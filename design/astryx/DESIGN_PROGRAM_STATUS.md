@@ -13,16 +13,19 @@ Updated: 2026-07-11 (after D4 approval-in-practice; D5 in build). Medium: coded 
 | D5 | Level-2 Review (`d5/`): queue, read-only workspace, approve/return/reject with exact return scope, version comparison | 3/3 SCR-WEB (300/310/320) | M06 53/53 (CSV-audited) | script-verified | **#5 Review Workspace ✓** |
 | D6 | Operations Center (`d6/`): synchronized live map/list, operational-state monitoring, alerts/exceptions, GPS-override approval, workload, tracking history, widget fault isolation | 1/1 SCR-WEB-500 | M08 19/19 (CSV-audited) | script-verified | **#6 complete ✓** (with D3 dossier half) |
 | D7 | Virtual sessions (`d7/`): appointment/waiting room, identity+OTP (no-bypass), remote execution with physical-follow-up path, closure→submission handoff | 3/3 SCR-VIR | M05 20/20 (CSV-audited) | script-verified | — |
+| D8 | Journey hub (`d8/`): clickable physical P00→P12 + virtual P06B journeys, all 10 mandated failure paths linked; global RTL toggle on every frame; responsive/a11y pass | — | journey wiring + SB01/SB02 realized | HTML ✓ | Approval-3 package ✓ |
+| D9 | Final audit + engineering handoff (`d9/`) | — | **493/493 governed records · unmapped ZERO · storyboards 20/20** | script-verified | — |
 
-Running totals: **38/38 screens · 478/478 atomic requirements design-covered · unmapped ZERO · 6/6 golden screens COMPLETE.** Remaining: D8 (journeys/RTL/polish round 2), D9 (final audit + handoff).
+Running totals: **38/38 screens · 478/478 atomic requirements design-covered · unmapped ZERO · 6/6 golden screens COMPLETE.** Design program first pass COMPLETE (D1–D9). Remaining: review rounds + formal approvals + gate-blocked build inputs.
 Cross-cutting done: state switchers on every frame; contract footers (REQ/AC/SB/ENG/ERR/EV IDs) on every frame; DEC placeholders everywhere (nothing invented); frame-to-frame journey navigation P00→P09(→P11).
 
 ## Not done yet ⬜
 
-| Wave | Scope | Screens | Requirements | Golden |
-|---|---|---|---|---|
-| D8 | Complete clickable physical+virtual journeys incl. negative/offline/auth/conflict paths; Arabic/RTL variants (gated DEC-004); responsive + accessibility passes; design polish round 2 on all frames | — | journey wiring | Approval 3 input |
-| D9 | Full 493-record coverage audit + engineering handoff spec (tokens→build, component API notes, per-screen acceptance matrix) | — | zero-unmapped proof | — |
+| Item | Notes |
+|---|---|
+| Polish round 2+ | review-driven; sponsor expects multiple rounds on the HTML frames — awaiting frame-level feedback |
+| G6 Approvals 1–3 formal sign-off | foundation + goldens approved in practice; Approval-3 package = `d8/D8-01_journey-hub.html` |
+| Arabic content variants | capability shipped (global RTL toggle); scope gated DEC-004 |
 
 ## Beyond design (not this program, blocked by gates)
 

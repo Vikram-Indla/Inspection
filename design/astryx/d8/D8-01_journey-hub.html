@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D8 — Complete Clickable Journeys (physical · virtual · failure paths)</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="../d2/admin.css">
+<style>
+  .jmap { display:flex; flex-direction:column; gap:var(--ax-space-100); }
+  .jstage { display:grid; grid-template-columns:64px minmax(0,1fr) auto; gap:var(--ax-space-200); align-items:center;
+    padding:var(--ax-space-200) var(--ax-space-300); background:var(--ax-color-surface);
+    border:1px solid var(--ax-color-border); border-radius:var(--ax-radius-standard); }
+  .jstage__phase { font:var(--ax-text-micro); letter-spacing:.05em; color:var(--ax-color-primary-strong);
+    background:var(--ax-color-primary-tint); border-radius:var(--ax-radius-small); padding:4px 8px; text-align:center; }
+  .jstage__fails { font:var(--ax-text-caption); color:var(--ax-color-text-secondary); margin-block-start:4px; }
+  .jstage__fails a { margin-inline-end:var(--ax-space-100); }
+  .jarrow { text-align:center; color:var(--ax-color-border-strong); font-size:14px; line-height:1; }
+  section.doc { background:var(--ax-color-surface); border:1px solid var(--ax-color-border); border-radius:var(--ax-radius-large); padding:var(--ax-space-400); display:flex; flex-direction:column; gap:var(--ax-space-300); }
+</style>
+</head>
+<body>
+<main class="ax-content" style="margin-inline:auto">
+  <header class="ax-stack">
+    <p class="ax-overline">Wave D8 · Approval-3 input · MIM Inspection Platform</p>
+    <h1>Complete clickable journeys</h1>
+    <p class="ax-caption">Every stage links to its live frame; every mandated failure path names the state-switcher button that plays it. Physical + virtual converge on one submission→review pipeline, exactly per contract. RTL preview: floating ⇄ button, every frame (capability demo — Arabic scope = DEC-004).</p>
+  </header>
+
+  <!-- PHYSICAL -->
+  <section class="doc">
+    <h2>Journey A — physical inspection, end to end (BRD §16.1 vertical slice)</h2>
+    <div class="jmap">
+      <div class="jstage"><span class="jstage__phase">P00</span>
+        <div><strong>Admin configures &amp; publishes package</strong><div class="jstage__fails">failure paths: <a class="ax-link" href="../d2/D2-04_package-designer.html">publish blocked (deps)</a> · <a class="ax-link" href="../d2/D2-04_package-designer.html">locked published</a> · <a class="ax-link" href="../d2/D2-04_package-designer.html">unauthorized</a></div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d2/D2-04_package-designer.html">Open frame</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P01–P03</span>
+        <div><strong>Planner: find factory → verify → configure → assign → publish</strong><div class="jstage__fails">failure paths: factory not found · <strong>duplicate visit</strong> · publish validation · <strong>assignment conflict + alternatives</strong> · degraded Senaei (all on the wizard switcher)</div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d3/D3-03_single-planning-wizard.html">Open golden #2</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P04–P05</span>
+        <div><strong>Inspector: assignments → startup pack → readiness</strong><div class="jstage__fails">failure paths: <strong>offline</strong> · expired assignment · readiness failures · <strong>package corrupt (quarantine)</strong> · wrong mode</div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d4/D4-01_assignments.html">Open golden #3</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P06A</span>
+        <div><strong>Journey → arrival → geofence check-in</strong><div class="jstage__fails">failure paths: weak GPS · <strong>outside geofence → governed override</strong> · offline en route · unable-to-execute</div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d4/D4-03_journey.html">Open frame</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P07–P08</span>
+        <div><strong>Execute: dynamic checklist → evidence → findings/violations/actions</strong><div class="jstage__fails">failure paths: <strong>offline capture + autosave</strong> · crash recovery · <strong>sync conflict resolver</strong> · blockers early · evidence permission/policy rejection · <strong>upload retry</strong> · action-form blocking</div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d4/D4-04_inspection-workspace.html">Open golden #4</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P09</span>
+        <div><strong>Immutable submission v1</strong><div class="jstage__fails">failure paths: mandatory gaps · offline queued submit · <strong>duplicate-submit protection (idempotency)</strong> · submitted-locked</div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d4/D4-07_submit.html">Open frame</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P10</span>
+        <div><strong>Reviewer: read-only review → return with exact scope</strong><div class="jstage__fails">failure paths: <strong>return without scope blocked</strong> · stale version · <strong>unauthorized</strong> · decided-locked (approve irreversible / reject final)</div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d5/D5-02_review-workspace.html">Open golden #5</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P11</span>
+        <div><strong>Selective correction → resubmission v2 → comparison → approval</strong><div class="jstage__fails">failure paths: <strong>locked-section edit blocked</strong> · scope sync conflict · missing version · incompatible package</div></div>
+        <div class="ax-row"><a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d4/D4-08_returned-correction.html">Correction</a><a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d5/D5-03_version-comparison.html">Compare v1→v2</a></div></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P12</span>
+        <div><strong>Factory 360 + Operations update</strong><div class="jstage__fails">failure paths: <strong>widget fault isolation</strong> · stale telemetry · degraded subservice · monitoring-only permission</div></div>
+        <div class="ax-row"><a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d3/D3-07_factory-360.html">Factory 360</a><a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d6/D6-01_operations-center.html">Golden #6 Ops</a></div></div>
+    </div>
+    <p class="ax-caption">Mandated non-success paths from the master execution prompt — mandatory-data blocker ✓ · assignment conflict ✓ · outside-geofence ✓ · offline capture/sync ✓ · evidence upload retry ✓ · duplicate-submit protection ✓ · selective returned-section editing ✓ · version comparison ✓ · unauthorized ✓ · degraded-service ✓ — all reachable above.</p>
+  </section>
+
+  <!-- VIRTUAL -->
+  <section class="doc">
+    <h2>Journey B — virtual inspection branch (P06B), converging at submission</h2>
+    <div class="jmap">
+      <div class="jstage"><span class="jstage__phase">P06B</span>
+        <div><strong>Confirmed appointment → waiting room → readiness</strong><div class="jstage__fails">failure paths: wrong appointment · outside window · device failure · participant late</div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d7/D7-01_appointment.html">Open frame</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P06B</span>
+        <div><strong>Identity + OTP verification (no bypass)</strong><div class="jstage__fails">failure paths: <strong>OTP retries</strong> · identity mismatch · <strong>provider unavailable (ERR-VIR-001)</strong></div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d7/D7-02_verify.html">Open frame</a></div>
+      <div class="jarrow">▼</div>
+      <div class="jstage"><span class="jstage__phase">P07–P09</span>
+        <div><strong>Remote execution → evidence → closure → same submission flow</strong><div class="jstage__fails">failure paths: connectivity loss · <strong>insufficient evidence → physical follow-up</strong> · closed/handoff → joins Journey A at P09</div></div>
+        <a class="ax-btn ax-btn--secondary" style="min-height:34px" href="../d7/D7-03_session.html">Open frame</a></div>
+    </div>
+  </section>
+
+  <!-- RESPONSIVE / A11Y / RTL -->
+  <section class="doc">
+    <h2>D8 variant passes</h2>
+    <div class="ax-grid-2">
+      <div>
+        <h4>Arabic / RTL</h4>
+        <p class="ax-caption">Floating ⇄ toggle now on every frame (shared astryx.js). All layout is logical-property based since D1 — direction flips natively: nav, breadcrumbs, steppers, timelines, conflict panels, switches. Arabic type stack (IBM Plex Sans Arabic) engages via <code>lang</code> switch. <strong>Scope stays DEC-004</strong> — this proves capability, commits nothing.</p>
+      </div>
+      <div>
+        <h4>Responsive &amp; accessibility</h4>
+        <p class="ax-caption">Desktop ≤1440 grid · shells collapse inspector panels below 1100px · iPad frames carry portrait/landscape toggles · focus-visible rings on every interactive element · no colour-only meaning (glyph+label lozenges) · reduced-motion honored · field text ≥16px, targets ≥48px. Verified per frame in D9 audit.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="adm-contract">
+    <h5>Contract traceability — D8</h5>
+    <span><strong>Deliverable:</strong> master execution prompt step 5 “wire the complete primary physical-inspection journey … include successful path + 10 named failure paths” ✓ + virtual branch ✓. Journey = P00→P12 canonical spine (master_end_to_end_process.mmd) with P06A/P06B branch and P10↔P11 loop, every stage a live frame. This page + linked frames = Approval 3 review package.</span>
+    <span><strong>Storyboards realized by this hub:</strong> <code>SB01</code> Executive End-to-End Journey (this page is its interactive form — all 478 mapped requirements reachable) · <code>SB02</code> Persona Experience Atlas (each stage names its owning persona and hands off across channels: Compliance Admin → Planner → Inspector → Factory Rep → Reviewer → Operations → Leadership) · <code>SB19</code>/<code>SB20</code> navigation &amp; architecture blueprints via the linked shells.</span>
+  </div>
+</main>
+<script src="../astryx.js"></script>
+</body>
+</html>

@@ -6,6 +6,26 @@
 (function () {
   "use strict";
 
+  // ---- D8: global floating RTL/LTR toggle on every frame ----
+  // Capability demo only — Arabic SCOPE remains DEC-004 (open decision).
+  (function () {
+    var b = document.createElement("button");
+    b.textContent = "⇄ RTL";
+    b.setAttribute("aria-pressed", "false");
+    b.setAttribute("aria-label", "Toggle right-to-left preview (DEC-004 capability demo)");
+    b.style.cssText = "position:fixed;inset-block-end:16px;inset-inline-start:16px;z-index:80;" +
+      "min-height:36px;padding-inline:12px;border-radius:999px;border:1px solid var(--ax-color-border-strong);" +
+      "background:var(--ax-color-surface);font:600 12px/1 var(--ax-font-sans);cursor:pointer;box-shadow:var(--ax-shadow-raised)";
+    b.addEventListener("click", function () {
+      var rtl = document.documentElement.getAttribute("dir") === "rtl";
+      document.documentElement.setAttribute("dir", rtl ? "ltr" : "rtl");
+      document.documentElement.setAttribute("lang", rtl ? "en" : "ar");
+      b.setAttribute("aria-pressed", String(!rtl));
+      b.textContent = rtl ? "⇄ RTL" : "⇄ LTR";
+    });
+    if (document.body) document.body.appendChild(b);
+  })();
+
   // ---- RTL / language toggle (DEC-004 prepared, not committed) ----
   document.querySelectorAll("[data-ax-rtl-toggle]").forEach(function (btn) {
     btn.addEventListener("click", function () {
