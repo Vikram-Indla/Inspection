@@ -30,3 +30,8 @@ coverage/
 # Python cache (added at G4 install)
 __pycache__/
 *.pyc
+
+# build artifacts
+apps/web/.next/
+*.tsbuildinfo
+node_modules/
