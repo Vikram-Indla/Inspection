@@ -1,0 +1,22 @@
+# Session Handoff
+
+- Session ID:
+- Date/time:
+- Gate:
+- Task ID:
+- Branch:
+- Starting commit:
+- Ending commit:
+- Requirements:
+- Acceptance IDs:
+- Screens:
+- Engines:
+- Files changed:
+- Database/API changes:
+- Tests run:
+- Evidence captured:
+- Decisions made:
+- Open blockers:
+- Regression result:
+- Exact next task:
+- Ready-to-paste resume prompt:

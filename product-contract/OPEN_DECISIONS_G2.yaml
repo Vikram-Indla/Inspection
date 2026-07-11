@@ -1,0 +1,34 @@
+open_decisions:
+- id: OD-01
+  topic: Arabic/RTL requirement for MVP1
+  owner: Business Sponsor
+  control: Must be approved; Fable may not infer English-only or bilingual scope
+- id: OD-02
+  topic: Risk factors, weights, formula and thresholds
+  owner: Risk Owner
+  control: Engine contract is frozen; actual policy values remain decision inputs
+- id: OD-03
+  topic: GIS/geofence radius, accuracy, route-deviation and retention policies
+  owner: Operations/GIS Owner
+  control: No arbitrary technical values
+- id: OD-04
+  topic: SLA values, work calendar and escalation ladder
+  owner: Business Operations
+  control: No invented timers
+- id: OD-05
+  topic: OTP, SMS, email, maps, identity, signature and virtual-session providers
+  owner: Architecture/Procurement
+  control: Integration state must be explicit
+- id: OD-06
+  topic: Evidence formats, size limits, retention, redaction and scanning
+  owner: Compliance/Security
+  control: No generic attachment assumptions
+- id: OD-07
+  topic: Exact factory-facing MVP1 participation boundary
+  owner: Product Owner
+  control: Virtual participation is clear; broader portal/correction/appeal needs
+    explicit approval
+- id: OD-08
+  topic: 'NFR targets: concurrency, latency, availability, RTO/RPO'
+  owner: Enterprise Architect
+  control: Must be decided before G8 certification

@@ -1,0 +1,16 @@
+schema_version: "1.0"
+approvals:
+  - gate: "G4"
+    decision: "Pending verification"
+    approver: "Vikram Indla"
+  - gate: "G5"
+    decision: "Not opened"
+  - gate: "G6"
+    decision: "Not opened"
+  - gate: "G7"
+    decision: "Not opened"
+  - gate: "G8"
+    decision: "Not opened"
+rules:
+  - "The agent may prepare evidence but may not self-approve a business decision."
+  - "G8 requires explicit human authorization before broad implementation."

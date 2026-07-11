@@ -1,0 +1,15 @@
+rbac_id,object_capability,role,channel,allowed_actions,data_scope,restrictions,scope
+RBAC-001,Regulations,Compliance Admin,Admin,View/Create/Edit Draft/Submit/Publish if approver,All configured scope,Maker-checker; cannot edit published version,MVP1
+RBAC-002,Packages/Forms,Form Admin,Admin,View/Create/Edit Draft/Preview/Test/Submit,All configured scope,Cannot publish own draft where segregation enabled,MVP1
+RBAC-003,Workflow,Workflow Admin,Admin,View/Create/Edit/Test/Submit/Publish if approver,All workflows,No direct runtime state mutation,MVP1
+RBAC-004,Risk Configuration,Risk Owner,Admin,View/Edit Draft/Test/Submit,All approved risk config,Weights/formula blocked until approved decision,MVP1 foundation
+RBAC-005,GIS Configuration,GIS Admin,Admin,View/Edit/Validate/Submit/Publish if approver,All spatial config,Override policy segregation,MVP1
+RBAC-006,Roles & Permissions,Security Admin,Admin,View/Create/Edit/Publish,All roles,Cannot grant beyond own administrative authority,MVP1
+RBAC-007,Visit Planning,Planner,Web,Create/Edit Draft/Assign/Publish/Return/Cancel per state,Assigned organizational scope,No execution/review decision,MVP1
+RBAC-008,Visit Management,Operations User,Web/Ops,View/Reassign/Resolve exception/Approve override per policy,Region/branch or all assigned scope,Cannot alter submitted inspection,MVP1
+RBAC-009,Assigned Visits,Inspector,iPad,View assigned/Accept/Return/Execute,Own assignments only,No access to unassigned visits,MVP1
+RBAC-010,Inspection Draft,Inspector,iPad,Create/Edit before submit/Add evidence/Submit,Own active inspection,Submitted version immutable,MVP1
+RBAC-011,Review,Level 2 Reviewer,Web,View submitted/Approve/Return/Reject/Add immutable comments,Assigned review queue/scope,Cannot edit inspector content,MVP1
+RBAC-012,Version Comparison,Auditor,Web,View only/Export evidence where permitted,Audit scope,No mutation,MVP1
+RBAC-013,Factory 360,Leadership User,Web,View aggregated KPIs/profile,Authorized geography/organization,Sensitive details may be masked,MVP1
+RBAC-014,Virtual Session,Factory Representative,Virtual,Join/Verify/Provide evidence/Respond,Own appointment/session only,No internal review/admin data,MVP1 boundary decision

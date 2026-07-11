@@ -1,0 +1,26 @@
+schema_version: "1.0"
+task_id: "G4-INSTALL-VERIFY"
+gate: "G4"
+title: "Install and verify Git-backed memory, Obsidian vault and Claude continuity controls"
+status: "READY_FOR_USER_INSTALLATION"
+enforce_stop_gate: false
+broad_implementation_allowed: false
+process_ids: []
+requirement_ids: []
+acceptance_ids: []
+screen_ids: []
+engine_ids: []
+required_context:
+  - product-contract/00_START_HERE.md
+  - product-contract/CURRENT_STATE.md
+  - product-contract/GATE_STATUS.md
+  - docs/G4_INSTALLATION_RUNBOOK.md
+required_evidence:
+  - evidence/G4-EV-001-overlay-tree.txt
+  - evidence/G4-EV-002-git-log.txt
+  - evidence/G4-EV-003-obsidian-vault.png
+  - evidence/G4-EV-004-claude-memory.txt
+  - evidence/G4-EV-005-session-start-hook.txt
+  - evidence/G4-EV-006-pretool-guard.txt
+  - evidence/G4-EV-007-resume-test.txt
+exit_condition: "All seven evidence items accepted and G4_GATE_REPORT.md changed to PASS."
