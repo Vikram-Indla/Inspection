@@ -11,7 +11,7 @@ Updated: 2026-07-11 (after D4 approval-in-practice; D5 in build). Medium: coded 
 | D3 | Web planning · management · Factory 360 (`d3/`) | 9/9 SCR-WEB (100–210, 400) | M01 52/52 · M02 46/46 · M07 20/20 | script-verified | **#2 Single Planning wizard ✓** · #6 dossier half ✓ |
 | D4 | iPad field app (`d4/`) | 8/8 SCR-IPAD | M03+M04 238/238 (CSV-audited) | script-verified | **#3 Assigned/Startup ✓ · #4 Inspection Workspace ✓** |
 
-Running totals: **31/38 screens · 386/478 atomic requirements design-covered · 4.5/6 golden screens.**
+Running totals: **35/38 screens · 458/478 atomic requirements design-covered · 6/6 golden screens COMPLETE** (D5 Review + D6 Operations Center done; remaining: D7 Virtual 3 screens/20 rows, D8, D9).
 Cross-cutting done: state switchers on every frame; contract footers (REQ/AC/SB/ENG/ERR/EV IDs) on every frame; DEC placeholders everywhere (nothing invented); frame-to-frame journey navigation P00→P09(→P11).
 
 ## Not done yet ⬜
