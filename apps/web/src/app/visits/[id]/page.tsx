@@ -1,11 +1,14 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import ActionBar from "./ActionBar";
 
 export const dynamic = "force-dynamic";
 
 export default async function VisitDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const sb = await supabaseServer();
+  const { data: inspRows } = await sb.from("user_roles").select("user_id, profiles(full_name)").eq("role_key", "inspector");
+  const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
   const { data: v } = await sb.from("visits")
     .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, cancellation_reason,
       factories(id, factory_code, name, cr_number, official_lat, official_lng, risk_band),
@@ -48,6 +51,7 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
           ) : <p className="ax-caption">Not started.</p>}
         </div>
       </div>
+      <ActionBar visitId={v.id} status={v.planning_status} inspectors={inspectors} />
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>Journey & location events — immutable (EV-005)</h4>
         <ul className="ax-timeline">
