@@ -1,0 +1,10 @@
+{
+  "name": "MIM Inspection Platform",
+  "short_name": "MIM Field",
+  "start_url": "/field",
+  "display": "standalone",
+  "background_color": "#F5F7FA",
+  "theme_color": "#0866FF",
+  "orientation": "any",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

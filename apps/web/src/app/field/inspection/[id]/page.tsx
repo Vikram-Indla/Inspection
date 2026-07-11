@@ -8,7 +8,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const { id } = await params;
   const sb = await supabaseServer();
   const [{ data: ins }, { data: items }, { data: resp }] = await Promise.all([
-    sb.from("inspections").select("id, status, visit_id, package_versions(version_label, definition, packages(code)), visits(factories(name))").eq("id", id).single(),
+    sb.from("inspections").select("id, status, visit_id, package_versions(version_label, definition, packages(code)), visits(factories(name)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)").eq("id", id).single(),
     sb.from("inspection_items").select("id, code, title, response_model, evidence_rule"),
     sb.from("checklist_responses").select("item_id, response, updated_at").eq("inspection_id", id),
   ]);

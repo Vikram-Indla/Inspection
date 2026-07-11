@@ -4,7 +4,7 @@ import { local, processOutbox, sha256b64, type SyncState, type Conflict } from "
 import { supabaseBrowser } from "@/lib/supabase";
 
 type Item = { id: string; code: string; title: string; response_model: { responses?: string[]; mapping?: Record<string, { violation?: string; action_form?: string }> }; evidence_rule: { on?: string; type?: string; mandatory?: boolean } | null };
-type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: { key: string; title: string; items?: string[] }[] } } };
+type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: { key: string; title: string; items?: string[] }[] } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
 type SResp = { item_id: string; response: { value?: string } | null; updated_at: string };
 
 const LABEL: Record<SyncState, string> = { synced: "Synced", offline: "Offline — work saved locally", pending: "Pending sync", syncing: "Syncing…", conflict: "Conflict — action required", failed: "Sync failed — will retry" };
@@ -49,10 +49,11 @@ export default function Workspace({ inspection, items, serverResponses }: { insp
     const missing = sections.flatMap(s => (s.items ?? []).filter(c => !answers[imap[c]?.id]));
     if (missing.length) { setMsg(`Blockers: ${missing.join(", ")} unanswered (ERR-SUB-001 — state stays in progress)`); return; }
     const key = crypto.randomUUID();
+    const nextVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)) + 1;
     const snapshot = { answers: Object.fromEntries(Object.entries(answers).map(([id, v]) => [items.find(i => i.id === id)?.code ?? id, v])), submitted_offline: !navigator.onLine };
-    await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: 1, snapshot, idempotency_key: key, acknowledgement: { name: "Factory representative", signed: true, ts: new Date().toISOString() }, queued_at: new Date().toISOString() });
+    await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: nextVersion, snapshot, idempotency_key: key, acknowledgement: { name: "Factory representative", signed: true, ts: new Date().toISOString() }, queued_at: new Date().toISOString() });
     setSubmitted(true);
-    setMsg(navigator.onLine ? "Submitting immutable v1 (idempotency-protected)…" : "Queued — will submit exactly once on reconnect (never claims submitted while unsynced)");
+    setMsg(navigator.onLine ? `Submitting immutable v${nextVersion} (idempotency-protected)…` : "Queued — will submit exactly once on reconnect (never claims submitted while unsynced)");
     processOutbox(onState);
   }
   const tone = sync === "synced" ? "ax-sync--synced" : sync === "offline" ? "ax-sync--offline" : sync === "syncing" ? "ax-sync--syncing" : sync === "conflict" ? "ax-sync--conflict" : sync === "failed" ? "ax-sync--failed" : "ax-sync--pending";
@@ -76,8 +77,19 @@ export default function Workspace({ inspection, items, serverResponses }: { insp
           </div>
         </div>
       ))}
+      {inspection.status === "returned" && (() => {
+        const lastReturn = (inspection.reviews ?? []).filter(r => r.decided_at && r.returned_sections).slice(-1)[0];
+        return lastReturn ? <div className="ax-banner ax-banner--warning"><div><strong>Returned — correction scope: {lastReturn.returned_sections!.join(", ")}.</strong> {lastReturn.decision_reason} · Only these sections are editable; resubmission creates the next immutable version (STM-COR-001/002).</div></div> : null;
+      })()}
       {submitted && <div className="ax-banner ax-banner--immutable"><div><strong>Submitted — immutable v1.</strong> Content locked by the database (proven B3); corrections only via reviewer return.</div></div>}
-      {!submitted && sections.map(s => (
+      {!submitted && sections.map(s => {
+        if (inspection.status === "returned") {
+          const lastReturn = (inspection.reviews ?? []).filter(r => r.decided_at && r.returned_sections).slice(-1)[0];
+          if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
+            return <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} 🔒</h4><p className="ax-caption">Not in return scope — locked read-only (M06-043); DB also rejects edits.</p></div>;
+          }
+        }
+        return (
         <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4>{s.title}</h4>
           {(s.items ?? []).map(code => {
@@ -102,7 +114,7 @@ export default function Workspace({ inspection, items, serverResponses }: { insp
             );
           })}
         </div>
-      ))}
+      );})}
       {!submitted && (
         <div className="ax-row" style={{ justifyContent: "flex-end" }}>
           <button className="ax-btn ax-btn--prominent ax-btn--field" onClick={submit}>Review & submit — immutable v1</button>
