@@ -21,4 +21,4 @@ items:
     owner: "Human decision owners (see decision_register.csv)"
     blocked_by: ["G5-ARCH-DISCOVERY"]
     blocks: ["G8-CERT"]
-    note: "Resolve DEC-001..010 / OD-01..08 and provide Supabase secret key or PAT for live-schema reconciliation."
+    note: "Resolve DEC-001..010 / OD-01..08. Live-schema reconciliation COMPLETE 2026-07-11 (greenfield; docs/G5_LIVE_SCHEMA_RECONCILIATION.md)."

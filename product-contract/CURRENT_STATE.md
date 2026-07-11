@@ -14,5 +14,6 @@
 - G7 Acceptance / Evidence / Test Data: PARTIAL
 - G8 Pre-Build Certification: NOT STARTED
 - Broad implementation: BLOCKED (until G8 PASS)
-- Live backend: Supabase project `iiozvqntawxfwbgffzqu` confirmed live; schema discovery pending secret key/PAT
-- Next controlled activity: resolve G5 open decisions and complete live-schema reconciliation, then G6 design
+- Live backend: Supabase project `iiozvqntawxfwbgffzqu` (region ap-northeast-2 Seoul); secret key provided 2026-07-11; schema discovery COMPLETE — pristine greenfield (0 tables/buckets/users); reconciliation report: docs/G5_LIVE_SCHEMA_RECONCILIATION.md
+- Design authority first pass complete: design/astryx D1-D9, 493/493 governed records covered (design/astryx/d9/D9_FINAL_AUDIT.md); G6 formal approvals pending
+- Next controlled activity: resolve G5 open decisions DEC-001..010 (only remaining G5 leg), then G6 formal approval, G7 scenario expansion, G8 certification

@@ -14,8 +14,8 @@
   "live_backend": {
     "provider": "Supabase",
     "project_ref": "iiozvqntawxfwbgffzqu",
-    "status": "live (auth/v1/health 200)",
-    "access": "publishable key only (RLS row access); schema discovery needs secret key or personal access token"
+    "status": "live; schema discovered 2026-07-11: pristine greenfield (0 tables/buckets/users); region ap-northeast-2",
+    "access": "secret key held in local macOS keychain (never committed); rotation recommended"
   },
   "required_verifications": [
     "Overlay copied to repository root",
