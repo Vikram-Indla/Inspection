@@ -1,0 +1,40 @@
+schema_version: "1.0"
+change_id: "CC-G4-001"
+title: "G4 closure: verification evidence, gate-report PASS and control-file status updates"
+requestor: "Vikram Indla"
+approver: "Vikram Indla"
+authorization: "Explicit human instruction to proceed autonomously and stop requesting mechanical approvals (session 2026-07-11)."
+business_reason: >
+  Close G4 (memory / Obsidian / Claude continuity) after installation and functional
+  verification, and open G5 architecture discovery. Human authorized correcting the
+  two bootstrap root-resolution defects, creating this change-approval record,
+  capturing all available G4 mechanical evidence, running the G4 validation suite,
+  marking G4 PASS on cloud-verifiable tests, and committing on the controlled branch.
+scope_allowed:
+  - "product-contract/evidence/** (capture G4-EV-001..007 and validation suite)"
+  - "product-contract/G4_GATE_REPORT.md (CONDITIONAL PASS -> PASS)"
+  - "product-contract/GATE_STATUS.md (G4 row; G5 discovery status)"
+  - "product-contract/CURRENT_STATE.md (gate status lines)"
+  - "product-contract/MANIFEST.json (current_gate, gate_status)"
+  - "product-contract/acceptance/ACCEPTANCE_STATUS.md (G4 result)"
+  - "product-contract/evidence/EVIDENCE_STATUS.md (captured)"
+  - "product-contract/execution/CURRENT_SLICE.yaml (advance to G5-ARCH-DISCOVERY)"
+  - "product-contract/execution/WORK_QUEUE.yaml (G4 done; G5 in progress)"
+  - "product-contract/governance/HUMAN_APPROVALS.yaml (record G4 authorization)"
+  - "product-contract/sessions/SESSION_LEDGER.json (append session, append-only)"
+  - "docs/G5_ARCHITECTURE_AND_READINESS.md (new discovery report)"
+scope_forbidden:
+  - "Any frozen domain contract row (field_dictionary, rbac_matrix, state_transitions, atomic_scope, reference_data, process_catalog, screen_route_catalogue, decision_register, error_catalogue, scope_boundary) — IDs and semantics preserved unchanged."
+  - "Any application/product code — none created."
+  - "Any push, merge or modification of main."
+  - "Resolving any open DEC-001..010 / OD-01..08 decision."
+mvp1_mvp2_impact: "None. No scope added, removed or weakened."
+regression_impact: "None. Control/status files only; all stable IDs preserved."
+decision_owner: "Vikram Indla"
+effective_version: "G4-CLOSED / G5-DISCOVERY-OPEN"
+effective_date: "2026-07-11"
+notes: >
+  G4-EV-003 Obsidian vault is recorded as a structure-verification note; the desktop
+  screenshot is a NON-BLOCKING post-check per human instruction (do not fabricate a
+  screenshot). This approval is narrow and expires on G4 closure commit; it does not
+  authorize G5 implementation, which remains blocked until G8 PASS.

@@ -1,0 +1,28 @@
+# G4-EV-004 Claude memory / instruction load evidence
+autoMemoryEnabled (settings.json):
+   True
+auto_memory_role (MANIFEST):
+   Advisory only
+
+Root instruction files that /memory loads:
+CLAUDE.md
+Path-scoped rules:
+admin.md
+governance.md
+ipad.md
+product-contract.md
+tests.md
+web.md
+Skills:
+inspection-build-slice
+inspection-gate-check
+inspection-qa-certification
+inspection-session-handoff
+inspection-session-start
+
+CLAUDE.md Memory policy excerpt:
+## Memory policy
+- Git-backed files are authoritative.
+- Obsidian is a human interface over the same repository, not a separate copy.
+- Claude auto memory is advisory only and may never override the product contract.
+- `CLAUDE.local.md` is personal and must not contain shared scope decisions.

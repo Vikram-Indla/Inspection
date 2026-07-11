@@ -2,7 +2,7 @@
 set -euo pipefail
 
 echo "MIM Inspection Platform - G4 bootstrap"
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
 python3 scripts/validate_memory.py

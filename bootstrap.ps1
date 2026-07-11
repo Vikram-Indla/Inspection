@@ -1,5 +1,5 @@
 $ErrorActionPreference = "Stop"
-$Root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Root = $PSScriptRoot
 Set-Location $Root
 Write-Host "MIM Inspection Platform - G4 bootstrap"
 python scripts/validate_memory.py

@@ -1,29 +1,56 @@
 {
   "schema_version": "1.0",
   "project": "MIM Inspection Platform MVP1",
-  "sessions": [],
-  "last_session": null,
+  "sessions": [
+    {
+      "session_id": "2026-07-11-g4-closure-g5-discovery",
+      "started_at": "2026-07-11",
+      "ended_at": "2026-07-11",
+      "branch": "setup/g4-memory-continuity",
+      "task_id": "G4-INSTALL-VERIFY -> G5-ARCH-DISCOVERY",
+      "gate": "G4 (closed) / G5 (discovery)",
+      "requirements": ["G4 continuity controls", "478 atomic MVP1 baseline (discovery only)"],
+      "acceptance_ids": ["G4 acceptance 1-7 PASS"],
+      "screens": ["38 specified routes catalogued (not built)"],
+      "engines": ["ENG-01..ENG-12 mapped"],
+      "files_changed": [
+        "bootstrap.sh (root fix)",
+        "bootstrap.ps1 (root fix)",
+        ".gitignore (pycache)",
+        "product-contract/evidence/G4-EV-001..007 + validation suite",
+        "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml (new)",
+        "product-contract/G4_GATE_REPORT.md (PASS)",
+        "product-contract/GATE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/MANIFEST.json",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/governance/HUMAN_APPROVALS.yaml",
+        "product-contract/execution/CURRENT_SLICE.yaml",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "docs/G5_ARCHITECTURE_AND_READINESS.md (new)"
+      ],
+      "tests": ["validate_memory PASS", "JSON integrity PASS", "HOME 16/16 links", "guard deny/allow PASS", "build-block intact"],
+      "evidence": ["G4-EV-001..007", "G4-VALIDATION-SUITE.txt"],
+      "decisions": ["G4 marked PASS under CC-G4-001; DEC-001..010 left OPEN; no product code"],
+      "blockers": [
+        "10 open decisions DEC-001..010 / OD-01..08",
+        "Supabase live-schema access needs secret key or PAT (project iiozvqntawxfwbgffzqu)",
+        "G6 design authority not started",
+        "Broad build blocked until G8 PASS"
+      ],
+      "commit_sha": "recorded at G4-closure commit on setup/g4-memory-continuity",
+      "next_task": "G5-DECISIONS: human disposition of DEC-001..010 + provide Supabase secret key/PAT for live-schema reconciliation",
+      "resume_prompt": "Read CLAUDE.md and product-contract/00_START_HERE.md. Load CURRENT_STATE.md, GATE_STATUS.md, execution/CURRENT_SLICE.yaml (G5-ARCH-DISCOVERY), TASK_ROUTER.yaml, governance/OPEN_DECISIONS.yaml and docs/G5_ARCHITECTURE_AND_READINESS.md. G4 is PASS; G5 discovery is complete. Do NOT start broad build (blocked until G8). Next: disposition open decisions DEC-001..010 and reconcile the live Supabase schema (project iiozvqntawxfwbgffzqu) once a secret key or PAT is provided. Never touch the unrelated catalyst-prod project."
+    }
+  ],
+  "last_session": "2026-07-11-g4-closure-g5-discovery",
   "rules": {
     "append_only": true,
     "required_fields": [
-      "session_id",
-      "started_at",
-      "ended_at",
-      "branch",
-      "task_id",
-      "gate",
-      "requirements",
-      "acceptance_ids",
-      "screens",
-      "engines",
-      "files_changed",
-      "tests",
-      "evidence",
-      "decisions",
-      "blockers",
-      "commit_sha",
-      "next_task",
-      "resume_prompt"
+      "session_id","started_at","ended_at","branch","task_id","gate","requirements",
+      "acceptance_ids","screens","engines","files_changed","tests","evidence","decisions",
+      "blockers","commit_sha","next_task","resume_prompt"
     ]
   }
 }

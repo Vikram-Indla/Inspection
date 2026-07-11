@@ -1,10 +1,15 @@
 schema_version: "1.0"
 approvals:
   - gate: "G4"
-    decision: "Pending verification"
+    decision: "PASS authorized (cloud-verifiable tests)"
     approver: "Vikram Indla"
+    date: "2026-07-11"
+    change_ref: "CC-G4-001"
+    note: "Obsidian desktop screenshot recorded as non-blocking post-check."
   - gate: "G5"
-    decision: "Not opened"
+    decision: "Discovery authorized; PASS not granted. Awaiting open decisions and live-schema access."
+    approver: "Vikram Indla"
+    date: "2026-07-11"
   - gate: "G6"
     decision: "Not opened"
   - gate: "G7"
@@ -14,3 +19,4 @@ approvals:
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."
+  - "Open decisions DEC-001..010 / OD-01..08 may not be resolved by the agent."

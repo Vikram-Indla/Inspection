@@ -3,13 +3,22 @@ items:
   - task_id: "G4-INSTALL-VERIFY"
     gate: "G4"
     priority: "P0"
-    status: "READY"
-    owner: "Human operator with ChatGPT gatekeeper"
+    status: "DONE"
+    owner: "Human operator with Claude gatekeeper"
     blocked_by: []
     blocks: ["G5-ARCH-DISCOVERY"]
   - task_id: "G5-ARCH-DISCOVERY"
     gate: "G5"
     priority: "P0"
+    status: "DISCOVERY_COMPLETE_AWAITING_DECISIONS"
+    owner: "Enterprise Architect + Human decision owners"
+    blocked_by: []
+    blocks: ["G6-DESIGN", "G8-CERT"]
+  - task_id: "G5-DECISIONS"
+    gate: "G5"
+    priority: "P0"
     status: "BLOCKED"
-    owner: "TBD"
-    blocked_by: ["G4-INSTALL-VERIFY"]
+    owner: "Human decision owners (see decision_register.csv)"
+    blocked_by: ["G5-ARCH-DISCOVERY"]
+    blocks: ["G8-CERT"]
+    note: "Resolve DEC-001..010 / OD-01..08 and provide Supabase secret key or PAT for live-schema reconciliation."

@@ -6,9 +6,17 @@
   "agent_instruction": "CLAUDE.md + .claude/rules + skills",
   "enforcement": "Claude Code project hooks",
   "auto_memory_role": "Advisory only",
-  "current_gate": "G4",
-  "gate_status": "CONDITIONAL - INSTALLATION VERIFICATION PENDING",
+  "current_gate": "G5",
+  "gate_status": "G4 PASS (cloud-verifiable); G5 DISCOVERY COMPLETE - AWAITING DECISIONS",
   "generated_at_utc": "2026-07-10T23:46:40.504523+00:00",
+  "g4_closed_at": "2026-07-11",
+  "g4_result": "PASS (Obsidian desktop screenshot non-blocking post-check)",
+  "live_backend": {
+    "provider": "Supabase",
+    "project_ref": "iiozvqntawxfwbgffzqu",
+    "status": "live (auth/v1/health 200)",
+    "access": "publishable key only (RLS row access); schema discovery needs secret key or personal access token"
+  },
   "required_verifications": [
     "Overlay copied to repository root",
     "Initial baseline commit created",
