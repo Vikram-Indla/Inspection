@@ -50,8 +50,8 @@
         <div class="st st--validation ax-validation" role="alert"><strong>3 readiness failures — journey blocked (P04 “insufficient device readiness”)</strong>
           <ul>
             <li>Battery 12% — below field policy for a full inspection day</li>
-            <li>Storage 400 MB — package cache requires more (sizes = DEC-010)</li>
-            <li>GPS accuracy ±48 m — below check-in requirement (threshold = DEC-002)</li>
+            <li>Storage 400 MB free — package target 200 MB + working space (DEC-010 accepted)</li>
+            <li>GPS accuracy ±48 m — check-in requires ≤25 m (DEC-002 accepted)</li>
           </ul>
         </div>
         <div class="st st--blocked ax-banner ax-banner--critical"><div><strong>Package integrity failure (ERR-PKG-001).</strong> Checksum mismatch on download — package quarantined, will not open. Re-download required; inspection cannot start on a corrupted package (M04-006). Security audit recorded.</div></div>
@@ -68,7 +68,7 @@
                 <div class="ipad-ready__row is-pass">Package resolved, downloaded, integrity-verified, locked <span class="ax-caption">M04-005/006 · regenerated after edits, locked after save (M03-012)</span></div>
                 <div class="ipad-ready__row is-pass">Offline cache complete — forms, checklist, action forms, docs <span class="ax-caption">M04-007</span></div>
                 <div class="ipad-ready__row is-warn">Battery 31% <span class="ax-caption">charge recommended</span></div>
-                <div class="ipad-ready__row is-pass">GPS, network, storage within limits <span class="ax-caption">values DEC-002/010</span></div>
+                <div class="ipad-ready__row is-pass">GPS ≤25 m, network, storage within accepted limits <span class="ax-caption">DEC-002/010 accepted</span></div>
                 <div class="ipad-ready__row is-pass">Factory notification — optional for physical, sent (M03-013)</div>
               </div>
             </div>

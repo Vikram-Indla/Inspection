@@ -34,7 +34,7 @@
 
       <div class="ipad-body">
         <div class="st st--validation ax-banner ax-banner--warning" role="alert"><div><strong>Camera permission denied (ERR-EVD-001).</strong> Explained + routed to Settings; alternative capture (file/document) offered. No false evidence record is created.</div></div>
-        <div class="st st--blocked ax-banner ax-banner--critical" role="alert"><div><strong>File rejected (ERR-EVD-002).</strong> Video exceeds configured policy — limits are admin/decision-governed (DEC-006), shown with the rejection. Inspection state preserved; nothing uploaded.</div></div>
+        <div class="st st--blocked ax-banner ax-banner--critical" role="alert"><div><strong>File rejected (ERR-EVD-002).</strong> Video 4:12 / 310 MB exceeds policy: ≤3 min, ≤250 MB (DEC-006 accepted; admin-revisable). Inspection state preserved; nothing uploaded.</div></div>
         <div class="st st--degraded ax-banner" style="border-inline-start-color:var(--ax-color-text-secondary)"><div><strong>Upload interrupted — safe retry.</strong> Evidence keeps its local identity + metadata until durable server confirmation; retry never duplicates (idempotent replay — FND-006; ERR-OFF-001). Chain of custody unbroken.</div></div>
 
         <div class="st st--populated ax-stack" style="gap:var(--ax-space-300)">
@@ -44,7 +44,7 @@
             <button><span>📄</span><span>Document scan</span></button>
             <button><span>🎙</span><span>Voice note</span></button>
           </div>
-          <p class="ax-caption">Types from REF-007 (admin-governed). Every capture: link target required (item / finding / action / inspection — FLD-EVD-003/004, same inspection only) · trusted timestamp · location + device attribution · content identity where enabled (FLD-EVD-006 = DEC-006). Loose evidence is rejected by design (P08 failure control).</p>
+          <p class="ax-caption">Types from REF-007 (admin-governed). Every capture: link target required (item / finding / action / inspection — FLD-EVD-003/004, same inspection only) · trusted timestamp · location + device attribution · SHA-256 content hash at sync (FLD-EVD-006 — DEC-006 accepted: enabled). Loose evidence is rejected by design (P08 failure control).</p>
 
           <div class="ax-evidence-grid">
             <figure class="ax-evidence" style="margin:0">

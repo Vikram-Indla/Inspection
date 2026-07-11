@@ -33,7 +33,7 @@
       <div class="ipad-head"><div class="ipad-head__row"><h3>Verify A. Saleh — factory representative</h3><span class="ax-caption">every attempt recorded: ID/OTP verification record + attempts (STM-VIR-002 audit)</span></div></div>
 
       <div class="ipad-body">
-        <div class="st st--validation ax-banner ax-banner--warning" role="alert"><div><strong>OTP incorrect — attempt 2 of retry policy (policy values = DEC-007).</strong> Retries remaining shown; resend available after cooldown; failures block session progression and remain auditable (BRD §7.5 rule). Escalation offered at policy limit.</div></div>
+        <div class="st st--validation ax-banner ax-banner--warning" role="alert"><div><strong>OTP incorrect — attempt 2 of 3 (DEC-007 accepted: 6-digit · 5-min expiry · 3 attempts · 3 resends @60 s cooldown).</strong> Retries remaining shown; resend available after cooldown; failures block session progression and remain auditable (BRD §7.5 rule). Escalation offered at policy limit.</div></div>
         <div class="st st--blocked ax-banner ax-banner--critical"><div><strong>Identity mismatch (SCR-VIR-710 failure state).</strong> Presented ID does not match the registered representative for this appointment. Session progression blocked; exception recorded; options: correct participant joins, or reschedule with factory contact update. No bypass.</div></div>
         <div class="st st--degraded ax-banner ax-banner--critical"><div><strong>OTP provider unavailable (ERR-VIR-001).</strong> Retry / reschedule / escalation offered — verification is never skipped. Session stays Joined/Unverified; provider outage logged (provider abstraction — DEC-007; simulation never release-complete).</div></div>
         <div class="st st--locked ax-banner ax-banner--success" style="border-inline-start-color:var(--ax-color-success)"><div><strong>Verified 10:04:31 (STM-VIR-002 → Verified).</strong> Participant bound to session · readiness unlocked · verification record sealed. <a class="ax-link" href="D7-03_session.html">Proceed to remote inspection →</a></div></div>
@@ -54,7 +54,7 @@
 
           <div class="ax-surface" style="padding:var(--ax-space-400); display:flex; flex-direction:column; gap:var(--ax-space-200)">
             <h4>Step 2 — OTP (SB09 step 6)</h4>
-            <p style="font:var(--ax-text-field)">One-time code sent to registered mobile ••••••312 via configured channel (provider = DEC-007).</p>
+            <p style="font:var(--ax-text-field)">6-digit code sent to ••••••312 via SMS — Unifonic primary, Twilio fallback (DEC-007 accepted) · expires in 5:00.</p>
             <div class="ax-row" role="group" aria-label="OTP entry">
               <input class="ax-input ax-numeric" aria-label="digit 1" style="max-inline-size:56px; min-height:var(--ax-control-height-field); text-align:center; font:var(--ax-text-title)" maxlength="1" value="7">
               <input class="ax-input ax-numeric" aria-label="digit 2" style="max-inline-size:56px; min-height:var(--ax-control-height-field); text-align:center; font:var(--ax-text-title)" maxlength="1" value="3">
@@ -67,7 +67,7 @@
               <button class="ax-btn ax-btn--field">Verify code</button>
               <button class="ax-btn ax-btn--subtle ax-btn--field">Resend (cooldown per DEC-007)</button>
             </div>
-            <div class="adm-check adm-check--pending">Expiry + retry ladder from approved policy — no timer invented</div>
+            <div class="adm-check adm-check--pass">Expiry 5 min · 3 attempts/code · 3 resends max · then supervisor-approved manual verification (audited)</div>
           </div>
         </div>
       </div>

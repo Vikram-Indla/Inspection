@@ -26,6 +26,64 @@
     if (document.body) document.body.appendChild(b);
   })();
 
+  // ---- D8+: cartographic scene injected into every .ax-map ----
+  // Real-map look (district blocks, road hierarchy, route) while staying
+  // self-contained; runtime provider = Google Maps Platform per DEC-008.
+  (function () {
+    var NS = "http://www.w3.org/2000/svg";
+    function el(t, attrs, cls) {
+      var e = document.createElementNS(NS, t);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      if (cls) e.setAttribute("class", cls);
+      return e;
+    }
+    document.querySelectorAll(".ax-map").forEach(function (map, mi) {
+      if (map.querySelector(".ax-map__scene")) return;
+      var s = el("svg", { viewBox: "0 0 400 260", preserveAspectRatio: "xMidYMid slice", "aria-hidden": "true" }, "ax-map__scene");
+
+      // ground features
+      s.appendChild(el("path", { d: "M310,-10 C280,60 330,120 300,190 C285,225 300,250 320,270 L410,270 L410,-10 Z" }, "m-water"));
+      s.appendChild(el("ellipse", { cx: 60, cy: 210, rx: 46, ry: 24 }, "m-green"));
+      s.appendChild(el("ellipse", { cx: 150, cy: 34, rx: 34, ry: 16 }, "m-green"));
+
+      // city blocks (deterministic grid, some industrial-toned)
+      var bi = 0;
+      for (var gy = 0; gy < 4; gy++) for (var gx = 0; gx < 6; gx++) {
+        var x = 14 + gx * 62 + ((gy * 7 + mi * 3) % 9), y = 16 + gy * 60 + ((gx * 5) % 8);
+        if (x > 280 && gy < 2) continue; // water side
+        var w = 44 - ((gx + gy) % 3) * 6, h = 40 - ((gx * gy) % 2) * 8;
+        var ind = (gx + gy + mi) % 3 === 0;
+        s.appendChild(el("rect", { x: x, y: y, width: w, height: h, rx: 3 }, "m-block" + (ind ? " m-block--industrial" : "")));
+        bi++;
+      }
+
+      // roads: casing then fill
+      var roads = [
+        { d: "M0,140 L400,128", w: 10, hw: true, name: "King Fahd Industrial Rd" },
+        { d: "M76,0 L84,260", w: 7 }, { d: "M200,0 L196,260", w: 7, name: "Street 14" },
+        { d: "M292,0 L286,260", w: 6 }, { d: "M0,68 L400,60", w: 6, name: "Street 8" },
+        { d: "M0,206 L400,198", w: 6 }
+      ];
+      roads.forEach(function (r) { s.appendChild(el("path", { d: r.d, "stroke-width": r.w + 3 }, "m-road-casing")); });
+      roads.forEach(function (r) { s.appendChild(el("path", { d: r.d, "stroke-width": r.w }, r.hw ? "m-highway" : "m-road")); });
+
+      // active route polyline (only when the panel is a journey/live context)
+      if (/journey|route|live|en route|ETA/i.test(map.getAttribute("aria-label") || "") || map.querySelector(".ax-pin--observed")) {
+        s.appendChild(el("path", { d: "M18,244 L80,238 L82,134 L198,130 L198,96 L232,92" }, "m-route"));
+        var halo = el("circle", { cx: 232, cy: 92, r: 10 }, "m-pos-halo");
+        s.appendChild(halo);
+        s.appendChild(el("circle", { cx: 232, cy: 92, r: 5 }, "m-pos"));
+      }
+
+      // labels
+      var l1 = el("text", { x: 12, y: 124 }, "m-label"); l1.textContent = "2ND INDUSTRIAL CITY"; s.appendChild(l1);
+      var l2 = el("text", { x: 210, y: 56 }, "m-label m-label--road"); l2.textContent = "Street 8"; s.appendChild(l2);
+      var l3 = el("text", { x: 330, y: 246 }, "m-label m-label--road"); l3.textContent = "Wadi channel"; s.appendChild(l3);
+
+      map.prepend(s);
+    });
+  })();
+
   // ---- RTL / language toggle (DEC-004 prepared, not committed) ----
   document.querySelectorAll("[data-ax-rtl-toggle]").forEach(function (btn) {
     btn.addEventListener("click", function () {

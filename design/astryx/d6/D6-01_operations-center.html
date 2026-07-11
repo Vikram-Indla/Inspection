@@ -58,7 +58,7 @@
           <div class="ax-surface ax-kpi"><span class="ax-overline">Visits planned today</span><span class="ax-kpi__value ax-numeric">42</span><span class="ax-kpi__delta">KPI period configurable (M08-016)</span></div>
           <div class="ax-surface ax-kpi"><span class="ax-overline">Active now</span><span class="ax-kpi__value ax-numeric">17</span><span class="ax-kpi__delta is-up">9 executing · 6 en route · 2 arrived</span></div>
           <div class="ax-surface ax-kpi"><span class="ax-overline">Exceptions open</span><span class="ax-kpi__value ax-numeric" style="color:var(--ax-color-critical-strong)">4</span><span class="ax-kpi__delta">2 GPS overrides await approval</span></div>
-          <div class="ax-surface ax-kpi is-stale" style="position:relative"><span class="ax-overline">SLA breaches</span><span class="ax-kpi__value ax-numeric">—</span><span class="ax-kpi__delta">server timestamps · values DEC-003</span></div>
+          <div class="ax-surface ax-kpi"><span class="ax-overline">SLA</span><span class="ax-kpi__value ax-numeric">3<span style="font:var(--ax-text-subheading)"> at risk</span></span><span class="ax-kpi__delta">0 breached · 3bd review SLA (DEC-003 accepted)</span></div>
         </div>
 
         <div class="ops-grid">
@@ -108,7 +108,7 @@
               <div class="ax-widget__body">
                 <div class="ops-feedrow">
                   <span class="ax-lozenge ax-lozenge--critical">GPS override</span>
-                  <div><strong>VIS-10024 — outside geofence, override requested</strong><br><span class="ax-caption">reason: official coordinate issue · evidence attached · awaiting approval (M08-013: auditable, does not block if confirmed)</span></div>
+                  <div><strong>VIS-10024 — outside geofence, override requested</strong><br><span class="ax-caption">reason: official coordinate issue · evidence attached · observed 640 m out vs 150 m fence (DEC-002) · awaiting approval (M08-013)</span></div>
                   <button class="ax-btn" style="min-height:34px">Review…</button>
                 </div>
                 <div class="ops-feedrow">
@@ -142,8 +142,8 @@
             <div class="ax-surface ax-widget">
               <div class="ax-widget__head"><h4>Risk &amp; SLA monitoring (M08-005/-006)</h4><span class="ax-freshness ax-freshness--stale">read-only</span></div>
               <div class="ax-widget__body ax-stack" style="gap:var(--ax-space-100)">
-                <div class="adm-check adm-check--warn">High-risk factories/visits — display gated by DEC-001 model</div>
-                <div class="adm-check adm-check--warn">Due / at-risk / overdue / breached — calendar values gated by DEC-003; server timestamps only (M08-005)</div>
+                <div class="adm-check adm-check--pass">High-risk list live — band High = score ≥70 (DEC-001 accepted, v1)</div>
+                <div class="adm-check adm-check--pass">Due / at-risk / overdue / breached — Sun–Thu 08:00–17:00 AST calendar (DEC-003 accepted); server timestamps (M08-005)</div>
                 <div class="adm-check adm-check--pass">Risk indicators read-only in Ops (M08-006)</div>
               </div>
             </div>

@@ -48,7 +48,7 @@
                 <div class="ipad-ready__row is-pass">Action forms — AF-3 complete, owner + due date set</div>
                 <div class="ipad-ready__row is-pass">Violations — 1 auto-generated (V-FS-09), penalty context attached</div>
                 <div class="ipad-ready__row is-pass">Factory verification — rep confirmed, location captured</div>
-                <div class="ipad-ready__row is-warn">Acknowledgement — captured only where approved flow requires (DEC-009: acknowledgement/refusal supported; PKI not implied)</div>
+                <div class="ipad-ready__row is-warn">Acknowledgement — drawn signature + name + role + timestamp + geotag, or refusal with reason (DEC-009 accepted; PKI = MVP2)</div>
               </div>
             </div>
             <div class="ax-surface" style="padding:var(--ax-space-300)">
@@ -70,7 +70,7 @@
             <div class="ax-banner"><div><strong>Atomicity:</strong> no partial finalization — the package submits whole or stays In Progress (P09 failure controls). Network retries are idempotent (ERR-SUB-002).</div></div>
             <div class="ax-surface" style="padding:var(--ax-space-300)">
               <h4 style="margin-block-end:var(--ax-space-100)">Evidence manifest</h4>
-              <p class="ax-caption ax-numeric">12 objects · 10 synced ✓ · 2 confirmed during final sync · hashes per DEC-006 policy when enabled</p>
+              <p class="ax-caption ax-numeric">12 objects · 10 synced ✓ · 2 confirmed during final sync · SHA-256 hashes sealed at sync (DEC-006 accepted)</p>
             </div>
           </div>
         </div>

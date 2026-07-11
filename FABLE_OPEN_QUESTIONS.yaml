@@ -1,6 +1,6 @@
 schema_version: "1.0"
 artifact: FABLE_OPEN_QUESTIONS
-status: PASS_WITH_NAMED_QUESTIONS follow-up — all items require human resolution; the agent may not invent any value
+status: UPDATED 2026-07-11 — DEC-001..010 dispositioned via sponsor-accepted recommendations (governance/DECISIONS_ACCEPTED_2026-07-11.yaml); environment items Q-ENV-001/002 closed (key provided, stack accepted under DEC-010)
 date: "2026-07-11"
 rules:
   - "Mobbin is excluded from all design work (current human instruction; supersedes frozen Mobbin references pending change control)."

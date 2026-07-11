@@ -33,12 +33,12 @@
 
       <div class="ipad-body">
         <!-- states -->
-        <div class="st st--validation ax-banner ax-banner--warning" role="alert"><div><strong>GPS accuracy ±38 m — below check-in requirement (ERR-GEO-001; threshold = DEC-002).</strong> Move to open sky and retry, or request a governed override. No check-in happens until accuracy passes or an override is approved — accuracy value shown, never hidden.</div></div>
+        <div class="st st--validation ax-banner ax-banner--warning" role="alert"><div><strong>GPS accuracy ±38 m — check-in requires ≤25 m (DEC-002 accepted; ERR-GEO-001).</strong> Move to open sky and retry, or request a governed override. No check-in happens until accuracy passes or an override is approved — accuracy value shown, never hidden.</div></div>
         <div class="st st--blocked ax-conflict">
           <div class="ax-conflict__head">⚠ Outside geofence — normal check-in blocked (ERR-GEO-002 · STM-JRN-003 guard)</div>
           <div class="ax-conflict__grid">
             <div class="ax-conflict__side"><h5>Observed</h5><p class="ax-numeric" style="font:var(--ax-text-field)">24.7101, 46.6821 · ±5 m<br>~640 m from official pin</p></div>
-            <div class="ax-conflict__side"><h5>Required</h5><p style="font:var(--ax-text-field)">Inside configured fence (radius/polygon per DEC-002) around official coordinates</p></div>
+            <div class="ax-conflict__side"><h5>Required</h5><p style="font:var(--ax-text-field)">Inside geofence — default radius 150 m, per-factory polygon override (DEC-002 accepted)</p></div>
           </div>
           <div class="ax-conflict__foot">
             <button class="ax-btn ax-btn--secondary ax-btn--field">Retry location</button>
