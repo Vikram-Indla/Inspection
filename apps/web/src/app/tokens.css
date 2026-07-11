@@ -1,0 +1,113 @@
+/* ============================================================================
+   MIM ASTRYX — DESIGN TOKENS (single source of raw values)
+   Wave D1 · MIM Inspection Platform MVP1
+   Authority: MIM_Inspection_Meta_Astryx_Fable_Pack/00_DESIGN_SYSTEM_DECISION.md
+   Rule: raw color/size values may appear ONLY in this file (MVP1-FND-010
+   master-data governance applied to design tokens). All components consume
+   var(--ax-*). Derived tints use color-mix() from approved base values —
+   no new hex is invented outside the approved palette.
+   Status: DESIGN DIRECTION — becomes authority only at G6 Approval 1.
+   ========================================================================== */
+
+:root {
+  /* ---- Color · approved base palette (pack §Colour) ---- */
+  --ax-color-primary:        #0866FF;  /* Astryx Cobalt */
+  --ax-color-primary-hover:  #0757D9;
+  --ax-color-canvas:         #F5F7FA;
+  --ax-color-surface:        #FFFFFF;
+  --ax-color-text:           #101828;  /* strong text */
+  --ax-color-text-secondary: #475467;
+  --ax-color-border:         #D0D5DD;
+  --ax-color-success:        #12B76A;
+  --ax-color-warning:        #F79009;
+  --ax-color-critical:       #D92D20;
+  --ax-color-info:           #2E90FA;
+
+  /* ---- Color · derived (color-mix from approved bases only) ---- */
+  --ax-color-primary-tint:   color-mix(in srgb, var(--ax-color-primary) 10%, var(--ax-color-surface));
+  --ax-color-primary-weak:   color-mix(in srgb, var(--ax-color-primary) 22%, var(--ax-color-surface));
+  --ax-color-primary-strong: color-mix(in srgb, var(--ax-color-primary) 80%, var(--ax-color-text));
+  --ax-color-success-tint:   color-mix(in srgb, var(--ax-color-success) 12%, var(--ax-color-surface));
+  --ax-color-success-strong: color-mix(in srgb, var(--ax-color-success) 70%, var(--ax-color-text));
+  --ax-color-warning-tint:   color-mix(in srgb, var(--ax-color-warning) 14%, var(--ax-color-surface));
+  --ax-color-warning-strong: color-mix(in srgb, var(--ax-color-warning) 62%, var(--ax-color-text));
+  --ax-color-critical-tint:  color-mix(in srgb, var(--ax-color-critical) 10%, var(--ax-color-surface));
+  --ax-color-critical-strong:color-mix(in srgb, var(--ax-color-critical) 78%, var(--ax-color-text));
+  --ax-color-info-tint:      color-mix(in srgb, var(--ax-color-info) 12%, var(--ax-color-surface));
+  --ax-color-neutral-tint:   color-mix(in srgb, var(--ax-color-text-secondary) 8%, var(--ax-color-surface));
+  --ax-color-neutral-weak:   color-mix(in srgb, var(--ax-color-text-secondary) 16%, var(--ax-color-surface));
+  --ax-color-border-strong:  color-mix(in srgb, var(--ax-color-text-secondary) 55%, var(--ax-color-border));
+  --ax-color-text-disabled:  color-mix(in srgb, var(--ax-color-text-secondary) 55%, var(--ax-color-surface));
+  --ax-color-surface-sunken: color-mix(in srgb, var(--ax-color-canvas) 60%, var(--ax-color-surface));
+  --ax-color-overlay:        color-mix(in srgb, var(--ax-color-text) 45%, transparent);
+  --ax-color-inverse-text:   var(--ax-color-surface);
+
+  /* ---- Typography (pack §Typography) ----
+     Inter (EN) + IBM Plex Sans Arabic (AR) to be licensed & bundled at build;
+     stacks below keep pages self-contained (no external fetch). */
+  --ax-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ax-font-arabic: "IBM Plex Sans Arabic", "Geeza Pro", "Segoe UI", Tahoma, sans-serif;
+  --ax-font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+
+  /* Semantic scale — shared, never screen-specific (pack rule).
+     Body minimum: 14px desktop / 16px field-critical iPad. */
+  --ax-text-display: 600 28px/36px var(--ax-font-sans);
+  --ax-text-title:   600 22px/30px var(--ax-font-sans);
+  --ax-text-heading: 600 18px/26px var(--ax-font-sans);
+  --ax-text-subheading: 600 15px/22px var(--ax-font-sans);
+  --ax-text-body:    400 14px/21px var(--ax-font-sans);
+  --ax-text-body-strong: 600 14px/21px var(--ax-font-sans);
+  --ax-text-field:   400 16px/24px var(--ax-font-sans);   /* iPad field-critical minimum */
+  --ax-text-caption: 400 12.5px/18px var(--ax-font-sans);
+  --ax-text-micro:   600 11px/16px var(--ax-font-sans);   /* labels/overlines only, uppercase */
+  /* KPIs, dates, coordinates, timers, SLA — tabular numerals mandatory */
+  --ax-numeric-features: "tnum" 1, "lnum" 1;
+
+  /* ---- Spacing · 4px base; rhythm 8/12/16/24/32/48 (pack §Geometry) ---- */
+  --ax-space-050: 4px;
+  --ax-space-100: 8px;
+  --ax-space-150: 12px;
+  --ax-space-200: 16px;
+  --ax-space-300: 24px;
+  --ax-space-400: 32px;
+  --ax-space-600: 48px;
+
+  /* ---- Radius (pack: 8 small / 12 card-input / 16 panel-modal) ---- */
+  --ax-radius-small: 8px;
+  --ax-radius-standard: 12px;
+  --ax-radius-large: 16px;
+  --ax-radius-full: 999px;
+
+  /* ---- Elevation — restrained; borders & tonal surfaces carry hierarchy ---- */
+  --ax-shadow-raised: 0 1px 2px color-mix(in srgb, var(--ax-color-text) 6%, transparent),
+                      0 1px 3px color-mix(in srgb, var(--ax-color-text) 8%, transparent);
+  --ax-shadow-overlay: 0 8px 24px color-mix(in srgb, var(--ax-color-text) 16%, transparent);
+
+  /* ---- Control metrics (pack: desktop 40–44px; field/iPad ≥48px) ---- */
+  --ax-control-height: 40px;
+  --ax-control-height-prominent: 44px;
+  --ax-control-height-field: 48px;     /* iPad / touch minimum target */
+  --ax-focus-ring: 0 0 0 2px var(--ax-color-surface), 0 0 0 4px var(--ax-color-primary);
+
+  /* ---- Motion — direct, responsive, optimistic; no decoration ---- */
+  --ax-motion-fast: 120ms cubic-bezier(.2,0,0,1);
+  --ax-motion-standard: 200ms cubic-bezier(.2,0,0,1);
+
+  /* ---- Layout grids ---- */
+  --ax-grid-desktop-max: 1440px;   /* 12-col, 24px gutter */
+  --ax-grid-gutter: var(--ax-space-300);
+  --ax-shell-nav-width: 248px;
+  --ax-shell-panel-width: 360px;   /* side context/audit/properties panel */
+
+  /* ---- Z-index ladder ---- */
+  --ax-z-sticky: 10;
+  --ax-z-drawer: 40;
+  --ax-z-modal: 50;
+  --ax-z-toast: 60;
+  --ax-z-tooltip: 70;
+}
+
+/* Arabic / RTL: language switches family; direction handled by logical
+   properties throughout astryx.css. Scope decision = DEC-004 (open):
+   this prepares RTL, it does not commit bilingual scope. */
+:lang(ar) { font-family: var(--ax-font-arabic); }
