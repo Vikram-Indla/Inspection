@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIM Astryx — D1 Enterprise Components (12 mandatory states · offline · audit · versioning)</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="astryx.css">
+<style>
+  section.doc { background: var(--ax-color-surface); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large); padding: var(--ax-space-400); display:flex; flex-direction:column; gap: var(--ax-space-300); }
+  .annot { border-inline-start: 3px solid var(--ax-color-info); background: var(--ax-color-info-tint); padding: var(--ax-space-150) var(--ax-space-200); font: var(--ax-text-caption); border-radius: var(--ax-radius-small); }
+  .statelabel { font: var(--ax-text-micro); color: var(--ax-color-text-secondary); text-transform: uppercase; letter-spacing:.05em; display:block; margin-block-end: var(--ax-space-050); }
+</style>
+</head>
+<body>
+<main class="ax-content" style="margin-inline:auto">
+  <header class="ax-stack">
+    <p class="ax-overline">MIM Inspection Platform · Wave D1 · Enterprise component authority</p>
+    <h1>Astryx Enterprise Components</h1>
+    <p class="ax-caption">Shell, tables, bulk actions, KPI, stepper, timeline/audit, validation summary, immutable/versioning surfaces, offline/sync/conflict, map abstraction, evidence chain, workflow canvas, rule builder — with the 12 mandatory screen states as reusable patterns.</p>
+  </header>
+
+  <!-- APP SHELL + PAGE HEADER -->
+  <section class="doc" style="padding:0; overflow:hidden">
+    <div class="ax-shell" style="min-block-size:420px">
+      <nav class="ax-shell__nav" aria-label="Primary">
+        <div class="ax-shell__brand"><span class="ax-shell__brand-mark">AX</span> MIM Inspection</div>
+        <a class="ax-nav-item" href="#0">Planning</a>
+        <a class="ax-nav-item" aria-current="page" href="#0">Visits</a>
+        <a class="ax-nav-item" href="#0">Reviews <span class="ax-badge ax-badge--critical" style="margin-inline-start:auto">3</span></a>
+        <a class="ax-nav-item" href="#0">Factory 360</a>
+        <a class="ax-nav-item" href="#0">Operations</a>
+      </nav>
+      <div class="ax-shell__main">
+        <div class="ax-pagehead">
+          <ul class="ax-breadcrumb"><li>Visits</li><li>VIS-10021</li></ul>
+          <div class="ax-pagehead__row">
+            <div class="ax-pagehead__context">
+              <h2>Visit VIS-10021 — Al Amal Plastics Factory</h2>
+              <span class="ax-lozenge ax-lozenge--plan ax-lozenge--info">Published</span>
+              <span class="ax-lozenge ax-lozenge--ops ax-lozenge--info ax-lozenge--live">On the way</span>
+              <span class="ax-version">PKG-FS · 2026.07.02</span>
+              <span class="ax-freshness">live · updated 09:14:22</span>
+            </div>
+            <div class="ax-row">
+              <button class="ax-btn ax-btn--secondary">Reassign…</button>
+              <button class="ax-btn">Open Factory 360</button>
+            </div>
+          </div>
+        </div>
+        <div class="ax-content">
+          <p class="annot"><strong>Shell contract:</strong> persistent nav (248px), page header always carries object ID + all applicable state-domain lozenges + version + freshness (UIUX authority §4 layout; FND-002 separation visible at top level). Side panels (360px drawer) host context/properties/audit — not page navigation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPI + COMMAND/FILTER + TABLE + BULK -->
+  <section class="doc">
+    <h2>KPI row · command bar · data table · bulk actions · per-row failure</h2>
+    <div class="ax-kpi-row">
+      <div class="ax-surface ax-kpi"><span class="ax-overline">Published</span><span class="ax-kpi__value ax-numeric">128</span><span class="ax-kpi__delta is-up">traceable to visit records (P12)</span></div>
+      <div class="ax-surface ax-kpi"><span class="ax-overline">Returned</span><span class="ax-kpi__value ax-numeric">7</span><span class="ax-kpi__delta">planning statuses only (M02-002)</span></div>
+      <div class="ax-surface ax-kpi"><span class="ax-overline">Cancelled</span><span class="ax-kpi__value ax-numeric">3</span><span class="ax-kpi__delta">reason-coded REF-009</span></div>
+      <div class="ax-surface ax-kpi is-stale" style="position:relative"><span class="ax-overline">SLA breaches</span><span class="ax-kpi__value ax-numeric">—</span><span class="ax-kpi__delta">values gated by DEC-003</span></div>
+    </div>
+    <div class="ax-commandbar">
+      <span class="ax-search" style="min-inline-size:280px"><input class="ax-input" placeholder="Visit ID, factory, CR, license, inspector (M02-003)"></span>
+      <button class="ax-filterchip is-active">Status: Published ✕</button>
+      <button class="ax-filterchip">Region</button>
+      <button class="ax-filterchip">Priority</button>
+      <button class="ax-filterchip">+ Save view</button>
+      <span class="ax-commandbar__spacer"></span>
+      <div class="ax-segmented"><button aria-pressed="true">List</button><button aria-pressed="false">Calendar</button><button aria-pressed="false">Map</button></div>
+      <button class="ax-btn ax-btn--secondary">Export (audited)</button>
+    </div>
+    <div class="ax-bulkbar" role="status">
+      <span>3 selected</span>
+      <button class="ax-btn ax-btn--secondary">Bulk edit</button>
+      <button class="ax-btn ax-btn--secondary">Bulk reassign</button>
+      <button class="ax-btn ax-btn--secondary">Bulk cancel…</button>
+      <span class="ax-caption" style="color:inherit; opacity:.8">bulk allowed only pre-execution, same Visit Plan (M02-007) — outcomes reported per row (P03)</span>
+    </div>
+    <div class="ax-tablewrap">
+      <table class="ax-table">
+        <thead><tr>
+          <th style="inline-size:36px"><input type="checkbox" data-ax-select-all aria-label="Select all"></th>
+          <th aria-sort="descending">Visit</th><th>Factory</th><th>Planning status</th><th>Operational</th><th>Inspector</th><th class="ax-td-num">Window</th><th style="inline-size:44px"></th>
+        </tr></thead>
+        <tbody>
+          <tr aria-selected="true"><td><input type="checkbox" checked aria-label="Select VIS-10021"></td><td><a class="ax-link" href="#0">VIS-10021</a></td><td>Al Amal Plastics</td><td><span class="ax-lozenge ax-lozenge--plan ax-lozenge--info">Published</span></td><td><span class="ax-lozenge ax-lozenge--ops ax-lozenge--info ax-lozenge--live">On the way</span></td><td>M. Inspector</td><td class="ax-td-num ax-numeric">Jul 14 09:00–16:00</td><td><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Row actions">⋯</button></td></tr>
+          <tr><td><input type="checkbox" aria-label="Select VIS-10022"></td><td><a class="ax-link" href="#0">VIS-10022</a></td><td>Gulf Steel Works</td><td><span class="ax-lozenge ax-lozenge--plan ax-lozenge--warning">Returned</span></td><td><span class="ax-lozenge ax-lozenge--ops">New</span></td><td>—</td><td class="ax-td-num ax-numeric">Jul 15 08:00–14:00</td><td><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Row actions">⋯</button></td></tr>
+          <tr class="is-row-failed"><td><input type="checkbox" aria-label="Select VIS-10023"></td><td><a class="ax-link" href="#0">VIS-10023</a></td><td>Najd Food Industries</td><td><span class="ax-lozenge ax-lozenge--plan ax-lozenge--info">Published</span></td><td><span class="ax-lozenge ax-lozenge--ops ax-lozenge--success ax-lozenge--live">Executing</span></td><td>S. Inspector</td><td class="ax-td-num ax-numeric">Jul 11 08:00–15:00</td><td><span class="ax-lozenge ax-lozenge--critical">bulk edit blocked — inspection started</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- STEPPER / TIMELINE / VALIDATION / IMMUTABLE / DIFF -->
+  <section class="doc">
+    <h2>Stepper · validation summary · immutable + version comparison</h2>
+    <ul class="ax-stepper">
+      <li class="is-done"><span class="ax-step__dot">✓</span> Targets</li>
+      <li class="is-done"><span class="ax-step__dot">✓</span> Configure</li>
+      <li class="is-active"><span class="ax-step__dot">3</span> Assign</li>
+      <li><span class="ax-step__dot">4</span> Review</li>
+      <li><span class="ax-step__dot">5</span> Publish</li>
+    </ul>
+    <div class="ax-validation" role="alert">
+      <strong>3 blockers before submission</strong> — deep links to exact items; state remains In Progress (ERR-SUB-001).
+      <ul>
+        <li><a class="ax-link" href="#0">Item 4.2 — mandatory response missing</a></li>
+        <li><a class="ax-link" href="#0">Finding F-12 — required photo evidence not attached (evidence rule)</a></li>
+        <li><a class="ax-link" href="#0">Action form AF-3 — owner and due date incomplete</a></li>
+      </ul>
+    </div>
+    <div class="ax-validation ax-validation--clear"><strong>All mandatory checks passed.</strong> Submission creates immutable Version 2 and routes to Level 2 review (STM-COR-002).</div>
+    <div class="ax-banner ax-banner--immutable"><div><strong>Version 1 · submitted 2026-07-10 14:22 · locked.</strong> Only returned sections 3 and 7 are editable in the correction workspace; everything else remains read-only (STM-REV-003 selective unlock).</div></div>
+    <div class="ax-surface" style="padding:var(--ax-space-300)">
+      <span class="statelabel">version comparison (SCR-WEB-320)</span>
+      <p style="font:var(--ax-text-body)">Fire-exit clearance: <span class="ax-diff-del">non-compliant — obstruction in aisle B</span> <span class="ax-diff-ins">compliant — obstruction removed, photo EV-88 attached</span></p>
+      <p class="ax-caption ax-numeric">v1 → v2 · changed by M. Inspector · 2026-07-11 12:40 · reviewer comments remain immutable</p>
+    </div>
+  </section>
+
+  <!-- 12 MANDATORY SCREEN STATES -->
+  <section class="doc">
+    <h2>The 12 mandatory screen states — reusable patterns</h2>
+    <p class="annot">Every product screen composes these from the system; a screen missing a required state fails design acceptance (Astryx pack §Non-negotiable states; screen catalogue `states` column). Loading/empty/populated/validation/unauthorized shown on the Core page — below: stale, degraded, offline, syncing, conflict, read-only, success.</p>
+    <div class="ax-grid-2">
+      <div class="ax-surface ax-widget" id="w-degrade">
+        <div class="ax-widget__head"><h4>Risk overview</h4><span class="ax-freshness ax-freshness--stale">stale · 08:20</span></div>
+        <div class="ax-widget__body"><p class="ax-caption">Widget content. One failed widget never breaks the page (MVP1-FND-012 · ERR-OPS-001 · EV-010).</p></div>
+        <div class="ax-widget__fallback ax-state ax-state--inline">
+          <span class="ax-state__glyph">⚠</span>
+          <h4>Risk service unavailable</h4>
+          <p class="ax-caption">Other panels remain usable. Exception visible to operations.</p>
+          <button class="ax-btn ax-btn--secondary">Retry widget</button>
+        </div>
+      </div>
+      <div class="ax-stack">
+        <button class="ax-btn ax-btn--secondary" data-ax-fail-widget="#w-degrade">Simulate widget failure (degraded state)</button>
+        <div class="ax-row">
+          <span class="statelabel" style="inline-size:120px">offline/sync chip</span>
+          <span class="ax-sync ax-sync--synced" id="sync-demo" data-i="0">Synced</span>
+          <button class="ax-btn ax-btn--subtle" data-ax-sync-cycle="#sync-demo">Cycle the 6 mandatory sync states</button>
+        </div>
+        <p class="annot"><strong>iPad chrome rule:</strong> this chip is persistent in the field shell — inspector always distinguishes offline / pending / syncing / synced / conflict / failed (iPad spec §4). Offline is calm, not alarming: work continues, save is local and durable (MVP1-FND-005).</p>
+      </div>
+    </div>
+    <div class="ax-conflict">
+      <div class="ax-conflict__head">⚠ Sync conflict — CHK-4.2 response · silent overwrite prohibited (STM-SYNC-002 · ERR-OFF-002)</div>
+      <div class="ax-conflict__grid">
+        <div class="ax-conflict__side">
+          <h5>Local (this device) · 12:31 offline</h5>
+          <p>Response: <strong>Non-compliant</strong> · note: “extinguisher expired 03/2026” · evidence EV-91 pending upload</p>
+        </div>
+        <div class="ax-conflict__side">
+          <h5>Server · 12:34 via reviewer-returned scope</h5>
+          <p>Response: <strong>Needs review</strong> · reviewer comment attached (immutable)</p>
+        </div>
+      </div>
+      <div class="ax-conflict__foot">
+        <button class="ax-btn ax-btn--secondary">Keep local</button>
+        <button class="ax-btn ax-btn--secondary">Keep server</button>
+        <button class="ax-btn">Resolve explicitly…</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP / VISIT CARD / EVIDENCE -->
+  <section class="doc">
+    <h2>Map panel (provider-abstract) · visit card · evidence chain</h2>
+    <div class="ax-grid-2">
+      <div class="ax-map" role="img" aria-label="Map abstraction: official pin, observed pin, geofence ring">
+        <div class="ax-map__chrome">
+          <span class="ax-lozenge ax-lozenge--sync ax-lozenge--info">GPS ±4.2 m</span>
+          <span class="ax-freshness">live · 2s</span>
+        </div>
+        <span class="ax-geofence" style="inset-inline-start:34%; inset-block-start:28%; inline-size:180px; block-size:180px"></span>
+        <span class="ax-pin ax-pin--official" style="inset-inline-start:44%; inset-block-start:48%"><span class="ax-pin__dot"></span><span class="ax-pin__label">Official (master)</span></span>
+        <span class="ax-pin ax-pin--observed" style="inset-inline-start:52%; inset-block-start:56%"><span class="ax-pin__dot"></span><span class="ax-pin__label">Observed (device)</span></span>
+        <span class="ax-map__provider">provider abstraction — DEC-008 open</span>
+      </div>
+      <div class="ax-stack">
+        <div class="ax-surface ax-visitcard">
+          <div class="ax-visitcard__row">
+            <h3>Al Amal Plastics — VIS-10021</h3>
+            <span class="ax-lozenge ax-lozenge--sync ax-lozenge--info">Package verified · locked</span>
+          </div>
+          <dl class="ax-visitcard__meta">
+            <div><dt>Window</dt><dd class="ax-numeric">Jul 14 · 09:00–16:00</dd></div>
+            <div><dt>Mode</dt><dd>Physical</dd></div>
+            <div><dt>Risk band</dt><dd>— (DEC-001)</dd></div>
+            <div><dt>Package</dt><dd class="ax-numeric">FS · 2026.07.02</dd></div>
+          </dl>
+          <div class="ax-row">
+            <button class="ax-btn ax-btn--field">Start journey</button>
+            <button class="ax-btn ax-btn--field ax-btn--secondary">Factory 360 snapshot</button>
+          </div>
+        </div>
+        <p class="annot"><strong>Map contract:</strong> official vs observed always distinct pins with source labels (MVP1-FND-007); geofence ring from governed config (DEC-002); freshness chrome mandatory; no decorative pins (UIUX authority §4). Check-in outside ring → governed override flow with permission + reason + evidence (ERR-GEO-002).</p>
+      </div>
+    </div>
+    <div>
+      <span class="statelabel">evidence gallery — linkage + custody visible (ENG-07 · MVP1-FND-008)</span>
+      <div class="ax-evidence-grid">
+        <figure class="ax-evidence" style="margin:0">
+          <div class="ax-evidence__thumb">📷<span class="ax-evidence__link"><span class="ax-lozenge ax-lozenge--info">Item 4.2</span></span></div>
+          <figcaption class="ax-evidence__meta"><span>EV-88 · photo</span><span class="ax-numeric">12:31:04 · 24.7136,46.6753</span><span>M. Inspector · synced ✓</span></figcaption>
+        </figure>
+        <figure class="ax-evidence is-unsynced" style="margin:0">
+          <div class="ax-evidence__thumb">🎬<span class="ax-evidence__link"><span class="ax-lozenge ax-lozenge--warning">Finding F-12</span></span></div>
+          <figcaption class="ax-evidence__meta"><span>EV-91 · video</span><span class="ax-numeric">12:33:40 · local only</span><span>pending upload — retained until durable confirmation</span></figcaption>
+        </figure>
+        <figure class="ax-evidence is-quarantined" style="margin:0">
+          <div class="ax-evidence__thumb">📄</div>
+          <figcaption class="ax-evidence__meta"><span>EV-92 · document</span><span>rejected — exceeds policy (ERR-EVD-002; limits = DEC-006)</span></figcaption>
+        </figure>
+        <figure class="ax-evidence" style="margin:0">
+          <div class="ax-evidence__thumb ax-skeleton" style="border-radius:0"></div>
+          <figcaption class="ax-evidence__meta"><span>uploading…</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- RULE BUILDER + WORKFLOW CANVAS -->
+  <section class="doc">
+    <h2>Rule builder · workflow canvas (control-plane primitives)</h2>
+    <div class="ax-stack" style="gap:var(--ax-space-100)">
+      <div class="ax-rule">
+        <span class="ax-rule__op">WHERE</span>
+        <select class="ax-select"><option>Region</option></select>
+        <select class="ax-select"><option>is any of</option></select>
+        <input class="ax-input" value="Riyadh, Qassim">
+        <button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Remove condition">✕</button>
+      </div>
+      <div class="ax-rule">
+        <span class="ax-rule__op">AND</span>
+        <select class="ax-select"><option>License status</option></select>
+        <select class="ax-select"><option>equals</option></select>
+        <select class="ax-select"><option>Active</option></select>
+        <button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Remove condition">✕</button>
+      </div>
+      <div class="ax-row"><button class="ax-btn ax-btn--subtle">+ AND</button><button class="ax-btn ax-btn--subtle">+ OR group</button><span class="ax-caption">unlimited combinations (MVP1-M01-012); invalid condition = exact error, draft preserved (ERR-PLN-001)</span></div>
+    </div>
+    <div class="ax-flow" role="img" aria-label="Workflow canvas abstraction: Draft to Published to Returned with guards">
+      <span class="ax-flow__node is-initial" style="inset-inline-start:4%; inset-block-start:40%">Draft</span>
+      <span class="ax-flow__edge" style="inset-inline-start:20%; inset-block-start:34%">Publish · guard: fields+targets+assignments valid</span>
+      <span class="ax-flow__node" style="inset-inline-start:42%; inset-block-start:16%">Published</span>
+      <span class="ax-flow__edge" style="inset-inline-start:58%; inset-block-start:44%">Return · guard: mandatory reason</span>
+      <span class="ax-flow__node" style="inset-inline-start:74%; inset-block-start:20%">Returned</span>
+      <span class="ax-flow__node is-terminal" style="inset-inline-start:52%; inset-block-start:66%">Cancelled</span>
+      <span class="ax-flow__node is-error" style="inset-inline-start:78%; inset-block-start:66%">Expired (system)</span>
+    </div>
+    <p class="annot"><strong>Canvas contract (SCR-ADM-051):</strong> nodes = configured states; edges always display guard + actor; simulation before publish; unreachable states and circular terminal paths block publish. Runtime never bypasses transitions (RBAC-003; STM regression rule). Left tree + central canvas + right inspector/validation layout per Admin spec §7.</p>
+  </section>
+
+  <footer class="ax-caption" style="padding-block: var(--ax-space-300)">Astryx D1 enterprise · READY_FOR_REVIEW · no self-approval · no product screens designed in this wave.</footer>
+</main>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="astryx.js"></script>
+</body>
+</html>

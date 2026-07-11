@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D3 · GOLDEN #2 — Single Visit Planning, Assignment & Publish (SCR-WEB-120/140/150)</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="../d2/admin.css"><link rel="stylesheet" href="web.css">
+</head>
+<body>
+<div class="ax-shell">
+  <nav class="ax-shell__nav" aria-label="Web portal">
+    <div class="ax-shell__brand"><span class="ax-shell__brand-mark">AX</span> MIM Inspection</div>
+    <a class="ax-nav-item" aria-current="page" href="D3-01_planning-home.html">Planning</a>
+    <a class="ax-nav-item" href="D3-05_visit-management.html">Visits</a>
+    <a class="ax-nav-item" href="#0">Reviews</a>
+    <a class="ax-nav-item" href="D3-07_factory-360.html">Factory 360</a>
+    <a class="ax-nav-item" href="#0">Operations</a>
+  </nav>
+
+  <div class="ax-shell__main">
+    <div class="ax-pagehead">
+      <ul class="ax-breadcrumb"><li>Planning</li><li>Single visit</li><li>Draft SVP-2026-0412</li></ul>
+      <div class="ax-pagehead__row">
+        <div class="ax-pagehead__context">
+          <h2>Single Visit Planning</h2>
+          <span class="ax-lozenge ax-lozenge--plan">Draft</span>
+          <span class="ax-freshness">draft autosaved 11:02:41</span>
+        </div>
+        <div class="ax-row"><button class="ax-btn ax-btn--secondary">Discard draft…</button><button class="ax-btn ax-btn--secondary">Save &amp; close</button></div>
+      </div>
+    </div>
+
+    <div class="ax-content" id="scr" data-screen="populated">
+      <div class="adm-statebar" data-for="#scr" role="toolbar" aria-label="Design state switcher">
+        <strong>Screen states</strong>
+        <button data-state="populated" aria-pressed="true">Populated (wizard)</button>
+        <button data-state="loading" aria-pressed="false">Loading</button>
+        <button data-state="empty" aria-pressed="false">Factory not found</button>
+        <button data-state="validation" aria-pressed="false">Publish validation failure</button>
+        <button data-state="blocked" aria-pressed="false">Duplicate visit</button>
+        <button data-state="unauthorized" aria-pressed="false">Unauthorized</button>
+        <button data-state="degraded" aria-pressed="false">Source degraded</button>
+      </div>
+
+      <div class="st st--loading ax-surface" style="padding:var(--ax-space-400)"><div class="ax-stack" style="gap:var(--ax-space-150)"><div class="ax-skeleton" style="inline-size:30%"></div><div class="ax-skeleton" style="min-block-size:320px"></div></div></div>
+
+      <div class="st st--empty ax-surface"><div class="ax-state">
+        <span class="ax-state__glyph">🏭</span><h4>No factory matches CR 4030-XXXXXX</h4>
+        <p class="ax-caption">Search supports CR Number and Industrial License only (MVP1-M01-035). Check the number, or — for urgent unregistered cases — switch to an Immediate Visit (M01-045 allows continuing without a registered factory).</p>
+        <div class="ax-row"><button class="ax-btn ax-btn--secondary">Retry search</button><a class="ax-link" href="D3-04_immediate-planning.html">Create Immediate Visit instead</a></div>
+      </div></div>
+
+      <div class="st st--unauthorized ax-surface ax-permission"><div class="ax-state">
+        <span class="ax-state__glyph">🛡</span><h4>Planner role required (RBAC-007)</h4>
+        <p class="ax-caption">Planning is scoped to your assigned organization. Attempt audited, nothing mutated (ERR-AUTH-001).</p>
+      </div></div>
+
+      <div class="st st--validation ax-validation" role="alert">
+        <strong>Publishing blocked — 3 validation failures (M01-041: publish blocked until validation passes; draft preserved)</strong>
+        <ul>
+          <li><a class="ax-link" href="#0">Visit window end precedes start (FLD-PLAN-005)</a></li>
+          <li><a class="ax-link" href="#0">Selected package v2026.05.19 was superseded — re-resolve to the active published version (ERR-PUB-001)</a></li>
+          <li><a class="ax-link" href="#0">No assigned inspector — every visit needs one before publish (M01-040)</a></li>
+        </ul>
+      </div>
+
+      <div class="st st--blocked ax-banner ax-banner--critical"><div><strong>Duplicate active visit detected.</strong> Factory F-2214 already has VIS-10021 (Published, window Jul 14) of the same visit type. Duplicate active visits are not allowed (M02-012 / SCR-WEB-120 failure state). <a class="ax-link" href="D3-06_visit-detail.html">Open existing visit</a> or change the visit type/window.</div></div>
+
+      <div class="st st--degraded ax-banner ax-banner--warning"><div><strong>Factory master source (Senaei) degraded.</strong> Showing last synchronized profile — 2026-07-11 06:00, clearly stale, never presented as live (MVP1-FND-013). Search retry available; publishing stays possible only with verified data.</div></div>
+
+      <!-- ===================== WIZARD (populated) ===================== -->
+      <div class="st st--populated web-wizard" data-stage="verify">
+        <!-- rail -->
+        <nav class="web-wizard__rail" aria-label="Planning steps">
+          <button class="web-rail-step is-done" data-stage-go="find"><span class="dot">✓</span><span>Find factory<small>CR / Industrial License</small></span></button>
+          <button class="web-rail-step is-active" data-stage-go="verify"><span class="dot">2</span><span>Verify identity &amp; location<small>official vs planner pin</small></span></button>
+          <button class="web-rail-step" data-stage-go="configure"><span class="dot">3</span><span>Configure visit<small>type · window · package · mode</small></span></button>
+          <button class="web-rail-step" data-stage-go="assign"><span class="dot">4</span><span>Assign inspector<small>auto or manual</small></span></button>
+          <button class="web-rail-step" data-stage-go="publish"><span class="dot">5</span><span>Review &amp; publish<small>one plan · one visit</small></span></button>
+        </nav>
+
+        <!-- stage -->
+        <section class="web-wizard__stage" aria-live="polite">
+
+          <!-- FIND -->
+          <div class="wz wz--find">
+            <div class="web-wizard__stagehead"><h3>Find registered factory</h3></div>
+            <div class="web-wizard__stagebody">
+              <div class="ax-row">
+                <div class="ax-field" style="max-inline-size:220px"><label class="ax-field__label" for="s-by">Search by</label>
+                  <select class="ax-select" id="s-by"><option>CR Number</option><option>Industrial License</option></select></div>
+                <div class="ax-field" style="flex:1"><label class="ax-field__label" for="s-q">Number <span class="ax-req">*</span></label>
+                  <span class="ax-search"><input class="ax-input ax-numeric" id="s-q" value="4030-118845"></span>
+                  <span class="ax-field__hint">Only CR and Industrial License are supported (M01-035); free-text factory search is not a planning path</span></div>
+                <button class="ax-btn" style="margin-block-start:22px">Search</button>
+              </div>
+              <div class="ax-surface web-factcard">
+                <div class="ax-row" style="justify-content:space-between">
+                  <h4>Al Amal Plastics Factory — F-2214</h4>
+                  <span class="ax-lozenge ax-lozenge--success">License active</span>
+                </div>
+                <dl class="web-factcard__grid">
+                  <div><dt>CR</dt><dd>4030-118845</dd></div>
+                  <div><dt>Industrial licenses</dt><dd>2 — selection required (M01-036)</dd></div>
+                  <div><dt>Region · city</dt><dd>Riyadh · 2nd Industrial City</dd></div>
+                  <div><dt>Stage</dt><dd>Operating</dd></div>
+                  <div><dt>Risk band</dt><dd>— (DEC-001)</dd></div>
+                  <div><dt>Last inspection</dt><dd class="ax-numeric">2025-11-03 · approved</dd></div>
+                </dl>
+                <div class="ax-row">
+                  <div class="ax-field" style="max-inline-size:380px">
+                    <label class="ax-field__label" for="s-lic">Industrial License <span class="ax-req">*</span></label>
+                    <select class="ax-select" id="s-lic"><option>IL-7741 — plastics extrusion (primary)</option><option>IL-9102 — packaging production</option></select>
+                    <span class="ax-field__hint">Multiple licenses exist — exactly one must be selected before proceeding (M01-036)</span>
+                  </div>
+                  <a class="ax-link" href="D3-07_factory-360.html" style="margin-block-start:26px">Open full Factory 360 ↗</a>
+                </div>
+              </div>
+              <div class="ax-row" style="justify-content:flex-end"><button class="ax-btn" data-stage-next="verify">Continue to verification</button></div>
+            </div>
+          </div>
+
+          <!-- VERIFY -->
+          <div class="wz wz--verify">
+            <div class="web-wizard__stagehead">
+              <h3>Verify identity &amp; location</h3>
+              <span class="ax-caption">factory profile read-only except location (M01-037)</span>
+            </div>
+            <div class="web-wizard__stagebody">
+              <div class="ax-grid-2">
+                <div class="ax-map" style="min-block-size:280px" role="img" aria-label="Official versus planner-updated location">
+                  <div class="ax-map__chrome"><span class="ax-lozenge ax-lozenge--info">verify mode</span><span class="ax-freshness ax-freshness--stale">source sync 06:00</span></div>
+                  <span class="ax-pin ax-pin--official" style="inset-inline-start:40%; inset-block-start:44%"><span class="ax-pin__dot"></span><span class="ax-pin__label">Official (license pin)</span></span>
+                  <span class="ax-pin" style="inset-inline-start:55%; inset-block-start:58%"><span class="ax-pin__dot"></span><span class="ax-pin__label">Planner pin (draft)</span></span>
+                  <span class="ax-map__provider">provider abstraction — DEC-008</span>
+                </div>
+                <div class="ax-stack">
+                  <div class="ax-banner"><div><strong>Provenance rule (M01-038):</strong> planner may override the pin for this visit; the official registered location is never overwritten — both are stored with source, actor and timestamp (MVP1-FND-007). The system permanently distinguishes official vs planner-updated vs field-observed.</div></div>
+                  <div class="ax-field"><label class="ax-field__label" for="v-coord">Planner-updated coordinates (this visit only)</label>
+                    <input class="ax-input ax-numeric" id="v-coord" value="24.7141, 46.6760">
+                    <span class="ax-field__hint">official remains 24.7136, 46.6753 (GIS Admin-owned, FLD-FACT-005/006)</span></div>
+                  <div class="ax-field"><label class="ax-field__label" for="v-note">Location note</label>
+                    <textarea class="ax-textarea" id="v-note" placeholder="Gate 3 entrance — main pin points to admin building"></textarea></div>
+                </div>
+              </div>
+              <div class="ax-row" style="justify-content:space-between"><button class="ax-btn ax-btn--secondary" data-stage-next="find">Back</button><button class="ax-btn" data-stage-next="configure">Confirm &amp; configure visit</button></div>
+            </div>
+          </div>
+
+          <!-- CONFIGURE -->
+          <div class="wz wz--configure">
+            <div class="web-wizard__stagehead"><h3>Configure visit</h3><span class="ax-caption">SCR-WEB-140 — configuration applies to the selected visit (M01-039)</span></div>
+            <div class="web-wizard__stagebody">
+              <div class="ax-grid-2">
+                <div class="ax-stack">
+                  <div class="ax-field"><label class="ax-field__label" for="c-type">Business visit type <span class="ax-req">*</span></label>
+                    <select class="ax-select" id="c-type"><option>Periodic compliance inspection</option><option>Follow-up inspection</option><option>Complaint-triggered</option></select>
+                    <span class="ax-field__hint">configured reference data — active values only (FLD-VIS-003)</span></div>
+                  <div class="ax-row">
+                    <div class="ax-field"><label class="ax-field__label" for="c-ws">Window start <span class="ax-req">*</span></label><input class="ax-input ax-numeric" id="c-ws" type="datetime-local" value="2026-07-16T09:00"></div>
+                    <div class="ax-field"><label class="ax-field__label" for="c-we">Window end <span class="ax-req">*</span></label><input class="ax-input ax-numeric" id="c-we" type="datetime-local" value="2026-07-16T16:00"></div>
+                  </div>
+                  <div class="ax-field"><label class="ax-field__label" for="c-prio">Priority</label>
+                    <select class="ax-select" id="c-prio"><option>— configured list (REF-005 · decision-gated)</option></select></div>
+                  <div class="ax-field"><label class="ax-field__label" for="c-notes">Notes to inspector</label><textarea class="ax-textarea" id="c-notes" placeholder="Access via Gate 3; contact factory rep A. Saleh"></textarea></div>
+                </div>
+                <div class="ax-stack">
+                  <div class="ax-field"><label class="ax-field__label" for="c-pkg">Inspection package <span class="ax-req">*</span></label>
+                    <select class="ax-select" id="c-pkg"><option>Fire &amp; Life Safety — General Factories · v2026.07.02 (active)</option><option>Environmental Baseline · v2026.06.10</option></select>
+                    <span class="ax-field__hint">only published, effective versions selectable (FLD-PKG-001); resolved version locks at inspector download (M04-005)</span></div>
+                  <div class="ax-field"><label class="ax-field__label">Execution mode eligibility</label>
+                    <div class="ax-row">
+                      <label class="ax-choice"><input type="radio" name="mode" checked> Physical</label>
+                      <label class="ax-choice"><input type="radio" name="mode"> Virtual</label>
+                    </div>
+                    <span class="ax-field__hint">eligibility rules validate at pre-start too (P05 gate; FLD-VIS-004)</span></div>
+                  <div class="ax-banner"><div><strong>One Single plan = one visit (M01-042):</strong> publishing creates one Visit Plan containing one Visit; the inspector receives the Visit, never the plan.</div></div>
+                </div>
+              </div>
+              <div class="ax-row" style="justify-content:space-between"><button class="ax-btn ax-btn--secondary" data-stage-next="verify">Back</button><button class="ax-btn" data-stage-next="assign">Continue to assignment</button></div>
+            </div>
+          </div>
+
+          <!-- ASSIGN -->
+          <div class="wz wz--assign">
+            <div class="web-wizard__stagehead">
+              <h3>Assign inspector</h3>
+              <div class="ax-segmented" role="group" aria-label="Assignment method"><button aria-pressed="true">Automatic</button><button aria-pressed="false">Manual</button></div>
+            </div>
+            <div class="web-wizard__stagebody">
+              <div class="ax-banner"><div><strong>Automatic strategy (ENG-05):</strong> ranks by skills, region, capacity, availability; planner may override manually (M01-008 — manual overrides auto). Every visit must have one assigned inspector before publish (M01-040). Assignment decision, candidates and conflicts are audited.</div></div>
+              <div class="ax-stack" style="gap:var(--ax-space-150)">
+                <div class="web-inspector-row" aria-selected="true">
+                  <span class="ax-avatar">MK</span>
+                  <div><strong>M. Al-Khalid</strong> · fire-safety certified · Riyadh<br>
+                    <span class="web-load">workload <span class="web-load__bar"><span style="inline-size:45%"></span></span> 5/11 this week · available Jul 16</span></div>
+                  <span class="ax-lozenge ax-lozenge--success">recommended</span>
+                </div>
+                <div class="web-inspector-row">
+                  <span class="ax-avatar">SF</span>
+                  <div><strong>S. Al-Fahad</strong> · fire-safety certified · Riyadh<br>
+                    <span class="web-load">workload <span class="web-load__bar is-hot"><span style="inline-size:92%"></span></span> 10/11 — capacity conflict</span></div>
+                  <span class="ax-lozenge ax-lozenge--warning">conflict</span>
+                </div>
+                <div class="web-conflict"><strong>⚠</strong><div><strong>Conflict detail (ERR-ASG-001):</strong> S. Al-Fahad has an overlapping visit VIS-10024 on Jul 16 (10:00–14:00) and is at weekly capacity. Selecting him requires a governed override with reason — alternatives are listed first; no assignment is applied until resolved.</div></div>
+              </div>
+              <div class="ax-row" style="justify-content:space-between"><button class="ax-btn ax-btn--secondary" data-stage-next="configure">Back</button><button class="ax-btn" data-stage-next="publish">Continue to review</button></div>
+            </div>
+          </div>
+
+          <!-- PUBLISH -->
+          <div class="wz wz--publish">
+            <div class="web-wizard__stagehead"><h3>Review &amp; publish</h3><span class="ax-caption">SCR-WEB-150 — publish is atomic: no partial publish (P03)</span></div>
+            <div class="web-wizard__stagebody">
+              <div class="ax-surface web-factcard">
+                <div class="ax-row" style="justify-content:space-between"><h4>Summary — SVP-2026-0412</h4><span class="ax-lozenge ax-lozenge--plan">Draft → Published on confirm</span></div>
+                <dl class="web-factcard__grid">
+                  <div><dt>Factory</dt><dd>Al Amal Plastics (F-2214) · IL-7741</dd></div>
+                  <div><dt>Type · mode</dt><dd>Periodic · Physical</dd></div>
+                  <div><dt>Window</dt><dd class="ax-numeric">Jul 16 · 09:00–16:00</dd></div>
+                  <div><dt>Package</dt><dd>Fire &amp; Life Safety v2026.07.02</dd></div>
+                  <div><dt>Inspector</dt><dd>M. Al-Khalid (auto · no conflicts)</dd></div>
+                  <div><dt>Location</dt><dd>planner pin + official retained</dd></div>
+                </dl>
+              </div>
+              <div class="ax-validation ax-validation--clear"><strong>All validations passed (M01-041).</strong> Publishing will: create Visit Plan + Visit VIS-new with stable IDs · lock plan version · notify M. Al-Khalid · update his calendar · write publish audit (STM-PLAN-002 side effects). Visit becomes available to the inspector immediately (M01-020).</div>
+              <div class="ax-row" style="justify-content:space-between">
+                <button class="ax-btn ax-btn--secondary" data-stage-next="assign">Back</button>
+                <button class="ax-btn ax-btn--prominent" data-ax-toast="Published — Visit VIS-10031 created, inspector notified, audit AE-99456 recorded" data-ax-toast-kind="success">Publish visit</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- aside -->
+        <aside class="web-wizard__aside" aria-label="Context">
+          <div>
+            <h5 class="ax-overline" style="margin-block-end:var(--ax-space-100)">Publish readiness</h5>
+            <div class="adm-check adm-check--pass">Factory identified via CR (M01-035)</div>
+            <div class="adm-check adm-check--pass">License IL-7741 selected (M01-036)</div>
+            <div class="adm-check adm-check--pass">Location verified — provenance kept (M01-038)</div>
+            <div class="adm-check adm-check--pending">Visit configuration (M01-039)</div>
+            <div class="adm-check adm-check--pending">Inspector assigned (M01-040)</div>
+            <div class="adm-check adm-check--pending">Duplicate check at publish (M02-012)</div>
+          </div>
+          <div>
+            <h5 class="ax-overline" style="margin-block-end:var(--ax-space-100)">Factory 360 snapshot</h5>
+            <div class="f360-healthrow"><span>Open corrective actions</span><strong class="ax-numeric">2</strong></div>
+            <div class="f360-healthrow"><span>Violations (12 mo)</span><strong class="ax-numeric">3</strong></div>
+            <div class="f360-healthrow"><span>Last outcome</span><span class="ax-lozenge ax-lozenge--review ax-lozenge--success">Approved</span></div>
+            <div class="f360-healthrow"><span>Risk band</span><span class="ax-caption">— DEC-001</span></div>
+            <a class="ax-link" href="D3-07_factory-360.html">Full dossier ↗</a>
+          </div>
+          <div class="adm-contract" style="border-style:solid">
+            <h5>Audit consequence</h5>
+            <span class="ax-caption">Publish = STM-PLAN-002: guard “assignments valid; package published; no blockers” · side effects create visits, notify, lock version · reviewer notification chain starts at submission. All actions carry actor/time/version (ENG-12).</span>
+          </div>
+        </aside>
+      </div>
+
+      <div class="adm-contract">
+        <h5>Contract traceability — GOLDEN SCREEN #2</h5>
+        <span><strong>Screens:</strong> <code>SCR-WEB-120</code> Single Visit Planning (factory search; Factory 360 preview; visit configuration · factory-not-found / duplicate-visit failures) + <code>SCR-WEB-140</code> Configure &amp; Assignment (form; package version; mode; team; conflict panel · no package / unavailable inspector / overlap) + <code>SCR-WEB-150</code> Review &amp; Publish (summary; validation; notifications · validation failure / stale data / duplicate) — one wired wizard, stages clickable.</span>
+        <span><strong>Requirements:</strong> <code>MVP1-M01-034..042</code> (Single path), <code>M01-006..010</code> (config/assign/review/publish), <code>M01-017..020</code> · acceptance <code>AC-0034..AC-0042</code> + <code>AC-0006..0010</code>. <strong>Journey:</strong> P01→P02→P03 · SB04 steps 1–8. <strong>Engines:</strong> ENG-02/03/05/06/11/12. <strong>Transitions:</strong> STM-PLAN-001/002. <strong>Errors:</strong> ERR-PLN-001/002, ERR-ASG-001, ERR-PUB-001, ERR-AUTH-001. <strong>Evidence:</strong> EV-003, EV-011. DEC-001/005/008 + REF-005 placeholders — nothing invented.</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="../astryx.js"></script><script src="../d2/admin.js"></script><script src="web.js"></script>
+</body>
+</html>

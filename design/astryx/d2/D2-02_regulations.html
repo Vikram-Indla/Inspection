@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D2 · SCR-ADM-010/011 — Regulation Library & Version Detail</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="ax-shell">
+  <nav class="ax-shell__nav" aria-label="Admin">
+    <div class="ax-shell__brand"><span class="ax-shell__brand-mark">AX</span> MIM Admin</div>
+    <a class="ax-nav-item" href="D2-01_admin-home.html">Overview</a>
+    <span class="ax-overline" style="padding:var(--ax-space-150) var(--ax-space-150) var(--ax-space-050)">Compliance</span>
+    <a class="ax-nav-item" aria-current="page" href="#0">Regulations</a>
+    <a class="ax-nav-item" href="D2-03_items.html">Inspection items</a>
+    <a class="ax-nav-item" href="D2-04_package-designer.html">Packages &amp; forms</a>
+    <a class="ax-nav-item" href="D2-05_violations-penalties.html">Violations &amp; penalties</a>
+    <span class="ax-overline" style="padding:var(--ax-space-150) var(--ax-space-150) var(--ax-space-050)">Platform</span>
+    <a class="ax-nav-item" href="D2-06_workflows.html">Workflows</a>
+    <a class="ax-nav-item" href="D2-07_risk-gis.html">Risk · GIS</a>
+    <a class="ax-nav-item" href="D2-08_notifications-access.html">Notifications · Access</a>
+  </nav>
+
+  <div class="ax-shell__main">
+    <div class="ax-pagehead">
+      <ul class="ax-breadcrumb"><li>Admin</li><li>Regulations</li><li>SBC-801 Fire Code — Industrial</li></ul>
+      <div class="ax-pagehead__row">
+        <div class="ax-pagehead__context">
+          <h2>Regulation Library &amp; Detail</h2>
+          <span class="ax-lozenge ax-lozenge--success">Published v2.3</span>
+          <span class="ax-version">effective 2026-07-10 →</span>
+        </div>
+        <div class="ax-row">
+          <button class="ax-btn ax-btn--secondary">Compare versions</button>
+          <button class="ax-btn ax-btn--secondary">Clone as draft</button>
+          <button class="ax-btn">New regulation draft</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ax-content" id="scr" data-screen="populated">
+      <div class="adm-statebar" data-for="#scr" role="toolbar" aria-label="Design state switcher">
+        <strong>Screen states</strong>
+        <button data-state="populated" aria-pressed="true">Populated</button>
+        <button data-state="loading" aria-pressed="false">Loading</button>
+        <button data-state="empty" aria-pressed="false">No records</button>
+        <button data-state="validation" aria-pressed="false">Validation errors</button>
+        <button data-state="blocked" aria-pressed="false">Publish blocked</button>
+        <button data-state="locked" aria-pressed="false">Locked published</button>
+        <button data-state="unauthorized" aria-pressed="false">Unauthorized</button>
+      </div>
+
+      <div class="st st--loading ax-surface" style="padding:var(--ax-space-400)"><div class="ax-stack" style="gap:var(--ax-space-150)">
+        <div class="ax-skeleton" style="inline-size:28%"></div><div class="ax-skeleton" style="min-block-size:44px"></div><div class="ax-skeleton" style="min-block-size:44px"></div><div class="ax-skeleton" style="inline-size:70%; min-block-size:44px"></div>
+      </div></div>
+
+      <div class="st st--empty ax-surface"><div class="ax-state">
+        <span class="ax-state__glyph">📜</span><h4>No regulations configured</h4>
+        <p class="ax-caption">Regulations are the parents of inspection items (MVP1-M09-001 business rule). Nothing downstream can publish without them.</p>
+        <button class="ax-btn">Create first regulation</button>
+      </div></div>
+
+      <div class="st st--unauthorized ax-surface ax-permission"><div class="ax-state">
+        <span class="ax-state__glyph">🛡</span><h4>Compliance Admin scope required (RBAC-001)</h4>
+        <p class="ax-caption">Read denied for regulation drafts outside your configured scope. Attempt audited.</p>
+      </div></div>
+
+      <div class="st st--validation ax-validation" role="alert">
+        <strong>2 validation errors — draft preserved</strong>
+        <ul>
+          <li><a class="ax-link" href="#0">Clause 4.9 effective date precedes regulation effective date (SCR-ADM-010 “invalid effective dates block publish”)</a></li>
+          <li><a class="ax-link" href="#0">Issuing authority missing on amendment record</a></li>
+        </ul>
+      </div>
+
+      <div class="st st--blocked ax-banner ax-banner--critical"><div><strong>Publish blocked — dependency conflict.</strong> Deactivating clause 4.2 would orphan 3 active items mapped in 2 published packages (SCR-ADM-011 failure state “dependency conflict”). Resolve mappings first — impact list below stays accurate to the second.</div></div>
+
+      <div class="st st--locked ax-banner ax-banner--immutable"><div><strong>v2.2 is locked.</strong> Published versions are immutable (RBAC-001 “cannot edit published version”); changes require a new draft. Prior inspections keep referencing their consumed version forever (M09-010).</div></div>
+
+      <div class="st st--populated adm-plane">
+        <aside class="adm-tree" aria-label="Regulation hierarchy">
+          <div class="adm-tree__head">
+            <span class="ax-search"><input class="ax-input" placeholder="Search regulations & clauses"></span>
+            <div class="ax-row" style="gap:var(--ax-space-050)"><button class="ax-filterchip is-active">Published</button><button class="ax-filterchip">Drafts</button><button class="ax-filterchip">Archived</button></div>
+          </div>
+          <div class="adm-tree__body">
+            <span class="adm-node adm-node--group">Fire &amp; life safety</span>
+            <button class="adm-node" aria-current="true">SBC-801 Fire Code — Industrial <span class="ax-lozenge ax-lozenge--success">v2.3</span></button>
+            <button class="adm-node adm-node--child">§4 Fixed protection systems</button>
+            <button class="adm-node adm-node--child">§5 Means of egress</button>
+            <button class="adm-node adm-node--child">§7 Hazmat storage</button>
+            <span class="adm-node adm-node--group">Industrial licensing</span>
+            <button class="adm-node">Industrial License Conditions <span class="ax-lozenge ax-lozenge--success">v1.8</span></button>
+            <button class="adm-node">Env. Compliance Baseline <span class="ax-lozenge ax-lozenge--warning">draft v3</span></button>
+            <span class="adm-node adm-node--group">Labor & safety</span>
+            <button class="adm-node">OSH Industrial Facilities <span class="ax-lozenge ax-lozenge--success">v2.0</span></button>
+          </div>
+        </aside>
+
+        <section class="adm-editor" aria-label="Regulation detail">
+          <div class="adm-editor__head">
+            <div class="ax-row" style="justify-content:space-between">
+              <h3>SBC-801 Fire Code — Industrial · v2.3</h3>
+              <div class="ax-row"><span class="ax-lozenge ax-lozenge--success">Published</span><button class="ax-btn ax-btn--icon ax-btn--secondary" aria-label="Menu">⋯</button></div>
+            </div>
+            <dl class="adm-metrics">
+              <div><dt>Clauses</dt><dd>38</dd></div>
+              <div><dt>Mapped items</dt><dd>64</dd></div>
+              <div><dt>Consuming packages</dt><dd>6</dd></div>
+              <div><dt>Issuing authority</dt><dd style="font:var(--ax-text-body-strong)">Saudi Building Code Committee</dd></div>
+              <div><dt>Effective</dt><dd class="ax-numeric" style="font:var(--ax-text-body-strong)">2026-07-10 → open</dd></div>
+            </dl>
+          </div>
+          <div class="adm-editor__body">
+            <div class="adm-designer-section">
+              <div class="adm-designer-section__head">Clauses — legal source hierarchy with applicability &amp; provenance (SCR-ADM-011)</div>
+              <div class="adm-item" aria-selected="true">
+                <span aria-hidden="true">§</span>
+                <div>
+                  <div class="adm-item__title">4.2 · Portable extinguishers — service &amp; tagging <span class="ax-lozenge ax-lozenge--info">3 items</span></div>
+                  <div class="adm-item__meta"><span>applicability: all industrial occupancies</span><span>·</span><span>source: Royal Decree M/43 art. 12</span><span>·</span><span>AR/EN text attached</span></div>
+                </div>
+                <button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Clause actions">⋯</button>
+              </div>
+              <div class="adm-item">
+                <span aria-hidden="true">§</span>
+                <div>
+                  <div class="adm-item__title">4.7 · Fire pump weekly churn test <span class="ax-lozenge ax-lozenge--info">1 item</span> <span class="ax-lozenge ax-lozenge--warning">amended in v2.3</span></div>
+                  <div class="adm-item__meta"><span>applicability: facilities with fixed pumps</span><span>·</span><span>amendment: test interval clarified</span></div>
+                </div>
+                <button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Clause actions">⋯</button>
+              </div>
+              <div class="adm-item">
+                <span aria-hidden="true">§</span>
+                <div>
+                  <div class="adm-item__title">5.1 · Exit route obstruction <span class="ax-lozenge ax-lozenge--info">4 items</span> <span class="ax-lozenge ax-lozenge--critical">violation basis V-FS-01</span></div>
+                  <div class="adm-item__meta"><span>penalty range mapped via catalogue (never edited here — M09-004 separation)</span></div>
+                </div>
+                <button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Clause actions">⋯</button>
+              </div>
+            </div>
+            <div class="ax-banner"><div><strong>Deactivation rule:</strong> deactivating a regulation prevents future use but never affects previous inspections (MVP1-M09-001) and never deletes history (M09-014). Reason mandatory, recorded immutably.</div></div>
+          </div>
+        </section>
+
+        <aside class="adm-inspector" aria-label="Versions and impact">
+          <div class="adm-inspector__head"><h4>Versions · dependencies · audit</h4></div>
+          <div class="adm-inspector__body">
+            <div>
+              <h5 class="ax-overline" style="margin-block-end:var(--ax-space-100)">Version lineage (M09-010)</h5>
+              <div class="adm-version"><span class="adm-version__tag">v2.3</span><span class="ax-lozenge ax-lozenge--success">active</span><span class="ax-numeric">2026-07-10</span></div>
+              <div class="adm-version"><span class="adm-version__tag">v2.2</span><span>superseded</span><a class="ax-link" href="#0">compare</a></div>
+              <div class="adm-version"><span class="adm-version__tag">v2.1</span><span>superseded</span><a class="ax-link" href="#0">compare</a></div>
+            </div>
+            <div>
+              <h5 class="ax-overline" style="margin-block-end:var(--ax-space-100)">Downstream dependencies</h5>
+              <div class="adm-impact">
+                <div class="adm-impact__row"><span class="ax-lozenge ax-lozenge--info">items</span><span>64 catalogue items reference clauses</span><a class="ax-link" href="#0">list</a></div>
+                <div class="adm-impact__row"><span class="ax-lozenge ax-lozenge--info">packages</span><span>6 published packages consume mapped items</span><a class="ax-link" href="#0">list</a></div>
+                <div class="adm-impact__row"><span class="ax-lozenge ax-lozenge--warning">violations</span><span>12 violation codes cite this regulation</span><a class="ax-link" href="#0">list</a></div>
+              </div>
+            </div>
+            <div>
+              <h5 class="ax-overline" style="margin-block-end:var(--ax-space-100)">Maker-checker</h5>
+              <div class="adm-pipeline">
+                <div class="adm-pipeline__step is-done"><span class="adm-pipeline__dot">✓</span><div>Draft v2.3 — C. ComplianceAdmin</div></div>
+                <div class="adm-pipeline__step is-done"><span class="adm-pipeline__dot">✓</span><div>Validated — dates, hierarchy, sources</div></div>
+                <div class="adm-pipeline__step is-done"><span class="adm-pipeline__dot">✓</span><div>Approved — B. BusinessAdmin (distinct approver ✓)</div></div>
+                <div class="adm-pipeline__step is-done"><span class="adm-pipeline__dot">✓</span><div>Published 2026-07-08 · audit AE-99213</div></div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="adm-contract">
+        <h5>Contract traceability — this frame</h5>
+        <span><strong>Screens:</strong> <code>SCR-ADM-010</code> Regulation Library (search; filters; list; version/status; owner; effective date · states: no records, validation errors, publish blocked) + <code>SCR-ADM-011</code> Regulation Detail &amp; Version (metadata; clauses; mappings; dependencies; versions; audit · states: locked published version, dependency conflict) — all designed via switcher.</span>
+        <span><strong>Requirements:</strong> <code>MVP1-M09-001</code> regulation management · <code>M09-010/011/012/013/014/015</code> versioning, draft/publish, dependency validation, impact, deactivation, audit · acceptance <code>AC-0449, AC-0458..0463</code>. <strong>Engine:</strong> ENG-01. <strong>Journey:</strong> P00 · SB03 step 1 · SB18 step 2. <strong>RBAC:</strong> RBAC-001 maker-checker. <strong>Evidence:</strong> EV-002, EV-011.</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="../astryx.js"></script><script src="admin.js"></script>
+</body>
+</html>

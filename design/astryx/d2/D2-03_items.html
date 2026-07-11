@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D2 · SCR-ADM-020 — Inspection Item Catalogue</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="ax-shell">
+  <nav class="ax-shell__nav" aria-label="Admin">
+    <div class="ax-shell__brand"><span class="ax-shell__brand-mark">AX</span> MIM Admin</div>
+    <a class="ax-nav-item" href="D2-01_admin-home.html">Overview</a>
+    <span class="ax-overline" style="padding:var(--ax-space-150) var(--ax-space-150) var(--ax-space-050)">Compliance</span>
+    <a class="ax-nav-item" href="D2-02_regulations.html">Regulations</a>
+    <a class="ax-nav-item" aria-current="page" href="#0">Inspection items</a>
+    <a class="ax-nav-item" href="D2-04_package-designer.html">Packages &amp; forms</a>
+    <a class="ax-nav-item" href="D2-05_violations-penalties.html">Violations &amp; penalties</a>
+    <span class="ax-overline" style="padding:var(--ax-space-150) var(--ax-space-150) var(--ax-space-050)">Platform</span>
+    <a class="ax-nav-item" href="D2-06_workflows.html">Workflows</a>
+    <a class="ax-nav-item" href="D2-07_risk-gis.html">Risk · GIS</a>
+    <a class="ax-nav-item" href="D2-08_notifications-access.html">Notifications · Access</a>
+  </nav>
+
+  <div class="ax-shell__main">
+    <div class="ax-pagehead">
+      <ul class="ax-breadcrumb"><li>Admin</li><li>Inspection items</li></ul>
+      <div class="ax-pagehead__row">
+        <div class="ax-pagehead__context"><h2>Inspection Item Catalogue</h2><span class="ax-freshness">712 items · 8 response models</span></div>
+        <div class="ax-row"><button class="ax-btn ax-btn--secondary">Export (audited)</button><button class="ax-btn">New item</button></div>
+      </div>
+    </div>
+
+    <div class="ax-content" id="scr" data-screen="populated">
+      <div class="adm-statebar" data-for="#scr" role="toolbar" aria-label="Design state switcher">
+        <strong>Screen states</strong>
+        <button data-state="populated" aria-pressed="true">Populated</button>
+        <button data-state="loading" aria-pressed="false">Loading</button>
+        <button data-state="empty" aria-pressed="false">Empty</button>
+        <button data-state="validation" aria-pressed="false">Duplicate code</button>
+        <button data-state="unauthorized" aria-pressed="false">Unauthorized</button>
+      </div>
+
+      <div class="st st--loading ax-surface" style="padding:var(--ax-space-400)"><div class="ax-stack" style="gap:var(--ax-space-150)"><div class="ax-skeleton" style="inline-size:24%"></div><div class="ax-skeleton" style="min-block-size:40px"></div><div class="ax-skeleton" style="min-block-size:40px"></div><div class="ax-skeleton" style="min-block-size:40px"></div></div></div>
+
+      <div class="st st--empty ax-surface"><div class="ax-state"><span class="ax-state__glyph">☑</span><h4>No inspection items</h4><p class="ax-caption">Items define response types, runtime meaning and evidence rules; each must belong to a regulation and can be reused across packages (MVP1-M09-002).</p><button class="ax-btn">Create first item</button></div></div>
+
+      <div class="st st--unauthorized ax-surface ax-permission"><div class="ax-state"><span class="ax-state__glyph">🛡</span><h4>Configuration role required</h4><p class="ax-caption">SCR-ADM-020 permission rule: config role. Attempt audited (ERR-AUTH-001).</p></div></div>
+
+      <div class="st st--validation ax-validation" role="alert"><strong>Item not saved — 2 errors, entries preserved</strong>
+        <ul><li>Code “FS-101” already exists — duplicate codes rejected (SCR-ADM-020 failure state)</li><li>No regulation clause mapped — an item must belong to a regulation (M09-002 rule)</li></ul>
+      </div>
+
+      <div class="st st--populated ax-stack" style="gap:var(--ax-space-300)">
+        <div class="ax-commandbar">
+          <span class="ax-search" style="min-inline-size:300px"><input class="ax-input" placeholder="Code, title, clause, response model"></span>
+          <button class="ax-filterchip is-active">Regulation: SBC-801 ✕</button>
+          <button class="ax-filterchip">Response model</button>
+          <button class="ax-filterchip">Status: Active</button>
+          <button class="ax-filterchip">Evidence rule</button>
+          <span class="ax-commandbar__spacer"></span>
+          <span class="ax-caption">reuse is the point: same item, many packages — one canonical meaning (FND-010)</span>
+        </div>
+
+        <div class="ax-tablewrap">
+          <table class="ax-table">
+            <thead><tr><th aria-sort="ascending">Code</th><th>Title</th><th>Response model &amp; runtime meaning</th><th>Clause</th><th class="ax-td-num">Used in</th><th>Evidence rule</th><th>Status</th><th style="inline-size:44px"></th></tr></thead>
+            <tbody>
+              <tr><td class="ax-numeric"><strong>FS-101</strong></td><td>Extinguisher service tags current</td><td><span class="ax-caption">Compliant / Non-compliant / N·A → NC triggers V-FS-09 (M09-019/020)</span></td><td>SBC-801 §4.2</td><td class="ax-td-num ax-numeric">6 pkgs</td><td><span class="ax-lozenge ax-lozenge--info">photo on NC</span></td><td><span class="ax-lozenge ax-lozenge--success">active</span></td><td><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Actions">⋯</button></td></tr>
+              <tr><td class="ax-numeric"><strong>FS-107</strong></td><td>Pump room weekly run log</td><td><span class="ax-caption">Value + date · scored, excluded when N/A (M09-023/024)</span></td><td>SBC-801 §4.7</td><td class="ax-td-num ax-numeric">2 pkgs</td><td><span class="ax-lozenge">document optional</span></td><td><span class="ax-lozenge ax-lozenge--success">active</span></td><td><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Actions">⋯</button></td></tr>
+              <tr><td class="ax-numeric"><strong>FS-114</strong></td><td>Emergency lighting test log</td><td><span class="ax-caption">Compliant / Non-compliant · Needs-Review flags reviewer (M09-020)</span></td><td>SBC-801 §4.9</td><td class="ax-td-num ax-numeric">1 pkg</td><td><span class="ax-lozenge">—</span></td><td><span class="ax-lozenge ax-lozenge--critical">deactivated · reason recorded</span></td><td><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Actions">⋯</button></td></tr>
+              <tr><td class="ax-numeric"><strong>EG-201</strong></td><td>Exit routes unobstructed</td><td><span class="ax-caption">Compliant / Non-compliant → NC auto-violation V-FS-01, inspector cannot override (M09-003)</span></td><td>SBC-801 §5.1</td><td class="ax-td-num ax-numeric">6 pkgs</td><td><span class="ax-lozenge ax-lozenge--info">photo + note on NC</span></td><td><span class="ax-lozenge ax-lozenge--success">active</span></td><td><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Actions">⋯</button></td></tr>
+              <tr><td class="ax-numeric"><strong>HZ-310</strong></td><td>Hazmat segregation per class</td><td><span class="ax-caption">Multi-select deficiency list · conditional mandatory when hazmat present (M09-022)</span></td><td>SBC-801 §7.3</td><td class="ax-td-num ax-numeric">3 pkgs</td><td><span class="ax-lozenge ax-lozenge--info">photo mandatory</span></td><td><span class="ax-lozenge ax-lozenge--success">active</span></td><td><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Actions">⋯</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ax-banner"><div><strong>Runtime contract:</strong> selected response must trigger the configured result — outcomes are configuration, not hardcode (M09-019 acceptance). Required items cannot be unselected during execution; optional items may be, only where permitted (M09-018/-007 rules). Deactivation hides from new packages, preserves history (M09-014).</div></div>
+      </div>
+
+      <div class="adm-contract">
+        <h5>Contract traceability — this frame</h5>
+        <span><strong>Screen:</strong> <code>SCR-ADM-020</code> Inspection Item Catalogue — regions: item code; title; response model; required rule; scoring; evidence · states: duplicate code; invalid mapping ✓. <strong>Requirements:</strong> <code>MVP1-M09-002/-003/-016..025</code> · acceptance <code>AC-0450, AC-0464..0473</code>. <strong>Engines:</strong> ENG-01/ENG-02. <strong>Journey:</strong> P00 · SB03 step 2 · SB13 steps 2–6. <strong>Evidence:</strong> EV-002, EV-011.</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="../astryx.js"></script><script src="admin.js"></script>
+</body>
+</html>

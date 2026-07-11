@@ -1,0 +1,151 @@
+schema_version: "1.0"
+artifact: FABLE_OPEN_QUESTIONS
+status: PASS_WITH_NAMED_QUESTIONS follow-up — all items require human resolution; the agent may not invent any value
+date: "2026-07-11"
+rules:
+  - "Mobbin is excluded from all design work (current human instruction; supersedes frozen Mobbin references pending change control)."
+  - "Historical archives (MIM_Inspection_MVP1_Historical_Archives_v3) are provenance/completeness only."
+  - "Meta-Astryx pack is design direction only; nothing is design authority until G6 approval."
+  - "Open decisions block only their affected acceptance/certification scope (governance/OPEN_DECISIONS.yaml)."
+
+open_decisions:  # authoritative register: product-contract/governance/decision_register.csv (DEC) mirrored by OPEN_DECISIONS_G2.yaml (OD)
+  - id: DEC-001 / OD-02
+    topic: "Risk model: exact factors, weights, formula, thresholds, owner"
+    owner: Risk Owner / Business
+    severity: P0
+    required_by: "G5 before risk runtime"
+    safe_interim: "Interface/config placeholders + historical version contract; no invented values"
+    blocks: ["ENG-04 runtime", "SCR-ADM-060", "risk display in SCR-WEB-110/400/500"]
+  - id: DEC-002 / OD-03
+    topic: "GPS accuracy threshold, arrival radius, geofence policy, telemetry frequency, route deviation, retention"
+    owner: GIS / Operations
+    severity: P0
+    required_by: "G5 before journey certification"
+    safe_interim: "Configurable values; publish blocked until approved"
+    blocks: ["ENG-06 certification", "SCR-ADM-070", "SCR-IPAD-620 check-in thresholds", "EV-005 acceptance"]
+  - id: DEC-003 / OD-04
+    topic: "Task SLAs, working calendar, pause/resume, escalation ladder"
+    owner: Business Operations
+    severity: P0
+    required_by: "G5 / G7"
+    safe_interim: "Configuration placeholders only; no arbitrary timers"
+    blocks: ["ENG-11 SLA timers", "SCR-ADM-080", "SLA panels in SCR-WEB-300/500"]
+  - id: DEC-004 / OD-01
+    topic: "Arabic/RTL MVP1 scope: English-only, bilingual, or selected surfaces"
+    owner: Executive / Product
+    severity: P0
+    required_by: "G6 design freeze"
+    safe_interim: "Do not assume; design prepares logical/RTL layout without committing scope"
+    blocks: ["G6 freeze", "typography/token decisions", "Astryx Arabic variants"]
+  - id: DEC-005 / OD-07
+    topic: "Exact external factory-facing MVP1 boundary"
+    owner: Product Owner
+    severity: P0
+    required_by: "G3 / G5"
+    safe_interim: "Virtual participation only unless explicitly approved"
+    blocks: ["RBAC-014 finalization", "SCR-VIR-700..720 scope edges"]
+  - id: DEC-006 / OD-06
+    topic: "Evidence policy: formats, sizes, video limits, retention, malware scanning, redaction, hash"
+    owner: Compliance / Security
+    severity: P0
+    required_by: "G5 / G7"
+    safe_interim: "Configurable controls; no invented legal retention; FLD-EVD-006 content_hash stays decision-gated"
+    blocks: ["ENG-07 certification", "SCR-IPAD-640", "EV-007 acceptance"]
+  - id: DEC-007 / OD-05
+    topic: "OTP provider, retries, expiry, fallback"
+    owner: Technical / Security
+    severity: P1
+    required_by: "G5"
+    safe_interim: "Provider abstraction; simulation not release-complete"
+    blocks: ["SCR-VIR-710", "STM-VIR-002 certification", "EV-009"]
+  - id: DEC-008 / OD-05
+    topic: "Maps/navigation/GIS provider and licensing"
+    owner: Technical / GIS
+    severity: P1
+    required_by: "G5 / G6"
+    safe_interim: "Provider abstraction"
+    blocks: ["map panels: SCR-ADM-070, SCR-WEB-200/210/400/500, SCR-IPAD-620"]
+  - id: DEC-009 / OD-05
+    topic: "Digital signature / PKI legal scope for MVP1"
+    owner: Legal / Product
+    severity: P0
+    required_by: "G3 / G5"
+    safe_interim: "Support acknowledgement/refusal; advanced PKI not implied (PKI = MVP2-011)"
+    blocks: ["SCR-IPAD-660 acknowledgement block", "P09 signature step"]
+  - id: DEC-010 / OD-08
+    topic: "NFR targets: availability, latency, concurrency, RTO/RPO, package sizes"
+    owner: Architecture / Operations
+    severity: P0
+    required_by: "G5; gates stack choice and G8"
+    safe_interim: "Decision placeholders + measurement hooks"
+    blocks: ["stack freeze", "G8 certification"]
+
+environment_and_access:
+  - id: Q-ENV-001
+    question: "Provide Supabase secret key (sb_secret_…/service_role) or personal access token for project iiozvqntawxfwbgffzqu to run live-schema reconciliation."
+    owner: Vikram Indla
+    blocks: ["G5 exit condition (CURRENT_SLICE.yaml)"]
+  - id: Q-ENV-002
+    question: "Confirm stack: Next.js/React + Supabase are candidates only (NEXT_PUBLIC_* env pattern + live project). iPad offline-first layer (PWA/offline cache vs native) must be an explicit decision."
+    owner: Enterprise Architect + human decision owners
+    blocks: ["G5 PASS", "DEC-010"]
+  - id: Q-ENV-003
+    question: "Rotate the dashboard credential pasted in an earlier chat session (recorded in docs/G5_ARCHITECTURE_AND_READINESS.md §12)."
+    owner: Vikram Indla
+    severity: security-hygiene
+  - id: Q-ENV-004
+    question: "Connected Supabase MCP is bound to unrelated production project (Catalyst). Confirm it stays untouched for Inspection work or rebind."
+    owner: Vikram Indla
+
+authority_conflicts:  # resolution proposal stated; human confirmation required for the two marked CHANGE-CONTROL
+  - id: CONF-001
+    conflict: "Meta-Astryx pack points to /Users/vikramindla/Documents/GitHub/Inspection/Requirements — folder does not exist."
+    resolution: "RESOLVED by human (2026-07-11): 'Requirements' was renamed to MIM_Inspection_MVP1_Historical_Archives_v3/ — that archive set IS the requirements folder. product-contract/ remains the frozen operating authority distilled from it."
+    status: RESOLVED_BY_HUMAN
+  - id: CONF-002
+    conflict: "Mobbin mandated by CLAUDE.md design policy, GATE_STATUS.md G6 title, archive UIUX authority PDF and Astryx execution prompt §2 — but current human instruction excludes Mobbin."
+    resolution_proposed: "Latest human instruction wins operationally; frozen wording should be amended via CHANGE-CONTROL before G6 so the contract and practice match."
+    status: NEEDS_CHANGE_CONTROL
+  - id: CONF-003
+    conflict: "Two design languages: archive UIUX authority (deep navy restrained enterprise) vs Meta-Astryx (Meta-inspired, Astryx Cobalt)."
+    resolution_proposed: "Meta-Astryx pack (2026-07-11) supersedes the archive UIUX doc as design direction per its own decision statement; neither is authority until G6 Approval 1."
+    status: RESOLVED_AS_DIRECTION_ONLY
+  - id: CONF-004
+    conflict: "Three gate models share 'G' numbering: repo project gates G0–G12 (current), archive Fable build-loop gates G0–G10, BRD delivery Gates 1–9."
+    resolution_proposed: "Repo G0–G12 is the governing model (GATE_STATUS.md). Any other reference must be name-qualified ('Fable-loop G4' ≠ project G4)."
+    status: RESOLVED_BY_NAMING_RULE
+  - id: CONF-005
+    conflict: "State transition counts: archive workbook 19 vs repo 23 (STM-*)."
+    resolution_proposed: "Repo G3 contract (23) supersedes; workbook retained as provenance."
+    status: RESOLVED
+  - id: CONF-006
+    conflict: "Role/persona granularity drift: personas.yaml 8 human personas; BRD §4 10 personas (adds Auditor, System); REF-015 lists 11 role names; rbac_matrix.csv has 14 role/capability contracts (adds Form/Workflow/GIS/Security Admin, Risk Owner)."
+    resolution_proposed: "Substance consistent; RBAC-014 matrix is the operative permission authority; REF-015 the configured role list; personas.yaml the experience-level personas. Single canonical role list to be confirmed at G6/G8."
+    status: NEEDS_HUMAN_CONFIRMATION
+  - id: CONF-007
+    conflict: "Astryx pack pre-commits Arabic typography/RTL while DEC-004 (Arabic scope) is open."
+    resolution_proposed: "Treat as prepare-for-RTL direction only; no bilingual scope commitment until DEC-004."
+    status: RESOLVED_AS_DIRECTION_ONLY
+  - id: CONF-008
+    conflict: "Business/investor storyboard pack: page 04 missing; pages depict MVP2 capabilities (objection/appeal, committee decisioning, executive dashboards) as if in scope."
+    resolution_proposed: "Pack stays non-authoritative (its own README says so). 20 native implementation storyboards SB01–SB20 are the only storyboard authority. Regenerate page 04 + reconcile before any external use."
+    status: NEEDS_HUMAN_ACTION
+  - id: CONF-009
+    conflict: "GATE_STATUS G6 row named 'UI/UX / Mobbin / Figma' vs Mobbin exclusion."
+    resolution_proposed: "Same as CONF-002; amend at change control."
+    status: NEEDS_CHANGE_CONTROL
+
+storyboard_discrepancies:
+  - id: SBD-001
+    note: "AC-sheet storyboard keys are composite for shared flows (SB03/SB13/SB18, SB07/SB14, SB08/SB15, SB10/SB17): one requirement can be visualized by multiple boards. Traceability CSV preserves the composite key verbatim as 'authoritative_storyboard'."
+    status: DOCUMENTED_NOT_A_DEFECT
+  - id: SBD-002
+    note: "SB02 (81 mapped reqs), SB19 (428), SB01/SB20 (478) are atlas/architecture boards overlapping module boards; mapping in the CSV uses the AC-sheet module-board key, atlases cited in FND rows."
+    status: DOCUMENTED_NOT_A_DEFECT
+  - id: SBD-003
+    note: "Investor pack page 04 missing (never generated) — investor pack only; native SB04 exists and is complete."
+    status: NEEDS_HUMAN_ACTION
+
+non_blocking:
+  - id: Q-NB-001
+    item: "G4-EV-003 Obsidian desktop screenshot post-check (human-owned, non-blocking per G4_GATE_REPORT.md)."

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D5 · SCR-WEB-320 — Version Comparison v1 → v2</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="../d2/admin.css"><link rel="stylesheet" href="../d3/web.css">
+<style>
+  .cmp { display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--ax-color-border); border-radius:var(--ax-radius-large); overflow:hidden; background:var(--ax-color-surface); }
+  .cmp__col { padding:var(--ax-space-300); }
+  .cmp__col + .cmp__col { border-inline-start:1px solid var(--ax-color-border); }
+  .cmp__head { display:flex; align-items:center; gap:var(--ax-space-100); margin-block-end:var(--ax-space-200); }
+  .cmp-row { padding-block:var(--ax-space-150); border-block-end:1px solid var(--ax-color-border); }
+  .cmp-row:last-child { border-block-end:0; }
+</style>
+</head>
+<body>
+<div class="ax-shell">
+  <nav class="ax-shell__nav" aria-label="Web portal">
+    <div class="ax-shell__brand"><span class="ax-shell__brand-mark">AX</span> MIM Inspection</div>
+    <a class="ax-nav-item" href="../d3/D3-01_planning-home.html">Planning</a>
+    <a class="ax-nav-item" href="../d3/D3-05_visit-management.html">Visits</a>
+    <a class="ax-nav-item" aria-current="page" href="D5-01_review-queue.html">Reviews</a>
+    <a class="ax-nav-item" href="../d3/D3-07_factory-360.html">Factory 360</a>
+    <a class="ax-nav-item" href="#0">Operations</a>
+  </nav>
+  <div class="ax-shell__main">
+    <div class="ax-pagehead">
+      <ul class="ax-breadcrumb"><li><a class="ax-link" href="D5-01_review-queue.html">Reviews</a></li><li>INS-2044</li><li>Compare</li></ul>
+      <div class="ax-pagehead__row">
+        <div class="ax-pagehead__context">
+          <h2>Version comparison — INS-2044 · Sudair Polymer</h2>
+          <span class="ax-version">v1 (returned)</span><span>→</span><span class="ax-version">v2 (resubmitted)</span>
+          <span class="ax-lozenge ax-lozenge--review ax-lozenge--info">Under review</span>
+        </div>
+        <div class="ax-row"><button class="ax-btn ax-btn--secondary">Changed sections only</button><button class="ax-btn" onclick="location.href='D5-02_review-workspace.html'">Decide on v2 →</button></div>
+      </div>
+    </div>
+
+    <div class="ax-content" id="scr" data-screen="populated">
+      <div class="adm-statebar" data-for="#scr" role="toolbar" aria-label="Design state switcher">
+        <strong>Screen states</strong>
+        <button data-state="populated" aria-pressed="true">Diff view</button>
+        <button data-state="loading" aria-pressed="false">Loading</button>
+        <button data-state="empty" aria-pressed="false">Missing version</button>
+        <button data-state="blocked" aria-pressed="false">Incompatible package</button>
+      </div>
+
+      <div class="st st--loading ax-surface" style="padding:var(--ax-space-400)"><div class="ax-skeleton" style="min-block-size:300px"></div></div>
+      <div class="st st--empty ax-surface"><div class="ax-state"><span class="ax-state__glyph">∅</span><h4>Version unavailable</h4><p class="ax-caption">Requested version does not exist for this inspection — versions are sequential and never deleted (FLD-SUB-002); check the version history (SCR-WEB-320 “missing version”).</p></div></div>
+      <div class="st st--blocked ax-banner ax-banner--critical"><div><strong>Incompatible package versions.</strong> These versions consumed different package versions — field-level diff is not meaningful; section-level comparison with package-version context shown instead (SCR-WEB-320 failure state).</div></div>
+
+      <div class="st st--populated ax-stack" style="gap:var(--ax-space-300)">
+        <div class="ax-banner"><div><strong>Comparison is read-only (M06-053).</strong> All submitted versions remain accessible; latest (v2) is the one under active review (M06-048). Reviewer comments from v1 remain immutable and visible.</div></div>
+
+        <div class="cmp">
+          <div class="cmp__col">
+            <div class="cmp__head"><span class="ax-version">v1</span><span class="ax-caption ax-numeric">submitted Jul 10 14:02 · returned Jul 10 16:40</span></div>
+            <div class="cmp-row">
+              <p class="ax-overline">§1 · FS-101 evidence</p>
+              <p><span class="ax-diff-del">EV-71 photo — tags unreadable</span></p>
+            </div>
+            <div class="cmp-row">
+              <p class="ax-overline">§3 · HZ-310 response</p>
+              <p><span class="ax-diff-del">Compliant</span> <span class="ax-caption">— contradicted photo EV-77</span></p>
+            </div>
+            <div class="cmp-row">
+              <p class="ax-overline">§2 · Exits (not returned)</p>
+              <p class="ax-caption">unchanged — was locked during correction 🔒 (EV-008 proof)</p>
+            </div>
+          </div>
+          <div class="cmp__col">
+            <div class="cmp__head"><span class="ax-version">v2</span><span class="ax-caption ax-numeric">resubmitted Jul 11 09:20 · N. Al-Rashid</span></div>
+            <div class="cmp-row">
+              <p class="ax-overline">§1 · FS-101 evidence</p>
+              <p><span class="ax-diff-ins">EV-96, EV-97 — close-ups, dates legible</span> <span class="ax-lozenge ax-lozenge--info">new objects; v1 evidence preserved</span></p>
+            </div>
+            <div class="cmp-row">
+              <p class="ax-overline">§3 · HZ-310 response</p>
+              <p><span class="ax-diff-ins">Non-compliant</span> → <span class="ax-caption">auto-violation V-HZ-02 created in v2 (configured semantics re-ran)</span></p>
+            </div>
+            <div class="cmp-row">
+              <p class="ax-overline">§2 · Exits</p>
+              <p class="ax-caption">identical — deemphasized (UIUX authority: unchanged sections deemphasized, reviewer context preserved)</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="ax-grid-2">
+          <div class="ax-surface" style="padding:var(--ax-space-300)">
+            <h4 style="margin-block-end:var(--ax-space-150)">Change summary (M06-046/-053)</h4>
+            <div class="adm-check adm-check--pass">2 sections changed · 2 unchanged (locked)</div>
+            <div class="adm-check adm-check--pass">2 evidence objects added · 0 removed (removal impossible post-submission)</div>
+            <div class="adm-check adm-check--warn">1 new violation in v2 — enforcement delta highlighted</div>
+            <div class="adm-check adm-check--pass">Correction edits fully audited against v1 (M06-050)</div>
+          </div>
+          <div class="ax-surface" style="padding:var(--ax-space-300)">
+            <h4 style="margin-block-end:var(--ax-space-150)">Version history (M06-048)</h4>
+            <div class="adm-version"><span class="adm-version__tag">v2</span><span class="ax-lozenge ax-lozenge--review ax-lozenge--info">under review</span><span class="ax-numeric">Jul 11 09:20</span></div>
+            <div class="adm-version"><span class="adm-version__tag">v1</span><span class="ax-lozenge ax-lozenge--review ax-lozenge--warning">returned</span><span class="ax-numeric">Jul 10 14:02 · locked forever</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="adm-contract">
+        <h5>Contract traceability — this frame</h5>
+        <span><strong>Screen:</strong> <code>SCR-WEB-320</code> Version Comparison — regions: section diff; field diff; evidence diff; comments; version metadata · states: missing version; incompatible package ✓. <strong>Requirements:</strong> <code>MVP1-M06-040, M06-045..048, M06-050/-053</code> · acceptance <code>AC-0376..0378 + resubmission family</code>. <strong>Journey:</strong> P11→P10 loop · SB10 steps 10–12 · SB17 step 8. <strong>Engine:</strong> ENG-09. <strong>Evidence:</strong> EV-008 (only returned sections editable; old version preserved — visually proven here). Auditor read-only access per RBAC-012.</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="../astryx.js"></script><script src="../d2/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D3 · SCR-WEB-100 — Visit Planning Home</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="../d2/admin.css"><link rel="stylesheet" href="web.css">
+</head>
+<body>
+<div class="ax-shell">
+  <nav class="ax-shell__nav" aria-label="Web portal">
+    <div class="ax-shell__brand"><span class="ax-shell__brand-mark">AX</span> MIM Inspection</div>
+    <a class="ax-nav-item" aria-current="page" href="#0">Planning</a>
+    <a class="ax-nav-item" href="D3-05_visit-management.html">Visits</a>
+    <a class="ax-nav-item" href="#0">Reviews</a>
+    <a class="ax-nav-item" href="D3-07_factory-360.html">Factory 360</a>
+    <a class="ax-nav-item" href="#0">Operations</a>
+  </nav>
+  <div class="ax-shell__main">
+    <div class="ax-pagehead">
+      <ul class="ax-breadcrumb"><li>Planning</li></ul>
+      <div class="ax-pagehead__row">
+        <div class="ax-pagehead__context"><h2>Visit planning</h2><span class="ax-freshness">packages healthy · 9 published</span></div>
+        <div class="ax-row"><button class="ax-btn ax-btn--secondary">My drafts <span class="ax-badge">3</span></button></div>
+      </div>
+    </div>
+
+    <div class="ax-content" id="scr" data-screen="populated">
+      <div class="adm-statebar" data-for="#scr" role="toolbar" aria-label="Design state switcher">
+        <strong>Screen states</strong>
+        <button data-state="populated" aria-pressed="true">Populated</button>
+        <button data-state="loading" aria-pressed="false">Loading</button>
+        <button data-state="blocked" aria-pressed="false">No published package</button>
+        <button data-state="unauthorized" aria-pressed="false">No permission</button>
+      </div>
+
+      <div class="st st--loading"><div class="web-methods"><div class="ax-surface" style="padding:var(--ax-space-400)"><div class="ax-skeleton" style="min-block-size:120px"></div></div><div class="ax-surface" style="padding:var(--ax-space-400)"><div class="ax-skeleton" style="min-block-size:120px"></div></div><div class="ax-surface" style="padding:var(--ax-space-400)"><div class="ax-skeleton" style="min-block-size:120px"></div></div></div></div>
+
+      <div class="st st--unauthorized ax-surface ax-permission"><div class="ax-state"><span class="ax-state__glyph">🛡</span><h4>Planning requires Planner permission</h4><p class="ax-caption">You can access only the planning methods permitted by your role (AC-0001 acceptance wording · RBAC-007). Attempt audited.</p></div></div>
+
+      <div class="st st--blocked ax-banner ax-banner--critical"><div><strong>No published inspection package is effective.</strong> Planning cannot proceed to publish without an active package (SCR-WEB-100 “no package” state · ERR-PUB-001). <a class="ax-link" href="../d2/D2-04_package-designer.html">Open Admin packages</a>.</div></div>
+
+      <div class="st st--populated ax-stack" style="gap:var(--ax-space-300)">
+        <div class="web-methods">
+          <button class="web-method" onclick="location.href='D3-02_bulk-planning.html'">
+            <span class="web-method__glyph">▦</span>
+            <h3>Bulk planning</h3>
+            <p class="ax-caption">Build AND/OR criteria, retrieve eligible factories, generate many visits under one plan. Each visit gets a unique Visit ID sharing the Visit Plan ID (M01-002).</p>
+            <span class="ax-lozenge ax-lozenge--info">criteria builder</span>
+          </button>
+          <button class="web-method" onclick="location.href='D3-03_single-planning-wizard.html'">
+            <span class="web-method__glyph">▣</span>
+            <h3>Single visit</h3>
+            <p class="ax-caption">One registered factory via CR / Industrial License, verified location, one plan containing one visit (M01-034/042).</p>
+            <span class="ax-lozenge ax-lozenge--success">golden flow</span>
+          </button>
+          <button class="web-method" onclick="location.href='D3-04_immediate-planning.html'">
+            <span class="web-method__glyph">⚡</span>
+            <h3>Immediate visit</h3>
+            <p class="ax-caption">Urgent dispatch — registered or unregistered factory with controlled minimum identity + mandatory location; bypasses Visit Plans (M01-043/045/046).</p>
+            <span class="ax-lozenge ax-lozenge--warning">restricted role</span>
+          </button>
+        </div>
+        <p class="ax-caption">Only one planning method per creation session (M01-011 · REF-001 fixed enum).</p>
+
+        <div class="ax-grid-2">
+          <div class="ax-surface" style="padding:var(--ax-space-300)">
+            <div class="ax-row" style="justify-content:space-between; margin-block-end:var(--ax-space-150)"><h4>Resume drafts</h4></div>
+            <div class="ax-stack" style="gap:var(--ax-space-150)">
+              <div class="ax-row" style="justify-content:space-between"><div><strong>SVP-2026-0412</strong> · Single · Al Amal Plastics<br><span class="ax-caption">step 2 of 5 · autosaved 11:02</span></div><a class="ax-link" href="D3-03_single-planning-wizard.html">Resume</a></div>
+              <div class="ax-row" style="justify-content:space-between"><div><strong>BLK-2026-0088</strong> · Bulk · Riyadh region, license expiring<br><span class="ax-caption">criteria built · 148 matches retrieved</span></div><a class="ax-link" href="D3-02_bulk-planning.html">Resume</a></div>
+            </div>
+          </div>
+          <div class="ax-surface" style="padding:var(--ax-space-300)">
+            <div class="ax-row" style="justify-content:space-between; margin-block-end:var(--ax-space-150)"><h4>Recent plans</h4><a class="ax-link" href="D3-05_visit-management.html">All visits</a></div>
+            <ul class="ax-timeline">
+              <li class="is-key"><div><strong>PLAN-3382 published</strong> · 14 visits · all assigned<br><span class="ax-timeline__meta">2026-07-11 09:02 · notifications sent</span></div></li>
+              <li><div><strong>PLAN-3379 published</strong> · 6 visits · 1 returned for window change<br><span class="ax-timeline__meta">2026-07-10 15:44</span></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="adm-contract">
+        <h5>Contract traceability — this frame</h5>
+        <span><strong>Screen:</strong> <code>SCR-WEB-100</code> Visit Planning Home — regions: planning method cards; drafts; recent plans; alerts · states: no permission; no package ✓. <strong>Requirements:</strong> <code>MVP1-M01-001</code> (method selection per role), <code>M01-011</code> (one method per session) · acceptance <code>AC-0001, AC-0011</code>. <strong>Journey:</strong> P01 · SB04 step 1 · SB19 step 2. <strong>Engine:</strong> ENG-12. <strong>Errors:</strong> ERR-AUTH-001, ERR-PUB-001.</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="../astryx.js"></script><script src="../d2/admin.js"></script><script src="web.js"></script>
+</body>
+</html>

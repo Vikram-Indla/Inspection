@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D5 · SCR-WEB-300 — Level 2 Review Queue</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="../d2/admin.css"><link rel="stylesheet" href="../d3/web.css">
+</head>
+<body>
+<div class="ax-shell">
+  <nav class="ax-shell__nav" aria-label="Web portal">
+    <div class="ax-shell__brand"><span class="ax-shell__brand-mark">AX</span> MIM Inspection</div>
+    <a class="ax-nav-item" href="../d3/D3-01_planning-home.html">Planning</a>
+    <a class="ax-nav-item" href="../d3/D3-05_visit-management.html">Visits</a>
+    <a class="ax-nav-item" aria-current="page" href="#0">Reviews <span class="ax-badge ax-badge--critical" style="margin-inline-start:auto">7</span></a>
+    <a class="ax-nav-item" href="../d3/D3-07_factory-360.html">Factory 360</a>
+    <a class="ax-nav-item" href="#0">Operations</a>
+  </nav>
+  <div class="ax-shell__main">
+    <div class="ax-pagehead">
+      <ul class="ax-breadcrumb"><li>Reviews</li></ul>
+      <div class="ax-pagehead__row">
+        <div class="ax-pagehead__context"><h2>Pending review queue</h2><span class="ax-freshness">live · 12:02:11</span></div>
+        <div class="ax-row"><span class="ax-caption">assigned to you: R. Al-Otaibi (RBAC-011 — assigned inspections only, M06-013)</span></div>
+      </div>
+    </div>
+
+    <div class="ax-content" id="scr" data-screen="populated">
+      <div class="adm-statebar" data-for="#scr" role="toolbar" aria-label="Design state switcher">
+        <strong>Screen states</strong>
+        <button data-state="populated" aria-pressed="true">Populated</button>
+        <button data-state="loading" aria-pressed="false">Loading</button>
+        <button data-state="empty" aria-pressed="false">Queue clear</button>
+        <button data-state="degraded" aria-pressed="false">Stale assignment</button>
+        <button data-state="unauthorized" aria-pressed="false">Unauthorized</button>
+      </div>
+
+      <div class="st st--loading ax-surface" style="padding:var(--ax-space-400)"><div class="ax-stack" style="gap:var(--ax-space-150)"><div class="ax-skeleton" style="inline-size:26%"></div><div class="ax-skeleton" style="min-block-size:48px"></div><div class="ax-skeleton" style="min-block-size:48px"></div><div class="ax-skeleton" style="min-block-size:48px"></div></div></div>
+
+      <div class="st st--empty ax-surface"><div class="ax-state"><span class="ax-state__glyph">✅</span><h4>Queue clear</h4><p class="ax-caption">No submitted inspections await your decision. New submissions arrive with notification (STM-INS-002 side effect).</p></div></div>
+
+      <div class="st st--degraded ax-banner ax-banner--warning"><div><strong>Stale assignment detected.</strong> INS-2049 was reassigned to another reviewer while listed here (SCR-WEB-300 “stale assignment”). Row refreshed and removed from your actionable set — opening it would have been blocked server-side anyway (reviewer permission guard, STM-REV-001).</div></div>
+
+      <div class="st st--unauthorized ax-surface ax-permission"><div class="ax-state"><span class="ax-state__glyph">🛡</span><h4>Level 2 Reviewer role required</h4><p class="ax-caption">Queue is scoped to assigned reviewers; supervisors need granted permission to see others’ queues (M06-013/-029). Attempt audited.</p></div></div>
+
+      <div class="st st--populated ax-stack" style="gap:var(--ax-space-300)">
+        <div class="ax-commandbar">
+          <span class="ax-search" style="min-inline-size:320px"><input class="ax-input" placeholder="Inspection number, factory, inspector, region (M06-014/-030)"></span>
+          <button class="ax-filterchip is-active">Assigned to me ✕</button>
+          <button class="ax-filterchip">Risk</button>
+          <button class="ax-filterchip">SLA</button>
+          <button class="ax-filterchip">Visit type</button>
+          <button class="ax-filterchip">Execution mode</button>
+          <span class="ax-commandbar__spacer"></span>
+          <span class="ax-caption">SLA from server timestamps (M08-005 rule); values per DEC-003</span>
+        </div>
+
+        <div class="ax-tablewrap">
+          <table class="ax-table">
+            <thead><tr><th aria-sort="descending">Submitted</th><th>Inspection</th><th>Factory</th><th>Inspector</th><th>Mode</th><th class="ax-td-num">Violations</th><th>SLA</th><th>Version</th><th style="inline-size:110px"></th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="ax-td-num ax-numeric">Jul 14 13:12</td>
+                <td><strong>INS-2051</strong></td><td>Al Amal Plastics</td><td>M. Al-Khalid</td><td>Physical</td>
+                <td class="ax-td-num ax-numeric">1 <span class="ax-lozenge ax-lozenge--critical">L2</span></td>
+                <td><span class="ax-lozenge ax-lozenge--warning">at risk — DEC-003</span></td>
+                <td><span class="ax-version">v1</span></td>
+                <td><button class="ax-btn" style="min-height:32px" onclick="location.href='D5-02_review-workspace.html'">Open</button></td>
+              </tr>
+              <tr>
+                <td class="ax-td-num ax-numeric">Jul 11 09:20</td>
+                <td><strong>INS-2044</strong></td><td>Sudair Polymer</td><td>N. Al-Rashid</td><td>Physical</td>
+                <td class="ax-td-num ax-numeric">2</td>
+                <td><span class="ax-lozenge ax-lozenge--critical">resubmission — priority</span></td>
+                <td><span class="ax-version">v2 · corrected</span></td>
+                <td><button class="ax-btn ax-btn--secondary" style="min-height:32px" onclick="location.href='D5-03_version-comparison.html'">Compare v1→v2</button></td>
+              </tr>
+              <tr>
+                <td class="ax-td-num ax-numeric">Jul 10 17:05</td>
+                <td><strong>INS-2048</strong></td><td>Najd Food Industries</td><td>S. Al-Fahad</td><td>Virtual</td>
+                <td class="ax-td-num ax-numeric">0</td>
+                <td><span class="ax-lozenge ax-lozenge--success">on time</span></td>
+                <td><span class="ax-version">v1</span></td>
+                <td><button class="ax-btn ax-btn--secondary" style="min-height:32px">Open</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="ax-caption">Queue always opens the <strong>latest submitted version</strong> in read-only mode (M06-015/-032). Risk indicators read-only (ENG-04, DEC-001).</p>
+      </div>
+
+      <div class="adm-contract">
+        <h5>Contract traceability — this frame</h5>
+        <span><strong>Screen:</strong> <code>SCR-WEB-300</code> Level 2 Review Queue — regions: queue; filters; SLA; risk; assignee; version; workload · states: no evidence; stale assignment; unauthorized ✓. <strong>Requirements:</strong> <code>MVP1-M06-013/-014, M06-029..032</code> · acceptance <code>AC-0349/0350, AC-0365..0368</code> (queue family). <strong>Journey:</strong> P10 · SB10 steps 1–2. <strong>Engines:</strong> ENG-09/11/12. <strong>Transitions:</strong> STM-REV-001. <strong>Evidence:</strong> EV-008, EV-011.</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="../astryx.js"></script><script src="../d2/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MIM Astryx — D1 Foundation (Tokens · Type · Grid · RTL · Accessibility)</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="astryx.css">
+<style>
+  /* page-local demo scaffolding only */
+  .spec { display:grid; grid-template-columns: 200px 1fr; gap: var(--ax-space-200); align-items: center; padding-block: var(--ax-space-150); border-block-end: 1px solid var(--ax-color-border); }
+  .swatch { display:flex; align-items:center; gap: var(--ax-space-150); }
+  .swatch__chip { inline-size: 56px; block-size: 40px; border-radius: var(--ax-radius-small); border: 1px solid var(--ax-color-border); }
+  .rhythm span { display:inline-block; background: var(--ax-color-primary-weak); border-inline-start: 2px solid var(--ax-color-primary); block-size: 24px; vertical-align: middle; margin-inline-end: var(--ax-space-200); }
+  .radius-demo { display:inline-grid; place-items:center; inline-size:96px; block-size:64px; background: var(--ax-color-primary-tint); border:1.5px solid var(--ax-color-primary); font: var(--ax-text-micro); }
+  .grid-demo { display:grid; grid-template-columns: repeat(12, 1fr); gap: var(--ax-space-300); }
+  .grid-demo div { background: var(--ax-color-primary-tint); border: 1px dashed var(--ax-color-primary); border-radius: var(--ax-radius-small); block-size: 48px; }
+  .grid-demo--ipad { grid-template-columns: repeat(8, 1fr); }
+  section.doc { background: var(--ax-color-surface); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large); padding: var(--ax-space-400); display:flex; flex-direction:column; gap: var(--ax-space-300); }
+  .annot { border-inline-start: 3px solid var(--ax-color-info); background: var(--ax-color-info-tint); padding: var(--ax-space-150) var(--ax-space-200); font: var(--ax-text-caption); border-radius: var(--ax-radius-small); }
+</style>
+</head>
+<body>
+<main class="ax-content" style="margin-inline:auto">
+
+  <header class="ax-stack">
+    <p class="ax-overline">MIM Inspection Platform · Wave D1 · Design direction — pending G6 Approval 1</p>
+    <h1>MIM Astryx — Foundation</h1>
+    <p class="ax-caption">Meta-inspired government-enterprise system. Authority source: <code>MIM_Inspection_Meta_Astryx_Fable_Pack/00_DESIGN_SYSTEM_DECISION.md</code>. Mobbin excluded. Raw values live only in <code>tokens.css</code> (MVP1-FND-010 applied to design tokens). Arabic/RTL prepared, scope not committed — DEC-004 open.</p>
+    <div class="ax-row">
+      <button class="ax-btn ax-btn--secondary" data-ax-rtl-toggle="#rtl-scope" aria-pressed="false">Toggle RTL preview (dir/lang switch)</button>
+      <span class="ax-lozenge ax-lozenge--info">STATUS: READY_FOR_REVIEW</span>
+    </div>
+  </header>
+
+  <!-- ============================================================ COLOUR -->
+  <section class="doc" aria-labelledby="c1">
+    <h2 id="c1">1 · Colour</h2>
+    <p class="annot">Base palette exactly per pack §Colour. Derived tints via <code>color-mix()</code> from approved bases only — no invented hex. Semantic colour is never the only carrier of meaning (MVP1-FND-011): every semantic use pairs with label/glyph. Contrast: strong text on surface 15.4:1; secondary text 7.4:1; primary on white 4.6:1 (AA for ≥14px semibold UI text).</p>
+    <div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-primary)"></span><strong>Primary — Astryx Cobalt</strong></div><code>--ax-color-primary</code></div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-primary-hover)"></span><strong>Primary hover</strong></div><code>--ax-color-primary-hover</code></div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-canvas)"></span><strong>Canvas</strong></div><code>--ax-color-canvas</code></div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-surface)"></span><strong>Surface</strong></div><code>--ax-color-surface</code></div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-text)"></span><strong>Text · strong</strong></div><code>--ax-color-text</code></div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-text-secondary)"></span><strong>Text · secondary</strong></div><code>--ax-color-text-secondary</code></div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-border)"></span><strong>Border</strong></div><code>--ax-color-border</code></div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-success)"></span><strong>Success</strong></div><code>--ax-color-success</code> · approvals, synced, published-healthy</div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-warning)"></span><strong>Warning</strong></div><code>--ax-color-warning</code> · SLA at-risk, stale, pending sync</div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-critical)"></span><strong>Critical</strong></div><code>--ax-color-critical</code> · blockers, conflicts, rejection, destructive</div>
+      <div class="spec"><div class="swatch"><span class="swatch__chip" style="background:var(--ax-color-info)"></span><strong>Information</strong></div><code>--ax-color-info</code> · guidance, observed-location, neutral live info</div>
+    </div>
+  </section>
+
+  <!-- ======================================================== TYPOGRAPHY -->
+  <section class="doc" aria-labelledby="c2" id="rtl-scope">
+    <h2 id="c2">2 · Typography (EN + AR preview)</h2>
+    <p class="annot">Inter (EN) / IBM Plex Sans Arabic (AR) — families to be licensed and bundled at build; this page uses system fallbacks to stay self-contained. One shared semantic scale — never screen-specific sizes. Body minimum 14px desktop, 16px field-critical iPad. Tabular numerals mandatory for KPIs, dates, coordinates, timers, SLA.</p>
+    <div class="spec"><span class="ax-overline">display</span><p style="font:var(--ax-text-display)">Operations Command — 42 active visits · العمليات الميدانية</p></div>
+    <div class="spec"><span class="ax-overline">title</span><p style="font:var(--ax-text-title)">Level 2 Review Workspace · مساحة المراجعة</p></div>
+    <div class="spec"><span class="ax-overline">heading</span><p style="font:var(--ax-text-heading)">Evidence chain of custody · سلسلة عهدة الأدلة</p></div>
+    <div class="spec"><span class="ax-overline">subheading</span><p style="font:var(--ax-text-subheading)">Returned sections (2 of 14) · الأقسام المُعادة</p></div>
+    <div class="spec"><span class="ax-overline">body</span><p style="font:var(--ax-text-body)">The submitted version is immutable. Corrections create Version N+1 with a full comparison. · النسخة المقدمة غير قابلة للتعديل.</p></div>
+    <div class="spec"><span class="ax-overline">field (iPad ≥16px)</span><p style="font:var(--ax-text-field)">GPS accuracy 4.2 m — inside geofence. Check-in available.</p></div>
+    <div class="spec"><span class="ax-overline">caption</span><p class="ax-caption">Last synchronized from Senaei · freshness indicator mandatory (MVP1-FND-013)</p></div>
+    <div class="spec"><span class="ax-overline">numeric</span><p class="ax-numeric" style="font:var(--ax-text-title)">24.7136° N, 46.6753° E · ETA 00:12:45 · SLA −02:10</p></div>
+  </section>
+
+  <!-- ===================================================== GEOMETRY/GRID -->
+  <section class="doc" aria-labelledby="c3">
+    <h2 id="c3">3 · Spacing · Radius · Elevation · Control metrics</h2>
+    <p class="rhythm">
+      <span style="inline-size:8px"></span>8
+      <span style="inline-size:12px"></span>12
+      <span style="inline-size:16px"></span>16
+      <span style="inline-size:24px"></span>24
+      <span style="inline-size:32px"></span>32
+      <span style="inline-size:48px"></span>48
+      <span class="ax-caption">— 4px base unit, standard rhythm (pack §Geometry)</span>
+    </p>
+    <div class="ax-row">
+      <span class="radius-demo" style="border-radius:var(--ax-radius-small)">8 · small</span>
+      <span class="radius-demo" style="border-radius:var(--ax-radius-standard)">12 · card/input</span>
+      <span class="radius-demo" style="border-radius:var(--ax-radius-large)">16 · panel/modal</span>
+    </div>
+    <div class="ax-row">
+      <button class="ax-btn">Desktop control 40px</button>
+      <button class="ax-btn ax-btn--prominent">Prominent 44px</button>
+      <button class="ax-btn ax-btn--field">Field / iPad ≥48px touch target</button>
+    </div>
+    <p class="annot">Shadows restrained — <code>--ax-shadow-raised</code> for cards, <code>--ax-shadow-overlay</code> for modals/drawers only. Borders and tonal surfaces carry hierarchy.</p>
+  </section>
+
+  <!-- ============================================================= GRIDS -->
+  <section class="doc" aria-labelledby="c4">
+    <h2 id="c4">4 · Grids</h2>
+    <h4>Desktop — 12 columns · 24px gutter · max 1440px · persistent shell (nav 248px + optional 360px side panel)</h4>
+    <div class="grid-demo" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <h4>iPad — 8 columns · 24px gutter · portrait and landscape designed deliberately (iPad spec §8)</h4>
+    <div class="grid-demo grid-demo--ipad" aria-hidden="true"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <p class="annot">Full-width operational workspaces where density is required; side panels for context/properties/audit instead of page navigation (pack §Layout).</p>
+  </section>
+
+  <!-- ======================================================== RTL & A11Y -->
+  <section class="doc" aria-labelledby="c5">
+    <h2 id="c5">5 · Arabic / RTL &amp; Accessibility rules</h2>
+    <ul class="ax-stack" style="gap:var(--ax-space-100); margin:0; padding-inline-start:var(--ax-space-300)">
+      <li><strong>RTL is native, not mirrored CSS hacks:</strong> all components use logical properties (<code>inline-start/end</code>); directional glyphs (breadcrumb ›, stepper →) flip via <code>[dir=rtl]</code> rules. Toggle above demonstrates live.</li>
+      <li><strong>DEC-004 boundary:</strong> Arabic <em>capability</em> is designed; Arabic <em>scope</em> (which surfaces, MVP1 vs MVP2-016) is an open executive decision. No bilingual commitment here.</li>
+      <li><strong>Contrast:</strong> body text ≥7:1, secondary ≥4.5:1, semantic-on-tint pairs ≥4.5:1. No colour-only status — every lozenge pairs glyph + label (MVP1-FND-011).</li>
+      <li><strong>Focus:</strong> 2px offset ring (<code>--ax-focus-ring</code>) on every interactive element; visible on all demos.</li>
+      <li><strong>Targets:</strong> ≥40px desktop, ≥48px iPad/field-critical.</li>
+      <li><strong>No zoom-required reading:</strong> minimum body sizes enforced by the semantic scale; micro size reserved for uppercase labels only.</li>
+      <li><strong>Reduced motion honored;</strong> live/pulse indicators degrade to static.</li>
+    </ul>
+  </section>
+
+  <footer class="ax-caption" style="padding-block: var(--ax-space-300)">
+    MIM Astryx D1 · design direction only until G6 Approval 1 · no product screen designed in this wave · Mobbin excluded.
+  </footer>
+</main>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="astryx.js"></script>
+</body>
+</html>

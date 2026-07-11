@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D3 · SCR-WEB-110 — Bulk Planning: Criteria, Targeting & Selection</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="../d2/admin.css"><link rel="stylesheet" href="web.css">
+</head>
+<body>
+<div class="ax-shell">
+  <nav class="ax-shell__nav" aria-label="Web portal">
+    <div class="ax-shell__brand"><span class="ax-shell__brand-mark">AX</span> MIM Inspection</div>
+    <a class="ax-nav-item" aria-current="page" href="D3-01_planning-home.html">Planning</a>
+    <a class="ax-nav-item" href="D3-05_visit-management.html">Visits</a>
+    <a class="ax-nav-item" href="#0">Reviews</a>
+    <a class="ax-nav-item" href="D3-07_factory-360.html">Factory 360</a>
+    <a class="ax-nav-item" href="#0">Operations</a>
+  </nav>
+  <div class="ax-shell__main">
+    <div class="ax-pagehead">
+      <ul class="ax-breadcrumb"><li>Planning</li><li>Bulk</li><li>Draft BLK-2026-0088</li></ul>
+      <div class="ax-pagehead__row">
+        <div class="ax-pagehead__context"><h2>Bulk planning — criteria &amp; targeting</h2><span class="ax-lozenge ax-lozenge--plan">Draft</span><span class="ax-freshness">criteria autosaved 11:05</span></div>
+        <div class="ax-row"><button class="ax-btn ax-btn--secondary">Save criteria set</button><button class="ax-btn">Continue with 12 selected →</button></div>
+      </div>
+    </div>
+
+    <div class="ax-content" id="scr" data-screen="populated">
+      <div class="adm-statebar" data-for="#scr" role="toolbar" aria-label="Design state switcher">
+        <strong>Screen states</strong>
+        <button data-state="populated" aria-pressed="true">Populated</button>
+        <button data-state="loading" aria-pressed="false">Retrieving</button>
+        <button data-state="empty" aria-pressed="false">No matches</button>
+        <button data-state="validation" aria-pressed="false">Invalid condition</button>
+        <button data-state="degraded" aria-pressed="false">Source unavailable</button>
+        <button data-state="unauthorized" aria-pressed="false">Unauthorized</button>
+      </div>
+
+      <div class="st st--loading ax-surface" style="padding:var(--ax-space-400)"><div class="ax-stack" style="gap:var(--ax-space-150)"><div class="ax-skeleton" style="inline-size:40%"></div><div class="ax-skeleton" style="min-block-size:40px"></div><div class="ax-skeleton" style="min-block-size:40px"></div><div class="ax-skeleton" style="min-block-size:40px"></div><p class="ax-caption">Retrieving factories matching all criteria… count updates when complete — factories matching ALL criteria are returned (M01-004).</p></div></div>
+
+      <div class="st st--empty ax-surface"><div class="ax-state">
+        <span class="ax-state__glyph">🔍</span><h4>0 factories match</h4>
+        <p class="ax-caption">Valid search returned none — criteria summary preserved, no plan change (ERR-PLN-002): <em>Region = Riyadh AND License status = Expiring ≤ 30d AND Activity = Chemicals</em>.</p>
+        <button class="ax-btn ax-btn--secondary">Adjust criteria</button>
+      </div></div>
+
+      <div class="st st--validation ax-validation" role="alert"><strong>Invalid condition — search not executed, draft preserved (ERR-PLN-001)</strong>
+        <ul><li>Condition 3: “Workforce count &gt; text” — operator requires a numeric value; exact invalid rule highlighted below</li></ul>
+      </div>
+
+      <div class="st st--degraded ax-banner ax-banner--warning"><div><strong>Factory data source unavailable (SCR-WEB-110 failure state).</strong> Criteria remain editable; retrieval paused with retry. Last sync 06:00 — results, when shown, carry freshness (MVP1-FND-013).</div></div>
+
+      <div class="st st--unauthorized ax-surface ax-permission"><div class="ax-state"><span class="ax-state__glyph">🛡</span><h4>Planner role required (RBAC-007)</h4></div></div>
+
+      <div class="st st--populated ax-stack" style="gap:var(--ax-space-300)">
+        <div class="ax-surface" style="padding:var(--ax-space-300)">
+          <div class="ax-row" style="justify-content:space-between; margin-block-end:var(--ax-space-150)">
+            <h4>Criteria builder — unlimited AND/OR combinations (M01-003/-012/-022)</h4>
+            <span class="ax-caption ax-numeric">148 matching factories</span>
+          </div>
+          <div class="ax-stack" style="gap:var(--ax-space-100)">
+            <div class="ax-rule"><span class="ax-rule__op">WHERE</span><select class="ax-select"><option>Region</option></select><select class="ax-select"><option>is any of</option></select><input class="ax-input" value="Riyadh"><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Remove">✕</button></div>
+            <div class="ax-rule"><span class="ax-rule__op">AND</span><select class="ax-select"><option>License status</option></select><select class="ax-select"><option>expires within</option></select><input class="ax-input ax-numeric" value="30 days" style="max-inline-size:140px"><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Remove">✕</button></div>
+            <div class="ax-rule"><span class="ax-rule__op">OR GROUP</span><select class="ax-select"><option>Last inspection outcome</option></select><select class="ax-select"><option>equals</option></select><select class="ax-select"><option>Rejected</option></select><span class="ax-caption">OR</span><select class="ax-select"><option>Open violations</option></select><select class="ax-select"><option>≥</option></select><input class="ax-input ax-numeric" value="2" style="max-inline-size:80px"><button class="ax-btn ax-btn--icon ax-btn--subtle" aria-label="Remove group">✕</button></div>
+            <div class="ax-row"><button class="ax-btn ax-btn--subtle">+ AND</button><button class="ax-btn ax-btn--subtle">+ OR group</button><span class="ax-commandbar__spacer"></span><button class="ax-btn ax-btn--secondary">Search</button></div>
+          </div>
+        </div>
+
+        <div class="ax-bulkbar" role="status">
+          <span>12 selected of 148</span>
+          <button class="ax-btn ax-btn--secondary">Select all matching</button>
+          <button class="ax-btn ax-btn--secondary">Clear</button>
+          <span class="ax-caption" style="color:inherit;opacity:.8">only selected factories proceed to visit configuration (M01-005/-025) · duplicates &amp; ineligible flagged before continue (P01 failure control)</span>
+        </div>
+
+        <div class="ax-tablewrap">
+          <table class="ax-table">
+            <thead><tr><th style="inline-size:36px"><input type="checkbox" data-ax-select-all aria-label="Select all"></th><th aria-sort="descending">Factory</th><th>CR</th><th>License</th><th>Region · city</th><th>Last outcome</th><th class="ax-td-num">Open violations</th><th>Eligibility</th></tr></thead>
+            <tbody>
+              <tr aria-selected="true"><td><input type="checkbox" checked aria-label="Select"></td><td><a class="ax-link" href="D3-07_factory-360.html">Al Amal Plastics</a></td><td class="ax-numeric">4030-118845</td><td><span class="ax-lozenge ax-lozenge--warning">expires 28d</span></td><td>Riyadh · 2nd Ind. City</td><td><span class="ax-lozenge ax-lozenge--review ax-lozenge--success">Approved</span></td><td class="ax-td-num ax-numeric">2</td><td><span class="ax-lozenge ax-lozenge--success">eligible</span></td></tr>
+              <tr aria-selected="true"><td><input type="checkbox" checked aria-label="Select"></td><td><a class="ax-link" href="#0">Gulf Steel Works</a></td><td class="ax-numeric">4030-102211</td><td><span class="ax-lozenge ax-lozenge--warning">expires 12d</span></td><td>Riyadh · Sudair</td><td><span class="ax-lozenge ax-lozenge--review ax-lozenge--critical">Rejected</span></td><td class="ax-td-num ax-numeric">4</td><td><span class="ax-lozenge ax-lozenge--success">eligible</span></td></tr>
+              <tr><td><input type="checkbox" aria-label="Select"></td><td><a class="ax-link" href="#0">Najd Food Industries</a></td><td class="ax-numeric">4030-095512</td><td><span class="ax-lozenge ax-lozenge--warning">expires 25d</span></td><td>Riyadh · 3rd Ind. City</td><td><span class="ax-lozenge ax-lozenge--review ax-lozenge--success">Approved</span></td><td class="ax-td-num ax-numeric">0</td><td><span class="ax-lozenge ax-lozenge--critical">duplicate — active visit VIS-10023</span></td></tr>
+              <tr><td><input type="checkbox" aria-label="Select"></td><td><a class="ax-link" href="#0">Sudair Polymer Co.</a></td><td class="ax-numeric">4030-140033</td><td><span class="ax-lozenge ax-lozenge--warning">expires 8d</span></td><td>Riyadh · Sudair</td><td><span class="ax-caption">never inspected</span></td><td class="ax-td-num ax-numeric">—</td><td><span class="ax-lozenge ax-lozenge--success">eligible</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ax-banner"><div><strong>What happens next (SB04 steps 4–8):</strong> shared configuration (type, window, package, mode) applies to every generated visit (M01-006/-027) → auto/manual assignment per visit (M01-007/-028) → review with duplicate detection (M01-030) → publish creates the Visit Plan + individual Visit IDs, notifies inspectors, audits (M01-031). AI planning summary (M01-016/-026) is Phase-2 deferred sub-capability — parent flow fully MVP1.</div></div>
+      </div>
+
+      <div class="adm-contract">
+        <h5>Contract traceability — this frame</h5>
+        <span><strong>Screen:</strong> <code>SCR-WEB-110</code> Bulk Planning Criteria — regions: filter builder; AND/OR; result count; factory table; selection · states: no matches; invalid condition; data source unavailable ✓. <strong>Requirements:</strong> <code>MVP1-M01-002..005, M01-012..015, M01-021..033</code> (criteria, retrieval, review, selection, configure/assign/review/publish, bulk edit/cancel) · acceptance <code>AC-0002..0005, AC-0012..0033</code>. <strong>Journey:</strong> P01→P02 · SB04 steps 2–3. <strong>Engines:</strong> ENG-04 (risk context — DEC-gated), ENG-05, ENG-12. <strong>Errors:</strong> ERR-PLN-001/002. <strong>Evidence:</strong> EV-003, EV-011.</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="../astryx.js"></script><script src="../d2/admin.js"></script><script src="web.js"></script>
+</body>
+</html>

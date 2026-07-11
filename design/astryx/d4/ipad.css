@@ -1,0 +1,123 @@
+/* ============================================================================
+   MIM ASTRYX — D4 iPAD / INSPECTOR WORKSPACE LAYER
+   Field-first, offline-first. Consumes tokens.css + astryx.css (+ d2/admin.css
+   review chrome). Contract: iPad spec §8 — no web shrink; large targets;
+   daylight contrast; minimal nav depth; persistent offline/autosave/GPS state;
+   blockers before submit; deliberate portrait & landscape.
+   ========================================================================== */
+
+/* device canvas — landscape default, portrait via [data-orient=portrait] */
+.ipad-frame { max-inline-size: 1180px; margin-inline: auto; }
+.ipad-frame[data-orient="portrait"] { max-inline-size: 860px; }
+.ipad-shell {
+  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large);
+  background: var(--ax-color-canvas); overflow: hidden;
+  display: flex; flex-direction: column; min-block-size: 700px;
+}
+
+/* persistent field status strip — ALWAYS visible (iPad spec §4) */
+.ipad-status {
+  display: flex; align-items: center; gap: var(--ax-space-150); flex-wrap: wrap;
+  padding: var(--ax-space-100) var(--ax-space-300);
+  background: var(--ax-color-surface); border-block-end: 1px solid var(--ax-color-border);
+  position: sticky; inset-block-start: 0; z-index: var(--ax-z-sticky);
+  font: var(--ax-text-caption); font-weight: 600;
+}
+.ipad-status__spacer { flex: 1; }
+.ipad-chip { display: inline-flex; align-items: center; gap: 6px; }
+.ipad-chip::before { font-size: 12px; }
+.ipad-chip--gps::before { content: "📶"; }
+.ipad-chip--battery::before { content: "🔋"; }
+.ipad-chip--storage::before { content: "💾"; }
+.ipad-chip--pkg::before { content: "📦"; }
+.ipad-chip.is-warn { color: var(--ax-color-warning-strong); }
+.ipad-chip.is-bad { color: var(--ax-color-critical-strong); }
+
+/* header inside device */
+.ipad-head { padding: var(--ax-space-300); display: flex; flex-direction: column; gap: var(--ax-space-150); background: var(--ax-color-surface); border-block-end: 1px solid var(--ax-color-border); }
+.ipad-head__row { display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-200); flex-wrap: wrap; }
+.ipad-body { flex: 1; overflow: auto; padding: var(--ax-space-300); display: flex; flex-direction: column; gap: var(--ax-space-300); }
+
+/* bottom action bar — thumb-reachable, 48px+ */
+.ipad-actions {
+  display: flex; gap: var(--ax-space-150); align-items: center;
+  padding: var(--ax-space-200) var(--ax-space-300);
+  background: var(--ax-color-surface); border-block-start: 1px solid var(--ax-color-border);
+  position: sticky; inset-block-end: 0;
+}
+.ipad-actions .ax-btn { min-height: var(--ax-control-height-field); font: var(--ax-text-field); font-weight: 600; }
+.ipad-actions__note { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+
+/* visit tiles (assignments) */
+.ipad-visits { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--ax-space-200); }
+.ipad-visit { display: flex; flex-direction: column; gap: var(--ax-space-150); padding: var(--ax-space-300); cursor: pointer; border: 1.5px solid var(--ax-color-border); border-radius: var(--ax-radius-large); background: var(--ax-color-surface); text-align: start; }
+.ipad-visit:hover { border-color: var(--ax-color-primary); }
+.ipad-visit:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.ipad-visit__title { font: var(--ax-text-field); font-weight: 600; }
+.ipad-visit__meta { display: flex; gap: var(--ax-space-100); flex-wrap: wrap; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); align-items: center; }
+.ipad-visit--today { border-inline-start: 4px solid var(--ax-color-primary); }
+
+/* section rail + progress (inspection workspace) */
+.ipad-work { display: grid; grid-template-columns: 300px minmax(0,1fr); gap: 0; border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large); background: var(--ax-color-surface); overflow: hidden; min-block-size: 480px; }
+.ipad-frame[data-orient="portrait"] .ipad-work { grid-template-columns: 1fr; }
+.ipad-sections { border-inline-end: 1px solid var(--ax-color-border); background: var(--ax-color-surface-sunken); padding: var(--ax-space-200); display: flex; flex-direction: column; gap: var(--ax-space-050); overflow: auto; }
+.ipad-section {
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--ax-space-100);
+  padding: var(--ax-space-150) var(--ax-space-200); min-block-size: var(--ax-control-height-field);
+  border-radius: var(--ax-radius-standard); border: 0; background: none; cursor: pointer;
+  font: var(--ax-text-body-strong); text-align: start; color: var(--ax-color-text);
+}
+.ipad-section:hover { background: var(--ax-color-neutral-tint); }
+.ipad-section[aria-current="true"] { background: var(--ax-color-primary-tint); color: var(--ax-color-primary-strong); }
+.ipad-section__prog { font: var(--ax-text-micro); font-variant-numeric: tabular-nums; color: var(--ax-color-text-secondary); }
+.ipad-section.is-blocked .ipad-section__prog { color: var(--ax-color-critical-strong); }
+.ipad-section.is-locked { color: var(--ax-color-text-disabled); }
+.ipad-section.is-locked::after { content: "🔒"; font-size: 12px; }
+
+.ipad-canvas { padding: var(--ax-space-300); overflow: auto; display: flex; flex-direction: column; gap: var(--ax-space-200); }
+
+/* question card — progressive, unmistakable mandatory/optional */
+.ipad-q { border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large); background: var(--ax-color-surface); padding: var(--ax-space-300); display: flex; flex-direction: column; gap: var(--ax-space-200); }
+.ipad-q__head { display: flex; justify-content: space-between; gap: var(--ax-space-150); align-items: flex-start; flex-wrap: wrap; }
+.ipad-q__title { font: var(--ax-text-field); font-weight: 600; }
+.ipad-q.is-answered { border-inline-start: 4px solid var(--ax-color-success); }
+.ipad-q.is-blocked { border-inline-start: 4px solid var(--ax-color-critical); }
+.ipad-q.is-conditional { border-style: dashed; }
+
+/* big response segmented — field targets */
+.ipad-resp { display: flex; gap: var(--ax-space-100); flex-wrap: wrap; }
+.ipad-resp button {
+  min-block-size: var(--ax-control-height-field); padding-inline: var(--ax-space-300);
+  border-radius: var(--ax-radius-standard); border: 1.5px solid var(--ax-color-border);
+  background: var(--ax-color-surface); font: var(--ax-text-field); font-weight: 600; cursor: pointer;
+}
+.ipad-resp button:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.ipad-resp button[aria-pressed="true"] { border-color: var(--ax-color-primary); background: var(--ax-color-primary-tint); color: var(--ax-color-primary-strong); }
+.ipad-resp button[aria-pressed="true"].resp-nc { border-color: var(--ax-color-critical); background: var(--ax-color-critical-tint); color: var(--ax-color-critical-strong); }
+
+/* journey metrics band */
+.ipad-journey { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--ax-space-200); }
+.ipad-metric { padding: var(--ax-space-200); display: flex; flex-direction: column; gap: 4px; }
+.ipad-metric dt { font: var(--ax-text-micro); text-transform: uppercase; letter-spacing: .05em; color: var(--ax-color-text-secondary); }
+.ipad-metric dd { margin: 0; font: var(--ax-text-title); font-variant-numeric: tabular-nums; }
+.ipad-metric.is-warn dd { color: var(--ax-color-warning-strong); }
+.ipad-metric.is-bad dd { color: var(--ax-color-critical-strong); }
+
+/* readiness checklist rows */
+.ipad-ready { display: flex; flex-direction: column; }
+.ipad-ready__row { display: flex; align-items: center; gap: var(--ax-space-150); padding-block: var(--ax-space-150); border-block-end: 1px solid var(--ax-color-border); font: var(--ax-text-field); }
+.ipad-ready__row:last-child { border-block-end: 0; }
+.ipad-ready__row::before { font-weight: 700; inline-size: 20px; text-align: center; }
+.ipad-ready__row.is-pass::before { content: "✓"; color: var(--ax-color-success-strong); }
+.ipad-ready__row.is-fail::before { content: "✕"; color: var(--ax-color-critical-strong); }
+.ipad-ready__row.is-warn::before { content: "!"; color: var(--ax-color-warning-strong); }
+.ipad-ready__row .ax-caption { margin-inline-start: auto; text-align: end; }
+
+/* capture tiles (evidence) */
+.ipad-capture { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--ax-space-200); }
+.ipad-capture button { min-block-size: 108px; border: 1.5px dashed var(--ax-color-border-strong); border-radius: var(--ax-radius-large); background: var(--ax-color-surface); font: var(--ax-text-body-strong); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--ax-space-100); }
+.ipad-capture button:hover { border-color: var(--ax-color-primary); }
+.ipad-capture button span:first-child { font-size: 26px; }
+
+/* orientation switcher (design chrome) */
+.ipad-orient { display: inline-flex; gap: 2px; }
