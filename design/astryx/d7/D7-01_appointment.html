@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astryx D7 · SCR-VIR-700 — Virtual Appointment & Waiting Room</title>
+<link rel="stylesheet" href="../tokens.css"><link rel="stylesheet" href="../astryx.css"><link rel="stylesheet" href="../d2/admin.css"><link rel="stylesheet" href="../d3/web.css"><link rel="stylesheet" href="../d4/ipad.css">
+</head>
+<body>
+<main class="ax-content" style="margin-inline:auto">
+  <div class="ax-row" style="justify-content:space-between">
+    <div><p class="ax-overline">Wave D7 · SCR-VIR-700 · SB09</p><h2>Virtual appointment &amp; waiting room</h2></div>
+    <span class="ax-caption">dual-participant surface: inspector host + factory representative (RBAC-014: rep sees own session only)</span>
+  </div>
+
+  <div class="adm-statebar" data-for="#scr" role="toolbar" aria-label="Design state switcher">
+    <strong>Screen states</strong>
+    <button data-state="populated" aria-pressed="true">Waiting room</button>
+    <button data-state="validation" aria-pressed="false">Wrong appointment</button>
+    <button data-state="blocked" aria-pressed="false">Outside window</button>
+    <button data-state="degraded" aria-pressed="false">Device failure</button>
+    <button data-state="empty" aria-pressed="false">Participant late</button>
+  </div>
+
+  <div class="ipad-frame" id="dev" data-orient="landscape">
+    <div class="ipad-shell" id="scr" data-screen="populated">
+      <div class="ipad-status">
+        <span class="ax-sync ax-sync--synced">Online</span>
+        <span class="ax-lozenge ax-lozenge--virtual">Scheduled → Waiting</span>
+        <span class="ipad-status__spacer"></span>
+        <span class="ax-version">VIS-10029 · Virtual · PKG FS v2026.07.02</span>
+      </div>
+
+      <div class="ipad-head"><div class="ipad-head__row">
+        <div><h3>Najd Food Industries — remote inspection</h3>
+          <span class="ax-caption ax-numeric">Confirmed appointment · Jul 18 · 10:00–12:00 · only confirmed virtual visits are displayed (BRD §7.5 rule)</span></div>
+        <span class="ax-lozenge ax-lozenge--success">appointment confirmed (M03-014)</span>
+      </div></div>
+
+      <div class="ipad-body">
+        <div class="st st--validation ax-banner ax-banner--critical"><div><strong>Wrong appointment (SCR-VIR-700 failure state).</strong> This join link belongs to a different session/participant. Access denied safely, attempt audited (ERR-AUTH-001 pattern); rep can request a corrected invitation via the notification service.</div></div>
+        <div class="st st--blocked ax-banner ax-banner--warning"><div><strong>Outside planned window.</strong> Session start is constrained by the planned execution window and assignment (BRD §7.5). Start unlocks at 10:00; reschedule follows the appointment workflow with notifications (M03-014).</div></div>
+        <div class="st st--degraded ax-banner ax-banner--critical"><div><strong>Camera failure on representative device (P06B “poor connection or device failure”).</strong> Readiness gate blocks start; retry / switch-device guidance offered; if unresolvable, reschedule or convert to physical follow-up — evidence-insufficiency path (P06B failure control), all auditable.</div></div>
+        <div class="st st--empty ax-surface"><div class="ax-state"><span class="ax-state__glyph">⏳</span><h4>Waiting for A. Saleh (factory representative)</h4><p class="ax-caption">Invited 10:00 · reminder resent 10:06 (ENG-11) · join/absence events recorded with timestamps (P06B business event 2). Absent participant → reschedule or escalation path, never a silent no-show.</p><div class="ax-row"><button class="ax-btn ax-btn--field ax-btn--secondary">Resend invitation</button><button class="ax-btn ax-btn--field ax-btn--secondary">Reschedule…</button></div></div></div>
+
+        <div class="st st--populated ax-grid-2">
+          <div class="ax-stack">
+            <div class="ax-surface" style="padding:var(--ax-space-300); min-block-size:240px; display:grid; place-items:center; background:var(--ax-color-text); border-radius:var(--ax-radius-large)">
+              <div style="text-align:center; color:var(--ax-color-inverse-text)">
+                <p style="font:var(--ax-text-title)">Secure session room</p>
+                <p class="ax-caption" style="color:inherit; opacity:.7">video provider abstraction — provider TBD (G5 §10); no generic conferencing UI (build contract §6)</p>
+              </div>
+            </div>
+            <div class="ax-surface" style="padding:var(--ax-space-300)">
+              <h4 style="margin-block-end:var(--ax-space-150)">Participants (join times recorded — STM-VIR-001 audit)</h4>
+              <div class="web-inspector-row"><span class="ax-avatar">MK</span><div><strong>M. Al-Khalid</strong> · inspector (host)<br><span class="ax-caption ax-numeric">joined 09:58:12 · readiness ✓</span></div><span class="ax-lozenge ax-lozenge--success">in room</span></div>
+              <div class="web-inspector-row" style="margin-block-start:var(--ax-space-100)"><span class="ax-avatar">AS</span><div><strong>A. Saleh</strong> · factory representative<br><span class="ax-caption ax-numeric">joined 10:01:44 · awaiting verification</span></div><span class="ax-lozenge ax-lozenge--virtual ax-lozenge--info">joined</span></div>
+            </div>
+          </div>
+          <div class="ax-stack">
+            <div class="ax-surface" style="padding:var(--ax-space-300)">
+              <h4 style="margin-block-end:var(--ax-space-150)">Device &amp; network readiness (P06B business event 4)</h4>
+              <div class="ipad-ready">
+                <div class="ipad-ready__row is-pass">Camera + microphone — both participants</div>
+                <div class="ipad-ready__row is-pass">Network quality sufficient for evidence capture</div>
+                <div class="ipad-ready__row is-pass">Permissions granted (screen/photo capture)</div>
+                <div class="ipad-ready__row is-warn">Rep bandwidth variable — degradation path armed</div>
+              </div>
+            </div>
+            <div class="ax-surface" style="padding:var(--ax-space-300)">
+              <h4 style="margin-block-end:var(--ax-space-100)">Session instructions</h4>
+              <p style="font:var(--ax-text-field)">Agenda: fire-safety checklist walkthrough · rep will camera-walk hall B · ID verification first (mandatory where configured — STM-VIR-002).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ipad-actions st st--populated">
+        <button class="ax-btn ax-btn--secondary">Cancel session… (allowed pre-inspection with reason — BRD §7.5)</button>
+        <span class="ipad-actions__note">verification unlocks execution</span>
+        <button class="ax-btn ax-btn--prominent" style="margin-inline-start:auto" onclick="location.href='D7-02_verify.html'">Begin identity verification →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="adm-contract">
+    <h5>Contract traceability — this frame</h5>
+    <span><strong>Screen:</strong> <code>SCR-VIR-700</code> Virtual Appointment &amp; Waiting Room — regions: appointment; participants; instructions; device readiness; join controls · states: wrong appointment; late; device failure ✓ (+ outside window). <strong>Requirements:</strong> <code>MVP1-M05</code> scheduling/join family (traceability CSV rows SB09 → SCR-VIR-700) · acceptance <code>AC-0322..0341</code> family. <strong>Journey:</strong> P06B · SB09 steps 1–4. <strong>Engines:</strong> ENG-03/07/11/12. <strong>Transitions:</strong> STM-VIR-001. <strong>Blocked:</strong> video provider TBD; boundary DEC-005.</span>
+  </div>
+</main>
+<div class="ax-toast-region" role="log" aria-live="polite"></div>
+<script src="../astryx.js"></script><script src="../d2/admin.js"></script><script src="../d4/ipad.js"></script>
+</body>
+</html>

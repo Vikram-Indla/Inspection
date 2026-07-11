@@ -12,15 +12,15 @@ Updated: 2026-07-11 (after D4 approval-in-practice; D5 in build). Medium: coded 
 | D4 | iPad field app (`d4/`) | 8/8 SCR-IPAD | M03+M04 238/238 (CSV-audited) | script-verified | **#3 Assigned/Startup ✓ · #4 Inspection Workspace ✓** |
 | D5 | Level-2 Review (`d5/`): queue, read-only workspace, approve/return/reject with exact return scope, version comparison | 3/3 SCR-WEB (300/310/320) | M06 53/53 (CSV-audited) | script-verified | **#5 Review Workspace ✓** |
 | D6 | Operations Center (`d6/`): synchronized live map/list, operational-state monitoring, alerts/exceptions, GPS-override approval, workload, tracking history, widget fault isolation | 1/1 SCR-WEB-500 | M08 19/19 (CSV-audited) | script-verified | **#6 complete ✓** (with D3 dossier half) |
+| D7 | Virtual sessions (`d7/`): appointment/waiting room, identity+OTP (no-bypass), remote execution with physical-follow-up path, closure→submission handoff | 3/3 SCR-VIR | M05 20/20 (CSV-audited) | script-verified | — |
 
-Running totals: **35/38 screens · 458/478 atomic requirements design-covered · 6/6 golden screens COMPLETE** (D5 Review + D6 Operations Center done; remaining: D7 Virtual 3 screens/20 rows, D8, D9).
+Running totals: **38/38 screens · 478/478 atomic requirements design-covered · unmapped ZERO · 6/6 golden screens COMPLETE.** Remaining: D8 (journeys/RTL/polish round 2), D9 (final audit + handoff).
 Cross-cutting done: state switchers on every frame; contract footers (REQ/AC/SB/ENG/ERR/EV IDs) on every frame; DEC placeholders everywhere (nothing invented); frame-to-frame journey navigation P00→P09(→P11).
 
 ## Not done yet ⬜
 
 | Wave | Scope | Screens | Requirements | Golden |
 |---|---|---|---|---|
-| D7 | Virtual: appointment/waiting room, identity/OTP, remote session, evidence, closure/handoff | SCR-VIR-700/710/720 | M05 20 rows | — |
 | D8 | Complete clickable physical+virtual journeys incl. negative/offline/auth/conflict paths; Arabic/RTL variants (gated DEC-004); responsive + accessibility passes; design polish round 2 on all frames | — | journey wiring | Approval 3 input |
 | D9 | Full 493-record coverage audit + engineering handoff spec (tokens→build, component API notes, per-screen acceptance matrix) | — | zero-unmapped proof | — |
 
