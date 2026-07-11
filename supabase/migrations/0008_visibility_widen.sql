@@ -8,3 +8,6 @@ create policy journeys_select on journey_sessions for select using (
   inspector_id = auth.uid() or has_any_role(array['ops','auditor','reviewer','planner','leadership']));
 create policy journeys_write on journey_sessions for insert with check (inspector_id = auth.uid());
 create policy journeys_update on journey_sessions for update using (inspector_id = auth.uid() or has_role('ops'));
+
+-- B5: replay-safe evidence upsert target
+alter table evidence add constraint evidence_storage_path_key unique (storage_path);
