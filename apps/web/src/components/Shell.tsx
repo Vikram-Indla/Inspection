@@ -3,7 +3,7 @@ export default function Shell({ current, children, title, context }: {
 }) {
   const nav = [
     ["Overview", "/"], ["Planning", "/planning"], ["Visits", "/visits"],
-    ["Reviews", "/reviews"], ["Operations", "/operations"], ["Admin", "/admin"],
+    ["Reviews", "/reviews"], ["Factory 360", "/factories"], ["Operations", "/operations"], ["Admin", "/admin"],
   ] as const;
   return (
     <div className="ax-shell">
