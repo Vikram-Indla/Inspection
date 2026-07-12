@@ -1,7 +1,7 @@
 /* MIM Field — app-shell service worker (FND-005: field app survives offline).
    Static assets: cache-first. Navigations: network-first, fallback to cached shell.
    Data writes are NOT handled here — the IndexedDB outbox owns them (idempotent replay). */
-const SHELL = "mim-shell-v1";
+const SHELL = "mim-shell-v2";
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(SHELL).then((c) => c.addAll(["/field", "/manifest.json", "/icon.svg"])));
   self.skipWaiting();
@@ -15,7 +15,11 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   if (e.request.mode === "navigate") {
+    // Offline fallback to the cached field shell applies to field routes only —
+    // public pages (/, /login) must never silently render the field app.
     e.respondWith(fetch(e.request).then((r) => { caches.open(SHELL).then((c) => c.put(e.request, r.clone())); return r; })
-      .catch(async () => (await caches.match(e.request)) ?? (await caches.match("/field")) ?? Response.error()));
+      .catch(async () => (await caches.match(e.request))
+        ?? (url.pathname.startsWith("/field") ? await caches.match("/field") : undefined)
+        ?? Response.error()));
   }
 });
