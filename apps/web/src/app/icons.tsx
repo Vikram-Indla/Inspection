@@ -129,3 +129,21 @@ export function IconEyeOff({ size = 18, className }: IconProps) {
     </svg>
   );
 }
+
+export function IconChevronDown({ size = 16, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M5 8.5l7 7 7-7" />
+    </svg>
+  );
+}
+
+export function IconLink({ size = 20, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M9.5 14.5l5-5" />
+      <path d="M11 7.5l1.2-1.2a3.6 3.6 0 0 1 5.1 5.1L16 12.6" />
+      <path d="M13 16.5l-1.2 1.2a3.6 3.6 0 0 1-5.1-5.1L7.9 11.4" />
+    </svg>
+  );
+}
