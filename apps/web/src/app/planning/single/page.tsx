@@ -50,6 +50,8 @@ export default async function SinglePlanning() {
     inspector: t("plan.single.inspector", "Inspector (M01-040)"),
     selectOption: t("plan.single.select", "— select"),
     autoAssign: t("plan.single.autoAssign", "Auto-assign — first available inspector (M01-040)"),
+    notes: t("plan.single.notes", "Notes (optional)"),
+    notesPlaceholder: t("plan.single.notesPlaceholder", "Anything the inspector or reviewer should know before this visit…"),
     blockedTitle: t("plan.single.blocked", "Publishing blocked — work preserved (M01-041)"),
     publish: t("plan.single.publish", "Publish visit (one plan · one visit — M01-042)"),
     publishing: t("plan.single.publishing", "Publishing…"),

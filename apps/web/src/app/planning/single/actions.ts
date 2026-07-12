@@ -22,6 +22,8 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const plannerLngRaw = String(formData.get("planner_lng") ?? "").trim();
   const planner_lat = plannerLatRaw === "" ? null : Number(plannerLatRaw);
   const planner_lng = plannerLngRaw === "" ? null : Number(plannerLngRaw);
+  const notesRaw = String(formData.get("notes") ?? "").trim();
+  const notes = notesRaw === "" ? null : notesRaw;
 
   // Publish validation gate (M01-041) — exact blockers, work preserved
   const blockers: string[] = [];
@@ -99,6 +101,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     // planner pin ≠ official pin (M01-038) — only stored when the planner overrode it
     planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
     planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
+    notes,
   }).select().single();
   if (e2) return { error: e2.message };
   const { error: e3 } = await sb.from("assignments").insert({

@@ -14,6 +14,8 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const window_end = String(formData.get("window_end") ?? "");
   const visit_type = String(formData.get("visit_type") ?? "periodic");
   const skipDuplicates = formData.get("skip_duplicates") === "1";
+  const notesRaw = String(formData.get("notes") ?? "").trim();
+  const notes = notesRaw === "" ? null : notesRaw;
   // Manual per-visit inspector picks (M01-029): inspector_<factoryId> = user_id | "" (auto)
   const picks = new Map<string, string>();
   for (const fid of factoryIds) {
@@ -74,7 +76,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   if (e1) return { error: e1.message };
   const rows = factoryIds.map(fid => ({
     visit_plan_id: plan.id, factory_id: fid, visit_type, execution_mode: "physical" as const,
-    planning_status: "draft" as const, window_start, window_end, package_version_id,
+    planning_status: "draft" as const, window_start, window_end, package_version_id, notes,
   }));
   const { data: visits, error: e2 } = await sb.from("visits").insert(rows).select("id, factory_id");
   if (e2) return { error: e2.message };

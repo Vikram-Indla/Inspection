@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { publishBulkPlan, type BulkResult } from "./actions";
 
 type F = { id: string; factory_code: string; name: string; cr_number: string; city: string; region: string | null; risk_band: string | null; risk_score: number | null; visits: { planning_status: string; visit_type: string }[] };
@@ -12,6 +12,7 @@ export type BulkFormStrings = {
   selectFactory: string; inspectorFor: string; autoAssign: string; sharedWarning: string;
   duplicate: string; eligible: string;
   visitType: string; typePeriodic: string; packageLabel: string; windowStart: string; windowEnd: string;
+  notes: string; notesPlaceholder: string;
   conflictsTitle: string; conflictLine: string; skipDuplicates: string;
   summaryTitle: string; summarySelected: string; summaryByBand: string; summaryByRegion: string;
   summaryType: string; summaryMode: string; summaryModePhysical: string;
@@ -24,6 +25,20 @@ export default function BulkForm({ factories, packages, inspectors, strings }: {
   const [state, formAction, pending] = useActionState<BulkResult, FormData>(publishBulkPlan, {});
   const [selected, setSelected] = useState<string[]>([]);
   const [picks, setPicks] = useState<Record<string, string>>({}); // factory_id -> inspector_id ("" = auto)
+  const [windowStart, setWindowStart] = useState("");
+  const [windowEnd, setWindowEnd] = useState("");
+  const [skipDuplicates, setSkipDuplicates] = useState(false);
+  const [notes, setNotes] = useState("");
+  // React 19 auto-resets a <form action={...}>'s native controls after every
+  // action completion (success and blocked) — see planning/single/Wizard.tsx
+  // for the full writeup. Same fix here: controlled state + a resetKey
+  // remount once the action settles.
+  const isFirstRender = useRef(true);
+  const [resetKey, setResetKey] = useState(0);
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    setResetKey(k => k + 1);
+  }, [state]);
 
   const dupOf = (f: F) => f.visits.some(v => ["draft", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
   const dupRows = factories.filter(dupOf);
@@ -81,7 +96,8 @@ export default function BulkForm({ factories, packages, inspectors, strings }: {
             <strong>{strings.conflictsTitle}</strong>
             <ul>{dupRows.map(f => <li key={f.id}>{strings.conflictLine.replace("{name}", f.name)}</li>)}</ul>
             <label className="ax-choice" style={{ display: "flex" }}>
-              <input type="checkbox" name="skip_duplicates" value="1" />
+              <input key={resetKey} type="checkbox" name="skip_duplicates" value="1"
+                checked={skipDuplicates} onChange={e => setSkipDuplicates(e.target.checked)} />
               <span>{strings.skipDuplicates}</span>
             </label>
           </div>
@@ -92,8 +108,17 @@ export default function BulkForm({ factories, packages, inspectors, strings }: {
           <select className="ax-select" name="visit_type"><option value="periodic">{strings.typePeriodic}</option></select></div>
         <div className="ax-field"><label className="ax-field__label">{strings.packageLabel}</label>
           <select className="ax-select" name="package_version_id">{packages.map(p => <option key={p.id} value={p.id}>{p.packages.code} · {p.version_label}</option>)}</select></div>
-        <div className="ax-field"><label className="ax-field__label">{strings.windowStart}</label><input className="ax-input ax-numeric" name="window_start" type="datetime-local" required /></div>
-        <div className="ax-field"><label className="ax-field__label">{strings.windowEnd}</label><input className="ax-input ax-numeric" name="window_end" type="datetime-local" required /></div>
+        <div className="ax-field"><label className="ax-field__label">{strings.windowStart}</label>
+          <input key={resetKey} className="ax-input ax-numeric" name="window_start" type="datetime-local" required
+            value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
+        <div className="ax-field"><label className="ax-field__label">{strings.windowEnd}</label>
+          <input key={resetKey} className="ax-input ax-numeric" name="window_end" type="datetime-local" required
+            value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
+      </div>
+      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="ax-field"><label className="ax-field__label">{strings.notes}</label>
+          <textarea key={resetKey} className="ax-textarea" name="notes" rows={2} placeholder={strings.notesPlaceholder}
+            value={notes} onChange={e => setNotes(e.target.value)} /></div>
       </div>
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.summaryTitle}</h4>

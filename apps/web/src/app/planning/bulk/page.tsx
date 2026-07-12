@@ -72,6 +72,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     packageLabel: t("plan.bulk.package", "Package"),
     windowStart: t("plan.bulk.windowStart", "Window start"),
     windowEnd: t("plan.bulk.windowEnd", "Window end"),
+    notes: t("plan.bulk.notes", "Notes (optional, applied to every visit in this plan)"),
+    notesPlaceholder: t("plan.bulk.notesPlaceholder", "Anything inspectors or reviewers should know before these visits…"),
     conflictsTitle: t("plan.bulk.conflictsTitle", "Conflicts detected — duplicate active visits (M02-012)"),
     conflictLine: t("plan.bulk.conflictLine", "{name} · already has an active visit of this type"),
     skipDuplicates: t("plan.bulk.skipDuplicates", "Skip conflicting factories at publish instead of blocking"),

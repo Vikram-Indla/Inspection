@@ -22,6 +22,7 @@ export type WizardStrings = {
   visitType: string; typePeriodic: string; typeFollowUp: string; typeComplaint: string;
   packageLabel: string; mode: string; modePhysical: string; modeVirtual: string; modeIneligible: string;
   windowStart: string; windowEnd: string; inspector: string; selectOption: string; autoAssign: string;
+  notes: string; notesPlaceholder: string;
   blockedTitle: string; publish: string; publishing: string;
   riskBands: Record<string, string>;
 };
@@ -57,6 +58,7 @@ export default function Wizard({ factories, packages, inspectors, strings, virtu
   const [locationConfirmed, setLocationConfirmed] = useState(false);
   const [inspectorId, setInspectorId] = useState("");
   const [executionMode, setExecutionMode] = useState<"physical" | "virtual">("physical");
+  const [notes, setNotes] = useState("");
   // React 19 auto-resets a <form action={...}>'s native controls after every
   // action completion (success AND blocked/validation failure) — a documented
   // behavior that writes directly to the DOM and bypasses controlled-input
@@ -186,6 +188,9 @@ export default function Wizard({ factories, packages, inspectors, strings, virtu
           <div className="ax-field"><label className="ax-field__label">{strings.inspector}</label>
             <select key={resetKey} className="ax-select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
         </div>
+        <div className="ax-field" style={{ marginBlockStart: "var(--ax-space-200)" }}><label className="ax-field__label">{strings.notes}</label>
+          <textarea key={resetKey} className="ax-textarea" name="notes" rows={2} placeholder={strings.notesPlaceholder}
+            value={notes} onChange={e => setNotes(e.target.value)} /></div>
       </div>
       {state.error && (
         <div className="ax-validation" role="alert"><strong>{strings.blockedTitle}</strong>
