@@ -427,6 +427,46 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           </div>
         </div>
       )}
+      {/* F3 M04-056/057/058 cancellation REQUEST (RBAC: planner/ops own the actual cancel). */}
+      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cancelHeading}</h4>
+        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.cancelCaption}</p>
+        {cancelRequested ? (
+          <span className="ax-lozenge ax-lozenge--warning">{strings.cancelRequestedChip}</span>
+        ) : reasons.length === 0 ? (
+          <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{strings.cancelReasonsMissing}</p>
+        ) : (
+          <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+            <label className="ax-field"><span className="ax-field__label">{strings.cancelSelectReason}</span>
+              <select className="ax-select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
+                <option value="">\u2014</option>
+                {reasons.map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
+              </select>
+            </label>
+            <textarea className="ax-textarea" rows={2} value={cancelComment} onChange={e => setCancelComment(e.target.value)} placeholder={strings.cancelCommentPlaceholder} />
+            <label className="ax-field"><span className="ax-field__label">{strings.cancelEvidenceLabel}</span>
+              <input className="ax-input" type="file" accept="image/*" onChange={e => setCancelFile(e.target.files?.[0] ?? null)} />
+            </label>
+            <div className="ax-row" style={{ justifyContent: "flex-end" }}>
+              <button className="ax-btn ax-btn--danger" onClick={submitCancellation} disabled={busy || !cancelReason}>{strings.cancelSubmit}</button>
+            </div>
+          </div>
+        )}
+      </div>
+      {/* F3 M03-006 inspector return for blocked visits (request + notify planner). */}
+      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.returnHeading}</h4>
+        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.returnCaption}</p>
+        {returnRequested ? (
+          <span className="ax-lozenge ax-lozenge--warning">{strings.returnRequestedChip}</span>
+        ) : (
+          <div className="ax-row" style={{ gap: 8, alignItems: "flex-start", flexWrap: "wrap" }}>
+            <textarea className="ax-textarea" style={{ flex: 1, minInlineSize: 220 }} rows={2} value={returnReason}
+              onChange={e => setReturnReason(e.target.value)} placeholder={strings.returnPlaceholder} />
+            <button className="ax-btn" onClick={submitReturn} disabled={busy || !returnReason.trim()}>{strings.returnSubmit}</button>
+          </div>
+        )}
+      </div>
       {log.length > 0 && <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <ul className="ax-timeline">{log.map((m, i) => <li key={i}><div>{m}</div></li>)}</ul>
       </div>}

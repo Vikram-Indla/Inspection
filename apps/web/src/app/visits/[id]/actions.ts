@@ -58,8 +58,11 @@ export async function republishVisit(_: ActionResult, fd: FormData): Promise<Act
   const id = String(fd.get("visit_id"));
   const { error } = await sb.from("visits").update({ planning_status: "published" }).eq("id", id).eq("planning_status", "returned");
   if (error) return { error: error.message };
+  // M02-009/030 — the assigned inspector is notified on republish.
+  const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
+  if (asg?.inspector_id) await insertNotification(sb, { event_key: "visit_republished", recipient: asg.inspector_id, payload: { visit_id: id } });
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Republished — same Visit ID retained (M02-009)" };
+  return { ok: "Republished — same Visit ID retained, inspector notified (M02-009)" };
 }
 
 // M02-006 — Cancel visit: published/new only, mandatory reason, notify assigned inspector.
