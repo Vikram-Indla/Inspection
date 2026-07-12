@@ -59,7 +59,13 @@ export default function Room({ session, strings }: { session: S; strings: RoomSt
 
   async function requestOtp(p: P) {
     setBusy(true);
-    const { data } = await sb.rpc("vp_request_otp", { p_participant: p.id });
+    const { data, error } = await sb.rpc("vp_request_otp", { p_participant: p.id });
+    if (error) {
+      // 0023 — the RPC now rejects callers with no authority over this session (RBAC-014).
+      setOtpInfo(o => ({ ...o, [p.id]: { msg: error.message } }));
+      setBusy(false);
+      return;
+    }
     const d = data as { status: string; dev_code?: string; retry_after_s?: number; resends_left?: number };
     setOtpInfo(o => ({
       ...o, [p.id]: {
@@ -75,7 +81,13 @@ export default function Room({ session, strings }: { session: S; strings: RoomSt
 
   async function verify(p: P) {
     setBusy(true);
-    const { data } = await sb.rpc("vp_verify_otp", { p_participant: p.id, p_code: codes[p.id] ?? "" });
+    const { data, error } = await sb.rpc("vp_verify_otp", { p_participant: p.id, p_code: codes[p.id] ?? "" });
+    if (error) {
+      // 0023 — the RPC now rejects callers with no authority over this session (RBAC-014).
+      setOtpInfo(o => ({ ...o, [p.id]: { msg: error.message } }));
+      setBusy(false);
+      return;
+    }
     const d = data as { status: string; attempts_left?: number };
     if (d.status === "verified") {
       setVerifiedIds(v => new Set([...v, p.id]));
