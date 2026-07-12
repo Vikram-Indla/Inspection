@@ -27,6 +27,14 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
       journey_sessions(id, started_at, geo_events(kind, accuracy_m, geofence_result, gis_version, occurred_at)),
       inspections(id, status, submission_versions(version_number, submitted_at), reviews(decision, status, returned_sections))`)
     .eq("id", id).maybeSingle();
+  // ENG-12 — the append-only audit trigger already records every status
+  // transition on this row (publish/return/republish/cancel/reassign/
+  // reschedule/expire); it just wasn't surfaced per-visit before, only via
+  // the separate global /admin/audit browser. RLS-gated same as that browser.
+  const { data: auditRows } = await sb.from("audit_events")
+    .select("id, actor, action, before_state, after_state, occurred_at")
+    .eq("object_type", "visits").eq("object_id", id)
+    .order("occurred_at", { ascending: false }).limit(30);
   if (vErr) {
     return <Shell current="/visits" title={t("visit.detail.errorTitle", "Visit — error")}><div className="ax-banner ax-banner--critical"><div>{t("visit.detail.loadError", "Could not load visit:")} {vErr.message}</div></div></Shell>;
   }
@@ -181,6 +189,18 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
             </li>
           )))}
           {journeys.length === 0 && <p className="ax-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
+        </ul>
+      </div>
+      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.auditHeading", "Planning history — immutable, append-only (ENG-12)")}</h4>
+        <ul className="ax-timeline">
+          {(auditRows ?? []).map(a => (
+            <li key={a.id}>
+              <div><strong>{t(`enum.audit.${a.action}`, a.action)}</strong> · {a.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", a.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}<br />
+                <span className="ax-timeline__meta ax-numeric">{new Date(a.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
+            </li>
+          ))}
+          {(auditRows ?? []).length === 0 && <p className="ax-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}
         </ul>
       </div>
     </Shell>
