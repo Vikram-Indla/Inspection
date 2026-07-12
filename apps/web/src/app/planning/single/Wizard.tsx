@@ -55,6 +55,7 @@ export default function Wizard({ factories, packages, inspectors, strings }: { f
   const [windowEnd, setWindowEnd] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
   const [locationConfirmed, setLocationConfirmed] = useState(false);
+  const [inspectorId, setInspectorId] = useState("");
   // React 19 auto-resets a <form action={...}>'s native controls after every
   // action completion (success AND blocked/validation failure) — a documented
   // behavior that writes directly to the DOM and bypasses controlled-input
@@ -163,7 +164,7 @@ export default function Wizard({ factories, packages, inspectors, strings }: { f
             <input key={resetKey} className="ax-input ax-numeric" name="window_end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
           {/* M01-040 — auto-assign option (availability-checked) beside the manual pick */}
           <div className="ax-field"><label className="ax-field__label">{strings.inspector}</label>
-            <select key={resetKey} className="ax-select" name="inspector_id" defaultValue=""><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+            <select key={resetKey} className="ax-select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
         </div>
       </div>
       {state.error && (
