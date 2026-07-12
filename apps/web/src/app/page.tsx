@@ -2,7 +2,8 @@ import "./landing.css";
 import { cookies } from "next/headers";
 import { supabaseServer } from "@/lib/supabase-server";
 import CoverageMap, { type CoverageRegion } from "./CoverageMap";
-import { IconTarget, IconFactory, IconClipboardCheck, IconScale, IconTrendUp, IconGovFlag } from "./icons";
+import { IconTarget, IconFactory, IconClipboardCheck, IconScale, IconTrendUp } from "./icons";
+import GovBar from "./GovBar";
 
 export const dynamic = "force-dynamic";
 
@@ -71,10 +72,16 @@ export default async function Landing() {
 
   return (
     <div className="mk-page" dir={dir} lang={locale}>
-      <div className="mk-govbar">
-        <span className="mk-govbar__flag" aria-hidden="true"><IconGovFlag size={14} /></span>
-        {ar ? "موقع حكومي رسمي تابع لحكومة المملكة العربية السعودية" : "Official government website of the Government of the Kingdom of Saudi Arabia"}
-      </div>
+      <GovBar
+        s={{
+          banner: ar ? "موقع حكومي رسمي تابع لحكومة المملكة العربية السعودية" : "Official government website of the Government of the Kingdom of Saudi Arabia",
+          howToVerify: ar ? "كيف تتحقق" : "How to verify",
+          linkTitle: ar ? "روابط المواقع الحكومية الرسمية تنتهي بـ gov.sa" : "Links to official Saudi websites end with gov.sa",
+          linkBody: ar ? "جميع روابط المواقع الرسمية للجهات الحكومية في المملكة العربية السعودية تنتهي بـ gov.sa" : "All links to official websites of government agencies in the Kingdom of Saudi Arabia end with .gov.sa",
+          httpsTitle: ar ? "المواقع الحكومية تستخدم بروتوكول HTTPS للتشفير والأمان." : "Government websites use the HTTPS protocol for encryption and security.",
+          httpsBody: ar ? "المواقع الآمنة في المملكة العربية السعودية تستخدم بروتوكول HTTPS للتشفير." : "Secure websites in the Kingdom of Saudi Arabia use the HTTPS protocol for encryption.",
+        }}
+      />
       <nav className="mk-nav" aria-label={ar ? "الرئيسية" : "Primary"}>
         <a className="mk-nav__brand" href="/">
           <span className="ax-shell__brand-mark">IP</span>

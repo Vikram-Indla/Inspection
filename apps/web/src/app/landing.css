@@ -7,11 +7,23 @@
 .mk-page { min-height: 100dvh; background: var(--ax-color-canvas); color: var(--ax-color-text); font: var(--ax-text-body); }
 
 /* ---- official-government strip (gov.sa pattern) ---- */
-.mk-govbar { display: flex; align-items: center; justify-content: center; gap: var(--ax-space-100);
+.mk-govbar-wrap { background: var(--ax-color-surface); border-block-end: 1px solid var(--ax-color-border); }
+.mk-govbar { display: flex; align-items: center; justify-content: center; gap: var(--ax-space-150);
   padding: 6px var(--ax-space-200); font: var(--ax-text-caption);
-  background: var(--ax-color-surface); border-block-end: 1px solid var(--ax-color-border);
   color: var(--ax-color-text-secondary); }
 .mk-govbar__flag { display: inline-flex; color: var(--ax-color-primary); }
+.mk-govbar__toggle { display: inline-flex; align-items: center; gap: var(--ax-space-050);
+  background: none; border: none; padding: 0; font: var(--ax-text-caption); font-weight: 600;
+  color: var(--ax-color-text); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.mk-govbar__chevron { transition: transform .15s ease; }
+.mk-govbar__chevron--open { transform: rotate(180deg); }
+.mk-govbar__panel { display: flex; flex-wrap: wrap; gap: var(--ax-space-300);
+  padding: var(--ax-space-300) clamp(16px, 5vw, 64px); border-block-start: 1px solid var(--ax-color-border); }
+.mk-govbar__card { display: flex; gap: var(--ax-space-150); flex: 1 1 280px; }
+.mk-govbar__cardicon { display: grid; place-items: center; inline-size: 40px; block-size: 40px; flex-shrink: 0;
+  border-radius: 50%; border: 1px solid var(--ax-color-border); color: var(--ax-color-text-secondary); }
+.mk-govbar__card strong { display: block; font: var(--ax-text-body); font-weight: 700; margin-block-end: var(--ax-space-050); }
+.mk-govbar__card p { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
 
 /* ---- top nav ---- */
 .mk-nav { position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: var(--ax-space-400);

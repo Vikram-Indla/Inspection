@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
-import { IconFingerprint, IconGovFlag, IconLock, IconEye, IconEyeOff, IconShieldCheck } from "../icons";
+import { IconFingerprint, IconLock, IconEye, IconEyeOff, IconShieldCheck } from "../icons";
+import GovBar from "../GovBar";
 
 // SCR-PUB-010 — national sign-in (client half). Layout mirrors the
 // app.industry.sa auth pattern: one centered card, Nafath panel first,
@@ -12,6 +13,11 @@ export type LoginStrings = {
   dir: "rtl" | "ltr";
   lang: "ar" | "en";
   govBanner: string;
+  howToVerify: string;
+  linkTitle: string;
+  linkBody: string;
+  httpsTitle: string;
+  httpsBody: string;
   brandTitle: string;
   brandSub: string;
   cardTitle: string;
@@ -70,10 +76,17 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
 
   return (
     <div className="lg-page" dir={s.dir} lang={s.lang}>
-      <div className="lg-govbar">
-        <span className="lg-govbar__flag" aria-hidden="true"><IconGovFlag size={14} /></span>
-        {s.govBanner}
-      </div>
+      <GovBar
+        prefix="lg"
+        s={{
+          banner: s.govBanner,
+          howToVerify: s.howToVerify,
+          linkTitle: s.linkTitle,
+          linkBody: s.linkBody,
+          httpsTitle: s.httpsTitle,
+          httpsBody: s.httpsBody,
+        }}
+      />
 
       <header className="lg-topbar">
         <a className="lg-topbar__brand" href="/">
