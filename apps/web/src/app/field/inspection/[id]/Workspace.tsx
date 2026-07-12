@@ -403,9 +403,39 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
       <div className="ax-row" style={{ justifyContent: "space-between", position: "sticky", insetBlockStart: 0, zIndex: 10, background: "var(--ax-color-canvas)", paddingBlock: "var(--ax-space-100)" }}>
         <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
-        <span className="ax-caption ax-numeric">{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+        <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
       </div>
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
+
+      {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
+          reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
+      <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>
+          {strings.panelTitle}{inspectionNo ? <span className="ax-numeric"> · {inspectionNo}</span> : null}
+        </summary>
+        <div className="ax-grid-2" style={{ marginBlockStart: "var(--ax-space-200)" }}>
+          <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelFactory}</summary>
+            <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+              <div><strong>{panel.factory.name}</strong></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelCode}</span><span className="ax-numeric">{panel.factory.code ?? "—"}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelLicense}</span><span className="ax-numeric">{panel.factory.license ?? "—"}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
+            </div>
+          </details>
+          <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelVisit}</summary>
+            <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelWindow}</span><span className="ax-numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="ax-version">{panel.pkg.label}</span></span></div>
+            </div>
+          </details>
+        </div>
+        {/* M04-136/137 — source of the previous-inspection comparison shown per item below */}
+        {prev && <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
+      </details>
       {conflicts.map(c => (
         <div key={c.key} className="ax-conflict">
           <div className="ax-conflict__head">{fmt(strings.conflictHead, { code: items.find(i => i.id === c.item_id)?.code ?? "" })}</div>
@@ -495,6 +525,15 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                   {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
                 </div>
                 {it.guidance && <p className="ax-caption">💡 {strings.guidanceLabel}: {it.guidance}</p>}
+                {/* M04-136/137 — same item's answer + evidence count from the factory's latest prior approved inspection */}
+                {prev && (
+                  <p className="ax-caption">
+                    ↩ {fmt(strings.prevLine, {
+                      value: prev.answers[it.id] ? (strings.enumLabels[prev.answers[it.id]] ?? prev.answers[it.id].replace(/_/g, " ")) : strings.prevNoAnswer,
+                      n: prev.evidence[it.id] ?? 0,
+                    })}
+                  </p>
+                )}
                 <div className="ax-row" style={{ flexWrap: "wrap" }}>
                   {isDate ? (
                     <label className="ax-field">

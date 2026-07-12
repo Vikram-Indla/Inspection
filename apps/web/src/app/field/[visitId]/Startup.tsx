@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabaseBrowser } from "@/lib/supabase";
-import { local } from "@/lib/offline";
+import { local, processOutbox, sha256b64 } from "@/lib/offline";
 import type { GeoMarkerData } from "@/components/GeoMap";
-import { transitionOperationalState } from "./actions";
+import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
 
 // SB19 — strings built server-side with t() and passed as props.
 export type StartupStrings = {
@@ -25,6 +25,23 @@ export type StartupStrings = {
   exceptionHeading: string; exceptionPlaceholder: string; exceptionSend: string;
   logExceptionSent: string; logExceptionFailed: string; logDeviation: string;
   logOpState: string; logOpBlocked: string; logGpsFallback: string;
+  // F3 — navigation launch (M04-016) · journey progress % (M04-026)
+  mapsOpen: string; mapsGeo: string; mapsCaption: string;
+  progressLabel: string; progressCaption: string;
+  // F3 — expandable Factory / Visit confirmation cards (M04-054)
+  cardsFactoryTitle: string; cardsVisitTitle: string;
+  lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string;
+  lblCoords: string; lblFence: string;
+  lblType: string; lblMode: string; lblWindow: string; lblPackage: string;
+  lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string;
+  // F3 — field cancellation request (M04-056/057/058)
+  cancelHeading: string; cancelCaption: string; cancelSelectReason: string;
+  cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string;
+  cancelRequestedChip: string; cancelReasonsMissing: string;
+  logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string;
+  // F3 — inspector return (M03-006)
+  returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string;
+  returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
 };
 
 // Module-level label so the dynamic() loading component (defined outside the
@@ -41,10 +58,17 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ),
 });
 
+type Insp = { id: string; status: string };
 type V = { id: string; window_start: string; window_end: string; execution_mode: string;
-  factories: { name: string; official_lat: number; official_lng: number; geofence_radius_m: number | null };
+  visit_type: string; priority: string | null; notes: string | null; planning_status: string;
+  factories: { name: string; factory_code: string | null; city: string | null; region: string | null;
+    cr_number: string | null; license_number: string | null;
+    official_lat: number; official_lng: number; geofence_radius_m: number | null };
   package_versions: { id: string; version_label: string; definition: unknown; packages: { code: string } };
-  inspections: { id: string; status: string }[] | null };
+  // visits -> inspections is TO-ONE; array tolerated defensively (server normalizes)
+  inspections: Insp[] | Insp | null };
+type Reason = { key: string; label: string };
+type Flags = { cancellationRequested: boolean; returnRequested: boolean };
 type Gis = { gps_accuracy_checkin_max_m?: number; geofence_default_radius_m?: number;
   arrival_detection_radius_m?: number; telemetry_interval_s?: number;
   route_deviation?: { off_route_m?: number; sustain_s?: number } };
@@ -59,7 +83,7 @@ function distM(a: [number, number], b: [number, number]) {
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 
-export default function Startup({ visit, gis, strings }: { visit: V; gis: Gis; strings: StartupStrings }) {
+export default function Startup({ visit, gis, strings, reasons, flags }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; flags: Flags }) {
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
   const [log, setLog] = useState([] as string[]);
@@ -74,6 +98,15 @@ export default function Startup({ visit, gis, strings }: { visit: V; gis: Gis; s
   const [repPresent, setRepPresent] = useState(false);
   const [locConfirmed, setLocConfirmed] = useState(false);
   const [exceptionNote, setExceptionNote] = useState("");
+  // F3 — journey progress % (M04-026): baseline = distance-to-factory at first fix
+  const [initialD, setInitialD] = useState(null as number | null);
+  // F3 — cancellation (M04-056/057/058) + return (M03-006) request state
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelComment, setCancelComment] = useState("");
+  const [cancelFile, setCancelFile] = useState(null as File | null);
+  const [cancelRequested, setCancelRequested] = useState(flags.cancellationRequested);
+  const [returnReason, setReturnReason] = useState("");
+  const [returnRequested, setReturnRequested] = useState(flags.returnRequested);
   const maxAcc = gis.gps_accuracy_checkin_max_m ?? 25;
   // SB20 — per-factory geofence override, else ENG-06 engine default.
   const fence = visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? 150;

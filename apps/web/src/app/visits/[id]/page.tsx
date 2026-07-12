@@ -2,6 +2,8 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import ActionBar, { type ActionBarStrings } from "./ActionBar";
+import Attachments, { type AttachmentRow, type AttachmentsStrings } from "./Attachments";
+import NotesEditor, { type NotesStrings } from "./NotesEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +43,48 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
   const journeys = v.journey_sessions as unknown as { id: string; started_at: string; geo_events: { kind: string; accuracy_m: number; geofence_result: string | null; gis_version: string; occurred_at: string }[] }[];
   // visits->inspections is to-one (unique visit_id): object or null, NOT an array
   const insp = v.inspections as unknown as { id: string; status: string; submission_versions: { version_number: number; submitted_at: string }[]; reviews: { decision: string | null; status: string; returned_sections: string[] | null }[] } | null;
+  // FIX WAVE F4 · M02-042 — attachments (soft-deleted rows excluded); the query
+  // failing (e.g. migration 0020 not applied yet) degrades to a verbatim error,
+  // never a crash. Signed URLs minted under the caller's session (private bucket).
+  const { data: attData, error: attErr } = await sb.from("visit_attachments")
+    .select("id, name, mime, storage_path, uploaded_at, uploader:profiles!visit_attachments_uploaded_by_fkey(full_name)")
+    .eq("visit_id", id).is("removed_at", null)
+    .order("uploaded_at", { ascending: false });
+  const attRows: AttachmentRow[] = await Promise.all(((attData ?? []) as unknown as {
+    id: string; name: string; mime: string; storage_path: string; uploaded_at: string;
+    uploader: { full_name: string } | null;
+  }[]).map(async a => {
+    const { data: signed, error: sErr } = await sb.storage.from("attachments").createSignedUrl(a.storage_path, 3600);
+    return {
+      id: a.id, name: a.name, mime: a.mime, uploadedAt: a.uploaded_at,
+      uploadedBy: a.uploader?.full_name ?? "—",
+      url: signed?.signedUrl ?? null, urlError: sErr?.message ?? null,
+    };
+  }));
+  const attachmentsStrings: AttachmentsStrings = {
+    heading: t("visit.att.heading", "Attachments (M02-042)"),
+    empty: t("visit.att.empty", "No attachments yet — planners and operations can attach supporting files."),
+    colFile: t("visit.att.colFile", "File"),
+    colType: t("visit.att.colType", "Type"),
+    colUploaded: t("visit.att.colUploaded", "Uploaded"),
+    colBy: t("visit.att.colBy", "By"),
+    colActions: t("visit.att.colActions", "Actions"),
+    download: t("visit.att.download", "Download"),
+    remove: t("visit.att.remove", "Remove"),
+    removeAria: t("visit.att.removeAria", "Remove attachment {name}"),
+    fileLabel: t("visit.att.fileLabel", "Attach a file (planner/ops — RLS-enforced)"),
+    uploadBtn: t("visit.att.uploadBtn", "Upload"),
+    uploading: t("visit.att.uploading", "Uploading…"),
+    urlFailed: t("visit.att.urlFailed", "download link unavailable"),
+  };
+  const notesStrings: NotesStrings = {
+    heading: t("visit.notes.heading", "Notes (M02-043)"),
+    label: t("visit.notes.label", "Visit notes"),
+    placeholder: t("visit.notes.placeholder", "Context for the inspector or operations — saved to the visit, audited"),
+    saveBtn: t("visit.notes.saveBtn", "Save notes"),
+    saving: t("visit.notes.saving", "Saving…"),
+    hint: t("visit.notes.hint", "planner/ops only (RLS visits_update) · return flows also write here (M02-008)"),
+  };
   const actionStrings: ActionBarStrings = {
     heading: t("visit.actions.heading", "Management actions — state-guarded (only valid transitions succeed)"),
     returnReason: t("visit.actions.returnReason", "Return reason *"),
