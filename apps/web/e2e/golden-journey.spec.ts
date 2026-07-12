@@ -54,8 +54,13 @@ test.beforeAll(async () => {
   scopeSectionKey = scope.key;
 });
 
+// Closes the previous test's context before opening the next — leaving contexts
+// open let Playwright's failure snapshot/trace pick an unrelated leftover page.
+let lastContext: BrowserContext | null = null;
 async function personaPage(browser: { newContext: (o: object) => Promise<BrowserContext> }, key: keyof typeof PERSONAS): Promise<Page> {
+  if (lastContext) await lastContext.close();
   const ctx = await browser.newContext({ storageState: storageStatePath(key) });
+  lastContext = ctx;
   return ctx.newPage();
 }
 

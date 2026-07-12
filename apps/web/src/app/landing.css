@@ -146,7 +146,7 @@
 .mk-coverage { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr); gap: var(--ax-space-250);
   margin-block-start: var(--ax-space-400); border: 1px solid var(--ax-color-border); border-radius: 16px; overflow: hidden; }
 .mk-coverage__map { block-size: 460px; background: var(--ax-color-surface-sunken); }
-.mk-coverage__rail { padding: var(--ax-space-250); background: var(--ax-color-text); color: var(--ax-color-inverse-text); display: flex; flex-direction: column; gap: var(--ax-space-150); }
+.mk-coverage__rail { padding: var(--ax-space-250); background: color-mix(in srgb, var(--ax-color-primary) 35%, var(--ax-color-text)); color: var(--ax-color-inverse-text); display: flex; flex-direction: column; gap: var(--ax-space-150); }
 .mk-coverage__legend { display: flex; gap: 8px; flex-wrap: wrap; }
 .mk-coverage__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
 .mk-coverage__row { display: grid; grid-template-columns: 10px 1fr auto auto; align-items: center; gap: var(--ax-space-100);

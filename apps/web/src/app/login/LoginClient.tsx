@@ -33,6 +33,13 @@ export type LoginStrings = {
   hidePw: string;
   signIn: string;
   signingIn: string;
+  forgotLink: string;
+  forgotTitle: string;
+  forgotSub: string;
+  forgotSend: string;
+  forgotSending: string;
+  forgotSentTitle: string;
+  forgotSentBody: string;
   nidLabel: string;
   nidHint: string;
   continueBtn: string;
@@ -44,12 +51,13 @@ export type LoginStrings = {
   verifiedBanner: string;
   footTrust: string;
   footSecure: string;
+  footCopyright: string;
   backToLanding: string;
   langHref: string;
   langLabel: string;
 };
 
-type View = "methods" | "nafath-id" | "nafath-waiting";
+type View = "methods" | "nafath-id" | "nafath-waiting" | "forgot" | "forgot-sent";
 
 export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
   const [view, setView] = useState<View>("methods");
@@ -72,6 +80,23 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
     // Hard navigation: guarantees the auth cookie is on the request before
     // /launch renders server-side (router.push races the cookie write).
     window.location.assign("/launch");                // role decides the landing, not the URL
+  }
+
+  async function sendReset(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true); setError(null);
+    // Supabase Auth sends the recovery email via its own mailer; the link
+    // lands on /reset where the user sets a new password. redirectTo must be
+    // in the project's auth redirect allowlist.
+    const { error } = await supabaseBrowser().auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset`,
+    });
+    setBusy(false);
+    // Do not reveal whether the address exists (anti-enumeration): always
+    // advance to the neutral "check your inbox" confirmation on success OR
+    // a non-committal failure. Only surface transport errors.
+    if (error) { setError(error.message); return; }
+    setView("forgot-sent");
   }
 
   return (
@@ -140,6 +165,8 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
                     </button>
                   </div>
                 </div>
+                <button type="button" className="lg-forgot"
+                  onClick={() => { setError(null); setView("forgot"); }}>{s.forgotLink}</button>
                 {error && <div className="ax-banner ax-banner--critical" role="alert"><div>{error}</div></div>}
                 <button className="ax-btn ax-btn--prominent lg-submit" disabled={busy}>{busy ? s.signingIn : s.signIn}</button>
               </form>
@@ -175,12 +202,40 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
               <button type="button" className="ax-btn ax-btn--secondary lg-submit" onClick={() => setView("methods")}>{s.back}</button>
             </div>
           )}
+
+          {view === "forgot" && (
+            <form onSubmit={sendReset} className="lg-credentials">
+              <h1 className="lg-card__title">{s.forgotTitle}</h1>
+              <p className="lg-card__sub">{s.forgotSub}</p>
+              <div className="ax-field">
+                <label className="ax-field__label" htmlFor="reset-email">{s.idLabel}</label>
+                <input id="reset-email" className="ax-input" type="email" placeholder={s.idPlaceholder}
+                  value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" required />
+              </div>
+              {error && <div className="ax-banner ax-banner--critical" role="alert"><div>{error}</div></div>}
+              <button className="ax-btn ax-btn--prominent lg-submit" disabled={busy}>{busy ? s.forgotSending : s.forgotSend}</button>
+              <button type="button" className="ax-btn ax-btn--secondary lg-submit"
+                onClick={() => { setError(null); setView("methods"); }}>{s.back}</button>
+            </form>
+          )}
+
+          {view === "forgot-sent" && (
+            <div className="lg-waiting">
+              <div className="ax-banner ax-banner--success" role="status"><div>{s.forgotSentTitle}</div></div>
+              <p className="lg-card__sub">{s.forgotSentBody}</p>
+              <button type="button" className="ax-btn ax-btn--prominent lg-submit"
+                onClick={() => { setError(null); setView("methods"); }}>{s.back}</button>
+            </div>
+          )}
         </div>
 
-        <div className="lg-trust">
-          <span><IconShieldCheck size={15} /> {s.footTrust}</span>
-          <span><IconLock size={14} /> {s.footSecure}</span>
-        </div>
+        <footer className="lg-foot">
+          <div className="lg-trust">
+            <span><IconShieldCheck size={15} /> {s.footTrust}</span>
+            <span><IconLock size={14} /> {s.footSecure}</span>
+          </div>
+          <p className="lg-foot__copyright">{s.footCopyright}</p>
+        </footer>
       </main>
     </div>
   );

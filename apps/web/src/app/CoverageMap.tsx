@@ -27,7 +27,9 @@ export type CoverageMapStrings = {
 };
 
 const KSA_CENTER: [number, number] = [23.8859, 45.0792];
-const KSA_ZOOM = 5;
+// Country-level framing, not a world view — zoom 5 showed everything from
+// France to India with the 7 KSA markers clustered into a few pixels.
+const KSA_ZOOM = 6;
 
 export default function CoverageMap({ regions, strings: s }: { regions: CoverageRegion[]; strings: CoverageMapStrings }) {
   const GeoMap = useMemo(() => dynamic(() => import("@/components/GeoMap"), {
@@ -78,6 +80,6 @@ function CoverageMapInner({ GeoMap, markers, selectedId, onMarkerClick }: {
 }) {
   return (
     <GeoMap center={KSA_CENTER} zoom={KSA_ZOOM} markers={markers}
-      selectedId={selectedId} onMarkerClick={onMarkerClick} height="100%" />
+      selectedId={selectedId} onMarkerClick={onMarkerClick} height="100%" interactive={false} />
   );
 }

@@ -69,7 +69,7 @@ function RadiusEditor({ markers, selectedId, onRadiusChange }: {
 }
 
 export default function GeoMap({
-  center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange,
+  center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true,
 }: {
   center: [number, number];
   zoom: number;
@@ -81,6 +81,8 @@ export default function GeoMap({
   onMarkerClick?: (id: string) => void;
   /** Fired when the user clicks the map with a marker selected — proposed new radius in metres. */
   onRadiusChange?: (id: string, radiusM: number) => void;
+  /** false for read-only placements (e.g. the public landing coverage map) — no pan/zoom/click. */
+  interactive?: boolean;
 }) {
   // Leaflet paths are SVG and need concrete stroke values, so ax tokens are
   // resolved once via getComputedStyle — source stays token-only.
@@ -97,7 +99,9 @@ export default function GeoMap({
 
   return (
     <div style={{ blockSize: height, inlineSize: "100%" }}>
-      <MapContainer center={center} zoom={zoom} scrollWheelZoom style={{ blockSize: "100%", inlineSize: "100%" }}>
+      <MapContainer center={center} zoom={zoom} scrollWheelZoom={interactive} dragging={interactive}
+        zoomControl={interactive} doubleClickZoom={interactive} touchZoom={interactive} boxZoom={interactive} keyboard={interactive}
+        style={{ blockSize: "100%", inlineSize: "100%" }}>
         <TileLayer
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

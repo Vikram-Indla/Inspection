@@ -44,6 +44,17 @@ export default async function Login() {
     hidePw: ar ? "إخفاء كلمة المرور" : "Hide password",
     signIn: ar ? "تسجيل الدخول" : "Sign In",
     signingIn: ar ? "جارٍ الدخول…" : "Signing in…",
+    forgotLink: ar ? "هل نسيت كلمة المرور؟" : "Forgot your password?",
+    forgotTitle: ar ? "إعادة تعيين كلمة المرور" : "Reset your password",
+    forgotSub: ar
+      ? "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور."
+      : "Enter your email and we'll send you a link to reset your password.",
+    forgotSend: ar ? "إرسال رابط إعادة التعيين" : "Send reset link",
+    forgotSending: ar ? "جارٍ الإرسال…" : "Sending…",
+    forgotSentTitle: ar ? "تحقّق من بريدك الإلكتروني" : "Check your email",
+    forgotSentBody: ar
+      ? "إذا كان هناك حساب مرتبط بهذا البريد، فسيصل رابط لإعادة تعيين كلمة المرور. تحقّق من مجلد الرسائل غير المرغوبة أيضًا."
+      : "If an account exists for that address, a password-reset link is on its way. Check your spam folder too.",
     // Nafath simulation sub-flow
     nidLabel: ar ? "رقم الهوية الوطنية أو الإقامة" : "National ID or Iqama number",
     nidHint: ar ? "10 أرقام" : "10 digits",
@@ -58,6 +69,7 @@ export default async function Login() {
     verifiedBanner: ar ? "تم التحقق من هويتك عبر نفاذ. أكمل الدخول ببيانات حسابك." : "Identity verified via Nafath. Complete sign-in with your account.",
     footTrust: ar ? "كل إجراء داخل جلستك موثَّق ومراجَع" : "Every action inside your session is recorded and reviewable",
     footSecure: ar ? "اتصال مشفّر" : "Encrypted connection",
+    footCopyright: ar ? "وزارة الصناعة والثروة المعدنية © 2026" : "Ministry of Industry and Mineral Resources © 2026",
     backToLanding: ar ? "الصفحة الرئيسية" : "Home",
     langHref: ar ? "/locale?set=en" : "/locale?set=ar",
     langLabel: ar ? "English" : "العربية",

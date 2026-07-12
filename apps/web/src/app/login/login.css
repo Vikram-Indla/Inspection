@@ -93,6 +93,12 @@
   background: transparent; color: var(--ax-color-text-secondary); cursor: pointer; }
 .lg-pwtoggle:hover { background: var(--ax-color-neutral-tint); color: var(--ax-color-text); }
 .lg-submit { inline-size: 100%; }
+/* forgot-password link under the credential fields */
+.lg-forgot { align-self: flex-start; margin-block-start: calc(-1 * var(--ax-space-100));
+  font: var(--ax-text-caption); font-weight: 600; color: var(--ax-color-primary);
+  background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; }
+.lg-forgot:hover { text-decoration: underline; color: var(--ax-color-primary-hover); }
+.lg-forgot:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); border-radius: var(--ax-radius-small); }
 
 /* ---- Nafath waiting (simulated app approval) ---- */
 .lg-waiting { display: flex; flex-direction: column; align-items: center; gap: var(--ax-space-200); text-align: center; }
@@ -106,8 +112,12 @@
   background: var(--ax-color-primary-tint); color: var(--ax-color-primary-strong); }
 @media (prefers-reduced-motion: reduce) { .lg-waiting__spinner { animation: none; } }
 
-/* ---- trust line under the card ---- */
+/* ---- footer band under the card ---- */
+.lg-foot { display: flex; flex-direction: column; align-items: center; gap: var(--ax-space-150);
+  padding-block-end: var(--ax-space-200); }
 .lg-trust { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--ax-space-300);
   font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
 .lg-trust span { display: inline-flex; align-items: center; gap: 6px; }
 .lg-trust svg { color: var(--ax-color-primary); }
+.lg-foot__copyright { font: var(--ax-text-caption); color: var(--ax-color-text-secondary);
+  text-align: center; }
