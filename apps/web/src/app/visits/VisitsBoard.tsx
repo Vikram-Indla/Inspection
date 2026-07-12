@@ -24,6 +24,8 @@ export type VisitRow = {
   factoryCode: string;
   crNumber: string;
   licenseNumber: string;
+  region: string;
+  city: string;
   planId: string;        // visit_plan_id ("" = immediate, no plan)
   planMethod: string;    // single|bulk ("" = immediate)
   inspectorName: string;
@@ -44,6 +46,8 @@ export type VisitsBoardStrings = {
   allStatuses: string;
   allTypes: string;
   allModes: string;
+  allRegions: string;
+  allCities: string;
   fromDate: string;
   toDate: string;
   sortAria: string;
@@ -88,11 +92,13 @@ type SortKey = "window_asc" | "window_desc" | "factory";
 
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 
-export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, total, limit, nextLimit, strings }: {
+export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings }: {
   rows: VisitRow[];
   inspectors: Inspector[];
   typeOptions: { value: string; label: string }[];
   modeOptions: { value: string; label: string }[];
+  regionOptions: { value: string; label: string }[];
+  cityOptions: { value: string; label: string }[];
   total: number;
   limit: number;
   nextLimit: number | null;
@@ -102,6 +108,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const [status, setStatus] = useState("");
   const [type, setType] = useState("");
   const [mode, setMode] = useState("");
+  const [region, setRegion] = useState("");
+  const [city, setCity] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [sort, setSort] = useState<SortKey>("window_asc");
@@ -136,6 +144,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       if (status && effectiveStatus(v) !== status) return false;
       if (type && v.visitType !== type) return false;
       if (mode && v.executionMode !== mode) return false;
+      if (region && v.region !== region) return false;
+      if (city && v.city !== city) return false;
       if (from && v.windowStart.slice(0, 10) < from) return false;
       if (to && v.windowStart.slice(0, 10) > to) return false;
       if (!needle) return true;
@@ -151,7 +161,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         ? a.factoryName.localeCompare(b.factoryName)
         : dir * a.windowStart.localeCompare(b.windowStart));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, q, status, type, mode, from, to, sort, nowMs]);
+  }, [rows, q, status, type, mode, region, city, from, to, sort, nowMs]);
 
   const allSelected = filtered.length > 0 && filtered.every(v => selected.has(v.id));
   const toggleAll = () => {
@@ -169,8 +179,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       return next;
     });
   };
-  const hasFilter = q || status || type || mode || from || to;
-  const clearFilters = () => { setQ(""); setStatus(""); setType(""); setMode(""); setFrom(""); setTo(""); };
+  const hasFilter = q || status || type || mode || region || city || from || to;
+  const clearFilters = () => { setQ(""); setStatus(""); setType(""); setMode(""); setRegion(""); setCity(""); setFrom(""); setTo(""); };
   const hidden = [...selected].map(id => <input key={id} type="hidden" name="visit_ids" value={id} />);
 
   return (
@@ -203,6 +213,14 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         <select className="ax-select" value={mode} onChange={e => setMode(e.target.value)} aria-label={strings.allModes}>
           <option value="">{strings.allModes}</option>
           {modeOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+        <select className="ax-select" value={region} onChange={e => setRegion(e.target.value)} aria-label={strings.allRegions}>
+          <option value="">{strings.allRegions}</option>
+          {regionOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+        <select className="ax-select" value={city} onChange={e => setCity(e.target.value)} aria-label={strings.allCities}>
+          <option value="">{strings.allCities}</option>
+          {cityOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
         <div className="ax-field" style={{ maxInlineSize: 170 }}>
           <label className="ax-field__label">{strings.fromDate}</label>

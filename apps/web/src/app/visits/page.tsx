@@ -12,7 +12,7 @@ type Joined = {
   id: string; visit_type: string; execution_mode: string; planning_status: string;
   operational_state: string; window_start: string; window_end: string;
   visit_plan_id: string | null;
-  factories: { name: string; factory_code: string | null; cr_number: string | null; license_number: string | null } | null;
+  factories: { name: string; factory_code: string | null; cr_number: string | null; license_number: string | null; region: string | null; city: string | null } | null;
   visit_plans: { method: string } | null; // TO-ONE embed — object or null (null = immediate)
   assignments: { profiles: { full_name: string } | null }[] | null;
   inspections: { status: string } | null; // TO-ONE embed — object or null
@@ -29,7 +29,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   const [{ data: visits, error, count }, { data: inspRows }] = await Promise.all([
     sb.from("visits")
       .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, visit_plan_id,
-        factories(name, factory_code, cr_number, license_number),
+        factories(name, factory_code, cr_number, license_number, region, city),
         visit_plans(method),
         assignments(profiles(full_name)),
         inspections(status)`, { count: "exact" })
@@ -61,6 +61,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       factoryCode: v.factories?.factory_code ?? "",
       crNumber: v.factories?.cr_number ?? "",
       licenseNumber: v.factories?.license_number ?? "",
+      region: v.factories?.region ?? "",
+      city: v.factories?.city ?? "",
       planId: v.visit_plan_id ?? "",
       planMethod: v.visit_plans?.method ?? "",
       inspectorName: asg?.profiles?.full_name ?? "",
@@ -74,6 +76,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   const distinct = (vals: string[]) => [...new Set(vals)].sort();
   const typeOptions = distinct(rows.map(r => r.visitType)).map(v => ({ value: v, label: t(`enum.${v}`, v) }));
   const modeOptions = distinct(rows.map(r => r.executionMode)).map(v => ({ value: v, label: t(`enum.${v}`, v) }));
+  const regionOptions = distinct(rows.map(r => r.region).filter(Boolean)).map(v => ({ value: v, label: v }));
+  const cityOptions = distinct(rows.map(r => r.city).filter(Boolean)).map(v => ({ value: v, label: v }));
   const total = count ?? rows.length;
   const nextLimit = rows.length < total && limit < PAGE_MAX ? Math.min(limit + PAGE_STEP, PAGE_MAX) : null;
   const strings: VisitsBoardStrings = {
@@ -84,6 +88,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     allStatuses: t("visit.list.allStatuses", "All statuses"),
     allTypes: t("visit.list.allTypes", "All types"),
     allModes: t("visit.list.allModes", "All modes"),
+    allRegions: t("visit.list.allRegions", "All regions"),
+    allCities: t("visit.list.allCities", "All cities"),
     fromDate: t("visit.list.fromDate", "Window from"),
     toDate: t("visit.list.toDate", "Window to"),
     sortAria: t("visit.list.sortAria", "Sort visits"),
@@ -150,6 +156,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
         </div></div>
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}
+          regionOptions={regionOptions} cityOptions={cityOptions}
           total={total} limit={limit} nextLimit={nextLimit} strings={strings} />
       )}
     </Shell>
