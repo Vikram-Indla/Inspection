@@ -25,6 +25,7 @@ export type StartupStrings = {
   exceptionHeading: string; exceptionPlaceholder: string; exceptionSend: string;
   logExceptionSent: string; logExceptionFailed: string; logDeviation: string;
   logOpState: string; logOpBlocked: string; logGpsFallback: string;
+  mapsOpen: string; mapsGeo: string; mapsCaption: string; progressLabel: string; progressCaption: string; cardsFactoryTitle: string; cardsVisitTitle: string; lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string; lblCoords: string; lblFence: string; lblType: string; lblMode: string; lblWindow: string; lblPackage: string; lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string; cancelHeading: string; cancelCaption: string; cancelSelectReason: string; cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string; cancelRequestedChip: string; cancelReasonsMissing: string; logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string; returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string; returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
 };
 
 // Module-level label so the dynamic() loading component (defined outside the
@@ -59,7 +60,7 @@ function distM(a: [number, number], b: [number, number]) {
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 
-export default function Startup({ visit, gis, strings }: { visit: V; gis: Gis; strings: StartupStrings }) {
+export default function Startup({ visit, gis, strings, reasons, flags }: { visit: V; gis: Gis; strings: StartupStrings; reasons: { key: string; label: string }[]; flags: { cancellationRequested: boolean; returnRequested: boolean } }) {
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
   const [log, setLog] = useState([] as string[]);
@@ -87,6 +88,7 @@ export default function Startup({ visit, gis, strings }: { visit: V; gis: Gis; s
   const posRef = useRef(null as Fix | null);
   const lastPostRef = useRef(0);
   const minDRef = useRef(Infinity);
+  const initDRef = useRef(null as number | null);
   const devSinceRef = useRef(null as number | null);
   const devDoneRef = useRef(false);
   const stringsRef = useRef(strings); stringsRef.current = strings;
@@ -132,6 +134,7 @@ export default function Startup({ visit, gis, strings }: { visit: V; gis: Gis; s
       const fix: Fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy,
         alt: p.coords.altitude, speed: p.coords.speed, heading: p.coords.heading, d };
       posRef.current = fix; setLive(fix);
+      if (initDRef.current === null) initDRef.current = d;
       if (d < minDRef.current) { minDRef.current = d; devSinceRef.current = null; }
     }, () => { /* GPS unavailable — one-shot check-in path handles fallback (M04-049) */ }, { enableHighAccuracy: true });
     const timer = setInterval(async () => {
@@ -253,6 +256,10 @@ export default function Startup({ visit, gis, strings }: { visit: V; gis: Gis; s
       tone: (checkin.inside ? "low" : "high") as GeoMarkerData["tone"],
     }] : []),
   ];
+  const initialD = initDRef.current;
+  const remainingD = live?.d ?? null;
+  const progress = (initialD != null && remainingD != null && initialD > 0)
+    ? Math.max(0, Math.min(100, (1 - remainingD / initialD) * 100)) : null;
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

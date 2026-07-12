@@ -112,6 +112,14 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   inline-size: 100%;
 }
 .ax-textarea { min-height: calc(var(--ax-control-height) * 2); resize: vertical; }
+/* Keep Chrome/Safari autofill on the neutral surface fill, not the UA blue/yellow wash */
+.ax-input:-webkit-autofill, .ax-input:-webkit-autofill:hover, .ax-input:-webkit-autofill:focus,
+.ax-select:-webkit-autofill, .ax-textarea:-webkit-autofill {
+  -webkit-text-fill-color: var(--ax-color-text);
+  box-shadow: 0 0 0 100px var(--ax-color-surface) inset;
+  caret-color: var(--ax-color-text);
+  transition: background-color 6000s ease-in-out 0s;
+}
 .ax-input:hover, .ax-select:hover, .ax-textarea:hover { border-color: var(--ax-color-border-strong); }
 .ax-input:focus-visible, .ax-select:focus-visible, .ax-textarea:focus-visible { outline: none; border-color: var(--ax-color-primary); box-shadow: var(--ax-focus-ring); }
 .ax-input[disabled], .ax-select[disabled], .ax-textarea[disabled] { background: var(--ax-color-neutral-tint); color: var(--ax-color-text-disabled); cursor: not-allowed; }

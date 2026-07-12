@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
+import { fetchFactoryChecks, updatedCount, FACTORY_FIELD_EN } from "@/lib/factory-verification";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,13 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     .in("object_id", timelineIds)
     .order("occurred_at", { ascending: false })
     .limit(25);
+  const fv = await fetchFactoryChecks(sb, ins.id);
+  const fvUpdated = updatedCount(fv.checks);
+  const { data: fvEvidence } = fv.checks.length
+    ? await sb.from("evidence").select("linked_id").eq("inspection_id", ins.id).eq("linked_type", "factory_field").is("deleted_at", null)
+    : { data: [] as { linked_id: string }[] };
+  const fvEvMap = (fvEvidence ?? []).reduce((m: Record<string, number>, e: { linked_id: string }) => { m[e.linked_id] = (m[e.linked_id] ?? 0) + 1; return m; }, {} as Record<string, number>);
+  const fvEvCount = (checkId: string) => fvEvMap[checkId] ?? 0;
   const panelStrings: WorkspaceDecisionStrings = {
     heading: t("review.ws.panelHeading", "Decision — irreversible once confirmed"),
     decisions: { approve: t("enum.approve", "approve"), return: t("enum.return", "return"), reject: t("enum.reject", "reject") },

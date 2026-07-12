@@ -196,7 +196,51 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       confirm: t("field.ws.sig.confirm", "Confirm & submit"),
       required: t("field.ws.sig.required", "Both a drawn signature and the representative name are required (DEC-009)."),
     },
+    panelTitle: t("field.ws.panel.title", "Factory & visit context"),
+    panelFactory: t("field.ws.panel.factory", "Factory"),
+    panelVisit: t("field.ws.panel.visit", "Visit"),
+    panelCode: t("field.ws.panel.code", "Code"),
+    panelLicense: t("field.ws.panel.license", "License"),
+    panelRegion: t("field.ws.panel.region", "Region"),
+    panelActivity: t("field.ws.panel.activity", "Activity"),
+    panelWindow: t("field.ws.panel.window", "Window"),
+    panelTypeMode: t("field.ws.panel.typeMode", "Type \u00b7 mode"),
+    panelPkg: t("field.ws.panel.pkg", "Package"),
+    prevSource: t("field.ws.prev.source", "Previous inspection"),
+    prevLine: t("field.ws.prev.line", "{code}: {value} \u00b7 {ev} photo(s)"),
+    prevNoAnswer: t("field.ws.prev.noAnswer", "not answered previously"),
+    evSyncedAlt: t("field.ws.ev.syncedAlt", "Synced evidence"),
+    evArchived: t("field.ws.ev.archived", "archived"),
+    evReplace: t("field.ws.ev.replace", "Replace"),
+    evDelete: t("field.ws.ev.delete", "Delete"),
+    evDeletedMsg: t("field.ws.ev.deletedMsg", "Evidence deleted (audited)."),
+    evDeleteQueuedOffline: t("field.ws.ev.deleteQueuedOffline", "Deletion queued \u2014 applies on reconnect."),
+    evArchiveQueued: t("field.ws.ev.archiveQueued", "Replacement queued \u2014 old evidence archived on sync."),
+    evDeleteTitle: t("field.ws.ev.deleteTitle", "Delete evidence"),
+    evDeleteReason: t("field.ws.ev.deleteReason", "Reason for deletion"),
+    evDeleteReasonPh: t("field.ws.ev.deleteReasonPh", "why this evidence is being removed"),
+    evDeleteConfirm: t("field.ws.ev.deleteConfirm", "Delete"),
+    evDeleteCancel: t("field.ws.ev.deleteCancel", "Cancel"),
+    evDeleteNeedsReason: t("field.ws.ev.deleteNeedsReason", "A reason is required to delete evidence."),
+    annot: {
+      title: t("field.ws.annot.title", "Annotate photo"),
+      hint: t("field.ws.annot.hint", "Mark the finding, then confirm. The annotated image is what gets stored."),
+      pen: t("field.ws.annot.pen", "Pen"),
+      rect: t("field.ws.annot.rect", "Box"),
+      undo: t("field.ws.annot.undo", "Undo"),
+      clear: t("field.ws.annot.clear", "Clear"),
+      cancel: t("field.ws.annot.cancel", "Cancel"),
+      confirm: t("field.ws.annot.confirm", "Confirm"),
+      imgAlt: t("field.ws.annot.imgAlt", "Captured photo to annotate"),
+    },
   };
+  const pvv = ins.package_versions as unknown as { packages: { code: string }; version_label: string };
+  const panel: WorkspacePanel = {
+    factory: { name: visitRow.factories.name, code: visitRow.factories.factory_code, region: visitRow.factories.region, city: visitRow.factories.city, license: visitRow.factories.license_number, activity: visitRow.factories.activity_class },
+    visit: { window_start: visitRow.window_start, window_end: visitRow.window_end, visit_type: visitRow.visit_type, execution_mode: visitRow.execution_mode },
+    pkg: { code: pvv.packages.code, label: pvv.version_label },
+  };
+  const inspectionNo = (ins as unknown as { inspection_no: string | null }).inspection_no ?? null;
   return (
     <Shell current="/field" title={t("field.ws.title", "Inspection — {factory}").replace("{factory}", (ins.visits as unknown as { factories: { name: string } }).factories.name)}
       context={<span className="ax-version">{(ins.package_versions as unknown as { packages: { code: string }; version_label: string }).packages.code} · {(ins.package_versions as unknown as { version_label: string }).version_label} · {t("field.ws.locked", "locked")}</span>}>
@@ -212,6 +256,10 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         evidenceLimits={settings.evidence ?? {}}
         actionDueDays={settings.sla?.action_due_calendar_days ?? 14}
         strings={strings}
+        evidenceUrls={evidenceUrls}
+        prev={prev}
+        panel={panel}
+        inspectionNo={inspectionNo}
       />
     </Shell>
   );
