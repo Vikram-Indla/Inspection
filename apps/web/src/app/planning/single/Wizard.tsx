@@ -20,7 +20,7 @@ export type WizardStrings = {
   plannerLat: string; plannerLng: string; plannerPin: string; locationConfirmed: string; mapLoading: string;
   configStep: string;
   visitType: string; typePeriodic: string; typeFollowUp: string; typeComplaint: string;
-  packageLabel: string; mode: string; modePhysical: string; modeVirtual: string;
+  packageLabel: string; mode: string; modePhysical: string; modeVirtual: string; modeIneligible: string;
   windowStart: string; windowEnd: string; inspector: string; selectOption: string; autoAssign: string;
   blockedTitle: string; publish: string; publishing: string;
   riskBands: Record<string, string>;
@@ -39,7 +39,7 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ),
 });
 
-export default function Wizard({ factories, packages, inspectors, strings }: { factories: Factory[]; packages: Pkg[]; inspectors: Insp[]; strings: WizardStrings }) {
+export default function Wizard({ factories, packages, inspectors, strings, virtualEligible }: { factories: Factory[]; packages: Pkg[]; inspectors: Insp[]; strings: WizardStrings; virtualEligible: boolean }) {
   const [state, formAction, pending] = useActionState<PublishResult, FormData>(publishSingleVisit, {});
   const [query, setQuery] = useState("");
   const [factory, setFactory] = useState(null as Factory | null);
@@ -56,6 +56,7 @@ export default function Wizard({ factories, packages, inspectors, strings }: { f
   const [licenseNumber, setLicenseNumber] = useState("");
   const [locationConfirmed, setLocationConfirmed] = useState(false);
   const [inspectorId, setInspectorId] = useState("");
+  const [executionMode, setExecutionMode] = useState<"physical" | "virtual">("physical");
   // React 19 auto-resets a <form action={...}>'s native controls after every
   // action completion (success AND blocked/validation failure) — a documented
   // behavior that writes directly to the DOM and bypasses controlled-input
@@ -80,6 +81,22 @@ export default function Wizard({ factories, packages, inspectors, strings }: { f
   const hasOfficial = factory != null && factory.official_lat != null && factory.official_lng != null;
   const pLat = Number(plannerLat); const pLng = Number(plannerLng);
   const hasPlannerPin = plannerLat !== "" && plannerLng !== "" && Number.isFinite(pLat) && Number.isFinite(pLng);
+  // M03-011 — execution-mode eligibility: physical needs a GIS-verifiable
+  // location (official pin, or a planner override pin — same substitution
+  // the M01-038 location-confirmation gate already accepts); virtual needs
+  // the OTP engine configured. field/[visitId]/page.tsx computes and shows
+  // this read-only after publish; this is the only place mode is actually
+  // chosen, so it's the only place that can enforce it, not just display it.
+  const physicalEligible = hasOfficial || hasPlannerPin;
+  useEffect(() => {
+    // Before a factory is picked, "physical ineligible" is meaningless (no
+    // location exists yet to be ineligible) — only enforce once eligibility
+    // is actually determined, or every session would open on Virtual.
+    if (!factory) return;
+    if (executionMode === "physical" && !physicalEligible && virtualEligible) setExecutionMode("virtual");
+    if (executionMode === "virtual" && !virtualEligible && physicalEligible) setExecutionMode("physical");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [factory, physicalEligible, virtualEligible]);
   const mapMarkers: GeoMarkerData[] = factory ? [
     ...(hasOfficial ? [{
       id: "official", lat: factory.official_lat as number, lng: factory.official_lng as number,
@@ -157,7 +174,10 @@ export default function Wizard({ factories, packages, inspectors, strings }: { f
           <div className="ax-field"><label className="ax-field__label">{strings.packageLabel}</label>
             <select className="ax-select" name="package_version_id">{packages.map(p => <option key={p.id} value={p.id}>{p.packages.code} · {p.version_label}</option>)}</select></div>
           <div className="ax-field"><label className="ax-field__label">{strings.mode}</label>
-            <select className="ax-select" name="execution_mode"><option value="physical">{strings.modePhysical}</option><option value="virtual">{strings.modeVirtual}</option></select></div>
+            <select key={resetKey} className="ax-select" name="execution_mode" value={executionMode} onChange={e => setExecutionMode(e.target.value as "physical" | "virtual")}>
+              <option value="physical" disabled={!physicalEligible}>{strings.modePhysical}{!physicalEligible ? ` — ${strings.modeIneligible}` : ""}</option>
+              <option value="virtual" disabled={!virtualEligible}>{strings.modeVirtual}{!virtualEligible ? ` — ${strings.modeIneligible}` : ""}</option>
+            </select></div>
           <div className="ax-field"><label className="ax-field__label">{strings.windowStart}</label>
             <input key={resetKey} className="ax-input ax-numeric" name="window_start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
           <div className="ax-field"><label className="ax-field__label">{strings.windowEnd}</label>

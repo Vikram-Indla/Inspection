@@ -35,8 +35,20 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     const hasPlannerPin = planner_lat != null && planner_lng != null && Number.isFinite(planner_lat) && Number.isFinite(planner_lng);
     if ((planner_lat != null || planner_lng != null) && !hasPlannerPin)
       blockers.push("Planner pin needs both a valid latitude and longitude (M01-038)");
-    if (fac && fac.official_lat == null && fac.official_lng == null && !hasPlannerPin)
+    const hasOfficial = fac?.official_lat != null && fac?.official_lng != null;
+    if (fac && !hasOfficial && !hasPlannerPin)
       blockers.push("No official location on record — pin the visit location manually (M01-038)");
+    // Execution-mode eligibility (M03-011): physical needs GIS-verifiable
+    // coordinates, virtual needs the OTP engine configured. Startup.tsx
+    // already computes and displays this read-only after publish — this is
+    // the only place mode is actually chosen, so it's the only place that
+    // can enforce "an ineligible mode cannot be selected" for real.
+    if (mode === "physical" && !hasOfficial && !hasPlannerPin)
+      blockers.push("Physical execution needs a GIS-verifiable location — no official pin and none provided (M03-011)");
+    if (mode === "virtual") {
+      const { data: otpEngine } = await sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle();
+      if (!otpEngine) blockers.push("Virtual execution requires the OTP engine to be configured (M03-011)");
+    }
   }
   if (!location_confirmed) blockers.push("Location must be confirmed on the map before publish (M01-038)");
   if (!package_version_id) blockers.push("No published package selected (ERR-PUB-001)");

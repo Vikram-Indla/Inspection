@@ -8,12 +8,16 @@ export const dynamic = "force-dynamic";
 export default async function SinglePlanning() {
   const { t } = await useT();
   const sb = await supabaseServer();
-  const [{ data: factories }, { data: pkgs }, { data: inspRoles }] = await Promise.all([
+  const [{ data: factories }, { data: pkgs }, { data: inspRoles }, { data: otpEngine }] = await Promise.all([
     sb.from("factories").select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m").order("name"),
     sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"]).order("published_at", { ascending: false }),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
+    sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
   ]);
   const inspectors = (inspRoles ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
+  // M03-011 — virtual execution requires the OTP engine configured, same
+  // eligibility rule field/[visitId]/page.tsx applies read-only after publish.
+  const virtualEligible = !!otpEngine;
   const strings: WizardStrings = {
     findFactory: t("plan.single.findFactory", "1 · Find factory — CR, code or Industrial License (M01-035)"),
     searchPlaceholder: t("plan.single.searchPlaceholder", "CR number, factory code or Industrial License"),
@@ -40,6 +44,7 @@ export default async function SinglePlanning() {
     mode: t("plan.single.mode", "Mode"),
     modePhysical: t("enum.physical", "Physical"),
     modeVirtual: t("enum.virtual", "Virtual"),
+    modeIneligible: t("plan.single.modeIneligible", "not eligible (M03-011)"),
     windowStart: t("plan.single.windowStart", "Window start"),
     windowEnd: t("plan.single.windowEnd", "Window end"),
     inspector: t("plan.single.inspector", "Inspector (M01-040)"),
@@ -57,7 +62,7 @@ export default async function SinglePlanning() {
   return (
     <Shell current="/planning" title={t("plan.single.title", "Single visit planning")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("plan.single.context", "SCR-WEB-120/140/150 · golden #2 as product")}</span>}>
-      <Wizard factories={(factories ?? []) as never} packages={(pkgs ?? []) as never} inspectors={inspectors} strings={strings} />
+      <Wizard factories={(factories ?? []) as never} packages={(pkgs ?? []) as never} inspectors={inspectors} strings={strings} virtualEligible={virtualEligible} />
     </Shell>
   );
 }
