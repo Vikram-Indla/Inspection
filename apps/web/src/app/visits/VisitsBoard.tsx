@@ -24,6 +24,8 @@ export type VisitRow = {
   factoryCode: string;
   crNumber: string;
   licenseNumber: string;
+  planId: string;        // visit_plan_id ("" = immediate, no plan)
+  planMethod: string;    // single|bulk ("" = immediate)
   inspectorName: string;
   inspectionStatus: string | null; // null = no inspection row yet
   typeLabel: string;     // pre-translated
@@ -37,6 +39,8 @@ export type Inspector = { user_id: string; full_name: string };
 export type VisitsBoardStrings = {
   searchPlaceholder: string;
   searchAria: string;
+  campaignLabel: string;
+  planLabel: string;
   allStatuses: string;
   allTypes: string;
   allModes: string;
@@ -132,8 +136,10 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       if (from && v.windowStart.slice(0, 10) < from) return false;
       if (to && v.windowStart.slice(0, 10) > to) return false;
       if (!needle) return true;
-      // M02-003/021 — Visit ID, Factory Name, CR, Industrial License, Inspector
-      return [v.id, v.factoryName, v.factoryCode, v.crNumber, v.licenseNumber, v.inspectorName]
+      // M02-021 — Visit ID, Plan/Campaign ID, Factory Name, CR, Industrial License, Inspector.
+      // Bulk plans ARE campaigns, so the plan id doubles as the campaign key: matching it
+      // surfaces every visit dispatched under that campaign.
+      return [v.id, v.planId, v.factoryName, v.factoryCode, v.crNumber, v.licenseNumber, v.inspectorName]
         .some(f => f && f.toLowerCase().includes(needle));
     });
     const dir = sort === "window_desc" ? -1 : 1;
@@ -267,7 +273,10 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                 <tr key={v.id}>
                   <td><input type="checkbox" checked={selected.has(v.id)} onChange={() => toggleOne(v.id)}
                     aria-label={strings.selectRowAria.replace("{id}", v.id.slice(0, 8))} /></td>
-                  <td className="ax-numeric"><a className="ax-link" href={`/visits/${v.id}`}><strong>{v.id.slice(0, 8)}</strong></a></td>
+                  <td className="ax-numeric"><a className="ax-link" href={`/visits/${v.id}`}><strong>{v.id.slice(0, 8)}</strong></a>
+                    {v.planId && (
+                      <><br /><span className="ax-caption ax-numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
+                    )}</td>
                   <td>{v.factoryName}{(v.crNumber || v.licenseNumber) && (
                     <><br /><span className="ax-caption ax-numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
                   )}</td>

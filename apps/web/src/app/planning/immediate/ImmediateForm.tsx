@@ -14,6 +14,10 @@ export type ImmediateStrings = {
   urgencyReason: string; selectOption: string;
   reasonComplaint: string; reasonIncident: string; reasonReferral: string;
   locationDispatch: string; latitude: string; longitude: string; packageLabel: string; inspector: string;
+  autoAssign: string;
+  visitType: string; typePeriodic: string; typeFollowUp: string; typeComplaint: string;
+  windowStart: string; windowEnd: string; windowHint: string;
+  priority: string; priorityPlaceholder: string; notes: string; notesPlaceholder: string;
   blockedTitle: string; create: string; creating: string;
 };
 
@@ -50,6 +54,13 @@ export default function ImmediateForm({ factories, packages, inspectors, strings
             <input className="ax-input" name="manual_activity" placeholder={strings.manualActivityPlaceholder} /></div>
           <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label">{strings.urgencyReason}</label>
             <select className="ax-select" name="urgency_reason" required><option value="">{strings.selectOption}</option><option value="Complaint received">{strings.reasonComplaint}</option><option value="Incident report">{strings.reasonIncident}</option><option value="Authority referral">{strings.reasonReferral}</option></select></div>
+          {/* M01-047 — visit type is selectable, not hardcoded */}
+          <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label">{strings.visitType}</label>
+            <select className="ax-select" name="visit_type" defaultValue="complaint">
+              <option value="complaint">{strings.typeComplaint}</option>
+              <option value="follow_up">{strings.typeFollowUp}</option>
+              <option value="periodic">{strings.typePeriodic}</option>
+            </select></div>
         </div>
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4>{strings.locationDispatch}</h4>
@@ -57,10 +68,25 @@ export default function ImmediateForm({ factories, packages, inspectors, strings
             <div className="ax-field"><label className="ax-field__label">{strings.latitude}</label><input className="ax-input ax-numeric" name="lat" defaultValue="24.7136" required /></div>
             <div className="ax-field"><label className="ax-field__label">{strings.longitude}</label><input className="ax-input ax-numeric" name="lng" defaultValue="46.6753" required /></div>
           </div>
+          {/* M01-047 — visit window is enterable; blank keeps the urgent default (now → +8h) */}
+          <div className="ax-row">
+            <div className="ax-field"><label className="ax-field__label">{strings.windowStart}</label>
+              <input className="ax-input ax-numeric" name="window_start" type="datetime-local" /></div>
+            <div className="ax-field"><label className="ax-field__label">{strings.windowEnd}</label>
+              <input className="ax-input ax-numeric" name="window_end" type="datetime-local" /></div>
+          </div>
+          <span className="ax-caption">{strings.windowHint}</span>
+          <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label">{strings.priority}</label>
+            <input className="ax-input" name="priority" placeholder={strings.priorityPlaceholder} /></div>
           <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label">{strings.packageLabel}</label>
             <select className="ax-select" name="package_version_id">{packages.map(p => <option key={p.id} value={p.id}>{p.packages.code} · {p.version_label}</option>)}</select></div>
+          {/* M01-048 — auto-assign option (availability-checked) alongside manual pick */}
           <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label">{strings.inspector}</label>
-            <select className="ax-select" name="inspector_id"><option value="">{strings.selectOption}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+            <select className="ax-select" name="inspector_id" defaultValue="auto">
+              <option value="auto">{strings.autoAssign}</option>
+              {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+          <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label">{strings.notes}</label>
+            <textarea className="ax-input" name="notes" rows={2} placeholder={strings.notesPlaceholder} /></div>
         </div>
       </div>
       {state.error && <div className="ax-validation" role="alert"><strong>{strings.blockedTitle}</strong><ul>{state.error.split(" · ").map(b => <li key={b}>{b}</li>)}</ul></div>}

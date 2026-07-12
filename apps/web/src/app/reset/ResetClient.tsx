@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
+import { logAuthEvent } from "@/lib/audit";
 import { IconEye, IconEyeOff } from "../icons";
 
 export type ResetStrings = {
@@ -59,11 +60,16 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
     setError(null);
     if (pw !== pw2) { setError(s.mismatch); return; }
     setBusy(true);
-    const { error } = await supabaseBrowser().auth.updateUser({ password: pw });
+    const sb = supabaseBrowser();
+    const { error } = await sb.auth.updateUser({ password: pw });
     setBusy(false);
     if (error) { setError(error.message); return; }  // surfaces Supabase password-policy errors verbatim
+    // Audit the completion (FND-003) while the recovery session still exists,
+    // so actor = auth.uid() is captured. Best-effort; email hashed client-side.
+    const { data } = await sb.auth.getUser();
+    if (data.user?.email) await logAuthEvent("password_reset_completed", data.user.email);
     // Drop the short-lived recovery session so sign-in starts clean.
-    await supabaseBrowser().auth.signOut();
+    await sb.auth.signOut();
     setStage("done");
   }
 

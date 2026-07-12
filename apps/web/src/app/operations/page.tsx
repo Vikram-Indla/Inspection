@@ -7,6 +7,7 @@ import {
 } from "./Controls";
 import { MonitoringTable, RegionCityFilter, type MonitoringStrings } from "./Monitoring";
 import OpsMap, { type OpsPin, type OpsMapStrings } from "./OpsMap";
+import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
 import type { MonitorRow } from "./actions";
 import type { GeoTone } from "@/components/GeoMap";
 
@@ -317,6 +318,60 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       : f.kind === "overdue_submit" ? t("ops.sla.overdueSubmit", "Overdue to submit")
         : `${t("ops.sla.reminder", "Reminder")} ${f.pct}%`;
 
+  // ---------- M08-017 CSV export — three tables, region/city scope honored ----------
+  const fmtTs = (ms: number) => new Date(ms).toISOString().slice(0, 16).replace("T", " ");
+  const exportStrings: OpsExportStrings = {
+    heading: t("ops.export.heading", "Export CSV (M08-017):"),
+    scopeNote: t("ops.export.scopeNote", "reflects the current region/city scope · UTF-8 BOM for Arabic"),
+  };
+  const exportDatasets: ExportDataset[] = [
+    {
+      key: "monitoring",
+      label: t("ops.export.monitoring", "Live monitoring"),
+      filename: "ops_monitoring.csv",
+      headers: [
+        t("ops.live.th.visit", "Visit"), t("ops.live.th.factory", "Factory"),
+        t("ops.live.th.operational", "Operational"), t("ops.live.th.geofence", "Geofence"),
+        t("ops.live.th.inspector", "Inspector"),
+      ],
+      rows: monitorRows.map(r => [
+        r.id.slice(0, 8), r.factory_name ?? "—", enumLabel(r.operational_state),
+        r.geofence ? enumLabel(r.geofence) : "—", r.inspector ?? "—",
+      ]),
+    },
+    {
+      key: "sla",
+      label: t("ops.export.sla", "SLA watch"),
+      filename: "ops_sla_watch.csv",
+      headers: [
+        t("ops.sla.th.visit", "Visit"), t("ops.sla.th.factory", "Factory"),
+        t("ops.sla.th.operational", "Operational"), t("ops.sla.th.deadline", "Deadline"),
+        t("ops.sla.th.sla", "SLA"), t("ops.sla.th.escalation", "Escalation"),
+      ],
+      rows: slaFlags.map(f => [
+        f.visit.id.slice(0, 8), f.visit.factories?.name ?? "—",
+        enumLabel(f.visit.operational_state), fmtTs(f.deadlineMs),
+        slaKindLabel(f), f.escalation ?? "—",
+      ]),
+    },
+    {
+      key: "risk",
+      label: t("ops.export.risk", "High-risk factories"),
+      filename: "ops_high_risk.csv",
+      headers: [
+        t("ops.risk.th.factory", "Factory"), t("ops.export.activity", "Activity"),
+        t("ops.risk.th.location", "Location"), t("ops.risk.th.score", "Score"),
+        t("ops.risk.th.band", "Band"),
+      ],
+      rows: highRisk.map(f => [
+        f.name, f.activity_class ?? "—",
+        [f.region, f.city].filter(Boolean).join(" · ") || "—",
+        f.risk_score != null ? String(f.risk_score) : "—",
+        f.risk_band ? enumLabel(f.risk_band) : "—",
+      ]),
+    },
+  ];
+
   return (
     <Shell current="/operations" title={t("ops.title", "Operations Center")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("ops.context", "SCR-WEB-500 · SB12 · operational state ≠ workflow status (FND-002)")}</span>}>
@@ -334,6 +389,11 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         ))}
       </div>
       <p className="ax-caption"><span className="ax-numeric">{published.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published and monitored live below.")}</p>
+
+      {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
+      <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>
+        <OpsExport datasets={exportDatasets} strings={exportStrings} />
+      </div>
 
       {/* Region/city scope — filters monitoring, map and SLA watch (M08-010) */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

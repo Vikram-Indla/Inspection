@@ -11,7 +11,9 @@ const PAGE_MAX = 1000;
 type Joined = {
   id: string; visit_type: string; execution_mode: string; planning_status: string;
   operational_state: string; window_start: string; window_end: string;
+  visit_plan_id: string | null;
   factories: { name: string; factory_code: string | null; cr_number: string | null; license_number: string | null } | null;
+  visit_plans: { method: string } | null; // TO-ONE embed — object or null (null = immediate)
   assignments: { profiles: { full_name: string } | null }[] | null;
   inspections: { status: string } | null; // TO-ONE embed — object or null
 };
@@ -26,8 +28,9 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   await sb.rpc("expire_lapsed_visits");
   const [{ data: visits, error, count }, { data: inspRows }] = await Promise.all([
     sb.from("visits")
-      .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end,
+      .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, visit_plan_id,
         factories(name, factory_code, cr_number, license_number),
+        visit_plans(method),
         assignments(profiles(full_name)),
         inspections(status)`, { count: "exact" })
       .order("window_start", { ascending: true }).limit(limit),
@@ -58,6 +61,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       factoryCode: v.factories?.factory_code ?? "",
       crNumber: v.factories?.cr_number ?? "",
       licenseNumber: v.factories?.license_number ?? "",
+      planId: v.visit_plan_id ?? "",
+      planMethod: v.visit_plans?.method ?? "",
       inspectorName: asg?.profiles?.full_name ?? "",
       inspectionStatus: v.inspections?.status ?? null,
       typeLabel: t(`enum.${v.visit_type}`, v.visit_type),
@@ -72,8 +77,10 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   const total = count ?? rows.length;
   const nextLimit = rows.length < total && limit < PAGE_MAX ? Math.min(limit + PAGE_STEP, PAGE_MAX) : null;
   const strings: VisitsBoardStrings = {
-    searchPlaceholder: t("visit.list.searchPlaceholder", "Visit ID, factory, CR, license or inspector…"),
-    searchAria: t("visit.list.searchAria", "Search visits (M02-003)"),
+    searchPlaceholder: t("visit.list.searchPlaceholder", "Visit ID, Plan/Campaign ID, factory, CR, license or inspector…"),
+    searchAria: t("visit.list.searchAria", "Search visits — including Plan ID and Campaign (M02-021)"),
+    campaignLabel: t("visit.list.campaignLabel", "Campaign"),
+    planLabel: t("visit.list.planLabel", "Plan"),
     allStatuses: t("visit.list.allStatuses", "All statuses"),
     allTypes: t("visit.list.allTypes", "All types"),
     allModes: t("visit.list.allModes", "All modes"),

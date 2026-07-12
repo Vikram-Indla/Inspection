@@ -4,6 +4,33 @@ import { supabaseServer } from "@/lib/supabase-server";
 
 export type PkgResult = { error?: string; ok?: boolean };
 
+// M09-013 — read-only publish-impact reader. Returns how many IN-FLIGHT visits
+// and inspections are still pinned to PRIOR published versions of this package
+// (they run on the frozen definition; a new publish never re-versions them).
+// Backed by the SECURITY DEFINER aggregate RPC package_version_impact (0024) so
+// the config-admin checker family reads COUNTS without row-level SELECT on the
+// operational tables. Degrades to null if the RPC is unavailable or scoped out.
+export type PinnedActiveImpact = {
+  active_visits: number;
+  active_inspections: number;
+  prior_count: number;
+  prior: { label: string; visits: number; inspections: number }[];
+};
+
+export async function getPinnedActiveImpact(versionId: string): Promise<PinnedActiveImpact | null> {
+  if (!versionId) return null;
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc("package_version_impact", { p_version_id: versionId });
+  if (error || !data || typeof data !== "object" || "error" in (data as object)) return null;
+  const d = data as Record<string, unknown>;
+  return {
+    active_visits: Number(d.active_visits ?? 0),
+    active_inspections: Number(d.active_inspections ?? 0),
+    prior_count: Number(d.prior_count ?? 0),
+    prior: Array.isArray(d.prior) ? (d.prior as PinnedActiveImpact["prior"]) : [],
+  };
+}
+
 // M09-030 — new draft version clones the latest definition; published versions stay immutable.
 export async function createDraftVersion(_: PkgResult, formData: FormData): Promise<PkgResult> {
   const sb = await supabaseServer();

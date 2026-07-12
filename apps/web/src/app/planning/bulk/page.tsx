@@ -2,21 +2,57 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import BulkForm, { type BulkFormStrings } from "./BulkForm";
+import CriteriaBuilder, { type Condition, type CriteriaBuilderStrings } from "./CriteriaBuilder";
 
 export const dynamic = "force-dynamic";
 
-export default async function BulkPlanning({ searchParams }: { searchParams: Promise<{ region?: string; band?: string }> }) {
-  const { region, band } = await searchParams;
+// M01-003/012/022 — criteria fields the builder targets over the factory set.
+const CRITERIA_FIELDS = ["region", "risk_band", "activity_class", "city"] as const;
+type FactoryForCriteria = {
+  region: string | null; risk_band: string | null; activity_class: string | null; city: string | null;
+};
+
+const toArr = (v: string | string[] | undefined): string[] => (v == null ? [] : Array.isArray(v) ? v : [v]);
+
+function matchesCondition(f: FactoryForCriteria, c: Condition): boolean {
+  const fv = String((f as Record<string, unknown>)[c.field] ?? "").toLowerCase().trim();
+  const tv = c.value.toLowerCase().trim();
+  const equal = fv === tv;
+  return c.op === "is-not" ? !equal : equal;
+}
+
+export default async function BulkPlanning({ searchParams }: { searchParams: Promise<{ cf?: string | string[]; co?: string | string[]; cv?: string | string[]; combine?: string }> }) {
+  const sp = await searchParams;
   const { t } = await useT();
   const sb = await supabaseServer();
-  let q = sb.from("factories").select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, visits(planning_status, visit_type)").order("risk_score", { ascending: false });
-  if (region) q = q.eq("region", region);
-  if (band) q = q.eq("risk_band", band);
-  const [{ data: factories }, { data: pkgs }, { data: inspRows }] = await Promise.all([
-    q,
+  // M01-003/012/022 — parse index-aligned cf/co/cv arrays into conditions; drop
+  // rows with an unknown field or an empty value (an in-progress blank row).
+  const cf = toArr(sp.cf), co = toArr(sp.co), cv = toArr(sp.cv);
+  const conditions: Condition[] = cf
+    .map((field, i) => ({ field, op: co[i] === "is-not" ? "is-not" : "is", value: (cv[i] ?? "").trim() }))
+    .filter(c => (CRITERIA_FIELDS as readonly string[]).includes(c.field) && c.value !== "");
+  const combine = sp.combine === "or" ? "or" : "and";
+  // M01-004 — all matching factories are fetched, then the criteria are evaluated
+  // server-side (AND = every / OR = some). No DB-level .eq filters: is-not and OR
+  // combinations cannot be expressed as simple equality filters, so evaluation is
+  // uniform in one place.
+  const [{ data: allFactories }, { data: pkgs }, { data: inspRows }] = await Promise.all([
+    sb.from("factories").select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, visits(planning_status, visit_type)").order("risk_score", { ascending: false }),
     sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"]),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
   ]);
+  const everyFactory = (allFactories ?? []) as unknown as (FactoryForCriteria & Record<string, unknown>)[];
+  const factories = conditions.length === 0
+    ? everyFactory
+    : everyFactory.filter(f => combine === "or"
+      ? conditions.some(c => matchesCondition(f, c))
+      : conditions.every(c => matchesCondition(f, c)));
+  // Distinct value lists per field (datalist suggestions in the builder).
+  const distinct = (key: string) => [...new Set(everyFactory.map(f => (f as Record<string, unknown>)[key]).filter((v): v is string => typeof v === "string" && v.length > 0))].sort();
+  const fieldOptions: Record<string, string[]> = {
+    region: distinct("region"), risk_band: distinct("risk_band"),
+    activity_class: distinct("activity_class"), city: distinct("city"),
+  };
   const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
   const strings: BulkFormStrings = {
     colFactory: t("plan.bulk.colFactory", "Factory"),
@@ -55,20 +91,34 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     publishing: t("plan.bulk.publishing", "Publishing…"),
     riskBands: { high: t("enum.high", "high"), medium: t("enum.medium", "medium"), low: t("enum.low", "low") },
   };
+  const criteriaStrings: CriteriaBuilderStrings = {
+    heading: t("plan.bulk.criteria.heading", "Targeting criteria (M01-003/012/022)"),
+    combineLabel: t("plan.bulk.criteria.combineLabel", "Combine conditions"),
+    combineAnd: t("plan.bulk.criteria.combineAnd", "AND — match every condition"),
+    combineOr: t("plan.bulk.criteria.combineOr", "OR — match any condition"),
+    fieldLabel: t("plan.bulk.criteria.fieldLabel", "Field"),
+    opLabel: t("plan.bulk.criteria.opLabel", "Operator"),
+    valueLabel: t("plan.bulk.criteria.valueLabel", "Value"),
+    valuePlaceholder: t("plan.bulk.criteria.valuePlaceholder", "Type or pick a value"),
+    fieldRegion: t("plan.bulk.criteria.fieldRegion", "Region"),
+    fieldRiskBand: t("plan.bulk.criteria.fieldRiskBand", "Risk band"),
+    fieldActivity: t("plan.bulk.criteria.fieldActivity", "Activity class"),
+    fieldCity: t("plan.bulk.criteria.fieldCity", "City"),
+    opIs: t("plan.bulk.criteria.opIs", "is"),
+    opIsNot: t("plan.bulk.criteria.opIsNot", "is not"),
+    addCondition: t("plan.bulk.criteria.addCondition", "Add condition"),
+    remove: t("plan.bulk.criteria.remove", "Remove"),
+    apply: t("plan.bulk.criteria.apply", "Apply criteria"),
+    clear: t("plan.bulk.criteria.clear", "Clear all"),
+    matching: t("plan.bulk.matching", "{n} matching factories (M01-004: all matching returned)"),
+    hint: t("plan.bulk.criteria.hint", "Conditions are evaluated server-side over every factory in your scope — is-not and OR combinations included."),
+  };
   return (
     <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.bulk.context", "SCR-WEB-110 · AND criteria via filters")}</span>}>
-      <form method="get" className="ax-commandbar">
-        <select className="ax-select" name="region" defaultValue={region ?? ""} style={{ maxInlineSize: 200 }}>
-          <option value="">{t("plan.bulk.regionAny", "Region: any")}</option><option value="Riyadh">{t("region.riyadh", "Riyadh")}</option>
-        </select>
-        <select className="ax-select" name="band" defaultValue={band ?? ""} style={{ maxInlineSize: 200 }}>
-          <option value="">{t("plan.bulk.bandAny", "Risk band: any")}</option><option value="high">{t("enum.high", "high")}</option><option value="medium">{t("enum.medium", "medium")}</option><option value="low">{t("enum.low", "low")}</option>
-        </select>
-        <button className="ax-btn ax-btn--secondary">{t("plan.bulk.search", "Search")}</button>
-        <span className="ax-caption ax-numeric">{t("plan.bulk.matching", "{n} matching factories (M01-004: all matching returned)").replace("{n}", String((factories ?? []).length))}</span>
-      </form>
-      <BulkForm factories={(factories ?? []) as never} packages={(pkgs ?? []) as never} inspectors={inspectors} strings={strings} />
+      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.bulk.context", "SCR-WEB-110 · AND/OR criteria builder")}</span>}>
+      <CriteriaBuilder initial={conditions} initialCombine={combine} fieldOptions={fieldOptions}
+        matchCount={factories.length} strings={criteriaStrings} />
+      <BulkForm factories={factories as never} packages={(pkgs ?? []) as never} inspectors={inspectors} strings={strings} />
     </Shell>
   );
 }

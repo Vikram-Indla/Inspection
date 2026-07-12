@@ -99,6 +99,11 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
     cancelReason: t("visit.actions.cancelReason", "Cancellation reason *"),
     cancelPlaceholder: t("visit.actions.cancelPlaceholder", "final — M02-006"),
     cancelBtn: t("visit.actions.cancelBtn", "Cancel visit"),
+    visitTypeLabel: t("visit.actions.visitTypeLabel", "Visit type (pre-start — M02-006)"),
+    visitTypeBtn: t("visit.actions.visitTypeBtn", "Update type"),
+    typePeriodic: t("enum.periodic", "Periodic compliance"),
+    typeFollowUp: t("enum.follow_up", "Follow-up"),
+    typeComplaint: t("enum.complaint", "Complaint"),
     executionStarted: t("visit.actions.executionStarted", "execution started ({state}) — cancel / reschedule locked (M02-006)"),
     finalState: t("visit.actions.finalState", "final state — view only (M02-015/016)"),
   };
@@ -157,7 +162,7 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
       )}
       <ActionBar visitId={v.id} status={v.planning_status} opState={v.operational_state}
         opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
-        windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors} strings={actionStrings} />
+        visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors} strings={actionStrings} />
       {/* FIX WAVE F4 — M02-043 notes add/edit */}
       <NotesEditor visitId={v.id} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
       {/* FIX WAVE F4 — M02-042 attachments */}

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
+import { logAuthEvent } from "@/lib/audit";
 import { IconFingerprint, IconLock, IconEye, IconEyeOff, IconShieldCheck } from "../icons";
 import GovBar from "../GovBar";
 
@@ -96,6 +97,9 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
     // advance to the neutral "check your inbox" confirmation on success OR
     // a non-committal failure. Only surface transport errors.
     if (error) { setError(error.message); return; }
+    // Audit the request (FND-003). Best-effort; the entered address is hashed
+    // client-side and never stored raw. Fire regardless of account existence.
+    void logAuthEvent("password_reset_requested", email);
     setView("forgot-sent");
   }
 

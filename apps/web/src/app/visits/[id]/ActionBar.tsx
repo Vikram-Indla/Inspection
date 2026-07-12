@@ -1,7 +1,7 @@
 "use client";
 // SB05 — management actions: cancel (M02-006), reschedule (M02-008), reassign (M02-009/ENG-05)
 import { useActionState } from "react";
-import { returnVisit, republishVisit, cancelVisit, rescheduleVisit, reassignVisit, type ActionResult } from "./actions";
+import { returnVisit, republishVisit, cancelVisit, rescheduleVisit, reassignVisit, updateVisitType, type ActionResult } from "./actions";
 
 type I = { user_id: string; full_name: string };
 
@@ -11,20 +11,23 @@ export type ActionBarStrings = {
   republishBtn: string; reassignTo: string; reassignBtn: string;
   newWindowStart: string; newWindowEnd: string; rescheduleBtn: string;
   cancelReason: string; cancelPlaceholder: string; cancelBtn: string;
+  visitTypeLabel: string; visitTypeBtn: string;
+  typePeriodic: string; typeFollowUp: string; typeComplaint: string;
   executionStarted: string; finalState: string;
 };
 
-export default function ActionBar({ visitId, status, opState, opStateLabel, windowStart, windowEnd, inspectors, strings }: {
-  visitId: string; status: string; opState: string; opStateLabel: string; windowStart: string; windowEnd: string; inspectors: I[]; strings: ActionBarStrings;
+export default function ActionBar({ visitId, status, opState, opStateLabel, visitType, windowStart, windowEnd, inspectors, strings }: {
+  visitId: string; status: string; opState: string; opStateLabel: string; visitType: string; windowStart: string; windowEnd: string; inspectors: I[]; strings: ActionBarStrings;
 }) {
   const [ret, retAct, p1] = useActionState<ActionResult, FormData>(returnVisit, {});
   const [rep, repAct, p2] = useActionState<ActionResult, FormData>(republishVisit, {});
   const [can, canAct, p3] = useActionState<ActionResult, FormData>(cancelVisit, {});
   const [rsc, rscAct, p4] = useActionState<ActionResult, FormData>(rescheduleVisit, {});
   const [rea, reaAct, p5] = useActionState<ActionResult, FormData>(reassignVisit, {});
-  const msg = ret.error ?? rep.error ?? can.error ?? rsc.error ?? rea.error;
-  const ok = ret.ok ?? rep.ok ?? can.ok ?? rsc.ok ?? rea.ok;
-  const busy = p1 || p2 || p3 || p4 || p5;
+  const [vt, vtAct, p6] = useActionState<ActionResult, FormData>(updateVisitType, {});
+  const msg = ret.error ?? rep.error ?? can.error ?? rsc.error ?? rea.error ?? vt.error;
+  const ok = ret.ok ?? rep.ok ?? can.ok ?? rsc.ok ?? rea.ok ?? vt.ok;
+  const busy = p1 || p2 || p3 || p4 || p5 || p6;
   const canCancelReschedule = status === "published" && opState === "new"; // M02-006 / M02-008 guard, mirrored server-side
   const toLocal = (iso: string) => { return iso ? new Date(iso).toISOString().slice(0, 16) : ""; };
   return (
@@ -53,6 +56,17 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, wind
         )}
         {canCancelReschedule && (
           <>
+            {/* M02-006 — edit visit type, pre-start only (guarded server-side) */}
+            <form action={vtAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+              <input type="hidden" name="visit_id" value={visitId} />
+              <div className="ax-field" style={{ maxInlineSize: 200 }}><label className="ax-field__label">{strings.visitTypeLabel}</label>
+                <select className="ax-select" name="visit_type" defaultValue={visitType}>
+                  <option value="periodic">{strings.typePeriodic}</option>
+                  <option value="follow_up">{strings.typeFollowUp}</option>
+                  <option value="complaint">{strings.typeComplaint}</option>
+                </select></div>
+              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.visitTypeBtn}</button>
+            </form>
             <form action={rscAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               <input type="hidden" name="visit_id" value={visitId} />
               <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label">{strings.newWindowStart}</label>

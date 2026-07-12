@@ -2,6 +2,10 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Workspace, { type WorkspaceStrings, type WorkspacePanel, type PrevComparison } from "./Workspace";
+import FactoryVerification, {
+  type FactoryField, type FactoryProductRow, type FactoryMaterialRow,
+  type FactoryLicense, type FactoryFieldEvidence, type FactoryVerificationStrings,
+} from "./FactoryVerification";
 import { contextFlags, type FormDef, type Item, type VioConfig } from "./runtime";
 
 export const dynamic = "force-dynamic";
@@ -101,6 +105,105 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     evidence?: Record<string, { formats?: string[]; max_mb?: number }>;
     sla?: { action_due_calendar_days?: number };
   };
+  // ── SCR-IPAD-630 · Factory-information verification (M04-095..114/190) ──
+  // Source-owned factory attributes render as Source Value (Senaei) vs Observed
+  // Value; observations persist to inspection_factory_checks via the offline
+  // outbox (factory_check op). Senaei is NEVER written back (FND-007/M04-112).
+  // inspection_factory_checks read is tolerant: a missing table degrades the
+  // module into a load-error banner rather than killing the page.
+  const [{ data: factoryFull }, { data: prodRows }, { data: matRows }, { data: licRow }, { data: checkRows, error: checksErr }] = await Promise.all([
+    sb.from("factories").select("name, cr_number, license_number, activity_class, region, city, employees_total, employees_saudi, capital_invested").eq("id", visitRow.factory_id).maybeSingle(),
+    sb.from("factory_products").select("name, hs_code, unit, annual_capacity, is_primary").eq("factory_id", visitRow.factory_id).order("is_primary", { ascending: false }),
+    sb.from("factory_materials").select("name, source, hs_code").eq("factory_id", visitRow.factory_id),
+    sb.from("factory_documents").select("reference_no, valid_from, valid_to").eq("factory_id", visitRow.factory_id).eq("doc_type", "license").order("valid_to", { ascending: false }).limit(1).maybeSingle(),
+    sb.from("inspection_factory_checks").select("id, field_key, source_value, observed_value, status, evidence_note").eq("inspection_id", id),
+  ]);
+  // fields[] — each source-owned attribute as key/label/source=value (M04-100/102).
+  const fvFieldDefs: { key: string; en: string }[] = [
+    { key: "name", en: "Factory name" },
+    { key: "cr_number", en: "Commercial registration (CR)" },
+    { key: "license_number", en: "Industrial license number" },
+    { key: "activity_class", en: "Activity class" },
+    { key: "region", en: "Region" },
+    { key: "city", en: "City" },
+    { key: "employees_total", en: "Total workforce" },
+    { key: "employees_saudi", en: "Saudi workforce" },
+    { key: "capital_invested", en: "Invested capital (SAR)" },
+  ];
+  const fRow = (factoryFull ?? {}) as Record<string, string | number | null>;
+  const factoryFields: FactoryField[] = fvFieldDefs.map(d => {
+    const v = fRow[d.key];
+    return { key: d.key, label: t(`field.fv.field.${d.key}`, d.en), source: v == null ? null : String(v) };
+  });
+  const factoryLicense: FactoryLicense = licRow
+    ? { reference_no: licRow.reference_no ?? null, valid_from: licRow.valid_from ?? null, valid_to: licRow.valid_to ?? null }
+    : null;
+  const factoryProducts = (prodRows ?? []) as FactoryProductRow[];
+  const factoryMaterials = (matRows ?? []) as FactoryMaterialRow[];
+  const factoryChecks = (checkRows ?? []) as { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }[];
+  const factoryChecksError = checksErr ? checksErr.message : null;   // errors verbatim (M04-114)
+  const factoryFieldEvidence: FactoryFieldEvidence[] = evidenceRows
+    .filter(e => e.linked_type === "factory_field")
+    .map(e => ({ linked_id: e.linked_id }));
+  const fvStrings: FactoryVerificationStrings = {
+    title: t("field.fv.title", "Factory information verification"),
+    hint: t("field.fv.hint", "Confirm each Senaei-sourced attribute or record what you observed on site. Observations are stored separately — the source record is never overwritten (M04-112)."),
+    sourceTag: t("field.fv.sourceTag", "Senaei source"),
+    colField: t("field.fv.colField", "Attribute"),
+    colSource: t("field.fv.colSource", "Source value"),
+    colObserved: t("field.fv.colObserved", "Observed value"),
+    colStatus: t("field.fv.colStatus", "Status"),
+    colEvidence: t("field.fv.colEvidence", "Evidence"),
+    verifyBtn: t("field.fv.verifyBtn", "Verify as-is"),
+    verified: t("field.fv.verified", "Verified"),
+    updated: t("field.fv.updated", "Updated"),
+    unchecked: t("field.fv.unchecked", "Not checked"),
+    observedPlaceholder: t("field.fv.observedPlaceholder", "Enter observed value…"),
+    noteLabel: t("field.fv.noteLabel", "Note"),
+    notePlaceholder: t("field.fv.notePlaceholder", "Optional observation note…"),
+    noteHeld: t("field.fv.noteHeld", "Note saved locally — it attaches once you record an observation for this field."),
+    changeCounter: t("field.fv.changeCounter", "{n} field(s) updated"),
+    noChanges: t("field.fv.noChanges", "No changes"),
+    reviewTitle: t("field.fv.reviewTitle", "Changes for review"),
+    reviewEmpty: t("field.fv.reviewEmpty", "No source values were changed."),
+    before: t("field.fv.before", "Before"),
+    after: t("field.fv.after", "After"),
+    evAttach: t("field.fv.evAttach", "📷 Attach evidence"),
+    evCount: t("field.fv.evCount", "{n} evidence"),
+    evQueued: t("field.fv.evQueued", "Evidence queued for {field}"),
+    evTooLarge: t("field.fv.evTooLarge", "{name} exceeds the {mb} MB limit for {type} evidence"),
+    evBadFormat: t("field.fv.evBadFormat", "{name}: unsupported format for {type} evidence (allowed: {formats})"),
+    annotateTitle: t("field.fv.annotateTitle", "Annotate photo"),
+    annotateHint: t("field.fv.annotateHint", "Draw on the photo to highlight the observation. The annotated copy is queued alongside the original."),
+    annotateSave: t("field.fv.annotateSave", "Save annotation"),
+    annotateSkip: t("field.fv.annotateSkip", "Attach without annotation"),
+    annotateClear: t("field.fv.annotateClear", "Clear"),
+    annotateCancel: t("field.fv.annotateCancel", "Cancel"),
+    loadError: t("field.fv.loadError", "Saved checks could not be loaded: {error}"),
+    syncFailed: t("field.fv.syncFailed", "Sync failed"),
+    retry: t("field.fv.retry", "Retry"),
+    savedLocal: t("field.fv.savedLocal", "Saved locally — syncing"),
+    readOnly: t("field.fv.readOnly", "This inspection is read-only — factory checks cannot be changed."),
+    licenseTitle: t("field.fv.licenseTitle", "Industrial license"),
+    licRef: t("field.fv.licRef", "Reference"),
+    licIssue: t("field.fv.licIssue", "Issued"),
+    licExpiry: t("field.fv.licExpiry", "Expires"),
+    licNone: t("field.fv.licNone", "No synced license document."),
+    productsTitle: t("field.fv.productsTitle", "Products"),
+    productsEmpty: t("field.fv.productsEmpty", "No products recorded for this factory."),
+    colProduct: t("field.fv.colProduct", "Product"),
+    colHs: t("field.fv.colHs", "HS code"),
+    colCapacity: t("field.fv.colCapacity", "Annual capacity"),
+    primaryTag: t("field.fv.primaryTag", "Primary"),
+    materialsTitle: t("field.fv.materialsTitle", "Raw materials"),
+    materialsEmpty: t("field.fv.materialsEmpty", "No raw materials recorded for this factory."),
+    colMaterial: t("field.fv.colMaterial", "Material"),
+    colMatSource: t("field.fv.colMatSource", "Source"),
+    srcLocal: t("field.fv.srcLocal", "Local"),
+    srcImported: t("field.fv.srcImported", "Imported"),
+  };
+  // Read-only unless the inspection is actively in progress (submitted/approved lock it).
+  const factoryReadOnly = ins.status !== "in_progress";
   const definition = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[]; action_forms?: FormDef[] } }).definition;
   // Enum DISPLAY labels for the response buttons — DB values stay untouched.
   const enumLabels = {} as Record<string, string>;
@@ -245,6 +348,20 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   return (
     <Shell current="/field" title={t("field.ws.title", "Inspection — {factory}").replace("{factory}", (ins.visits as unknown as { factories: { name: string } }).factories.name)}
       context={<span className="ax-version">{(ins.package_versions as unknown as { packages: { code: string }; version_label: string }).packages.code} · {(ins.package_versions as unknown as { version_label: string }).version_label} · {t("field.ws.locked", "locked")}</span>}>
+      {/* SCR-IPAD-630 — factory-verification step precedes the checklist (M04-095) */}
+      <FactoryVerification
+        inspectionId={id}
+        fields={factoryFields}
+        license={factoryLicense}
+        products={factoryProducts}
+        materials={factoryMaterials}
+        initialChecks={factoryChecks}
+        checksLoadError={factoryChecksError}
+        serverFieldEvidence={factoryFieldEvidence}
+        evidenceLimits={settings.evidence ?? {}}
+        readOnly={factoryReadOnly}
+        strings={fvStrings}
+      />
       <Workspace
         inspection={ins as never}
         items={items}

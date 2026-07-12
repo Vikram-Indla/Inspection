@@ -2,8 +2,24 @@
 // SB05 — Visit Management write legs: cancel (M02-006), reschedule (M02-008), reassign (M02-009/ENG-05)
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { insertNotification } from "@/lib/notify";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type ActionResult = { error?: string; ok?: string };
+
+// M02-041 — notify the visit's assigned inspector (single insert path; ENG-11).
+// Best-effort: the primary state change already committed, so a failed
+// notification is surfaced but never rolls the transition back.
+async function notifyAssignedInspector(
+  sb: SupabaseClient, visitId: string, event_key: string, payload: Record<string, unknown>,
+): Promise<string | null> {
+  const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", visitId).maybeSingle();
+  if (!asg?.inspector_id) return null;
+  const r = await insertNotification(sb, {
+    event_key, recipient: asg.inspector_id, payload: { visit_id: visitId, ...payload }, channel: "push",
+  });
+  return r.error ?? null;
+}
 
 // Planning changes lock once the linked inspection has started (M02-006 guard)
 async function guardPreStart(visitId: string) {
@@ -30,8 +46,11 @@ export async function returnVisit(_: ActionResult, fd: FormData): Promise<Action
   if (!reason) return { error: "Return reason is mandatory (STM-VIS-001)" };
   const { error } = await sb.from("visits").update({ planning_status: "returned", notes: `RETURNED: ${reason}` }).eq("id", id).eq("planning_status", "published");
   if (error) return { error: error.message };
+  // M02-041 — the assigned inspector is told their visit was returned to planning.
+  const nErr = await notifyAssignedInspector(sb, id, "visit_returned", { reason });
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Returned — allowed fields reopened, owner notified" };
+  if (nErr) return { error: `Returned, but notification failed: ${nErr}` };
+  return { ok: "Returned — allowed fields reopened, inspector notified (M02-041)" };
 }
 
 export async function republishVisit(_: ActionResult, fd: FormData): Promise<ActionResult> {
@@ -82,8 +101,11 @@ export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<Ac
     .select("id");
   if (error) return { error: error.message };
   if (!updated?.length) return { error: "No row updated — state changed concurrently or RLS denied the update (visits_update requires planner/ops)" };
+  // M02-041 — the assigned inspector is notified of the new window.
+  const nErr = await notifyAssignedInspector(sb, id, "visit_rescheduled", { window_start: start.toISOString(), window_end: end.toISOString() });
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
-  return { ok: "Window rescheduled — inspector sees the new window (M02-008)" };
+  if (nErr) return { error: `Window rescheduled, but notification failed: ${nErr}` };
+  return { ok: "Window rescheduled — inspector notified of the new window (M02-008 · M02-041)" };
 }
 
 // FIX WAVE F4 · M02-042 — visit attachments: upload to private bucket 'attachments'
@@ -144,6 +166,32 @@ export async function updateVisitNotes(_: ActionResult, fd: FormData): Promise<A
   if (!updated?.length) return { error: "No row updated — RLS denied (visits_update requires planner/ops)" };
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
   return { ok: "Notes saved (M02-043, audited)" };
+}
+
+// M02-006 — edit visit type: only before execution starts and only while the
+// visit is still published/new (same lock the cancel/reschedule legs enforce, so
+// a visit that is already on-the-way/arrived/executing can never have its type
+// changed underneath the field app). Reference values only.
+const VISIT_TYPES = ["periodic", "follow_up", "complaint"] as const;
+export async function updateVisitType(_: ActionResult, fd: FormData): Promise<ActionResult> {
+  const sb = await supabaseServer();
+  const id = String(fd.get("visit_id"));
+  const visit_type = String(fd.get("visit_type") ?? "");
+  if (!(VISIT_TYPES as readonly string[]).includes(visit_type))
+    return { error: "Choose a valid visit type (M02-006)" };
+  // pre-start lock first (execution owns the visit once started), then state guard.
+  const locked = await guardPreStart(id);
+  if (locked) return { error: `Visit-type change blocked: ${locked}` };
+  const guard = await guardPublishedNew(id);
+  if (guard) return { error: `Visit-type change blocked: ${guard} (M02-006)` };
+  const { data: updated, error } = await sb.from("visits")
+    .update({ visit_type })
+    .eq("id", id).eq("planning_status", "published").eq("operational_state", "new")
+    .select("id");
+  if (error) return { error: error.message };
+  if (!updated?.length) return { error: "No row updated — state changed concurrently or RLS denied the update (visits_update requires planner/ops)" };
+  revalidatePath(`/visits/${id}`); revalidatePath("/visits");
+  return { ok: "Visit type updated — pre-start only, audited (M02-006)" };
 }
 
 // M02-009 / ENG-05 — Reassign inspector: updates assignments.inspector_id, notifies new inspector.
