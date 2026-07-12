@@ -124,26 +124,24 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
               <div className="lg-or" role="separator" aria-label={s.or}><span>{s.or}</span></div>
 
               <form onSubmit={signIn} className="lg-credentials">
-                <div className="lg-credbox">
-                  <div className="ax-field">
-                    <label className="ax-field__label" htmlFor="email">{s.idLabel}</label>
-                    <input id="email" className="ax-input" type="email" placeholder={s.idPlaceholder}
-                      value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" required />
-                  </div>
-                  <div className="ax-field">
-                    <label className="ax-field__label" htmlFor="pw">{s.pwLabel}</label>
-                    <div className="lg-pwwrap">
-                      <input id="pw" className="ax-input" type={showPw ? "text" : "password"} placeholder={s.pwPlaceholder}
-                        value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required />
-                      <button type="button" className="lg-pwtoggle" onClick={() => setShowPw(v => !v)}
-                        aria-label={showPw ? s.hidePw : s.showPw}>
-                        {showPw ? <IconEyeOff /> : <IconEye />}
-                      </button>
-                    </div>
-                  </div>
-                  {error && <div className="ax-banner ax-banner--critical" role="alert"><div>{error}</div></div>}
-                  <button className="ax-btn ax-btn--prominent lg-submit" disabled={busy}>{busy ? s.signingIn : s.signIn}</button>
+                <div className="ax-field">
+                  <label className="ax-field__label" htmlFor="email">{s.idLabel}</label>
+                  <input id="email" className="ax-input" type="email" placeholder={s.idPlaceholder}
+                    value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" required />
                 </div>
+                <div className="ax-field">
+                  <label className="ax-field__label" htmlFor="pw">{s.pwLabel}</label>
+                  <div className="lg-pwwrap">
+                    <input id="pw" className="ax-input" type={showPw ? "text" : "password"} placeholder={s.pwPlaceholder}
+                      value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required />
+                    <button type="button" className="lg-pwtoggle" onClick={() => setShowPw(v => !v)}
+                      aria-label={showPw ? s.hidePw : s.showPw}>
+                      {showPw ? <IconEyeOff /> : <IconEye />}
+                    </button>
+                  </div>
+                </div>
+                {error && <div className="ax-banner ax-banner--critical" role="alert"><div>{error}</div></div>}
+                <button className="ax-btn ax-btn--prominent lg-submit" disabled={busy}>{busy ? s.signingIn : s.signIn}</button>
               </form>
             </>
           )}

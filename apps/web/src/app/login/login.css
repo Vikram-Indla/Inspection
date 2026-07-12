@@ -85,10 +85,6 @@
 /* ---- credential form ---- */
 .lg-credentials { display: flex; flex-direction: column; gap: var(--ax-space-200); }
 .lg-credentials .ax-field { max-inline-size: none; }
-/* boxed credential group — mirrors the app.industry.sa inner card */
-.lg-credbox { display: flex; flex-direction: column; gap: var(--ax-space-200);
-  padding: var(--ax-space-250); border: 1px solid var(--ax-color-border);
-  border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); }
 .lg-pwwrap { position: relative; }
 .lg-pwwrap .ax-input { padding-inline-end: 44px; inline-size: 100%; }
 .lg-pwtoggle { position: absolute; inset-block-start: 50%; inset-inline-end: 8px;
