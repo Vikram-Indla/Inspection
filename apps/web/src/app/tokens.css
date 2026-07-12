@@ -10,15 +10,19 @@
    ========================================================================== */
 
 :root {
-  /* ---- Color · approved base palette (pack §Colour) ---- */
-  --ax-color-primary:        #0866FF;  /* Astryx Cobalt */
-  --ax-color-primary-hover:  #0757D9;
-  --ax-color-canvas:         #F5F7FA;
+  /* ---- Color · Ministry theme (MIM-website Figma variables, DGA-aligned) ----
+     Qualified 2026-07-12 from figma 0cdvi9fwsR7btbV3dxrmwC: primary = ministry
+     green (Button/button-background-primary-default #1b8354), hover = SA-flag
+     deep green (Text/text-primary-sa-flag #14573a), neutrals = DGA grayscale,
+     success = Icon/icon-success #067647 (darker than primary — no collision). */
+  --ax-color-primary:        #1B8354;  /* Ministry green */
+  --ax-color-primary-hover:  #14573A;  /* SA-flag deep green */
+  --ax-color-canvas:         #F9FAFB;  /* Background/background-neutral-50 */
   --ax-color-surface:        #FFFFFF;
-  --ax-color-text:           #101828;  /* strong text */
-  --ax-color-text-secondary: #475467;
-  --ax-color-border:         #D0D5DD;
-  --ax-color-success:        #12B76A;
+  --ax-color-text:           #161616;  /* Text/text-default */
+  --ax-color-text-secondary: #384250;  /* Text/text-primary-paragraph */
+  --ax-color-border:         #D2D6DB;  /* Border/border-neutral-primary */
+  --ax-color-success:        #067647;  /* Icon/icon-success */
   --ax-color-warning:        #F79009;
   --ax-color-critical:       #D92D20;
   --ax-color-info:           #2E90FA;
@@ -45,7 +49,7 @@
   /* ---- Typography (pack §Typography) ----
      Inter (EN) + IBM Plex Sans Arabic (AR) to be licensed & bundled at build;
      stacks below keep pages self-contained (no external fetch). */
-  --ax-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ax-font-sans: var(--font-plex-arabic, "IBM Plex Sans Arabic"), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;  /* DGA: Font Family/font-family-text (EN+AR) */
   --ax-font-arabic: "IBM Plex Sans Arabic", "Geeza Pro", "Segoe UI", Tahoma, sans-serif;
   --ax-font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
 

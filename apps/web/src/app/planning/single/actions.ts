@@ -16,10 +16,29 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const window_start = String(formData.get("window_start") ?? "");
   const window_end = String(formData.get("window_end") ?? "");
   const mode = String(formData.get("execution_mode") ?? "physical");
+  const license_number = String(formData.get("license_number") ?? "");
+  const location_confirmed = formData.get("location_confirmed") === "1";
+  const plannerLatRaw = String(formData.get("planner_lat") ?? "").trim();
+  const plannerLngRaw = String(formData.get("planner_lng") ?? "").trim();
+  const planner_lat = plannerLatRaw === "" ? null : Number(plannerLatRaw);
+  const planner_lng = plannerLngRaw === "" ? null : Number(plannerLngRaw);
 
   // Publish validation gate (M01-041) — exact blockers, work preserved
   const blockers: string[] = [];
   if (!factory_id) blockers.push("Factory not selected (M01-035)");
+  if (factory_id) {
+    // License + location gates validated against the factory record (M01-036 / M01-038)
+    const { data: fac } = await sb.from("factories")
+      .select("license_number, official_lat, official_lng").eq("id", factory_id).single();
+    if (fac?.license_number && license_number !== fac.license_number)
+      blockers.push("Industrial License must be selected and confirmed before publish (M01-036)");
+    const hasPlannerPin = planner_lat != null && planner_lng != null && Number.isFinite(planner_lat) && Number.isFinite(planner_lng);
+    if ((planner_lat != null || planner_lng != null) && !hasPlannerPin)
+      blockers.push("Planner pin needs both a valid latitude and longitude (M01-038)");
+    if (fac && fac.official_lat == null && fac.official_lng == null && !hasPlannerPin)
+      blockers.push("No official location on record — pin the visit location manually (M01-038)");
+  }
+  if (!location_confirmed) blockers.push("Location must be confirmed on the map before publish (M01-038)");
   if (!package_version_id) blockers.push("No published package selected (ERR-PUB-001)");
   if (!inspector_id) blockers.push("Every visit needs an assigned inspector before publish (M01-040)");
   if (!window_start || !window_end || new Date(window_end) <= new Date(window_start))
@@ -39,6 +58,9 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const { data: visit, error: e2 } = await sb.from("visits").insert({
     visit_plan_id: plan.id, factory_id, visit_type, execution_mode: mode,
     planning_status: "draft", window_start, window_end, package_version_id,
+    // planner pin ≠ official pin (M01-038) — only stored when the planner overrode it
+    planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
+    planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
   }).select().single();
   if (e2) return { error: e2.message };
   const { error: e3 } = await sb.from("assignments").insert({ visit_id: visit.id, inspector_id, method: "manual" });

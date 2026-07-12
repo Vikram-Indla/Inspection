@@ -1,0 +1,50 @@
+{
+  "app/CoverageMap.tsx -> @/components/GeoMap": {
+    "id": 1568,
+    "files": [
+      "static/css/ab28570ae691aba6.css",
+      "static/chunks/d0deef33.c4122c9a4274eaad.js",
+      "static/chunks/1568.e0238e70f891fe41.js"
+    ]
+  },
+  "app/admin/gis/GisStudio.tsx -> @/components/GeoMap": {
+    "id": 1568,
+    "files": [
+      "static/css/ab28570ae691aba6.css",
+      "static/chunks/d0deef33.c4122c9a4274eaad.js",
+      "static/chunks/1568.e0238e70f891fe41.js"
+    ]
+  },
+  "app/field/[visitId]/Startup.tsx -> @/components/GeoMap": {
+    "id": 1568,
+    "files": [
+      "static/css/ab28570ae691aba6.css",
+      "static/chunks/d0deef33.c4122c9a4274eaad.js",
+      "static/chunks/1568.e0238e70f891fe41.js"
+    ]
+  },
+  "app/operations/OpsMap.tsx -> @/components/GeoMap": {
+    "id": 1568,
+    "files": [
+      "static/css/ab28570ae691aba6.css",
+      "static/chunks/d0deef33.c4122c9a4274eaad.js",
+      "static/chunks/1568.e0238e70f891fe41.js"
+    ]
+  },
+  "app/planning/single/Wizard.tsx -> @/components/GeoMap": {
+    "id": 1568,
+    "files": [
+      "static/css/ab28570ae691aba6.css",
+      "static/chunks/d0deef33.c4122c9a4274eaad.js",
+      "static/chunks/1568.e0238e70f891fe41.js"
+    ]
+  },
+  "components/field/FieldHome.tsx -> @/components/GeoMap": {
+    "id": 1568,
+    "files": [
+      "static/css/ab28570ae691aba6.css",
+      "static/chunks/d0deef33.c4122c9a4274eaad.js",
+      "static/chunks/1568.e0238e70f891fe41.js"
+    ]
+  }
+}

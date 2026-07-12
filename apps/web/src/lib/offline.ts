@@ -8,8 +8,14 @@ const DB = "mim-field-v1";
 export type SyncState = "synced" | "offline" | "pending" | "syncing" | "conflict" | "failed";
 export type OutboxOp =
   | { kind: "response"; inspection_id: string; item_id: string; response: unknown; baseline_updated_at: string | null; queued_at: string }
-  | { kind: "evidence"; inspection_id: string; linked_type: string; linked_id: string; name: string; mime: string; data_b64: string; captured_at: string; sha256: string; queued_at: string }
-  | { kind: "submit"; inspection_id: string; version_number: number; snapshot: unknown; idempotency_key: string; acknowledgement: unknown; queued_at: string };
+  // Additive (slice F3 · M04-058): visit_id set = VISIT-linked evidence
+  // (cancellation — no inspections row exists yet); inspection_id then only
+  // namespaces the storage path. Ops without visit_id replay exactly as before.
+  | { kind: "evidence"; inspection_id: string; linked_type: string; linked_id: string; name: string; mime: string; data_b64: string; captured_at: string; sha256: string; queued_at: string; visit_id?: string }
+  | { kind: "submit"; inspection_id: string; version_number: number; snapshot: unknown; idempotency_key: string; acknowledgement: unknown; queued_at: string }
+  // Additive (slice F1 · M04-095..114): factory-field verification check.
+  // Upsert on (inspection_id, field_key) → idempotent replay; never touches factories (FND-007/M04-112).
+  | { kind: "factory_check"; inspection_id: string; check: { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }; queued_at: string };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
 
 function idb(): Promise<IDBDatabase> {
@@ -87,11 +93,17 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
         const up = await sb.storage.from("evidence").upload(path, bytes, { contentType: op.mime, upsert: true }); // upsert = replay-safe
         if (up.error) throw up.error;
         const { data: { user } } = await sb.auth.getUser();
-        const { error } = await sb.from("evidence").upsert({
+        const row: Record<string, unknown> = {
           inspection_id: op.inspection_id, evidence_type: op.mime.startsWith("image") ? "photo" : "document",
           linked_type: op.linked_type, linked_id: op.linked_id, storage_path: path,
           captured_at: op.captured_at, content_sha256: op.sha256, captured_by: user?.id, synced_at: new Date().toISOString(),
-        }, { onConflict: "storage_path", ignoreDuplicates: true } as never);
+        };
+        if (op.visit_id) {
+          // F3 / M04-058 — cancellation evidence anchors to the visit (0020);
+          // pre-0020 the insert fails verbatim and the op stays queued (honest).
+          row.visit_id = op.visit_id; row.inspection_id = null;
+        }
+        const { error } = await sb.from("evidence").upsert(row, { onConflict: "storage_path", ignoreDuplicates: true } as never);
         if (error && !String(error.message).includes("duplicate")) throw error;
       } else if (op.kind === "submit") {
         const { error } = await sb.from("submission_versions").insert({
@@ -101,6 +113,17 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
         });
         if (error && !String(error.message).includes("duplicate")) throw error;  // 409 duplicate = already submitted (ERR-SUB-002)
         await sb.from("inspections").update({ status: "submitted" }).eq("id", op.inspection_id);
+      } else if (op.kind === "factory_check") {
+        // M04-103/104/105/113 — observed value + Verified/Updated status persisted
+        // separately from Senaei data; audit trigger logs before/after server-side.
+        const { data: { user } } = await sb.auth.getUser();
+        const { error } = await sb.from("inspection_factory_checks").upsert({
+          id: op.check.id, inspection_id: op.inspection_id, field_key: op.check.field_key,
+          source_value: op.check.source_value, observed_value: op.check.observed_value,
+          status: op.check.status, evidence_note: op.check.evidence_note,
+          updated_by: user?.id, updated_at: new Date().toISOString(),
+        }, { onConflict: "inspection_id,field_key" });
+        if (error) throw error;
       }
       await local.remove(key);
     } catch (e) {

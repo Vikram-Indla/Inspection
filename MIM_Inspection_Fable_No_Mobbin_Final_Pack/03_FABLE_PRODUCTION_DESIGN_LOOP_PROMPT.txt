@@ -1,0 +1,53 @@
+You are now approved to design the complete MIM Inspection Platform.
+
+Use only:
+1. current project documentation at `/Users/vikramindla/Documents/GitHub/Inspection`;
+2. the approved Understanding Report;
+3. the approved acceptance contract;
+4. the Meta-inspired MIM Astryx direction.
+
+Mobbin is out of scope. Do not call, cite or use Mobbin.
+
+GOAL
+Create production-grade, high-tech, government-enterprise designs covering every requirement, journey, storyboard, screen and required state across Admin, Web, Operations, iPad and Virtual.
+
+LOOP
+For each design wave:
+1. Read the relevant requirements, journeys, storyboards, screen contracts and acceptance criteria.
+2. Restate the exact scope and IDs.
+3. Create or refine Astryx components needed for that scope.
+4. Design all required happy, loading, empty, validation, unauthorized, read-only, stale, degraded, offline, syncing, conflict and recovery states.
+5. Wire every action, branch, transition and return path.
+6. Annotate backend/integration dependencies, permissions, audit, evidence, versioning and performance implications.
+7. Trace every frame to requirement, journey, storyboard, screen and acceptance IDs.
+8. Self-audit for omissions and correct them.
+9. Continue only when the current wave has full traceability.
+
+WAVES
+D1 Astryx foundations and reusable components.
+D2 Admin configuration, package/form designer, workflow, access and publish.
+D3 Web planning, assignment, visit management and Factory 360.
+D4 iPad assignments, startup, journey, check-in, inspection, evidence, findings, submit and returned correction.
+D5 Review queue, review workspace, return, comparison and approval.
+D6 Operations command centre, maps, telemetry, alerts, workload and drilldown.
+D7 Virtual appointment, identity verification and session execution.
+D8 Arabic/RTL, accessibility, responsive states and complete journey wiring.
+D9 Full coverage and acceptance audit.
+
+QUALITY
+Use a coherent Meta-inspired Astryx language: calm, human, premium, responsive, clear and operationally credible. Do not imitate consumer social UI. Do not use generic generated dashboards. Preserve enterprise density where required and field simplicity on iPad.
+
+STOP RULES
+Never invent a field, workflow, permission, provider, threshold or SLA. Raise a named contract question instead.
+Do not mark a screen complete without all required states and wired transitions.
+Do not mark the project complete until every requirement, journey, storyboard and P0/P1 acceptance criterion is traceable to approved design output.
+
+At the end of each wave, return:
+- completed IDs;
+- missing IDs;
+- open questions;
+- acceptance coverage;
+- links/locations of created frames;
+- `READY_FOR_REVIEW`.
+
+Do not self-approve.

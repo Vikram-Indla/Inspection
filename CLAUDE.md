@@ -57,4 +57,4 @@ Before completion:
 - Admin engines are control planes, not simple CRUD screens.
 
 ## Gate position
-G0 PASS. G1 CONDITIONAL PASS because the repository is empty. G2 PASS. G3 PASS. G4 is being established. G5-G8 are not passed. Broad build remains blocked.
+G0-G9 PASS (G1 conditional; G8 sponsor-authorized 2026-07-11; G9 build completion 2026-07-12). G10 verification is in progress with the Playwright headless suite as the exit criterion. G11 hardening and G12 release are open. Broad implementation is authorized. `product-contract/GATE_STATUS.md` is the authoritative gate record.

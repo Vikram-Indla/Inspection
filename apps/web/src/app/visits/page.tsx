@@ -1,50 +1,141 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { useT } from "@/lib/i18n";
+import VisitsBoard, { type VisitRow, type VisitsBoardStrings } from "./VisitsBoard";
 
 export const dynamic = "force-dynamic";
 
-const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical" };
+const PAGE_STEP = 100;   // M02-020 — raised from the old 50 cap; load-more grows by this step
+const PAGE_MAX = 1000;
 
-export default async function Visits() {
+type Joined = {
+  id: string; visit_type: string; execution_mode: string; planning_status: string;
+  operational_state: string; window_start: string; window_end: string;
+  factories: { name: string; factory_code: string | null; cr_number: string | null; license_number: string | null } | null;
+  assignments: { profiles: { full_name: string } | null }[] | null;
+  inspections: { status: string } | null; // TO-ONE embed — object or null
+};
+
+export default async function Visits({ searchParams }: { searchParams: Promise<{ limit?: string }> }) {
+  const sp = await searchParams;
+  const limit = Math.min(Math.max(Number.parseInt(sp.limit ?? "", 10) || PAGE_STEP, PAGE_STEP), PAGE_MAX);
+  const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: visits } = await sb.from("visits")
-    .select("id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, factories(name, factory_code)")
-    .order("window_start", { ascending: true }).limit(50);
-  const counts: Record<string, number> = {};
-  for (const v of visits ?? []) counts[v.planning_status] = (counts[v.planning_status] ?? 0) + 1;
+  // M02-016 — persist published→expired before reading (parity with field home;
+  // security-definer rpc runs the canonical transition, audit trigger records it).
+  await sb.rpc("expire_lapsed_visits");
+  const [{ data: visits, error, count }, { data: inspRows }] = await Promise.all([
+    sb.from("visits")
+      .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end,
+        factories(name, factory_code, cr_number, license_number),
+        assignments(profiles(full_name)),
+        inspections(status)`, { count: "exact" })
+      .order("window_start", { ascending: true }).limit(limit),
+    // ENG-05 — inspector pool for bulk reassign (disambiguated embed, detail-page canon)
+    sb.from("profiles")
+      .select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)")
+      .eq("user_roles.role_key", "inspector").order("full_name"),
+  ]);
+  if (error) {
+    return (
+      <Shell current="/visits" title={t("visit.list.title", "Visit management")}>
+        <div className="ax-banner ax-banner--critical"><div>{t("visit.list.loadError", "Could not load visits:")} {error.message}</div></div>
+      </Shell>
+    );
+  }
+  const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
+  const rows: VisitRow[] = ((visits ?? []) as unknown as Joined[]).map(v => {
+    const asg = v.assignments?.[0];
+    return {
+      id: v.id,
+      visitType: v.visit_type,
+      executionMode: v.execution_mode,
+      planningStatus: v.planning_status,
+      operationalState: v.operational_state,
+      windowStart: v.window_start,
+      windowEnd: v.window_end,
+      factoryName: v.factories?.name ?? "—",
+      factoryCode: v.factories?.factory_code ?? "",
+      crNumber: v.factories?.cr_number ?? "",
+      licenseNumber: v.factories?.license_number ?? "",
+      inspectorName: asg?.profiles?.full_name ?? "",
+      inspectionStatus: v.inspections?.status ?? null,
+      typeLabel: t(`enum.${v.visit_type}`, v.visit_type),
+      modeLabel: t(`enum.${v.execution_mode}`, v.execution_mode),
+      planningLabel: t(`enum.${v.planning_status}`, v.planning_status),
+      opsLabel: t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " ")),
+    };
+  });
+  const distinct = (vals: string[]) => [...new Set(vals)].sort();
+  const typeOptions = distinct(rows.map(r => r.visitType)).map(v => ({ value: v, label: t(`enum.${v}`, v) }));
+  const modeOptions = distinct(rows.map(r => r.executionMode)).map(v => ({ value: v, label: t(`enum.${v}`, v) }));
+  const total = count ?? rows.length;
+  const nextLimit = rows.length < total && limit < PAGE_MAX ? Math.min(limit + PAGE_STEP, PAGE_MAX) : null;
+  const strings: VisitsBoardStrings = {
+    searchPlaceholder: t("visit.list.searchPlaceholder", "Visit ID, factory, CR, license or inspector…"),
+    searchAria: t("visit.list.searchAria", "Search visits (M02-003)"),
+    allStatuses: t("visit.list.allStatuses", "All statuses"),
+    allTypes: t("visit.list.allTypes", "All types"),
+    allModes: t("visit.list.allModes", "All modes"),
+    fromDate: t("visit.list.fromDate", "Window from"),
+    toDate: t("visit.list.toDate", "Window to"),
+    sortAria: t("visit.list.sortAria", "Sort visits"),
+    sortWindowAsc: t("visit.list.sortWindowAsc", "Window — earliest first"),
+    sortWindowDesc: t("visit.list.sortWindowDesc", "Window — latest first"),
+    sortFactory: t("visit.list.sortFactory", "Factory name"),
+    clearFilters: t("visit.list.clearFilters", "Clear filters"),
+    statusLabels: {
+      draft: t("enum.draft", "draft"),
+      published: t("enum.published", "published"),
+      returned: t("enum.returned", "returned"),
+      cancelled: t("enum.cancelled", "cancelled"),
+      expired: t("enum.expired", "expired"),
+    },
+    kpiFilterHint: t("visit.list.kpiFilterHint", "Status counts — select one to filter the list (M02-002)"),
+    colVisit: t("visit.list.colVisit", "Visit"),
+    colFactory: t("visit.list.colFactory", "Factory"),
+    colTypeMode: t("visit.list.colTypeMode", "Type · mode"),
+    colPlanning: t("visit.list.colPlanning", "Planning status"),
+    colOperational: t("visit.list.colOperational", "Operational"),
+    colInspector: t("visit.list.colInspector", "Inspector"),
+    colWindow: t("visit.list.colWindow", "Window"),
+    selectAllAria: t("visit.list.selectAllAria", "Select all visible visits"),
+    selectRowAria: t("visit.list.selectRowAria", "Select visit {id}"),
+    selectedCount: t("visit.list.selectedCount", "{n} selected"),
+    bulkHeading: t("visit.list.bulkHeading", "Bulk actions — per-row guards apply (M02-007/011)"),
+    bulkWindowStart: t("visit.list.bulkWindowStart", "New window start (M02-033)"),
+    bulkWindowEnd: t("visit.list.bulkWindowEnd", "New window end"),
+    bulkRescheduleBtn: t("visit.list.bulkRescheduleBtn", "Reschedule selected"),
+    bulkReassignTo: t("visit.list.bulkReassignTo", "Reassign to (M02-032)"),
+    bulkReassignBtn: t("visit.list.bulkReassignBtn", "Reassign selected"),
+    selectOption: t("visit.list.selectOption", "— select"),
+    bulkCancelReason: t("visit.list.bulkCancelReason", "Cancellation reason *"),
+    bulkCancelPlaceholder: t("visit.list.bulkCancelPlaceholder", "mandatory — M02-011, final"),
+    bulkCancelBtn: t("visit.list.bulkCancelBtn", "Cancel selected"),
+    clearSelection: t("visit.list.clearSelection", "Clear selection"),
+    noMatch: t("visit.list.noMatch", "No visits match the current search and filters."),
+    showing: t("visit.list.showing", "Showing {shown} of {total} visits"),
+    loadMore: t("visit.list.loadMore", "Load more"),
+    expiredLabel: t("enum.expired", "expired"),
+  };
   return (
-    <Shell current="/visits" title="Visit management"
-      context={<span className="ax-lozenge ax-lozenge--info">planning statuses only — M02-002</span>}>
-      <div className="ax-kpi-row">
-        {["draft", "published", "returned", "cancelled", "expired"].map(s => (
-          <div key={s} className="ax-surface ax-kpi">
-            <span className="ax-overline">{s}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s] ?? 0}</span>
-          </div>
-        ))}
+    <Shell current="/visits" title={t("visit.list.title", "Visit management")}
+      context={<span className="ax-lozenge ax-lozenge--info">{t("visit.list.context", "SCR-WEB-200/210 · RLS-scoped")}</span>}>
+      {/* FIX WAVE F4 — M02-038 calendar + M02-018/037 workload entry points */}
+      <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+        <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits">{t("visit.views.list", "List")}</a>
+        <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
+        <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
       </div>
-      {(visits ?? []).length === 0 ? (
+      {rows.length === 0 ? (
         <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🗓</span><h4>No visits in your scope</h4>
-          <p className="ax-caption">Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).</p>
-          <a className="ax-btn" href="/planning">Create a plan</a>
+          <span className="ax-state__glyph">🗓</span><h4>{t("visit.list.empty", "No visits in your scope")}</h4>
+          <p className="ax-caption">{t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}</p>
+          <a className="ax-btn" href="/planning">{t("visit.list.createPlan", "Create a plan")}</a>
         </div></div>
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
-          <thead><tr><th>Visit</th><th>Factory</th><th>Type · mode</th><th>Planning status</th><th>Operational</th><th className="ax-td-num">Window</th></tr></thead>
-          <tbody>
-            {(visits ?? []).map(v => (
-              <tr key={v.id}>
-                <td className="ax-numeric"><strong>{v.id.slice(0, 8)}</strong></td>
-                <td>{(v.factories as unknown as { name: string } | null)?.name}</td>
-                <td>{v.visit_type} · {v.execution_mode}</td>
-                <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{v.planning_status}</span></td>
-                <td><span className="ax-lozenge ax-lozenge--ops">{v.operational_state.replace(/_/g, " ")}</span></td>
-                <td className="ax-td-num ax-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table></div>
+        <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}
+          total={total} limit={limit} nextLimit={nextLimit} strings={strings} />
       )}
     </Shell>
   );

@@ -10,6 +10,9 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
   if (!user) return { error: "Session expired." };
   const existing_factory_id = String(formData.get("existing_factory_id") ?? "");
   const manual_name = String(formData.get("manual_name") ?? "").trim();
+  const manual_cr = String(formData.get("manual_cr") ?? "").trim();
+  const manual_license = String(formData.get("manual_license") ?? "").trim();
+  const manual_activity = String(formData.get("manual_activity") ?? "").trim();
   const lat = Number(formData.get("lat")); const lng = Number(formData.get("lng"));
   const reason = String(formData.get("urgency_reason") ?? "");
   const inspector_id = String(formData.get("inspector_id") ?? "");
@@ -28,6 +31,9 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
     const { data: f, error } = await sb.from("factories").insert({
       name: manual_name, is_temporary: true, source: "immediate_manual",
       official_lat: lat, official_lng: lng, region: "Riyadh",
+      // Optional identity/business info captured with the temporary entity (M01-045)
+      cr_number: manual_cr || null, license_number: manual_license || null,
+      activity_class: manual_activity || null,
     }).select().single();
     if (error) return { error: error.message };
     factory_id = f.id;  // controlled temporary entity flagged for reconciliation (FLD-VIS-002)

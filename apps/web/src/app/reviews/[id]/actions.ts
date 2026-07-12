@@ -1,6 +1,8 @@
 "use server";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { insertNotification } from "@/lib/notify";
 
 export type DecisionResult = { error?: string };
 
@@ -24,5 +26,19 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
   }).eq("id", review_id).select("inspection_id").single();
   if (error) return { error: `${error.message} (decided reviews are immutable — M06-009)` };
   await sb.from("inspections").update({ status }).eq("id", rev.inspection_id);
+  // M06-004/006/008 — the inspector is notified on every decision (ENG-11).
+  const { data: ins } = await sb.from("inspections").select("visit_id").eq("id", rev.inspection_id).single();
+  const { data: asg } = ins
+    ? await sb.from("assignments").select("inspector_id").eq("visit_id", ins.visit_id).maybeSingle()
+    : { data: null };
+  if (asg?.inspector_id) {
+    const n = await insertNotification(sb, {
+      event_key: "review_decision",
+      recipient: asg.inspector_id,
+      payload: { inspection_id: rev.inspection_id, decision, reason: reason || null, returned_sections: decision === "return" ? sections : null },
+    });
+    if (n.error) return { error: `Decision recorded, but inspector notification failed: ${n.error}` };
+  }
+  revalidatePath("/reviews");
   redirect("/reviews");
 }

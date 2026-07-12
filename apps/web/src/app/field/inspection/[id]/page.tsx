@@ -1,22 +1,174 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
-import Workspace from "./Workspace";
+import { useT } from "@/lib/i18n";
+import Workspace, { type WorkspaceStrings } from "./Workspace";
+import { contextFlags, type FormDef, type Item, type VioConfig } from "./runtime";
 
 export const dynamic = "force-dynamic";
 
+const humanize = (k: string) => k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
+
+type PenaltyRow = { penalty_ref: string; legal_basis: string | null; mapping_version: string | null };
+type VCodeRow = { id: string; code: string; title: string; level: string; penalty_mappings: PenaltyRow | PenaltyRow[] | null };
+type ItemRow = {
+  id: string; code: string; title: string;
+  response_model: Item["response_model"]; evidence_rule: Item["evidence_rule"];
+  score_excluded_on: string[] | null; guidance_en: string | null; guidance_ar: string | null;
+  regulation_clauses: { clause_ref: string; legal_source: string | null } | null;
+};
+
 export default async function FieldInspection({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
-  const [{ data: ins }, { data: items }, { data: resp }] = await Promise.all([
+  const [{ data: ins }, { data: itemRows }, { data: resp }, { data: ev }, { data: vios }, { data: vcodes }, { data: engines }] = await Promise.all([
     sb.from("inspections").select("id, status, visit_id, package_versions(version_label, definition, packages(code)), visits(factories(name)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)").eq("id", id).single(),
-    sb.from("inspection_items").select("id, code, title, response_model, evidence_rule"),
+    sb.from("inspection_items").select("id, code, title, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)"),
     sb.from("checklist_responses").select("item_id, response, updated_at").eq("inspection_id", id),
+    sb.from("evidence").select("id, linked_type, linked_id, evidence_type").eq("inspection_id", id),
+    sb.from("violations").select("id, violation_code_id").eq("inspection_id", id),
+    sb.from("violation_codes").select("id, code, title, level, penalty_mappings(penalty_ref, legal_basis, mapping_version)"),
+    sb.from("engine_settings").select("engine, settings").in("engine", ["evidence", "sla"]),
   ]);
-  if (!ins) return <Shell current="/field" title="Not found"><div /></Shell>;
+  // Tolerant fetches for columns landing in migration 0015 (context, action_forms.item_id):
+  // a missing column degrades the feature instead of killing the page.
+  const [{ data: ctxRow }, { data: afRows }] = await Promise.all([
+    sb.from("inspections").select("context").eq("id", id).maybeSingle(),
+    sb.from("action_forms").select("id, item_id, violation_id, form_type, owner_name, owner_role, due_at, required_correction, status").eq("inspection_id", id),
+  ]);
+  if (!ins) {
+    return <Shell current="/field" title={t("field.ws.notFound", "Not found")}><div /></Shell>;
+  }
+  // Items with locale-resolved guidance (M04-138 · guidance_en/ar) + regulation ref.
+  const items: Item[] = ((itemRows ?? []) as unknown as ItemRow[]).map(r => ({
+    id: r.id, code: r.code, title: r.title,
+    response_model: r.response_model, evidence_rule: r.evidence_rule,
+    score_excluded_on: r.score_excluded_on,
+    guidance: (locale === "ar" && r.guidance_ar) ? r.guidance_ar : r.guidance_en,
+    clause: r.regulation_clauses ? { clause_ref: r.regulation_clauses.clause_ref, legal_source: r.regulation_clauses.legal_source } : null,
+  }));
+  // Compliance configuration for the violation auto-display panel (M04-142/143/144).
+  const vioConfig = {} as Record<string, VioConfig>;
+  for (const v of ((vcodes ?? []) as unknown as VCodeRow[])) {
+    const pm = Array.isArray(v.penalty_mappings) ? v.penalty_mappings[0] : v.penalty_mappings;
+    vioConfig[v.code] = { id: v.id, code: v.code, title: v.title, level: v.level, penalty_ref: pm?.penalty_ref ?? null, legal_basis: pm?.legal_basis ?? null, mapping_version: pm?.mapping_version ?? null };
+  }
+  const settings = Object.fromEntries((engines ?? []).map(e => [e.engine, e.settings])) as {
+    evidence?: Record<string, { formats?: string[]; max_mb?: number }>;
+    sla?: { action_due_calendar_days?: number };
+  };
+  const definition = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[]; action_forms?: FormDef[] } }).definition;
+  // Enum DISPLAY labels for the response buttons — DB values stay untouched.
+  const enumLabels = {} as Record<string, string>;
+  for (const it of items) {
+    for (const r of (it.response_model.responses ?? [])) enumLabels[r] = enumLabels[r] ?? t(`enum.${r}`, r.replace(/_/g, " "));
+  }
+  // Site-condition flag labels (keys come from response_model.conditional data).
+  const ctxLabels = {} as Record<string, string>;
+  for (const k of contextFlags(items)) ctxLabels[k] = t(`field.ws.ctx.${k}`, humanize(k));
+  // Action-form field labels (fields come from package definition data).
+  const afFieldLabels = {} as Record<string, string>;
+  for (const d of definition.action_forms ?? []) for (const f of d.fields) afFieldLabels[f] = afFieldLabels[f] ?? t(`field.ws.af.${f}`, humanize(f));
+  const strings: WorkspaceStrings = {
+    sync: {
+      synced: t("field.ws.sync.synced", "Synced"),
+      offline: t("field.ws.sync.offline", "Offline — work saved locally"),
+      pending: t("field.ws.sync.pending", "Pending sync"),
+      syncing: t("field.ws.sync.syncing", "Syncing…"),
+      conflict: t("field.ws.sync.conflict", "Conflict — action required"),
+      failed: t("field.ws.sync.failed", "Sync failed — will retry"),
+    },
+    answered: t("field.ws.answered", "{a}/{b} answered · autosaved locally"),
+    conflictHead: t("field.ws.conflictHead", "⚠ Conflict on {code} — explicit resolution (STM-SYNC-002, no silent overwrite)"),
+    thisDevice: t("field.ws.thisDevice", "This device"),
+    server: t("field.ws.server", "Server"),
+    keepMine: t("field.ws.keepMine", "Keep mine"),
+    keepServer: t("field.ws.keepServer", "Keep server"),
+    returnedScope: t("field.ws.returnedScope", "Returned — correction scope: {sections}."),
+    returnedNote: t("field.ws.returnedNote", "Only these sections are editable; resubmission creates the next immutable version (STM-COR-001/002)."),
+    submittedTitle: t("field.ws.submittedTitle", "Submitted — immutable v1."),
+    submittedBody: t("field.ws.submittedBody", "Content locked by the database (proven B3); corrections only via reviewer return."),
+    lockedSection: t("field.ws.lockedSection", "Not in return scope — locked read-only (M06-043); DB also rejects edits."),
+    mandatoryPhoto: t("field.ws.mandatoryPhoto", "📷 Mandatory photo"),
+    submitBtn: t("field.ws.submitBtn", "Review & submit — immutable v1"),
+    autoViolation: t("field.ws.autoViolation", "{code} → auto-violation {violation}{actionForm}{photo} (config-driven, non-overridable M09-026)"),
+    plusActionForm: t("field.ws.plusActionForm", " + blocking action form"),
+    plusPhoto: t("field.ws.plusPhoto", " + mandatory photo"),
+    evidenceQueued: t("field.ws.evidenceQueued", "Evidence queued for {code} · sha256 {sha}… — linked, custody-stamped (ENG-07)"),
+    blockers: t("field.ws.blockers", "Blockers: {items} unanswered (ERR-SUB-001 — state stays in progress)"),
+    submitting: t("field.ws.submitting", "Submitting immutable v{v} (idempotency-protected)…"),
+    queuedOffline: t("field.ws.queuedOffline", "Queued — will submit exactly once on reconnect (never claims submitted while unsynced)"),
+    enumLabels,
+    // — Slice E2 runtime depth —
+    progress: t("field.ws.progress", "{pct}% complete"),
+    summaryTitle: t("field.ws.summaryTitle", "Live summary"),
+    sumAnswered: t("field.ws.sum.answered", "Answered"),
+    sumPending: t("field.ws.sum.pending", "Pending"),
+    sumCompliant: t("field.ws.sum.compliant", "Compliant"),
+    sumNonCompliant: t("field.ws.sum.nonCompliant", "Non-compliant"),
+    sumViolations: t("field.ws.sum.violations", "Violations"),
+    sumEvidence: t("field.ws.sum.evidence", "Evidence"),
+    ctxTitle: t("field.ws.ctx.title", "Site conditions"),
+    ctxHint: t("field.ws.ctx.hint", "These flags drive conditional checklist visibility (M04-119); they persist with the inspection."),
+    ctxYes: t("field.ws.ctx.yes", "Yes"),
+    ctxNo: t("field.ws.ctx.no", "No"),
+    ctxLabels,
+    guidanceLabel: t("field.ws.guidance", "Guidance"),
+    conditionalBadge: t("field.ws.conditional", "Conditional"),
+    noteLabel: t("field.ws.note.label", "Inspector note"),
+    notePlaceholder: t("field.ws.note.placeholder", "Add an observation note (saved with the answer)…"),
+    naExcluded: t("field.ws.naExcluded", "N/A — excluded from scoring for this item"),
+    dateLabel: t("field.ws.date.label", "Recorded date"),
+    evAdd: t("field.ws.ev.add", "📷 Add photo"),
+    evAddDoc: t("field.ws.ev.addDoc", "📄 Add document"),
+    evCount: t("field.ws.ev.count", "{n}/{min} evidence"),
+    evRequired: t("field.ws.ev.required", "Evidence required before submit: {min} minimum"),
+    evQueuedAlt: t("field.ws.ev.queuedAlt", "Queued evidence (unsynced)"),
+    evTooLarge: t("field.ws.ev.tooLarge", "{name} exceeds the {mb} MB limit for {type} evidence"),
+    evBadFormat: t("field.ws.ev.badFormat", "{name}: unsupported format for {type} evidence (allowed: {formats})"),
+    afBlocking: t("field.ws.af.blocking", "Blocking — submission refused until this form is complete (M09-027)"),
+    afComplete: t("field.ws.af.complete", "Complete"),
+    afIncomplete: t("field.ws.af.incomplete", "Incomplete"),
+    afSaved: t("field.ws.af.saved", "Action form saved for {code}"),
+    afFieldLabels,
+    vioTitle: t("field.ws.vio.title", "Violations implied by answers"),
+    vioNone: t("field.ws.vio.none", "No violations implied by current answers."),
+    vioPenalty: t("field.ws.vio.penalty", "Penalty {ref} · {basis}"),
+    vioLevel: t("field.ws.vio.level", "Severity {level}"),
+    vioAction: t("field.ws.vio.action", "Corrective action: {status}"),
+    valTitle: t("field.ws.val.title", "Validation issues (grouped by section)"),
+    valUnanswered: t("field.ws.val.unanswered", "Unanswered: {items}"),
+    valEvidence: t("field.ws.val.evidence", "Mandatory evidence missing: {items}"),
+    valForms: t("field.ws.val.forms", "Action form incomplete: {items}"),
+    ready: t("field.ws.ready", "All blocking validations pass — ready to submit"),
+    notReady: t("field.ws.notReady", "{n} blocking issue(s) — submission will be refused"),
+    sig: {
+      title: t("field.ws.sig.title", "Factory representative acknowledgement"),
+      hint: t("field.ws.sig.hint", "Sign in the box below. The signature image, name and timestamp are stored inside the immutable submission version (DEC-009)."),
+      nameLabel: t("field.ws.sig.name", "Representative name"),
+      namePlaceholder: t("field.ws.sig.namePh", "Full name as recorded on site"),
+      clear: t("field.ws.sig.clear", "Clear"),
+      cancel: t("field.ws.sig.cancel", "Cancel"),
+      confirm: t("field.ws.sig.confirm", "Confirm & submit"),
+      required: t("field.ws.sig.required", "Both a drawn signature and the representative name are required (DEC-009)."),
+    },
+  };
   return (
-    <Shell current="/field" title={`Inspection — ${(ins.visits as unknown as { factories: { name: string } }).factories.name}`}
-      context={<span className="ax-version">{(ins.package_versions as unknown as { packages: { code: string }; version_label: string }).packages.code} · {(ins.package_versions as unknown as { version_label: string }).version_label} · locked</span>}>
-      <Workspace inspection={ins as never} items={(items ?? []) as never} serverResponses={(resp ?? []) as never} />
+    <Shell current="/field" title={t("field.ws.title", "Inspection — {factory}").replace("{factory}", (ins.visits as unknown as { factories: { name: string } }).factories.name)}
+      context={<span className="ax-version">{(ins.package_versions as unknown as { packages: { code: string }; version_label: string }).packages.code} · {(ins.package_versions as unknown as { version_label: string }).version_label} · {t("field.ws.locked", "locked")}</span>}>
+      <Workspace
+        inspection={ins as never}
+        items={items}
+        serverResponses={(resp ?? []) as never}
+        serverEvidence={(ev ?? []) as never}
+        serverForms={(afRows ?? []) as never}
+        serverViolations={(vios ?? []) as never}
+        serverContext={(ctxRow as { context?: Record<string, string> } | null)?.context ?? {}}
+        vioConfig={vioConfig}
+        evidenceLimits={settings.evidence ?? {}}
+        actionDueDays={settings.sla?.action_due_calendar_days ?? 14}
+        strings={strings}
+      />
     </Shell>
   );
 }

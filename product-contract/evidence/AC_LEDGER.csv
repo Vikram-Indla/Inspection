@@ -1,0 +1,494 @@
+requirement_id,acceptance_id,module,channel,status,note
+MVP1-M01-001,AC-0001,Visit Planning - Planning,Web Portal,implemented,[audit] planning/page.tsx method cards route to /planning/bulk|single|immediate
+MVP1-M01-002,AC-0002,Visit Planning - Planning,Web Portal,implemented,"[audit] planning/bulk/actions.ts: dup check, plan+visits+assignments+notification rows; audit via 0002 trigger"
+MVP1-M01-003,AC-0003,Visit Planning - Planning,Web Portal,partial,"[audit] bulk/page.tsx has only fixed region+band AND filters; no add/remove criteria, no OR logic"
+MVP1-M01-004,AC-0004,Visit Planning - Planning,Web Portal,implemented,"[audit] bulk/page.tsx server query returns all matching factories, count shown"
+MVP1-M01-005,AC-0005,Visit Planning - Planning,Web Portal,partial,[audit] per-row checkboxes in BulkForm.tsx; no select-all/bulk selection control
+MVP1-M01-006,AC-0006,Visit Planning - Planning,Web Portal,partial,"[audit] type+window validated (bulk/actions.ts); no Assignment Method choice, no Notes field"
+MVP1-M01-007,AC-0007,Visit Planning - Planning,Web Portal,implemented,[audit] bulk/actions.ts round-robin auto assignment over inspector role pool (ENG-05)
+MVP1-M01-008,AC-0008,Visit Planning - Planning,Web Portal,partial,[audit] manual inspector select exists (single/immediate); no availability validation anywhere
+MVP1-M01-009,AC-0009,Visit Planning - Planning,Web Portal,partial,[audit] publish blockers validate required info; auto assignments never shown for review pre-publish
+MVP1-M01-010,AC-0010,Visit Planning - Planning,Web Portal,partial,"[audit] plan/visits/assign/audit built; inspector calendar absent, notification=table row only"
+MVP1-M01-011,AC-0011,Visit Planning - Planning,Web Portal,implemented,[audit] planning/page.tsx loads Bulk/Single/Immediate workflows
+MVP1-M01-012,AC-0012,Visit Planning - Planning,Web Portal,partial,"[audit] fixed AND filters only (region, risk band); no dynamic add/remove or OR"
+MVP1-M01-013,AC-0013,Visit Planning - Planning,Web Portal,implemented,[audit] GET search form in bulk/page.tsx executes query and returns matches
+MVP1-M01-014,AC-0014,Visit Planning - Planning,Web Portal,partial,"[audit] filters work, default risk sort; no user sorting, no factory profile link from results"
+MVP1-M01-015,AC-0015,Visit Planning - Planning,Web Portal,implemented,[audit] BulkForm.tsx checkboxes select/unselect individual or multiple factories
+MVP1-M01-016,AC-0016,Visit Planning - Planning,Web Portal,missing,[audit] no AI summary or campaign summary generation anywhere
+MVP1-M01-017,AC-0017,Visit Planning - Planning,Web Portal,partial,[audit] type+window validated; Assignment Method selector and Notes missing
+MVP1-M01-018,AC-0018,Visit Planning - Planning,Web Portal,implemented,[audit] auto allocation via round-robin in bulk/actions.ts
+MVP1-M01-019,AC-0019,Visit Planning - Planning,Web Portal,partial,[audit] manual inspector dropdown (single Wizard); no availability validation
+MVP1-M01-020,AC-0020,Visit Planning - Planning,Web Portal,partial,"[audit] dup validation, plan/visits/notify rows/audit built; inspector calendars absent"
+MVP1-M01-021,AC-0021,Visit Planning - Planning,Web Portal,implemented,[audit] /planning/bulk workspace loads (page.tsx + BulkForm)
+MVP1-M01-022,AC-0022,Visit Planning - Planning,Web Portal,partial,[audit] two fixed AND filter keys only; no OR combination or filter management
+MVP1-M01-023,AC-0023,Visit Planning - Planning,Web Portal,implemented,[audit] search executes and retrieves all matching factories (unbounded query)
+MVP1-M01-024,AC-0024,Visit Planning - Planning,Web Portal,partial,"[audit] grid shows name/CR/city/risk; no sort controls, no factory profile open from list"
+MVP1-M01-025,AC-0025,Visit Planning - Planning,Web Portal,partial,[audit] individual select/unselect works; no select-all control
+MVP1-M01-026,AC-0026,Visit Planning - Planning,Web Portal,missing,[audit] no AI recommendations or campaign summary implementation
+MVP1-M01-027,AC-0027,Visit Planning - Planning,Web Portal,partial,[audit] type+window mandatory validation; Assignment Method and Notes not configurable
+MVP1-M01-028,AC-0028,Visit Planning - Planning,Web Portal,implemented,"[audit] auto assignment strategy (round-robin) executes at publish, bulk/actions.ts"
+MVP1-M01-029,AC-0029,Visit Planning - Planning,Web Portal,missing,[audit] bulk flow has no manual per-visit inspector selection or eligibility/conflict validation
+MVP1-M01-030,AC-0030,Visit Planning - Planning,Web Portal,partial,[audit] mandatory+duplicate validation with error list; assignments not reviewable before publish
+MVP1-M01-031,AC-0031,Visit Planning - Planning,Web Portal,partial,"[audit] plan+Visit IDs+assign+audit+Published status built; calendars absent, notify=row only"
+MVP1-M01-032,AC-0032,Visit Planning - Planning,Web Portal,missing,[audit] no bulk edit of child visits — no multi-select update path exists
+MVP1-M01-033,AC-0033,Visit Planning - Planning,Web Portal,missing,[audit] no multi-visit cancellation; only per-visit cancel in visits/[id]/actions.ts
+MVP1-M01-034,AC-0034,Visit Planning - Planning,Web Portal,verified_live,Single-visit wizard rendered + publish gate live-tested.
+MVP1-M01-035,AC-0035,Visit Planning - Planning,Web Portal,partial,[audit] Wizard searches CR + factory code; Industrial License Number search missing (column exists)
+MVP1-M01-036,AC-0036,Visit Planning - Planning,Web Portal,missing,[audit] no Industrial License selection step; license_number never surfaced in wizard
+MVP1-M01-037,AC-0037,Visit Planning - Planning,Web Portal,partial,"[audit] shows name/code/CR/city/risk; Industrial License, Region, License Stage/Status not displayed"
+MVP1-M01-038,AC-0038,Visit Planning - Planning,Web Portal,missing,[audit] single planning wizard has no location confirm/map-pin step
+MVP1-M01-039,AC-0039,Visit Planning - Planning,Web Portal,partial,[audit] type (3 options)+window validated; Notes field and Assignment Method choice missing
+MVP1-M01-040,AC-0040,Visit Planning - Planning,Web Portal,partial,"[audit] manual inspector select mandatory (M01-040 blocker); no Auto option, no availability validation"
+MVP1-M01-041,AC-0041,Visit Planning - Planning,Web Portal,implemented,"[audit] single/actions.ts blockers: mandatory fields, window order, duplicate active visit (M02-012)"
+MVP1-M01-042,AC-0042,Visit Planning - Planning,Web Portal,partial,[audit] Visit ID+assignment+audit+notification row built; inspector calendar absent
+MVP1-M01-043,AC-0043,Visit Planning - Planning,Web Portal,implemented,[audit] /planning/immediate workspace loads (page.tsx + ImmediateForm)
+MVP1-M01-044,AC-0044,Visit Planning - Planning,Web Portal,partial,[audit] existing-factory dropdown shows name·CR; no CR/IL search input
+MVP1-M01-045,AC-0045,Visit Planning - Planning,Web Portal,partial,[audit] manual name only stored as temp factory; CR/IL/business info fields not capturable
+MVP1-M01-046,AC-0046,Visit Planning - Planning,Web Portal,partial,"[audit] lat/lng mandatory, saved only when creating temp factory; existing-factory pin not modifiable"
+MVP1-M01-047,AC-0047,Visit Planning - Planning,Web Portal,partial,"[audit] urgency reason validated; visit type hardcoded, no window/Notes/Priority inputs"
+MVP1-M01-048,AC-0048,Visit Planning - Planning,Web Portal,partial,"[audit] manual assignment mandatory (blocker); no Auto option, no assignment validation beyond presence"
+MVP1-M01-049,AC-0049,Visit Planning - Planning,Web Portal,partial,[audit] mandatory validation built; immediate/actions.ts has NO duplicate-active-visit check
+MVP1-M01-050,AC-0050,Visit Planning - Planning,Web Portal,implemented,"[audit] immediate/actions.ts inserts visit (ID, no plan) + assignment; audited via 0002 trigger"
+MVP1-M01-051,AC-0051,Visit Planning - Planning,Web Portal,partial,[audit] field Startup creates inspection in_progress + routes to workspace; visits.operational_state never updated
+MVP1-M01-052,AC-0052,Visit Planning - Planning,Web Portal,partial,[audit] notification rows written (no delivery channel); field queue reflects assignment; no calendar
+MVP1-M02-001,AC-0053,Visit Planning - Management,Web Portal,partial,"[audit] visits/page.tsx loads KPI tiles + list; no search box, no filters"
+MVP1-M02-002,AC-0054,Visit Planning - Management,Web Portal,partial,"[audit] 5 status counts shown (from 50-row window); KPIs not clickable, no list filtering"
+MVP1-M02-003,AC-0055,Visit Planning - Management,Web Portal,missing,[audit] no search by Visit ID/Factory/CR/License/Inspector on /visits
+MVP1-M02-004,AC-0056,Visit Planning - Management,Web Portal,missing,[audit] no filter controls on visit list
+MVP1-M02-005,AC-0057,Visit Planning - Management,Web Portal,partial,[audit] visits/[id] shows config/assignment/journey timeline/factory link; no audit history or location display
+MVP1-M02-006,AC-0058,Visit Planning - Management,Web Portal,partial,[audit] window (reschedule) and inspector (reassign) editable; visit type/location/notes not editable
+MVP1-M02-007,AC-0059,Visit Planning - Management,Web Portal,missing,[audit] no bulk update of selected child visits
+MVP1-M02-008,AC-0060,Visit Planning - Management,Web Portal,partial,[audit] republish/reassign available on returned; return reason stored in notes but never displayed
+MVP1-M02-009,AC-0061,Visit Planning - Management,Web Portal,partial,"[audit] republishVisit sets returned→published (same ID), audited; no inspector notification inserted"
+MVP1-M02-010,AC-0062,Visit Planning - Management,Web Portal,implemented,"[audit] cancelVisit: mandatory reason, state guard, notification row, audit trigger (visits/[id]/actions.ts)"
+MVP1-M02-011,AC-0063,Visit Planning - Management,Web Portal,missing,[audit] no multi-select bulk cancellation; cancel is per-visit only
+MVP1-M02-012,AC-0064,Visit Planning - Management,Web Portal,implemented,[audit] active-visit duplicate detection in single+bulk publish and BulkForm eligibility column
+MVP1-M02-013,AC-0065,Visit Planning - Management,Web Portal,partial,[audit] timeline shows only journey/geo events; planning/status events not displayed
+MVP1-M02-014,AC-0066,Visit Planning - Management,Web Portal,implemented,[audit] 0002 audit_row_change trigger records before/after/actor/timestamp on visits/plans/assignments; no browser UI
+MVP1-M02-015,AC-0067,Visit Planning - Management,Web Portal,implemented,[audit] app-layer transition guards (guardPublishedNew/guardPreStart + status-conditional updates) in actions.ts
+MVP1-M02-016,AC-0068,Visit Planning - Management,Web Portal,missing,[audit] expired is an enum value only; no expiry job or runtime transition exists
+MVP1-M02-017,AC-0069,Visit Planning - Management,Web Portal,missing,[audit] no Visit Plan detail page listing child visits/assignments/summary
+MVP1-M02-018,AC-0070,Visit Planning - Management,Web Portal,missing,[audit] no inspector workload/capacity view anywhere
+MVP1-M02-019,AC-0071,Visit Planning - Management,Web Portal,partial,"[audit] KPIs, list, and per-visit planner actions exist; filters and search missing"
+MVP1-M02-020,AC-0072,Visit Planning - Management,Web Portal,partial,[audit] KPI counts computed client-side over 50-row query; no drill-into records
+MVP1-M02-021,AC-0073,Visit Planning - Management,Web Portal,missing,[audit] no search facility on visit management (Visit ID/Plan ID/CR/License/Inspector/Campaign)
+MVP1-M02-022,AC-0074,Visit Planning - Management,Web Portal,missing,[audit] no filters on visit management list
+MVP1-M02-023,AC-0075,Visit Planning - Management,Web Portal,partial,[audit] static table with row links to detail; no sort/group/select capabilities
+MVP1-M02-024,AC-0076,Visit Planning - Management,Web Portal,partial,"[audit] detail shows factory/assignment/planning/journey; attachments, audit view and location display missing"
+MVP1-M02-025,AC-0077,Visit Planning - Management,Web Portal,partial,"[audit] only window+inspector updatable (validated, audited); other editable fields have no save path"
+MVP1-M02-026,AC-0078,Visit Planning - Management,Web Portal,partial,"[audit] reassign validates role pool, updates + notifies new inspector (row); no workload check, old inspector not notified"
+MVP1-M02-027,AC-0079,Visit Planning - Management,Web Portal,implemented,"[audit] rescheduleVisit: date validation, published/new state guard, window update (visits/[id]/actions.ts)"
+MVP1-M02-028,AC-0080,Visit Planning - Management,Web Portal,implemented,"[audit] cancelVisit with mandatory reason, notification row, audit trigger"
+MVP1-M02-029,AC-0081,Visit Planning - Management,Web Portal,partial,"[audit] returned state allows reassign/republish; return reason not displayed, planning fields not editable"
+MVP1-M02-030,AC-0082,Visit Planning - Management,Web Portal,partial,[audit] republish transition works + audit trigger; no update validation and no inspector notification
+MVP1-M02-031,AC-0083,Visit Planning - Management,Web Portal,missing,[audit] no bulk shared-field update across selected visits
+MVP1-M02-032,AC-0084,Visit Planning - Management,Web Portal,missing,[audit] no bulk reassignment; reassign is single-visit only
+MVP1-M02-033,AC-0085,Visit Planning - Management,Web Portal,missing,[audit] no bulk visit-window rescheduling
+MVP1-M02-034,AC-0086,Visit Planning - Management,Web Portal,missing,[audit] no bulk cancellation flow
+MVP1-M02-035,AC-0087,Visit Planning - Management,Web Portal,missing,[audit] no campaign/plan summary view with child visits
+MVP1-M02-036,AC-0088,Visit Planning - Management,Web Portal,missing,[audit] no campaign progress calculation (completed/published/returned/cancelled/expired)
+MVP1-M02-037,AC-0089,Visit Planning - Management,Web Portal,missing,[audit] no inspector utilization/capacity display
+MVP1-M02-038,AC-0090,Visit Planning - Management,Web Portal,missing,[audit] no Day/Week/Month calendar view of visits
+MVP1-M02-039,AC-0091,Visit Planning - Management,Web Portal,missing,[audit] GeoMap exists only in field startup + GIS admin; no management map of factories/inspectors
+MVP1-M02-040,AC-0092,Visit Planning - Management,Web Portal,partial,"[audit] duplicate/active-visit check at publish only; no overlap, capacity or missing-location conflict review"
+MVP1-M02-041,AC-0093,Visit Planning - Management,Web Portal,partial,"[audit] rows for assignment/cancel/reassign + ops outbox panel; none for return/reschedule/expiry, no delivery"
+MVP1-M02-042,AC-0094,Visit Planning - Management,Web Portal,missing,[audit] no visit attachment upload/download/remove anywhere in visit management
+MVP1-M02-043,AC-0095,Visit Planning - Management,Web Portal,missing,[audit] no notes add/edit UI; notes column only overwritten by return/immediate actions
+MVP1-M02-044,AC-0096,Visit Planning - Management,Web Portal,implemented,[audit] audit_events (0002 trigger) timestamps every planning table change chronologically; no timeline UI
+MVP1-M02-045,AC-0097,Visit Planning - Management,Web Portal,implemented,[audit] 0002 audit_row_change stores before_state/after_state/actor/timestamp; no review UI (known gap)
+MVP1-M02-046,AC-0098,Visit Planning - Management,Web Portal,missing,[audit] no automatic status update job and no planner notification path
+MVP1-M03-001,AC-0099,Inspection Execution - Pre-Start,iPad / Inspector Workspace,partial,"[audit] field/page.tsx has KPIs, charts, FAB quick action; no notifications display (no inspector inbox)"
+MVP1-M03-002,AC-0100,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] field/page.tsx loads RLS-scoped assigned visits; cards open startup/workspace
+MVP1-M03-003,AC-0101,Inspection Execution - Pre-Start,iPad / Inspector Workspace,missing,[audit] field dashboard is list-only; no Calendar/List/Map view switch
+MVP1-M03-004,AC-0102,Inspection Execution - Pre-Start,iPad / Inspector Workspace,missing,[audit] no search/filter/sort controls on field dashboard or visits list
+MVP1-M03-005,AC-0103,Inspection Execution - Pre-Start,iPad / Inspector Workspace,missing,[audit] no drag & drop rescheduling; reschedule is a planner form (visits/[id]/actions.ts)
+MVP1-M03-006,AC-0104,Inspection Execution - Pre-Start,iPad / Inspector Workspace,partial,[audit] assignments.return_reason+returned status (0001); no inspector return UI or planner notification
+MVP1-M03-007,AC-0105,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] visits/[id]/page.tsx loads full visit detail; inspector access via inspector_own_visits RLS (0001)
+MVP1-M03-008,AC-0106,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,"[audit] factories/[id]/page.tsx Factory 360: identity, risk, docs, reps, inspection history"
+MVP1-M03-009,AC-0107,Inspection Execution - Pre-Start,iPad / Inspector Workspace,missing,[audit] no AI insight/recommendation code anywhere in apps/web/src
+MVP1-M03-010,AC-0108,Inspection Execution - Pre-Start,iPad / Inspector Workspace,partial,"[audit] date/mode/package chosen in planner wizard (planning/single); no inspector prep form, no notify-factory"
+MVP1-M03-011,AC-0109,Inspection Execution - Pre-Start,iPad / Inspector Workspace,missing,[audit] execution mode picked freely at planning; no eligibility rule evaluation
+MVP1-M03-012,AC-0110,Inspection Execution - Pre-Start,iPad / Inspector Workspace,partial,[audit] Startup.tsx caches+version-locks package (M04-005/007); no content preview of form/checklist/rules
+MVP1-M03-013,AC-0111,Inspection Execution - Pre-Start,iPad / Inspector Workspace,missing,"[audit] no notify-factory toggle; notifications are table rows only, no delivery channel"
+MVP1-M03-014,AC-0112,Inspection Execution - Pre-Start,iPad / Inspector Workspace,missing,[audit] no appointment scheduling/confirmation/reschedule-approval flow; virtual is placeholder
+MVP1-M03-015,AC-0113,Inspection Execution - Pre-Start,iPad / Inspector Workspace,missing,[audit] 'ready'/'expired' values exist in enums (0001) but no transition logic or expiry job
+MVP1-M04-001,AC-0114,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] RLS journeys_rw/is_assigned_inspector (0002) blocks journey insert unless assigned to logged-in user
+MVP1-M04-002,AC-0115,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] dashboard filters published only (field/page.tsx); Startup itself never validates planning_status
+MVP1-M04-003,AC-0116,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] window shown as pre-passed check in Startup.tsx; no actual date-vs-window comparison or block
+MVP1-M04-004,AC-0117,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] uses factories.official_lat/lng only; planner_lat/lng columns (0001) never consulted
+MVP1-M04-005,AC-0118,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup.downloadPackage caches+locks package definition (offline.ts); previous answers not bundled
+MVP1-M04-006,AC-0119,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no package version/checksum/mandatory-file validation anywhere
+MVP1-M04-007,AC-0120,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] offline.ts IndexedDB 'packages' store — version-locked on-device cache (M04-007)
+MVP1-M04-008,AC-0121,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup.startJourney inserts journey_sessions linked to visit (0001 §6)
+MVP1-M04-009,AC-0122,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] journey_sessions.started_at server default only; device timestamp never captured
+MVP1-M04-010,AC-0123,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] lat/lng captured at check-in into geo_events; no altitude column or capture
+MVP1-M04-011,AC-0124,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] geo_events.accuracy_m recorded; <=25m accuracy gate enforced in Startup.checkIn
+MVP1-M04-012,AC-0125,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] device_id hardcoded 'field-pwa'; OS/app version never captured
+MVP1-M04-013,AC-0126,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] navigator.onLine detection live (offline.ts); status/connection type never persisted to journey
+MVP1-M04-014,AC-0127,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no watchPosition/interval GPS tracking; only one-shot check-in
+MVP1-M04-015,AC-0128,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] no timeline entity; journey insert audited via trg_audit (0002) plus transient client log
+MVP1-M04-016,AC-0129,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no navigation-app launch (no maps:// or geo: link anywhere)
+MVP1-M04-017,AC-0130,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] journey_sessions.eta_minutes column exists but is never written
+MVP1-M04-018,AC-0131,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] visits.operational_state never updated by field flow; stays 'new'
+MVP1-M04-019,AC-0132,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] DB writes audited (trg_audit); validation/download/GPS client events only in transient UI log
+MVP1-M04-020,AC-0133,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup gates steps, blocks on accuracy/fence failure, surfaces errors, retryable"
+MVP1-M04-021,AC-0134,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no continuous GPS tracking loop despite telemetry_interval_s config
+MVP1-M04-022,AC-0135,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] geo_events written only at check-in; no speed/heading columns or interval capture
+MVP1-M04-023,AC-0136,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] operations/page.tsx lists geo_events; no live inspector marker or map update
+MVP1-M04-024,AC-0137,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no ETA calculation anywhere; eta_minutes never populated
+MVP1-M04-025,AC-0138,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] remaining_distance_m column never written; no route distance calc
+MVP1-M04-026,AC-0139,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no journey progress percentage
+MVP1-M04-027,AC-0140,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] accuracy checked once at check-in; no continuous monitoring or degradation record
+MVP1-M04-028,AC-0141,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] online/offline listeners in Workspace.tsx; no Wi-Fi vs mobile network detection
+MVP1-M04-029,AC-0142,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] outbox queues responses/evidence/submit only; journey/GPS events not queued offline
+MVP1-M04-030,AC-0143,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] processOutbox replays queued ops in order (offline.ts); GPS points/timeline never queued
+MVP1-M04-031,AC-0144,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] route_deviation config seeded (0001 engine_settings) but no runtime comparison
+MVP1-M04-032,AC-0145,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup.checkIn compares distance vs configured radius (factory override or gis default)
+MVP1-M04-033,AC-0146,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] journey start + check-in recorded; no offline/online/ETA/deviation/arrival events
+MVP1-M04-034,AC-0147,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] geo_events checkin + trg_audit rows; network/sync/op-state events not recorded
+MVP1-M04-035,AC-0148,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] readiness panel + sync banner shown; no ETA/distance/progress display
+MVP1-M04-036,AC-0149,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] errors surfaced; duplicate journey prevention UI-only — no DB unique on journey_sessions.visit_id
+MVP1-M04-037,AC-0150,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] geofence comparison is one-shot at check-in (Startup.checkIn), not continuous"
+MVP1-M04-038,AC-0151,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] step-4 gated on inside-fence check-in; no GPS override path despite override enum (0001)
+MVP1-M04-039,AC-0152,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] geo_events.occurred_at server default; device timestamp not captured
+MVP1-M04-040,AC-0153,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] lat/lng/accuracy recorded at check-in; altitude not captured
+MVP1-M04-041,AC-0154,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] haversine distM() in Startup.tsx computes planned-vs-actual distance
+MVP1-M04-042,AC-0155,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] distance compared to configured tolerance fence in Startup.checkIn
+MVP1-M04-043,AC-0156,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] outside-fence just blocks with log line; no override confirmation dialog
+MVP1-M04-044,AC-0157,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] check-in geo_events row persists final coords, fence result, gis_version"
+MVP1-M04-045,AC-0158,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no arrival evidence photo/comment capture
+MVP1-M04-046,AC-0159,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] operational_state never transitions to 'arrived'
+MVP1-M04-047,AC-0160,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] checkin geo_event + audit recorded; override/evidence/confirmed events absent
+MVP1-M04-048,AC-0161,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] coords/timestamps/validation in geo_events + trg_audit; overrides and state transitions unlogged
+MVP1-M04-049,AC-0162,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] GPS-unavailable path silently substitutes demo coordinates (Startup.checkIn) instead of handling
+MVP1-M04-050,AC-0163,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no arrival confirmation screen; startup goes straight to start inspection
+MVP1-M04-051,AC-0164,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] Factory 360 has name/CR/risk; no card in arrival flow, no license status or health score fields"
+MVP1-M04-052,AC-0165,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] visit detail (web) shows type/window/assignment; no visit card in field flow, priority/reason not shown"
+MVP1-M04-053,AC-0166,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] geo event timeline on visits/[id]; no journey duration/distance-travelled summary
+MVP1-M04-054,AC-0167,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no expandable factory/visit cards in the field flow
+MVP1-M04-055,AC-0168,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] startInspection creates in_progress inspection + workspace; no op-state/SLA/journey-stop/timeline
+MVP1-M04-056,AC-0169,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no cancel action in field flow; web cancel locked once past published/new
+MVP1-M04-057,AC-0170,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] mandatory free-text reason saved (cancelVisit, visits/[id]/actions.ts); no configurable list, web-only"
+MVP1-M04-058,AC-0171,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no cancellation evidence upload
+MVP1-M04-059,AC-0172,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] planning_status->cancelled with guards; no op-state cancel, journey close, or SLA timers"
+MVP1-M04-060,AC-0173,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] state transitions audited via trg_audit; card-view/proceed events not logged
+MVP1-M04-061,AC-0174,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] guarded conditional updates + error returns keep state consistent (actions.ts, Startup error paths)"
+MVP1-M04-062,AC-0175,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] inspections insert with unique visit_id + frozen package_version_id (0001 FLD-INS-003)
+MVP1-M04-063,AC-0176,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] package cached per-inspection + version frozen on inspection; trg_guard_pkg locks published pkg
+MVP1-M04-064,AC-0177,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] field/inspection/[id] Workspace loads sections, sync engine, responses"
+MVP1-M04-065,AC-0178,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no wizard: Workspace is a single scroll page with no steps or navigation
+MVP1-M04-066,AC-0179,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] checklist sections only; no Factory Info/Report/Action Forms/Review steps
+MVP1-M04-067,AC-0180,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] answered a/b progress counter rendered in Workspace header
+MVP1-M04-068,AC-0181,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no collapsible Factory/Visit context panel in Workspace
+MVP1-M04-069,AC-0182,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] resume restores answers from checklist_responses + IndexedDB drafts; Resume link in Startup
+MVP1-M04-070,AC-0183,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] autosave on every answer (local.saveDraft + enqueue) + 8s outbox interval
+MVP1-M04-071,AC-0184,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] IndexedDB stores initialized; Workspace renders from server fetch, never verifies offline package"
+MVP1-M04-072,AC-0185,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] no timeline; inspection insert audited via trg_audit only
+MVP1-M04-073,AC-0186,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] inspections.started_at captured; no SLA timer runtime
+MVP1-M04-074,AC-0187,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no pre-execution package/config/dependency validation
+MVP1-M04-075,AC-0188,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] not-found empty state only; no retry-initialization handling
+MVP1-M04-076,AC-0189,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] sections rendered from package definition in order, but as one page — no form-engine wizard steps"
+MVP1-M04-077,AC-0190,Physical Inspection Execution,iPad / Inspector Workspace,missing,"[audit] no step concept, no current-step highlight or description"
+MVP1-M04-078,AC-0191,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no Next button or per-step validation
+MVP1-M04-079,AC-0192,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no Previous navigation (data does persist)
+MVP1-M04-080,AC-0193,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] completion counts checklist answers only; no factory/report/forms/review components
+MVP1-M04-081,AC-0194,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] answered count shown; no percentage or completed/remaining step breakdown
+MVP1-M04-082,AC-0195,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] checklist_responses.is_complete + answered styling; no step-level completion rules
+MVP1-M04-083,AC-0196,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] submit checks all items answered; mandatory evidence and forms not validated
+MVP1-M04-084,AC-0197,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no Action Forms step exists to auto-remove
+MVP1-M04-085,AC-0198,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no change summary counters
+MVP1-M04-086,AC-0199,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] answers persist via state+drafts; no step or navigation history to preserve
+MVP1-M04-087,AC-0200,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] autosave after each answer/evidence + 8s interval (Workspace useEffect + offline.ts)
+MVP1-M04-088,AC-0201,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] continuous autosave only; no explicit Save Draft button or navigation-position save
+MVP1-M04-089,AC-0202,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] saved answers restored on reopen; no last-step position (no wizard)
+MVP1-M04-090,AC-0203,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] blockers listed in one banner; not grouped by step
+MVP1-M04-091,AC-0204,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] validation message is static text; no navigate-and-highlight
+MVP1-M04-092,AC-0205,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submitted state removes editing (Workspace) + trg_guard_resp/evd/fnd reject edits (0002)
+MVP1-M04-093,AC-0206,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] response/evidence writes audited via trg_audit; navigation/draft/validation events not logged
+MVP1-M04-094,AC-0207,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] offline outbox halts on failure, preserves order, retries — no data loss (offline.ts)"
+MVP1-M04-095,AC-0208,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] factory profile exists as Factory 360 web page (factories/[id]); no factory-info step in execution
+MVP1-M04-096,AC-0209,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] license_number shown only; no license status/stage/issue/expiry/holder fields in schema
+MVP1-M04-097,AC-0210,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] Factory 360 shows name/CR/activity/region/city; no factory status/address, not in execution flow"
+MVP1-M04-098,AC-0211,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no products table or HS codes in schema
+MVP1-M04-099,AC-0212,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no raw materials data
+MVP1-M04-100,AC-0213,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no employee statistics
+MVP1-M04-101,AC-0214,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no investment/capacity/industrial indicators
+MVP1-M04-102,AC-0215,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] factories.source='senaei' + source_synced_at (0001); no per-attribute source-value display
+MVP1-M04-103,AC-0216,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no observed-value capture separate from Senaei data
+MVP1-M04-104,AC-0217,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no Verified status marking
+MVP1-M04-105,AC-0218,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no Updated status marking
+MVP1-M04-106,AC-0219,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no source-vs-observed side-by-side view
+MVP1-M04-107,AC-0220,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no updated-field highlighting
+MVP1-M04-108,AC-0221,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] evidence_link enum lacks a factory-field target; no field-level evidence
+MVP1-M04-109,AC-0222,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no image annotation anywhere in the codebase
+MVP1-M04-110,AC-0223,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no updated-field counter
+MVP1-M04-111,AC-0224,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no factory change review display
+MVP1-M04-112,AC-0225,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] RLS factories_update restricted to gis_admin/planner (0002) — inspector cannot write source data
+MVP1-M04-113,AC-0226,Physical Inspection Execution,iPad / Inspector Workspace,missing,"[audit] verification workflow absent, so no Verified/Updated/before-after events exist"
+MVP1-M04-114,AC-0227,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] factory verification feature absent; nothing to recover
+MVP1-M04-115,AC-0228,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no Dynamic Form Builder or report definition; workspace renders checklist only
+MVP1-M04-116,AC-0229,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report metadata display
+MVP1-M04-117,AC-0230,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no dynamic report section rendering
+MVP1-M04-118,AC-0231,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no field-type rendering (text/number/date/lookup/signature); only enum response buttons
+MVP1-M04-119,AC-0232,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no conditional visibility rules engine
+MVP1-M04-120,AC-0233,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no form-builder mandatory-field validation
+MVP1-M04-121,AC-0234,Physical Inspection Execution,iPad / Inspector Workspace,missing,"[audit] no conditional validations, value ranges or custom rules"
+MVP1-M04-122,AC-0235,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report responses; only checklist_responses stored
+MVP1-M04-123,AC-0236,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report fields to link evidence to
+MVP1-M04-124,AC-0237,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no annotation support
+MVP1-M04-125,AC-0238,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report draft (report step does not exist)
+MVP1-M04-126,AC-0239,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report autosave (report step does not exist)
+MVP1-M04-127,AC-0240,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report progress calculation
+MVP1-M04-128,AC-0241,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report summary
+MVP1-M04-129,AC-0242,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no read-only report rendering
+MVP1-M04-130,AC-0243,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report events
+MVP1-M04-131,AC-0244,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report error handling
+MVP1-M04-132,AC-0245,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace loads inspection_items + package definition sections (field/inspection/[id])
+MVP1-M04-133,AC-0246,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] items grouped by definition sections; no expand/collapse, no subcategories"
+MVP1-M04-134,AC-0247,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] all items treated mandatory at submit; no per-item mandatory flag or marking
+MVP1-M04-135,AC-0248,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no optional items — every item blocks submission
+MVP1-M04-136,AC-0249,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no previous-inspection answer comparison
+MVP1-M04-137,AC-0250,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no previous evidence display
+MVP1-M04-138,AC-0251,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] shows code+title+responses+photo requirement; no description/regulation ref/guidance display
+MVP1-M04-139,AC-0252,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] answer() saves response locally then upserts checklist_responses via outbox
+MVP1-M04-140,AC-0253,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] responses constrained to configured response_model.responses enum buttons
+MVP1-M04-141,AC-0254,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] response_model.mapping evaluated; non_compliant path flags violation + mandatory evidence
+MVP1-M04-142,AC-0255,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] mapped violation code surfaced in banner only; no violations row ever inserted at runtime
+MVP1-M04-143,AC-0256,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] penalty_mappings table (0001) never displayed during execution
+MVP1-M04-144,AC-0257,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no corrective action display; action_forms not generated at runtime
+MVP1-M04-145,AC-0258,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no per-item inspector comment field
+MVP1-M04-146,AC-0259,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] attachPhoto queues evidence with linked_type=item + sha256 custody (Workspace + offline.ts)
+MVP1-M04-147,AC-0260,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no annotation capability
+MVP1-M04-148,AC-0261,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] answered/total computed and displayed in Workspace header
+MVP1-M04-149,AC-0262,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] answered count only; no compliant/non-compliant/violations/evidence totals
+MVP1-M04-150,AC-0263,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] drafts + outbox autosave responses and evidence (offline.ts, drill-proven)"
+MVP1-M04-151,AC-0264,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submitted state removes editing; trg_guard_resp rejects post-submit edits (0002)
+MVP1-M04-152,AC-0265,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] answer/evidence writes audited via trg_audit; item-opened/comment/draft events not recorded
+MVP1-M04-153,AC-0266,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] offline engine preserves entered data across failures with ordered retry (offline.ts)
+MVP1-M04-154,AC-0267,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] photo upload only (accept=image/*); video and document upload not offered
+MVP1-M04-155,AC-0268,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] single file input; iPad native picker gives camera/gallery, no explicit file/doc source"
+MVP1-M04-156,AC-0269,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] file input accept=image/* launches iPad camera/gallery capture (Workspace.attachPhoto)
+MVP1-M04-157,AC-0270,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no video recording path
+MVP1-M04-158,AC-0271,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no document upload UI (offline.ts maps doc mime but input is image-only)
+MVP1-M04-159,AC-0272,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no comment attached to evidence records
+MVP1-M04-160,AC-0273,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no annotation layer
+MVP1-M04-161,AC-0274,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] evidence.linked_type schema supports item/finding/action/inspection; runtime links items only
+MVP1-M04-162,AC-0275,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no evidence preview UI in field
+MVP1-M04-163,AC-0276,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no replace/archive-version flow
+MVP1-M04-164,AC-0277,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no delete-evidence UI
+MVP1-M04-165,AC-0278,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] mandatory-photo prompt per evidence_rule; type/size/format limits (engine_settings) unenforced
+MVP1-M04-166,AC-0279,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no image/video compression before sync
+MVP1-M04-167,AC-0280,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] evidence stored base64 in IndexedDB outbox until sync (offline.ts)
+MVP1-M04-168,AC-0281,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] queued evidence syncs with linkage + sha256, replay-safe upsert (offline.ts)"
+MVP1-M04-169,AC-0282,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] evidence insert audited (trg_audit); replace/delete/preview/annotation events do not exist
+MVP1-M04-170,AC-0283,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] upload failure halts outbox, preserves queue, retries on interval — no loss (offline.ts)"
+MVP1-M04-171,AC-0284,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] response mapping evaluated per answer; only shows a message, never generates a form"
+MVP1-M04-172,AC-0285,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] action_forms never inserted at runtime; no template instantiation
+MVP1-M04-173,AC-0286,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] form_type column exists (0001) but no runtime assignment
+MVP1-M04-174,AC-0287,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no action form rendering
+MVP1-M04-175,AC-0288,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no dynamic field controls for action forms
+MVP1-M04-176,AC-0289,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no conditional display rules
+MVP1-M04-177,AC-0290,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no action form validation
+MVP1-M04-178,AC-0291,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no action form responses saved
+MVP1-M04-179,AC-0292,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] evidence_link enum has 'action' but no runtime path links evidence to forms
+MVP1-M04-180,AC-0293,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] submission acknowledgement JSON hardcodes signed rep (Workspace.submit); no capture UI or refusal
+MVP1-M04-181,AC-0294,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no action form drafts
+MVP1-M04-182,AC-0295,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no action form autosave
+MVP1-M04-183,AC-0296,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no Complete action for forms
+MVP1-M04-184,AC-0297,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no form-based progress update
+MVP1-M04-185,AC-0298,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] operations page lists action_forms with status + ack/close (web ops); no iPad forms review
+MVP1-M04-186,AC-0299,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no read-only action form rendering
+MVP1-M04-187,AC-0300,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] action forms never generated during execution; no lifecycle events to record
+MVP1-M04-188,AC-0301,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] action form flow absent; no failure handling to assess
+MVP1-M04-189,AC-0302,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no review dashboard step before submit
+MVP1-M04-190,AC-0303,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] factory verification feature absent; nothing to review
+MVP1-M04-191,AC-0304,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no report section (report step does not exist)
+MVP1-M04-192,AC-0305,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] live checklist shows answers inline + a/b count; no dedicated answered/pending/compliance summary
+MVP1-M04-193,AC-0306,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] violations never persisted; nothing to review
+MVP1-M04-194,AC-0307,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] penalties never displayed
+MVP1-M04-195,AC-0308,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no action forms review section
+MVP1-M04-196,AC-0309,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no grouped evidence preview
+MVP1-M04-197,AC-0310,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no signature review display (acknowledgement JSON is invisible to the inspector)
+MVP1-M04-198,AC-0311,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no cross-section counts summary
+MVP1-M04-199,AC-0312,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] submit() validates every checklist item answered; forms/signatures/evidence not validated
+MVP1-M04-200,AC-0313,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] blockers shown in a single banner listing item codes; no grouping or severity
+MVP1-M04-201,AC-0314,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no click-to-navigate on validation issues
+MVP1-M04-202,AC-0315,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no expandable review sections
+MVP1-M04-203,AC-0316,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no review position saved
+MVP1-M04-204,AC-0317,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] validation blocks on click; Submit button is not gated by a readiness evaluation
+MVP1-M04-205,AC-0318,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no review-step events recorded
+MVP1-M04-206,AC-0319,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] entered data preserved via drafts/outbox; no dedicated review retry handling
+MVP1-M04-207,AC-0320,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] submit() enqueues submission -> submission_versions insert (Workspace + offline.ts, journey proven)"
+MVP1-M04-208,AC-0321,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] client re-checks all items before enqueue; forms/evidence/signature rules not revalidated
+MVP1-M04-209,AC-0322,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no configured inspection numbering; UUIDs only
+MVP1-M04-210,AC-0323,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] trg_guard_resp/evd/fnd (0002) reject any change after submit — DB-enforced freeze
+MVP1-M04-211,AC-0324,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] inspections.package_version_id frozen + trg_guard_pkg blocks published package edits (0002)
+MVP1-M04-212,AC-0325,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] trg_guard_evd blocks evidence update/delete post-submit (0002); annotations/comments do not exist
+MVP1-M04-213,AC-0326,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] action forms not auto-closed on submit; ops can still edit them
+MVP1-M04-214,AC-0327,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] submission_versions.snapshot stores answers+offline flag only; no evidence/violations/forms manifest
+MVP1-M04-215,AC-0328,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no PDF report generator anywhere
+MVP1-M04-216,AC-0329,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] offline.ts submit op sets inspections.status='submitted'; review pipeline consumes it (proven)
+MVP1-M04-217,AC-0330,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] operational_state never set to 'submitted'
+MVP1-M04-218,AC-0331,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] review row created lazily when reviewer opens (reviews/[id]/page.tsx); no work item/rules at submit
+MVP1-M04-219,AC-0332,Physical Inspection Execution,iPad / Inspector Workspace,missing,[audit] no notification insert on submission; reviewer never notified
+MVP1-M04-220,AC-0333,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] confirmation message shown + immutable submission row + audit record (Workspace.submit)
+MVP1-M04-221,AC-0334,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] editing disabled after submit but sections hidden entirely — submitted content not viewable
+MVP1-M04-222,AC-0335,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] submission insert + status change audited (trg_audit); numbering/PDF/assignment events do not exist
+MVP1-M04-223,AC-0336,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] unique idempotency_key + duplicate-tolerant ordered replay = exactly-once submit (offline.ts)
+MVP1-M05-001,AC-0337,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] virtual/page.tsx + virtual/[id]/page.tsx load session, factory, appointment, participants, inspection status"
+MVP1-M05-002,AC-0338,Virtual Inspection Execution,Virtual Session + Web Portal,missing,[audit] No Start Session action anywhere; no app code inserts virtual_sessions; no validations
+MVP1-M05-003,AC-0339,Virtual Inspection Execution,Virtual Session + Web Portal,missing,[audit] virtual_sessions.timeline jsonb (0001) never written by any code; no session-start timestamp captured
+MVP1-M05-004,AC-0340,Virtual Inspection Execution,Virtual Session + Web Portal,partial,[audit] Room.tsx updates state to verified/in_progress; no Session Started transition since no start action exists
+MVP1-M05-005,AC-0341,Virtual Inspection Execution,Virtual Session + Web Portal,partial,[audit] Visit-level cancel form exists (visits/[id] cancelVisit); no cancel on virtual screens SCR-VIR-700
+MVP1-M05-006,AC-0342,Virtual Inspection Execution,Virtual Session + Web Portal,partial,"[audit] cancelVisit saves cancellation_reason (visits/[id]/actions.ts); not session-scoped, no separate comments"
+MVP1-M05-007,AC-0343,Virtual Inspection Execution,Virtual Session + Web Portal,partial,"[audit] visits audited (trg_audit, 0002) but virtual_sessions excluded from audit trigger list; state updates unrecorded"
+MVP1-M05-008,AC-0344,Virtual Inspection Execution,Virtual Session + Web Portal,partial,[audit] Room page opens but video/meeting provider is a placeholder div (Room.tsx) — no provider connection
+MVP1-M05-009,AC-0345,Virtual Inspection Execution,Virtual Session + Web Portal,partial,"[audit] Room.tsx shows participant verified/joined badges; joined_at never written, no live presence"
+MVP1-M05-010,AC-0346,Virtual Inspection Execution,Virtual Session + Web Portal,missing,[audit] joined_at columns exist (0001) but no code ever populates inspector/rep join times
+MVP1-M05-011,AC-0347,Virtual Inspection Execution,Virtual Session + Web Portal,missing,[audit] No connected/disconnected/reconnected/session-end tracking anywhere in code or schema writes
+MVP1-M05-012,AC-0348,Virtual Inspection Execution,Virtual Session + Web Portal,missing,[audit] No join/leave/disconnect/reconnect event recording in app or migrations
+MVP1-M05-013,AC-0349,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] Room.tsx renders per-participant OTP verification method UI
+MVP1-M05-014,AC-0350,Virtual Inspection Execution,Virtual Session + Web Portal,partial,"[audit] vp_request_otp (0009) generates+hashes OTP with cooldown/resend caps; DEV on-screen code only, no dispatch to rep"
+MVP1-M05-015,AC-0351,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] vp_verify_otp (0009) validates hash, expiry, attempts; wired via Room.tsx rpc"
+MVP1-M05-016,AC-0352,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] attempts_per_code/resend_max from engine_settings; locked status after max (0009)
+MVP1-M05-017,AC-0353,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] 0009 sets verified_at + verification_record (provider, attempts) + OTP_VERIFIED audit; participant name/role stored"
+MVP1-M05-018,AC-0354,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] Room.tsx sets virtual_sessions.state='verified' on successful OTP
+MVP1-M05-019,AC-0355,Virtual Inspection Execution,Virtual Session + Web Portal,partial,[audit] Room.begin() creates in_progress inspection + started_at and opens workspace; no SLA timer exists anywhere
+MVP1-M05-020,AC-0356,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] Room.begin() routes to /field/inspection/[id] — same shared workspace/submission flow as physical
+MVP1-M06-001,AC-0357,Level 2 Review & Resubmission,Web Portal,implemented,[audit] DecisionPanel gated on open review + under_review; reviews_update RLS reviewer-only (0002)
+MVP1-M06-002,AC-0358,Level 2 Review & Resubmission,Web Portal,partial,"[audit] reviews/[id] shows violations/actions/evidence/version + approve warn; no counts, factory updates, compliance preview"
+MVP1-M06-003,AC-0359,Level 2 Review & Resubmission,Web Portal,partial,"[audit] Corrective actions displayed; no expected penalties, official documents or notifications preview"
+MVP1-M06-004,AC-0360,Level 2 Review & Resubmission,Web Portal,partial,"[audit] decide() sets approved; trg_guard_review + no-update RLS lock version; no inspector notification, no compliance trigger"
+MVP1-M06-005,AC-0361,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] reviews/[id]/DecisionPanel.tsx: section checkboxes, mandatory reason, scope-impact hint"
+MVP1-M06-006,AC-0362,Level 2 Review & Resubmission,Web Portal,partial,"[audit] Return status/scope/unlock/version-preserve built (actions.ts, Workspace.tsx, 0002); no inspector notification"
+MVP1-M06-007,AC-0363,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Reject requires reason (reviews/[id]/actions.ts) and shows final-impact banner (DecisionPanel.tsx)
+MVP1-M06-008,AC-0364,Level 2 Review & Resubmission,Web Portal,partial,[audit] Reject sets review+inspection rejected; DB guards lock; no inspector notification row created
+MVP1-M06-009,AC-0365,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] trg_audit_reviews/inspections (0002) capture actor, before/after full rows incl decision, reason, sections, statuses"
+MVP1-M06-010,AC-0366,Level 2 Review & Resubmission,Web Portal,partial,[audit] Decision recorded in audit_events via trigger; no timeline UI to view the event
+MVP1-M06-011,AC-0367,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Workspace submit creates next version_number; prior versions immutable (no update RLS, 0002); golden journey proven"
+MVP1-M06-012,AC-0368,Level 2 Review & Resubmission,Web Portal,implemented,[audit] reviews/[id] fully read-only; trg_guard_resp/evd/fnd (0002) reject edits after submission
+MVP1-M06-013,AC-0369,Level 2 Review & Resubmission,Web Portal,partial,"[audit] reviews/page.tsx queue shows factory/version/submitted/status only; no priority, SLA, risk, type or mode"
+MVP1-M06-014,AC-0370,Level 2 Review & Resubmission,Web Portal,missing,[audit] No search or filter controls on reviews queue
+MVP1-M06-015,AC-0371,Level 2 Review & Resubmission,Web Portal,partial,"[audit] reviews/[id] loads latest snapshot, checklist, evidence, actions; no report, factory-verify, timeline/audit view"
+MVP1-M06-016,AC-0372,Level 2 Review & Resubmission,Web Portal,partial,"[audit] Factory/version/status + item lists shown; no summary header with inspector, mode, visit type or counts"
+MVP1-M06-017,AC-0373,Level 2 Review & Resubmission,Web Portal,missing,[audit] No Source Value / Observed Value / Before-After comparison UI anywhere
+MVP1-M06-018,AC-0374,Level 2 Review & Resubmission,Web Portal,missing,[audit] No report entity or report responses/attachments/comments view; only checklist snapshot exists
+MVP1-M06-019,AC-0375,Level 2 Review & Resubmission,Web Portal,implemented,[audit] reviews/[id]/page.tsx renders checklist answers table + violations + evidence
+MVP1-M06-020,AC-0376,Level 2 Review & Resubmission,Web Portal,partial,"[audit] Evidence listed as storage_path+sha text (reviews/[id]); no media preview, annotations or per-item linkage"
+MVP1-M06-021,AC-0377,Level 2 Review & Resubmission,Web Portal,partial,[audit] Action forms shown as text lines; no signatures/attachments display (signature = JSON acknowledgement only)
+MVP1-M06-022,AC-0378,Level 2 Review & Resubmission,Web Portal,partial,[audit] Chronological events exist in audit_events; no timeline UI in review workspace
+MVP1-M06-023,AC-0379,Level 2 Review & Resubmission,Web Portal,missing,[audit] submission_versions stored (0001) but no version compare/diff UI exists
+MVP1-M06-024,AC-0380,Level 2 Review & Resubmission,Web Portal,partial,[audit] Return with reason+sections+unlock+workflow built (reviews/[id]/actions.ts); no inspector notification
+MVP1-M06-025,AC-0381,Level 2 Review & Resubmission,Web Portal,partial,[audit] Approve locks version + updates status (actions.ts + 0002 guards); no compliance trigger or notification
+MVP1-M06-026,AC-0382,Level 2 Review & Resubmission,Web Portal,partial,[audit] Reject requires reason and closes workflow status; no inspector notification; timeline = audit rows only
+MVP1-M06-027,AC-0383,Level 2 Review & Resubmission,Web Portal,partial,"[audit] Review open (insert) and decisions audited via triggers; no comment, version-viewed or timeline-viewed logging"
+MVP1-M06-028,AC-0384,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Action errors surfaced for retry; decided_at guard + trg_guard_review (0002) preserve review integrity
+MVP1-M06-029,AC-0385,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] reviews/page.tsx loads pending (decided_at null) reviews, RLS-scoped to reviewer visibility"
+MVP1-M06-030,AC-0386,Level 2 Review & Resubmission,Web Portal,missing,[audit] No search/filter UI on the review queue
+MVP1-M06-031,AC-0387,Level 2 Review & Resubmission,Web Portal,missing,"[audit] No SLA status, overdue flag, risk level or critical-violation badges on queue"
+MVP1-M06-032,AC-0388,Level 2 Review & Resubmission,Web Portal,implemented,[audit] reviews/[id] loads latest submitted version read-only (M06-012 banner + DB guards)
+MVP1-M06-033,AC-0389,Level 2 Review & Resubmission,Web Portal,partial,"[audit] Checklist/evidence/violations/actions/versions loaded; no report, observations, timeline or audit display"
+MVP1-M06-034,AC-0390,Level 2 Review & Resubmission,Web Portal,missing,"[audit] No source/observed values, verified-updated status or before/after display exists"
+MVP1-M06-035,AC-0391,Level 2 Review & Resubmission,Web Portal,partial,[audit] Submitted snapshot answers rendered read-only; no report fields/attachments structure exists
+MVP1-M06-036,AC-0392,Level 2 Review & Resubmission,Web Portal,partial,"[audit] Answers, violations, corrective actions displayed; no penalties, comments or required/optional flags"
+MVP1-M06-037,AC-0393,Level 2 Review & Resubmission,Web Portal,partial,[audit] Evidence text list only; no photo/video/document preview or grouping by source
+MVP1-M06-038,AC-0394,Level 2 Review & Resubmission,Web Portal,partial,[audit] Action forms as text lines; no attachments or signatures/refusals rendering
+MVP1-M06-039,AC-0395,Level 2 Review & Resubmission,Web Portal,partial,[audit] Immutable audit_events rows exist (0002/0005); no timeline/audit browser UI
+MVP1-M06-040,AC-0396,Level 2 Review & Resubmission,Web Portal,partial,[audit] Version numbers visible in queue and [id] fetches all versions; no all-versions view or differences
+MVP1-M06-041,AC-0397,Level 2 Review & Resubmission,Web Portal,partial,[audit] Returned inspection appears in field home + returned banner (Workspace.tsx); no notification row created on return
+MVP1-M06-042,AC-0398,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Workspace.tsx returned banner shows returned_sections + decision_reason + scope note
+MVP1-M06-043,AC-0399,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Workspace.tsx locks non-returned sections read-only; DB guards also reject edits (0002)
+MVP1-M06-044,AC-0400,Level 2 Review & Resubmission,Web Portal,implemented,[audit] local.saveDraft + outbox enqueue/sync (lib/offline.ts) autosave edits and evidence
+MVP1-M06-045,AC-0401,Level 2 Review & Resubmission,Web Portal,partial,[audit] Resubmit creates new locked version + submitted status (offline.ts submit op); no reviewer notification
+MVP1-M06-046,AC-0402,Level 2 Review & Resubmission,Web Portal,missing,[audit] No previous-vs-latest change-highlight UI exists
+MVP1-M06-047,AC-0403,Level 2 Review & Resubmission,Web Portal,partial,"[audit] Immutable submission_versions created, but snapshot holds answers+acknowledgement only — not evidence/forms/timeline"
+MVP1-M06-048,AC-0404,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] submission_versions(version_number, submitted_at, submitted_by) + review decision linked; listed in reviews queue"
+MVP1-M06-049,AC-0405,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] trg_audit_reviews (0002) logs actor + full before/after incl decision, reason, sections, statuses, timestamp"
+MVP1-M06-050,AC-0406,Level 2 Review & Resubmission,Web Portal,partial,[audit] Resubmission audited via submission_versions insert; checklist_responses/evidence not in audit trigger list (0002)
+MVP1-M06-051,AC-0407,Level 2 Review & Resubmission,Web Portal,partial,[audit] Submit/review-open/decision events land in audit_events; no timeline event model or UI
+MVP1-M06-052,AC-0408,Level 2 Review & Resubmission,Web Portal,partial,[audit] Only decision_reason captured (immutable via trg_guard_review); no general reviewer comment capability
+MVP1-M06-053,AC-0409,Level 2 Review & Resubmission,Web Portal,missing,"[audit] No selected-versions before/after comparison UI for fields, evidence, items or forms"
+MVP1-M07-001,AC-0410,Factory 360,Web Portal,implemented,[audit] factories/[id]/page.tsx loads factory+risk+visits+inspections+violations+actions+reviews in one dossier
+MVP1-M07-002,AC-0411,Factory 360,Web Portal,implemented,[audit] Identity panel shows name/CR/license/activity/region/city; status+stage fields absent from schema (0001)
+MVP1-M07-003,AC-0412,Factory 360,Web Portal,partial,[audit] Only license_number rendered; no license status/stage/issue-expiry/holder fields anywhere in schema
+MVP1-M07-004,AC-0413,Factory 360,Web Portal,partial,"[audit] Only cr_number rendered; no legal name, CR status, or owner fields in factories table (0001)"
+MVP1-M07-005,AC-0414,Factory 360,Web Portal,partial,[audit] official_lat/lng shown as text only; GeoMap.tsx exists but unused on F360 — no pins/override history here
+MVP1-M07-006,AC-0415,Factory 360,Web Portal,missing,[audit] No products/HS-code table or UI anywhere in apps/web/src or migrations
+MVP1-M07-007,AC-0416,Factory 360,Web Portal,missing,[audit] No raw-materials table or UI anywhere in codebase
+MVP1-M07-008,AC-0417,Factory 360,Web Portal,missing,[audit] No employee/workforce fields in schema or UI
+MVP1-M07-009,AC-0418,Factory 360,Web Portal,missing,[audit] No investment/capacity/industrial-indicator fields in schema or UI
+MVP1-M07-010,AC-0419,Factory 360,Web Portal,implemented,"[audit] History table shows visits w/ planning_status (incl cancelled/expired), op state, window date, link to detail"
+MVP1-M07-011,AC-0420,Factory 360,Web Portal,implemented,[audit] Inspection status/versions/review decisions per visit row; opens /visits/[id] which shows inspector+dates
+MVP1-M07-012,AC-0421,Factory 360,Web Portal,partial,"[audit] Violation codes + corrective actions w/ due dates shown; violations lack open/closed state, penalties not surfaced"
+MVP1-M07-013,AC-0422,Factory 360,Web Portal,implemented,[audit] action_forms status/owner/due rendered per inspection row in F360 history table
+MVP1-M07-014,AC-0423,Factory 360,Web Portal,partial,"[audit] Current risk_score/band/version shown; no score history, drivers, or last-recalc date (no recompute job)"
+MVP1-M07-015,AC-0424,Factory 360,Web Portal,partial,[audit] risk_band lozenge + related violations shown; no risk drivers or risk history
+MVP1-M07-016,AC-0425,Factory 360,Web Portal,partial,"[audit] factory_documents metadata table only (0011); no PDF generator, no preview/download of files"
+MVP1-M07-017,AC-0426,Factory 360,Web Portal,partial,"[audit] Visit/inspection history table only; no unified event timeline with sync, penalty, or score-update events"
+MVP1-M07-018,AC-0427,Factory 360,Web Portal,implemented,[audit] FactoryList.tsx renders dossier link to /factories/{id} per row
+MVP1-M07-019,AC-0428,Factory 360,Web Portal,implemented,"[audit] DB-enforced: RLS fdocs/freps policies (0011) + compliance_admin dossier visibility (0012), visits scope (0008)"
+MVP1-M07-020,AC-0429,Factory 360,Web Portal,implemented,[audit] Per-source error banners (dErr/rErr) with retry text while remaining panels render; not-found state for factory
+MVP1-M08-001,AC-0430,Operations Center,Operations Center / Web Portal,partial,"[audit] operations/page.tsx loads visits/geo/actions/notifications; no map, no SLA engine, no risk indicators"
+MVP1-M08-002,AC-0431,Operations Center,Operations Center / Web Portal,missing,[audit] No map on Operations Center; GeoMap.tsx only used in admin/gis and field startup
+MVP1-M08-003,AC-0432,Operations Center,Operations Center / Web Portal,partial,"[audit] KPI cards + live table by operational_state and visit links exist; no filter control, cancelled/expired not shown"
+MVP1-M08-004,AC-0433,Operations Center,Operations Center / Web Portal,partial,"[audit] Only inspector name per visit via assignments; no availability, live location, online state, or workload"
+MVP1-M08-005,AC-0434,Operations Center,Operations Center / Web Portal,partial,[audit] Only action_forms due_at<now overdue badge; no SLA rules for journey/execution/submission/review
+MVP1-M08-006,AC-0435,Operations Center,Operations Center / Web Portal,missing,[audit] No high-risk factory list/map on ops page; risk only on /factories list (different screen)
+MVP1-M08-007,AC-0436,Operations Center,Operations Center / Web Portal,partial,"[audit] Notif panel + mark-handled exist, but RLS notif_own is SELECT-only so ack fails; alerts only assignment/visit_cancelled"
+MVP1-M08-008,AC-0437,Operations Center,Operations Center / Web Portal,implemented,"[audit] Visit links open /visits/[id] with statuses, execution_mode, inspector, cancellation reason, geo timeline"
+MVP1-M08-009,AC-0438,Operations Center,Operations Center / Web Portal,missing,[audit] Factory names on ops page are plain text — no link/navigation to Factory 360
+MVP1-M08-010,AC-0439,Operations Center,Operations Center / Web Portal,missing,[audit] No branch/region/city selector on ops; region filter exists only on FactoryList
+MVP1-M08-011,AC-0440,Operations Center,Operations Center / Web Portal,missing,[audit] No workload aggregation by inspector/branch (assigned/active/completed/overdue) anywhere
+MVP1-M08-012,AC-0441,Operations Center,Operations Center / Web Portal,partial,[audit] cancellation_reason captured and shown on visit detail; no ops view of cancellations by reason/inspector/region
+MVP1-M08-013,AC-0442,Operations Center,Operations Center / Web Portal,partial,[audit] geofence_result=override lozenges in geo events list; no planned-vs-actual location or confirmation display
+MVP1-M08-014,AC-0443,Operations Center,Operations Center / Web Portal,partial,[audit] geo_events list w/ kind+timestamp per visit (M08-014 panel); no journey path/arrival-point rendering
+MVP1-M08-015,AC-0444,Operations Center,Operations Center / Web Portal,partial,[audit] Visit detail shows lifecycle statuses + geo timeline; no unified planning-to-review event timeline
+MVP1-M08-016,AC-0445,Operations Center,Operations Center / Web Portal,partial,"[audit] Only counts by operational_state; no completed/cancelled/overdue KPIs, avg duration, or SLA breach rate"
+MVP1-M08-017,AC-0446,Operations Center,Operations Center / Web Portal,missing,[audit] No export on ops; only CSV export in codebase is admin/localization Manager.tsx
+MVP1-M08-018,AC-0447,Operations Center,Operations Center / Web Portal,implemented,"[audit] DB-enforced: role-scoped RLS on visits/geo_events/journeys (0001, 0008) governs everything ops reads"
+MVP1-M08-019,AC-0448,Operations Center,Operations Center / Web Portal,implemented,[audit] loadErrors banner names failed sources with retry text while healthy panels still render
+MVP1-M09-001,AC-0449,Compliance Configuration,Admin Portal,partial,"[audit] admin/regulations create/publish/list only; no edit-draft, deactivate, effective date or attachments"
+MVP1-M09-002,AC-0450,Compliance Configuration,Admin Portal,implemented,"[audit] admin/items/actions.ts createItem: clause link, response model, evidence rule; consumed by package designer"
+MVP1-M09-003,AC-0451,Compliance Configuration,Admin Portal,partial,[audit] violation_codes create w/ level+clause (admin/violations); corrective action & grace period absent; item link seed-only
+MVP1-M09-004,AC-0452,Compliance Configuration,Admin Portal,implemented,[audit] createPenaltyMapping + unique violation_code_id (0001_foundation.sql) enforce one penalty per violation
+MVP1-M09-005,AC-0453,Compliance Configuration,Admin Portal,partial,"[audit] evidence_rule presets stored (items/actions.ts); photo-only, and submit() never blocks missing mandatory evidence"
+MVP1-M09-006,AC-0454,Compliance Configuration,Admin Portal,partial,"[audit] draft versions + item attach + planning selects published pkg; no create-package action, no Template Builder"
+MVP1-M09-007,AC-0455,Compliance Configuration,Admin Portal,implemented,"[audit] DraftEditor.tsx add/remove items, section mandatory flag, ordered definition JSON saved via saveDraftDefinition"
+MVP1-M09-008,AC-0456,Compliance Configuration,Admin Portal,missing,[audit] no Template Builder or template reference entity; report fields live inline in package definition
+MVP1-M09-009,AC-0457,Compliance Configuration,Admin Portal,partial,[audit] action_form linkage stored in response_model/definition; no code inserts action_forms rows on trigger
+MVP1-M09-010,AC-0458,Compliance Configuration,Admin Portal,partial,"[audit] package/workflow versions immutable (trg_guard_pkg, config_versions); regs/items/violations/penalties unversioned"
+MVP1-M09-011,AC-0459,Compliance Configuration,Admin Portal,partial,"[audit] draft save + publish exist (packages/workflows actions); no dependency validation pre-publish, no deactivate+reason"
+MVP1-M09-012,AC-0460,Compliance Configuration,Admin Portal,partial,[audit] publishRegulation flips draft→published (regulations/actions.ts) with zero validation of items/violations/penalties
+MVP1-M09-013,AC-0461,Compliance Configuration,Admin Portal,missing,[audit] no impact-analysis view; grep for affected packages/visits UI finds nothing
+MVP1-M09-014,AC-0462,Compliance Configuration,Admin Portal,partial,[audit] toggleItemActive (items/actions.ts) has no reason field; packages page catalog does not filter inactive items
+MVP1-M09-015,AC-0463,Compliance Configuration,Admin Portal,partial,"[audit] 0002 audit triggers cover regulations/package_versions/engine_settings; inspection_items, violation_codes, penalty_mappings unaudited"
+MVP1-M09-016,AC-0464,Compliance Configuration,Admin Portal,partial,"[audit] sections created in DraftEditor and rendered in field Workspace; single title only, no AR/EN section naming"
+MVP1-M09-017,AC-0465,Compliance Configuration,Admin Portal,implemented,[audit] item order persisted in definition arrays (DraftEditor) and Workspace renders sections/items in stored order
+MVP1-M09-018,AC-0466,Compliance Configuration,Admin Portal,partial,[audit] section mandatory flag stored; Workspace submit treats every item required; no per-item Required/Optional/Conditional
+MVP1-M09-019,AC-0467,Compliance Configuration,Admin Portal,implemented,[audit] response_model.mapping stored (items actions + 0003 seed) and read at execution (Workspace.tsx answer())
+MVP1-M09-020,AC-0468,Compliance Configuration,Admin Portal,partial,[audit] compliant/non_compliant/na evaluated in Workspace; Needs Review result type unsupported anywhere
+MVP1-M09-021,AC-0469,Compliance Configuration,Admin Portal,partial,"[audit] conditional visible_when stored (0003 seed, designer badge); Workspace never evaluates it — no show/hide"
+MVP1-M09-022,AC-0470,Compliance Configuration,Admin Portal,partial,[audit] mandatory_when_visible stored in response_model; no runtime enforcement in Workspace submit
+MVP1-M09-023,AC-0471,Compliance Configuration,Admin Portal,partial,"[audit] score_weight stored/displayed (items, designer); no risk/health recompute consumes it — factory risk_score is static seed"
+MVP1-M09-024,AC-0472,Compliance Configuration,Admin Portal,partial,[audit] score_excluded_on stored (presets/seed); no score calculation exists anywhere in src
+MVP1-M09-025,AC-0473,Compliance Configuration,Admin Portal,partial,[audit] per-response evidence rule stored and shows photo affordance on NC (Workspace); submit does not enforce it
+MVP1-M09-026,AC-0474,Compliance Configuration,Admin Portal,partial,[audit] NC→violation mapping stored + Workspace banner announces it; no violations row ever inserted at runtime
+MVP1-M09-027,AC-0475,Compliance Configuration,Admin Portal,partial,[audit] is_blocking stored + ops queue shows blocking/close-terminal; nothing enforces completion before approval
+MVP1-M09-028,AC-0476,Compliance Configuration,Admin Portal,missing,"[audit] no preview mode; packages page is a designer listing, not an inspector-view render"
+MVP1-M09-029,AC-0477,Compliance Configuration,Admin Portal,partial,[audit] approveAndPublish enforces maker-checker only (0006); no validation of sections/items/mappings/evidence pre-publish
+MVP1-M09-030,AC-0478,Compliance Configuration,Admin Portal,verified_live,Published-version immutability banner + DB trigger; new draft v2026.09 created in browser.
+MVP1-FND-001,FND-ACC-001,FND (foundation),All channels,implemented,"[audit] deny-by-default RLS + role policies (0001/0002), has_role/has_any_role helpers, role-scoped writes throughout"
+MVP1-FND-002,FND-ACC-002,FND (foundation),All channels,implemented,[audit] five separate enums (0001 §1); visits carry planning_status + operational_state as distinct columns
+MVP1-FND-003,FND-ACC-003,FND (foundation),All channels,implemented,"[audit] audit_row_change triggers w/ actor+before/after (0002), append-only enforced (0005); geo_events immutable"
+MVP1-FND-004,FND-ACC-004,FND (foundation),All channels,partial,"[audit] notification rows written on cancel/reassign; no delivery channel, dedup, or SLA runtime (config in engine_settings only)"
+MVP1-FND-005,FND-ACC-005,FND (foundation),iPad,partial,"[audit] offline.ts: version-locked cache, autosave, explicit conflicts; no package checksum validation or on-device encryption"
+MVP1-FND-006,FND-ACC-006,FND (foundation),Web;iPad;Virtual,implemented,"[audit] submission idempotency_key unique (0001), upsert replay in processOutbox, status-guarded .eq() transitions in actions"
+MVP1-FND-007,FND-ACC-007,FND (foundation),Web,implemented,[audit] factories.official_lat/lng vs visits.planner_lat/lng vs geo_events observed_* with source + timestamps (0001)
+MVP1-FND-008,FND-ACC-008,FND (foundation),iPad;Virtual;Web,implemented,"[audit] evidence linkage columns mandatory (0001); trg_guard_evd (0002) locks post-submission, returned state reopens"
+MVP1-FND-009,FND-ACC-009,FND (foundation),iPad;Operations,partial,[audit] geo_read RLS limits roles (0002); no active-journey-only visibility window and no retention enforcement job
+MVP1-FND-010,FND-ACC-010,FND (foundation),All channels,partial,"[audit] ui_strings/engine_settings/roles centralized; visit types, levels, response presets hardcoded per screen"
+MVP1-FND-011,FND-ACC-011,FND (foundation),All channels,implemented,"[audit] astryx.css token system, ax-btn--field touch targets, text lozenges + glyph cues (non-color), RTL support"
+MVP1-FND-012,FND-ACC-012,FND (foundation),Web;Operations,implemented,[audit] operations/page.tsx collects per-source errors into partial-service banner; each panel renders independently
+MVP1-FND-013,FND-ACC-013,FND (foundation),Web,implemented,"[audit] factories/[id]/page.tsx:121 shows source + source_synced_at freshness line, dash when unavailable"
+MVP1-FND-014,FND-ACC-014,FND (foundation),iPad;Virtual;Web,partial,[audit] type/size limits configured in engine_settings only; offline evidence upload has no size/type check or malware scan
+MVP1-FND-015,FND-ACC-015,FND (foundation),All channels,partial,[audit] evidence/AC_LEDGER.csv maps 493 rows to requirement/acceptance/status; per-row test+evidence incomplete (G10 open)

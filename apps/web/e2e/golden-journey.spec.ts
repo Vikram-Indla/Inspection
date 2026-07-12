@@ -1,0 +1,230 @@
+import { test, expect, type BrowserContext, type Page } from "@playwright/test";
+import { PERSONAS, storageStatePath } from "./personas";
+import { login, rest, must } from "./live-rest";
+import { signAndConfirm } from "./sign-helper";
+
+// Golden journey B10 (B10-EV-001) driven entirely through the UI:
+// plan -> publish -> assign -> startup -> execute -> submit v1 -> Level-2 RETURN
+// (exact scope) -> correct -> resubmit v2 -> Level-2 APPROVE, with UI negative
+// paths inline (publish blockers M01-040, submit blockers ERR-SUB-001) and
+// decided-review lock (M06-009) asserted at the end. Server truth is verified
+// over PostgREST with persona JWTs, exactly like the B10 evidence script.
+
+test.describe.configure({ mode: "serial" });
+
+let factory: { id: string; factory_code: string; name: string };
+let inspectorUserId: string;
+let packageVersionId: string;
+let scopeSectionKey: string; // section containing FS-101 — the exact return scope
+let visitId: string;
+let inspectionId: string;
+
+async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 15): Promise<T> {
+  for (let i = 0; i < tries; i++) {
+    const v = await fn();
+    if (v) return v;
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  throw new Error(`timed out waiting for ${label}`);
+}
+
+test.beforeAll(async () => {
+  const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+  const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  inspectorUserId = inspector.userId;
+
+  // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
+  // an existing shared factory races every other run (this suite's own retries,
+  // the collaborator's own manual testing) against the same live project —
+  // provision a dedicated throwaway factory per run instead so the journey
+  // can never collide with concurrent activity.
+  const code = `G10-JOURNEY-${Date.now()}`;
+  factory = must(await rest("POST", "factories", planner.jwt, {
+    factory_code: code, name: `G10 Golden Journey ${code}`,
+    cr_number: `9999-${Date.now() % 1000000}`, region: "Riyadh", city: "Riyadh",
+    risk_band: "low", risk_score: 10,
+  }), "create sacrificial factory")[0];
+
+  const pkg = must(await rest("GET",
+    "package_versions?select=id,definition&status=eq.published&order=published_at.desc&limit=1", planner.jwt), "package")[0];
+  packageVersionId = pkg.id;
+  const sections: { key: string; items?: string[] }[] = pkg.definition.sections ?? [];
+  const scope = sections.find(s => (s.items ?? []).includes("FS-101"));
+  if (!scope) throw new Error("published package no longer contains FS-101 — journey fixture drifted");
+  scopeSectionKey = scope.key;
+});
+
+async function personaPage(browser: { newContext: (o: object) => Promise<BrowserContext> }, key: keyof typeof PERSONAS): Promise<Page> {
+  const ctx = await browser.newContext({ storageState: storageStatePath(key) });
+  return ctx.newPage();
+}
+
+async function fillWizard(page: Page) {
+  await page.getByPlaceholder(/CR number|Industrial License/i).fill(factory.factory_code);
+  await page.locator(`input[name="factory_id"][value="${factory.id}"]`).check();
+
+  // Selecting the factory conditionally renders the license (M01-036) and location
+  // (M01-038) steps in the same React commit; wait for that render to land before
+  // probing for the license radio's presence, since .count() (unlike .fill/.click)
+  // does not auto-wait and would otherwise race the state update.
+  await page.getByText(/3 · Confirm location/).waitFor();
+
+  // License step (M01-036) — check the single radio if this factory carries a license.
+  const licenseRadio = page.locator('input[name="license_number"]');
+  if (await licenseRadio.count()) await licenseRadio.check();
+
+  // Location step (M01-038) — always provide a planner pin and confirm; satisfies
+  // both "no official pin on record" and "confirmation required" blockers.
+  await page.locator('input[name="planner_lat"]').fill("24.7136");
+  await page.locator('input[name="planner_lng"]').fill("46.6753");
+  await page.locator('input[name="location_confirmed"]').check();
+
+  await page.locator('select[name="package_version_id"]').selectOption(packageVersionId);
+  const start = new Date(Date.now() + 3 * 864e5).toISOString().slice(0, 16);
+  const end = new Date(Date.now() + 3 * 864e5 + 4 * 36e5).toISOString().slice(0, 16);
+  await page.locator('input[name="window_start"]').fill(start);
+  await page.locator('input[name="window_end"]').fill(end);
+}
+
+test("NEG: publish without an inspector is blocked, work preserved (M01-040/M01-041)", async ({ browser }) => {
+  const page = await personaPage(browser, "planner");
+  await page.goto("/planning/single");
+  await fillWizard(page);
+  await page.getByRole("button", { name: /publish visit/i }).click();
+  const validation = page.locator('.ax-validation[role="alert"]');
+  await expect(validation).toBeVisible();
+  await expect(validation).toContainText("M01-040");
+  await expect(page).toHaveURL(/\/planning\/single/); // work preserved, no navigation
+});
+
+test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ browser }) => {
+  const page = await personaPage(browser, "planner");
+  await page.goto("/planning/single");
+  await fillWizard(page);
+  await page.locator('select[name="inspector_id"]').selectOption(inspectorUserId);
+  await page.getByRole("button", { name: /publish visit/i }).click();
+  await page.waitForURL(/\/visits\/[0-9a-f-]+/, { timeout: 20_000 });
+  visitId = page.url().match(/\/visits\/([0-9a-f-]+)/)![1];
+});
+
+test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1", async ({ browser }) => {
+  const page = await personaPage(browser, "inspector");
+
+  // Assigned visit is visible on the field dashboard (RBAC-009 scope)
+  await page.goto("/field");
+  // Two links can point at the same next visit: the assignment card and the
+  // "Start next visit" FAB — scope to the card (ax-surface panel), not the FAB.
+  await expect(page.locator(`a.ax-surface[href="/field/${visitId}"]`)).toContainText(factory.name);
+
+  // Startup: four steps, enabled strictly in order (SB05)
+  await page.goto(`/field/${visitId}`);
+  const step = (re: RegExp) => page.getByRole("button", { name: re });
+  await expect(step(/2 ·/)).toBeDisabled();
+  await step(/1 ·/).click();
+  await step(/2 ·/).click();
+  await step(/3 ·/).click();
+  // Execution-mode "eligible" badges also use .ax-lozenge--success now — match text directly.
+  await expect(page.locator(".ax-lozenge--success", { hasText: "inside fence" })).toBeVisible();
+  // M03-010 — mandatory pre-start confirmations (rep present + location confirmed) gate step 4.
+  const checkboxes = page.locator('input[type="checkbox"]');
+  await checkboxes.nth(0).check();
+  await checkboxes.nth(1).check();
+  await step(/4 ·/).click();
+  await page.waitForURL(/\/field\/inspection\/[0-9a-f-]+/, { timeout: 20_000 });
+  inspectionId = page.url().match(/\/field\/inspection\/([0-9a-f-]+)/)![1];
+
+  // NEG: submit with everything unanswered — ERR-SUB-001, state stays in progress
+  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
+  await expect(page.locator(".ax-banner").first()).toContainText("Blockers:");
+
+  // Answer every item; FS-101 non-compliant (drives the V-FS-09 path)
+  const qs = page.locator(".ipad-q");
+  const n = await qs.count();
+  expect(n).toBeGreaterThan(0);
+  for (let i = 0; i < n; i++) {
+    const q = qs.nth(i);
+    const target = (await q.innerText()).includes("FS-101");
+    const btn = target
+      ? q.getByRole("button", { name: /^non compliant$/i })
+      : q.getByRole("button", { name: /^compliant$/i });
+    if (await btn.count()) await btn.click();
+    else await q.getByRole("button").first().click();
+    await expect(q).toHaveClass(/is-answered/);
+  }
+
+  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
+  await signAndConfirm(page); // DEC-009 acknowledgement gate
+  await expect(page.locator(".ax-banner--immutable")).toContainText("Submitted — immutable v1.");
+  await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
+
+  // Server truth: v1 exists and inspection is submitted
+  const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  await pollRest(async () => {
+    const { data } = await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.1`, inspector.jwt);
+    return Array.isArray(data) && data.length === 1 ? data : null;
+  }, "submission v1");
+});
+
+test("P3 reviewer: RETURN with exact scope and mandatory reason (M06-006, STM-REV-003)", async ({ browser }) => {
+  const page = await personaPage(browser, "reviewer");
+  await page.goto(`/reviews/${inspectionId}`); // opening the submission creates the review
+  await expect(page.locator(".ax-table, table")).toContainText("FS-101");
+
+  await page.locator('input[name="decision"][value="return"]').check();
+  await page.locator(`input[name="returned_section"][value="${scopeSectionKey}"]`).check();
+  await page.locator('textarea[name="reason"]').fill("FS-101 evidence insufficient — retag and re-shoot (G10 Playwright golden journey).");
+  await page.getByRole("button", { name: /confirm return/i }).click();
+  await page.waitForURL(/\/reviews$/, { timeout: 20_000 });
+});
+
+test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M06-043)", async ({ browser }) => {
+  const page = await personaPage(browser, "inspector");
+  await page.goto(`/field/inspection/${inspectionId}`);
+
+  await expect(page.locator(".ax-banner--warning")).toContainText(`Returned — correction scope: ${scopeSectionKey}.`);
+  await expect(page.getByText("Not in return scope — locked read-only").first()).toBeVisible();
+
+  const q101 = page.locator(".ipad-q", { hasText: "FS-101" });
+  await q101.getByRole("button", { name: /^compliant$/i }).click();
+
+  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
+  await signAndConfirm(page); // DEC-009 acknowledgement gate
+  await expect(page.locator(".ax-banner--immutable")).toBeVisible();
+  await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
+
+  const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  await pollRest(async () => {
+    const { data } = await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.2`, inspector.jwt);
+    return Array.isArray(data) && data.length === 1 ? data : null;
+  }, "submission v2");
+});
+
+test("P5 reviewer: APPROVE v2; decided reviews lock; v1 stays intact (M06-009)", async ({ browser }) => {
+  const page = await personaPage(browser, "reviewer");
+  await page.goto(`/reviews/${inspectionId}`);
+  await expect(page.locator(".ax-banner--warning").first()).toContainText("Prior decision");
+
+  await page.locator('input[name="decision"][value="approve"]').check();
+  await page.locator('textarea[name="reason"]').fill("Corrected evidence adequate (G10 Playwright golden journey).");
+  await page.getByRole("button", { name: /confirm approve/i }).click();
+  await page.waitForURL(/\/reviews$/, { timeout: 20_000 });
+
+  // Decided = locked: reopening the workspace offers no decision panel (M06-009)
+  await page.goto(`/reviews/${inspectionId}`);
+  await expect(page.getByText("No open decision")).toBeVisible();
+
+  // Final server assertions — mirror of the B10 evidence script
+  const reviewer = await login(PERSONAS.reviewer.email, PERSONAS.reviewer.password);
+  const subs = must(await rest("GET",
+    `submission_versions?select=version_number,snapshot&inspection_id=eq.${inspectionId}&order=version_number`, reviewer.jwt), "versions");
+  expect(subs.map((s: { version_number: number }) => s.version_number)).toEqual([1, 2]);
+  expect(subs[0].snapshot.answers["FS-101"], "v1 immutable — original non_compliant intact").toBe("non_compliant");
+  expect(subs[1].snapshot.answers["FS-101"]).toBe("compliant");
+  const revs = must(await rest("GET",
+    `reviews?select=decision,returned_sections&inspection_id=eq.${inspectionId}&order=decided_at`, reviewer.jwt), "reviews");
+  expect(revs.map((r: { decision: string }) => r.decision)).toEqual(["return", "approve"]);
+  expect(revs[0].returned_sections).toEqual([scopeSectionKey]);
+
+  const ins = must(await rest("GET", `inspections?select=status&id=eq.${inspectionId}`, reviewer.jwt), "inspection")[0];
+  expect(ins.status).toBe("approved");
+});
