@@ -10,7 +10,7 @@
 // All strings arrive pre-translated from the server page (strings-prop canon).
 import { useMemo, useState } from "react";
 import { useActionState } from "react";
-import { bulkCancelVisits, bulkRescheduleVisits, bulkReassignVisits, type ActionResult } from "./actions";
+import { bulkCancelVisits, bulkRescheduleVisits, bulkReassignVisits, bulkEditVisits, type ActionResult } from "./actions";
 
 export type VisitRow = {
   id: string;
@@ -73,6 +73,8 @@ export type VisitsBoardStrings = {
   bulkCancelReason: string;
   bulkCancelPlaceholder: string;
   bulkCancelBtn: string;
+  bulkEditType: string; bulkEditNotes: string; bulkEditNotesPlaceholder: string; bulkEditSetNotes: string; bulkEditBtn: string;
+  typePeriodic: string; typeFollowUp: string; typeComplaint: string;
   clearSelection: string;
   noMatch: string;
   showing: string;          // "{shown}" and "{total}" placeholders
@@ -107,9 +109,10 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const [can, canAct, p1] = useActionState<ActionResult, FormData>(bulkCancelVisits, {});
   const [rsc, rscAct, p2] = useActionState<ActionResult, FormData>(bulkRescheduleVisits, {});
   const [rea, reaAct, p3] = useActionState<ActionResult, FormData>(bulkReassignVisits, {});
-  const busy = p1 || p2 || p3;
-  const msg = can.error ?? rsc.error ?? rea.error;
-  const ok = can.ok ?? rsc.ok ?? rea.ok;
+  const [edt, edtAct, p4] = useActionState<ActionResult, FormData>(bulkEditVisits, {});
+  const busy = p1 || p2 || p3 || p4;
+  const msg = can.error ?? rsc.error ?? rea.error ?? edt.error;
+  const ok = can.ok ?? rsc.ok ?? rea.ok ?? edt.ok;
 
   // M02-016 display parity with field (M03-015): lapsed published window with a
   // not-started inspection renders 'expired'. Persistence is expire_lapsed_visits().
@@ -245,6 +248,21 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label">{strings.bulkCancelReason}</label>
                 <input className="ax-input" name="reason" placeholder={strings.bulkCancelPlaceholder} /></div>
               <button className="ax-btn ax-btn--danger" disabled={busy}>{strings.bulkCancelBtn}</button>
+            </form>
+            <form action={edtAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+              {hidden}
+              <div className="ax-field" style={{ maxInlineSize: 180 }}><label className="ax-field__label">{strings.bulkEditType}</label>
+                <select className="ax-select" name="visit_type"><option value="">{strings.selectOption}</option>
+                  <option value="periodic">{strings.typePeriodic}</option>
+                  <option value="follow_up">{strings.typeFollowUp}</option>
+                  <option value="complaint">{strings.typeComplaint}</option></select></div>
+              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label">{strings.bulkEditNotes}</label>
+                <input className="ax-input" name="notes" placeholder={strings.bulkEditNotesPlaceholder} /></div>
+              <label className="ax-choice" style={{ display: "flex" }}>
+                <input type="checkbox" name="set_notes" value="1" />
+                <span>{strings.bulkEditSetNotes}</span>
+              </label>
+              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkEditBtn}</button>
             </form>
           </div>
         </div>

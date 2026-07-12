@@ -71,10 +71,53 @@ export async function bulkRescheduleVisits(_: ActionResult, fd: FormData): Promi
     if (error) { lines.push(`${short(id)} — ${error.message}`); continue; }
     if (!updated?.length) { lines.push(`${short(id)} — blocked: not published/new, or RLS denied (M02-008 guard)`); continue; }
     done++;
+    // Unlike bulkReassignVisits/bulkCancelVisits, this leg never notified the
+    // assigned inspector that their window moved — same "silent reschedule"
+    // gap the single-visit rescheduleVisit() already closed.
+    const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
+    if (asg?.inspector_id) {
+      const { error: nErr } = await sb.from("notifications").insert({
+        event_key: "reschedule", recipient: asg.inspector_id,
+        payload: { visit_id: id, window_start: start.toISOString(), window_end: end.toISOString(), bulk: true }, channel: "push",
+      });
+      if (nErr) { lines.push(`${short(id)} — window updated, but notification failed: ${nErr.message}`); continue; }
+    }
     lines.push(`${short(id)} — window updated`);
   }
   revalidatePath("/visits");
   const summary = `${done}/${ids.length} rescheduled (M02-033, audited)\n${lines.join("\n")}`;
+  return done > 0 ? { ok: summary } : { error: summary };
+}
+
+// Bulk Edit Visits (Excel row: Visit Type / Location / Notes) — the existing
+// bulk actions only covered reschedule/reassign/cancel; type and notes had
+// no bulk path at all. Location is intentionally out of scope here (same
+// reason single-visit Edit Visit doesn't cover it — location changes need
+// the map/pin re-confirmation flow, not a blind bulk overwrite).
+export async function bulkEditVisits(_: ActionResult, fd: FormData): Promise<ActionResult> {
+  const sb = await supabaseServer();
+  const ids = selectedIds(fd);
+  const visitType = String(fd.get("visit_type") ?? "").trim();
+  const notesRaw = String(fd.get("notes") ?? "");
+  const setNotes = fd.get("set_notes") === "1"; // explicit opt-in so "leave notes alone" is the default
+  if (ids.length === 0) return { error: "Select at least one visit (M02-007)" };
+  if (!visitType && !setNotes) return { error: "Choose a visit type to change, or check \"update notes\" (M02-007)" };
+  const patch: Record<string, string | null> = {};
+  if (visitType) patch.visit_type = visitType;
+  if (setNotes) patch.notes = notesRaw.trim() === "" ? null : notesRaw.trim();
+  const lines: string[] = [];
+  let done = 0;
+  for (const id of ids) {
+    const { data: updated, error } = await sb.from("visits").update(patch)
+      .eq("id", id).eq("planning_status", "published").eq("operational_state", "new")
+      .select("id");
+    if (error) { lines.push(`${short(id)} — ${error.message}`); continue; }
+    if (!updated?.length) { lines.push(`${short(id)} — blocked: not published/new, or RLS denied (M02-008 guard)`); continue; }
+    done++;
+    lines.push(`${short(id)} — updated`);
+  }
+  revalidatePath("/visits");
+  const summary = `${done}/${ids.length} edited (M02-007, audited)\n${lines.join("\n")}`;
   return done > 0 ? { ok: summary } : { error: summary };
 }
 
