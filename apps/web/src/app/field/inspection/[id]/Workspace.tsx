@@ -556,15 +556,47 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                 </div>
                 {val?.value && scoreExcluded(it, val.value) && <p className="ax-caption">{strings.naExcluded}</p>}
                 {leg?.applies && leg.mandatory && evCount < leg.min && <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
-                {thumbs.length > 0 && (
-                  <div className="ax-evidence-grid">
-                    {thumbs.map((q, i) => (
-                      <div key={i} className="ax-evidence is-unsynced">
-                        <img className="ax-evidence__thumb" src={`data:${q.mime};base64,${q.data_b64}`} alt={strings.evQueuedAlt} />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* F2 — evidence list per item: synced thumbnails + REPLACE (archive, M04-163)
+                    + DELETE (soft, audited, M04-164); queued captures ride alongside unsynced */}
+                {(() => {
+                  const rows = serverEvidence.filter(ev2 => ev2.linked_type === "item" && ev2.linked_id === it.id && !ev2.deleted_at && !evState[ev2.id]?.deleted);
+                  if (!rows.length && !thumbs.length) return null;
+                  return (
+                    <div className="ax-evidence-grid">
+                      {rows.map(ev2 => {
+                        const archived = !!ev2.archived_at || !!evState[ev2.id]?.archived;
+                        const url = evidenceUrls[ev2.id];
+                        return (
+                          <div key={ev2.id} className={`ax-evidence ${archived ? "is-quarantined" : ""}`}>
+                            {url
+                              ? <img className="ax-evidence__thumb" src={url} alt={strings.evSyncedAlt} />
+                              : <div className="ax-evidence__thumb" aria-hidden="true">{ev2.evidence_type === "document" ? "📄" : "📷"}</div>}
+                            <div className="ax-evidence__meta">
+                              <span className="ax-numeric">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
+                              {archived
+                                ? <span className="ax-lozenge ax-lozenge--warning">{strings.evArchived}</span>
+                                : (
+                                  <span className="ax-row" style={{ gap: "var(--ax-space-050)", flexWrap: "wrap" }}>
+                                    <label className="ax-btn ax-btn--subtle" style={{ cursor: "pointer" }}>
+                                      {strings.evReplace}
+                                      <input type="file" accept={acceptFor(leg?.type ?? "photo")} hidden
+                                        onChange={ie => { if (ie.target.files?.length) { attachFiles(it, ie.target.files, ev2.id); ie.target.value = ""; } }} />
+                                    </label>
+                                    <button className="ax-btn ax-btn--subtle" onClick={() => setDeleting({ ev: ev2, reason: "" })}>{strings.evDelete}</button>
+                                  </span>
+                                )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {thumbs.map((q, i) => (
+                        <div key={i} className="ax-evidence is-unsynced">
+                          <img className="ax-evidence__thumb" src={`data:${q.mime};base64,${q.data_b64}`} alt={strings.evQueuedAlt} />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 <label className="ax-field">
                   <span className="ax-field__label">{strings.noteLabel}</span>
                   <textarea className="ax-textarea" rows={2} placeholder={strings.notePlaceholder} value={val?.note ?? ""} onChange={e => saveNote(it, e.target.value)} onBlur={() => flushNote(it)} />
@@ -641,6 +673,31 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       {/* DEC-009 — acknowledgement signature gate; the dataURL rides in the queued submit op */}
       {signing && !submitted && (
         <SignaturePad strings={strings.sig} onCancel={() => setSigning(false)} onConfirm={finalizeSubmit} />
+      )}
+      {/* M04-109/124/147/160 — annotation overlay before enqueue: the flattened image
+          becomes the outbox payload, so annotated evidence syncs like any other op */}
+      {shot && !submitted && (
+        <ImageAnnotator srcB64={shot.b64} mime={shot.mime} strings={strings.annot}
+          onCancel={() => setPendingShots(q => q.slice(1))} onConfirm={confirmShot} />
+      )}
+      {/* M04-164 — soft delete requires a reason; the update is captured by the evidence audit trigger */}
+      {deleting && !submitted && (
+        <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.evDeleteTitle}>
+          <div className="ax-modal" style={{ inlineSize: "min(480px, 100%)" }}>
+            <div className="ax-modal__header"><h3>{strings.evDeleteTitle}</h3></div>
+            <div className="ax-modal__body">
+              <label className="ax-field">
+                <span className="ax-field__label">{strings.evDeleteReason}<span className="ax-req">*</span></span>
+                <textarea className="ax-textarea" rows={2} placeholder={strings.evDeleteReasonPh} value={deleting.reason}
+                  onChange={e => setDeleting(d => d ? { ...d, reason: e.target.value } : d)} />
+              </label>
+            </div>
+            <div className="ax-modal__footer">
+              <button className="ax-btn ax-btn--secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
+              <button className="ax-btn ax-btn--prominent" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

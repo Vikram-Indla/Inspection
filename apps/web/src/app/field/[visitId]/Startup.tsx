@@ -165,6 +165,8 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       const fix: Fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy,
         alt: p.coords.altitude, speed: p.coords.speed, heading: p.coords.heading, d };
       posRef.current = fix; setLive(fix);
+      // M04-026 — first fix after journey start anchors the progress baseline
+      setInitialD(prev => prev ?? d);
       if (d < minDRef.current) { minDRef.current = d; devSinceRef.current = null; }
     }, () => { /* GPS unavailable — one-shot check-in path handles fallback (M04-049) */ }, { enableHighAccuracy: true });
     const timer = setInterval(async () => {
@@ -249,7 +251,54 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     setExceptionNote(""); add(fmt(strings.logExceptionSent, { acc: fix.acc.toFixed(1) }));
   }
 
+  // F3 · M04-056/057/058 — cancellation REQUEST at arrival. Evidence (optional
+  // photo) is queued durably in the outbox linked to the CANCELLATION (visit-
+  // anchored, 0020) before the request itself; the request flags the visit and
+  // notifies planner/ops — planning_status stays untouched (planner/ops decide).
+  async function submitCancellation() {
+    if (!cancelReason) return;
+    setBusy(true);
+    try {
+      if (cancelFile) {
+        const b64 = btoa(String.fromCharCode(...new Uint8Array(await cancelFile.arrayBuffer())));
+        const sha = await sha256b64(b64);
+        await local.enqueue({
+          kind: "evidence", inspection_id: visit.id, visit_id: visit.id,
+          linked_type: "cancellation", linked_id: visit.id,
+          name: `cancellation-${Date.now()}-${cancelFile.name}`, mime: cancelFile.type || "image/jpeg",
+          data_b64: b64, captured_at: new Date().toISOString(), sha256: sha, queued_at: new Date().toISOString(),
+        });
+        add(fmt(strings.logCancelEvidenceQueued, { name: cancelFile.name, sha: sha.slice(0, 12) }));
+        processOutbox(() => { /* startup has no sync banner; failures stay queued for the workspace runner */ });
+      }
+      const fd = new FormData();
+      fd.set("visit_id", visit.id); fd.set("reason_key", cancelReason); fd.set("comment", cancelComment);
+      const r = await requestVisitCancellation({}, fd);
+      if (r.error) { add(fmt(strings.logCancelFailed, { error: r.error })); return; }
+      setCancelRequested(true);           // M04-056 — stop transition to execution
+      add(strings.logCancelSent);
+    } finally { setBusy(false); }
+  }
+
+  // F3 · M03-006 — inspector return for blocked visits: assignment -> returned,
+  // visit flagged return_requested, planner notified (request_visit_return, 0020).
+  async function submitReturn() {
+    const reason = returnReason.trim();
+    if (!reason) return;
+    setBusy(true);
+    const fd = new FormData();
+    fd.set("visit_id", visit.id); fd.set("reason", reason);
+    const r = await requestVisitReturn({}, fd);
+    setBusy(false);
+    if (r.error) { add(fmt(strings.logReturnFailed, { error: r.error })); return; }
+    setReturnRequested(true);
+    add(strings.logReturnSent);
+  }
+
   async function startInspection() {
+    // M04-056 — a requested cancellation stops the transition to execution
+    if (cancelRequested) { add(fmt(strings.logStartBlocked, { error: strings.cancelRequestedChip })); return; }
+    if (returnRequested) { add(fmt(strings.logStartBlocked, { error: strings.returnRequestedChip })); return; }
     // M03-010 — mandatory pre-start confirmations (rep present + location confirmed)
     if (!repPresent || !locConfirmed) { add(strings.logPrestartBlocked); return; }
     setBusy(true);
@@ -270,8 +319,15 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     await local.cachePackage(data.id, visit.package_versions);  // key by inspection for the workspace
     router.push(`/field/inspection/${data.id}`);
   }
-  const existing = visit.inspections?.[0];
+  // visits -> inspections is TO-ONE (object | null); arrays tolerated defensively.
+  const existing = Array.isArray(visit.inspections) ? visit.inspections[0] : (visit.inspections ?? undefined);
   const arrivalDetected = !!live && live.d <= arrivalRadius;          // M04-037 arrival auto-detect
+  const started = !!existing && existing.status !== "not_started";
+  // M04-026 — travelled vs initial distance-to-factory from the first fix; clamped 0–100.
+  const remainingD = checkedIn ? 0 : live?.d ?? null;
+  const progress = initialD != null && initialD > 0 && remainingD != null
+    ? Math.min(100, Math.max(0, ((initialD - remainingD) / initialD) * 100))
+    : null;
   // SB20 / ENG-08 — official pin + geofence ring; observed dot after check-in; live dot while journeying.
   const mapMarkers: GeoMarkerData[] = [
     { id: "official", lat: visit.factories.official_lat, lng: visit.factories.official_lng,
