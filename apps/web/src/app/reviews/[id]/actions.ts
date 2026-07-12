@@ -25,7 +25,8 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
     decided_at: new Date().toISOString(),
   }).eq("id", review_id).select("inspection_id").single();
   if (error) return { error: `${error.message} (decided reviews are immutable — M06-009)` };
-  await sb.from("inspections").update({ status }).eq("id", rev.inspection_id);
+  const { error: insErr } = await sb.from("inspections").update({ status }).eq("id", rev.inspection_id);
+  if (insErr) return { error: `Decision recorded, but the inspection could not be transitioned: ${insErr.message}` };
   // M06-004/006/008 — the inspector is notified on every decision (ENG-11).
   const { data: ins } = await sb.from("inspections").select("visit_id").eq("id", rev.inspection_id).single();
   const { data: asg } = ins

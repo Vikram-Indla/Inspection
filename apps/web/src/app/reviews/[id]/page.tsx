@@ -32,11 +32,14 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     }).select().single();
     if (created) {
       open = created as never;
-      await sb.from("inspections").update({ status: "under_review" }).eq("id", ins.id);
+      const { error: transErr } = await sb.from("inspections").update({ status: "under_review" }).eq("id", ins.id);
       // ins was fetched before this transition — the render condition below
       // reads ins.status, so without this the decision panel never shows on
       // the very first visit that auto-creates the review (only on reload).
-      ins.status = "under_review";
+      // Only mirror the DB write locally if it actually happened (RLS can
+      // silently no-op an update instead of erroring) — otherwise ins.status
+      // stays "submitted" and the fallback message reflects real state.
+      if (!transErr) ins.status = "under_review";
     }
   }
   const sections = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[] } }).definition.sections.filter(s => { return !!s.items?.length; });
