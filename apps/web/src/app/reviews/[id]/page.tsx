@@ -30,7 +30,14 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     const { data: created } = await sb.from("reviews").insert({
       inspection_id: ins.id, submission_version_id: latest.id, reviewer_id: user!.id, status: "under_review",
     }).select().single();
-    if (created) { open = created as never; await sb.from("inspections").update({ status: "under_review" }).eq("id", ins.id); }
+    if (created) {
+      open = created as never;
+      await sb.from("inspections").update({ status: "under_review" }).eq("id", ins.id);
+      // ins was fetched before this transition — the render condition below
+      // reads ins.status, so without this the decision panel never shows on
+      // the very first visit that auto-creates the review (only on reload).
+      ins.status = "under_review";
+    }
   }
   const sections = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[] } }).definition.sections.filter(s => { return !!s.items?.length; });
   const f = (ins.visits as unknown as { factories: { name: string; factory_code: string } }).factories;
