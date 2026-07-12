@@ -38,10 +38,14 @@ test.beforeAll(async () => {
   // the collaborator's own manual testing) against the same live project —
   // provision a dedicated throwaway factory per run instead so the journey
   // can never collide with concurrent activity.
+  // Known app bug: Startup.tsx's GeoMap crashes (Leaflet reads .lat off null)
+  // when a factory has no official coordinates. Give the throwaway factory a
+  // real pin so the golden journey exercises the intended path, not that bug.
   const code = `G10-JOURNEY-${Date.now()}`;
   factory = must(await rest("POST", "factories", planner.jwt, {
     factory_code: code, name: `G10 Golden Journey ${code}`,
     cr_number: `9999-${Date.now() % 1000000}`, region: "Riyadh", city: "Riyadh",
+    official_lat: 24.7136, official_lng: 46.6753,
     risk_band: "low", risk_score: 10,
   }), "create sacrificial factory")[0];
 
@@ -138,9 +142,16 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await page.waitForURL(/\/field\/inspection\/[0-9a-f-]+/, { timeout: 20_000 });
   inspectionId = page.url().match(/\/field\/inspection\/([0-9a-f-]+)/)![1];
 
-  // NEG: submit with everything unanswered — ERR-SUB-001, state stays in progress
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
+  // NEG: submit with everything unanswered — ERR-SUB-001, state stays in progress.
+  // The button is aria-disabled (not the disabled attribute) while blocked —
+  // submit() does its own full validation internally, so force the click same
+  // as a real pointer click would (aria-disabled doesn't prevent DOM clicks).
+  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click({ force: true });
   await expect(page.locator(".ax-banner").first()).toContainText("Blockers:");
+
+  // 1x1 PNG — satisfies the mandatory-evidence gate on a non-compliant answer (DEC-006).
+  const PIXEL_PNG = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=", "base64");
 
   // Answer every item; FS-101 non-compliant (drives the V-FS-09 path)
   const qs = page.locator(".ipad-q");
@@ -155,9 +166,27 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
     if (await btn.count()) await btn.click();
     else await q.getByRole("button").first().click();
     await expect(q).toHaveClass(/is-answered/);
+
+    if (target) {
+      // Mandatory evidence (M04-199/evidence_rule) — attach a photo.
+      const fileInput = q.locator('input[type="file"]');
+      if (await fileInput.count()) {
+        await fileInput.setInputFiles({ name: "fs-101.png", mimeType: "image/png", buffer: PIXEL_PNG });
+      }
+      // Blocking action form (M04-171..184) — fill every generic field it asks for.
+      const formFields = q.locator(".ax-panel input, .ax-panel textarea");
+      const fc = await formFields.count();
+      for (let f = 0; f < fc; f++) {
+        const field = formFields.nth(f);
+        const tag = await field.evaluate(el => el.tagName.toLowerCase());
+        const type = tag === "input" ? await field.getAttribute("type") : null;
+        await field.fill(type === "date" ? "2026-08-01" : "G10 Playwright golden journey — corrective action.");
+        await field.blur();
+      }
+    }
   }
 
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
+  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click({ force: true });
   await signAndConfirm(page); // DEC-009 acknowledgement gate
   await expect(page.locator(".ax-banner--immutable")).toContainText("Submitted — immutable v1.");
   await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
