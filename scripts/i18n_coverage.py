@@ -26,7 +26,7 @@ ALLOW = re.compile(
     r"|@|\bhttp|\.example\b|\bpx\b|\bvar\(|—$"
     r"|^(English|العربية|OpenStreetMap|Leaflet|نفاذ · Nafath|Twitter / X|LinkedIn|YouTube)$"  # proper nouns / brands — never translated
     r"|^[\w./-]+\.(py|ts|tsx|css|json)$"  # file paths shown as code
-    r"|[;{}=]|\n")                      # code fragments caught by the JSX regex
+    r"|[;{}=&\[\]]|\n|as Record|=>")    # code fragments caught by the JSX regex
 TEXT_IN_JSX = re.compile(r">([^<>{}]+)<")
 ATTR_TEXT = re.compile(r'(?:placeholder|title|aria-label|alt)="([^"{]+)"')
 

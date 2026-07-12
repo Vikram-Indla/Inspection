@@ -403,9 +403,39 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
       <div className="ax-row" style={{ justifyContent: "space-between", position: "sticky", insetBlockStart: 0, zIndex: 10, background: "var(--ax-color-canvas)", paddingBlock: "var(--ax-space-100)" }}>
         <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
-        <span className="ax-caption ax-numeric">{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+        <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
       </div>
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
+
+      {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
+          reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
+      <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>
+          {strings.panelTitle}{inspectionNo ? <span className="ax-numeric"> · {inspectionNo}</span> : null}
+        </summary>
+        <div className="ax-grid-2" style={{ marginBlockStart: "var(--ax-space-200)" }}>
+          <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelFactory}</summary>
+            <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+              <div><strong>{panel.factory.name}</strong></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelCode}</span><span className="ax-numeric">{panel.factory.code ?? "—"}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelLicense}</span><span className="ax-numeric">{panel.factory.license ?? "—"}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
+            </div>
+          </details>
+          <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+            <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelVisit}</summary>
+            <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelWindow}</span><span className="ax-numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
+              <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="ax-version">{panel.pkg.label}</span></span></div>
+            </div>
+          </details>
+        </div>
+        {/* M04-136/137 — source of the previous-inspection comparison shown per item below */}
+        {prev && <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
+      </details>
       {conflicts.map(c => (
         <div key={c.key} className="ax-conflict">
           <div className="ax-conflict__head">{fmt(strings.conflictHead, { code: items.find(i => i.id === c.item_id)?.code ?? "" })}</div>
@@ -495,6 +525,15 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                   {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
                 </div>
                 {it.guidance && <p className="ax-caption">💡 {strings.guidanceLabel}: {it.guidance}</p>}
+                {/* M04-136/137 — same item's answer + evidence count from the factory's latest prior approved inspection */}
+                {prev && (
+                  <p className="ax-caption">
+                    ↩ {fmt(strings.prevLine, {
+                      value: prev.answers[it.id] ? (strings.enumLabels[prev.answers[it.id]] ?? prev.answers[it.id].replace(/_/g, " ")) : strings.prevNoAnswer,
+                      n: prev.evidence[it.id] ?? 0,
+                    })}
+                  </p>
+                )}
                 <div className="ax-row" style={{ flexWrap: "wrap" }}>
                   {isDate ? (
                     <label className="ax-field">
@@ -517,15 +556,47 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                 </div>
                 {val?.value && scoreExcluded(it, val.value) && <p className="ax-caption">{strings.naExcluded}</p>}
                 {leg?.applies && leg.mandatory && evCount < leg.min && <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
-                {thumbs.length > 0 && (
-                  <div className="ax-evidence-grid">
-                    {thumbs.map((q, i) => (
-                      <div key={i} className="ax-evidence is-unsynced">
-                        <img className="ax-evidence__thumb" src={`data:${q.mime};base64,${q.data_b64}`} alt={strings.evQueuedAlt} />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* F2 — evidence list per item: synced thumbnails + REPLACE (archive, M04-163)
+                    + DELETE (soft, audited, M04-164); queued captures ride alongside unsynced */}
+                {(() => {
+                  const rows = serverEvidence.filter(ev2 => ev2.linked_type === "item" && ev2.linked_id === it.id && !ev2.deleted_at && !evState[ev2.id]?.deleted);
+                  if (!rows.length && !thumbs.length) return null;
+                  return (
+                    <div className="ax-evidence-grid">
+                      {rows.map(ev2 => {
+                        const archived = !!ev2.archived_at || !!evState[ev2.id]?.archived;
+                        const url = evidenceUrls[ev2.id];
+                        return (
+                          <div key={ev2.id} className={`ax-evidence ${archived ? "is-quarantined" : ""}`}>
+                            {url
+                              ? <img className="ax-evidence__thumb" src={url} alt={strings.evSyncedAlt} />
+                              : <div className="ax-evidence__thumb" aria-hidden="true">{ev2.evidence_type === "document" ? "📄" : "📷"}</div>}
+                            <div className="ax-evidence__meta">
+                              <span className="ax-numeric">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
+                              {archived
+                                ? <span className="ax-lozenge ax-lozenge--warning">{strings.evArchived}</span>
+                                : (
+                                  <span className="ax-row" style={{ gap: "var(--ax-space-050)", flexWrap: "wrap" }}>
+                                    <label className="ax-btn ax-btn--subtle" style={{ cursor: "pointer" }}>
+                                      {strings.evReplace}
+                                      <input type="file" accept={acceptFor(leg?.type ?? "photo")} hidden
+                                        onChange={ie => { if (ie.target.files?.length) { attachFiles(it, ie.target.files, ev2.id); ie.target.value = ""; } }} />
+                                    </label>
+                                    <button className="ax-btn ax-btn--subtle" onClick={() => setDeleting({ ev: ev2, reason: "" })}>{strings.evDelete}</button>
+                                  </span>
+                                )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {thumbs.map((q, i) => (
+                        <div key={i} className="ax-evidence is-unsynced">
+                          <img className="ax-evidence__thumb" src={`data:${q.mime};base64,${q.data_b64}`} alt={strings.evQueuedAlt} />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 <label className="ax-field">
                   <span className="ax-field__label">{strings.noteLabel}</span>
                   <textarea className="ax-textarea" rows={2} placeholder={strings.notePlaceholder} value={val?.note ?? ""} onChange={e => saveNote(it, e.target.value)} onBlur={() => flushNote(it)} />
@@ -602,6 +673,31 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       {/* DEC-009 — acknowledgement signature gate; the dataURL rides in the queued submit op */}
       {signing && !submitted && (
         <SignaturePad strings={strings.sig} onCancel={() => setSigning(false)} onConfirm={finalizeSubmit} />
+      )}
+      {/* M04-109/124/147/160 — annotation overlay before enqueue: the flattened image
+          becomes the outbox payload, so annotated evidence syncs like any other op */}
+      {shot && !submitted && (
+        <ImageAnnotator srcB64={shot.b64} mime={shot.mime} strings={strings.annot}
+          onCancel={() => setPendingShots(q => q.slice(1))} onConfirm={confirmShot} />
+      )}
+      {/* M04-164 — soft delete requires a reason; the update is captured by the evidence audit trigger */}
+      {deleting && !submitted && (
+        <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.evDeleteTitle}>
+          <div className="ax-modal" style={{ inlineSize: "min(480px, 100%)" }}>
+            <div className="ax-modal__header"><h3>{strings.evDeleteTitle}</h3></div>
+            <div className="ax-modal__body">
+              <label className="ax-field">
+                <span className="ax-field__label">{strings.evDeleteReason}<span className="ax-req">*</span></span>
+                <textarea className="ax-textarea" rows={2} placeholder={strings.evDeleteReasonPh} value={deleting.reason}
+                  onChange={e => setDeleting(d => d ? { ...d, reason: e.target.value } : d)} />
+              </label>
+            </div>
+            <div className="ax-modal__footer">
+              <button className="ax-btn ax-btn--secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
+              <button className="ax-btn ax-btn--prominent" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
