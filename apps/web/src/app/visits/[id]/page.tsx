@@ -158,6 +158,14 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
       <ActionBar visitId={v.id} status={v.planning_status} opState={v.operational_state}
         opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
         windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors} strings={actionStrings} />
+      {/* FIX WAVE F4 — M02-043 notes add/edit */}
+      <NotesEditor visitId={v.id} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
+      {/* FIX WAVE F4 — M02-042 attachments */}
+      {attErr ? (
+        <div className="ax-banner ax-banner--critical"><div>{t("visit.att.loadError", "Could not load attachments (M02-042):")} {attErr.message}</div></div>
+      ) : (
+        <Attachments visitId={v.id} rows={attRows} strings={attachmentsStrings} />
+      )}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.journeyHeading", "Journey & location events — immutable (EV-005)")}</h4>
         <ul className="ax-timeline">
