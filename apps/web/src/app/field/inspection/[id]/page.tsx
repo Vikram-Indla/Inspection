@@ -1,7 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import Workspace, { type WorkspaceStrings } from "./Workspace";
+import Workspace, { type WorkspaceStrings, type WorkspacePanel, type PrevComparison } from "./Workspace";
 import { contextFlags, type FormDef, type Item, type VioConfig } from "./runtime";
 
 export const dynamic = "force-dynamic";
@@ -22,22 +22,66 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const [{ data: ins }, { data: itemRows }, { data: resp }, { data: ev }, { data: vios }, { data: vcodes }, { data: engines }] = await Promise.all([
-    sb.from("inspections").select("id, status, visit_id, package_versions(version_label, definition, packages(code)), visits(factories(name)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)").eq("id", id).single(),
+    sb.from("inspections").select("id, status, visit_id, package_versions(version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)").eq("id", id).single(),
     sb.from("inspection_items").select("id, code, title, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)"),
     sb.from("checklist_responses").select("item_id, response, updated_at").eq("inspection_id", id),
-    sb.from("evidence").select("id, linked_type, linked_id, evidence_type").eq("inspection_id", id),
+    sb.from("evidence").select("id, linked_type, linked_id, evidence_type, storage_path, captured_at").eq("inspection_id", id),
     sb.from("violations").select("id, violation_code_id").eq("inspection_id", id),
     sb.from("violation_codes").select("id, code, title, level, penalty_mappings(penalty_ref, legal_basis, mapping_version)"),
     sb.from("engine_settings").select("engine, settings").in("engine", ["evidence", "sla"]),
   ]);
-  // Tolerant fetches for columns landing in migration 0015 (context, action_forms.item_id):
-  // a missing column degrades the feature instead of killing the page.
-  const [{ data: ctxRow }, { data: afRows }] = await Promise.all([
+  // Tolerant fetches for columns landing in migrations 0015/0020 (context,
+  // action_forms.item_id, inspection_no, evidence lifecycle): a missing column
+  // degrades the feature instead of killing the page.
+  const [{ data: ctxRow }, { data: afRows }, { data: noRow }, { data: evMeta }] = await Promise.all([
     sb.from("inspections").select("context").eq("id", id).maybeSingle(),
     sb.from("action_forms").select("id, item_id, violation_id, form_type, owner_name, owner_role, due_at, required_correction, status").eq("inspection_id", id),
+    sb.from("inspections").select("inspection_no").eq("id", id).maybeSingle(),
+    sb.from("evidence").select("id, archived_at, superseded_by, deleted_at").eq("inspection_id", id),
   ]);
   if (!ins) {
     return <Shell current="/field" title={t("field.ws.notFound", "Not found")}><div /></Shell>;
+  }
+  // Merge lifecycle columns (0020) into the evidence rows the client sees.
+  const evLife = Object.fromEntries(((evMeta ?? []) as { id: string; archived_at: string | null; superseded_by: string | null; deleted_at: string | null }[]).map(m => [m.id, m]));
+  const evidenceRows = ((ev ?? []) as { id: string; linked_type: string; linked_id: string; evidence_type: string; storage_path: string | null; captured_at: string | null }[])
+    .map(e => ({ ...e, ...(evLife[e.id] ?? {}) }));
+  // F2 — signed thumbnails for synced photo evidence (RLS + storage policy decide access).
+  const evidenceUrls: Record<string, string> = {};
+  await Promise.all(evidenceRows.filter(e => e.evidence_type === "photo" && !!e.storage_path).map(async e => {
+    const { data: signed } = await sb.storage.from("evidence").createSignedUrl(e.storage_path!, 3600);
+    if (signed?.signedUrl) evidenceUrls[e.id] = signed.signedUrl;
+  }));
+  const visitRow = ins.visits as unknown as {
+    factory_id: string; visit_type: string; execution_mode: string; window_start: string; window_end: string;
+    factories: { name: string; factory_code: string | null; region: string | null; city: string | null; license_number: string | null; activity_class: string | null };
+  };
+  // M04-136/137 — the factory's most recent prior APPROVED inspection (read
+  // granted by the 0020 prior-approved policies; absent rows hide the panel).
+  const { data: prevRow } = await sb.from("inspections")
+    .select("id, started_at, visits!inner(factory_id)")
+    .eq("visits.factory_id", visitRow.factory_id).eq("status", "approved").neq("id", id)
+    .order("started_at", { ascending: false }).limit(1).maybeSingle();
+  let prev: PrevComparison | null = null;
+  if (prevRow) {
+    const [{ data: pResp }, { data: pEv }, { data: pNo }] = await Promise.all([
+      sb.from("checklist_responses").select("item_id, response").eq("inspection_id", prevRow.id),
+      sb.from("evidence").select("linked_type, linked_id").eq("inspection_id", prevRow.id),
+      sb.from("inspections").select("inspection_no").eq("id", prevRow.id).maybeSingle(),   // tolerant pre-0020
+    ]);
+    const answers: Record<string, string> = {};
+    for (const r of (pResp ?? []) as { item_id: string; response: { value?: string } | null }[]) {
+      if (r.response?.value) answers[r.item_id] = r.response.value;
+    }
+    const evidence: Record<string, number> = {};
+    for (const e of (pEv ?? []) as { linked_type: string; linked_id: string }[]) {
+      if (e.linked_type === "item") evidence[e.linked_id] = (evidence[e.linked_id] ?? 0) + 1;
+    }
+    prev = {
+      label: (pNo as { inspection_no?: string } | null)?.inspection_no ?? prevRow.id.slice(0, 8),
+      date: prevRow.started_at ? String(prevRow.started_at).slice(0, 10) : null,
+      answers, evidence,
+    };
   }
   // Items with locale-resolved guidance (M04-138 · guidance_en/ar) + regulation ref.
   const items: Item[] = ((itemRows ?? []) as unknown as ItemRow[]).map(r => ({

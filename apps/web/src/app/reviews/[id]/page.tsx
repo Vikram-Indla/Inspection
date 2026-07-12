@@ -95,6 +95,47 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
               <p key={i} className="ax-caption ax-numeric" style={{ marginBlockStart: 8 }}>📎 {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
             ))}
           </div>
+          {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}
+          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+              {t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)")}{" "}
+              <span className={`ax-lozenge ${fvUpdated ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>
+                {fvUpdated
+                  ? t("review.ws.fvChanged", "{n} field(s) updated").replace("{n}", String(fvUpdated))
+                  : t("review.ws.fvNoChanges", "no changes vs source")}
+              </span>
+            </h4>
+            {fv.error ? (
+              <p className="ax-caption">{t("review.ws.fvError", "Verification data unavailable: {error}").replace("{error}", fv.error)}</p>
+            ) : fv.checks.length === 0 ? (
+              <p className="ax-caption">{t("review.ws.fvEmpty", "No factory-field checks recorded for this inspection.")}</p>
+            ) : (
+              <div className="ax-tablewrap"><table className="ax-table">
+                <thead><tr>
+                  <th>{t("review.ws.fvColField", "Field")}</th>
+                  <th>{t("review.ws.fvColBefore", "Before — source (Senaei)")}</th>
+                  <th>{t("review.ws.fvColAfter", "After — observed")}</th>
+                  <th>{t("review.ws.fvColStatus", "Status")}</th>
+                  <th>{t("review.ws.fvColEvidence", "Evidence")}</th>
+                </tr></thead>
+                <tbody>{fv.checks.map(c => (
+                  <tr key={c.id} style={c.status === "updated" ? { background: "var(--ax-color-surface-sunken)" } : undefined}>
+                    <td style={c.status === "updated" ? { borderInlineStart: "4px solid var(--ax-color-warning)" } : undefined}>
+                      <strong>{t(`field.fv.f.${c.field_key}`, FACTORY_FIELD_EN[c.field_key] ?? c.field_key.replace(/_/g, " "))}</strong>
+                    </td>
+                    <td>{c.source_value ?? "—"}</td>
+                    <td>{c.observed_value ?? "—"}</td>
+                    <td><span className={`ax-lozenge ${c.status === "verified" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.fv.${c.status}`, c.status)}</span></td>
+                    <td className="ax-numeric">
+                      {fvEvCount(c.id) || "—"}
+                      {c.evidence_note && <div className="ax-caption">{c.evidence_note}</div>}
+                    </td>
+                  </tr>
+                ))}</tbody>
+              </table></div>
+            )}
+            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record (FND-007/M04-112); checks are audit-logged with before/after values (M04-113).")}</p>
+          </div>
           {/* M04-197 / M06-021 — acknowledgement signature made visible to the reviewer */}
           {latest?.acknowledgement != null && (() => {
             const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };

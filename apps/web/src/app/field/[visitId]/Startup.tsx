@@ -264,6 +264,35 @@ export default function Startup({ visit, gis, strings }: { visit: V; gis: Gis; s
           <div style={{ display: "flex", gap: 8 }}>{telemetryCount > 0 ? "✓" : "○"} {fmt(strings.telemetryRow, { s: telemetryS, n: telemetryCount })}</div>
           <div style={{ display: "flex", gap: 8 }}>{checkedIn ? "✓" : "○"} {fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</div>
         </div>
+        {/* F3 · M04-016 — real navigation handoff with the official coordinates */}
+        <div className="ax-row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--ax-space-200)" }}>
+          <a className="ax-btn" target="_blank" rel="noopener noreferrer"
+            href={`https://maps.google.com/?q=${visit.factories.official_lat},${visit.factories.official_lng}`}>
+            {strings.mapsOpen} ↗
+          </a>
+          <a className="ax-btn" target="_blank" rel="noopener noreferrer"
+            href={`geo:${visit.factories.official_lat},${visit.factories.official_lng}?q=${visit.factories.official_lat},${visit.factories.official_lng}`}>
+            {strings.mapsGeo}
+          </a>
+        </div>
+        <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.mapsCaption}</p>
+        {/* F3 · M04-026 — journey progress % (travelled vs initial distance from first fix) */}
+        {journeyId && progress != null && (
+          <div className="ax-stack" style={{ gap: 4, marginBlockStart: "var(--ax-space-200)" }}>
+            <div className="ax-row" style={{ justifyContent: "space-between" }}>
+              <span className="ax-caption">{strings.progressLabel}</span>
+              <span className="ax-caption ax-numeric">{progress.toFixed(0)}%</span>
+            </div>
+            <div role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}
+              aria-label={strings.progressLabel}
+              style={{ blockSize: 8, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-border)", overflow: "hidden" }}>
+              <div style={{ blockSize: "100%", inlineSize: `${progress}%`, background: "var(--ax-color-primary)", borderRadius: "inherit" }} />
+            </div>
+            <span className="ax-caption ax-numeric">
+              {fmt(strings.progressCaption, { remaining: (remainingD ?? 0).toFixed(0), initial: (initialD ?? 0).toFixed(0) })}
+            </span>
+          </div>
+        )}
       </div>
       {/* SB20 / ENG-08 — compact geofence map card (official location is GIS-Admin-owned, FND-007) */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
