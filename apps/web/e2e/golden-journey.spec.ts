@@ -89,8 +89,13 @@ async function fillWizard(page: Page) {
   await page.locator('input[name="location_confirmed"]').check();
 
   await page.locator('select[name="package_version_id"]').selectOption(packageVersionId);
-  const start = new Date(Date.now() + 3 * 864e5).toISOString().slice(0, 16);
-  const end = new Date(Date.now() + 3 * 864e5 + 4 * 36e5).toISOString().slice(0, 16);
+  // M01-040 now checks inspector availability across the window — a fixed
+  // +3-days offset collides with the same inspector's assignment from any
+  // recent run of this same suite. Randomize the day offset so repeated runs
+  // don't fight over the same slot.
+  const dayOffset = 3 + Math.floor(Math.random() * 60);
+  const start = new Date(Date.now() + dayOffset * 864e5).toISOString().slice(0, 16);
+  const end = new Date(Date.now() + dayOffset * 864e5 + 4 * 36e5).toISOString().slice(0, 16);
   await page.locator('input[name="window_start"]').fill(start);
   await page.locator('input[name="window_end"]').fill(end);
 }
