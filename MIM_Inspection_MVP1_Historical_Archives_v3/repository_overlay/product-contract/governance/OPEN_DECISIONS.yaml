@@ -1,0 +1,18 @@
+schema_version: "1.0"
+authority: "G3 decision register"
+rules:
+  - "Fable may not invent an unresolved value."
+  - "An open decision blocks only the affected acceptance/certification scope."
+source_files:
+  - product-contract/governance/decision_register.csv
+priority_decisions:
+  - DEC-001 risk model
+  - DEC-002 GIS accuracy and geofence policy
+  - DEC-003 SLA calendar
+  - DEC-004 Arabic/RTL
+  - DEC-005 factory-facing boundary
+  - DEC-006 evidence policy
+  - DEC-007 OTP provider
+  - DEC-008 maps provider
+  - DEC-009 digital acknowledgement
+  - DEC-010 NFR targets

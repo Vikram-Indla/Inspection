@@ -1,0 +1,11 @@
+decision_id,domain,decision_required,status,owner,required_by,safe_interim_rule,severity
+DEC-001,Risk model,"Exact factors, weights, formula, thresholds and owner",Open,Risk Owner / Business,G5 before risk runtime,Do not invent; allow interface/config placeholders and historical version contract,P0
+DEC-002,GIS accuracy,"GPS accuracy threshold, arrival radius, geofence policy, telemetry frequency",Open,GIS/Operations,G5 before journey certification,Keep values configurable and block publish until approved,P0
+DEC-003,SLA calendar,"Task SLAs, working calendar, pause/resume and escalation",Open,Business Operations,G5/G7,Configuration placeholders only; no arbitrary timers,P0
+DEC-004,Arabic/RTL,"MVP1 English-only, bilingual, or selected Arabic surfaces",Open,Executive/Product,G6 design freeze,Do not assume,P0
+DEC-005,Factory-facing boundary,Exact external factory functions in MVP1,Open,Product Owner,G3/G5,Virtual participation only unless explicitly approved,P0
+DEC-006,Evidence policy,"File formats, sizes, video limits, retention, malware scanning, redaction and hash",Open,Compliance/Security,G5/G7,Configurable controls; no invented legal retention,P0
+DEC-007,OTP provider,"Selected provider, retries, expiry and fallback",Open,Technical/Security,G5,Provider abstraction; simulation not release-complete,P1
+DEC-008,Maps provider,Selected maps/navigation/GIS provider and licensing,Open,Technical/GIS,G5/G6,Provider abstraction,P1
+DEC-009,Digital acknowledgement,Whether legal digital signature/PKI is MVP1,Open,Legal/Product,G3/G5,Support acknowledgement/refusal; advanced PKI not implied,P0
+DEC-010,NFR targets,"Availability, response times, users, RTO/RPO, package sizes",Open,Architecture/Operations,G5,Use decision placeholders and measurement hooks,P0

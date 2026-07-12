@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "project": "MIM Inspection Platform MVP1",
+  "sessions": [],
+  "last_session": null,
+  "rules": {
+    "append_only": true,
+    "required_fields": [
+      "session_id",
+      "started_at",
+      "ended_at",
+      "branch",
+      "task_id",
+      "gate",
+      "requirements",
+      "acceptance_ids",
+      "screens",
+      "engines",
+      "files_changed",
+      "tests",
+      "evidence",
+      "decisions",
+      "blockers",
+      "commit_sha",
+      "next_task",
+      "resume_prompt"
+    ]
+  }
+}
