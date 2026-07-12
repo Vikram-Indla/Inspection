@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
+import { fetchFactoryChecks, updatedCount, FACTORY_FIELD_EN } from "@/lib/factory-verification";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
       submission_versions(id, version_number, snapshot, acknowledgement, submitted_at),
       violations(mapping_version, violation_codes(code, title, level)),
       action_forms(owner_name, due_at, status, required_correction),
-      evidence(storage_path, evidence_type, content_sha256, captured_at),
+      evidence(storage_path, evidence_type, content_sha256, captured_at, linked_type, linked_id),
       reviews(id, status, decision, decision_reason, returned_sections, decided_at, submission_version_id)`)
     .eq("id", id).single();
   if (!ins) {
@@ -45,6 +46,13 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     return { key: k, prev: a, latest: b, changed: a !== b };
   }) : [];
   const changedCount = diffRows.filter(d => { return d.changed; }).length;
+  // M04-190 / M06-017 / M06-034 — factory-data verification checks for the
+  // reviewer: Source (Senaei) vs Observed, Verified/Updated, before/after,
+  // linked evidence. Tolerant fetch: 0020 pending → verbatim error, no crash.
+  const fv = await fetchFactoryChecks(sb, ins.id);
+  const fvUpdated = updatedCount(fv.checks);
+  const fvEvidence = (ins.evidence as unknown as { storage_path: string; linked_type?: string; linked_id?: string }[]).filter(e => e.linked_type === "factory_field");
+  const fvEvCount = (checkId: string) => fvEvidence.filter(e => e.linked_id === checkId).length;
   // M06-010/022/039/051 — chronological audit timeline for this inspection's
   // review chain (immutable audit_events rows; audit_read grants reviewer).
   const timelineIds = [ins.id, ...subs.map(s => { return s.id; }), ...reviews.map(r => { return r.id; })];
