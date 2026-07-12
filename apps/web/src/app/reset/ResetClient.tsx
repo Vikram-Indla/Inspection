@@ -76,13 +76,7 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
   return (
     <div className="lg-page" dir={s.dir} lang={s.lang}>
       <header className="lg-topbar">
-        <a className="lg-topbar__brand" href="/">
-          <span className="ax-shell__brand-mark">IP</span>
-          <span className="lg-topbar__brandtext">
-            <strong>{s.brandTitle}</strong>
-            <small>{s.brandSub}</small>
-          </span>
-        </a>
+        <a className="lg-topbar__brand" href="/login" lang="ar" dir="rtl">{s.brandTitle}</a>
       </header>
 
       <main className="lg-center">

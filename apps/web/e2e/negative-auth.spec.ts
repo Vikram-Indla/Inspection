@@ -20,7 +20,7 @@ test.describe("negative: authentication", () => {
   test("unknown account is denied with the same safe shape", async ({ page }) => {
     await page.goto("/login");
     await waitForCredentialsForm(page);
-    await page.locator("#email").fill("nobody@mim.example");
+    await page.locator("#email").fill("nobody@mim.gov.sa");
     await page.locator("#pw").fill("Whatever!2026");
     await submitCredentials(page);
     await expect(page.locator(".ax-banner--critical[role=alert]")).toBeVisible();

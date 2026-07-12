@@ -94,9 +94,9 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           <div className="rp-head__col">
             <strong>{t("report.head.kingdom", "Kingdom of Saudi Arabia")}</strong>
             <strong>{t("report.head.ministry", "Ministry of Industry and Mineral Resources")}</strong>
-            <span className="ax-caption">{t("report.head.platform", "Inspection Platform — official inspection report")}</span>
+            <span className="ax-caption">{t("report.head.platform", "Saqeel Inspection Platform — official inspection report")}</span>
           </div>
-          <div className="rp-head__mark" aria-hidden="true"><span>IP</span></div>
+          <div className="rp-head__mark" aria-hidden="true"><span lang="ar">صقيل</span></div>
           <div className="rp-head__col rp-head__ar">
             <strong>المملكة العربية السعودية</strong>
             <strong>وزارة الصناعة والثروة المعدنية</strong>

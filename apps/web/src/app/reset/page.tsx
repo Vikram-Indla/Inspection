@@ -21,8 +21,8 @@ export default async function Reset() {
   const strings: ResetStrings = {
     dir: ar ? "rtl" : "ltr",
     lang: locale,
-    brandTitle: ar ? "منصّة التفتيش الصناعي" : "Industrial Inspection Platform",
-    brandSub: ar ? "وزارة الصناعة والثروة المعدنية" : "Ministry of Industry & Mineral Resources",
+    brandTitle: "صقيل | صناعي",
+    brandSub: ar ? "منصّة التفتيش الصناعي" : "Industrial Inspection Platform",
     checking: ar ? "جارٍ التحقق من رابط إعادة التعيين…" : "Verifying your reset link…",
     invalidTitle: ar ? "رابط إعادة التعيين غير صالح أو منتهي الصلاحية" : "This reset link is invalid or has expired",
     invalidBody: ar ? "اطلب رابطًا جديدًا من صفحة تسجيل الدخول." : "Request a new link from the sign-in page.",

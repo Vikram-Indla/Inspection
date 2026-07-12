@@ -9,7 +9,7 @@ type I = { user_id: string; full_name: string };
 // SB19 — strings built server-side with t() and passed as props.
 export type BulkFormStrings = {
   colFactory: string; colCr: string; colCity: string; colRisk: string; colEligibility: string; colInspector: string;
-  selectFactory: string; inspectorFor: string; autoAssign: string; sharedWarning: string;
+  selectFactory: string; selectAllAria: string; inspectorFor: string; autoAssign: string; sharedWarning: string;
   duplicate: string; eligible: string;
   visitType: string; typePeriodic: string; packageLabel: string; windowStart: string; windowEnd: string;
   notes: string; notesPlaceholder: string;
@@ -62,7 +62,11 @@ export default function BulkForm({ factories, packages, inspectors, strings }: {
   return (
     <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
       <div className="ax-tablewrap"><table className="ax-table">
-        <thead><tr><th style={{ inlineSize: 36 }}></th><th>{strings.colFactory}</th><th>{strings.colCr}</th><th>{strings.colCity}</th><th className="ax-td-num">{strings.colRisk}</th><th>{strings.colEligibility}</th><th>{strings.colInspector}</th></tr></thead>
+        <thead><tr><th style={{ inlineSize: 36 }}>
+          <input type="checkbox" aria-label={strings.selectAllAria}
+            checked={selected.length > 0 && selected.length === factories.filter(f => !dupOf(f)).length}
+            onChange={e => setSelected(e.target.checked ? factories.filter(f => !dupOf(f)).map(f => f.id) : [])} />
+        </th><th>{strings.colFactory}</th><th>{strings.colCr}</th><th>{strings.colCity}</th><th className="ax-td-num">{strings.colRisk}</th><th>{strings.colEligibility}</th><th>{strings.colInspector}</th></tr></thead>
         <tbody>
           {factories.map(f => {
             const dup = dupOf(f);
@@ -72,7 +76,7 @@ export default function BulkForm({ factories, packages, inspectors, strings }: {
             return (
               <tr key={f.id}>
                 <td><input type="checkbox" name="factory_id" value={f.id} disabled={dup} checked={isSel} onChange={e => toggle(f.id, e.target.checked)} aria-label={strings.selectFactory.replace("{name}", f.name)} /></td>
-                <td><strong>{f.name}</strong> <span className="ax-caption">{f.factory_code}</span></td>
+                <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="ax-caption">{f.factory_code}</span></td>
                 <td className="ax-numeric">{f.cr_number}</td><td>{f.city}</td>
                 <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.riskBands[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>
                 <td>{dup ? <span className="ax-lozenge ax-lozenge--critical">{strings.duplicate}</span> : <span className="ax-lozenge ax-lozenge--success">{strings.eligible}</span>}</td>

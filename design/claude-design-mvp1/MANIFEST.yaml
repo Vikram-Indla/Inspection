@@ -1,0 +1,142 @@
+schema_version: "1.1"
+project: "Saqeel MVP1 Claude Design and UX Acceptance"
+mode: "design-only; code-ready; no application edits"
+brand_authority: "product-contract/governance/DECISIONS_ACCEPTED_2026-07-12_SAQEEL.yaml"
+behavior_authority: "product-contract"
+implementation_root: "apps/web/src"
+counts:
+  governed_screens: 38
+  storyboards: 20
+  process_branches: 14
+  engines: 12
+  acceptance_records: 493
+entry_points:
+  - 00_START_HERE.md
+  - CURRENT_UI_BASELINE.md
+  - prompts/00_MASTER_DESIGN_CONSTITUTION.md
+authority:
+  - authority/SOURCE_AUTHORITY.md
+  - authority/DESIGN_DECISIONS.md
+  - authority/JOURNEY_SCREEN_MAP.csv
+  - authority/STORYBOARD_COVERAGE_MAP.csv
+  - authority/CODE_ROUTE_RECONCILIATION.csv
+  - authority/UX_BLIND_SPOT_REGISTER.csv
+journey_prompts:
+  - prompts/journeys/P00_PRE_DAY_ZERO_ADMIN_CONFIGURATION.md
+  - prompts/journeys/P01_TARGETING_AND_PLANNING_METHOD.md
+  - prompts/journeys/P02_VISIT_DESIGN_AND_ASSIGNMENT.md
+  - prompts/journeys/P03_PUBLISH_AND_VISIT_MANAGEMENT.md
+  - prompts/journeys/P04_INSPECTOR_STARTUP_PACK.md
+  - prompts/journeys/P05_EXECUTION_MODE_GATE.md
+  - prompts/journeys/P06A_PHYSICAL_JOURNEY_AND_CHECKIN.md
+  - prompts/journeys/P06B_VIRTUAL_SESSION_AND_VERIFICATION.md
+  - prompts/journeys/P07_INSPECTION_EXECUTION.md
+  - prompts/journeys/P08_EVIDENCE_FINDINGS_VIOLATIONS_ACTIONS.md
+  - prompts/journeys/P09_IMMUTABLE_SUBMISSION.md
+  - prompts/journeys/P10_LEVEL_TWO_REVIEW.md
+  - prompts/journeys/P11_RETURN_CORRECTION_RESUBMISSION.md
+  - prompts/journeys/P12_FACTORY360_AND_OPERATIONS.md
+system_prompts:
+  - prompts/systems/GIS_GEOFENCE_AND_ROUTE_DESIGN.md
+  - prompts/systems/AUTHENTICATED_LIVE_OPERATIONS_MAP.md
+  - prompts/systems/VIRTUAL_VIDEO_SESSION.md
+  - prompts/systems/EVIDENCE_MEDIA_AND_ANNOTATION.md
+  - prompts/systems/OFFLINE_SYNC_CONFLICT_AND_RECOVERY.md
+  - prompts/systems/REVIEW_AND_VERSION_COMPARISON.md
+  - prompts/systems/NOTIFICATIONS_SLA_AND_REALTIME_ALERTS.md
+  - prompts/systems/ARABIC_RTL_ACCESSIBILITY_AND_RESPONSIVE.md
+acceptance:
+  - acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+  - acceptance/SCREEN_STATE_MATRIX.csv
+  - acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv
+  - acceptance/VISUAL_EVIDENCE_REGISTER.csv
+  - acceptance/DESIGN_SIGNOFF_CHECKLIST.md
+delivery_strategy:
+  name: "family-incremental implementation with controlled release"
+  principle: >-
+    Design, implement, and verify coherent screen families incrementally; never deploy
+    isolated screens that create a mixed experience, and never defer all implementation
+    until a single high-risk big-bang build.
+  implementation_cadence:
+    - id: F0
+      scope: "foundation, shell, tokens, shared component grammar"
+      design_inputs: "SAQEEL_FOUNDATION_LOCK"
+    - id: F1
+      scope: "access family"
+      design_inputs: "CD-001..CD-003"
+    - id: F2A
+      scope: "admin governance"
+      design_inputs: "CD-004..CD-007, CD-010, CD-011, CD-017..CD-019"
+    - id: F2B
+      scope: "admin studios"
+      design_inputs: "CD-008, CD-009, CD-012..CD-016"
+    - id: F3
+      scope: "planning and visit management"
+      design_inputs: "CD-020..CD-027"
+    - id: F4
+      scope: "review, Factory 360, and operations"
+      design_inputs: "CD-028..CD-032"
+    - id: F5
+      scope: "iPad field journey"
+      design_inputs: "CD-033..CD-040"
+    - id: F6
+      scope: "virtual inspection"
+      design_inputs: "CD-041..CD-043"
+    - id: F7
+      scope: "cross-family Big Bang critique and release audit"
+      design_inputs: "CD-001..CD-043 plus cumulative P2 register"
+  family_implementation_entry_gate:
+    - "family design is complete enough to prove its end-to-end storyline"
+    - "all family P0/P1 findings are closed with evidence"
+    - "family contact sheet, outliers, EN/AR, RTL, dark/light, and responsive states are accepted"
+    - "exact before/after file manifest and protected behavior register are accepted"
+    - "source commit and current regression baseline are recorded"
+    - "product, UX, accessibility, architecture, and security approvals required for the family are recorded"
+  allowed_parallel_work:
+    - "controlled branch/worktree preparation"
+    - "fresh production build and regression baseline"
+    - "visual-diff and screenshot harness preparation"
+    - "asset provenance, licensing, and verified public-location research"
+    - "approved shared-component implementation needed by an accepted family"
+    - "non-visual backend work already authorized by the product contract"
+  prohibited_parallel_work:
+    - "implementing a screen whose family P0/P1 gate is still open"
+    - "writing unapproved design changes into the dirty main worktree"
+    - "deploying isolated screens that mix old and new shells or component grammar"
+    - "using unlicensed imagery or unverified geographic/industrial claims"
+    - "changing product behavior under the label of visual refinement"
+  environment_policy:
+    design: "read-only against application source"
+    implementation: "controlled branch/worktree per accepted family"
+    integration: "continuous integration into a revamp staging environment"
+    production: >-
+      release only coherent persona journeys or the complete revamp; use feature flags
+      where partial exposure is required; never expose a broken mixture of old and new UX.
+  final_release_gate:
+    - "F7 Big Bang critique is complete"
+    - "cumulative P2 register is closed, accepted as residual risk, or explicitly deferred"
+    - "all cross-family P0/P1 findings are closed"
+    - "end-to-end role journeys pass on the actual platform"
+    - "production build, Playwright, accessibility, RTL, theme, offline, and visual-diff evidence pass"
+feedback_governance:
+  orchestrator_duty: >-
+    Critique sponsor feedback when it would weaken inspection truth, coherence,
+    accessibility, security, cultural appropriateness, asset rights, implementation fit,
+    or accepted product behavior; do not defer merely because the feedback is aesthetic.
+  mandatory_challenge_conditions:
+    - "feedback creates a tourism, consumer, gaming, or generic-SaaS pattern that weakens the inspection story"
+    - "feedback implies live, real, verified, connected, or operational data that is only illustrative or pending"
+    - "feedback introduces unlicensed assets, confidential factories, unsafe imagery, or culturally inappropriate treatment"
+    - "feedback changes requirements, roles, workflow, policy, security, audit, offline, or immutable behavior"
+    - "feedback breaks the approved family grammar or creates a one-off component system"
+    - "feedback cannot map deterministically to the existing repository"
+  review_moments:
+    - "foundation lock"
+    - "first signature screen of each family"
+    - "family contact-sheet and cross-screen storyline review"
+    - "penultimate P0/P1 gate before family implementation handoff"
+    - "runtime review on the real staging platform"
+    - "F7 consolidated Big Bang critique before production"
+  non_blocking_policy: "record P2 findings in the cumulative Big Bang register and continue"
+  blocking_policy: "stop or correct progressively only for genuine P0/P1 findings"
+status: "ready_for_claude_design_execution"

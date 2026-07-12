@@ -19,6 +19,14 @@
 - [[product-contract/domain/state_transitions.csv]]
 - [[product-contract/governance/error_catalogue.csv]]
 
+## MVP1 UX and Claude Design
+- [[design/claude-design-mvp1/00_START_HERE]]
+- [[design/claude-design-mvp1/CURRENT_UI_BASELINE]]
+- [[design/claude-design-mvp1/authority/JOURNEY_SCREEN_MAP.csv]]
+- [[design/claude-design-mvp1/authority/CODE_ROUTE_RECONCILIATION.csv]]
+- [[design/claude-design-mvp1/acceptance/DESIGN_SIGNOFF_CHECKLIST]]
+- [[design/claude-design-mvp1/handoff/CLAUDE_DESIGN_READ_ORDER]]
+
 ## Session continuity
 - [[product-contract/execution/RESUME_PROTOCOL]]
 - [[product-contract/execution/SESSION_HANDOFF_TEMPLATE]]

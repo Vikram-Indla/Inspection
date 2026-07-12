@@ -402,7 +402,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
       {/* KSA operations map — M08-002 */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.map.heading", "KSA operations map (M08-002 · ENG-06)")}</h4>
+        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)", marginBlockEnd: "var(--ax-space-150)" }}>
+          <h4 style={{ margin: 0 }}>{t("ops.map.heading", "KSA operations map (M08-002 · ENG-06)")}</h4>
+          <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
+        </div>
         {pins.length === 0 ? (
           <div className="ax-state"><span className="ax-state__glyph">🗺</span><h4>{t("ops.map.empty.title", "No mappable factories in scope")}</h4>
             <p className="ax-caption">{t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006).")}</p></div>

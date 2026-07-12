@@ -48,9 +48,9 @@ def write_out():
 now = datetime.datetime.now(datetime.timezone.utc)
 iso = lambda d: d.isoformat()
 
-planner, planner_id = login("planner@mim.example", "MimPlan!2026")
-inspector, inspector_id = login("inspector@mim.example", "MimField!2026")
-reviewer, reviewer_id = login("reviewer@mim.example", "MimRev!2026")
+planner, planner_id = login("planner@mim.gov.sa", "MimPlan!2026")
+inspector, inspector_id = login("inspector@mim.gov.sa", "MimField!2026")
+reviewer, reviewer_id = login("reviewer@mim.gov.sa", "MimRev!2026")
 log("P0-auth", f"planner/inspector/reviewer sessions established")
 
 # ---- P1 · planner: plan + visit + assignment + publish (M01-034/040/042) ----

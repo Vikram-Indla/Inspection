@@ -1,0 +1,45 @@
+G10-EV-002 — SCR-PUB-010 v4 "the inspection story" login + full suite rerun
+Date: 2026-07-12
+Slice: G10-VERIFICATION-PLAYWRIGHT (login redesign applied under DEC-011 follow-up)
+Design authority: Claude Design project 90d4620c-118f-4359-8b3e-767d37d3cabd,
+  Login.dc.html Turn 4 (final direction — 4a dark/AR/RTL, 4b light/EN/LTR)
+
+Change
+------
+SCR-PUB-010 v3 (static SVG brand hero) -> v4 (Login.dc.html Turn 4):
+- Solid credential panel on the start side (lockup, one form, trust footer,
+  language link). No text sits on imagery (WCAG posture from design Turn 3b/4).
+- Story panel: header (title + "ONE VISIT, END TO END · SAMPLE — ILLUSTRATIVE"
+  overline + theme toggle), framed Leaflet KSA map telling ONE sample
+  inspection journey (01 planned Riyadh -> inspector en route -> 02 geofenced
+  arrival Jubail), and the Plan/Inspect/Review/Decide storyline strip.
+- Map: CARTO basemap (theme-aware, same external-tile posture as GeoMap/
+  LiveOps), KSA boundary bundled locally (apps/web/public/geo/sau.geo.json —
+  no third-party GeoJSON host at runtime), boundary mask, single-hue activity
+  zones, factory chips, animated route, emerald geofence + inspector.
+  On any init failure the static SaqeelHero SVG takes the frame (offline-safe).
+- All colours via ax tokens (GLOBAL COLOR LAW); no raw values outside tokens.css.
+- Sample data only — no live operational intelligence on the public surface
+  (DEC-011 / SAQEEL-07 preserved). No persona selector (role routing stays
+  server-side via /launch).
+
+Unchanged (verified)
+--------------------
+- Supabase credential sign-in; ERR-AUTH-001 safe deny
+- Anti-enumeration password reset -> neutral confirmation
+- FND-003 auth audit (password_reset_requested hashed client-side)
+- /reset shares login.css primitives (lg-topbar/lg-card/lg-waiting) — rendered OK
+- e2e selectors #email / form:has(#email) button.ax-btn--prominent
+
+Evidence
+--------
+- npx playwright test (full G10 headless suite, local production build):
+  PASS (19) FAIL (0) — setup 3 personas + golden journey B10 NEG+P1-P5,
+  offline drill, persona tours, negative-auth. Time 86s.
+- Production build: next build passes; tsc --noEmit clean.
+- Screens: product-contract/evidence/screens/login-v4/
+  SCR-PUB-010-v4-dark-ar.png            (design 4a parity)
+  SCR-PUB-010-v4-light-en.png           (design 4b parity)
+  SCR-PUB-010-v4-theme-toggle-light-ar.png (live theme flip re-inits map)
+  SCR-PUB-010-v4-reset-shared-css.png   (reset leg regression check)
+- No page errors in console during renders (dark/AR, light/EN, toggle).

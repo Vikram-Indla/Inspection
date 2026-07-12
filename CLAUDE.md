@@ -55,6 +55,8 @@ Before completion:
 - Mobbin is for pattern research and provenance, never direct copying.
 - The iPad is a field application, not a reduced web portal.
 - Admin engines are control planes, not simple CRUD screens.
+- For MVP1 UX work, begin at `design/claude-design-mvp1/00_START_HERE.md` and follow its authority, journey prompts, special-component contracts, and design acceptance matrices.
+- Claude Design produces code-ready design outputs only; application edits begin only after the relevant design acceptance rows receive human signoff.
 
 ## Gate position
 G0-G9 PASS (G1 conditional; G8 sponsor-authorized 2026-07-11; G9 build completion 2026-07-12). G10 verification is in progress with the Playwright headless suite as the exit criterion. G11 hardening and G12 release are open. Broad implementation is authorized. `product-contract/GATE_STATUS.md` is the authoritative gate record.

@@ -1,10 +1,8 @@
 import type { Page } from "@playwright/test";
 
-// SCR-PUB-010 — /login shows the credential form directly (view="methods");
-// Nafath is an optional sign-in method (a button into a separate NID ->
-// waiting-for-app-approval sub-flow), not a mandatory gate in front of
-// credentials. #email/#pw are present on initial render, so no navigation
-// through Nafath is needed to sign in with a password.
+// SCR-PUB-010 v2 — /login is the single Saqeel sign-in: the credential form
+// renders directly (view="signin") with a persona selector above it that
+// defaults to the web portal, so #email/#pw are present on initial render.
 export async function waitForCredentialsForm(page: Page) {
   await page.locator("#email").waitFor();
 }

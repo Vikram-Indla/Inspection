@@ -9,3 +9,4 @@ DEC-007,OTP provider,"Selected provider, retries, expiry and fallback",Open,Tech
 DEC-008,Maps provider,Selected maps/navigation/GIS provider and licensing,Open,Technical/GIS,G5/G6,Provider abstraction,P1
 DEC-009,Digital acknowledgement,Whether legal digital signature/PKI is MVP1,Open,Legal/Product,G3/G5,Support acknowledgement/refusal; advanced PKI not implied,P0
 DEC-010,NFR targets,"Availability, response times, users, RTO/RPO, package sizes",Open,Architecture/Operations,G5,Use decision placeholders and measurement hooks,P0
+DEC-011,Brand/theme,"Saqeel rebrand: single login page, Nafath & gov-banner removal, dark launch-film theme, type scale bump",Accepted (sponsor 2026-07-12),Sponsor (V. Indla),G10 window,Sponsor-directed; recorded in DECISIONS_ACCEPTED_2026-07-12_SAQEEL.yaml,P1

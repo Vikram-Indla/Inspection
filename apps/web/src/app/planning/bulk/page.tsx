@@ -62,6 +62,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     colEligibility: t("plan.bulk.colEligibility", "Eligibility"),
     colInspector: t("plan.bulk.colInspector", "Inspector (M01-029)"),
     selectFactory: t("plan.bulk.selectFactory", "select {name}"),
+    selectAllAria: t("plan.bulk.selectAll", "select all eligible factories"),
     inspectorFor: t("plan.bulk.inspectorFor", "inspector for {name}"),
     autoAssign: t("plan.bulk.autoAssign", "Auto (round-robin)"),
     sharedWarning: t("plan.bulk.sharedWarning", "also picked for {n} other visits in this window"),

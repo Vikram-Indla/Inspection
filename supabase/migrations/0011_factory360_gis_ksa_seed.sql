@@ -88,9 +88,9 @@ declare
   v_planner uuid; v_inspector uuid; v_reviewer uuid; v_pkg uuid;
   f record; v_plan uuid; v_visit uuid; v_ins uuid; v_sub uuid; i int := 0;
 begin
-  select user_id into v_planner from profiles where email = 'planner@mim.example';
-  select user_id into v_inspector from profiles where email = 'inspector@mim.example';
-  select user_id into v_reviewer from profiles where email = 'reviewer@mim.example';
+  select user_id into v_planner from profiles where email = 'planner@mim.gov.sa';
+  select user_id into v_inspector from profiles where email = 'inspector@mim.gov.sa';
+  select user_id into v_reviewer from profiles where email = 'reviewer@mim.gov.sa';
   select id into v_pkg from package_versions where status = 'published' order by published_at desc limit 1;
   if v_planner is null or v_inspector is null or v_reviewer is null or v_pkg is null then
     raise notice 'seed history skipped — personas/package missing'; return;

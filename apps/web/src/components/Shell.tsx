@@ -1,5 +1,6 @@
 import { useT } from "@/lib/i18n";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default async function Shell({ current, children, title, context }: {
   current: string; children: React.ReactNode; title: string; context?: React.ReactNode;
@@ -47,11 +48,14 @@ export default async function Shell({ current, children, title, context }: {
   return (
     <div className="ax-shell">
       <nav className="ax-shell__nav" aria-label={t("nav.primary", "Primary")} style={{ display: "flex", flexDirection: "column" }}>
-        <div className="ax-shell__brand"><span className="ax-shell__brand-mark">IP</span> {"Inspection Platform"}</div>
+        <div className="ax-shell__brand"><span className="ax-shell__brand-wordmark" lang="ar">{"صقيل | صناعي"}</span></div>
         {nav.map(([label, href]) => (
           <a key={href} className="ax-nav-item" aria-current={href === current ? "page" : undefined} href={href}>{label}</a>
         ))}
-        <a className="ax-nav-item" href={langHref} lang={langLang} style={{ marginBlockStart: "auto" }}>{langLabel}</a>
+        <div className="ax-nav-item ax-nav-item--toggle" style={{ marginBlockStart: "auto" }}>
+          <ThemeToggle className="ax-theme-toggle" labels={{ toLight: t("theme.light", "Light mode"), toDark: t("theme.dark", "Dark mode") }} />
+          <a className="ax-nav-sub" href={langHref} lang={langLang}>{langLabel}</a>
+        </div>
         {/* server route clears the session — keeps Shell free of client imports */}
         <a className="ax-nav-item" href="/signout">↩ {t("nav.signout", "Sign out")}</a>
       </nav>

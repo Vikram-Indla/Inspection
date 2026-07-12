@@ -1,0 +1,39 @@
+screen_id,catalogue_route,implemented_route,code_location,reconciliation,status,design_instruction
+SCR-ADM-001,/admin,/admin,apps/web/src/app/admin/page.tsx,Direct,implemented,Retain control-plane home and expose health drafts approvals warnings and audit
+SCR-ADM-010,/admin/regulations,/admin/regulations,apps/web/src/app/admin/regulations,Direct,implemented,Design library list search status version and lifecycle
+SCR-ADM-011,/admin/regulations/:id,/admin/regulations,apps/web/src/app/admin/regulations,Consolidated,implemented_logical,Keep detail version dependencies and audit as explicit drill-in state
+SCR-ADM-020,/admin/items,/admin/items,apps/web/src/app/admin/items,Direct,implemented,Preserve response semantics scoring evidence and clause mapping
+SCR-ADM-030,/admin/packages,/admin/packages,apps/web/src/app/admin/packages,Direct,implemented,Design package library and version state
+SCR-ADM-031,/admin/packages/:id/designer,/admin/packages,apps/web/src/app/admin/packages,Consolidated,implemented_logical,Make DraftEditor ImpactPanel Preview and PublishControls a coherent studio
+SCR-ADM-040,/admin/violations,/admin/violations,apps/web/src/app/admin/violations,Direct,implemented,Expose legal basis lifecycle and applicability
+SCR-ADM-041,/admin/penalties,/admin/violations,apps/web/src/app/admin/violations,Consolidated,implemented_logical,Keep penalty mapping and cardinality visibly distinct
+SCR-ADM-050,/admin/workflows,/admin/workflows,apps/web/src/app/admin/workflows,Direct,implemented,Design workflow list versions effective dates and validation
+SCR-ADM-051,/admin/workflows/:id,/admin/workflows,apps/web/src/app/admin/workflows,Consolidated,implemented_logical,Represent state transition guard simulation and publish workspace
+SCR-ADM-060,/admin/risk,/admin/risk,apps/web/src/app/admin/risk,Direct,implemented,Keep MVP1 constrained configuration and reproducibility
+SCR-ADM-070,/admin/gis,/admin/gis,apps/web/src/app/admin/gis,Direct,implemented,Design map settings geometry preview validation and publish
+SCR-ADM-080,/admin/notifications,/admin,apps/web/src/app/admin/page.tsx,Consolidated_or_gap,requires_design_reconciliation,Design explicit notification SLA configuration surface without inventing provider
+SCR-ADM-090,/admin/access,/admin/access,apps/web/src/app/admin/access,Direct,implemented,Design role matrix data scope segregation warnings and audit
+SCR-WEB-100,/planning,/planning,apps/web/src/app/planning/page.tsx,Direct,implemented,Preserve three-method entry and draft resume
+SCR-WEB-110,/planning/bulk,/planning/bulk,apps/web/src/app/planning/bulk,Direct,implemented,Design criteria builder result selection and validation
+SCR-WEB-120,/planning/single,/planning/single,apps/web/src/app/planning/single,Direct,implemented,Design factory search 360 preview map and wizard
+SCR-WEB-130,/planning/immediate,/planning/immediate,apps/web/src/app/planning/immediate,Direct,implemented,Design urgent registered and unregistered paths
+SCR-WEB-140,/planning/:id/configure,/planning/plans/:id,apps/web/src/app/planning/plans/[id]/page.tsx,Route_alias,implemented_logical,Make configuration assignment conflicts and package version explicit
+SCR-WEB-150,/planning/:id/review,/planning/plans/:id,apps/web/src/app/planning/plans/[id]/page.tsx,Consolidated,implemented_logical,Make review validation and atomic publish a distinct step
+SCR-WEB-200,/visits,/visits,apps/web/src/app/visits,Direct,implemented,Design table filters views map calendar workload and bulk actions
+SCR-WEB-210,/visits/:id,/visits/:id,apps/web/src/app/visits/[id],Direct,implemented,Design timeline package assignment notes attachments and state actions
+SCR-WEB-300,/reviews,/reviews,apps/web/src/app/reviews/page.tsx,Direct,implemented,Design risk SLA workload queue and claim behavior
+SCR-WEB-310,/reviews/:id,/reviews/:id,apps/web/src/app/reviews/[id],Direct,implemented,Design immutable evidence-led review and decision panel
+SCR-WEB-320,/reviews/:id/compare,/reviews/:id,apps/web/src/app/reviews/[id],Consolidated,implemented_logical,Create an explicit comparison mode with changed-section navigation
+SCR-WEB-400,/factories/:id/360,/factories/:id,apps/web/src/app/factories/[id],Direct,implemented,Design resilient dossier with partial-service degradation
+SCR-WEB-500,/operations,/operations and /operations/live,apps/web/src/app/operations,Extended,implemented,Separate operational dashboard from authenticated live-map mode
+SCR-IPAD-600,/ipad/assignments,/field,apps/web/src/app/field/page.tsx,Route_alias,implemented,Keep iPad assignment dashboard semantics
+SCR-IPAD-610,/ipad/visits/:id/prestart,/field/:visitId,apps/web/src/app/field/[visitId],Route_alias,implemented,Design startup package readiness map and diagnostics
+SCR-IPAD-620,/ipad/visits/:id/journey,/field/:visitId,apps/web/src/app/field/[visitId]/Startup.tsx,Consolidated,implemented_logical,Make journey check-in and exception states explicit within startup route
+SCR-IPAD-630,/ipad/inspections/:id,/field/inspection/:id,apps/web/src/app/field/inspection/[id],Route_alias,implemented,Design section navigation autosave progress and blockers
+SCR-IPAD-640,/ipad/inspections/:id/evidence,/field/inspection/:id,apps/web/src/app/field/inspection/[id]/Workspace.tsx,Consolidated,implemented_logical,Create a strong evidence capture and lifecycle mode
+SCR-IPAD-650,/ipad/inspections/:id/findings,/field/inspection/:id,apps/web/src/app/field/inspection/[id]/Workspace.tsx,Consolidated,implemented_logical,Create findings violations penalty context and action-form mode
+SCR-IPAD-660,/ipad/inspections/:id/submit,/field/inspection/:id,apps/web/src/app/field/inspection/[id]/Workspace.tsx,Consolidated,implemented_logical,Create a dedicated pre-submit validation and immutable submission mode
+SCR-IPAD-670,/ipad/returned/:id,/field/inspection/:id,apps/web/src/app/field/inspection/[id]/Workspace.tsx,State_alias,implemented_logical,Create returned-scope mode with locked sections and version context
+SCR-VIR-700,/virtual/appointments/:id,/virtual/:id,apps/web/src/app/virtual/[id],Consolidated,implemented_logical,Design appointment waiting device and participant readiness states
+SCR-VIR-710,/virtual/sessions/:id/verify,/virtual/:id,apps/web/src/app/virtual/[id]/Room.tsx,Consolidated,implemented_logical,Design OTP counters lockout identity mismatch and provider failure
+SCR-VIR-720,/virtual/sessions/:id,/virtual/:id,apps/web/src/app/virtual/[id]/Room.tsx,Consolidated,provider_partial,Design governed room and video adapter states without fake integration

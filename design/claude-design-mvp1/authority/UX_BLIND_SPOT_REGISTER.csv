@@ -1,0 +1,19 @@
+blind_spot_id,severity,area,evidence,risk,recommendation,acceptance_link
+UX-BS-001,P0,Authority,"GATE_STATUS says G6/G10 PASS while DESIGN_AUTHORITY_STATUS and CURRENT_SLICE are stale",Claude follows obsolete gate or theme instructions,Create source-authority banner and require conflict check before every design run,DSG-GOV-001
+UX-BS-002,P0,Runtime,"Local authenticated navigation hit ChunkLoadError from stale build",Design audit judges stale assets or broken route,Require clean fresh production build and record commit before screenshots,DSG-RUN-001
+UX-BS-003,P0,Truthfulness,/operations/live animates projected visit-window positions,Stakeholders mistake projection for live GPS,Use persistent projected label and design separate genuine telemetry state,SPC-LIVE-001
+UX-BS-004,P0,Virtual,Room.tsx contains video-provider placeholder,Design implies a working call provider,Specify adapter pending degraded retry fallback and provider-ready states,SPC-VID-001
+UX-BS-005,P1,Routes,Several logical catalogue screens are consolidated in code,Claude drops logical steps or invents incompatible routes,Use reconciliation matrix and retain logical modes inside existing routes,DSG-CODE-001
+UX-BS-006,P1,Maps,OSM and CARTO tiles are external dependencies,Blank maps privacy and attribution failure,Design unavailable offline stale attribution and privacy states,SPC-GIS-001
+UX-BS-007,P1,GIS,Region zones are centroid circles and not authoritative boundaries,Users infer geographic precision,Label aggregation method and reserve choropleth for approved boundary provider,SPC-LIVE-002
+UX-BS-008,P1,Accessibility,Saqeel light and Arabic audits cover only selected screens,Contrast clipping and RTL interaction regressions,Require representative matrix plus all-screen automated checks,DSG-A11Y-001
+UX-BS-009,P1,Release,Demo accounts appear on login,External users see seeded identities and passwords,Design demo-gated and production-removed variants,DSG-AUTH-001
+UX-BS-010,P1,Evidence,Media flows include capture annotation compression retry archive and deletion,Generic uploader loses legal chain-of-custody cues,Use dedicated evidence lifecycle design and metadata disclosure,SPC-EV-001
+UX-BS-011,P1,Offline,IndexedDB outbox has multiple sync and conflict states,Optimistic design hides unsynced regulatory work,Make sync truth persistent actionable and non-color-only,SPC-OFF-001
+UX-BS-012,P1,Review,Return and compare are consolidated into shared pages,Reviewer misses selective unlock or immutable version meaning,Create explicit review return and compare modes with locked-state cues,SPC-REV-001
+UX-BS-013,P1,Resilience,Factory 360 and Operations aggregate multiple services,One failed widget collapses the whole view,Design sectional error boundaries stale timestamps and retry,DSG-RES-001
+UX-BS-014,P2,Research,Old prompts conflict on whether Mobbin is allowed,Incoherent provenance or copied patterns,Allow multi-source pattern research under DEC-011 and record adopted principles,DSG-RESRCH-001
+UX-BS-015,P1,Acceptance,Functional AC status is stronger than design evidence,Screenshots are incorrectly treated as completion,Require design state interaction traceability and engineering constraints per screen,DSG-SIGN-001
+UX-BS-016,P1,Dirty worktree,Current source has uncommitted sponsor-directed changes,Design tooling overwrites active work,Read-only design phase and later implementation on controlled branch,DSG-GIT-001
+UX-BS-017,P1,Realtime,Notifications and maps mix polling projection and future realtime,Users cannot tell freshness,Design source timestamp connectivity freshness and delivery-state language,SPC-RT-001
+UX-BS-018,P1,Responsive,Field code shares a Next.js app with desktop surfaces,A shrunken desktop layout reaches iPad,Use separate field navigation density touch and interruption rules,DSG-IPAD-001

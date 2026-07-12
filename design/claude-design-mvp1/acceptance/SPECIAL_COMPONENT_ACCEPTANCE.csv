@@ -1,0 +1,55 @@
+acceptance_id,component,criterion,severity,evidence,status
+SPC-GIS-001,Shared map,Map has synchronized list alternative legend attribution and keyboard-accessible selection,P0,"desktop/iPad interaction recording",not_started
+SPC-GIS-002,Geofence,Official and observed coordinates geofence result and accuracy/freshness are distinguishable,P0,"inside/outside/weak/stale frames",not_started
+SPC-GIS-003,Geofence override,Override exposes reason evidence permission approval and audit consequence,P0,"request/approve/reject flow",not_started
+SPC-GIS-004,Map failure,Tile/provider failure preserves operational data and recovery actions,P1,"provider-unavailable frame",not_started
+SPC-GIS-005,Offline map,Offline state never implies current tiles or route data,P1,"offline iPad frame",not_started
+SPC-GIS-006,Privacy,Active tracking start stop scope freshness and retention dependency are visible,P1,"journey privacy annotation",not_started
+SPC-GIS-007,Map accessibility,Risk and operational state use shape label and color with reduced-motion support,P1,"legend and accessibility audit",not_started
+SPC-GIS-008,Boundary truth,Centroid circles are labelled aggregate zones and not legal boundaries,P1,"operations map annotation",not_started
+SPC-LIVE-001,Operations live map,Projected movement is persistently labelled not live GPS,P0,"full-screen map screenshot",not_started
+SPC-LIVE-002,Operations zones,Region posture communicates aggregation method and freshness,P1,"zone tooltip/legend",not_started
+SPC-LIVE-003,Operations selection,Map list counters filters and drilldown remain synchronized,P1,"interaction recording",not_started
+SPC-LIVE-004,Operations freshness,Source timestamp refresh state stale state and reconnect are visible,P0,"fresh/stale/reconnecting frames",not_started
+SPC-LIVE-005,Operations resilience,One failed map/widget does not collapse the command center,P0,"fault-isolation frame",not_started
+SPC-LIVE-006,Operations motion,Reduced motion freezes projected animation without hiding state,P1,"reduced-motion evidence",not_started
+SPC-LIVE-007,Future telemetry,Genuine telemetry variant requires location accuracy timestamp privacy and connection data,P1,"annotated future-ready spec",not_started
+SPC-VID-001,Virtual video,Provider-pending state never renders fake participant video,P0,"provider-pending golden frame",not_started
+SPC-VID-002,Virtual verification,OTP send cooldown expiry attempts lockout and identity mismatch are explicit,P0,"OTP state set",not_started
+SPC-VID-003,Virtual begin guard,Session cannot begin until required representatives are verified,P0,"disabled/enabled transition",not_started
+SPC-VID-004,Virtual device,Camera microphone and network readiness/failure have recovery actions,P1,"readiness/failure frames",not_started
+SPC-VID-005,Virtual connection,Reconnecting low bandwidth provider failure and reschedule are supported,P1,"connection state set",not_started
+SPC-VID-006,Virtual evidence,Evidence requests and capture retain item/session/audit context,P0,"remote evidence annotation",not_started
+SPC-VID-007,Virtual fallback,Insufficient evidence supports governed physical follow-up,P1,"fallback flow",not_started
+SPC-EV-001,Evidence lifecycle,Capture preview annotation compression queue upload verify replace archive delete are represented,P0,"end-to-end evidence flow",not_started
+SPC-EV-002,Evidence provenance,Item/finding source actor time device location and sync state are visible where available,P0,"metadata panel",not_started
+SPC-EV-003,Evidence permission,Camera/media permission denial has an accessible alternative,P1,"denied/recovery frame",not_started
+SPC-EV-004,Evidence validation,Format size corruption and missing mandatory evidence block correctly,P0,"validation state set",not_started
+SPC-EV-005,Evidence sync,Queued uploading retry failed synced and conflict states are distinct,P0,"sync lifecycle frames",not_started
+SPC-EV-006,Evidence annotation,Pen rectangle undo clear cancel confirm are touch and keyboard accessible,P1,"annotation interaction evidence",not_started
+SPC-EV-007,Evidence replacement,Superseded evidence retains lineage and does not look deleted,P0,"replace/history frame",not_started
+SPC-EV-008,Evidence deletion,Deletion/archive requires reason permission and audit context,P0,"delete/archive confirmation",not_started
+SPC-EV-009,Evidence truth,Hash malware scan and retention are shown only when runtime data confirms them,P0,"truth-label audit",not_started
+SPC-OFF-001,Offline status,Sync status is persistent textual and non-color-only,P0,"all sync states",not_started
+SPC-OFF-002,Offline scope,User can see what data/actions are available offline,P1,"offline scope panel",not_started
+SPC-OFF-003,Outbox,Pending operation count last sync and retry action are visible,P0,"outbox frame",not_started
+SPC-OFF-004,Conflict,Device and server values consequence and authorized resolution are shown,P0,"conflict resolver",not_started
+SPC-OFF-005,Recovery,Reload/restart preserves draft and explains recovered state,P0,"restart recovery evidence",not_started
+SPC-OFF-006,Replay,Duplicate retry is safely recognized and never appears as a second submission,P0,"idempotency state",not_started
+SPC-OFF-007,Offline evidence,Interrupted media upload supports durable resume/retry,P1,"upload recovery frame",not_started
+SPC-OFF-008,No silent overwrite,No flow resolves server/device conflict without user-visible policy,P0,"conflict audit",not_started
+SPC-REV-001,Immutable review,Submitted content is visibly read-only with version/package identity,P0,"review golden frame",not_started
+SPC-REV-002,Selective return,Reviewer selects exact sections with mandatory reason,P0,"return flow",not_started
+SPC-REV-003,Selective correction,Only returned sections appear editable on iPad,P0,"editable/locked comparison",not_started
+SPC-REV-004,Version diff,Fields evidence findings violations actions and metadata changes are represented,P0,"diff golden frame",not_started
+SPC-REV-005,Diff accessibility,Change type uses text/icon plus color and supports RTL,P1,"accessibility/RTL evidence",not_started
+SPC-REV-006,Immutable comments,Reviewer comments and prior versions cannot appear editable,P0,"locked comments/version frame",not_started
+SPC-REV-007,Decision failure,Failed approve/return/reject leaves one unambiguous prior state,P0,"failure recovery frame",not_started
+SPC-RT-001,Freshness,Realtime-like data shows source last refresh connection and stale state,P0,"fresh/stale/reconnect frames",not_started
+SPC-RT-002,Delivery truth,Created notification rows are not labelled delivered SMS/email without provider proof,P0,"provider-pending frame",not_started
+SPC-RT-003,SLA meaning,SLA start stop pause calendar reminder breach and escalation context are legible,P1,"SLA detail frame",not_started
+SPC-RT-004,Alert lifecycle,New acknowledged handled resolved and failed actions are distinct,P1,"alert states",not_started
+SPC-RT-005,Deep link,Notification/alert opens exact governed object and context,P1,"interaction evidence",not_started
+SPC-RT-006,Duplicate/noise,Duplicate alert grouping preserves underlying audit records,P2,"grouped alert frame",not_started
+SPC-RT-007,Partial failure,Notification or SLA provider failure is isolated from core operations,P0,"fault-isolation frame",not_started
+SPC-RT-008,Accessibility,Urgency is not communicated by motion or color alone,P1,"accessibility audit",not_started

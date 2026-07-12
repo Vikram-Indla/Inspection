@@ -1,123 +1,221 @@
 /* ============================================================================
-   MIM ASTRYX — NATIONAL SIGN-IN (SCR-PUB-010)
-   Pattern: app.industry.sa auth — centered card on a soft tinted canvas,
-   Nafath panel first, OR divider, credential form below.
-   GLOBAL COLOR LAW: tokens only — every color is var(--ax-*) or a color-mix()
-   of approved tokens. No raw values outside tokens.css.
+   SAQEEL — UNIFIED SIGN-IN (SCR-PUB-010 v4 · Login.dc.html Turn 4)
+   "The inspection story": a solid credential panel on the start side (lockup,
+   one form, trust footer — no text ever sits on imagery) beside a story
+   panel — framed KSA map telling one sample inspection journey, plus the
+   Plan → Inspect → Review → Decide strip. Works in both themes (tokens only —
+   no raw values outside tokens.css).
+   Shared with /reset: .lg-page (base), .lg-topbar, .lg-center, .lg-card,
+   .lg-credentials, .lg-pwwrap, .lg-pwtoggle, .lg-submit, .lg-waiting.
    ========================================================================== */
 
 .lg-page { min-block-size: 100dvh; display: flex; flex-direction: column;
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--ax-color-primary) 7%, var(--ax-color-canvas)),
-      var(--ax-color-canvas) 55%);
+  background: var(--ax-color-canvas);
   color: var(--ax-color-text); font: var(--ax-text-body); }
 
-/* ---- official-government strip (gov.sa pattern) ---- */
-.lg-govbar-wrap { background: var(--ax-color-surface); border-block-end: 1px solid var(--ax-color-border); }
-.lg-govbar { display: flex; align-items: center; justify-content: center; gap: var(--ax-space-150);
-  padding: 6px var(--ax-space-200); font: var(--ax-text-caption);
-  color: var(--ax-color-text-secondary); }
-.lg-govbar__flag { display: inline-flex; color: var(--ax-color-primary); }
-.lg-govbar__toggle { display: inline-flex; align-items: center; gap: var(--ax-space-050);
-  background: none; border: none; padding: 0; font: var(--ax-text-caption); font-weight: 600;
-  color: var(--ax-color-text); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-.lg-govbar__chevron { transition: transform .15s ease; }
-.lg-govbar__chevron--open { transform: rotate(180deg); }
-.lg-govbar__panel { display: flex; flex-wrap: wrap; gap: var(--ax-space-300);
-  padding: var(--ax-space-300) clamp(16px, 5vw, 64px); border-block-start: 1px solid var(--ax-color-border); }
-.lg-govbar__card { display: flex; gap: var(--ax-space-150); flex: 1 1 280px; }
-.lg-govbar__cardicon { display: grid; place-items: center; inline-size: 40px; block-size: 40px; flex-shrink: 0;
-  border-radius: 50%; border: 1px solid var(--ax-color-border); color: var(--ax-color-text-secondary); }
-.lg-govbar__card strong { display: block; font: var(--ax-text-body); font-weight: 700; margin-block-end: var(--ax-space-050); }
-.lg-govbar__card p { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+/* Split variant (login): fixed credential column on the start side, story
+   panel takes the rest. The story panel disappears on small screens. */
+.lg-page--split { display: grid; grid-template-columns: minmax(420px, 500px) minmax(0, 1fr); }
+@media (max-width: 960px) { .lg-page--split { grid-template-columns: 1fr; } }
 
-/* ---- top bar ---- */
-.lg-topbar { display: flex; align-items: center; justify-content: space-between;
-  padding: var(--ax-space-150) clamp(16px, 4vw, 48px); }
-.lg-topbar__brand { display: flex; align-items: center; gap: var(--ax-space-150);
-  text-decoration: none; color: inherit; }
-.lg-topbar__brandtext { display: flex; flex-direction: column; line-height: 1.25; }
-.lg-topbar__brandtext strong { font-weight: 700; letter-spacing: -0.01em; font-size: 15px; }
-.lg-topbar__brandtext small { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
-.lg-topbar__actions { display: flex; gap: var(--ax-space-100); }
-.lg-topbar__actions a { display: inline-flex; align-items: center; padding: 5px 12px;
-  border-radius: var(--ax-radius-full); border: 1px solid var(--ax-color-border);
-  background: var(--ax-color-surface); color: var(--ax-color-text); text-decoration: none;
-  font: var(--ax-text-caption);
-  transition: border-color var(--ax-motion-fast), background var(--ax-motion-fast); }
-.lg-topbar__actions a:hover { border-color: var(--ax-color-primary-weak); background: var(--ax-color-primary-tint); }
+/* ---- credential panel -------------------------------------------------- */
+.lg-panel { display: flex; flex-direction: column; min-inline-size: 0;
+  min-block-size: 100dvh;
+  padding: var(--ax-space-400) clamp(24px, 3vw, 44px);
+  background: var(--ax-color-surface);
+  border-inline-end: 1px solid var(--ax-color-border); }
+@media (max-width: 960px) { .lg-panel { border-inline-end: none; } }
 
-/* ---- centered card ---- */
-.lg-center { flex: 1; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: var(--ax-space-200); padding: var(--ax-space-400) var(--ax-space-200); }
-.lg-card { inline-size: min(480px, 100%); background: var(--ax-color-surface);
-  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large);
-  box-shadow: var(--ax-shadow-overlay); padding: clamp(28px, 5vw, 40px);
-  display: flex; flex-direction: column; gap: var(--ax-space-300); }
-.lg-card__title { font: var(--ax-text-display); text-align: center; letter-spacing: -0.02em; }
-.lg-card__sub { font: var(--ax-text-body); color: var(--ax-color-text-secondary);
-  text-align: center; margin-block-start: calc(-1 * var(--ax-space-200)); }
+.lg-lockup { display: flex; align-items: center; gap: var(--ax-space-150); }
+.lg-lockup__mark { inline-size: 36px; block-size: 36px; color: var(--ax-color-primary-hover); flex-shrink: 0; }
+.lg-lockup__wordmark { font: 700 24px/1.2 var(--ax-font-arabic); color: var(--ax-color-text); }
 
-/* ---- Nafath panel (primary method) ---- */
-.lg-nafath { display: flex; align-items: center; gap: var(--ax-space-200); text-align: start;
-  min-block-size: 76px; padding: var(--ax-space-250);
-  border: 1px solid color-mix(in srgb, var(--ax-color-primary) 40%, var(--ax-color-border));
-  border-radius: var(--ax-radius-standard);
-  background: var(--ax-color-primary-tint); cursor: pointer; font: inherit; color: inherit;
-  box-shadow: var(--ax-shadow-raised);
-  transition: border-color var(--ax-motion-fast), box-shadow var(--ax-motion-fast); }
-.lg-nafath:hover { border-color: var(--ax-color-primary); box-shadow: var(--ax-shadow-overlay); }
-.lg-nafath:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
-.lg-nafath__mark { display: grid; place-items: center; inline-size: 48px; block-size: 48px;
-  border-radius: var(--ax-radius-standard); flex-shrink: 0;
-  background: var(--ax-color-surface); color: var(--ax-color-primary);
-  border: 1px solid color-mix(in srgb, var(--ax-color-primary) 24%, var(--ax-color-border)); }
-.lg-nafath__text { display: flex; flex-direction: column; gap: 2px; }
-.lg-nafath__text strong { font: var(--ax-text-body-strong); color: var(--ax-color-primary-strong); }
-.lg-nafath__text span { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.lg-controls { display: inline-flex; align-items: center; gap: var(--ax-space-100); }
+/* theme toggle in the lockup row exists for small screens only — on desktop
+   the story panel header owns it */
+.lg-controls--compact { display: none; margin-inline-start: auto; }
+@media (max-width: 960px) { .lg-controls--compact { display: inline-flex; } }
 
-/* ---- OR divider ---- */
-.lg-or { display: flex; align-items: center; gap: var(--ax-space-200);
-  color: var(--ax-color-text-secondary); font: var(--ax-text-caption); }
-.lg-or::before, .lg-or::after { content: ""; flex: 1; block-size: 1px; background: var(--ax-color-border); }
+.lg-iconbtn { display: grid; place-items: center; inline-size: 40px; block-size: 40px;
+  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-full);
+  background: var(--ax-color-surface); color: var(--ax-color-text-secondary); cursor: pointer;
+  transition: color var(--ax-motion-fast), border-color var(--ax-motion-fast); }
+.lg-iconbtn:hover { color: var(--ax-color-text); border-color: var(--ax-color-primary); }
+.lg-iconbtn:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 
-/* ---- credential form ---- */
+.lg-center { flex: 1; display: flex; flex-direction: column; justify-content: center;
+  padding-block: var(--ax-space-300); }
+
+.lg-card { inline-size: 100%; display: flex; flex-direction: column;
+  gap: var(--ax-space-250); }
+.lg-card__title { margin: 0; font: var(--ax-text-title); color: var(--ax-color-text); }
+.lg-card__sub { margin: 0; margin-block-start: calc(-1 * var(--ax-space-150));
+  font: var(--ax-text-body); color: var(--ax-color-text-secondary); }
+
+/* ---- credential form ---------------------------------------------------- */
 .lg-credentials { display: flex; flex-direction: column; gap: var(--ax-space-200); }
-.lg-credentials .ax-field { max-inline-size: none; }
+/* email addresses are LTR data even on the Arabic page */
+.lg-input--email { text-align: start; direction: ltr; }
+[dir="rtl"] .lg-input--email { text-align: left; }
 .lg-pwwrap { position: relative; }
-.lg-pwwrap .ax-input { padding-inline-end: 44px; inline-size: 100%; }
-.lg-pwtoggle { position: absolute; inset-block-start: 50%; inset-inline-end: 8px;
+.lg-pwwrap .ax-input { padding-inline-end: 48px; }
+.lg-pwtoggle { position: absolute; inset-block-start: 50%; inset-inline-end: var(--ax-space-100);
   transform: translateY(-50%); display: grid; place-items: center;
-  inline-size: 32px; block-size: 32px; border: 0; border-radius: var(--ax-radius-small);
-  background: transparent; color: var(--ax-color-text-secondary); cursor: pointer; }
-.lg-pwtoggle:hover { background: var(--ax-color-neutral-tint); color: var(--ax-color-text); }
-.lg-submit { inline-size: 100%; }
-/* forgot-password link under the credential fields */
-.lg-forgot { align-self: flex-start; margin-block-start: calc(-1 * var(--ax-space-100));
-  font: var(--ax-text-caption); font-weight: 600; color: var(--ax-color-primary);
-  background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none; }
-.lg-forgot:hover { text-decoration: underline; color: var(--ax-color-primary-hover); }
-.lg-forgot:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); border-radius: var(--ax-radius-small); }
+  inline-size: 36px; block-size: 36px; border: none; border-radius: var(--ax-radius-small);
+  background: none; color: var(--ax-color-text-secondary); cursor: pointer; }
+.lg-pwtoggle:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
+.lg-submit { inline-size: 100%; margin-block-start: var(--ax-space-050); }
+.lg-linkbtn { align-self: center; background: none; border: none; padding: 0; cursor: pointer;
+  font: var(--ax-text-body-strong); color: var(--ax-color-primary-hover); }
+.lg-linkbtn:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-/* ---- Nafath waiting (simulated app approval) ---- */
-.lg-waiting { display: flex; flex-direction: column; align-items: center; gap: var(--ax-space-200); text-align: center; }
-.lg-waiting__spinner { inline-size: 36px; block-size: 36px; border-radius: 50%;
-  border: 3px solid var(--ax-color-primary-tint); border-block-start-color: var(--ax-color-primary);
-  animation: lg-spin 900ms linear infinite; }
+/* ---- reset page (shared) ------------------------------------------------ */
+.lg-topbar { display: flex; align-items: center; justify-content: space-between;
+  padding: var(--ax-space-250) clamp(20px, 4vw, 48px); }
+.lg-topbar__brand { font: 700 20px/28px var(--ax-font-arabic); color: var(--ax-color-text); }
+/* reset renders .lg-center inside the flat .lg-page (no panel): center the card */
+.lg-page:not(.lg-page--split) .lg-center { display: grid; place-items: center;
+  padding: var(--ax-space-300) clamp(20px, 4vw, 48px); }
+.lg-page:not(.lg-page--split) .lg-card { inline-size: min(100%, 400px); }
+
+.lg-waiting { display: flex; flex-direction: column; align-items: center;
+  gap: var(--ax-space-200); text-align: center; }
+.lg-waiting__spinner { inline-size: 36px; block-size: 36px; border-radius: var(--ax-radius-full);
+  border: 3px solid var(--ax-color-border);
+  border-block-start-color: var(--ax-color-primary);
+  animation: lg-spin 0.9s linear infinite; }
 @keyframes lg-spin { to { transform: rotate(360deg); } }
-.lg-waiting__number { font: var(--ax-text-display); font-feature-settings: var(--ax-numeric-features);
-  letter-spacing: .08em; padding: var(--ax-space-150) var(--ax-space-400);
-  border-radius: var(--ax-radius-standard);
-  background: var(--ax-color-primary-tint); color: var(--ax-color-primary-strong); }
-@media (prefers-reduced-motion: reduce) { .lg-waiting__spinner { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .lg-waiting__spinner { animation-duration: 2.4s; } }
 
-/* ---- footer band under the card ---- */
-.lg-foot { display: flex; flex-direction: column; align-items: center; gap: var(--ax-space-150);
-  padding-block-end: var(--ax-space-200); }
-.lg-trust { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--ax-space-300);
+/* ---- credential-panel footer -------------------------------------------- */
+.lg-foot { display: flex; flex-direction: column; gap: var(--ax-space-100);
+  padding-block-start: var(--ax-space-200);
+  border-block-start: 1px solid var(--ax-color-border);
   font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
-.lg-trust span { display: inline-flex; align-items: center; gap: 6px; }
-.lg-trust svg { color: var(--ax-color-primary); }
-.lg-foot__copyright { font: var(--ax-text-caption); color: var(--ax-color-text-secondary);
-  text-align: center; }
+.lg-foot__item { display: inline-flex; align-items: center; gap: var(--ax-space-100); }
+.lg-foot__item svg { color: var(--ax-color-success); flex-shrink: 0; }
+.lg-foot__row { display: flex; align-items: center; justify-content: space-between;
+  gap: var(--ax-space-150); }
+.lg-foot__copy { color: var(--ax-color-text-disabled); }
+.lg-lang { font: 600 14px/20px var(--ax-font-sans); color: var(--ax-color-primary-hover);
+  text-decoration: none; }
+.lg-lang:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---- demo-access helper (evaluation only) ------------------------------- */
+.lg-demo { margin-block-start: var(--ax-space-100);
+  padding-block-start: var(--ax-space-150);
+  border-block-start: 1px solid var(--ax-color-border); }
+.lg-demo__toggle { display: inline-flex; align-items: center; gap: var(--ax-space-050);
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: var(--ax-text-caption); font-weight: 600; color: var(--ax-color-text-secondary); }
+.lg-demo__toggle:hover { color: var(--ax-color-text); }
+.lg-demo__chev { transition: transform var(--ax-motion-fast); }
+.lg-demo__chev--open { transform: rotate(180deg); }
+.lg-demo__body { margin-block-start: var(--ax-space-150); }
+.lg-demo__hint { font: var(--ax-text-caption); color: var(--ax-color-text-secondary);
+  margin-block-end: var(--ax-space-150); }
+.lg-demo__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ax-space-100); }
+.lg-demo__item { inline-size: 100%; display: grid; grid-template-columns: auto 1fr; column-gap: var(--ax-space-150);
+  align-items: baseline; padding: var(--ax-space-100) var(--ax-space-150); text-align: start; cursor: pointer;
+  background: var(--ax-color-surface-sunken); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-small);
+  transition: border-color var(--ax-motion-fast); }
+.lg-demo__item:hover { border-color: var(--ax-color-primary); }
+.lg-demo__item:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.lg-demo__role { font: var(--ax-text-body-strong); color: var(--ax-color-text); }
+.lg-demo__dest { justify-self: end; font: var(--ax-text-caption); color: var(--ax-color-primary-hover); }
+.lg-demo__email { grid-column: 1 / -1; font: 400 13px var(--ax-font-mono);
+  color: var(--ax-color-text-secondary); direction: ltr; text-align: start; }
+[dir="rtl"] .lg-demo__email { text-align: right; }
+
+/* ============================================================================
+   STORY PANEL — header · framed map · storyline strip
+   ========================================================================== */
+.lg-story { display: flex; flex-direction: column; gap: var(--ax-space-150);
+  min-inline-size: 0; min-block-size: 100dvh; padding: clamp(20px, 2vw, 28px); }
+@media (max-width: 960px) { .lg-story { display: none; } }
+
+.lg-story__head { display: flex; align-items: center; justify-content: space-between;
+  gap: var(--ax-space-200); }
+.lg-story__heading { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
+.lg-story__title { font: 700 17px/24px var(--ax-font-sans); color: var(--ax-color-text); }
+.lg-story__overline { font: 600 10px/14px var(--ax-font-mono); letter-spacing: 0.16em;
+  color: var(--ax-color-text-secondary); align-self: start; }
+[dir="rtl"] .lg-story__overline { align-self: end; }
+
+.lg-story__frame { position: relative; flex: 1; min-block-size: 0;
+  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large);
+  overflow: hidden; background: var(--ax-color-canvas); }
+.lg-story__fallback { position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center; padding: var(--ax-space-400); }
+
+.lg-story__strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ax-space-150); }
+@media (max-width: 1280px) { .lg-story__strip { grid-template-columns: repeat(2, 1fr); } }
+.lg-story__step { display: flex; flex-direction: column; gap: var(--ax-space-100);
+  padding: var(--ax-space-200); background: var(--ax-color-surface);
+  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); }
+.lg-story__step-head { display: flex; align-items: center; gap: var(--ax-space-100); }
+.lg-story__step-badge { display: grid; place-items: center; inline-size: 26px; block-size: 26px;
+  border-radius: var(--ax-radius-small); background: var(--ax-color-primary);
+  color: var(--ax-color-inverse-text); font: 700 12px var(--ax-font-mono); }
+.lg-story__step-title { font: 700 15px/20px var(--ax-font-sans); color: var(--ax-color-text); }
+.lg-story__step-body { margin: 0; font: 400 13px/21px var(--ax-font-sans);
+  color: var(--ax-color-text-secondary); }
+
+/* ---- the map itself ------------------------------------------------------ */
+.lg-map { position: absolute; inset: 0; background: var(--ax-color-canvas); }
+.lg-map .leaflet-container { background: transparent; font: inherit; }
+/* CARTO dark tiles are too dim behind the mask — brighten them (design 4a) */
+.lg-map .lg-map__tiles--bright { filter: brightness(2.3) saturate(1.2) contrast(1.02); }
+.lg-map .leaflet-control-attribution { background: transparent;
+  font: 400 9px var(--ax-font-sans); color: var(--ax-color-text-disabled); }
+.lg-map .leaflet-control-attribution a { color: var(--ax-color-text-secondary); }
+
+/* factory chip */
+.lg-map__site { transform: translate(-50%, -50%); display: grid; place-items: center;
+  border-radius: var(--ax-radius-small); background: var(--ax-color-surface);
+  border: 1.5px solid var(--ax-color-primary); box-shadow: var(--ax-shadow-raised);
+  color: var(--ax-color-primary-hover); }
+.lg-map__sitelabel { white-space: nowrap; color: var(--ax-color-text);
+  text-shadow: 0 1px 4px var(--ax-color-canvas); }
+.lg-map__sitelabel--en { font: 600 10px var(--ax-font-mono); letter-spacing: 2px; }
+.lg-map__sitelabel--ar { font: 700 13px var(--ax-font-arabic); }
+
+/* animated route (plan -> arrival) */
+.lg-map__route { animation: lg-map-route 24s linear infinite; }
+@keyframes lg-map-route { to { stroke-dashoffset: -320; } }
+
+/* inspector en route — pulsing emerald */
+.lg-map__insp { transform: translate(-50%, -50%); position: relative; }
+.lg-map__insp-ping { position: absolute; inset: -7px; border-radius: var(--ax-radius-full);
+  border: 1.5px solid var(--ax-color-success); opacity: 0.7;
+  animation: lg-map-ping 2.4s ease-out infinite; }
+@keyframes lg-map-ping { 0% { transform: scale(0.5); opacity: 0.8; } 100% { transform: scale(2); opacity: 0; } }
+.lg-map__insp-dot { display: grid; place-items: center; inline-size: 22px; block-size: 22px;
+  border-radius: var(--ax-radius-full); background: var(--ax-color-success);
+  border: 2px solid var(--ax-color-canvas); box-shadow: var(--ax-shadow-raised);
+  color: var(--ax-color-inverse-text); }
+
+/* step badges on the map (01 planned · 02 geofenced arrival) */
+.lg-map__badge { transform: translate(-50%, -68px); display: grid; place-items: center;
+  inline-size: 24px; block-size: 24px; border-radius: var(--ax-radius-full);
+  background: var(--ax-color-primary); color: var(--ax-color-inverse-text);
+  font: 700 11px var(--ax-font-mono); box-shadow: var(--ax-shadow-raised); }
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-map__route { animation: none; }
+  .lg-map__insp-ping { animation: none; opacity: 0.35; }
+}
+
+/* ---- static fallback illustration (SaqeelHero) --------------------------- */
+.lg-hero { inline-size: 100%; block-size: 100%; }
+.lg-hero__fence { animation: lg-fence 60s linear infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes lg-fence { to { stroke-dashoffset: -220; } }
+.lg-hero__pulse { transform-box: fill-box; transform-origin: center; opacity: 0;
+  animation: lg-pulsering 3.2s ease-out infinite; }
+@keyframes lg-pulsering { 0% { transform: scale(0.5); opacity: 0.5; } 100% { transform: scale(1.7); opacity: 0; } }
+.lg-hero__ping { transform-box: fill-box; transform-origin: center; opacity: 0.28;
+  animation: lg-ping 2.6s ease-out infinite; }
+@keyframes lg-ping { 0% { transform: scale(0.4); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .lg-hero__fence, .lg-hero__pulse, .lg-hero__ping { animation: none; }
+}
