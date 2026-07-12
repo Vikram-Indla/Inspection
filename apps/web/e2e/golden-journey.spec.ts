@@ -172,6 +172,12 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
       const fileInput = q.locator('input[type="file"]');
       if (await fileInput.count()) {
         await fileInput.setInputFiles({ name: "fs-101.png", mimeType: "image/png", buffer: PIXEL_PNG });
+        // M04-109 — attaching a photo opens an annotate-before-attach modal
+        // (pen/highlight over the image) that blocks the rest of the page
+        // until confirmed or discarded.
+        const annotateDialog = page.getByRole("dialog", { name: /annotate photo/i });
+        await annotateDialog.getByRole("button", { name: /attach evidence/i }).click();
+        await expect(annotateDialog).toBeHidden();
       }
       // Blocking action form (M04-171..184) — fill every generic field it asks for.
       const formFields = q.locator(".ax-panel input, .ax-panel textarea");
