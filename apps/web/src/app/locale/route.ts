@@ -6,6 +6,8 @@ export async function GET(request: Request) {
   const set = url.searchParams.get("set") === "ar" ? "ar" : "en";
   const back = request.headers.get("referer") ?? new URL("/", request.url).toString();
   const res = NextResponse.redirect(back);
-  res.cookies.set("locale", set, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+  const options = { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" as const };
+  res.cookies.set("locale", set, options);
+  res.cookies.set("login_locale", set, options);
   return res;
 }

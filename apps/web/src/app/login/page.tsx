@@ -18,12 +18,13 @@ type Locale = "ar" | "en";
 
 async function resolveLocale(): Promise<Locale> {
   const c = await cookies();
-  return c.get("locale")?.value === "en" ? "en" : "ar";
+  return c.get("login_locale")?.value === "en" ? "en" : "ar";
 }
 
 export default async function Login() {
   const locale = await resolveLocale();
   const ar = locale === "ar";
+  const demoEnabled = process.env.SAQEEL_DEMO_ACCESS_ENABLED === "1";
 
   const strings: LoginStrings = {
     dir: ar ? "rtl" : "ltr",
@@ -41,6 +42,19 @@ export default async function Login() {
     hidePw: ar ? "إخفاء كلمة المرور" : "Hide password",
     signIn: ar ? "تسجيل الدخول" : "Sign In",
     signingIn: ar ? "جارٍ الدخول…" : "Signing in…",
+    authErrorInvalid: ar
+      ? "تعذّر تسجيل الدخول بهذه البيانات. تحقّق منها أو أعد تعيين كلمة المرور."
+      : "We could not sign you in with those details. Check your information or reset your password.",
+    authErrorNetwork: ar
+      ? "تعذّر الوصول إلى خدمة تسجيل الدخول. تحقّق من الاتصال وحاول مرة أخرى."
+      : "We could not reach the sign-in service. Check your connection and try again.",
+    authErrorGeneric: ar
+      ? "تعذّر تسجيل الدخول. حاول مرة أخرى أو أعد تعيين كلمة المرور."
+      : "We could not sign you in. Try again or reset your password.",
+    resetErrorGeneric: ar
+      ? "تعذّر إرسال رابط إعادة التعيين. تحقّق من الاتصال وحاول مرة أخرى."
+      : "We could not send the reset link. Check your connection and try again.",
+    emailInvalid: ar ? "أدخل بريدًا إلكترونيًا صالحًا." : "Enter a valid email address.",
     forgotLink: ar ? "هل نسيت كلمة المرور؟" : "Forgot your password?",
     forgotTitle: ar ? "إعادة تعيين كلمة المرور" : "Reset your password",
     forgotSub: ar
@@ -58,50 +72,33 @@ export default async function Login() {
     footCopyright: ar
       ? "صقيل — وزارة الصناعة والثروة المعدنية © 2026"
       : "Saqeel — Ministry of Industry and Mineral Resources © 2026",
+    securityNote: ar
+      ? "لحمايتك، لا نؤكد أبدًا وجود حساب من عدمه."
+      : "For your security, we never confirm whether an account exists.",
     langHref: ar ? "/locale?set=en" : "/locale?set=ar",
     langLabel: ar ? "English" : "العربية",
     themeToLight: ar ? "الوضع الفاتح" : "Light mode",
     themeToDark: ar ? "الوضع الداكن" : "Dark mode",
     story: {
       title: ar
-        ? "قصة التفتيش في صقيل — من الخطة إلى القرار"
-        : "The Saqeel inspection story — from plan to decision",
-      // Mono overline stays LTR/EN in both locales (design: JetBrains Mono label).
-      overline: "ONE VISIT, END TO END · SAMPLE — ILLUSTRATIVE",
-      mapLabels: {
-        riyadh: ar ? "الرياض" : "RIYADH",
-        jubail: ar ? "الجبيل" : "JUBAIL",
-      },
-      steps: [
-        {
-          n: "01",
-          title: ar ? "التخطيط" : "Plan",
-          body: ar
-            ? "زيارات تُجدول حسب الخطورة، وتُسند وفق عبء العمل والقرب الجغرافي"
-            : "Risk-based visit planning; assignment by workload, capacity and proximity",
-        },
-        {
-          n: "02",
-          title: ar ? "التفتيش" : "Inspect",
-          body: ar
-            ? "تحقق جغرافي عند بوابة المصنع، قوائم فحص وأدلة — ويعمل دون اتصال"
-            : "Geofenced check-in at the gate, checklists and evidence — works offline",
-        },
-        {
-          n: "03",
-          title: ar ? "المراجعة" : "Review",
-          body: ar
-            ? "تدقيق المستوى الثاني للأدلة والنتائج قبل اعتماد النتيجة"
-            : "Level-2 verification of evidence and findings before approval",
-        },
-        {
-          n: "04",
-          title: ar ? "القرار" : "Decide",
-          body: ar
-            ? "قرار امتثال يُسجَّل في ملف المصنع 360 ويُعيد احتساب الخطورة"
-            : "Compliance decision recorded to Factory 360; risk re-scored",
-        },
+        ? "أطلس التفتيش الصناعي في صقيل"
+        : "The Saqeel industrial inspection atlas",
+      overline: ar ? "رحلة تفتيش واحدة · من البداية إلى النهاية" : "ONE VISIT · END TO END",
+      stagesLabel: ar ? "مراحل دورة التفتيش" : "Inspection lifecycle stages",
+      stages: [
+        { id: "plan", label: ar ? "التخطيط" : "Plan", event: ar ? "اختيار المنشأة وموعد الزيارة" : "Factory and visit window selected" },
+        { id: "travel", label: ar ? "التنقّل" : "Travel", event: ar ? "تفعيل مسار المفتش نحو الموقع المكلّف" : "Inspector route activates toward the assigned site" },
+        { id: "arrive", label: ar ? "الوصول" : "Arrive", event: ar ? "تأكيد الوصول داخل النطاق الجغرافي لبوابة المنشأة" : "Geofence confirms arrival at the factory gate" },
+        { id: "inspect", label: ar ? "التفتيش" : "Inspect", event: ar ? "توثيق قائمة الفحص والأدلة والنتائج" : "Checklist, evidence and findings are captured" },
+        { id: "review", label: ar ? "المراجعة" : "Review", event: ar ? "انتقال حزمة الأدلة إلى التحقق من المستوى الثاني" : "Evidence package moves to level-two verification" },
+        { id: "decide", label: ar ? "القرار" : "Decide", event: ar ? "تثبيت القرار في سجل المنشأة" : "Decision is sealed into the factory record" },
       ],
+      dossier: {
+        industry: ar ? "الصناعة" : "Industry",
+        state: ar ? "مرحلة الدورة" : "Lifecycle stage",
+        close: ar ? "إغلاق" : "Close",
+        mapLabel: ar ? "مواقع الأطلس الصناعي التفاعلية" : "Interactive industrial atlas locations",
+      },
     },
     demo: {
       title: ar ? "حسابات تجريبية" : "Demo access",
@@ -109,13 +106,13 @@ export default async function Login() {
         ? "لا يوجد اختيار عام بين الإدارة والبوابة — الدور يحدد الوجهة بعد الدخول. اختر حسابًا تجريبيًا لتعبئة النموذج."
         : "There's no public admin/portal toggle — your role decides the destination after sign-in. Pick a demo identity to fill the form.",
     },
-    demoAccounts: [
+    demoAccounts: demoEnabled ? [
       { label: ar ? "الإدارة" : "Administrator", dest: ar ? "وحدة الإدارة" : "Admin console", email: "admin@mim.gov.sa", password: "MimAdmin!2026" },
       { label: ar ? "مخطّط" : "Planner", dest: ar ? "التخطيط" : "Planning", email: "planner@mim.gov.sa", password: "MimPlan!2026" },
       { label: ar ? "مفتّش" : "Inspector", dest: ar ? "الميدان" : "Field", email: "inspector@mim.gov.sa", password: "MimField!2026" },
       { label: ar ? "مراجِع" : "Reviewer", dest: ar ? "المراجعة" : "Reviews", email: "reviewer@mim.gov.sa", password: "MimRev!2026" },
       { label: ar ? "التشغيل" : "Operations", dest: ar ? "مركز العمليات" : "Operations", email: "ops@mim.gov.sa", password: "MimOps!2026" },
-    ],
+    ] : [],
   };
 
   return <LoginClient strings={strings} />;

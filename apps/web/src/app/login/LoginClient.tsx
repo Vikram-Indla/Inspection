@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
 import { logAuthEvent } from "@/lib/audit";
 import { IconEye, IconEyeOff, IconShieldCheck } from "../icons";
@@ -11,8 +11,8 @@ import DemoAccess, { type DemoAccount, type DemoStrings } from "./DemoAccess";
 // SCR-PUB-010 v4 — Saqeel unified sign-in (client half), from Login.dc.html
 // Turn 4 ("the inspection story"). Solid credential panel on the start side —
 // lockup, one form, trust footer; zero text sits on imagery — beside a story
-// panel: framed KSA map showing one sample inspection journey plus the
-// four-step Plan → Inspect → Review → Decide strip. No persona selector —
+// panel: framed KSA map showing one sample inspection journey plus one attached
+// Plan → Travel → Arrive → Inspect → Review → Decide control strip. No persona selector —
 // role routing is server-side (/launch); making the user self-declare
 // "admin" was security theatre and leaked the console's existence.
 // Credential sign-in is real Supabase auth — ERR-AUTH-001 safe deny,
@@ -31,6 +31,11 @@ export type LoginStrings = {
   hidePw: string;
   signIn: string;
   signingIn: string;
+  authErrorInvalid: string;
+  authErrorNetwork: string;
+  authErrorGeneric: string;
+  resetErrorGeneric: string;
+  emailInvalid: string;
   forgotLink: string;
   forgotTitle: string;
   forgotSub: string;
@@ -42,6 +47,7 @@ export type LoginStrings = {
   footTrust: string;
   footSecure: string;
   footCopyright: string;
+  securityNote: string;
   langHref: string;
   langLabel: string;
   themeToLight: string;
@@ -53,20 +59,43 @@ export type LoginStrings = {
 
 type View = "signin" | "forgot" | "forgot-sent";
 
+// Format check only — never an existence check (that would be enumeration).
+const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function safeSignInError(error: unknown, s: LoginStrings): string {
+  const message = error instanceof Error
+    ? error.message.toLowerCase()
+    : String((error as { message?: unknown } | null)?.message ?? "").toLowerCase();
+  if (message.includes("invalid login") || message.includes("invalid credentials")) return s.authErrorInvalid;
+  if (message.includes("fetch") || message.includes("network") || message.includes("timeout")) return s.authErrorNetwork;
+  return s.authErrorGeneric;
+}
+
 export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
   const [view, setView] = useState<View>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailFormatError, setEmailFormatError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const forgotHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const backLinkRef = useRef<HTMLButtonElement | null>(null);
+
+  // CD-002 focus table: entering "forgot" moves focus to its heading;
+  // entering "forgot-sent" moves focus to "Back to sign in".
+  useEffect(() => {
+    if (view === "forgot") forgotHeadingRef.current?.focus();
+    else if (view === "forgot-sent") backLinkRef.current?.focus();
+  }, [view]);
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(null);
     const { error } = await supabaseBrowser().auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) { setError(error.message); return; }  // ERR-AUTH-001: deny with safe message
+    if (error) { setError(safeSignInError(error, s)); return; }  // ERR-AUTH-001: deny with neutral copy
     // Hard navigation: guarantees the auth cookie is on the request before
     // /launch renders server-side (router.push races the cookie write).
     // /launch decides the landing by role — the URL never does.
@@ -75,7 +104,10 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
 
   async function sendReset(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true); setError(null);
+    setError(null);
+    if (!EMAIL_FORMAT.test(email)) { setEmailFormatError(s.emailInvalid); return; }
+    setEmailFormatError(null);
+    setBusy(true);
     const { error } = await supabaseBrowser().auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset`,
     });
@@ -83,7 +115,7 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
     // Anti-enumeration: never reveal whether the address exists — always
     // advance to the neutral confirmation on success; only surface transport
     // errors. Audit the request (FND-003); the address is hashed client-side.
-    if (error) { setError(error.message); return; }
+    if (error) { setError(s.resetErrorGeneric); return; }
     void logAuthEvent("password_reset_requested", email);
     setView("forgot-sent");
   }
@@ -142,20 +174,23 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
 
           {view === "forgot" && (
             <section className="lg-card" aria-label={s.forgotTitle}>
-              <h1 className="lg-card__title">{s.forgotTitle}</h1>
+              <h1 className="lg-card__title" ref={forgotHeadingRef} tabIndex={-1}>{s.forgotTitle}</h1>
               <p className="lg-card__sub">{s.forgotSub}</p>
-              <form className="lg-credentials" onSubmit={sendReset}>
-                <div className="ax-field">
+              <form className="lg-credentials" onSubmit={sendReset} noValidate>
+                <div className={`ax-field${emailFormatError ? " is-invalid" : ""}`}>
                   <label className="ax-field__label" htmlFor="email">{s.idLabel}</label>
                   <input id="email" className="ax-input lg-input--email" type="email" autoComplete="username"
                     dir="ltr" placeholder={s.idPlaceholder} value={email}
-                    onChange={e => setEmail(e.target.value)} required />
+                    aria-invalid={emailFormatError ? true : undefined}
+                    aria-describedby={emailFormatError ? "email-err" : undefined}
+                    onChange={e => { setEmail(e.target.value); setEmailFormatError(null); }} required />
+                  {emailFormatError && <p id="email-err" className="ax-field__error">{emailFormatError}</p>}
                 </div>
                 {error && <div className="ax-banner ax-banner--critical" role="alert">{error}</div>}
-                <button className="ax-btn ax-btn--prominent lg-submit" type="submit" disabled={busy}>
+                <button className="ax-btn ax-btn--prominent lg-submit" type="submit" disabled={busy} aria-busy={busy}>
                   {busy ? s.forgotSending : s.forgotSend}
                 </button>
-                <button type="button" className="lg-linkbtn" onClick={() => { setError(null); setView("signin"); }}>
+                <button type="button" className="lg-linkbtn" onClick={() => { setError(null); setEmailFormatError(null); setView("signin"); }}>
                   {s.back}
                 </button>
               </form>
@@ -164,9 +199,11 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
 
           {view === "forgot-sent" && (
             <section className="lg-card" aria-label={s.forgotSentTitle}>
-              <h1 className="lg-card__title">{s.forgotSentTitle}</h1>
-              <p className="lg-card__sub">{s.forgotSentBody}</p>
-              <button type="button" className="lg-linkbtn" onClick={() => { setError(null); setView("signin"); }}>
+              <div role="status">
+                <h1 className="lg-card__title">{s.forgotSentTitle}</h1>
+                <p className="lg-card__sub">{s.forgotSentBody}</p>
+              </div>
+              <button ref={backLinkRef} type="button" className="lg-linkbtn" onClick={() => { setError(null); setView("signin"); }}>
                 {s.back}
               </button>
             </section>
@@ -175,14 +212,15 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
 
         <footer className="lg-foot">
           <span className="lg-foot__item"><IconShieldCheck /> {s.footTrust} · {s.footSecure}</span>
+          <span className="lg-foot__item">{s.securityNote}</span>
           <div className="lg-foot__row">
             <span className="lg-foot__copy">{s.footCopyright}</span>
-            <a className="lg-lang" href={s.langHref}>{s.langLabel}</a>
+            <a className="lg-lang" href={s.langHref} dir={s.lang === "ar" ? "ltr" : "rtl"}>{s.langLabel}</a>
           </div>
         </footer>
       </main>
 
-      <StoryPanel strings={s.story} locale={s.lang} themeLabels={themeLabels} />
+      <StoryPanel strings={s.story} locale={s.lang} themeLabels={themeLabels} subdued={view !== "signin"} />
     </div>
   );
 }
