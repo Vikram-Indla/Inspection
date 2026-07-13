@@ -129,6 +129,9 @@
   color: var(--ax-color-text-secondary); direction: ltr; text-align: start; }
 [dir="rtl"] .lg-demo__email { text-align: right; }
 
+/* ---- CD-003: own-identity mono island (AccessState) ---------------------- */
+.lg-identity { font: 400 13px var(--ax-font-mono); color: var(--ax-color-text-secondary); }
+
 /* ============================================================================
    STORY PANEL — header · framed map with attached lifecycle strip
    ========================================================================== */
