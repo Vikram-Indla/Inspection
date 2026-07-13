@@ -1,91 +1,53 @@
 # Last Session
-- Time: 2026-07-13T19:15:00.414670+00:00
-- Session ID: e00c6b10-a77b-44b4-9105-f466b3a4c318
-- End reason: other
-- Branch: feat/cd-021-bulk-targeting
-- Commit: 8b0e0fa
-- Working tree:
-```
-M .project-memory/audit/instructions_loaded.jsonl
- M .project-memory/audit/session_end.jsonl
- M .project-memory/audit/tool_events.jsonl
- M apps/web/e2e/auth.setup.ts
- M apps/web/package.json
- M apps/web/src/app/astryx.css
- M apps/web/src/app/launch/page.tsx
- M apps/web/src/app/operations/actions.ts
- M apps/web/src/app/operations/live/page.tsx
- M apps/web/src/app/operations/page.tsx
- M apps/web/src/app/planning/bulk/BulkForm.tsx
- M apps/web/src/app/planning/bulk/CriteriaBuilder.tsx
- M apps/web/src/app/planning/bulk/actions.ts
- M apps/web/src/app/planning/bulk/page.tsx
- M apps/web/src/components/Shell.tsx
- M design/claude-design-mvp1/CURRENT_UI_BASELINE.md
- M design/claude-design-mvp1/MANIFEST.yaml
- M design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
- M design/claude-design-mvp1/acceptance/VISUAL_EVIDENCE_REGISTER.csv
- M outputs/claude-design-approval-pack/Saqeel_43_Screen_Claude_Design_Approval_Pack.xlsx
- M outputs/claude-design-approval-pack/Saqeel_43_Screen_Claude_Design_Approval_Pack.xlsx.inspect.ndjson
- M outputs/claude-design-approval-pack/Saqeel_43_Screen_Claude_Design_Matrix.csv
- M outputs/claude-design-approval-pack/preview-43-screen-matrix.png
- M outputs/claude-design-approval-pack/preview-blind-spots.png
- M outputs/claude-design-approval-pack/preview-claude-prompts.png
- M outputs/claude-design-approval-pack/preview-code-handoff-contract.png
- M outputs/claude-design-approval-pack/preview-reference-library.png
- M outputs/claude-design-approval-pack/preview-scoring-rubric.png
- M outputs/claude-design-approval-pack/preview-start-here.png
- M outputs/claude-design-approval-pack/preview-submission-guide.png
- M product-contract/CURRENT_STATE.md
- M product-contract/acceptance/ACCEPTANCE_STATUS.md
- M product-contract/evidence/AC_LEDGER.csv
- M product-contract/evidence/EVIDENCE_STATUS.md
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-en.png
- M product-contract/evidence/screens/login-v7-atlas/laptop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-light-ar.png
- M product-contract/execution/CURRENT_SLICE.yaml
- M product-contract/execution/WORK_QUEUE.yaml
- M product-contract/sessions/LAST_SESSION.md
- M product-contract/sessions/SESSION_LEDGER.json
-?? apps/web/e2e/cd-021-bulk-targeting.spec.ts
-?? apps/web/e2e/dashboard-business.spec.ts
-?? apps/web/e2e/dashboard-kpi-seed.spec.ts
-?? apps/web/e2e/shell-navigation.spec.ts
-?? apps/web/e2e/shell-visual-evidence.spec.ts
-?? apps/web/scripts/
-?? apps/web/src/app/dashboard/
-?? apps/web/src/app/planning/bulk/DistributionPanels.tsx
-?? apps/web/src/app/planning/bulk/EligibilityLedger.tsx
-?? apps/web/src/app/planning/bulk/criteria.ts
-?? apps/web/src/app/planning/bulk/review/
-?? apps/web/src/components/ShellClient.tsx
-?? apps/web/src/lib/shell-navigation.ts
-?? design/claude-design-mvp1/authority/DASHBOARD_BUSINESS_REQUIREMENT_CONTRACT_V1.md
-?? design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md
-?? outputs/claude-design-approval-pack/CLAUDE_DESIGN_WEB_FIRST_MASTER_PROMPT_V3.md
-?? outputs/claude-design-approval-pack/POST_APPROVAL_VERTICAL_SLICE_SOP_V3.md
-?? outputs/claude-design-approval-pack/REVISION_NOTES_V3.md
-?? outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3.json
-?? outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3_1.json
-?? outputs/claude-design-approval-pack/preview-shell-tabs.png
-?? outputs/claude-design-approval-pack/preview-vertical-slice-sop.png
-?? outputs/claude-design-approval-pack/preview-web-first-wave.png
-?? outputs/claude-design-approval-pack/renders/
-?? outputs/claude-design-approval-pack/sheets.ndjson
-?? product-contract/evidence/TASK-DASH-KPI-SEED-001-EV-001.txt
-?? product-contract/evidence/TASK-WEB-DASHBOARD-002-EV-001.txt
-?? product-contract/evidence/TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md
-?? product-contract/evidence/TASK-WEB-SHELL-001-EV-001.txt
-?? product-contract/evidence/screens/cd-021-bulk-v1/
-?? product-contract/evidence/screens/dashboard-business-v1/
-?? product-contract/evidence/screens/dashboard-kpi-seed/
-?? product-contract/evidence/screens/shell-v1/
-?? product-contract/execution/CURRENT_SLICE.TASK-WEB-DASHBOARD-002.yaml
-?? supabase/migrations/0026_cd021_bulk_publish_atomic.sql
-```
-- Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.
+
+- Ended: 2026-07-13T23:28:25+03:00
+- Branch: `feat/cd-023-immediate-authority-bar`
+- Commit: CD-023 remediation committed on this branch; see branch `HEAD`
+- Task: `CD-023-IMMEDIATE-VISIT-REMEDIATION`
+- Gate: G11 DEC-012 remediation; G12 release open
+- Verdict: **LOCAL CONTRACT PASS / LIVE BLOCKED**
+
+## Outcome
+
+All nine original CD-023 audit findings remain remediated. The hardening pass
+added explicit Visit location provenance, exact validation for official pins,
+stored-role idempotent replay, stable multi-key identity locking, narrower
+Inspector RLS and constrained blocked-audit codes. The relevant baseline plus
+migration 0027 applied cleanly to a fresh disposable PostgreSQL 16 cluster.
+`supabase/tests/0027_cd023_immediate_visit_atomic.sql` returned
+`CD023_DATABASE_CONTRACT_PASS` and rolled its synthetic data back.
+
+## Verification
+
+- Web typecheck: PASS.
+- Production build: PASS.
+- `git diff --check`: PASS.
+- Playwright discovery: PASS — 8 CD-023 product tests plus 3 auth setup tests.
+- Fresh migration/database contract: PASS.
+- Live focused/full Playwright: NOT RUN — migration 0027 is not live.
+- Independent DEC-012 re-audit: NOT RUN.
+
+## Evidence and continuation
+
+- `product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md`
+- `product-contract/evidence/screens/immediate-v2/CD023_LOCAL_REMEDIATION_EVIDENCE.md`
+- `product-contract/evidence/screens/immediate-v2/CD023_PACK_PROVENANCE_AUDIT.md`
+- `product-contract/sessions/CLAUDE_CODE_CONTINUATION_CD-023.md`
+
+## Blockers
+
+1. Explicit human approval to transmit and apply migration 0027 to the linked
+   development Supabase project.
+2. Focused CD-023 and full Playwright runtime verification plus eight live frames.
+3. Actual `outputs/cd-023/*` design export/wiring map is still missing.
+4. Fresh independent Codex DEC-012 PASS and sponsor runtime acceptance.
+
+No push, merge, deployment or `main` modification occurred. Unrelated
+pre-existing dirty work was preserved and remains outside this commit.
+
+## Required next action
+
+After explicit approval, apply only migration 0027 to the linked development
+project and follow the exact verification sequence in
+`CLAUDE_CODE_CONTINUATION_CD-023.md`. Do not close CD-023 or begin CD-024+
+implementation before the independent audit passes.

@@ -1,74 +1,81 @@
-schema_version: "1.0"
-task_id: "CD-021-BULK-TARGETING"
-gate: "G11 sponsor-directed design implementation"
-title: "CD-021 Bulk Targeting — criteria-first Targeting Lens (SCR-WEB-110) + P02 review (SCR-WEB-120)"
-status: "BUILD_IMPLEMENTED_VERIFIED_AWAITING_REVIEW"
-enforce_stop_gate: false   # build complete + verified; remaining items are external (Codex review, sponsor acceptance), not stop-gate-blockable coding
+schema_version: "1.1"
+task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
+gate: "G11 sponsor-directed remediation after DEC-012 wiring audit"
+title: "CD-023 Immediate Visit Planning — source and wiring remediation (SCR-WEB-130)"
+status: "REMEDIATION_IN_PROGRESS"
+enforce_stop_gate: false
 broad_implementation_allowed: true
 source_design:
-  project: "90d4620c (MVP1 UX/UI refinement program)"
-  package: "CD-021 Bulk Targeting.dc.html + outputs/cd-021/*"
-  sponsor_direction: "Sponsor directed import + full implementation this session (2026-07-13)."
-branch: "feat/cd-021-bulk-targeting (uncommitted; nothing merged)"
-process_ids: ["P01", "P02", "P03"]
+  project: "Astryx accepted design authority"
+  artifact: "design/astryx/d3/D3-04_immediate-planning.html"
+  supplied_programme_pack: "/Users/vikramindla/Desktop/Inspection Documentation/claude-design-approval-pack"
+  source_baseline: "MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx"
+  missing_export_note: "The supplied programme pack contains SOPs/matrices but no repository outputs/cd-023 implementation package or WIRING_MAP_CD-023.csv export. Astryx D3-04 plus exact source rows remain the implementation authority; the missing export remains an evidence/package gap, not permission to invent values."
+sponsor_direction:
+  - "2026-07-13: sponsor requested all independent-audit comments be fixed and the slice unblocked with a continuation report for Claude Code."
+  - "This direction authorizes the narrow CD-023 migration/RLS/audit remediation required by the source; it does not authorize unrelated engines, shared shell, deployment, commit, push, merge, or main changes."
+governance_gate_decision:
+  - "DEC-012 requires an actual independent Codex wiring audit; session direction is not a substitute."
+  - "The recorded audit product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md returned FAIL with nine findings. Closure remains blocked until remediation is independently re-audited and recorded."
+branch: "feat/cd-023-immediate-authority-bar"
+process_ids: ["P01"]
 requirement_ids:
-  - "M01-003/012/022 — nested AND/OR targeting criteria"
-  - "M01-004 — all matching factories returned (server-side evaluation)"
-  - "M01-016/026 — deterministic (non-AI) pre-publish summary"
-  - "M01-029 — manual inspector assignment + double-booking surfacing"
-  - "M02-012 — duplicate active-visit flag"
+  - "MVP1-M01-043 — Planner or Inspector selects Immediate; direct Visit, no Visit Plan"
+  - "MVP1-M01-044 — optional existing-factory search by CR or Industrial License"
+  - "MVP1-M01-045 — unregistered factory accepts any available business identity; name/CR/license individually optional"
+  - "MVP1-M01-046 — selected or manually confirmed location mandatory and stored with the Visit"
+  - "MVP1-M01-047 — Business Visit Type; Planner-only Visit Window; optional notes/priority; Inspector-created starts immediately"
+  - "MVP1-M01-048 — Planner assigns eligible Inspector; Inspector-created self-assigns"
+  - "MVP1-M01-049 — Planner review validates mandatory data and duplicate active visits"
+  - "MVP1-M01-050 — creates direct Visit ID, audit record, no Visit Plan"
+  - "MVP1-M01-051 — Inspector-created visit continues to the standard start/execution lifecycle"
+  - "MVP1-M01-052 — notify only when Planner assigns another Inspector; queue/calendar derive from assignment/visit"
+  - "MVP1-M02-012 — reject active or overlapping duplicate Visits for the same factory"
   - "MVP1-FND-001 — RLS remains the authorization boundary"
-  - "MVP1-FND-011 — non-color-only status communication"
-  - "MVP1-FND-013 — source freshness"
-  - "P03 — partial publish prohibited (atomic publish)"
-acceptance_ids:
-  - "DSG-016 — enterprise-density comprehension"
-  - "DSG-A11Y-001 — accessibility, RTL, responsive"
-screen_ids: ["SCR-WEB-110", "SCR-WEB-120"]
-engine_ids: ["ENG-04", "ENG-05", "ENG-06", "ENG-12"]
-required_context:
-  - "product-contract/governance/error_catalogue.csv"
-  - "product-contract/domain/state_transitions.csv"
-  - "supabase/migrations/0026_cd021_bulk_publish_atomic.sql"
-  - "apps/web/src/app/planning/bulk/*"
-  - "outputs/cd-021 (design package, in project 90d4620c)"
-increments_done:
-  - "1 — atomic publish RPC (migration 0026, SECURITY INVOKER, RLS-enforced) + neutral catalogued errors; FK-rollback atomicity proof"
-  - "2 — eligibility ledger + list-first distribution panels + real FND-013 freshness (no invented stale threshold)"
-  - "3 — nested ALL/ANY criteria tree (ct param, backward-compatible with cf/co/cv); shared criteria.ts; 8/8 unit checks"
-  - "4 — evidence table (provenance + data-quality), filter-within-results, select-page vs select-all, client pagination, sticky cross-page selection bar, selection-invalidation confirm dialog"
-  - "5 — visit config + manual assignment relocated to SCR-WEB-120 review route; gated Review & continue hand-off"
-  - "6 — Playwright 15/15 + evidence + CURRENT_STATE UPDATE 13/14"
-required_evidence:
-  - "product-contract/evidence/screens/cd-021-bulk-v1/CD-021_EVIDENCE.md"
-  - "CD-021 Playwright 15/15 on fresh production build; persona-tours 9/9 (no regression); criteria 8/8 unit; atomicity DB proof; EN/AR/narrow screenshots"
-verification:
-  typecheck: "PASS"
-  production_build: "PASS (both /planning/bulk and /planning/bulk/review)"
-  color_law: "clean"
-  cd021_playwright: "15/15 PASS"
-  regression_spot_check: "persona-tours 9/9 PASS (only other spec touching /planning/bulk)"
-governance_notes:
-  - "No invented policy values (freshness stale-threshold deferred, not fabricated)."
-  - "RLS never bypassed (publish RPC is SECURITY INVOKER; loadBulkSelection RLS-scoped)."
-  - "Canonical draft->published transition unchanged — only made atomic."
-  - "All changes on branch; no commit, push, merge, deploy or main modification."
-open_items:
-  - "Codex/backend wiring review (external)."
-  - "Full ~50-spec regression rerun."
-  - "AC-ledger recompute to include CD-021 rows."
-  - "Sponsor runtime acceptance of the two-screen flow."
-  - "Governance reconciliation: /planning/bulk/review is labelled SCR-WEB-120, but the screen catalogue reserves SCR-WEB-120 for Single Visit Planning; CD-024/SCR-WEB-140 ownership and route remain unresolved."
-parked_slice:
-  task_id: "TASK-WEB-DASHBOARD-002"
-  note: "Moved to WORK_QUEUE (awaiting sponsor runtime acceptance). Full spec preserved in execution/CURRENT_SLICE.TASK-WEB-DASHBOARD-002.yaml."
+  - "MVP1-FND-003 — append-only immutable audit, including blocked planning attempts"
+  - "MVP1-FND-007 — visit-selected location remains separate from official factory master coordinates"
+  - "MVP1-FND-011 — status never communicated by color alone"
+screen_ids: ["SCR-WEB-130", "SCR-IPAD-610", "SCR-IPAD-620"]
+engine_ids: ["ENG-03", "ENG-05", "ENG-06", "ENG-11", "ENG-12"]
+acceptance_ids: ["AC-0043", "AC-0044", "AC-0045", "AC-0046", "AC-0047", "AC-0048", "AC-0049", "AC-0050", "AC-0051", "AC-0052", "AC-0064", "DSG-018", "DSG-A11Y-001"]
+dependencies:
+  - "Published or locked package version"
+  - "Planner or Inspector role"
+  - "At least one Inspector role for Planner auto/manual assignment"
+  - "Live Supabase migration 0027 applied before runtime certification"
+open_decisions:
+  - "DEC-003 remains open; therefore no default duration is invented. Planner enters an explicit window; Inspector-created uses an instantaneous start-now representation."
 do_not_touch:
-  - "CD-020 planning source/design artifacts (running externally)."
-  - "CD-001 login/atlas and CD-002 reset behavior."
-  - "Supabase RLS policies, engine settings, audit immutability."
-  - "main, commits, pushes, merges or deployments."
-  - "CD-024 application implementation; current work authorizes design-quality preparation only."
+  - "CD-020/CD-021/CD-022/CD-024+ implementation areas"
+  - "Dashboard and shared authenticated shell"
+  - "Unrelated engine settings, workflow states, provider configuration, or official factory master coordinates"
+  - "main, commits, pushes, merges, deployments, or production release"
+authorized_file_scope:
+  - "apps/web/src/app/planning/immediate/*"
+  - "apps/web/e2e/cd-023-immediate-authority-bar.spec.ts"
+  - "apps/web/src/app/field/[visitId]/page.tsx and Startup.tsx only for M01-046/051 location handoff"
+  - "supabase/migrations/0027_cd023_immediate_visit_atomic.sql — narrow schema/RLS/RPC/audit remediation"
+  - "CD-023 evidence, acceptance, governance current-state, and session records"
+required_tests:
+  - "Blank/null/zero coordinate guards and visit-level location persistence"
+  - "Published-package revalidation and query-error/transaction failure truth"
+  - "Registered and minimum-manual identities, including no-name path"
+  - "Planner review/window/eligible assignment and notification-provider truth"
+  - "Inspector self-create/start path with no assignment notification"
+  - "M02-012 active duplicate and concurrent double-submit/request-id idempotency"
+  - "Direct audit_events assertions for factory, visit, assignment, notification, created and blocked-attempt records"
+  - "Arabic/RTL localized authority labels and live announcements; EN/AR desktop/narrow theme evidence"
+  - "Typecheck, production build, focused CD-023 Playwright, then full regression"
+required_evidence:
+  - "product-contract/evidence/screens/immediate-v2/"
+  - "Updated independent CODEX_AUDIT_CD-023.md verdict after remediation"
+  - "Claude Code continuation report with exact pass/fail/blocker state"
+open_items:
+  - "Apply and verify migration 0027 on the live development Supabase project."
+  - "Complete focused and full runtime verification."
+  - "Import the missing outputs/cd-023 package if/when exported from the Claude Design project."
+  - "Independent Codex wiring re-audit and sponsor runtime acceptance."
 exit_condition: >-
-  CD-021 SCR-WEB-110 targeting + SCR-WEB-120 review are implemented and verified with no
-  fabricated policy values, RLS preserved, and atomic all-or-nothing publish. Slice closes on
-  Codex wiring review, full regression rerun, AC-ledger recompute and sponsor runtime acceptance.
+  All MVP1-M01-043..052 and M02-012 paths are implemented and evidenced; migration
+  0027 is verified live; focused and full regression pass; the independent wiring
+  re-audit records PASS; and no P0/P1 acceptance row remains failed or unevidenced.

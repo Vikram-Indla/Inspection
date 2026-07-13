@@ -86,11 +86,19 @@ items:
     blocked_by: []
     blocks: []
     note: "Now the active slice (2026-07-13, sponsor-directed). SCR-WEB-110 /planning/bulk + SCR-WEB-120 /planning/bulk/review. Increments 1-6 done and verified on branch feat/cd-021-bulk-targeting (uncommitted). Migration 0026 atomic publish RPC applied live. Open: Codex wiring review, full regression rerun, AC-ledger recompute, sponsor runtime acceptance."
+  - task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
+    gate: "G11 DEC-012 remediation"
+    priority: "P0"
+    status: "LOCAL_PASS_LIVE_MIGRATION_AND_INDEPENDENT_REAUDIT_BLOCKED"
+    owner: "Claude Code implementation + distinct Codex wiring reviewer + Sponsor"
+    blocked_by: ["Explicit approval to apply migration 0027 to linked development Supabase"]
+    blocks: ["CD-023 closure", "CD-024+ implementation"]
+    note: "All nine original audit findings are remediated in branch code. Fresh relevant-baseline + migration 0027 apply and repeatable PostgreSQL RLS/atomicity/idempotency/location/audit contract PASS; build/typecheck/diff PASS; discovery 8 product + 3 auth setup tests PASS. Still required: explicit approval and live migration 0027, focused and full Playwright, 8-frame evidence, actual outputs/cd-023 wiring-map import, fresh independent DEC-012 audit, sponsor runtime acceptance. See sessions/CLAUDE_CODE_CONTINUATION_CD-023.md."
   - task_id: "TASK-DESIGN-CD024-QUALITY-RATCHET"
     gate: "G11 controlled Web-first design"
     priority: "P0"
     status: "READY_FOR_DESIGN_ONLY_ROUTE_RECONCILIATION_REQUIRED"
     owner: "Claude Design + Codex design reviewer + Sponsor"
-    blocked_by: []
+    blocked_by: ["CD-023 DEC-012 independent wiring audit PASS"]
     blocks: ["CD-024 implementation authorization"]
     note: "V4 quality audit and exact CD-024 prompt are ready. Design exploration may proceed, but implementation is blocked until sponsor design approval, SCR-WEB-120/140 ownership and route reconciliation, independent wiring audit, and explicit authorization. Preserve /planning/plans/:id as read-only."

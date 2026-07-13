@@ -15,7 +15,7 @@ export type StartupStrings = {
   geofenceHeading: string; insideFence: string; outsideFence: string;
   fenceCaption: string; factoryOverride: string; engineDefault: string; positionHint: string;
   step1: string; step2: string; step3: string; step4: string; resume: string;
-  officialLabel: string; youLabel: string; insideWord: string; outsideWord: string;
+  officialLabel: string; plannedLabel: string; youLabel: string; insideWord: string; outsideWord: string;
   logCached: string; logJourneyBlocked: string; logJourneyStarted: string;
   logAccuracyBlocked: string; logCheckinRejected: string; logOutside: string; logInside: string; logStartBlocked: string;
   // E3 — telemetry / arrival auto-detect / deviation / exception / pre-start / STM-OPS
@@ -45,6 +45,7 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
 type Insp = { id: string; status: string };
 type V = { id: string; window_start: string; window_end: string; execution_mode: string;
   visit_type: string; priority: string | null; notes: string | null; planning_status: string;
+  dispatch_lat: number; dispatch_lng: number; dispatch_source: "official" | "planned";
   factories: { name: string; factory_code: string | null; city: string | null; region: string | null;
     cr_number: string | null; license_number: string | null;
     official_lat: number; official_lng: number; geofence_radius_m: number | null };
@@ -98,7 +99,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const telemetryS = gis.telemetry_interval_s ?? 30;                // ENG-06 telemetry_interval_s
   const offRouteM = gis.route_deviation?.off_route_m ?? 500;        // ENG-06 route_deviation
   const sustainS = gis.route_deviation?.sustain_s ?? 120;
-  const official: [number, number] = [visit.factories.official_lat, visit.factories.official_lng];
+  const dispatchPoint: [number, number] = [visit.dispatch_lat, visit.dispatch_lng];
   const add = (m: string) => setLog(l => [...l, m]);
   // refs for the tracking loop (M04-021/022/031/037)
   const posRef = useRef(null as Fix | null);
@@ -145,7 +146,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     if (!journeyId || !navigator.geolocation) return;
     const jId = journeyId;
     const watch = navigator.geolocation.watchPosition(p => {
-      const d = distM([p.coords.latitude, p.coords.longitude], official);
+      const d = distM([p.coords.latitude, p.coords.longitude], dispatchPoint);
       const fix: Fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy,
         alt: p.coords.altitude, speed: p.coords.speed, heading: p.coords.heading, d };
       posRef.current = fix; setLive(fix);
@@ -192,12 +193,12 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     setBusy(true);
     const pos = await new Promise<GeolocationPosition | null>(res =>
       navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => res(p), () => res(null), { timeout: 4000 }) : res(null));
-    // demo fallback: 60m from official pin, good accuracy — surfaced in the log (M04-049)
+    // demo fallback: near the governed dispatch point, good accuracy — surfaced in the log (M04-049)
     if (!pos) add(strings.logGpsFallback);
-    const lat = pos?.coords.latitude ?? visit.factories.official_lat + 0.0005;
-    const lng = pos?.coords.longitude ?? visit.factories.official_lng + 0.0002;
+    const lat = pos?.coords.latitude ?? visit.dispatch_lat + 0.0005;
+    const lng = pos?.coords.longitude ?? visit.dispatch_lng + 0.0002;
     const acc = pos?.coords.accuracy ?? 4.2;
-    const d = distM([lat, lng], official);
+    const d = distM([lat, lng], dispatchPoint);
     if (acc > maxAcc) { add(fmt(strings.logAccuracyBlocked, { acc: acc.toFixed(0), max: maxAcc })); setBusy(false); return; }
     const inside = d <= fence;
     setCheckin({ lat, lng, acc, d, inside }); // SB20 — plot observed position on the map card
@@ -312,10 +313,10 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const progress = initialD != null && initialD > 0 && remainingD != null
     ? Math.min(100, Math.max(0, ((initialD - remainingD) / initialD) * 100))
     : null;
-  // SB20 / ENG-08 — official pin + geofence ring; observed dot after check-in; live dot while journeying.
+  // SB20 / ENG-08 — governed dispatch point + geofence ring; observed dot after check-in; live dot while journeying.
   const mapMarkers: GeoMarkerData[] = [
-    { id: "official", lat: visit.factories.official_lat, lng: visit.factories.official_lng,
-      label: fmt(strings.officialLabel, { name: visit.factories.name }), tone: "neutral", radiusM: fence },
+    { id: "dispatch", lat: visit.dispatch_lat, lng: visit.dispatch_lng,
+      label: fmt(visit.dispatch_source === "official" ? strings.officialLabel : strings.plannedLabel, { name: visit.factories.name }), tone: "neutral", radiusM: fence },
     ...(live && !checkin ? [{
       id: "live", lat: live.lat, lng: live.lng,
       label: fmt(strings.liveLabel, { acc: live.acc.toFixed(1) }), tone: "medium" as GeoMarkerData["tone"],
@@ -337,14 +338,14 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           <div style={{ display: "flex", gap: 8 }}>{telemetryCount > 0 ? "✓" : "○"} {fmt(strings.telemetryRow, { s: telemetryS, n: telemetryCount })}</div>
           <div style={{ display: "flex", gap: 8 }}>{checkedIn ? "✓" : "○"} {fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</div>
         </div>
-        {/* F3 · M04-016 — real navigation handoff with the official coordinates */}
+        {/* F3 · M04-016 — real navigation handoff with this Visit's governed dispatch coordinates */}
         <div className="ax-row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--ax-space-200)" }}>
           <a className="ax-btn" target="_blank" rel="noopener noreferrer"
-            href={`https://maps.google.com/?q=${visit.factories.official_lat},${visit.factories.official_lng}`}>
+            href={`https://maps.google.com/?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
             {strings.mapsOpen} ↗
           </a>
           <a className="ax-btn" target="_blank" rel="noopener noreferrer"
-            href={`geo:${visit.factories.official_lat},${visit.factories.official_lng}?q=${visit.factories.official_lat},${visit.factories.official_lng}`}>
+            href={`geo:${visit.dispatch_lat},${visit.dispatch_lng}?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
             {strings.mapsGeo}
           </a>
         </div>
@@ -367,7 +368,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           </div>
         )}
       </div>
-      {/* SB20 / ENG-08 — compact geofence map card (official location is GIS-Admin-owned, FND-007) */}
+      {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-150)" }}>
           <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="ax-lozenge ax-lozenge--info">SB20 · ENG-08</span></h4>
@@ -386,7 +387,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           </span>
         </div>
         <div style={{ blockSize: 240, borderRadius: "var(--ax-radius-standard)", overflow: "hidden", border: "1px solid var(--ax-color-border)" }} dir="ltr">
-          <GeoMap center={[visit.factories.official_lat, visit.factories.official_lng]} zoom={15} markers={mapMarkers} height="100%" />
+          <GeoMap center={[visit.dispatch_lat, visit.dispatch_lng]} zoom={15} markers={mapMarkers} height="100%" />
         </div>
         <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>
           {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}

@@ -10,7 +10,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data: v } = await sb.from("visits")
-    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, factories(name, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m), package_versions(id, version_label, definition, packages(code)), inspections(id, status)")
+    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, planner_lat, planner_lng, immediate_creator_role, visit_location_source, factories(name, name_is_system_generated, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m), package_versions(id, version_label, definition, packages(code)), inspections(id, status)")
     .eq("id", visitId).single();
   const { data: engines } = await sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "otp", "field"]);
   const gis = engines?.find(e => e.engine === "gis")?.settings ?? {};
@@ -41,18 +41,26 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
       </Shell>
     );
   }
-  const factory = v.factories as unknown as { name: string; official_lat: number | null; official_lng: number | null };
+  const factory = v.factories as unknown as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null };
+  const factoryName = factory.name_is_system_generated ? t("field.start.unregisteredFactory", "Unregistered factory") : factory.name;
+  const dispatchLat = v.planner_lat ?? factory.official_lat;
+  const dispatchLng = v.planner_lng ?? factory.official_lng;
+  const dispatchSource = v.visit_location_source === "official" ? "official" : "planned";
   // visits -> inspections is TO-ONE (object | null) — normalize defensively so
   // the client never regresses on the array/object shape.
   const rawInspections = v.inspections as unknown;
   const vNorm = {
     ...v,
+    dispatch_lat: dispatchLat,
+    dispatch_lng: dispatchLng,
+    dispatch_source: dispatchSource,
+    factories: { ...(v.factories as object), name: factoryName },
     inspections: Array.isArray(rawInspections) ? (rawInspections[0] ?? null) : rawInspections ?? null,
   };
   // M03-011 — execution-mode eligibility evaluated from engine configuration + master data,
   // never invented: physical requires GIS-verifiable official coordinates (M04-004);
   // virtual requires the OTP engine to be configured for identity verification (0009).
-  const physicalEligible = factory.official_lat != null && factory.official_lng != null;
+  const physicalEligible = dispatchLat != null && dispatchLng != null;
   const virtualEligible = otpConfigured;
   const strings: StartupStrings = {
     mapLoading: t("field.start.mapLoading", "Loading geofence map"),
@@ -75,6 +83,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     step4: t("field.start.step4", "4 · Start inspection"),
     resume: t("field.start.resume", "Resume inspection →"),
     officialLabel: t("field.start.officialLabel", "{name} — official location (FND-007)"),
+    plannedLabel: t("field.start.plannedLabel", "{name} — visit location confirmed at planning (M01-046; not official master data)"),
     youLabel: t("field.start.youLabel", "You — ±{acc}m · {state} fence ({d}m)"),
     insideWord: t("enum.inside", "inside"),
     outsideWord: t("enum.outside", "outside"),
@@ -108,7 +117,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     // F3 — navigation launch (M04-016)
     mapsOpen: t("field.start.mapsOpen", "Open in Google Maps"),
     mapsGeo: t("field.start.mapsGeo", "Open in navigation app"),
-    mapsCaption: t("field.start.mapsCaption", "Launches the device navigation app with the official factory coordinates (M04-016 · FND-007)"),
+    mapsCaption: dispatchSource === "official"
+      ? t("field.start.mapsCaption", "Launches the device navigation app with the official factory coordinates (M04-016 · FND-007)")
+      : t("field.start.mapsCaptionImmediate", "Launches navigation with the location confirmed on this Immediate Visit; official factory master coordinates remain unchanged (M01-046 · FND-007)"),
     // F3 — journey progress % (M04-026)
     progressLabel: t("field.start.progressLabel", "Journey progress (M04-026)"),
     progressCaption: t("field.start.progressCaption", "{remaining} m remaining of {initial} m from first GPS fix — straight-line basis"),
@@ -152,7 +163,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (
-    <Shell current="/field" title={t("field.start.title", "Startup — {name}").replace("{name}", factory.name)}
+    <Shell current="/field" title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-IPAD-610/620</span>}>
       <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
@@ -163,7 +174,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
               <span className={`ax-lozenge ${physicalEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
                 {physicalEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
-              <span>{t("field.start.physicalRule", "Physical — requires GIS-verified official coordinates for geofence arrival (M04-004 · ENG-06)")}</span>
+              <span>{dispatchSource === "official"
+                ? t("field.start.physicalRule", "Physical — using GIS-verified official coordinates for geofence arrival (M04-004 · ENG-06)")
+                : t("field.start.physicalImmediateRule", "Physical Immediate Visit — using the location confirmed with the visit (M01-046); factory master coordinates remain unchanged (FND-007)")}</span>
               {v.execution_mode !== "virtual" && <span className="ax-lozenge ax-lozenge--info">{t("field.start.plannedMode", "planned mode")}</span>}
             </div>
             <div className="ax-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
