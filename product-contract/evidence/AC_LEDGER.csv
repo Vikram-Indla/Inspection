@@ -431,21 +431,21 @@ MVP1-M07-020,AC-0429,Factory 360,Web Portal,implemented,[audit] per-section erro
 MVP1-M08-001,AC-0430,Operations Center,Operations Center / Web Portal,implemented,[audit] ops page loads visits/inspectors/SLA watch/map/high-risk/notifications live (M08-001)
 MVP1-M08-002,AC-0431,Operations Center,Operations Center / Web Portal,implemented,"[audit] OpsMap Leaflet KSA pins (factory+active visit), geofence radius, href open, legend (M08-002)"
 MVP1-M08-003,AC-0432,Operations Center,Operations Center / Web Portal,implemented,[audit] KPI counts per operational_state + monitoring table + open-visit link; cancelled/expired not in KPI row
-MVP1-M08-004,AC-0433,Operations Center,Operations Center / Web Portal,partial,[audit] monitoring shows inspector name per active visit only; no availability/live-location/online-offline/workload
-MVP1-M08-005,AC-0434,Operations Center,Operations Center / Web Portal,implemented,[audit] computeSlaFlags: overdue_start/overdue_submit/reminders + L1/L2 escalation from engine_settings; review-overdue partial
+MVP1-M08-004,AC-0433,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] per-inspector assigned/active/completed/overdue workload; presence/online state truthfully unavailable because no source or timeout policy exists
+MVP1-M08-005,AC-0434,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] visit SLA plus configured business-day review SLA; engine_settings only and no predictive forecast
 MVP1-M08-006,AC-0435,Operations Center,Operations Center / Web Portal,implemented,[audit] high-risk board top-8 by risk_score (ENG-04) + map risk pins (M08-006)
-MVP1-M08-007,AC-0436,Operations Center,Operations Center / Web Portal,partial,[audit] generic notification inbox + mark-handled; no alert generation for override/missed/offline/stuck/overdue-review triggers
+MVP1-M08-007,AC-0436,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] deterministic overdue/review/override/cancellation alert board plus RLS-scoped mark-handled; offline/stuck truthfully unavailable without source/policy
 MVP1-M08-008,AC-0437,Operations Center,Operations Center / Web Portal,implemented,[audit] visit rows link to /visits/[id] detail across monitoring/SLA/geo (M08-008)
 MVP1-M08-009,AC-0438,Operations Center,Operations Center / Web Portal,implemented,[audit] factory names link to /factories/[id] Factory 360 (M08-009)
-MVP1-M08-010,AC-0439,Operations Center,Operations Center / Web Portal,implemented,[audit] RegionCityFilter scopes monitoring+map+SLA; branch dimension not implemented (region/city only)
-MVP1-M08-011,AC-0440,Operations Center,Operations Center / Web Portal,partial,[audit] no per-inspector/branch workload aggregation on SCR-WEB-500; only per-visit inspector name shown
-MVP1-M08-012,AC-0441,Operations Center,Operations Center / Web Portal,partial,[audit] cancellation_reason column exists but ops page never surfaces cancelled-visit reasons list
-MVP1-M08-013,AC-0442,Operations Center,Operations Center / Web Portal,partial,[audit] geo_events override lozenge+accuracy+ts shown; no planned-vs-actual coords or inspector confirmation detail
-MVP1-M08-014,AC-0443,Operations Center,Operations Center / Web Portal,partial,"[audit] location events list w/ kind+timestamps (checkin/arrival); no route path render, journey_sessions unused here"
-MVP1-M08-015,AC-0444,Operations Center,Operations Center / Web Portal,partial,[audit] only geo location-event timeline; no full planning→review/compliance lifecycle timeline
-MVP1-M08-016,AC-0445,Operations Center,Operations Center / Web Portal,partial,[audit] KPI cards are operational_state counts only; no completed/cancelled/overdue/avg-duration/SLA-breach-rate KPIs
+MVP1-M08-010,AC-0439,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] region/city source-backed filtering; branch truthfully unavailable because the runtime has no branch field
+MVP1-M08-011,AC-0440,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] per-inspector scoped workload with relative active load; no absolute capacity threshold or invented balancing recommendation
+MVP1-M08-012,AC-0441,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] scoped cancelled count, reason distribution and deterministic alert rows
+MVP1-M08-013,AC-0442,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] planned-versus-observed coordinates, reason and timestamp; confirmation truthfully unavailable because no field exists
+MVP1-M08-014,AC-0443,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] append-only location-event history with visit drilldown; projected routes never claim recorded GPS history
+MVP1-M08-015,AC-0444,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] scoped append-only planning-to-review audit timeline
+MVP1-M08-016,AC-0445,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] planned/completed/cancelled/overdue/active-inspector/duration/SLA scorecard with formulas and denominators
 MVP1-M08-017,AC-0446,Operations Center,Operations Center / Web Portal,implemented,"[audit] OpsExport CSV of monitoring/SLA/high-risk, region/city scope honored, UTF-8 BOM (M08-017)"
-MVP1-M08-018,AC-0447,Operations Center,Operations Center / Web Portal,implemented,[audit] RLS role scope + region/city filter applied to all widgets; branch/explicit-permission dimension thin
+MVP1-M08-018,AC-0447,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] RLS plus role-scoped shell and direct /dashboard route guard; region scope applied and branch unavailable without source
 MVP1-M08-019,AC-0448,Operations Center,Operations Center / Web Portal,implemented,[audit] loadErrors partial-service banner per source + monitoring 30s auto-refresh re-fetch (M08-019)
 MVP1-M09-001,AC-0449,Compliance Configuration,Admin Portal,partial,"[audit] createRegulation/addClause/publishRegulation+view exist; no effective-date/attachments capture, no edit/deactivate leg"
 MVP1-M09-002,AC-0450,Compliance Configuration,Admin Portal,implemented,"[audit] createItem links clause, response preset, evidence preset, weight; stored active in inspection_items"

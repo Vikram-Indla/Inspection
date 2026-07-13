@@ -6,6 +6,7 @@
     "dev": "next dev -H 127.0.0.1",
     "build": "next build",
     "start": "next start",
+    "seed:kpi": "node scripts/seed-dashboard-kpis.mjs",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test"
   },

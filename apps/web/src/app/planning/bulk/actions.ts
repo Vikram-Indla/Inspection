@@ -4,6 +4,45 @@ import { supabaseServer } from "@/lib/supabase-server";
 
 export type BulkResult = { error?: string };
 
+// CD-021 — data for the P02 review step. The targeting screen (110) hands off a
+// client-held selection of factory ids; the review route loads their summaries,
+// the eligible inspector pool (M01-029) and published packages, all RLS-scoped
+// (no privileged bypass). Duplicate active periodic visits are flagged so the
+// reviewer sees them before publishing (M02-012).
+export type ReviewFactory = {
+  id: string; factory_code: string; name: string; cr_number: string;
+  city: string | null; region: string | null; risk_band: string | null; risk_score: number | null; dup: boolean;
+};
+export type ReviewInspector = { user_id: string; full_name: string };
+export type ReviewPackage = { id: string; version_label: string; code: string };
+export type ReviewData = { factories: ReviewFactory[]; packages: ReviewPackage[]; inspectors: ReviewInspector[] };
+
+export async function loadBulkSelection(ids: string[]): Promise<ReviewData> {
+  const sb = await supabaseServer();
+  const clean = [...new Set(ids)].filter(id => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 500);
+  if (clean.length === 0) return { factories: [], packages: [], inspectors: [] };
+  const [{ data: fac }, { data: pkgs }, { data: inspRows }] = await Promise.all([
+    sb.from("factories").select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, visits(planning_status, visit_type)").in("id", clean),
+    sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"]),
+    sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
+  ]);
+  const factories: ReviewFactory[] = (fac ?? []).map(f => {
+    const visits = (f as unknown as { visits: { planning_status: string; visit_type: string }[] }).visits ?? [];
+    const dup = visits.some(v => ["draft", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
+    return { id: f.id, factory_code: f.factory_code, name: f.name, cr_number: f.cr_number, city: f.city, region: f.region, risk_band: f.risk_band, risk_score: f.risk_score, dup };
+  });
+  const packages: ReviewPackage[] = (pkgs ?? []).map(p => ({ id: p.id, version_label: p.version_label, code: (p.packages as unknown as { code: string }).code }));
+  const inspectors: ReviewInspector[] = (inspRows ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
+  return { factories, packages, inspectors };
+}
+
+// CD-021: neutral, catalogued failure copy. Raw Supabase/provider error text
+// must NEVER reach the UI (it leaks schema/internal detail) — it is logged
+// server-side and the operator sees governed language only.
+const NEUTRAL_PUBLISH_ERROR =
+  "Publishing failed — the plan was not created and no visits were scheduled. " +
+  "Nothing was published. Please try again; if it keeps failing, contact support.";
+
 export async function publishBulkPlan(_: BulkResult, formData: FormData): Promise<BulkResult> {
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
@@ -71,29 +110,28 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   }
   if (blockers.length) return { error: blockers.join(" · ") };
 
-  const { data: plan, error: e1 } = await sb.from("visit_plans")
-    .insert({ method: "bulk", status: "draft", created_by: user.id, criteria: { selected: factoryIds.length } }).select().single();
-  if (e1) return { error: e1.message };
-  const rows = factoryIds.map(fid => ({
-    visit_plan_id: plan.id, factory_id: fid, visit_type, execution_mode: "physical" as const,
-    planning_status: "draft" as const, window_start, window_end, package_version_id, notes,
-  }));
-  const { data: visits, error: e2 } = await sb.from("visits").insert(rows).select("id, factory_id");
-  if (e2) return { error: e2.message };
-  // Manual picks honored per visit; remaining rows round-robin over the pool (ENG-05).
-  let rr = 0;
-  const asg = visits!.map(v => {
-    const manual = picks.get(v.factory_id as string);
-    return manual
-      ? { visit_id: v.id, inspector_id: manual, method: "manual" as const }
-      : { visit_id: v.id, inspector_id: inspectors[rr++ % inspectors.length], method: "automatic" as const };
+  // CD-021: atomic publish. publish_bulk_plan (migration 0026) performs every
+  // write — plan, visits, assignments, draft->published transition,
+  // notifications — inside one SECURITY INVOKER transaction. On any error the
+  // whole operation rolls back: no plan, no visits, no half-published state
+  // (P03 "partial publish prohibited"). RLS is still enforced because the
+  // function runs as the calling planner.
+  const manual: Record<string, string> = {};
+  for (const [fid, insp] of picks) manual[fid] = insp;
+  const { error } = await sb.rpc("publish_bulk_plan", {
+    p_factory_ids: factoryIds,
+    p_package_version_id: package_version_id,
+    p_window_start: window_start,
+    p_window_end: window_end,
+    p_visit_type: visit_type,
+    p_notes: notes,
+    p_manual: manual,
+    p_auto_pool: inspectors,
   });
-  const { error: e3 } = await sb.from("assignments").insert(asg);
-  if (e3) return { error: e3.message };
-  // atomic publish: all or nothing (P03 "partial publish prohibited")
-  const { error: e4 } = await sb.from("visits").update({ planning_status: "published" }).eq("visit_plan_id", plan.id);
-  const { error: e5 } = await sb.from("visit_plans").update({ status: "published", published_at: new Date().toISOString() }).eq("id", plan.id);
-  if (e4 || e5) return { error: (e4 ?? e5)!.message };
-  await sb.from("notifications").insert(asg.map(a => ({ event_key: "assignment", recipient: a.inspector_id, payload: { visit_id: a.visit_id }, channel: "push" })));
+  if (error) {
+    // Log the real cause server-side; return catalogued neutral copy only.
+    console.error("[CD-021] publish_bulk_plan failed:", error.message, error.code);
+    return { error: NEUTRAL_PUBLISH_ERROR };
+  }
   redirect("/visits");
 }
