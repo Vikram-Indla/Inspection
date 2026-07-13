@@ -38,7 +38,11 @@ async function createRegisteredFactory(jwt: string, suffix: string) {
 }
 
 function plannerPayload(factoryId: string, pkg: string, inspectorId: string, requestId = randomUUID()): RpcPayload {
-  const start = new Date(Date.now() + 180 * 86400e3);
+  // Derive a stable, remote-safe window from the idempotency key. Fixed dates
+  // make repeated live certification runs collide with immutable assignments
+  // left by earlier evidence runs and falsely report inspector_unavailable.
+  const windowDay = 10_000 + (Number.parseInt(requestId.slice(0, 8), 16) % 100_000);
+  const start = new Date(Date.now() + windowDay * 86400e3);
   const end = new Date(start.getTime() + 3600e3);
   return {
     p_request_id: requestId, p_actor_mode: "planner", p_existing_factory_id: factoryId,
@@ -158,6 +162,8 @@ test.describe("CD-023 database blockers, concurrency and idempotency", () => {
     ]);
     const ra = must(a, "first concurrent request");
     const rb = must(b, "second concurrent request");
+    expect(ra).toMatchObject({ status: "ok", actor_mode: "planner", replayed: false });
+    expect(rb).toMatchObject({ status: "ok", actor_mode: "planner" });
     expect(ra.visit_id).toBe(rb.visit_id);
     const crossModeReplay = must(await rest("POST", "rpc/create_immediate_visit", planner.jwt, {
       ...payload,
@@ -172,6 +178,41 @@ test.describe("CD-023 database blockers, concurrency and idempotency", () => {
     expect(notifications).toHaveLength(1);
     const replays = must(await rest("GET", `audit_events?object_id=eq.${requestId}&action=eq.IDEMPOTENT_REPLAY&select=id`, planner.jwt), "idempotent replay audit");
     expect(replays).toHaveLength(2);
+  });
+
+  test("concurrent requests cannot claim the same inspector window", async () => {
+    const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+    const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+    const pkg = await packageId(planner.jwt);
+    const run = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    const [factoryA, factoryB] = await Promise.all([
+      createRegisteredFactory(planner.jwt, `SLOT-A-${run}`),
+      createRegisteredFactory(planner.jwt, `SLOT-B-${run}`),
+    ]);
+    const requestA = randomUUID();
+    const requestB = randomUUID();
+    const payloadA = plannerPayload(factoryA.id, pkg, inspector.userId, requestA);
+    const payloadB = {
+      ...plannerPayload(factoryB.id, pkg, inspector.userId, requestB),
+      p_window_start: payloadA.p_window_start,
+      p_window_end: payloadA.p_window_end,
+    };
+
+    const [a, b] = await Promise.all([
+      rest("POST", "rpc/create_immediate_visit", planner.jwt, payloadA),
+      rest("POST", "rpc/create_immediate_visit", planner.jwt, payloadB),
+    ]);
+    const results = [must(a, "first inspector-window request"), must(b, "second inspector-window request")];
+    expect(results.map(result => result.status).sort()).toEqual(["blocked", "ok"]);
+    expect(["concurrent_conflict", "inspector_unavailable"]).toContain(
+      results.find(result => result.status === "blocked")?.code,
+    );
+    const visits = must(await rest(
+      "GET",
+      `visits?creation_request_id=in.(${requestA},${requestB})&select=id`,
+      planner.jwt,
+    ), "inspector-window visit count");
+    expect(visits).toHaveLength(1);
   });
 
   test("concurrent manual identities sharing one licence cannot create two factories", async () => {
@@ -212,15 +253,16 @@ test.describe("CD-023 Inspector-created Immediate Visit", () => {
     await page.waitForURL(/\/field\/[0-9a-f-]+/, { timeout: 15_000 });
     const visitId = page.url().split("/field/")[1];
     const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
-    const [visit] = must(await rest("GET", `visits?id=eq.${visitId}&select=id,window_start,window_end,planner_lat,planner_lng,visit_location_source,immediate_creator_role,creation_request_id`, inspector.jwt), "inspector visit");
+    const [visit] = must(await rest("GET", `visits?id=eq.${visitId}&select=id,planning_status,window_start,window_end,planner_lat,planner_lng,visit_location_source,immediate_creator_role,creation_request_id`, inspector.jwt), "inspector visit");
     expect(visit.immediate_creator_role).toBe("inspector");
     expect(visit.visit_location_source).toBe("manual");
+    expect(visit.planning_status).toBe("published");
     expect(visit.window_start).toBe(visit.window_end);
     const [assignment] = must(await rest("GET", `assignments?visit_id=eq.${visitId}&select=inspector_id`, inspector.jwt), "self assignment");
     expect(assignment.inspector_id).toBe(inspector.userId);
-    const notifications = must(await rest("GET", `notifications?payload->>visit_id=eq.${visitId}&select=id`, inspector.jwt), "inspector self notification absence");
+    const notifications = must(await rest("GET", `notifications?payload->>visit_id=eq.${visitId}&event_key=eq.assignment&select=id`, inspector.jwt), "inspector self assignment-notification absence");
     expect(notifications).toHaveLength(0);
-    await expect(page.getByText(/visit location confirmed at planning/i)).toBeVisible();
+    await expect(page.getByText(/location confirmed with the visit/i)).toBeVisible();
   });
 });
 
@@ -235,6 +277,9 @@ test.describe("CD-023 accessibility, localization and visual matrix", () => {
     await expect(group.locator(".ax-authoritybar__chip")).toHaveCount(9);
     await expect(group.getByText("السبب", { exact: true })).toBeVisible();
     await expect(group.getByText("الهوية", { exact: true })).toBeVisible();
+    await expect(group).toContainText("اختر سببًا للاستعجال");
+    await expect(group).toContainText("أدخل هوية المصنع");
+    await expect(group).not.toContainText("select an urgency reason");
     await expect(page.locator(".ax-sr-only[role=alert]")).toContainText(/يحظر الإنشاء/);
   });
 
@@ -244,8 +289,9 @@ test.describe("CD-023 accessibility, localization and visual matrix", () => {
         for (const viewport of [{ name: "desktop", width: 1280, height: 900 }, { name: "narrow", width: 420, height: 900 }]) {
           await page.setViewportSize({ width: viewport.width, height: viewport.height });
           await page.goto(`/locale?set=${locale}`);
-          await page.evaluate(mode => localStorage.setItem("saqeel-theme", mode), theme);
           await page.goto("/planning/immediate");
+          await page.evaluate(mode => localStorage.setItem("saqeel-theme", mode), theme);
+          await page.reload();
           await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
           const widths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
           expect(widths.scroll).toBeLessThanOrEqual(widths.client + 1);

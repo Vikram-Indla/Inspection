@@ -89,11 +89,11 @@ items:
   - task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
     gate: "G11 DEC-012 remediation"
     priority: "P0"
-    status: "LOCAL_PASS_LIVE_MIGRATION_AND_INDEPENDENT_REAUDIT_BLOCKED"
+    status: "LIVE_FOCUSED_PASS_INDEPENDENT_REAUDIT_PENDING"
     owner: "Claude Code implementation + distinct Codex wiring reviewer + Sponsor"
-    blocked_by: ["Explicit approval to apply migration 0027 to linked development Supabase"]
+    blocked_by: ["Coherent full regression", "Fresh independent DEC-012 wiring audit", "Sponsor runtime acceptance"]
     blocks: ["CD-023 closure", "CD-024+ implementation"]
-    note: "All nine original audit findings are remediated in branch code. Fresh relevant-baseline + migration 0027 apply and repeatable PostgreSQL RLS/atomicity/idempotency/location/audit contract PASS; build/typecheck/diff PASS; discovery 8 product + 3 auth setup tests PASS. Still required: explicit approval and live migration 0027, focused and full Playwright, 8-frame evidence, actual outputs/cd-023 wiring-map import, fresh independent DEC-012 audit, sponsor runtime acceptance. See sessions/CLAUDE_CODE_CONTINUATION_CD-023.md."
+    note: "Migrations 0027-0031 are live; build/typecheck PASS; focused live CD-023 12/12 PASS; persona regression 9/9 PASS; 8-frame evidence captured; outputs/cd-023 wiring package is present. Both static-review residuals (Arabic detail fallback and Inspector-window race) are fixed and live-tested. Still required: complete regression from a coherent worktree, fresh independent row-by-row DEC-012 audit, and sponsor runtime acceptance. See sessions/CLAUDE_CODE_CONTINUATION_CD-023.md."
   - task_id: "TASK-DESIGN-CD024-QUALITY-RATCHET"
     gate: "G11 controlled Web-first design"
     priority: "P0"

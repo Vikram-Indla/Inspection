@@ -131,6 +131,14 @@ select create_immediate_visit(
   null, null, null, false
 );
 
+-- The start-now timestamp is not a planning deadline. Running the same expiry
+-- core used by both Field Home and the scheduler must leave this Inspector-
+-- created visit active. The minimal contract fixture does not install pg_cron.
+reset role;
+select _expire_lapsed_visits_core('true');
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', true);
+
 -- The narrow Inspector factory policy must reject source-master coordinates.
 do $$
 begin
@@ -152,7 +160,7 @@ $$;
 do $$
 begin
   begin
-    perform audit_immediate_attempt(
+    perform private.audit_immediate_attempt(
       'cccccccc-cccc-cccc-cccc-ccccccccccc1', 'CREATED',
       jsonb_build_object('visit_id', '99999999-9999-9999-9999-999999999999')
     );
@@ -238,6 +246,7 @@ begin
   if not exists (
     select 1 from visits
      where id = v_visit and window_start = window_end
+       and planning_status = 'published'
        and visit_location_source = 'manual'
        and immediate_creator_role = 'inspector'
        and created_by = '22222222-2222-2222-2222-222222222222'
@@ -252,8 +261,12 @@ begin
     select 1 from assignments
      where visit_id = v_visit and inspector_id = '22222222-2222-2222-2222-222222222222'
   ) then raise exception 'CD023_ASSERT: inspector self-assignment missing'; end if;
-  if exists (select 1 from notifications where payload->>'visit_id' = v_visit::text) then
-    raise exception 'CD023_ASSERT: inspector self-create incorrectly notified';
+  if exists (
+    select 1 from notifications
+     where payload->>'visit_id' = v_visit::text
+       and event_key in ('assignment','visit_expired')
+  ) then
+    raise exception 'CD023_ASSERT: inspector self-create incorrectly notified or expired';
   end if;
   if exists (select 1 from factories where id = '77777777-7777-7777-7777-777777777777') then
     raise exception 'CD023_ASSERT: forbidden direct inspector factory persisted';

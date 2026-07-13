@@ -1,12 +1,16 @@
-# Claude Code Continuation — CD-023 Remediation
+# Claude Code Continuation — CD-023 Live Remediation
 
 ## Outcome first
 
-The nine original wiring-audit findings are remediated in code and verified in an
-isolated PostgreSQL environment. CD-023 is **not yet unblocked for closure**:
-migration 0027 is not live, the migration-dependent Playwright suites have not
-run, the design export/wiring map is missing, and DEC-012 requires a fresh
-independent reviewer after runtime evidence exists.
+CD-023 remediation is implemented and verified against the linked Supabase
+development project. All nine original audit findings and both residual items
+from the independent static re-audit are corrected. The focused live suite is
+**12/12 PASS** and generated all eight required visual frames.
+
+This is an execution handoff, not a self-issued DEC-012 verdict. CD-023 closure
+still requires a fresh independent reviewer to audit the live evidence and the
+real `outputs/cd-023/WIRING_MAP_CD-023.csv`, followed by sponsor runtime
+acceptance. CD-024+ implementation remains blocked until that gate is recorded.
 
 ## Resume authority
 
@@ -14,106 +18,89 @@ Read in order:
 
 1. `AGENTS.md`
 2. `product-contract/00_START_HERE.md`
-3. `product-contract/CURRENT_STATE.md` UPDATE 19
-4. `product-contract/GATE_STATUS.md`
-5. `product-contract/execution/CURRENT_SLICE.yaml`
-6. `product-contract/governance/OPEN_DECISIONS.yaml` / DEC-012
-7. `product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md`
-8. `product-contract/evidence/screens/immediate-v2/CD023_LOCAL_REMEDIATION_EVIDENCE.md`
-9. `product-contract/evidence/screens/immediate-v2/CD023_PACK_PROVENANCE_AUDIT.md`
+3. `product-contract/CURRENT_STATE.md`
+4. `product-contract/governance/OPEN_DECISIONS.yaml` / DEC-012
+5. `outputs/cd-023/WIRING_MAP_CD-023.csv`
+6. `product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md`
+7. `product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_REMEDIATION_REVIEW.md`
+8. `product-contract/evidence/screens/immediate-v2/CD023_LIVE_REMEDIATION_EVIDENCE.md`
 
-Exact requirements were reconciled from the historical baseline rows
-M01-043..052 and M02-012. The programme pack at
-`/Users/vikramindla/Desktop/Inspection Documentation/claude-design-approval-pack`
-contains SOP/matrix material but not the `outputs/cd-023/*` implementation
-package. The workbook/CSV contains the CD-023 **input prompt**, which itself
-requires those files to be returned by the design run; it is not the returned
-package. The recursive filename, archive and embedded workbook-content check is
-recorded in `evidence/screens/immediate-v2/CD023_PACK_PROVENANCE_AUDIT.md`. Do not
-fabricate it.
+The CD-023 design package exists under `outputs/cd-023/`; the earlier local-only
+provenance report was superseded after the package was retrieved from Claude
+Design project `90d4620c`. Do not repeat the obsolete “package missing” claim.
 
-## Implemented files
+## Live database state
 
-- `supabase/migrations/0027_cd023_immediate_visit_atomic.sql`
-- `apps/web/src/app/planning/immediate/actions.ts`
-- `apps/web/src/app/planning/immediate/ImmediateForm.tsx`
-- `apps/web/src/app/planning/immediate/AuthorityBar.tsx`
-- `apps/web/src/app/planning/immediate/page.tsx`
-- `apps/web/src/app/field/[visitId]/page.tsx`
-- `apps/web/src/app/field/[visitId]/Startup.tsx`
-- `apps/web/e2e/cd-023-immediate-authority-bar.spec.ts`
-- `supabase/tests/0027_cd023_immediate_visit_atomic.sql`
+Project: `iiozvqntawxfwbgffzqu`.
 
-## Protected behavior now present
+Applied transactionally through the authenticated Supabase SQL editor:
 
-- Planner and Inspector paths are source-authorized and distinct.
-- Planner must enter an explicit window and confirm M01-049 review.
-- Inspector self-assigns, receives no assignment notification, and is routed to
-  the standard field start flow.
-- No `+8h` or other unresolved duration is invented.
-- Any manual name/CR/license/activity identity is accepted; a missing reported
-  name receives an explicitly marked technical label, not fabricated master data.
-- Confirmed coordinates and their `official`/`manual` provenance persist on the
-  Visit; official factory coordinates are never overwritten. An `official`
-  claim must exactly match registered master data.
-- Published-package, duplicate-active-Visit and Inspector eligibility checks run
-  inside one transaction.
-- UUID request lock + unique indexes enforce retry/double-submit idempotency;
-  replay returns the stored creator role. CR/licence locks serialize every
-  supplied identity key in stable order.
-- Factory, Visit, assignment, notification, blocked attempt and successful
-  request actions are append-only audited.
-- Provider delivery remains truthful (`not_configured` for push here).
-- Arabic chip labels and live announcements are localized.
+- `0027_cd023_immediate_visit_atomic.sql`
+- `0028_cd023_private_helpers.sql`
+- `0029_cd023_rls_initplan.sql`
+- `0030_cd023_inspector_immediate_expiry.sql`
+- `0031_cd023_assignment_overlap_guard.sql`
+
+The project has no `supabase_migrations.schema_migrations` table, and the CLI
+could not authenticate database commands despite a successful device login.
+Therefore there is no CLI migration-ledger entry for these dashboard-applied
+transactions. Do not fabricate or backfill migration history without a separate
+operations/governance decision.
+
+Database hardening outcomes:
+
+- helper functions moved to the private schema with exact grants;
+- the three CD-023 RLS policies use initplan-safe auth predicates;
+- Inspector self-created start-now Visits are not immediately expired;
+- assignment writes serialize per Inspector and reject overlapping active
+  windows, closing the availability race found by the static reviewer;
+- Security Advisor warnings reduced from 60 to 56; Performance Advisor reports
+  0 errors and warnings reduced from 139 to 137;
+- remaining advisor findings predate CD-023 and are outside this slice.
+
+## Verification record
+
+- production build: PASS
+- sequential typecheck: PASS
+- isolated PostgreSQL contract: `CD023_DATABASE_CONTRACT_PASS`
+- focused live CD-023: **12/12 PASS** (3 persona setup + 9 product tests)
+- inspector-window concurrency proof: PASS; two requests, one Visit retained
+- persona regression: **9/9 PASS**
+- visual matrix: 8/8 captured, EN/AR × dark/light × desktop/narrow
+- Arabic: labels, live announcement, and blocking detail text verified; no
+  English fallback in the asserted Arabic authority state
+- full-suite attempt before the final narrow fixes: 56 passed, 9 failed, 5 did
+  not run. CD-023 tests passed; failures originated in concurrent uncommitted
+  CD-022 work, and missing auth-state cascades were repaired by moving reusable
+  state outside Playwright's disposable `test-results` directory. Do not report
+  the complete regression as PASS until rerun from a coherent slice worktree.
+
+## Original findings and final state
+
+| Finding | Final remediation | Live proof |
+|---|---|---|
+| FAIL-01 blank coordinates | raw-presence and RPC range guards | focused negative PASS |
+| FAIL-02 discarded location | Visit coordinates + explicit provenance; master coordinates immutable | live row assertions PASS |
+| FAIL-03 stale package | package re-read inside atomic RPC | unavailable-package blocker PASS |
+| FAIL-04 audit gaps | row triggers + governed attempt audit | exact five-leg audit assertion PASS |
+| FAIL-05 retry/idempotency | request lock, unique guards, stored-role replay, identity locks | concurrent replay and identity races PASS |
+| FAIL-06 swallowed read failures | fail-closed transaction with neutral result | isolated forced-failure contract PASS |
+| FAIL-07 false partial ledger | one atomic RPC; client ledger removed | structural + runtime PASS |
+| FAIL-08 partial Arabic | all authority labels/details explicitly bilingual | live Arabic assertions PASS |
+| FAIL-09 evidence gaps | expanded focused suite and eight frames | 12/12 + 8/8 PASS |
+| residual: inspector race | canonical assignment advisory lock + overlap guard | live concurrent contention PASS |
+| residual: DB translation uncertainty | critical authority details use explicit `tr()` Arabic | live no-fallback assertion PASS |
 
 ## Exact next execution sequence
 
-1. Obtain explicit human approval to apply repository migration SQL to the linked
-   Supabase development project. Do not treat this handoff as that approval.
-2. Apply only pending migration 0027; capture migration output and verify its
-   function/index/policy/trigger inventory.
-3. Run `npm run build`, then `npm run typecheck` sequentially.
-4. Run the focused CD-023 Playwright spec. It must produce 8/8 product PASS plus
-   shared setup PASS and the eight EN/AR × dark/light × desktop/narrow frames.
-5. Run the complete Playwright regression. Fix only demonstrated regressions in
-   the authorized slice; preserve unrelated dirty work.
-6. Update AC-0043..0052 and AC-0064 evidence only after live assertions pass.
-7. Import the actual `outputs/cd-023/*` export if supplied; populate every wiring
-   row with reviewer/date/verdict/evidence.
-8. Request a fresh independent Codex audit in a different reviewer session. The
-   implementation author must not self-issue DEC-012 PASS.
-9. Only after that PASS and sponsor runtime acceptance may CD-023 close or CD-024+
-   implementation proceed.
+1. Run the complete Playwright regression from a coherent worktree after the
+   concurrent CD-022 changes are either committed or isolated.
+2. Assign a distinct Codex reviewer to perform the row-by-row wiring audit using
+   the checklist and the live evidence above. This implementation session must
+   not author the final DEC-012 PASS.
+3. Record reviewer/date/verdict/evidence in the wiring-map/evidence trace.
+4. Obtain sponsor runtime acceptance.
+5. Only after steps 1-4 pass may CD-023 be closed and CD-024+ implementation be
+   considered under its own design/start gates.
 
-## Completion audit
-
-| Original finding | Code correction | Local proof | Live/independent proof |
-|---|---|---|---|
-| FAIL-01 blank coordinates | Raw presence before numeric conversion plus RPC range guard | SQL/typecheck and focused negative test present | Pending live focused test |
-| FAIL-02 lost location | Visit coordinates plus explicit official/manual provenance | Fresh SQL contract proves modified pin and unchanged master coordinates | Pending live focused test |
-| FAIL-03 stale package | Published/locked revalidation inside atomic RPC | Forced package-read denial and unavailable-package path covered | Pending live focused test |
-| FAIL-04 incomplete audit | Factory/notification triggers plus constrained request audit | Exact SQL audit assertions PASS | Pending live exact-row assertions |
-| FAIL-05 unsafe retry | Request lock, unique guards, stored-role replay and ordered identity locks | Replay and identity contract PASS; concurrent tests discovered | Pending live concurrency tests |
-| FAIL-06 ignored read errors | One fail-closed RPC with neutral errors | Forced read and write denial PASS | Pending live suite |
-| FAIL-07 false partial ledger | Sequential/ledger path removed; transaction rolls back | Forced downstream failure leaves no Visit | Pending live suite |
-| FAIL-08 partial Arabic | All chips and live announcements localized | Typecheck plus Arabic assertions discovered | Pending live AR/RTL run |
-| FAIL-09 evidence gaps | Eight focused product tests plus repeatable SQL contract | Build/typecheck/discovery/SQL contract PASS | Focused/full runtime and eight frames pending |
-
-The implementation-remediation column is complete. The final column is a gate,
-not optional cleanup: Claude Code must not convert local evidence into live or
-independent PASS.
-
-## Current checks
-
-- Production build: PASS.
-- Typecheck: PASS (sequential after build).
-- Diff whitespace: PASS.
-- Auth personas: PASS 3/3.
-- Fresh isolated migration plus repeatable RLS/atomicity/idempotency/location/
-  audit SQL contract: PASS (`CD023_DATABASE_CONTRACT_PASS`).
-- Focused live CD-023: NOT RUN — migration absent live.
-- Full live regression: NOT RUN.
-- Independent re-audit: NOT RUN.
-
-The CD-023 remediation is committed on the working branch. No push, merge,
-deployment or `main` modification was performed.
+No push, merge, release deployment, or `main` modification was performed.

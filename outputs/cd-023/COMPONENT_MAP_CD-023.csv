@@ -1,0 +1,17 @@
+component,current_location,disposition,after_responsibility,design_frame,approval_needed
+Shared shell,apps/web/src/components,PRESERVE,Unchanged,3a,no
+Minimum Viable Authority Bar,new AuthorityBar.tsx,CREATE,9 focusable protection chips derived from existing validation state; jump-to-control; narrow 9-dot strip,3a/3d/3g/3h/3i,no
+Urgency reason control,ImmediateForm select,UPDATE,Segmented control of the 3 governed enum values; required; stamped to audit,3a/3g,no
+Registered/unregistered toggle,implicit (select + manual fields),UPDATE,Explicit two-mode toggle; registered search reuses CD-022 grading grammar; no auto-switch,3a/3d,no
+Registered identity preview,select option text,CREATE,Identity card - name AR/EN + CR/license/region/freshness/risk(advisory),3a/3g,no
+Temporary identity capture,ImmediateForm manual fields,UPDATE,Name required; CR/license/activity optional; region + city REQUIRED (fixes hardcoded Riyadh); flagged-temporary explanation + reconciliation note,3d,no
+Location capture,lat/lng inputs (prefilled),UPDATE,No prefill; map pin-drop OR typed pair (both required, range-validated); source stated as official vs manually-confirmed-by-name+time; text equivalent,3a/3d,no
+Package select,ImmediateForm,PRESERVE,Published/locked only; re-validated at dispatch,3a,no
+Inspector assignment,ImmediateForm select,PRESERVE,Auto-assign default + manual pick; availability check + candidates audit (M01-048),3a,no
+Window fields,ImmediateForm,PRESERVE,Blank = urgent default now->+8h; both-or-neither rule (M01-047),3a,no
+Priority field,ImmediateForm free text,PRESERVE (truth-labelled),Optional ungoverned free text labelled as such; governed enum HANDOFF_BLOCKED,3a,no
+Consequence summary,new,CREATE,Names exactly what dispatch creates incl. no-plan bypass and queued-not-delivered notification,3a/3g,no
+Dispatch step ledger / reconciliation,new,CREATE,4-step truth chips; retry-by-id; orphan temp-factory accounting; canonical cancel path,3f,no
+Validation summary,error list,UPDATE,role=alert; chips + summary link to controls; neutral copy,3d,no
+Work preservation,MISSING in ImmediateForm,UPDATE,Adopt controlled inputs + resetKey pattern from Wizard/BulkForm,3i note,no
+Unauthorized state,none (shell/RLS only),CREATE,No-data screen naming the Planner requirement; inspector persona truth documented,3e,no
