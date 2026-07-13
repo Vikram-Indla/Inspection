@@ -30,8 +30,8 @@ export const viewport = { themeColor: "#0A0A14" };
 export const metadata = {
   manifest: "/manifest.json",
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/favicon-32.png", sizes: "32x32" }],
-    apple: "/apple-touch-icon.png",
+    icon: [{ url: "/saqeel-prism.svg", type: "image/svg+xml" }, { url: "/saqeel-prism-32.png", sizes: "32x32" }],
+    apple: "/saqeel-prism-180.png",
   },
   title: "Saqeel صقيل — Industrial Inspection Platform",
   description: "Saqeel (صقيل | صناعي) — the national industrial inspection platform. One platform. Every factory. Every inspection. Every decision.",

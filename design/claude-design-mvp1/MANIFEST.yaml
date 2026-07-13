@@ -10,6 +10,116 @@ counts:
   process_branches: 14
   engines: 12
   acceptance_records: 493
+current_program_state:
+  recorded_at: "2026-07-13"
+  total_cd_prompts: 43
+  approved_for_implementation: 1
+  current_family: "F1 access — CD-001..CD-003"
+  cd_001:
+    status: "IMPLEMENTED; SPONSOR ACCEPTED FOR NOW; DESIGN ITERATION CLOSED"
+    approval_record:
+      approved_by: "Sponsor / product owner (Vikram Indla)"
+      approved_at: "2026-07-13"
+      approval_scope: >-
+        CD-001 selected visual direction through the V7 Saudi Industrial Atlas:
+        unified sign-in plus a premium, layered, interactive, illustrative KSA
+        industrial-inspection story. This authorizes implementation and runtime
+        validation on feat/cd-001-v7-atlas; it does not approve CD-002, CD-003,
+        production deployment, public operational metrics, or pixel-copy use of
+        the supplied reference raster.
+      handoff: "handoff/CLAUDE_CODE_CD001_V7_IMPLEMENTATION_PROMPT.md"
+    runtime_evidence:
+      build: "PASS — production Next.js build"
+      targeted_suite: "PASS 9/9 — atlas, fallback, responsive, demo gate, negative auth"
+      full_regression: "PASS 26/26 — setup, golden journey, offline drill, persona tours, negative paths"
+      visual_evidence: "product-contract/evidence/screens/login-v7-atlas/"
+      evidence_log: "product-contract/evidence/CD001-V7-EV-001-public-safe-atlas.txt"
+      residual_p1:
+        - "sponsor confirmation of source and derivative image rights"
+        - "official-source confirmation of public geographic anchors"
+    claude_design_closure:
+      status: "CONTEXT_WINDOW_COMPLETE; DESIGN SESSION CLOSED"
+      final_pack: "/Users/vikramindla/Downloads/# Saqeel MVP1 UIUX Revamp (1).zip"
+      continuation_rule: >-
+        Claude Code must continue from the repository manifest, implementation
+        prompt, runtime contract, and supplied ZIP artifacts; it must not depend
+        on Claude Design chat history or request another design iteration for P2.
+    accepted_elements:
+      - "unified sign-in and no persona selector"
+      - "credential-panel behavior and protected authentication contract"
+      - "illustrative inspection lifecycle intent"
+    rejected_elements:
+      - "V6 SVG outline presented as a map"
+      - "placeholder factory portal illustrations"
+      - "unproven hover/focus/tap runtime behavior"
+      - "missing full review-pack and implementation-handoff evidence"
+    resolution: >-
+      Stop Claude Design map illustration iterations. Prove the atlas with the existing
+      Leaflet stack in a controlled, non-production runtime spike; accept it only after
+      actual tiles, verified locations, interaction, fallback, accessibility, performance,
+      asset provenance, and visual evidence pass.
+    visual_reference:
+      name: "inspection.png — Factory Inspection Map Design"
+      received_at: "2026-07-13"
+      authority: "visual inspiration only; never product/data authority"
+      preserve:
+        - "premium dark 3D relief and spatial depth"
+        - "recognizable industrial structures at multiple Saudi nodes"
+        - "inspectors, geofence halos, illustrative routes, and lifecycle storytelling"
+        - "clear zone and city orientation"
+        - "hover/focus dossier concept and strong visual selling moment"
+      reject_or_correct:
+        - "the unsanitized source PNG on the public surface"
+        - "use of any raster alone as the interaction, accessibility, or geographic truth layer"
+        - "public city/zone risk, compliance, overdue, violation, SLA, or workload metrics"
+        - "real-time or operational-data implication"
+        - "religious landmarks used as decorative industrial objects"
+        - "hover-only information, inaccessible text baked into imagery, or animation without reduced-motion fallback"
+        - "unlicensed, confidential, unsafe, or geographically unverified assets"
+      implementation_model: >-
+        Preserve a public-safe derivative of the stakeholder-approved PNG as the
+        premium visual foundation after removing operational panels, counts, risk,
+        compliance, violation, SLA, workload, update-time, and live implications.
+        Add accessible DOM/SVG hotspots, labels, dossiers, lifecycle motion, persistent
+        illustrative truth, responsive/list modes, and reduced-motion behavior. Leaflet
+        remains the optional geographic/failure layer and must never be falsely implied
+        by the raster itself.
+  cd_002:
+    status: "DESIGN OUTPUT RECEIVED IN FINAL ARCHIVE; READY_FOR P0/P1 REVIEW; NOT ACCEPTED; NOT IMPLEMENTED"
+    source_archive: "/Users/vikramindla/Downloads/# Saqeel MVP1 UIUX Revamp (1).zip"
+    design_entry: "design_handoff_cd001_login_atlas/CD-002 Reset.dc.html"
+    next_task: "TASK-DESIGN-CD002-REVIEW"
+  cd_003:
+    status: "PENDING"
+  implementation: >-
+    CD-001 V7 implemented on feat/cd-001-v7-atlas and ready for human runtime
+    review. All implementation P0 tests pass. Two P1 release confirmations remain:
+    image rights and official-source confirmation of public geographic anchors.
+    Sponsor correction CD-001-V7-UX-003 removes the public landing-page location
+    list and visible illustrative disclaimers, adds map-anchored lifecycle events,
+    fixes the atlas as a dark operations viewport in both shell themes, and adopts
+    the magenta-violet prism favicon. This exception applies only to SCR-PUB-010;
+    operational shared maps retain SPC-GIS-001 list requirements. Sponsor closure on
+    2026-07-13 accepts CD-001 for now as the baseline; UX-004 makes fresh login Arabic
+    first with full document-level RTL. Reopen only for P0/P1 regression or recorded
+    release blockers. CD-002 output exists in the final archive and is next for review.
+  production: "BLOCKED until coherent family acceptance and release gates"
+fast_track_policy:
+  design_review_rounds:
+    - "R1 access family — CD-001..CD-003 plus real-map spike"
+    - "R2 admin governance — F2A"
+    - "R3 admin studios — F2B"
+    - "R4 planning and visit management — F3"
+    - "R5 review, Factory 360, and operations — F4"
+    - "R6 iPad field journey — F5"
+    - "R7 virtual inspection — F6"
+    - "R8 consolidated Big Bang critique and release audit — F7"
+  signature_screen_rule: "full high-fidelity primary, outlier, responsive, RTL/theme, and runtime proof"
+  supporting_screen_rule: "reuse accepted family components; deliver contact-sheet states and exact handoff without isolated aesthetic iteration"
+  map_exception_rule: >-
+    A map is never accepted from a static vector approximation when the product uses a
+    real map runtime. Design defines hierarchy and interaction; runtime evidence proves
+    geography, labels, tiles, accessibility, fallback, and performance.
 entry_points:
   - 00_START_HERE.md
   - CURRENT_UI_BASELINE.md

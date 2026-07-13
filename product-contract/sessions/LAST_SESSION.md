@@ -1,60 +1,64 @@
 # Last Session
-- Time: 2026-07-12T21:51:07.089925+00:00
-- Session ID: 9315a5ab-dc14-4b06-b975-a7c47a1aeddc
+- Time: 2026-07-13T09:15:03.735274+00:00
+- Session ID: d453ffb7-d6dc-4d6b-b868-1811fe9eb089
 - End reason: other
-- Branch: main
-- Commit: 144aea9
+- Branch: feat/cd-001-v7-atlas
+- Commit: 130cc6b
 - Working tree:
 ```
 M .project-memory/audit/instructions_loaded.jsonl
  M .project-memory/audit/session_end.jsonl
  M .project-memory/audit/tool_events.jsonl
- M CLAUDE.md
- M HOME.md
- M apps/web/e2e/login-helper.ts
- M apps/web/e2e/negative-auth.spec.ts
- M apps/web/e2e/personas.ts
- M apps/web/public/icon.svg
- D apps/web/src/app/CoverageMap.tsx
- D apps/web/src/app/GovBar.tsx
- M apps/web/src/app/astryx.css
- D apps/web/src/app/landing.css
+ M apps/web/middleware.ts
+ M apps/web/playwright.config.ts
+ M apps/web/public/manifest.json
+ M apps/web/public/sw.js
  M apps/web/src/app/layout.tsx
+ M apps/web/src/app/locale/route.ts
+ M apps/web/src/app/login/DemoAccess.tsx
  M apps/web/src/app/login/LoginClient.tsx
+ M apps/web/src/app/login/SaqeelMark.tsx
+ M apps/web/src/app/login/StoryMapInner.tsx
+ M apps/web/src/app/login/StoryPanel.tsx
  M apps/web/src/app/login/login.css
  M apps/web/src/app/login/page.tsx
- M apps/web/src/app/operations/page.tsx
- M apps/web/src/app/page.tsx
- M apps/web/src/app/planning/bulk/BulkForm.tsx
- M apps/web/src/app/planning/bulk/page.tsx
- M apps/web/src/app/reports/inspection/[id]/page.tsx
- M apps/web/src/app/reset/ResetClient.tsx
- M apps/web/src/app/reset/page.tsx
  M apps/web/src/app/tokens.css
- M apps/web/src/components/Shell.tsx
+ M apps/web/src/lib/i18n.ts
+ M design/claude-design-mvp1/MANIFEST.yaml
  M product-contract/CURRENT_STATE.md
- M product-contract/evidence/b10_golden_journey.py
- M product-contract/governance/decision_register.csv
+ M product-contract/acceptance/ACCEPTANCE_STATUS.md
+ M product-contract/evidence/EVIDENCE_STATUS.md
+ M product-contract/execution/WORK_QUEUE.yaml
  M product-contract/sessions/LAST_SESSION.md
- M supabase/migrations/0011_factory360_gis_ksa_seed.sql
-?? .agents/
-?? .project-memory/audit/compactions.jsonl
-?? AGENTS.md
-?? apps/web/public/geo/
-?? apps/web/src/app/login/DemoAccess.tsx
-?? apps/web/src/app/login/SaqeelHero.tsx
-?? apps/web/src/app/login/SaqeelMark.tsx
-?? apps/web/src/app/login/StoryMapInner.tsx
-?? apps/web/src/app/login/StoryPanel.tsx
-?? apps/web/src/app/operations/live/
-?? apps/web/src/components/ThemeScript.tsx
-?? apps/web/src/components/ThemeToggle.tsx
-?? design/claude-design-mvp1/
-?? outputs/
-?? product-contract/evidence/G10-EV-002-login-v4-inspection-story.txt
-?? product-contract/evidence/screens/
-?? product-contract/governance/DECISIONS_ACCEPTED_2026-07-12_SAQEEL.yaml
-?? product-contract/sessions/COMPACTION_CHECKPOINT.md
-?? tmp/
+ M product-contract/sessions/SESSION_LEDGER.json
+ M tmp/claude-design-feedback/extract-review-pack.mjs
+?? apps/web/e2e/cd-001-v7-atlas.spec.ts
+?? apps/web/e2e/cd-001-v7-visual-evidence.spec.ts
+?? apps/web/public/brand/saudi-atlas/
+?? apps/web/public/saqeel-prism-180.png
+?? apps/web/public/saqeel-prism-192.png
+?? apps/web/public/saqeel-prism-32.png
+?? apps/web/public/saqeel-prism-512.png
+?? apps/web/public/saqeel-prism.svg
+?? apps/web/src/app/login/SaudiAtlasDossier.tsx
+?? apps/web/src/app/login/SaudiIndustrialAtlas.tsx
+?? apps/web/src/app/login/saudi-atlas-locations.ts
+?? apps/web/src/app/login/saudi-atlas-motion.ts
+?? apps/web/src/app/login/saudi-atlas-structures.ts
+?? design/claude-design-mvp1/acceptance/SAUDI_ATLAS_ASSET_REGISTER_CD001.csv
+?? design/claude-design-mvp1/acceptance/SAUDI_ATLAS_REFERENCE_REGISTER_CD001.csv
+?? design/claude-design-mvp1/handoff/CD001_V7_PUBLIC_SAFE_PNG_AMENDMENT.md
+?? design/claude-design-mvp1/handoff/CD001_V7_UX003_SPONSOR_CORRECTION.md
+?? design/claude-design-mvp1/handoff/CD001_V7_UX004_ARABIC_RTL.md
+?? design/claude-design-mvp1/handoff/CLAUDE_CODE_CD001_V7_IMPLEMENTATION_PROMPT.md
+?? product-contract/evidence/CD001-V7-EV-001-public-safe-atlas.txt
+?? product-contract/evidence/CD001-V7-EV-005-lifecycle-rail.txt
+?? product-contract/evidence/CD001-V7-EV-006-stage-theme-prism.txt
+?? product-contract/evidence/CD001-V7-EV-007-arabic-rtl.txt
+?? product-contract/evidence/CD001-V7-EV-008-design-closure-handoff.txt
+?? product-contract/evidence/screens/login-v7-atlas/
+?? product-contract/sessions/HANDOFF_2026-07-13_CD001_CLOSED_CD002_NEXT.md
+?? tmp/claude-design-feedback/CD001-V6-assets/
+?? tmp/claude-design-feedback/CD001-V6-unpacked.html
 ```
 - Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.

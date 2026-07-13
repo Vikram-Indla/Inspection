@@ -74,6 +74,17 @@
 }
 
 :root {
+  /* ---- Fixed brand-visual viewport ---------------------------------------
+     The photographic atlas is art-directed as a night operations scene. It
+     stays dark in both shell themes; recolouring it for light mode produces a
+     washed-out pasted-image effect. */
+  --ax-color-atlas-canvas:  #050A18;
+  --ax-color-atlas-surface: #0E1428;
+  --ax-color-atlas-text:    #F6F2FF;
+  --ax-color-atlas-muted:   #B5AEC9;
+  --ax-color-atlas-border:  #34285F;
+  --ax-color-prism-magenta: #D946EF;
+
   /* ---- Color · derived (color-mix from approved bases only) ----
      On the dark theme, tints mix toward the dark surface (tinted panels) and
      strong variants mix toward the light text (readable accents). */

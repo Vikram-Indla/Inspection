@@ -24,8 +24,11 @@ export default async function Reset() {
     brandTitle: "صقيل | صناعي",
     brandSub: ar ? "منصّة التفتيش الصناعي" : "Industrial Inspection Platform",
     checking: ar ? "جارٍ التحقق من رابط إعادة التعيين…" : "Verifying your reset link…",
-    invalidTitle: ar ? "رابط إعادة التعيين غير صالح أو منتهي الصلاحية" : "This reset link is invalid or has expired",
+    invalidTitle: ar ? "رابط إعادة التعيين غير صالح أو منتهي الصلاحية." : "This reset link is invalid or has expired.",
     invalidBody: ar ? "اطلب رابطًا جديدًا من صفحة تسجيل الدخول." : "Request a new link from the sign-in page.",
+    invalidHint: ar
+      ? "اختر \"هل نسيت كلمة المرور؟\" في صفحة تسجيل الدخول لطلب رابط جديد."
+      : "Select \"Forgot your password?\" on the sign-in page to request a new link.",
     title: ar ? "تعيين كلمة مرور جديدة" : "Set a new password",
     sub: ar ? "اختر كلمة مرور جديدة لحسابك." : "Choose a new password for your account.",
     pwLabel: ar ? "كلمة المرور الجديدة" : "New password",
@@ -35,11 +38,24 @@ export default async function Reset() {
     showPw: ar ? "إظهار كلمة المرور" : "Show password",
     hidePw: ar ? "إخفاء كلمة المرور" : "Hide password",
     mismatch: ar ? "كلمتا المرور غير متطابقتين" : "The passwords don't match",
+    policyError: ar
+      ? "كلمة المرور الجديدة لا تستوفي متطلبات الأمان المحددة لهذه المنصّة."
+      : "The new password doesn't meet the security requirements set for this platform.",
+    saveTransportError: ar
+      ? "تعذّر حفظ كلمة المرور الجديدة. تحقّق من الاتصال وحاول مرة أخرى."
+      : "We couldn't save the new password. Check your connection and try again.",
+    saveUnexpectedError: ar ? "حدث خطأ ما. حاول مرة أخرى." : "Something went wrong. Try again.",
     save: ar ? "حفظ كلمة المرور" : "Save new password",
     saving: ar ? "جارٍ الحفظ…" : "Saving…",
     doneTitle: ar ? "تم تحديث كلمة المرور" : "Password updated",
-    doneBody: ar ? "يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة." : "You can now sign in with your new password.",
+    doneBody: ar
+      ? "تم تسجيل خروجك من جلسة الاسترداد. يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة."
+      : "You've been signed out of the recovery session. You can now sign in with your new password.",
     toSignIn: ar ? "الذهاب إلى تسجيل الدخول" : "Go to sign in",
+    langHref: ar ? "/locale?set=en" : "/locale?set=ar",
+    langLabel: ar ? "English" : "العربية",
+    themeToLight: ar ? "الوضع الفاتح" : "Light mode",
+    themeToDark: ar ? "الوضع الداكن" : "Dark mode",
   };
 
   return <ResetClient strings={strings} />;

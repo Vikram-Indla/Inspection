@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="ad594ea6-167e-4437-8c39-58fc85cc902f"></script>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>/* arabic */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("b3814d61-1016-48dc-9c46-034937ff86ec") format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("dbd00004-a849-480f-b566-06245f23ba9a") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("f4ae2160-c238-4ce8-9b44-2364e7ed27ac") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("52ada8dd-7d5d-445f-a779-44477298fcde") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* arabic */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("dd4cb06e-52b9-4466-bdf5-d637c64cd0e4") format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("4093ab18-d5dc-4c7f-8f7a-d21837cbae76") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("ea217652-0acf-41dd-a86d-6ea6aea89cce") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("3bdeb702-e449-49d0-b5b7-ccb22fc0d255") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* arabic */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("ce259d29-9b1b-46d9-a8da-5a4084efc1d6") format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("acfc9498-fdf3-433a-96bd-665c5d925771") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("f836c91c-fd9b-48eb-bca5-e5cf168a56fc") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("6c672c29-1b14-4b4e-b560-5be4254297dd") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* arabic */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("76119e7d-f69a-4c8d-b6ce-3de52e272b55") format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("d3132101-1373-490b-8f9d-3c44f82c2352") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("924e80c4-018d-49b9-a3eb-c68863e29a1d") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("d40825a7-6cbe-42e6-83e1-53616e235f99") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("4da9e3a6-2f8b-4f55-acaf-84e522bc74c6") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("80920349-a522-49c6-a288-214fdf64b8bd") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("6e1d9f9f-f849-4e86-b9e6-36be539f1750") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("aacdfa89-8e5d-4c89-a7c6-01a8795aaa9c") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("8f5e9d6f-f316-4589-b5ae-d8e1434522cc") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("c36684dc-d9d7-4724-8c1a-514ec0085f03") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("4da9e3a6-2f8b-4f55-acaf-84e522bc74c6") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("80920349-a522-49c6-a288-214fdf64b8bd") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("6e1d9f9f-f849-4e86-b9e6-36be539f1750") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("aacdfa89-8e5d-4c89-a7c6-01a8795aaa9c") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("8f5e9d6f-f316-4589-b5ae-d8e1434522cc") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("c36684dc-d9d7-4724-8c1a-514ec0085f03") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("4da9e3a6-2f8b-4f55-acaf-84e522bc74c6") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("80920349-a522-49c6-a288-214fdf64b8bd") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("6e1d9f9f-f849-4e86-b9e6-36be539f1750") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("aacdfa89-8e5d-4c89-a7c6-01a8795aaa9c") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("8f5e9d6f-f316-4589-b5ae-d8e1434522cc") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("c36684dc-d9d7-4724-8c1a-514ec0085f03") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("a6675f01-ae95-4a66-902d-edb98edd6f62") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("a0811ffa-eec4-47eb-a0ea-a38aea02d600") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("29b9b3dd-06b1-4e96-8c0c-8d4f685a0c2b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("a6675f01-ae95-4a66-902d-edb98edd6f62") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("a0811ffa-eec4-47eb-a0ea-a38aea02d600") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("29b9b3dd-06b1-4e96-8c0c-8d4f685a0c2b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("a6675f01-ae95-4a66-902d-edb98edd6f62") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("a0811ffa-eec4-47eb-a0ea-a38aea02d600") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("29b9b3dd-06b1-4e96-8c0c-8d4f685a0c2b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("a6675f01-ae95-4a66-902d-edb98edd6f62") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("a0811ffa-eec4-47eb-a0ea-a38aea02d600") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("29b9b3dd-06b1-4e96-8c0c-8d4f685a0c2b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+  <style>
+    body { margin: 0; background: #08080F; }
+    a { color: #9487FF; text-decoration: none; }
+    a:hover { color: #EFEFF7; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+</helmet>
+
+<section style="display:flex; flex-direction:column; gap:32px; padding:48px; font-family:'Space Grotesk',sans-serif;">
+
+  <div style="max-width:1160px; display:flex; flex-direction:column; gap:8px;">
+    <div style="font:700 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; text-transform:uppercase; color:#7C6CFF;">CD-001 V6 · AUTH-01 · /login · SAUDI INDUSTRIAL INSPECTION ATLAS</div>
+    <h1 style="margin:0; font:600 34px/42px 'Space Grotesk',sans-serif; color:#EFEFF7;">Unified sign-in — Saudi Industrial Inspection Atlas</h1>
+    <p style="margin:0; font:400 16px/24px 'Space Grotesk',sans-serif; color:#9C9CB2;">Redesigned atlas: real KSA geography with sea/land contrast, city orientation, verified public industrial-city coverage (MODON / RCJY context), photographic portals with connectors, dossier previews on hover/focus/tap, and stage-driven lifecycle storytelling. Auth behavior unchanged. Implementation renders the same composition on the existing Leaflet stack (bundled boundary + CARTO labelled basemap). <strong style="color:#E8B84B;">DESIGN TARGET — RUNTIME VERIFICATION PENDING</strong> · commit <span style="font-family:'JetBrains Mono',monospace;">144aea9</span> · frames <a href="#1a">1a</a>–<a href="#1k">1k</a></p>
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:48px; align-items:flex-start;">
+
+    <!-- ============ 1a PRIMARY DARK EN 1600 ============ -->
+    <div id="1a" data-screen-label="1a V6 primary dark EN" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1a</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Primary · 1600 dark EN · lifecycle stage 02 INSPECT selected — sample route live toward Jubail</span></div>
+      <div style="width:1600px; height:960px; display:grid; grid-template-columns:460px 1fr; background:#0A0A14; border:1px solid #26263A; border-radius:16px; overflow:hidden; color:#EFEFF7; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <main style="display:flex; flex-direction:column; padding:40px 44px; background:#14141F; border-right:1px solid #26263A;">
+          <header style="display:flex; align-items:center; gap:12px;">
+            <span style="color:#9487FF;"><svg width="34" height="34" sc-camel-view-box="0 0 48 48" fill="none" stroke="currentColor" stroke-linejoin="round" aria-hidden="true"><path d="M24 5 L40 18 L24 43 L8 18 Z" stroke-width="2.4"></path><path d="M8 18 H40 M24 5 L17 18 L24 43 M24 5 L31 18 L24 43" stroke-width="1.3" opacity="0.5"></path></svg></span>
+            <span lang="ar" style="font:700 24px/1.2 'IBM Plex Sans Arabic',sans-serif;">صقيل | صناعي</span>
+          </header>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:20px; padding-block:24px;">
+            <div>
+              <h2 style="margin:0; font:600 28px/36px 'Space Grotesk',sans-serif; letter-spacing:-0.01em;">Sign in to Saqeel</h2>
+              <p style="margin:6px 0 0; color:#9C9CB2;">The national industrial inspection platform. Your workspace is resolved securely after sign-in.</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <span style="font:600 16px/24px 'Space Grotesk',sans-serif;">Email</span>
+              <span dir="ltr" style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#0A0A14; color:#9C9CB2;">name@mim.gov.sa</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <span style="font:600 16px/24px 'Space Grotesk',sans-serif;">Password</span>
+              <span style="position:relative; display:flex; align-items:center; height:48px; padding:0 48px 0 14px; border:1px solid #26263A; border-radius:12px; background:#0A0A14; color:#9C9CB2;">••••••••••
+                <span style="position:absolute; right:6px; display:grid; place-items:center; width:36px; height:36px; border-radius:8px; color:#9C9CB2;" aria-label="Show password"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>
+              </span>
+            </div>
+            <span style="display:grid; place-items:center; height:48px; border-radius:12px; background:#7C6CFF; color:#0B0B14; font:600 17px/26px 'Space Grotesk',sans-serif;">Sign in</span>
+            <span style="align-self:center; font:600 16px/24px 'Space Grotesk',sans-serif; color:#9487FF;">Forgot your password?</span>
+          </div>
+          <footer style="display:flex; flex-direction:column; gap:8px; padding-top:16px; border-top:1px solid #26263A; font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+            <span style="display:inline-flex; align-items:center; gap:8px;"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#2DE08E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Government-secured access · encrypted session</span>
+            <div style="display:flex; align-items:center; justify-content:space-between;"><span style="color:color-mix(in srgb,#9C9CB2 55%,#14141F);">© 2026 Ministry of Industry and Mineral Resources</span><span lang="ar" style="font:600 15px/22px 'IBM Plex Sans Arabic',sans-serif; color:#9487FF;">العربية</span></div>
+          </footer>
+        </main>
+
+        <aside style="display:flex; flex-direction:column; gap:12px; padding:20px 24px; min-width:0;">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px;">
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.16em; color:#9C9CB2;">SAUDI INDUSTRIAL INSPECTION ATLAS — SAMPLE / ILLUSTRATIVE COVERAGE</span>
+              <span style="font:700 18px/26px 'Space Grotesk',sans-serif;">One platform. Every factory. Every inspection. Every decision.</span>
+            </div>
+            <span style="display:grid; place-items:center; width:40px; height:40px; border:1px solid #26263A; border-radius:999px; color:#9C9CB2;" aria-label="Switch to light mode"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"></path></svg></span>
+          </div>
+
+          <!-- atlas frame -->
+          <div style="position:relative; flex:1; min-height:0; border:1px solid #26263A; border-radius:16px; overflow:hidden; background:color-mix(in srgb,#5AA7FA 10%,#0A0A14);">
+            <svg sc-camel-view-box="0 0 800 640" sc-camel-preserve-aspect-ratio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%;" role="img" aria-label="Illustrative map of Saudi Arabia: Gulf and Red Sea coastlines, major cities, and sample industrial-city coverage. A list alternative is provided.">
+              <path d="M320.2,612L315.8,596.2L305.7,585.1L303.1,570.4L285.7,557.2L267.7,526.2L258.2,496.1L234.9,470.7L219.9,464.6L197.6,429.4L193.7,403.7L195.2,381.9L175.9,340.9L160.1,326.5L141.9,318.9L130.8,297.7L132.6,289.3L123.3,270.2L113.5,262L100.3,234.5L79.8,204.7L62.6,179.3L45.9,179.5L51.1,159.2L52.6,146.3L56.8,131.6L94.2,137.4L108.8,126.1L116.9,112.8L142.6,107.7L148.1,95.3L159.2,89L125.7,52.1L193.1,33.6L199.5,28L240.1,38L290.2,63.9L385.2,138.1L447.8,141.1L477.8,144.6L486.2,162.2L510,161.3L523.2,193.1L539.7,201.6L545.5,214.5L568.5,230.1L570.5,245.3L567.1,257.6L571.4,270L581.1,280.4L585.6,292.5L590.6,301.5L600.8,308.9L610.1,306.2L616.5,320.3L617.8,328.9L630.7,366.3L731.9,384.9L738.7,377.1L754.1,403.3L731.7,477.1L630.7,514.1L533.6,528.2L502.2,544.8L478,583.6L462.3,589.8L453.9,577.5L441,579.3L408.4,575.6L402.3,571.9L363.4,572.8L354.3,576.1L340.4,566.5L331.5,584.7L335,600.2L320.2,612Z" fill="color-mix(in srgb,#7C6CFF 9%,#14141F)" stroke="color-mix(in srgb,#9C9CB2 65%,#26263A)" stroke-width="2.5" stroke-linejoin="round"></path>
+              <text x="70" y="470" transform="rotate(-52 70 470)" style="font:600 13px 'JetBrains Mono',monospace; letter-spacing:.3em;" fill="#5AA7FA" opacity="0.55">RED SEA</text>
+              <text x="596" y="150" transform="rotate(40 596 150)" style="font:600 12px 'JetBrains Mono',monospace; letter-spacing:.22em;" fill="#5AA7FA" opacity="0.55">ARABIAN GULF</text>
+              <!-- connectors: portal anchor → industrial node -->
+              <g stroke="color-mix(in srgb,#9C9CB2 55%,#26263A)" stroke-width="1.2" stroke-dasharray="3 4" opacity="0.7" fill="none">
+                <line x1="185" y1="70" x2="360" y2="244"></line>
+                <line x1="620" y1="70" x2="543" y2="193"></line>
+                <line x1="742" y1="200" x2="552" y2="218"></line>
+                <line x1="742" y1="430" x2="567" y2="240"></line>
+                <line x1="410" y1="588" x2="451" y2="303"></line>
+              </g>
+              <!-- sample journey: Riyadh → Jubail (stage 02 active) -->
+              <path d="M451 303 C 490 278, 525 246, 552 220" fill="none" stroke="#7C6CFF" stroke-width="3.5" stroke-dasharray="9 7" stroke-linecap="round"></path>
+              <circle cx="505" cy="262" r="9" fill="#2DE08E" stroke="#0A0A14" stroke-width="3"></circle>
+              <circle cx="552" cy="218" r="24" fill="none" stroke="#7C6CFF" stroke-width="2" stroke-dasharray="5 5"></circle>
+              <!-- orientation cities -->
+              <g style="font:600 12px 'JetBrains Mono',monospace; letter-spacing:.06em;" fill="#EFEFF7" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke">
+                <circle cx="451" cy="303" r="4" stroke-width="2"></circle><text x="440" y="290">RIYADH</text>
+                <circle cx="199" cy="422" r="4" stroke-width="2"></circle><text x="150" y="415">JEDDAH</text>
+                <circle cx="228" cy="440" r="3.5" stroke-width="2" fill="#9C9CB2"></circle><text x="238" y="453" fill="#9C9CB2">MAKKAH</text>
+                <circle cx="225" cy="296" r="3.5" stroke-width="2" fill="#9C9CB2"></circle><text x="232" y="288">MADINAH</text>
+                <circle cx="567" cy="240" r="4" stroke-width="2"></circle><text x="580" y="248">DAMMAM</text>
+                <circle cx="284" cy="200" r="3.5" stroke-width="2" fill="#9C9CB2"></circle><text x="248" y="190" fill="#9C9CB2">HA'IL</text>
+                <circle cx="360" cy="244" r="4" stroke-width="2"></circle><text x="330" y="232">BURAIDAH</text>
+                <circle cx="311" cy="542" r="3.5" stroke-width="2" fill="#9C9CB2"></circle><text x="322" y="552" fill="#9C9CB2">JAZAN</text>
+              </g>
+              <!-- industrial nodes -->
+              <g>
+                <rect x="546" y="212" width="13" height="13" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="537" y="187" width="13" height="13" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="155" y="320" width="13" height="13" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="458" y="312" width="13" height="13" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="573" y="252" width="11" height="11" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="204" y="430" width="11" height="11" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="366" y="250" width="11" height="11" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="290" y="206" width="11" height="11" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="317" y="530" width="11" height="11" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+              </g>
+              <g style="font:700 12px 'JetBrains Mono',monospace; letter-spacing:.05em;" fill="#9487FF" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke">
+                <text x="565" y="212">JUBAIL</text>
+                <text x="500" y="180">RAS AL-KHAIR</text>
+                <text x="112" y="345">YANBU</text>
+                <text x="470" y="332">RIYADH IC</text>
+                <text x="588" y="272" style="font-size:10px;">DAMMAM IC</text>
+                <text x="218" y="444" style="font-size:10px;">JEDDAH IC</text>
+                <text x="380" y="264" style="font-size:10px;">QASSIM IC</text>
+                <text x="304" y="212" style="font-size:10px;">HA'IL IC</text>
+                <text x="330" y="536" style="font-size:10px;">JAZAN IC</text>
+              </g>
+            </svg>
+
+            <!-- photographic portals (perimeter) -->
+            <figure style="position:absolute; left:14%; top:10px; margin:0; width:180px; border-radius:12px; border:1px solid #26263A; overflow:hidden; background:#14141F; box-shadow:0 12px 32px rgba(0,0,0,.55);" tabindex="0" aria-label="Food and packaging — Qassim industrial city, illustrative">
+              <div style="height:86px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect width="320" height="140" fill="#7C6CFF" opacity="0.05"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><polygon points="16,108 300,78 300,92 16,122" fill="#262640"></polygon><rect x="58" y="88" width="24" height="18" rx="2" fill="#30304E"></rect><rect x="128" y="80" width="24" height="18" rx="2" fill="#2B2B48"></rect><rect x="196" y="72" width="24" height="18" rx="2" fill="#30304E"></rect><rect x="176" y="34" width="7" height="54" fill="#2B2B48"></rect><rect x="230" y="28" width="7" height="54" fill="#2B2B48"></rect><rect x="176" y="30" width="61" height="7" fill="#2B2B48"></rect><rect x="183" y="46" width="47" height="2" fill="#7C6CFF" opacity="0.55"></rect><circle cx="282" cy="82" r="5" fill="#3D3D60"></circle><rect x="276" y="88" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px; display:flex; flex-direction:column; gap:1px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">FOOD · PACKAGING</span><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">QASSIM IC · DESIGN CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <figure style="position:absolute; right:14%; top:10px; margin:0; width:180px; border-radius:12px; border:1px solid #26263A; overflow:hidden; background:#14141F; box-shadow:0 12px 32px rgba(0,0,0,.55);" tabindex="0" aria-label="Mining and metals — Ras Al-Khair, illustrative">
+              <div style="height:86px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect width="320" height="140" fill="#7C6CFF" opacity="0.05"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="24" y="28" width="250" height="8" fill="#2B2B48"></rect><rect x="34" y="36" width="8" height="78" fill="#262640"></rect><rect x="256" y="36" width="8" height="78" fill="#262640"></rect><rect x="148" y="36" width="3" height="28" fill="#34345A"></rect><rect x="128" y="64" width="44" height="30" rx="3" fill="#2B2B48"></rect><rect x="140" y="60" width="20" height="4" fill="#7C6CFF" opacity="0.5"></rect><rect x="56" y="98" width="84" height="16" rx="2" fill="#262640"></rect><circle cx="236" cy="94" r="5" fill="#3D3D60"></circle><rect x="230" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px; display:flex; flex-direction:column; gap:1px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">MINING · METALS</span><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">RAS AL-KHAIR · DESIGN CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <figure style="position:absolute; right:10px; top:26%; margin:0; width:180px; border-radius:12px; border:1px solid #26263A; overflow:hidden; background:#14141F; box-shadow:0 12px 32px rgba(0,0,0,.55);" tabindex="0" aria-label="Petrochemical and process — Jubail industrial city, illustrative">
+              <div style="height:86px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect width="320" height="140" fill="#7C6CFF" opacity="0.05"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="28" y="42" width="34" height="72" rx="4" fill="#262640"></rect><rect x="70" y="30" width="34" height="84" rx="4" fill="#2B2B48"></rect><rect x="112" y="50" width="34" height="64" rx="4" fill="#262640"></rect><rect x="160" y="18" width="10" height="96" fill="#2B2B48"></rect><circle cx="165" cy="16" r="3" fill="#7C6CFF" opacity="0.9"></circle><rect x="28" y="66" width="142" height="4" fill="#34345A"></rect><circle cx="228" cy="94" r="5" fill="#3D3D60"></circle><rect x="222" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px; display:flex; flex-direction:column; gap:1px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">PETROCHEMICAL · PROCESS</span><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">JUBAIL · DESIGN CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <figure style="position:absolute; right:10px; bottom:16%; margin:0; width:180px; border-radius:12px; border:1px solid #26263A; overflow:hidden; background:#14141F; box-shadow:0 12px 32px rgba(0,0,0,.55);" tabindex="0" aria-label="Fabrication and assembly — Dammam industrial cities, illustrative">
+              <div style="height:86px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect width="320" height="140" fill="#7C6CFF" opacity="0.05"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="36" y="94" width="180" height="9" rx="2" fill="#262640"></rect><rect x="46" y="103" width="7" height="26" fill="#222238"></rect><rect x="196" y="103" width="7" height="26" fill="#222238"></rect><rect x="66" y="58" width="92" height="36" rx="3" fill="#2B2B48"></rect><circle cx="158" cy="76" r="9" fill="#E8B84B" opacity="0.18"></circle><path d="M158 76l10-7M158 76l12 2M158 76l7 10M158 76l-2 12" stroke="#E8B84B" stroke-width="1.6" opacity="0.8" fill="none"></path><circle cx="190" cy="68" r="5" fill="#3D3D60"></circle><rect x="182" y="74" width="15" height="20" rx="6" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px; display:flex; flex-direction:column; gap:1px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">FABRICATION · ASSEMBLY</span><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">DAMMAM IC · DESIGN CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <figure style="position:absolute; left:42%; bottom:10px; margin:0; width:180px; border-radius:12px; border:1px solid #26263A; overflow:hidden; background:#14141F; box-shadow:0 12px 32px rgba(0,0,0,.55);" tabindex="0" aria-label="Pharmaceutical and clean production — Riyadh industrial cities, illustrative">
+              <div style="height:86px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#191928"></rect><polygon points="0,6 118,38 118,104 0,134" fill="#222238"></polygon><polygon points="320,6 202,38 202,104 320,134" fill="#222238"></polygon><rect x="138" y="48" width="44" height="62" rx="2" fill="#2B2B48"></rect><rect x="70" y="26" width="28" height="5" rx="2" fill="#7C6CFF" opacity="0.3"></rect><rect x="146" y="26" width="28" height="5" rx="2" fill="#7C6CFF" opacity="0.35"></rect><rect x="222" y="26" width="28" height="5" rx="2" fill="#7C6CFF" opacity="0.3"></rect><circle cx="160" cy="66" r="5" fill="#5A5A85"></circle><rect x="153" y="72" width="14" height="26" rx="6" fill="#5A5A85"></rect><rect y="120" width="320" height="20" fill="#12121F"></rect></svg></div>
+              <figcaption style="padding:6px 10px; display:flex; flex-direction:column; gap:1px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">PHARMA · CLEAN PRODUCTION</span><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">RIYADH IC · DESIGN CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+
+            <div style="position:absolute; left:10px; top:10px;"><span style="display:inline-flex; align-items:center; gap:6px; font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; background:#14141F; border:1px solid #26263A; color:#9C9CB2; border-radius:999px; padding:4px 12px;">ILLUSTRATIVE INDUSTRIAL COVERAGE — SAMPLE ONLY</span></div>
+            <div style="position:absolute; left:10px; bottom:10px; display:flex; gap:8px; align-items:center;">
+              <span style="font:600 10px/14px 'JetBrains Mono',monospace; color:color-mix(in srgb,#9C9CB2 60%,#14141F); background:#14141F; padding:2px 8px; border-radius:8px; border:1px dashed color-mix(in srgb,#9C9CB2 45%,#26263A);">Basemap: theme-aware CARTO (labelled) · © OpenStreetMap · scale illustrative</span>
+              <span style="font:600 10px/14px 'JetBrains Mono',monospace; color:#9487FF; background:#14141F; padding:2px 8px; border-radius:8px; border:1px solid #26263A;">List view alternative ⇥</span>
+            </div>
+          </div>
+
+          <!-- interactive lifecycle strip: stage 02 selected -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:inline-flex; align-self:flex-start; background:color-mix(in srgb,#9C9CB2 10%,#14141F); border:1px solid #26263A; border-radius:12px; padding:3px; gap:3px; font:600 15px/22px 'Space Grotesk',sans-serif;" role="tablist" aria-label="Inspection lifecycle — illustrative">
+              <span role="tab" style="padding:8px 18px; border-radius:9px; color:#9C9CB2;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">01</span> Plan</span>
+              <span role="tab" aria-selected="true" style="padding:8px 18px; border-radius:9px; background:#7C6CFF; color:#0B0B14;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px;">02</span> Inspect</span>
+              <span role="tab" style="padding:8px 18px; border-radius:9px; color:#9C9CB2;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">03</span> Review</span>
+              <span role="tab" style="padding:8px 18px; border-radius:9px; color:#9C9CB2;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">04</span> Decide</span>
+            </div>
+            <p style="margin:0; font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;"><strong style="color:#EFEFF7;">Inspect —</strong> a sample field route is en route to Jubail Industrial City; the geofenced arrival ring is armed. Selecting Plan highlights candidate regions; Review reveals evidence &amp; immutable-submission cues; Decide completes the sample journey. All movement is illustrative, keyboard-operable and disabled under reduced motion.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ============ 1b PRIMARY LIGHT EN 1440 ============ -->
+    <div id="1b" data-screen-label="1b V6 primary light EN" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1b</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Primary · 1440 light EN · full parity (portals, nodes, cities, lifecycle) · sea/land contrast held</span></div>
+      <div style="width:1440px; height:920px; display:grid; grid-template-columns:440px 1fr; background:#F4F4FB; border:1px solid #E2E2EC; border-radius:16px; overflow:hidden; color:#16161F; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <main style="display:flex; flex-direction:column; padding:40px 44px; background:#FFFFFF; border-right:1px solid #E2E2EC;">
+          <header style="display:flex; align-items:center; gap:12px;">
+            <span style="color:#5541D6;"><svg width="34" height="34" sc-camel-view-box="0 0 48 48" fill="none" stroke="currentColor" stroke-linejoin="round" aria-hidden="true"><path d="M24 5 L40 18 L24 43 L8 18 Z" stroke-width="2.4"></path><path d="M8 18 H40 M24 5 L17 18 L24 43 M24 5 L31 18 L24 43" stroke-width="1.3" opacity="0.5"></path></svg></span>
+            <span lang="ar" style="font:700 24px/1.2 'IBM Plex Sans Arabic',sans-serif;">صقيل | صناعي</span>
+          </header>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:20px; padding-block:24px;">
+            <div>
+              <h2 style="margin:0; font:600 28px/36px 'Space Grotesk',sans-serif; letter-spacing:-0.01em;">Sign in to Saqeel</h2>
+              <p style="margin:6px 0 0; color:#56566B;">The national industrial inspection platform. Your workspace is resolved securely after sign-in.</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;"><span style="font:600 16px/24px 'Space Grotesk',sans-serif;">Email</span><span dir="ltr" style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #E2E2EC; border-radius:12px; background:#F4F4FB; color:#56566B;">name@mim.gov.sa</span></div>
+            <div style="display:flex; flex-direction:column; gap:6px;"><span style="font:600 16px/24px 'Space Grotesk',sans-serif;">Password</span><span style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #E2E2EC; border-radius:12px; background:#F4F4FB; color:#56566B;">••••••••••</span></div>
+            <span style="display:grid; place-items:center; height:48px; border-radius:12px; background:#6B57F0; color:#FFFFFF; font:600 17px/26px 'Space Grotesk',sans-serif;">Sign in</span>
+            <span style="align-self:center; font:600 16px/24px 'Space Grotesk',sans-serif; color:#5541D6;">Forgot your password?</span>
+          </div>
+          <footer style="display:flex; flex-direction:column; gap:8px; padding-top:16px; border-top:1px solid #E2E2EC; font:400 14px/20px 'Space Grotesk',sans-serif; color:#56566B;">
+            <span style="display:inline-flex; align-items:center; gap:8px;"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#0F9F63" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"></path><path d="m9 12 2 2 4-4"></path></svg>Government-secured access · encrypted session</span>
+            <div style="display:flex; align-items:center; justify-content:space-between;"><span style="opacity:.7;">© 2026 Ministry of Industry and Mineral Resources</span><span lang="ar" style="font:600 15px/22px 'IBM Plex Sans Arabic',sans-serif; color:#5541D6;">العربية</span></div>
+          </footer>
+        </main>
+        <aside style="display:flex; flex-direction:column; gap:12px; padding:20px 24px; min-width:0;">
+          <div style="display:flex; flex-direction:column; gap:3px;">
+            <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.16em; color:#56566B;">SAUDI INDUSTRIAL INSPECTION ATLAS — SAMPLE / ILLUSTRATIVE COVERAGE</span>
+            <span style="font:700 18px/26px 'Space Grotesk',sans-serif;">One platform. Every factory. Every inspection. Every decision.</span>
+          </div>
+          <div style="position:relative; flex:1; min-height:0; border:1px solid #E2E2EC; border-radius:16px; overflow:hidden; background:color-mix(in srgb,#2E7FD4 12%,#F4F4FB);">
+            <svg sc-camel-view-box="0 0 800 640" sc-camel-preserve-aspect-ratio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true">
+              <path d="M320.2,612L315.8,596.2L305.7,585.1L303.1,570.4L285.7,557.2L267.7,526.2L258.2,496.1L234.9,470.7L219.9,464.6L197.6,429.4L193.7,403.7L195.2,381.9L175.9,340.9L160.1,326.5L141.9,318.9L130.8,297.7L132.6,289.3L123.3,270.2L113.5,262L100.3,234.5L79.8,204.7L62.6,179.3L45.9,179.5L51.1,159.2L52.6,146.3L56.8,131.6L94.2,137.4L108.8,126.1L116.9,112.8L142.6,107.7L148.1,95.3L159.2,89L125.7,52.1L193.1,33.6L199.5,28L240.1,38L290.2,63.9L385.2,138.1L447.8,141.1L477.8,144.6L486.2,162.2L510,161.3L523.2,193.1L539.7,201.6L545.5,214.5L568.5,230.1L570.5,245.3L567.1,257.6L571.4,270L581.1,280.4L585.6,292.5L590.6,301.5L600.8,308.9L610.1,306.2L616.5,320.3L617.8,328.9L630.7,366.3L731.9,384.9L738.7,377.1L754.1,403.3L731.7,477.1L630.7,514.1L533.6,528.2L502.2,544.8L478,583.6L462.3,589.8L453.9,577.5L441,579.3L408.4,575.6L402.3,571.9L363.4,572.8L354.3,576.1L340.4,566.5L331.5,584.7L335,600.2L320.2,612Z" fill="#FFFFFF" stroke="color-mix(in srgb,#6B57F0 60%,#E2E2EC)" stroke-width="2.5" stroke-linejoin="round"></path>
+              <text x="70" y="470" transform="rotate(-52 70 470)" style="font:600 13px 'JetBrains Mono',monospace; letter-spacing:.3em;" fill="#2E7FD4" opacity="0.7">RED SEA</text>
+              <text x="596" y="150" transform="rotate(40 596 150)" style="font:600 12px 'JetBrains Mono',monospace; letter-spacing:.22em;" fill="#2E7FD4" opacity="0.7">ARABIAN GULF</text>
+              <g stroke="color-mix(in srgb,#56566B 50%,#E2E2EC)" stroke-width="1.2" stroke-dasharray="3 4" opacity="0.8" fill="none">
+                <line x1="185" y1="70" x2="360" y2="244"></line>
+                <line x1="620" y1="70" x2="543" y2="193"></line>
+                <line x1="742" y1="200" x2="552" y2="218"></line>
+                <line x1="742" y1="430" x2="567" y2="240"></line>
+                <line x1="410" y1="588" x2="451" y2="303"></line>
+              </g>
+              <path d="M451 303 C 490 278, 525 246, 552 220" fill="none" stroke="#6B57F0" stroke-width="3.5" stroke-dasharray="9 7" stroke-linecap="round"></path>
+              <circle cx="505" cy="262" r="9" fill="#0F9F63" stroke="#FFFFFF" stroke-width="3"></circle>
+              <circle cx="552" cy="218" r="24" fill="none" stroke="#6B57F0" stroke-width="2" stroke-dasharray="5 5"></circle>
+              <g style="font:600 12px 'JetBrains Mono',monospace; letter-spacing:.06em;" fill="#16161F" stroke="#FFFFFF" stroke-width="3.5" paint-order="stroke">
+                <circle cx="451" cy="303" r="4" stroke-width="2"></circle><text x="440" y="290">RIYADH</text>
+                <circle cx="199" cy="422" r="4" stroke-width="2"></circle><text x="150" y="415">JEDDAH</text>
+                <circle cx="228" cy="440" r="3.5" stroke-width="2" fill="#56566B"></circle><text x="238" y="453" fill="#56566B">MAKKAH</text>
+                <circle cx="225" cy="296" r="3.5" stroke-width="2" fill="#56566B"></circle><text x="232" y="288" fill="#56566B">MADINAH</text>
+                <circle cx="567" cy="240" r="4" stroke-width="2"></circle><text x="580" y="248">DAMMAM</text>
+                <circle cx="284" cy="200" r="3.5" stroke-width="2" fill="#56566B"></circle><text x="248" y="190" fill="#56566B">HA'IL</text>
+                <circle cx="360" cy="244" r="4" stroke-width="2"></circle><text x="330" y="232">BURAIDAH</text>
+                <circle cx="311" cy="542" r="3.5" stroke-width="2" fill="#56566B"></circle><text x="322" y="552" fill="#56566B">JAZAN</text>
+              </g>
+              <g>
+                <rect x="546" y="212" width="13" height="13" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+                <rect x="537" y="187" width="13" height="13" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+                <rect x="155" y="320" width="13" height="13" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+                <rect x="458" y="312" width="13" height="13" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+                <rect x="573" y="252" width="11" height="11" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+                <rect x="204" y="430" width="11" height="11" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+                <rect x="366" y="250" width="11" height="11" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+                <rect x="290" y="206" width="11" height="11" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+                <rect x="317" y="530" width="11" height="11" rx="3" fill="#FFFFFF" stroke="#6B57F0" stroke-width="2"></rect>
+              </g>
+              <g style="font:700 12px 'JetBrains Mono',monospace; letter-spacing:.05em;" fill="#5541D6" stroke="#FFFFFF" stroke-width="3.5" paint-order="stroke">
+                <text x="565" y="212">JUBAIL</text>
+                <text x="500" y="180">RAS AL-KHAIR</text>
+                <text x="112" y="345">YANBU</text>
+                <text x="470" y="332">RIYADH IC</text>
+                <text x="588" y="272" style="font-size:10px;">DAMMAM IC</text>
+                <text x="218" y="444" style="font-size:10px;">JEDDAH IC</text>
+                <text x="380" y="264" style="font-size:10px;">QASSIM IC</text>
+                <text x="304" y="212" style="font-size:10px;">HA'IL IC</text>
+                <text x="330" y="536" style="font-size:10px;">JAZAN IC</text>
+              </g>
+            </svg>
+            <figure style="position:absolute; left:14%; top:10px; margin:0; width:172px; border-radius:12px; border:1px solid #E2E2EC; overflow:hidden; background:#FFFFFF; box-shadow:0 8px 24px rgba(26,26,46,.14);">
+              <div style="height:80px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><polygon points="16,108 300,78 300,92 16,122" fill="#262640"></polygon><rect x="58" y="88" width="24" height="18" rx="2" fill="#30304E"></rect><rect x="128" y="80" width="24" height="18" rx="2" fill="#2B2B48"></rect><rect x="196" y="72" width="24" height="18" rx="2" fill="#30304E"></rect><rect x="176" y="34" width="7" height="54" fill="#2B2B48"></rect><rect x="230" y="28" width="7" height="54" fill="#2B2B48"></rect><rect x="176" y="30" width="61" height="7" fill="#2B2B48"></rect><rect x="183" y="46" width="47" height="2" fill="#7C6CFF" opacity="0.55"></rect><circle cx="282" cy="82" r="5" fill="#3D3D60"></circle><rect x="276" y="88" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">FOOD · PACKAGING</span><br><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#56566B;">QASSIM IC · CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <figure style="position:absolute; right:14%; top:10px; margin:0; width:172px; border-radius:12px; border:1px solid #E2E2EC; overflow:hidden; background:#FFFFFF; box-shadow:0 8px 24px rgba(26,26,46,.14);">
+              <div style="height:80px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="24" y="28" width="250" height="8" fill="#2B2B48"></rect><rect x="34" y="36" width="8" height="78" fill="#262640"></rect><rect x="256" y="36" width="8" height="78" fill="#262640"></rect><rect x="128" y="64" width="44" height="30" rx="3" fill="#2B2B48"></rect><rect x="140" y="60" width="20" height="4" fill="#7C6CFF" opacity="0.5"></rect><rect x="56" y="98" width="84" height="16" rx="2" fill="#262640"></rect><circle cx="236" cy="94" r="5" fill="#3D3D60"></circle><rect x="230" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">MINING · METALS</span><br><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#56566B;">RAS AL-KHAIR · CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <figure style="position:absolute; right:10px; top:26%; margin:0; width:172px; border-radius:12px; border:1px solid #E2E2EC; overflow:hidden; background:#FFFFFF; box-shadow:0 8px 24px rgba(26,26,46,.14);">
+              <div style="height:80px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="28" y="42" width="34" height="72" rx="4" fill="#262640"></rect><rect x="70" y="30" width="34" height="84" rx="4" fill="#2B2B48"></rect><rect x="112" y="50" width="34" height="64" rx="4" fill="#262640"></rect><rect x="160" y="18" width="10" height="96" fill="#2B2B48"></rect><circle cx="165" cy="16" r="3" fill="#7C6CFF" opacity="0.9"></circle><rect x="28" y="66" width="142" height="4" fill="#34345A"></rect><circle cx="228" cy="94" r="5" fill="#3D3D60"></circle><rect x="222" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">PETROCHEMICAL · PROCESS</span><br><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#56566B;">JUBAIL · CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <figure style="position:absolute; right:10px; bottom:16%; margin:0; width:172px; border-radius:12px; border:1px solid #E2E2EC; overflow:hidden; background:#FFFFFF; box-shadow:0 8px 24px rgba(26,26,46,.14);">
+              <div style="height:80px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="36" y="94" width="180" height="9" rx="2" fill="#262640"></rect><rect x="66" y="58" width="92" height="36" rx="3" fill="#2B2B48"></rect><circle cx="158" cy="76" r="9" fill="#E8B84B" opacity="0.18"></circle><path d="M158 76l10-7M158 76l12 2M158 76l7 10M158 76l-2 12" stroke="#E8B84B" stroke-width="1.6" opacity="0.8" fill="none"></path><circle cx="190" cy="68" r="5" fill="#3D3D60"></circle><rect x="182" y="74" width="15" height="20" rx="6" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">FABRICATION · ASSEMBLY</span><br><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#56566B;">DAMMAM IC · CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <figure style="position:absolute; left:42%; bottom:10px; margin:0; width:172px; border-radius:12px; border:1px solid #E2E2EC; overflow:hidden; background:#FFFFFF; box-shadow:0 8px 24px rgba(26,26,46,.14);">
+              <div style="height:80px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#191928"></rect><polygon points="0,6 118,38 118,104 0,134" fill="#222238"></polygon><polygon points="320,6 202,38 202,104 320,134" fill="#222238"></polygon><rect x="138" y="48" width="44" height="62" rx="2" fill="#2B2B48"></rect><rect x="146" y="26" width="28" height="5" rx="2" fill="#7C6CFF" opacity="0.35"></rect><circle cx="160" cy="66" r="5" fill="#5A5A85"></circle><rect x="153" y="72" width="14" height="26" rx="6" fill="#5A5A85"></rect></svg></div>
+              <figcaption style="padding:6px 10px;"><span style="font:700 11px/15px 'JetBrains Mono',monospace; letter-spacing:.08em;">PHARMA · CLEAN PRODUCTION</span><br><span style="font:400 10px/14px 'JetBrains Mono',monospace; color:#56566B;">RIYADH IC · CONCEPT — ASSET PENDING</span></figcaption>
+            </figure>
+            <div style="position:absolute; left:10px; top:10px;"><span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; background:#FFFFFF; border:1px solid #E2E2EC; color:#56566B; border-radius:999px; padding:4px 12px;">ILLUSTRATIVE INDUSTRIAL COVERAGE — SAMPLE ONLY</span></div>
+            <div style="position:absolute; left:10px; bottom:10px; font:600 10px/14px 'JetBrains Mono',monospace; color:#56566B; background:#FFFFFF; padding:2px 8px; border-radius:8px; border:1px dashed #E2E2EC;">Basemap: theme-aware CARTO (labelled) · © OpenStreetMap</div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:inline-flex; align-self:flex-start; background:#FFFFFF; border:1px solid #E2E2EC; border-radius:12px; padding:3px; gap:3px; font:600 15px/22px 'Space Grotesk',sans-serif;">
+              <span style="padding:8px 18px; border-radius:9px; color:#56566B;"><span style="color:#5541D6; font-family:'JetBrains Mono',monospace; font-size:11px;">01</span> Plan</span>
+              <span style="padding:8px 18px; border-radius:9px; background:#6B57F0; color:#FFFFFF;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px;">02</span> Inspect</span>
+              <span style="padding:8px 18px; border-radius:9px; color:#56566B;"><span style="color:#5541D6; font-family:'JetBrains Mono',monospace; font-size:11px;">03</span> Review</span>
+              <span style="padding:8px 18px; border-radius:9px; color:#56566B;"><span style="color:#5541D6; font-family:'JetBrains Mono',monospace; font-size:11px;">04</span> Decide</span>
+            </div>
+            <p style="margin:0; font:400 14px/20px 'Space Grotesk',sans-serif; color:#56566B;"><strong style="color:#16161F;">Inspect —</strong> a sample field route is en route to Jubail Industrial City; the geofenced arrival ring is armed.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ============ 1c ARABIC RTL 1440 ============ -->
+    <div id="1c" data-screen-label="1c V6 Arabic RTL" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1c</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Arabic RTL · 1440 dark · full parity — Arabic map labels, portals, lifecycle, dossier language (copy pending linguistic approval)</span></div>
+      <div dir="rtl" lang="ar" style="width:1440px; height:920px; display:grid; grid-template-columns:440px 1fr; background:#0A0A14; border:1px solid #26263A; border-radius:16px; overflow:hidden; color:#EFEFF7; font:400 16px/26px 'IBM Plex Sans Arabic',sans-serif;">
+        <main style="display:flex; flex-direction:column; padding:40px 44px; background:#14141F; border-left:1px solid #26263A;">
+          <header style="display:flex; align-items:center; gap:12px;">
+            <span style="color:#9487FF;"><svg width="34" height="34" sc-camel-view-box="0 0 48 48" fill="none" stroke="currentColor" stroke-linejoin="round" aria-hidden="true"><path d="M24 5 L40 18 L24 43 L8 18 Z" stroke-width="2.4"></path><path d="M8 18 H40 M24 5 L17 18 L24 43 M24 5 L31 18 L24 43" stroke-width="1.3" opacity="0.5"></path></svg></span>
+            <span style="font:700 24px/1.4 'IBM Plex Sans Arabic',sans-serif;">صقيل | صناعي</span>
+          </header>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:20px; padding-block:24px;">
+            <div>
+              <h2 style="margin:0; font:600 28px/40px 'IBM Plex Sans Arabic',sans-serif;">تسجيل الدخول إلى صقيل</h2>
+              <p style="margin:6px 0 0; color:#9C9CB2;">المنصة الوطنية للتفتيش الصناعي. يتم تحديد مساحة عملك بأمان بعد تسجيل الدخول.</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;"><span style="font:600 16px/26px 'IBM Plex Sans Arabic',sans-serif;">البريد الإلكتروني</span><span dir="ltr" style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#0A0A14; color:#9C9CB2; text-align:left; font:400 16px/24px 'Space Grotesk',sans-serif;">name@mim.gov.sa</span></div>
+            <div style="display:flex; flex-direction:column; gap:6px;"><span style="font:600 16px/26px 'IBM Plex Sans Arabic',sans-serif;">كلمة المرور</span><span style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#0A0A14; color:#9C9CB2;">••••••••••</span></div>
+            <span style="display:grid; place-items:center; height:48px; border-radius:12px; background:#7C6CFF; color:#0B0B14; font:600 17px/26px 'IBM Plex Sans Arabic',sans-serif;">تسجيل الدخول</span>
+            <span style="align-self:center; font:600 16px/26px 'IBM Plex Sans Arabic',sans-serif; color:#9487FF;">هل نسيت كلمة المرور؟</span>
+          </div>
+          <footer style="display:flex; flex-direction:column; gap:8px; padding-top:16px; border-top:1px solid #26263A; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">
+            <span style="display:inline-flex; align-items:center; gap:8px;"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#2DE08E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v5c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z"></path><path d="m9 12 2 2 4-4"></path></svg>وصول حكومي مؤمّن · جلسة مشفّرة</span>
+            <div style="display:flex; align-items:center; justify-content:space-between;"><span style="opacity:.6;">© 2026 وزارة الصناعة والثروة المعدنية</span><span lang="en" dir="ltr" style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#9487FF;">English</span></div>
+          </footer>
+        </main>
+        <aside style="display:flex; flex-direction:column; gap:12px; padding:20px 24px; min-width:0;">
+          <div style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;">
+            <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; color:#9C9CB2;" dir="ltr">SAMPLE / ILLUSTRATIVE COVERAGE</span>
+            <span style="font:700 18px/30px 'IBM Plex Sans Arabic',sans-serif;">أطلس التفتيش الصناعي السعودي — منصة واحدة لكل مصنع وكل تفتيش وكل قرار.</span>
+          </div>
+          <div style="position:relative; flex:1; min-height:0; border:1px solid #26263A; border-radius:16px; overflow:hidden; background:color-mix(in srgb,#5AA7FA 10%,#0A0A14);">
+            <svg sc-camel-view-box="0 0 800 640" sc-camel-preserve-aspect-ratio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true">
+              <path d="M320.2,612L315.8,596.2L305.7,585.1L303.1,570.4L285.7,557.2L267.7,526.2L258.2,496.1L234.9,470.7L219.9,464.6L197.6,429.4L193.7,403.7L195.2,381.9L175.9,340.9L160.1,326.5L141.9,318.9L130.8,297.7L132.6,289.3L123.3,270.2L113.5,262L100.3,234.5L79.8,204.7L62.6,179.3L45.9,179.5L51.1,159.2L52.6,146.3L56.8,131.6L94.2,137.4L108.8,126.1L116.9,112.8L142.6,107.7L148.1,95.3L159.2,89L125.7,52.1L193.1,33.6L199.5,28L240.1,38L290.2,63.9L385.2,138.1L447.8,141.1L477.8,144.6L486.2,162.2L510,161.3L523.2,193.1L539.7,201.6L545.5,214.5L568.5,230.1L570.5,245.3L567.1,257.6L571.4,270L581.1,280.4L585.6,292.5L590.6,301.5L600.8,308.9L610.1,306.2L616.5,320.3L617.8,328.9L630.7,366.3L731.9,384.9L738.7,377.1L754.1,403.3L731.7,477.1L630.7,514.1L533.6,528.2L502.2,544.8L478,583.6L462.3,589.8L453.9,577.5L441,579.3L408.4,575.6L402.3,571.9L363.4,572.8L354.3,576.1L340.4,566.5L331.5,584.7L335,600.2L320.2,612Z" fill="color-mix(in srgb,#7C6CFF 9%,#14141F)" stroke="color-mix(in srgb,#9C9CB2 65%,#26263A)" stroke-width="2.5" stroke-linejoin="round"></path>
+              <text x="70" y="470" transform="rotate(-52 70 470)" style="font:600 14px 'IBM Plex Sans Arabic',sans-serif;" fill="#5AA7FA" opacity="0.6">البحر الأحمر</text>
+              <text x="590" y="146" transform="rotate(40 590 146)" style="font:600 13px 'IBM Plex Sans Arabic',sans-serif;" fill="#5AA7FA" opacity="0.6">الخليج العربي</text>
+              <path d="M451 303 C 490 278, 525 246, 552 220" fill="none" stroke="#7C6CFF" stroke-width="3.5" stroke-dasharray="9 7" stroke-linecap="round"></path>
+              <circle cx="505" cy="262" r="9" fill="#2DE08E" stroke="#0A0A14" stroke-width="3"></circle>
+              <circle cx="552" cy="218" r="24" fill="none" stroke="#7C6CFF" stroke-width="2" stroke-dasharray="5 5"></circle>
+              <g style="font:600 13px 'IBM Plex Sans Arabic',sans-serif;" fill="#EFEFF7" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke">
+                <circle cx="451" cy="303" r="4" stroke-width="2"></circle><text x="428" y="292">الرياض</text>
+                <circle cx="199" cy="422" r="4" stroke-width="2"></circle><text x="168" y="414">جدة</text>
+                <circle cx="228" cy="440" r="3.5" stroke-width="2" fill="#9C9CB2"></circle><text x="238" y="455" fill="#9C9CB2">مكة المكرمة</text>
+                <circle cx="225" cy="296" r="3.5" stroke-width="2" fill="#9C9CB2"></circle><text x="232" y="288" fill="#9C9CB2">المدينة المنورة</text>
+                <circle cx="567" cy="240" r="4" stroke-width="2"></circle><text x="580" y="248">الدمام</text>
+                <circle cx="284" cy="200" r="3.5" stroke-width="2" fill="#9C9CB2"></circle><text x="250" y="192" fill="#9C9CB2">حائل</text>
+                <circle cx="360" cy="244" r="4" stroke-width="2"></circle><text x="326" y="234">بريدة</text>
+                <circle cx="311" cy="542" r="3.5" stroke-width="2" fill="#9C9CB2"></circle><text x="322" y="554" fill="#9C9CB2">جازان</text>
+              </g>
+              <g>
+                <rect x="546" y="212" width="13" height="13" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="537" y="187" width="13" height="13" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="155" y="320" width="13" height="13" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+                <rect x="458" y="312" width="13" height="13" rx="3" fill="#14141F" stroke="#7C6CFF" stroke-width="2"></rect>
+              </g>
+              <g style="font:700 13px 'IBM Plex Sans Arabic',sans-serif;" fill="#9487FF" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke">
+                <text x="566" y="210">الجبيل الصناعية</text>
+                <text x="470" y="180">رأس الخير</text>
+                <text x="98" y="348">ينبع الصناعية</text>
+                <text x="470" y="334">المدن الصناعية بالرياض</text>
+              </g>
+            </svg>
+            <div style="position:absolute; right:10px; top:10px;"><span style="font:600 13px/20px 'IBM Plex Sans Arabic',sans-serif; background:#14141F; border:1px solid #26263A; color:#9C9CB2; border-radius:999px; padding:4px 14px;">تغطية صناعية توضيحية — عينات فقط</span></div>
+            <figure style="position:absolute; left:10px; top:24%; margin:0; width:172px; border-radius:12px; border:1px solid #26263A; overflow:hidden; background:#14141F; box-shadow:0 12px 32px rgba(0,0,0,.55);">
+              <div style="height:80px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="28" y="42" width="34" height="72" rx="4" fill="#262640"></rect><rect x="70" y="30" width="34" height="84" rx="4" fill="#2B2B48"></rect><rect x="112" y="50" width="34" height="64" rx="4" fill="#262640"></rect><rect x="160" y="18" width="10" height="96" fill="#2B2B48"></rect><circle cx="165" cy="16" r="3" fill="#7C6CFF" opacity="0.9"></circle><circle cx="228" cy="94" r="5" fill="#3D3D60"></circle><rect x="222" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px;"><span style="font:700 12px/18px 'IBM Plex Sans Arabic',sans-serif;">بتروكيماويات · معالجة</span><br><span style="font:400 11px/16px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">الجبيل · مفهوم تصميمي — بانتظار الأصل</span></figcaption>
+            </figure>
+            <figure style="position:absolute; left:10px; bottom:16%; margin:0; width:172px; border-radius:12px; border:1px solid #26263A; overflow:hidden; background:#14141F; box-shadow:0 12px 32px rgba(0,0,0,.55);">
+              <div style="height:80px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="24" y="28" width="250" height="8" fill="#2B2B48"></rect><rect x="34" y="36" width="8" height="78" fill="#262640"></rect><rect x="256" y="36" width="8" height="78" fill="#262640"></rect><rect x="128" y="64" width="44" height="30" rx="3" fill="#2B2B48"></rect><circle cx="236" cy="94" r="5" fill="#3D3D60"></circle><rect x="230" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+              <figcaption style="padding:6px 10px;"><span style="font:700 12px/18px 'IBM Plex Sans Arabic',sans-serif;">تعدين · معادن</span><br><span style="font:400 11px/16px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">رأس الخير · مفهوم تصميمي — بانتظار الأصل</span></figcaption>
+            </figure>
+            <figure style="position:absolute; right:42%; bottom:10px; margin:0; width:172px; border-radius:12px; border:1px solid #26263A; overflow:hidden; background:#14141F; box-shadow:0 12px 32px rgba(0,0,0,.55);">
+              <div style="height:80px; position:relative;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#191928"></rect><polygon points="0,6 118,38 118,104 0,134" fill="#222238"></polygon><polygon points="320,6 202,38 202,104 320,134" fill="#222238"></polygon><rect x="138" y="48" width="44" height="62" rx="2" fill="#2B2B48"></rect><rect x="146" y="26" width="28" height="5" rx="2" fill="#7C6CFF" opacity="0.35"></rect><circle cx="160" cy="66" r="5" fill="#5A5A85"></circle><rect x="153" y="72" width="14" height="26" rx="6" fill="#5A5A85"></rect></svg></div>
+              <figcaption style="padding:6px 10px;"><span style="font:700 12px/18px 'IBM Plex Sans Arabic',sans-serif;">أدوية · إنتاج نظيف</span><br><span style="font:400 11px/16px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">المدن الصناعية بالرياض · مفهوم تصميمي</span></figcaption>
+            </figure>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:inline-flex; align-self:flex-start; background:color-mix(in srgb,#9C9CB2 10%,#14141F); border:1px solid #26263A; border-radius:12px; padding:3px; gap:3px; font:600 15px/24px 'IBM Plex Sans Arabic',sans-serif;">
+              <span style="padding:8px 18px; border-radius:9px; color:#9C9CB2;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;" dir="ltr">01</span> التخطيط</span>
+              <span style="padding:8px 18px; border-radius:9px; background:#7C6CFF; color:#0B0B14;"><span style="font-family:'JetBrains Mono',monospace; font-size:11px;" dir="ltr">02</span> التفتيش</span>
+              <span style="padding:8px 18px; border-radius:9px; color:#9C9CB2;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;" dir="ltr">03</span> المراجعة</span>
+              <span style="padding:8px 18px; border-radius:9px; color:#9C9CB2;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;" dir="ltr">04</span> القرار</span>
+            </div>
+            <p style="margin:0; font:400 14px/24px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;"><strong style="color:#EFEFF7;">التفتيش —</strong> مسار ميداني توضيحي في طريقه إلى مدينة الجبيل الصناعية؛ حلقة الوصول ضمن السياج الجغرافي جاهزة.</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ============ 1d DOSSIER PREVIEWS (hover/focus/tap) ============ -->
+    <div id="1d" data-screen-label="1d Dossier previews" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1d</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Inspection dossier previews — open on hover, keyboard focus, click or tap (never hover-only) · Riyadh / Jubail / Yanbu / Ras Al-Khair</span></div>
+      <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; color:#EFEFF7; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <div style="width:400px; background:#14141F; border:1px solid #7C6CFF; border-radius:16px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,.55);">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 18px; border-bottom:1px solid #26263A;">
+            <span style="font:700 14px/20px 'JetBrains Mono',monospace; letter-spacing:.06em;">RIYADH INDUSTRIAL CITIES</span>
+            <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2; border:1px solid #26263A; border-radius:999px; padding:2px 8px;">SAMPLE / ILLUSTRATIVE</span>
+          </div>
+          <div style="display:grid; grid-template-columns:120px 1fr; gap:14px; padding:16px 18px;">
+            <div style="height:84px; position:relative; border-radius:8px; overflow:hidden; border:1px solid #26263A;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#191928"></rect><polygon points="0,6 118,38 118,104 0,134" fill="#222238"></polygon><polygon points="320,6 202,38 202,104 320,134" fill="#222238"></polygon><rect x="138" y="48" width="44" height="62" rx="2" fill="#2B2B48"></rect><circle cx="160" cy="66" r="5" fill="#5A5A85"></circle><rect x="153" y="72" width="14" height="26" rx="6" fill="#5A5A85"></rect></svg></div>
+            <div style="display:flex; flex-direction:column; gap:4px; font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+              <span style="color:#EFEFF7; font-weight:600;">Manufacturing, assembly &amp; clean production</span>
+              <span>Representative facility: production halls, clean lines</span>
+              <span>Illustrative theme: <span style="color:#EFEFF7;">equipment &amp; occupational safety</span></span>
+            </div>
+          </div>
+          <div style="padding:0 18px 16px; font:600 13px/18px 'JetBrains Mono',monospace; color:#9487FF;">PLAN → INSPECT → EVIDENCE → REVIEW</div>
+        </div>
+        <div style="width:400px; background:#14141F; border:1px solid #7C6CFF; border-radius:16px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,.55);">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 18px; border-bottom:1px solid #26263A;">
+            <span style="font:700 14px/20px 'JetBrains Mono',monospace; letter-spacing:.06em;">JUBAIL INDUSTRIAL CITY</span>
+            <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2; border:1px solid #26263A; border-radius:999px; padding:2px 8px;">SAMPLE / ILLUSTRATIVE</span>
+          </div>
+          <div style="display:grid; grid-template-columns:120px 1fr; gap:14px; padding:16px 18px;">
+            <div style="height:84px; position:relative; border-radius:8px; overflow:hidden; border:1px solid #26263A;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="28" y="42" width="34" height="72" rx="4" fill="#262640"></rect><rect x="70" y="30" width="34" height="84" rx="4" fill="#2B2B48"></rect><rect x="112" y="50" width="34" height="64" rx="4" fill="#262640"></rect><rect x="160" y="18" width="10" height="96" fill="#2B2B48"></rect><circle cx="165" cy="16" r="3" fill="#7C6CFF" opacity="0.9"></circle><circle cx="228" cy="94" r="5" fill="#3D3D60"></circle><rect x="222" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+            <div style="display:flex; flex-direction:column; gap:4px; font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+              <span style="color:#EFEFF7; font-weight:600;">Process &amp; petrochemical industry</span>
+              <span>Representative facility: process towers, pipe galleries</span>
+              <span>Illustrative theme: <span style="color:#EFEFF7;">process safety</span></span>
+            </div>
+          </div>
+          <div style="padding:0 18px 16px; font:600 13px/18px 'JetBrains Mono',monospace; color:#9487FF;">PLAN → INSPECT → EVIDENCE → REVIEW</div>
+        </div>
+        <div style="width:400px; background:#14141F; border:1px solid #7C6CFF; border-radius:16px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,.55);">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 18px; border-bottom:1px solid #26263A;">
+            <span style="font:700 14px/20px 'JetBrains Mono',monospace; letter-spacing:.06em;">YANBU INDUSTRIAL CITY</span>
+            <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2; border:1px solid #26263A; border-radius:999px; padding:2px 8px;">SAMPLE / ILLUSTRATIVE</span>
+          </div>
+          <div style="display:grid; grid-template-columns:120px 1fr; gap:14px; padding:16px 18px;">
+            <div style="height:84px; position:relative; border-radius:8px; overflow:hidden; border:1px solid #26263A;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="28" y="42" width="34" height="72" rx="4" fill="#262640"></rect><rect x="70" y="30" width="34" height="84" rx="4" fill="#2B2B48"></rect><rect x="160" y="18" width="10" height="96" fill="#2B2B48"></rect><rect x="28" y="66" width="142" height="4" fill="#34345A"></rect><circle cx="228" cy="94" r="5" fill="#3D3D60"></circle><rect x="222" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+            <div style="display:flex; flex-direction:column; gap:4px; font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+              <span style="color:#EFEFF7; font-weight:600;">Refining, process &amp; port-linked industry</span>
+              <span>Representative facility: storage farms, process units</span>
+              <span>Illustrative theme: <span style="color:#EFEFF7;">storage &amp; handling</span></span>
+            </div>
+          </div>
+          <div style="padding:0 18px 16px; font:600 13px/18px 'JetBrains Mono',monospace; color:#9487FF;">PLAN → INSPECT → EVIDENCE → REVIEW</div>
+        </div>
+        <div style="width:400px; background:#14141F; border:1px solid #7C6CFF; border-radius:16px; overflow:hidden; box-shadow:0 12px 32px rgba(0,0,0,.55);">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 18px; border-bottom:1px solid #26263A;">
+            <span style="font:700 14px/20px 'JetBrains Mono',monospace; letter-spacing:.06em;">RAS AL-KHAIR INDUSTRIAL CITY</span>
+            <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2; border:1px solid #26263A; border-radius:999px; padding:2px 8px;">SAMPLE / ILLUSTRATIVE</span>
+          </div>
+          <div style="display:grid; grid-template-columns:120px 1fr; gap:14px; padding:16px 18px;">
+            <div style="height:84px; position:relative; border-radius:8px; overflow:hidden; border:1px solid #26263A;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect y="112" width="320" height="28" fill="#0D0D17"></rect><rect x="24" y="28" width="250" height="8" fill="#2B2B48"></rect><rect x="34" y="36" width="8" height="78" fill="#262640"></rect><rect x="256" y="36" width="8" height="78" fill="#262640"></rect><rect x="128" y="64" width="44" height="30" rx="3" fill="#2B2B48"></rect><circle cx="236" cy="94" r="5" fill="#3D3D60"></circle><rect x="230" y="100" width="12" height="22" rx="5" fill="#3D3D60"></rect></svg></div>
+            <div style="display:flex; flex-direction:column; gap:4px; font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+              <span style="color:#EFEFF7; font-weight:600;">Mining, metals &amp; mineral processing</span>
+              <span>Representative facility: smelters, materials handling</span>
+              <span>Illustrative theme: <span style="color:#EFEFF7;">materials &amp; lifting safety</span></span>
+            </div>
+          </div>
+          <div style="padding:0 18px 16px; font:600 13px/18px 'JetBrains Mono',monospace; color:#9487FF;">PLAN → INSPECT → EVIDENCE → REVIEW</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1e KEYBOARD FOCUS + 1f REDUCED MOTION ============ -->
+    <div id="1e" data-screen-label="1e Keyboard focus and reduced motion" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1e</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Keyboard focus on an atlas node · reduced-motion treatment</span></div>
+      <div style="display:flex; gap:20px; align-items:flex-start; color:#EFEFF7; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <div style="width:520px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:12px;">
+          <span style="font:600 12px/16px 'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; color:#9C9CB2;">Keyboard focus — node ring + dossier opens</span>
+          <div style="display:flex; align-items:center; gap:14px;">
+            <span style="display:grid; place-items:center; width:44px; height:44px; border-radius:10px; background:#14141F; border:2px solid #7C6CFF; box-shadow:0 0 0 2px #0A0A14, 0 0 0 4px #7C6CFF;"><svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#9487FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3h4M11 3v6l-5.5 9.5A2 2 0 0 0 7 21h10a2 2 0 0 0 1.5-2.5L13 9V3"></path></svg></span>
+            <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Tab order: lifecycle stages → industrial nodes (geographic order) → portals → list-view link. Enter/Space opens the dossier; Esc closes and returns focus.</span>
+          </div>
+          <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Every node has a text alternative; nothing is hover-only. Screen reader: "Jubail Industrial City, process and petrochemical industry, illustrative sample — press Enter for dossier preview."</span>
+        </div>
+        <div style="width:520px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:12px;">
+          <span style="font:600 12px/16px 'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.08em; color:#9C9CB2;">Reduced motion — static storytelling</span>
+          <div style="position:relative; height:180px; border:1px solid #26263A; border-radius:12px; overflow:hidden; background:color-mix(in srgb,#5AA7FA 10%,#0A0A14);">
+            <svg sc-camel-view-box="300 120 380 260" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true">
+              <path d="M451 303 C 490 278, 525 246, 552 220" fill="none" stroke="#7C6CFF" stroke-width="3" stroke-dasharray="9 7" stroke-linecap="round"></path>
+              <circle cx="451" cy="303" r="5" fill="#7C6CFF"></circle>
+              <circle cx="552" cy="218" r="22" fill="none" stroke="#7C6CFF" stroke-width="2" stroke-dasharray="5 5"></circle>
+              <circle cx="552" cy="218" r="5" fill="#7C6CFF"></circle>
+              <g style="font:600 12px 'JetBrains Mono',monospace;" fill="#EFEFF7" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke"><text x="430" y="330">01 PLANNED</text><text x="530" y="188">02 ARRIVAL</text></g>
+            </svg>
+          </div>
+          <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Under prefers-reduced-motion: route dash animation, inspector ping and geofence pulse are disabled; the journey renders as a static dashed line with numbered step badges. Meaning is never carried by motion.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1g MAP FALLBACK ============ -->
+    <div id="1g" data-screen-label="1g Map fallback" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1g</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Tiles/scripts unavailable — static vector atlas keeps geography, coverage labels and lifecycle; sign-in unaffected</span></div>
+      <div style="width:960px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:12px; color:#EFEFF7; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.16em; color:#9C9CB2;">SAUDI INDUSTRIAL INSPECTION ATLAS — SAMPLE / ILLUSTRATIVE</span>
+          <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; padding:3px 10px; border-radius:999px; background:#14141F; border:1px dashed color-mix(in srgb,#9C9CB2 45%,#26263A); color:#9C9CB2;">STATIC ILLUSTRATION — MAP TILES UNAVAILABLE</span>
+        </div>
+        <div style="position:relative; height:380px; border:1px solid #26263A; border-radius:16px; overflow:hidden; background:color-mix(in srgb,#5AA7FA 10%,#0A0A14);">
+          <svg sc-camel-view-box="0 0 800 640" sc-camel-preserve-aspect-ratio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true">
+            <path d="M320.2,612L315.8,596.2L305.7,585.1L303.1,570.4L285.7,557.2L267.7,526.2L258.2,496.1L234.9,470.7L219.9,464.6L197.6,429.4L193.7,403.7L195.2,381.9L175.9,340.9L160.1,326.5L141.9,318.9L130.8,297.7L132.6,289.3L123.3,270.2L113.5,262L100.3,234.5L79.8,204.7L62.6,179.3L45.9,179.5L51.1,159.2L52.6,146.3L56.8,131.6L94.2,137.4L108.8,126.1L116.9,112.8L142.6,107.7L148.1,95.3L159.2,89L125.7,52.1L193.1,33.6L199.5,28L240.1,38L290.2,63.9L385.2,138.1L447.8,141.1L477.8,144.6L486.2,162.2L510,161.3L523.2,193.1L539.7,201.6L545.5,214.5L568.5,230.1L570.5,245.3L567.1,257.6L571.4,270L581.1,280.4L585.6,292.5L590.6,301.5L600.8,308.9L610.1,306.2L616.5,320.3L617.8,328.9L630.7,366.3L731.9,384.9L738.7,377.1L754.1,403.3L731.7,477.1L630.7,514.1L533.6,528.2L502.2,544.8L478,583.6L462.3,589.8L453.9,577.5L441,579.3L408.4,575.6L402.3,571.9L363.4,572.8L354.3,576.1L340.4,566.5L331.5,584.7L335,600.2L320.2,612Z" fill="color-mix(in srgb,#7C6CFF 9%,#14141F)" stroke="color-mix(in srgb,#9C9CB2 65%,#26263A)" stroke-width="2.5" stroke-linejoin="round"></path>
+            <path d="M451 303 C 490 278, 525 246, 552 220" fill="none" stroke="#7C6CFF" stroke-width="3" stroke-dasharray="9 7" stroke-linecap="round"></path>
+            <circle cx="552" cy="218" r="24" fill="none" stroke="#7C6CFF" stroke-width="2" stroke-dasharray="5 5"></circle>
+            <g style="font:600 12px 'JetBrains Mono',monospace;" fill="#EFEFF7" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke">
+              <text x="440" y="290">RIYADH</text><text x="150" y="415">JEDDAH</text><text x="580" y="248">DAMMAM</text>
+            </g>
+            <g style="font:700 12px 'JetBrains Mono',monospace;" fill="#9487FF" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke">
+              <text x="565" y="212">JUBAIL</text><text x="112" y="345">YANBU</text><text x="500" y="180">RAS AL-KHAIR</text>
+            </g>
+          </svg>
+          <div style="position:absolute; left:12px; bottom:12px; font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2; background:#14141F; border:1px solid #26263A; border-radius:8px; padding:6px 12px;">This is a sample illustration. Sign-in and platform services are unaffected.</div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span style="font:700 14px/20px 'Space Grotesk',sans-serif; background:#14141F; border:1px solid #26263A; border-radius:999px; padding:6px 16px;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">01</span> Plan</span>
+          <span style="font:700 14px/20px 'Space Grotesk',sans-serif; background:#14141F; border:1px solid #26263A; border-radius:999px; padding:6px 16px;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">02</span> Inspect</span>
+          <span style="font:700 14px/20px 'Space Grotesk',sans-serif; background:#14141F; border:1px solid #26263A; border-radius:999px; padding:6px 16px;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">03</span> Review</span>
+          <span style="font:700 14px/20px 'Space Grotesk',sans-serif; background:#14141F; border:1px solid #26263A; border-radius:999px; padding:6px 16px;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">04</span> Decide</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1h TABLET LANDSCAPE ============ -->
+    <div id="1h" data-screen-label="1h Tablet landscape" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1h</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Tablet landscape 1194 — map + one selected dossier; portals reduced</span></div>
+      <div style="width:1194px; height:680px; display:grid; grid-template-columns:380px 1fr; background:#0A0A14; border:1px solid #26263A; border-radius:24px; overflow:hidden; color:#EFEFF7; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <main style="display:flex; flex-direction:column; padding:32px 36px; background:#14141F; border-right:1px solid #26263A;">
+          <header style="display:flex; align-items:center; gap:12px;"><span style="color:#9487FF;"><svg width="30" height="30" sc-camel-view-box="0 0 48 48" fill="none" stroke="currentColor" stroke-linejoin="round" aria-hidden="true"><path d="M24 5 L40 18 L24 43 L8 18 Z" stroke-width="2.4"></path><path d="M8 18 H40 M24 5 L17 18 L24 43 M24 5 L31 18 L24 43" stroke-width="1.3" opacity="0.5"></path></svg></span><span lang="ar" style="font:700 22px/30px 'IBM Plex Sans Arabic',sans-serif;">صقيل | صناعي</span></header>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:18px;">
+            <h2 style="margin:0; font:600 26px/34px 'Space Grotesk',sans-serif;">Sign in to Saqeel</h2>
+            <span dir="ltr" style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#0A0A14; color:#9C9CB2;">name@mim.gov.sa</span>
+            <span style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#0A0A14; color:#9C9CB2;">••••••••••</span>
+            <span style="display:grid; place-items:center; height:52px; border-radius:12px; background:#7C6CFF; color:#0B0B14; font:600 17px/26px 'Space Grotesk',sans-serif;">Sign in</span>
+            <span style="align-self:center; font:600 16px/24px 'Space Grotesk',sans-serif; color:#9487FF;">Forgot your password?</span>
+          </div>
+          <footer style="padding-top:14px; border-top:1px solid #26263A; font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2; display:flex; justify-content:space-between;"><span>Government-secured access</span><span lang="ar" style="font:600 15px/22px 'IBM Plex Sans Arabic',sans-serif; color:#9487FF;">العربية</span></footer>
+        </main>
+        <aside style="display:flex; flex-direction:column; gap:10px; padding:18px 22px; min-width:0;">
+          <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.16em; color:#9C9CB2;">SAUDI INDUSTRIAL INSPECTION ATLAS — SAMPLE / ILLUSTRATIVE</span>
+          <div style="position:relative; flex:1; min-height:0; border:1px solid #26263A; border-radius:16px; overflow:hidden; background:color-mix(in srgb,#5AA7FA 10%,#0A0A14);">
+            <svg sc-camel-view-box="0 0 800 640" sc-camel-preserve-aspect-ratio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true">
+              <path d="M320.2,612L315.8,596.2L305.7,585.1L303.1,570.4L285.7,557.2L267.7,526.2L258.2,496.1L234.9,470.7L219.9,464.6L197.6,429.4L193.7,403.7L195.2,381.9L175.9,340.9L160.1,326.5L141.9,318.9L130.8,297.7L132.6,289.3L123.3,270.2L113.5,262L100.3,234.5L79.8,204.7L62.6,179.3L45.9,179.5L51.1,159.2L52.6,146.3L56.8,131.6L94.2,137.4L108.8,126.1L116.9,112.8L142.6,107.7L148.1,95.3L159.2,89L125.7,52.1L193.1,33.6L199.5,28L240.1,38L290.2,63.9L385.2,138.1L447.8,141.1L477.8,144.6L486.2,162.2L510,161.3L523.2,193.1L539.7,201.6L545.5,214.5L568.5,230.1L570.5,245.3L567.1,257.6L571.4,270L581.1,280.4L585.6,292.5L590.6,301.5L600.8,308.9L610.1,306.2L616.5,320.3L617.8,328.9L630.7,366.3L731.9,384.9L738.7,377.1L754.1,403.3L731.7,477.1L630.7,514.1L533.6,528.2L502.2,544.8L478,583.6L462.3,589.8L453.9,577.5L441,579.3L408.4,575.6L402.3,571.9L363.4,572.8L354.3,576.1L340.4,566.5L331.5,584.7L335,600.2L320.2,612Z" fill="color-mix(in srgb,#7C6CFF 9%,#14141F)" stroke="color-mix(in srgb,#9C9CB2 65%,#26263A)" stroke-width="2.5" stroke-linejoin="round"></path>
+              <path d="M451 303 C 490 278, 525 246, 552 220" fill="none" stroke="#7C6CFF" stroke-width="3" stroke-dasharray="9 7" stroke-linecap="round"></path>
+              <circle cx="552" cy="218" r="24" fill="none" stroke="#7C6CFF" stroke-width="2" stroke-dasharray="5 5"></circle>
+              <g style="font:600 12px 'JetBrains Mono',monospace;" fill="#EFEFF7" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke"><text x="440" y="290">RIYADH</text><text x="150" y="415">JEDDAH</text><text x="580" y="248">DAMMAM</text></g>
+              <g style="font:700 12px 'JetBrains Mono',monospace;" fill="#9487FF" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke"><text x="565" y="212">JUBAIL</text><text x="112" y="345">YANBU</text><text x="500" y="180">RAS AL-KHAIR</text></g>
+            </svg>
+            <div style="position:absolute; right:12px; bottom:12px; width:320px; background:#14141F; border:1px solid #7C6CFF; border-radius:12px; padding:14px 16px; box-shadow:0 12px 32px rgba(0,0,0,.55);">
+              <div style="display:flex; justify-content:space-between; gap:8px;"><span style="font:700 13px/18px 'JetBrains Mono',monospace;">JUBAIL INDUSTRIAL CITY</span><span style="font:600 9px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">SAMPLE</span></div>
+              <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">Process &amp; petrochemical · illustrative theme: process safety</span>
+              <div style="font:600 11px/16px 'JetBrains Mono',monospace; color:#9487FF; margin-top:6px;">PLAN → INSPECT → EVIDENCE → REVIEW</div>
+            </div>
+            <div style="position:absolute; left:10px; top:10px;"><span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.08em; background:#14141F; border:1px solid #26263A; color:#9C9CB2; border-radius:999px; padding:3px 10px;">ILLUSTRATIVE INDUSTRIAL COVERAGE</span></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ============ 1i TABLET PORTRAIT + 1j NARROW ============ -->
+    <div id="1i" data-screen-label="1i Tablet portrait and narrow" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1i</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Tablet portrait 834 (credentials first, compact map + story below) · Narrow 390 (coverage carousel, no map interaction)</span></div>
+      <div style="display:flex; gap:24px; align-items:flex-start;">
+        <div style="width:640px; height:900px; display:flex; flex-direction:column; background:#0A0A14; border:1px solid #26263A; border-radius:24px; overflow:hidden; color:#EFEFF7; font:400 16px/24px 'Space Grotesk',sans-serif;">
+          <div style="padding:28px 40px 0; display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; align-items:center; gap:10px;"><span style="color:#9487FF;"><svg width="30" height="30" sc-camel-view-box="0 0 48 48" fill="none" stroke="currentColor" stroke-linejoin="round" aria-hidden="true"><path d="M24 5 L40 18 L24 43 L8 18 Z" stroke-width="2.4"></path><path d="M8 18 H40 M24 5 L17 18 L24 43 M24 5 L31 18 L24 43" stroke-width="1.3" opacity="0.5"></path></svg></span><span lang="ar" style="font:700 22px/30px 'IBM Plex Sans Arabic',sans-serif;">صقيل | صناعي</span></div>
+            <h2 style="margin:0; font:600 26px/34px 'Space Grotesk',sans-serif;">Sign in to Saqeel</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+              <span dir="ltr" style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#14141F; color:#9C9CB2;">name@mim.gov.sa</span>
+              <span style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#14141F; color:#9C9CB2;">••••••••••</span>
+            </div>
+            <span style="display:grid; place-items:center; height:52px; border-radius:12px; background:#7C6CFF; color:#0B0B14; font:600 17px/26px 'Space Grotesk',sans-serif;">Sign in</span>
+          </div>
+          <div style="flex:1; margin:20px 40px 28px; position:relative; border:1px solid #26263A; border-radius:16px; overflow:hidden; background:color-mix(in srgb,#5AA7FA 10%,#0A0A14);">
+            <svg sc-camel-view-box="0 0 800 640" sc-camel-preserve-aspect-ratio="xMidYMid meet" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true">
+              <path d="M320.2,612L315.8,596.2L305.7,585.1L303.1,570.4L285.7,557.2L267.7,526.2L258.2,496.1L234.9,470.7L219.9,464.6L197.6,429.4L193.7,403.7L195.2,381.9L175.9,340.9L160.1,326.5L141.9,318.9L130.8,297.7L132.6,289.3L123.3,270.2L113.5,262L100.3,234.5L79.8,204.7L62.6,179.3L45.9,179.5L51.1,159.2L52.6,146.3L56.8,131.6L94.2,137.4L108.8,126.1L116.9,112.8L142.6,107.7L148.1,95.3L159.2,89L125.7,52.1L193.1,33.6L199.5,28L240.1,38L290.2,63.9L385.2,138.1L447.8,141.1L477.8,144.6L486.2,162.2L510,161.3L523.2,193.1L539.7,201.6L545.5,214.5L568.5,230.1L570.5,245.3L567.1,257.6L571.4,270L581.1,280.4L585.6,292.5L590.6,301.5L600.8,308.9L610.1,306.2L616.5,320.3L617.8,328.9L630.7,366.3L731.9,384.9L738.7,377.1L754.1,403.3L731.7,477.1L630.7,514.1L533.6,528.2L502.2,544.8L478,583.6L462.3,589.8L453.9,577.5L441,579.3L408.4,575.6L402.3,571.9L363.4,572.8L354.3,576.1L340.4,566.5L331.5,584.7L335,600.2L320.2,612Z" fill="color-mix(in srgb,#7C6CFF 9%,#14141F)" stroke="color-mix(in srgb,#9C9CB2 65%,#26263A)" stroke-width="2.5" stroke-linejoin="round"></path>
+              <path d="M451 303 C 490 278, 525 246, 552 220" fill="none" stroke="#7C6CFF" stroke-width="3" stroke-dasharray="9 7" stroke-linecap="round"></path>
+              <circle cx="552" cy="218" r="24" fill="none" stroke="#7C6CFF" stroke-width="2" stroke-dasharray="5 5"></circle>
+              <g style="font:600 12px 'JetBrains Mono',monospace;" fill="#EFEFF7" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke"><text x="440" y="290">RIYADH</text><text x="150" y="415">JEDDAH</text></g>
+              <g style="font:700 12px 'JetBrains Mono',monospace;" fill="#9487FF" stroke="#0A0A14" stroke-width="3.5" paint-order="stroke"><text x="565" y="212">JUBAIL</text><text x="112" y="345">YANBU</text></g>
+            </svg>
+            <div style="position:absolute; left:12px; top:12px;"><span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.1em; background:#14141F; border:1px solid #26263A; color:#9C9CB2; border-radius:999px; padding:4px 12px;">SAMPLE / ILLUSTRATIVE — STATIC AT THIS SIZE</span></div>
+            <div style="position:absolute; left:12px; bottom:12px; right:12px; display:flex; gap:8px; flex-wrap:wrap;">
+              <span style="font:700 13px/18px 'Space Grotesk',sans-serif; background:#14141F; border:1px solid #26263A; border-radius:999px; padding:5px 14px;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">01</span> Plan</span>
+              <span style="font:700 13px/18px 'Space Grotesk',sans-serif; background:#14141F; border:1px solid #26263A; border-radius:999px; padding:5px 14px;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">02</span> Inspect</span>
+              <span style="font:700 13px/18px 'Space Grotesk',sans-serif; background:#14141F; border:1px solid #26263A; border-radius:999px; padding:5px 14px;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">03</span> Review</span>
+              <span style="font:700 13px/18px 'Space Grotesk',sans-serif; background:#14141F; border:1px solid #26263A; border-radius:999px; padding:5px 14px;"><span style="color:#9487FF; font-family:'JetBrains Mono',monospace; font-size:11px;">04</span> Decide</span>
+            </div>
+          </div>
+        </div>
+        <div id="1j" style="width:390px; height:844px; display:flex; flex-direction:column; background:#0A0A14; border:1px solid #26263A; border-radius:24px; overflow:hidden; color:#EFEFF7; font:400 16px/24px 'Space Grotesk',sans-serif;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:20px 24px;">
+            <div style="display:flex; align-items:center; gap:10px;"><span style="color:#9487FF;"><svg width="26" height="26" sc-camel-view-box="0 0 48 48" fill="none" stroke="currentColor" stroke-linejoin="round" aria-hidden="true"><path d="M24 5 L40 18 L24 43 L8 18 Z" stroke-width="2.4"></path><path d="M8 18 H40 M24 5 L17 18 L24 43 M24 5 L31 18 L24 43" stroke-width="1.3" opacity="0.5"></path></svg></span><span lang="ar" style="font:700 20px/28px 'IBM Plex Sans Arabic',sans-serif;">صقيل | صناعي</span></div>
+            <span lang="ar" style="font:600 14px/20px 'IBM Plex Sans Arabic',sans-serif; color:#9487FF;">العربية</span>
+          </div>
+          <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:14px; padding:0 24px;">
+            <h3 style="margin:0; font:600 24px/32px 'Space Grotesk',sans-serif;">Sign in to Saqeel</h3>
+            <span dir="ltr" style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#14141F; color:#9C9CB2; font-size:16px;">name@mim.gov.sa</span>
+            <span style="display:flex; align-items:center; height:48px; padding:0 14px; border:1px solid #26263A; border-radius:12px; background:#14141F; color:#9C9CB2; font-size:16px;">••••••••••</span>
+            <span style="display:grid; place-items:center; height:52px; border-radius:12px; background:#7C6CFF; color:#0B0B14; font:600 17px/26px 'Space Grotesk',sans-serif;">Sign in</span>
+            <span style="align-self:center; font:600 16px/24px 'Space Grotesk',sans-serif; color:#9487FF;">Forgot your password?</span>
+            <div style="margin-top:8px; padding:14px 16px; border:1px solid #26263A; border-radius:12px; background:#14141F; display:flex; flex-direction:column; gap:10px;">
+              <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.12em; color:#9C9CB2;">SAUDI INDUSTRIAL COVERAGE — SAMPLE · SWIPE</span>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:72px; height:52px; position:relative; border-radius:8px; overflow:hidden; border:1px solid #26263A; flex-shrink:0;"><svg sc-camel-view-box="0 0 320 140" sc-camel-preserve-aspect-ratio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%;" aria-hidden="true"><rect width="320" height="140" fill="#12121F"></rect><rect x="28" y="42" width="34" height="72" rx="4" fill="#262640"></rect><rect x="70" y="30" width="34" height="84" rx="4" fill="#2B2B48"></rect><rect x="160" y="18" width="10" height="96" fill="#2B2B48"></rect><circle cx="165" cy="16" r="3" fill="#7C6CFF"></circle></svg></div>
+                <div style="display:flex; flex-direction:column; gap:2px;"><span style="font:700 14px/18px 'Space Grotesk',sans-serif;">Jubail — process &amp; petrochemical</span><span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Illustrative theme: process safety</span></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; font:600 13px/18px 'Space Grotesk',sans-serif; flex-wrap:wrap;"><span>Plan</span><span style="color:#26263A;">→</span><span>Inspect</span><span style="color:#26263A;">→</span><span>Review</span><span style="color:#26263A;">→</span><span>Decide</span></div>
+              <div style="display:flex; gap:5px;"><span style="width:16px; height:4px; border-radius:2px; background:#7C6CFF;"></span><span style="width:8px; height:4px; border-radius:2px; background:#26263A;"></span><span style="width:8px; height:4px; border-radius:2px; background:#26263A;"></span><span style="width:8px; height:4px; border-radius:2px; background:#26263A;"></span><span style="width:8px; height:4px; border-radius:2px; background:#26263A;"></span></div>
+            </div>
+          </div>
+          <div style="padding:16px 24px 24px; border-top:1px solid #26263A; font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">Government-secured access · encrypted session</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 1k MAP LIST ALTERNATIVE ============ -->
+    <div id="1k" data-screen-label="1k Map list alternative" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="font:700 12px/16px 'JetBrains Mono',monospace; background:#7C6CFF; color:#0B0B14; padding:3px 8px; border-radius:6px;">1k</span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">List alternative — every map fact readable without the map (screen-reader &amp; keyboard parity)</span></div>
+      <div style="width:900px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:24px; display:flex; flex-direction:column; gap:12px; color:#EFEFF7; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <span style="font:600 10px/14px 'JetBrains Mono',monospace; letter-spacing:.16em; color:#9C9CB2;">ILLUSTRATIVE INDUSTRIAL COVERAGE — SAMPLE ONLY · LIST VIEW</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; overflow:hidden;">
+          <sc-raw-table style="border-collapse:collapse; width:100%; font:400 15px/22px 'Space Grotesk',sans-serif;">
+            <sc-raw-thead><sc-raw-tr style="text-align:left;">
+              <sc-raw-th style="padding:10px 16px; font:600 11px/16px 'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; color:#9C9CB2; border-bottom:1px solid #26263A;">Location</sc-raw-th>
+              <sc-raw-th style="padding:10px 16px; font:600 11px/16px 'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; color:#9C9CB2; border-bottom:1px solid #26263A;">Region</sc-raw-th>
+              <sc-raw-th style="padding:10px 16px; font:600 11px/16px 'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; color:#9C9CB2; border-bottom:1px solid #26263A;">Industrial character</sc-raw-th>
+              <sc-raw-th style="padding:10px 16px; font:600 11px/16px 'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.06em; color:#9C9CB2; border-bottom:1px solid #26263A;">Illustrative theme</sc-raw-th>
+            </sc-raw-tr></sc-raw-thead>
+            <sc-raw-tbody>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; font-weight:600;">Jubail Industrial City</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Eastern</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A;">Process &amp; petrochemical</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Process safety</sc-raw-td></sc-raw-tr>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; font-weight:600;">Yanbu Industrial City</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Madinah</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A;">Refining &amp; port-linked</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Storage &amp; handling</sc-raw-td></sc-raw-tr>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; font-weight:600;">Ras Al-Khair Industrial City</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Eastern</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A;">Mining, metals &amp; minerals</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Materials &amp; lifting safety</sc-raw-td></sc-raw-tr>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; font-weight:600;">Riyadh industrial cities</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Riyadh</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A;">Manufacturing, assembly, pharma</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Equipment &amp; occupational safety</sc-raw-td></sc-raw-tr>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; font-weight:600;">Dammam industrial cities</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Eastern</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A;">Manufacturing &amp; Gulf logistics</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Fabrication safety</sc-raw-td></sc-raw-tr>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; font-weight:600;">Jeddah industrial cities</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Makkah</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A;">Manufacturing, food &amp; packaging</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Hygiene &amp; packaging</sc-raw-td></sc-raw-tr>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; font-weight:600;">Qassim Industrial City</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Qassim</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A;">Food production &amp; packaging</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Food safety</sc-raw-td></sc-raw-tr>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; font-weight:600;">Ha'il Industrial City</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">Ha'il</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A;">Regional manufacturing</sc-raw-td><sc-raw-td style="padding:10px 16px; border-bottom:1px solid #26263A; color:#9C9CB2;">General compliance</sc-raw-td></sc-raw-tr>
+              <sc-raw-tr><sc-raw-td style="padding:10px 16px; font-weight:600;">Jazan Industrial City</sc-raw-td><sc-raw-td style="padding:10px 16px; color:#9C9CB2;">Jazan</sc-raw-td><sc-raw-td style="padding:10px 16px;">Downstream &amp; logistics</sc-raw-td><sc-raw-td style="padding:10px 16px; color:#9C9CB2;">General compliance</sc-raw-td></sc-raw-tr>
+            </sc-raw-tbody>
+          </sc-raw-table>
+        </div>
+        <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Verified public context: MODON industrial-cities directory and RCJY (Jubail, Ras Al-Khair). No customer factories, visits, risk bands or findings are shown anywhere on this surface.</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+
+
+</body></html>

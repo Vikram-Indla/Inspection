@@ -22,3 +22,19 @@ items:
     blocked_by: ["G5-ARCH-DISCOVERY"]
     blocks: ["G8-CERT"]
     note: "Resolve DEC-001..010 / OD-01..08. Live-schema reconciliation COMPLETE 2026-07-11 (greenfield; docs/G5_LIVE_SCHEMA_RECONCILIATION.md)."
+  - task_id: "TASK-DESIGN-CD001-V7-IMPLEMENTATION"
+    gate: "G10/G11 controlled UI revamp"
+    priority: "P0"
+    status: "ACCEPTED_FOR_NOW_DESIGN_CLOSED"
+    owner: "Sponsor / product owner"
+    blocked_by: []
+    blocks: ["F1 access-family integration signoff"]
+    note: "Sponsor accepted CD-001 for now on 2026-07-13; design iteration closed except demonstrated P0/P1 regression or recorded release blocker. Typecheck/build, interaction 7/7 and visual evidence 1/1 PASS; English/Arabic dark/light desktop/mobile proof captured. Operational maps retain SPC-GIS-001. Production remains blocked by image rights, official geographic confirmation, Arabic-only raster decision and public-coverage communication (P1)."
+  - task_id: "TASK-DESIGN-CD002-REVIEW"
+    gate: "G10/G11 controlled UI revamp"
+    priority: "P0"
+    status: "READY"
+    owner: "Codex design orchestrator + Sponsor / product owner"
+    blocked_by: []
+    blocks: ["F1 access-family design acceptance", "CD-002 implementation"]
+    note: "Review only; do not implement. Existing design output is in /Users/vikramindla/Downloads/# Saqeel MVP1 UIUX Revamp (1).zip: CD-002 Reset.dc.html plus manifest, component map, handoff and checklist. Produce P0/P1 critique, state matrix and sponsor recommendation; defer P2 to Big Bang register."

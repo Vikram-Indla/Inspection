@@ -2,8 +2,8 @@
    SAQEEL — UNIFIED SIGN-IN (SCR-PUB-010 v4 · Login.dc.html Turn 4)
    "The inspection story": a solid credential panel on the start side (lockup,
    one form, trust footer — no text ever sits on imagery) beside a story
-   panel — framed KSA map telling one sample inspection journey, plus the
-   Plan → Inspect → Review → Decide strip. Works in both themes (tokens only —
+   panel — framed KSA map telling one sample inspection journey, plus one
+   attached lifecycle control strip. Works in both themes (tokens only —
    no raw values outside tokens.css).
    Shared with /reset: .lg-page (base), .lg-topbar, .lg-center, .lg-card,
    .lg-credentials, .lg-pwwrap, .lg-pwtoggle, .lg-submit, .lg-waiting.
@@ -48,6 +48,7 @@
 
 .lg-card { inline-size: 100%; display: flex; flex-direction: column;
   gap: var(--ax-space-250); }
+[dir="rtl"] .lg-card { text-align: right; }
 .lg-card__title { margin: 0; font: var(--ax-text-title); color: var(--ax-color-text); }
 .lg-card__sub { margin: 0; margin-block-start: calc(-1 * var(--ax-space-150));
   font: var(--ax-text-body); color: var(--ax-color-text-secondary); }
@@ -93,6 +94,7 @@
   border-block-start: 1px solid var(--ax-color-border);
   font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
 .lg-foot__item { display: inline-flex; align-items: center; gap: var(--ax-space-100); }
+[dir="rtl"] .lg-foot__item { justify-content: flex-start; }
 .lg-foot__item svg { color: var(--ax-color-success); flex-shrink: 0; }
 .lg-foot__row { display: flex; align-items: center; justify-content: space-between;
   gap: var(--ax-space-150); }
@@ -128,11 +130,10 @@
 [dir="rtl"] .lg-demo__email { text-align: right; }
 
 /* ============================================================================
-   STORY PANEL — header · framed map · storyline strip
+   STORY PANEL — header · framed map with attached lifecycle strip
    ========================================================================== */
 .lg-story { display: flex; flex-direction: column; gap: var(--ax-space-150);
   min-inline-size: 0; min-block-size: 100dvh; padding: clamp(20px, 2vw, 28px); }
-@media (max-width: 960px) { .lg-story { display: none; } }
 
 .lg-story__head { display: flex; align-items: center; justify-content: space-between;
   gap: var(--ax-space-200); }
@@ -141,25 +142,15 @@
 .lg-story__overline { font: 600 10px/14px var(--ax-font-mono); letter-spacing: 0.16em;
   color: var(--ax-color-text-secondary); align-self: start; }
 [dir="rtl"] .lg-story__overline { align-self: end; }
+[dir="rtl"] .lg-story__title,
+[dir="rtl"] .lg-story__overline { font-family: var(--ax-font-arabic); text-align: right; letter-spacing: 0; }
 
 .lg-story__frame { position: relative; flex: 1; min-block-size: 0;
-  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large);
-  overflow: hidden; background: var(--ax-color-canvas); }
+  border: 1px solid var(--ax-color-atlas-border); border-radius: var(--ax-radius-large);
+  overflow: hidden; background: var(--ax-color-atlas-canvas);
+  box-shadow: 0 18px 50px color-mix(in srgb, var(--ax-color-shadow-base) 24%, transparent); }
 .lg-story__fallback { position: absolute; inset: 0; display: flex;
   align-items: center; justify-content: center; padding: var(--ax-space-400); }
-
-.lg-story__strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ax-space-150); }
-@media (max-width: 1280px) { .lg-story__strip { grid-template-columns: repeat(2, 1fr); } }
-.lg-story__step { display: flex; flex-direction: column; gap: var(--ax-space-100);
-  padding: var(--ax-space-200); background: var(--ax-color-surface);
-  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); }
-.lg-story__step-head { display: flex; align-items: center; gap: var(--ax-space-100); }
-.lg-story__step-badge { display: grid; place-items: center; inline-size: 26px; block-size: 26px;
-  border-radius: var(--ax-radius-small); background: var(--ax-color-primary);
-  color: var(--ax-color-inverse-text); font: 700 12px var(--ax-font-mono); }
-.lg-story__step-title { font: 700 15px/20px var(--ax-font-sans); color: var(--ax-color-text); }
-.lg-story__step-body { margin: 0; font: 400 13px/21px var(--ax-font-sans);
-  color: var(--ax-color-text-secondary); }
 
 /* ---- the map itself ------------------------------------------------------ */
 .lg-map { position: absolute; inset: 0; background: var(--ax-color-canvas); }
@@ -206,6 +197,12 @@
   .lg-map__insp-ping { animation: none; opacity: 0.35; }
 }
 
+/* ---- CD-002: recovery views subordinate the atlas to a quiet static motif
+   (no lifecycle chips, markers or photo rail) — additive, no selector above
+   is modified. ------------------------------------------------------------- */
+.lg-story--subdued .lg-story__frame { box-shadow: none; }
+.lg-story--subdued .lg-story__fallback { opacity: 0.82; }
+
 /* ---- static fallback illustration (SaqeelHero) --------------------------- */
 .lg-hero { inline-size: 100%; block-size: 100%; }
 .lg-hero__fence { animation: lg-fence 60s linear infinite; transform-box: fill-box; transform-origin: center; }
@@ -218,4 +215,286 @@
 @keyframes lg-ping { 0% { transform: scale(0.4); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   .lg-hero__fence, .lg-hero__pulse, .lg-hero__ping { animation: none; }
+}
+
+/* ============================================================================
+   CD-001 V7 — PREMIUM 3D SAUDI INDUSTRIAL INSPECTION ATLAS
+   Five layers over the Leaflet stack. Tokens only (GLOBAL COLOR LAW): tone is
+   carried per node via --tone; color-mix derives tints/shadows from tokens.
+   ========================================================================== */
+
+/* ---- approved public-safe PNG foundation --------------------------------
+   The bitmap carries visual depth only. Buttons and dossier remain native DOM
+   so the image is never the interaction or accessibility layer. */
+.lg-atlas-image { position: absolute; inset: 0; overflow: hidden;
+  container-type: size; background: var(--ax-color-atlas-canvas); }
+.lg-atlas-image__plane { position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
+  inline-size: min(100cqw, calc(100cqh * 1.776833)); aspect-ratio: 1672 / 941;
+  transform: translate(-50%, -50%); }
+[dir="rtl"] .lg-atlas-image__plane { transform: translate(50%, -50%); }
+.lg-atlas-image__plane picture { position: absolute; inset: 0; }
+.lg-atlas-image__media { position: absolute; inset: 0; inline-size: 100%; block-size: 100%;
+  object-fit: fill; opacity: 0;
+  transition: opacity var(--ax-motion-standard); user-select: none; }
+.lg-atlas-image.is-ready .lg-atlas-image__media { opacity: 1; }
+.lg-atlas-image__hotspots { position: absolute; inset: 0; z-index: 20; }
+.lg-atlas-image__hotspot { --tone: var(--ax-color-primary); position: absolute;
+  inline-size: 44px; block-size: 44px; transform: translate(-50%, -50%);
+  display: grid; place-items: center; border: 0; border-radius: var(--ax-radius-full);
+  padding: 0; background: transparent; cursor: pointer; }
+.lg-atlas-image__hotspot--arrival { --tone: var(--ax-color-success); }
+.lg-atlas-image__hotspot--planned { --tone: var(--ax-color-warning); }
+.lg-atlas-image__hotspot--virtual { --tone: var(--ax-color-info); }
+.lg-atlas-image__hotspot--route { --tone: var(--ax-color-primary); }
+.lg-atlas-image__hotspot::before { content: ""; position: absolute; inset: 5px;
+  border: 1px solid color-mix(in srgb, var(--tone) 72%, transparent);
+  border-radius: inherit; opacity: 0; transform: scale(0.72);
+  transition: opacity var(--ax-motion-fast), transform var(--ax-motion-fast); }
+.lg-atlas-image__hotspot:hover::before,
+.lg-atlas-image__hotspot:focus-visible::before,
+.lg-atlas-image__hotspot.is-active::before { opacity: 1; transform: scale(1); }
+.lg-atlas-image__hotspot-core { inline-size: 10px; block-size: 10px;
+  border: 2px solid var(--ax-color-atlas-canvas); border-radius: var(--ax-radius-full);
+  background: var(--tone); box-shadow: var(--ax-shadow-raised); }
+.lg-atlas-image__hotspot-label { position: absolute; z-index: 2; min-inline-size: max-content;
+  padding: 2px 7px; border-radius: var(--ax-radius-full); pointer-events: none;
+  color: var(--ax-color-atlas-text); background: color-mix(in srgb, var(--ax-color-atlas-canvas) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tone) 34%, transparent);
+  font: 700 11px/16px var(--ax-font-arabic); box-shadow: 0 2px 8px color-mix(in srgb, var(--ax-color-shadow-base) 40%, transparent); }
+.lg-atlas-image__hotspot-label--ar { font-family: var(--ax-font-arabic); }
+.lg-atlas-image__hotspot-label--en { font: 700 10px/15px var(--ax-font-mono); letter-spacing: 0.4px; }
+.lg-atlas-image__hotspot-label--below { inset-block-start: calc(100% - 4px); left: 50%; transform: translateX(-50%); }
+.lg-atlas-image__hotspot-label--above { inset-block-end: calc(100% - 4px); left: 50%; transform: translateX(-50%); }
+.lg-atlas-image__hotspot-label--right { left: calc(100% - 4px); }
+.lg-atlas-image__hotspot-label--left { right: calc(100% - 4px); }
+.lg-atlas-image__zones { position: absolute; inset: 0; pointer-events: none; }
+.lg-atlas-image__zones span { position: absolute; transform: translate(-50%, -50%);
+  padding: 1px 6px; border-radius: var(--ax-radius-full); white-space: nowrap;
+  color: var(--ax-color-atlas-muted); background: color-mix(in srgb, var(--ax-color-atlas-canvas) 82%, transparent);
+  font: 600 10px/15px var(--ax-font-arabic); letter-spacing: 0; }
+.lg-atlas-image__zones--en span { font-family: var(--ax-font-mono); letter-spacing: 1px; }
+.lg-atlas-image__hotspot:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.lg-atlas-image__hotspot.is-active::after { content: ""; position: absolute; inset: 6px;
+  border: 1.5px solid var(--tone); border-radius: inherit;
+  animation: lg-atlas-image-stage 1.8s ease-out infinite; }
+@keyframes lg-atlas-image-stage {
+  0% { opacity: 0.8; transform: scale(0.65); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+.lg-atlas-image__stage-signal { position: absolute; z-index: 25;
+  inline-size: 34px; block-size: 34px; transform: translate(-50%, -145%);
+  display: grid; place-items: center; pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--ax-color-prism-magenta) 70%, var(--ax-color-atlas-text));
+  border-radius: var(--ax-radius-full); color: var(--ax-color-atlas-text);
+  background: color-mix(in srgb, var(--ax-color-prism-magenta) 55%, var(--ax-color-atlas-surface));
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--ax-color-prism-magenta) 14%, transparent), var(--ax-shadow-raised);
+  animation: lg-atlas-stage-signal-in 320ms ease-out; }
+.lg-atlas-image__stage-signal svg { inline-size: 18px; block-size: 18px; fill: none;
+  stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.lg-atlas-image__stage-signal--travel { animation: lg-atlas-travel-signal 1.3s ease-in-out infinite alternate; }
+@keyframes lg-atlas-stage-signal-in {
+  from { opacity: 0; transform: translate(-50%, -125%) scale(0.72); }
+  to { opacity: 1; transform: translate(-50%, -145%) scale(1); }
+}
+@keyframes lg-atlas-travel-signal {
+  from { transform: translate(-70%, -145%); }
+  to { transform: translate(-30%, -145%); }
+}
+
+/* ---- Layer 3: connection network (illustrative spokes) ------------------- */
+.lg-atlas3d__net { stroke-dasharray: 2 7; }
+
+/* ---- Layer 2: terrain relief slab + orientation labels ------------------- */
+.lg-atlas3d__terrain-top { fill: color-mix(in srgb, var(--ax-color-primary) 10%, transparent); }
+.lg-atlas3d__terrain-shadow { fill: color-mix(in srgb, var(--ax-color-shadow-base) 45%, transparent);
+  transform: translateY(6px); }
+.lg-atlas3d__orient { transform: translate(-50%, -50%); white-space: nowrap;
+  color: var(--ax-color-text-secondary); text-shadow: 0 1px 3px var(--ax-color-canvas); }
+.lg-atlas3d__orient--en { font: 500 9px var(--ax-font-sans); letter-spacing: 0.5px; }
+.lg-atlas3d__orient--ar { font: 600 11px var(--ax-font-arabic); }
+
+/* ---- Layer 2/4: node structures ------------------------------------------ */
+.lg-atlas3d__node { position: relative; inline-size: var(--nw); transform: translate(-50%, -100%);
+  display: flex; flex-direction: column; align-items: center; color: var(--tone);
+  pointer-events: auto; cursor: pointer; transition: transform var(--ax-motion-fast); }
+.lg-atlas3d__node:hover, .lg-atlas3d__node:focus-within { transform: translate(-50%, -100%) scale(1.06); }
+.lg-atlas3d__node--arrival { --tone: var(--ax-color-success); }
+.lg-atlas3d__node--planned { --tone: var(--ax-color-warning); }
+.lg-atlas3d__node--virtual { --tone: var(--ax-color-info); }
+.lg-atlas3d__node--route   { --tone: var(--ax-color-primary); }
+.lg-atlas3d__halo { position: absolute; inset-block-end: -4px; inset-inline-start: 50%;
+  inline-size: calc(var(--nw) + 20px); block-size: 16px; transform: translateX(-50%);
+  border-radius: var(--ax-radius-full);
+  background: radial-gradient(ellipse at center, color-mix(in srgb, var(--tone) 50%, transparent), transparent 72%); }
+.lg-atlas3d__struct { position: relative; inline-size: var(--nw); block-size: var(--nh);
+  display: grid; place-items: end center; border-radius: var(--ax-radius-small); }
+.lg-atlas3d__struct-flat svg { inline-size: var(--nw); block-size: var(--nh); overflow: visible;
+  filter: drop-shadow(0 4px 6px color-mix(in srgb, var(--ax-color-shadow-base) 60%, transparent)); }
+/* isometric factory faces lit from the node --tone (roof brightest, front
+   darkest) with warm work-lights — premium depth, tokens only. */
+.lg-atlas3d__factory .f-top { fill: var(--tone); }
+.lg-atlas3d__factory .f-side { fill: color-mix(in srgb, var(--tone) 66%, var(--ax-color-canvas)); }
+.lg-atlas3d__factory .f-front { fill: color-mix(in srgb, var(--tone) 40%, var(--ax-color-canvas)); }
+.lg-atlas3d__factory .f-win { fill: var(--ax-color-warning); opacity: 0.92; }
+.lg-atlas3d__factory .f-flame { fill: var(--ax-color-warning); }
+.lg-atlas3d__factory polygon, .lg-atlas3d__factory rect, .lg-atlas3d__factory ellipse {
+  stroke: color-mix(in srgb, var(--ax-color-canvas) 45%, transparent); stroke-width: 0.5;
+  stroke-linejoin: round; }
+.lg-atlas3d__factory .f-win { stroke: none; }
+.lg-atlas3d__struct-img { position: absolute; inset: 0; inline-size: 100%; block-size: 100%;
+  object-fit: contain; opacity: 0; transition: opacity var(--ax-motion-standard); }
+.lg-atlas3d__anchor { position: absolute; inset-block-end: 0; inset-inline-end: -9px;
+  inline-size: 8px; block-size: 32px; opacity: 0.8;
+  background: linear-gradient(to top, var(--tone), color-mix(in srgb, var(--tone) 25%, transparent));
+  clip-path: polygon(32% 100%, 68% 100%, 58% 0, 42% 0); }
+.lg-atlas3d__node-base { inline-size: calc(var(--nw) + 6px); block-size: 4px; margin-block-start: 3px;
+  border-radius: var(--ax-radius-full); background: color-mix(in srgb, var(--tone) 40%, transparent); }
+.lg-atlas3d__node-label { position: absolute; inset-inline-start: 50%; inset-block-start: 100%;
+  transform: translateX(-50%); margin-block-start: 2px; white-space: nowrap; pointer-events: none;
+  color: var(--ax-color-text); text-shadow: 0 1px 4px var(--ax-color-canvas), 0 0 3px var(--ax-color-canvas); }
+.lg-atlas3d__node-label--above { inset-block-start: auto; inset-block-end: 100%; margin-block: 0 3px; }
+.lg-atlas3d__node-label--right { inset-block-start: auto; inset-block-end: 4px; inset-inline-start: 100%;
+  transform: none; margin-inline-start: 5px; }
+.lg-atlas3d__node-label--left { inset-block-start: auto; inset-block-end: 4px; inset-inline-start: auto;
+  inset-inline-end: 100%; transform: none; margin-inline-end: 5px; }
+.lg-atlas3d__node-label--en { font: 600 10px var(--ax-font-mono); letter-spacing: 1.5px; }
+.lg-atlas3d__node-label--ar { font: 700 13px var(--ax-font-arabic); }
+.lg-atlas3d__node:focus-visible { outline: none; }
+.lg-atlas3d__node:focus-visible .lg-atlas3d__struct { box-shadow: var(--ax-focus-ring); }
+
+/* ---- Layer 3: journey overlays (illustrative; no red states) ------------- */
+.lg-atlas3d__route { animation: lg-atlas-route 24s linear infinite; }
+@keyframes lg-atlas-route { to { stroke-dashoffset: -320; } }
+.lg-atlas3d__vehicle, .lg-atlas3d__actor, .lg-atlas3d__evidence, .lg-atlas3d__cue {
+  position: absolute; transform: translate(-50%, -50%); opacity: 0; pointer-events: none;
+  transition: opacity var(--ax-motion-standard); }
+.lg-atlas3d__vehicle.is-on, .lg-atlas3d__actor.is-on, .lg-atlas3d__evidence.is-on, .lg-atlas3d__cue.is-on { opacity: 1; }
+.lg-atlas3d__vehicle { display: grid; place-items: center; inline-size: 28px; block-size: 20px;
+  border-radius: var(--ax-radius-small); background: var(--ax-color-surface);
+  border: 1.5px solid var(--ax-color-primary); color: var(--ax-color-primary-hover);
+  box-shadow: var(--ax-shadow-raised); }
+.lg-atlas3d__actor { display: grid; place-items: center; inline-size: 26px; block-size: 26px;
+  border-radius: var(--ax-radius-full); background: var(--ax-color-success);
+  color: var(--ax-color-inverse-text); border: 2px solid var(--ax-color-canvas); box-shadow: var(--ax-shadow-raised); }
+.lg-atlas3d__evidence { display: grid; place-items: center; inline-size: 20px; block-size: 20px;
+  border-radius: var(--ax-radius-full); background: var(--ax-color-success);
+  color: var(--ax-color-inverse-text); border: 2px solid var(--ax-color-canvas); }
+.lg-atlas3d__cue { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+  padding: 2px 8px; border-radius: var(--ax-radius-full); font: 700 11px var(--ax-font-mono);
+  background: var(--ax-color-surface); border: 1px solid var(--ax-color-border); box-shadow: var(--ax-shadow-raised); }
+.lg-atlas3d__cue--review { color: var(--ax-color-primary-hover); }
+.lg-atlas3d__cue--seal { color: var(--ax-color-success); }
+.lg-atlas3d__geofence { position: absolute; transform: translate(-50%, -50%); opacity: 0;
+  inline-size: calc(var(--fence-r) * 2); block-size: calc(var(--fence-r) * 2);
+  border-radius: var(--ax-radius-full); border: 1.5px dashed var(--ax-color-success);
+  background: radial-gradient(circle, color-mix(in srgb, var(--ax-color-success) 12%, transparent), transparent 70%);
+  transition: opacity var(--ax-motion-standard); }
+.lg-atlas3d__geofence.is-on { opacity: 1; }
+.lg-atlas3d__geofence.pulse { animation: lg-atlas-fence 0.6s ease-out 1; }
+@keyframes lg-atlas-fence {
+  0% { transform: translate(-50%, -50%) scale(0.85); }
+  100% { transform: translate(-50%, -50%) scale(1); } }
+
+/* ---- Layer 4: dossier ---------------------------------------------------- */
+.lg-atlas3d__dossier { position: absolute; inset-block-start: 44px; inset-inline-end: 10px; z-index: 650;
+  inline-size: min(280px, 72%); padding: var(--ax-space-200);
+  border-radius: var(--ax-radius-large); border: 1px solid var(--ax-color-border);
+  color: var(--ax-color-atlas-text);
+  background: color-mix(in srgb, var(--ax-color-atlas-surface) 94%, transparent); backdrop-filter: blur(10px);
+  box-shadow: var(--ax-shadow-overlay); animation: lg-atlas-dossier 0.18s ease-out; }
+.lg-atlas3d__dossier--left { inset-inline: auto; left: 10px; right: auto; }
+.lg-atlas3d__dossier--right { inset-inline: auto; right: 10px; left: auto; }
+@keyframes lg-atlas-dossier { from { opacity: 0; transform: translateY(-4px); } }
+.lg-atlas3d__dossier--locked { border-color: var(--ax-color-primary); }
+.lg-atlas3d__dossier-head { display: flex; align-items: center; gap: var(--ax-space-100); }
+.lg-atlas3d__dossier-dot { inline-size: 10px; block-size: 10px; border-radius: var(--ax-radius-full); flex-shrink: 0; }
+.lg-atlas3d__dossier-name { font: 700 15px var(--ax-font-sans); color: var(--ax-color-atlas-text); }
+.lg-atlas3d__dossier-close { margin-inline-start: auto; border: none; background: none; cursor: pointer;
+  padding: 4px; line-height: 1; font-size: 14px; color: var(--ax-color-text-secondary);
+  border-radius: var(--ax-radius-small); }
+.lg-atlas3d__dossier-close:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
+.lg-atlas3d__dossier-close:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.lg-atlas3d__dossier-body { margin: var(--ax-space-150) 0 0; display: flex; flex-direction: column; gap: var(--ax-space-100); }
+.lg-atlas3d__dossier-row { display: flex; flex-direction: column; gap: 1px; }
+.lg-atlas3d__dossier-row dt { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.lg-atlas3d__dossier-row dd { margin: 0; font: var(--ax-text-body); color: var(--ax-color-atlas-text); }
+.lg-atlas3d__dossier-state { font-weight: 700; }
+
+/* ---- selected stage event: map motion carries the story ----------------- */
+.lg-atlas3d__event { position: absolute; inset-block-start: 12px; inset-inline-start: 12px; z-index: 610;
+  max-inline-size: min(360px, calc(100% - 24px)); display: flex; flex-direction: column; gap: 4px;
+  padding: var(--ax-space-150) var(--ax-space-200); pointer-events: none;
+  border: 1px solid var(--ax-color-atlas-border); border-radius: var(--ax-radius-standard);
+  color: var(--ax-color-atlas-text);
+  background: color-mix(in srgb, var(--ax-color-atlas-surface) 88%, transparent);
+  box-shadow: var(--ax-shadow-raised); backdrop-filter: blur(10px);
+  animation: lg-atlas-event-in 280ms ease-out; }
+.lg-atlas3d__event-stage { display: flex; align-items: center; gap: var(--ax-space-100);
+  font: 700 10px/14px var(--ax-font-mono); letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--ax-color-prism-magenta); }
+[dir="rtl"] .lg-atlas3d__event { text-align: right; }
+[dir="rtl"] .lg-atlas3d__event-stage { font-family: var(--ax-font-arabic); text-transform: none; letter-spacing: 0; }
+.lg-atlas3d__event strong { font: 600 14px/20px var(--ax-font-sans); color: var(--ax-color-atlas-text); }
+@keyframes lg-atlas-event-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- single lifecycle rail, attached to and controlling the map ---------- */
+.lg-atlas3d__stages { position: absolute; inset-inline: 10px; inset-block-end: 10px; z-index: 610;
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0;
+  padding: 4px; overflow: hidden;
+  border: 1px solid var(--ax-color-atlas-border); border-radius: var(--ax-radius-standard);
+  background: color-mix(in srgb, var(--ax-color-atlas-surface) 90%, transparent);
+  box-shadow: var(--ax-shadow-raised); backdrop-filter: blur(10px); }
+.lg-atlas3d__stage { min-inline-size: 0; display: flex; align-items: center; gap: var(--ax-space-100);
+  padding: var(--ax-space-100) var(--ax-space-150); text-align: start; cursor: pointer;
+  background: transparent; border: 0; border-inline-end: 1px solid var(--ax-color-atlas-border);
+  border-radius: var(--ax-radius-small); color: var(--ax-color-atlas-muted);
+  transition: background var(--ax-motion-fast), color var(--ax-motion-fast); }
+.lg-atlas3d__stage:last-child { border-inline-end: 0; }
+.lg-atlas3d__stage:hover { color: var(--ax-color-atlas-text); background: color-mix(in srgb, var(--ax-color-atlas-text) 8%, transparent); }
+.lg-atlas3d__stage.is-active { color: var(--ax-color-atlas-text);
+  background: color-mix(in srgb, var(--ax-color-prism-magenta) 20%, var(--ax-color-atlas-surface)); }
+.lg-atlas3d__stage:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.lg-atlas3d__stage-n { font: 700 10px var(--ax-font-mono); color: var(--ax-color-prism-magenta); }
+.lg-atlas3d__stage-label { font: 600 12px var(--ax-font-sans); overflow: hidden; text-overflow: ellipsis; }
+[dir="rtl"] .lg-atlas3d__stage-label { font-family: var(--ax-font-arabic); }
+[dir="rtl"] .lg-atlas3d__stage-n { unicode-bidi: isolate; }
+
+/* ---- responsive: dossier becomes a bottom sheet on narrow frames --------- */
+@media (max-width: 1200px) {
+  .lg-atlas3d__dossier { inset-block: auto 8px; inset-inline: 8px; inline-size: auto; }
+}
+
+/* The atlas becomes a scroll-to story below the credential panel instead of
+   disappearing. This keeps sign-in first while preserving the approved asset
+   on tablet/mobile. */
+@media (max-width: 960px) {
+  .lg-story { min-block-size: auto; padding: var(--ax-space-300) clamp(16px, 4vw, 28px);
+    border-block-start: 1px solid var(--ax-color-border); }
+  .lg-story__head .lg-iconbtn { display: none; }
+  .lg-story__frame { flex: none; min-block-size: 320px; aspect-ratio: 16 / 9; }
+  .lg-atlas3d__stages { overflow-x: auto; grid-template-columns: repeat(6, minmax(108px, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .lg-story__frame { min-block-size: 250px; aspect-ratio: 4 / 3; }
+  .lg-atlas3d__event { max-inline-size: calc(100% - 24px); }
+  .lg-atlas-image__hotspot { inline-size: 40px; block-size: 40px; }
+  .lg-atlas-image__hotspot-core { inline-size: 8px; block-size: 8px; }
+}
+
+/* ---- reduced motion: loop off; stepped states only ----------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .lg-atlas3d__route { animation: none; }
+  .lg-atlas3d__geofence.pulse { animation: none; }
+  .lg-atlas3d__node,
+  .lg-atlas3d__vehicle, .lg-atlas3d__actor, .lg-atlas3d__evidence,
+  .lg-atlas3d__cue, .lg-atlas3d__geofence, .lg-atlas3d__struct-img { transition: none; }
+  .lg-atlas3d__dossier { animation: none; }
+  .lg-atlas3d__event { animation: none; }
+  .lg-atlas-image__media { transition: none; }
+  .lg-atlas-image__hotspot.is-active::after { animation: none; opacity: 0.55; transform: scale(1); }
+  .lg-atlas-image__stage-signal { animation: none; }
 }
