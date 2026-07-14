@@ -91,3 +91,19 @@ Sponsor approval recorded (Vikram Indla, 2026-07-14): Track 1 + audit-first. DEC
 | CD027-EV-004 | Narrow 412 — ribbon reflows to ordered accessible state ledger (S36) | `screens/cd-027-visit-detail-v1/ribbon-narrow-412.png` | Captured |
 | CD027-EV-005 | DSG-A11Y-001 — keyboard `tablist` (roving tabindex, Arrow/Home/End), glyph+label status, role=status/alert | `../../apps/web/src/app/visits/[id]/DualStateRibbon.tsx` · `ActionBar.tsx` | Proven at runtime (spec tests 1–2, 4) + code layer |
 | CD027-EV-006 | ERRORMAP neutral mapping helper (no raw provider text) | `../../apps/web/src/app/visits/[id]/neutral.ts` | Captured — applied across page.tsx + actions.ts |
+
+## CD-004 Admin Control Plane Home (SCR-ADM-001) — 2026-07-15
+
+Merged to `setup/Inspection` via PR #12 (commit `5f9a676`). Acceptance: DSG-A11Y-001,
+DSG-CODE-001, CD004-QG-01..08, ADM-QG-01..18. Requirements: MVP1-M09-001..030 (gateway),
+RBAC-001..006, FND-003. Wiring audit: `../../outputs/cd-004/CD-004_WIRING_AUDIT.md` (DEC-012).
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| CD004-EV-001 | Compile: `tsc --noEmit` + `next build` (`/admin` dynamic) | `../../outputs/cd-004/CD-004_WIRING_AUDIT.md` | Captured — PASS |
+| CD004-EV-002 | Code-layer wiring self-check (per-source modelling, distinct verified-zero/unavailable, blocked legs, real routes, guarded migration) | `../../apps/web/e2e/cd-004-admin-control-plane-home.spec.ts` (DEC-012 block) | Captured — 25/25 PASS |
+| CD004-EV-003 | Runtime e2e: populated spine, glyph+word states, action links, link-only band, scope band, heading hierarchy, 44px targets; Arabic RTL + dark/light × 1440/1024 screenshots | `screens/cd-004-admin-home-v1/` | **OPEN** — env-gated (no `NEXT_PUBLIC_SUPABASE_*` in checkout); spec authored, run where Supabase env is configured |
+| CD004-EV-004 | Per-source **failure** / **verified-zero** runtime frames | — | **OPEN** — design-pack fixtures; not safely forcible against live data (proven at code layer in CD004-EV-002) |
+| CD004-EV-005 | Populated **act-scope** band | `screens/cd-004-admin-home-v1/` | **OPEN** — needs a seeded admin persona (only planner/inspector/reviewer exist) |
+
+Owner: run CD004-EV-003..005 where Supabase env + an admin persona are available; then mark Captured.
