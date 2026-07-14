@@ -5,12 +5,27 @@
 // M02-002/004/022: KPI tiles filter the list on click; status/type/mode/date-range filters.
 // M02-023: user sorting (window asc/desc, factory) + row selection.
 // M02-007/011/031/032/033/034: multi-select rows → bulk reschedule / reassign /
-//              cancel via server actions that report per-row outcomes.
+//              cancel / edit via server actions that report per-item outcomes.
 // M02-016 display parity with field: lapsed published windows render 'expired'.
 // All strings arrive pre-translated from the server page (strings-prop canon).
-import { useMemo, useState } from "react";
+//
+// CD-026 / SCR-WEB-200 Track 1:
+//   - Selected Visit Continuity Spine (signature pattern): one stable selected
+//     identity + state + allowed-action context, carried in-session. Cross-route
+//     persistence is HANDOFF_BLOCKED_CONTINUITY (not synthesised here).
+//   - Bulk eligibility preview: per-verb "n of N eligible", verified-now vs
+//     re-checked-at-submit; the cross-Plan bulk-edit control is shown UNAVAILABLE
+//     (HANDOFF_BLOCKED_GUARD — no server enforcement), never faked as safe.
+//   - Per-item outcome ledger replaces the single mixed banner: Applied /
+//     Blocked before change / Change applied — notification not queued. A mixed
+//     result is NEVER a green success banner. Focus moves to the summary; a
+//     failing/partial submit is a single role=alert, progress is role=status.
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useActionState } from "react";
-import { bulkCancelVisits, bulkRescheduleVisits, bulkReassignVisits, bulkEditVisits, type ActionResult } from "./actions";
+import {
+  bulkCancelVisits, bulkRescheduleVisits, bulkReassignVisits, bulkEditVisits,
+  type ActionResult, type BulkVerb, type OutcomeCode,
+} from "./actions";
 
 export type VisitRow = {
   id: string;
@@ -84,13 +99,76 @@ export type VisitsBoardStrings = {
   showing: string;          // "{shown}" and "{total}" placeholders
   loadMore: string;
   expiredLabel: string;
+  // CD-026 — continuity spine
+  spineHeading: string;
+  spineEmpty: string;
+  spineOpenDetail: string;
+  spineWindow: string;
+  spineInspector: string;
+  spineAllowed: string;
+  previewAria: string;      // "{id}"
+  openDetailAria: string;   // "{id}"
+  allowedEditable: string;
+  allowedLocked: string;
+  allowedFinal: string;
+  allowedExpired: string;
+  // CD-026 — eligibility preview
+  eligHeading: string;
+  eligVerified: string;
+  eligCount: string;        // "{n}" and "{total}"
+  eligSamePlanBlocked: string;
+  eligReschedule: string;
+  eligReassign: string;
+  eligCancel: string;
+  eligEdit: string;
+  // CD-026 — outcome ledger
+  ledgerColVisit: string;
+  ledgerColOutcome: string;
+  ledgerColReason: string;
+  ledgerOpen: string;
+  ledgerSummaryApplied: string;   // "{n}"
+  ledgerSummaryBlocked: string;   // "{n}"
+  ledgerSummaryNoNotif: string;   // "{n}"
+  ledgerRetrySafe: string;
+  progressBusy: string;           // "{n}"
+  verbReschedule: string; verbReassign: string; verbCancel: string; verbEdit: string;
+  outcomeApplied: string;
+  outcomeNoNotif: string;
+  ledgerShortNoNotif: string;
+  ledgerShortBlocked: string;
+  ledgerShortError: string;
+  outcomeBlockedNotPub: string;
+  outcomeBlockedStarted: string;
+  outcomeBlockedNoAssign: string;
+  outcomeError: string;
+  // CD-026 — neutral pre-flight validation
+  errSelectOne: string;
+  errReasonRequired: string;
+  errWindowRequired: string;
+  errWindowInvalid: string;
+  errWindowOrder: string;
+  errInspectorRequired: string;
+  errTypeOrNotes: string;
 };
 
 const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical" };
 
+// Outcome → lozenge tone. "Applied" is success; everything else that means
+// "nothing changed / partial" is warning, never a green success signal.
+const OUTCOME_TONE: Record<OutcomeCode, string> = {
+  applied: "ax-lozenge--success",
+  applied_no_notification: "ax-lozenge--warning",
+  blocked_not_publishable: "ax-lozenge--warning",
+  blocked_started: "ax-lozenge--warning",
+  blocked_no_assignment: "ax-lozenge--warning",
+  error: "ax-lozenge--critical",
+};
+
 type SortKey = "window_asc" | "window_desc" | "factory";
+type AllowedKey = "editable" | "locked" | "final" | "expired";
 
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
+const EMPTY: ActionResult = {};
 
 export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings }: {
   rows: VisitRow[];
@@ -114,13 +192,24 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const [to, setTo] = useState("");
   const [sort, setSort] = useState<SortKey>("window_asc");
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [can, canAct, p1] = useActionState<ActionResult, FormData>(bulkCancelVisits, {});
-  const [rsc, rscAct, p2] = useActionState<ActionResult, FormData>(bulkRescheduleVisits, {});
-  const [rea, reaAct, p3] = useActionState<ActionResult, FormData>(bulkReassignVisits, {});
-  const [edt, edtAct, p4] = useActionState<ActionResult, FormData>(bulkEditVisits, {});
+  const [activeId, setActiveId] = useState<string | null>(null); // continuity spine
+  const [lastVerb, setLastVerb] = useState<BulkVerb | null>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+
+  const [can, canAct, p1] = useActionState<ActionResult, FormData>(bulkCancelVisits, EMPTY);
+  const [rsc, rscAct, p2] = useActionState<ActionResult, FormData>(bulkRescheduleVisits, EMPTY);
+  const [rea, reaAct, p3] = useActionState<ActionResult, FormData>(bulkReassignVisits, EMPTY);
+  const [edt, edtAct, p4] = useActionState<ActionResult, FormData>(bulkEditVisits, EMPTY);
   const busy = p1 || p2 || p3 || p4;
-  const msg = can.error ?? rsc.error ?? rea.error ?? edt.error;
-  const ok = can.ok ?? rsc.ok ?? rea.ok ?? edt.ok;
+
+  // Only the last-submitted verb's result is rendered (one form submits at a
+  // time). This avoids showing stale ledgers from an earlier verb.
+  const resultByVerb: Record<BulkVerb, ActionResult> = { cancel: can, reschedule: rsc, reassign: rea, edit: edt };
+  const pendingByVerb: Record<BulkVerb, boolean> = { cancel: p1, reschedule: p2, reassign: p3, edit: p4 };
+  const result = lastVerb ? resultByVerb[lastVerb] : null;
+  const pending = lastVerb ? pendingByVerb[lastVerb] : false;
+  const hasLedger = !!result?.items && result.items.length > 0;
+  const hasFormError = !!result?.formErrorCode;
 
   // M02-016 display parity with field (M03-015): lapsed published window with a
   // not-started inspection renders 'expired'. Persistence is expire_lapsed_visits().
@@ -129,6 +218,24 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
     const lapsed = new Date(v.windowEnd).getTime() < nowMs;
     const started = !!v.inspectionStatus && v.inspectionStatus !== "not_started";
     return v.planningStatus === "published" && lapsed && !started ? "expired" : v.planningStatus;
+  };
+  // published + not-started + not-lapsed → the reschedule/cancel/edit guard set.
+  const isPublishNew = (v: VisitRow) => effectiveStatus(v) === "published" && v.operationalState === "new";
+  const isNotStarted = (v: VisitRow) => !v.inspectionStatus || v.inspectionStatus === "not_started";
+  const allowedKey = (v: VisitRow): AllowedKey => {
+    if (effectiveStatus(v) === "expired") return "expired";
+    if (v.planningStatus === "cancelled") return "final";
+    if (!isNotStarted(v)) return "locked";
+    if (isPublishNew(v)) return "editable";
+    return "final";
+  };
+  const allowedLabel: Record<AllowedKey, string> = {
+    editable: strings.allowedEditable, locked: strings.allowedLocked,
+    final: strings.allowedFinal, expired: strings.allowedExpired,
+  };
+  const allowedTone: Record<AllowedKey, string> = {
+    editable: "ax-lozenge--success", locked: "ax-lozenge--warning",
+    final: "ax-lozenge--critical", expired: "ax-lozenge--critical",
   };
 
   const counts = useMemo(() => {
@@ -183,8 +290,102 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const clearFilters = () => { setQ(""); setStatus(""); setType(""); setMode(""); setRegion(""); setCity(""); setFrom(""); setTo(""); };
   const hidden = [...selected].map(id => <input key={id} type="hidden" name="visit_ids" value={id} />);
 
+  const rowById = useMemo(() => new Map(rows.map(v => [v.id, v])), [rows]);
+  const activeVisit = activeId ? rowById.get(activeId) ?? null : null;
+
+  // Bulk eligibility preview — computed from the loaded rows (verified now);
+  // the server re-checks every item per its guard at submit (rechecked-at-submit).
+  const selectedRows = useMemo(
+    () => [...selected].map(id => rowById.get(id)).filter((v): v is VisitRow => !!v),
+    [selected, rowById],
+  );
+  const elig = useMemo(() => {
+    const publishNew = selectedRows.filter(isPublishNew).length;
+    const notStarted = selectedRows.filter(isNotStarted).length;
+    const plans = new Set(selectedRows.map(v => v.planId));
+    const samePlan = plans.size === 1 && [...plans][0] !== ""; // one non-immediate Plan
+    return { n: selectedRows.length, publishNew, notStarted, samePlan };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRows, nowMs]);
+
+  const eligLine = (n: number) => strings.eligCount.replace("{n}", String(n)).replace("{total}", String(elig.n));
+
+  // Focus the outcome summary after a completed submit (success, partial, or
+  // failure) so keyboard / screen-reader users land on the result (S38).
+  useEffect(() => {
+    if (!pending && (hasLedger || hasFormError)) summaryRef.current?.focus();
+  }, [pending, hasLedger, hasFormError, result]);
+
+  const formErrorText = (): string => {
+    switch (result?.formErrorCode) {
+      case "select_one": return strings.errSelectOne;
+      case "reason_required": return strings.errReasonRequired;
+      case "window_required": return strings.errWindowRequired;
+      case "window_invalid": return strings.errWindowInvalid;
+      case "window_order": return strings.errWindowOrder;
+      case "inspector_required": return strings.errInspectorRequired;
+      case "type_or_notes_required": return strings.errTypeOrNotes;
+      default: return "";
+    }
+  };
+  const outcomeText: Record<OutcomeCode, string> = {
+    applied: strings.outcomeApplied,
+    applied_no_notification: strings.outcomeNoNotif,
+    blocked_not_publishable: strings.outcomeBlockedNotPub,
+    blocked_started: strings.outcomeBlockedStarted,
+    blocked_no_assignment: strings.outcomeBlockedNoAssign,
+    error: strings.outcomeError,
+  };
+  const verbLabel: Record<BulkVerb, string> = {
+    reschedule: strings.verbReschedule, reassign: strings.verbReassign,
+    cancel: strings.verbCancel, edit: strings.verbEdit,
+  };
+
+  const ledger = result?.items ?? [];
+  const nApplied = ledger.filter(i => i.outcome === "applied").length;
+  const nNoNotif = ledger.filter(i => i.outcome === "applied_no_notification").length;
+  const nBlocked = ledger.filter(i => i.outcome.startsWith("blocked") || i.outcome === "error").length;
+  const anyProblem = nBlocked > 0 || nNoNotif > 0; // partial/failed → role=alert
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+      {/* CD-026 — Selected Visit Continuity Spine (signature pattern). One stable
+          selected identity + state + allowed-action context, carried in-session. */}
+      <section className="ax-surface" aria-label={strings.spineHeading}
+        style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+          <span className="ax-overline">{strings.spineHeading}</span>
+          {activeVisit && (
+            <span className={`ax-lozenge ${allowedTone[allowedKey(activeVisit)]}`}>{allowedLabel[allowedKey(activeVisit)]}</span>
+          )}
+        </div>
+        {!activeVisit ? (
+          <p className="ax-caption" style={{ margin: 0 }}>{strings.spineEmpty}</p>
+        ) : (
+          <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
+            <div style={{ minInlineSize: 200 }}>
+              <div className="ax-numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
+                {activeVisit.planId && <span className="ax-caption ax-numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
+              </div>
+              <div className="ax-caption">{activeVisit.factoryName}{(activeVisit.crNumber || activeVisit.licenseNumber) && <> · <span className="ax-numeric">{[activeVisit.crNumber, activeVisit.licenseNumber].filter(Boolean).join(" · ")}</span></>}</div>
+              <div className="ax-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
+            </div>
+            <div style={{ minInlineSize: 180 }}>
+              <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+                <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[effectiveStatus(activeVisit)] ?? ""}`}>
+                  {effectiveStatus(activeVisit) === "expired" && activeVisit.planningStatus === "published" ? strings.expiredLabel : activeVisit.planningLabel}
+                </span>
+                <span className="ax-lozenge ax-lozenge--ops">{activeVisit.opsLabel}</span>
+              </div>
+              <div className="ax-caption">{strings.spineWindow}: <span className="ax-numeric">{fmt(activeVisit.windowStart)}</span></div>
+              <div className="ax-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
+            </div>
+            <a className="ax-btn ax-btn--subtle" href={`/visits/${activeVisit.id}`}
+              aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</a>
+          </div>
+        )}
+      </section>
+
       {/* M02-002 — KPI tiles double as status filters */}
       <div className="ax-kpi-row" role="group" aria-label={strings.kpiFilterHint}>
         {["draft", "published", "returned", "cancelled", "expired"].map(s => (
@@ -245,8 +446,22 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             <h4 style={{ margin: 0 }}>{strings.bulkHeading} · {strings.selectedCount.replace("{n}", String(selected.size))}</h4>
             <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
           </div>
+
+          {/* CD-026 — eligibility preview: verified now, re-checked at submit */}
+          <div className="ax-state ax-state--inline" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-050)", alignItems: "flex-start" }}>
+            <span className="ax-overline">{strings.eligHeading}</span>
+            <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+              <span className="ax-caption">{strings.eligReschedule}: <strong>{eligLine(elig.publishNew)}</strong></span>
+              <span className="ax-caption">{strings.eligCancel}: <strong>{eligLine(elig.publishNew)}</strong></span>
+              <span className="ax-caption">{strings.eligReassign}: <strong>{eligLine(elig.notStarted)}</strong></span>
+              <span className="ax-caption">{strings.eligEdit}: <strong>{elig.samePlan ? eligLine(elig.publishNew) : "—"}</strong></span>
+            </div>
+            <span className="ax-caption">{strings.eligVerified}</span>
+            {!elig.samePlan && <span className="ax-lozenge ax-lozenge--warning">{strings.eligSamePlanBlocked}</span>}
+          </div>
+
           <div className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
-            <form action={rscAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+            <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label">{strings.bulkWindowStart}</label>
                 <input className="ax-input ax-numeric" type="datetime-local" name="window_start" /></div>
@@ -254,20 +469,20 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                 <input className="ax-input ax-numeric" type="datetime-local" name="window_end" /></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkRescheduleBtn}</button>
             </form>
-            <form action={reaAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="ax-row" style={{ alignItems: "flex-end" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label">{strings.bulkReassignTo}</label>
                 <select className="ax-select" name="inspector_id"><option value="">{strings.selectOption}</option>
                   {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkReassignBtn}</button>
             </form>
-            <form action={canAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="ax-row" style={{ alignItems: "flex-end" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label">{strings.bulkCancelReason}</label>
                 <input className="ax-input" name="reason" placeholder={strings.bulkCancelPlaceholder} /></div>
               <button className="ax-btn ax-btn--danger" disabled={busy}>{strings.bulkCancelBtn}</button>
             </form>
-            <form action={edtAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+            <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 180 }}><label className="ax-field__label">{strings.bulkEditType}</label>
                 <select className="ax-select" name="visit_type"><option value="">{strings.selectOption}</option>
@@ -280,14 +495,68 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                 <input type="checkbox" name="set_notes" value="1" />
                 <span>{strings.bulkEditSetNotes}</span>
               </label>
-              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkEditBtn}</button>
+              {/* HANDOFF_BLOCKED_GUARD — cross-Plan bulk edit has no server enforcement,
+                  so it is disabled (not faked as safe) when the selection spans Plans. */}
+              <button className="ax-btn ax-btn--secondary" disabled={busy || !elig.samePlan}
+                title={!elig.samePlan ? strings.eligSamePlanBlocked : undefined}>{strings.bulkEditBtn}</button>
             </form>
           </div>
         </div>
       )}
-      {/* per-row outcomes come back verbatim from the server action */}
-      {msg && <div className="ax-banner ax-banner--critical"><div style={{ whiteSpace: "pre-line" }}>{msg}</div></div>}
-      {ok && <div className="ax-banner ax-banner--success"><div style={{ whiteSpace: "pre-line" }}>{ok}</div></div>}
+
+      {/* CD-026 — busy progress: role=status, no optimistic success (S25/S39) */}
+      {pending && (
+        <div className="ax-banner" role="status" aria-live="polite">
+          <div>{strings.progressBusy.replace("{n}", String(selected.size))}</div>
+        </div>
+      )}
+
+      {/* CD-026 — neutral pre-flight validation (single role=alert) */}
+      {!pending && hasFormError && (
+        <div ref={summaryRef} tabIndex={-1} className="ax-banner ax-banner--critical" role="alert">
+          <div>{formErrorText()}</div>
+        </div>
+      )}
+
+      {/* CD-026 — per-item outcome ledger. Never a single green banner for a
+          mixed result. Partial/failed → role=alert; all-applied → role=status. */}
+      {!pending && hasLedger && (
+        <div ref={summaryRef} tabIndex={-1}
+          className={`ax-surface ${anyProblem ? "ax-banner--critical" : ""}`}
+          role={anyProblem ? "alert" : "status"} aria-live="polite"
+          style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+          <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>
+            <strong>{verbLabel[result!.verb as BulkVerb] ?? ""}</strong>
+            {nApplied > 0 && <span className="ax-lozenge ax-lozenge--success">{strings.ledgerSummaryApplied.replace("{n}", String(nApplied))}</span>}
+            {nBlocked > 0 && <span className="ax-lozenge ax-lozenge--warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
+            {nNoNotif > 0 && <span className="ax-lozenge ax-lozenge--warning">{strings.ledgerSummaryNoNotif.replace("{n}", String(nNoNotif))}</span>}
+          </div>
+          <div className="ax-tablewrap"><table className="ax-table">
+            <thead><tr>
+              <th>{strings.ledgerColVisit}</th>
+              <th>{strings.ledgerColOutcome}</th>
+              <th>{strings.ledgerColReason}</th>
+              <th />
+            </tr></thead>
+            <tbody>
+              {ledger.map(item => (
+                <tr key={item.id}>
+                  <td className="ax-numeric"><strong>{item.id.slice(0, 8)}</strong></td>
+                  <td><span className={`ax-lozenge ${OUTCOME_TONE[item.outcome]}`}>
+                    {item.outcome === "applied" ? strings.outcomeApplied
+                      : item.outcome === "applied_no_notification" ? strings.ledgerShortNoNotif
+                      : item.outcome === "error" ? strings.ledgerShortError
+                      : strings.ledgerShortBlocked}
+                  </span></td>
+                  <td className="ax-caption">{outcomeText[item.outcome]}</td>
+                  <td><a className="ax-link ax-caption" href={`/visits/${item.id}`}>{strings.ledgerOpen}</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table></div>
+          {nBlocked > 0 && <span className="ax-caption">{strings.ledgerRetrySafe}</span>}
+        </div>
+      )}
 
       {filtered.length === 0 ? (
         <div className="ax-surface"><div className="ax-state">
@@ -305,14 +574,25 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           <tbody>
             {filtered.map(v => {
               const eff = effectiveStatus(v);
+              const isActive = v.id === activeId;
               return (
-                <tr key={v.id}>
+                <tr key={v.id} aria-selected={isActive}
+                  style={isActive ? { outline: "var(--ax-focus-ring)", outlineOffset: "-2px" } : undefined}>
                   <td><input type="checkbox" checked={selected.has(v.id)} onChange={() => toggleOne(v.id)}
                     aria-label={strings.selectRowAria.replace("{id}", v.id.slice(0, 8))} /></td>
-                  <td className="ax-numeric"><a className="ax-link" href={`/visits/${v.id}`}><strong>{v.id.slice(0, 8)}</strong></a>
+                  <td className="ax-numeric">
+                    {/* Button drives the continuity spine (keyboard-accessible);
+                        the adjacent link preserves direct navigation to detail. */}
+                    <button type="button" className="ax-link" onClick={() => setActiveId(v.id)} aria-pressed={isActive}
+                      aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
+                      <strong>{v.id.slice(0, 8)}</strong>
+                    </button>
+                    {" "}<a className="ax-link ax-caption" href={`/visits/${v.id}`}
+                      aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</a>
                     {v.planId && (
                       <><br /><span className="ax-caption ax-numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
-                    )}</td>
+                    )}
+                  </td>
                   <td>{v.factoryName}{(v.crNumber || v.licenseNumber) && (
                     <><br /><span className="ax-caption ax-numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
                   )}</td>
