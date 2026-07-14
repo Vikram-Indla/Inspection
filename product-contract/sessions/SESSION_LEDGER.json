@@ -359,7 +359,7 @@
       "evidence": ["product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md", "outputs/cd-021/WIRING_MAP_CD-021.csv", "outputs/cd-022/WIRING_MAP_CD-022.csv", "outputs/cd-023/WIRING_MAP_CD-023.csv"],
       "decisions": ["Keep CD-024/CD-025 route and lifecycle implementation blocked by governance", "Keep notification/provider delivery truthful and diagnostic details out of UI", "Generate forward migrations with Supabase CLI; do not deploy production in this task", "Preserve concurrent work and stashes until branch disposition is proven"],
       "blockers": ["Forward migration runtime certification", "Full no-exclusion regression after migration", "Fresh independent DEC-012 CD-023 audit", "Sponsor runtime acceptance", "G11/G12 credential, region, provider and asset-rights release items"],
-      "commit_sha": "02c29654f98d0085b7cd9a8d83bcaa5fa46d94aa (origin/main verified)",
+      "commit_sha": "582d98829620354afbc89abe87d6ef73635256cb (origin/main verified before final disposition note)",
       "next_task": "If repository policy permits, change the protected default branch from setup/Inspection to main, then delete setup/Inspection administratively",
       "resume_prompt": "Read TASK-BASELINE-WIRING-AUDIT-001.md and CURRENT_SLICE.yaml. Preserve the declared migration and regression blockers; finish the authorized main consolidation and branch disposition without deploying production or implementing blocked CD-024/CD-025 routes."
     }
