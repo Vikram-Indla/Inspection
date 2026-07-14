@@ -1,18 +1,16 @@
 "use client";
 import { useMemo, useState } from "react";
-import { useActionState } from "react";
-import { decideReview, type DecisionResult } from "./actions";
 
-// SB19 — strings built server-side with t() and passed as props.
-export type DecisionPanelStrings = {
-  heading: string; awaiting: string;
-  decisions: Record<string, string>;
-  returnScope: string; reason: string; record: string; recording: string;
-};
+// CD-028 / SCR-WEB-300 — Level 2 review queue (scan-first).
+// The queue renders NO decision controls (leg 10): a row opens /reviews/:id,
+// where the reviewer explicitly starts and decides. Each row carries the
+// Evidence-readiness & SLA-risk fingerprint — labelled facts only, never a
+// single severity score or colour-only signal (MVP1-FND-011).
 
-// M06-031 — per-pending-review computed badges (SLA/overdue, risk, critical
-// violations, priority). Server computes the values against engine_settings.sla
-// and factory risk_band, then hands pre-translated labels + lozenge tones here.
+// M06-031 — per-review derived facts. SLA/risk/critical/priority come from the
+// accepted config + factory record; the four readiness facts come from
+// RLS-scoped joins. Any fact that cannot be read is "unavailable", never
+// invented (HANDOFF_BLOCKED_QUEUE_READINESS resolved by real derivation).
 export type QueueBadges = {
   slaLabel: string; slaTone: string; slaState: "on_time" | "overdue" | "none";
   riskLabel: string; riskTone: string; riskBand: string | null;
@@ -20,61 +18,9 @@ export type QueueBadges = {
   priorityLabel: string | null;
 };
 
-function Badges({ b }: { b: QueueBadges }) {
-  return (
-    <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
-      {b.slaState !== "none" && <span className={`ax-lozenge ${b.slaTone}`}>{b.slaLabel}</span>}
-      {b.riskBand && <span className={`ax-lozenge ${b.riskTone}`}>{b.riskLabel}</span>}
-      {b.criticalCount > 0 && <span className="ax-lozenge ax-lozenge--critical">{b.criticalLabel}</span>}
-      {b.priorityLabel && <span className="ax-lozenge ax-lozenge--info">{b.priorityLabel}</span>}
-    </div>
-  );
-}
+export type ReadinessFact = "present" | "missing" | "verified" | "updated" | "unavailable";
+export type Readiness = { checklist: ReadinessFact; evidence: ReadinessFact; ack: ReadinessFact; factory: ReadinessFact };
 
-export default function DecisionPanel({ reviewId, factory, strings, meta }: { reviewId: string; factory: string; strings: DecisionPanelStrings; meta?: QueueBadges }) {
-  const [state, formAction, pending] = useActionState<DecisionResult, FormData>(decideReview, {});
-  const [decision, setDecision] = useState("");
-  return (
-    <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-200)" }}>
-        <h4>{strings.heading.replace("{factory}", factory)}</h4>
-        <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", justifyContent: "flex-end" }}>
-          {meta && <Badges b={meta} />}
-          <span className="ax-lozenge ax-lozenge--warning">{strings.awaiting}</span>
-        </div>
-      </div>
-      <input type="hidden" name="review_id" value={reviewId} />
-      <div className="ax-row" style={{ gap: "var(--ax-space-300)" }}>
-        {(["approve", "return", "reject"] as const).map(d => (
-          <label key={d} className="ax-choice" style={{ display: "flex" }}>
-            <input type="radio" name="decision" value={d} checked={decision === d} onChange={() => setDecision(d)} />
-            <span>{strings.decisions[d] ?? d}</span>
-          </label>
-        ))}
-      </div>
-      {decision === "return" && (
-        <div className="ax-field" style={{ maxInlineSize: "none" }}>
-          <label className="ax-field__label">{strings.returnScope}</label>
-          <input className="ax-input" name="returned_sections" placeholder="s1, s3" />
-        </div>
-      )}
-      <div className="ax-field" style={{ maxInlineSize: "none" }}>
-        <label className="ax-field__label">{strings.reason}</label>
-        <textarea className="ax-input" name="reason" rows={2} required />
-      </div>
-      {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
-      <div className="ax-row" style={{ justifyContent: "flex-end" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending || !decision}>
-          {pending ? strings.recording : strings.record}
-        </button>
-      </div>
-    </form>
-  );
-}
-
-// M06-013/014/016/030/031 — the review queue itself: enriched columns (inspector,
-// execution mode, visit type, factory risk, SLA/overdue, critical count, priority)
-// plus client-side search/status/risk/overdue filters over the loaded RLS page.
 export type QueueRow = QueueBadges & {
   id: string;              // review id
   href: string;            // /reviews/{inspectionId}
@@ -86,23 +32,82 @@ export type QueueRow = QueueBadges & {
   status: string;          // raw enum for filtering
   statusLabel: string;
   statusTone: string;
-  decisionLabel: string;
-  returnScope: string;
-  reason: string;
   modeLabel: string;
   typeLabel: string;
+  readiness: Readiness;
+  readable: boolean;       // false ⇒ a linked source could not be read for this row
+  unassigned: boolean;     // no Level 2 reviewer assigned (claim path stays blocked)
+};
+
+export type FingerprintStrings = {
+  sla: string; slaOverdue: string; slaOnTime: string; slaUnavailable: string;
+  risk: string; critical: string; priority: string;
+  checklist: string; evidence: string; ack: string; factory: string;
+  present: string; missing: string; verified: string; updated: string; unavailable: string;
+  readyBlockTag: string;
+  noEvidenceTitle: string; noEvidenceBody: string;
+  unassignedTitle: string; unassignedBlocked: string;
 };
 
 export type ReviewQueueStrings = {
   searchPlaceholder: string; searchAria: string;
   allStatuses: string; allRisks: string; overdueOnly: string; clearFilters: string;
-  showing: string;         // "{shown}" / "{total}"
-  noMatch: string;
+  showing: string; noMatch: string; noMatchBody: string;
   colFactory: string; colInspector: string; colTypeMode: string;
-  colSubmitted: string; colVersion: string; colRisk: string; colSla: string;
-  colCritical: string; colPriority: string; colStatus: string; colDecision: string;
-  colReturnScope: string; colReason: string; colOpen: string; open: string;
+  colVersion: string; colFingerprint: string;
+  colStatus: string; colOpen: string; open: string; openHint: string;
+  fpTitle: string; fpHint: string;
+  fp: FingerprintStrings;
 };
+
+const FACT_GLYPH: Record<ReadinessFact, string> = { present: "●", verified: "●", updated: "◐", missing: "○", unavailable: "◇" };
+const FACT_KIND: Record<ReadinessFact, string> = { present: "ok", verified: "ok", updated: "upd", missing: "miss", unavailable: "unknown" };
+
+function FactChip({ label, fact, valueLabel }: { label: string; fact: ReadinessFact; valueLabel: string }) {
+  return (
+    <span className={`cd-fpchip cd-fpchip--${FACT_KIND[fact]}`}>
+      <span className="cd-fpchip__g" aria-hidden="true">{FACT_GLYPH[fact]}</span>
+      {label}: {valueLabel}
+    </span>
+  );
+}
+
+// The signature. Two labelled rows: derived SLA/risk facts, then the four
+// evidence-readiness facts. Missing SLA is shown "unavailable" (never on-time);
+// a risk band is a fact, not a recommendation.
+function Fingerprint({ r, s }: { r: QueueRow; s: FingerprintStrings }) {
+  const fp = s;
+  if (!r.readable) {
+    return (
+      <div className="cd-fp cd-fp--flag">
+        <span className="cd-tag cd-tag--warn">{fp.noEvidenceTitle}</span>
+        <span className="cd-sub">{fp.noEvidenceBody}</span>
+      </div>
+    );
+  }
+  const factLabel = (f: ReadinessFact) =>
+    f === "present" ? fp.present : f === "verified" ? fp.verified : f === "updated" ? fp.updated : f === "missing" ? fp.missing : fp.unavailable;
+  return (
+    <div className="cd-fp">
+      <div className="cd-fp__row">
+        {r.slaState === "none"
+          ? <span className="cd-fpchip cd-fpchip--unknown" title={fp.slaUnavailable}><span className="cd-fpchip__g" aria-hidden="true">◇</span>{fp.sla}: {fp.unavailable}</span>
+          : <span className={`cd-fpchip cd-fpchip--${r.slaState === "overdue" ? "bad" : "ok"}`}><span className="cd-fpchip__g" aria-hidden="true">{r.slaState === "overdue" ? "▲" : "✓"}</span>{fp.sla}: {r.slaState === "overdue" ? fp.slaOverdue : fp.slaOnTime}</span>}
+        <span className={`ax-lozenge ${r.riskBand ? r.riskTone : ""}`}>{fp.risk}: {r.riskBand ? r.riskLabel : fp.unavailable}</span>
+        {r.criticalCount > 0
+          ? <span className="ax-lozenge ax-lozenge--critical">{r.criticalCount} {fp.critical}</span>
+          : <span className="cd-sub">0 {fp.critical}</span>}
+        {r.priorityLabel && <span className="ax-lozenge ax-lozenge--info">{fp.priority}: {r.priorityLabel}</span>}
+      </div>
+      <div className="cd-fp__row">
+        <FactChip label={fp.checklist} fact={r.readiness.checklist} valueLabel={factLabel(r.readiness.checklist)} />
+        <FactChip label={fp.evidence} fact={r.readiness.evidence} valueLabel={factLabel(r.readiness.evidence)} />
+        <FactChip label={fp.ack} fact={r.readiness.ack} valueLabel={factLabel(r.readiness.ack)} />
+        <FactChip label={fp.factory} fact={r.readiness.factory} valueLabel={factLabel(r.readiness.factory)} />
+      </div>
+    </div>
+  );
+}
 
 export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
   rows: QueueRow[];
@@ -127,65 +132,62 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
   const clear = () => { setQ(""); setStatus(""); setRisk(""); setOverdue(false); };
 
   return (
-    <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="cd-queue">
+      {/* fingerprint legend — states the contract before the table */}
+      <section className="ax-surface cd-panelpad">
+        <div className="cd-sectionhead"><h3>{strings.fpTitle}</h3></div>
+        <p className="cd-sub">{strings.fpHint}</p>
+      </section>
       {/* M06-014/030 — client search + status + risk + overdue-only over the RLS page */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "center" }}>
-        <input className="ax-input" style={{ inlineSize: 260 }} value={q} onChange={e => setQ(e.target.value)}
-          placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} />
-        <select className="ax-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
-          <option value="">{strings.allStatuses}</option>
-          {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-        <select className="ax-select" value={risk} onChange={e => setRisk(e.target.value)} aria-label={strings.allRisks}>
-          <option value="">{strings.allRisks}</option>
-          {riskOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-        <label className="ax-choice" style={{ display: "flex", gap: "var(--ax-space-100)", alignItems: "center" }}>
-          <input type="checkbox" checked={overdue} onChange={e => setOverdue(e.target.checked)} />
-          <span>{strings.overdueOnly}</span>
-        </label>
+      <div className="ax-surface cd-filters">
+        <label className="cd-fl cd-fl--search"><span className="cd-fl__k">{strings.searchPlaceholder}</span>
+          <input className="ax-input" value={q} onChange={e => setQ(e.target.value)} placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} /></label>
+        <label className="cd-fl"><span className="cd-fl__k">{strings.allStatuses}</span>
+          <select className="ax-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
+            <option value="">{strings.allStatuses}</option>
+            {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select></label>
+        <label className="cd-fl"><span className="cd-fl__k">{strings.allRisks}</span>
+          <select className="ax-select" value={risk} onChange={e => setRisk(e.target.value)} aria-label={strings.allRisks}>
+            <option value="">{strings.allRisks}</option>
+            {riskOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select></label>
+        <label className="cd-choice"><input type="checkbox" checked={overdue} onChange={e => setOverdue(e.target.checked)} /><span>{strings.overdueOnly}</span></label>
         {hasFilter && <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clearFilters}</button>}
         <span className="ax-caption ax-numeric" style={{ marginInlineStart: "auto" }}>
           {strings.showing.replace("{shown}", String(filtered.length)).replace("{total}", String(rows.length))}
         </span>
       </div>
       {filtered.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">🔍</span><h4>{strings.noMatch}</h4></div></div>
+        <section className="ax-surface cd-panelpad cd-result" role="status">
+          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--neutral" aria-hidden="true">🔍</div>
+            <div className="cd-stack"><h3 tabIndex={-1}>{strings.noMatch}</h3><p>{strings.noMatchBody}</p></div></div>
+        </section>
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="ax-tablewrap"><table className="ax-table cd-table">
           <thead><tr>
-            <th>{strings.colFactory}</th>
-            <th>{strings.colInspector}</th>
-            <th>{strings.colTypeMode}</th>
-            <th>{strings.colRisk}</th>
-            <th>{strings.colSla}</th>
-            <th className="ax-td-num">{strings.colCritical}</th>
-            <th>{strings.colPriority}</th>
-            <th>{strings.colVersion}</th>
-            <th className="ax-td-num">{strings.colSubmitted}</th>
-            <th>{strings.colStatus}</th>
-            <th>{strings.colDecision}</th>
-            <th>{strings.colReturnScope}</th>
-            <th>{strings.colReason}</th>
-            <th>{strings.colOpen}</th>
+            <th scope="col">{strings.colFactory}</th>
+            <th scope="col">{strings.colInspector}</th>
+            <th scope="col">{strings.colTypeMode}</th>
+            <th scope="col">{strings.colVersion}</th>
+            <th scope="col">{strings.colFingerprint}</th>
+            <th scope="col">{strings.colStatus}</th>
+            <th scope="col">{strings.colOpen}</th>
           </tr></thead>
           <tbody>
             {filtered.map(r => (
-              <tr key={r.id}>
-                <td><strong>{r.factoryName}</strong> <span className="ax-caption">{r.factoryCode}</span></td>
+              <tr key={r.id} className={!r.readable || r.unassigned ? "cd-row--flag" : ""}>
+                <td>
+                  <div className="cd-fname">{r.factoryName}</div>
+                  <div className="cd-sub cd-mono"><bdi>{r.factoryCode}</bdi> · <bdi>{r.id.slice(0, 8)}</bdi></div>
+                  {r.unassigned && <div className="cd-sub cd-warn">{strings.fp.unassignedTitle} <span className="cd-tag cd-tag--blocked">{strings.fp.unassignedBlocked}</span></div>}
+                </td>
                 <td>{r.inspectorName || "—"}</td>
-                <td><span className="ax-caption">{r.typeLabel} · {r.modeLabel}</span></td>
-                <td>{r.riskBand ? <span className={`ax-lozenge ${r.riskTone}`}>{r.riskLabel}</span> : "—"}</td>
-                <td>{r.slaState !== "none" ? <span className={`ax-lozenge ${r.slaTone}`}>{r.slaLabel}</span> : "—"}</td>
-                <td className="ax-td-num ax-numeric">{r.criticalCount > 0 ? <span className="ax-lozenge ax-lozenge--critical">{r.criticalCount}</span> : "0"}</td>
-                <td>{r.priorityLabel ? <span className="ax-lozenge ax-lozenge--info">{r.priorityLabel}</span> : "—"}</td>
-                <td><span className="ax-version">v{r.versionNumber ?? "—"}</span></td>
-                <td className="ax-td-num ax-numeric">{r.submittedDisplay}</td>
+                <td className="cd-sub">{r.typeLabel} · {r.modeLabel}</td>
+                <td><span className="ax-version">v{r.versionNumber ?? "—"}</span><div className="cd-sub cd-mono ax-numeric">{r.submittedDisplay}</div></td>
+                <td><Fingerprint r={r} s={strings.fp} /></td>
                 <td><span className={`ax-lozenge ax-lozenge--review ${r.statusTone}`}>{r.statusLabel}</span></td>
-                <td>{r.decisionLabel}</td>
-                <td>{r.returnScope}</td>
-                <td className="ax-caption">{r.reason}</td>
-                <td><a className="ax-btn ax-btn--subtle" href={r.href}>{strings.open}</a></td>
+                <td><a className="ax-btn ax-btn--secondary" href={r.href} title={strings.openHint}>{strings.open}</a></td>
               </tr>
             ))}
           </tbody>
