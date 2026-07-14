@@ -139,6 +139,20 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     expect(board).toContain("Selected Visit Continuity Spine");
   });
 
+  test("no visits route leaks a raw provider error — load-error banners are neutralised (query-degraded)", () => {
+    // DEC-012 CODEX_AUDIT_CD-026 F1/F2 regression guard: page/calendar/workload
+    // load-error branches must NOT interpolate error.message into the DOM; the raw
+    // provider text is logged server-side only.
+    for (const p of ["src/app/visits/page.tsx", "src/app/visits/calendar/page.tsx", "src/app/visits/workload/page.tsx"]) {
+      const src = SRC(p);
+      // JSX `{error.message}` leaks to the DOM; template `${error.message}` (server-side
+      // console.error) does not. Match the former only: `{error.message}` NOT preceded by `$`.
+      expect(src, `${p} must not render error.message in JSX`).not.toMatch(/[^$]\{error\.message\}/);
+      expect(src, `${p} must log the provider error server-side`).toContain("console.error");
+      expect(src, `${p} must show neutral load-error copy`).toMatch(/loadErrorNeutral/);
+    }
+  });
+
   test("the Map lens is represented as unavailable — no route or provider is invented", () => {
     const page = SRC("src/app/visits/page.tsx");
     expect(page).toContain("HANDOFF_BLOCKED_MAP");

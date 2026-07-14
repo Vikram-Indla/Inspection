@@ -40,9 +40,12 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       .eq("user_roles.role_key", "inspector").order("full_name"),
   ]);
   if (error) {
+    // CD-026 query-degraded — neutralise the provider error: raw Supabase/PostgREST
+    // text is logged server-side only; the user sees stable neutral copy (no raw message).
+    console.error(`[visits.list] load failed: ${error.message}`);
     return (
       <Shell current="/visits" title={t("visit.list.title", "Visit management")}>
-        <div className="ax-banner ax-banner--critical"><div>{t("visit.list.loadError", "Could not load visits:")} {error.message}</div></div>
+        <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
       </Shell>
     );
   }
