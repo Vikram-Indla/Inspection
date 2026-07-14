@@ -210,7 +210,12 @@ result.inspections = await insertMissing("inspections", inspections, inspector.j
 result.findings = await insertMissing("findings", [finding], inspector.jwt);
 result.violations = await insertMissing("violations", [violation], inspector.jwt);
 result.action_forms = await insertMissing("action_forms", actions, inspector.jwt);
-result.notifications = await insertMissing("notifications", notifications, ops.jwt);
+// Operations' notification panel is "latest 20 by created_at" (operations/page.tsx)
+// against a shared live project that accumulates notifications from every other
+// test run. insertMissing would leave this fixture's created_at fixed at whenever
+// it was first seeded, so it silently ages out of that top-20 — same class of
+// issue as the visits fixture above; upsert keeps it "now"-relative on every run.
+result.notifications = await upsert("notifications", notifications, ops.jwt);
 
 const truth = await rest(
   "GET",

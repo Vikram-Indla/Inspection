@@ -1,42 +1,40 @@
 # Compaction Checkpoint
-- Time: 2026-07-12T11:19:04.479996+00:00
-- Session: ec118c43-9f51-4b45-97e5-47a387ee2fe8
+- Time: 2026-07-14T10:34:07.761218+00:00
+- Session: 3a85e154-1ec8-4711-a3b7-aaea22eed5f1
 - Trigger: auto
 - Branch: main
-- Commit: a5cf8a2
+- Commit: d7490ed
 - Working tree:
 ```
 M .project-memory/audit/instructions_loaded.jsonl
  M .project-memory/audit/tool_events.jsonl
- M apps/web/e2e/login-helper.ts
- M apps/web/public/icon.svg
- D apps/web/src/app/CoverageMap.tsx
- D apps/web/src/app/GovBar.tsx
- M apps/web/src/app/astryx.css
- D apps/web/src/app/landing.css
- M apps/web/src/app/layout.tsx
- M apps/web/src/app/login/LoginClient.tsx
- M apps/web/src/app/login/login.css
- M apps/web/src/app/login/page.tsx
- M apps/web/src/app/operations/page.tsx
- M apps/web/src/app/page.tsx
- M apps/web/src/app/planning/bulk/BulkForm.tsx
- M apps/web/src/app/planning/bulk/page.tsx
- M apps/web/src/app/reports/inspection/[id]/page.tsx
- M apps/web/src/app/reset/ResetClient.tsx
- M apps/web/src/app/reset/page.tsx
- M apps/web/src/app/tokens.css
- M apps/web/src/app/visits/VisitsBoard.tsx
- M apps/web/src/app/visits/page.tsx
- M apps/web/src/components/Shell.tsx
- M product-contract/CURRENT_STATE.md
- M product-contract/governance/decision_register.csv
-?? apps/web/src/app/login/KsaMotif.tsx
-?? apps/web/src/app/login/SaqeelMark.tsx
-?? apps/web/src/app/operations/live/
-?? apps/web/src/components/ThemeScript.tsx
-?? apps/web/src/components/ThemeToggle.tsx
-?? product-contract/governance/DECISIONS_ACCEPTED_2026-07-12_SAQEEL.yaml
+ M product-contract/evidence/screens/cd-021-bulk-v1/ar-rtl.png
+ M product-contract/evidence/screens/cd-021-bulk-v1/narrow.png
+ M product-contract/evidence/screens/cd-021-bulk-v1/primary.png
+ M product-contract/evidence/screens/dashboard-business-v1/operational-en-dark-desktop.png
+ M product-contract/evidence/screens/dashboard-business-v1/strategic-ar-mobile.png
+ M product-contract/evidence/screens/dashboard-business-v1/strategic-en-dark-desktop.png
+ M product-contract/evidence/screens/dashboard-business-v1/strategic-en-light-desktop.png
+ M product-contract/evidence/screens/dashboard-kpi-seed/live-operations-en-light.png
+ M product-contract/evidence/screens/immediate-v2/ar-dark-desktop.png
+ M product-contract/evidence/screens/immediate-v2/ar-dark-narrow.png
+ M product-contract/evidence/screens/immediate-v2/ar-light-desktop.png
+ M product-contract/evidence/screens/immediate-v2/ar-light-narrow.png
+ M product-contract/evidence/screens/immediate-v2/en-dark-desktop.png
+ M product-contract/evidence/screens/immediate-v2/en-dark-narrow.png
+ M product-contract/evidence/screens/immediate-v2/en-light-desktop.png
+ M product-contract/evidence/screens/immediate-v2/en-light-narrow.png
+ M product-contract/evidence/screens/login-v7-atlas/desktop-dark-ar.png
+ M product-contract/evidence/screens/login-v7-atlas/desktop-dark-en.png
+ M product-contract/evidence/screens/login-v7-atlas/desktop-light-ar.png
+ M product-contract/evidence/screens/login-v7-atlas/desktop-light-en.png
+ M product-contract/evidence/screens/login-v7-atlas/laptop-dark-en.png
+ M product-contract/evidence/screens/login-v7-atlas/mobile-dark-ar.png
+ M product-contract/evidence/screens/login-v7-atlas/mobile-dark-en.png
+ M product-contract/evidence/screens/login-v7-atlas/mobile-light-ar.png
+ M product-contract/evidence/screens/shell-v1/planner-desktop-en-collapsed.png
+ M product-contract/evidence/screens/shell-v1/planner-desktop-en-dark.png
+?? apps/web/.next-stale-backup/
 ```
 - Current slice: `product-contract/execution/CURRENT_SLICE.yaml`
 - Resume protocol: `product-contract/execution/RESUME_PROTOCOL.md`
