@@ -138,15 +138,77 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     showing: t("visit.list.showing", "Showing {shown} of {total} visits"),
     loadMore: t("visit.list.loadMore", "Load more"),
     expiredLabel: t("enum.expired", "expired"),
+    // CD-026 — continuity spine
+    spineHeading: t("visit.spine.heading", "Selected visit"),
+    spineEmpty: t("visit.spine.empty", "Select a visit to see its identity, state and allowed actions here — kept in view as you work."),
+    spineOpenDetail: t("visit.spine.openDetail", "Open full detail"),
+    spineWindow: t("visit.spine.window", "Window"),
+    spineInspector: t("visit.spine.inspector", "Inspector"),
+    spineAllowed: t("visit.spine.allowed", "Allowed actions"),
+    previewAria: t("visit.spine.previewAria", "Show visit {id} in the selected-visit panel"),
+    openDetailAria: t("visit.spine.openDetailAria", "Open full detail for visit {id}"),
+    allowedEditable: t("visit.spine.allowedEditable", "Editable — published & not started"),
+    allowedLocked: t("visit.spine.allowedLocked", "Locked — inspection started"),
+    allowedFinal: t("visit.spine.allowedFinal", "Final — no further changes"),
+    allowedExpired: t("visit.spine.allowedExpired", "Expired — read-only"),
+    // CD-026 — eligibility preview
+    eligHeading: t("visit.elig.heading", "Eligibility preview"),
+    eligVerified: t("visit.elig.verified", "Verified now — each item is re-checked on the server at submit."),
+    eligCount: t("visit.elig.count", "{n} of {total} eligible"),
+    eligSamePlanBlocked: t("visit.elig.samePlanBlocked", "Bulk edit applies within one Plan. Cross-Plan enforcement is not yet in place on the server, so it is unavailable across Plans."),
+    eligReschedule: t("visit.elig.reschedule", "Reschedule"),
+    eligReassign: t("visit.elig.reassign", "Reassign"),
+    eligCancel: t("visit.elig.cancel", "Cancel"),
+    eligEdit: t("visit.elig.edit", "Edit"),
+    // CD-026 — outcome ledger
+    ledgerColVisit: t("visit.ledger.colVisit", "Visit"),
+    ledgerColOutcome: t("visit.ledger.colOutcome", "Outcome"),
+    ledgerColReason: t("visit.ledger.colReason", "What happened"),
+    ledgerOpen: t("visit.ledger.open", "Open"),
+    ledgerSummaryApplied: t("visit.ledger.summaryApplied", "{n} applied"),
+    ledgerSummaryBlocked: t("visit.ledger.summaryBlocked", "{n} blocked before change"),
+    ledgerSummaryNoNotif: t("visit.ledger.summaryNoNotif", "{n} changed — notification not queued"),
+    ledgerRetrySafe: t("visit.ledger.retrySafe", "Blocked items were not changed and are safe to retry."),
+    progressBusy: t("visit.ledger.progressBusy", "Applying to {n} visits…"),
+    verbReschedule: t("visit.ledger.verbReschedule", "Reschedule result"),
+    verbReassign: t("visit.ledger.verbReassign", "Reassign result"),
+    verbCancel: t("visit.ledger.verbCancel", "Cancel result"),
+    verbEdit: t("visit.ledger.verbEdit", "Edit result"),
+    outcomeApplied: t("visit.outcome.applied", "Applied"),
+    outcomeNoNotif: t("visit.outcome.noNotif", "Change applied — notification not queued"),
+    ledgerShortNoNotif: t("visit.outcome.shortNoNotif", "Applied — no notification"),
+    ledgerShortBlocked: t("visit.outcome.shortBlocked", "Blocked before change"),
+    ledgerShortError: t("visit.outcome.shortError", "Not changed"),
+    outcomeBlockedNotPub: t("visit.outcome.blockedNotPub", "Blocked before change — no longer published & unstarted, or outside your scope. Nothing changed."),
+    outcomeBlockedStarted: t("visit.outcome.blockedStarted", "Blocked before change — the inspection has already started. Nothing changed."),
+    outcomeBlockedNoAssign: t("visit.outcome.blockedNoAssign", "Blocked before change — no assignment to update, or outside your scope. Nothing changed."),
+    outcomeError: t("visit.outcome.error", "Not changed — something went wrong. This item is safe to retry."),
+    errSelectOne: t("visit.err.selectOne", "Select at least one visit."),
+    errReasonRequired: t("visit.err.reasonRequired", "A cancellation reason is required and final."),
+    errWindowRequired: t("visit.err.windowRequired", "A new window start and end are both required."),
+    errWindowInvalid: t("visit.err.windowInvalid", "Enter valid date and time values."),
+    errWindowOrder: t("visit.err.windowOrder", "The window end must be after the window start."),
+    errInspectorRequired: t("visit.err.inspectorRequired", "Select an inspector."),
+    errTypeOrNotes: t("visit.err.typeOrNotes", "Choose a visit type to change, or tick “update notes”."),
   };
   return (
     <Shell current="/visits" title={t("visit.list.title", "Visit management")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("visit.list.context", "SCR-WEB-200/210 · RLS-scoped")}</span>}>
-      {/* FIX WAVE F4 — M02-038 calendar + M02-018/037 workload entry points */}
-      <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-        <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits">{t("visit.views.list", "List")}</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
+      {/* FIX WAVE F4 — M02-038 calendar + M02-018/037 workload entry points.
+          CD-026 — the Map lens is HANDOFF_BLOCKED_MAP: no route, provider or
+          coordinate wiring exists, so it is shown UNAVAILABLE (disabled) and the
+          authoritative list below is the working equivalent — never faked. */}
+      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--ax-space-150)" }}>
+        <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+          <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits">{t("visit.views.list", "List")}</a>
+          <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
+          <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
+          <button type="button" className="ax-btn ax-btn--subtle" disabled aria-disabled="true"
+            title={t("visit.views.mapUnavailable", "Map view is not available yet — use the list below.")}>
+            {t("visit.views.map", "Map")}
+          </button>
+        </div>
+        <span className="ax-caption ax-numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
       {rows.length === 0 ? (
         <div className="ax-surface"><div className="ax-state">

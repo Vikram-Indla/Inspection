@@ -18,14 +18,26 @@ export async function getLocale(): Promise<Locale> {
 let cache: { at: number; dict: Dict } | null = null;
 const TTL_MS = 30_000;
 
+const PAGE = 1000; // PostgREST caps a single response at 1000 rows (db max-rows).
+
 export async function getDict(locale: Locale): Promise<Dict> {
   if (locale === "en") return {};
   if (cache && Date.now() - cache.at < TTL_MS) return cache.dict;
   // anon client: ui_strings is world-readable; avoids per-request cookie plumbing
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-  const { data } = await sb.from("ui_strings").select("key, ar").not("ar", "is", null);
+  // Page through ALL rows. A single unbounded select is capped at 1000 by
+  // PostgREST, which once the table grew past 1000 translated rows silently
+  // dropped every later key back to its English fallback (whole-app Arabic
+  // truncation, not screen-specific). Range-paginate on a stable key order so
+  // the full dictionary always loads.
   const dict: Dict = {};
-  for (const r of data ?? []) dict[r.key] = r.ar as string;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await sb.from("ui_strings")
+      .select("key, ar").not("ar", "is", null).order("key").range(from, from + PAGE - 1);
+    if (error || !data || data.length === 0) break;
+    for (const r of data) dict[r.key] = r.ar as string;
+    if (data.length < PAGE) break;
+  }
   cache = { at: Date.now(), dict };
   return dict;
 }
