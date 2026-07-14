@@ -1,12 +1,30 @@
 "use server";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
+import { findDuplicateActiveVisits } from "./duplicate";
 
-export type PublishResult = { error?: string };
+export type StepStatus = "pending" | "done" | "failed";
+export type PublishSteps = { plan: StepStatus; visit: StepStatus; assignment: StepStatus; status: StepStatus; notification: StepStatus };
+export type PublishResult = { error?: string; steps?: PublishSteps; resumeId?: string };
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// CD-022 — catalogued neutral copy for write-phase failures. Raw Supabase
+// error text must never reach the UI (schema/internal detail leak); the real
+// cause is logged server-side only. Validation blockers below are deliberate
+// governed business messages, not raw provider errors, and are unchanged.
+const NEUTRAL_WRITE_ERROR =
+  "Publishing could not complete a step. Your entries are preserved — review the step status below and retry; retry will not create a second visit.";
+const NEUTRAL_READ_ERROR =
+  "Planning data could not be verified (ERR-OPS-001). Your entries are preserved — try again.";
 
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await sb.auth.getUser();
+  if (authError) {
+    console.error("[CD-022 publishSingleVisit] auth read failed:", authError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
   if (!user) return { error: "Session expired — sign in again." };
 
   const factory_id = String(formData.get("factory_id") ?? "");
@@ -24,14 +42,31 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const planner_lng = plannerLngRaw === "" ? null : Number(plannerLngRaw);
   const notesRaw = String(formData.get("notes") ?? "").trim();
   const notes = notesRaw === "" ? null : notesRaw;
+  const resumeRaw = String(formData.get("resume_visit_plan_id") ?? "").trim();
+  const resumeId = UUID.test(resumeRaw) ? resumeRaw : "";
 
-  // Publish validation gate (M01-041) — exact blockers, work preserved
+  // Publish validation gate (M01-041) — exact blockers, work preserved.
+  // Unchanged from the prior runtime.
   const blockers: string[] = [];
+  if (!user.id) blockers.push("Authorized Planner role required (RBAC-007)");
+  const { data: plannerRole, error: plannerRoleError } = await sb.from("user_roles")
+    .select("role_key").eq("user_id", user.id).eq("role_key", "planner").maybeSingle();
+  if (plannerRoleError) {
+    console.error("[CD-022 publishSingleVisit] planner role read failed:", plannerRoleError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
+  if (!plannerRole) blockers.push("Authorized Planner role required (RBAC-007)");
+  if (!["periodic", "follow_up", "complaint"].includes(visit_type)) blockers.push("Visit type is not supported (FLD-PLAN-003)");
+  if (!["physical", "virtual"].includes(mode)) blockers.push("Execution mode is not supported (M03-011)");
   if (!factory_id) blockers.push("Factory not selected (M01-035)");
   if (factory_id) {
     // License + location gates validated against the factory record (M01-036 / M01-038)
-    const { data: fac } = await sb.from("factories")
+    const { data: fac, error: factoryError } = await sb.from("factories")
       .select("license_number, official_lat, official_lng").eq("id", factory_id).single();
+    if (factoryError || !fac) {
+      console.error("[CD-022 publishSingleVisit] factory verification failed:", factoryError?.message);
+      return { error: NEUTRAL_READ_ERROR };
+    }
     if (fac?.license_number && license_number !== fac.license_number)
       blockers.push("Industrial License must be selected and confirmed before publish (M01-036)");
     const hasPlannerPin = planner_lat != null && planner_lng != null && Number.isFinite(planner_lat) && Number.isFinite(planner_lng);
@@ -48,71 +83,95 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     if (mode === "physical" && !hasOfficial && !hasPlannerPin)
       blockers.push("Physical execution needs a GIS-verifiable location — no official pin and none provided (M03-011)");
     if (mode === "virtual") {
-      const { data: otpEngine } = await sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle();
+      const { data: otpEngine, error: otpError } = await sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle();
+      if (otpError) {
+        console.error("[CD-022 publishSingleVisit] OTP engine verification failed:", otpError.message);
+        return { error: NEUTRAL_READ_ERROR };
+      }
       if (!otpEngine) blockers.push("Virtual execution requires the OTP engine to be configured (M03-011)");
     }
   }
   if (!location_confirmed) blockers.push("Location must be confirmed on the map before publish (M01-038)");
   if (!package_version_id) blockers.push("No published package selected (ERR-PUB-001)");
+  if (package_version_id) {
+    const { data: packageVersion, error: packageError } = await sb.from("package_versions")
+      .select("id").eq("id", package_version_id).in("status", ["published", "locked"]).maybeSingle();
+    if (packageError) {
+      console.error("[CD-022 publishSingleVisit] package verification failed:", packageError.message);
+      return { error: NEUTRAL_READ_ERROR };
+    }
+    if (!packageVersion) blockers.push("No published package selected (ERR-PUB-001)");
+  }
   // M01-040 — either a manual inspector or the auto-assign option ("auto") is required.
   const autoAssign = inspector_id === "auto";
   if (!inspector_id) blockers.push("Assign an inspector or choose auto-assign before publish (M01-040)");
-  if (!window_start || !window_end || new Date(window_end) <= new Date(window_start))
+  const startMs = Date.parse(window_start);
+  const endMs = Date.parse(window_end);
+  if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs)
     blockers.push("Visit window end must be after start (FLD-PLAN-005)");
-  // Duplicate active visit (M02-012)
+  // Duplicate active visit (M02-012) — same shared check the dossier surfaces
+  // as a selection-time warning; here it remains the hard publish-time block.
   if (factory_id) {
-    const { data: dups } = await sb.from("visits").select("id")
-      .eq("factory_id", factory_id).eq("visit_type", visit_type)
-      .in("planning_status", ["draft", "published", "returned"]).limit(1);
-    if ((dups ?? []).length > 0) blockers.push(`Duplicate active visit exists for this factory/type (M02-012): ${dups![0].id.slice(0, 8)}`);
+    const dups = await findDuplicateActiveVisits(sb, factory_id, visit_type);
+    if (dups.unavailable) return { error: NEUTRAL_READ_ERROR };
+    if (dups.visits.length > 0) blockers.push(`Duplicate active visit exists for this factory/type (M02-012): ${dups.visits[0].id.slice(0, 8)}`);
   }
   if (blockers.length) return { error: blockers.join(" · ") };
 
   // M01-040 — resolve the inspector with an availability check: auto-assign the
   // first inspector with no overlapping active assignment in this window, or
   // validate the manual pick's availability (no double-booking).
-  const { data: inspRows } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
+  const { data: inspRows, error: inspectorPoolError } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
+  if (inspectorPoolError) {
+    console.error("[CD-022 publishSingleVisit] inspector pool read failed:", inspectorPoolError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
   const pool = (inspRows ?? []).map(r => r.user_id as string);
   if (pool.length === 0) return { error: "No eligible inspector in the pool (M01-040 / P02)" };
-  const { data: overlaps } = await sb.from("assignments")
+  const { data: overlaps, error: overlapError } = await sb.from("assignments")
     .select("inspector_id, visits!inner(planning_status, window_start, window_end)")
     .in("inspector_id", autoAssign ? pool : [inspector_id])
     .in("visits.planning_status", ["draft", "published", "returned"])
     .lt("visits.window_start", window_end)
     .gt("visits.window_end", window_start);
+  if (overlapError) {
+    console.error("[CD-022 publishSingleVisit] assignment overlap read failed:", overlapError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
   const booked = new Set((overlaps ?? []).map(o => o.inspector_id as string));
-  let assigned_id: string; let assign_method: "manual" | "automatic";
   if (autoAssign) {
     const available = pool.find(pid => !booked.has(pid));
     if (!available) return { error: "No inspector is available in this window — all are double-booked (M01-040)" };
-    assigned_id = available; assign_method = "automatic";
   } else {
     if (!pool.includes(inspector_id)) return { error: "Selected inspector is not in the eligible pool (M01-040)" };
     if (booked.has(inspector_id)) return { error: "Selected inspector is already booked in this window — pick another or choose auto-assign (M01-040)" };
-    assigned_id = inspector_id; assign_method = "manual";
   }
 
-  const { data: plan, error: e1 } = await sb.from("visit_plans")
-    .insert({ method: "single", status: "draft", created_by: user.id }).select().single();
-  if (e1) return { error: e1.message };
-  const { data: visit, error: e2 } = await sb.from("visits").insert({
-    visit_plan_id: plan.id, factory_id, visit_type, execution_mode: mode,
-    planning_status: "draft", window_start, window_end, package_version_id,
-    // planner pin ≠ official pin (M01-038) — only stored when the planner overrode it
-    planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
-    planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
-    notes,
-  }).select().single();
-  if (e2) return { error: e2.message };
-  const { error: e3 } = await sb.from("assignments").insert({
-    visit_id: visit.id, inspector_id: assigned_id, method: assign_method,
-    candidates: assign_method === "automatic" ? { pool, chosen: assigned_id, reason: "first available in window" } : null,
+  const steps: PublishSteps = { plan: "pending", visit: "pending", assignment: "pending", status: "pending", notification: "pending" };
+  // Migration 0033 is the authoritative write boundary. It repeats every
+  // mutable guard inside one transaction, derives auto-assignment server-side,
+  // executes STM-PLAN-001 then STM-PLAN-002, and rolls back plan, visit,
+  // assignment, audit and notification together on any failure.
+  const { data: visitId, error: publishError } = await sb.rpc("publish_single_visit", {
+    p_factory_id: factory_id,
+    p_package_version_id: package_version_id,
+    p_inspector_id: autoAssign ? null : inspector_id,
+    p_visit_type: visit_type,
+    p_execution_mode: mode,
+    p_window_start: window_start,
+    p_window_end: window_end,
+    p_license_number: license_number || null,
+    p_location_confirmed: location_confirmed,
+    p_planner_lat: planner_lat != null && Number.isFinite(planner_lat) ? planner_lat : null,
+    p_planner_lng: planner_lng != null && Number.isFinite(planner_lng) ? planner_lng : null,
+    p_notes: notes,
+    p_resume_plan_id: resumeId || null,
   });
-  if (e3) return { error: e3.message };
-  // Atomic publish step (STM-PLAN-002 side effects; notification row = ENG-11)
-  const { error: e4 } = await sb.from("visits").update({ planning_status: "published" }).eq("id", visit.id);
-  const { error: e5 } = await sb.from("visit_plans").update({ status: "published", published_at: new Date().toISOString() }).eq("id", plan.id);
-  if (e4 || e5) return { error: (e4 ?? e5)!.message };
-  await sb.from("notifications").insert({ event_key: "assignment", recipient: assigned_id, payload: { visit_id: visit.id }, channel: "push" });
-  redirect(`/visits/${visit.id}`);
+  if (publishError || !visitId) {
+    console.error("[CD-022 publishSingleVisit] atomic publish failed:", publishError?.message, publishError?.code);
+    steps.plan = "failed";
+    return { error: NEUTRAL_WRITE_ERROR, steps };
+  }
+
+  redirect(`/visits/${visitId}`);
 }

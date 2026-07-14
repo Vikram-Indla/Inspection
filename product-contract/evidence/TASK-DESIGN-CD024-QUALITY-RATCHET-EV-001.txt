@@ -1,0 +1,28 @@
+TASK-DESIGN-CD024-QUALITY-RATCHET — EVIDENCE
+Date: 2026-07-13
+Scope: Design documentation and approval-pack quality hardening only.
+
+RESULT: READY FOR CD-024 DESIGN; IMPLEMENTATION HANDOFF BLOCKED.
+
+Evidence:
+- V4 quality ratchet, master prompt, post-approval SOP, revision notes and exact CD-024 prompt created.
+- All 11 existing workbook sheets updated and a 12th Quality Ratchet sheet added.
+- Workbook inventory: 12 sheets, 43 governed prompt rows, 32 research references.
+- Artifact-tool formula/error scan: 0 matches for #REF!, #DIV/0!, #VALUE!, #NAME?, #N/A.
+- All 12 sheets rendered and visually reviewed. Layout PASS after START HERE row-height correction.
+- Repository workbook and preview/renders updated.
+- Safe Desktop copy written to claude-design-approval-pack/v4-quality-ratchet because the V3 workbook was open in Excel.
+
+CD-024 route truth:
+- Contract: SCR-WEB-140 /planning/:id/configure.
+- Current implemented P02 subset: /planning/bulk/review.
+- Current /planning/plans/:id: read-only/post-publish drill-down; must remain non-editing.
+- Governance collision: current bulk review is labelled SCR-WEB-120, already assigned to Single Visit Planning in the screen catalogue.
+
+P1 wiring gaps recorded:
+- Automatic round-robin does not prove overlap avoidance.
+- Package status/effective-date and visit-type submit revalidation are unproven.
+- Execution mode is hard-coded physical.
+- Attempted-conflict audit, outbound delivery and stale candidate concurrency are unproven.
+
+No application code, database schema, RLS policy, engine configuration, commit, push, merge, deployment or main-branch change was performed.

@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#060610; font-family:'Space Grotesk','IBM Plex Sans Arabic',sans-serif; }
+    a { color:#9487FF; } a:hover { color:#B4A9FF; }
+    :lang(ar) { font-family:'IBM Plex Sans Arabic','Space Grotesk',sans-serif; }
+  </style>
+</helmet>
+
+<section style="display:flex; flex-direction:column; gap:40px; padding:48px; align-items:flex-start;">
+
+  <div style="display:flex; flex-direction:column; gap:8px; max-width:1200px;">
+    <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:#7C6CFF;">CD-025 · SCR-WEB-150 (logical) · P03 Plan Review &amp; Publish · Planner · DSG-020 · ratchet V4 · R1</div>
+    <div style="font:600 34px/42px 'Space Grotesk',sans-serif; color:#EFEFF7;">Plan Review &amp; Publish — a pre-flight decision surface for an irreversible boundary</div>
+    <div style="font:400 16px/24px 'Space Grotesk',sans-serif; color:#9C9CB2; max-width:960px;">Dedicated CD-025 file. Selected hypothesis: <strong style="color:#EFEFF7;">blocker-first pre-flight</strong> (<a href="#5a">5a</a>) with the score-free <strong style="color:#EFEFF7;">Publish Consequence Ledger</strong> at the commit boundary (<a href="#5d">5d</a> close-up + counterfactual). Equal-fidelity alternatives: <a href="#5b">5b</a> object-first dossier, <a href="#5c">5c</a> consequence-first. Evidence: <a href="#5e">5e</a> single-plan variant (non-atomic truth), <a href="#5f">5f</a> 28-state contact sheet, <a href="#5g">5g</a> publishing, <a href="#5h">5h</a> failure truth, <a href="#5i">5i</a> completion + read-only destination, <a href="#5j">5j</a> linked error summary, <a href="#5k">5k</a> Arabic RTL dark, <a href="#5l">5l</a> light, <a href="#5m">5m</a> 1024 tablet, <a href="#5n">5n</a> operable narrow. Handoff: <span style="font-family:'JetBrains Mono',monospace; font-size:14px;">outputs/cd-025/</span>. CD-024 is the upstream configuration/assignment dependency; this screen absorbs no configuration editing.</div>
+  </div>
+
+  <!-- ============ ROUTE_LIFECYCLE_AND_OWNERSHIP_DECISION — mandatory first output ============ -->
+  <div id="5route" data-screen-label="5 ROUTE_LIFECYCLE_AND_OWNERSHIP_DECISION" style="width:1600px; border:2px solid #7C6CFF; border-radius:12px; background:#101020; padding:18px 20px; color:#EFEFF7; font:400 14px/21px 'Space Grotesk',sans-serif;">
+    <div style="font:700 13px/18px 'JetBrains Mono',monospace; letter-spacing:.1em; color:#7C6CFF; margin-bottom:10px;">ROUTE_LIFECYCLE_AND_OWNERSHIP_DECISION — non-product annotation (verified in repository 2026-07-14)</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 24px; color:#9C9CB2;">
+      <span><strong style="color:#EFEFF7;">1.</strong> The product contract defines <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">SCR-WEB-150</span> at <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">/planning/:id/review</span>.</span>
+      <span><strong style="color:#EFEFF7;">2.</strong> That route is not implemented.</span>
+      <span><strong style="color:#EFEFF7;">3.</strong> <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">/planning/plans/:id</span> is the post-publication, read-only plan drill-down. It receives no review-mode editing and no publish controls — this design places none there.</span>
+      <span><strong style="color:#EFEFF7;">4.</strong> The current bulk flow keeps its staged selection/configuration in client/session state and publishes directly from <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">/planning/bulk/review</span>.</span>
+      <span><strong style="color:#EFEFF7;">5.</strong> The bulk plan and child visits do not exist before the publish RPC; the RPC creates and publishes them in one transaction.</span>
+      <span><strong style="color:#EFEFF7;">6.</strong> The single flow also publishes directly from its wizard; it creates a draft plan only after publish is submitted and can resume a partially completed write sequence (<span style="font-family:'JetBrains Mono',monospace; font-size:12px;">resume_visit_plan_id</span>, verified in <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">single/actions.ts</span>).</span>
+      <span><strong style="color:#EFEFF7;">7.</strong> There is therefore no route-addressable, persisted <em>Validated</em> plan that can truthfully supply <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">/planning/:id/review</span> before publication.</span>
+      <span><strong style="color:#EFEFF7;">8.</strong> The reconciliation row mapping CD-025 to <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">/planning/plans/:id</span> ("Consolidated") is stale and does not override observed runtime behavior.</span>
+      <span><strong style="color:#EFEFF7;">9.</strong> Immediate planning creates a published Visit directly and intentionally creates no Visit Plan — it does not pass through CD-025.</span>
+      <span><strong style="color:#EFEFF7;">10.</strong> No planning-specific maker-checker/approver workflow is proven by the runtime. Package maker-checker behavior is not evidence of plan approval behavior.</span>
+    </div>
+    <div style="margin-top:12px; padding-top:12px; border-top:1px solid #26263A; color:#9C9CB2;"><strong style="color:#EFEFF7;">Position taken:</strong> a <strong>route-neutral staged Plan Review &amp; Publish workspace</strong>. No final URL, persisted draft identifier, handoff mechanism or approval queue is invented. The visible review reference (<span style="font-family:'JetBrains Mono',monospace; font-size:12px;">SR‑0142</span>) is sample content, clearly labelled temporary, never a persisted plan ID. <strong style="color:#F0625D;">HANDOFF_BLOCKED</strong> until governance chooses and implementation proves one coherent model: (a) persist Draft/Validated plan records before review and use a real plan ID, or (b) retain an ephemeral staged review with an approved non-ID route and explicit recoverability semantics. Route, lifecycle and CD-024→CD-025 handoff ownership stay blocked in the manifest; <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">STM-PLAN-001/002</span> remain the canonical transitions and are not weakened here.</div>
+  </div>
+
+  <!-- ============ CRITIQUE + CONTRACT-TO-RUNTIME TRUTH MATRIX ============ -->
+  <div style="width:1600px; display:grid; grid-template-columns:1fr 1.2fr; gap:16px;">
+    <div data-screen-label="5 critique" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#F0625D; margin-bottom:8px;">Current-screen critique — 3 highest-cost decision failures (bulk review, single wizard, plan detail; read 2026-07-14)</div>
+      <strong style="color:#EFEFF7;">1 · Configuration, assignment, validation and irreversible publication collapse into one screen and one click.</strong> On /planning/bulk/review the same surface where the planner is still editing is the surface that commits; there is no stable moment where the full consequence set can be inspected before the boundary. Cost: irreversible commits made while attention is on editing, not on consequences.<br>
+      <strong style="color:#EFEFF7;">2 · No explicit consequence model exists anywhere.</strong> Neither flow states, before commit, exactly what will be created (plan/visits/assignments), what will be locked (package version, window), what is only queued (notifications), and what will NOT happen. Cost: planners over-read publication (assume delivery, acceptance) or under-read it (miss the visit count after scope reduction).<br>
+      <strong style="color:#EFEFF7;">3 · The single flow's step sequence can half-complete while looking like one action.</strong> publishSingleVisit writes plan → visit → assignment → status → notification sequentially; a failed later step leaves earlier records present, surfaced only as a retry banner. Cost: "published" is ambiguous — the planner cannot tell a committed plan from a stranded partial one without understanding the step ledger.
+    </div>
+    <div data-screen-label="5 truth matrix" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Contract-to-runtime truth matrix (verified in code 2026-07-14)</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 20px;">
+        <span style="color:#2DE08E; font:600 12px/18px 'JetBrains Mono',monospace;">VERIFIED NOW</span><span style="color:#E8B84B; font:600 12px/18px 'JetBrains Mono',monospace;">UNAVAILABLE / UNPROVEN / BLOCKED</span>
+        <span>Bulk: publishBulkPlan re-runs mandatory-field, duplicate, pool and manual-overlap checks server-side <em>before</em> the RPC · publish_bulk_plan is SECURITY INVOKER (caller RLS active) and creates plan + visits + assignments + status updates + notification rows in ONE transaction; any error rolls the whole RPC back · auto assignment is deterministic round-robin (not AI/optimization) · manual picks honored · bulk success → /visits · Single: wizard validates before writing; overlap query picks a non-overlapping auto inspector at that moment; writes are sequential with resumable plan ID; single success → /visits/:id · notification INSERT is a queued row only · package choices from published/locked versions only · plans/:id read-only</span>
+        <span>Persisted Draft/Validated plan before publish — <strong>none</strong> · validation version/concurrency token — <strong>none</strong> · in-transaction recheck of duplicates, package status/effective date, visit type, manual overlap, auto overlap, pool changes, stale targets — <strong>none</strong> (validation is pre-RPC and can go stale) · structured per-source query errors — <strong>not consistent; a failed read can render as emptiness (fail-closed required, HANDOFF_BLOCKED)</strong> · planning maker-checker/approver config — <strong>unproven</strong> · dedicated publication/blocked-attempt business audit event — <strong>unproven beyond table triggers</strong> · notification delivery/acceptance — <strong>never claimed</strong> · single-plan atomic transaction — <strong>absent (sequential, resumable)</strong> · return-to-edit route with preserved context — <strong>unproven</strong> · success receipt persistence — <strong>none</strong></span>
+      </div>
+      <div style="margin-top:8px;">Every unsupported signal renders as <em>Unavailable</em> / <em>Not evaluated</em> / a blocking dependency — never a score, promise or optimistic badge.</div>
+    </div>
+  </div>
+
+  <!-- ============ METHOD BOUNDARY + SUPPORTED/UNSUPPORTED MATRIX ============ -->
+  <div style="width:1600px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div data-screen-label="5 method boundary" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Method boundary matrix — what CD-025 covers</div>
+      <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 14px;">
+        <span style="color:#2DE08E; font:600 12px/19px 'JetBrains Mono',monospace;">BULK</span><span><strong style="color:#EFEFF7;">Primary designed method.</strong> The RPC proves all-or-nothing writes for plan, one visit per retained factory, one assignment per visit, published transitions and notification rows. Write atomicity is real; precondition concurrency-safety is NOT claimed — checks run before the transaction and can go stale.</span>
+        <span style="color:#E8B84B; font:600 12px/19px 'JetBrains Mono',monospace;">SINGLE</span><span><strong style="color:#EFEFF7;">Required variant (5e).</strong> Same review grammar reduced to one factory/visit/assignment. NOT atomic: sequential writes with resumable plan ID; a failed later step leaves earlier records. The atomic-publication contract leg stays HANDOFF_BLOCKED until a transactional implementation + rollback evidence exist.</span>
+        <span style="color:#767688; font:600 12px/19px 'JetBrains Mono',monospace;">IMMEDIATE</span><span><strong style="color:#EFEFF7;">Excluded by contract.</strong> Immediate planning creates a direct published Visit with no Visit Plan and never passes through CD-025. Recorded here in annotations only — no user-facing copy explains an absence the user never encounters.</span>
+      </div>
+    </div>
+    <div data-screen-label="5 supported matrix" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Supported / unsupported / HANDOFF_BLOCKED — data &amp; actions</div>
+      <span style="color:#2DE08E; font:600 11px/18px 'JetBrains Mono',monospace;">SUPPORTED (design uses):</span> retained factories with stable codes · exact package code+version · window · visit type · physical-only bulk mode · manual/auto method + per-visit assignee · duplicate detection · manual overlap evidence (exact visit/window) · all-or-nothing bulk commit language · queued notification rows · neutral catalogued failure copy · read-only drill-down destination.<br>
+      <span style="color:#E8B84B; font:600 11px/18px 'JetBrains Mono',monospace;">UNSUPPORTED (rendered as Not evaluated / Unavailable):</span> skills, certification, territory, work hours, capacity, travel time · auto-overlap avoidance · delivery/acceptance · exact publish duration · bulk size policy · override/escalation taxonomy · support contact · downloadable receipt.<br>
+      <span style="color:#F0625D; font:600 11px/18px 'JetBrains Mono',monospace;">HANDOFF_BLOCKED (wiring legs):</span> final route + lifecycle + CD-024→025 handoff · return-to-edit route · approver config · fail-closed structured reads · concurrency guard/version token · in-transaction rechecks · single atomicity · attempted-publication audit · delivery · receipt persistence · partial single cleanup policy · route-level role/scope guard.
+    </div>
+  </div>
+
+  <!-- ============ 5a · SELECTED · BLOCKER-FIRST PRE-FLIGHT · PRIMARY BULK REVIEW · DARK EN ============ -->
+  <div id="5a" data-screen-label="5a Primary P03 review and publish (dark EN)" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5a" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5a</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">SELECTED — Blocker-first pre-flight · populated bulk plan, genuinely ready (2 warnings, disclosed scope reduction, 0 blockers) · dark · EN</span>
+    </div>
+
+    <div id="frame-cd025-primary" style="width:1600px; display:flex; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 16px/24px 'Space Grotesk',sans-serif;">
+      <div style="width:248px; flex:none; background:#0C0C18; border-inline-end:1px solid #26263A; display:flex; flex-direction:column;">
+        <div style="height:64px; display:flex; align-items:center; gap:10px; padding:0 20px; border-bottom:1px solid #26263A;">
+          <div style="width:28px; height:28px; flex:none; border-radius:8px; background:linear-gradient(135deg,#D946EF,#7C6CFF);"></div>
+          <div style="display:flex; flex-direction:column;"><span style="font:600 16px/20px 'Space Grotesk',sans-serif;">Saqeel</span><span lang="ar" dir="rtl" style="font:400 12px/14px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">صقيل | صناعي</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px; padding:20px 12px;">
+          <div style="padding:0 12px 6px; font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#9C9CB2;">Inspection</div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; border-radius:8px; background:color-mix(in srgb,#7C6CFF 14%,#14141F); box-shadow:inset 2px 0 0 #7C6CFF;"><span style="width:8px; height:8px; border-radius:2px; background:#7C6CFF;"></span><strong>Planning</strong></div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#9C9CB2;"><span style="width:8px; height:8px; border-radius:2px; background:#9C9CB2;"></span>Visit Management</div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#9C9CB2;"><span style="width:8px; height:8px; border-radius:2px; background:#9C9CB2;"></span>Factory 360</div>
+        </div>
+        <div style="margin-top:auto; padding:16px 20px; border-top:1px solid #26263A; display:flex; align-items:center; gap:10px;">
+          <div style="width:32px; height:32px; border-radius:999px; background:#26263A; display:flex; align-items:center; justify-content:center; font:600 13px/16px 'Space Grotesk',sans-serif;">NH</div>
+          <div style="display:flex; flex-direction:column;"><span style="font:600 14px/18px 'Space Grotesk',sans-serif;">Norah Al‑Harbi</span><span style="font:400 12px/16px 'Space Grotesk',sans-serif; color:#9C9CB2;">Planner</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+        <div style="height:64px; flex:none; display:flex; align-items:center; gap:12px; padding:0 24px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 20px/28px 'Space Grotesk',sans-serif;">Review &amp; publish — bulk plan</span>
+          <span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#5AA7FA 14%,#14141F); color:#5AA7FA; font:600 12px/16px 'JetBrains Mono',monospace;">FINAL REVIEW — NOTHING COMMITTED</span>
+          <div style="margin-inline-start:auto; display:flex; gap:8px; align-items:center; color:#9C9CB2;">
+            <div style="width:200px; height:40px; border-radius:8px; border:1px solid #26263A; background:#14141F; display:flex; align-items:center; padding:0 12px; color:#9C9CB2; font-size:14px;">⌕&nbsp; Navigate…</div>
+            <span style="width:40px; height:40px; border:1px solid #26263A; border-radius:8px; display:flex; align-items:center; justify-content:center;">◐</span>
+            <span style="width:40px; height:40px; border:1px solid #26263A; border-radius:8px; display:flex; align-items:center; justify-content:center;">🔔</span>
+            <span style="width:40px; height:40px; border:1px solid #26263A; border-radius:8px; display:flex; align-items:center; justify-content:center; font:600 13px 'JetBrains Mono',monospace;">ع</span>
+          </div>
+        </div>
+
+        <div style="flex:none; display:flex; align-items:center; gap:24px; padding:12px 24px; border-bottom:1px solid #26263A; background:#101020;">
+          <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Bulk plan · review reference <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#EFEFF7;">SR‑0142</bdi> <span style="font-size:12px;">(temporary — becomes a plan number only when published)</span></span>
+          <span style="font:600 16px/22px 'Space Grotesk',sans-serif; font-feature-settings:'tnum' 1;">10 factories retained <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">— of 12 targeted · 2 removed by you (listed below)</span></span>
+          <span style="margin-inline-start:auto; font:400 13px/18px 'JetBrains Mono',monospace; color:#9C9CB2;">nothing is created or sent until you publish</span>
+        </div>
+
+        <div style="flex:1; display:flex; min-height:0;">
+          <div style="flex:1.35; min-width:0; border-inline-end:1px solid #26263A; padding:16px 20px; display:flex; flex-direction:column; gap:12px; overflow:auto;">
+
+            <!-- Readiness pre-flight leads -->
+            <div style="border:1px solid #2DE08E; border-radius:12px; background:color-mix(in srgb,#2DE08E 5%,#14141F); padding:14px 16px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">READINESS — CHECKED NOW, CHECKED AGAIN WHEN YOU PUBLISH</span>
+                <span style="margin-inline-start:auto; font:400 12px/16px 'Space Grotesk',sans-serif; color:#9C9CB2;">availability can change while you read — a change stops publishing safely</span>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <span><span style="color:#2DE08E;">✓</span> Configuration complete — type, package, window · <a href="#5a">view configuration</a></span>
+                <span><span style="color:#2DE08E;">✓</span> Package <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px;">SAQ‑PKG‑04 · v3</bdi> is currently published</span>
+                <span><span style="color:#2DE08E;">✓</span> 10 of 10 visits have an inspector · <a href="#5a">view assignments</a></span>
+                <span><span style="color:#2DE08E;">✓</span> 7 manual picks — no known overlapping visit right now</span>
+                <span><span style="color:#2DE08E;">✓</span> Active-duplicate conflicts resolved — 2 factories removed by you</span>
+                <span><span style="color:#2DE08E;">✓</span> No duplicate visits among the 10 retained factories</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:4px; border-top:1px solid #26263A; padding-top:8px; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <span><span style="color:#E8B84B;">◐</span> <strong style="color:#E8B84B;">Warning</strong> — 3 assignments use rotation, which does not check the inspector's schedule · <a href="#5a">review those 3 visits</a></span>
+                <span><span style="color:#E8B84B;">◐</span> <strong style="color:#E8B84B;">Warning</strong> — inspector notifications are queued at publish; sending is a separate step that is not confirmed here</span>
+                <span style="color:#9C9CB2;"><strong style="color:#EFEFF7;">Blockers: none.</strong> Nothing blocks publishing right now. Every check runs once more when you publish; if anything has changed, publishing stops with the reason and everything on this page is kept.</span>
+              </div>
+            </div>
+
+            <!-- Scope integrity -->
+            <div style="border:1px solid #E8B84B; border-radius:12px; background:color-mix(in srgb,#E8B84B 6%,#14141F); padding:14px 16px; display:flex; flex-direction:column; gap:8px;">
+              <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#E8B84B;">SCOPE — 12 TARGETED → 10 RETAINED · NOTHING DROPPED SILENTLY</span>
+              <div style="display:flex; flex-direction:column; gap:4px; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <span>Removed by you (each already has an active periodic visit):</span>
+                <span><strong>Riyadh Advanced Plastics Co.</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9C9CB2;">FAC‑RY‑00117</bdi> — active visit <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px;">V‑2026‑04412</bdi></span>
+                <span><strong>Sudair Polymer Compounds</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9C9CB2;">FAC‑RY‑00201</bdi> — active visit <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px;">V‑2026‑04901</bdi></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+                <span>Plan, visit, assignment and notification counts below are recalculated for 10.</span>
+                <a href="#5a" style="margin-inline-start:auto;">Change scope in assignment<span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);"> — returns to the assignment step for this staged plan</span></a>
+              </div>
+            </div>
+
+            <!-- Plan objects: configuration -->
+            <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:14px 16px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">WHAT EVERY VISIT WILL USE</span>
+                <a href="#5a" style="margin-inline-start:auto; font:400 13px/18px 'Space Grotesk',sans-serif;">Change configuration<span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);"> — visit type, package and window</span></a>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <div style="display:flex; flex-direction:column; gap:2px;"><span style="font:600 12px/16px 'Space Grotesk',sans-serif; color:#9C9CB2;">Visit type</span><span>Periodic compliance</span></div>
+                <div style="display:flex; flex-direction:column; gap:2px;"><span style="font:600 12px/16px 'Space Grotesk',sans-serif; color:#9C9CB2;">Package · exact version</span><span style="font:400 14px 'JetBrains Mono',monospace;"><bdi dir="ltr">SAQ‑PKG‑04 · v3</bdi></span></div>
+                <div style="display:flex; flex-direction:column; gap:2px;"><span style="font:600 12px/16px 'Space Grotesk',sans-serif; color:#9C9CB2;">Window</span><span style="font:400 13px 'JetBrains Mono',monospace;"><bdi dir="ltr">2026‑07‑20 08:00 → 2026‑07‑24 16:00</bdi></span></div>
+                <div style="display:flex; flex-direction:column; gap:2px;"><span style="font:600 12px/16px 'Space Grotesk',sans-serif; color:#9C9CB2;">Execution</span><span>On‑site — the only supported mode</span></div>
+              </div>
+            </div>
+
+            <!-- Plan objects: visits & assignments -->
+            <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:14px 16px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">10 VISITS TO BE CREATED — ONE PER RETAINED FACTORY</span>
+                <a href="#5a" style="margin-inline-start:auto; font:400 13px/18px 'Space Grotesk',sans-serif;">Change assignments<span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);"> — inspector and method per visit</span></a>
+              </div>
+              <table style="width:100%; border-collapse:collapse; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <thead><tr>
+                  <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 11px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">FACTORY · ID</th>
+                  <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 11px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">METHOD</th>
+                  <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 11px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">INSPECTOR</th>
+                  <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 11px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">ASSIGNMENT STATE</th>
+                </tr></thead>
+                <tbody>
+                  <tr><td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>Al‑Nakheel Chemical Industries</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00214</bdi></span></td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">Manual</td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">Fahad Al‑Otaibi</td><td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#2DE08E;">✓ no known overlap in window</span></td></tr>
+                  <tr><td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>Gulf Polymer Works</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00389</bdi></span></td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">Manual</td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">Aisha Al‑Zahrani</td><td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#2DE08E;">✓ no known overlap in window</span></td></tr>
+                  <tr style="background:color-mix(in srgb,#E8B84B 5%,transparent);"><td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>Najd Specialty Chemicals</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00522</bdi></span></td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">Rotation</td><td style="padding:8px; border-bottom:1px solid #1B1B2C; color:#9C9CB2;">chosen at publish</td><td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#E8B84B;">◐ schedule not checked for rotation</span></td></tr>
+                  <tr><td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>Eastern Gate Fertilizers Co.</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00610</bdi></span></td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">Manual</td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">Saad Al‑Qahtani</td><td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#2DE08E;">✓ no known overlap in window</span></td></tr>
+                </tbody>
+              </table>
+              <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">6 more rows (2 rotation, 4 manual — all verified)… Semantic table; every state is glyph + text, never color alone. Assignment evidence detail lives in the assignment step — this page summarizes its verified result and links back.</span>
+            </div>
+          </div>
+
+          <!-- Right rail: Publish Consequence Ledger + action -->
+          <div style="width:430px; flex:none; background:#0C0C18; display:flex; flex-direction:column;">
+            <div id="frame-cd025-ledger" style="flex:1; overflow:auto; padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                <span style="font:600 17px/24px 'Space Grotesk',sans-serif;">What publishing does</span>
+                <span style="font:600 11px/16px 'JetBrains Mono',monospace; color:#7C6CFF;">SIGNATURE — one per screen</span>
+              </div>
+              <div style="border:1px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 6%,#14141F); padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">CREATED — TOGETHER, OR NOT AT ALL</span>
+                <span style="font:400 13px/19px 'Space Grotesk',sans-serif;">1 plan · 10 visits (one per retained factory) · 10 assignments. If any part fails, nothing is created. <a href="#5a">view the 10 visits</a></span>
+              </div>
+              <div style="border:1px solid #7C6CFF; border-radius:10px; background:color-mix(in srgb,#7C6CFF 6%,#14141F); padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9487FF;">SET FOR THOSE VISITS</span>
+                <span style="font:400 13px/19px 'Space Grotesk',sans-serif;">Package <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> exactly · window <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">07‑20 → 07‑24</bdi> · Periodic compliance · on‑site · a named inspector per visit (7 chosen by you, 3 by rotation). <a href="#5a">view configuration</a></span>
+              </div>
+              <div style="border:1px solid #5AA7FA; border-radius:10px; background:color-mix(in srgb,#5AA7FA 6%,#14141F); padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#5AA7FA;">RECORDED OR QUEUED</span>
+                <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">The publication is recorded in the system's history · 10 assignment notifications are <strong style="color:#EFEFF7;">queued for sending</strong> — queueing is not delivery, and no reply from an inspector is implied.</span>
+              </div>
+              <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">WILL NOT HAPPEN AT PUBLISH</span>
+                <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">No inspection starts · no inspector has accepted anything · no notification is confirmed delivered · none of your 10 factories is dropped silently · a partial result is never shown as success.</span>
+              </div>
+            </div>
+            <div style="flex:none; padding:14px 18px; border-top:1px solid #26263A; background:#101020; display:flex; flex-direction:column; gap:10px;">
+              <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">When you publish, every readiness check runs once more. If anything changed, publishing stops with the reason and this page is kept as it is. After a successful publish you'll be taken to the visit register.</span>
+              <button style="height:48px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 16px 'Space Grotesk',sans-serif; cursor:pointer;">Publish plan and create 10 visits</button>
+              <button style="height:44px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Return to assignment — keeps everything staged</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="width:1600px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:12px 16px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+      <strong style="color:#EFEFF7;">Annotation (outside product UI):</strong> "Change scope / configuration / assignments" and "Return to assignment" links depend on the ungoverned CD-024→CD-025 staged handoff — the return-to-edit legs are <strong style="color:#F0625D;">HANDOFF_BLOCKED</strong> (no invented working route). The review reference SR‑0142 is sample content for an ephemeral staged review, never a persisted plan ID. Publication audit copy says "recorded in the system's history" because table-trigger evidence exists; a dedicated business audit event is unproven and stays blocked.
+    </div>
+  </div>
+  <!-- ============ 5b / 5c · ALTERNATIVE HYPOTHESES (equal fidelity) + comparison ============ -->
+  <div style="display:flex; gap:32px; align-items:flex-start; flex-wrap:wrap;">
+    <div id="5b" data-screen-label="5b Hypothesis object-first dossier" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#5b" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; border:2px solid #7C6CFF; color:#9487FF; font:700 14px/16px 'JetBrains Mono',monospace;">5b</span></a>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Hypothesis 1 — Object-first dossier · not selected</span>
+      </div>
+      <div style="width:760px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <div style="height:48px; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 15px 'Space Grotesk',sans-serif;">Review &amp; publish</span>
+          <span style="font:600 11px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">DECISION ZONE — plan dossier opens into objects; ledger only at the boundary · CONTENT_CROP</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; padding:14px 16px;">
+          <div style="border:2px solid #7C6CFF; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">PLAN SUMMARY</span>
+            <div style="display:flex; gap:16px; font-size:14px; flex-wrap:wrap;"><span><strong>Bulk</strong> · 10 factories</span><span style="font-family:'JetBrains Mono',monospace; font-size:13px;"><bdi dir="ltr">SAQ‑PKG‑04 · v3</bdi></span><span style="font-family:'JetBrains Mono',monospace; font-size:13px;"><bdi dir="ltr">07‑20 → 07‑24</bdi></span><span>Periodic · on‑site</span></div>
+            <div style="display:flex; gap:8px;">
+              <button style="height:40px; padding:0 12px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Targets (10)</button>
+              <button style="height:40px; padding:0 12px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Visits (10)</button>
+              <button style="height:40px; padding:0 12px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Package</button>
+              <button style="height:40px; padding:0 12px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Assignments (7+3)</button>
+            </div>
+          </div>
+          <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">OPEN: ASSIGNMENTS</span>
+            <div style="display:flex; align-items:center; gap:10px; min-height:44px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; padding:6px 12px;"><strong style="font-size:14px;">Fahad Al‑Otaibi</strong><span style="font-size:13px; color:#2DE08E;">✓ no known overlap</span><span style="margin-inline-start:auto; font-size:12px; color:#9C9CB2;">Al‑Nakheel Chemical Industries</span></div>
+            <div style="display:flex; align-items:center; gap:10px; min-height:44px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; padding:6px 12px;"><strong style="font-size:14px;">Rotation</strong><span style="font-size:13px; color:#E8B84B;">◐ schedule not checked</span><span style="margin-inline-start:auto; font-size:12px; color:#9C9CB2;">Najd Specialty Chemicals</span></div>
+          </div>
+          <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; display:flex; align-items:center; gap:10px; font-size:13px; color:#9C9CB2;">Consequence ledger + readiness appear only after the last dossier tab, above the publish button.</div>
+        </div>
+      </div>
+      <div style="width:760px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:14px 16px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+        <strong style="color:#EFEFF7;">Why rejected:</strong> object browsing answers "what is in the plan?" but hides the state that decides the publish question — readiness and blockers live behind whichever tab the planner has not opened. Time-to-safe-decision and time-to-locate-one-blocker are worst of the three: a blocker in tab 4 costs four traversals. Silent-scope-loss protection also weakens: the removed-factories disclosure competes with tabs for attention. Its virtue — deep object inspectability — survives in 5a as the always-visible object sections below readiness.
+      </div>
+    </div>
+
+    <div id="5c" data-screen-label="5c Hypothesis consequence-first" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#5c" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; border:2px solid #7C6CFF; color:#9487FF; font:700 14px/16px 'JetBrains Mono',monospace;">5c</span></a>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Hypothesis 3 — Consequence-first commit boundary · not selected</span>
+      </div>
+      <div style="width:760px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <div style="height:48px; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 15px 'Space Grotesk',sans-serif;">Review &amp; publish</span>
+          <span style="font:600 11px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">DECISION ZONE — ledger leads; each consequence expands to evidence · CONTENT_CROP</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; padding:14px 16px;">
+          <div style="border:2px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 5%,#14141F); padding:12px; display:flex; flex-direction:column; gap:6px;">
+            <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">CREATED — TOGETHER, OR NOT AT ALL</span>
+            <span style="font-size:14px;">1 plan · 10 visits · 10 assignments <a href="#5c" style="font-size:13px;">expand evidence ▾</a></span>
+            <div style="border:1px solid #26263A; border-radius:8px; background:#0F0F1C; padding:8px 10px; font-size:13px; color:#9C9CB2;">Al‑Nakheel Chemical Industries · Gulf Polymer Works · Najd Specialty Chemicals · 7 more — every visit uses <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi></div>
+          </div>
+          <div style="border:1px solid #E8B84B; border-radius:10px; background:color-mix(in srgb,#E8B84B 6%,#14141F); padding:12px; display:flex; flex-direction:column; gap:4px;">
+            <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#E8B84B;">QUEUED, NOT DELIVERED</span>
+            <span style="font-size:14px; color:#9C9CB2;">10 assignment notifications queued at publish <a href="#5c" style="font-size:13px;">expand ▾</a></span>
+          </div>
+          <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; font-size:13px; color:#9C9CB2;">Readiness and blockers appear inside each consequence's expansion — a blocked assignment lives under "Created", a package problem under "Set for those visits".</div>
+        </div>
+      </div>
+      <div style="width:760px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:14px 16px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+        <strong style="color:#EFEFF7;">Why rejected (narrowly):</strong> strongest irreversible-action comprehension of the three — but it files problems under consequences, so locating one blocker means guessing which consequence owns it, and the verified/stale/unknown/blocked separation fragments across expansions. On narrow screens nested expansion doubles traversal. Its core — consequences connected to counts and correction paths — is kept intact in 5a as the always-visible ledger at the commit boundary, where consequences belong; readiness stays a single unfragmented surface on top.
+      </div>
+    </div>
+  </div>
+
+  <div data-screen-label="5 hypothesis comparison" style="width:1600px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+    <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Hypothesis comparison — evidence-based selection (no scores)</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px 20px;">
+      <span style="font:600 12px/18px 'JetBrains Mono',monospace; color:#9C9CB2;">5b OBJECT-FIRST</span><span style="font:600 12px/18px 'JetBrains Mono',monospace; color:#2DE08E;">5a BLOCKER-FIRST — SELECTED</span><span style="font:600 12px/18px 'JetBrains Mono',monospace; color:#9C9CB2;">5c CONSEQUENCE-FIRST</span>
+      <span>Safe-decision time: worst — readiness hidden behind tabs. Blocker location: up to N tab traversals. Scope-loss visibility: competes with tabs. RTL/keyboard: tab set doubles traversal. Narrow: tabs stack acceptably. Truth: neutral.</span>
+      <span>Safe-decision time: best — the publish question ("anything blocking?") is answered by the first section; blockers are links that land focus on the exact row. Objects stay directly inspectable below; consequences stay pinned at the action. Scope loss has its own always-visible section. Narrow: mandated order falls out naturally. Truth: readiness copy carries the stale-able-check disclosure in one place instead of per consequence.</span>
+      <span>Safe-decision time: good when ready, poor when blocked — blockers are filed under consequences. Irreversibility comprehension: best; kept by pinning the ledger at the boundary in 5a. Narrow: nested expansions double depth. Truth: fragmentation risks a consequence looking verified while its sibling holds the blocker.</span>
+    </div>
+    <div style="margin-top:8px;"><strong style="color:#EFEFF7;">Selection:</strong> blocker-first pre-flight, with 5c's ledger pinned at the commit boundary and 5b's object depth as inline sections — differences among the three are decision-flow and information architecture, not card order.</div>
+  </div>
+
+  <!-- ============ 5d · CONSEQUENCE LEDGER CLOSE-UP + COUNTERFACTUAL ============ -->
+  <div id="5d" data-screen-label="5d Ledger close-up + counterfactual" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5d" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5d</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Publish Consequence Ledger close-up (blocked variant) — and the counterfactual without it</span>
+    </div>
+    <div style="display:flex; gap:24px; align-items:stretch;">
+      <div id="frame-cd025-closeup" style="width:640px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px; color:#EFEFF7; font:400 15px/22px 'Space Grotesk',sans-serif;">
+        <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#7C6CFF;">WITH LEDGER — every consequence carries its count, state and correction path · CONTENT_CROP</span>
+        <div style="border:2px solid #F0625D; border-radius:10px; background:color-mix(in srgb,#F0625D 6%,#14141F); padding:12px; display:flex; flex-direction:column; gap:6px;">
+          <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">CREATED — CURRENTLY BLOCKED</span>
+          <span style="font:400 14px/20px 'Space Grotesk',sans-serif;">1 plan · 10 visits · <strong style="color:#F0625D;">9 of 10 assignments ready</strong> — Eastern Gate Fertilizers Co.'s inspector is already booked on <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px;">V‑2026‑04788</bdi>, <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px;">07‑21 09:00 → 13:00</bdi>.</span>
+          <a href="#5j" style="font:600 13px/18px 'Space Grotesk',sans-serif;">Fix this assignment<span style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);"> — Eastern Gate Fertilizers Co., overlapping inspector</span></a>
+        </div>
+        <div style="border:1px solid #5AA7FA; border-radius:10px; background:color-mix(in srgb,#5AA7FA 6%,#14141F); padding:12px; display:flex; flex-direction:column; gap:4px;">
+          <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#5AA7FA;">RECORDED OR QUEUED</span>
+          <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">10 notifications will be queued — <strong style="color:#EFEFF7;">queued means placed in line for sending</strong>; this screen never claims they were delivered or read.</span>
+        </div>
+        <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">Each ledger row derives its number from the retained scope shown above it — the counts can never disagree with the page. A failed row names the exact object and links to the exact correction point with hidden accessible context. No score, no percentage, no "confidence".</span>
+      </div>
+      <div id="frame-cd025-counterfactual" style="width:640px; background:#0A0A14; border:1px dashed #56566B; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px; color:#EFEFF7; font:400 15px/22px 'Space Grotesk',sans-serif;">
+        <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">COUNTERFACTUAL — same screen, ledger removed</span>
+        <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:6px;">
+          <span style="font:600 16px/22px 'Space Grotesk',sans-serif;">Ready to publish?</span>
+          <button style="align-self:flex-start; height:44px; padding:0 16px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Publish plan</button>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">…the page shows objects and a button, but never states what the click creates, locks, queues — or does not do.</span>
+        </div>
+        <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;"><strong style="color:#EFEFF7;">Measurable loss:</strong> (1) the visit/assignment count after scope reduction is never restated at the boundary, so a 12→10 change can be committed unnoticed; (2) "notification queued ≠ delivered" disappears, reintroducing the exact over-claim the runtime cannot support; (3) a blocker's owner object must be found by scanning the whole page instead of one linked row — slower blocker location on every failure; (4) nothing tells the planner that no inspection starts and no acceptance is implied, so the irreversible boundary is under-read. Deletion-tested: removing the ledger removes decision evidence, not decoration.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5e · SINGLE-PLAN VARIANT — NON-ATOMIC TRUTH ============ -->
+  <div id="5e" data-screen-label="5e Single-plan variant" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5e" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5e</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Single-plan variant — same review grammar, truthful non-atomic commitment · CONTENT_CROP</span>
+    </div>
+    <div style="display:flex; gap:24px; align-items:flex-start;">
+      <div id="frame-cd025-single" style="width:760px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <div style="height:48px; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 15px 'Space Grotesk',sans-serif;">Review &amp; publish — single visit</span>
+          <span style="display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#5AA7FA 14%,#14141F); color:#5AA7FA; font:600 10px/14px 'JetBrains Mono',monospace;">FINAL REVIEW</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; padding:14px 16px;">
+          <div style="border:1px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 5%,#14141F); padding:10px 12px; font-size:14px;"><span style="color:#2DE08E;">✓</span> Ready — licence confirmed · location confirmed · package published · inspector has no known overlapping visit · no active duplicate</div>
+          <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:12px; display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:14px;">
+            <span><strong>Al‑Nakheel Chemical Industries</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00214</bdi></span></span>
+            <span>Manual · Fahad Al‑Otaibi<br><span style="font-size:13px; color:#2DE08E;">✓ no known overlap</span></span>
+            <span style="font:400 13px 'JetBrains Mono',monospace;"><bdi dir="ltr">SAQ‑PKG‑04 · v3</bdi></span>
+            <span style="font:400 13px 'JetBrains Mono',monospace;"><bdi dir="ltr">2026‑07‑20 → 2026‑07‑24</bdi></span>
+          </div>
+          <div style="border:1px solid #E8B84B; border-radius:10px; background:color-mix(in srgb,#E8B84B 6%,#14141F); padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+            <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#E8B84B;">HOW THIS PUBLISH COMPLETES</span>
+            <span style="font-size:13px; color:#9C9CB2;">This visit is published in <strong style="color:#EFEFF7;">steps</strong> (plan · visit · assignment · status · notification). If a step fails, publishing stops, what happened so far is shown honestly, and retry continues from where it stopped — <strong style="color:#EFEFF7;">retry will not create a second visit</strong>. Unlike a bulk plan, this is not an all-together-or-nothing action.</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px;">
+            <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">WHAT PUBLISHING DOES</span>
+            <span style="font-size:13px; color:#9C9CB2;">Creates 1 plan, 1 visit, 1 assignment · sets <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> and the window for that visit · queues 1 assignment notification (queued, not delivered) · starts no inspection and implies no acceptance.</span>
+          </div>
+          <button style="height:48px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 15px 'Space Grotesk',sans-serif; cursor:pointer;">Publish this visit</button>
+        </div>
+      </div>
+      <div style="width:560px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:14px 16px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+        <strong style="color:#EFEFF7;">Annotation (outside product UI):</strong> the step language mirrors the runtime exactly — publishSingleVisit writes plan → visit → assignment → status → notification sequentially with a resumable plan ID; the two status updates have no transactional guarantee. The design never labels single publish "all-or-nothing"; that label is reserved for bulk where the RPC proves it. The single-plan atomic-publication contract leg (P03 / STM-PLAN-002) is <strong style="color:#F0625D;">HANDOFF_BLOCKED</strong> until a transactional implementation and rollback evidence exist. The partial-step failure state is designed at <a href="#5h">5h</a> — never shown as success.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5f · HARD-STATE CONTACT SHEET — 28 required states ============ -->
+  <div id="5f" data-screen-label="5f Hard-state contact sheet" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5f" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5f</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Hard-state contact sheet — designed mini-frames for all 28 required states · state labels are annotations outside each frame</span>
+    </div>
+    <div id="frame-cd025-states" style="width:1600px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S1 · VALIDATING — staged context retained; a failed load becomes a source-failure card, never this</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px;"><span style="width:16px; height:16px; border:3px solid #26263A; border-top-color:#7C6CFF; border-radius:999px;"></span><span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Checking 10 retained factories, package and assignments…</span></div>
+          <span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">Bulk plan · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SR‑0142</bdi> · 10 of 12 retained</span>
+          <div style="height:14px; border-radius:7px; background:#1B1B2C;"></div>
+          <div style="height:14px; border-radius:7px; background:#1B1B2C; width:70%;"></div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S2 · GENUINELY READY — full frame at <a href="#5a">5a</a></span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">10 factories · 0 blockers · 2 warnings</span>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; font:600 11px/16px 'JetBrains Mono',monospace;">
+            <span style="padding:3px 8px; border-radius:999px; background:color-mix(in srgb,#2DE08E 14%,#14141F); color:#2DE08E;">✓ all required checks verified</span>
+            <span style="padding:3px 8px; border-radius:999px; background:color-mix(in srgb,#E8B84B 16%,#14141F); color:#E8B84B;">◐ 3 rotation rows: schedule unchecked</span>
+          </div>
+          <button style="height:44px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Publish plan and create 10 visits</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S3 · MULTIPLE BLOCKERS — each links to its object (summary frame at <a href="#5j">5j</a>)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;">3 things block publishing:</strong><br><a href="#5j">Eastern Gate's inspector has an overlapping visit</a> · <a href="#5j">1 visit has no inspector</a> · <a href="#5j">decide on 2 factories with active visits</a></div>
+          <button disabled style="height:44px; border-radius:8px; border:0; background:#2A2A3E; color:#767688; font:600 13px 'Space Grotesk',sans-serif;">Publish plan — blocked by 3 issues listed above</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S4 · MANDATORY CONFIGURATION MISSING</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Visit window</span>
+          <div style="height:44px; border:2px solid #F0625D; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; color:#9C9CB2; font-size:14px;">Not set</div>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#F0625D;">✕ Every visit needs a start and end. <a href="#5f">Set the window in configuration</a> — everything else you entered is kept.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S5 · NO PUBLISHED PACKAGE AVAILABLE</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="height:44px; border:1px dashed #E8B84B; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; color:#E8B84B; font-size:14px;">No package is currently published</div>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Visits can't be published without one. This plan stays staged exactly as it is.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S6 · SELECTED PACKAGE INVALIDATED — distinct from S5</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;"><bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> is no longer available for publishing.</strong><br><span style="color:#9C9CB2;">It was valid when you chose it. Choose a currently published package — nothing was scheduled and your other entries are kept.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 12px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Choose another package</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S7 · NO INSPECTORS IN THE ROLE POOL — governance, not a query result</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;">No one currently holds the inspector role.</strong><br><span style="color:#9C9CB2;">No assignment — manual or rotation — is possible until a Security Admin grants it. Your staged plan is kept.</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S8 · PARTIAL ASSIGNMENT COVERAGE</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">8 of 10 visits have an inspector</span>
+          <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#F0625D;">✕ <a href="#5f">Najd Specialty Chemicals</a> and <a href="#5f">Wadi Steel Fabrication</a> have none — publishing creates every visit together, so all 10 need one.</span>
+          <button disabled style="height:40px; border-radius:8px; border:0; background:#2A2A3E; color:#767688; font:600 13px 'Space Grotesk',sans-serif;">Publish plan — 2 visits have no inspector</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#E8B84B;">S9 · ACTIVE DUPLICATE ON TARGETS — explicit decision, never a silent skip</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 13px/19px 'Space Grotesk',sans-serif; color:#E8B84B;">2 factories already have an active periodic visit</span>
+          <span style="font-size:13px;">Riyadh Advanced Plastics Co. <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#9C9CB2;">FAC‑RY‑00117</bdi> · Sudair Polymer Compounds <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#9C9CB2;">FAC‑RY‑00201</bdi></span>
+          <div style="display:flex; gap:8px;">
+            <button style="flex:1; height:44px; border-radius:8px; border:2px solid #E8B84B; background:color-mix(in srgb,#E8B84B 14%,#14141F); color:#EFEFF7; font:600 12px 'Space Grotesk',sans-serif; cursor:pointer;">Remove both — publish 10 of 12</button>
+            <button style="flex:1; height:44px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 12px 'Space Grotesk',sans-serif; cursor:pointer;">Keep — publish stays blocked</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S10 · SCOPE REDUCTION AFTER-STATE — recalculated, disclosed (restore path HANDOFF_BLOCKED, no invented link)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">10 of 12 — you removed 2 factories</span>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif;">Publishing will now create <strong style="color:#EFEFF7;">10 visits, 10 assignments and queue 10 notifications</strong>; the removal is stated on this page and recorded with the plan.</span>
+          <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">Undoing the removal happens in the assignment step, not here.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S11 · MANUAL OVERLAP — exact visit and window</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px; font-size:13px;">
+          <div style="display:flex; align-items:center; gap:8px; min-height:44px; border:2px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 5%,#14141F); padding:4px 10px;"><span>Saad Al‑Qahtani → Eastern Gate</span><span style="margin-inline-start:auto; color:#F0625D;">✕ booked on <bdi dir="ltr">V‑2026‑04788</bdi> · <bdi dir="ltr">07‑21 09:00→13:00</bdi></span></div>
+          <span style="color:#9C9CB2;">Checked immediately before publish; availability may change in that final moment — a failed re-check stops publishing safely with this same message.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#E8B84B;">S12 · ROTATION OVERLAP NOT EVALUATED — honest gap, never "conflict-free"</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px; font-size:13px;">
+          <div style="display:flex; align-items:center; gap:8px; min-height:44px; border:1px solid #26263A; border-radius:8px; background:#14141F; padding:4px 10px;"><span style="color:#9C9CB2;">Rotation · chosen at publish</span><span style="margin-inline-start:auto; color:#E8B84B;">◐ rotation does not check schedules</span></div>
+          <span style="color:#9C9CB2;">Shown on every rotation row and repeated in readiness as a warning — the plan can still publish under current rules, but the gap is never hidden.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S13 · FACTORY SOURCE FAILURE — fails closed (HANDOFF_BLOCKED: current reads ignore errors)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">Your retained factories couldn't be loaded.</strong><br><span style="color:#9C9CB2;">A loading problem — not an empty plan and not a removal. Publishing is paused; nothing you staged was lost.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Try again</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S14 · PACKAGE VALIDATION FAILURE — never rendered as "no package"</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">The package couldn't be verified.</strong><br><span style="color:#9C9CB2;">Different from "no package is published" and from "package invalid". Publishing is paused until verification succeeds.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Try again</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S15 · INSPECTOR SOURCE FAILURE — never rendered as an empty pool</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">Assignment information couldn't be loaded.</strong><br><span style="color:#9C9CB2;">Not the same as "no one holds the inspector role". Your picks are kept; publishing is paused.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Try again</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S16 · DUPLICATE / OVERLAP QUERY FAILURE — blocks safely, never "zero conflicts"</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">Duplicate and schedule checks couldn't run.</strong><br><span style="color:#9C9CB2;">Conflicts can't be ruled out, so publishing is paused — this is not the same as "no conflicts". Everything staged is kept.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Try again</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#E8B84B;">S17 · STALE DATA — revalidation required (no version token exists; HANDOFF_BLOCKED)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">This review was checked a while ago.</strong><br><span style="color:#9C9CB2;">Factory, package or inspector facts may have changed. Re-check before publishing — your staged plan is unchanged.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Re-check now</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S18 · CONCURRENT CHANGE AT SUBMIT — input preserved</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;">Publishing stopped — 1 thing changed while you reviewed:</strong><br><a href="#5f">Fahad Al‑Otaibi now has an overlapping visit — choose again</a></div>
+          <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">Nothing was published. Focus moves to this summary; the link lands on the affected row.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S19 · APPROVAL REQUIRED — NOT DESIGNED: no proven planning approval configuration (annotation, not UI)</span>
+        <div style="border:1px dashed #56566B; border-radius:12px; background:#101020; padding:14px; display:flex; flex-direction:column; gap:6px;">
+          <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">The runtime proves no planning-specific approver configuration, submission/approval transitions, self-approval guard, audit event or negative path. Designing an approval queue here would be invention. The leg stays <strong style="color:#F0625D;">HANDOFF_BLOCKED</strong>; the direct-publish state (S20) is what RBAC-007 supports. Package maker-checker is explicitly not copied into planning.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">S20 · PLANNER PUBLISHES DIRECTLY — supported by role policy</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:400 13px/19px 'Space Grotesk',sans-serif;">As a Planner you can publish this plan yourself — there is no separate approval step. The page states the consequences instead of asking someone else to check them.</span>
+          <button style="height:44px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Publish plan and create 10 visits</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S21 · UNAUTHORIZED / NOT IN SCOPE — distinct from S22 and from failures (route guard: HANDOFF_BLOCKED; RLS authoritative)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center;">
+          <span style="width:32px; height:32px; border-radius:999px; background:color-mix(in srgb,#F0625D 14%,#14141F); color:#F0625D; display:flex; align-items:center; justify-content:center; font:700 16px 'Space Grotesk',sans-serif;">⨯</span>
+          <span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">Reviewing and publishing plans requires the Planner role</span>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif;">Your account doesn't include it — no plan data is shown. This is not a loading problem and not an expired review.</span>
+          <button style="height:40px; padding:0 14px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Go to your launch page</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S22 · LOST / EXPIRED STAGED REVIEW — distinct from unauthorized (recoverability semantics: HANDOFF_BLOCKED)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center;">
+          <span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">This review is no longer available</span>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif;">The staged plan behind it has expired or was opened in a different session. Nothing was published. Start from targeting to build it again.</span>
+          <button style="height:40px; padding:0 14px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Go to targeting</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S23 · PUBLISH IN PROGRESS — full frame at <a href="#5g">5g</a></span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px;"><span style="width:18px; height:18px; border:3px solid #26263A; border-top-color:#7C6CFF; border-radius:999px;"></span><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">Publishing — re-running checks, then creating 10 visits…</span></div>
+          <button disabled style="height:44px; border-radius:8px; border:0; background:#2A2A3E; color:#767688; font:600 13px 'Space Grotesk',sans-serif;">Publishing… (button locked — no second submit)</button>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S24 · BULK TRANSACTION FAILURE — full frame at <a href="#5h">5h</a></span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;">Publishing failed — nothing was published.</strong><br><span style="color:#9C9CB2;">No plan, visits or notifications were created. Your review is preserved; try again.</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">S25 · SINGLE PARTIAL-STEP FAILURE — full frame at <a href="#5h">5h</a>; never shown as success</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:6px; font-size:12px;">
+          <span style="display:flex; justify-content:space-between;"><span>Plan · Visit · Assignment</span><span style="color:#2DE08E;">✓ done</span></span>
+          <span style="display:flex; justify-content:space-between;"><span>Status update</span><span style="color:#F0625D;">✕ stopped here</span></span>
+          <span style="display:flex; justify-content:space-between;"><span>Notification</span><span style="color:#9C9CB2;">— not started</span></span>
+          <span style="color:#9C9CB2;">Publication did not complete. Work is retained for safe retry; retry will not create a second visit. "Published" is not confirmed.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">S26 · BULK PUBLICATION COMPLETE — full frame at <a href="#5i">5i</a></span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #2DE08E; border-radius:8px; background:color-mix(in srgb,#2DE08E 7%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#2DE08E;">Plan published — 10 visits and 10 assignments created.</strong><br><span style="color:#9C9CB2;">10 notifications queued for sending. Taking you to the visit register.</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S27 · READ-ONLY POST-PUBLISH DESTINATION — full frame at <a href="#5i">5i</a>; no editing controls</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;"><bdi dir="ltr">PLN‑2026‑0102</bdi></span><span style="display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#2DE08E 14%,#14141F); color:#2DE08E; font:600 11px/16px 'JetBrains Mono',monospace;">PUBLISHED</span></div>
+          <span style="font:400 12px/17px 'Space Grotesk',sans-serif;">View-only record — published plans are not edited here.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">S28 · RETURN FROM EDIT — focus lands on the corrected section (return route: HANDOFF_BLOCKED)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #26263A; border-radius:8px; background:#14141F; padding:10px 12px; box-shadow:0 0 0 2px #0A0A14, 0 0 0 4px #7C6CFF;"><span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">10 visits to be created</span><br><span style="font-size:12px; color:#9C9CB2;">← heading receives focus on return; a polite status announces "assignment updated — review continues"</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5g · PUBLISHING / DOUBLE-SUBMIT PREVENTION ============ -->
+  <div id="5g" data-screen-label="5g Publishing in progress" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5g" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5g</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Publish in progress — double submit prevented, context kept, no optimistic "Published" · CONTENT_CROP</span>
+    </div>
+    <div id="frame-cd025-publishing" style="width:1080px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:12px; font:400 15px/22px 'Space Grotesk',sans-serif;">
+      <div role="status" style="border:1px solid #7C6CFF; border-radius:12px; background:color-mix(in srgb,#7C6CFF 7%,#14141F); padding:14px 16px; display:flex; align-items:center; gap:12px;">
+        <span style="width:20px; height:20px; border:3px solid #26263A; border-top-color:#7C6CFF; border-radius:999px; flex:none;"></span>
+        <span><strong>Publishing…</strong> re-running every readiness check, then creating the plan, 10 visits and 10 assignments together. <span style="color:#9C9CB2;">This page stays as it is until the result comes back — no duration is promised.</span></span>
+        <span style="margin-inline-start:auto; font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">role=status · polite announcement</span>
+      </div>
+      <div style="display:flex; gap:16px; align-items:center;">
+        <div style="flex:1; border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; color:#9C9CB2; font-size:14px;">Bulk plan · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SR‑0142</bdi> · 10 factories · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">07‑20 → 07‑24</bdi> — context remains visible and readable</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <button disabled style="height:48px; padding:0 18px; border-radius:8px; border:0; background:#2A2A3E; color:#767688; font:600 15px 'Space Grotesk',sans-serif;">Publishing…</button>
+          <span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">disabled + aria-disabled — a second activation does nothing; the reason is in the status region for SR users</span>
+        </div>
+      </div>
+      <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">"Published" appears only after the authoritative result returns (S26). If the result is a failure, the assertive alert of <a href="#5h">5h</a> replaces this status — never both at once.</span>
+    </div>
+  </div>
+
+  <!-- ============ 5h · FAILURE TRUTH — BULK ATOMIC vs SINGLE PARTIAL ============ -->
+  <div id="5h" data-screen-label="5h Failure truth" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5h" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5h</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Failure truth — atomic bulk failure vs truthful single partial-step failure · CONTENT_CROP</span>
+    </div>
+    <div style="display:flex; gap:24px; align-items:stretch;">
+      <div id="frame-cd025-failure" style="width:640px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px; color:#EFEFF7; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">BULK — TRANSACTION FAILURE, NOTHING PUBLISHED</span>
+        <div role="alert" style="border:2px solid #F0625D; border-radius:10px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:12px 14px;">
+          <strong style="color:#F0625D;">Publishing failed — nothing was published.</strong><br>
+          <span style="color:#9C9CB2; font-size:13px;">No plan, visits, assignments or notifications were created. Your full review below is exactly as you left it. Try again; if it keeps failing, stop and report it.</span>
+        </div>
+        <div style="border:1px solid #26263A; border-radius:8px; background:#14141F; padding:10px 12px; font-size:13px; color:#9C9CB2;">Bulk plan · 10 factories · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> <span style="color:#2DE08E;">✓ all staged choices preserved</span></div>
+        <button style="align-self:flex-start; height:44px; padding:0 16px; border-radius:8px; border:1px solid #F0625D; background:none; color:#F0625D; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Try publishing again</button>
+        <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">Neutral copy only — no provider, schema or transaction detail ever reaches this surface. "Staged review preserved" holds only where the approved handoff model preserves it; that leg is recorded as blocked in the manifest.</span>
+      </div>
+      <div id="frame-cd025-partial" style="width:640px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px; color:#EFEFF7; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#E8B84B;">SINGLE — PARTIAL-STEP FAILURE, HONESTLY INCOMPLETE</span>
+        <div role="alert" style="border:2px solid #E8B84B; border-radius:10px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:12px 14px;">
+          <strong style="color:#E8B84B;">Publication did not complete.</strong><br>
+          <span style="color:#9C9CB2; font-size:13px;">Some steps finished before it stopped — the visit is <strong style="color:#EFEFF7;">not confirmed published</strong>. Your work is retained; retry continues from where it stopped and will not create a second visit.</span>
+        </div>
+        <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:6px; font-size:13px;">
+          <span style="display:flex; justify-content:space-between; min-height:24px;"><span>Plan record</span><span style="color:#2DE08E;">✓ created</span></span>
+          <span style="display:flex; justify-content:space-between; min-height:24px;"><span>Visit</span><span style="color:#2DE08E;">✓ created</span></span>
+          <span style="display:flex; justify-content:space-between; min-height:24px;"><span>Inspector assignment</span><span style="color:#2DE08E;">✓ created</span></span>
+          <span style="display:flex; justify-content:space-between; min-height:24px; border-top:1px solid #26263A; padding-top:6px;"><span><strong>Publication status</strong></span><span style="color:#F0625D;">✕ stopped here</span></span>
+          <span style="display:flex; justify-content:space-between; min-height:24px;"><span style="color:#9C9CB2;">Notification</span><span style="color:#9C9CB2;">— not started</span></span>
+        </div>
+        <button style="align-self:flex-start; height:44px; padding:0 16px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Retry publication — continues, never duplicates</button>
+        <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">Never says "nothing was created" (untrue for single) and never shows the sequence as green/complete. Mirrors the runtime step ledger and resumable retry exactly.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5i · COMPLETION + READ-ONLY DESTINATION ============ -->
+  <div id="5i" data-screen-label="5i Completion and destination" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5i" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5i</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Bulk completion (truthful) + read-only post-publish destination · CONTENT_CROP</span>
+    </div>
+    <div style="display:flex; gap:24px; align-items:stretch;">
+      <div id="frame-cd025-success" style="width:640px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px; color:#EFEFF7; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">BULK SUCCESS — COMMITTED FACTS ONLY; FOCUS MOVES TO THIS HEADING</span>
+        <div style="border:2px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 7%,#14141F); padding:12px 14px; display:flex; flex-direction:column; gap:4px;">
+          <strong style="color:#2DE08E; font:600 17px/24px 'Space Grotesk',sans-serif;">Plan published</strong>
+          <span style="font-size:14px;">10 visits and 10 assignments were created together. 10 assignment notifications are queued for sending.</span>
+          <span style="font-size:13px; color:#9C9CB2;">Queued means placed in line — delivery, reading and acceptance are not confirmed here. No inspection has started.</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button style="height:44px; padding:0 14px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Go to the visit register</button>
+          <button style="height:44px; padding:0 14px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">View the published plan (read‑only)</button>
+        </div>
+        <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">No receipt download, no invented timing, no support contact — none exist. The runtime redirects to the visit register; this panel is the announced completion moment before that redirect, not a persistent confirmation page.</span>
+      </div>
+      <div id="frame-cd025-destination" style="width:640px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px; color:#EFEFF7; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">READ-ONLY PLAN DRILL-DOWN — PROTECTED; NO EDITING OR PUBLISH CONTROLS</span>
+        <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font:600 16px/22px 'Space Grotesk',sans-serif;"><bdi dir="ltr">PLN‑2026‑0102</bdi></span><span style="display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#2DE08E 14%,#14141F); color:#2DE08E; font:600 11px/16px 'JetBrains Mono',monospace;">PUBLISHED</span><span style="margin-inline-start:auto; font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">2026‑07‑14 15:42</bdi></span></div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:13px; color:#9C9CB2;">
+            <span>Method <strong style="color:#EFEFF7;">bulk</strong> · 10 visits</span>
+            <span><bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi></span>
+            <span><bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">07‑20 → 07‑24</bdi> · Periodic · on‑site</span>
+            <span>10 assignments · notifications queued</span>
+          </div>
+          <span style="font-size:12px; color:#9C9CB2;">This page is a view-only record of what was published. Changes to visits happen in Visit Management.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5j · LINKED ERROR SUMMARY + FOCUSED BLOCKER ============ -->
+  <div id="5j" data-screen-label="5j Focused error summary" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5j" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5j</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Linked error summary (blocked plan) → focused blocker row → restoration · CONTENT_CROP</span>
+    </div>
+    <div id="frame-cd025-error" style="width:1080px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:14px; font:400 15px/22px 'Space Grotesk',sans-serif;">
+      <div role="alert" tabindex="-1" style="border:2px solid #F0625D; border-radius:12px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:14px 16px; box-shadow:0 0 0 2px #0A0A14, 0 0 0 4px #F0625D;">
+        <strong style="color:#F0625D; font:600 16px/22px 'Space Grotesk',sans-serif;">Publishing stopped — 3 things need attention <span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">← summary receives focus on failed submit</span></strong>
+        <ul style="margin:8px 0 0; padding-inline-start:20px; display:flex; flex-direction:column; gap:4px;">
+          <li><a href="#5j">Eastern Gate Fertilizers Co. — the chosen inspector is already booked on an overlapping visit</a></li>
+          <li><a href="#5j">Najd Specialty Chemicals — this visit has no inspector</a></li>
+          <li><a href="#5j">Decide what to do with the 2 factories that already have an active visit</a></li>
+        </ul>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:16px;">
+        <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+          <span style="font:600 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Eastern Gate Fertilizers Co. — assignment</span>
+          <div style="min-height:48px; border:2px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 6%,#14141F); display:flex; align-items:center; padding:0 12px; font-size:15px; box-shadow:0 0 0 2px #0A0A14, 0 0 0 4px #7C6CFF;">Manual · Saad Al‑Qahtani</div>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#F0625D;">✕ Booked on <bdi dir="ltr">V‑2026‑04788</bdi> · <bdi dir="ltr">07‑21 09:00→13:00</bdi> — inside this plan's window</span>
+          <span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">← Enter on summary link 1 moves focus here; the inline error is programmatically associated with the row</span>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; gap:6px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+          <strong style="color:#EFEFF7;">After correction:</strong> fixing an item in the assignment step clears its inline error and removes the summary entry on return; focus lands on the corrected section heading (S28). When the last entry clears, the summary disappears and a polite status announces "all blockers resolved — review continues". Blockers, stale-state and transaction failures use the assertive alert once, never duplicated in the polite region. All staged entries survive every failed submit.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5k · ARABIC RTL DARK — SAME STATE ============ -->
+  <div id="5k" data-screen-label="5k Arabic RTL dark" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5k" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5k</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Arabic RTL dark — fresh-session default, same complete state (ready, 2 warnings, scope 10 of 12)</span>
+    </div>
+    <div dir="rtl" lang="ar" id="frame-cd025-rtl" style="width:1600px; display:flex; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 15px/24px 'IBM Plex Sans Arabic',sans-serif;">
+      <div style="width:248px; flex:none; background:#0C0C18; border-inline-end:1px solid #26263A; display:flex; flex-direction:column;">
+        <div style="height:64px; display:flex; align-items:center; gap:10px; padding:0 20px; border-bottom:1px solid #26263A;"><div style="width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,#D946EF,#7C6CFF);"></div><span style="font:600 16px 'IBM Plex Sans Arabic',sans-serif;">صقيل</span></div>
+        <div style="display:flex; flex-direction:column; gap:4px; padding:20px 12px;">
+          <div style="padding:0 12px 6px; font:600 12px/16px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">التفتيش</div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; border-radius:8px; background:color-mix(in srgb,#7C6CFF 14%,#14141F); box-shadow:inset 2px 0 0 #7C6CFF;"><span style="width:8px; height:8px; border-radius:2px; background:#7C6CFF;"></span><strong>التخطيط</strong></div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#9C9CB2;"><span style="width:8px; height:8px; border-radius:2px; background:#9C9CB2;"></span>إدارة الزيارات</div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#9C9CB2;"><span style="width:8px; height:8px; border-radius:2px; background:#9C9CB2;"></span>المصنع 360</div>
+        </div>
+        <div style="margin-top:auto; padding:16px 20px; border-top:1px solid #26263A; display:flex; align-items:center; gap:10px;">
+          <div style="width:32px; height:32px; border-radius:999px; background:#26263A; display:flex; align-items:center; justify-content:center; font:600 13px 'Space Grotesk',sans-serif;">NH</div>
+          <div style="display:flex; flex-direction:column;"><span style="font:600 14px/20px 'IBM Plex Sans Arabic',sans-serif;">نورة الحربي</span><span style="font:400 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">مخطِّطة</span></div>
+        </div>
+      </div>
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+        <div style="height:64px; flex:none; display:flex; align-items:center; gap:12px; padding:0 24px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 19px/30px 'IBM Plex Sans Arabic',sans-serif;">المراجعة والنشر — خطة جماعية</span>
+          <span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#5AA7FA 14%,#14141F); color:#5AA7FA; font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif;">مراجعة نهائية — لم يُرتَّب أي أثر</span>
+          <div style="margin-inline-start:auto; display:flex; gap:8px; align-items:center; color:#9C9CB2;">
+            <div style="width:180px; height:40px; border-radius:8px; border:1px solid #26263A; background:#14141F; display:flex; align-items:center; padding:0 12px; font-size:14px;">⌕&nbsp; التنقّل…</div>
+            <span style="width:40px; height:40px; border:1px solid #26263A; border-radius:8px; display:flex; align-items:center; justify-content:center;">◐</span>
+            <span style="width:40px; height:40px; border:1px solid #26263A; border-radius:8px; display:flex; align-items:center; justify-content:center; font:600 13px 'JetBrains Mono',monospace;">EN</span>
+          </div>
+        </div>
+        <div style="flex:none; display:flex; align-items:center; gap:20px; padding:12px 24px; border-bottom:1px solid #26263A; background:#101020;">
+          <span style="font:400 13px/22px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">مرجع المراجعة <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#EFEFF7;">SR‑0142</bdi> (مؤقت — يصبح رقم خطة عند النشر فقط)</span>
+          <span style="font:600 16px/26px 'IBM Plex Sans Arabic',sans-serif;">١٠ مصانع مُبقاة <span style="font:400 13px/22px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">— من ١٢ مستهدفًا · استبعدتَ ٢ (مذكوران أدناه)</span></span>
+          <span style="margin-inline-start:auto; font:400 13px/20px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">لا يُنشأ أو يُرسل شيء قبل النشر</span>
+        </div>
+        <div style="flex:1; display:flex; min-height:0;">
+          <div style="flex:1.35; min-width:0; border-inline-end:1px solid #26263A; padding:16px 20px; display:flex; flex-direction:column; gap:12px;">
+            <div style="border:1px solid #2DE08E; border-radius:12px; background:color-mix(in srgb,#2DE08E 5%,#14141F); padding:14px 16px; display:flex; flex-direction:column; gap:8px;">
+              <span style="font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#2DE08E;">الجاهزية — تُفحص الآن وتُفحص مرة أخرى عند النشر</span>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif;">
+                <span><span style="color:#2DE08E;">✓</span> التهيئة مكتملة — النوع والحزمة والنافذة</span>
+                <span><span style="color:#2DE08E;">✓</span> الحزمة <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> منشورة حاليًا</span>
+                <span><span style="color:#2DE08E;">✓</span> ١٠ من ١٠ زيارات لها مفتش</span>
+                <span><span style="color:#2DE08E;">✓</span> ٧ اختيارات يدوية — لا تعارض معلوم الآن</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:2px; border-top:1px solid #26263A; padding-top:8px; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif;">
+                <span><span style="color:#E8B84B;">◐</span> <strong style="color:#E8B84B;">تنبيه</strong> — ٣ إسنادات بالتناوب، والتناوب لا يفحص جدول المفتش · <a href="#5k">راجع الزيارات الثلاث</a></span>
+                <span><span style="color:#E8B84B;">◐</span> <strong style="color:#E8B84B;">تنبيه</strong> — الإشعارات تُوضع في قائمة الإرسال عند النشر؛ الإرسال خطوة لاحقة لا تُؤكَّد هنا</span>
+                <span style="color:#9C9CB2;"><strong style="color:#EFEFF7;">العوائق: لا شيء.</strong> تُعاد جميع الفحوص عند النشر؛ إذا تغيّر شيء يتوقف النشر مع بيان السبب وبقاء كل ما في هذه الصفحة.</span>
+              </div>
+            </div>
+            <div style="border:1px solid #E8B84B; border-radius:12px; background:color-mix(in srgb,#E8B84B 6%,#14141F); padding:12px 14px; display:flex; flex-direction:column; gap:4px; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif;">
+              <span style="font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#E8B84B;">النطاق — ١٢ مستهدفًا ← ١٠ مُبقاة · لا حذف صامت</span>
+              <span><strong>شركة الرياض المتقدمة للبلاستيك</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#9C9CB2;">FAC‑RY‑00117</bdi> — زيارة نشطة <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">V‑2026‑04412</bdi> · <strong>مصنع سدير لمركّبات البوليمر</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#9C9CB2;">FAC‑RY‑00201</bdi> — <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">V‑2026‑04901</bdi></span>
+              <span style="color:#9C9CB2; font-size:13px;">أُعيد حساب أعداد الخطة والزيارات والإسنادات والإشعارات لعشرة مصانع · <a href="#5k">تغيير النطاق في خطوة الإسناد</a></span>
+            </div>
+            <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:12px 14px; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">
+              <span style="font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif;">ما ستستخدمه كل زيارة</span> · دورية · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">2026‑07‑20 08:00 ← 2026‑07‑24 16:00</bdi> · التنفيذ: <strong style="color:#EFEFF7;">ميداني — الوضع الوحيد المدعوم</strong> · <a href="#5k">تغيير التهيئة</a>
+            </div>
+            <table style="width:100%; border-collapse:collapse; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif;">
+              <thead><tr>
+                <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">المصنع</th>
+                <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">الطريقة / المفتش</th>
+                <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">حالة الإسناد</th>
+              </tr></thead>
+              <tbody>
+                <tr><td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>شركة النخيل للصناعات الكيميائية المتقدمة والمتخصصة</strong><br><bdi dir="ltr" style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">FAC‑RY‑00214</bdi></td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">يدوي · فهد العتيبي</td><td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#2DE08E;">✓ لا تعارض معلوم في النافذة</span></td></tr>
+                <tr><td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>مصنع الخليج لأعمال البوليمرات</strong><br><bdi dir="ltr" style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">FAC‑RY‑00389</bdi></td><td style="padding:8px; border-bottom:1px solid #1B1B2C;">يدوي · عائشة الزهراني</td><td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#2DE08E;">✓ لا تعارض معلوم في النافذة</span></td></tr>
+                <tr style="background:color-mix(in srgb,#E8B84B 5%,transparent);"><td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>مصنع نجد للكيماويات المتخصصة</strong><br><bdi dir="ltr" style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">FAC‑RY‑00522</bdi></td><td style="padding:8px; border-bottom:1px solid #1B1B2C; color:#9C9CB2;">بالتناوب · يُختار عند النشر</td><td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#E8B84B;">◐ الجدول لا يُفحص للتناوب</span></td></tr>
+              </tbody>
+            </table>
+            <span style="font:400 13px/20px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">٧ صفوف أخرى… · <a href="#5k">تغيير الإسنادات</a></span>
+          </div>
+          <div style="width:430px; flex:none; background:#0C0C18; display:flex; flex-direction:column;">
+            <div style="flex:1; padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+              <span style="font:600 17px/26px 'IBM Plex Sans Arabic',sans-serif;">ما الذي يفعله النشر</span>
+              <div style="border:1px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 6%,#14141F); padding:10px 12px; font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif;"><span style="font-weight:700; color:#2DE08E;">يُنشأ — معًا أو لا شيء:</span> خطة واحدة · ١٠ زيارات (واحدة لكل مصنع مُبقى) · ١٠ إسنادات — إذا فشل أي جزء لا يُنشأ شيء</div>
+              <div style="border:1px solid #7C6CFF; border-radius:10px; background:color-mix(in srgb,#7C6CFF 6%,#14141F); padding:10px 12px; font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif;"><span style="font-weight:700; color:#9487FF;">يُثبَّت لتلك الزيارات:</span> الحزمة <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> بالضبط · النافذة · مفتش مسمّى لكل زيارة (٧ باختيارك، ٣ بالتناوب)</div>
+              <div style="border:1px solid #5AA7FA; border-radius:10px; background:color-mix(in srgb,#5AA7FA 6%,#14141F); padding:10px 12px; font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;"><span style="font-weight:700; color:#5AA7FA;">يُسجَّل أو يُدرج في القائمة:</span> تُسجَّل عملية النشر في سجل النظام · ١٠ إشعارات إسناد في قائمة الإرسال — <strong style="color:#EFEFF7;">الإدراج ليس تسليمًا</strong></div>
+              <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;"><span style="font-weight:700;">لن يحدث عند النشر:</span> لا يبدأ أي تفتيش · لا يُفترض قبول المفتشين · لا يُؤكَّد تسليم الإشعارات · لا يُحذف أي مصنع بصمت · لا تُعرض نتيجة جزئية كنجاح</div>
+            </div>
+            <div style="flex:none; padding:14px 18px; border-top:1px solid #26263A; background:#101020; display:flex; flex-direction:column; gap:10px;">
+              <span style="font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">عند النشر تُعاد جميع فحوص الجاهزية مرة أخرى. إذا تغيّر شيء يتوقف النشر مع بيان السبب وتبقى هذه الصفحة كما هي. بعد النجاح تُنقل إلى سجل الزيارات.</span>
+              <button style="height:48px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 16px 'IBM Plex Sans Arabic',sans-serif; cursor:pointer;">نشر الخطة وإنشاء ١٠ زيارات</button>
+              <button style="height:44px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 14px 'IBM Plex Sans Arabic',sans-serif; cursor:pointer;">العودة إلى الإسناد — يبقى كل شيء محفوظًا</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 5l · LIGHT DESKTOP — SAME STATE ============ -->
+  <div id="5l" data-screen-label="5l Light desktop" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#5l" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5l</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Light theme, full desktop — same complete state, shell included</span>
+    </div>
+    <div id="frame-cd025-light" style="width:1600px; display:flex; background:#F4F4FB; color:#16161F; border:1px solid #E2E2EC; border-radius:16px; overflow:hidden; font:400 15px/22px 'Space Grotesk',sans-serif;">
+      <div style="width:248px; flex:none; background:#FFFFFF; border-inline-end:1px solid #E2E2EC; display:flex; flex-direction:column;">
+        <div style="height:64px; display:flex; align-items:center; gap:10px; padding:0 20px; border-bottom:1px solid #E2E2EC;"><div style="width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,#D946EF,#6B57F0);"></div><div style="display:flex; flex-direction:column;"><span style="font:600 16px/20px 'Space Grotesk',sans-serif;">Saqeel</span><span lang="ar" dir="rtl" style="font:400 12px/14px 'IBM Plex Sans Arabic',sans-serif; color:#56566B;">صقيل | صناعي</span></div></div>
+        <div style="display:flex; flex-direction:column; gap:4px; padding:20px 12px;">
+          <div style="padding:0 12px 6px; font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#56566B;">Inspection</div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; border-radius:8px; background:color-mix(in srgb,#6B57F0 10%,#FFFFFF); box-shadow:inset 2px 0 0 #6B57F0;"><span style="width:8px; height:8px; border-radius:2px; background:#6B57F0;"></span><strong>Planning</strong></div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#56566B;"><span style="width:8px; height:8px; border-radius:2px; background:#56566B;"></span>Visit Management</div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#56566B;"><span style="width:8px; height:8px; border-radius:2px; background:#56566B;"></span>Factory 360</div>
+        </div>
+        <div style="margin-top:auto; padding:16px 20px; border-top:1px solid #E2E2EC; display:flex; align-items:center; gap:10px;">
+          <div style="width:32px; height:32px; border-radius:999px; background:#E9E9F2; display:flex; align-items:center; justify-content:center; font:600 13px 'Space Grotesk',sans-serif;">NH</div>
+          <div style="display:flex; flex-direction:column;"><span style="font:600 14px/18px 'Space Grotesk',sans-serif;">Norah Al‑Harbi</span><span style="font:400 12px/16px 'Space Grotesk',sans-serif; color:#56566B;">Planner</span></div>
+        </div>
+      </div>
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+        <div style="height:64px; flex:none; display:flex; align-items:center; gap:12px; padding:0 24px; border-bottom:1px solid #E2E2EC; background:#FFFFFF;">
+          <span style="font:600 20px/28px 'Space Grotesk',sans-serif;">Review &amp; publish — bulk plan</span>
+          <span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#2E7FD4 12%,#FFFFFF); color:#2E7FD4; font:600 12px/16px 'JetBrains Mono',monospace;">FINAL REVIEW — NOTHING COMMITTED</span>
+          <div style="margin-inline-start:auto; display:flex; gap:8px; align-items:center; color:#56566B;">
+            <div style="width:200px; height:40px; border-radius:8px; border:1px solid #E2E2EC; background:#F9F9FD; display:flex; align-items:center; padding:0 12px; font-size:14px;">⌕&nbsp; Navigate…</div>
+            <span style="width:40px; height:40px; border:1px solid #E2E2EC; border-radius:8px; display:flex; align-items:center; justify-content:center;">◑</span>
+            <span style="width:40px; height:40px; border:1px solid #E2E2EC; border-radius:8px; display:flex; align-items:center; justify-content:center; font:600 13px 'JetBrains Mono',monospace;">ع</span>
+          </div>
+        </div>
+        <div style="flex:none; display:flex; align-items:center; gap:24px; padding:12px 24px; border-bottom:1px solid #E2E2EC; background:#FBFBFE;">
+          <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#56566B;">Review reference <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#16161F;">SR‑0142</bdi> (temporary)</span>
+          <span style="font:600 16px/22px 'Space Grotesk',sans-serif;">10 factories retained <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#56566B;">— of 12 targeted · 2 removed by you</span></span>
+          <span style="margin-inline-start:auto; font:400 13px/18px 'JetBrains Mono',monospace; color:#56566B;">nothing is created or sent until you publish</span>
+        </div>
+        <div style="flex:1; display:flex; min-height:0;">
+          <div style="flex:1.35; min-width:0; border-inline-end:1px solid #E2E2EC; padding:16px 20px; display:flex; flex-direction:column; gap:12px;">
+            <div style="border:1px solid #0F9F63; border-radius:12px; background:color-mix(in srgb,#0F9F63 4%,#FFFFFF); padding:14px 16px; display:flex; flex-direction:column; gap:8px;">
+              <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#0F9F63;">READINESS — CHECKED NOW, CHECKED AGAIN WHEN YOU PUBLISH</span>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 20px; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <span><span style="color:#0F9F63;">✓</span> Configuration complete — type, package, window</span>
+                <span><span style="color:#0F9F63;">✓</span> Package <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> currently published</span>
+                <span><span style="color:#0F9F63;">✓</span> 10 of 10 visits have an inspector</span>
+                <span><span style="color:#0F9F63;">✓</span> 7 manual picks — no known overlap right now</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:2px; border-top:1px solid #E2E2EC; padding-top:8px; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <span><span style="color:#B26B00;">◐</span> <strong style="color:#B26B00;">Warning</strong> — 3 rotation assignments; rotation does not check schedules · <a href="#5l" style="color:#6B57F0;">review those 3 visits</a></span>
+                <span><span style="color:#B26B00;">◐</span> <strong style="color:#B26B00;">Warning</strong> — notifications queued at publish; sending is not confirmed here</span>
+                <span style="color:#56566B;"><strong style="color:#16161F;">Blockers: none.</strong> Every check runs once more when you publish; a change stops publishing safely and keeps this page.</span>
+              </div>
+            </div>
+            <div style="border:1px solid #B26B00; border-radius:12px; background:color-mix(in srgb,#B26B00 4%,#FFFFFF); padding:12px 14px; font:400 14px/20px 'Space Grotesk',sans-serif; color:#56566B;">
+              <strong style="color:#B26B00;">Scope — 12 targeted → 10 retained · nothing dropped silently.</strong> Removed by you: <strong style="color:#16161F;">Riyadh Advanced Plastics Co.</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px;">FAC‑RY‑00117</bdi> (active visit <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">V‑2026‑04412</bdi>) · <strong style="color:#16161F;">Sudair Polymer Compounds</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px;">FAC‑RY‑00201</bdi> (<bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">V‑2026‑04901</bdi>). Counts below recalculated for 10 · <a href="#5l" style="color:#6B57F0;">Change scope in assignment</a>
+            </div>
+            <div style="border:1px solid #E2E2EC; border-radius:12px; background:#FFFFFF; padding:12px 14px; font:400 14px/20px 'Space Grotesk',sans-serif; color:#56566B;">
+              <strong style="color:#16161F;">What every visit will use</strong> · Periodic compliance · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">2026‑07‑20 08:00 → 2026‑07‑24 16:00</bdi> · on‑site — the only supported mode · <a href="#5l" style="color:#6B57F0;">Change configuration</a>
+            </div>
+            <div style="border:1px solid #E2E2EC; border-radius:12px; background:#FFFFFF; padding:12px 14px; display:flex; flex-direction:column; gap:6px; font-size:14px;">
+              <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#56566B;">10 VISITS TO BE CREATED · <a href="#5l" style="color:#6B57F0; letter-spacing:0;">Change assignments</a></span>
+              <div style="border:1px solid #E2E2EC; border-radius:8px; background:#F9F9FD; padding:8px 12px;"><strong>Al‑Nakheel Chemical Industries</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#56566B;">FAC‑RY‑00214</bdi> — Manual · Fahad Al‑Otaibi · <span style="color:#0F9F63;">✓ no known overlap</span></div>
+              <div style="border:1px solid #E2E2EC; border-radius:8px; background:#F9F9FD; padding:8px 12px;"><strong>Gulf Polymer Works</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#56566B;">FAC‑RY‑00389</bdi> — Manual · Aisha Al‑Zahrani · <span style="color:#0F9F63;">✓ no known overlap</span></div>
+              <div style="border:1px solid #E8D4A8; border-radius:8px; background:color-mix(in srgb,#B26B00 4%,#FFFFFF); padding:8px 12px;"><strong>Najd Specialty Chemicals</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#56566B;">FAC‑RY‑00522</bdi> — Rotation · chosen at publish · <span style="color:#B26B00;">◐ schedule not checked for rotation</span></div>
+              <span style="font-size:13px; color:#56566B;">7 more rows…</span>
+            </div>
+          </div>
+          <div style="width:430px; flex:none; background:#FFFFFF; border-inline-start:0; display:flex; flex-direction:column;">
+            <div style="flex:1; padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+              <span style="font:600 17px/24px 'Space Grotesk',sans-serif;">What publishing does</span>
+              <div style="border:1px solid #0F9F63; border-radius:10px; background:color-mix(in srgb,#0F9F63 4%,#FFFFFF); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#0F9F63;">Created — together, or not at all:</strong> 1 plan · 10 visits · 10 assignments. If any part fails, nothing is created.</div>
+              <div style="border:1px solid #6B57F0; border-radius:10px; background:color-mix(in srgb,#6B57F0 4%,#FFFFFF); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#6B57F0;">Set for those visits:</strong> <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> exactly · window · a named inspector per visit (7 chosen by you, 3 by rotation).</div>
+              <div style="border:1px solid #2E7FD4; border-radius:10px; background:color-mix(in srgb,#2E7FD4 4%,#FFFFFF); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif; color:#56566B;"><strong style="color:#2E7FD4;">Recorded or queued:</strong> the publication is recorded · 10 notifications queued — <strong style="color:#16161F;">queueing is not delivery</strong>.</div>
+              <div style="border:1px solid #E2E2EC; border-radius:10px; background:#F9F9FD; padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif; color:#56566B;"><strong style="color:#16161F;">Will not happen at publish:</strong> no inspection starts · no acceptance implied · no delivery implied · no factory dropped silently · no partial result shown as success.</div>
+            </div>
+            <div style="flex:none; padding:14px 18px; border-top:1px solid #E2E2EC; background:#FBFBFE; display:flex; flex-direction:column; gap:10px;">
+              <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#56566B;">When you publish, every readiness check runs once more; a change stops publishing with the reason and keeps this page. After success you'll be taken to the visit register.</span>
+              <button style="height:48px; border-radius:8px; border:0; background:#6B57F0; color:#FFFFFF; font:600 16px 'Space Grotesk',sans-serif; cursor:pointer;">Publish plan and create 10 visits</button>
+              <button style="height:44px; border-radius:8px; border:1px solid #E2E2EC; background:#FFFFFF; color:#16161F; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Return to assignment — keeps everything staged</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RTL LIGHT EVIDENCE + 5m · TABLET + 5n · NARROW ============ -->
+  <div style="display:flex; gap:32px; align-items:flex-start; flex-wrap:wrap;">
+    <div data-screen-label="5 Arabic RTL light evidence" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; border:2px solid #7C6CFF; color:#9487FF; font:700 13px/16px 'JetBrains Mono',monospace;">5k+</span>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Arabic RTL light evidence — readiness + ledger + action, same state · CONTENT_CROP</span>
+      </div>
+      <div dir="rtl" lang="ar" id="frame-cd025-rtl-light" style="width:520px; background:#F4F4FB; color:#16161F; border:1px solid #E2E2EC; border-radius:16px; padding:16px; display:flex; flex-direction:column; gap:10px; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif;">
+        <span style="font:600 16px/26px 'IBM Plex Sans Arabic',sans-serif;">المراجعة والنشر — خطة جماعية</span>
+        <div style="border:1px solid #0F9F63; border-radius:10px; background:color-mix(in srgb,#0F9F63 4%,#FFFFFF); padding:10px 12px; display:flex; flex-direction:column; gap:2px; font-size:13px;">
+          <span style="font-weight:700; color:#0F9F63;">الجاهزية — تُفحص الآن وتُفحص مرة أخرى عند النشر</span>
+          <span><span style="color:#0F9F63;">✓</span> التهيئة مكتملة · الحزمة <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px;">SAQ‑PKG‑04 · v3</bdi> منشورة · ١٠ من ١٠ لها مفتش</span>
+          <span><span style="color:#B26B00;">◐</span> تنبيهان: ٣ إسنادات بالتناوب دون فحص الجدول · الإشعارات تُدرج ولا يُؤكَّد إرسالها</span>
+          <span style="color:#56566B;"><strong style="color:#16161F;">العوائق: لا شيء.</strong></span>
+        </div>
+        <div style="border:1px solid #B26B00; border-radius:10px; background:color-mix(in srgb,#B26B00 4%,#FFFFFF); padding:10px 12px; font-size:13px; color:#56566B;"><strong style="color:#B26B00;">النطاق:</strong> ١٢ ← ١٠ — استبعدتَ مصنعين مسمّيين؛ أُعيد حساب الأعداد</div>
+        <div style="border:1px solid #0F9F63; border-radius:10px; background:color-mix(in srgb,#0F9F63 4%,#FFFFFF); padding:10px 12px; font-size:13px;"><span style="font-weight:700; color:#0F9F63;">يُنشأ — معًا أو لا شيء:</span> خطة · ١٠ زيارات · ١٠ إسنادات</div>
+        <div style="border:1px solid #2E7FD4; border-radius:10px; background:color-mix(in srgb,#2E7FD4 4%,#FFFFFF); padding:10px 12px; font-size:13px; color:#56566B;"><span style="font-weight:700; color:#2E7FD4;">يُدرج في القائمة:</span> ١٠ إشعارات — الإدراج ليس تسليمًا</div>
+        <button style="height:48px; border-radius:8px; border:0; background:#6B57F0; color:#FFFFFF; font:600 15px 'IBM Plex Sans Arabic',sans-serif; cursor:pointer;">نشر الخطة وإنشاء ١٠ زيارات</button>
+      </div>
+    </div>
+
+    <div id="5m" data-screen-label="5m Tablet 1024" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#5m" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5m</span></a>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">1024px tablet — collapsed shell, ledger docks below objects, same state</span>
+      </div>
+      <div id="frame-cd025-tablet" style="width:1024px; display:flex; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 15px/22px 'Space Grotesk',sans-serif;">
+        <div style="width:72px; flex:none; background:#0C0C18; border-inline-end:1px solid #26263A; display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:8px;">
+          <div style="width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,#D946EF,#7C6CFF); margin-bottom:12px;"></div>
+          <span style="width:44px; height:44px; border-radius:8px; background:color-mix(in srgb,#7C6CFF 14%,#14141F); box-shadow:inset 2px 0 0 #7C6CFF; display:flex; align-items:center; justify-content:center;"><span style="width:8px; height:8px; border-radius:2px; background:#7C6CFF;"></span></span>
+          <span style="width:44px; height:44px; display:flex; align-items:center; justify-content:center;"><span style="width:8px; height:8px; border-radius:2px; background:#9C9CB2;"></span></span>
+          <span style="width:44px; height:44px; display:flex; align-items:center; justify-content:center;"><span style="width:8px; height:8px; border-radius:2px; background:#9C9CB2;"></span></span>
+          <div style="margin-top:auto; width:32px; height:32px; border-radius:999px; background:#26263A; display:flex; align-items:center; justify-content:center; font:600 12px 'Space Grotesk',sans-serif;">NH</div>
+        </div>
+        <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+          <div style="height:56px; flex:none; display:flex; align-items:center; gap:10px; padding:0 20px; border-bottom:1px solid #26263A; background:#0C0C18;">
+            <span style="font:600 17px/24px 'Space Grotesk',sans-serif;">Review &amp; publish — bulk plan</span>
+            <span style="display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#5AA7FA 14%,#14141F); color:#5AA7FA; font:600 11px/15px 'JetBrains Mono',monospace;">FINAL REVIEW</span>
+            <span style="margin-inline-start:auto; font:600 14px/20px 'Space Grotesk',sans-serif;">10 of 12 retained</span>
+          </div>
+          <div style="padding:14px 20px; display:flex; flex-direction:column; gap:10px;">
+            <div style="border:1px solid #2DE08E; border-radius:12px; background:color-mix(in srgb,#2DE08E 5%,#14141F); padding:12px 14px; font-size:14px; display:flex; flex-direction:column; gap:4px;">
+              <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">READINESS</span>
+              <span><span style="color:#2DE08E;">✓</span> configuration · package · coverage · manual picks · duplicates resolved &nbsp; <span style="color:#E8B84B;">◐</span> 2 warnings (rotation schedule unchecked · queued ≠ delivered) &nbsp; <strong>Blockers: none</strong></span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px;">
+              <div style="border:1px solid #E8B84B; border-radius:10px; background:color-mix(in srgb,#E8B84B 6%,#14141F); padding:10px 12px; color:#9C9CB2;"><strong style="color:#E8B84B;">Scope 12 → 10</strong> — 2 removed by you, named; counts recalculated</div>
+              <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; color:#9C9CB2;">Periodic · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">07‑20 → 07‑24</bdi> · on‑site</div>
+            </div>
+            <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; font-size:13px; color:#9C9CB2;"><strong style="color:#EFEFF7;">10 visits</strong> — Al‑Nakheel (Manual · Al‑Otaibi ✓) · Gulf Polymer (Manual · Al‑Zahrani ✓) · Najd (Rotation ◐) · 7 more…</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px;">
+              <div style="border:1px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 6%,#14141F); padding:10px 12px;"><strong style="color:#2DE08E;">Created — together or nothing:</strong> 1 plan · 10 visits · 10 assignments</div>
+              <div style="border:1px solid #5AA7FA; border-radius:10px; background:color-mix(in srgb,#5AA7FA 6%,#14141F); padding:10px 12px; color:#9C9CB2;"><strong style="color:#5AA7FA;">Queued:</strong> 10 notifications — queueing is not delivery</div>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+              <button style="flex:1; height:48px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 15px 'Space Grotesk',sans-serif; cursor:pointer;">Publish plan and create 10 visits</button>
+              <button style="height:48px; padding:0 14px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Return to assignment</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5n" data-screen-label="5n Narrow 390-430" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#5n" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">5n</span></a>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Narrow 420px — operable, mandated order, same state</span>
+      </div>
+      <div id="frame-cd025-narrow" style="width:420px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <div style="height:56px; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="width:44px; height:44px; margin-inline-start:-8px; display:flex; align-items:center; justify-content:center; color:#9C9CB2;">☰</span>
+          <span style="font:600 16px 'Space Grotesk',sans-serif;">Review &amp; publish</span>
+          <span style="margin-inline-start:auto; display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#5AA7FA 14%,#14141F); color:#5AA7FA; font:600 10px/14px 'JetBrains Mono',monospace;">FINAL REVIEW</span>
+        </div>
+        <div style="padding:12px 16px; display:flex; flex-direction:column; gap:12px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif;">Bulk plan · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9C9CB2;">SR‑0142</bdi><br><span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">10 of 12 retained — 2 removed by you · nothing committed yet</span></span>
+          <div style="border:1px solid #2DE08E; border-radius:12px; background:color-mix(in srgb,#2DE08E 5%,#14141F); padding:10px 12px; display:flex; flex-direction:column; gap:4px; font:400 13px/19px 'Space Grotesk',sans-serif;">
+            <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">READINESS</span>
+            <span><span style="color:#2DE08E;">✓</span> Configuration · package · 10 of 10 assigned · manual picks clear</span>
+            <span><span style="color:#E8B84B;">◐</span> 3 rotation rows — schedule not checked · <a href="#5n">review</a></span>
+            <span><span style="color:#E8B84B;">◐</span> Notifications queued at publish, not delivered</span>
+            <span style="color:#9C9CB2;"><strong style="color:#EFEFF7;">Blockers: none</strong> — checks re-run at publish</span>
+          </div>
+          <div style="border:1px solid #E8B84B; border-radius:12px; background:color-mix(in srgb,#E8B84B 6%,#14141F); padding:10px 12px; font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+            <strong style="color:#E8B84B;">Scope 12 → 10.</strong> Removed: Riyadh Advanced Plastics Co. <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:10px;">FAC‑RY‑00117</bdi> · Sudair Polymer Compounds <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:10px;">FAC‑RY‑00201</bdi> — both have an active visit. Counts recalculated.
+          </div>
+          <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:10px 12px; display:flex; flex-direction:column; gap:6px; font:400 13px/18px 'Space Grotesk',sans-serif;">
+            <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">10 VISITS · STACKED ROWS</span>
+            <div style="border:1px solid #26263A; border-radius:8px; background:#0F0F1C; padding:8px 10px;"><strong>Al‑Nakheel Chemical Industries</strong><br><span style="color:#9C9CB2;"><bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px;">FAC‑RY‑00214</bdi> · Manual · Fahad Al‑Otaibi · <span style="color:#2DE08E;">✓ no known overlap</span></span></div>
+            <div style="border:1px solid #26263A; border-radius:8px; background:#0F0F1C; padding:8px 10px;"><strong>Najd Specialty Chemicals</strong><br><span style="color:#9C9CB2;"><bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:11px;">FAC‑RY‑00522</bdi> · Rotation · <span style="color:#E8B84B;">◐ schedule not checked</span></span></div>
+            <span style="color:#9C9CB2;">8 more rows… · <a href="#5n">Change assignments</a></span>
+          </div>
+          <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:10px 12px; font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Periodic · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">07‑20 → 07‑24</bdi> · on‑site · <a href="#5n">Change configuration</a></div>
+          <div style="display:flex; flex-direction:column; gap:6px; font:400 13px/18px 'Space Grotesk',sans-serif;">
+            <div style="border:1px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 6%,#14141F); padding:8px 10px;"><strong style="color:#2DE08E;">Created — together or nothing:</strong> 1 plan · 10 visits · 10 assignments</div>
+            <div style="border:1px solid #5AA7FA; border-radius:10px; background:color-mix(in srgb,#5AA7FA 6%,#14141F); padding:8px 10px; color:#9C9CB2;"><strong style="color:#5AA7FA;">Queued:</strong> 10 notifications — not delivery</div>
+            <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:8px 10px; color:#9C9CB2;"><strong style="color:#EFEFF7;">Won't happen:</strong> no inspection starts · no acceptance or delivery implied</div>
+          </div>
+          <button style="height:48px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Return to assignment</button>
+          <button style="height:48px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 15px 'Space Grotesk',sans-serif; cursor:pointer;">Publish plan and create 10 visits</button>
+        </div>
+      </div>
+      <div style="width:420px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:12px 14px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+        Mandated order: context → readiness/blockers → retained targets/visits → package + assignment evidence → consequence ledger → change paths → final action. In-flow action (no sticky bar covering content); no horizontal overflow; ≥44–48px targets.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SPEC PANELS ============ -->
+  <div style="width:1600px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div data-screen-label="5 keyboard spec" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Keyboard · focus · live regions · reduced motion</div>
+      <strong style="color:#EFEFF7;">Model: semantic headings, lists, description lists and one plain table — no ARIA grid (the interaction is read-and-follow-links, not composite navigation).</strong> Skip link → main landmark → h1 → readiness (h2) → scope (h2) → objects (h2, table with proper th/td relationships) → ledger (h2, each class an h3 region) → final action. All links and buttons in the normal tab order; repeated "Change" links carry hidden context ("Change assignments — inspector and method per visit"). Focus ring: 2px offset ring visible on dark (#7C6CFF on #0A0A14) and light (#6B57F0 on #FFFFFF). Failed submit: focus → error summary (role=alert, tabindex="-1"); each entry anchors to its row; return from edit lands focus on the corrected section heading (S28) with a polite "assignment updated — review continues". Success: focus → completion heading (5i). No modal is used, so no focus-restoration contract is owed. role="status" (polite): validating, revalidating, publishing progress, scope-count changes ("scope reduced — 10 of 12 factories"). role="alert" (assertive, once, never duplicated): blockers on submit, stale/concurrent change, transaction failure. Disabled publish carries its reason in visible text and aria-describedby. Disclosure widgets announce expanded/collapsed. Reduced motion: no spinner rotation theatre beyond opacity, no scroll animation, instant ledger updates — object continuity preserved. Conflict/selection cues are always glyph + text, never color alone.
+    </div>
+    <div data-screen-label="5 research ledger" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Research ledger — adopted / rejected (frames cited)</div>
+      <strong style="color:#EFEFF7;">GOV.UK — Check answers (design-system.service.gov.uk/patterns/check-answers/):</strong> one final page restating every answer with a change link per section, before an irreversible submit. Adopted: object sections with per-section "Change" links carrying hidden context (5a). Rejected: generic government styling; question/answer phrasing — Saqeel objects are factories/visits/packages, not form answers.<br>
+      <strong style="color:#EFEFF7;">GOV.UK — Confirmation pages (…/patterns/confirmation-pages/):</strong> confirm only what happened, state what happens next. Adopted: completion panel with committed counts and truthful next destination (5i). Rejected: green panel claiming delivery/receipt; invented reference-number persistence; support contact — none exist.<br>
+      <strong style="color:#EFEFF7;">GOV.UK — Error summary (…/components/error-summary/):</strong> focused summary, per-error links, input preserved. Adopted verbatim (<a href="#5j">5j</a>). Rejected: nothing material.<br>
+      <strong style="color:#EFEFF7;">WCAG 2.2 — Focus Order (w3.org/WAI/WCAG22/Understanding/focus-order.html):</strong> focus follows meaning and operability. Adopted: reading order = mandated narrow order; summary→row→restoration transfers (5j, S28). Rejected: sticky action bars that trap or reorder focus.<br>
+      <strong style="color:#EFEFF7;">WCAG 2.2 — Status Messages (…/status-messages.html):</strong> status conveyed without focus stealing. Adopted: polite status for progress/scope counts, assertive alert only for actionable failures, no duplication (5g). Rejected: announcing every state change assertively.<br>
+      <strong style="color:#EFEFF7;">Saudi DGA — web accessibility (dga.gov.sa/en/digital-knowledge/web-accessibility-disabilities-and-elderly-people):</strong> operability for disabled and elderly users. Adopted: ≥44–48px targets, plain-language consequence copy, glyph+text status. Arabic-first is NOT sourced here — binding Saqeel baseline (DEC-011). Rejected: nothing in scope.<br>
+      <strong style="color:#EFEFF7;">PostgreSQL — Transaction Isolation (postgresql.org/docs/current/transaction-iso.html):</strong> a transaction guarantees atomicity of its own writes, not the freshness of reads made before it began. Adopted: bulk copy separates "created together or not at all" (true, RPC) from "checks re-run before publish; a change in that final moment is not caught" (5a readiness; S11/S18). Rejected: any "concurrency-safe" or "rechecked inside the transaction" claim.
+    </div>
+    <div data-screen-label="5 inheritance ledger" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Family inheritance ledger + one-pattern novelty declaration</div>
+      <strong style="color:#EFEFF7;">Reused accepted grammar:</strong> frozen shell + Planning tab; magenta-violet tokens, lozenges, tables, focus/error grammar; CD-024's blocker/warning/unknown separation, glyph+text states, exact package-version treatment, named scope-reduction disclosure, neutral-failure banner, fail-closed source cards, distinct unauthorized/no-data family, linked error summary. CD-024's Assignment Evidence Ledger is <strong>not duplicated</strong> — 5a summarizes its verified result per row and links back to assignment correction. <strong style="color:#EFEFF7;">Created page-specific:</strong> the <strong>Publish Consequence Ledger</strong> — the ONE new signature pattern (declared; nothing else novel). <strong style="color:#EFEFF7;">Regression checks:</strong> /planning/plans/:id untouched (view-only, 5i right); no publish controls added anywhere post-publish; atomic RPC contract unchanged; single resumable retry preserved (5h right); immediate flow untouched; physical-only bulk mode kept as fact. <strong style="color:#EFEFF7;">Genericity test:</strong> with branding removed, the page still reads factories / visits / assignments / package version / publication consequences — not CRM cards or project tasks.
+    </div>
+    <div data-screen-label="5 self-criticism" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#F0625D; margin-bottom:8px;">Self-criticism loop — evidence per pass (no scores)</div>
+      <strong style="color:#EFEFF7;">1 Contract coverage:</strong> M01-009/010/030/031 (5a, 5i), 006/007/008/027/028/029 (object + assignment sections), M02-012 (S9/S10), FND-001/002/003/004/011/013 throughout; STM-PLAN-001/002 stated, not weakened (5route). <strong style="color:#EFEFF7;">2 Runtime truth:</strong> no persisted-draft, approver, delivery, receipt or in-transaction-recheck claim anywhere; single never "atomic" (5e/5h). <strong style="color:#EFEFF7;">3 Decision superiority:</strong> blocker→row link + consequence counts vs current single joined error string (critique 1–3). <strong style="color:#EFEFF7;">4 Hard cases:</strong> 28 designed states incl. per-source failures, stale, concurrent, unauthorized, expired review (5f). <strong style="color:#EFEFF7;">5 Inspection specificity:</strong> genericity test in inheritance panel. <strong style="color:#EFEFF7;">6 Family continuity:</strong> inheritance ledger. <strong style="color:#EFEFF7;">7 Arabic-first:</strong> full RTL dark (5k) + RTL light evidence + long names + bdi isolation. <strong style="color:#EFEFF7;">8 Accessibility:</strong> keyboard spec panel; focused frames 5j/S28. <strong style="color:#EFEFF7;">9 Implementation fit:</strong> WIRING_MAP_CD-025.csv rows with 17 blocked legs. <strong style="color:#EFEFF7;">10 Novelty discipline:</strong> one pattern; counterfactual (5d) shows material irreversible-error-risk reduction. <strong style="color:#EFEFF7;">Revisions made by the loop:</strong> consequence-first demoted after pass 3 (blocker location cost); "Restore" link removed from S10 after pass 9 (no runtime leg — HANDOFF_BLOCKED, no invented link); "recorded in the audit trail" softened to "recorded in the system's history" after pass 2 (business audit event unproven).
+    </div>
+  </div>
+
+</section>
+
+</x-dc>
+</body>
+</html>

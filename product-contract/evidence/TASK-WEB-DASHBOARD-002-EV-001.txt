@@ -1,0 +1,55 @@
+TASK-WEB-DASHBOARD-002 — source-backed Saqeel dashboard and shell reconciliation
+Date: 2026-07-13
+Status: IMPLEMENTED AND VERIFIED; SPONSOR RUNTIME REVIEW PENDING
+
+OUTCOME
+- `/dashboard` is a dedicated Operations/Leadership route with Strategic and Operational views.
+- The business topbar is functional: entity search, last-30-days/custom date range and region scope.
+- Every dashboard value is computed from the signed-in user's RLS-visible Supabase records or shown as explicitly unavailable.
+- `/operations` remains the detailed command center and `/operations/live` remains the labelled projected live view.
+- Unsupported and AI-only concepts from saqeel.html are omitted under the approved shell contract.
+
+IMPLEMENTATION MAP
+- apps/web/src/app/dashboard/page.tsx — authentication/role guard, RLS queries, pagination, partial-source isolation and shell composition.
+- apps/web/src/app/dashboard/metrics.ts — Asia/Riyadh date boundaries, formulas, denominators, review selection, SLA, workload, exceptions and timeline scope.
+- apps/web/src/app/dashboard/DashboardView.tsx — both views, search results, toolbar, unavailable states, tables, alerts and accessibility semantics.
+- apps/web/src/app/dashboard/dashboard.module.css — dark/light, responsive and RTL-safe layout.
+- apps/web/src/components/Shell.tsx and ShellClient.tsx — page-owned dashboard topbar while preserving shell theme/notification/account/language/sign-out.
+- apps/web/src/lib/shell-navigation.ts and app/launch/page.tsx — `/dashboard` landing and role-visible destinations.
+- apps/web/src/app/operations/actions.ts — mark-handled notification action aligned with the existing recipient/Operations UPDATE RLS policy.
+
+DATA AND SECURITY
+- Uses `supabaseServer()` with the caller session; no service role.
+- Explicit route guard admits only `ops` or `leadership`; other authenticated roles return through `/launch` to their own home.
+- Reads are paginated beyond the Supabase 1,000-row response boundary.
+- No schema, RLS, engine-setting, workflow, audit or immutable-version mutation.
+- Notification acknowledgement relies on `notif_own` SELECT and `notif_update_recipient` UPDATE policies; database outcome remains authoritative.
+
+TRUTH GUARDS
+- Compliance = compliant / (compliant + non-compliant); incomplete, N/A, null and unknown excluded.
+- Approval = latest approved scoped inspections / submitted scoped inspections.
+- Visit and review SLA use accepted record/configuration values; no forecast.
+- Annual target, inspection-year boundary, active-factory eligibility, capacity threshold, online/offline timeout, stuck-duration policy and GPS confirmation are not invented.
+- AI assistant, briefs, recommendations and reference sample numbers are absent.
+
+VERIFICATION
+- npm run typecheck: PASS.
+- npm run build: PASS.
+- Focused Playwright dashboard/shell run: PASS 16/16.
+- Complete Playwright regression: PASS 50/50.
+- Route-negative case: planner direct navigation to `/dashboard` is redirected to `/planning` via `/launch`.
+- Seed fixture assertion permits canonical published-to-expired planning transition while preserving independent operational-state coverage (FND-002).
+
+VISUAL EVIDENCE
+- screens/dashboard-business-v1/strategic-en-dark-desktop.png
+- screens/dashboard-business-v1/strategic-en-light-desktop.png
+- screens/dashboard-business-v1/operational-en-dark-desktop.png
+- screens/dashboard-business-v1/strategic-ar-mobile.png
+
+RELATED MATRIX
+- TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md
+
+BOUNDARIES
+- This is uncommitted work in the existing dirty worktree. No commit, push, merge, deployment or main modification was performed.
+- CD-020 remains concurrent external work and was not edited or claimed by this task.
+- Sponsor runtime visual acceptance remains pending.

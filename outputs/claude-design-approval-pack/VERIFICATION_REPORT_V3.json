@@ -1,0 +1,23 @@
+{
+  "version": 3,
+  "sheets": 11,
+  "uniquePrompts": 43,
+  "promptsWithShellContract": 43,
+  "businessTabsDispositioned": 22,
+  "formulaErrors": 0,
+  "outputXlsx": "/Users/vikramindla/.codex/visualizations/2026/07/13/019f5a55-7400-7681-ad66-6bdbfb3f5986/design-pack-v3/output/Saqeel_43_Screen_Claude_Design_Approval_Pack.xlsx",
+  "outputCsv": "/Users/vikramindla/.codex/visualizations/2026/07/13/019f5a55-7400-7681-ad66-6bdbfb3f5986/design-pack-v3/output/Saqeel_43_Screen_Claude_Design_Matrix.csv",
+  "renderedSheets": [
+    "START HERE",
+    "43 Screen Matrix",
+    "Claude Prompts",
+    "Reference Library",
+    "Blind Spots",
+    "Submission Guide",
+    "Code Handoff Contract",
+    "Scoring Rubric",
+    "Web-First Wave",
+    "Vertical Slice SOP",
+    "Shell & Tabs"
+  ]
+}

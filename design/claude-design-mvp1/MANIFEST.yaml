@@ -1,6 +1,6 @@
 schema_version: "1.1"
 project: "Saqeel MVP1 Claude Design and UX Acceptance"
-mode: "design-only; code-ready; no application edits"
+mode: "design authority plus sponsor-approved vertical-slice implementation"
 brand_authority: "product-contract/governance/DECISIONS_ACCEPTED_2026-07-12_SAQEEL.yaml"
 behavior_authority: "product-contract"
 implementation_root: "apps/web/src"
@@ -13,8 +13,8 @@ counts:
 current_program_state:
   recorded_at: "2026-07-13"
   total_cd_prompts: 43
-  approved_for_implementation: 1
-  current_family: "F1 access — CD-001..CD-003"
+  approved_for_implementation: 2
+  current_family: "F3 Web-first planning — CD-024 next under Design Quality Ratchet V4"
   cd_001:
     status: "IMPLEMENTED; SPONSOR ACCEPTED FOR NOW; DESIGN ITERATION CLOSED"
     approval_record:
@@ -85,12 +85,49 @@ current_program_state:
         remains the optional geographic/failure layer and must never be falsely implied
         by the raster itself.
   cd_002:
-    status: "DESIGN OUTPUT RECEIVED IN FINAL ARCHIVE; READY_FOR P0/P1 REVIEW; NOT ACCEPTED; NOT IMPLEMENTED"
+    status: "SPONSOR APPROVED MANUALLY; IMPLEMENTATION DELEGATED TO CLAUDE CODE; OUTCOME PENDING"
     source_archive: "/Users/vikramindla/Downloads/# Saqeel MVP1 UIUX Revamp (1).zip"
     design_entry: "design_handoff_cd001_login_atlas/CD-002 Reset.dc.html"
-    next_task: "TASK-DESIGN-CD002-REVIEW"
+    next_task: "Verify Claude Code implementation outcome before closing the access-family vertical slice"
   cd_003:
-    status: "PENDING"
+    status: "IMPLEMENTED ROLE RESOLUTION; DESIGN PROGRAM PAUSED FOR SHARED SHELL"
+  shared_shell:
+    task_id: "TASK-WEB-SHELL-001"
+    status: "IMPLEMENTED; AUTOMATED AND VISUAL VERIFICATION PASS; SPONSOR ACCEPTED; FROZEN FOR CD-020..CD-031"
+    approved_input: "/Users/vikramindla/Downloads/saqeel.html"
+    contract: "authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md"
+    code:
+      - "apps/web/src/components/Shell.tsx"
+      - "apps/web/src/components/ShellClient.tsx"
+      - "apps/web/src/lib/shell-navigation.ts"
+      - "apps/web/src/app/astryx.css"
+    evidence:
+      typecheck: "PASS"
+      production_build: "PASS"
+      targeted_playwright: "PASS 10/10"
+      visual_playwright: "PASS 4/4 including persona setup"
+      full_playwright_regression: "PASS 41/41 on isolated port 3107"
+      screenshots: "product-contract/evidence/screens/shell-v1/"
+    tab_rule: "Every business input tab is dispositioned as wired, consolidated, renamed, or hidden/blocked in the shell contract; no placeholder destinations."
+  dashboard:
+    task_id: "TASK-WEB-DASHBOARD-002"
+    status: "IMPLEMENTED AND VERIFIED; SPONSOR RUNTIME REVIEW PENDING"
+    approved_input: "/Users/vikramindla/Downloads/saqeel.html"
+    contract: "authority/DASHBOARD_BUSINESS_REQUIREMENT_CONTRACT_V1.md"
+    route: "/dashboard"
+    views: ["Strategic", "Operational"]
+    code:
+      - "apps/web/src/app/dashboard/page.tsx"
+      - "apps/web/src/app/dashboard/DashboardView.tsx"
+      - "apps/web/src/app/dashboard/metrics.ts"
+      - "apps/web/src/app/dashboard/dashboard.module.css"
+    evidence:
+      typecheck: "PASS"
+      production_build: "PASS"
+      targeted_shell_dashboard_playwright: "PASS 16/16"
+      full_playwright_regression: "PASS 50/50"
+      screenshots: "product-contract/evidence/screens/dashboard-business-v1/"
+    truth_rule: "Example values and AI text from saqeel.html are never runtime data; use RLS-scoped records or an explicit unavailable state."
   implementation: >-
     CD-001 V7 implemented on feat/cd-001-v7-atlas and ready for human runtime
     review. All implementation P0 tests pass. Two P1 release confirmations remain:
@@ -102,7 +139,9 @@ current_program_state:
     operational shared maps retain SPC-GIS-001 list requirements. Sponsor closure on
     2026-07-13 accepts CD-001 for now as the baseline; UX-004 makes fresh login Arabic
     first with full document-level RTL. Reopen only for P0/P1 regression or recorded
-    release blockers. CD-002 output exists in the final archive and is next for review.
+    release blockers. CD-002 is manually sponsor-approved with Claude Code outcome
+    pending verification. TASK-WEB-SHELL-001 implements the approved business shell
+    reconciliation and is the required F0 baseline before web-first CD-020..CD-031.
   production: "BLOCKED until coherent family acceptance and release gates"
 fast_track_policy:
   design_review_rounds:
@@ -124,6 +163,8 @@ entry_points:
   - 00_START_HERE.md
   - CURRENT_UI_BASELINE.md
   - prompts/00_MASTER_DESIGN_CONSTITUTION.md
+  - ../../outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md
+  - ../../outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md
 authority:
   - authority/SOURCE_AUTHORITY.md
   - authority/DESIGN_DECISIONS.md
@@ -131,6 +172,7 @@ authority:
   - authority/STORYBOARD_COVERAGE_MAP.csv
   - authority/CODE_ROUTE_RECONCILIATION.csv
   - authority/UX_BLIND_SPOT_REGISTER.csv
+  - authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md
 journey_prompts:
   - prompts/journeys/P00_PRE_DAY_ZERO_ADMIN_CONFIGURATION.md
   - prompts/journeys/P01_TARGETING_AND_PLANNING_METHOD.md

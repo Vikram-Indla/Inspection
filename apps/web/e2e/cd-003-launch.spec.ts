@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 // CD-003 / AUTH-03 / CD003-SEC-001 — role resolution + no-workspace
 // fallback. Behavioral proof that the ROLE_HOME edit (six explicit
@@ -15,6 +17,13 @@ test("AUTH-03: /launch redirects unauthenticated visitors to /login", async ({ p
 test("AUTH-03: /launch/no-workspace redirects unauthenticated visitors to /login (defense in depth)", async ({ page }) => {
   await page.goto("/launch/no-workspace");
   await page.waitForURL(/\/login/);
+});
+
+test("AUTH-03: identity and role read failures route to the neutral error boundary, not no-workspace", () => {
+  const source = readFileSync(join(process.cwd(), "src/app/launch/page.tsx"), "utf8");
+  expect(source).toContain("if (authError)");
+  expect(source).toContain("if (rolesError)");
+  expect(source).toContain('throw new Error("launch_roles_unavailable")');
 });
 
 test("CD003-SEC-001 regression: admin-family persona still lands on /admin via the six explicit role_key entries", async ({ page }) => {

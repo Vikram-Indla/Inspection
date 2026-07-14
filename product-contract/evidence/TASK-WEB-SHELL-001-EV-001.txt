@@ -1,0 +1,47 @@
+TASK-WEB-SHELL-001 · authenticated Saqeel shell evidence
+Recorded: 2026-07-13 Asia/Riyadh
+
+Scope
+- Sponsor-approved reconciliation of /Users/vikramindla/Downloads/saqeel.html.
+- Server role-scoped grouped navigation, real route wiring, sticky topbar,
+  desktop collapse, accessible mobile drawer, Arabic-first RTL, themes,
+  notification/account/language/sign-out controls.
+- Unsupported Analytics, Lookup Management, Notification Configuration,
+  Integration Management and AI destinations omitted.
+
+Verification
+- npm run typecheck: PASS
+- npm run build: PASS (Next.js 15 production build; all routes compiled)
+- shell-navigation.spec.ts: PASS 10/10 on isolated port 3107
+  - three real persona authentication setups
+  - deterministic planner/inspector/admin-family role matrices
+  - unsupported-tab absence
+  - dashboard/live active-state separation
+  - desktop collapse
+  - mobile focus entry, Escape and focus restoration
+  - Arabic html lang/dir and both themes
+- shell-visual-evidence.spec.ts: PASS 4/4 including persona setup
+- complete Playwright regression: PASS 41/41 on isolated port 3107
+  - CD-001 Arabic-first/authentication baseline
+  - CD-002 password recovery/reset behavior
+  - CD-003 role resolution
+  - golden journey, negative authentication, offline replay and persona tours
+  - shell role, RTL, theme, responsive, keyboard and visual evidence coverage
+
+Visual evidence
+- screens/shell-v1/planner-desktop-en-dark.png
+- screens/shell-v1/planner-desktop-en-collapsed.png
+- screens/shell-v1/planner-mobile-ar-light-drawer.png
+
+Defect found and corrected during visual QA
+- Persisted desktop collapsed state plus Arabic mobile direction initially left
+  the RTL drawer off-canvas behind its backdrop due to CSS specificity.
+- Corrected and regenerated evidence shows the drawer entering physically from
+  the right with backdrop and explicit close control.
+
+Notes
+- Navigation visibility is not the authorization boundary; existing RLS and
+  route/state guards remain authoritative.
+- No Supabase schema, RLS, authentication, audit or reset behavior changed.
+- Sponsor accepted the functioning shared shell on 2026-07-13. The shell is now
+  frozen as the shared Web/Admin baseline for CD-020..CD-031.

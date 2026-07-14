@@ -1,0 +1,15 @@
+component,current_location,disposition,after_responsibility,design_frame,approval_needed
+Shared shell + Planning tab,apps/web/src/components,PRESERVE (evidence),Unchanged frozen shell V1 incl. grouped nav + search + collapse,5a/5k/5l/5m,no
+Review context strip,proposed within PlanReviewWorkspace,CREATE (route blocked),Method + temporary review reference + retained/targeted counts + nothing-committed notice,5a,yes (route/lifecycle governance)
+Readiness pre-flight,partially in ReviewClient error string,CREATE,Verified/warning/unknown/blocker groups; each blocker links to its object; re-check-at-publish disclosure,5a/5f S3,yes
+Scope integrity panel,replaces silent skip semantics,CREATE,Named removals + verified reason + recalculated counts; no preselected destruction; restore path NOT invented (blocked),5a/5f S9-S10,yes
+Object sections (config + visits table),ReviewClient config/table,UPDATE after approval,Read-only restatement with per-section Change links (hidden context); summarizes CD-024 assignment evidence + links back,5a,yes
+Publish Consequence Ledger,new,CREATE,Four truthful consequence groups with counts derived from retained scope; failed rows link to blocking object; the ONE new signature pattern,5a/5d,yes
+Final action zone,ReviewClient submit,UPDATE after approval,Count-bearing action label + all-or-nothing language (bulk only) + disabled-reason text + revalidation notice + secondary return; no modal/checkbox/typed-phrase theatre,5a/5g,yes
+Single-step truth panel,single Wizard steps,UPDATE after approval,Sequential-step honesty; retry-continues-never-duplicates; atomic label withheld,5e/5h,yes
+Linked error summary,error div,UPDATE after approval,role=alert + per-blocker anchors + focus transfer + preserved staging,5j/5f S18,yes
+Publishing lock,ReviewClient pending state,UPDATE after approval,Disabled repeat submission + polite status + no optimistic Published,5g/5f S23,yes
+Per-source failure cards,missing (reads ignore errors),CREATE,Fail-closed factory/package/inspector/duplicate-check failures distinct from legitimate zero,5f S13-S16,yes
+Unauthorized / expired states,missing,CREATE,Distinct S21 (role) vs S22 (expired staged review) vs failures,5f,yes
+Completion + destination,redirect to /visits,UPDATE after approval,Committed-facts completion moment + read-only plan drill-down untouched,5i/5f S26-S27,yes
+Read-only plan detail,apps/web/src/app/planning/plans/[id]/page.tsx,PRESERVE,Post-publish view only; NEVER receives review editing or publish controls,5i,protected

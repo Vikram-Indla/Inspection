@@ -1,0 +1,29 @@
+state_id,name,frame,blocking,notes
+S1,Initial validation/loading,5f,n/a,staged context retained; load error becomes S13-S16 never S1
+S2,Populated ready,5a,no,2 warnings do not block under existing rules
+S3,Multiple blockers,5f+5j,yes,each blocker links to exact object/row
+S4,Mandatory configuration missing,5f,yes,field named; entries kept
+S5,No published package,5f,yes,distinct from S6 and S14
+S6,Package invalidated,5f,yes,was valid at selection; choose again; nothing scheduled
+S7,No inspectors in role pool,5f,yes,governance cause named; distinct from S15
+S8,Partial assignment coverage,5f,yes,unassigned visits named and linked
+S9,Duplicate active visit on targets,5f,yes,explicit decision; never preselected removal
+S10,Scope reduction after-state,5f+5a,no,named removals + recalculated counts; restore path HANDOFF_BLOCKED
+S11,Manual overlap exact,5f,yes,exact visit + window; checked-before-publish truth
+S12,Rotation overlap not evaluated,5f+5a,no (warning),never called conflict-free
+S13,Factory source failure,5f,yes,fail-closed; HANDOFF_BLOCKED (reads ignore errors)
+S14,Package validation failure,5f,yes,distinct from S5/S6
+S15,Inspector source failure,5f,yes,distinct from S7
+S16,Duplicate/overlap query failure,5f,yes,never rendered as zero conflicts
+S17,Stale data revalidation,5f,yes,no version token (BLOCKED); staged plan unchanged
+S18,Concurrent change at submit,5f+5j,yes,input preserved; focus to summary
+S19,Approval required,5f (annotation),n/a,NOT designed - unproven configuration; HANDOFF_BLOCKED
+S20,Direct Planner publish,5f,no,supported by RBAC-007
+S21,Unauthorized/not-in-scope,5f,yes,distinct from S22 and failures; route guard BLOCKED; RLS authoritative
+S22,Lost/expired staged review,5f,yes,recoverability semantics BLOCKED
+S23,Publish in progress,5g+5f,n/a,double submit prevented; polite status; no optimistic Published
+S24,Bulk transaction failure,5h+5f,recoverable,nothing published; staging preserved (model-dependent)
+S25,Single partial-step failure,5h+5f,recoverable,never called success; resumable retry never duplicates
+S26,Bulk publication complete,5i+5f,n/a,committed counts only; queued != delivered
+S27,Read-only destination,5i+5f,n/a,no editing/publish controls
+S28,Return-to-edit focus landing,5f,n/a,focus on corrected section; polite status; return route BLOCKED

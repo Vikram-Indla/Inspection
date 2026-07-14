@@ -9,10 +9,11 @@ This directory is the design-execution layer for ChatGPT, Codex, Claude Design, 
 3. `CURRENT_UI_BASELINE.md`.
 4. `authority/SOURCE_AUTHORITY.md` and `authority/DESIGN_DECISIONS.md`.
 5. `prompts/00_MASTER_DESIGN_CONSTITUTION.md`.
-6. `prompts/01_CODE_AND_RUNTIME_DISCOVERY.md`.
-7. `prompts/02_SAQEEL_FOUNDATIONS_AND_COMPONENTS.md`.
-8. One journey prompt and any linked system prompts.
-9. The acceptance and verification files before declaring a design ready.
+6. `../../outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md`.
+7. `prompts/01_CODE_AND_RUNTIME_DISCOVERY.md`.
+8. `prompts/02_SAQEEL_FOUNDATIONS_AND_COMPONENTS.md`.
+9. One journey prompt and any linked system prompts.
+10. The acceptance and verification files before declaring a design ready.
 
 ## Operating rule
 
@@ -32,6 +33,8 @@ The existing row-level mapping is not duplicated here: `FABLE_UNDERSTANDING_TRAC
 ## Required output from Claude Design
 
 Claude Design produces code-ready high-fidelity design specifications, component decisions, state variants, interaction notes, and traceability. It does not edit application code in this phase. Fable implements only after the relevant design acceptance rows are signed off.
+
+Quality is ratcheted, not reset per screen. Every screen must preserve the strongest accepted family grammar, prove decision superiority over the current implementation, introduce at most one justified signature pattern, and stop its implementation handoff when route or runtime truth is missing.
 
 ## Important truth labels
 

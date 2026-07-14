@@ -10,7 +10,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data: v } = await sb.from("visits")
-    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, factories(name, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m), package_versions(id, version_label, definition, packages(code)), inspections(id, status)")
+    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, planner_lat, planner_lng, immediate_creator_role, visit_location_source, factories(name, name_is_system_generated, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m), package_versions(id, version_label, definition, packages(code)), inspections(id, status)")
     .eq("id", visitId).single();
   const { data: engines } = await sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "otp", "field"]);
   const gis = engines?.find(e => e.engine === "gis")?.settings ?? {};
@@ -41,18 +41,26 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
       </Shell>
     );
   }
-  const factory = v.factories as unknown as { name: string; official_lat: number | null; official_lng: number | null };
+  const factory = v.factories as unknown as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null };
+  const factoryName = factory.name_is_system_generated ? t("field.start.unregisteredFactory", "Unregistered factory") : factory.name;
+  const dispatchLat = v.planner_lat ?? factory.official_lat;
+  const dispatchLng = v.planner_lng ?? factory.official_lng;
+  const dispatchSource = v.visit_location_source === "official" ? "official" : "planned";
   // visits -> inspections is TO-ONE (object | null) — normalize defensively so
   // the client never regresses on the array/object shape.
   const rawInspections = v.inspections as unknown;
   const vNorm = {
     ...v,
+    dispatch_lat: dispatchLat,
+    dispatch_lng: dispatchLng,
+    dispatch_source: dispatchSource,
+    factories: { ...(v.factories as object), name: factoryName },
     inspections: Array.isArray(rawInspections) ? (rawInspections[0] ?? null) : rawInspections ?? null,
   };
   // M03-011 — execution-mode eligibility evaluated from engine configuration + master data,
   // never invented: physical requires GIS-verifiable official coordinates (M04-004);
   // virtual requires the OTP engine to be configured for identity verification (0009).
-  const physicalEligible = factory.official_lat != null && factory.official_lng != null;
+  const physicalEligible = dispatchLat != null && dispatchLng != null;
   const virtualEligible = otpConfigured;
   const strings: StartupStrings = {
     mapLoading: t("field.start.mapLoading", "Loading geofence map"),
@@ -75,17 +83,25 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     step4: t("field.start.step4", "4 · Start inspection"),
     resume: t("field.start.resume", "Resume inspection →"),
     officialLabel: t("field.start.officialLabel", "{name} — official location (FND-007)"),
+    plannedLabel: t("field.start.plannedLabel", "{name} — visit location confirmed at planning (M01-046; not official master data)"),
     youLabel: t("field.start.youLabel", "You — ±{acc}m · {state} fence ({d}m)"),
     insideWord: t("enum.inside", "inside"),
     outsideWord: t("enum.outside", "outside"),
     logCached: t("field.start.logCached", "Package {version} cached & version-locked (M04-005/007)"),
-    logJourneyBlocked: t("field.start.logJourneyBlocked", "Journey blocked: {error}"),
+    logJourneyBlocked: locale === "ar"
+      ? "تعذر بدء الرحلة. تحقق من التكليف والاتصال ثم أعد المحاولة."
+      : t("field.start.logJourneyBlockedSafe", "The journey could not be started. Check the assignment and connection, then try again."),
     logJourneyStarted: t("field.start.logJourneyStarted", "Journey started — telemetry active (STM-JRN-001)"),
     logAccuracyBlocked: t("field.start.logAccuracyBlocked", "BLOCKED: accuracy ±{acc}m > {max}m required (ERR-GEO-001) — retry or governed override"),
-    logCheckinRejected: t("field.start.logCheckinRejected", "Check-in rejected: {error}"),
+    logCheckinRejected: locale === "ar"
+      ? "تعذر حفظ تسجيل الوصول. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logCheckinRejectedSafe", "Check-in could not be saved. Check the connection, then try again."),
     logOutside: t("field.start.logOutside", "OUTSIDE geofence ({d}m > {fence}m) — check-in recorded as outside; governed override required (ERR-GEO-002)"),
     logInside: t("field.start.logInside", "Checked in INSIDE fence ({d}m, ±{acc}m) — start allowed (STM-JRN-003)"),
     logStartBlocked: t("field.start.logStartBlocked", "Start blocked: {error}"),
+    logInspectionCreateFailed: locale === "ar"
+      ? "تعذر بدء التفتيش. تحقق من الجاهزية ثم أعد المحاولة."
+      : t("field.start.logInspectionCreateFailed", "The inspection could not be started. Check readiness and try again."),
     // E3 — telemetry / arrival auto-detect / deviation / exception / pre-start / STM-OPS
     telemetryRow: t("field.start.telemetryRow", "Telemetry every {s}s while journeying — {n} points (ENG-06 · M04-021)"),
     liveDistance: t("field.start.liveDistance", "live · {d} m out · arrival radius {radius} m"),
@@ -100,15 +116,21 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     exceptionPlaceholder: t("field.start.exceptionPlaceholder", "Describe the exception — mandatory"),
     exceptionSend: t("field.start.exceptionSend", "Record exception"),
     logExceptionSent: t("field.start.logExceptionSent", "Exception recorded at ±{acc}m — immutable geo event (FLD-GEO-005)"),
-    logExceptionFailed: t("field.start.logExceptionFailed", "Exception rejected: {error}"),
+    logExceptionFailed: locale === "ar"
+      ? "تعذر حفظ الاستثناء. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logExceptionFailedSafe", "The exception could not be saved. Check the connection, then try again."),
     logDeviation: t("field.start.logDeviation", "Route deviation recorded — {d} m beyond closest approach, sustained {s}s (ENG-06 route_deviation)"),
     logOpState: t("field.start.logOpState", "Operational state → {state} (STM-OPS)"),
-    logOpBlocked: t("field.start.logOpBlocked", "Operational transition blocked: {error}"),
+    logOpBlocked: locale === "ar"
+      ? "تعذر تحديث حالة الزيارة. تحقق من الجاهزية والاتصال ثم أعد المحاولة."
+      : t("field.start.logOpBlockedSafe", "The visit state could not be updated. Check readiness and the connection, then try again."),
     logGpsFallback: t("field.start.logGpsFallback", "GPS unavailable — demo coordinates substituted for check-in (M04-049 handled)"),
     // F3 — navigation launch (M04-016)
     mapsOpen: t("field.start.mapsOpen", "Open in Google Maps"),
     mapsGeo: t("field.start.mapsGeo", "Open in navigation app"),
-    mapsCaption: t("field.start.mapsCaption", "Launches the device navigation app with the official factory coordinates (M04-016 · FND-007)"),
+    mapsCaption: dispatchSource === "official"
+      ? t("field.start.mapsCaption", "Launches the device navigation app with the official factory coordinates (M04-016 · FND-007)")
+      : t("field.start.mapsCaptionImmediate", "Launches navigation with the location confirmed on this Immediate Visit; official factory master coordinates remain unchanged (M01-046 · FND-007)"),
     // F3 — journey progress % (M04-026)
     progressLabel: t("field.start.progressLabel", "Journey progress (M04-026)"),
     progressCaption: t("field.start.progressCaption", "{remaining} m remaining of {initial} m from first GPS fix — straight-line basis"),
@@ -140,7 +162,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     cancelReasonsMissing: t("field.start.cancelReasonsMissing", "Cancellation reasons unavailable — engine_settings.field not seeded yet (0020 pending)."),
     logCancelEvidenceQueued: t("field.start.logCancelEvidenceQueued", "Cancellation evidence {name} queued (sha256 {sha}…) — syncs to the visit record (M04-058)"),
     logCancelSent: t("field.start.logCancelSent", "Cancellation requested — planner/ops notified; execution stopped (M04-056)"),
-    logCancelFailed: t("field.start.logCancelFailed", "Cancellation request rejected: {error}"),
+    logCancelFailed: locale === "ar"
+      ? "تعذر إرسال طلب الإلغاء. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logCancelFailedSafe", "The cancellation request could not be sent. Check the connection, then try again."),
     // F3 — inspector return (M03-006)
     returnHeading: t("field.start.returnHeading", "Return visit (M03-006)"),
     returnCaption: t("field.start.returnCaption", "Blocked from proceeding (outside fence, no access, GPS)? Return the visit with a reason — the assignment moves to returned and the planner is notified."),
@@ -148,11 +172,13 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     returnSubmit: t("field.start.returnSubmit", "Return visit"),
     returnRequestedChip: t("field.start.returnRequestedChip", "return requested — planner notified"),
     logReturnSent: t("field.start.logReturnSent", "Visit returned — assignment set to returned, planner notified (M03-006)"),
-    logReturnFailed: t("field.start.logReturnFailed", "Return rejected: {error}"),
+    logReturnFailed: locale === "ar"
+      ? "تعذر إرسال طلب الإرجاع. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logReturnFailedSafe", "The return request could not be sent. Check the connection, then try again."),
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (
-    <Shell current="/field" title={t("field.start.title", "Startup — {name}").replace("{name}", factory.name)}
+    <Shell current="/field" title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-IPAD-610/620</span>}>
       <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
@@ -163,7 +189,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
               <span className={`ax-lozenge ${physicalEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
                 {physicalEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
-              <span>{t("field.start.physicalRule", "Physical — requires GIS-verified official coordinates for geofence arrival (M04-004 · ENG-06)")}</span>
+              <span>{dispatchSource === "official"
+                ? t("field.start.physicalRule", "Physical — using GIS-verified official coordinates for geofence arrival (M04-004 · ENG-06)")
+                : t("field.start.physicalImmediateRule", "Physical Immediate Visit — using the location confirmed with the visit (M01-046); factory master coordinates remain unchanged (FND-007)")}</span>
               {v.execution_mode !== "virtual" && <span className="ax-lozenge ax-lozenge--info">{t("field.start.plannedMode", "planned mode")}</span>}
             </div>
             <div className="ax-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>

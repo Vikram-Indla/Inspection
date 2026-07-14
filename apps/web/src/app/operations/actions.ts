@@ -99,10 +99,9 @@ export async function fetchMonitoringRows(region: string, city: string): Promise
   };
 }
 
-// ENG-11 — mark a notification handled. The schema has a state column (delivery_state,
-// 0001_foundation.sql), so the write leg exists; RLS policy `notif_own` is SELECT-only,
-// so unless an UPDATE policy is added the database will report zero rows — we surface
-// that honestly instead of pretending success.
+// ENG-11 — mark a notification handled. SELECT remains recipient/ops scoped by
+// `notif_own` (0002); UPDATE is independently recipient/ops scoped by
+// `notif_update_recipient` (0015). The database remains the authority.
 export async function markNotificationHandled(_: OpsResult, formData: FormData): Promise<OpsResult> {
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
@@ -118,7 +117,7 @@ export async function markNotificationHandled(_: OpsResult, formData: FormData):
     .neq("delivery_state", "handled")
     .select("id");
   if (error) return { error: error.message };
-  if (!data || data.length === 0) return { error: "No row updated — notifications UPDATE is not granted by RLS (notif_own is select-only)." };
+  if (!data || data.length === 0) return { error: "No row updated — outside your notification scope or already handled." };
 
   revalidatePath("/operations");
   return { ok: true };

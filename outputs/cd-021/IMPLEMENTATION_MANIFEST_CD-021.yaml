@@ -1,0 +1,59 @@
+prompt_id: CD-021
+screen_id: SCR-WEB-110
+route: /planning/bulk
+persona: Planner
+journey: P01
+engines: [ENG-04, ENG-06, ENG-12]
+acceptance: [DSG-016, DSG-A11Y-001]
+source_branch: feat/cd-022-single-identity-lens
+source_commit: PENDING_TASK_BASELINE_WIRING_AUDIT_001_COMMIT
+dirty_worktree: AUDITED_SHARED_WORKTREE_PRESERVED
+cd020_dependency: RUNTIME_WIRED_DESIGN_ARTIFACT_ABSENT
+design_frame_ids: [1a, 1b, 1c, 1d, 1e, 1f, 1g, 1h]
+design_file: "CD-021 Bulk Targeting.dc.html"
+png_paths:
+  - outputs/cd-021/CD-021_SCR-WEB-110_primary.png
+  - outputs/cd-021/CD-021_SCR-WEB-110_outlier.png
+  - outputs/cd-021/CD-021_SCR-WEB-110_ar_rtl.png
+  - outputs/cd-021/CD-021_SCR-WEB-110_narrow.png
+selected_hypothesis: criteria-first Targeting Lens (frame 1a); B map-linked and C result-first rejected (frames 1b/1c, rationale on canvas)
+file_changes:
+  - file: apps/web/src/app/planning/bulk/page.tsx
+    before: Parses flat cf/co/cv arrays + single combine; fetches ALL factories unpaginated; evaluates conditions server-side; builds strings; renders CriteriaBuilder + BulkForm
+    disposition: UPDATE
+    after: Parse serialized criteria tree (new ct param, backward-compatible with cf/co/cv); server-side evaluation extended to nested groups; add per-condition contribution counts, exclusion-reason aggregation, region/risk/activity distributions, server-side pagination (25/page) with total counts; expose registry sync freshness
+    design_node: 1a ledger + criteria instrument + distribution row
+    protected: RLS-scoped reads only; evaluation stays server-side; GET round-trip preserved (criteria remain URL-reproducible)
+    tests: unit eval of nested AND/OR incl. is-not; pagination totals; distribution sums equal denominator
+  - file: apps/web/src/app/planning/bulk/CriteriaBuilder.tsx
+    before: Flat rows (field/op/value selects + datalist), one AND/OR toggle, apply/clear
+    disposition: UPDATE
+    after: Tree instrument - nested ALL/ANY groups, condition chips with edit/duplicate/remove/reorder, focus (read-only) contribution highlighting, validation states inline, keyboard tree pattern, aria-live count announcements, draft save/restore affordance
+    design_node: 1a criteria rail; 1d invalid states; 1h states 1/4/5/25/26
+    protected: GET form contract to page.tsx (serialized, still no client-side filtering)
+    tests: keyboard-only build/edit/reorder; SR announcement assertions; invalid/unsupported condition rendering
+  - file: apps/web/src/app/planning/bulk/BulkForm.tsx
+    before: Table with checkbox/name/CR/city/risk/eligibility/inspector; conflicts banner; config fields; deterministic summary; publish button; error list
+    disposition: UPDATE
+    after: Evidence table (adds data-quality + provenance column, missing-location/unknown-risk flags, filter-within-results, select-visible vs select-all-results, pagination); persistent selection bar with cross-page count + readiness chips (package/inspectors/validation); selection-invalidation confirm dialog; publish stepper (in-progress + partial-failure reuse). Visit-type/package/window/notes/inspector fields RELOCATE to the P02 review step (SCR-WEB-120/130 family) - relocation requires human approval as an IA change
+    design_node: 1a table + selection bar; 1d stepper; 1h states 12/13/14/15/16/18/19
+    protected: M02-012 duplicate flags; M01-029 manual-pick validation semantics; deterministic (non-AI) summary
+    tests: selection persistence across pagination/filter; select-all confirmation; readiness gating
+  - file: apps/web/src/app/planning/bulk/actions.ts
+    before: publishBulkPlan - 6 sequential writes (plan, visits, assignments, visits update, plan update, notifications) with no transaction; raw supabase e.message returned to UI; comment falsely claims atomicity
+    disposition: UPDATE
+    after: Fail-closed role/factory/package/inspector/duplicate/overlap reads; neutral provider-error copy; one publish_bulk_plan RPC whose migration-20260714091727 transaction repeats authoritative guards, derives schedule-safe auto assignment, executes STM-PLAN-001/002, audits, queues notifications and rolls back the complete write set on failure
+    design_node: 1d reconciliation banner + stepper
+    protected: RLS; canonical transitions; append-only audit; notification insert semantics
+    dependencies: MIGRATION_20260714091726_20260714091727_DEPLOYMENT_AND_LIVE_CERTIFICATION_REQUIRED
+    tests: static transaction/transition contract + existing live targeting/authorization suite; forced rollback/concurrency certification required after migration deployment
+  - file: apps/web/src/app/planning/bulk/DistributionPanels.tsx
+    before: (does not exist)
+    disposition: CREATE
+    after: Region/risk/activity distribution with list-first accessible rendering, optional GeoMap.tsx map view (reduced-motion: no fly-to), explicit unknown buckets, denominator label, per-source failure isolation (ERR-OPS-001 pattern)
+    design_node: 1a distribution row; 1d partial-source card
+    tests: list/map parity; unavailable state per failed source
+removals: []   # REMOVE requires explicit human approval; none proposed
+rtl_theme_impact: All components logical-properties only; dark/light via existing ax tokens; document-level RTL per shell; bdi-isolated identifiers
+rollback: Design-only change set per file; each UPDATE is additive behind the same routes; revert = git revert of the implementation commits; no schema changes proposed
+status: IMPLEMENTED_PENDING_MIGRATION_RUNTIME_CERTIFICATION

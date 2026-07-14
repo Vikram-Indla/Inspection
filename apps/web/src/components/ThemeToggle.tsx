@@ -19,7 +19,19 @@ export default function ThemeToggle({ className, labels }: {
   labels?: { toLight: string; toDark: string };
 }) {
   const [mode, setMode] = useState<Mode>("dark");
-  useEffect(() => { setMode(resolved()); }, []);
+  useEffect(() => {
+    // The blocking head script handles first paint. Re-apply the persisted
+    // value after hydration as well: client navigation/hydration must never
+    // leave the document without the explicit theme contract.
+    let persisted: string | null = null;
+    try { persisted = localStorage.getItem("saqeel-theme"); } catch { /* private mode */ }
+    if (persisted === "light" || persisted === "dark") {
+      document.documentElement.setAttribute("data-theme", persisted);
+      setMode(persisted);
+      return;
+    }
+    setMode(resolved());
+  }, []);
 
   const l = labels ?? { toLight: "Light mode", toDark: "Dark mode" };
   const next: Mode = mode === "dark" ? "light" : "dark";

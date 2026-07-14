@@ -89,11 +89,13 @@ async function fillWizard(page: Page) {
   await page.locator('input[name="location_confirmed"]').check();
 
   await page.locator('select[name="package_version_id"]').selectOption(packageVersionId);
-  // M01-040 now checks inspector availability across the window — a fixed
-  // +3-days offset collides with the same inspector's assignment from any
-  // recent run of this same suite. Randomize the day offset so repeated runs
-  // don't fight over the same slot.
-  const dayOffset = 3 + Math.floor(Math.random() * 60);
+  // M01-040 now checks inspector availability across the window — the sole
+  // seeded inspector persona is shared by every spec in this suite (and by
+  // cd-023-immediate-authority-bar.spec.ts), so a narrow 3-63 day range still
+  // collides often enough to flake. Spread across a ~270-year range instead —
+  // the same fix applied in cd-023-immediate-authority-bar.spec.ts — so two
+  // suites picking random offsets are de-facto never in the same window.
+  const dayOffset = 1000 + Math.floor(Math.random() * 99000);
   const start = new Date(Date.now() + dayOffset * 864e5).toISOString().slice(0, 16);
   const end = new Date(Date.now() + dayOffset * 864e5 + 4 * 36e5).toISOString().slice(0, 16);
   await page.locator('input[name="window_start"]').fill(start);
@@ -234,7 +236,10 @@ test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M
 
   await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
   await signAndConfirm(page); // DEC-009 acknowledgement gate
-  await expect(page.locator(".ax-banner--immutable")).toBeVisible();
+  // Two immutable banners are legitimately on screen post-resubmit (locked
+  // read-only sections + the submission confirmation) — scope to the one
+  // this assertion actually cares about, not just "first".
+  await expect(page.locator(".ax-banner--immutable", { hasText: "Submitted — immutable v1." })).toBeVisible();
   await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
 
   const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);

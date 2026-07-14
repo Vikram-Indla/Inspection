@@ -27,9 +27,10 @@ export default async function PlanRegister() {
     .order("created_at", { ascending: false })
     .limit(500);
   if (error) {
+    console.error("[planning plan register]", error);
     return (
       <Shell current="/planning" title={t("plan.register.title", "Plan register")}>
-        <div className="ax-banner ax-banner--critical"><div>{t("plan.register.loadError", "Could not load plans:")} {error.message}</div></div>
+        <div className="ax-banner ax-banner--critical"><div>{t("plan.register.loadErrorSafe", "Could not load plans. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
       </Shell>
     );
   }

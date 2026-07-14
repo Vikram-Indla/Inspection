@@ -33,8 +33,80 @@ items:
   - task_id: "TASK-DESIGN-CD002-REVIEW"
     gate: "G10/G11 controlled UI revamp"
     priority: "P0"
-    status: "READY"
+    status: "SPONSOR_APPROVED_MANUALLY"
     owner: "Codex design orchestrator + Sponsor / product owner"
     blocked_by: []
     blocks: ["F1 access-family design acceptance", "CD-002 implementation"]
-    note: "Review only; do not implement. Existing design output is in /Users/vikramindla/Downloads/# Saqeel MVP1 UIUX Revamp (1).zip: CD-002 Reset.dc.html plus manifest, component map, handoff and checklist. Produce P0/P1 critique, state matrix and sponsor recommendation; defer P2 to Big Bang register."
+    note: "Sponsor manually approved CD-002 and separately instructed Claude Code to implement it. The shared-shell slice must not reopen CD-002 or alter its protected reset behavior."
+  - task_id: "TASK-WEB-SHELL-001"
+    gate: "G11 controlled UI hardening"
+    priority: "P0"
+    status: "SPONSOR_ACCEPTED_COMPLETE"
+    owner: "Codex implementation orchestrator + Sponsor / product owner"
+    blocked_by: []
+    blocks: ["Authenticated dashboard and CD-020..CD-031 family shell consistency"]
+    note: "Sponsor accepted the functioning reconciled shell on 2026-07-13. Implementation and docs complete: typecheck/build PASS, targeted Playwright 10/10, visual evidence 4/4 including persona setup, complete regression 41/41; RTL persisted-collapse defect found and corrected. V3.1 approval pack has 11 sheets, 43 shell-aware prompts, 22 tab dispositions and 0 formula errors. Shell frozen for CD-020..CD-031; no commit/push/merge/deploy/main modification."
+  - task_id: "TASK-DASH-KPI-SEED-001"
+    gate: "G11 verification hardening"
+    priority: "P1"
+    status: "IMPLEMENTED_VERIFIED_COMPLETE"
+    owner: "Codex implementation orchestrator"
+    blocked_by: []
+    blocks: []
+    note: "Deterministic SCR-WEB-500 verification data is seeded under Verification Fixtures / Dashboard KPI through authenticated RLS actors. One visit exists in every operational state with supporting monitoring, SLA, risk, geo, action, notification and live-map records. Repeat seed inserts 0 duplicates; typecheck/build PASS; focused Playwright 6/6; full regression 44/44; evidence captured. Verification project only; no production deployment."
+  - task_id: "TASK-WEB-DASHBOARD-002"
+    gate: "G11 sponsor-directed dashboard completion"
+    priority: "P0"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_RUNTIME_ACCEPTANCE"
+    owner: "Codex implementation orchestrator"
+    blocked_by: []
+    blocks: ["Complete business dashboard acceptance", "Web-first CD-020..CD-031 integrated shell verification"]
+    note: "Source-backed Strategic and Operational /dashboard is implemented with entity/date/region topbar, formulas/denominators, deterministic alerts, workload, cancellation, GPS and audit views, truthful unavailable states and route-level ops/leadership guard. Typecheck/build PASS; focused dashboard/shell 16/16; complete regression 50/50; EN dark/light desktop and AR RTL mobile evidence reviewed. Requirement matrix closes DASH-001..016 and AC-0430..0448 visible legs. Sponsor runtime acceptance pending. No AI, fabricated targets/policy, schema/RLS changes, CD-020 edits, commit, push, merge or deployment."
+  - task_id: "TASK-DESIGN-CD020"
+    gate: "G10/G11 controlled UI design"
+    priority: "P0"
+    status: "RUNNING_EXTERNALLY_WITH_CLAUDE_CODE"
+    owner: "Claude Code + Sponsor"
+    blocked_by: []
+    blocks: ["CD-020 implementation acceptance"]
+    note: "Concurrent design/implementation activity declared by sponsor. Dashboard slice must not edit planning/CD-020 files or claim its outcome."
+  - task_id: "TASK-WEB-DASHBOARD-002"
+    gate: "G11 sponsor-directed dashboard completion"
+    priority: "P1"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_RUNTIME_ACCEPTANCE"
+    owner: "Sponsor / product owner"
+    blocked_by: []
+    blocks: []
+    note: "Parked from active slice on 2026-07-13 to let CD-021 become active (sponsor-directed). Build implemented and verified (dashboard/shell Playwright 16/16, regression 50/50 at its closure); awaiting sponsor runtime acceptance. Full spec preserved in execution/CURRENT_SLICE.TASK-WEB-DASHBOARD-002.yaml."
+  - task_id: "CD-021-BULK-TARGETING"
+    gate: "G11 sponsor-directed design implementation"
+    priority: "P1"
+    status: "BUILD_IMPLEMENTED_VERIFIED_AWAITING_REVIEW"
+    owner: "Claude Code + Sponsor / product owner"
+    blocked_by: []
+    blocks: []
+    note: "Now the active slice (2026-07-13, sponsor-directed). SCR-WEB-110 /planning/bulk + SCR-WEB-120 /planning/bulk/review. Increments 1-6 done and verified on branch feat/cd-021-bulk-targeting (uncommitted). Migration 0026 atomic publish RPC applied live. Open: Codex wiring review, full regression rerun, AC-ledger recompute, sponsor runtime acceptance."
+  - task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
+    gate: "G11 DEC-012 remediation"
+    priority: "P0"
+    status: "REMEDIATION_IMPLEMENTED_PENDING_LIVE_MIGRATION_AND_REAUDIT"
+    owner: "Claude Code implementation + distinct Codex wiring reviewer + Sponsor"
+    blocked_by: ["Apply urgency migration 20260714060935 through linked migration history", "Run migration-dependent crafted-RPC test and complete regression without exclusions", "Fresh independent DEC-012 re-audit", "Sponsor runtime acceptance"]
+    blocks: ["CD-023 closure", "CD-024+ implementation"]
+    note: "The strict post-live FAIL is remediated in the worktree: all 12 wiring rows now match current runtime and cite exact tests; the accepted D3 four-value urgency set plus Other justification is enforced in the server action and prepared database CHECK; downstream field start uses neutral localized copy. Typecheck/build PASS, focused runnable suite 16/16 PASS, and broader regression 90/90 PASS with only the unapplied-migration crafted-RPC test excluded. Migration 20260714060935 could not be applied because linked CLI authentication stalled and no DB password/access token is available; Dashboard SQL was not used to bypass migration history. Apply it, run 91/91, then obtain a fresh independent DEC-012 audit and sponsor acceptance."
+  - task_id: "TASK-DESIGN-CD024-QUALITY-RATCHET"
+    gate: "G11 controlled Web-first design"
+    priority: "P0"
+    status: "READY_FOR_DESIGN_ONLY_ROUTE_RECONCILIATION_REQUIRED"
+    owner: "Claude Design + Codex design reviewer + Sponsor"
+    blocked_by: ["CD-023 DEC-012 independent wiring audit PASS"]
+    blocks: ["CD-024 implementation authorization"]
+    note: "V4 quality audit and exact CD-024 prompt are ready. Design exploration may proceed, but implementation is blocked until sponsor design approval, SCR-WEB-120/140 ownership and route reconciliation, independent wiring audit, and explicit authorization. Preserve /planning/plans/:id as read-only."
+  - task_id: "TASK-BASELINE-WIRING-AUDIT-001"
+    gate: "G10 verification / G11 hardening"
+    priority: "P0"
+    status: "AUDIT_IN_PROGRESS_PENDING_REGRESSION_AND_MAIN_CONSOLIDATION"
+    owner: "Codex"
+    blocked_by: ["Full no-exclusion Playwright regression", "Forward migration runtime certification", "DEC-012 fresh independent CD-023 audit", "Sponsor runtime acceptance"]
+    blocks: ["G11/G12 release claim", "CD-024 implementation authorization"]
+    note: "Cross-slice wiring audit for CD-001/CD-002/CD-003/CD-020/CD-021/CD-022/CD-023 plus CD-024 boundary recorded at product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md. Fail-closed UI/API wiring and raw-error sinks are remediated; migrations 20260714091726/27 are generated but not deployed."

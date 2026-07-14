@@ -1,0 +1,15 @@
+component,current_location,disposition,after_responsibility,design_frame,approval_needed
+Shared shell + Planning tab,apps/web/src/components,PRESERVE,Unchanged frozen shell,4a,no
+Planning context strip,bulk/review page header,UPDATE,Method + criteria link + selected/publishable counts + draft notice,4a,no
+Visit configuration panel,ReviewClient config surface,PRESERVE (content) / UPDATE (mode line),Same fields; execution mode rendered as fixed physical statement - no choice until runtime supports virtual,4a,no
+Assignment candidate table,ReviewClient table,UPDATE,Adds evidence column (pool/overlap/not-evaluated); focused row drives ledger; semantic table kept as the primary decision path,4a,no
+Assignment Evidence Ledger,new EvidenceLedger.tsx,CREATE,Four truth classes for focused candidate/method; no score; SR-navigable; the ONE new signature pattern,4d,no
+Method consequence note,new inline,CREATE,States auto round-robin's unchecked-overlap gap and manual's submit-time check explicitly,4a,no
+Scope-decision panel,replaces skip_duplicates checkbox,UPDATE,Named removals + recalculated totals + restore; readiness records 'scope reduced by you',4a/4e,no (same action semantics; explicit UI)
+Readiness ledger,summary row + error string,UPDATE,Blockers/warnings/unknowns/future-effects classes; publish button carries blocking reason,4a,no
+Linked error summary,error div,UPDATE,role=alert + per-blocker anchors + focus transfer; input preserved,4e,no
+Future-effects note,new,CREATE,Names atomic transaction scope + queued-not-delivered notifications + audit rows as prospective,4a,no
+Service-failure vs empty distinction,missing,CREATE,Amber retry card for failed loads; legitimate zero states named,4e,no
+Read-only plan drill-down,/planning/plans/[id],PRESERVE,Untouched; no editing controls; post-publish destination,4e,no
+Planner direct-route guard,apps/web/src/app/planning/bulk/review/page.tsx,UPDATE,Explicit role guard; distinct unauthorized/not-in-scope state; RLS stays authoritative (R1-8),4e,no
+Fail-closed source results,actions.ts loadBulkSelection,UPDATE,Structured success-or-failure per read; failure blocks readiness with neutral copy + preserved input (R1-2),4e per-source failure frames (factory/package/inspector/duplicate),no
