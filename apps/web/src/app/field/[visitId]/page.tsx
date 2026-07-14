@@ -95,6 +95,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     logOutside: t("field.start.logOutside", "OUTSIDE geofence ({d}m > {fence}m) — check-in recorded as outside; governed override required (ERR-GEO-002)"),
     logInside: t("field.start.logInside", "Checked in INSIDE fence ({d}m, ±{acc}m) — start allowed (STM-JRN-003)"),
     logStartBlocked: t("field.start.logStartBlocked", "Start blocked: {error}"),
+    logInspectionCreateFailed: locale === "ar"
+      ? "تعذر بدء التفتيش. تحقق من الجاهزية ثم أعد المحاولة."
+      : t("field.start.logInspectionCreateFailed", "The inspection could not be started. Check readiness and try again."),
     // E3 — telemetry / arrival auto-detect / deviation / exception / pre-start / STM-OPS
     telemetryRow: t("field.start.telemetryRow", "Telemetry every {s}s while journeying — {n} points (ENG-06 · M04-021)"),
     liveDistance: t("field.start.liveDistance", "live · {d} m out · arrival radius {radius} m"),

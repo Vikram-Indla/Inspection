@@ -17,10 +17,12 @@ test.describe("planner tour (web channel)", () => {
     }
   });
 
-  test("single-planning wizard renders its gate: search, window, publish", async ({ page }) => {
+  test("single-planning wizard renders its gate: search, publish", async ({ page }) => {
     await page.goto("/planning/single");
     await expect(page.getByPlaceholder(/CR number|Industrial License/i)).toBeVisible();
-    await expect(page.locator('input[name="window_start"]')).toBeVisible();
+    // CD-022: the configuration column (incl. window_start) is progressively
+    // disclosed — it only renders once an identity is selected and its
+    // license + location are confirmed (M01-036/038). Not asserted here.
     await expect(page.getByRole("button", { name: /publish visit/i })).toBeVisible();
   });
 

@@ -119,6 +119,35 @@ select create_immediate_visit(
 reset role;
 grant select on package_versions to authenticated;
 
+-- A crafted RPC request cannot persist a reason outside the accepted D3 set.
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
+select create_immediate_visit(
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7', 'planner',
+  '55555555-5555-5555-5555-555555555553', null, null, null, null, null, null,
+  24.7136, 46.6753, 'official', 'Crafted unapproved reason',
+  '44444444-4444-4444-4444-444444444444', 'complaint', null, null,
+  '2035-01-01 08:00+03', '2035-01-01 09:00+03',
+  '22222222-2222-2222-2222-222222222222', true
+);
+select create_immediate_visit(
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8', 'planner',
+  '55555555-5555-5555-5555-555555555553', null, null, null, null, null, null,
+  24.7136, 46.6753, 'official', 'Other',
+  '44444444-4444-4444-4444-444444444444', 'complaint', null, null,
+  '2036-01-01 08:00+03', '2036-01-01 09:00+03',
+  '22222222-2222-2222-2222-222222222222', true
+);
+select create_immediate_visit(
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9', 'planner',
+  '55555555-5555-5555-5555-555555555553', null, null, null, null, null, null,
+  24.7136, 46.6753, 'official', null,
+  '44444444-4444-4444-4444-444444444444', 'complaint', null, 'missing reason',
+  '2037-01-01 08:00+03', '2037-01-01 09:00+03',
+  '22222222-2222-2222-2222-222222222222', true
+);
+reset role;
+
 -- Inspector: activity alone satisfies “any available business information”,
 -- the visit starts immediately, self-assigns, and creates no notification.
 set local role authenticated;
@@ -126,10 +155,18 @@ select set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222
 select create_immediate_visit(
   'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1', 'inspector',
   null, null, null, null, 'Activity only', null, null,
-  24.7200, 46.7200, 'manual', 'Follow-up trigger',
+  24.7200, 46.7200, 'manual', 'Referral from authority',
   '44444444-4444-4444-4444-444444444444', 'follow_up', null, null,
   null, null, null, false
 );
+
+-- The start-now timestamp is not a planning deadline. Running the same expiry
+-- core used by both Field Home and the scheduler must leave this Inspector-
+-- created visit active. The minimal contract fixture does not install pg_cron.
+reset role;
+select _expire_lapsed_visits_core('true');
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', true);
 
 -- The narrow Inspector factory policy must reject source-master coordinates.
 do $$
@@ -152,7 +189,7 @@ $$;
 do $$
 begin
   begin
-    perform audit_immediate_attempt(
+    perform private.audit_immediate_attempt(
       'cccccccc-cccc-cccc-cccc-ccccccccccc1', 'CREATED',
       jsonb_build_object('visit_id', '99999999-9999-9999-9999-999999999999')
     );
@@ -222,13 +259,19 @@ begin
 
   if exists (select 1 from visits where creation_request_id in (
        'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5',
-       'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6'
+       'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6',
+       'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7',
+       'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8',
+       'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9'
      )) then raise exception 'CD023_ASSERT: failed RPC retained a visit'; end if;
   if (select count(*) from audit_events
        where object_id in (
          'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5',
-         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6'
-       ) and action = 'BLOCKED' and after_state->>'code' = 'system_error') <> 2 then
+         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6',
+         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7',
+         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8',
+         'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa9'
+       ) and action = 'BLOCKED' and after_state->>'code' in ('reason_required','system_error')) <> 5 then
     raise exception 'CD023_ASSERT: neutral failure audits missing';
   end if;
 
@@ -238,6 +281,7 @@ begin
   if not exists (
     select 1 from visits
      where id = v_visit and window_start = window_end
+       and planning_status = 'published'
        and visit_location_source = 'manual'
        and immediate_creator_role = 'inspector'
        and created_by = '22222222-2222-2222-2222-222222222222'
@@ -252,8 +296,12 @@ begin
     select 1 from assignments
      where visit_id = v_visit and inspector_id = '22222222-2222-2222-2222-222222222222'
   ) then raise exception 'CD023_ASSERT: inspector self-assignment missing'; end if;
-  if exists (select 1 from notifications where payload->>'visit_id' = v_visit::text) then
-    raise exception 'CD023_ASSERT: inspector self-create incorrectly notified';
+  if exists (
+    select 1 from notifications
+     where payload->>'visit_id' = v_visit::text
+       and event_key in ('assignment','visit_expired')
+  ) then
+    raise exception 'CD023_ASSERT: inspector self-create incorrectly notified or expired';
   end if;
   if exists (select 1 from factories where id = '77777777-7777-7777-7777-777777777777') then
     raise exception 'CD023_ASSERT: forbidden direct inspector factory persisted';

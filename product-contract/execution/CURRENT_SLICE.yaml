@@ -2,7 +2,7 @@ schema_version: "1.1"
 task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
 gate: "G11 sponsor-directed remediation after DEC-012 wiring audit"
 title: "CD-023 Immediate Visit Planning — source and wiring remediation (SCR-WEB-130)"
-status: "REMEDIATION_IN_PROGRESS"
+status: "REMEDIATION_IMPLEMENTED_LIVE_VERIFIED_PENDING_INDEPENDENT_REAUDIT"
 enforce_stop_gate: false
 broad_implementation_allowed: true
 source_design:
@@ -10,13 +10,16 @@ source_design:
   artifact: "design/astryx/d3/D3-04_immediate-planning.html"
   supplied_programme_pack: "/Users/vikramindla/Desktop/Inspection Documentation/claude-design-approval-pack"
   source_baseline: "MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx"
-  missing_export_note: "The supplied programme pack contains SOPs/matrices but no repository outputs/cd-023 implementation package or WIRING_MAP_CD-023.csv export. Astryx D3-04 plus exact source rows remain the implementation authority; the missing export remains an evidence/package gap, not permission to invent values."
+  missing_export_note: "SUPERSEDED: outputs/cd-023 was imported from Claude Design project 90d4620c and is present. The post-live audit found its wiring map stale against the remediated runtime; package presence does not satisfy DEC-012 until the map is reconciled and independently re-audited."
 sponsor_direction:
   - "2026-07-13: sponsor requested all independent-audit comments be fixed and the slice unblocked with a continuation report for Claude Code."
+  - "2026-07-14: sponsor said fix it after the strict post-live audit FAIL; this authorizes the narrow audit remediation recorded here."
   - "This direction authorizes the narrow CD-023 migration/RLS/audit remediation required by the source; it does not authorize unrelated engines, shared shell, deployment, commit, push, merge, or main changes."
 governance_gate_decision:
   - "DEC-012 requires an actual independent Codex wiring audit; session direction is not a substitute."
   - "The recorded audit product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md returned FAIL with nine findings. Closure remains blocked until remediation is independently re-audited and recorded."
+  - "The fresh post-live audit product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md returned FAIL: the runtime remediation is substantially verified, but WIRING_MAP_CD-023 remains pre-remediation/stale, the urgency enum is not server-enforced, downstream start can expose raw DB text, and coherent full regression is still missing."
+  - "2026-07-14 remediation corrected those implementation/package findings. DEC-012 remains open because this implementation session cannot self-issue the fresh independent verdict and migration 20260714060935 is not yet live."
 branch: "feat/cd-023-immediate-authority-bar"
 process_ids: ["P01"]
 requirement_ids:
@@ -43,6 +46,7 @@ dependencies:
   - "Planner or Inspector role"
   - "At least one Inspector role for Planner auto/manual assignment"
   - "Live Supabase migration 0027 applied before runtime certification"
+  - "Urgency contract migration 20260714060935 must be applied through linked migration history before the crafted-RPC test and fresh audit"
 open_decisions:
   - "DEC-003 remains open; therefore no default duration is invented. Planner enters an explicit window; Inspector-created uses an instantaneous start-now representation."
 do_not_touch:
@@ -54,7 +58,7 @@ authorized_file_scope:
   - "apps/web/src/app/planning/immediate/*"
   - "apps/web/e2e/cd-023-immediate-authority-bar.spec.ts"
   - "apps/web/src/app/field/[visitId]/page.tsx and Startup.tsx only for M01-046/051 location handoff"
-  - "supabase/migrations/0027_cd023_immediate_visit_atomic.sql — narrow schema/RLS/RPC/audit remediation"
+  - "supabase/migrations/0027_cd023_immediate_visit_atomic.sql through 20260714060935_cd023_urgency_contract.sql — narrow schema/RLS/RPC/audit remediation"
   - "CD-023 evidence, acceptance, governance current-state, and session records"
 required_tests:
   - "Blank/null/zero coordinate guards and visit-level location persistence"
@@ -68,14 +72,14 @@ required_tests:
   - "Typecheck, production build, focused CD-023 Playwright, then full regression"
 required_evidence:
   - "product-contract/evidence/screens/immediate-v2/"
-  - "Updated independent CODEX_AUDIT_CD-023.md verdict after remediation"
+  - "Independent post-remediation verdict in product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md (or a later explicitly linked successor)"
   - "Claude Code continuation report with exact pass/fail/blocker state"
 open_items:
-  - "Apply and verify migration 0027 on the live development Supabase project."
-  - "Complete focused and full runtime verification."
-  - "Import the missing outputs/cd-023 package if/when exported from the Claude Design project."
-  - "Independent Codex wiring re-audit and sponsor runtime acceptance."
+  - "Apply migration 20260714060935 through linked Supabase migration history; CLI authentication is unavailable in this checkout and Dashboard SQL must not bypass history."
+  - "Run the migration-dependent crafted-RPC reason test, then rerun the complete 91-test regression without exclusions."
+  - "Fresh independent Codex wiring re-audit after reconciliation, then sponsor runtime acceptance."
 exit_condition: >-
   All MVP1-M01-043..052 and M02-012 paths are implemented and evidenced; migration
-  0027 is verified live; focused and full regression pass; the independent wiring
-  re-audit records PASS; and no P0/P1 acceptance row remains failed or unevidenced.
+  0027 and urgency migration 20260714060935 are verified live; focused and full
+  regression pass without exclusions; the independent wiring re-audit records
+  PASS; and no P0/P1 acceptance row remains failed or unevidenced.

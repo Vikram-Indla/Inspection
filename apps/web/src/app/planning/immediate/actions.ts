@@ -34,6 +34,8 @@ const COPY = {
     location_required: "Confirm a valid visit location before creating the visit (M01-046).",
     location_source_invalid: "Confirm whether the visit uses the official registry pin or a manually verified pin (M01-046).",
     reason_required: "Select the urgency reason before creating the visit.",
+    reason_invalid: "Select one of the approved urgency reasons.",
+    reason_justification_required: "Justify the “Other” urgency reason in Notes before creating the visit.",
     visit_type_invalid: "Select a valid Business Visit Type (M01-047).",
     package_unavailable: "The selected package is no longer published or locked. Refresh and select an available package.",
     review_required: "Review the visit details and confirm them before creation (M01-049).",
@@ -56,6 +58,8 @@ const COPY = {
     location_required: "أكّد موقع زيارة صالحًا قبل إنشاء الزيارة (M01-046).",
     location_source_invalid: "أكّد ما إذا كانت الزيارة تستخدم موقع السجل الرسمي أو موقعًا تم التحقق منه يدويًا (M01-046).",
     reason_required: "اختر سبب الاستعجال قبل إنشاء الزيارة.",
+    reason_invalid: "اختر أحد أسباب الاستعجال المعتمدة.",
+    reason_justification_required: "برّر سبب الاستعجال «أخرى» في الملاحظات قبل إنشاء الزيارة.",
     visit_type_invalid: "اختر نوع زيارة أعمال صالحًا (M01-047).",
     package_unavailable: "حزمة التفتيش المحددة لم تعد منشورة أو مقفلة. حدّث الصفحة واختر حزمة متاحة.",
     review_required: "راجع تفاصيل الزيارة وأكّدها قبل الإنشاء (M01-049).",
@@ -74,6 +78,12 @@ const COPY = {
 } as const;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const URGENCY_REASONS = new Set([
+  "Complaint received",
+  "Incident / accident report",
+  "Referral from authority",
+  "Other",
+]);
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 const nullable = (value: string) => value || null;
 const coordinate = (value: string) => value === "" ? null : Number(value);
@@ -99,6 +109,17 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
   if (lat === null || lng === null || !Number.isFinite(lat) || !Number.isFinite(lng)) {
     return { error: copy.location_required, errorCode: "location_required", blockingField: "location" };
   }
+  const reason = text(formData, "urgency_reason");
+  if (!reason) {
+    return { error: copy.reason_required, errorCode: "reason_required", blockingField: "reason" };
+  }
+  if (!URGENCY_REASONS.has(reason)) {
+    return { error: copy.reason_invalid, errorCode: "reason_invalid", blockingField: "reason" };
+  }
+  const notes = text(formData, "notes");
+  if (reason === "Other" && !notes) {
+    return { error: copy.reason_justification_required, errorCode: "reason_justification_required", blockingField: "reason" };
+  }
 
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
@@ -120,11 +141,11 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
     p_lat: lat,
     p_lng: lng,
     p_location_source: nullable(text(formData, "location_source")),
-    p_reason: nullable(text(formData, "urgency_reason")),
+    p_reason: reason,
     p_package_version_id: UUID.test(packageId) ? packageId : null,
     p_visit_type: text(formData, "visit_type"),
     p_priority: nullable(text(formData, "priority")),
-    p_notes: nullable(text(formData, "notes")),
+    p_notes: nullable(notes),
     p_window_start: instant(text(formData, "window_start")),
     p_window_end: instant(text(formData, "window_end")),
     p_inspector_id: actorMode === "planner" && UUID.test(inspectorId) ? inspectorId : null,

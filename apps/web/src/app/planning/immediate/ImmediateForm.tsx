@@ -28,6 +28,7 @@ export type ImmediateStrings = {
   manualActivity: string; manualActivityPlaceholder: string; manualRegion: string; manualCity: string; manualCityPlaceholder: string;
   temporaryNote: string;
   urgencyReason: string; reasonComplaint: string; reasonIncident: string; reasonReferral: string;
+  reasonOther: string; reasonOtherHint: string;
   locationDispatch: string; useOfficialLocation: string; latitude: string; longitude: string;
   locationSourceOfficial: string; locationSourceManual: string; locationSourceNone: string; mapLoading: string;
   packageLabel: string; inspector: string; autoAssign: string;
@@ -41,7 +42,7 @@ export type ImmediateStrings = {
   chipAllSatisfied: string; chipBlockedAnnouncement: string;
   chipAuthorizedLabel: string; chipReasonLabel: string; chipIdentityLabel: string; chipLocationLabel: string;
   chipPackageLabel: string; chipInspectorLabel: string; chipWindowLabel: string; chipAuditLabel: string; chipNotifyLabel: string;
-  chipAuthorizedDetail: string; chipReasonBlocked: string;
+  chipAuthorizedDetail: string; chipReasonBlocked: string; chipReasonOtherBlocked: string;
   chipIdentityBlocked: string; chipIdentityRegistered: string; chipIdentityTemporary: string;
   chipLocationBlocked: string; chipLocationOfficial: string; chipLocationManual: string;
   chipPackageBlocked: string; chipInspectorAuto: string; chipInspectorManual: string; chipInspectorBlocked: string;
@@ -109,7 +110,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
     && latNum >= -90 && latNum <= 90 && lngNum >= -180 && lngNum <= 180;
   const identityOk = mode === "registered" ? factory != null
     : [manualName, manualCr, manualLicense, manualActivity].some(v => v.trim() !== "");
-  const reasonOk = reason !== "";
+  const reasonOk = reason !== "" && (reason !== "Other" || notes.trim() !== "");
   const packageOk = packageId !== "";
   const windowOk = actorMode === "inspector"
     || (!!windowStart && !!windowEnd && new Date(windowEnd).getTime() > new Date(windowStart).getTime());
@@ -122,7 +123,10 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const onLatChange = (v: string) => { setLat(v); setLocationSource("manual"); setLocationAt(new Date().toISOString()); };
   const onLngChange = (v: string) => { setLng(v); setLocationSource("manual"); setLocationAt(new Date().toISOString()); };
 
-  const reasonLabel = (r: string) => r === "Complaint received" ? strings.reasonComplaint : r === "Incident report" ? strings.reasonIncident : r === "Authority referral" ? strings.reasonReferral : r;
+  const reasonLabel = (r: string) => r === "Complaint received" ? strings.reasonComplaint
+    : r === "Incident / accident report" ? strings.reasonIncident
+      : r === "Referral from authority" ? strings.reasonReferral
+        : r === "Other" ? strings.reasonOther : r;
 
   // --- 9 protection chips — derived entirely from the state above, no new
   // policy objects. Server-side blockingField wins if the server found
@@ -133,7 +137,9 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
     {
       id: "reason", label: strings.chipReasonLabel, controlId: "imm-reason",
       state: (bf === "reason" || !reasonOk) ? "blocking" : "satisfied",
-      detail: (bf === "reason" || !reasonOk) ? strings.chipReasonBlocked : reasonLabel(reason),
+      detail: (bf === "reason" || !reasonOk)
+        ? (reason === "Other" && notes.trim() === "" ? strings.chipReasonOtherBlocked : strings.chipReasonBlocked)
+        : reasonLabel(reason),
     },
     {
       id: "identity", label: strings.chipIdentityLabel, controlId: mode === "registered" ? "imm-search" : "imm-manual-name",
@@ -240,11 +246,12 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
 
           <div className="ax-field" style={{ maxInlineSize: "none" }} id="imm-reason" tabIndex={-1}>
             <label className="ax-field__label">{strings.urgencyReason}</label>
-            <div className="ax-segmented" role="group" aria-label={strings.urgencyReason}>
-              {[["Complaint received", strings.reasonComplaint], ["Incident report", strings.reasonIncident], ["Authority referral", strings.reasonReferral]].map(([v, label]) => (
+            <div className="ax-segmented" role="group" aria-label={strings.urgencyReason} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
+              {[["Complaint received", strings.reasonComplaint], ["Incident / accident report", strings.reasonIncident], ["Referral from authority", strings.reasonReferral], ["Other", strings.reasonOther]].map(([v, label]) => (
                 <button key={v} type="button" aria-pressed={reason === v} onClick={() => setReason(v)}>{label}</button>
               ))}
             </div>
+            {reason === "Other" && <p id="imm-reason-other-hint" className="ax-caption">{strings.reasonOtherHint}</p>}
           </div>
           <input type="hidden" name="urgency_reason" value={reason} key={`ur-${resetKey}`} />
 

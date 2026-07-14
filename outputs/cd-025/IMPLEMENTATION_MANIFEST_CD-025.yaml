@@ -1,0 +1,77 @@
+prompt_id: CD-025
+screen_id: SCR-WEB-150 (logical)
+process: P03
+route: HANDOFF_BLOCKED  # contract targets /planning/:id/review (unimplemented); no persisted Validated plan exists pre-publish (bulk = session-staged, publishes from /planning/bulk/review; single = wizard-direct with resumable plan id); reconciliation row mapping CD-025 to /planning/plans/:id is stale ("Consolidated") and /planning/plans/:id must stay post-publish read-only. Route-neutral staged workspace designed; governance must choose: (a) persist Draft/Validated pre-review with real plan ID, or (b) ephemeral staged review on an approved non-ID route with explicit recoverability semantics.
+persona: Planner (direct publish per RBAC-007); Approver NOT designed - no proven planning approval configuration
+journey: P03
+requirements: [MVP1-M01-009, MVP1-M01-010, MVP1-M01-030, MVP1-M01-031, MVP1-M01-006, MVP1-M01-007, MVP1-M01-008, MVP1-M01-027, MVP1-M01-028, MVP1-M01-029, MVP1-M02-012, MVP1-FND-001, MVP1-FND-002, MVP1-FND-003, MVP1-FND-004, MVP1-FND-011, MVP1-FND-013]
+acceptance: [DSG-020, DSG-A11Y-001, DSG-CODE-001]
+canonical_transitions: [STM-PLAN-001 Draft->Validated, STM-PLAN-002 Validated->Published]  # stated, not weakened; runtime does not yet persist the full lifecycle
+source_branch: local mount exposes no git metadata - UNVERIFIED
+source_commit: UNVERIFIED_HANDOFF_BLOCKED
+dirty_worktree: UNVERIFIED_HANDOFF_BLOCKED
+design_file: "CD-025 Plan Review and Publish.dc.html (dedicated file; frames 5route, 5a-5n, S1-S28)"
+design_frame_ids: [5route, 5a, 5b, 5c, 5d, 5e, 5f(S1-S28), 5g, 5h, 5i, 5j, 5k, 5k-light, 5l, 5m, 5n]
+png_paths:
+  - outputs/cd-025/CD-025_SCR-WEB-150_primary.png
+  - outputs/cd-025/CD-025_SCR-WEB-150_consequence_ledger.png
+  - outputs/cd-025/CD-025_SCR-WEB-150_single_variant.png
+  - outputs/cd-025/CD-025_SCR-WEB-150_ar_rtl.png
+  - outputs/cd-025/CD-025_SCR-WEB-150_light.png
+  - outputs/cd-025/CD-025_SCR-WEB-150_tablet.png
+  - outputs/cd-025/CD-025_SCR-WEB-150_narrow.png
+  - outputs/cd-025/CD-025_SCR-WEB-150_error_summary.png
+  - outputs/cd-025/CD-025_SCR-WEB-150_failure_truth.png
+selected_hypothesis: blocker-first pre-flight (5a); object-first dossier (5b) and consequence-first (5c) rejected on time-to-safe-decision, blocker-location cost, scope-loss visibility, narrow survival (comparison panel)
+signature_interaction: Publish Consequence Ledger (Created-together-or-nothing / Set for those visits / Recorded or queued / Will not happen) - the ONE new pattern; counterfactual proven in 5d; CD-024's Assignment Evidence Ledger NOT duplicated (summarized + linked back)
+method_boundary:
+  bulk: primary; all-or-nothing RPC label truthful; precondition concurrency-safety NOT claimed
+  single: variant 5e; sequential resumable writes; atomic label withheld; atomicity leg HANDOFF_BLOCKED
+  immediate: excluded by contract (no Visit Plan); annotation only
+file_changes:
+  # Existing files: EVIDENCE ONLY at this stage - no implementation is authorized.
+  - file: apps/web/src/app/planning/bulk/review/ReviewClient.tsx
+    role: evidence + candidate UPDATE after approval
+    after: hosts or precedes the route-neutral review workspace; readiness pre-flight, scope integrity, object sections, Publish Consequence Ledger, linked error summary, double-submit lock
+    design_node: 5a / 5f / 5g / 5j
+  - file: apps/web/src/app/planning/bulk/actions.ts
+    role: evidence + candidate UPDATE after approval
+    after: structured per-source success-or-failure results (fail-closed); machine-readable blocker list for linked summary; counts derived server-side from retained scope
+    design_node: 5f S13-S16 / 5j
+  - file: apps/web/src/app/planning/bulk/review/page.tsx
+    role: evidence + candidate UPDATE after approval
+    after: explicit Planner route/scope guard; distinct unauthorized state (S21) separate from expired review (S22) and source failure
+    design_node: 5f S21/S22
+  - file: PlanReviewWorkspace (proposed component - route target BLOCKED)
+    role: proposed CREATE; do not guess a Next.js route filename
+    after: route-neutral review+publish surface consumable by whichever lifecycle model governance selects
+    design_node: 5a
+  - file: apps/web/src/app/planning/single/actions.ts
+    role: evidence only (sequential steps + resumable retry mirrored truthfully in 5e/5h)
+  - file: apps/web/src/app/planning/plans/[id]/page.tsx
+    role: READ-ONLY - PRESERVE; post-publish plan detail destination (5i); never an editable pre-publish review route
+  - file: supabase/migrations/0026_cd021_bulk_publish_atomic.sql
+    role: evidence only (atomic RPC; no in-transaction rechecks)
+removals: []
+handoff_blocked:
+  - route_and_ownership: final CD-025 route + screen identity
+  - persisted_lifecycle: Draft/Validated plan records before review
+  - staged_handoff: CD-024 -> CD-025 staged handoff and recovery semantics
+  - return_to_edit: route with preserved focus/context (links designed, not wired)
+  - approver_configuration: planning maker-checker (S19 annotation)
+  - fail_closed_reads: structured source/query error outcomes
+  - concurrency_guard: versioned/stale-state token
+  - in_txn_duplicate_recheck: authoritative
+  - in_txn_package_visit_type_validation: authoritative incl. effective date
+  - concurrency_safe_manual_overlap: pre-RPC check can go stale
+  - bulk_auto_overlap_avoidance: rotation ignores schedules
+  - single_atomicity: transactional single publish + rollback evidence
+  - attempted_publication_audit: dedicated business event
+  - notification_delivery: provider truth
+  - success_receipt: persistence
+  - partial_single_cleanup: policy
+  - route_level_guard: Planner/scope guard on the future route
+rtl_theme_impact: logical properties; Arabic fresh-session default; bdi-isolated codes/windows/IDs; dark/light parity incl. RTL light evidence; status glyph+text never color alone
+rollback: design-only package; no code, schema or contract files touched
+implementation_authorized: false
+status: READY_FOR_DESIGN_REVIEW_R1

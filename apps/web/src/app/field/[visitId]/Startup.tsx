@@ -18,6 +18,7 @@ export type StartupStrings = {
   officialLabel: string; plannedLabel: string; youLabel: string; insideWord: string; outsideWord: string;
   logCached: string; logJourneyBlocked: string; logJourneyStarted: string;
   logAccuracyBlocked: string; logCheckinRejected: string; logOutside: string; logInside: string; logStartBlocked: string;
+  logInspectionCreateFailed: string;
   // E3 — telemetry / arrival auto-detect / deviation / exception / pre-start / STM-OPS
   telemetryRow: string; liveDistance: string; arrivalDetected: string; liveLabel: string;
   prestartHeading: string; prestartRep: string; prestartLoc: string;
@@ -299,7 +300,15 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     const { data, error } = await sb.from("inspections").insert({
       visit_id: visit.id, status: "in_progress", package_version_id: visit.package_versions.id, started_at: new Date().toISOString(),
     }).select().single();
-    if (error) { add(fmt(strings.logStartBlocked, { error: error.message })); setBusy(false); return; }
+    if (error) {
+      // Provider/constraint details stay in diagnostics; field users receive
+      // stable localized recovery guidance, never raw database text.
+      // eslint-disable-next-line no-console
+      console.error("[field start inspection]", error);
+      add(strings.logInspectionCreateFailed);
+      setBusy(false);
+      return;
+    }
     await opTransition("executing");                                  // M04-055 · STM-OPS leg 3
     await local.cachePackage(data.id, visit.package_versions);  // key by inspection for the workspace
     router.push(`/field/inspection/${data.id}`);

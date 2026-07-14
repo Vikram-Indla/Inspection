@@ -74,6 +74,22 @@ async function insertMissing(table, rows, jwt) {
   return { inserted: missing.length, existing: found.size };
 }
 
+// Visit windows are absolute timestamps computed relative to THIS run's "now".
+// insertMissing alone only creates the row once and never touches it again,
+// so as real time advances past a fixture's window_end the canonical
+// scheduled expiry job independently moves planning_status to 'expired'
+// (FND-002 — operational_state is untouched, but apps/web/src/app/operations/
+// page.tsx's monitoring/SLA panels filter on planning_status === 'published',
+// so the fixture silently drops out of those panels). Upsert (not
+// insert-if-missing) so re-running `npm run seed:kpi` refreshes every fixture
+// visit's window and planning_status back to fresh, published, "now"-relative
+// values — making the fixture genuinely re-seedable instead of a one-shot.
+async function upsert(table, rows, jwt) {
+  if (!rows.length) return { upserted: 0 };
+  await rest("POST", table, jwt, rows, "resolution=merge-duplicates,return=minimal");
+  return { upserted: rows.length };
+}
+
 const planner = await login(ACTORS.planner);
 const inspector = await login(ACTORS.inspector);
 const ops = await login(ACTORS.ops);
@@ -186,7 +202,7 @@ const notifications = [
 const result = {};
 result.factories = await insertMissing("factories", factories, planner.jwt);
 result.visit_plans = await insertMissing("visit_plans", plans, planner.jwt);
-result.visits = await insertMissing("visits", visits, planner.jwt);
+result.visits = await upsert("visits", visits, planner.jwt);
 result.assignments = await insertMissing("assignments", assignments, planner.jwt);
 result.journey_sessions = await insertMissing("journey_sessions", journeys, inspector.jwt);
 result.geo_events = await insertMissing("geo_events", geoEvents, inspector.jwt);

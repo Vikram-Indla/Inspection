@@ -10,4 +10,8 @@ export const PERSONAS = {
 
 export type PersonaKey = keyof typeof PERSONAS;
 
-export const storageStatePath = (key: PersonaKey) => `test-results/.auth/${key}.json`;
+// Keep reusable authentication outside Playwright's outputDir. Playwright may
+// clear test-results while recovering from a failed worker; storing state
+// there makes every later persona test fail with ENOENT instead of reporting
+// the original failure.
+export const storageStatePath = (key: PersonaKey) => `playwright/.auth/${key}.json`;

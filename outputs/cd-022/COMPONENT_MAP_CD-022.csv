@@ -1,0 +1,18 @@
+component,current_location,disposition,after_responsibility,design_frame,approval_needed
+Shared shell (Shell/ShellClient/shell-navigation),apps/web/src/components,PRESERVE,Unchanged planner-scoped shell,2a,no
+Identifier search field,Wizard.tsx step 1,UPDATE,Accepts CR/code/license/name; server-side query; >=3 chars; progress + result count announced,2a/2d,no
+Match grading labels (EXACT/SIMILAR NAME/AMBIGUOUS/DEGRADED),new,CREATE,Rule-based text labels - identifier equality only for EXACT; no invented confidence score,2a/2d,no
+Result comparison rail,Wizard.tsx radio list,UPDATE,Cards with distinguishing identifiers; nothing pre-selected; explicit dossier open,2a,no
+Candidate comparison table,new,CREATE,Side-by-side identifier/activity/location/visit comparison for ambiguous results,2d,no
+Identity dossier,new IdentityDossier.tsx,CREATE,Identifier grid + provenance + location + risk + history + duplicate guard; links to Factory 360,2a/2f,no
+Factory 360 link,BulkForm precedent (/factories/:id),PRESERVE,Dossier deep-link in new tab; criteria/work preserved,2a,no
+GeoMap official/planner pins,components/GeoMap.tsx via Wizard,PRESERVE,Same markers/geofence; gains Map/Text toggle wrapper (text alternative is CREATE),2a,no
+License confirmation gate,Wizard.tsx step 2,PRESERVE,M01-036 radio confirm / proceed-against-CR banner - moved inside dossier flow unchanged,2a/2h,no
+Location confirm + planner pin,Wizard.tsx step 3,PRESERVE,M01-038 confirm checkbox + lat/lng pair validation; official pin read-only,2a/2h,no
+Execution mode eligibility,Wizard.tsx + actions.ts,PRESERVE,M03-011 physical-needs-location / virtual-needs-OTP incl. auto-switch,2a,no
+Duplicate/overlap guard at selection,new read (visits),CREATE,Same query as publish-time M02-012 check, surfaced in dossier with cause; overlap = warning not block,2a/2d,no
+Configuration column,Wizard.tsx step 4,UPDATE,Same fields; unlocks after identity+location confirmation; availability result inline,2a,no
+Readiness chips + publish,Wizard.tsx submit,UPDATE,identity/license/location/duplicate/inspector chips gate publish; blockers attached to button,2a,no
+Publish stepper + reconciliation,new,CREATE,6-step truth ledger; retry-at-step; discard-draft; success = redirect (no interstitial),2e,no
+Validation summary,Wizard error list,UPDATE,role=alert with per-field links + focus transfer to first blocker; neutral copy,2h,no
+Work preservation (controlled inputs + resetKey),Wizard.tsx,PRESERVE,Verbatim - documented React 19 reset workaround stays,2h,no

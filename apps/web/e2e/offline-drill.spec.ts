@@ -21,11 +21,16 @@ test.beforeAll(async () => {
   const pkg = must(await rest("GET", "package_versions?select=id&status=eq.published&order=published_at.desc&limit=1", planner.jwt), "package")[0];
   const plan = must(await rest("POST", "visit_plans", planner.jwt, { method: "single", status: "draft", created_by: planner.userId }), "plan")[0];
   const now = new Date();
+  // A fixed +3-day offset collides with the sole seeded inspector persona's
+  // bookings from every other suite sharing this live project (cd-023/cd-022/
+  // golden-journey all hit this same 23505 unique-violation historically) —
+  // spread across a ~270-year range instead, same fix applied everywhere else.
+  const dayOffset = 4000 + Math.floor(Math.random() * 90000);
   const visit = must(await rest("POST", "visits", planner.jwt, {
     visit_plan_id: plan.id, factory_id: fac.id, visit_type: "periodic",
     execution_mode: "physical", planning_status: "draft",
-    window_start: new Date(now.getTime() + 3 * 864e5).toISOString(),
-    window_end: new Date(now.getTime() + 3 * 864e5 + 4 * 36e5).toISOString(),
+    window_start: new Date(now.getTime() + dayOffset * 864e5).toISOString(),
+    window_end: new Date(now.getTime() + dayOffset * 864e5 + 4 * 36e5).toISOString(),
     package_version_id: pkg.id,
   }), "visit")[0];
   assertOk(await rest("POST", "assignments", planner.jwt, { visit_id: visit.id, inspector_id: inspector.userId, method: "manual" }, "return=minimal"), "assign");

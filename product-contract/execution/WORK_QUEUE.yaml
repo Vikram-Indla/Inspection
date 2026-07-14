@@ -89,11 +89,11 @@ items:
   - task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
     gate: "G11 DEC-012 remediation"
     priority: "P0"
-    status: "LOCAL_PASS_LIVE_MIGRATION_AND_INDEPENDENT_REAUDIT_BLOCKED"
+    status: "REMEDIATION_IMPLEMENTED_PENDING_LIVE_MIGRATION_AND_REAUDIT"
     owner: "Claude Code implementation + distinct Codex wiring reviewer + Sponsor"
-    blocked_by: ["Explicit approval to apply migration 0027 to linked development Supabase"]
+    blocked_by: ["Apply urgency migration 20260714060935 through linked migration history", "Run migration-dependent crafted-RPC test and complete regression without exclusions", "Fresh independent DEC-012 re-audit", "Sponsor runtime acceptance"]
     blocks: ["CD-023 closure", "CD-024+ implementation"]
-    note: "All nine original audit findings are remediated in branch code. Fresh relevant-baseline + migration 0027 apply and repeatable PostgreSQL RLS/atomicity/idempotency/location/audit contract PASS; build/typecheck/diff PASS; discovery 8 product + 3 auth setup tests PASS. Still required: explicit approval and live migration 0027, focused and full Playwright, 8-frame evidence, actual outputs/cd-023 wiring-map import, fresh independent DEC-012 audit, sponsor runtime acceptance. See sessions/CLAUDE_CODE_CONTINUATION_CD-023.md."
+    note: "The strict post-live FAIL is remediated in the worktree: all 12 wiring rows now match current runtime and cite exact tests; the accepted D3 four-value urgency set plus Other justification is enforced in the server action and prepared database CHECK; downstream field start uses neutral localized copy. Typecheck/build PASS, focused runnable suite 16/16 PASS, and broader regression 90/90 PASS with only the unapplied-migration crafted-RPC test excluded. Migration 20260714060935 could not be applied because linked CLI authentication stalled and no DB password/access token is available; Dashboard SQL was not used to bypass migration history. Apply it, run 91/91, then obtain a fresh independent DEC-012 audit and sponsor acceptance."
   - task_id: "TASK-DESIGN-CD024-QUALITY-RATCHET"
     gate: "G11 controlled Web-first design"
     priority: "P0"

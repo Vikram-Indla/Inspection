@@ -40,3 +40,4 @@ node_modules/
 # e2e artifacts (G10 Playwright suite)
 apps/web/test-results/
 apps/web/playwright-report/
+apps/web/playwright/.auth/
