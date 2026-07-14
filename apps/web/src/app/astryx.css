@@ -742,3 +742,98 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .leaflet-tooltip::before { display: none; }
 .leaflet-popup-content a { color: var(--ax-color-primary-hover); }
 .lv-zonelabel { background: none; border: none; box-shadow: none; }
+
+/* ==================================================== CD-027: DUAL-STATE RIBBON
+   Five never-collapsed state domains as a keyboard tablist. Status carried by
+   glyph + label (never color/animation alone; MVP1-FND-011). Reflows into an
+   ordered accessible state ledger at narrow width — no motion required. */
+.ax-ribbon__tracks {
+  display: flex; gap: var(--ax-space-150); flex-wrap: wrap;
+  border-block-end: 1px solid var(--ax-color-border);
+  padding-block-end: var(--ax-space-150); margin-block-end: var(--ax-space-200);
+}
+.ax-ribbon__track {
+  display: flex; align-items: center; gap: var(--ax-space-100);
+  border: 1px solid var(--ax-color-border); background: var(--ax-color-surface);
+  border-radius: var(--ax-radius-standard); cursor: pointer;
+  padding-block: var(--ax-space-150); padding-inline: var(--ax-space-200);
+  min-block-size: 48px; color: var(--ax-color-text-secondary);
+  font: var(--ax-text-body-strong);
+}
+.ax-ribbon__track.is-active {
+  border-color: var(--ax-color-primary); color: var(--ax-color-text);
+  box-shadow: inset 0 -2px 0 0 var(--ax-color-primary);
+}
+.ax-ribbon__track:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.ax-ribbon__glyph { font-size: 14px; line-height: 1; }
+.ax-ribbon__domain { white-space: nowrap; }
+.ax-ribbon__panel { padding-block-start: var(--ax-space-100); }
+.ax-ribbon__panel:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); border-radius: var(--ax-space-050); }
+.ax-ribbon__facts { display: grid; grid-template-columns: max-content 1fr; gap: var(--ax-space-100) var(--ax-space-300); margin: 0 0 var(--ax-space-200); }
+.ax-ribbon__facts > div { display: contents; }
+.ax-ribbon__facts dt { color: var(--ax-color-text-secondary); font: var(--ax-text-caption); }
+.ax-ribbon__facts dd { margin: 0; }
+@media (max-width: 640px) {
+  /* ordered state ledger: numbered, stacked, each track self-describing */
+  .ax-ribbon__tracks { flex-direction: column; counter-reset: ribbon; }
+  .ax-ribbon__track { inline-size: 100%; justify-content: flex-start; }
+  .ax-ribbon__track::before {
+    counter-increment: ribbon; content: counter(ribbon) ". ";
+    color: var(--ax-color-text-secondary); font: var(--ax-text-caption);
+  }
+}
+
+/* CD-027 — action zones (available / disabled-with-why / unavailable) */
+.ax-actionzone { display: flex; flex-direction: column; gap: var(--ax-space-150); }
+.ax-actionzone__label { margin: 0; text-transform: uppercase; letter-spacing: .04em; }
+
+/* ==================================================== CD-028 · SCR-WEB-300
+   Level 2 review queue — scan-first. The Evidence-readiness & SLA-risk
+   fingerprint is labelled facts, never a colour-only signal (MVP1-FND-011).
+   Tokens only; light/dark inherit from the theme scope. */
+.cd-queue { display: flex; flex-direction: column; gap: var(--ax-space-200); }
+.cd-panelpad { padding: var(--ax-space-300); }
+.cd-sectionhead { display: flex; justify-content: space-between; align-items: baseline; gap: var(--ax-space-150); flex-wrap: wrap; margin-block-end: var(--ax-space-150); }
+.cd-sectionhead h3 { font: var(--ax-text-heading); margin: 0; }
+.cd-sub { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.cd-mono { font-family: var(--ax-font-mono); font-variant-numeric: tabular-nums; }
+.cd-warn { color: var(--ax-color-warning-strong); }
+.cd-fname { font: var(--ax-text-body-strong); }
+.cd-stack { display: flex; flex-direction: column; gap: var(--ax-space-100); flex: 1; min-inline-size: 0; }
+
+/* filters */
+.cd-filters { padding: var(--ax-space-200); display: flex; flex-wrap: wrap; gap: var(--ax-space-150); align-items: flex-end; }
+.cd-fl { display: flex; flex-direction: column; gap: 4px; }
+.cd-fl__k { font: var(--ax-text-micro); text-transform: uppercase; letter-spacing: .04em; color: var(--ax-color-text-secondary); }
+.cd-fl--search { flex: 1; min-inline-size: 220px; }
+.cd-fl--search .ax-input { inline-size: 100%; }
+.cd-choice { display: flex; gap: 8px; align-items: center; font: var(--ax-text-caption); }
+
+/* table + row flags */
+.cd-table th { white-space: nowrap; vertical-align: bottom; }
+.cd-row--flag { background: var(--ax-color-warning-tint); }
+
+/* fingerprint */
+.cd-fp { display: flex; flex-direction: column; gap: 6px; min-inline-size: 280px; }
+.cd-fp__row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.cd-fp--flag { padding: 8px; border: 1px dashed var(--ax-color-warning-strong); border-radius: var(--ax-radius-standard); gap: 4px; }
+.cd-fpchip { display: inline-flex; gap: 4px; align-items: center; font: var(--ax-text-micro); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--ax-color-border); background: var(--ax-color-surface); }
+.cd-fpchip__g { font-size: 11px; line-height: 1; }
+.cd-fpchip--ok { border-color: color-mix(in srgb, var(--ax-color-success) 35%, var(--ax-color-border)); color: var(--ax-color-success-strong); }
+.cd-fpchip--miss { border-color: color-mix(in srgb, var(--ax-color-critical) 40%, var(--ax-color-border)); color: var(--ax-color-critical-strong); border-style: dashed; }
+.cd-fpchip--upd { border-color: color-mix(in srgb, var(--ax-color-warning) 45%, var(--ax-color-border)); color: var(--ax-color-warning-strong); }
+.cd-fpchip--bad { border-color: color-mix(in srgb, var(--ax-color-critical) 40%, var(--ax-color-border)); color: var(--ax-color-critical-strong); }
+.cd-fpchip--unknown { border-style: dashed; color: var(--ax-color-text-secondary); }
+
+/* tags */
+.cd-tag { display: inline-block; font: var(--ax-text-micro); font-family: var(--ax-font-mono); padding: 3px 8px; border-radius: 6px; letter-spacing: .03em; }
+.cd-tag--blocked { background: var(--ax-color-critical-tint); color: var(--ax-color-critical-strong); border: 1px solid color-mix(in srgb, var(--ax-color-critical) 40%, transparent); }
+.cd-tag--warn { background: var(--ax-color-warning-tint); color: var(--ax-color-warning-strong); }
+
+/* result / empty / unauthorized blocks */
+.cd-result__row { display: flex; gap: var(--ax-space-200); align-items: flex-start; }
+.cd-result__icon { inline-size: 44px; block-size: 44px; border-radius: var(--ax-radius-full); display: grid; place-items: center; font-size: 20px; flex: none; }
+.cd-result__icon--neutral { background: var(--ax-color-neutral-tint); color: var(--ax-color-text-secondary); }
+.cd-result__icon--critical { background: var(--ax-color-critical-tint); color: var(--ax-color-critical-strong); }
+.cd-result__icon--ok { background: var(--ax-color-success-tint); color: var(--ax-color-success-strong); }
+.cd-result h3 { font: var(--ax-text-heading); margin: 0; }
