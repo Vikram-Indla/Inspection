@@ -110,3 +110,35 @@ items:
     blocked_by: ["Full no-exclusion Playwright regression", "Forward migration runtime certification", "DEC-012 fresh independent CD-023 audit", "Sponsor runtime acceptance"]
     blocks: ["G11/G12 release claim", "CD-024 implementation authorization"]
     note: "Cross-slice wiring audit for CD-001/CD-002/CD-003/CD-020/CD-021/CD-022/CD-023 plus CD-024 boundary recorded at product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md. Fail-closed UI/API wiring and raw-error sinks are remediated; migrations 20260714091726/27 are generated but not deployed."
+  - task_id: "TASK-DESIGN-CD025-R4"
+    gate: "G11 controlled Web-first design"
+    priority: "P0"
+    status: "BLOCKED_PENDING_SYNCHRONIZED_R4_RESUBMISSION"
+    owner: "Claude Design + Codex design reviewer + Sponsor"
+    blocked_by: ["Clean synchronized CD-025 R4 archive generated from exact baseline"]
+    blocks: ["CD-025 sponsor design approval", "CD-025 Claude Code execution", "CD-025 implementation authorization"]
+    note: "R3 page-specific design is preserved, but Plan Review and Publish (1).zip is a contradictory R2/R3 hybrid. Run outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md in the same Claude Design project. Do not execute the stale R2 Claude Code prompt."
+  - task_id: "TASK-DESIGN-CD026"
+    gate: "G11 controlled Web-first design"
+    priority: "P0"
+    status: "PROMPT_READY_AWAITING_CLAUDE_DESIGN"
+    owner: "Claude Design + Codex design reviewer + Sponsor"
+    blocked_by: []
+    blocks: ["CD-026 sponsor design approval", "CD-026 implementation authorization"]
+    note: "The complete fresh-session prompt is outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md. Design only: list/calendar/workload/map continuity, truthful partial bulk outcomes, full AR/RTL/theme/responsive/a11y/security coverage. Map and Branch Manager mapping remain HANDOFF_BLOCKED where runtime evidence is absent."
+  - task_id: "TASK-DESIGN-CD027"
+    gate: "G11 controlled Web-first design"
+    priority: "P0"
+    status: "DESIGN_DELIVERED_R2_IMPORTED_AND_IMPLEMENTED"
+    owner: "Codex prompt author + Claude Design + Sponsor"
+    blocked_by: []
+    blocks: []
+    note: "CD-027 r2 design delivered by Claude Design (project 20cb0dce, READY_FOR_DESIGN_REVIEW_R2) and imported via DesignSync. Superseded by implementation task CD-027-VISIT-DETAIL-TRACK1 below."
+  - task_id: "CD-027-VISIT-DETAIL-TRACK1"
+    gate: "G11 production-readiness wiring"
+    priority: "P0"
+    status: "TRACK1_AND_SAFE_TRACK2_IMPLEMENTED_PENDING_REAUDIT_AND_ACCEPTANCE"
+    owner: "Claude Code implementation + distinct Codex wiring reviewer + Sponsor"
+    blocked_by: ["Fresh independent DEC-012 re-audit of the Track 1 + Track 2 closures", "Sponsor runtime acceptance", "Change-control for the 3 held-blocked legs (MAP / ASSIGNMENT_RELEASE / ATOMIC)"]
+    blocks: ["CD-027 closure"]
+    note: "SCR-WEB-210 /visits/:id. Sponsor approved audit-first (Vikram Indla, 2026-07-14). Dual-State Ribbon (five domains, keyboard tablist, S36 ledger), available/disabled-with-why/unavailable action zones, honest queued-not-delivered copy. Track 2 closed ERRORMAP (neutral errors), ORPHAN (storage cleanup), NOTIFY_PREV (prev-inspector notify via REF-014 assignment event). Held BLOCKED: MAP (never invent provider/geofence), ASSIGNMENT_RELEASE (open product decision), ATOMIC (would weaken best-effort-notify contract). Recorded audit outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (DEC-012). e2e cd-027-visit-detail.spec.ts 16/16 PASS on local prod build; typecheck+build clean. Preserved: RLS reads, five state machines, guards, append-only audit(30), immutable submissions, soft-delete, signed URLs, system-only expiry, grouped shell. Branch feat/cd-026-visit-management, unmerged."

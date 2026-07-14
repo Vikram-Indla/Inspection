@@ -102,7 +102,7 @@ insert into ui_strings (key, en, ar, status, context) values
   -- publishing / result
   ('plan.review.publishingTitle',  'Publishing…', 'جارٍ النشر…', 'draft', 'CD-025'),
   ('plan.review.publishingBody',   'The server is validating and committing the plan, its visits and assignments in one transaction. Do not close this page.', 'يتحقق الخادم ويلتزم بالخطة وزياراتها وإسناداتها في معاملة واحدة. لا تُغلق هذه الصفحة.', 'draft', 'CD-025'),
-  ('plan.review.publishingSub',    '‘Published’ is not shown until the transaction returns an authoritative result.', 'لا تُعرض حالة «منشور» حتى تُرجِع المعاملة نتيجة مرجعية.', 'draft', 'CD-025'),
+  ('plan.review.publishingSub',    'Published is not shown until the transaction returns an authoritative result.', 'لا تُعرض حالة «منشور» حتى تُرجِع المعاملة نتيجة مرجعية.', 'draft', 'CD-025'),
   ('plan.review.failTitle',        'Publishing failed — nothing was published', 'فشل النشر — لم يُنشر شيء', 'draft', 'CD-025'),
   ('plan.review.failBody',         'Nothing was published. The plan and visits were not created.', 'لم يُنشر شيء. لم تُنشأ الخطة والزيارات.', 'draft', 'CD-025'),
   ('plan.review.failSub',          'Technical details are logged server-side only.', 'سُجِّلت التفاصيل التقنية من جهة الخادم فقط.', 'draft', 'CD-025'),
@@ -117,7 +117,7 @@ insert into ui_strings (key, en, ar, status, context) values
   ('plan.review.goVisits',         'Go to visits', 'الذهاب إلى الزيارات', 'draft', 'CD-025'),
   ('plan.review.openPlan',         'Open the published plan (read-only)', 'فتح الخطة المنشورة (للقراءة فقط)', 'draft', 'CD-025'),
   -- unauthorized
-  ('plan.review.unauth.title',     'You don’t have access to review this plan', 'لا تملك صلاحية مراجعة هذه الخطة', 'draft', 'CD-025 RBAC-007'),
+  ('plan.review.unauth.title',     'You do not have access to review this plan', 'لا تملك صلاحية مراجعة هذه الخطة', 'draft', 'CD-025 RBAC-007'),
   ('plan.review.unauth.body',      'This view requires the Planner role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.', 'يتطلب هذا العرض دور المُخطِّط ونطاقًا مطابقًا. الرؤية في التنقّل ليست تفويضًا؛ ويظل RLS حدَّ التفويض.', 'draft', 'CD-025 RBAC-007'),
   ('plan.review.unauth.back',      'Back to planning', 'العودة إلى التخطيط', 'draft', 'CD-025'),
   -- blocker copy (kind → title / detail)
@@ -138,11 +138,11 @@ insert into ui_strings (key, en, ar, status, context) values
   ('plan.review.bl.srcf.t',        'Factory/target source could not be verified', 'تعذّر التحقق من مصدر المصانع', 'draft', 'CD-025'),
   ('plan.review.bl.srcf.d',        'Not evaluated — blocks safely rather than showing false emptiness.', 'غير مُقيَّم — يمنع بأمان بدلًا من عرض فراغ زائف.', 'draft', 'CD-025'),
   ('plan.review.bl.srcp.t',        'Package source is unavailable', 'تعذّر الوصول إلى مصدر الحزم', 'draft', 'CD-025'),
-  ('plan.review.bl.srcp.d',        'Distinct from ‘no package’ — the state is not evaluated, not empty.', 'مختلف عن «لا توجد حزمة» — الحالة غير مُقيَّمة، لا فارغة.', 'draft', 'CD-025'),
+  ('plan.review.bl.srcp.d',        'Distinct from no-package — the state is not evaluated, not empty.', 'مختلف عن «لا توجد حزمة» — الحالة غير مُقيَّمة، لا فارغة.', 'draft', 'CD-025'),
   ('plan.review.bl.srci.t',        'Inspector source is unavailable', 'تعذّر الوصول إلى مصدر المفتشين', 'draft', 'CD-025'),
-  ('plan.review.bl.srci.d',        'Distinct from ‘empty pool’ — an empty pool cannot be confirmed.', 'مختلف عن «لا مفتشين» — لا يمكن تأكيد التجمّع الفارغ.', 'draft', 'CD-025'),
+  ('plan.review.bl.srci.d',        'Distinct from empty-pool — an empty pool cannot be confirmed.', 'مختلف عن «لا مفتشين» — لا يمكن تأكيد التجمّع الفارغ.', 'draft', 'CD-025'),
   ('plan.review.bl.srcd.t',        'Duplicate / overlap check could not run', 'تعذّر تنفيذ فحص التكرار/التعارض', 'draft', 'CD-025'),
-  ('plan.review.bl.srcd.d',        'Distinct from ‘verified zero conflicts’ — publish is not allowed without the check.', 'مختلف عن «صفر تعارضات مؤكَّد» — لا يُسمح بالنشر دون فحص.', 'draft', 'CD-025')
+  ('plan.review.bl.srcd.d',        'Distinct from verified-zero-conflicts — publish is not allowed without the check.', 'مختلف عن «صفر تعارضات مؤكَّد» — لا يُسمح بالنشر دون فحص.', 'draft', 'CD-025')
 on conflict (key) do update
   set ar = excluded.ar, en = excluded.en, context = excluded.context
   where ui_strings.status = 'draft';   -- never clobber a human-reviewed translation

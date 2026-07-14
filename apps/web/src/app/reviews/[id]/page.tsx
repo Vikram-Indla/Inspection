@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
+import StartReview, { type StartReviewStrings } from "./StartReview";
 import { fetchFactoryChecks, updatedCount, FACTORY_FIELD_EN } from "@/lib/factory-verification";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,6 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const { id } = await params;  // inspection id
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
   const { data: ins } = await sb.from("inspections")
     .select(`id, status, visits(factories(name, factory_code)), package_versions(version_label, definition),
       submission_versions(id, version_number, snapshot, acknowledgement, submitted_at),
@@ -25,23 +25,11 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const subs = (ins.submission_versions as unknown as { id: string; version_number: number; snapshot: { answers?: Record<string, string> }; acknowledgement: unknown; submitted_at: string }[]).sort((a, b) => b.version_number - a.version_number);
   const latest = subs[0];
   const reviews = ins.reviews as unknown as { id: string; status: string; decision: string | null; decision_reason: string | null; returned_sections: string[] | null; decided_at: string | null; submission_version_id: string }[];
-  let open = reviews.find(r => { return r.submission_version_id === latest?.id && !r.decided_at; });
-  if (!open && latest && ins.status === "submitted") {
-    const { data: created } = await sb.from("reviews").insert({
-      inspection_id: ins.id, submission_version_id: latest.id, reviewer_id: user!.id, status: "under_review",
-    }).select().single();
-    if (created) {
-      open = created as never;
-      const { error: transErr } = await sb.from("inspections").update({ status: "under_review" }).eq("id", ins.id);
-      // ins was fetched before this transition — the render condition below
-      // reads ins.status, so without this the decision panel never shows on
-      // the very first visit that auto-creates the review (only on reload).
-      // Only mirror the DB write locally if it actually happened (RLS can
-      // silently no-op an update instead of erroring) — otherwise ins.status
-      // stays "submitted" and the fallback message reflects real state.
-      if (!transErr) ins.status = "under_review";
-    }
-  }
+  // CD-028 leg 5 — opening is read-only. The review is NOT created and the
+  // inspection is NOT transitioned as a side-effect of this render; that now
+  // happens only through the explicit StartReview action below.
+  const open = reviews.find(r => { return r.submission_version_id === latest?.id && !r.decided_at; });
+  const canStart = !open && !!latest && ins.status === "submitted";
   const sections = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[] } }).definition.sections.filter(s => { return !!s.items?.length; });
   const f = (ins.visits as unknown as { factories: { name: string; factory_code: string } }).factories;
   // M06-023/046/053 — real diff of the resubmitted snapshot against the prior
@@ -85,6 +73,12 @@ const panelStrings: WorkspaceDecisionStrings = {
     confirm: t("review.ws.confirm", "Confirm {decision}"),
     recording: t("review.ws.recording", "Recording…"),
     audited: t("review.ws.audited", "Audited: reviewer, reason, sections, prior/new status, version, timestamp (M06-009/027)."),
+  };
+  const startStrings: StartReviewStrings = {
+    title: t("review.ws.startTitle", "Start Level 2 review"),
+    body: t("review.ws.startBody", "Opening this record does not change anything (CD-028). Starting the review claims it for you and moves the inspection to under review — an explicit, audited action."),
+    start: t("review.ws.startAction", "Start review"),
+    starting: t("review.ws.starting", "Starting…"),
   };
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
@@ -217,6 +211,8 @@ const panelStrings: WorkspaceDecisionStrings = {
         </div>
         {open && ins.status === "under_review"
           ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))} strings={panelStrings} />
+          : canStart
+          ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
           : <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
       </div>
     </Shell>

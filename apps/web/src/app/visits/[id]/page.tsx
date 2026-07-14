@@ -4,6 +4,8 @@ import { useT } from "@/lib/i18n";
 import ActionBar, { type ActionBarStrings } from "./ActionBar";
 import Attachments, { type AttachmentRow, type AttachmentsStrings } from "./Attachments";
 import NotesEditor, { type NotesStrings } from "./NotesEditor";
+import DualStateRibbon, { type RibbonTrack, type RibbonStrings } from "./DualStateRibbon";
+import { mapError } from "./neutral";
 
 export const dynamic = "force-dynamic";
 
@@ -36,7 +38,7 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
     .eq("object_type", "visits").eq("object_id", id)
     .order("occurred_at", { ascending: false }).limit(30);
   if (vErr) {
-    return <Shell current="/visits" title={t("visit.detail.errorTitle", "Visit — error")}><div className="ax-banner ax-banner--critical"><div>{t("visit.detail.loadError", "Could not load visit:")} {vErr.message}</div></div></Shell>;
+    return <Shell current="/visits" title={t("visit.detail.errorTitle", "Visit — error")}><div className="ax-banner ax-banner--critical" role="alert"><div>{mapError(vErr, "load")}</div></div></Shell>;
   }
   if (!v) {
     return <Shell current="/visits" title={t("visit.detail.notFoundTitle", "Visit not found")}><div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">∅</span><h4>{t("visit.detail.notFound", "Not in your scope or does not exist")}</h4><p className="ax-caption">{t("visit.detail.notFoundDesc", "IDs are immutable, never reused (FLD-VIS-001).")}</p></div></div></Shell>;
@@ -66,7 +68,9 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
     return {
       id: a.id, name: a.name, mime: a.mime, uploadedAt: a.uploaded_at,
       uploadedBy: a.uploader?.full_name ?? "—",
-      url: signed?.signedUrl ?? null, urlError: sErr?.message ?? null,
+      // HANDOFF_BLOCKED_ERRORMAP closure — never leak the raw signed-URL error;
+      // the null url already drives the neutral "download link unavailable" state.
+      url: signed?.signedUrl ?? null, urlError: sErr ? mapError(sErr, "link") : null,
     };
   }));
   const attachmentsStrings: AttachmentsStrings = {
@@ -114,6 +118,70 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
     typeComplaint: t("enum.complaint", "Complaint"),
     executionStarted: t("visit.actions.executionStarted", "execution started ({state}) — cancel / reschedule locked (M02-006)"),
     finalState: t("visit.actions.finalState", "final state — view only (M02-015/016)"),
+    zoneAvailable: t("visit.actions.zoneAvailable", "Available now"),
+    zoneBlocked: t("visit.actions.zoneBlocked", "Not available yet — why"),
+    zoneUnavailable: t("visit.actions.zoneUnavailable", "Unavailable in this state"),
+    reassignLockedWhy: t("visit.actions.reassignLockedWhy", "reassign locked — inspection already started ({state}) (M02-006)"),
+    scheduleLockedWhy: t("visit.actions.scheduleLockedWhy", "locked — execution started ({state}); only published/new visits can be rescheduled, retyped or cancelled (M02-006/008)"),
+    noneAvailable: t("visit.actions.noneAvailable", "No management actions available in this state."),
+  };
+  // CD-027 — Dual-State Ribbon: five never-collapsed domains, each with the
+  // latest VERIFIED event + its source + the allowed-action boundary + a history
+  // anchor. Boundaries are derived from the same guards the server actions enforce.
+  const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
+  const preStart = !insp || insp.status === "not_started";
+  const canManage = v.planning_status === "published" && v.operational_state === "new";
+  const canReassign = ["published", "returned"].includes(v.planning_status) && preStart;
+  const isFinal = ["cancelled", "expired"].includes(v.planning_status);
+  const latestAudit = (auditRows ?? [])[0];
+  const geoEvents = journeys.flatMap(j => j.geo_events).sort((a, b) => b.occurred_at.localeCompare(a.occurred_at));
+  const latestGeo = geoEvents[0];
+  const latestSub = insp ? [...insp.submission_versions].sort((a, b) => b.version_number - a.version_number)[0] : undefined;
+  const reviews = insp?.reviews ?? [];
+  const latestReview = reviews[reviews.length - 1];
+  const noEvt = t("visit.ribbon.noEvent", "no verified event yet");
+  const planningBoundary = canManage
+    ? t("visit.ribbon.b.manage", "Return · reassign · reschedule · change type · cancel")
+    : v.planning_status === "returned" ? t("visit.ribbon.b.returned", "Republish · reassign")
+    : v.planning_status === "published" ? t("visit.ribbon.b.locked", "Return · reassign only — execution started, schedule/type/cancel locked")
+    : t("visit.ribbon.b.none", "None — final state, view only");
+  const ribbonTracks: RibbonTrack[] = [
+    { id: "planning", domainLabel: t("visit.ribbon.planning", "Planning"),
+      stateLabel: t(`enum.${v.planning_status}`, v.planning_status), tone: PLAN_TONE[v.planning_status] ?? "",
+      eventLabel: latestAudit ? `${t(`enum.audit.${latestAudit.action}`, latestAudit.action)} · ${fmt(latestAudit.occurred_at)}` : noEvt,
+      sourceLabel: t("visit.ribbon.src.audit", "append-only audit trail (ENG-12)"),
+      boundaryLabel: planningBoundary, anchorHref: "#audit", anchorLabel: t("visit.ribbon.a.audit", "Open planning history") },
+    { id: "operational", domainLabel: t("visit.ribbon.operational", "Operational"),
+      stateLabel: t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " ")), tone: "",
+      eventLabel: latestGeo ? `${t(`enum.${latestGeo.kind}`, latestGeo.kind)} · ${fmt(latestGeo.occurred_at)}` : t("visit.ribbon.noJourney", "no journey yet"),
+      sourceLabel: t("visit.ribbon.src.field", "field app / journey engine"),
+      boundaryLabel: t("visit.ribbon.b.opRead", "Read-only here — owned by the field app (set_operational_state)"),
+      anchorHref: "#journey", anchorLabel: t("visit.ribbon.a.journey", "Open journey & location") },
+    { id: "assignment", domainLabel: t("visit.ribbon.assignment", "Assignment"),
+      stateLabel: asg ? t(`enum.${asg.status}`, asg.status) : t("visit.ribbon.unassigned", "unassigned"), tone: asg ? "ax-lozenge--info" : "",
+      eventLabel: asg ? `${t(`enum.${asg.method}`, asg.method)} · ${asg.profiles?.full_name ?? "—"}` : t("visit.ribbon.noInspector", "no inspector assigned"),
+      sourceLabel: t("visit.ribbon.src.assign", "assignment record (ENG-05)"),
+      boundaryLabel: canReassign ? t("visit.ribbon.b.reassign", "Reassign inspector (pre-start only)") : t("visit.ribbon.b.reassignLocked", "Read-only — reassignment locked"),
+      anchorHref: "#config", anchorLabel: t("visit.ribbon.a.config", "Open assignment") },
+    { id: "inspection", domainLabel: t("visit.ribbon.inspection", "Inspection"),
+      stateLabel: insp ? t(`enum.${insp.status}`, insp.status.replace(/_/g, " ")) : t("enum.not_started", "not started"), tone: insp ? "ax-lozenge--info" : "",
+      eventLabel: latestSub ? `v${latestSub.version_number} · ${fmt(latestSub.submitted_at)} · ${t("visit.detail.immutable", "immutable")}` : t("visit.ribbon.noSub", "not submitted"),
+      sourceLabel: t("visit.ribbon.src.insp", "inspection engine — submissions immutable"),
+      boundaryLabel: t("visit.ribbon.b.read", "Read-only here"), anchorHref: "#inspection", anchorLabel: t("visit.ribbon.a.insp", "Open inspection & versions") },
+    { id: "review", domainLabel: t("visit.ribbon.review", "Review"),
+      stateLabel: latestReview ? t(`enum.${latestReview.decision ?? latestReview.status}`, (latestReview.decision ?? latestReview.status).replace(/_/g, " ")) : t("visit.ribbon.noReview", "no review"),
+      tone: latestReview?.decision === "approved" ? "ax-lozenge--success" : latestReview?.decision === "rejected" ? "ax-lozenge--critical" : latestReview ? "ax-lozenge--warning" : "",
+      eventLabel: latestReview?.returned_sections?.length ? `${t("visit.detail.returnedSections", "returned")} ${latestReview.returned_sections.join(", ")}` : (latestReview ? t(`enum.${latestReview.status}`, latestReview.status.replace(/_/g, " ")) : t("visit.ribbon.noReviewEvt", "review not started")),
+      sourceLabel: t("visit.ribbon.src.review", "review engine"),
+      boundaryLabel: t("visit.ribbon.b.read", "Read-only here"), anchorHref: "#inspection", anchorLabel: t("visit.ribbon.a.review", "Open review outcome") },
+  ];
+  const ribbonStrings: RibbonStrings = {
+    heading: t("visit.ribbon.heading", "Lifecycle — five state domains (MVP1-FND-002)"),
+    tablistLabel: t("visit.ribbon.tablist", "Visit state domains"),
+    stateWord: t("visit.ribbon.stateWord", "State"),
+    latestWord: t("visit.ribbon.latestWord", "Latest verified event"),
+    sourceWord: t("visit.ribbon.sourceWord", "Source of truth"),
+    boundaryWord: t("visit.ribbon.boundaryWord", "Allowed from here"),
   };
   return (
     <Shell current="/visits" title={t("visit.detail.title", "Visit {id} — {factory}").replace("{id}", v.id.slice(0, 8)).replace("{factory}", f.name)}
@@ -123,13 +191,15 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
         <span className="ax-lozenge ax-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span>
         {pkg && <span className="ax-version">{pkg.packages.code} · {pkg.version_label}</span>}
       </>}>
+      {/* CD-027 — signature interaction: Dual-State Ribbon (one per screen) */}
+      <DualStateRibbon tracks={ribbonTracks} strings={ribbonStrings} />
       <div className="ax-grid-2">
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div id="config" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
           <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="ax-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
           <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="ax-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360 →")}</a></p>
         </div>
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div id="inspection" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.inspectionVersions", "Inspection & versions")}</h4>
           {insp ? (
             <div className="ax-stack" style={{ gap: 8 }}>
@@ -170,16 +240,17 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
       )}
       <ActionBar visitId={v.id} status={v.planning_status} opState={v.operational_state}
         opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
-        visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors} strings={actionStrings} />
+        visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors}
+        canManage={canManage} canReassign={canReassign} isFinal={isFinal} strings={actionStrings} />
       {/* FIX WAVE F4 — M02-043 notes add/edit */}
       <NotesEditor visitId={v.id} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
       {/* FIX WAVE F4 — M02-042 attachments */}
       {attErr ? (
-        <div className="ax-banner ax-banner--critical"><div>{t("visit.att.loadError", "Could not load attachments (M02-042):")} {attErr.message}</div></div>
+        <div className="ax-banner ax-banner--critical" role="alert"><div>{mapError(attErr, "load")}</div></div>
       ) : (
         <Attachments visitId={v.id} rows={attRows} strings={attachmentsStrings} />
       )}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div id="journey" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.journeyHeading", "Journey & location events — immutable (EV-005)")}</h4>
         <ul className="ax-timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (
@@ -191,8 +262,8 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
           {journeys.length === 0 && <p className="ax-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
         </ul>
       </div>
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.auditHeading", "Planning history — immutable, append-only (ENG-12)")}</h4>
+      <div id="audit" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.auditHeading", "Planning history — immutable, append-only (ENG-12, latest 30)")}</h4>
         <ul className="ax-timeline">
           {(auditRows ?? []).map(a => (
             <li key={a.id}>

@@ -105,11 +105,20 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
 });
 
 test.describe("CD-025 a11y / RTL / responsive (DSG-A11Y-001)", () => {
-  test("Arabic renders the review workspace document-level RTL", async ({ page }) => {
+  test("Arabic renders the review workspace document-level RTL with localized copy", async ({ page }) => {
     await stageSelection(page);
     await page.goto("/locale?set=ar");
     await page.goto("/planning/bulk/review");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    // Localized copy from ui_strings (plan.review.*), not the English fallback.
+    await expect(page.getByRole("heading", { name: "الجاهزية" })).toBeVisible();            // Readiness
+    await expect(page.getByRole("heading", { name: "سجل نتائج النشر" })).toBeVisible();       // Publish consequence ledger
+    await expect(page.getByRole("heading", { name: "المصانع والزيارات المقترحة" })).toBeVisible(); // Targets & proposed visits
+    // fill the window so the frame shows a resolved (non-config-missing) Arabic state
+    const dt = page.locator('input[type="datetime-local"]');
+    await dt.nth(0).fill("2026-08-01T09:00");
+    await dt.nth(1).fill("2026-08-31T17:00");
+    await expect(page.getByText("التهيئة الإلزامية ناقصة")).toHaveCount(0, { timeout: 15000 });
     await page.screenshot({ path: join(EVIDENCE_DIR, "review-ar-rtl.png"), fullPage: true });
     await page.goto("/locale?set=en");
   });

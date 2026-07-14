@@ -50,3 +50,24 @@ reconciliation (see docs/G5_ARCHITECTURE_AND_READINESS.md).
 - Automated verification: **PASS** — typecheck, production build, focused dashboard/shell Playwright 16/16 and complete regression 50/50.
 - Visual verification: **PASS** — English dark/light desktop and Arabic RTL narrow/mobile evidence reviewed.
 - Overall status: **IMPLEMENTED AND VERIFIED; SPONSOR RUNTIME ACCEPTANCE PENDING**. Unsupported Analytics/Lookup/Notification Configuration/Integration products remain intentionally hidden under the accepted shell disposition; they are not claimed as built.
+
+## CD-025 R3 and CD-026 design disposition — 2026-07-14
+
+- CD-025 R3 page composition: **PRESERVE PENDING CORRECTION** — root design corrects the shared Planner shell and drawer model.
+- CD-025 R3 submitted archive: **BLOCKED — P1** — hybrid R2/R3 deliverables, missing R3 standalone/evidence and stale unsafe Claude Code prompt. No sponsor approval and no implementation authorization.
+- CD-025 next acceptance input: one clean synchronized R4 archive produced from `CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md`, followed by fresh Codex review.
+- CD-026: **PROMPT READY ONLY** — no Claude Design output, sponsor approval, wiring audit or implementation authorization exists yet.
+- CD-027: superseded by the disposition below.
+
+## CD-027 / SCR-WEB-210 / P03 — Visit Detail disposition — 2026-07-14
+
+- Sponsor status: **APPROVED (Vikram Indla, 2026-07-14)** for Track 1 + safe Track 2 wiring closures; recorded in `outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md` (DEC-012).
+- Baseline: `BASELINE_REVERIFY_REQUIRED` cleared — reverified against local `HEAD 8af0185` (`9360fc9` in history); `setup/Inspection` not used; dirty tree preserved.
+- Design source: imported CD-027 r2 (`READY_FOR_DESIGN_REVIEW_R2`) from Claude Design project `Plan Review and Publish`.
+- **DSG-022** (integrated Visit Detail): **IMPLEMENTED AND VERIFIED** — Dual-State Ribbon (five never-collapsed domains: planning/operational/assignment/inspection/review), identity header, evidence chapters, available/disabled-with-why/unavailable action zones. 16/16 e2e pass on the local production build.
+- **DSG-A11Y-001** (semantic, RTL, responsive, non-color): **IMPLEMENTED AND VERIFIED** — ribbon as keyboard `tablist` (APG roving tabindex, Arrow/Home/End); glyph+label status (FND-011); `role=status` completion / single `role=alert` failure; 412 narrow reflow to ordered ledger. RTL/theme parity carried by unchanged tokens/astryx.
+- Wiring (14 legs, DEC-012): all wired. Track 2 closed **ERRORMAP** (neutral errors, no raw provider text), **ORPHAN** (compensating storage cleanup), **NOTIFY_PREV** (previous-inspector notify via existing REF-014 `assignment` event).
+- Still blocked (not closed — hard-rule protected): **MAP** (never invent provider/geofence), **ASSIGNMENT_RELEASE** (open product/state-machine decision), **ATOMIC** (would weaken accepted best-effort-notify contract). Each needs its own change-control.
+- Preserved: RLS reads + joins, five state machines, field/journey ownership of operational state, state-guarded actions + guards, append-only audit (limit 30), immutable submissions, private attachments + soft delete, signed URLs, queued-not-delivered notifications, system-only expiry, the grouped shell.
+- Reopen rule: demonstrated P0/P1 regression, a11y/security failure, protected-behavior break, or recorded release blocker only.
+- Production not approved: the three blocked legs and an independent Codex re-audit of the closures remain open items.
