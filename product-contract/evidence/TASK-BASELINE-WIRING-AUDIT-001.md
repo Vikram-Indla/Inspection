@@ -44,6 +44,8 @@ The audit used the product contract, current slice, task router, decision regist
 
 The CD-001, CD-003 and CD-021 branch tips are ancestors of the consolidation branch. CD-023's unique migrations, tests, localized UI and evidence are present in the candidate tree even though its branch tip is not an ancestor; its reconciliation is recorded before branch cleanup. Concurrent Claude worktree changes were preserved, including the CD-020 planning slice and `.next-stale-backup/`. Four stashes remain untouched because they are not stale branches and may contain user-owned recovery material; no stash was dropped.
 
+Final disposition: local feature branches `feat/cd-001-v7-atlas`, `feat/cd-003-role-resolution`, `feat/cd-021-bulk-targeting`, `feat/cd-023-immediate-authority-bar`, and local `setup/Inspection` were deleted after reconciliation. `origin/main` is verified at `02c29654f98d0085b7cd9a8d83bcaa5fa46d94aa`. The remote `setup/Inspection` branch could not be deleted because GitHub protects it as the current default branch; changing the repository default branch is an external administrative action, not a safe Git push operation. 
+
 ## Exit conditions
 
 Do not call G11/G12 released: provider adapters, credential rotation, region confirmation, image rights/geographic-source confirmation and sponsor runtime acceptance remain open. After the full regression and migration certification are complete, commit the audited tree, merge to `main`, verify the remote SHA, and delete only branches proven represented by this baseline.
