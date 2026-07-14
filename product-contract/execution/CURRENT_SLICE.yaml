@@ -2,7 +2,7 @@ schema_version: "1.2"
 task_id: "TASK-BASELINE-WIRING-AUDIT-001"
 gate: "G11 production-readiness wiring audit and sponsor-authorized baseline consolidation"
 title: "CD-001..003 and CD-020..024 design-to-live wiring, branch reconciliation, and main baseline"
-status: "AUDIT_IN_PROGRESS"
+status: "BASELINE_COMMITTED_PENDING_MAIN_PUSH"
 enforce_stop_gate: false
 broad_implementation_allowed: true
 
