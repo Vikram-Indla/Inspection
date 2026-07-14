@@ -1,0 +1,143 @@
+import { test, expect, type Page } from "@playwright/test";
+import { mkdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { storageStatePath } from "./personas";
+
+// CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
+// Acceptance: DSG-020 (complete plan/child visits/blockers/notifications/atomic
+// publication), DSG-A11Y-001, DSG-CODE-001. Requirements: M01-009/010/029/030/031,
+// M02-012, FND-001/003/004/011/013, RBAC-007.
+// Tests are READ-ONLY — publish is never clicked (it mutates live data); atomic
+// all-or-nothing publication is proven at the DB layer + the guarded RPC. Runtime
+// evidence is supplementary to the functional assertions (.claude/rules/tests.md).
+const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-025-plan-review-v1");
+const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
+
+test.use({ storageState: storageStatePath("planner") });
+
+async function stageSelection(page: Page, n = 3): Promise<string[]> {
+  await page.goto("/planning/bulk");
+  const hrefs = await page.locator('a[href^="/factories/"]').evaluateAll(
+    (els, k) => els.slice(0, k).map(e => (e.getAttribute("href") ?? "").replace("/factories/", "")),
+    n,
+  );
+  const ids = hrefs.filter(Boolean);
+  await page.addInitScript(sel => { sessionStorage.setItem("cd021-bulk-selection", JSON.stringify(sel)); }, ids);
+  return ids;
+}
+
+test.beforeAll(() => { mkdirSync(EVIDENCE_DIR, { recursive: true }); });
+test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
+
+test.describe("CD-025 review workspace (DSG-020)", () => {
+  test("renders the blocker-first IA: context → readiness → targets → evidence → ledger → action", async ({ page }) => {
+    await stageSelection(page);
+    await page.goto("/planning/bulk/review");
+    // staged, nothing-persisted honesty (no plan record yet)
+    await expect(page.getByText(/nothing is saved until you publish/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /^Readiness$/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Targets & proposed visits/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Assignment evidence/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Corrections & publish/i })).toBeVisible();
+    // Complete the mandatory window so the readiness preview resolves (proves the
+    // validateBulkPlan wiring runs); publish is NOT clicked (read-only).
+    const dt = page.locator('input[type="datetime-local"]');
+    await dt.nth(0).fill("2026-08-01T09:00");
+    await dt.nth(1).fill("2026-08-31T17:00");
+    // Wait for the preview to RE-VALIDATE against the filled window (the initial
+    // empty-window "configuration missing" blocker must clear), so the captured
+    // frame is coherent — not a race between inputs and a stale preview.
+    await expect(page.getByText(/Mandatory configuration is missing/i)).toHaveCount(0, { timeout: 15000 });
+    // Readiness must resolve to a truthful, definite state — ready OR blocked —
+    // and never remain a false "ready" while checking (no optimistic success).
+    const readiness = page.locator(".cd-ready");
+    await expect(readiness.locator(".ax-lozenge--success, .ax-lozenge--critical")).toBeVisible({ timeout: 15000 });
+    // Publish reflects that state: enabled iff readiness is clear.
+    const ready = await readiness.locator(".ax-lozenge--success").count();
+    const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
+    if (ready) await expect(publish).toBeEnabled();
+    else await expect(publish).toBeDisabled();
+    await page.screenshot({ path: join(EVIDENCE_DIR, "review-primary.png"), fullPage: true });
+  });
+
+  test("consequence ledger binds four groups (created / referenced / recorded-or-queued / will-not-happen)", async ({ page }) => {
+    await stageSelection(page);
+    await page.goto("/planning/bulk/review");
+    await expect(page.getByText(/Will be created on successful commit/i)).toBeVisible();
+    await expect(page.getByText(/Will be referenced for those visits/i)).toBeVisible();
+    await expect(page.getByText(/Will be recorded or queued/i)).toBeVisible();
+    await expect(page.getByText(/Will not happen at publication/i)).toBeVisible();
+    // FND-004 — notifications are queued, never claimed delivered/accepted.
+    await expect(page.getByText(/queued for sending only/i)).toBeVisible();
+    await expect(page.getByText(/No message is delivered or accepted/i)).toBeVisible();
+  });
+
+  test("automatic-assignment copy is truthful; no round-robin claim, no invented support destination", async ({ page }) => {
+    await stageSelection(page);
+    await page.goto("/planning/bulk/review");
+    // the visible assignment-evidence heading (not the collapsed <option>)
+    await expect(page.locator(".ax-overline", { hasText: /chosen at publish/i })).toBeVisible();
+    await expect(page.getByText(/first eligible Inspector available in the window/i)).toBeVisible();
+    await expect(page.getByText(/round-robin/i)).toHaveCount(0);
+    await expect(page.getByText(/contact support/i)).toHaveCount(0);
+  });
+
+  test("publish is a single native button; when blocked it exposes a described-by disabled reason (DSG-A11Y-001)", async ({ page }) => {
+    await stageSelection(page);
+    await page.goto("/planning/bulk/review");
+    const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
+    await expect(publish).toBeVisible();
+    if (!(await publish.isEnabled())) {
+      const describedBy = await publish.getAttribute("aria-describedby");
+      expect(describedBy).toBeTruthy();
+      await expect(page.locator(`#${describedBy}`)).toContainText(/Disabled:/i);
+    }
+  });
+
+  test("empty staged selection fails closed to a return path, never a blank publishable plan", async ({ page }) => {
+    await page.addInitScript(() => { sessionStorage.removeItem("cd021-bulk-selection"); });
+    await page.goto("/planning/bulk/review");
+    await expect(page.getByText(/No factories selected/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Back to targeting/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Publish/i })).toHaveCount(0);
+  });
+});
+
+test.describe("CD-025 a11y / RTL / responsive (DSG-A11Y-001)", () => {
+  test("Arabic renders the review workspace document-level RTL", async ({ page }) => {
+    await stageSelection(page);
+    await page.goto("/locale?set=ar");
+    await page.goto("/planning/bulk/review");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await page.screenshot({ path: join(EVIDENCE_DIR, "review-ar-rtl.png"), fullPage: true });
+    await page.goto("/locale?set=en");
+  });
+
+  test("narrow viewport (412) has no horizontal overflow", async ({ page }) => {
+    await stageSelection(page);
+    await page.setViewportSize({ width: 412, height: 900 });
+    await page.goto("/planning/bulk/review");
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(1);
+    await page.screenshot({ path: join(EVIDENCE_DIR, "review-narrow-412.png"), fullPage: true });
+  });
+});
+
+// DSG-CODE-001 / DEC-012 wiring — code-layer proof of the design-to-live closures
+// that do not require mutating live data.
+test("CD-025 wiring: truthful publisher result, live readiness preview, no invented support path", () => {
+  const actions = SRC("src/app/planning/bulk/actions.ts");
+  // publish returns the authoritative plan ID (drives the read-only plan link), never a hard redirect
+  expect(actions).toContain('sb.rpc("publish_bulk_plan"');
+  expect(actions).toContain("return { ok: true, planId:");
+  expect(actions).not.toContain('redirect("/visits")');
+  // readiness preview exists and is a preview only (RPC remains authoritative)
+  expect(actions).toContain("export async function validateBulkPlan");
+  // no invented support/escalation destination in operator-facing copy
+  expect(actions).not.toContain("contact support");
+  // the guarded RPC returns the plan id and runs STM-PLAN-001/002 (validated → published)
+  const migration = SRC("../../supabase/migrations/20260714091727_planning_publish_guards.sql");
+  expect(migration).toContain("returns uuid");
+  expect(migration).toContain("return v_plan_id;");
+});
