@@ -5,10 +5,10 @@ persona: Planner
 journey: P01
 engines: [ENG-04, ENG-05, ENG-06]
 acceptance: [DSG-017, DSG-A11Y-001]
-source_branch: feat/cd-003-role-resolution   # per CURRENT_STATE.md; local mount exposes no git metadata
-source_commit: UNVERIFIED_HANDOFF_BLOCKED
-dirty_worktree: UNVERIFIED_HANDOFF_BLOCKED   # CURRENT_UI_BASELINE warns of uncommitted user work
-cd020_cd021_dependency: HANDOFF_BLOCKED      # no sponsor-approved CD-020/CD-021 artifact recorded in the repo; only the frozen shared shell is assumed
+source_branch: feat/cd-022-single-identity-lens
+source_commit: PENDING_TASK_BASELINE_WIRING_AUDIT_001_COMMIT
+dirty_worktree: AUDITED_SHARED_WORKTREE_PRESERVED
+cd020_cd021_dependency: RUNTIME_WIRED_DESIGN_ARTIFACT_GAPS_RECORDED
 research_set_r16_r19_r21_r24: HANDOFF_BLOCKED # approval pack Reference Library defines R01-R15 only; R16/R19/R21/R24 are cited by the matrix but not defined in the mounted repo. Three primary-source categories satisfied directly (see RESEARCH_PROVENANCE_CD-022.md).
 design_frame_ids: [2a, 2b, 2c, 2d, 2e, 2f, 2g, 2h]
 design_file: "CD-021 Bulk Targeting.dc.html (canvas section CD-022, ids 2a-2h)"
@@ -37,11 +37,11 @@ file_changes:
   - file: apps/web/src/app/planning/single/actions.ts
     before: publishSingleVisit - validation blockers then 6 sequential writes (plan, visit, assignment, visit update, plan update, notification), redirect /visits/:id; raw e.message on any write failure
     disposition: UPDATE
-    after: (a) catalogued neutral error copy, raw errors logged server-side only; (b) structured step-level result powering the 2e stepper; (c) resumable retry keyed by visit_plan_id (never a second visit); (d) success redirect unchanged
+    after: Fail-closed authoritative reads plus one publish_single_visit RPC; migration 20260714091727 revalidates identity/package/location/duplicate/assignment inside a transaction, executes STM-PLAN-001/002, writes audit/notification side effects atomically, and supports only an owned empty draft as a legacy resume input
     design_node: 2e partial failure + success contrast
     protected: all validation blockers verbatim; assignment candidates JSON; notification insert semantics (queued, not delivered)
-    dependencies: HANDOFF_BLOCKED - true atomicity needs a Postgres RPC/transaction; backend decision
-    tests: forced failure at each step leaves consistent draft; retry idempotence; no raw provider text in DOM
+    dependencies: MIGRATION_20260714091726_20260714091727_DEPLOYMENT_AND_LIVE_CERTIFICATION_REQUIRED
+    tests: static transaction/transition contract + identity/duplicate/work-preservation/legacy-resume UI suite; forced rollback/concurrency certification required after migration deployment
   - file: apps/web/src/app/planning/single/IdentityDossier.tsx
     before: (does not exist)
     disposition: CREATE
@@ -51,4 +51,4 @@ file_changes:
 removals: []   # REMOVE requires explicit human approval; none proposed
 rtl_theme_impact: Logical properties only; Arabic-primary entity names with LTR secondary line; bdi-isolated CR/license/coords/dates; dark/light via ax tokens
 rollback: Additive UPDATEs behind the same route; git revert of implementation commits; no schema changes proposed
-status: READY_FOR_DESIGN_REVIEW
+status: IMPLEMENTED_PENDING_MIGRATION_RUNTIME_CERTIFICATION

@@ -342,6 +342,26 @@
       "commit_sha": "uncommitted shared dirty worktree; no commit/push/merge authorized",
       "next_task": "Apply urgency migration from an authenticated Supabase environment, run 91/91, then hand the reconciled package to a distinct OpenAI Codex reviewer",
       "resume_prompt": "Read product-contract/sessions/CLAUDE_CODE_CONTINUATION_CD-023.md and outputs/cd-023/WIRING_MAP_CD-023.csv. Do not repeat the completed code/package reconciliation. Apply only migration 20260714060935 through linked migration history, run the crafted urgency check and full 91-test suite, then request a fresh independent DEC-012 audit. Do not self-close, start CD-024+ implementation, commit, push, merge, deploy, modify main, switch branches, or clean the shared worktree."
+    },
+    {
+      "session_id": "2026-07-14-baseline-wiring-audit-001",
+      "started_at": "2026-07-14T09:05:00+03:00",
+      "ended_at": "2026-07-14T16:45:00+03:00",
+      "branch": "feat/cd-022-single-identity-lens",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring audit and baseline consolidation",
+      "requirements": ["MVP1-M01-001..052", "MVP1-M02-012", "MVP1-FND-001", "MVP1-FND-002", "MVP1-FND-003", "RBAC-001..014"],
+      "acceptance_ids": ["CD-001", "CD-002", "CD-003", "CD-020", "CD-021", "CD-022", "CD-023", "CD-024", "DSG-A11Y-001"],
+      "screens": ["AUTH-01", "AUTH-02", "AUTH-03", "SCR-WEB-100", "SCR-WEB-110", "SCR-WEB-120", "SCR-WEB-130", "SCR-IPAD-610", "SCR-IPAD-620"],
+      "engines": ["ENG-02", "ENG-03", "ENG-04", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
+      "files_changed": ["cross-slice wiring and fail-closed runtime paths", "forward migrations 20260714091726/27", "wiring maps/manifests", "TASK-BASELINE-WIRING-AUDIT-001.md", "CURRENT_STATE.md", "WORK_QUEUE.yaml"],
+      "tests": ["typecheck PASS", "production build PASS", "focused CD-001..CD-022 sweep 48/48 PASS with migration-dependent publish checks held", "CD-023 focused 18/18 PASS", "full Playwright 92/99 PASS; 2 atomic-RPC failures pending migration and 1 KPI fixture/published-monitoring mismatch"],
+      "evidence": ["product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md", "outputs/cd-021/WIRING_MAP_CD-021.csv", "outputs/cd-022/WIRING_MAP_CD-022.csv", "outputs/cd-023/WIRING_MAP_CD-023.csv"],
+      "decisions": ["Keep CD-024/CD-025 route and lifecycle implementation blocked by governance", "Keep notification/provider delivery truthful and diagnostic details out of UI", "Generate forward migrations with Supabase CLI; do not deploy production in this task", "Preserve concurrent work and stashes until branch disposition is proven"],
+      "blockers": ["Forward migration runtime certification", "Full no-exclusion regression after migration", "Fresh independent DEC-012 CD-023 audit", "Sponsor runtime acceptance", "G11/G12 credential, region, provider and asset-rights release items"],
+      "commit_sha": "pending baseline commit",
+      "next_task": "Commit audited tree, reconcile CD-023 branch, merge to main, verify remote SHA, then delete only represented stale branches",
+      "resume_prompt": "Read TASK-BASELINE-WIRING-AUDIT-001.md and CURRENT_SLICE.yaml. Preserve the declared migration and regression blockers; finish the authorized main consolidation and branch disposition without deploying production or implementing blocked CD-024/CD-025 routes."
     }
   ],
   "last_session": "2026-07-14-cd023-post-audit-remediation",

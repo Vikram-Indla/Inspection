@@ -58,6 +58,28 @@ handoff_blocked:
   - attempted_conflict_audit: no audit event for blocked/attempted assignment
   - notification_delivery: notification row is queued-only; no delivery truth (ENG-11 providers)
   - stale_concurrency_token: no availability version token; submit recheck is the only concurrency contract
+baseline_wiring_audit_2026_07_14:
+  resolved_in_candidate_baseline:
+    - fail_closed_query_error_handling
+    - concurrency_safe_overlap_enforcement
+    - automatic_overlap_protection
+    - authoritative_package_visit_type_revalidation
+    - canonical_plan_transition
+    - single_publish_atomicity_dependency
+  evidence:
+    - apps/web/src/app/planning/bulk/actions.ts
+    - apps/web/src/app/planning/bulk/page.tsx
+    - apps/web/src/app/planning/bulk/review/page.tsx
+    - supabase/migrations/0031_cd023_assignment_overlap_guard.sql
+    - supabase/migrations/20260714091726_plan_validated_state.sql
+    - supabase/migrations/20260714091727_planning_publish_guards.sql
+  runtime_certification: PENDING_MIGRATION_DEPLOYMENT
+  still_blocked:
+    - route_ownership_and_design_signoff
+    - virtual_mode_for_bulk
+    - attempted_conflict_business_audit
+    - notification_provider_delivery_truth
+    - stale_availability_version_token
 rtl_theme_impact: Logical properties; Arabic fresh-session default; bdi-isolated IDs/windows/codes; dark/light via ax tokens; conflict = glyph+text never color alone
 rollback: Additive UPDATEs on the existing review route; git revert; no schema changes; RPC untouched
 status: READY_FOR_DESIGN_REVIEW_R2

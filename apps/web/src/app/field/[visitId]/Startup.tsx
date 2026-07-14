@@ -115,7 +115,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     const fd = new FormData();
     fd.set("visit_id", visit.id); fd.set("next", next);
     const r = await transitionOperationalState({}, fd);
-    if (r.error) { add(fmt(strings.logOpBlocked, { error: r.error })); return false; }
+    if (r.error) { add(strings.logOpBlocked); return false; }
     add(fmt(strings.logOpState, { state: next.replace(/_/g, " ") }));
     return true;
   }
@@ -132,7 +132,14 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       .insert({ visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString() })  // M04-009 device clock
       .select().single();
     setBusy(false);
-    if (error) { add(fmt(strings.logJourneyBlocked, { error: error.message })); return; }
+    if (error) {
+      // Provider/RLS detail stays diagnostic-only. The field timeline must never
+      // expose raw database text (DEC-012 cross-cutting error-sink rule).
+      // eslint-disable-next-line no-console
+      console.error("[field start journey]", error);
+      add(strings.logJourneyBlocked);
+      return;
+    }
     setJourneyId(data.id); add(strings.logJourneyStarted);
     await opTransition("on_the_way");                                // M04-018 · STM-OPS leg 1
   }
@@ -212,7 +219,12 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       geofence_result: inside ? "inside" : "outside", gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
     });
     setBusy(false);
-    if (error) { add(fmt(strings.logCheckinRejected, { error: error.message })); return; }
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[field check-in]", error);
+      add(strings.logCheckinRejected);
+      return;
+    }
     if (!inside) { add(fmt(strings.logOutside, { d: d.toFixed(0), fence })); return; }
     setCheckedIn(true); add(fmt(strings.logInside, { d: d.toFixed(0), acc: acc.toFixed(1) }));
     await sb.from("journey_sessions").update({ status: "arrived" }).eq("id", journeyId!);
@@ -233,7 +245,12 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
     });
     setBusy(false);
-    if (error) { add(fmt(strings.logExceptionFailed, { error: error.message })); return; }
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[field exception record]", error);
+      add(strings.logExceptionFailed);
+      return;
+    }
     setExceptionNote(""); add(fmt(strings.logExceptionSent, { acc: fix.acc.toFixed(1) }));
   }
 
@@ -260,7 +277,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       const fd = new FormData();
       fd.set("visit_id", visit.id); fd.set("reason_key", cancelReason); fd.set("comment", cancelComment);
       const r = await requestVisitCancellation({}, fd);
-      if (r.error) { add(fmt(strings.logCancelFailed, { error: r.error })); return; }
+      if (r.error) { add(strings.logCancelFailed); return; }
       setCancelRequested(true);           // M04-056 — stop transition to execution
       add(strings.logCancelSent);
     } finally { setBusy(false); }
@@ -276,7 +293,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     fd.set("visit_id", visit.id); fd.set("reason", reason);
     const r = await requestVisitReturn({}, fd);
     setBusy(false);
-    if (r.error) { add(fmt(strings.logReturnFailed, { error: r.error })); return; }
+    if (r.error) { add(strings.logReturnFailed); return; }
     setReturnRequested(true);
     add(strings.logReturnSent);
   }

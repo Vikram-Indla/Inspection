@@ -8,16 +8,21 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // publish passes the actual chosen visit_type (the existing hard block,
 // unchanged).
 export type DuplicateVisit = { id: string; visit_type: string };
+export type DuplicateVisitRead = { visits: DuplicateVisit[]; unavailable: boolean };
 
 export async function findDuplicateActiveVisits(
   sb: SupabaseClient,
   factoryId: string,
   visitType?: string,
-): Promise<DuplicateVisit[]> {
+): Promise<DuplicateVisitRead> {
   let q = sb.from("visits").select("id, visit_type")
     .eq("factory_id", factoryId)
     .in("planning_status", ["draft", "published", "returned"]);
   if (visitType) q = q.eq("visit_type", visitType);
-  const { data } = await q.limit(5);
-  return (data ?? []) as DuplicateVisit[];
+  const { data, error } = await q.limit(5);
+  if (error) {
+    console.error("[CD-022 duplicate-active-visit read]", error.message, error.code);
+    return { visits: [], unavailable: true };
+  }
+  return { visits: (data ?? []) as DuplicateVisit[], unavailable: false };
 }

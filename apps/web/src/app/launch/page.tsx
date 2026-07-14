@@ -26,10 +26,20 @@ const ROLE_HOME: [string, string][] = [
 
 export default async function Launch() {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) redirect("/login");
+  const { data: { user }, error: authError } = await sb.auth.getUser();
+  // Throw into the route error boundary so an identity-provider outage is
+  // never misrepresented as an unauthenticated or no-workspace outcome.
+  if (authError?.name === "AuthSessionMissingError" || !user) redirect("/login");
+  if (authError) {
+    console.error("[CD-003 launch auth]", authError.message);
+    throw new Error("launch_auth_unavailable");
+  }
 
-  const { data: roles } = await sb.from("user_roles").select("role_key").eq("user_id", user.id);
+  const { data: roles, error: rolesError } = await sb.from("user_roles").select("role_key").eq("user_id", user.id);
+  if (rolesError) {
+    console.error("[CD-003 launch roles]", rolesError.message);
+    throw new Error("launch_roles_unavailable");
+  }
   const keys = new Set((roles ?? []).map(r => r.role_key));
   for (const [role, home] of ROLE_HOME) if (keys.has(role)) redirect(home);
   // CD003-SEC-001: no matched role is not the same as an admin grant — an

@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { PERSONAS, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
@@ -260,4 +260,16 @@ test.describe("CD-022 authorization boundary", () => {
     await expect(page.getByText(/authorized role required|يلزم دور مصرح له/i)).toBeVisible();
     await expect(page.getByPlaceholder(/CR number|Industrial License/i)).toHaveCount(0);
   });
+});
+
+test("CD-022 publish and duplicate reads fail closed behind the shared atomic boundary", () => {
+  const action = readFileSync(join(process.cwd(), "src/app/planning/single/actions.ts"), "utf8");
+  const duplicate = readFileSync(join(process.cwd(), "src/app/planning/single/duplicate.ts"), "utf8");
+  const migration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260714091727_planning_publish_guards.sql"), "utf8");
+  expect(action).toContain('sb.rpc("publish_single_visit"');
+  expect(action).not.toContain('.from("visit_plans").insert');
+  expect(duplicate).toContain("unavailable: true");
+  expect(migration).toContain("single publish duplicate active visit");
+  expect(migration).toContain("set status = 'validated'");
+  expect(migration).toContain("insert into notifications");
 });

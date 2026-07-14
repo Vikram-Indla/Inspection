@@ -62,7 +62,7 @@ export type WorkspaceStrings = {
   panelWindow: string; panelTypeMode: string; panelPkg: string;
   prevSource: string; prevLine: string; prevNoAnswer: string;
   evSyncedAlt: string; evArchived: string; evReplace: string; evDelete: string;
-  evDeletedMsg: string; evDeleteQueuedOffline: string; evArchiveQueued: string;
+  evDeletedMsg: string; evDeleteQueuedOffline: string; evArchiveQueued: string; saveFailed: string;
   evDeleteTitle: string; evDeleteReason: string; evDeleteReasonPh: string;
   evDeleteConfirm: string; evDeleteCancel: string; evDeleteNeedsReason: string;
   annot: AnnotatorStrings;
@@ -153,11 +153,12 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
 
   // --- Persistence beyond the outbox (context · action forms · runtime violations) ---
   // The offline engine is untouched: these use direct writes when online plus a
-  // local draft + reconnect flush when offline (RLS is the authority; errors verbatim).
+  // local draft + reconnect flush when offline (RLS is the authority; provider
+  // errors are diagnostic-only and the UI receives stable recovery copy).
   async function pushCtx(next: Record<string, string>) {
     if (!navigator.onLine) { pending.current.ctx = true; return; }
     const { error } = await supabaseBrowser().from("inspections").update({ context: next }).eq("id", inspection.id);
-    if (error) { setMsg(error.message); pending.current.ctx = true; } else pending.current.ctx = false;
+    if (error) { console.error("[field workspace context]", error.message); setMsg(strings.saveFailed); pending.current.ctx = true; } else pending.current.ctx = false;
   }
   async function saveCtx(key: string, value: string) {
     const next = { ...ctxRef.current, [key]: value };
@@ -171,10 +172,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     if (!cfg?.mapping_version) return null;                 // no accepted penalty mapping → never invent one
     if (!navigator.onLine) { pending.current.vios.add(code); return null; }
     const sb = supabaseBrowser();
-    const { data: existing } = await sb.from("violations").select("id").eq("inspection_id", inspection.id).eq("violation_code_id", cfg.id).maybeSingle();
+    const { data: existing, error: existingError } = await sb.from("violations").select("id").eq("inspection_id", inspection.id).eq("violation_code_id", cfg.id).maybeSingle();
+    if (existingError) { console.error("[field workspace violation read]", existingError.message); setMsg(strings.saveFailed); pending.current.vios.add(code); return null; }
     if (existing?.id) { setVioIds(m => ({ ...m, [code]: existing.id })); pending.current.vios.delete(code); return existing.id; }
     const { data, error } = await sb.from("violations").insert({ inspection_id: inspection.id, violation_code_id: cfg.id, mapping_version: cfg.mapping_version }).select("id").single();
-    if (error) { setMsg(error.message); pending.current.vios.add(code); return null; }
+    if (error) { console.error("[field workspace violation]", error.message); setMsg(strings.saveFailed); pending.current.vios.add(code); return null; }
     setVioIds(m => ({ ...m, [code]: data.id })); pending.current.vios.delete(code);
     return data.id;
   }
@@ -192,7 +194,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       required_correction: draft.required_correction || null,
       status: formComplete(def, draft) ? "complete" : "open",   // M04-183: complete only when mandatory fields pass
     }, { onConflict: "inspection_id,item_id" });
-    if (error) { setMsg(error.message); pending.current.forms.add(item.id); return; }
+    if (error) { console.error("[field workspace action form]", error.message); setMsg(strings.saveFailed); pending.current.forms.add(item.id); return; }
     pending.current.forms.delete(item.id);
     setMsg(fmt(strings.afSaved, { code: item.code }));
   }
@@ -210,10 +212,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     if (pendingArch.current.length) {
       const rest: typeof pendingArch.current = [];
       for (const a of pendingArch.current) {
-        const { data: repl } = await sb.from("evidence").select("id").eq("storage_path", a.newPath).maybeSingle();
+        const { data: repl, error: replacementError } = await sb.from("evidence").select("id").eq("storage_path", a.newPath).maybeSingle();
+        if (replacementError) { console.error("[field workspace replacement read]", replacementError.message); setMsg(strings.saveFailed); rest.push(a); continue; }
         if (!repl) { rest.push(a); continue; }                    // replacement not synced yet — retry next tick
         const { error } = await sb.from("evidence").update({ archived_at: new Date().toISOString(), superseded_by: repl.id }).eq("id", a.oldId);
-        if (error) { setMsg(error.message); rest.push(a); }
+        if (error) { console.error("[field workspace evidence archive]", error.message); setMsg(strings.saveFailed); rest.push(a); }
       }
       pendingArch.current = rest;
       await local.saveDraft(inspection.id, "__arch", rest);
@@ -222,7 +225,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       const rest: typeof pendingDel.current = [];
       for (const d of pendingDel.current) {
         const { error } = await sb.from("evidence").update({ deleted_at: new Date().toISOString(), delete_reason: d.reason }).eq("id", d.id);
-        if (error) { setMsg(error.message); rest.push(d); }
+        if (error) { console.error("[field workspace evidence delete flush]", error.message); setMsg(strings.saveFailed); rest.push(d); }
       }
       pendingDel.current = rest;
       await local.saveDraft(inspection.id, "__del", rest);
@@ -320,7 +323,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     setDeleting(null);
     if (navigator.onLine) {
       const { error } = await supabaseBrowser().from("evidence").update({ deleted_at: new Date().toISOString(), delete_reason: reason }).eq("id", evId);
-      if (error) { setMsg(error.message); return; }
+      if (error) { console.error("[field workspace evidence delete]", error.message); setMsg(strings.saveFailed); return; }
       setEvState(s => ({ ...s, [evId]: { ...s[evId], deleted: true } }));
       setMsg(strings.evDeletedMsg);
     } else {

@@ -11,7 +11,7 @@ import { publishBulkPlan, loadBulkSelection, type BulkResult, type ReviewData } 
 const SEL_KEY = "cd021-bulk-selection";
 
 export type ReviewStrings = {
-  loading: string; emptyTitle: string; emptyBody: string; backToTargeting: string;
+  loading: string; unavailable: string; emptyTitle: string; emptyBody: string; backToTargeting: string;
   configTitle: string; visitType: string; typePeriodic: string; packageLabel: string;
   windowStart: string; windowEnd: string; notes: string; notesPlaceholder: string;
   assignTitle: string; colFactory: string; colRisk: string; colInspector: string;
@@ -35,11 +35,14 @@ export default function ReviewClient({ strings }: { strings: ReviewStrings }) {
     try { stored = JSON.parse(sessionStorage.getItem(SEL_KEY) ?? "[]"); } catch { stored = []; }
     const clean = Array.isArray(stored) ? stored : [];
     setIds(clean);
-    if (clean.length) loadBulkSelection(clean).then(setData);
+    if (clean.length) loadBulkSelection(clean).then(setData).catch(() => setData({ factories: [], packages: [], inspectors: [], unavailable: true }));
     else setData({ factories: [], packages: [], inspectors: [] });
   }, []);
 
   if (data === null) return <p className="ax-caption">{strings.loading}</p>;
+  if (data.unavailable) {
+    return <div className="ax-banner ax-banner--critical" role="alert">{strings.unavailable}</div>;
+  }
   if (ids.length === 0 || data.factories.length === 0) {
     return (
       <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }}>

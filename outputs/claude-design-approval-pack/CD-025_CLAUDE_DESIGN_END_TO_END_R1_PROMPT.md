@@ -1,5 +1,9 @@
 # Claude Design End-to-End Prompt — CD-025 R1
 
+This is the complete prompt to paste directly into Claude Design.
+
+Claude Design must generate the visual design and the complete handoff package. The handoff package must include a paste-ready Claude Code implementation prompt for the sponsor to use only after approving the design.
+
 ## Identity — mandatory
 
 This task is **CD-025 / SCR-WEB-150 / P03 Plan Review & Publish**.
@@ -21,6 +25,8 @@ This is design research, interaction design and high-fidelity design only.
 Do not edit application code, migrations, database policies, tests, runtime data or product-contract files.
 
 Do not implement, commit, push, merge, deploy, modify `main`, discard dirty work or claim implementation readiness.
+
+`Design only` does not mean “omit the Claude Code prompt.” Generate the paste-ready implementation prompt as a handoff artefact, but label it clearly: `DO NOT EXECUTE UNTIL SPONSOR DESIGN APPROVAL`.
 
 Produce one complete, code-aware design package for sponsor review. Preserve the established Saqeel family grammar and introduce no more than one page-specific signature pattern.
 
@@ -723,7 +729,8 @@ Return one coherent package containing:
 33. `ACCEPTANCE_CHECKLIST_CD-025.md`
 34. `RESEARCH_PROVENANCE_CD-025.md`
 35. `CLAUDE_CODE_HANDOFF_CD-025.md`
-36. PNG exports named consistently with `CD-025_SCR-WEB-150_*`
+36. `CLAUDE_CODE_IMPLEMENTATION_PROMPT_CD-025.md` — a complete paste-ready prompt for Claude Code, labelled `DO NOT EXECUTE UNTIL SPONSOR DESIGN APPROVAL`
+37. PNG exports named consistently with `CD-025_SCR-WEB-150_*`
 
 Every exported frame must have a stable node/frame identifier referenced by the checklist.
 
@@ -780,6 +787,17 @@ Never list `apps/web/src/app/planning/plans/[id]/page.tsx` as an editable pre-pu
 Do not guess a new Next.js route filename. Use a route-neutral proposed component name and mark its route target blocked.
 
 The manifest must state `implementation_authorized: false`.
+
+The generated `CLAUDE_CODE_IMPLEMENTATION_PROMPT_CD-025.md` must:
+
+- implement only the sponsor-approved CD-025 design and vertical slice;
+- require Claude Code to read the approved design file, manifest, component map, wiring map, state matrix and acceptance checklist before editing;
+- preserve all protected behavior and the existing dirty worktree;
+- prohibit commit, push, merge, deployment and modification of `main` unless separately authorized;
+- require exact route, lifecycle, validation, RLS, audit, notification, negative-path, Arabic/RTL, theme, responsive and accessibility evidence;
+- instruct Claude Code to stop rather than invent any unresolved policy or backend behavior;
+- include the exact files and tests identified by the final selected design;
+- remain a handoff artefact until the sponsor explicitly approves CD-025.
 
 ## Acceptance proof
 

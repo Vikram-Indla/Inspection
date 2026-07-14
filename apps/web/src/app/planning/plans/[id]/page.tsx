@@ -26,7 +26,13 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const { t } = await useT();
   const sb = await supabaseServer();
-  await sb.rpc("expire_lapsed_visits"); // persist published→expired before counting (M02-016)
+  const { error: expiryError } = await sb.rpc("expire_lapsed_visits"); // persist published→expired before counting (M02-016)
+  if (expiryError) {
+    console.error("[planning plan drill expiry]", expiryError);
+    return <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
+      <div className="ax-banner ax-banner--critical"><div>{t("plan.drill.loadErrorSafe", "Could not load the current plan state. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
+    </Shell>;
+  }
   const [{ data: plan, error: pErr }, { data: kids, error: kErr }] = await Promise.all([
     sb.from("visit_plans")
       .select("id, method, status, criteria, created_at, published_at, profiles(full_name)")
@@ -37,8 +43,9 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       .eq("visit_plan_id", id).order("window_start", { ascending: true }),
   ]);
   if (pErr || kErr) {
+    console.error("[planning plan drill read]", pErr ?? kErr);
     return <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
-      <div className="ax-banner ax-banner--critical"><div>{t("plan.drill.loadError", "Could not load plan:")} {pErr?.message ?? kErr?.message}</div></div>
+      <div className="ax-banner ax-banner--critical"><div>{t("plan.drill.loadErrorSafe", "Could not load the plan. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
     </Shell>;
   }
   if (!plan) {

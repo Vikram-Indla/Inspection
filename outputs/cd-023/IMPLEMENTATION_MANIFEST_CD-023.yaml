@@ -28,9 +28,10 @@ accepted_design_authority:
 source_branch: feat/cd-023-immediate-authority-bar
 source_commit_reviewed: 7a01355
 working_tree_note: >-
-  Post-audit remediation is uncommitted in a shared dirty checkout on
-  feat/cd-022-single-identity-lens. No switch/reset/clean/commit/push/merge is
-  authorized; CD-023 target blobs matched 7a01355 before these scoped edits.
+  TASK-BASELINE-WIRING-AUDIT-001 sponsor-authorized consolidation is active in
+  the shared feat/cd-022-single-identity-lens checkout. Parallel changes are
+  preserved and provenance-audited; final baseline commit/merge/push and a
+  fresh DEC-012 re-audit remain pending.
 design_frame_ids: [3a, 3b, 3c, 3d, 3e, 3f, 3g, 3h, 3i]
 design_file: "CD-021 Bulk Targeting.dc.html (canvas section CD-023, ids 3a-3i)"
 png_paths:
@@ -140,11 +141,12 @@ database_contract:
     planner: one queued row with provider status; delivery not claimed
     inspector: none for self-assignment
   urgency_constraint_migration: 20260714060935_cd023_urgency_contract.sql
-  urgency_constraint_live_state: PREPARED_NOT_APPLIED
+  urgency_constraint_live_state: APPLIED_LIVE_SPONSOR_CONFIRMED_SQL_EDITOR
   live_state_reason: >-
-    Linked CLI migration-list/dry-run stalled at login-role initialization and
-    no SUPABASE_DB_PASSWORD or SUPABASE_ACCESS_TOKEN is available. Dashboard SQL
-    was not used because it would bypass migration history.
+    Sponsor applied the exact 20260714060935 migration body to the linked project
+    through Supabase SQL Editor on 2026-07-14. Focused runtime coverage then passed
+    18/18 including crafted direct-RPC rejection. Linked CLI migration-history
+    confirmation remains unavailable without SUPABASE_ACCESS_TOKEN/DB password.
 
 design_claims_superseded_by_source_authority:
   - Planner-only access
@@ -163,4 +165,4 @@ rollback: >-
   Revert the scoped application/test/package changes and roll forward with a new
   migration if the urgency CHECK has already been deployed. Never edit an applied
   migration in place.
-status: REMEDIATION_IMPLEMENTED_PENDING_LIVE_MIGRATION_FULL_REGRESSION_AND_INDEPENDENT_REAUDIT
+status: REMEDIATION_IMPLEMENTED_LIVE_VERIFIED_PENDING_FINAL_INDEPENDENT_REAUDIT

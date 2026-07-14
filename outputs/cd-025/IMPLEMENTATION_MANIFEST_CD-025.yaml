@@ -74,4 +74,21 @@ handoff_blocked:
 rtl_theme_impact: logical properties; Arabic fresh-session default; bdi-isolated codes/windows/IDs; dark/light parity incl. RTL light evidence; status glyph+text never color alone
 rollback: design-only package; no code, schema or contract files touched
 implementation_authorized: false
+baseline_wiring_audit_2026_07_14:
+  note: Backend safety dependencies were resolved without implementing the unapproved CD-025 screen or guessing its route.
+  resolved_in_candidate_baseline:
+    - canonical STM-PLAN-001 and STM-PLAN-002 persistence
+    - in_transaction_duplicate_package_visit_type_and_assignment_revalidation
+    - bulk_auto_overlap_avoidance
+    - concurrency_safe_assignment_guard
+    - single_atomicity
+    - fail_closed_reads_on_existing_bulk_and_single_routes
+  runtime_certification: PENDING_MIGRATION_DEPLOYMENT
+  still_blocked:
+    - route_and_ownership
+    - staged_handoff_and_return_to_edit
+    - planning_approver_configuration
+    - attempted_publication_business_event
+    - notification_provider_delivery
+    - durable_success_receipt
 status: READY_FOR_DESIGN_REVIEW_R1

@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 // CD-001 V7 Atlas — runtime interaction proof for the premium 3D Saudi
 // Industrial Inspection Atlas on /login. Demonstrates the claims the design
@@ -11,6 +13,13 @@ test.beforeEach(async ({ page }) => {
   // Origin-agnostic: /locale sets the locale cookie server-side (works under
   // both the throwaway :3210 run and the main :3000 G10 suite).
   await page.goto("/locale?set=en");
+});
+
+test("production login bundle contains no source-coded demo passwords", () => {
+  const source = readFileSync(join(process.cwd(), "src/app/login/page.tsx"), "utf8");
+  expect(source).not.toMatch(/Mim(?:Admin|Plan|Field|Rev|Ops)!2026/);
+  expect(source).toContain("SAQEEL_DEMO_${key}_PASSWORD");
+  expect(source).toContain("SAQEEL_DEMO_${key}_EMAIL");
 });
 
 test("fresh login defaults to Arabic with document-level RTL semantics", async ({ page, context }) => {

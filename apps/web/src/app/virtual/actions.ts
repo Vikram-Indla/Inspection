@@ -7,6 +7,8 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { insertNotification } from "@/lib/notify";
 
+const SYSTEM_ERROR = "The session could not be scheduled. Try again or contact support.";
+
 export type VirtualActionResult = { error?: string; ok?: string };
 
 export async function scheduleSession(_: VirtualActionResult, fd: FormData): Promise<VirtualActionResult> {
@@ -25,7 +27,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
   const { data: visit, error: vErr } = await sb.from("visits")
     .select("id, execution_mode, planning_status, factories(name), virtual_sessions(id), assignments(inspector_id, profiles(full_name))")
     .eq("id", visit_id).single();
-  if (vErr) return { error: vErr.message };
+  if (vErr) { console.error("[virtual schedule visit read]", vErr); return { error: SYSTEM_ERROR }; }
   if (visit.execution_mode !== "virtual") return { error: "Visit is not a virtual visit (M05-002 validation)." };
   if (visit.planning_status !== "published") return { error: `Visit is ${visit.planning_status} — only published visits can be scheduled (M05-002).` };
   // visits -> virtual_sessions is a TO-ONE embed (unique visit_id): object|null.
@@ -39,7 +41,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
     appointment_at: appointmentIso,
     timeline: [{ event: "scheduled", at: new Date().toISOString(), actor: user.id, detail: { appointment_at: appointmentIso } }],
   }).select("id").single();
-  if (sErr) return { error: sErr.message };
+  if (sErr) { console.error("[virtual schedule session write]", sErr); return { error: SYSTEM_ERROR }; }
 
   const asg = (visit.assignments as unknown as { inspector_id: string; profiles: { full_name: string } | null }[])?.[0];
   const participants = [
@@ -47,7 +49,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
     ...(asg ? [{ session_id: session.id, display_name: asg.profiles?.full_name ?? "Inspector", role: "inspector" }] : []),
   ];
   const { error: pErr } = await sb.from("virtual_participants").insert(participants);
-  if (pErr) return { error: `Session created, but participants failed: ${pErr.message}` };
+  if (pErr) { console.error("[virtual schedule participants]", pErr); return { error: "The session could not bind its participants. Try again or contact support." }; }
 
   const factoryName = (visit.factories as unknown as { name: string } | null)?.name ?? "";
   const notes: string[] = [];
@@ -56,7 +58,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
       event_key: "virtual_scheduled", recipient: asg.inspector_id,
       payload: { session_id: session.id, visit_id, appointment_at: appointmentIso, factory: factoryName },
     });
-    if (n.error) notes.push(`inspector notification failed: ${n.error}`);
+    if (n.error) notes.push("inspector notification could not be queued");
   }
   // Factory rep is an external party — SMS channel; no provider is configured
   // in this environment, so the row is stored honestly as not_configured.
@@ -64,7 +66,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
     event_key: "virtual_scheduled", recipient: null, channel: "sms",
     payload: { session_id: session.id, visit_id, appointment_at: appointmentIso, factory: factoryName, rep_name },
   });
-  if (rep.error) notes.push(`factory-rep notification failed: ${rep.error}`);
+  if (rep.error) notes.push("factory representative notification could not be queued");
 
   revalidatePath("/virtual");
   return { ok: `Session scheduled for ${appointmentIso.slice(0, 16).replace("T", " ")} (M05-002)${notes.length ? ` — ${notes.join("; ")}` : ""}` };

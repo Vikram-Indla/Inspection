@@ -25,6 +25,14 @@ export default async function Login() {
   const locale = await resolveLocale();
   const ar = locale === "ar";
   const demoEnabled = process.env.SAQEEL_DEMO_ACCESS_ENABLED === "1";
+  // Demo credentials are deployment secrets, never source constants. Even
+  // when the demo switch is on, an identity is offered only when both values
+  // were explicitly supplied by the environment.
+  const demoIdentity = (label: string, dest: string, key: string) => {
+    const email = process.env[`SAQEEL_DEMO_${key}_EMAIL`];
+    const password = process.env[`SAQEEL_DEMO_${key}_PASSWORD`];
+    return email && password ? { label, dest, email, password } : null;
+  };
 
   const strings: LoginStrings = {
     dir: ar ? "rtl" : "ltr",
@@ -107,12 +115,12 @@ export default async function Login() {
         : "There's no public admin/portal toggle — your role decides the destination after sign-in. Pick a demo identity to fill the form.",
     },
     demoAccounts: demoEnabled ? [
-      { label: ar ? "الإدارة" : "Administrator", dest: ar ? "وحدة الإدارة" : "Admin console", email: "admin@mim.gov.sa", password: "MimAdmin!2026" },
-      { label: ar ? "مخطّط" : "Planner", dest: ar ? "التخطيط" : "Planning", email: "planner@mim.gov.sa", password: "MimPlan!2026" },
-      { label: ar ? "مفتّش" : "Inspector", dest: ar ? "الميدان" : "Field", email: "inspector@mim.gov.sa", password: "MimField!2026" },
-      { label: ar ? "مراجِع" : "Reviewer", dest: ar ? "المراجعة" : "Reviews", email: "reviewer@mim.gov.sa", password: "MimRev!2026" },
-      { label: ar ? "التشغيل" : "Operations", dest: ar ? "مركز العمليات" : "Operations", email: "ops@mim.gov.sa", password: "MimOps!2026" },
-    ] : [],
+      demoIdentity(ar ? "الإدارة" : "Administrator", ar ? "وحدة الإدارة" : "Admin console", "ADMIN"),
+      demoIdentity(ar ? "مخطّط" : "Planner", ar ? "التخطيط" : "Planning", "PLANNER"),
+      demoIdentity(ar ? "مفتّش" : "Inspector", ar ? "الميدان" : "Field", "INSPECTOR"),
+      demoIdentity(ar ? "مراجِع" : "Reviewer", ar ? "المراجعة" : "Reviews", "REVIEWER"),
+      demoIdentity(ar ? "التشغيل" : "Operations", ar ? "مركز العمليات" : "Operations", "OPS"),
+    ].filter((account): account is NonNullable<typeof account> => account !== null) : [],
   };
 
   return <LoginClient strings={strings} />;

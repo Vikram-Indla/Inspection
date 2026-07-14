@@ -15,17 +15,24 @@ export type ReviewFactory = {
 };
 export type ReviewInspector = { user_id: string; full_name: string };
 export type ReviewPackage = { id: string; version_label: string; code: string };
-export type ReviewData = { factories: ReviewFactory[]; packages: ReviewPackage[]; inspectors: ReviewInspector[] };
+export type ReviewData = { factories: ReviewFactory[]; packages: ReviewPackage[]; inspectors: ReviewInspector[]; unavailable?: boolean };
 
 export async function loadBulkSelection(ids: string[]): Promise<ReviewData> {
   const sb = await supabaseServer();
   const clean = [...new Set(ids)].filter(id => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 500);
   if (clean.length === 0) return { factories: [], packages: [], inspectors: [] };
-  const [{ data: fac }, { data: pkgs }, { data: inspRows }] = await Promise.all([
+  const [factoryRead, packageRead, inspectorRead] = await Promise.all([
     sb.from("factories").select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, visits(planning_status, visit_type)").in("id", clean),
     sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"]),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
   ]);
+  if (factoryRead.error || packageRead.error || inspectorRead.error) {
+    console.error("[CD-021 loadBulkSelection]", factoryRead.error?.message ?? packageRead.error?.message ?? inspectorRead.error?.message);
+    return { factories: [], packages: [], inspectors: [], unavailable: true };
+  }
+  const fac = factoryRead.data;
+  const pkgs = packageRead.data;
+  const inspRows = inspectorRead.data;
   const factories: ReviewFactory[] = (fac ?? []).map(f => {
     const visits = (f as unknown as { visits: { planning_status: string; visit_type: string }[] }).visits ?? [];
     const dup = visits.some(v => ["draft", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
@@ -42,12 +49,27 @@ export async function loadBulkSelection(ids: string[]): Promise<ReviewData> {
 const NEUTRAL_PUBLISH_ERROR =
   "Publishing failed — the plan was not created and no visits were scheduled. " +
   "Nothing was published. Please try again; if it keeps failing, contact support.";
+const NEUTRAL_READ_ERROR =
+  "Planning data could not be verified (ERR-OPS-001). Nothing was published. Please try again.";
 
 export async function publishBulkPlan(_: BulkResult, formData: FormData): Promise<BulkResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await sb.auth.getUser();
+  if (authError) {
+    console.error("[CD-021 publishBulkPlan] auth read failed:", authError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
   if (!user) return { error: "Session expired." };
-  let factoryIds = formData.getAll("factory_id").map(String);
+  const { data: plannerRole, error: plannerRoleError } = await sb.from("user_roles")
+    .select("role_key").eq("user_id", user.id).eq("role_key", "planner").maybeSingle();
+  if (plannerRoleError) {
+    console.error("[CD-021 publishBulkPlan] planner role read failed:", plannerRoleError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
+  if (!plannerRole) return { error: "Authorized Planner role required (RBAC-007)." };
+  let factoryIds = [...new Set(formData.getAll("factory_id").map(String))]
+    .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
+    .slice(0, 500);
   const package_version_id = String(formData.get("package_version_id") ?? "");
   const window_start = String(formData.get("window_start") ?? "");
   const window_end = String(formData.get("window_end") ?? "");
@@ -64,11 +86,27 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
 
   const blockers: string[] = [];
   if (factoryIds.length === 0) blockers.push("No factories selected — only selected targets proceed (M01-005)");
+  if (visit_type !== "periodic") blockers.push("Visit type is not supported by this planning method (FLD-PLAN-003)");
   if (!package_version_id) blockers.push("No published package (ERR-PUB-001)");
-  if (!window_start || !window_end || new Date(window_end) <= new Date(window_start)) blockers.push("Invalid window (FLD-PLAN-005)");
+  const startMs = Date.parse(window_start);
+  const endMs = Date.parse(window_end);
+  if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) blockers.push("Invalid window (FLD-PLAN-005)");
+  if (package_version_id) {
+    const { data: packageVersion, error: packageError } = await sb.from("package_versions")
+      .select("id").eq("id", package_version_id).in("status", ["published", "locked"]).maybeSingle();
+    if (packageError) {
+      console.error("[CD-021 publishBulkPlan] package verification failed:", packageError.message);
+      return { error: NEUTRAL_READ_ERROR };
+    }
+    if (!packageVersion) blockers.push("No published package (ERR-PUB-001)");
+  }
   // per-row duplicate check (P01: duplicates flagged; conflicts listed, skip allowed)
-  const { data: dups } = await sb.from("visits").select("factory_id")
+  const { data: dups, error: duplicateError } = await sb.from("visits").select("factory_id")
     .in("factory_id", factoryIds).eq("visit_type", visit_type).in("planning_status", ["draft", "published", "returned"]);
+  if (duplicateError) {
+    console.error("[CD-021 publishBulkPlan] duplicate read failed:", duplicateError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
   const dupSet = new Set((dups ?? []).map(d => d.factory_id));
   if (dupSet.size) {
     if (skipDuplicates) {
@@ -80,7 +118,11 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   }
 
   // inspectors pool (ENG-05 automatic; capacity checks deepen in B7)
-  const { data: inspRows } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
+  const { data: inspRows, error: inspectorError } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
+  if (inspectorError) {
+    console.error("[CD-021 publishBulkPlan] inspector pool read failed:", inspectorError.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
   const inspectors = (inspRows ?? []).map(r => r.user_id);
   if (!inspectors.length) blockers.push("No eligible inspector (P02 failure control)");
 
@@ -92,16 +134,24 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   }
   if (chosen.length && window_start && window_end) {
     // Existing active assignments whose visit window overlaps this plan's window (visits embed is TO-ONE).
-    const { data: conflicts } = await sb.from("assignments")
+    const { data: conflicts, error: conflictError } = await sb.from("assignments")
       .select("inspector_id, visits!inner(id, window_start, window_end, planning_status)")
       .in("inspector_id", chosen)
       .in("visits.planning_status", ["draft", "published", "returned"])
       .lt("visits.window_start", window_end)
       .gt("visits.window_end", window_start);
+    if (conflictError) {
+      console.error("[CD-021 publishBulkPlan] assignment conflict read failed:", conflictError.message);
+      return { error: NEUTRAL_READ_ERROR };
+    }
     if ((conflicts ?? []).length) {
       const byInsp = new Map<string, number>();
       for (const c of conflicts!) byInsp.set(c.inspector_id, (byInsp.get(c.inspector_id) ?? 0) + 1);
-      const { data: names } = await sb.from("profiles").select("user_id, full_name").in("user_id", [...byInsp.keys()]);
+      const { data: names, error: namesError } = await sb.from("profiles").select("user_id, full_name").in("user_id", [...byInsp.keys()]);
+      if (namesError) {
+        console.error("[CD-021 publishBulkPlan] inspector name read failed:", namesError.message);
+        return { error: NEUTRAL_READ_ERROR };
+      }
       const nameOf = new Map((names ?? []).map(n => [n.user_id, n.full_name]));
       for (const [insp, n] of byInsp) {
         blockers.push(`${nameOf.get(insp) ?? insp.slice(0, 8)} is already booked on ${n} overlapping visit(s) in this window (M01-029 double-booking)`);

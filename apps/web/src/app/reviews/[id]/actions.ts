@@ -24,9 +24,9 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
     returned_sections: decision === "return" ? sections : null,
     decided_at: new Date().toISOString(),
   }).eq("id", review_id).select("inspection_id").single();
-  if (error) return { error: `${error.message} (decided reviews are immutable — M06-009)` };
+  if (error) { console.error("[review detail decision write]", error); return { error: "The decision could not be recorded. Decided reviews are immutable — try again or contact support." }; }
   const { error: insErr } = await sb.from("inspections").update({ status }).eq("id", rev.inspection_id);
-  if (insErr) return { error: `Decision recorded, but the inspection could not be transitioned: ${insErr.message}` };
+  if (insErr) { console.error("[review inspection transition]", insErr); return { error: "The decision was recorded, but the inspection state could not be transitioned. Contact support." }; }
   // M06-004/006/008 — the inspector is notified on every decision (ENG-11).
   const { data: ins } = await sb.from("inspections").select("visit_id").eq("id", rev.inspection_id).single();
   const { data: asg } = ins
@@ -38,7 +38,7 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
       recipient: asg.inspector_id,
       payload: { inspection_id: rev.inspection_id, decision, reason: reason || null, returned_sections: decision === "return" ? sections : null },
     });
-    if (n.error) return { error: `Decision recorded, but inspector notification failed: ${n.error}` };
+    if (n.error) return { error: "Decision recorded, but the inspector notification could not be queued." };
   }
   revalidatePath("/reviews");
   redirect("/reviews");

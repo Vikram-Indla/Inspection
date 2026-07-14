@@ -25,10 +25,18 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   // Planner-only capability. RLS already blocks the eventual publish write for
   // any other role, but the read-only targeting UI must not render for them
   // either (a non-planner authenticated user previously saw the full screen).
-  const { data: { user } } = await sb.auth.getUser();
-  const { data: myRoles } = user
+  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
-    : { data: [] as { role_key: string }[] };
+    : { data: [] as { role_key: string }[], error: null };
+  if (authError || rolesError) {
+    console.error("[CD-021 bulk planning authorization]", authError?.message ?? rolesError?.message);
+    return (
+      <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
+        <div className="ax-banner ax-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+      </Shell>
+    );
+  }
   const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
   if (!isPlanner) {
     return (

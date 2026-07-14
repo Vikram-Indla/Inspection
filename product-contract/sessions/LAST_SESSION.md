@@ -1,130 +1,30 @@
 # Last Session
-- Time: 2026-07-14T06:21:38.433052+00:00
+- Time: 2026-07-14T09:02:38.398749+00:00
 - Session ID: 85101ab7-27b1-4841-a9c5-f4a49309613b
 - End reason: other
 - Branch: feat/cd-022-single-identity-lens
-- Commit: 112f820
+- Commit: e281ce8
 - Working tree:
 ```
-M .gitignore
- M .project-memory/audit/instructions_loaded.jsonl
+M .project-memory/audit/instructions_loaded.jsonl
  M .project-memory/audit/session_end.jsonl
  M .project-memory/audit/tool_events.jsonl
- M apps/web/e2e/cd-021-bulk-targeting.spec.ts
  M apps/web/e2e/cd-023-immediate-authority-bar.spec.ts
- M apps/web/e2e/golden-journey.spec.ts
- M apps/web/e2e/offline-drill.spec.ts
- M apps/web/e2e/persona-tours.spec.ts
- M apps/web/e2e/personas.ts
- M apps/web/scripts/seed-dashboard-kpis.mjs
  M apps/web/src/app/field/[visitId]/Startup.tsx
+ M apps/web/src/app/field/[visitId]/actions.ts
  M apps/web/src/app/field/[visitId]/page.tsx
- M apps/web/src/app/planning/bulk/BulkForm.tsx
- M apps/web/src/app/planning/bulk/CriteriaBuilder.tsx
- M apps/web/src/app/planning/bulk/DistributionPanels.tsx
- M apps/web/src/app/planning/bulk/EligibilityLedger.tsx
- M apps/web/src/app/planning/bulk/criteria.ts
- M apps/web/src/app/planning/bulk/page.tsx
- M apps/web/src/app/planning/bulk/review/page.tsx
- M apps/web/src/app/planning/immediate/ImmediateForm.tsx
- M apps/web/src/app/planning/immediate/actions.ts
- M apps/web/src/app/planning/immediate/page.tsx
- M apps/web/src/app/planning/single/Wizard.tsx
- M apps/web/src/app/planning/single/actions.ts
- M apps/web/src/app/planning/single/page.tsx
- M apps/web/src/components/ThemeToggle.tsx
- M design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
- M design/claude-design-mvp1/authority/UX_BLIND_SPOT_REGISTER.csv
- M outputs/claude-design-approval-pack/Saqeel_43_Screen_Claude_Design_Approval_Pack.xlsx
- M outputs/claude-design-approval-pack/Saqeel_43_Screen_Claude_Design_Approval_Pack.xlsx.inspect.ndjson
- M outputs/claude-design-approval-pack/preview-43-screen-matrix.png
- M outputs/claude-design-approval-pack/preview-blind-spots.png
- M outputs/claude-design-approval-pack/preview-claude-prompts.png
- M outputs/claude-design-approval-pack/preview-code-handoff-contract.png
- M outputs/claude-design-approval-pack/preview-reference-library.png
- M outputs/claude-design-approval-pack/preview-scoring-rubric.png
- M outputs/claude-design-approval-pack/preview-shell-tabs.png
- M outputs/claude-design-approval-pack/preview-start-here.png
- M outputs/claude-design-approval-pack/preview-submission-guide.png
- M outputs/claude-design-approval-pack/preview-vertical-slice-sop.png
- M outputs/claude-design-approval-pack/preview-web-first-wave.png
- M outputs/claude-design-approval-pack/renders/43-Screen-Matrix.png
- M outputs/claude-design-approval-pack/renders/Blind-Spots.png
- M outputs/claude-design-approval-pack/renders/Claude-Prompts.png
- M outputs/claude-design-approval-pack/renders/Code-Handoff-Contract.png
- M outputs/claude-design-approval-pack/renders/Reference-Library.png
- M outputs/claude-design-approval-pack/renders/START-HERE.png
- M outputs/claude-design-approval-pack/renders/Scoring-Rubric.png
- M outputs/claude-design-approval-pack/renders/Shell-Tabs.png
- M outputs/claude-design-approval-pack/renders/Submission-Guide.png
- M outputs/claude-design-approval-pack/renders/Vertical-Slice-SOP.png
- M outputs/claude-design-approval-pack/renders/Web-First-Wave.png
+ M apps/web/src/app/planning/page.tsx
+ M apps/web/src/app/planning/plans/[id]/page.tsx
+ M apps/web/src/app/planning/plans/page.tsx
+ M outputs/cd-023/IMPLEMENTATION_MANIFEST_CD-023.yaml
+ M outputs/cd-023/WIRING_MAP_CD-023.csv
+ M outputs/claude-design-approval-pack/CD-025_CLAUDE_DESIGN_END_TO_END_R1_PROMPT.md
  M product-contract/CURRENT_STATE.md
- M product-contract/evidence/AC_LEDGER.csv
- M product-contract/evidence/screens/cd-021-bulk-v1/ar-rtl.png
- M product-contract/evidence/screens/cd-021-bulk-v1/narrow.png
- M product-contract/evidence/screens/cd-021-bulk-v1/primary.png
- M product-contract/evidence/screens/dashboard-business-v1/operational-en-dark-desktop.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-ar-mobile.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-en-dark-desktop.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-en-light-desktop.png
- M product-contract/evidence/screens/dashboard-kpi-seed/live-operations-en-light.png
- M product-contract/evidence/screens/dashboard-kpi-seed/operations-scoped-en-light.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-en.png
- M product-contract/evidence/screens/login-v7-atlas/laptop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-light-ar.png
- M product-contract/evidence/screens/shell-v1/planner-desktop-en-collapsed.png
- M product-contract/evidence/screens/shell-v1/planner-desktop-en-dark.png
  M product-contract/execution/CURRENT_SLICE.yaml
- M product-contract/execution/WORK_QUEUE.yaml
- M product-contract/governance/HUMAN_APPROVALS.yaml
- M product-contract/sessions/CLAUDE_CODE_CONTINUATION_CD-023.md
  M product-contract/sessions/LAST_SESSION.md
- M product-contract/sessions/SESSION_LEDGER.json
- M supabase/tests/0027_cd023_immediate_visit_atomic.sql
 ?? apps/web/.next-stale-backup/
-?? apps/web/e2e/cd-022-identity-lens.spec.ts
-?? apps/web/src/app/planning/bulk/TargetingLensClient.tsx
-?? apps/web/src/app/planning/single/IdentityDossier.tsx
-?? apps/web/src/app/planning/single/duplicate.ts
-?? outputs/cd-021/
-?? outputs/cd-022/
-?? outputs/cd-023/
-?? outputs/cd-024/
-?? outputs/claude-design-approval-pack/CD-024_CLAUDE_DESIGN_END_TO_END_R2_PROMPT.md
-?? outputs/claude-design-approval-pack/CD-024_DESIGN_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/CD-024_PROGRESSIVE_CORRECTION_PROMPT_R1.md
-?? outputs/claude-design-approval-pack/CD-025_CLAUDE_DESIGN_END_TO_END_R1_PROMPT.md
-?? outputs/claude-design-approval-pack/VERIFICATION_REPORT_V4.json
-?? outputs/claude-design-approval-pack/preview-quality-ratchet.png
-?? outputs/claude-design-approval-pack/renders/quality-ratchet.png
-?? product-contract/evidence/TASK-DESIGN-CD024-QUALITY-RATCHET-EV-001.txt
-?? product-contract/evidence/screens/cd-021-bulk-v1/CODEX_AUDIT_CD-021.md
-?? product-contract/evidence/screens/cd-021-bulk-v1/CODEX_AUDIT_CD-021_REMEDIATION_VERIFICATION.md
-?? product-contract/evidence/screens/immediate-v2/CD023_LIVE_REMEDIATION_EVIDENCE.md
-?? product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md
-?? product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_REMEDIATION_REVIEW.md
-?? product-contract/evidence/screens/immediate-v2/ar-dark-desktop.png
-?? product-contract/evidence/screens/immediate-v2/ar-dark-narrow.png
-?? product-contract/evidence/screens/immediate-v2/ar-light-desktop.png
-?? product-contract/evidence/screens/immediate-v2/ar-light-narrow.png
-?? product-contract/evidence/screens/immediate-v2/en-dark-desktop.png
-?? product-contract/evidence/screens/immediate-v2/en-dark-narrow.png
-?? product-contract/evidence/screens/immediate-v2/en-light-desktop.png
-?? product-contract/evidence/screens/immediate-v2/en-light-narrow.png
-?? product-contract/evidence/screens/single-v2/
-?? product-contract/execution/CURRENT_SLICE.CD-021-BULK-TARGETING.yaml
-?? product-contract/sessions/HANDOFF_2026-07-13_DESIGN_QUALITY_RATCHET_V4_CD024_NEXT.md
-?? supabase/.temp/cli-latest
-?? supabase/migrations/0028_cd023_private_helpers.sql
-?? supabase/migrations/0029_cd023_rls_initplan.sql
-?? supabase/migrations/0030_cd023_inspector_immediate_expiry.sql
-?? supabase/migrations/0031_cd023_assignment_overlap_guard.sql
-?? supabase/migrations/20260714060935_cd023_urgency_contract.sql
+?? apps/web/e2e/cd-020-planning-home.spec.ts
+?? product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_ROUND3.md
+?? product-contract/execution/CURRENT_SLICE.CD-023-IMMEDIATE-VISIT-REMEDIATION.yaml
 ```
 - Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.

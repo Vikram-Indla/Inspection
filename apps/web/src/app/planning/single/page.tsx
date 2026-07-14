@@ -41,10 +41,20 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   // just hides the nav link) — this page-level check is the actual boundary
   // for the UI state shown; the write path is separately RLS-gated
   // (has_role('planner') on visit_plans/visits inserts) regardless.
-  const { data: { user } } = await sb.auth.getUser();
-  const { data: myRoles } = user
+  const { data: { user }, error: userError } = await sb.auth.getUser();
+  const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
-    : { data: [] as { role_key: string }[] };
+    : { data: [] as { role_key: string }[], error: null };
+  if (userError || rolesError) {
+    console.error("[CD-022 single-planning authorization]", userError?.message ?? rolesError?.message);
+    return (
+      <Shell current="/planning" title={t("plan.single.title", "Single visit planning")}>
+        <div className="ax-banner ax-banner--critical" role="alert">
+          {tr("plan.single.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.", "بيانات التخطيط غير متاحة مؤقتًا (ERR-OPS-001). حاول مرة أخرى.")}
+        </div>
+      </Shell>
+    );
+  }
   const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
   if (!isPlanner) {
     return (
@@ -58,11 +68,24 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     );
   }
 
-  const [{ data: pkgs }, { data: inspRoles }, { data: otpEngine }] = await Promise.all([
+  const [packageRead, inspectorRead, otpRead] = await Promise.all([
     sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"]).order("published_at", { ascending: false }),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
     sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
   ]);
+  if (packageRead.error || inspectorRead.error || otpRead.error) {
+    console.error("[CD-022 single-planning configuration]", packageRead.error?.message ?? inspectorRead.error?.message ?? otpRead.error?.message);
+    return (
+      <Shell current="/planning" title={t("plan.single.title", "Single visit planning")}>
+        <div className="ax-banner ax-banner--critical" role="alert">
+          {tr("plan.single.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.", "بيانات التخطيط غير متاحة مؤقتًا (ERR-OPS-001). حاول مرة أخرى.")}
+        </div>
+      </Shell>
+    );
+  }
+  const pkgs = packageRead.data;
+  const inspRoles = inspectorRead.data;
+  const otpEngine = otpRead.data;
   const inspectors = (inspRoles ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
   const virtualEligible = !!otpEngine;
 
@@ -84,9 +107,12 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       registryUnavailable = true;
     }
     const dupChecks = await Promise.all((candidates ?? []).map(f => findDuplicateActiveVisits(sb, f.id)));
+    if (dupChecks.some(read => read.unavailable)) {
+      registryUnavailable = true;
+    }
     graded = (candidates ?? [])
       .map((f, i) => ({ f, grade: gradeCandidate(f, q), dups: dupChecks[i] }))
-      .filter((r): r is { f: NonNullable<typeof candidates>[number]; grade: "exact" | "similar_name"; dups: Awaited<ReturnType<typeof findDuplicateActiveVisits>> } => r.grade !== null)
+      .filter((r): r is { f: NonNullable<typeof candidates>[number]; grade: "exact" | "similar_name"; dups: Awaited<ReturnType<typeof findDuplicateActiveVisits>> } => r.grade !== null && !registryUnavailable)
       .map(({ f, grade, dups }) => ({
         id: f.id, factory_code: f.factory_code, name: f.name, cr_number: f.cr_number, license_number: f.license_number,
         region: f.region, city: f.city, risk_band: f.risk_band, risk_score: f.risk_score,
@@ -94,8 +120,8 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         source_synced_at: (f as unknown as { source_synced_at: string | null }).source_synced_at,
         grade,
         degraded: !f.license_number || f.official_lat == null || f.official_lng == null,
-        duplicate: dups.length > 0,
-        duplicateVisitId: dups[0]?.id ?? null,
+        duplicate: dups.visits.length > 0,
+        duplicateVisitId: dups.visits[0]?.id ?? null,
       }));
   }
 

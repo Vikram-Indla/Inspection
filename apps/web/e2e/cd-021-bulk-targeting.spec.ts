@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { storageStatePath } from "./personas";
 
@@ -73,6 +74,14 @@ test.describe("CD-021 evidence table + provenance (FND-011, FND-013, M02-012)", 
 });
 
 test.describe("CD-021 selection (frame 1a)", () => {
+  test("factory profile opens without destroying criteria or selection context", async ({ page }) => {
+    await page.goto(`/planning/bulk?ct=${ct(HIGH_RISK)}`);
+    const profile = page.locator('a[href^="/factories/"]').first();
+    await expect(profile).toHaveAttribute("target", "_blank");
+    await expect(profile).toHaveAttribute("rel", /noreferrer|noopener/);
+    await expect(page).toHaveURL(/ct=/);
+  });
+
   test("select-all-results vs select-this-page distinct; Review CTA gates on selection", async ({ page }) => {
     await page.goto("/planning/bulk");
     // With nothing selected the review hand-off is a disabled button (no link).
@@ -130,6 +139,17 @@ test.describe("CD-021 selection (frame 1a)", () => {
     await expect(dialog).toContainText(/no longer match/i);
     await expect(page.getByRole("button", { name: /Keep remaining selection/i })).toBeVisible();
   });
+});
+
+test("CD-021 publish boundary revalidates inside one transaction and follows STM-PLAN-001/002", () => {
+  const action = readFileSync(join(process.cwd(), "src/app/planning/bulk/actions.ts"), "utf8");
+  const migration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260714091727_planning_publish_guards.sql"), "utf8");
+  expect(action).toContain('sb.rpc("publish_bulk_plan"');
+  expect(migration).toContain("not has_role('planner')");
+  expect(migration).toContain("bulk publish duplicate active visit");
+  expect(migration).toContain("set status = 'validated'");
+  expect(migration).toContain("where id = v_plan_id and status = 'validated'");
+  expect(migration).not.toContain("p_auto_pool[");
 });
 
 test.describe("CD-021 a11y / RTL (DSG-A11Y-001)", () => {

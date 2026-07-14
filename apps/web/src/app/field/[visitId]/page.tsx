@@ -88,10 +88,14 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     insideWord: t("enum.inside", "inside"),
     outsideWord: t("enum.outside", "outside"),
     logCached: t("field.start.logCached", "Package {version} cached & version-locked (M04-005/007)"),
-    logJourneyBlocked: t("field.start.logJourneyBlocked", "Journey blocked: {error}"),
+    logJourneyBlocked: locale === "ar"
+      ? "تعذر بدء الرحلة. تحقق من التكليف والاتصال ثم أعد المحاولة."
+      : t("field.start.logJourneyBlockedSafe", "The journey could not be started. Check the assignment and connection, then try again."),
     logJourneyStarted: t("field.start.logJourneyStarted", "Journey started — telemetry active (STM-JRN-001)"),
     logAccuracyBlocked: t("field.start.logAccuracyBlocked", "BLOCKED: accuracy ±{acc}m > {max}m required (ERR-GEO-001) — retry or governed override"),
-    logCheckinRejected: t("field.start.logCheckinRejected", "Check-in rejected: {error}"),
+    logCheckinRejected: locale === "ar"
+      ? "تعذر حفظ تسجيل الوصول. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logCheckinRejectedSafe", "Check-in could not be saved. Check the connection, then try again."),
     logOutside: t("field.start.logOutside", "OUTSIDE geofence ({d}m > {fence}m) — check-in recorded as outside; governed override required (ERR-GEO-002)"),
     logInside: t("field.start.logInside", "Checked in INSIDE fence ({d}m, ±{acc}m) — start allowed (STM-JRN-003)"),
     logStartBlocked: t("field.start.logStartBlocked", "Start blocked: {error}"),
@@ -112,10 +116,14 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     exceptionPlaceholder: t("field.start.exceptionPlaceholder", "Describe the exception — mandatory"),
     exceptionSend: t("field.start.exceptionSend", "Record exception"),
     logExceptionSent: t("field.start.logExceptionSent", "Exception recorded at ±{acc}m — immutable geo event (FLD-GEO-005)"),
-    logExceptionFailed: t("field.start.logExceptionFailed", "Exception rejected: {error}"),
+    logExceptionFailed: locale === "ar"
+      ? "تعذر حفظ الاستثناء. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logExceptionFailedSafe", "The exception could not be saved. Check the connection, then try again."),
     logDeviation: t("field.start.logDeviation", "Route deviation recorded — {d} m beyond closest approach, sustained {s}s (ENG-06 route_deviation)"),
     logOpState: t("field.start.logOpState", "Operational state → {state} (STM-OPS)"),
-    logOpBlocked: t("field.start.logOpBlocked", "Operational transition blocked: {error}"),
+    logOpBlocked: locale === "ar"
+      ? "تعذر تحديث حالة الزيارة. تحقق من الجاهزية والاتصال ثم أعد المحاولة."
+      : t("field.start.logOpBlockedSafe", "The visit state could not be updated. Check readiness and the connection, then try again."),
     logGpsFallback: t("field.start.logGpsFallback", "GPS unavailable — demo coordinates substituted for check-in (M04-049 handled)"),
     // F3 — navigation launch (M04-016)
     mapsOpen: t("field.start.mapsOpen", "Open in Google Maps"),
@@ -154,7 +162,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     cancelReasonsMissing: t("field.start.cancelReasonsMissing", "Cancellation reasons unavailable — engine_settings.field not seeded yet (0020 pending)."),
     logCancelEvidenceQueued: t("field.start.logCancelEvidenceQueued", "Cancellation evidence {name} queued (sha256 {sha}…) — syncs to the visit record (M04-058)"),
     logCancelSent: t("field.start.logCancelSent", "Cancellation requested — planner/ops notified; execution stopped (M04-056)"),
-    logCancelFailed: t("field.start.logCancelFailed", "Cancellation request rejected: {error}"),
+    logCancelFailed: locale === "ar"
+      ? "تعذر إرسال طلب الإلغاء. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logCancelFailedSafe", "The cancellation request could not be sent. Check the connection, then try again."),
     // F3 — inspector return (M03-006)
     returnHeading: t("field.start.returnHeading", "Return visit (M03-006)"),
     returnCaption: t("field.start.returnCaption", "Blocked from proceeding (outside fence, no access, GPS)? Return the visit with a reason — the assignment moves to returned and the planner is notified."),
@@ -162,7 +172,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     returnSubmit: t("field.start.returnSubmit", "Return visit"),
     returnRequestedChip: t("field.start.returnRequestedChip", "return requested — planner notified"),
     logReturnSent: t("field.start.logReturnSent", "Visit returned — assignment set to returned, planner notified (M03-006)"),
-    logReturnFailed: t("field.start.logReturnFailed", "Return rejected: {error}"),
+    logReturnFailed: locale === "ar"
+      ? "تعذر إرسال طلب الإرجاع. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logReturnFailedSafe", "The return request could not be sent. Check the connection, then try again."),
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (

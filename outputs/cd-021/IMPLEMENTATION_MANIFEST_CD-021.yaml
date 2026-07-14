@@ -5,10 +5,10 @@ persona: Planner
 journey: P01
 engines: [ENG-04, ENG-06, ENG-12]
 acceptance: [DSG-016, DSG-A11Y-001]
-source_branch: feat/cd-003-role-resolution   # per CURRENT_STATE.md updates 9-12; local mount has no git metadata
-source_commit: UNVERIFIED_HANDOFF_BLOCKED    # mounted folder exposes no .git; must be recorded at implementation start
-dirty_worktree: UNVERIFIED_HANDOFF_BLOCKED   # CURRENT_UI_BASELINE warns of uncommitted user work; verify before edits
-cd020_dependency: HANDOFF_BLOCKED            # no sponsor-approved CD-020 Planning Home artifact exists in the repo; do not assume its composition
+source_branch: feat/cd-022-single-identity-lens
+source_commit: PENDING_TASK_BASELINE_WIRING_AUDIT_001_COMMIT
+dirty_worktree: AUDITED_SHARED_WORKTREE_PRESERVED
+cd020_dependency: RUNTIME_WIRED_DESIGN_ARTIFACT_ABSENT
 design_frame_ids: [1a, 1b, 1c, 1d, 1e, 1f, 1g, 1h]
 design_file: "CD-021 Bulk Targeting.dc.html"
 png_paths:
@@ -42,11 +42,11 @@ file_changes:
   - file: apps/web/src/app/planning/bulk/actions.ts
     before: publishBulkPlan - 6 sequential writes (plan, visits, assignments, visits update, plan update, notifications) with no transaction; raw supabase e.message returned to UI; comment falsely claims atomicity
     disposition: UPDATE
-    after: (a) map provider errors to catalogued neutral copy (never raw e.message); (b) return structured step-level result {step, done, failed} powering the truthful stepper; (c) draft-preserving failure - never leave rows in a state the UI reports as published; (d) resumable retry keyed by visit_plan_id
+    after: Fail-closed role/factory/package/inspector/duplicate/overlap reads; neutral provider-error copy; one publish_bulk_plan RPC whose migration-20260714091727 transaction repeats authoritative guards, derives schedule-safe auto assignment, executes STM-PLAN-001/002, audits, queues notifications and rolls back the complete write set on failure
     design_node: 1d reconciliation banner + stepper
     protected: RLS; canonical transitions; append-only audit; notification insert semantics
-    dependencies: HANDOFF_BLOCKED - true atomicity requires a Postgres RPC/transaction or compensation routine; backend decision, not designed here
-    tests: forced mid-flow failure leaves draft + resumable state; no duplicate visits on retry; no raw provider error text in DOM
+    dependencies: MIGRATION_20260714091726_20260714091727_DEPLOYMENT_AND_LIVE_CERTIFICATION_REQUIRED
+    tests: static transaction/transition contract + existing live targeting/authorization suite; forced rollback/concurrency certification required after migration deployment
   - file: apps/web/src/app/planning/bulk/DistributionPanels.tsx
     before: (does not exist)
     disposition: CREATE
@@ -56,4 +56,4 @@ file_changes:
 removals: []   # REMOVE requires explicit human approval; none proposed
 rtl_theme_impact: All components logical-properties only; dark/light via existing ax tokens; document-level RTL per shell; bdi-isolated identifiers
 rollback: Design-only change set per file; each UPDATE is additive behind the same routes; revert = git revert of the implementation commits; no schema changes proposed
-status: READY_FOR_DESIGN_REVIEW
+status: IMPLEMENTED_PENDING_MIGRATION_RUNTIME_CERTIFICATION

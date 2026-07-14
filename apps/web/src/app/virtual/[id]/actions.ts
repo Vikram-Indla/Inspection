@@ -6,6 +6,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+
+const SYSTEM_ERROR = "The session could not be updated. Try again or contact support.";
 import { insertNotification } from "@/lib/notify";
 
 export type RoomActionResult = { error?: string; ok?: string };
@@ -26,13 +28,13 @@ export async function rescheduleSession(_: RoomActionResult, fd: FormData): Prom
     return { error: "A valid appointment date/time is required (M05-002)." };
   const { data: s, error: sErr } = await sb.from("virtual_sessions")
     .select("id, state, visit_id, visits(factories(name), assignments(inspector_id))").eq("id", session_id).single();
-  if (sErr) return { error: sErr.message };
+  if (sErr) { console.error("[virtual reschedule session read]", sErr); return { error: SYSTEM_ERROR }; }
   if (!["scheduled", "waiting"].includes(s.state))
     return { error: `Session is ${s.state.replace(/_/g, " ")} — rescheduling is only allowed before participants join (STM-VIR).` };
   const appointmentIso = new Date(appointment_at).toISOString();
   const { data: upd, error } = await sb.from("virtual_sessions")
     .update({ appointment_at: appointmentIso }).eq("id", session_id).select("id");
-  if (error) return { error: error.message };
+  if (error) { console.error("[virtual reschedule session write]", error); return { error: SYSTEM_ERROR }; }
   if (!upd?.length) return { error: "No row updated — RLS denied (vs_write: planner/ops/assigned inspector only)." };
   const evErr = await appendEvent(sb, session_id, "rescheduled", { appointment_at: appointmentIso });
   const asg = (s.visits as unknown as { assignments: { inspector_id: string }[]; factories: { name: string } } | null);
@@ -62,7 +64,7 @@ export async function openWaitingRoom(_: RoomActionResult, fd: FormData): Promis
   const session_id = String(fd.get("session_id") ?? "");
   const { data: upd, error } = await sb.from("virtual_sessions")
     .update({ state: "waiting" }).eq("id", session_id).eq("state", "scheduled").select("id");
-  if (error) return { error: error.message };
+  if (error) { console.error("[virtual waiting room]", error); return { error: SYSTEM_ERROR }; }
   if (!upd?.length) return { error: "No transition — session is not in scheduled state, or RLS denied (STM-VIR)." };
   const evErr = await appendEvent(sb, session_id, "waiting_opened");
   revalidatePath(`/virtual/${session_id}`);
@@ -80,7 +82,7 @@ export async function joinParticipant(_: RoomActionResult, fd: FormData): Promis
     .update({ joined_at: new Date().toISOString() })
     .eq("id", participant_id).eq("session_id", session_id).is("joined_at", null)
     .select("display_name, role").maybeSingle();
-  if (pErr) return { error: pErr.message };
+  if (pErr) { console.error("[virtual participant read]", pErr); return { error: SYSTEM_ERROR }; }
   if (!p) return { error: "No row updated — participant already joined, or RLS denied." };
   // Advance scheduled/waiting → joined (forward-only; guard enforces).
   await sb.from("virtual_sessions").update({ state: "joined" })
@@ -100,7 +102,7 @@ export async function markSessionVerified(_: RoomActionResult, fd: FormData): Pr
   const { data: upd, error } = await sb.from("virtual_sessions")
     .update({ state: "verified" }).eq("id", session_id)
     .in("state", ["scheduled", "waiting", "joined"]).select("id");
-  if (error) return { error: error.message };
+  if (error) { console.error("[virtual participant join]", error); return { error: SYSTEM_ERROR }; }
   const evErr = await appendEvent(sb, session_id, "verified", { participant });
   revalidatePath(`/virtual/${session_id}`);
   if (!upd?.length) return { ok: "Identity verified (session already verified or further along)" };
@@ -116,7 +118,7 @@ export async function beginRemote(_: RoomActionResult, fd: FormData): Promise<Ro
   const session_id = String(fd.get("session_id") ?? "");
   const { data: s, error: sErr } = await sb.from("virtual_sessions")
     .select("id, state, visit_id, visits(package_version_id, inspections(id))").eq("id", session_id).single();
-  if (sErr) return { error: sErr.message };
+  if (sErr) { console.error("[virtual begin session read]", sErr); return { error: SYSTEM_ERROR }; }
   if (s.state !== "verified" && s.state !== "in_progress")
     return { error: "Verification gates execution — verify the factory representative first (STM-VIR-002, no bypass)." };
   const v = s.visits as unknown as { package_version_id: string; inspections: unknown };
@@ -128,11 +130,11 @@ export async function beginRemote(_: RoomActionResult, fd: FormData): Promise<Ro
       visit_id: s.visit_id, status: "in_progress", package_version_id: v.package_version_id,
       started_at: new Date().toISOString(),
     }).select("id").single();
-    if (iErr) return { error: iErr.message };
+    if (iErr) { console.error("[virtual begin inspection]", iErr); return { error: SYSTEM_ERROR }; }
     inspectionId = ins.id;
     await sb.from("virtual_sessions").update({ state: "in_progress" }).eq("id", session_id).eq("state", "verified");
     const evErr = await appendEvent(sb, session_id, "begin", { inspection_id: inspectionId });
-    if (evErr) return { error: `Inspection started, but timeline append failed: ${evErr}` };
+    if (evErr) { console.error("[virtual begin timeline]", evErr); return { error: "The inspection started, but its timeline could not be updated. Contact support." }; }
   }
   redirect(`/field/inspection/${inspectionId}`);
 }
@@ -148,7 +150,7 @@ export async function closeSession(_: RoomActionResult, fd: FormData): Promise<R
   if (!reason) return { error: "A close/cancel reason is mandatory (M05-006)." };
   const { data: s, error: sErr } = await sb.from("virtual_sessions")
     .select("id, state, timeline, visits(factories(name), assignments(inspector_id))").eq("id", session_id).single();
-  if (sErr) return { error: sErr.message };
+  if (sErr) { console.error("[virtual close session read]", sErr); return { error: SYSTEM_ERROR }; }
   if (s.state === "closed") return { error: "Session is already closed (closed sessions are immutable — STM-VIR)." };
   // State + closing timeline event land in ONE update: after it, the guard
   // trigger makes the row immutable, so the event must ride along.
@@ -156,7 +158,7 @@ export async function closeSession(_: RoomActionResult, fd: FormData): Promise<R
   const { data: upd, error } = await sb.from("virtual_sessions")
     .update({ state: "closed", timeline: [...((s.timeline as unknown[]) ?? []), closedEvent] })
     .eq("id", session_id).select("id");
-  if (error) return { error: error.message };
+  if (error) { console.error("[virtual close session write]", error); return { error: SYSTEM_ERROR }; }
   if (!upd?.length) return { error: "No row updated — RLS denied (vs_write: planner/ops/assigned inspector only)." };
   const asg = (s.visits as unknown as { assignments: { inspector_id: string }[]; factories: { name: string } } | null);
   if (asg?.assignments?.[0]?.inspector_id) {
@@ -164,7 +166,7 @@ export async function closeSession(_: RoomActionResult, fd: FormData): Promise<R
       event_key: "virtual_closed", recipient: asg.assignments[0].inspector_id,
       payload: { session_id, reason, comments: comments || null, factory: asg.factories?.name },
     });
-    if (n.error) return { error: `Session closed, but inspector notification failed: ${n.error}` };
+    if (n.error) return { error: "Session closed, but the inspector notification could not be queued." };
   }
   revalidatePath(`/virtual/${session_id}`);
   revalidatePath("/virtual");

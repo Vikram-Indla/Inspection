@@ -345,10 +345,18 @@ test.describe("CD-023 authorization and neutral errors", () => {
     await context.close();
   });
 
-  test("Inspector start failure never appends raw database error text to the visible log", () => {
+  test("Inspector field handoff never appends raw database error text to the visible log", () => {
     const startup = readFileSync(join(process.cwd(), "src/app/field/[visitId]/Startup.tsx"), "utf8");
     expect(startup).toContain("add(strings.logInspectionCreateFailed)");
-    expect(startup).not.toContain("fmt(strings.logStartBlocked, { error: error.message })");
+    expect(startup).toContain("add(strings.logJourneyBlocked)");
+    expect(startup).toContain("add(strings.logCheckinRejected)");
+    expect(startup).toContain("add(strings.logExceptionFailed)");
+    expect(startup).toContain("add(strings.logOpBlocked)");
+    expect(startup).toContain("add(strings.logCancelFailed)");
+    expect(startup).toContain("add(strings.logReturnFailed)");
+    expect(startup).not.toMatch(/add\(fmt\(strings\.(?:logInspectionCreateFailed|logJourneyBlocked|logCheckinRejected|logExceptionFailed|logOpBlocked|logCancelFailed|logReturnFailed)[\s\S]{0,160}(?:error\.message|r\.error)/);
+    const actions = readFileSync(join(process.cwd(), "src/app/field/[visitId]/actions.ts"), "utf8");
+    expect(actions).not.toMatch(/return \{ error: error\.message \}/);
   });
 });
 

@@ -52,9 +52,17 @@ export default async function Field() {
 
   // M03-015 — persist published→expired before reading (security-definer rpc,
   // canonical transition; a missing function pre-0015 just leaves display-only expiry).
-  await sb.rpc("expire_lapsed_visits");
+  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
+  if (expiryError) {
+    console.error("[field dashboard expiry]", expiryError.message, expiryError.code);
+    return (
+      <Shell current="/field" title={t("field.dashboard.title", "Field dashboard")}>
+        <div className="ax-banner ax-banner--critical" role="alert">{t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+      </Shell>
+    );
+  }
 
-  const [{ data: asg, error }, { data: notifRows }] = await Promise.all([
+  const [assignmentRead, notificationRead] = await Promise.all([
     sb.from("assignments")
       .select("visit_id, status, visits(id, visit_type, execution_mode, planning_status, window_start, window_end, factories(name, factory_code, city, official_lat, official_lng), inspections(id, status, reviews(status, decided_at), submission_versions(submitted_at)))")
       .eq("inspector_id", user.id).order("created_at", { ascending: false }),
@@ -65,6 +73,16 @@ export default async function Field() {
       .order("created_at", { ascending: false })
       .limit(8),
   ]);
+  if (assignmentRead.error || notificationRead.error) {
+    console.error("[field dashboard reads]", assignmentRead.error?.message ?? notificationRead.error?.message);
+    return (
+      <Shell current="/field" title={t("field.dashboard.title", "Field dashboard")}>
+        <div className="ax-banner ax-banner--critical" role="alert">{t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+      </Shell>
+    );
+  }
+  const asg = assignmentRead.data;
+  const notifRows = notificationRead.data;
 
   const cards = (asg ?? [])
     .map(a => a.visits as unknown as VisitCard)
@@ -181,10 +199,6 @@ export default async function Field() {
       context={<span className="ax-lozenge ax-lozenge--info">{t("field.dashboard.context", "SCR-IPAD-600 · assigned-only (RBAC-009, RLS-enforced)")}</span>}>
       {/* padding-block-end keeps content clear of the fixed bottom tab bar */}
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", paddingBlockEnd: "96px" }}>
-        {error && (
-          <div className="ax-banner ax-banner--critical"><div><strong>{t("field.dashboard.loadError", "Couldn’t load assignments.")}</strong> {error.message} — {t("field.dashboard.retry", "retry.")}</div></div>
-        )}
-
         <div className="ax-kpi-row">
           {kpis.map(([label, value]) => (
             <div key={label} className="ax-surface ax-kpi">

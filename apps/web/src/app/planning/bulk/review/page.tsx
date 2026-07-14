@@ -15,10 +15,18 @@ export default async function BulkReview() {
   // this route only ever receives a client-held selection from that screen,
   // but it must independently refuse to render for any other role too.
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  const { data: myRoles } = user
+  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
-    : { data: [] as { role_key: string }[] };
+    : { data: [] as { role_key: string }[], error: null };
+  if (authError || rolesError) {
+    console.error("[CD-021 bulk review authorization]", authError?.message ?? rolesError?.message);
+    return (
+      <Shell current="/planning" title={t("plan.bulk.review.title", "Bulk planning — review & publish")}>
+        <div className="ax-banner ax-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+      </Shell>
+    );
+  }
   const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
   if (!isPlanner) {
     return (
@@ -34,6 +42,7 @@ export default async function BulkReview() {
 
   const strings: ReviewStrings = {
     loading: t("plan.bulk.review.loading", "Loading your selection…"),
+    unavailable: t("plan.bulk.review.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Return to targeting and try again."),
     emptyTitle: t("plan.bulk.review.emptyTitle", "No factories selected"),
     emptyBody: t("plan.bulk.review.emptyBody", "Select target factories on the targeting screen, then continue to review."),
     backToTargeting: t("plan.bulk.review.back", "Back to targeting"),
