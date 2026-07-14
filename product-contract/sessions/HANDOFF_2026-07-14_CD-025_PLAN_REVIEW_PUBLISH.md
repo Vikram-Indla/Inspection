@@ -32,5 +32,13 @@ CD-025 staged **Plan Review & Publish** workspace, imported from Claude Design p
 ## Still HANDOFF_BLOCKED (deferred, not invented)
 Planning maker-checker/approver; provider delivery/receipt; durable receipt; freshness threshold; lost-review recovery / durable return-to-edit context restore.
 
+## Arabic localization
+Seed migration `supabase/migrations/20260714093000_cd025_ar_strings.sql` — 126 `plan.review.*`
+keys, Arabic from the design's own D.ar dictionary, `status='draft'` (human review pending),
+guarded upsert (never clobbers a `reviewed` row). **Not yet applied to the live DB** — no write
+creds in this session; applies on the next credentialed `supabase db push`. RTL layout already
+verified; until push, AR copy falls back to English (by design, migration 0013).
+
 ## Next
-Sponsor review of the branch → decision to merge to `main` (requires explicit human approval per CLAUDE.md). Optional: seed Arabic `ui_strings` for the new `plan.review.*` keys (RTL layout already verified; copy currently falls back to English).
+1. Apply the AR seed migration (`supabase db push`) → AR copy renders.
+2. Sponsor review of the branch → decision to merge to `main` (requires explicit human approval per CLAUDE.md).
