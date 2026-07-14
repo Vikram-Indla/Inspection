@@ -555,7 +555,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
               </table></div>
             )}
             <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
-              {t("ops.notifs.rlsNote", "delivery_state exists in schema; RLS policy notif_own currently grants SELECT only — mark-handled surfaces the database verdict verbatim.")}
+              {t("ops.notifs.rlsNote", "Notification reads and mark-handled updates are recipient/Operations scoped by separate RLS policies; the database verdict remains authoritative.")}
             </p>
           </div>
         </div>

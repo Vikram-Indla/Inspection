@@ -1,33 +1,130 @@
-schema_version: "1.0"
-task_id: "G10-VERIFICATION-PLAYWRIGHT"
-gate: "G10"
-title: "G10 verification: headless Playwright suite over the built MVP1 scope"
-status: "IN_PROGRESS"
+schema_version: "1.2"
+task_id: "TASK-BASELINE-WIRING-AUDIT-001"
+gate: "G11 production-readiness wiring audit and sponsor-authorized baseline consolidation"
+title: "CD-001..003 and CD-020..024 design-to-live wiring, branch reconciliation, and main baseline"
+status: "BASELINE_COMMITTED_PENDING_MAIN_PUSH"
 enforce_stop_gate: false
 broad_implementation_allowed: true
-process_ids: ["P00","P01","P02","P03","P04","P05","P06A","P06B","P07","P08","P09","P10","P11","P12"]
-requirement_ids: ["493 AC ledger rows (72 verified_live / 421 implemented / 0 missing); source 478 atomic rows MVP1-M01..M09 (domain/atomic_scope.csv)"]
-acceptance_ids: ["AC ledger machine-computed per G7 (2026-07-12); Playwright suite is the G10 exit criterion"]
-screen_ids: ["38 routes in screens/screen_route_catalogue.csv (SCR-ADM/WEB/IPAD/VIR)"]
-engine_ids: ["ENG-01","ENG-02","ENG-03","ENG-04","ENG-05","ENG-06","ENG-07","ENG-08","ENG-09","ENG-10","ENG-11","ENG-12"]
-required_context:
-  - product-contract/GATE_STATUS.md
-  - product-contract/governance/DECISIONS_ACCEPTED_2026-07-11.yaml
-  - product-contract/domain/state_transitions.csv
-  - product-contract/domain/rbac_matrix.csv
-  - product-contract/screens/screen_route_catalogue.csv
-  - product-contract/governance/error_catalogue.csv
+
+sponsor_direction:
+  approver: "Vikram Indla"
+  date: "2026-07-14"
+  authorization:
+    - "Audit CD-001, CD-002, CD-003 and CD-020 through CD-024 from a complete wiring perspective."
+    - "Audit every delivered design and every D2L/design-to-live opportunity, including cross-screen dependencies."
+    - "Implement every contract-authorized wiring closure that can be safely proven."
+    - "Review every branch and stash, preserve concurrent Claude Code work, then commit, merge and push the verified baseline to main."
+    - "Delete stale branches only after proving their unique work is represented in the baseline."
+  change_control_effect:
+    - "This direction supersedes older no-commit/no-push/no-main restrictions for this baseline task only."
+    - "It does not authorize invented product policy, weakening accepted behavior, destructive cleanup before reconciliation, production deployment, or self-approval of unresolved business decisions."
+
+branch_at_start: "feat/cd-022-single-identity-lens"
+remote_at_start:
+  default_ref: "origin/setup/Inspection"
+  remote_main_exists: false
+  remote_heads: ["setup/Inspection"]
+concurrency_note: "Claude Code and Claude Design are running in parallel; all pre-existing and newly appearing changes must be attributed, preserved, audited, and reconciled before baseline creation."
+
+prompt_ids: ["CD-001", "CD-002", "CD-003", "CD-020", "CD-021", "CD-022", "CD-023", "CD-024"]
+process_ids: ["AUTH", "P01", "P02", "P03"]
+requirement_ids:
+  - "MVP1-M01-001..052"
+  - "MVP1-M02-012"
+  - "MVP1-FND-001"
+  - "MVP1-FND-002"
+  - "MVP1-FND-003"
+  - "MVP1-FND-004"
+  - "MVP1-FND-007"
+  - "MVP1-FND-010..013"
+  - "RBAC-001..014"
+  - "ERR-AUTH-001"
+screen_ids: ["AUTH-01", "AUTH-02", "AUTH-03", "SCR-WEB-100", "SCR-WEB-110", "SCR-WEB-120", "SCR-WEB-130", "SCR-WEB-140", "SCR-IPAD-610", "SCR-IPAD-620"]
+engine_ids: ["ENG-02", "ENG-03", "ENG-04", "ENG-05", "ENG-06", "ENG-11", "ENG-12"]
+acceptance_ids:
+  - "CD-001 P0/P1 runtime gate"
+  - "UX-BS-009"
+  - "DSG-015..DSG-019"
+  - "DSG-SHELL-001"
+  - "DSG-A11Y-001"
+  - "DSG-CODE-001"
+  - "AC-0001..AC-0052"
+  - "AC-0064"
+
+dependencies:
+  - "Accepted CD-001 public-safe login baseline, Supabase auth, neutral errors, FND-003 audit and /launch RBAC routing."
+  - "Sponsor-accepted shared authenticated shell and role-scoped navigation."
+  - "Published/locked package versions, Planner/Inspector roles, RLS and append-only audit."
+  - "Migrations 0026, 0027..0031 and 20260714060935 represented in source and verified against the configured project where live proof is claimed."
+  - "CD-021 targeting handoff, CD-022 single identity lens, and CD-023 immediate flow must preserve each other's shared planning contracts."
+  - "CD-024 route/screen ownership must be reconciled before implementation: governed /planning/:id/configure versus current /planning/bulk/review and read-only /planning/plans/:id."
+
+open_decisions:
+  - "DEC-003 SLA calendar remains open; no default duration, SLA clock, pause or escalation value may be invented."
+  - "DEC-012 requires an independent recorded wiring audit per implemented CD slice; implementation/self-review is not a substitute."
+  - "CD-024 SCR-WEB-120/140 route and ownership collision is unresolved and blocks code implementation of the dedicated workspace."
+  - "CD-001 production release still requires asset-rights and official geographic-anchor confirmation; Arabic-only raster remains a recorded P1 limitation."
+  - "G11 credential rotation, region, and provider adapters remain release-hardening items."
+
+do_not_touch:
+  - "Do not redesign or weaken sponsor-accepted CD-001 or the frozen shared shell absent a demonstrated P0/P1 regression."
+  - "Do not edit applied migrations in place; add forward migrations only when the contract requires one."
+  - "Do not directly mutate workflow status, immutable submitted versions, official factory master coordinates, or offline/server conflicts."
+  - "Do not claim notification delivery, provider success, SLA/risk/capacity/proximity/travel values, or policy that the runtime cannot prove."
+  - "Do not implement CD-024 or CD-025 blocked route/lifecycle legs until the upstream governance decision is recorded."
+  - "Do not discard, reset, overwrite, or silently absorb concurrent Claude changes, stashes, evidence, or build artefacts."
+  - "Do not deploy production as part of this baseline task."
+
+authorized_file_scope:
+  - "Read-only audit of the complete repository, every local/remote branch, worktree, stash, delivered design package and evidence record."
+  - "apps/web/src/app/login, reset, launch, planning, field startup handoff, and shared shell only for proven P0/P1 wiring defects."
+  - "apps/web/e2e and existing verification scripts for exact positive, negative, role, audit, RTL/theme/responsive and regression proof."
+  - "supabase/migrations/tests only for forward-only contract corrections; no live database mutation without existing authorization and reproducible evidence."
+  - "outputs/cd-001..024, product-contract acceptance/evidence/governance/execution/session records, and a branch/baseline audit report."
+  - "Git commits, merges, branch creation/deletion and push to main after the worktree is clean and the verified baseline is reproducible."
+
+task_specific_context:
+  - "product-contract/governance/CODEX_WIRING_AUDIT_CHECKLIST.md"
+  - "product-contract/screens/screen_route_catalogue.csv"
+  - "product-contract/domain/field_dictionary.csv"
+  - "product-contract/domain/rbac_matrix.csv"
+  - "product-contract/domain/state_transitions.csv"
+  - "product-contract/governance/error_catalogue.csv"
+  - "product-contract/governance/decision_register.csv"
+  - "product-contract/evidence/AC_LEDGER.csv"
+  - "outputs/claude-design-approval-pack/Saqeel_43_Screen_Claude_Design_Matrix.csv"
+  - "outputs/cd-021/*"
+  - "outputs/cd-022/*"
+  - "outputs/cd-023/*"
+  - "outputs/cd-024/*"
+  - "product-contract/evidence/screens/login-v7-atlas/*"
+  - "product-contract/evidence/screens/cd-021-bulk-v1/*"
+  - "product-contract/evidence/screens/single-v2/*"
+  - "product-contract/evidence/screens/immediate-v2/*"
+
+required_tests:
+  - "Branch/stash/worktree provenance and unique-commit audit; no unique validated work lost."
+  - "Per-row DEC-012 audit for every implemented wiring map with exact code/test/runtime evidence."
+  - "Authentication, anti-enumeration reset, /launch role/no-workspace/unauthorized routing and protected-route negatives."
+  - "CD-020 planning-home route/card/draft/degraded/role wiring."
+  - "CD-021 criteria/search/selection/review/atomic publish/RLS/audit/notification/idempotency/failure truth."
+  - "CD-022 identity search, ambiguity, duplicate/location/package/assignment/atomicity/retry/role/failure truth."
+  - "CD-023 dual-role, urgency, identity/location/package/window/assignment/atomicity/idempotency/audit/notification/field-handoff/error-sink truth."
+  - "CD-024 design-map blocked rows and current P02 subset checked against runtime without inventing the unresolved route."
+  - "Typecheck, production build, color-law/static safety scans, focused Playwright specs, then complete Playwright regression with no exclusions."
+  - "Git diff check, clean baseline checkout verification, remote main existence/tip verification after push."
+
 required_evidence:
-  - "Playwright headless suite passing against local production build (golden journey B10, offline drill, persona tours, negative paths)"
-gates_passed:
-  - "G0-G9 PASS per GATE_STATUS.md; G8 sponsor-authorized 2026-07-11; G9 PASS 2026-07-12"
-open_decisions_blocking_g5: []
-decisions_note: "DEC-001..DEC-010 dispositioned in governance/DECISIONS_ACCEPTED_2026-07-11.yaml"
-remaining_gates:
-  - "G10 verification: Playwright suite pending (this slice)"
-  - "G11 hardening: credential rotation (parked on sponsor instruction), Seoul->Frankfurt region decision, video/notification provider adapters"
-  - "G12 release: no hosting/deploy target chosen"
-live_environment:
-  supabase_project_ref: "iiozvqntawxfwbgffzqu"
-  status: "live; schema reconciled at G5 (greenfield)"
-exit_condition: "Playwright headless suite covering golden journey, offline drill, persona tours and negative paths passes against the local production build, with evidence captured."
+  - "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md"
+  - "Recorded per-slice audit companions for CD-001/002/003/020/021/022/023/024 as applicable."
+  - "Updated CURRENT_STATE.md, SESSION_LEDGER.json, WORK_QUEUE.yaml, ACCEPTANCE_STATUS.md, EVIDENCE_STATUS.md and AC ledger/summary where source status changes."
+  - "Final commit graph, branch disposition table, test transcript summary, baseline commit SHA and remote main SHA."
+
+exit_condition: >-
+  Every implemented CD-001/002/003/020/021/022/023 wiring leg is either independently
+  verified PASS or fixed and then independently reverified; CD-024 and any later delivered
+  design rows are truthfully recorded PASS or BLOCKED_UPSTREAM without invented behavior;
+  all required focused and full tests pass without exclusions; concurrent work and stashes
+  are reconciled without loss; acceptance/evidence/session records are current; the validated
+  commit graph is consolidated to main and the exact main tip is pushed and verified before
+  any stale branch is deleted.

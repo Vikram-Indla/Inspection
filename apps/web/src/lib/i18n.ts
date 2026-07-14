@@ -10,7 +10,7 @@ export type Dict = Record<string, string>;
 
 export async function getLocale(): Promise<Locale> {
   const c = await cookies();
-  return c.get("locale")?.value === "ar" ? "ar" : "en";
+  return c.get("locale")?.value === "en" ? "en" : "ar";
 }
 
 // Module-level cache: one dictionary fetch per server process per TTL window.

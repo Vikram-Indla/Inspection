@@ -1,0 +1,85 @@
+prompt_id: CD-024
+screen_id: SCR-WEB-140 (logical)
+route: HANDOFF_BLOCKED  # contract targets /planning/:id/configure (unimplemented); /planning/bulk/review implements the P02 subset but is labelled SCR-WEB-120 (collides with Single Visit Planning); /planning/plans/:id is read-only post-publish and must remain non-editing. Route-neutral workspace designed; no code-ready route manifest until governance reconciles.
+persona: Planner
+journey: P02
+acceptance: [DSG ratchet V4, DSG-A11Y-001]
+source_branch: feat/cd-021-bulk-targeting (bulk review) / feat/cd-023-immediate-authority-bar (per CURRENT_STATE.md UPDATE 18) — local mount exposes no git metadata
+source_commit: UNVERIFIED_HANDOFF_BLOCKED
+dirty_worktree: UNVERIFIED_HANDOFF_BLOCKED  # CURRENT_STATE records CD-021/CD-023 branches uncommitted
+design_frame_ids: [4route, 4log, 4a, 4b, 4c, 4d, 4e, 4f, 4g, 4h, 4i]
+design_file: "CD-024 Visit Configuration and Assignment.dc.html (dedicated file; frames 4route, 4log, 4a-4i)"
+png_paths:
+  - outputs/cd-024/CD-024_SCR-WEB-140_primary.png
+  - outputs/cd-024/CD-024_SCR-WEB-140_decision_zone.png
+  - outputs/cd-024/CD-024_SCR-WEB-140_ar_rtl.png
+  - outputs/cd-024/CD-024_SCR-WEB-140_narrow.png
+  - outputs/cd-024/CD-024_SCR-WEB-140_light.png
+  - outputs/cd-024/CD-024_SCR-WEB-140_error_summary.png
+correction_round: R2 - R1 deltas (review 2026-07-14, verdict BLOCK/P1) in CD-024_R1_CORRECTION_LOG.md + canvas 4log; R2 adds the identity extraction (dedicated CD-024 design file), mandated four-fact route decision wording, per-source failure states, empty-selection / restored-scope / read-only-plan states, exact mandated research sources, and the "Checked again before publish" ledger class name
+selected_hypothesis: candidate-first evidence comparison (4a); constraint-first (4b) and schedule-context (4c) rejected against decision time, hidden assumptions, conflict prevention, RTL, keyboard burden, narrow survival and implementation truth
+signature_interaction: Assignment Evidence Ledger (Verified now / Not evaluated / Blocks assignment / Checked again before publish) — the ONE new pattern; counterfactual proven in 4d
+file_changes:
+  # All targets assume the current /planning/bulk/review implementation as the code base for the route-neutral workspace.
+  - file: apps/web/src/app/planning/bulk/review/ReviewClient.tsx
+    before: Config panel + assignment table with name-only inspector selects; silent skip-duplicates checkbox; summary counts; single joined error string
+    disposition: UPDATE
+    after: Candidate rows carry evidence cells (pool membership, overlap count with exact visit/window when present, explicit not-evaluated note); focused row drives the Assignment Evidence Ledger (read-only reflection); scope-decision panel replaces the skip checkbox (named removals, recalculated totals, restorable); readiness ledger separates blockers/warnings/unknowns/future effects; linked error summary with focus transfer; execution mode rendered as fixed physical (no choice)
+    design_node: 4a / 4d / 4e
+    protected: sessionStorage selection hand-off; empty-selection return; RLS-scoped loadBulkSelection; atomic publishBulkPlan call; neutral catalogued failure copy
+    tests: row-focus->ledger reflection; scope change recalculation + restore; error-summary focus transfer with input preserved; no color-only conflict
+  - file: apps/web/src/app/planning/bulk/actions.ts
+    before: loadBulkSelection returns factories/packages/inspectors; publishBulkPlan validates (manual overlap only) then calls atomic RPC
+    disposition: UPDATE
+    after: (a) loadBulkSelection additionally returns per-inspector overlapping active assignments within a supplied window (same query as the pre-RPC submit check - one query, two call sites); (b) structured blocker list (machine-readable) so the UI links each blocker to its control; (c) R1-2 FAIL-CLOSED READS: every factory/package/inspector/duplicate/overlap read returns a structured success-or-failure result; any failure blocks readiness with neutral copy and preserved input - NEVER rendered as zero results or no conflict (current reads ignore Supabase errors - defect)
+    design_node: 4a evidence cells; 4e stale/concurrent state
+    protected: all existing blockers verbatim; RPC contract unchanged; RLS; raw-error suppression
+    tests: selection-time vs submit-time overlap parity; structured blockers rendering
+  - file: apps/web/src/app/planning/bulk/review/page.tsx
+    before: Builds strings and renders ReviewClient; no explicit role guard (shell visibility + RLS only)
+    disposition: UPDATE
+    after: Explicit Planner direct-route guard (R1-8); unauthorized/not-in-scope renders the distinct no-data state - separate from empty selection and from source failure; RLS remains the data authority
+    design_node: 4e unauthorized mini-frame
+    tests: non-planner direct URL -> unauthorized state, not "No factories selected"
+  - file: apps/web/src/app/planning/bulk/review/EvidenceLedger.tsx
+    before: (does not exist)
+    disposition: CREATE
+    after: Four-class ledger component (Verified now / Not evaluated / Blocks assignment / Checked again before publish) fed entirely by loadBulkSelection facts + static truth config; no score computation; SR-navigable headings
+    design_node: 4d
+    tests: class rendering per candidate state; no numeric output anywhere
+removals: []  # REMOVE requires human approval; the silent skip checkbox is REPLACED by the scope-decision panel (UPDATE, behavior-preserving at the action level: same skip semantics, now explicit)
+handoff_blocked:
+  - route_ownership: SCR-WEB-120/140 collision + /planning/:id/configure target - governance decision required before any route/manifest work
+  - concurrency_safe_overlap_enforcement: manual pool/overlap validation runs pre-RPC and can go stale before the assignment insert; the RPC re-validates nothing (R1-1)
+  - fail_closed_query_error_handling: current reads ignore errors; structured per-source results required (R1-2)
+  - automatic_overlap_protection: publish_bulk_plan round-robin ignores schedules; adding overlap-aware auto is a backend/RPC decision
+  - authoritative_package_visit_type_revalidation: no server-side recheck of tampered/stale package_version_id or visit_type at submit
+  - virtual_mode: execution mode hard-coded physical; virtual/OTP readiness unimplemented
+  - attempted_conflict_audit: no audit event for blocked/attempted assignment
+  - notification_delivery: notification row is queued-only; no delivery truth (ENG-11 providers)
+  - stale_concurrency_token: no availability version token; submit recheck is the only concurrency contract
+baseline_wiring_audit_2026_07_14:
+  resolved_in_candidate_baseline:
+    - fail_closed_query_error_handling
+    - concurrency_safe_overlap_enforcement
+    - automatic_overlap_protection
+    - authoritative_package_visit_type_revalidation
+    - canonical_plan_transition
+    - single_publish_atomicity_dependency
+  evidence:
+    - apps/web/src/app/planning/bulk/actions.ts
+    - apps/web/src/app/planning/bulk/page.tsx
+    - apps/web/src/app/planning/bulk/review/page.tsx
+    - supabase/migrations/0031_cd023_assignment_overlap_guard.sql
+    - supabase/migrations/20260714091726_plan_validated_state.sql
+    - supabase/migrations/20260714091727_planning_publish_guards.sql
+  runtime_certification: PENDING_MIGRATION_DEPLOYMENT
+  still_blocked:
+    - route_ownership_and_design_signoff
+    - virtual_mode_for_bulk
+    - attempted_conflict_business_audit
+    - notification_provider_delivery_truth
+    - stale_availability_version_token
+rtl_theme_impact: Logical properties; Arabic fresh-session default; bdi-isolated IDs/windows/codes; dark/light via ax tokens; conflict = glyph+text never color alone
+rollback: Additive UPDATEs on the existing review route; git revert; no schema changes; RPC untouched
+status: READY_FOR_DESIGN_REVIEW_R2

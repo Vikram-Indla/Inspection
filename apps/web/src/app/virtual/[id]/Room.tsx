@@ -21,6 +21,7 @@ export type RoomStrings = {
   markJoined: string;
   sendOtp: string; resendOtp: string; devCode: string; codeLabel: string; verify: string;
   otpSent: string; otpCooldown: string; otpVerified: string; otpWrong: string; otpLocked: string; otpExpired: string; otpExhausted: string; otpNoCode: string;
+  otpError: string;
   otpCounters: string;   // "attempts {a}/{b} · resends {c}/{d}"
   beginReady: string; beginGated: string;
   openWaiting: string;
@@ -62,7 +63,10 @@ export default function Room({ session, strings }: { session: S; strings: RoomSt
     const { data, error } = await sb.rpc("vp_request_otp", { p_participant: p.id });
     if (error) {
       // 0023 — the RPC now rejects callers with no authority over this session (RBAC-014).
-      setOtpInfo(o => ({ ...o, [p.id]: { msg: error.message } }));
+      // Provider/RLS detail remains diagnostic-only; show stable localized copy.
+      // eslint-disable-next-line no-console
+      console.error("[virtual otp request]", error);
+      setOtpInfo(o => ({ ...o, [p.id]: { msg: strings.otpError } }));
       setBusy(false);
       return;
     }
@@ -84,7 +88,10 @@ export default function Room({ session, strings }: { session: S; strings: RoomSt
     const { data, error } = await sb.rpc("vp_verify_otp", { p_participant: p.id, p_code: codes[p.id] ?? "" });
     if (error) {
       // 0023 — the RPC now rejects callers with no authority over this session (RBAC-014).
-      setOtpInfo(o => ({ ...o, [p.id]: { msg: error.message } }));
+      // Provider/RLS detail remains diagnostic-only; show stable localized copy.
+      // eslint-disable-next-line no-console
+      console.error("[virtual otp verify]", error);
+      setOtpInfo(o => ({ ...o, [p.id]: { msg: strings.otpError } }));
       setBusy(false);
       return;
     }

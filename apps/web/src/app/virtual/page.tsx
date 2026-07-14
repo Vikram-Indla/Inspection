@@ -32,7 +32,7 @@ export default async function VirtualList() {
   return (
     <Shell current="/virtual" title={t("virtual.list.title", "Virtual inspections")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("virtual.list.context", "SCR-VIR-700 · confirmed sessions only")}</span>}>
-      {error && <div className="ax-banner ax-banner--critical"><div>{t("virtual.list.loadError", "Couldn’t load sessions:")} {error.message}</div></div>}
+      {error && <div className="ax-banner ax-banner--critical"><div>{t("virtual.list.loadError", "Couldn’t load sessions. Try again or contact support.")}</div></div>}
       {!error && rows.length === 0 && (
         <div className="ax-surface"><div className="ax-state">
           <span className="ax-state__glyph">📹</span><h4>{t("virtual.list.empty", "No virtual sessions in scope")}</h4>

@@ -1,5 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const playwrightPort = Number(process.env.PLAYWRIGHT_PORT ?? 3000);
+const playwrightOrigin = `http://127.0.0.1:${playwrightPort}`;
+
 // G10-VERIFICATION-PLAYWRIGHT — headless suite over the local production build.
 // Exit criterion for gate G10 (product-contract/execution/CURRENT_SLICE.yaml):
 // golden journey B10, offline drill, persona tours, negative paths.
@@ -16,7 +19,7 @@ export default defineConfig({
     ["json", { outputFile: "test-results/results.json" }],
   ],
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL: playwrightOrigin,
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     ...devices["Desktop Chrome"],
@@ -30,9 +33,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start",
-    url: "http://127.0.0.1:3000/login",
-    reuseExistingServer: true,
+    command: `npm run start -- -H 127.0.0.1 -p ${playwrightPort}`,
+    url: `${playwrightOrigin}/login`,
+    reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER !== "0",
     timeout: 60_000,
   },
 });

@@ -1,0 +1,25 @@
+CD001-V7-EV-008 — Design closure and continuation handoff
+Date: 2026-07-13
+Branch: feat/cd-001-v7-atlas
+Screen: SCR-PUB-010
+
+Sponsor disposition
+- CD-001 login is done for now and becomes the preserved baseline.
+- Further P2 refinement is deferred to the consolidated Big Bang critique.
+- Reopen only for a demonstrated P0/P1 regression or recorded release blocker.
+
+Closure proof
+- Detailed human-readable handoff: product-contract/sessions/HANDOFF_2026-07-13_CD001_CLOSED_CD002_NEXT.md
+- Machine-readable append-only session entry: product-contract/sessions/SESSION_LEDGER.json
+- Interaction suite: PASS 7/7 product tests.
+- Visual evidence suite: PASS 1/1 product test.
+- English/Arabic, dark/light and desktop/mobile evidence captured, including desktop-light-ar.png and mobile-light-ar.png.
+- Local /login response verified HTTP 200 with lang=ar and dir=rtl on a fresh request.
+
+Next controlled task
+- TASK-DESIGN-CD002-REVIEW.
+- Review the existing CD-002 Reset design package; do not regenerate or implement before sponsor acceptance.
+
+Release boundary
+- Source/derivative rights, official geographic anchors, Arabic-only raster option and public-coverage communication remain P1 release items.
+- No commit, push, merge or deployment was performed.

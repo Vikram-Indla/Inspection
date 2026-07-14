@@ -1,0 +1,16 @@
+component,current_location,disposition,after_responsibility,design_frame,approval_needed
+Shared shell (Shell.tsx/ShellClient.tsx/shell-navigation.ts),apps/web/src/components,PRESERVE,Unchanged role-scoped shell; Planning stays under Inspection group,1a,no
+Sticky topbar,apps/web/src/components/ShellClient.tsx,PRESERVE,Unchanged; page owns no global filters (Dashboard-style topbar explicitly NOT copied),1a,no
+Eligibility ledger strip,apps/web/src/app/planning/bulk (new),CREATE,Denominator + eligible + excluded + focused-condition contribution + source freshness in one persistent strip,1a,no
+CriteriaBuilder,apps/web/src/app/planning/bulk/CriteriaBuilder.tsx,UPDATE,Nested AND/OR tree instrument with chips; focus-to-highlight; validation; drafts; keyboard tree,1a/1d,no
+Condition chip,within CriteriaBuilder,CREATE,Field/operator/value chip with contribution delta + edit/duplicate/remove/reorder,1a,no
+Distribution panels (region/risk/activity + exclusions),new DistributionPanels.tsx,CREATE,Accessible list-first distributions; GeoMap.tsx optional map view; unknown buckets; source-failure isolation,1a/1d,no
+GeoMap (Leaflet),apps/web/src/components/GeoMap.tsx,PRESERVE,Reused as optional map view only; list remains equivalent channel,1a/1b,no
+Factory result table,apps/web/src/app/planning/bulk/BulkForm.tsx,UPDATE,Evidence table: provenance + data-quality columns; pagination; filter-within-results; select-visible vs select-all,1a,no
+Persistent selection bar,new within BulkForm,CREATE,Cross-page selection count; readiness chips; review/continue action,1a,no
+Selection-invalidation dialog,new within BulkForm,CREATE,Explicit confirm when criteria edit drops selected factories,1d,no
+Publish stepper (progress + partial failure),new within BulkForm/actions result,CREATE,Truthful 6-step publish visualization; resume-at-step retry; discard-draft path,1d/1h,no
+Visit configuration fields (type/package/window/notes/inspector),BulkForm.tsx,UPDATE (relocate to P02 review step),Configuration moves to review step so SCR-WEB-110 focuses on targeting; behavior unchanged,1a note,YES - IA relocation needs human approval
+Validation summary,BulkForm error banner,UPDATE,Role=alert summary with per-condition links; catalogued neutral copy only,1d,no
+publishBulkPlan action,apps/web/src/app/planning/bulk/actions.ts,UPDATE,Structured step results; neutral errors; draft-preserving failure; HANDOFF_BLOCKED atomic leg,1d,no
+Deterministic campaign summary,BulkForm.tsx,PRESERVE,Pure-count summary moves with configuration to review step; no AI claims,-,covered by relocation approval

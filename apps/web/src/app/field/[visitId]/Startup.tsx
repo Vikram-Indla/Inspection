@@ -15,9 +15,10 @@ export type StartupStrings = {
   geofenceHeading: string; insideFence: string; outsideFence: string;
   fenceCaption: string; factoryOverride: string; engineDefault: string; positionHint: string;
   step1: string; step2: string; step3: string; step4: string; resume: string;
-  officialLabel: string; youLabel: string; insideWord: string; outsideWord: string;
+  officialLabel: string; plannedLabel: string; youLabel: string; insideWord: string; outsideWord: string;
   logCached: string; logJourneyBlocked: string; logJourneyStarted: string;
   logAccuracyBlocked: string; logCheckinRejected: string; logOutside: string; logInside: string; logStartBlocked: string;
+  logInspectionCreateFailed: string;
   // E3 — telemetry / arrival auto-detect / deviation / exception / pre-start / STM-OPS
   telemetryRow: string; liveDistance: string; arrivalDetected: string; liveLabel: string;
   prestartHeading: string; prestartRep: string; prestartLoc: string;
@@ -45,6 +46,7 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
 type Insp = { id: string; status: string };
 type V = { id: string; window_start: string; window_end: string; execution_mode: string;
   visit_type: string; priority: string | null; notes: string | null; planning_status: string;
+  dispatch_lat: number; dispatch_lng: number; dispatch_source: "official" | "planned";
   factories: { name: string; factory_code: string | null; city: string | null; region: string | null;
     cr_number: string | null; license_number: string | null;
     official_lat: number; official_lng: number; geofence_radius_m: number | null };
@@ -98,7 +100,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const telemetryS = gis.telemetry_interval_s ?? 30;                // ENG-06 telemetry_interval_s
   const offRouteM = gis.route_deviation?.off_route_m ?? 500;        // ENG-06 route_deviation
   const sustainS = gis.route_deviation?.sustain_s ?? 120;
-  const official: [number, number] = [visit.factories.official_lat, visit.factories.official_lng];
+  const dispatchPoint: [number, number] = [visit.dispatch_lat, visit.dispatch_lng];
   const add = (m: string) => setLog(l => [...l, m]);
   // refs for the tracking loop (M04-021/022/031/037)
   const posRef = useRef(null as Fix | null);
@@ -113,7 +115,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     const fd = new FormData();
     fd.set("visit_id", visit.id); fd.set("next", next);
     const r = await transitionOperationalState({}, fd);
-    if (r.error) { add(fmt(strings.logOpBlocked, { error: r.error })); return false; }
+    if (r.error) { add(strings.logOpBlocked); return false; }
     add(fmt(strings.logOpState, { state: next.replace(/_/g, " ") }));
     return true;
   }
@@ -130,7 +132,14 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       .insert({ visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString() })  // M04-009 device clock
       .select().single();
     setBusy(false);
-    if (error) { add(fmt(strings.logJourneyBlocked, { error: error.message })); return; }
+    if (error) {
+      // Provider/RLS detail stays diagnostic-only. The field timeline must never
+      // expose raw database text (DEC-012 cross-cutting error-sink rule).
+      // eslint-disable-next-line no-console
+      console.error("[field start journey]", error);
+      add(strings.logJourneyBlocked);
+      return;
+    }
     setJourneyId(data.id); add(strings.logJourneyStarted);
     await opTransition("on_the_way");                                // M04-018 · STM-OPS leg 1
   }
@@ -145,7 +154,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     if (!journeyId || !navigator.geolocation) return;
     const jId = journeyId;
     const watch = navigator.geolocation.watchPosition(p => {
-      const d = distM([p.coords.latitude, p.coords.longitude], official);
+      const d = distM([p.coords.latitude, p.coords.longitude], dispatchPoint);
       const fix: Fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy,
         alt: p.coords.altitude, speed: p.coords.speed, heading: p.coords.heading, d };
       posRef.current = fix; setLive(fix);
@@ -192,12 +201,12 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     setBusy(true);
     const pos = await new Promise<GeolocationPosition | null>(res =>
       navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => res(p), () => res(null), { timeout: 4000 }) : res(null));
-    // demo fallback: 60m from official pin, good accuracy — surfaced in the log (M04-049)
+    // demo fallback: near the governed dispatch point, good accuracy — surfaced in the log (M04-049)
     if (!pos) add(strings.logGpsFallback);
-    const lat = pos?.coords.latitude ?? visit.factories.official_lat + 0.0005;
-    const lng = pos?.coords.longitude ?? visit.factories.official_lng + 0.0002;
+    const lat = pos?.coords.latitude ?? visit.dispatch_lat + 0.0005;
+    const lng = pos?.coords.longitude ?? visit.dispatch_lng + 0.0002;
     const acc = pos?.coords.accuracy ?? 4.2;
-    const d = distM([lat, lng], official);
+    const d = distM([lat, lng], dispatchPoint);
     if (acc > maxAcc) { add(fmt(strings.logAccuracyBlocked, { acc: acc.toFixed(0), max: maxAcc })); setBusy(false); return; }
     const inside = d <= fence;
     setCheckin({ lat, lng, acc, d, inside }); // SB20 — plot observed position on the map card
@@ -210,7 +219,12 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       geofence_result: inside ? "inside" : "outside", gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
     });
     setBusy(false);
-    if (error) { add(fmt(strings.logCheckinRejected, { error: error.message })); return; }
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[field check-in]", error);
+      add(strings.logCheckinRejected);
+      return;
+    }
     if (!inside) { add(fmt(strings.logOutside, { d: d.toFixed(0), fence })); return; }
     setCheckedIn(true); add(fmt(strings.logInside, { d: d.toFixed(0), acc: acc.toFixed(1) }));
     await sb.from("journey_sessions").update({ status: "arrived" }).eq("id", journeyId!);
@@ -231,7 +245,12 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
     });
     setBusy(false);
-    if (error) { add(fmt(strings.logExceptionFailed, { error: error.message })); return; }
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[field exception record]", error);
+      add(strings.logExceptionFailed);
+      return;
+    }
     setExceptionNote(""); add(fmt(strings.logExceptionSent, { acc: fix.acc.toFixed(1) }));
   }
 
@@ -258,7 +277,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       const fd = new FormData();
       fd.set("visit_id", visit.id); fd.set("reason_key", cancelReason); fd.set("comment", cancelComment);
       const r = await requestVisitCancellation({}, fd);
-      if (r.error) { add(fmt(strings.logCancelFailed, { error: r.error })); return; }
+      if (r.error) { add(strings.logCancelFailed); return; }
       setCancelRequested(true);           // M04-056 — stop transition to execution
       add(strings.logCancelSent);
     } finally { setBusy(false); }
@@ -274,7 +293,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     fd.set("visit_id", visit.id); fd.set("reason", reason);
     const r = await requestVisitReturn({}, fd);
     setBusy(false);
-    if (r.error) { add(fmt(strings.logReturnFailed, { error: r.error })); return; }
+    if (r.error) { add(strings.logReturnFailed); return; }
     setReturnRequested(true);
     add(strings.logReturnSent);
   }
@@ -298,7 +317,15 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     const { data, error } = await sb.from("inspections").insert({
       visit_id: visit.id, status: "in_progress", package_version_id: visit.package_versions.id, started_at: new Date().toISOString(),
     }).select().single();
-    if (error) { add(fmt(strings.logStartBlocked, { error: error.message })); setBusy(false); return; }
+    if (error) {
+      // Provider/constraint details stay in diagnostics; field users receive
+      // stable localized recovery guidance, never raw database text.
+      // eslint-disable-next-line no-console
+      console.error("[field start inspection]", error);
+      add(strings.logInspectionCreateFailed);
+      setBusy(false);
+      return;
+    }
     await opTransition("executing");                                  // M04-055 · STM-OPS leg 3
     await local.cachePackage(data.id, visit.package_versions);  // key by inspection for the workspace
     router.push(`/field/inspection/${data.id}`);
@@ -312,10 +339,10 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const progress = initialD != null && initialD > 0 && remainingD != null
     ? Math.min(100, Math.max(0, ((initialD - remainingD) / initialD) * 100))
     : null;
-  // SB20 / ENG-08 — official pin + geofence ring; observed dot after check-in; live dot while journeying.
+  // SB20 / ENG-08 — governed dispatch point + geofence ring; observed dot after check-in; live dot while journeying.
   const mapMarkers: GeoMarkerData[] = [
-    { id: "official", lat: visit.factories.official_lat, lng: visit.factories.official_lng,
-      label: fmt(strings.officialLabel, { name: visit.factories.name }), tone: "neutral", radiusM: fence },
+    { id: "dispatch", lat: visit.dispatch_lat, lng: visit.dispatch_lng,
+      label: fmt(visit.dispatch_source === "official" ? strings.officialLabel : strings.plannedLabel, { name: visit.factories.name }), tone: "neutral", radiusM: fence },
     ...(live && !checkin ? [{
       id: "live", lat: live.lat, lng: live.lng,
       label: fmt(strings.liveLabel, { acc: live.acc.toFixed(1) }), tone: "medium" as GeoMarkerData["tone"],
@@ -337,14 +364,14 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           <div style={{ display: "flex", gap: 8 }}>{telemetryCount > 0 ? "✓" : "○"} {fmt(strings.telemetryRow, { s: telemetryS, n: telemetryCount })}</div>
           <div style={{ display: "flex", gap: 8 }}>{checkedIn ? "✓" : "○"} {fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</div>
         </div>
-        {/* F3 · M04-016 — real navigation handoff with the official coordinates */}
+        {/* F3 · M04-016 — real navigation handoff with this Visit's governed dispatch coordinates */}
         <div className="ax-row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--ax-space-200)" }}>
           <a className="ax-btn" target="_blank" rel="noopener noreferrer"
-            href={`https://maps.google.com/?q=${visit.factories.official_lat},${visit.factories.official_lng}`}>
+            href={`https://maps.google.com/?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
             {strings.mapsOpen} ↗
           </a>
           <a className="ax-btn" target="_blank" rel="noopener noreferrer"
-            href={`geo:${visit.factories.official_lat},${visit.factories.official_lng}?q=${visit.factories.official_lat},${visit.factories.official_lng}`}>
+            href={`geo:${visit.dispatch_lat},${visit.dispatch_lng}?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
             {strings.mapsGeo}
           </a>
         </div>
@@ -367,7 +394,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           </div>
         )}
       </div>
-      {/* SB20 / ENG-08 — compact geofence map card (official location is GIS-Admin-owned, FND-007) */}
+      {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-150)" }}>
           <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="ax-lozenge ax-lozenge--info">SB20 · ENG-08</span></h4>
@@ -386,7 +413,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           </span>
         </div>
         <div style={{ blockSize: 240, borderRadius: "var(--ax-radius-standard)", overflow: "hidden", border: "1px solid var(--ax-color-border)" }} dir="ltr">
-          <GeoMap center={[visit.factories.official_lat, visit.factories.official_lng]} zoom={15} markers={mapMarkers} height="100%" />
+          <GeoMap center={[visit.dispatch_lat, visit.dispatch_lng]} zoom={15} markers={mapMarkers} height="100%" />
         </div>
         <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>
           {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}

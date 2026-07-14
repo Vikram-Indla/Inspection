@@ -138,7 +138,7 @@ export default async function LiveOperations() {
 
   const title = t("ops.live.title", "Live Operations — Saudi Arabia");
   return (
-    <Shell current="/operations" title={title}>
+    <Shell current="/operations/live" title={title}>
       <LiveOps factories={factories} regions={regions} inspectors={inspectors} strings={strings} />
     </Shell>
   );

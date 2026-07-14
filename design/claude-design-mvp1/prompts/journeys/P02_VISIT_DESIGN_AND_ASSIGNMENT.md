@@ -1,9 +1,9 @@
 # P02 — Visit Design and Assignment
 
-Use the master constitution. Cover SCR-WEB-140, SB04/SB05, and the logical modes currently hosted by `/planning/plans/:id`.
+Use the master constitution and the V4 quality ratchet. Cover SCR-WEB-140 and SB04/SB05, but reconcile ownership before composing: `/planning/plans/:id` is now a read-only/post-publish drill-down; `/planning/bulk/review` contains an implemented pre-publish P02 step; the contract route `/planning/:id/configure` is not implemented. The current bulk review's `SCR-WEB-120` label collides with the governed Single Visit Planning identity. Preserve the read-only route and mark the implementation route leg `HANDOFF_BLOCKED` until this is resolved.
 
 Inspect plan detail, package versions, assignment actions, inspector availability, schedule conflicts, execution-mode eligibility, GIS location, and notifications. Design a structured configuration workspace for visit type, window, priority, exact package version, physical/virtual eligibility, team, notes, and manual/automatic assignment.
 
-Make conflicts actionable: unavailable inspector, capacity conflict, overlapping visit, missing package, stale target, invalid location, or unconfigured OTP for virtual. Show which rule produced each blocker and which actions are permitted. Automatic recommendation must remain explainable and overridable with an audit reason.
+Make only verified conflicts actionable. The current runtime can prove inspector-role membership, duplicate active visits and manual-selection overlap; it cannot yet prove skills, work hours, capacity, proximity, travel time, automatic overlap avoidance, virtual eligibility, override policy or attempted-conflict audit. Show unsupported facts as unavailable or blocked, never as a score. Automatic assignment is deterministic round-robin, not a recommendation engine.
 
-Return desktop high-fidelity configuration, conflict-resolution panel, assignment comparison, read-only published state, Arabic/RTL, loading/stale states, and exact P03 readiness criteria. Do not redesign assignment as a cosmetic dropdown.
+Return equal-fidelity decision-zone hypotheses, desktop high-fidelity configuration, an Assignment Evidence Ledger, conflict-resolution panel, semantic candidate comparison, read-only published state, Arabic/RTL, narrow layout, loading/stale/concurrent states, linked error-summary focus, and exact P03 readiness criteria. Do not redesign assignment as a cosmetic dropdown or imply unsupported optimization.

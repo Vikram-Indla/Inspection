@@ -308,6 +308,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     evReplace: t("field.ws.ev.replace", "Replace"),
     evDelete: t("field.ws.ev.delete", "Delete"),
     evDeletedMsg: t("field.ws.ev.deleted", "Evidence removed from the package — soft-deleted with reason, audit event recorded (M04-164)"),
+    saveFailed: t("field.ws.saveFailed", "This change could not be synchronized. It remains queued where possible — try again."),
     evDeleteQueuedOffline: t("field.ws.ev.deleteQueued", "Delete queued — will apply with reason on reconnect (M04-164)"),
     evArchiveQueued: t("field.ws.ev.archiveQueued", "Replacement queued for {code} — previous file will be archived, never destroyed (M04-163)"),
     evDeleteTitle: t("field.ws.ev.deleteTitle", "Delete evidence (M04-164)"),

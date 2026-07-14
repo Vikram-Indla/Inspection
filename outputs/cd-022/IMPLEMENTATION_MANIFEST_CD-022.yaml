@@ -1,0 +1,54 @@
+prompt_id: CD-022
+screen_id: SCR-WEB-120
+route: /planning/single
+persona: Planner
+journey: P01
+engines: [ENG-04, ENG-05, ENG-06]
+acceptance: [DSG-017, DSG-A11Y-001]
+source_branch: feat/cd-022-single-identity-lens
+source_commit: PENDING_TASK_BASELINE_WIRING_AUDIT_001_COMMIT
+dirty_worktree: AUDITED_SHARED_WORKTREE_PRESERVED
+cd020_cd021_dependency: RUNTIME_WIRED_DESIGN_ARTIFACT_GAPS_RECORDED
+research_set_r16_r19_r21_r24: HANDOFF_BLOCKED # approval pack Reference Library defines R01-R15 only; R16/R19/R21/R24 are cited by the matrix but not defined in the mounted repo. Three primary-source categories satisfied directly (see RESEARCH_PROVENANCE_CD-022.md).
+design_frame_ids: [2a, 2b, 2c, 2d, 2e, 2f, 2g, 2h]
+design_file: "CD-021 Bulk Targeting.dc.html (canvas section CD-022, ids 2a-2h)"
+png_paths:
+  - outputs/cd-022/CD-022_SCR-WEB-120_primary.png
+  - outputs/cd-022/CD-022_SCR-WEB-120_outlier.png
+  - outputs/cd-022/CD-022_SCR-WEB-120_partial_failure.png
+  - outputs/cd-022/CD-022_SCR-WEB-120_ar_rtl.png
+  - outputs/cd-022/CD-022_SCR-WEB-120_narrow.png
+selected_composition: Identity dossier with progressive configuration (2a); search-first wizard (2b) and map-and-identifier workspace (2c) rejected with rationale on canvas
+file_changes:
+  - file: apps/web/src/app/planning/single/page.tsx
+    before: Fetches ALL factories (full table) + packages + inspector roles + otp engine flag; builds strings; renders Wizard
+    disposition: UPDATE
+    after: Server-side identifier search endpoint/param (CR, factory_code, license_number, + name — name search is NEW, current runtime omits it); returns graded matches (exact = identifier equality, similar-name, degraded) with provenance fields; adds duplicate/overlap read at selection (same visits query used at publish); exposes registry sync freshness
+    design_node: 2a search strip + comparison rail; 2d comparison table
+    protected: RLS-scoped reads; virtualEligible via engine_settings(otp) unchanged
+    tests: grading rules unit tests (no score, rule labels only); name search; duplicate-at-selection parity with publish check
+  - file: apps/web/src/app/planning/single/Wizard.tsx
+    before: Linear 4-step form - search radios, license radio (M01-036), GeoMap + planner pin + confirm checkbox (M01-038), config grid (type/package/mode M03-011/window/inspector M01-040/notes); controlled-state + resetKey work preservation; error list
+    disposition: UPDATE (rename SingleVisitLens or keep file, re-sequence)
+    after: Dossier composition - comparison rail (graded results, nothing pre-selected), identity dossier (identifier grid, provenance, official-vs-planner location, risk context ENG-04 v1 advisory, visit history + duplicate guard), progressive configuration column unlocked by license+location confirmation, readiness chips, publish stepper. ALL existing gates preserved verbatim; work-preservation pattern preserved
+    design_node: 2a full frame; 2d warnings; 2h states
+    protected: M01-036 license gate; M01-038 planner-pin-never-edits-registry; M03-011 mode eligibility incl. auto-switch logic; M01-040 availability; controlled inputs + resetKey
+    tests: keyboard flow; focus transfer to first blocker; work preservation on blocked publish; duplicate warning at selection
+  - file: apps/web/src/app/planning/single/actions.ts
+    before: publishSingleVisit - validation blockers then 6 sequential writes (plan, visit, assignment, visit update, plan update, notification), redirect /visits/:id; raw e.message on any write failure
+    disposition: UPDATE
+    after: Fail-closed authoritative reads plus one publish_single_visit RPC; migration 20260714091727 revalidates identity/package/location/duplicate/assignment inside a transaction, executes STM-PLAN-001/002, writes audit/notification side effects atomically, and supports only an owned empty draft as a legacy resume input
+    design_node: 2e partial failure + success contrast
+    protected: all validation blockers verbatim; assignment candidates JSON; notification insert semantics (queued, not delivered)
+    dependencies: MIGRATION_20260714091726_20260714091727_DEPLOYMENT_AND_LIVE_CERTIFICATION_REQUIRED
+    tests: static transaction/transition contract + identity/duplicate/work-preservation/legacy-resume UI suite; forced rollback/concurrency certification required after migration deployment
+  - file: apps/web/src/app/planning/single/IdentityDossier.tsx
+    before: (does not exist)
+    disposition: CREATE
+    after: Dossier panel composing identifier grid, provenance row, GeoMap official/planner pins with text alternative, risk context, visit history + duplicate/overlap guard; reused by the comparison view in 2d
+    design_node: 2a center panel; 2d right column
+    tests: text-alternative parity with map; degraded-record flags; bdi isolation of identifiers
+removals: []   # REMOVE requires explicit human approval; none proposed
+rtl_theme_impact: Logical properties only; Arabic-primary entity names with LTR secondary line; bdi-isolated CR/license/coords/dates; dark/light via ax tokens
+rollback: Additive UPDATEs behind the same route; git revert of implementation commits; no schema changes proposed
+status: IMPLEMENTED_PENDING_MIGRATION_RUNTIME_CERTIFICATION

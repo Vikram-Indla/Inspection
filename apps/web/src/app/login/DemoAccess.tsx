@@ -15,6 +15,7 @@ export default function DemoAccess({ accounts, strings: s, onPick }: {
   onPick: (email: string, password: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  if (!accounts.length) return null;
   return (
     <div className="lg-demo">
       <button type="button" className="lg-demo__toggle" aria-expanded={open} onClick={() => setOpen(v => !v)}>

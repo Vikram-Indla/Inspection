@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; background:#060610; font-family:'Space Grotesk','IBM Plex Sans Arabic',sans-serif; }
+    a { color:#9487FF; } a:hover { color:#B4A9FF; }
+    :lang(ar) { font-family:'IBM Plex Sans Arabic','Space Grotesk',sans-serif; }
+  </style>
+</helmet>
+
+<section style="display:flex; flex-direction:column; gap:40px; padding:48px; align-items:flex-start;">
+
+  <div style="display:flex; flex-direction:column; gap:8px; max-width:1200px;">
+    <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.12em; text-transform:uppercase; color:#7C6CFF;">CD-024 · SCR-WEB-140 (logical) · P02 Visit Configuration &amp; Assignment · Planner · DSG ratchet V4</div>
+    <div style="font:600 34px/42px 'Space Grotesk',sans-serif; color:#EFEFF7;">P02 workspace — assignment as an evidence-led decision</div>
+    <div style="font:400 16px/24px 'Space Grotesk',sans-serif; color:#9C9CB2; max-width:920px;">R2 package — CD-024 frames extracted out of the CD-021 file into this dedicated design file (identity correction; CD-021 is referenced only as the upstream targeting/runtime dependency). R1 progressive correction retained (review 2026‑07‑14, verdict BLOCK/P1 — direction preserved). Selected hypothesis: <strong style="color:#EFEFF7;">candidate-first evidence comparison</strong> (<a href="#4a">4a</a>) with the score-free <strong style="color:#EFEFF7;">Assignment Evidence Ledger</strong> (<a href="#4d">4d</a> close-up + counterfactual). Equal-fidelity alternatives: <a href="#4b">4b</a> constraint-first, <a href="#4c">4c</a> schedule-context. Evidence: <a href="#4e">4e</a> visual hard-state contact sheet, <a href="#4f">4f</a> Arabic RTL, <a href="#4g">4g</a> light, <a href="#4h">4h</a> operable narrow, <a href="#4i">4i</a> focused error summary. Handoff: <span style="font-family:'JetBrains Mono',monospace; font-size:14px;">outputs/cd-024/</span>.</div>
+  </div>
+
+  <!-- ============ CD-024_R1_CORRECTION_LOG ============ -->
+  <div id="4log" data-screen-label="4 R1 correction log" style="width:1600px; border:2px solid #E8B84B; border-radius:12px; background:#101020; padding:18px 20px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+    <div style="font:700 13px/18px 'JetBrains Mono',monospace; letter-spacing:.1em; color:#E8B84B; margin-bottom:10px;">CD-024_R1_CORRECTION_LOG — deltas against review findings 1–10</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 24px;">
+      <span><strong style="color:#EFEFF7;">0 Identity (R2):</strong> this is CD-024 / SCR-WEB-140 / P02 — not CD-021. Frames extracted from the CD-021 file into this dedicated file; every frame name, heading, export, manifest and handoff path uses CD-024.</span>
+      <span><strong style="color:#EFEFF7;">1 Transaction truth:</strong> all "rechecked inside the transaction" claims removed. Corrected everywhere: manual pool/overlap validation runs server-side <em>before</em> the RPC and can go stale before the assignment insert; auto has no overlap check; concurrency-safe enforcement stays HANDOFF_BLOCKED.</span>
+      <span><strong style="color:#EFEFF7;">2 Fail-closed reads:</strong> handoff now requires structured per-source results from every factory/package/inspector/duplicate/overlap read; a read failure blocks readiness with neutral copy + preserved input — never zero-results/no-conflict. New HANDOFF_BLOCKED legs recorded (current reads ignore errors).</span>
+      <span><strong style="color:#EFEFF7;">3 Visual proof:</strong> 4b/4c rebuilt as equal-fidelity decision zones (same data, type, component depth); 4e rebuilt as designed mini-frames; 4h rebuilt as an operable 420px screen.</span>
+      <span><strong style="color:#EFEFF7;">4 Theme/Arabic parity:</strong> 4f/4g carry the same full hard state (config, blockers, unknowns, readiness); light PNG exported.</span>
+      <span><strong style="color:#EFEFF7;">5 Shell:</strong> 4a/4f restore the accepted grouped navigation + navigation search + account treatment; 4g/4d intentionally crop and are labelled CONTENT_CROP.</span>
+      <span><strong style="color:#EFEFF7;">6 Internal traceability:</strong> SCR/HANDOFF/requirement/engine IDs, P03, migration numbers, RPC names and SECURITY INVOKER removed from all user-facing frames — kept in the annotations outside and the wiring map. "10 publishable" → "10 without active duplicates".</span>
+      <span><strong style="color:#EFEFF7;">7 Keyboard model:</strong> plain semantic table chosen; native controls stay in the normal tab sequence; ledger updates on row focusin / explicit "Review evidence"; the one-tab-stop claim is withdrawn. Focused error-summary evidence added (4i).</span>
+      <span><strong style="color:#EFEFF7;">8 Authorization:</strong> review/page.tsx added to the component/handoff map for an explicit Planner direct-route guard; unauthorized/not-in-scope designed distinctly from empty selection and source failure (4e).</span>
+      <span><strong style="color:#EFEFF7;">9 Research:</strong> Microsoft citations replaced with exact Field Service scheduling-methods and work-order/requirement pages; DGA homepage replaced with the Digital Experience Standard; Arabic-first attributed to the Saqeel baseline (DEC-011), not external policy.</span>
+      <span><strong style="color:#EFEFF7;">10 Acceptance checklist:</strong> self-claims replaced with reviewer-verifiable frame/node references; status remains a review request — READY_FOR_DESIGN_REVIEW_R2, never approved.</span>
+    </div>
+  </div>
+
+  <!-- ============ ROUTE_AND_OWNERSHIP_DECISION — mandatory first output ============ -->
+  <div id="4route" data-screen-label="4 ROUTE_AND_OWNERSHIP_DECISION" style="width:1600px; border:2px solid #7C6CFF; border-radius:12px; background:#101020; padding:18px 20px; color:#EFEFF7; font:400 15px/23px 'Space Grotesk',sans-serif;">
+    <div style="font:700 13px/18px 'JetBrains Mono',monospace; letter-spacing:.1em; color:#7C6CFF; margin-bottom:10px;">ROUTE_AND_OWNERSHIP_DECISION</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 24px; color:#9C9CB2;">
+      <span><strong style="color:#EFEFF7;">Fact 1.</strong> The product contract targets logical screen <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">SCR-WEB-140</span> at <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">/planning/:id/configure</span>.</span>
+      <span><strong style="color:#EFEFF7;">Fact 2.</strong> That contract route is not implemented.</span>
+      <span><strong style="color:#EFEFF7;">Fact 3.</strong> The current <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">/planning/plans/:id</span> is a read-only, post-publish drill-down (M02-017/036) and must remain non-editing — this design places no editing control on it.</span>
+      <span><strong style="color:#EFEFF7;">Fact 4.</strong> The current <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">/planning/bulk/review</span> owns a real pre-publish P02 configuration/assignment step but is labelled <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">SCR-WEB-120</span>, colliding with the governed Single Visit Planning identity.</span>
+    </div>
+    <div style="margin-top:12px; padding-top:12px; border-top:1px solid #26263A; color:#9C9CB2;"><strong style="color:#EFEFF7;">Position taken:</strong> one route-neutral P02 draft configuration/assignment workspace (frames below), composed so it can be mounted at a reconciled route later — its data contract matches what <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">loadBulkSelection</span> + <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">publishBulkPlan</span>/<span style="font-family:'JetBrains Mono',monospace; font-size:13px;">publish_bulk_plan</span> (migration 0026) already provide. The read-only drill-down is preserved untouched. <strong style="color:#F0625D;">The route/screen-ID manifest leg is HANDOFF_BLOCKED</strong> until the SCR-WEB-120/140 collision and the /planning/:id/configure target are reconciled by governance — no code-ready route manifest is published here.</div>
+    <div style="margin-top:12px; padding-top:12px; border-top:1px solid #26263A; color:#9C9CB2;"><strong style="color:#EFEFF7;">Corrected runtime truth (R1):</strong> the atomic RPC makes the <em>writes</em> all-or-nothing; it does <strong>not</strong> re-validate anything. Manual pool/overlap and duplicate validation run in <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">publishBulkPlan</span> <em>before</em> the RPC call — a concurrent assignment landing between that check and the insert is not caught (<strong style="color:#F0625D;">HANDOFF_BLOCKED:</strong> concurrency-safe overlap enforcement). Automatic round-robin has no overlap check at all. Every factory/package/inspector/duplicate/overlap read currently ignores query errors — a failed read can masquerade as "no conflict" (<strong style="color:#F0625D;">HANDOFF_BLOCKED:</strong> fail-closed structured per-source results). Raw-error suppression and RLS authority are preserved.</div>
+  </div>
+
+  <!-- ============ CURRENT-SCREEN CRITIQUE + RUNTIME TRUTH MATRIX ============ -->
+  <div style="width:1600px; display:grid; grid-template-columns:1fr 1.2fr; gap:16px;">
+    <div data-screen-label="4 critique" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#F0625D; margin-bottom:8px;">Current-screen critique — 3 highest-cost decision failures (/planning/bulk/review, read 2026-07-14)</div>
+      <strong style="color:#EFEFF7;">1 · Assignment is an evidence-free dropdown.</strong> The inspector select shows only names. Role membership, overlap exposure and workload are invisible until submit rejects the choice — the costliest failure: the planner decides blind, then re-enters.<br>
+      <strong style="color:#EFEFF7;">2 · The auto method looks safer than it is.</strong> "Auto (round-robin)" is the default label, but only MANUAL picks get the overlap query; auto allocation can double-book silently. Nothing on screen states this asymmetry.<br>
+      <strong style="color:#EFEFF7;">3 · "Skip conflicting factories" is silent partial success.</strong> A checkbox quietly shrinks the publish scope; removed factories are never named and the totals don't recalculate until after publish. The planner authorizes a different campaign than the one displayed.
+    </div>
+    <div data-screen-label="4 truth matrix" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Runtime truth &amp; unsupported-data matrix (verified in code 2026-07-14)</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 20px;">
+        <span style="color:#2DE08E; font:600 12px/18px 'JetBrains Mono',monospace;">VERIFIED NOW</span><span style="color:#E8B84B; font:600 12px/18px 'JetBrains Mono',monospace;">UNAVAILABLE / NOT EVALUATED / BLOCKED</span>
+        <span>Package code + version (published/locked only) · factory identity, risk band/score, active-duplicate flag · candidates = <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">inspector</span> role holders · manual pick: pool membership + overlap query at submit (exact visits/window) · atomic publish: one SECURITY INVOKER transaction (migration 0026), RLS enforced · neutral catalogued failure copy · RLS authoritative</span>
+        <span>Skills/certification, work hours, capacity, territory, location, proximity, travel time — <strong>Not evaluated</strong> · auto round-robin overlap avoidance — <strong>not proven, gap shown</strong> · server-side package/visit-type recheck vs tampered input — <strong>HANDOFF_BLOCKED</strong> · execution mode hard-coded <span style="font-family:'JetBrains Mono',monospace; font-size:12px;">physical</span>; virtual/OTP — <strong>not implemented, no choice shown</strong> · team/crew, scoring, reasoned override — <strong>absent</strong> · blocked-attempt audit — <strong>not proven</strong> · notification row ≠ delivery · stale-availability version token — <strong>none</strong></span>
+      </div>
+      <div style="margin-top:8px;">Every unsupported signal renders as <em>Unavailable</em> / <em>Not evaluated</em> / HANDOFF_BLOCKED — never a score, rank, badge or promise.</div>
+    </div>
+  </div>
+
+  <!-- ============ 4a · SELECTED · CANDIDATE-FIRST EVIDENCE WORKSPACE · DARK EN ============ -->
+  <div id="4a" data-screen-label="4a Primary P02 workspace (dark EN)" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#4a" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">4a</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">SELECTED — Candidate-first evidence workspace · populated, one manual conflict, explicit scope change · dark · EN</span>
+    </div>
+
+    <div id="frame-cd024-primary" style="width:1600px; display:flex; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 16px/24px 'Space Grotesk',sans-serif;">
+      <div style="width:248px; flex:none; background:#0C0C18; border-inline-end:1px solid #26263A; display:flex; flex-direction:column;">
+        <div style="height:64px; display:flex; align-items:center; gap:10px; padding:0 20px; border-bottom:1px solid #26263A;">
+          <div style="width:28px; height:28px; flex:none; border-radius:8px; background:linear-gradient(135deg,#D946EF,#7C6CFF);"></div>
+          <div style="display:flex; flex-direction:column;"><span style="font:600 16px/20px 'Space Grotesk',sans-serif;">Saqeel</span><span lang="ar" dir="rtl" style="font:400 12px/14px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">صقيل | صناعي</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px; padding:20px 12px;">
+          <div style="padding:0 12px 6px; font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#9C9CB2;">Inspection</div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; border-radius:8px; background:color-mix(in srgb,#7C6CFF 14%,#14141F); box-shadow:inset 2px 0 0 #7C6CFF;"><span style="width:8px; height:8px; border-radius:2px; background:#7C6CFF;"></span><strong>Planning</strong></div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#9C9CB2;"><span style="width:8px; height:8px; border-radius:2px; background:#9C9CB2;"></span>Visit Management</div>
+          <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#9C9CB2;"><span style="width:8px; height:8px; border-radius:2px; background:#9C9CB2;"></span>Factory 360</div>
+        </div>
+        <div style="margin-top:auto; padding:16px 20px; border-top:1px solid #26263A; display:flex; align-items:center; gap:10px;">
+          <div style="width:32px; height:32px; border-radius:999px; background:#26263A; display:flex; align-items:center; justify-content:center; font:600 13px/16px 'Space Grotesk',sans-serif;">NH</div>
+          <div style="display:flex; flex-direction:column;"><span style="font:600 14px/18px 'Space Grotesk',sans-serif;">Norah Al‑Harbi</span><span style="font:400 12px/16px 'Space Grotesk',sans-serif; color:#9C9CB2;">Planner</span></div>
+        </div>
+      </div>
+
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+        <div style="height:64px; flex:none; display:flex; align-items:center; gap:12px; padding:0 24px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 20px/28px 'Space Grotesk',sans-serif;">Configure &amp; assign — review before publish</span>
+          <span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#5AA7FA 14%,#14141F); color:#5AA7FA; font:600 12px/16px 'JetBrains Mono',monospace;">DRAFT PLAN</span>
+          <div style="margin-inline-start:auto; display:flex; gap:8px; align-items:center; color:#9C9CB2;">
+            <div style="width:200px; height:40px; border-radius:8px; border:1px solid #26263A; background:#14141F; display:flex; align-items:center; padding:0 12px; color:#9C9CB2; font-size:14px;">⌕&nbsp; Navigate…</div>
+            <span style="width:40px; height:40px; border:1px solid #26263A; border-radius:8px; display:flex; align-items:center; justify-content:center;">◐</span>
+            <span style="width:40px; height:40px; border:1px solid #26263A; border-radius:8px; display:flex; align-items:center; justify-content:center;">🔔</span>
+            <span style="width:40px; height:40px; border:1px solid #26263A; border-radius:8px; display:flex; align-items:center; justify-content:center; font:600 13px 'JetBrains Mono',monospace;">ع</span>
+          </div>
+        </div>
+
+        <!-- Planning context strip -->
+        <div style="flex:none; display:flex; align-items:center; gap:24px; padding:12px 24px; border-bottom:1px solid #26263A; background:#101020;">
+          <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Method <strong style="color:#EFEFF7;">bulk</strong> · targeting criteria v3 · back to targeting</span>
+          <span style="font:600 16px/22px 'Space Grotesk',sans-serif; font-feature-settings:'tnum' 1;">12 factories selected <span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">— 10 without active duplicates · 2 already have an active periodic visit (decision below)</span></span>
+          <span style="margin-inline-start:auto; font:400 13px/18px 'JetBrains Mono',monospace; color:#9C9CB2;">draft — nothing committed until publish</span>
+        </div>
+
+        <div style="flex:1; display:flex; min-height:0;">
+          <!-- Left: configuration + assignment table -->
+          <div style="flex:1.35; min-width:0; border-inline-end:1px solid #26263A; padding:16px 20px; display:flex; flex-direction:column; gap:12px; overflow:auto;">
+            <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:14px 16px; display:flex; flex-direction:column; gap:10px;">
+              <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">VISIT CONFIGURATION — APPLIED TO EVERY VISIT IN THIS PLAN</span>
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px;">
+                <div style="display:flex; flex-direction:column; gap:4px;"><span style="font:600 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Visit type</span><div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font-size:15px;">Periodic compliance ▾</div></div>
+                <div style="display:flex; flex-direction:column; gap:4px;"><span style="font:600 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Package · exact version</span><div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font:400 14px 'JetBrains Mono',monospace;">SAQ‑PKG‑04 · v3 ▾</div></div>
+                <div style="display:flex; flex-direction:column; gap:4px;"><span style="font:600 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Window start</span><div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font:400 14px 'JetBrains Mono',monospace;"><bdi dir="ltr">2026‑07‑20 08:00</bdi></div></div>
+                <div style="display:flex; flex-direction:column; gap:4px;"><span style="font:600 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Window end</span><div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font:400 14px 'JetBrains Mono',monospace;"><bdi dir="ltr">2026‑07‑24 16:00</bdi></div></div>
+              </div>
+              <div style="display:flex; gap:16px; align-items:center;">
+                <span style="display:inline-flex; gap:6px; padding:4px 10px; border-radius:999px; background:color-mix(in srgb,#9C9CB2 10%,#14141F); color:#9C9CB2; font:600 12px/18px 'JetBrains Mono',monospace;">All visits are on‑site — virtual visits are not yet available</span>
+                <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Only packages that are currently published can be chosen. If the package or visit type stops being valid before you publish, publishing is blocked with the reason — nothing is scheduled.</span>
+              </div>
+            </div>
+
+            <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:14px 16px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">ASSIGNMENT — ONE INSPECTOR PER FACTORY</span>
+                <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;"><strong style="color:#EFEFF7;">Auto</strong> assigns in rotation and <strong style="color:#E8B84B;">does not check the inspector's schedule</strong>. <strong style="color:#EFEFF7;">Manual</strong> picks are checked against existing visits now and again just before publishing — a change in that final moment is not caught, so publishing can still fail safely.</span>
+              </div>
+              <table style="width:100%; border-collapse:collapse; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <thead><tr>
+                  <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 11px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">FACTORY · ID</th>
+                  <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 11px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">RISK (ADVISORY)</th>
+                  <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 11px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">METHOD / INSPECTOR</th>
+                  <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 11px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">ASSIGNMENT EVIDENCE</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="background:color-mix(in srgb,#7C6CFF 7%,transparent);">
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>Al‑Nakheel Chemical Industries</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00214</bdi></span></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#F0625D 14%,#14141F); color:#F0625D; font:600 12px/18px 'JetBrains Mono',monospace;">▲ high · 87</span></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><div style="height:44px; border:2px solid #7C6CFF; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font-size:15px; min-width:200px;">Manual · Fahad Al‑Otaibi ▾</div></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#2DE08E;">✓ in pool · ✓ 0 overlaps in window</span> · <span style="color:#9C9CB2;">skills/capacity: not evaluated</span> <span style="color:#7C6CFF;">— selected, see ledger →</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>Gulf Polymer Works</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00389</bdi></span></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#F0625D 14%,#14141F); color:#F0625D; font:600 12px/18px 'JetBrains Mono',monospace;">▲ high · 82</span></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><div style="height:44px; border:2px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 6%,#0F0F1C); display:flex; align-items:center; padding:0 12px; font-size:15px; min-width:200px;">Manual · Saad Al‑Qahtani ▾</div></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#F0625D;">✕ blocks: already booked on <a href="#4a">V‑2026‑04788</a>, <bdi dir="ltr">07‑21 09:00→13:00</bdi></span> · <span style="color:#9C9CB2;">alternatives listed in ledger</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>Najd Specialty Chemicals</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00522</bdi></span></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#9C9CB2 10%,#14141F); color:#9C9CB2; font:600 12px/18px 'JetBrains Mono',monospace;">? unknown</span></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font-size:15px; min-width:200px; color:#9C9CB2;">Auto (round‑robin) ▾</div></td>
+                    <td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#E8B84B;">◐ auto: pool ✓ · overlap not re‑checked for auto — known gap</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">7 more rows… Comparison is a semantic table — fully keyboard-operable; no map/timeline is required to decide.</span>
+            </div>
+
+            <!-- Explicit scope change (replaces silent skip) -->
+            <div style="border:1px solid #E8B84B; border-radius:12px; background:color-mix(in srgb,#E8B84B 7%,#14141F); padding:14px 16px; display:flex; flex-direction:column; gap:8px;">
+              <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#E8B84B;">SCOPE DECISION — 2 FACTORIES ALREADY HAVE AN ACTIVE PERIODIC VISIT</span>
+              <div style="display:flex; flex-direction:column; gap:4px; font:400 14px/20px 'Space Grotesk',sans-serif;">
+                <span><strong>Riyadh Advanced Plastics Co.</strong> <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9C9CB2;">FAC‑RY‑00117</span> — active periodic visit <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">V‑2026‑04412</span></span>
+                <span><strong>Sudair Polymer Compounds</strong> <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9C9CB2;">FAC‑RY‑00201</span> — active periodic visit <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">V‑2026‑04901</span></span>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <button style="height:44px; padding:0 16px; border-radius:8px; border:2px solid #E8B84B; background:color-mix(in srgb,#E8B84B 14%,#14141F); color:#EFEFF7; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Remove these 2 — publish 10 of 12</button>
+                <button style="height:44px; padding:0 16px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Keep — publish stays blocked</button>
+                <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">An explicit pre‑publish scope change: removed factories are named, the total recalculates everywhere, and the readiness ledger records "scope reduced 12 → 10 by you". Never a silent skip.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Assignment Evidence Ledger + readiness -->
+          <div style="width:430px; flex:none; background:#0C0C18; display:flex; flex-direction:column;">
+            <div id="frame-cd024-ledger" style="flex:1; overflow:auto; padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:baseline; justify-content:space-between;">
+                <span style="font:600 17px/24px 'Space Grotesk',sans-serif;">Assignment Evidence Ledger</span>
+                <span style="font:600 11px/16px 'JetBrains Mono',monospace; color:#7C6CFF;">SIGNATURE — one per screen</span>
+              </div>
+              <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">For the focused row: <strong style="color:#EFEFF7;">Fahad Al‑Otaibi → Al‑Nakheel Chemical Industries</strong>. Four truth classes; no score is calculated.</span>
+
+              <div style="border:1px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 6%,#14141F); padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#2DE08E;">VERIFIED NOW</span>
+                <span style="font:400 13px/19px 'Space Grotesk',sans-serif;">Holds the inspector role · no overlapping visit between 20–24 Jul · package SAQ‑PKG‑04 v3 is currently published</span>
+              </div>
+              <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">NOT EVALUATED</span>
+                <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">Skills/certification match · work hours · capacity · territory · current location · proximity/travel time — Saqeel has no verified source for these; they are absent, not assumed.</span>
+              </div>
+              <div style="border:1px solid #F0625D; border-radius:10px; background:color-mix(in srgb,#F0625D 6%,#14141F); padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">BLOCKS ASSIGNMENT</span>
+                <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">Nothing for this candidate. (Row 2's pick is blocked: overlap with V‑2026‑04788 — shown on its own ledger with the exact visit and time.)</span>
+              </div>
+              <div style="border:1px solid #5AA7FA; border-radius:10px; background:color-mix(in srgb,#5AA7FA 6%,#14141F); padding:10px 12px; display:flex; flex-direction:column; gap:4px;">
+                <span style="font:700 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#5AA7FA;">CHECKED AGAIN BEFORE PUBLISH</span>
+                <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">Eligibility, double‑booking and active‑visit checks re‑run when you publish — <strong style="color:#EFEFF7;">immediately before the final write, not inside it</strong>. A change that lands in that instant is not caught; if a re‑check fails, publishing stops with the reason and everything you entered is kept. Facts on this ledger can go stale while you work.</span>
+              </div>
+            </div>
+
+            <!-- Readiness ledger -->
+            <div style="flex:none; padding:14px 18px; border-top:1px solid #26263A; background:#101020; display:flex; flex-direction:column; gap:10px;">
+              <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">READINESS — PUBLISH IS ALL‑OR‑NOTHING</span>
+              <div style="display:flex; flex-wrap:wrap; gap:6px; font:600 12px/18px 'JetBrains Mono',monospace;">
+                <span style="padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#F0625D 14%,#14141F); color:#F0625D;">✕ 1 blocker · manual overlap (row 2)</span>
+                <span style="padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#E8B84B 16%,#14141F); color:#E8B84B;">◐ 1 warning · scope decision pending</span>
+                <span style="padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#9C9CB2 12%,#14141F); color:#9C9CB2;">? unknowns · auto overlap not proven</span>
+              </div>
+              <div style="border:1px solid #26263A; border-radius:8px; background:#14141F; padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+                <strong style="color:#EFEFF7;">What publishing will do:</strong> create and publish 1 plan + 10 visits + 10 assignments <strong>together — if anything fails, nothing is created</strong> · queue a notification to every assigned inspector (queued, not yet delivered) · record the actions in the audit trail. Nothing happens until you publish.
+              </div>
+              <button disabled style="height:48px; border-radius:8px; border:0; background:#2A2A3E; color:#767688; font:600 16px 'Space Grotesk',sans-serif;">Publish plan — blocked by 1 conflict + scope decision</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>  <!-- ============ 4b / 4c · ALTERNATIVE HYPOTHESES ============ -->
+  <div style="display:flex; gap:32px; align-items:flex-start; flex-wrap:wrap;">
+    <div id="4b" data-screen-label="4b Hypothesis constraint-first" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#4b" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; border:2px solid #7C6CFF; color:#9487FF; font:700 14px/16px 'JetBrains Mono',monospace;">4b</span></a>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Hypothesis 1 — Constraint-first · not selected</span>
+      </div>
+      <div style="width:760px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <div style="height:48px; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 15px 'Space Grotesk',sans-serif;">Configure &amp; assign</span>
+          <span style="font:600 11px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">DECISION ZONE — rule set locks first, candidates appear inside it · CONTENT_CROP</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; padding:14px 16px;">
+          <div style="border:2px solid #7C6CFF; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px;"><span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">STEP 1 · RULE SET</span><span style="display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#2DE08E 14%,#14141F); color:#2DE08E; font:600 11px/16px 'JetBrains Mono',monospace;">✓ LOCKED</span></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+              <div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font-size:14px;">Periodic compliance ▾</div>
+              <div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font:400 13px 'JetBrains Mono',monospace;">SAQ‑PKG‑04 · v3 ▾</div>
+              <div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font:400 13px 'JetBrains Mono',monospace;"><bdi dir="ltr">07‑20 08:00 → 07‑24 16:00</bdi></div>
+            </div>
+            <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Edit rule set — unlocks and clears step 2</button>
+          </div>
+          <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">STEP 2 · CANDIDATES WITHIN THE RULE SET</span>
+            <div style="display:flex; align-items:center; gap:10px; min-height:48px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; padding:6px 12px;"><strong style="font-size:14px;">Fahad Al‑Otaibi</strong><span style="font-size:13px; color:#2DE08E;">✓ inspector role · no overlapping visit in the window</span><span style="margin-inline-start:auto; font-size:12px; color:#9C9CB2;">skills/capacity: not evaluated</span></div>
+            <div style="display:flex; align-items:center; gap:10px; min-height:48px; border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 5%,#0F0F1C); padding:6px 12px;"><strong style="font-size:14px;">Saad Al‑Qahtani</strong><span style="font-size:13px; color:#F0625D;">✕ booked on <bdi dir="ltr">V‑2026‑04788</bdi> · <bdi dir="ltr">07‑21 09:00→13:00</bdi></span></div>
+            <div style="display:flex; align-items:center; gap:10px; min-height:48px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; padding:6px 12px;"><strong style="font-size:14px;">Aisha Al‑Zahrani</strong><span style="font-size:13px; color:#2DE08E;">✓ inspector role · no overlapping visit in the window</span><span style="margin-inline-start:auto; font-size:12px; color:#9C9CB2;">skills/capacity: not evaluated</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="width:760px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:14px 16px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+        <strong style="color:#EFEFF7;">Why rejected:</strong> the step gating adds re-entry cost the runtime can't justify — the only rule the backend actually applies to candidates is role membership; window overlap is per-candidate evidence, not a filter. Locking configuration first implies constraint-aware candidate filtering Saqeel does not have (skills/hours/capacity are Not evaluated), and editing the window later forces re-walking steps. Its virtue — facts before people — survives in 4a as the compact configuration panel above the table.
+      </div>
+    </div>
+
+    <div id="4c" data-screen-label="4c Hypothesis schedule-context" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#4c" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; border:2px solid #7C6CFF; color:#9487FF; font:700 14px/16px 'JetBrains Mono',monospace;">4c</span></a>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Hypothesis 3 — Schedule-context · not selected</span>
+      </div>
+      <div style="width:760px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 14px/20px 'Space Grotesk',sans-serif;">
+        <div style="height:48px; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 15px 'Space Grotesk',sans-serif;">Configure &amp; assign</span>
+          <span style="font:600 11px/14px 'JetBrains Mono',monospace; color:#9C9CB2;">DECISION ZONE — candidate rows + known-assignment strip · CONTENT_CROP</span>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px; padding:14px 16px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><span>WINDOW <bdi dir="ltr">07‑20 08:00 → 07‑24 16:00</bdi></span><span style="color:#E8B84B;">strip shows known assignments only — it is not availability</span></div>
+          <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; align-items:center; gap:10px;"><strong style="font-size:14px; min-width:150px;">Fahad Al‑Otaibi</strong><span style="flex:1; height:12px; border-radius:6px; background:#1B1B2C;"></span><span style="min-width:220px; font-size:13px; color:#2DE08E;">✓ no known assignment in window</span></div>
+            <div style="display:flex; align-items:center; gap:10px;"><strong style="font-size:14px; min-width:150px;">Saad Al‑Qahtani</strong><span style="flex:1; height:12px; border-radius:6px; background:linear-gradient(90deg,#1B1B2C 30%,#F0625D 30%,#F0625D 55%,#1B1B2C 55%);"></span><span style="min-width:220px; font-size:13px; color:#F0625D;">✕ <bdi dir="ltr">V‑2026‑04788</bdi> · <bdi dir="ltr">07‑21 09:00→13:00</bdi></span></div>
+            <div style="display:flex; align-items:center; gap:10px;"><strong style="font-size:14px; min-width:150px;">Aisha Al‑Zahrani</strong><span style="flex:1; height:12px; border-radius:6px; background:#1B1B2C;"></span><span style="min-width:220px; font-size:13px; color:#2DE08E;">✓ no known assignment in window</span></div>
+          </div>
+          <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; display:flex; align-items:center; gap:10px; font-size:14px;">
+            <span style="color:#9C9CB2;">Equivalent list (primary path):</span>
+            <div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px;">Fahad Al‑Otaibi ▾</div>
+            <span style="font-size:13px; color:#9C9CB2;">every strip fact repeats as text — the decision never needs the graphic</span>
+          </div>
+        </div>
+      </div>
+      <div style="width:760px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:14px 16px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+        <strong style="color:#EFEFF7;">Why rejected (narrowly):</strong> the timeline visualizes only what the overlap query already returns — known active assignments — yet reads as availability, the exact optimistic over-claim the truth matrix forbids (no work hours, no capacity, no location). It also doubles the keyboard surface and collapses badly at 390px. Its honest core — exact conflicting visit + time — survives in 4a as text evidence in the row and ledger, which is the accessible channel anyway. Revisit only if a governed availability source ever exists.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4d · DECISION-ZONE CLOSE-UP + COUNTERFACTUAL ============ -->
+  <div id="4d" data-screen-label="4d Ledger close-up + counterfactual" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#4d" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">4d</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Primary decision zone close-up — and the counterfactual without the ledger</span>
+    </div>
+    <div style="display:flex; gap:24px; align-items:stretch;">
+      <div id="frame-cd024-closeup" style="width:640px; background:#0A0A14; border:1px solid #26263A; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px; color:#EFEFF7; font:400 15px/22px 'Space Grotesk',sans-serif;">
+        <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#7C6CFF;">WITH LEDGER — the decision reads in one pass</span>
+        <div style="border:2px solid #F0625D; border-radius:10px; background:color-mix(in srgb,#F0625D 6%,#14141F); padding:12px; display:flex; flex-direction:column; gap:6px;">
+          <span style="font:600 16px/22px 'Space Grotesk',sans-serif;">Saad Al‑Qahtani → Gulf Polymer Works</span>
+          <span style="font:700 11px/16px 'JetBrains Mono',monospace; color:#F0625D;">BLOCKS ASSIGNMENT</span>
+          <span style="font:400 14px/20px 'Space Grotesk',sans-serif;">Already booked on <strong><bdi dir="ltr">V‑2026‑04788</bdi></strong> (Sudair Industrial City) <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px;">2026‑07‑21 09:00 → 13:00</bdi> — inside your window. Source: his existing visit schedule; the same check runs again just before publishing.</span>
+          <div style="display:flex; gap:8px;">
+            <button style="height:44px; padding:0 14px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Review Aisha Al‑Zahrani — no known overlap</button>
+            <button style="height:44px; padding:0 14px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Switch to Auto</button>
+            <button style="height:44px; padding:0 14px; border-radius:8px; border:1px solid transparent; background:none; color:#9C9CB2; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Open V‑2026‑04788</button>
+          </div>
+        </div>
+        <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">Focus/selection drives the ledger (read-only reflection, same grammar as CD-021's condition focus). Verified facts cite their query; unknowns are named as unknowns; the blocking fact carries the exact visit, place and time plus resolution actions. No number pretends to rank candidates.</span>
+      </div>
+      <div id="frame-cd024-counterfactual" style="width:640px; background:#0A0A14; border:1px dashed #56566B; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px; color:#EFEFF7; font:400 15px/22px 'Space Grotesk',sans-serif;">
+        <span style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">COUNTERFACTUAL — same screen, ledger removed</span>
+        <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:6px;">
+          <span style="font:600 16px/22px 'Space Grotesk',sans-serif;">Gulf Polymer Works</span>
+          <div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font-size:15px; max-width:260px;">Saad Al‑Qahtani ▾</div>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">…submit → <span style="color:#F0625D;">"Saad Al‑Qahtani is already booked on 1 overlapping visit(s)"</span></span>
+        </div>
+        <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;"><strong style="color:#EFEFF7;">Measurable loss:</strong> (1) the conflict is discovered only at submit — a full re-entry cycle per conflict instead of zero; (2) the auto method's unchecked-overlap gap becomes invisible again — the planner cannot know auto and manual have different safety; (3) the Not-evaluated class disappears, so absence of skills/capacity data silently reads as "fine"; (4) the exact conflicting visit/time never appears, so resolution means leaving the screen to search /visits. The ledger is deletion-tested: removing it hides decision evidence, not decoration.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4e · HARD-STATE CONTACT SHEET ============ -->
+  <div id="4e" data-screen-label="4e Hard-state contact sheet" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#4e" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">4e</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Hard-state contact sheet — designed mini-frames (R1: visual, not prose) · labels outside each frame</span>
+    </div>
+    <div id="frame-cd024-states" style="width:1600px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">TRUE READY — no blockers, honest counts</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">10 factories · 10 without active duplicates</span>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; font:600 11px/16px 'JetBrains Mono',monospace;">
+            <span style="padding:3px 8px; border-radius:999px; background:color-mix(in srgb,#2DE08E 14%,#14141F); color:#2DE08E;">✓ no blockers</span>
+            <span style="padding:3px 8px; border-radius:999px; background:color-mix(in srgb,#9C9CB2 12%,#14141F); color:#9C9CB2;">? auto rows: schedule not checked</span>
+          </div>
+          <button style="height:44px; border-radius:8px; border:0; background:#7C6CFF; color:#0B0B14; font:600 14px 'Space Grotesk',sans-serif; cursor:pointer;">Publish plan — 10 visits, all or nothing</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">NO PUBLISHED PACKAGE (ERR-PUB-001)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Package</span>
+          <div style="height:44px; border:1px dashed #E8B84B; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; color:#E8B84B; font-size:14px;">No package is currently published</div>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Visits can't be published without one. Everything else you set here is kept. <a href="#4e">Packages &amp; Surveys</a> (shown only to authorized roles).</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">NO INSPECTORS — empty role pool (governance, not a query result)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 14px/20px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;">No one currently holds the inspector role.</strong><br><span style="color:#9C9CB2; font-size:13px;">Assignment is impossible until a Security Admin grants it. Your configuration is kept.</span></div>
+          <div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; color:#767688; font-size:14px;">Auto (rotation) — unavailable</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">LEGITIMATE ZERO — cause named, distinct from failure</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">0 factories left in this plan</span>
+          <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">You removed both remaining factories in the scope decision. Restore them below or return to targeting to select more.</span>
+          <div style="display:flex; gap:8px;"><button style="height:40px; padding:0 12px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Restore removed (2)</button><button style="height:40px; padding:0 12px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Back to targeting</button></div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">FACTORY SOURCE FAILURE — fails closed, never an empty list (HANDOFF_BLOCKED: current reads ignore errors)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 14px/20px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">Your selected factories couldn't be loaded.</strong><br><span style="color:#9C9CB2; font-size:13px;">A loading problem, not an empty selection — nothing you chose was lost. Publishing is paused until the list loads.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Try again</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">PACKAGE SOURCE FAILURE — never rendered as "no published package" (HANDOFF_BLOCKED: current reads ignore errors)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 14px/20px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">Package information couldn't be loaded.</strong><br><span style="color:#9C9CB2; font-size:13px;">Different from "no package is currently published". Everything else you set is kept; publishing is paused.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Try again</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">INSPECTOR SOURCE FAILURE — never rendered as an empty pool (HANDOFF_BLOCKED: current reads ignore errors)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 14px/20px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">The inspector list couldn't be loaded.</strong><br><span style="color:#9C9CB2; font-size:13px;">Not the same as "no one holds the inspector role". Your picks are kept; assignment is paused until the list loads.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Try again</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#F0625D;">DUPLICATE / CONFLICT CHECK FAILURE — blocks safely, never "zero conflicts" (HANDOFF_BLOCKED: current reads ignore errors)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #E8B84B; border-radius:8px; background:color-mix(in srgb,#E8B84B 8%,#14141F); padding:10px 12px; font:400 14px/20px 'Space Grotesk',sans-serif;"><strong style="color:#E8B84B;">Duplicate and schedule checks couldn't run.</strong><br><span style="color:#9C9CB2; font-size:13px;">Conflicts can't be ruled out, so publishing is paused — this is not the same as "no conflicts". Everything you entered is kept.</span></div>
+          <button style="align-self:flex-start; height:40px; padding:0 14px; border-radius:8px; border:1px solid #E8B84B; background:none; color:#E8B84B; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Try again</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">MANUAL CONFLICT · AUTO GAP — side by side</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px; font-size:13px;">
+          <div style="display:flex; align-items:center; gap:8px; min-height:44px; border:2px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 5%,#14141F); padding:4px 10px;"><span>Manual · Saad Al‑Qahtani</span><span style="margin-inline-start:auto; color:#F0625D;">✕ booked on <bdi dir="ltr">V‑2026‑04788</bdi></span></div>
+          <div style="display:flex; align-items:center; gap:8px; min-height:44px; border:1px solid #26263A; border-radius:8px; background:#14141F; padding:4px 10px;"><span style="color:#9C9CB2;">Auto (rotation)</span><span style="margin-inline-start:auto; color:#E8B84B;">◐ schedule not checked for auto</span></div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">STALE / CONCURRENT RE-CHECK FAILURE — input preserved (HANDOFF_BLOCKED: no concurrency token)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;">Publishing stopped — 1 thing changed while you worked:</strong><br><a href="#4e">Fahad Al‑Otaibi now has an overlapping visit — choose again</a></div>
+          <div style="height:44px; border:2px solid #F0625D; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; font-size:14px;">Manual · Fahad Al‑Otaibi ▾ <span style="margin-inline-start:auto; color:#9C9CB2; font-size:12px;">focus lands here from the summary link</span></div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">INVALID / TAMPERED SELECTION (HANDOFF_BLOCKED: authoritative server recheck absent)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;">The selected package can't be used for publishing.</strong><br><span style="color:#9C9CB2;">Choose a currently published package. Nothing was scheduled.</span></div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">SUBMIT IN PROGRESS — locked controls, retained context, status announced</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px;"><span style="width:18px; height:18px; border:3px solid #26263A; border-top-color:#7C6CFF; border-radius:999px;"></span><span style="font:600 14px/20px 'Space Grotesk',sans-serif;">Publishing 10 visits…</span></div>
+          <div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; color:#767688; font-size:14px;">Manual · Fahad Al‑Otaibi (locked)</div>
+          <button disabled style="height:44px; border-radius:8px; border:0; background:#2A2A3E; color:#767688; font:600 14px 'Space Grotesk',sans-serif;">Publishing…</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">NEUTRAL TRANSACTION FAILURE — all input preserved</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div role="alert" style="border:1px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#F0625D;">Publishing failed — the plan was not created and no visits were scheduled.</strong><br><span style="color:#9C9CB2;">Nothing was published. Please try again; if it keeps failing, contact support.</span></div>
+          <div style="height:44px; border:1px solid #26263A; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; font:400 13px 'JetBrains Mono',monospace;"><bdi dir="ltr">2026‑07‑20 08:00</bdi><span style="margin-inline-start:auto; color:#2DE08E; font-size:12px;">✓ still filled</span></div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">POST-SCOPE-REDUCTION — restorable, recalculated</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">10 of 12 — you removed 2 factories</span>
+          <div style="border:1px solid #26263A; border-radius:8px; background:#14141F; padding:8px 12px; display:flex; align-items:center; gap:8px; font-size:13px; color:#9C9CB2;">Removed: Riyadh Advanced Plastics Co. · Sudair Polymer Compounds<button style="margin-inline-start:auto; height:36px; padding:0 10px; border-radius:6px; border:1px solid #26263A; background:none; color:#EFEFF7; font:600 12px 'Space Grotesk',sans-serif; cursor:pointer;">Restore</button></div>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Publishing will now create <strong style="color:#EFEFF7;">10 visits</strong>; the removal is recorded with the plan.</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">UNAUTHORIZED / NOT IN SCOPE — distinct from empty selection (guard: review/page.tsx + RLS)</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center;">
+          <span style="width:32px; height:32px; border-radius:999px; background:color-mix(in srgb,#F0625D 14%,#14141F); color:#F0625D; display:flex; align-items:center; justify-content:center; font:700 16px 'Space Grotesk',sans-serif;">⨯</span>
+          <span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">Planning review requires the Planner role</span>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Your account doesn't include it — no planning data is shown. This is different from having nothing selected.</span>
+          <button style="height:40px; padding:0 14px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Go to your launch page</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">SUCCESS — committed outcome, delivery not claimed</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="border:1px solid #2DE08E; border-radius:8px; background:color-mix(in srgb,#2DE08E 7%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;"><strong style="color:#2DE08E;">Plan published — 10 visits created.</strong><br><span style="color:#9C9CB2;">Each inspector's notification is queued. You're being taken to the visit register.</span></div>
+          <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">Redirect → /visits · the plan is viewable read-only in the plan register drill-down.</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">LOADING — known count, polite announcement; a load error becomes the service-failure card, never this</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px;"><span style="width:16px; height:16px; border:3px solid #26263A; border-top-color:#7C6CFF; border-radius:999px;"></span><span style="font:400 14px/20px 'Space Grotesk',sans-serif; color:#9C9CB2;">Loading 12 selected factories…</span></div>
+          <div style="height:14px; border-radius:7px; background:#1B1B2C;"></div>
+          <div style="height:14px; border-radius:7px; background:#1B1B2C; width:72%;"></div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">RESTORED AFTER SCOPE REDUCTION — totals recalculated, decision reopens</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">12 of 12 — you restored 2 factories</span>
+          <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">Riyadh Advanced Plastics Co. and Sudair Polymer Compounds are back in the plan. Totals recalculate everywhere, and because both still have an active periodic visit, the scope decision reopens and publishing returns to blocked until you decide.</span>
+          <span style="display:inline-flex; align-self:flex-start; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#E8B84B 16%,#14141F); color:#E8B84B; font:600 11px/16px 'JetBrains Mono',monospace;">◐ scope decision pending again</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">EMPTY SELECTION / DIRECT URL — distinct from unauthorized and from load failure</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px; align-items:center; text-align:center;">
+          <span style="font:600 14px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;">Nothing is selected for bulk planning</span>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">This page works on a selection made in targeting. Opening it directly, or after the selection expired, shows this — it is not an error and not a permissions problem.</span>
+          <button style="height:44px; padding:0 16px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Go to targeting</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <span style="font:600 11px/16px 'JetBrains Mono',monospace; letter-spacing:.08em; color:#9C9CB2;">READ-ONLY PUBLISHED PLAN — post-publish destination, no editing controls</span>
+        <div style="border:1px solid #26263A; border-radius:12px; background:#0A0A14; padding:14px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px;"><span style="font:600 15px/20px 'Space Grotesk',sans-serif; color:#EFEFF7;"><bdi dir="ltr">PLN‑2026‑0087</bdi></span><span style="display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#2DE08E 14%,#14141F); color:#2DE08E; font:600 11px/16px 'JetBrains Mono',monospace;">PUBLISHED</span></div>
+          <span style="font:400 13px/19px 'Space Grotesk',sans-serif; color:#9C9CB2;">10 visits · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">SAQ‑PKG‑04 · v3</bdi> · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:12px;">2026‑07‑20 → 2026‑07‑24</bdi></span>
+          <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">View-only record. Published plans are not edited here — there are no editing controls on this page.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4f · ARABIC RTL + 4g · LIGHT + 4h · NARROW ============ -->
+  <div id="4f" data-screen-label="4f Arabic RTL" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#4f" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">4f</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Arabic RTL — same hard state (manual conflict + scope decision), fresh-session default</span>
+    </div>
+    <div dir="rtl" lang="ar" id="frame-cd024-rtl" style="width:1600px; display:flex; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 16px/26px 'IBM Plex Sans Arabic',sans-serif;">
+      <div style="width:248px; flex:none; background:#0C0C18; border-inline-end:1px solid #26263A; padding:20px 12px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; gap:10px; padding:0 8px 16px;"><div style="width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,#D946EF,#7C6CFF);"></div><span style="font:600 16px 'IBM Plex Sans Arabic',sans-serif;">صقيل</span></div>
+        <div style="padding:0 12px 4px; font:600 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">القيادة</div>
+        <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#9C9CB2;">المصنع 360</div>
+        <div style="padding:8px 12px 4px; font:600 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">التفتيش</div>
+        <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; border-radius:8px; background:color-mix(in srgb,#7C6CFF 14%,#14141F); box-shadow:inset 2px 0 0 #7C6CFF;"><strong>التخطيط</strong></div>
+        <div style="display:flex; align-items:center; gap:10px; height:44px; padding:0 12px; color:#9C9CB2;">إدارة الزيارات</div>
+        <div style="margin-top:auto; padding:16px 12px 0; border-top:1px solid #26263A; display:flex; align-items:center; gap:10px;">
+          <div style="width:32px; height:32px; border-radius:999px; background:#26263A; display:flex; align-items:center; justify-content:center; font:600 13px/16px 'Space Grotesk',sans-serif;">NH</div>
+          <div style="display:flex; flex-direction:column;"><span style="font:600 14px/20px 'IBM Plex Sans Arabic',sans-serif;">نورة الحربي</span><span style="font:400 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">مخطِّطة</span></div>
+        </div>
+      </div>
+      <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
+        <div style="height:64px; flex:none; display:flex; align-items:center; gap:12px; padding:0 24px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="font:600 20px/30px 'IBM Plex Sans Arabic',sans-serif;">التهيئة والإسناد — المراجعة قبل النشر</span>
+          <span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#5AA7FA 14%,#14141F); color:#5AA7FA; font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif;">خطة مسودة</span>
+          <div style="margin-inline-start:auto; width:180px; height:40px; border-radius:8px; border:1px solid #26263A; background:#14141F; display:flex; align-items:center; padding:0 12px; color:#9C9CB2; font-size:14px;">⌕&nbsp; التنقّل…</div>
+        </div>
+        <div style="flex:none; display:flex; align-items:center; gap:20px; padding:12px 24px; border-bottom:1px solid #26263A; background:#101020;">
+          <span style="font:600 16px/26px 'IBM Plex Sans Arabic',sans-serif; font-feature-settings:'tnum' 1;">١٢ مصنعًا محددًا <span style="font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">— ١٠ دون زيارات دورية نشطة · ٢ عليها زيارة دورية نشطة (القرار أدناه)</span></span>
+          <span style="margin-inline-start:auto; font:400 13px/20px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">مسودة — لا يُرتَّب أي أثر قبل النشر</span>
+        </div>
+        <div style="flex:1; display:flex; min-height:0;">
+          <div style="flex:1.35; min-width:0; border-inline-end:1px solid #26263A; padding:16px 20px; display:flex; flex-direction:column; gap:12px;">
+            <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:12px 14px; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">
+              <span style="font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">تهيئة الزيارة — تُطبَّق على كل زيارة</span><br>
+              دورية · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px;">SAQ‑PKG‑04 · v3</bdi> · <bdi dir="ltr" style="font-family:'JetBrains Mono',monospace; font-size:13px;">2026‑07‑20 08:00 ← 2026‑07‑24 16:00</bdi> · وضع التنفيذ: <strong style="color:#EFEFF7;">ميداني — الوضع الوحيد المدعوم</strong> (لا يُعرض خيار افتراضي قبل توفر جاهزيته)
+            </div>
+            <table style="width:100%; border-collapse:collapse; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif;">
+              <thead><tr>
+                <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">المصنع</th>
+                <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">الطريقة / المفتش</th>
+                <th style="padding:8px; border-bottom:1px solid #26263A; text-align:start; font:600 12px/18px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;">أدلة الإسناد</th>
+              </tr></thead>
+              <tbody>
+                <tr style="background:color-mix(in srgb,#7C6CFF 7%,transparent);">
+                  <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>شركة النخيل للصناعات الكيميائية المتقدمة والمتخصصة</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00214</bdi></span></td>
+                  <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><div style="min-height:44px; border:2px solid #7C6CFF; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:6px 12px;">يدوي · فهد العتيبي ▾</div></td>
+                  <td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#2DE08E;">✓ ضمن الفريق المؤهل · ✓ لا تعارض في النافذة</span> · <span style="color:#9C9CB2;">المهارات والطاقة: لم تُقيَّم</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><strong>مصنع الخليج لأعمال البوليمرات</strong><br><span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;"><bdi dir="ltr">FAC‑RY‑00389</bdi></span></td>
+                  <td style="padding:8px; border-bottom:1px solid #1B1B2C;"><div style="min-height:44px; border:2px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 6%,#0F0F1C); display:flex; align-items:center; padding:6px 12px;">يدوي · سعد القحطاني ▾</div></td>
+                  <td style="padding:8px; border-bottom:1px solid #1B1B2C; font-size:13px;"><span style="color:#F0625D;">✕ يمنع الإسناد: مرتبط بالزيارة <bdi dir="ltr">V‑2026‑04788</bdi> · <bdi dir="ltr">07‑21 09:00→13:00</bdi></span></td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="border:1px solid #E8B84B; border-radius:12px; background:color-mix(in srgb,#E8B84B 7%,#14141F); padding:12px 14px; display:flex; align-items:center; gap:12px; font:400 14px/22px 'IBM Plex Sans Arabic',sans-serif;">
+              <span style="color:#E8B84B; font-weight:600;">قرار النطاق:</span> مصنعان عليهما زيارات نشطة —
+              <button style="min-height:44px; padding:0 14px; border-radius:8px; border:2px solid #E8B84B; background:color-mix(in srgb,#E8B84B 14%,#14141F); color:#EFEFF7; font:600 14px 'IBM Plex Sans Arabic',sans-serif; cursor:pointer;">استبعادهما — نشر ١٠ من ١٢</button>
+              <span style="color:#9C9CB2; font-size:13px;">تُسمّى المصانع المستبعدة ويُعاد حساب الإجمالي — لا تخطٍّ صامت</span>
+            </div>
+          </div>
+          <div style="width:430px; flex:none; background:#0C0C18; padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+            <span style="font:600 17px/26px 'IBM Plex Sans Arabic',sans-serif;">سجل أدلة الإسناد</span>
+            <div style="border:1px solid #2DE08E; border-radius:10px; background:color-mix(in srgb,#2DE08E 6%,#14141F); padding:10px 12px; font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif;"><span style="font-weight:700; color:#2DE08E;">مؤكَّد الآن:</span> يحمل دور مفتش · لا إسناد متعارض في النافذة · الحزمة منشورة</div>
+            <div style="border:1px solid #26263A; border-radius:10px; background:#14141F; padding:10px 12px; font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;"><span style="font-weight:700;">لم يُقيَّم:</span> المهارات · ساعات العمل · الطاقة الاستيعابية · الموقع والمسافة — لا مصدر موثَّق لها</div>
+            <div style="border:1px solid #5AA7FA; border-radius:10px; background:color-mix(in srgb,#5AA7FA 6%,#14141F); padding:10px 12px; font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;"><span style="font-weight:700; color:#5AA7FA;">يُتحقق منه مرة أخرى قبل النشر:</span> الأهلية والتعارض والزيارات النشطة — قبيل الكتابة النهائية مباشرة لا داخلها؛ وإذا فشل التحقق يتوقف النشر مع بقاء كل ما أدخلته</div>
+            <div style="border:1px solid #26263A; border-radius:10px; background:#101020; padding:10px 12px; font:400 13px/21px 'IBM Plex Sans Arabic',sans-serif; color:#9C9CB2;"><span style="font-weight:700; color:#EFEFF7;">أثر النشر:</span> إنشاء ونشر خطة و١٠ زيارات و١٠ إسنادات معًا — إذا فشل أي جزء لا يُنشأ شيء · تُوضع إشعارات المفتشين في قائمة الإرسال (لا يُدّعى التسليم)</div>
+            <div style="margin-top:auto; display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                <span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#F0625D 14%,#14141F); color:#F0625D; font:600 13px/20px 'IBM Plex Sans Arabic',sans-serif;">✕ عائق: تعارض إسناد يدوي</span>
+                <span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#E8B84B 16%,#14141F); color:#E8B84B; font:600 13px/20px 'IBM Plex Sans Arabic',sans-serif;">◐ تنبيه: قرار النطاق معلَّق</span>
+                <span style="display:inline-flex; padding:3px 10px; border-radius:999px; background:color-mix(in srgb,#9C9CB2 12%,#14141F); color:#9C9CB2; font:600 13px/20px 'IBM Plex Sans Arabic',sans-serif;">? غير معلوم: جدول الإسناد التلقائي لا يُفحص</span>
+              </div>
+              <button disabled style="height:48px; border-radius:8px; border:0; background:#2A2A3E; color:#767688; font:600 16px 'IBM Plex Sans Arabic',sans-serif;">نشر الخطة — معطَّل حتى حل التعارض وقرار النطاق</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:32px; align-items:flex-start;">
+    <div id="4g" data-screen-label="4g Light theme" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#4g" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">4g</span></a>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Light theme — same full hard state · CONTENT_CROP (page content only; shell inherited unchanged)</span>
+      </div>
+      <div id="frame-cd024-light" style="width:1080px; background:#F4F4FB; color:#16161F; border:1px solid #E2E2EC; border-radius:16px; overflow:hidden; font:400 15px/22px 'Space Grotesk',sans-serif;">
+        <div style="height:56px; display:flex; align-items:center; gap:10px; padding:0 20px; border-bottom:1px solid #E2E2EC; background:#FFFFFF;">
+          <div style="width:24px; height:24px; border-radius:6px; background:linear-gradient(135deg,#D946EF,#6B57F0);"></div>
+          <span style="font:600 17px 'Space Grotesk',sans-serif;">Configure &amp; assign — review before publish</span>
+          <span style="display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#2E7FD4 12%,#FFFFFF); color:#2E7FD4; font:600 11px/16px 'JetBrains Mono',monospace;">DRAFT PLAN</span>
+          <span style="margin-inline-start:auto; font:600 13px/18px 'Space Grotesk',sans-serif;">12 selected · 10 without active duplicates</span>
+        </div>
+        <div style="display:flex;">
+          <div style="flex:1.3; border-inline-end:1px solid #E2E2EC; padding:14px 16px; display:flex; flex-direction:column; gap:8px; font-size:14px;">
+            <div style="border:1px solid #E2E2EC; border-radius:10px; background:#FFFFFF; padding:10px 12px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div style="height:40px; border:1px solid #E2E2EC; border-radius:8px; background:#F9F9FD; display:flex; align-items:center; padding:0 10px; font-size:13px;">Periodic compliance ▾</div>
+              <div style="height:40px; border:1px solid #E2E2EC; border-radius:8px; background:#F9F9FD; display:flex; align-items:center; padding:0 10px; font:400 12px 'JetBrains Mono',monospace;">SAQ‑PKG‑04 · v3 ▾</div>
+              <div style="height:40px; border:1px solid #E2E2EC; border-radius:8px; background:#F9F9FD; display:flex; align-items:center; padding:0 10px; font:400 12px 'JetBrains Mono',monospace;"><bdi dir="ltr">2026‑07‑20 08:00</bdi></div>
+              <div style="height:40px; border:1px solid #E2E2EC; border-radius:8px; background:#F9F9FD; display:flex; align-items:center; padding:0 10px; font:400 12px 'JetBrains Mono',monospace;"><bdi dir="ltr">2026‑07‑24 16:00</bdi></div>
+              <span style="grid-column:span 2; color:#56566B; font-size:12px;">All visits are on‑site — virtual visits are not yet available.</span>
+            </div>
+            <div style="border:2px solid #6B57F0; border-radius:10px; background:color-mix(in srgb,#6B57F0 4%,#FFFFFF); padding:8px 12px;"><strong>Al‑Nakheel Chemical Industries</strong> — Manual · Fahad Al‑Otaibi · <span style="color:#0F9F63;">✓ pool · ✓ 0 overlaps</span> · <span style="color:#56566B;">skills: not evaluated</span></div>
+            <div style="border:2px solid #CF3A38; border-radius:10px; background:color-mix(in srgb,#CF3A38 4%,#FFFFFF); padding:8px 12px;"><strong>Gulf Polymer Works</strong> — Manual · Saad Al‑Qahtani · <span style="color:#CF3A38;">✕ booked on V‑2026‑04788, 07‑21 09:00→13:00</span></div>
+            <div style="border:1px solid #E8B84B; border-radius:10px; background:color-mix(in srgb,#B26B00 5%,#FFFFFF); padding:8px 12px; color:#56566B;"><strong style="color:#B26B00;">Scope decision:</strong> 2 active duplicates — Remove (publish 10 of 12) or Keep (blocked)</div>
+          </div>
+          <div style="width:340px; flex:none; padding:14px 16px; display:flex; flex-direction:column; gap:8px; font-size:13px;">
+            <span style="font:600 14px 'Space Grotesk',sans-serif;">Assignment Evidence Ledger</span>
+            <div style="border:1px solid #0F9F63; border-radius:8px; background:color-mix(in srgb,#0F9F63 4%,#FFFFFF); padding:8px 10px;"><strong style="color:#0F9F63;">Verified now:</strong> role ✓ · 0 overlaps · package published</div>
+            <div style="border:1px solid #E2E2EC; border-radius:8px; background:#FFFFFF; padding:8px 10px; color:#56566B;"><strong>Not evaluated:</strong> skills · hours · capacity · proximity</div>
+            <div style="border:1px solid #CF3A38; border-radius:8px; background:color-mix(in srgb,#CF3A38 4%,#FFFFFF); padding:8px 10px; color:#56566B;"><strong style="color:#CF3A38;">Blocks assignment:</strong> row 2 — booked on V‑2026‑04788, 07‑21 09:00→13:00</div>
+            <div style="border:1px solid #2E7FD4; border-radius:8px; background:color-mix(in srgb,#2E7FD4 4%,#FFFFFF); padding:8px 10px; color:#56566B;"><strong style="color:#2E7FD4;">Checked again before publish:</strong> eligibility · double-booking · active visits — just before the final write, not inside it; input kept on failure</div>
+            <div style="display:flex; flex-wrap:wrap; gap:4px; font:600 10px/14px 'JetBrains Mono',monospace;">
+              <span style="padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#CF3A38 10%,#FFFFFF); color:#CF3A38;">✕ 1 blocker</span>
+              <span style="padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#B26B00 10%,#FFFFFF); color:#B26B00;">◐ scope pending</span>
+              <span style="padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#56566B 8%,#FFFFFF); color:#56566B;">? auto schedule unchecked</span>
+            </div>
+            <button disabled style="margin-top:auto; height:44px; border-radius:8px; border:0; background:#D9D9E6; color:#8A8A9E; font:600 14px 'Space Grotesk',sans-serif;">Publish plan — blocked by 1 conflict + scope decision</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="4h" data-screen-label="4h Narrow 390-430" style="display:flex; flex-direction:column; gap:12px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="#4h" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">4h</span></a>
+        <span style="font:600 16px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Narrow 420px — operable screen, same hard state, mandated order</span>
+      </div>
+      <div id="frame-cd024-narrow" style="width:420px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; overflow:hidden; font:400 16px/24px 'Space Grotesk',sans-serif;">
+        <div style="height:56px; display:flex; align-items:center; gap:10px; padding:0 16px; border-bottom:1px solid #26263A; background:#0C0C18;">
+          <span style="width:44px; height:44px; margin-inline-start:-8px; display:flex; align-items:center; justify-content:center; color:#9C9CB2;">☰</span>
+          <span style="font:600 16px 'Space Grotesk',sans-serif;">Configure &amp; assign</span>
+          <span style="margin-inline-start:auto; display:inline-flex; padding:2px 8px; border-radius:999px; background:color-mix(in srgb,#5AA7FA 14%,#14141F); color:#5AA7FA; font:600 10px/14px 'JetBrains Mono',monospace;">DRAFT PLAN</span>
+        </div>
+        <div style="padding:12px 16px; display:flex; flex-direction:column; gap:12px;">
+          <span style="font:600 15px/20px 'Space Grotesk',sans-serif;">12 selected <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">— 10 without active duplicates</span></span>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; font-size:15px;">Periodic compliance ▾</div>
+            <div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 12px; font:400 14px 'JetBrains Mono',monospace;">SAQ‑PKG‑04 · v3 ▾</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 10px; font:400 12px 'JetBrains Mono',monospace;"><bdi dir="ltr">07‑20 08:00</bdi></div>
+              <div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#14141F; display:flex; align-items:center; padding:0 10px; font:400 12px 'JetBrains Mono',monospace;"><bdi dir="ltr">07‑24 16:00</bdi></div>
+            </div>
+            <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">All visits are on‑site — virtual visits are not yet available.</span>
+          </div>
+          <div role="alert" style="border:1px solid #F0625D; border-radius:12px; background:color-mix(in srgb,#F0625D 6%,#14141F); padding:10px 12px; font:400 13px/19px 'Space Grotesk',sans-serif;">
+            <strong style="color:#F0625D;">Before you can publish:</strong> <a href="#4h">Saad Al‑Qahtani has an overlapping visit</a> · <a href="#4h">decide on 2 factories with active visits</a>
+          </div>
+          <div style="border:2px solid #F0625D; border-radius:12px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <strong style="font-size:15px;">Gulf Polymer Works</strong>
+            <div style="height:48px; border:2px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 6%,#0F0F1C); display:flex; align-items:center; padding:0 12px; font-size:15px;">Manual · Saad Al‑Qahtani ▾</div>
+            <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#F0625D;">✕ Booked on <bdi dir="ltr">V‑2026‑04788</bdi> · <bdi dir="ltr">07‑21 09:00→13:00</bdi> — inside your window</span>
+            <button style="height:44px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Review evidence</button>
+          </div>
+          <div style="border:1px solid #26263A; border-radius:12px; background:#14141F; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <strong style="font-size:15px;">Al‑Nakheel Chemical Industries</strong>
+            <div style="height:48px; border:1px solid #26263A; border-radius:8px; background:#0F0F1C; display:flex; align-items:center; padding:0 12px; font-size:15px;">Manual · Fahad Al‑Otaibi ▾</div>
+            <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#2DE08E;">✓ Inspector role · no overlapping visit <span style="color:#9C9CB2;">· skills/capacity not evaluated</span></span>
+          </div>
+          <span style="font:400 12px/17px 'Space Grotesk',sans-serif; color:#9C9CB2;">10 more factory cards…</span>
+          <div style="border:1px solid #E8B84B; border-radius:12px; background:color-mix(in srgb,#E8B84B 7%,#14141F); padding:12px; display:flex; flex-direction:column; gap:8px; font:400 13px/18px 'Space Grotesk',sans-serif;">
+            <strong style="color:#E8B84B;">2 factories already have an active periodic visit</strong>
+            <div style="display:flex; gap:8px;">
+              <button style="flex:1; height:48px; border-radius:8px; border:2px solid #E8B84B; background:color-mix(in srgb,#E8B84B 14%,#14141F); color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Remove — publish 10</button>
+              <button style="flex:1; height:48px; border-radius:8px; border:1px solid #26263A; background:#14141F; color:#EFEFF7; font:600 13px 'Space Grotesk',sans-serif; cursor:pointer;">Keep — blocked</button>
+            </div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; font:600 11px/16px 'JetBrains Mono',monospace;">
+            <span style="padding:3px 8px; border-radius:999px; background:color-mix(in srgb,#F0625D 14%,#14141F); color:#F0625D;">✕ 1 blocker</span>
+            <span style="padding:3px 8px; border-radius:999px; background:color-mix(in srgb,#E8B84B 16%,#14141F); color:#E8B84B;">◐ scope pending</span>
+            <span style="padding:3px 8px; border-radius:999px; background:color-mix(in srgb,#9C9CB2 12%,#14141F); color:#9C9CB2;">? auto schedule unchecked</span>
+          </div>
+          <button disabled style="height:48px; border-radius:8px; border:0; background:#2A2A3E; color:#767688; font:600 15px 'Space Grotesk',sans-serif;">Publish plan — blocked by 1 conflict + scope decision</button>
+        </div>
+      </div>
+      <div style="width:420px; border:1px solid #26263A; border-radius:12px; background:#101020; padding:14px 16px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+        Operable screen in the mandated order: context → configuration → blockers/unknowns → candidate evidence (cards; "Review evidence" opens the full ledger panel) → readiness → action. No horizontal overflow; ≥48px targets; 16px inputs.
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 4i · FOCUSED ERROR SUMMARY EVIDENCE ============ -->
+  <div id="4i" data-screen-label="4i Focused error summary" style="display:flex; flex-direction:column; gap:16px; align-items:flex-start;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="#4i" style="text-decoration:none;"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:44px; height:28px; padding:0 10px; border-radius:999px; background:#7C6CFF; color:#0B0B14; font:700 14px/16px 'JetBrains Mono',monospace;">4i</span></a>
+      <span style="font:600 17px/24px 'Space Grotesk',sans-serif; color:#EFEFF7;">Focused error summary → linked inline target → focus restoration · CONTENT_CROP</span>
+    </div>
+    <div id="frame-cd024-error" style="width:1080px; background:#0A0A14; color:#EFEFF7; border:1px solid #26263A; border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:14px; font:400 15px/22px 'Space Grotesk',sans-serif;">
+      <div role="alert" tabindex="-1" style="border:2px solid #F0625D; border-radius:12px; background:color-mix(in srgb,#F0625D 8%,#14141F); padding:14px 16px; box-shadow:0 0 0 2px #0A0A14, 0 0 0 4px #F0625D;">
+        <strong style="color:#F0625D; font:600 16px/22px 'Space Grotesk',sans-serif;">Publishing stopped — 2 things need attention <span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">← summary receives focus on failed submit</span></strong>
+        <ul style="margin:8px 0 0; padding-inline-start:20px; display:flex; flex-direction:column; gap:4px;">
+          <li><a href="#4i">Saad Al‑Qahtani is already booked on an overlapping visit — choose a different inspector for Gulf Polymer Works</a></li>
+          <li><a href="#4i">Decide what to do with the 2 factories that already have an active visit</a></li>
+        </ul>
+      </div>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+          <span style="font:600 13px/18px 'Space Grotesk',sans-serif; color:#9C9CB2;">Inspector — Gulf Polymer Works</span>
+          <div style="height:48px; border:2px solid #F0625D; border-radius:8px; background:color-mix(in srgb,#F0625D 6%,#14141F); display:flex; align-items:center; padding:0 12px; font-size:15px; box-shadow:0 0 0 2px #0A0A14, 0 0 0 4px #7C6CFF;">Manual · Saad Al‑Qahtani ▾</div>
+          <span style="font:400 13px/18px 'Space Grotesk',sans-serif; color:#F0625D;">✕ Booked on <bdi dir="ltr">V‑2026‑04788</bdi> · <bdi dir="ltr">07‑21 09:00→13:00</bdi></span>
+          <span style="font:400 12px/16px 'JetBrains Mono',monospace; color:#9C9CB2;">← Enter on summary link 1 moves focus here; the inline error is programmatically associated with the control</span>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; gap:6px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+          <strong style="color:#EFEFF7;">After correction:</strong> choosing another inspector clears the inline error and removes the summary entry; focus stays on the corrected control. When the last entry clears, the summary disappears and a polite status announces "all issues resolved — ready to review scope decision". Statuses (loading, publishing, success) use the polite status region; blockers and failures use the assertive alert. All picks and fields survive every failed submit.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SPEC PANELS ============ -->
+  <div style="width:1600px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div data-screen-label="4 keyboard spec" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Keyboard · focus · status · reduced motion (R1: plain-table model)</div>
+      <strong style="color:#EFEFF7;">Model: plain semantic table — no roving focus, no ARIA grid.</strong> Every native control (config selects/inputs, each row's method/inspector select, "Review evidence" buttons, scope buttons, publish) sits in the normal tab sequence. The ledger updates on row <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">focusin</span> (any control inside the row) or explicit "Review evidence" activation — no Enter/Escape widget behavior is claimed. Entry: main heading; exit: publish button. Submit failure: focus moves to the error summary (role=alert, tabindex="-1"); each entry is an anchor to its control; correction clears the entry and keeps focus on the corrected control (see <a href="#4i">4i</a>). Status region (polite): "loading 12 selected factories…", "scope reduced — 10 of 12", "publishing 10 visits…", success. Alerts (assertive): conflicts, re-check failures, transaction failure. Conflict/selection always glyph + text, never color alone. Reduced motion: no highlight transitions or scroll animation; the ledger swaps content instantly.
+    </div>
+    <div data-screen-label="4 research ledger" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 13px/19px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Research ledger — adopted / rejected</div>
+      <strong style="color:#EFEFF7;">Microsoft Field Service — schedule board &amp; manual scheduling (learn.microsoft.com/en-us/dynamics365/field-service/work-with-schedule-board):</strong> the schedule board is a dispatcher surface for explicit manual booking over <em>known bookings</em>; it displays existing bookings, it does not infer availability. Adopted: manual assignment decided over known assignments rendered as text evidence (exact visit + window). Rejected: the board/timeline visualization — it reads as availability, which Saqeel cannot verify.<br>
+      <strong style="color:#EFEFF7;">Microsoft Field Service — resource types (learn.microsoft.com/en-us/dynamics365/field-service/scheduling-resource-types):</strong> scheduling behavior depends on which resource attributes are actually modelled; a resource only supports what its type carries. Adopted: candidate evidence limited to attributes Saqeel verifiably has (role membership, known assignments); everything else is a named "Not evaluated". Rejected: skill/territory/location/hours attributes — no Saqeel source.<br>
+      <strong style="color:#EFEFF7;">W3C ARIA APG — grid (w3.org/WAI/ARIA/apg/patterns/grid/):</strong> a composite grid requires the full managed-focus contract (focus entry/exit, arrow-key navigation, Enter/F2/Escape, screen-reader behavior). Adopted as the rejection criterion: this design uses a plain semantic table with native tabbable controls instead. Rejected: any roving/one-tab-stop behavior without that contract.<br>
+      <strong style="color:#EFEFF7;">W3C ARIA APG — listbox (w3.org/WAI/ARIA/apg/patterns/listbox/):</strong> custom listboxes carry selection-model and screen-reader caveats that native select elements avoid. Adopted: native selects for method/inspector, in the normal tab order. Rejected: styled ARIA listboxes.<br>
+      <strong style="color:#EFEFF7;">GOV.UK Design System — error summary (design-system.service.gov.uk/components/error-summary/):</strong> on failed submit the summary receives focus, each error links to its control, entered values are preserved; permission failures are not field validation. Adopted verbatim (<a href="#4i">4i</a>). Rejected: nothing material.<br>
+      <strong style="color:#EFEFF7;">Saudi DGA — web accessibility for people with disabilities &amp; the elderly (dga.gov.sa/en/digital-knowledge/web-accessibility-disabilities-and-elderly-people):</strong> government services must stay operable for disabled and elderly users — keyboard operation, clear language, adequate control sizes. Adopted: ≥44–48px targets, glyph+text status (never color alone), plain-language failure copy. Arabic-first is NOT sourced here — it is the binding Saqeel baseline (DEC-011). Rejected: nothing in scope.
+    </div>
+    <div data-screen-label="4 inheritance ledger" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#7C6CFF; margin-bottom:8px;">Family inheritance ledger + one-pattern novelty declaration</div>
+      <strong style="color:#EFEFF7;">Reused accepted components:</strong> frozen shell + Planning tab; ax tokens/lozenges/tables/fields; CD-021's focus-drives-evidence grammar (condition focus → ledger reflection), readiness-chips row, neutral-failure banner, no-data RLS screen; CD-022's evidence-cites-its-query convention; bulk review's config panel fields and empty-selection return. <strong style="color:#EFEFF7;">Created page-specific:</strong> the Assignment Evidence Ledger — the ONE new signature pattern (declared; nothing else novel). <strong style="color:#EFEFF7;">Regressions checked:</strong> read-only drill-down untouched (no editing controls added); targeting hand-off (sessionStorage selection) unchanged; atomic RPC contract unchanged; no Dashboard filters copied into Planning.
+    </div>
+    <div data-screen-label="4 self-audit" style="border:1px solid #26263A; border-radius:12px; background:#101020; padding:16px 18px; color:#9C9CB2; font:400 14px/21px 'Space Grotesk',sans-serif;">
+      <div style="font:600 12px/16px 'JetBrains Mono',monospace; letter-spacing:.1em; text-transform:uppercase; color:#F0625D; margin-bottom:8px;">P0/P1 self-audit — Pass / Correct / Block (no numerical scoring)</div>
+      <strong style="color:#EFEFF7;">Pass (evidence):</strong> runtime truth corrected per R1‑1/2 (route panel + <a href="#4log">4log</a>); user copy operational only (4a, R1‑6); equal-fidelity zones (<a href="#4b">4b</a>/<a href="#4c">4c</a>, R1‑3); visual hard states (<a href="#4e">4e</a>); theme/Arabic parity (<a href="#4f">4f</a>/<a href="#4g">4g</a>, R1‑4); operable narrow (<a href="#4h">4h</a>); plain-table keyboard model + focused-error evidence (<a href="#4i">4i</a>, R1‑7); explicit route guard + distinct unauthorized state (4e, R1‑8). <strong style="color:#EFEFF7;">Corrected this round:</strong> "rechecked inside the transaction" withdrawn; "10 publishable" → "10 without active duplicates"; dev artefacts moved to annotations; research citations made exact. <strong style="color:#F0625D;">Block (carried as HANDOFF_BLOCKED, not designed around):</strong> route/screen-ID ownership; concurrency-safe overlap enforcement; fail-closed structured reads; authoritative package/visit-type recheck; auto overlap protection; attempted-conflict audit; delivery truth. Genericity test: the four truth classes + named runtime gaps remain Saqeel-specific regulatory content.
+    </div>
+  </div>
+</section>
+
+</x-dc>
+</body>
+</html>

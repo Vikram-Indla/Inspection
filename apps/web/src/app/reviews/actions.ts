@@ -33,7 +33,7 @@ export async function decideReview(_: DecisionResult, formData: FormData): Promi
     returned_sections: sections,
     decided_at: new Date().toISOString(),
   }).eq("id", review_id).is("decided_at", null).select("inspection_id").maybeSingle();
-  if (error) return { error: error.message };
+  if (error) { console.error("[review decision write]", error); return { error: "The decision could not be recorded. Try again or contact support." }; }
   if (!rev) return { error: "No row updated — review already decided, or RLS denied (M06-009)." };
   // Canonical workflow transition follows the decision (never mutated elsewhere).
   await sb.from("inspections").update({ status: statusMap[decision as keyof typeof statusMap] }).eq("id", rev.inspection_id);
@@ -49,7 +49,7 @@ export async function decideReview(_: DecisionResult, formData: FormData): Promi
       recipient: asg.inspector_id,
       payload: { inspection_id: rev.inspection_id, decision, reason, returned_sections: sections },
     });
-    if (n.error) return { error: `Decision recorded, but inspector notification failed: ${n.error}` };
+    if (n.error) return { error: "Decision recorded, but the inspector notification could not be queued." };
   }
 
   revalidatePath("/reviews");

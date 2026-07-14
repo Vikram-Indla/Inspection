@@ -16,3 +16,4 @@ priority_decisions:
   - DEC-008 maps provider
   - DEC-009 digital acknowledgement
   - DEC-010 NFR targets
+  - DEC-012 CD-0XX Codex wiring-audit gate (session-direction vs. actual audit)
