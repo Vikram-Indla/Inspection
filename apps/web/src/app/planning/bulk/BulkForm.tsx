@@ -12,6 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 type F = {
   id: string; factory_code: string; name: string; cr_number: string;
   city: string | null; region: string | null; risk_band: string | null; risk_score: number | null;
+  activity_class: string | null;
   official_lat: number | null; official_lng: number | null; source_synced_at: string | null;
   visits: { planning_status: string; visit_type: string }[];
 };
@@ -29,17 +30,23 @@ export type BulkFormStrings = {
   invalidTitle: string; invalidBody: string; invalidKeep: string; invalidClear: string;
   summaryTitle: string; summarySelected: string; summaryByBand: string; summaryByRegion: string; summaryEmpty: string;
   riskBands: Record<string, string>;
+  selectAllConfirmTitle: string; selectAllConfirmBody: string; selectAllConfirmInputLabel: string;
+  selectAllConfirmButton: string; selectAllConfirmCancel: string;
 };
 
 const PAGE_SIZE = 25;
 const SEL_KEY = "cd021-bulk-selection";
 const dupOf = (f: F) => f.visits.some(v => ["draft", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
 
-export default function BulkForm({ factories, strings }: { factories: F[]; strings: BulkFormStrings }) {
+export default function BulkForm({ factories, strings, focusedField, focusedValue }: {
+  factories: F[]; strings: BulkFormStrings; focusedField?: string | null; focusedValue?: string | null;
+}) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [q, setQ] = useState("");
   const [page, setPage] = useState(0);
   const [invalidDropped, setInvalidDropped] = useState(0);
+  const [confirmingSelectAll, setConfirmingSelectAll] = useState(false);
+  const [confirmInput, setConfirmInput] = useState("");
   const idSet = useMemo(() => new Set(factories.map(f => f.id)), [factories]);
 
   useEffect(() => {
@@ -65,7 +72,10 @@ export default function BulkForm({ factories, strings }: { factories: F[]; strin
 
   const toggle = (id: string, on: boolean) => setSelected(s => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n; });
   const selectVisible = () => setSelected(s => { const n = new Set(s); for (const f of pageRows) if (!dupOf(f)) n.add(f.id); return n; });
-  const selectAllResults = () => setSelected(s => { const n = new Set(s); for (const f of filtered) if (!dupOf(f)) n.add(f.id); return n; });
+  const confirmSelectAllResults = () => {
+    setSelected(s => { const n = new Set(s); for (const f of filtered) if (!dupOf(f)) n.add(f.id); return n; });
+    setConfirmingSelectAll(false); setConfirmInput("");
+  };
   const clearSelection = () => setSelected(new Set());
 
   const sel = factories.filter(f => selected.has(f.id));
@@ -102,9 +112,28 @@ export default function BulkForm({ factories, strings }: { factories: F[]; strin
           <input id="bulk-filter" className="ax-input" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} placeholder={strings.filterPlaceholder} />
         </div>
         <button type="button" className="ax-btn ax-btn--secondary" onClick={selectVisible}>{strings.selectVisible}</button>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={selectAllResults}>{strings.selectAllResults}</button>
+        <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
         <span className="ax-caption ax-numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
       </div>
+
+      {confirmingSelectAll && (
+        <div className="ax-banner ax-banner--warning" role="alertdialog" aria-label={strings.selectAllConfirmTitle}>
+          <div>
+            <strong>{strings.selectAllConfirmTitle}</strong>
+            <p>{strings.selectAllConfirmBody.replaceAll("{n}", String(filtered.length))}</p>
+            <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
+              <div className="ax-field" style={{ maxInlineSize: 140 }}>
+                <label className="ax-field__label" htmlFor="select-all-confirm-input">{strings.selectAllConfirmInputLabel}</label>
+                <input id="select-all-confirm-input" className="ax-input ax-numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
+              </div>
+              <button type="button" className="ax-btn ax-btn--prominent" disabled={confirmInput.trim() !== String(filtered.length)} onClick={confirmSelectAllResults}>
+                {strings.selectAllConfirmButton.replace("{n}", String(filtered.length))}
+              </button>
+              <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>{strings.selectAllConfirmCancel}</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="ax-tablewrap"><table className="ax-table">
         <thead><tr>
@@ -117,8 +146,10 @@ export default function BulkForm({ factories, strings }: { factories: F[]; strin
           {pageRows.map(f => {
             const dup = dupOf(f);
             const dq = dataQuality(f);
+            const isFocused = focusedField != null && focusedValue != null
+              && String((f as unknown as Record<string, unknown>)[focusedField] ?? "").toLowerCase() === focusedValue.toLowerCase();
             return (
-              <tr key={f.id}>
+              <tr key={f.id} style={isFocused ? { outline: "2px solid var(--ax-color-primary)", outlineOffset: -2 } : undefined}>
                 <td><input type="checkbox" disabled={dup} checked={selected.has(f.id)} onChange={e => toggle(f.id, e.target.checked)} aria-label={strings.selectFactory.replace("{name}", f.name)} /></td>
                 <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="ax-caption ax-numeric"><bdi>{f.factory_code}</bdi></span></td>
                 <td className="ax-numeric"><bdi>{f.cr_number}</bdi></td>

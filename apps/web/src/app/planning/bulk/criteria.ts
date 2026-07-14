@@ -109,3 +109,20 @@ export function hasCriteria(tree: GroupNode | null): boolean {
     n.kind === "cond" ? true : n.children.some(walk);
   return walk(tree);
 }
+
+// ---- shared leaf access (used by empty-value validation AND focus/contribution) ---
+export type Leaf = { path: number[]; node: CondNode };
+
+export function leaves(node: CriteriaNode, path: number[] = []): Leaf[] {
+  if (node.kind === "cond") return [{ path, node }];
+  return node.children.flatMap((c, i) => leaves(c, [...path, i]));
+}
+
+export const pathKey = (path: number[]): string => path.join(".");
+
+// Leaves with a blank value are never submittable — the server silently drops
+// them (see fromWire), which previously meant a half-filled condition vanished
+// with no warning (ERR-PLN-001: "Invalid criteria... show exact invalid rule").
+export function emptyValueLeaves(tree: GroupNode): Leaf[] {
+  return leaves(tree).filter(l => l.node.value.trim() === "");
+}

@@ -1,13 +1,37 @@
 import Shell from "@/components/Shell";
+import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import ReviewClient, { type ReviewStrings } from "./ReviewClient";
 
 export const dynamic = "force-dynamic";
 
 // CD-021 P02 review step (SCR-WEB-120). Configuration + manual assignment
-// relocated here from the SCR-WEB-110 targeting screen.
+// relocated here from the SCR-WEB-110 targeting screen (approved:
+// governance/HUMAN_APPROVALS.yaml gate CD-021-P02-relocation-approval).
 export default async function BulkReview() {
   const { t } = await useT();
+
+  // RBAC-007 — same Planner-only gate as the targeting screen (SCR-WEB-110);
+  // this route only ever receives a client-held selection from that screen,
+  // but it must independently refuse to render for any other role too.
+  const sb = await supabaseServer();
+  const { data: { user } } = await sb.auth.getUser();
+  const { data: myRoles } = user
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    : { data: [] as { role_key: string }[] };
+  const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
+  if (!isPlanner) {
+    return (
+      <Shell current="/planning" title={t("plan.bulk.review.title", "Bulk planning — review & publish")}>
+        <div className="ax-surface"><div className="ax-state">
+          <span className="ax-state__glyph">⛔</span>
+          <h4>{t("plan.bulk.unauthorized.title", "Authorized role required")}</h4>
+          <p className="ax-caption">{t("plan.bulk.unauthorized.body", "Bulk targeting (SCR-WEB-110) is available to the Planner role only.")}</p>
+        </div></div>
+      </Shell>
+    );
+  }
+
   const strings: ReviewStrings = {
     loading: t("plan.bulk.review.loading", "Loading your selection…"),
     emptyTitle: t("plan.bulk.review.emptyTitle", "No factories selected"),

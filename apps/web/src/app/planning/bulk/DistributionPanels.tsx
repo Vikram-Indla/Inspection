@@ -16,7 +16,7 @@ export type DistributionStrings = {
   riskAdvisory: string;  // ENG-04 advisory label
 };
 
-function Panel({ dist, strings }: { dist: Distribution; strings: DistributionStrings }) {
+function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: DistributionStrings; focusedValue?: string }) {
   const max = Math.max(1, ...dist.buckets.map(b => b.count));
   return (
     <section className="ax-surface" aria-label={dist.heading}
@@ -28,8 +28,10 @@ function Panel({ dist, strings }: { dist: Distribution; strings: DistributionStr
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
         {dist.buckets.map(b => {
           const pct = Math.round((b.count / max) * 100);
+          const isFocused = focusedValue != null && b.label.toLowerCase() === focusedValue.toLowerCase();
           return (
-            <li key={b.label} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+            <li key={b.label} className="ax-row"
+              style={{ gap: "var(--ax-space-150)", alignItems: "center", outline: isFocused ? "2px solid var(--ax-color-primary)" : undefined, borderRadius: "var(--ax-radius-small)" }}>
               <span style={{ minInlineSize: 120, flexShrink: 0 }}>
                 {b.unknown ? <span className="ax-lozenge ax-lozenge--warning">? {strings.unknown}</span> : <bdi>{b.label}</bdi>}
               </span>
@@ -46,16 +48,18 @@ function Panel({ dist, strings }: { dist: Distribution; strings: DistributionStr
   );
 }
 
-export default function DistributionPanels({ distributions, strings }: {
+export default function DistributionPanels({ distributions, strings, focusedField, focusedValue }: {
   distributions: Distribution[];
   strings: DistributionStrings;
+  focusedField?: string | null;
+  focusedValue?: string | null;
 }) {
   return (
     <section aria-label={strings.heading}
       style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: "var(--ax-space-200)" }}>
       {distributions.map(d => (
         <div key={d.key}>
-          <Panel dist={d} strings={strings} />
+          <Panel dist={d} strings={strings} focusedValue={d.key === focusedField ? (focusedValue ?? undefined) : undefined} />
           {d.key === "risk_band" && <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.riskAdvisory}</p>}
         </div>
       ))}

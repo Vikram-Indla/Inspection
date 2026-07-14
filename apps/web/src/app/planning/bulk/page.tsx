@@ -1,11 +1,12 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import BulkForm, { type BulkFormStrings } from "./BulkForm";
-import CriteriaBuilder, { type CriteriaBuilderStrings } from "./CriteriaBuilder";
-import EligibilityLedger, { type LedgerStrings } from "./EligibilityLedger";
-import DistributionPanels, { type Bucket, type Distribution, type DistributionStrings } from "./DistributionPanels";
-import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree } from "./criteria";
+import type { BulkFormStrings } from "./BulkForm";
+import type { CriteriaBuilderStrings } from "./CriteriaBuilder";
+import type { LedgerStrings } from "./EligibilityLedger";
+import type { Bucket, Distribution, DistributionStrings } from "./DistributionPanels";
+import TargetingLensClient from "./TargetingLensClient";
+import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey } from "./criteria";
 
 export const dynamic = "force-dynamic";
 
@@ -19,18 +20,61 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const sp = await searchParams;
   const { t } = await useT();
   const sb = await supabaseServer();
+
+  // RBAC-007 — Visit Planning (bulk targeting + its P02 review step) is a
+  // Planner-only capability. RLS already blocks the eventual publish write for
+  // any other role, but the read-only targeting UI must not render for them
+  // either (a non-planner authenticated user previously saw the full screen).
+  const { data: { user } } = await sb.auth.getUser();
+  const { data: myRoles } = user
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    : { data: [] as { role_key: string }[] };
+  const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
+  if (!isPlanner) {
+    return (
+      <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
+        <div className="ax-surface"><div className="ax-state">
+          <span className="ax-state__glyph">⛔</span>
+          <h4>{t("plan.bulk.unauthorized.title", "Authorized role required")}</h4>
+          <p className="ax-caption">{t("plan.bulk.unauthorized.body", "Bulk targeting (SCR-WEB-110) is available to the Planner role only.")}</p>
+        </div></div>
+      </Shell>
+    );
+  }
+
   // M01-003/012/022 — criteria tree. New `ct` param (nested ALL/ANY) is
   // authoritative; legacy cf/co/cv links still parse for backward compatibility.
-  const tree = parseCt(sp.ct)
+  // A NON-EMPTY `ct` that fails to parse is a distinct, honest state from "no
+  // criteria at all" (ERR-PLN-001): we do not silently fall through to
+  // match-everything without telling the planner their criteria were dropped.
+  const ctParsed = parseCt(sp.ct);
+  const ctWasInvalid = Boolean(sp.ct) && ctParsed === null;
+  const tree = ctParsed
     ?? fromFlat(toArr(sp.cf), toArr(sp.co), toArr(sp.cv), sp.combine ?? "and")
     ?? emptyTree();
   // M01-004 — all factories fetched, then the tree evaluated server-side
   // (ALL = every child / ANY = some, nested). No DB-level .eq filters: is-not
   // and ANY combinations aren't simple equality, so evaluation is uniform here.
-  const { data: allFactories } = await sb
+  const { data: allFactories, error: factoriesError } = await sb
     .from("factories")
     .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, visits(planning_status, visit_type)")
     .order("risk_score", { ascending: false });
+  // ERR-OPS-001 — a failed read must never masquerade as a legitimate empty
+  // catalog (0 in scope, 0 eligible). One shared query backs every panel on
+  // this screen, so isolation here is page-level, not per-widget; the wiring
+  // map previously claimed per-source isolation this architecture can't do.
+  if (factoriesError) {
+    console.error("[CD-021] factories read failed:", factoriesError.message, factoriesError.code);
+    return (
+      <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
+        <div className="ax-surface"><div className="ax-state">
+          <span className="ax-state__glyph">⚠</span>
+          <h4>{t("plan.bulk.serviceUnavailable.title", "Factory registry unavailable")}</h4>
+          <p className="ax-caption">{t("plan.bulk.serviceUnavailable.body", "The factory registry could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")}</p>
+        </div></div>
+      </Shell>
+    );
+  }
   const everyFactory = (allFactories ?? []) as unknown as (FactoryForCriteria & Record<string, unknown>)[];
   const factories = hasCriteria(tree)
     ? everyFactory.filter(f => evalNode(f as Record<string, unknown>, tree))
@@ -69,6 +113,17 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const syncTimes = factories.map(f => (f as Record<string, unknown>).source_synced_at).filter((v): v is string => typeof v === "string");
   const oldestSyncedAt = syncTimes.length ? syncTimes.reduce((a, b) => (a < b ? a : b)) : null;
   const missingSync = factories.length - syncTimes.length;
+
+  // "Focus condition" (design frame 1a) — each leaf's population contribution,
+  // computed alone against the whole scope (independent of its siblings), so
+  // focusing a chip reveals what THAT condition alone would keep. Client-only
+  // interaction (no new server action); paths key against the tree as-applied.
+  const leafList = leaves(tree);
+  const contributions: Record<string, number> = {};
+  for (const leaf of leafList) {
+    contributions[pathKey(leaf.path)] = everyFactory.filter(f => evalNode(f as Record<string, unknown>, leaf.node)).length;
+  }
+  const leafInfo = leafList.map(l => ({ pathKey: pathKey(l.path), field: l.node.field, value: l.node.value }));
 
   const ledgerStrings: LedgerStrings = {
     heading: t("plan.bulk.ledger.heading", "Eligibility ledger"),
@@ -125,6 +180,11 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     summaryByRegion: t("plan.bulk.summaryByRegion", "By region"),
     summaryEmpty: t("plan.bulk.summaryEmpty", "Select factories to build the campaign summary."),
     riskBands: { high: t("enum.high", "high"), medium: t("enum.medium", "medium"), low: t("enum.low", "low") },
+    selectAllConfirmTitle: t("plan.bulk.selectAllConfirmTitle", "Confirm select all results"),
+    selectAllConfirmBody: t("plan.bulk.selectAllConfirmBody", "This selects all {n} results matching the current criteria, across every page — not just what's visible. Type {n} to confirm."),
+    selectAllConfirmInputLabel: t("plan.bulk.selectAllConfirmInputLabel", "Type the count to confirm"),
+    selectAllConfirmButton: t("plan.bulk.selectAllConfirmButton", "Select all {n}"),
+    selectAllConfirmCancel: t("plan.bulk.selectAllConfirmCancel", "Cancel"),
   };
   const criteriaStrings: CriteriaBuilderStrings = {
     heading: t("plan.bulk.criteria.heading", "Targeting criteria (M01-003/012/022)"),
@@ -153,16 +213,27 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     hint: t("plan.bulk.criteria.hint", "Criteria are evaluated server-side over every factory in your scope — nested ALL/ANY groups and is-not included."),
     groupItem: t("plan.bulk.criteria.groupItem", "criteria group"),
     conditionItem: t("plan.bulk.criteria.conditionItem", "condition"),
+    invalidTitle: t("plan.bulk.criteria.invalidTitle", "Incomplete condition (ERR-PLN-001)"),
+    invalidBody: t("plan.bulk.criteria.invalidBody", "{n} condition(s) are missing a value. An incomplete condition is dropped rather than applied — fill it in or remove it before applying."),
+    contributionLabel: t("plan.bulk.criteria.contributionLabel", "{n} match this condition alone — focus"),
+    unfocusLabel: t("plan.bulk.criteria.unfocusLabel", "Clear focus"),
   };
   return (
     <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("plan.bulk.context", "SCR-WEB-110 · AND/OR criteria builder")}</span>}>
-      <CriteriaBuilder initialTree={tree} fieldOptions={fieldOptions}
-        matchCount={factories.length} strings={criteriaStrings} />
-      <EligibilityLedger denominator={denominator} eligible={factories.length}
-        oldestSyncedAt={oldestSyncedAt} missingSync={missingSync} strings={ledgerStrings} />
-      <DistributionPanels distributions={distributions} strings={distStrings} />
-      <BulkForm factories={factories as never} strings={strings} />
+      {ctWasInvalid && (
+        <div className="ax-banner ax-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>
+          <strong>{t("plan.bulk.invalidCt.title", "Criteria could not be read")}</strong>
+          <p>{t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-PLN-001) and could not be applied. Showing unfiltered results — please rebuild your criteria below.")}</p>
+        </div>
+      )}
+      <TargetingLensClient
+        initialTree={tree} fieldOptions={fieldOptions} matchCount={factories.length} criteriaStrings={criteriaStrings}
+        contributions={contributions} leafInfo={leafInfo}
+        denominator={denominator} eligible={factories.length} oldestSyncedAt={oldestSyncedAt} missingSync={missingSync} ledgerStrings={ledgerStrings}
+        distributions={distributions} distStrings={distStrings}
+        factories={factories as never} bulkFormStrings={strings}
+      />
     </Shell>
   );
 }

@@ -11,7 +11,7 @@
 import { useMemo, useState } from "react";
 import {
   type GroupNode, type CriteriaNode, type CondNode, type Field,
-  CRITERIA_FIELDS, newCond, emptyTree, serializeCriteria,
+  CRITERIA_FIELDS, newCond, emptyTree, serializeCriteria, emptyValueLeaves, pathKey,
 } from "./criteria";
 
 export type CriteriaBuilderStrings = {
@@ -24,6 +24,8 @@ export type CriteriaBuilderStrings = {
   moveUp: string; moveDown: string;
   apply: string; clear: string; matching: string; hint: string;
   groupItem: string; conditionItem: string;
+  invalidTitle: string; invalidBody: string;
+  contributionLabel: string; unfocusLabel: string;
 };
 
 // Immutably transform the group living at `path` (indices into nested children).
@@ -41,16 +43,23 @@ function editChildren(root: GroupNode, parentPath: number[], fn: (ch: CriteriaNo
   return modifyGroupAt(root, parentPath, g => ({ ...g, children: fn(g.children) }));
 }
 
-export default function CriteriaBuilder({ initialTree, fieldOptions, matchCount, strings }: {
+export default function CriteriaBuilder({
+  initialTree, fieldOptions, matchCount, strings, contributions, focusedPath, onFocus,
+}: {
   initialTree: GroupNode;
   fieldOptions: Record<string, string[]>;
   matchCount: number;
   strings: CriteriaBuilderStrings;
+  contributions?: Record<string, number>;
+  focusedPath?: string | null;
+  onFocus?: (path: string | null) => void;
 }) {
   const [tree, setTree] = useState<GroupNode>(
     initialTree.children.length ? initialTree : { ...emptyTree(), children: [newCond()] }
   );
   const ct = useMemo(() => serializeCriteria(tree), [tree]);
+  const invalid = useMemo(() => emptyValueLeaves(tree), [tree]);
+  const [showInvalid, setShowInvalid] = useState(false);
 
   const fieldLabel = (f: string) =>
     f === "region" ? strings.fieldRegion
@@ -70,7 +79,12 @@ export default function CriteriaBuilder({ initialTree, fieldOptions, matchCount,
     const next = ch.slice(); [next[idx], next[j]] = [next[j], next[idx]]; return next;
   }));
 
-  const renderCond = (c: CondNode, parentPath: number[], idx: number, count: number) => (
+  const renderCond = (c: CondNode, parentPath: number[], idx: number, count: number) => {
+    const key = pathKey([...parentPath, idx]);
+    const contribution = contributions?.[key];
+    const isEmpty = c.value.trim() === "";
+    const isFocused = focusedPath === key;
+    return (
     <li role="treeitem" aria-label={strings.conditionItem} className="ax-row"
       style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
       <div className="ax-field" style={{ maxInlineSize: 180 }}>
@@ -89,17 +103,26 @@ export default function CriteriaBuilder({ initialTree, fieldOptions, matchCount,
       </div>
       <div className="ax-field" style={{ maxInlineSize: 210 }}>
         <label className="ax-field__label">{strings.valueLabel}</label>
-        <input className="ax-input" list={`vals-${c.field}`} value={c.value}
+        <input className="ax-input" list={`vals-${c.field}`} value={c.value} aria-invalid={isEmpty || undefined}
           onChange={e => patchCond(parentPath, idx, { value: e.target.value })} placeholder={strings.valuePlaceholder} />
         <datalist id={`vals-${c.field}`}>
           {(fieldOptions[c.field] ?? []).map(v => <option key={v} value={v} />)}
         </datalist>
       </div>
+      {contribution != null && (
+        <button type="button" className="ax-btn ax-btn--subtle ax-numeric" aria-pressed={isFocused}
+          onClick={() => onFocus?.(isFocused ? null : key)}
+          aria-label={(isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution)))}
+          style={isFocused ? { borderColor: "var(--ax-color-primary)", fontWeight: 600 } : undefined}>
+          {contribution}
+        </button>
+      )}
       <button type="button" className="ax-btn ax-btn--subtle" onClick={() => move(parentPath, idx, -1)} disabled={idx === 0} aria-label={strings.moveUp}>↑</button>
       <button type="button" className="ax-btn ax-btn--subtle" onClick={() => move(parentPath, idx, 1)} disabled={idx === count - 1} aria-label={strings.moveDown}>↓</button>
       <button type="button" className="ax-btn ax-btn--subtle" onClick={() => removeAt(parentPath, idx)}>{strings.remove}</button>
     </li>
-  );
+    );
+  };
 
   const renderGroup = (g: GroupNode, path: number[]): React.ReactNode => (
     <li role="treeitem" aria-label={strings.groupItem}
@@ -132,12 +155,19 @@ export default function CriteriaBuilder({ initialTree, fieldOptions, matchCount,
 
   return (
     <form method="get" action="/planning/bulk" className="ax-surface"
+      onSubmit={e => { if (invalid.length > 0) { e.preventDefault(); setShowInvalid(true); } }}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
       <input type="hidden" name="ct" value={ct} />
       <ul role="tree" aria-label={strings.heading} style={{ listStyle: "none", margin: 0, padding: 0 }}>
         {renderGroup(tree, [])}
       </ul>
+      {showInvalid && invalid.length > 0 && (
+        <div className="ax-banner ax-banner--warning" role="alert">
+          <strong>{strings.invalidTitle}</strong>
+          <p>{strings.invalidBody.replace("{n}", String(invalid.length))}</p>
+        </div>
+      )}
       <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent">{strings.apply}</button>
         <a className="ax-btn ax-btn--subtle" href="/planning/bulk">{strings.clear}</a>

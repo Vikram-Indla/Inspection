@@ -19,13 +19,15 @@ export type LedgerStrings = {
 };
 
 export default function EligibilityLedger({
-  denominator, eligible, oldestSyncedAt, missingSync, strings,
+  denominator, eligible, oldestSyncedAt, missingSync, strings, focusedCount, focusedLabel,
 }: {
   denominator: number;
   eligible: number;
   oldestSyncedAt: string | null;
   missingSync: number;
   strings: LedgerStrings;
+  focusedCount?: number | null;
+  focusedLabel?: string | null;
 }) {
   const excluded = Math.max(0, denominator - eligible);
   // Factual relative age — no threshold styling.
@@ -52,6 +54,12 @@ export default function EligibilityLedger({
           <span className="ax-lozenge ax-lozenge--info">− {excluded}</span>
         </div>
       </div>
+      {focusedCount != null && (
+        <div role="status" aria-live="polite">
+          <span className="ax-caption">{focusedLabel}</span>
+          <div className="ax-numeric"><span className="ax-lozenge ax-lozenge--info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
+        </div>
+      )}
       <div style={{ marginInlineStart: "auto" }}>
         <span className="ax-caption">{strings.freshness}</span>
         <div className="ax-freshness ax-numeric">
