@@ -114,8 +114,10 @@ delete), so — with sponsor sign-off — the negative path was verified instead
   (`sodGuardShown: true`) and the "Approve & publish" button is **absent**
   (`selfApproveBlocked: true`) — RBAC-002 maker-checker enforced in UI ahead of
   the DB constraint.
-- **Accepted side effect:** one identifiable DRAFT row (`RT-SOD-…`) remains — no
-  delete action exists; it is not published and not runtime-live.
+- **Side effect cleaned:** the one DRAFT row it created (`RT-SOD-2026-07-15T20-45-07-385Z`,
+  id `3d4b95c2-bdeb-4c31-a239-e520560ac3dc`) was deleted by the DB owner via the
+  Supabase SQL editor (scoped `delete … where version_label = '…' and status='draft'
+  and engine='workflow'`; re-select returned 0 rows). Store left clean.
 
 ### Risk-weights save — DONE (CD-014, `VERIFY_ROUNDTRIP=1`)
 
