@@ -36,8 +36,13 @@ async function localizationRoundTrip(page) {
     const inp = r.locator('input[name="ar"]');
     await inp.fill(value);
     await r.locator('form:has(input[name="ar"]) button').first().click();
-    // saveTranslation revalidates the path; give the action + re-render time.
-    await page.waitForTimeout(2500);
+    // Wait for the server action + revalidate to actually settle, not a fixed
+    // timeout: prefer the row's "saved" success lozenge, fall back to networkidle.
+    await Promise.race([
+      r.locator('.ax-lozenge--success').first().waitFor({ timeout: 9000 }).catch(() => {}),
+      page.waitForLoadState("networkidle").catch(() => {}),
+    ]);
+    await page.waitForTimeout(1200);
   };
 
   await goList();
@@ -68,6 +73,46 @@ async function localizationRoundTrip(page) {
     statusAfterSave: statusText,
     restoredOk: restored === original,
     original, testVal, persisted, restored,
+  };
+}
+
+// Workflow maker-checker (RBAC-002) negative path: admin proposes a draft
+// (proposeWorkflowDraft write) then is BLOCKED from approving its own draft.
+// Publish is irreversible so this exercises the write + the CD-012 SoD guard
+// without publishing. NOTE: leaves one identifiable DRAFT row (no delete action).
+async function workflowSoDRoundTrip(page, label) {
+  const goWf = async () => {
+    await page.goto(`${BASE}/admin/workflows`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".ax-pagehead", { timeout: 20000 });
+    await page.waitForTimeout(600);
+  };
+  await goWf();
+
+  const proposeForm = page.locator('form:has(input[name="version_label"])').first();
+  if (await proposeForm.count() === 0) {
+    return { ran: false, reason: "no published workflow version with a propose-draft form" };
+  }
+  await proposeForm.locator('input[name="version_label"]').fill(label);
+  await proposeForm.locator("button").first().click();
+  await page.waitForTimeout(2500);
+  const proposeError = (await proposeForm.locator('[role="alert"]').first().innerText().catch(() => "")).trim();
+
+  await goWf();
+  const card = page.locator(`.ax-surface:has(.ax-version:text-is(${JSON.stringify(label)}))`).first();
+  const proposed = await card.count() > 0;
+  let statusText = "", sodGuardShown = false, approveButtonPresent = null;
+  if (proposed) {
+    statusText = (await card.locator(".ax-lozenge").first().innerText().catch(() => "")).trim();
+    const bodyText = await card.innerText().catch(() => "");
+    sodGuardShown = /distinct checker must approve/i.test(bodyText);
+    approveButtonPresent = await card.locator('button:has-text("Approve & publish")').count() > 0;
+  }
+  return {
+    ran: true, label, proposeError: proposeError || null,
+    proposed,
+    statusIsDraft: /draft/i.test(statusText),
+    sodGuardShown,
+    selfApproveBlocked: sodGuardShown && approveButtonPresent === false,
   };
 }
 
@@ -109,7 +154,10 @@ try {
     results.push({ route: c.route, status, allMarkersPresent, markerHits, bodyErr, jsErrors: newErrors });
   }
   const roundTrip = process.env.VERIFY_ROUNDTRIP ? await localizationRoundTrip(page) : { ran: false, reason: "skipped (set VERIFY_ROUNDTRIP=1)" };
-  console.log(JSON.stringify({ landed, results, roundTrip }, null, 2));
+  const workflowSoD = process.env.VERIFY_WF_SOD
+    ? await workflowSoDRoundTrip(page, `RT-SOD-${new Date().toISOString().replace(/[:.]/g, "-")}`)
+    : { ran: false, reason: "skipped (set VERIFY_WF_SOD=1 — creates a draft row)" };
+  console.log(JSON.stringify({ landed, results, roundTrip, workflowSoD }, null, 2));
 } finally {
   await browser.close();
 }

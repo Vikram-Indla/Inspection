@@ -100,6 +100,22 @@ Non-destructive end-to-end mutation test through the real UI:
 - Original value **restored** afterwards (`restoredOk: true`) — the store is left
   exactly as before the test.
 
-This closes the DEC-012 runtime audit for the six routes AND the CD-018 write
-path. Still not E2E-exercised: workflow publish (maker-checker) and risk-weights
-save round-trips — same pattern, extendable in `scripts/verify-admin.mjs`.
+Save-wait was hardened to wait for the row's "saved" success lozenge /
+networkidle rather than a fixed timeout (an initial fixed-timeout version flaked
+under load); re-verified green on repeated runs.
+
+### Workflow maker-checker SoD — DONE (CD-012, `VERIFY_WF_SOD=1`)
+
+Publish is irreversible (immutable published version, changes live config, no
+delete), so — with sponsor sign-off — the negative path was verified instead:
+- Admin proposes a draft (`proposeWorkflowDraft` write) → `proposed: true`,
+  `statusIsDraft: true`.
+- The CD-012 separation-of-duties guard renders on the admin's own draft
+  (`sodGuardShown: true`) and the "Approve & publish" button is **absent**
+  (`selfApproveBlocked: true`) — RBAC-002 maker-checker enforced in UI ahead of
+  the DB constraint.
+- **Accepted side effect:** one identifiable DRAFT row (`RT-SOD-…`) remains — no
+  delete action exists; it is not published and not runtime-live.
+
+Still not E2E-exercised (by design / risk): a successful workflow *publish*
+(needs a second user as maker; irreversible) and the risk-weights save round-trip.
