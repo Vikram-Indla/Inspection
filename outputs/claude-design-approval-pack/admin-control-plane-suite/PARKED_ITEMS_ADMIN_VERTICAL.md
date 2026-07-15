@@ -5,7 +5,14 @@ Recorded 2026-07-15. Implementation is code-complete, verified, and landed on
 deferred by sponsor direction ("park migrations and e2e, move on") and remain
 open until credentials / a test environment are provided.
 
-## PARK-1 — Apply the 4 admin `ui_strings` AR migrations to live Supabase
+## PARK-1 — RESOLVED 2026-07-15 ✅ (Supabase token supplied)
+The 4 admin AR migrations + the CD-024 AR migration were applied live to
+`iiozvqntawxfwbgffzqu` via the Management API (guarded `ui_strings` upserts).
+Verified live: admin.viol 101, admin.items 115, admin.reg 90, admin.pkg 79,
+plan.review.e* 31 — 503+ admin strings now carry reviewed-pending Arabic. Arabic no
+longer falls back to English at runtime. Original detail below (historical).
+
+## PARK-1 (historical) — Apply the 4 admin `ui_strings` AR migrations to live Supabase
 - Migrations (authored, NOT applied):
   - `supabase/migrations/20260715100000_cd005_cd006_ar_strings.sql`
   - `supabase/migrations/20260715101000_cd007_ar_strings.sql`
