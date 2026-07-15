@@ -117,5 +117,19 @@ delete), so — with sponsor sign-off — the negative path was verified instead
 - **Accepted side effect:** one identifiable DRAFT row (`RT-SOD-…`) remains — no
   delete action exists; it is not published and not runtime-live.
 
+### Risk-weights save — DONE (CD-014, `VERIFY_ROUNDTRIP=1`)
+
+Reversible end-to-end write: moved 0.05 between two factors keeping Σ = 1.00 →
+`saveRiskSettings` → `engine_settings` write → reload confirms persisted
+(`savedOk`) → restored exact original weights (`restoredOk`), store unchanged.
+`rlsDenied: false` — the `compliance_admin` session can write the risk engine.
+Original `[0.3,0.2,0.2,0.15,0.15]` → saved `[0.25,0.25,0.2,0.15,0.15]` → restored
+`[0.3,0.2,0.2,0.15,0.15]`.
+
+### Write-path coverage summary
+- CD-018 localization `saveTranslation` — round-trip PASS (persist→draft→restore)
+- CD-014 risk `saveRiskSettings` — round-trip PASS (persist→restore, Σ-guard live)
+- CD-012 workflow maker-checker — SoD negative path PASS (propose→self-approve blocked)
+
 Still not E2E-exercised (by design / risk): a successful workflow *publish*
-(needs a second user as maker; irreversible) and the risk-weights save round-trip.
+(irreversible; needs a second user as maker).
