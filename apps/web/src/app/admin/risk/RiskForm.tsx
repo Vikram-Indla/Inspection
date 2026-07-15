@@ -10,12 +10,13 @@
 import { useMemo, useState, useActionState } from "react";
 import { saveRiskSettings } from "./actions";
 
-type Factor = { key: string; weight: number };
+// Factor names are resolved to strings on the server — a function prop cannot
+// cross the server→client boundary (Next throws at render).
+type Factor = { key: string; weight: number; name: string };
 type SaveState = { error?: string; ok?: boolean };
 
 export type RiskLabels = {
   factorsTitle: string;
-  factorName: (key: string) => string;
   bandsTitle: string;
   lowEnds: string;
   mediumEnds: string;
@@ -72,12 +73,12 @@ export default function RiskForm({
         const pct = Math.round((Number.isFinite(w) ? w : 0) / maxWeight * 100);
         return (
           <div key={f.key} className="rk-driver">
-            <div className="rk-driver__name"><b>{labels.factorName(f.key)}</b></div>
+            <div className="rk-driver__name"><b>{f.name}</b></div>
             <input
               className="ax-input ax-numeric rk-w" id={f.key} name={f.key} type="number" step="0.05" min="0" max="1"
               value={Number.isFinite(w) ? w : ""}
               onChange={e => setWeights(prev => ({ ...prev, [f.key]: parseFloat(e.target.value) }))}
-              style={{ maxInlineSize: 110 }} aria-label={labels.factorName(f.key)}
+              style={{ maxInlineSize: 110 }} aria-label={f.name}
             />
             <div className="rk-bar" aria-hidden="true"><span style={{ inlineSize: `${pct}%` }} /></div>
           </div>
