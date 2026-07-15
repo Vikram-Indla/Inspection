@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import {
   NewRegulationForm,
@@ -87,7 +87,7 @@ export default async function Regulations({
   const detailId = typeof sp.id === "string" ? sp.id : Array.isArray(sp.id) ? sp.id[0] : undefined;
 
   // Route layout restricts module visibility; writes remain independently RLS-gated.
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getServerUser();
   const { data: roleRows, error: roleError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };

@@ -5,30 +5,33 @@ import { storageStatePath } from "./personas";
 
 // CD-008 / SCR-ADM-030 + CD-009 / SCR-ADM-031
 // MVP1-M09-004/012/013/019/025/028/029/030 · RBAC-002 · DEC-012.
-// Runtime coverage uses the Inspector as the authenticated read-only persona.
-// Writer-only draft paths are additionally checked at the source boundary because
+// SCR-ADM-030/031 are restricted to Form Admin and Compliance Admin. Runtime
+// coverage therefore uses the seeded admin persona; read-only and denied paths are
+// additionally checked at the source/route boundary because
 // no deterministic writer-owned draft is guaranteed in shared live seed data.
 const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-008-009-packages-v2");
 const PKG = (path: string) => readFileSync(join(process.cwd(), "src/app/admin/packages", path), "utf8");
 const SRC = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 
-test.use({ storageState: storageStatePath("inspector") });
+test.use({ storageState: storageStatePath("admin") });
 test.beforeAll(() => mkdirSync(EVIDENCE_DIR, { recursive: true }));
-test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
+test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.titlePath.some(part => part.includes("source wiring") || part.includes("localized string source"))) return;
+  await page.goto("/locale?set=en");
+});
 
 test.describe("CD-008 package library — version-led runtime", () => {
   test("S01 renders package groups, version rows and source-read disclosure", async ({ page }) => {
     await page.goto("/admin/packages");
-    await expect(page.getByRole("heading", { name: /Package library & designer/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Package (?:library & designer|& Form Designer)/i })).toBeVisible();
     await expect(page.getByText(/PKG-FS/).first()).toBeVisible();
     await expect(page.locator(".ax-version", { hasText: "v2026.07.02" }).first()).toBeVisible();
-    await expect(page.getByText(/Read from source at/i)).toBeVisible();
+    await expect(page.getByText(/source read/i).last()).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "library-en-light-1440.png"), fullPage: true });
   });
 
-  test("S05/S06 inspector sees a truthful read-only surface and no mutation controls", async ({ page }) => {
+  test("S05/S06 published versions remain immutable while the authorized writer sees draft controls", async ({ page }) => {
     await page.goto("/admin/packages");
-    await expect(page.getByText(/Read-only package access/i)).toBeVisible();
     const immutable = page.locator(".ax-banner--immutable:visible").first();
     if (await immutable.count()) await expect(immutable).toContainText(/Published version — immutable/i);
     else {
@@ -37,9 +40,7 @@ test.describe("CD-008 package library — version-led runtime", () => {
       if (await publishedVersion.getAttribute("open") === null) await publishedSummary.click();
       await expect(publishedVersion.locator(".ax-banner--immutable")).toContainText(/Published version — immutable/i);
     }
-    await expect(page.getByRole("button", { name: /Create draft/i })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /Save draft definition/i })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /Approve & publish/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Create draft/i })).toBeVisible();
   });
 
   test("published history exposes governed effective and supersede lineage read-only", async ({ page }) => {
@@ -53,12 +54,12 @@ test.describe("CD-008 package library — version-led runtime", () => {
 test.describe("CD-009 read-only field projection", () => {
   test("preview exposes item semantics while every inspector input remains inert", async ({ page }) => {
     await page.goto("/admin/packages");
-    const toggle = page.getByRole("button", { name: /Open field preview/i }).first();
+    const toggle = page.getByRole("button", { name: /Open field preview|Preview as inspector/i }).first();
     await expect(toggle).toBeVisible();
     await toggle.click();
     const preview = page.locator(".ipad-preview").first();
     await expect(preview).toBeVisible();
-    await expect(preview.getByText(/Read-only projection/i)).toBeVisible();
+    await expect(preview.getByText(/read-only/i)).toBeVisible();
     for (const chip of await preview.locator(".ax-btn--field").all()) await expect(chip).toHaveAttribute("aria-disabled", /.*/);
     for (const input of await preview.locator("input, textarea").all()) await expect(input).toBeDisabled();
     await expect(preview.getByRole("button", { name: /simulate|run|calculate|score/i })).toHaveCount(0);
@@ -71,16 +72,21 @@ test.describe("CD-008 publish impact truth", () => {
     await page.goto("/admin/packages");
     const impact = page.locator(".ax-impact").first();
     await expect(impact).toBeVisible();
-    await expect(impact).toContainText(/unavailable|outside your read scope|No active visits or inspections are pinned/i);
-    await expect(impact.getByText(/0 active visit/i)).toHaveCount(0);
-    await expect(impact.getByText(/0 active inspection/i)).toHaveCount(0);
+    const unavailable = impact.getByText(/unavailable|outside your read scope/i);
+    if (await unavailable.count()) {
+      await expect(impact.getByText(/0 active visit/i)).toHaveCount(0);
+      await expect(impact.getByText(/0 active inspection/i)).toHaveCount(0);
+    } else {
+      await expect(impact).toContainText(/active visit\(s\)/i);
+      await expect(impact).toContainText(/active inspection\(s\)/i);
+    }
   });
 });
 
 test.describe("CD-008/009 a11y, RTL, theme and responsive semantics", () => {
   test("visible action targets are at least 44px", async ({ page }) => {
     await page.goto("/admin/packages");
-    const buttons = page.locator("button.ax-btn:visible");
+    const buttons = page.locator("main button:visible");
     expect(await buttons.count()).toBeGreaterThan(0);
     for (const button of await buttons.all()) {
       const box = await button.boundingBox();

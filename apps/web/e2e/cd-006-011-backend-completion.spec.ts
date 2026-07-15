@@ -131,6 +131,27 @@ test.describe("CD-006..011 backend completion", () => {
     expect(violationActions).toContain("deactivateViolationCode");
   });
 
+  test("trigger-only and system issuance functions are not exposed as public RPCs", () => {
+    const hardening = source("../../supabase/migrations/20260716200000_cd006_011_trigger_rpc_hardening.sql");
+    for (const fn of [
+      "archive_inspection_item_version",
+      "materialize_informational_penalty",
+      "issue_penalties_after_approval",
+    ]) {
+      expect(hardening).toContain(`revoke all on function public.${fn}()`);
+    }
+    expect(hardening).toContain("from public, anon, authenticated");
+  });
+
+  test("admin renders verify asymmetric JWT claims without per-component Auth API calls", () => {
+    const middleware = source("middleware.ts");
+    const serverAuth = source("src/lib/supabase-server.ts");
+    expect(middleware).toContain("supabase.auth.getClaims()");
+    expect(middleware).not.toContain("supabase.auth.getUser()");
+    expect(serverAuth).toContain("cache(async () =>");
+    expect(serverAuth).toContain("sb.auth.getClaims()");
+  });
+
   test("CD-008/CD-009 publish validation rejects invalid condition grammar", () => {
     const actions = source("src/app/admin/packages/actions.ts");
     const migration = source("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");

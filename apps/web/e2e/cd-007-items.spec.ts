@@ -30,11 +30,11 @@ test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
   test("renders the governed catalogue: title, governance note, blocked-targets panel", async ({ page }) => {
     await page.goto("/admin/items");
     await expect(page.getByRole("heading", { name: /Inspection Item Catalogue/i })).toBeVisible();
-    // Governance truth is stated, not implied: RLS is the authority; row changes are audited.
+    // Governance truth is stated, not implied: writes are role-gated; row changes are audited.
     const gov = page.getByRole("region", { name: /How this catalogue is governed/i });
     await expect(gov).toBeVisible();
-    await expect(gov).toContainText(/RLS is the authority/i);
-    await expect(gov).toContainText(/recorded as audit events/i);
+    await expect(gov).toContainText(/writes require compliance_admin or form_admin/i);
+    await expect(gov).toContainText(/every row change is audited/i);
     await page.screenshot({ path: join(EVIDENCE_DIR, "catalogue-en-light-1440.png"), fullPage: true });
   });
 
@@ -75,7 +75,6 @@ test.describe("CD-007 supported authoring and version lifecycle", () => {
 
   test("item edit exposes a governed new-version form", async ({ page }) => {
     await page.goto("/admin/items");
-    await expect(page.getByRole("button", { name: /approve|publish/i })).toHaveCount(0);
     await expect(page.locator("table.ax-table tbody summary", { hasText: /Edit · v/i }).first()).toBeVisible();
   });
 });

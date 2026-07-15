@@ -22,7 +22,9 @@ const CONTROLS = SRC("src/app/admin/violations/Controls.tsx");
 const ACTIONS = SRC("src/app/admin/violations/actions.ts");
 const COMPLETION_MIGRATION = SRC("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");
 
-test.use({ storageState: storageStatePath("inspector") });
+// Reviewer is explicitly admitted by the SCR-ADM-040 route boundary but is not a
+// configuration writer, giving deterministic runtime proof of the read-only state.
+test.use({ storageState: storageStatePath("reviewer") });
 
 test.beforeAll(() => { mkdirSync(EVIDENCE_DIR, { recursive: true }); });
 
@@ -54,9 +56,9 @@ test.describe("CD-010 catalogue mode — populated, trace, derived lifecycle (AC
     await expect(page.getByText(/as of today/i).first()).toBeVisible();
   });
 
-  test("S06 read-only: a non-writer (Inspector) sees no create form and a read-only reason", async ({ page }) => {
+  test("S06 read-only: a permitted non-writer (Reviewer) sees no create form and a read-only reason", async ({ page }) => {
     await page.goto("/admin/violations");
-    // RLS write requires compliance_admin/form_admin; the Inspector is neither.
+    // RLS write requires compliance_admin/form_admin; the Reviewer is neither.
     await expect(page.getByText(/Read-only view/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Create violation code/i })).toHaveCount(0);
   });

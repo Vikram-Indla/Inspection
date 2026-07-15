@@ -1,5 +1,5 @@
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import {
   NewItemForm,
@@ -67,7 +67,7 @@ export default async function Items({
 
   const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
   const rows = items ?? [];
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getServerUser();
   const { data: roleRows, error: roleError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
@@ -233,7 +233,7 @@ export default async function Items({
       <section className="ax-surface ax-permission ax-stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
         <p className="ax-caption" style={{ margin: 0 }}>
-          {t("admin.items.r2.gov.body", "Anyone signed in can read the catalogue; writes require compliance_admin or form_admin. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
+          {t("admin.items.r3.gov.body", "Anyone signed in can read the catalogue; writes require compliance_admin or form_admin. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
         </p>
       </section>
 

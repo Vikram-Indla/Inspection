@@ -1,5 +1,5 @@
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NewViolationForm, AddMappingForm, PublishMappingForm, PublishViolationForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
 import { getViolationUsage, type ViolationUsage } from "./actions";
@@ -106,7 +106,7 @@ export default async function Violations({
   if (clauseError) logProviderError("admin violation clauses read", clauseError);
 
   // Reflect RLS in the UI; the route layout separately restricts module visibility.
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getServerUser();
   const { data: roleRows, error: roleError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };

@@ -1,5 +1,5 @@
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 import { NewDraftForm, ApprovePublish, DeactivatePackage, type PublishStrings } from "./PublishControls";
@@ -73,7 +73,7 @@ export default async function Packages() {
     sb.from("inspection_items").select("id, code, title, active, response_model, evidence_rule, score_weight, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)").order("code"),
     sb.from("configuration_templates").select("id, template_key, template_type, version_label, title_en, title_ar, schema, status, effective_from").order("template_key"),
     sb.from("violation_codes").select("code, title, status").in("status", ["published", "locked"]).order("code"),
-    sb.auth.getUser(),
+    getServerUser(),
   ]);
   if (packageRead.error) logProviderError("admin packages read", packageRead.error);
   if (itemRead.error) logProviderError("admin package item-bank read", itemRead.error);
@@ -291,6 +291,7 @@ export default async function Packages() {
             <div>
               <h2 id="pkg-overview" style={{ margin: 0 }}>{t("admin.pkg.overview.title", "Version-governed inspection packages")}</h2>
               <p className="ax-caption">{t("admin.pkg.overview.body", "Drafts are editable. Publishing runs dependency validation and maker-checker approval; published and locked definitions remain immutable.")}</p>
+              <p className="ax-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></p>
             </div>
             <span className={`ax-lozenge ${canWrite ? "ax-lozenge--success" : "ax-lozenge--info"}`}>
               <span aria-hidden="true">{canWrite ? "✎ " : "◉ "}</span>
