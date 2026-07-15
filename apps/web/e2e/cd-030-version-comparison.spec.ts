@@ -17,6 +17,7 @@ import { storageStatePath } from "./personas";
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 const CMP = "src/app/reviews/[id]/VersionCompare.tsx";
 const PAGE = "src/app/reviews/[id]/page.tsx";
+const LOADING = "src/app/reviews/[id]/loading.tsx";
 
 // Open the first workspace from the queue; skip the test if the env has no rows.
 async function openFirstWorkspace(page: Page): Promise<boolean> {
@@ -66,6 +67,23 @@ test.describe("CD-030 source truth — scope authority, unavailable ≠ unchange
     expect(page).toMatch(/unavailPackage/);
     expect(page).toMatch(/unavailMetadata/);
     expect(page).toMatch(/HANDOFF_BLOCKED_MEDIADIFF/);
+  });
+
+  test("leg 15 (S07) — a degraded version source is stated, never silently omitted", () => {
+    const page = SRC(PAGE);
+    // The fetch error is captured and distinguished from a genuine not-found.
+    expect(page).toMatch(/error:\s*insErr/);
+    expect(page).toMatch(/insErr\s*\?/);
+    // Missing submission_versions (latest undefined) renders an explicit
+    // unavailable banner in place of the comparison surface, not nothing.
+    expect(page).toMatch(/latest\s*\?\s*\(\s*\n?\s*<VersionCompare/);
+    expect(page).toMatch(/sourceUnavailable/);
+  });
+
+  test("S11 — a route-level loading skeleton exists for /reviews/:id", () => {
+    const loading = SRC(LOADING);
+    expect(loading).toMatch(/role="status"/);
+    expect(loading).toMatch(/aria-busy="true"/);
   });
 });
 

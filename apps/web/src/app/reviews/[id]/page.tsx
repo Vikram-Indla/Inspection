@@ -12,7 +12,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const { id } = await params;  // inspection id
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: ins } = await sb.from("inspections")
+  const { data: ins, error: insErr } = await sb.from("inspections")
     .select(`id, status, visits(factories(name, factory_code)), package_versions(version_label, definition),
       submission_versions(id, version_number, snapshot, acknowledgement, submitted_at),
       violations(mapping_version, violation_codes(code, title, level)),
@@ -21,7 +21,21 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
       reviews(id, status, decision, decision_reason, returned_sections, decided_at, submission_version_id)`)
     .eq("id", id).single();
   if (!ins) {
-    return <Shell current="/reviews" title={t("review.ws.notFound", "Not found")}><div /></Shell>;
+    // insErr distinguishes an actual fetch failure (degraded source) from a
+    // genuinely missing id — a failed fetch is never labeled "not found".
+    return (
+      <Shell current="/reviews" title={insErr ? t("review.ws.loadError", "Could not load") : t("review.ws.notFound", "Not found")}>
+        <div className="ax-surface"><div className="ax-state">
+          <span className="ax-state__glyph" aria-hidden="true">…</span>
+          <h4>{insErr ? t("review.ws.loadError", "Could not load") : t("review.ws.notFound", "Not found")}</h4>
+          <p className="ax-caption">
+            {insErr
+              ? t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")
+              : t("review.ws.notFoundDesc", "No record matches this ID.")}
+          </p>
+        </div></div>
+      </Shell>
+    );
   }
   const subs = (ins.submission_versions as unknown as { id: string; version_number: number; snapshot: { answers?: Record<string, string> }; acknowledgement: unknown; submitted_at: string }[]).sort((a, b) => b.version_number - a.version_number);
   const latest = subs[0];
@@ -199,7 +213,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               </div>
             );
           })()}
-          {latest && (
+          {latest ? (
             <VersionCompare
               versions={compareVersions}
               itemSection={itemSection}
@@ -207,6 +221,17 @@ const panelStrings: WorkspaceDecisionStrings = {
               scopeLabel={scopeLabel}
               strings={compareStrings}
             />
+          ) : (
+            // S07 / HANDOFF_BLOCKED_LINKED — the inspection loaded but its
+            // submission versions did not (a degraded relation fetch: a
+            // submitted inspection always has at least one version on record).
+            // State it explicitly; never render nothing where a comparison
+            // surface belongs.
+            <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+              <div className="ax-banner ax-banner--warning" role="status">
+                <div><strong>{t("review.cmp.sourceUnavailable", "Comparison source unavailable.")}</strong> {t("review.cmp.sourceUnavailableBody", "Submitted-version data could not be loaded for this record, so no comparison can be shown — this is unavailable, not an empty result.")}</div>
+              </div>
+            </div>
           )}
           {(trail ?? []).length > 0 && (
             <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
