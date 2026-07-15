@@ -891,7 +891,13 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   border: 1px solid var(--ax-color-border); border-radius: 999px; padding: 2px 8px;
 }
 .nya__body { margin: 0; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
-.nya__seam { font: var(--ax-text-micro); font-family: var(--ax-font-mono); color: var(--ax-color-text-secondary); }
+/* R3 item-7: technical seam + prerequisites tucked behind a disclosure. */
+.nya__more { margin-block-start: 2px; }
+.nya__more > summary { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); cursor: pointer; list-style-position: inside; }
+.nya__more > summary:hover { color: var(--ax-color-text); }
+.nya__more[open] > summary { margin-block-end: 6px; }
+.nya__prereq { margin: 0 0 6px; padding-inline-start: 1.1em; display: flex; flex-direction: column; gap: 2px; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.nya__seam { display: block; font: var(--ax-text-micro); font-family: var(--ax-font-mono); color: var(--ax-color-text-secondary); }
 
 /* CD-014 · risk model — weight bars, live sum, band strip. */
 .rk-driver { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding-block: var(--ax-space-150); border-block-end: 1px solid var(--ax-color-border); }

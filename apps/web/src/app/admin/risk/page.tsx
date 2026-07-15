@@ -60,9 +60,14 @@ export default async function RiskStudio() {
       <div style={{ maxInlineSize: 720 }}>
         <NotYetBoundary
           title={t("admin.risk.trace.title", "Why this factory? — worked calculation trace")}
-          consequence={t("admin.risk.trace.desc", "A line-by-line score trace needs a specific factory and its stored scoring inputs; this configuration screen reads the model, not per-factory records.")}
+          consequence={t("admin.risk.trace.desc", "A line-by-line score trace isn’t shown here — this screen configures the model, not individual factories.")}
           seam="NEEDS_FACTORY_SCORING_INPUTS — per-factory trace"
+          prerequisites={[
+            t("admin.risk.trace.pre1", "A selected factory and its stored scoring inputs"),
+            t("admin.risk.trace.pre2", "The per-factor normalized values used at scoring time"),
+          ]}
           notAvailableLabel={t("admin.risk.notYet", "Not available yet")}
+          detailLabel={t("common.whyPrereq", "Why / prerequisites")}
         />
       </div>
     </Shell>
