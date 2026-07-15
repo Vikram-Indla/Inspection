@@ -65,6 +65,12 @@ close outcome. R1 failure modes were not reintroduced.
 
 ## DEC-012
 
-Independent recorded wiring audit is **PENDING** — this record is the implementer's
-closure note, not the independent audit DEC-012 requires. Route to an independent
-reviewer before marking the slice accepted.
+Independent recorded wiring audit **DONE** — see
+`CD-043_DEC-012_INDEPENDENT_WIRING_AUDIT_2026-07-15.md`. Verdict
+**ACCEPT-WITH-FIXES** by an independent reviewer (not the implementer).
+
+- **Finding 1 (MEDIUM, reschedule STM-VIR TOCTOU): FIXED** — CAS `.in("state",
+  ["scheduled","waiting"])` added to the reschedule UPDATE in `actions.ts`.
+- **Finding 2 (LOW, gate): OPEN** — e2e runtime pass still PENDING the Supabase
+  test DB; slice not marked accepted until S12/S13/S15 pass live.
+- Finding 3: cosmetic, no action (🔒 is a CSS `::before` glyph, renders fine).

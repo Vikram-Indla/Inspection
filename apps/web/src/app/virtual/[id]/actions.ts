@@ -47,10 +47,17 @@ export async function rescheduleSession(_: RoomActionResult, fd: FormData): Prom
   if (!["scheduled", "waiting"].includes(s.state))
     return { error: `Session is ${s.state.replace(/_/g, " ")} — rescheduling is only allowed before participants join (STM-VIR).` };
   const appointmentIso = new Date(appointment_at).toISOString();
+  // Compare-and-swap on state: the appointment_at write itself keeps state
+  // unchanged, so the STM-VIR guard trigger (which only blocks state moves and
+  // edits to a closed row) would let a reschedule land on an already-joined
+  // session if a concurrent join advanced it between the read above and this
+  // write. The state filter closes that TOCTOU — a race loses the row and the
+  // reschedule is refused, mirroring openWaitingRoom's guarded transition.
   const { data: upd, error } = await sb.from("virtual_sessions")
-    .update({ appointment_at: appointmentIso }).eq("id", session_id).select("id");
+    .update({ appointment_at: appointmentIso })
+    .eq("id", session_id).in("state", ["scheduled", "waiting"]).select("id");
   if (error) { console.error("[virtual reschedule session write]", error); return { error: SYSTEM_ERROR }; }
-  if (!upd?.length) return { error: "No row updated — RLS denied (vs_write: planner/ops/assigned inspector only)." };
+  if (!upd?.length) return { error: "No row updated — the session moved past scheduling (a participant joined concurrently), or RLS denied (vs_write: planner/ops/assigned inspector only)." };
   const evErr = await appendEvent(sb, session_id, "rescheduled", { appointment_at: appointmentIso });
   const asg = (s.visits as unknown as { assignments: { inspector_id: string }[]; factories: { name: string } } | null);
   const notes: string[] = [];
