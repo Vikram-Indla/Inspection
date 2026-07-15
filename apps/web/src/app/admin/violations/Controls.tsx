@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
-import { createViolationCode, createPenaltyMapping, deactivateViolationCode, publishPenaltyMapping, type VioResult } from "./actions";
+import { createViolationCode, createPenaltyMapping, deactivateViolationCode, publishPenaltyMapping, publishViolationCode, type VioResult } from "./actions";
 
 export type ClauseOption = { id: string; label: string };
 
@@ -14,6 +14,7 @@ export type VioStrings = {
   clause: string;
   selectClause: string;
   activeFrom: string;
+  correctiveAction: string; gracePeriod: string; category: string; applicability: string; configurationVersion: string;
   creating: string;
   create: string;
   created: string;
@@ -44,6 +45,8 @@ export type VioStrings = {
   checkPresets: string;
   pass: string;
   needsAttention: string;
+  deactivationReason: string; penaltyType: string; amount: string; duePeriod: string; template: string; none: string;
+  publishCode: string; publishingCode: string; codePublished: string;
 };
 
 // SCR-ADM-040 · ENG-08 — create a violation code anchored to a clause.
@@ -71,6 +74,11 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
         </select></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-active-from">{s.activeFrom}</label>
         <input id="new-violation-active-from" className="ax-input ax-numeric" name="active_from" type="date" required /></div>
+      <div className="ax-field" style={{ flex: 1, minInlineSize: 240 }}><label className="ax-field__label" htmlFor="new-violation-corrective">{s.correctiveAction}</label><input id="new-violation-corrective" className="ax-input" name="corrective_action" required /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-grace">{s.gracePeriod}</label><input id="new-violation-grace" className="ax-input" name="grace_period_days" type="number" min="0" step="1" /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-category">{s.category}</label><input id="new-violation-category" className="ax-input" name="category" /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-applicability">{s.applicability}</label><input id="new-violation-applicability" className="ax-input" name="applicability" /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-version">{s.configurationVersion}</label><input id="new-violation-version" className="ax-input" name="configuration_version" type="number" min="1" step="1" defaultValue="1" required /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.creating : s.create}</button>
       {state.error && <span ref={errorRef} tabIndex={-1} className="ax-validation" role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
@@ -80,7 +88,7 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
 
 // SCR-ADM-041 · M09-004 — one penalty mapping per violation (DB-unique);
 // presets keep penalty_range/repeat_rule aligned with the approved schedule.
-export function AddMappingForm({ violationId, violationCode, strings: s }: { violationId: string; violationCode: string; strings: VioStrings }) {
+export function AddMappingForm({ violationId, violationCode, templates, strings: s }: { violationId: string; violationCode: string; templates: { id: string; label: string }[]; strings: VioStrings }) {
   const [state, formAction, pending] = useActionState<VioResult, FormData>(createPenaltyMapping, {});
   const [legalBasis, setLegalBasis] = useState("");
   const [rangePreset, setRangePreset] = useState("schedule_approved");
@@ -127,12 +135,22 @@ export function AddMappingForm({ violationId, violationCode, strings: s }: { vio
           <option value="escalate_one_level">{s.repeatEscalate}</option>
           <option value="none">{s.repeatNone}</option>
         </select></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-type`}>{s.penaltyType}</label><input id={`${baseId}-type`} className="ax-input" name="penalty_type" required /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-amount`}>{s.amount}</label><input id={`${baseId}-amount`} className="ax-input" name="amount" type="number" min="0" step="any" /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-grace`}>{s.gracePeriod}</label><input id={`${baseId}-grace`} className="ax-input" name="grace_period_days" type="number" min="0" step="1" /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-due`}>{s.duePeriod}</label><input id={`${baseId}-due`} className="ax-input" name="due_period_days" type="number" min="0" step="1" /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-template`}>{s.template}</label><select id={`${baseId}-template`} className="ax-select" name="template_version_id" defaultValue=""><option value="">{s.none}</option>{templates.map(template => <option key={template.id} value={template.id}>{template.label}</option>)}</select></div>
       <button className="ax-btn" disabled={pending}>{pending ? s.mapping : `${s.mapTo} ${violationCode}`}</button>
       {state.error && <span ref={errorRef} tabIndex={-1} className="ax-validation" role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.mapped}</span>}
       </div>
     </form>
   );
+}
+
+export function PublishViolationForm({ violationId, violationCode, strings: s }: { violationId: string; violationCode: string; strings: VioStrings }) {
+  const [state, formAction, pending] = useActionState<VioResult, FormData>(publishViolationCode, {});
+  return <form action={formAction} className="ax-row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="ax-btn ax-btn--prominent" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="ax-validation" role="alert">{state.error}</span>}{state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.codePublished}</span>}</form>;
 }
 
 export function PublishMappingForm({ mappingId, violationCode, strings: s }: { mappingId: string; violationCode: string; strings: VioStrings }) {
@@ -159,6 +177,7 @@ export function DeactivateViolationForm({ violationId, violationCode, strings: s
         <label className="ax-field__label" htmlFor={fieldId}>{s.activeTo}</label>
         <input id={fieldId} className="ax-input ax-numeric" type="date" name="active_to" max={new Date().toISOString().slice(0, 10)} required />
       </div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reason`}>{s.deactivationReason}</label><input id={`${fieldId}-reason`} className="ax-input" name="deactivation_reason" required /></div>
       <button className="ax-btn ax-btn--subtle" aria-label={`${s.deactivate} ${violationCode}`} disabled={pending}>
         <span aria-hidden="true">⏻</span> {pending ? s.deactivating : s.deactivate}
       </button>

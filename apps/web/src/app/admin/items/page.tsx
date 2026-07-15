@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import {
   NewItemForm,
+  EditItemForm,
   ToggleActive,
   ItemPreview,
   type ClauseOption,
@@ -19,7 +20,7 @@ import { getItemUsage, type ItemUsage } from "./actions";
 // prevents unrelated roles from loading this module). inspection_items changes are audit-tracked and writers receive only the
 // object-scoped timeline. Usage aggregates, conditional authoring, all evidence types,
 // mandatory-when-visible and scoring enablement consume the completion backend.
-// Item edit/version lifecycle and deactivation-reason capture remain genuine blockers.
+// Item edits create an archived configuration version before the current row advances.
 export const dynamic = "force-dynamic";
 
 const fill = (tmpl: string, vars: Record<string, string | number>) =>
@@ -49,7 +50,7 @@ export default async function Items({
   // catalogue: the catalogue renders and only the clause control degrades.
   const [{ data: items, error }, { data: clauses, error: clauseError }] = await Promise.all([
     sb.from("inspection_items")
-      .select("id, code, title, active, score_weight, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, regulations(code))")
+      .select("id, code, title, clause_id, active, configuration_version, deactivation_reason, score_weight, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, regulations(code))")
       .order("code"),
     sb.from("regulation_clauses")
       .select("id, clause_ref, title, regulations(code)")
@@ -131,6 +132,8 @@ export default async function Items({
     reactivate: t("admin.items.r2.toggle.reactivate", "Reactivate"),
     reasonNote: t("admin.items.r2.toggle.reasonNote", "History is preserved; the required reason and item-row change are recorded in audit history."),
     deactivationReason: t("admin.items.r2.form.deactivationReason", "Deactivation reason"),
+    saveDraft: t("admin.items.r2.edit.save", "Save new version"),
+    draftSaved: t("admin.items.r2.edit.saved", "New item version saved"),
   };
 
   const previewStrings: PreviewStrings = {
@@ -187,11 +190,6 @@ export default async function Items({
     };
   });
 
-  // ---- blocked contract targets (rendered as disabled, annotated targets) ----
-  const blocked: { label: string; owner: string }[] = [
-    { label: t("admin.items.r2.blocked.edit", "Edit item / new version"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
-  ];
-
   return (
     <Shell
       current="/admin"
@@ -235,7 +233,7 @@ export default async function Items({
       <section className="ax-surface ax-permission ax-stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
         <p className="ax-caption" style={{ margin: 0 }}>
-          {t("admin.items.r2.gov.body", "Anyone signed in can read the catalogue; creating items and changing active state require compliance_admin or form_admin — RLS is the authority and navigation visibility grants nothing. Deactivation preserves history and stores no reason. inspection_items row changes are recorded as audit events (trg_audit_inspection_items); the audit-trail read view is a separate, not-yet-granted leg.")}
+          {t("admin.items.r2.gov.body", "Anyone signed in can read the catalogue; writes require compliance_admin or form_admin. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
         </p>
       </section>
 
@@ -320,10 +318,7 @@ export default async function Items({
                       <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
                         {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="ax-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}
                         {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/items?audit=${encodeURIComponent(i.id)}#cd007-audit-h`}>{t("admin.items.r2.audit.open", "Audit")}</a> : null}
-                        <button className="ax-btn ax-btn--subtle" disabled aria-disabled="true"
-                          title={t("admin.items.r2.blocked.editNote", "Item edit / new version is a contract target (HANDOFF_BLOCKED · backend).")}>
-                          <span aria-hidden="true">🔒 </span>{t("admin.items.r2.blocked.editShort", "Edit")}
-                        </button>
+                        {isWriter ? <EditItemForm item={{ id: i.id, title: i.title, clauseId: i.clause_id, guidance: i.guidance_en, version: i.configuration_version ?? 1 }} clauses={clauseOptions} strings={strings} /> : null}
                       </div>
                     </td>
                   </tr>
@@ -347,24 +342,6 @@ export default async function Items({
             </div>}
         </section>
       )}
-
-      {/* Contract targets — disabled, annotated, never presented as working. */}
-      <section className="ax-surface ax-stack" aria-labelledby="cd007-blocked-h" style={{ padding: "var(--ax-space-300)" }}>
-        <h3 id="cd007-blocked-h" style={{ margin: 0 }}>{t("admin.items.r2.blocked.heading", "Contract targets — not yet wired")}</h3>
-        <p className="ax-caption" style={{ margin: 0 }}>
-          {t("admin.items.r2.blocked.body", "These are contract capabilities with no proven runtime leg today. They render as disabled targets so the design never implies they work.")}
-        </p>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
-          {blocked.map(b => (
-            <span key={b.label} className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
-              <button className="ax-btn ax-btn--subtle" disabled aria-disabled="true">
-                <span aria-hidden="true">🔒 </span>{b.label}
-              </button>
-              <span className="ax-caption">{t("admin.items.r2.blocked.tag", "not yet wired")} · {b.owner}</span>
-            </span>
-          ))}
-        </div>
-      </section>
 
       <p className="ax-caption">
         {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages (M09-002/007); deactivation preserves history (M09-014). Writes require compliance_admin/form_admin — RLS is the authority. inspection_items row changes are audit-tracked (trg_audit_inspection_items).")}

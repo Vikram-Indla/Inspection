@@ -61,17 +61,11 @@ test.describe("CD-010 catalogue mode — populated, trace, derived lifecycle (AC
     await expect(page.getByRole("button", { name: /Create violation code/i })).toHaveCount(0);
   });
 
-  test("only genuine contract targets remain disabled (CD-010)", async ({ page }) => {
+  test("category, applicability, version and trigger trace are enabled (CD-010)", async ({ page }) => {
     await page.goto("/admin/violations");
-    await expect(page.getByRole("heading", { name: /Contract targets — not enabled/i })).toBeVisible();
-    for (const leg of ["category", "applicability", "edit", "version", "trigger-trace"]) {
-      const btn = page.locator(`button[data-blocked-leg="${leg}"]`);
-      await expect(btn).toHaveCount(1);
-      await expect(btn).toBeDisabled();
-    }
-    for (const nowSupported of ["deactivate", "usage-count", "audit-timeline"]) {
-      await expect(page.locator(`button[data-blocked-leg="${nowSupported}"]`)).toHaveCount(0);
-    }
+    await expect(page.getByText(/Trigger trace/i).first()).toBeVisible();
+    await expect(page.getByText(/Version history/i).first()).toBeVisible();
+    await expect(page.locator("[data-blocked-leg]")).toHaveCount(0);
   });
 });
 
@@ -97,7 +91,7 @@ test.describe("CD-011 penalty mode — Mapping Validation Lens + one-to-one reco
     await page.screenshot({ path: join(EVIDENCE_DIR, "cd011-penalty-en-light-1440.png"), fullPage: true });
   });
 
-  test("penalty presets render as tokens, never as monetary or legal values", async ({ page }) => {
+  test("penalty values render only when explicitly configured", async ({ page }) => {
     await page.goto("/admin/violations?mode=penalty");
     // A present mapping shows its governed preset token; otherwise the verified
     // unmapped state is shown. Neither case fabricates an amount.
@@ -108,8 +102,7 @@ test.describe("CD-011 penalty mode — Mapping Validation Lens + one-to-one reco
     } else {
       await expect(page.getByText(/no mapping yet — one is required/i).first()).toBeVisible();
     }
-    // No currency/amount leaks anywhere on the page.
-    await expect(page.getByText(/SAR|\$|ريال/).first()).toHaveCount(0);
+    await expect(page.getByText(/Amount \(when applicable\)/i).first()).toHaveCount(0);
   });
 
   test("effective periods, maker-checker lifecycle and immutability are no longer blocked targets", async ({ page }) => {
@@ -193,14 +186,13 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
     expect(PAGE).toContain("function deriveLifecycle");
     // The query projects active_to so the derivation has real inputs.
     expect(PAGE).toMatch(/select\([^)]*active_from, active_to/);
-    // No invented status column is read.
-    expect(PAGE).not.toContain('.eq("status"');
+    expect(PAGE).toContain("status");
   });
 
   test("CD-010: legal basis is NEVER written onto the violation_codes row", () => {
     // createViolationCode inserts only the proven columns — legal_basis lives on
     // the penalty mapping, not the code row.
-    expect(ACTIONS).toContain("violation_codes\").insert({ code: codeValue, title, level, clause_id, active_from })");
+    expect(ACTIONS).toContain("corrective_action");
     expect(ACTIONS).not.toMatch(/violation_codes[^;]*insert[^;]*legal_basis/s);
   });
 
@@ -218,13 +210,14 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
     expect(COMPLETION_MIGRATION).toContain("penalty_mapping_one_draft");
     expect(COMPLETION_MIGRATION).toContain("penalty_mapping_maker_checker");
     expect(COMPLETION_MIGRATION).toContain("trg_guard_governed_penalty_mapping");
-    expect(ACTIONS).not.toMatch(/SAR|ريال|amount:|price/);
+    expect(ACTIONS).not.toMatch(/SAR|ريال|price/);
+    expect(ACTIONS).toContain("amountRaw");
   });
 
   test("CD-010: usage, active-to deactivation, and scoped audit are wired without false zeroes", () => {
     expect(ACTIONS).toContain('sb.rpc("violation_code_usage"');
     expect(ACTIONS).toContain("export async function deactivateViolationCode");
-    expect(ACTIONS).toContain('.is("active_to", null).select("id")');
+    expect(ACTIONS).toContain('.is("active_to", null).in("status", ["published", "locked"]).select("id")');
     expect(PAGE).toContain('sb.rpc("admin_configuration_audit"');
     expect(PAGE).toContain('data-usage-state="unavailable"');
     expect(PAGE).toContain("Audit history unavailable — no zero-event claim was made.");
@@ -243,16 +236,9 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
     expect(existsSync(join(process.cwd(), "src/app/admin/penalties"))).toBe(false);
   });
 
-  test("every genuine blocked leg remains annotated and supported legs are enabled", () => {
-    for (const leg of ["category", "applicability", "edit", "version", "trigger-trace"]) {
-      expect(PAGE).toContain(`"${leg}"`);
-    }
-    for (const closed of ["effective-periods", "overlap-gap", "cardinality", "lifecycle", "maker-checker", "immutability", "route-guard"]) {
-      expect(PAGE).not.toContain(`["${closed}"`);
-    }
-    for (const supported of ['["deactivate"', '["usage-count"', '["audit-timeline"', '["mapping-audit"']) {
-      expect(PAGE).not.toContain(supported);
-    }
+  test("authoritative violation and penalty fields are enabled without blocked targets", () => {
+    for (const field of ["category", "applicability", "configuration_version", "corrective_action", "penalty_type", "amount"]) expect(PAGE).toContain(field);
+    expect(PAGE).not.toContain("data-blocked-leg");
   });
 
   test("loading/error/no-op semantics and focus-safe validation are present", () => {

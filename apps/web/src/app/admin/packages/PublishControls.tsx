@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useEffect, useRef } from "react";
-import { createDraftVersion, approveAndPublish, type PkgResult } from "./actions";
+import { createDraftVersion, approveAndPublish, deactivatePackageVersion, type PkgResult } from "./actions";
 
 // SCR-ADM-030/031 — client controls consume server-built strings only (SB19).
 export type PublishStrings = {
@@ -14,6 +14,7 @@ export type PublishStrings = {
   approvePublish: string;
   published: string;
   publishHint: string;
+  effectiveTo: string; deactivationReason: string; deactivate: string; deactivating: string; deactivated: string;
 };
 
 export function NewDraftForm({ packageId, strings: s }: { packageId: string; strings: PublishStrings }) {
@@ -35,6 +36,11 @@ export function NewDraftForm({ packageId, strings: s }: { packageId: string; str
       </div>
     </form>
   );
+}
+
+export function DeactivatePackage({ versionId, strings: s }: { versionId: string; strings: PublishStrings }) {
+  const [state, formAction, pending] = useActionState<PkgResult, FormData>(deactivatePackageVersion, {});
+  return <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}><input type="hidden" name="version_id" value={versionId}/><label className="ax-field"><span className="ax-field__label">{s.effectiveTo}</span><input className="ax-input" type="date" name="effective_to" required/></label><label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required/></label><button className="ax-btn" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>{state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}{state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.deactivated}</span>}</form>;
 }
 
 export function ApprovePublish({ versionId, strings: s }: { versionId: string; strings: PublishStrings }) {

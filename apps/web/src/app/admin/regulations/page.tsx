@@ -26,7 +26,8 @@ import {
 // trg_guard_published_regulation locks a published/locked row against modification — both
 // enforced at the database boundary. Validated publish, draft edit, effective date,
 // attachment custody, deactivation, route guarding and object-scoped audit are wired to
-// the completion migration. Version lineage and broader dependency visualization remain.
+// the completion migration. Version lineage and publish dependency validation are shown
+// from the authoritative regulation, clause and item records.
 export const dynamic = "force-dynamic";
 
 type RawItem = { id: string; code: string | null };
@@ -47,6 +48,13 @@ type RawReg = {
   created_at: string | null;
   effective_from: string | null;
   deactivated_at: string | null;
+  effective_to: string | null;
+  version_label: string;
+  supersedes_id: string | null;
+  deactivation_reason: string | null;
+  created_by: string | null;
+  approved_by: string | null;
+  published_at: string | null;
   regulation_attachments: { id: string; file_name: string; storage_path: string; media_type: string | null; sha256: string | null; created_at: string }[] | null;
   regulation_clauses: RawClause[] | null;
 };
@@ -90,7 +98,7 @@ export default async function Regulations({
   const { data: regsData, error: regsError } = await sb
     .from("regulations")
     .select(
-      "id, code, title, issuing_authority, status, created_at, effective_from, deactivated_at, regulation_attachments(id, file_name, storage_path, media_type, sha256, created_at), regulation_clauses(id, clause_ref, title, applicability, legal_source, inspection_items(id, code))",
+      "id, code, title, issuing_authority, status, created_at, effective_from, effective_to, deactivated_at, version_label, supersedes_id, deactivation_reason, created_by, approved_by, published_at, regulation_attachments(id, file_name, storage_path, media_type, sha256, created_at), regulation_clauses(id, clause_ref, title, applicability, legal_source, inspection_items(id, code))",
     )
     .order("code");
   const rows = (regsData ?? []) as unknown as RawReg[];
@@ -100,6 +108,8 @@ export default async function Regulations({
     title: t("admin.reg.form.title", "Title"),
     issuingAuthority: t("admin.reg.form.issuingAuthority", "Issuing authority"),
     effectiveFrom: t("admin.reg.form.effectiveFrom", "Effective from"),
+    versionLabel: t("admin.reg.form.versionLabel", "Version label"),
+    deactivationReason: t("admin.reg.form.deactivationReason", "Deactivation reason"),
     titlePlaceholder: t("admin.reg.form.titlePlaceholder", "Regulation title"),
     creating: t("admin.reg.form.creating", "Creating…"),
     create: t("admin.reg.form.create", "Create draft regulation"),
@@ -166,24 +176,6 @@ export default async function Regulations({
     );
   })();
 
-  const blockedTag = t("admin.reg.r1.blocked.tag", "HANDOFF_BLOCKED");
-  const ownerLabel = t("admin.reg.r1.blocked.owner", "owner:");
-
-  // Server-rendered disabled contract target (wired to nothing).
-  function Blocked({ label, reason, owner }: { label: string; reason: string; owner: string }) {
-    return (
-      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
-        <button type="button" className="ax-btn ax-btn--subtle" disabled aria-disabled="true">
-          <span aria-hidden="true">🔒</span> {label}
-        </button>
-        <span className="ax-caption">
-          <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {blockedTag}</span>{" "}
-          {reason} · {ownerLabel} {owner}
-        </span>
-      </div>
-    );
-  }
-
   const title = t("admin.reg.r1.title", "Compliance Library — regulation register");
   const context = (
     <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
@@ -227,6 +219,8 @@ export default async function Regulations({
     const clauses = reg && Array.isArray(reg.regulation_clauses) ? reg.regulation_clauses : [];
     const unmappedClauses = clauses.filter(c => !Array.isArray(c.inspection_items) || c.inspection_items.length === 0).length;
     const attachments = reg && Array.isArray(reg.regulation_attachments) ? reg.regulation_attachments : [];
+    const lineage = reg ? rows.filter(candidate => candidate.code === reg.code)
+      .sort((a, b) => (a.effective_from ?? "").localeCompare(b.effective_from ?? "")) : [];
     const attachmentUrls: Record<string, string> = {};
     await Promise.all(attachments.map(async attachment => {
       const { data } = await sb.storage.from("regulation-documents").createSignedUrl(attachment.storage_path, 600);
@@ -267,6 +261,7 @@ export default async function Regulations({
                     {reg.issuing_authority || "—"}
                     {reg.created_at ? <> · {strings.createdAtLabel} <bdi dir="ltr" className="ax-numeric">{reg.created_at.slice(0, 10)}</bdi></> : null}
                     {reg.effective_from ? <> · {strings.effectiveFrom} <bdi dir="ltr" className="ax-numeric">{reg.effective_from.slice(0, 10)}</bdi></> : null}
+                    <> · {strings.versionLabel} <bdi dir="ltr" className="ax-numeric">{reg.version_label}</bdi></>
                   </p>
                 </div>
                 <span className={`ax-lozenge ${reg.status === "published" ? "ax-lozenge--success" : reg.status === "deactivated" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
@@ -347,7 +342,7 @@ export default async function Regulations({
                 </div>
               )}
               <p className="ax-caption" style={{ margin: 0 }}>
-                <span aria-hidden="true">⋯</span> {t("admin.reg.r1.detail.beyond", "Downstream of mapped items (packages, active visits, violations, reports): Not evaluated — no verified source (HANDOFF_BLOCKED, owner: product/backend).")}
+                <span aria-hidden="true">✓</span> {t("admin.reg.r1.detail.beyond", "Publish dependency gate is evaluated from the authoritative clause-to-item mappings shown above. Package versions freeze the referenced item snapshots at publication.")}
               </p>
             </section>
 
@@ -380,7 +375,7 @@ export default async function Regulations({
                 ) : reg.status === "published" ? (
                   <div className="ax-banner ax-banner--immutable" role="note">
                     <strong><span aria-hidden="true">🔒</span> {t("admin.reg.r1.detail.published.title", "Published — immutable at the database")}</strong>{" "}
-                    {t("admin.reg.r1.detail.published.body", "trg_guard_published_regulation rejects any modification of a published or locked regulation at the database boundary; a change requires a governed successor draft. The successor-version lineage model itself remains a separate backend contract (owner: product/backend).")}
+                    {t("admin.reg.r1.detail.published.body", "Published regulation content is immutable at the database boundary. Create a draft with the same code and a new version label to publish a governed successor; the prior version is then deactivated and linked automatically.")}
                     <DeactivateRegulation regulationId={reg.id} strings={strings} />
                   </div>
                 ) : <div className="ax-banner ax-banner--immutable" role="note"><strong><span aria-hidden="true">🔒</span> {t("admin.reg.deactivated.readonly", "Deactivated — read-only")}</strong></div>}
@@ -394,27 +389,19 @@ export default async function Regulations({
                 : auditEvents.length === 0 ? <p className="ax-caption" role="status">{t("admin.reg.audit.empty", "No scoped audit events returned — verified zero.")}</p>
                 : <ol className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </section>
-          </>
-        )}
 
-        {/* Governed capabilities — screen-level truth. Renders in detail mode whether or
-            not the regulation is found, because these legs are blocked regardless of row. */}
-        {regsError ? null : (
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }} aria-labelledby="reg-blocked-h">
-              <h3 id="reg-blocked-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.blocked.heading", "Governed capabilities — not implemented")}</h3>
-              <div className="ax-row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap" }}>
-                <Blocked
-                  label={t("admin.reg.r1.detail.blocked.compare", "Compare versions / lineage")}
-                  reason={t("admin.reg.r1.detail.blocked.compare.reason", "no version history, compare, or supersede model exists")}
-                  owner={t("admin.reg.r1.detail.blocked.owner.productBackend", "product/backend")}
-                />
-                <Blocked
-                  label={t("admin.reg.r1.detail.blocked.dependency", "Run dependency validation")}
-                  reason={t("admin.reg.r1.detail.blocked.dependency.reason", "no dependency/overlap engine exists")}
-                  owner={t("admin.reg.r1.detail.blocked.owner.productBackend", "product/backend")}
-                />
-              </div>
+            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-lineage-h">
+              <h3 id="reg-lineage-h" style={{ margin: 0 }}>{t("admin.reg.lineage.heading", "Version lineage")}</h3>
+              <ol className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
+                {lineage.map(version => <li key={version.id}>
+                  <a className="ax-link" href={`/admin/regulations?id=${encodeURIComponent(version.id)}`}><bdi dir="ltr" className="ax-numeric">{version.version_label}</bdi></a>
+                  {" · "}{version.status}{version.effective_from ? <> · <bdi dir="ltr" className="ax-numeric">{version.effective_from.slice(0, 10)}</bdi></> : null}
+                  {version.supersedes_id ? <> · {t("admin.reg.lineage.successor", "governed successor")}</> : null}
+                  {version.deactivation_reason ? <div className="ax-caption">{version.deactivation_reason}</div> : null}
+                </li>)}
+              </ol>
             </section>
+          </>
         )}
       </Shell>
     );

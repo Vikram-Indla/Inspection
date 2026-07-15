@@ -19,6 +19,8 @@ export type RegStrings = {
   title: string;
   issuingAuthority: string;
   effectiveFrom: string;
+  versionLabel: string;
+  deactivationReason: string;
   titlePlaceholder: string;
   creating: string;
   create: string;
@@ -90,7 +92,9 @@ export function NewRegulationForm({ strings: s }: { strings: RegStrings }) {
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="reg-auth">{s.issuingAuthority}</label>
         <input id="reg-auth" className="ax-input" name="issuing_authority" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="reg-effective">{s.effectiveFrom}</label>
-        <input id="reg-effective" className="ax-input ax-numeric" type="date" name="effective_from" /></div>
+        <input id="reg-effective" className="ax-input ax-numeric" type="date" name="effective_from" required /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="reg-version">{s.versionLabel}</label>
+        <input id="reg-version" className="ax-input ax-numeric" name="version_label" defaultValue="v1" required /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.creating : s.create}</button>
       {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
@@ -177,6 +181,7 @@ export function DeactivateRegulation({ regulationId, strings: s }: { regulationI
   return (
     <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-100)", alignItems: "flex-start" }}>
       <input type="hidden" name="regulation_id" value={regulationId} />
+      <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><textarea className="ax-input" name="deactivation_reason" required /></label>
       <button className="ax-btn ax-btn--subtle" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>
       {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.deactivated}</span>}
@@ -247,7 +252,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
             <span className="ax-caption"><span aria-hidden="true">✓</span> <span className="ax-numeric"><bdi dir="ltr">{r.itemCount}</bdi></span></span>
           )}
         </div>
-        {/* Beyond items — no verified source (HANDOFF_BLOCKED) */}
+        {/* Beyond items — list disclosure stays conservative; dossier publication evaluates mappings. */}
         <div className="ax-stack" style={{ gap: "2px", minInlineSize: 180 }}>
           <span className="ax-overline">{s.railBeyond}</span>
           <span className="ax-caption"><span aria-hidden="true">⋯</span> {s.railNotEvaluated}</span>

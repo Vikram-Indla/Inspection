@@ -65,18 +65,7 @@ test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
   });
 });
 
-test.describe("CD-007 supported authoring and genuine remaining blockers", () => {
-  test("contract-target panel lists disabled targets with owners", async ({ page }) => {
-    await page.goto("/admin/items");
-    const panel = page.getByRole("region", { name: /Contract targets — not yet wired/i });
-    await expect(panel).toBeVisible();
-    for (const label of [
-      "Edit item / new version",
-    ]) {
-      await expect(panel.getByRole("button", { name: new RegExp(label, "i") })).toBeDisabled();
-    }
-    await expect(panel.getByText(/owner: backend/i).first()).toBeVisible();
-  });
+test.describe("CD-007 supported authoring and version lifecycle", () => {
 
   test("writer sees scoped usage and governed mutation controls", async ({ page }) => {
     await page.goto("/admin/items");
@@ -84,11 +73,10 @@ test.describe("CD-007 supported authoring and genuine remaining blockers", () =>
     await expect(page.getByRole("button", { name: /Create item/i })).toBeVisible();
   });
 
-  test("no approve/publish/edit mutation is presented as working; row Edit is disabled", async ({ page }) => {
+  test("item edit exposes a governed new-version form", async ({ page }) => {
     await page.goto("/admin/items");
     await expect(page.getByRole("button", { name: /approve|publish/i })).toHaveCount(0);
-    const rowEdit = page.locator("table.ax-table tbody").getByRole("button", { name: /^Edit$/ }).first();
-    await expect(rowEdit).toBeDisabled();
+    await expect(page.locator("table.ax-table tbody summary", { hasText: /Edit · v/i }).first()).toBeVisible();
   });
 });
 
@@ -99,9 +87,9 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
     await expect(page.getByRole("heading", { level: 3 }).first()).toBeVisible();
   });
 
-  test("remaining contract targets are at least 44px (spec §10)", async ({ page }) => {
+  test("edit controls are at least 44px (spec §10)", async ({ page }) => {
     await page.goto("/admin/items");
-    const target = page.getByRole("button", { name: /Edit item \/ new version/i });
+    const target = page.locator("table.ax-table tbody summary", { hasText: /Edit · v/i }).first();
     const box = await target.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.height).toBeGreaterThanOrEqual(44 - 0.5);
@@ -175,22 +163,19 @@ test.describe("CD-007 wiring (DEC-012): completed authoring, usage and scoped au
     expect(controls).toContain("clauseUnavailable");
   });
 
-  test("conditional requirements, scoring control, usage and scoped audit are wired", () => {
-    expect(controls).toContain('name="requirement_mode"');
-    expect(controls).toContain('name="visible_when"');
-    expect(controls).toContain('name="mandatory_when_visible"');
+  test("base-item semantics, scoring, usage and scoped audit are wired", () => {
+    expect(controls).not.toContain('name="requirement_mode"');
     expect(controls).toContain('name="scoring_enabled"');
-    expect(actions).toContain("key=value visibility rule");
     expect(actions).toContain("scoring_enabled: scoringEnabled");
     expect(page).toContain("getItemUsage");
     expect(page).toContain("admin_configuration_audit");
   });
 
-  test("backend item version update is wired while its final frontend edit control remains", () => {
+  test("backend item version update and frontend edit control are wired", () => {
     expect(actions).toContain("export async function updateItem");
     expect(actions).toContain("inspection_item_versions_are_frozen");
     expect(actions).toContain("configuration_version");
-    expect(page).toContain("admin.items.r2.blocked.edit");
+    expect(page).toContain("EditItemForm");
     expect(page).not.toContain("admin.items.r2.blocked.reason");
     expect(page).not.toContain("admin.items.r2.blocked.guard");
     expect(page).not.toContain("admin.items.r2.blocked.conditional");

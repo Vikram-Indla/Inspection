@@ -123,14 +123,16 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
     expect(actions).toContain("requireConfigurationWriter");
   });
 
-  test("three-pane draft studio owns only proven structural controls", () => {
+  test("three-pane draft studio owns governed relationship and ordering controls", () => {
     expect(editor).toContain("styles.designerStudio");
     for (const sourceToken of ["s.structure", "s.fieldCanvas", "s.preview", "patchSelected", "s.addSection", "s.addItemAria", "s.mandatory"]) {
       expect(editor).toContain(sourceToken);
     }
-    expect(editor).not.toMatch(/onDrag|draggable|moveUp|moveDown/);
-    expect(editor).not.toContain("score_weight");
-    expect(editor).not.toContain("evidence_rule");
+    expect(editor).toContain("moveItem");
+    expect(editor).toContain("moveSection");
+    expect(editor).toContain("score_weight");
+    expect(editor).toContain("evidence_rule");
+    expect(editor).toContain("response_mapping");
   });
 
   test("no-op draft save is disabled and stale/non-draft writes are rejected server-side", () => {
@@ -167,12 +169,11 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
     expect(page).toContain('href="/admin/packages"');
   });
 
-  test("unsupported rich package authoring remains disabled or disclosure-only", () => {
-    for (const target of ["targetReorder", "targetConditions", "targetItemPolicies", "targetActionForms", "targetSimulation"]) {
-      expect(editor).toContain(`s.${target}`);
-    }
-    expect(editor).toContain('disabled aria-disabled="true"');
-    expect(page).toContain("Effective windows, supersede lineage, item ordering, condition validation and circular-rule rejection are enforced");
+  test("rich package authoring is wired to the authoritative definition contract", () => {
+    for (const token of ["item_rules", "action_forms", "template_refs", "mandatory_when_visible", "visible_when"]) expect(editor).toContain(token);
+    expect(page).toContain("configuration_templates");
+    expect(page).toContain("violation_codes");
+    expect(actions).toContain("Circular visibility rule");
   });
 });
 

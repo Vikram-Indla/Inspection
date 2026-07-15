@@ -2,19 +2,21 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
-import { NewDraftForm, ApprovePublish, type PublishStrings } from "./PublishControls";
+import { NewDraftForm, ApprovePublish, DeactivatePackage, type PublishStrings } from "./PublishControls";
 import DraftEditor, { type DraftEditorStrings } from "./DraftEditor";
 import PackagePreview, { type PreviewStrings, type PreviewItem } from "./PackagePreview";
 import ImpactPanel, { type ImpactStrings, type ImpactData, type ReferencingPackage, type DefinitionDiff } from "./ImpactPanel";
 import { getPinnedActiveImpact } from "./actions";
 import styles from "./packages.module.css";
+import TemplateRegistry, { type TemplateRow, type TemplateStrings } from "./TemplateRegistry";
 
 export const dynamic = "force-dynamic";
 
 const WRITER_ROLES = new Set(["compliance_admin", "form_admin"]);
-type Section = { key: string; title: string; items?: string[]; mandatory?: boolean };
-type ActionFormDef = { key: string; title: string; blocking?: boolean; fields?: string[] };
-type Definition = { sections?: Section[]; action_forms?: ActionFormDef[] };
+type ItemRule = { requirement?: "required" | "optional" | "conditional"; conditional?: { visible_when?: string; mandatory_when_visible?: boolean }; evidence_rule?: ItemRow["evidence_rule"]; scoring_enabled?: boolean; score_weight?: number | null; response_mapping?: ResponseModel["mapping"] };
+type Section = { key: string; title?: string; title_en?: string; title_ar?: string; items?: string[]; mandatory?: boolean };
+type ActionFormDef = { key: string; title: string; blocking?: boolean; fields?: string[]; template_version_id?: string };
+type Definition = { sections?: Section[]; action_forms?: ActionFormDef[]; item_rules?: Record<string, ItemRule>; template_refs?: string[] };
 type VersionRow = { id: string; version_label: string; status: string; published_at: string | null; effective_from: string | null; effective_to: string | null; supersedes_id: string | null; definition: Definition };
 type PkgRow = { id: string; code: string; title: string; scope: string | null; package_versions: VersionRow[] | null };
 type ResponseModel = {
@@ -66,13 +68,17 @@ function currentPublished(pkg: PkgRow): VersionRow | null {
 export default async function Packages() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
-  const [packageRead, itemRead, authRead] = await Promise.all([
+  const [packageRead, itemRead, templateRead, violationRead, authRead] = await Promise.all([
     sb.from("packages").select("id, code, title, scope, package_versions(id, version_label, status, published_at, effective_from, effective_to, supersedes_id, definition)").order("code"),
     sb.from("inspection_items").select("id, code, title, active, response_model, evidence_rule, score_weight, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)").order("code"),
+    sb.from("configuration_templates").select("id, template_key, template_type, version_label, title_en, title_ar, schema, status, effective_from").order("template_key"),
+    sb.from("violation_codes").select("code, title, status").in("status", ["published", "locked"]).order("code"),
     sb.auth.getUser(),
   ]);
   if (packageRead.error) logProviderError("admin packages read", packageRead.error);
   if (itemRead.error) logProviderError("admin package item-bank read", itemRead.error);
+  if (templateRead.error) logProviderError("admin template registry read", templateRead.error);
+  if (violationRead.error) logProviderError("admin package violation read", violationRead.error);
 
   const user = authRead.data.user;
   const roleRead = user
@@ -85,6 +91,9 @@ export default async function Packages() {
   const itemBankUnavailable = !!itemRead.error;
   const pkgs = (packageRead.data ?? []) as unknown as PkgRow[];
   const items = (itemRead.data ?? []) as unknown as ItemRow[];
+  const templates = (templateRead.data ?? []) as unknown as TemplateRow[];
+  const templateChoices = templates.filter(template => ["published", "locked"].includes(template.status)).map(template => ({ id: template.id, label: `${template.template_key} · ${template.version_label} — ${locale === "ar" ? template.title_ar : template.title_en}` }));
+  const violationChoices = (violationRead.data ?? []).map(violation => ({ id: violation.code, label: `${violation.code} — ${violation.title}` }));
   const itemMap = new Map(items.map(item => [item.code, item]));
   const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
 
@@ -170,6 +179,7 @@ export default async function Packages() {
     approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
     published: t("admin.pkg.publish.published", "Version published. It is now immutable."),
     publishHint: t("admin.pkg.publish.hint", "Publish rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must differ from the creator (RBAC-002)."),
+    effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
   };
   const editorStrings: DraftEditorStrings = {
     heading: t("admin.pkg.editor.heading", "Package designer"),
@@ -179,10 +189,13 @@ export default async function Packages() {
     fieldCanvas: t("admin.pkg.editor.canvas", "2 · Field canvas"),
     preview: t("admin.pkg.editor.preview", "3 · Read-only preview"),
     sectionTitleAria: t("admin.pkg.editor.sectionTitleAria", "Section title"),
+    sectionTitleEn: t("admin.pkg.editor.sectionTitleEn", "Section title (English)"), sectionTitleAr: t("admin.pkg.editor.sectionTitleAr", "Section title (Arabic)"),
+    moveUp: t("admin.pkg.editor.moveUp", "Move up"), moveDown: t("admin.pkg.editor.moveDown", "Move down"),
     removeAria: t("admin.pkg.editor.removeAria", "Remove"),
     addItem: t("admin.pkg.editor.addItem", "Choose an item…"),
     addItemAria: t("admin.pkg.editor.addItemAria", "Add item from catalogue"),
     newSectionTitle: t("admin.pkg.editor.newSectionTitle", "New section title"),
+    newSectionTitleAr: t("admin.pkg.editor.newSectionTitleAr", "New section title (Arabic)"),
     addSection: t("admin.pkg.editor.addSection", "Add section"),
     draftSaved: t("admin.pkg.editor.draftSaved", "Draft definition saved"),
     saving: t("admin.pkg.editor.saving", "Saving…"),
@@ -196,14 +209,14 @@ export default async function Packages() {
     validationClear: t("admin.pkg.editor.validationClear", "The editable structure has no duplicate items or blank section titles. Full dependency validation runs again at publish."),
     duplicateItem: t("admin.pkg.editor.duplicateItem", "Item {code} appears in more than one section."),
     blankSection: t("admin.pkg.editor.blankSection", "Section {key} needs a title."),
-    targetsTitle: t("admin.pkg.editor.targetsTitle", "Governed contract targets"),
-    blocked: t("admin.pkg.editor.blocked", "Not enabled"),
-    blockedOwner: t("admin.pkg.editor.blockedOwner", "requires a package-definition backend contract"),
-    targetReorder: t("admin.pkg.editor.targetReorder", "Reorder items"),
-    targetConditions: t("admin.pkg.editor.targetConditions", "Author conditions in this package"),
-    targetItemPolicies: t("admin.pkg.editor.targetPolicies", "Edit scoring or evidence policy here"),
-    targetActionForms: t("admin.pkg.editor.targetForms", "Author action forms"),
-    targetSimulation: t("admin.pkg.editor.targetSimulation", "Run simulation / circular-rule detection"),
+    bilingualSection: t("admin.pkg.editor.bilingualSection", "Section {key} needs English and Arabic titles."),
+    relationship: t("admin.pkg.editor.relationship", "Package-item policy"), requirement: t("admin.pkg.editor.requirement", "Requirement"), required: t("admin.pkg.editor.required", "Required"), optional: t("admin.pkg.editor.optional", "Optional"), conditional: t("admin.pkg.editor.conditional", "Conditional"),
+    visibleWhen: t("admin.pkg.editor.visibleWhen", "Visible when (key=value)"), mandatoryWhenVisible: t("admin.pkg.editor.mandatoryWhenVisible", "Mandatory when visible"), evidence: t("admin.pkg.editor.evidence", "Evidence override"), inheritEvidence: t("admin.pkg.editor.inheritEvidence", "Use base item policy"), scoring: t("admin.pkg.editor.scoring", "Scoring enabled"), scoreWeight: t("admin.pkg.editor.scoreWeight", "Score weight override"), violation: t("admin.pkg.editor.violation", "Non-compliant violation"), actionForm: t("admin.pkg.editor.actionForm", "Non-compliant action form"), none: t("admin.pkg.editor.none", "None"),
+    forms: t("admin.pkg.editor.forms", "Action forms"), formKey: t("admin.pkg.editor.formKey", "Form key"), formTitle: t("admin.pkg.editor.formTitle", "Form title"), blocking: t("admin.pkg.editor.blocking", "Blocking"), template: t("admin.pkg.editor.template", "Governed template version"), addForm: t("admin.pkg.editor.addForm", "Add action form"), removeForm: t("admin.pkg.editor.removeForm", "Remove form"), circularCheck: t("admin.pkg.editor.circularCheck", "Circular dependencies are rejected again at publish."),
+  };
+  const templateStrings: TemplateStrings = {
+    heading: t("admin.template.heading", "Governed template registry"), intro: t("admin.template.intro", "Create versioned bilingual form, report, action-form, or penalty templates. Published versions are immutable and can be referenced by package action forms and penalty mappings."),
+    key: t("admin.template.key", "Template key"), type: t("admin.template.type", "Type"), version: t("admin.template.version", "Version"), effectiveFrom: t("admin.template.effectiveFrom", "Effective from"), titleEn: t("admin.template.titleEn", "English title"), titleAr: t("admin.template.titleAr", "Arabic title"), schema: t("admin.template.schema", "Schema (JSON object)"), create: t("admin.template.create", "Create draft template version"), creating: t("admin.template.creating", "Creating…"), save: t("admin.template.save", "Save draft"), saving: t("admin.template.saving", "Saving…"), publish: t("admin.template.publish", "Approve & publish"), publishing: t("admin.template.publishing", "Publishing…"), effectiveTo: t("admin.template.effectiveTo", "Effective to"), reason: t("admin.template.reason", "Reason"), deactivate: t("admin.template.deactivate", "Deactivate"), deactivating: t("admin.template.deactivating", "Deactivating…"), historical: t("admin.template.historical", "Immutable historical template version."), saved: t("admin.template.saved", "Saved"),
   };
   const previewStrings: PreviewStrings = {
     open: t("admin.pkg.preview.open", "Open field preview"), close: t("admin.pkg.preview.close", "Close field preview"),
@@ -248,14 +261,22 @@ export default async function Packages() {
     noChanges: t("admin.pkg.impact.noChanges", "No item or action-form changes from the published version."),
   };
 
-  const previewFor = (definition: Definition) => (
+  const previewFor = (definition: Definition) => {
+    const projected = { ...previewItems };
+    for (const [code, override] of Object.entries(definition.item_rules ?? {})) {
+      const base = projected[code]; if (!base) continue;
+      const nc = override.response_mapping?.non_compliant;
+      projected[code] = { ...base, requirement: override.requirement ?? base.requirement, conditional: override.conditional?.visible_when ?? null, mandatoryWhenVisible: !!override.conditional?.mandatory_when_visible, scoringEnabled: override.scoring_enabled ?? base.scoringEnabled, evidence: override.evidence_rule === undefined ? base.evidence : override.evidence_rule?.on ? { type: override.evidence_rule.type ?? "photo", min: Math.max(1, override.evidence_rule.min ?? 1), mandatory: !!override.evidence_rule.mandatory } : null, ncViolation: nc?.violation ?? base.ncViolation, ncActionForm: nc?.action_form ?? base.ncActionForm };
+    }
+    return (
     <PackagePreview
-      sections={(definition.sections ?? []).map(section => ({ key: section.key, title: section.title, items: section.items, mandatory: section.mandatory }))}
+      sections={(definition.sections ?? []).map(section => ({ key: section.key, title: locale === "ar" ? (section.title_ar ?? section.title_en ?? section.title ?? section.key) : (section.title_en ?? section.title ?? section.title_ar ?? section.key), items: section.items, mandatory: section.mandatory }))}
       actionForms={(definition.action_forms ?? []).map(form => ({ key: form.key, title: form.title, blocking: form.blocking, fields: form.fields }))}
-      itemMap={previewItems}
+      itemMap={projected}
       strings={previewStrings}
     />
-  );
+    );
+  };
 
   return (
     <Shell current="/admin" title={t("admin.pkg.title", "Package library & designer")}
@@ -264,6 +285,7 @@ export default async function Packages() {
         <span className="ax-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
       </span>}>
       <div className={styles.pageStack}>
+        {!packageUnavailable && canWrite && <TemplateRegistry templates={templates} strings={templateStrings} />}
         <section className={`ax-surface ${styles.hero}`} aria-labelledby="pkg-overview">
           <div className={styles.heroRow}>
             <div>
@@ -365,10 +387,12 @@ export default async function Packages() {
                         {version.status === "draft" && canWrite && !itemBankUnavailable ? (
                           <DraftEditor versionId={version.id} definition={definition}
                             catalog={items.filter(item => item.active).map(item => ({ code: item.code, title: item.title }))}
+                            violations={violationChoices} templates={templateChoices}
                             strings={editorStrings} preview={previewFor(definition)} />
                         ) : !itemBankUnavailable ? previewFor(definition) : null}
 
                         <ImpactPanel data={impact} strings={impactStrings} />
+                        {published && canWrite && <DeactivatePackage versionId={version.id} strings={publishStrings} />}
 
                         {version.status === "draft" && canWrite && (
                           <section className="ax-surface" style={{ padding: "var(--ax-space-200)" }} aria-label={t("admin.pkg.publish.heading", "Publish gate")}>
@@ -388,7 +412,7 @@ export default async function Packages() {
 
         {!packageUnavailable && <section className={`ax-surface ${styles.governance}`} aria-labelledby="pkg-blockers">
           <h3 id="pkg-blockers" style={{ margin: 0 }}>{t("admin.pkg.blockers.title", "Boundaries kept visible")}</h3>
-          <p className="ax-caption">{t("admin.pkg.blockers.body", "Package footprint/fingerprint counts, visual simulation, and richer package-level policy authoring remain unavailable. Effective windows, supersede lineage, item ordering, condition validation and circular-rule rejection are enforced. No value or working control is fabricated.")}</p>
+          <p className="ax-caption">{t("admin.pkg.blockers.body", "The designer now authors ordered bilingual sections, package-item policy, action forms, and governed template references. Publish revalidates dependencies and rejects circular conditions. Package footprint/fingerprint metrics and visual simulation remain unclaimed because no approved metric or simulator contract exists.")}</p>
           <p className="ax-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="ax-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
         </section>}
       </div>

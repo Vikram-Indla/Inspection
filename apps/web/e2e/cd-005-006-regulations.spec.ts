@@ -52,7 +52,7 @@ test.describe("CD-005 register — discovery, impact rail, read-only truth", () 
   });
 });
 
-test.describe("CD-006 detail — logical mode and genuine remaining blockers", () => {
+test.describe("CD-006 detail — logical mode and governed lineage", () => {
   test("dedicated detail route renders the dossier mode and shows the back link", async ({ page }) => {
     await page.goto("/admin/regulations/__no_such_regulation__");
     expect(new URL(page.url()).pathname).toBe("/admin/regulations/__no_such_regulation__");
@@ -67,19 +67,15 @@ test.describe("CD-006 detail — logical mode and genuine remaining blockers", (
     }
   });
 
-  test("only genuine lineage, dependency-engine and route capabilities remain disabled", async ({ page }) => {
+  test("lineage and publish dependency readiness are enabled", async ({ page }) => {
     await page.goto("/admin/regulations");
     const dossier = page.getByRole("link", { name: /Open dossier/i }).first();
     if (await dossier.count()) {
       await dossier.click();
-      const blocked = page.getByRole("region", { name: /Governed capabilities/i });
-      await expect(blocked).toBeVisible();
-      for (const label of ["Compare versions / lineage", "Run dependency validation"]) {
-        await expect(blocked.getByRole("button", { name: new RegExp(label, "i") })).toBeDisabled();
-      }
-      await expect(blocked.getByRole("button", { name: /validated publish|audit timeline/i })).toHaveCount(0);
-      await expect(blocked.getByText(/HANDOFF_BLOCKED/).first()).toBeVisible();
-      await page.screenshot({ path: join(EVIDENCE_DIR, "detail-blocked-en-light-1440.png"), fullPage: true });
+      await expect(page.getByRole("heading", { name: /Version lineage/i })).toBeVisible();
+      await expect(page.getByText(/Publish dependency gate/i)).toBeVisible();
+      await expect(page.locator("[data-blocked-leg]")).toHaveCount(0);
+      await page.screenshot({ path: join(EVIDENCE_DIR, "detail-lineage-en-light-1440.png"), fullPage: true });
     } else {
       await expect(page.getByText(/register unavailable/i)).toBeVisible();
       await expect(page.getByRole("button", { name: /Compare versions|Run dependency validation/i })).toHaveCount(0);
@@ -125,12 +121,10 @@ test.describe("CD-005/006 wiring (DEC-012): governed lifecycle, distinct states 
     expect(page).toContain("unknown ? null : items");
   });
 
-  test("publish validates mappings, records checker provenance and rejects no-op transitions", () => {
-    expect(actions).toContain('status: "published", approved_by: userId');
-    expect(actions).toContain('.eq("status", "draft")');
+  test("publish validates mappings and uses the governed maker-checker transition", () => {
+    expect(actions).toContain('sb.rpc("publish_regulation"');
     expect(actions).toContain("every clause must map to an inspection item");
-    expect(actions).toContain("approved_by: userId");
-    expect(actions).toContain("if (!data?.length)");
+    expect(actions).toContain("maker-checker");
     expect(page).toContain('t("admin.reg.r1.detail.validation.title"');
   });
 
@@ -143,18 +137,13 @@ test.describe("CD-005/006 wiring (DEC-012): governed lifecycle, distinct states 
     expect(page).toContain("Configuration audit timeline");
   });
 
-  test("only genuine blockers are disabled targets with owners; clause changes are audited", () => {
-    for (const key of [
-      "admin.reg.r1.detail.blocked.compare",
-      "admin.reg.r1.detail.blocked.dependency",
-    ]) {
-      expect(page).toContain(`t("${key}"`);
-    }
-    expect(page).toContain('aria-disabled="true"');
+  test("lineage and dependency readiness are wired; clause changes are audited", () => {
+    expect(page).toContain("Version lineage");
+    expect(page).toContain("supersedes_id");
+    expect(page).toContain("Publish dependency gate");
     expect(page).toContain('t("admin.reg.r1.detail.auditNote"');
     expect(controls).toContain("clauseNotAudited");
-    expect(page).not.toContain("admin.reg.r1.detail.blocked.validatedPublish");
-    expect(page).not.toContain("admin.reg.r1.detail.blocked.audit");
+    expect(page).not.toContain("admin.reg.r1.detail.blocked.compare");
   });
 
   test("writes are gated to writers in the UI and the dedicated detail route exists", () => {

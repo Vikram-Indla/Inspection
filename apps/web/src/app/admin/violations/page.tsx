@@ -1,7 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import { NewViolationForm, AddMappingForm, PublishMappingForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
+import { NewViolationForm, AddMappingForm, PublishMappingForm, PublishViolationForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
 import { getViolationUsage, type ViolationUsage } from "./actions";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
@@ -24,9 +24,8 @@ import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 //    SELECT any authenticated; writes compliance_admin/form_admin (fail-closed
 //    requireConfigurationWriter guard), plus a module route-visibility guard.
 //
-// Remaining violation-code capabilities (category, applicability, edit/version,
-// trigger trace) are CONTRACT TARGETS rendered as a
-// disabled, annotated element, never a working control.
+// Category, applicability, governed version lineage, trigger trace and penalty
+// lifecycle fields consume the authoritative completion migration.
 export const dynamic = "force-dynamic";
 
 const WRITER_ROLES = new Set(["compliance_admin", "form_admin"]);
@@ -45,6 +44,14 @@ type CodeRow = {
   code: string;
   title: string;
   level: string;
+  status: string;
+  corrective_action: string | null;
+  grace_period_days: number | null;
+  category: string | null;
+  applicability: string | null;
+  configuration_version: number;
+  supersedes_id: string | null;
+  deactivation_reason: string | null;
   active_from: string | null;
   active_to: string | null;
   regulation_clauses: { clause_ref: string; regulations: { code: string } | null } | null;
@@ -60,6 +67,11 @@ type CodeRow = {
     effective_to: string | null;
     created_by: string | null;
     approved_by: string | null;
+    penalty_type: string;
+    amount: number | null;
+    grace_period_days: number | null;
+    due_period_days: number | null;
+    template_version_id: string | null;
   }[] | null;
 };
 
@@ -80,13 +92,15 @@ export default async function Violations({
   const { t } = await useT();
   const sb = await supabaseServer();
 
-  const [{ data: codesRaw, error }, { data: clauses, error: clauseError }] = await Promise.all([
+  const [{ data: codesRaw, error }, { data: clauses, error: clauseError }, templateRead, itemTraceRead] = await Promise.all([
     sb.from("violation_codes")
-      .select("id, code, title, level, active_from, active_to, regulation_clauses(clause_ref, regulations(code)), penalty_mappings(id, penalty_ref, mapping_version, legal_basis, penalty_range, repeat_rule, status, effective_from, effective_to, created_by, approved_by)")
+      .select("id, code, title, level, status, corrective_action, grace_period_days, category, applicability, configuration_version, supersedes_id, deactivation_reason, active_from, active_to, regulation_clauses(clause_ref, regulations(code)), penalty_mappings(id, penalty_ref, mapping_version, legal_basis, penalty_range, repeat_rule, status, effective_from, effective_to, created_by, approved_by, penalty_type, amount, grace_period_days, due_period_days, template_version_id)")
       .order("code"),
     sb.from("regulation_clauses")
       .select("id, clause_ref, title, regulations(code)")
       .order("clause_ref"),
+    sb.from("configuration_templates").select("id, template_key, version_label, title_en, status").in("status", ["published", "locked"]).order("template_key"),
+    sb.from("inspection_items").select("code, title, response_model").order("code"),
   ]);
   if (error) logProviderError("admin violations read", error);
   if (clauseError) logProviderError("admin violation clauses read", clauseError);
@@ -100,6 +114,8 @@ export default async function Violations({
   const canWrite = roles.some(r => WRITER_ROLES.has(r));
 
   const codes = (codesRaw ?? []) as unknown as CodeRow[];
+  const templateChoices = (templateRead.data ?? []).map(template => ({ id: template.id, label: `${template.template_key} · ${template.version_label} — ${template.title_en}` }));
+  const itemTraces = (itemTraceRead.data ?? []) as Array<{ code: string; title: string; response_model: { mapping?: Record<string, { violation?: string }> } | null }>;
   const today = new Date().toISOString().slice(0, 10);
   const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
 
@@ -139,6 +155,11 @@ export default async function Violations({
     clause: t("admin.viol.form.clause", "Clause"),
     selectClause: t("admin.viol.form.selectClause", "Select clause…"),
     activeFrom: t("admin.viol.form.activeFrom", "Active from"),
+    correctiveAction: t("admin.viol.form.correctiveAction", "Corrective action"),
+    gracePeriod: t("admin.viol.form.gracePeriod", "Grace period (days)"),
+    category: t("admin.viol.form.category", "Category"),
+    applicability: t("admin.viol.form.applicability", "Applicability"),
+    configurationVersion: t("admin.viol.form.configurationVersion", "Configuration version"),
     creating: t("admin.viol.form.creating", "Creating…"),
     create: t("admin.viol.form.create", "Create violation code"),
     created: t("admin.viol.form.created", "created"),
@@ -169,6 +190,15 @@ export default async function Violations({
     checkPresets: t("admin.viol.lens.c4", "Range and repeat presets are governed tokens, not amounts."),
     pass: t("admin.viol.lens.pass", "Pass"),
     needsAttention: t("admin.viol.lens.needsAttention", "Needs attention"),
+    deactivationReason: t("admin.viol.form.deactivationReason", "Deactivation reason"),
+    penaltyType: t("admin.viol.map.penaltyType", "Penalty type"),
+    amount: t("admin.viol.map.amount", "Amount (when applicable)"),
+    duePeriod: t("admin.viol.map.duePeriod", "Due period (days)"),
+    template: t("admin.viol.map.template", "Governed template"),
+    none: t("admin.viol.none", "None"),
+    publishCode: t("admin.viol.publish", "Approve & publish code"),
+    publishingCode: t("admin.viol.publishing", "Publishing…"),
+    codePublished: t("admin.viol.published", "Violation code published"),
   };
 
   // Severity = glyph + word + colour (never colour alone). The "word" is the
@@ -240,25 +270,6 @@ export default async function Violations({
     </div>
   );
 
-  // A contract-target leg: rendered as a disabled, annotated button so it is
-  // legible as "not enabled" without ever behaving like a working control.
-  const blockedTarget = (id: string, label: string, owner: string) => (
-    <button key={id} type="button" className="ax-btn ax-btn--subtle" disabled aria-disabled="true"
-      title={`${label} — ${t("admin.viol.blocked.title", "contract target, not enabled")} · ${owner}`}
-      data-blocked-leg={id}>
-      <span aria-hidden="true">⛔</span> {label}
-    </button>
-  );
-
-  const cd010Blocked: [string, string, string][] = [
-    ["category", t("admin.viol.blk.category", "Category"), "backend"],
-    ["applicability", t("admin.viol.blk.applicability", "Applicability"), "backend"],
-    ["edit", t("admin.viol.blk.edit", "Edit code"), "product/backend"],
-    ["version", t("admin.viol.blk.version", "Version history"), "product/backend"],
-    ["trigger-trace", t("admin.viol.blk.trace", "Trigger-trace query"), "backend"],
-  ];
-  const cd011Blocked: [string, string, string][] = [];
-
   const title = penaltyMode
     ? t("admin.viol.penalty.title", "Penalty Mapping")
     : t("admin.viol.title", "Violation Catalogue");
@@ -308,7 +319,7 @@ export default async function Violations({
           {/* Signature — Mapping Validation Lens: exactly the four proven checks. */}
           <section className="ax-surface ax-stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
             <h3 id="pen-lens-h" style={{ margin: 0 }}>{t("admin.viol.lens.title", "Mapping Validation Lens")}</h3>
-            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping passes exactly four proven checks. No lifecycle, approval, or monetary value exists on this table.")}</p>
+            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping validates legal basis, lifecycle, type, optional amount, timing, repeat policy, and an optional immutable template reference. No value is inferred or invented.")}</p>
             <ul className="ax-stack" style={{ gap: "var(--ax-space-050)", margin: 0, paddingInlineStart: "var(--ax-space-200)" }}>
               <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c1", "The violation is not already mapped (one mapping per violation).")}</li>
               <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c2", "A second mapping is rejected by the database unique constraint.")}</li>
@@ -370,28 +381,20 @@ export default async function Violations({
                         <span className="ax-version">{pm.mapping_version}</span>{" "}
                         {pm.status} · {pm.effective_from ?? "—"}{pm.effective_to ? ` → ${pm.effective_to}` : ""}
                       </span>
+                      <span className="ax-caption">{strings.penaltyType}: {pm.penalty_type}{pm.amount !== null ? <> · {strings.amount}: <bdi dir="ltr" className="ax-numeric">{pm.amount}</bdi></> : null}{pm.grace_period_days !== null ? <> · {strings.gracePeriod}: {pm.grace_period_days}</> : null}{pm.due_period_days !== null ? <> · {strings.duePeriod}: {pm.due_period_days}</> : null}</span>
                       {draft && canWrite ? <PublishMappingForm mappingId={draft.id} violationCode={v.code} strings={strings} /> : null}
                       {auditSummary(evidence?.mappingAudit, t("admin.viol.audit.mapping", "Mapping audit events"))}
                     </div>
                   ) : canWrite ? (
-                    <AddMappingForm violationId={v.id} violationCode={v.code} strings={strings} />
+                    <AddMappingForm violationId={v.id} violationCode={v.code} templates={templateChoices} strings={strings} />
                   ) : (
                     <span className="ax-caption">{t("admin.viol.penalty.readonly", "Unmapped — a compliance/form admin can add the mapping.")}</span>
                   )}
-                  {canWrite && !draft && pm ? <AddMappingForm violationId={v.id} violationCode={v.code} strings={strings} /> : null}
+                  {canWrite && !draft && pm ? <AddMappingForm violationId={v.id} violationCode={v.code} templates={templateChoices} strings={strings} /> : null}
                 </div>
               </div>
             );
           })}
-
-          {/* Contract targets — disabled, annotated (never working controls). */}
-          {cd011Blocked.length > 0 && <section className="ax-surface ax-stack" aria-labelledby="pen-blocked-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
-            <h3 id="pen-blocked-h" style={{ margin: 0 }}>{t("admin.viol.blocked.heading", "Contract targets — not enabled on this schema")}</h3>
-            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.blocked.body", "These capabilities remain blocked because no column, policy, lifecycle model, or route exists for them. Scoped audit history is available to configuration writers.")}</p>
-            <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
-              {cd011Blocked.map(([id, label, owner]) => blockedTarget(id, label, owner))}
-            </div>
-          </section>}
 
           <p className="ax-caption">{t("admin.viol.penalty.footer", "One violation = one penalty (M09-004) — the database rejects a second mapping. Presets are governed tokens, never monetary or legal values. The contract route /admin/penalties is not a live URL; this is its logical mode.")}</p>
         </>
@@ -439,6 +442,17 @@ export default async function Violations({
                   <span className="ax-overline">{t("admin.viol.trace", "Legal trace")}:</span>{" "}
                   {rc ? <bdi dir="ltr">{rc.regulations?.code ?? "?"} §{rc.clause_ref}</bdi> : t("admin.viol.noAnchor", "No clause anchor")}
                 </p>
+                <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+                  <span className="ax-lozenge ax-lozenge--info">v{v.configuration_version}</span>
+                  {v.category && <span className="ax-lozenge ax-lozenge--info">{v.category}</span>}
+                  {v.applicability && <span className="ax-caption">{v.applicability}</span>}
+                </div>
+                <p className="ax-caption"><strong>{t("admin.viol.corrective", "Corrective action")}:</strong> {v.corrective_action ?? "—"}{v.grace_period_days !== null ? <> · {t("admin.viol.grace", "Grace period")}: {v.grace_period_days} {t("admin.days", "days")}</> : null}</p>
+                {(() => {
+                  const traces = itemTraces.filter(item => Object.values(item.response_model?.mapping ?? {}).some(mapping => mapping.violation === v.code));
+                  return <details className="ax-caption"><summary>{t("admin.viol.triggerTrace", "Trigger trace")} · {traces.length} {t("admin.items", "item(s)")}</summary>{traces.length ? <ul>{traces.map(item => <li key={item.code}><bdi dir="ltr">{item.code}</bdi> — {item.title}</li>)}</ul> : <p>{t("admin.viol.noTriggers", "No item response mapping currently references this code.")}</p>}</details>;
+                })()}
+                <details className="ax-caption"><summary>{t("admin.viol.versionHistory", "Version history")}</summary><ol>{codes.filter(candidate => candidate.code === v.code).sort((a, b) => a.configuration_version - b.configuration_version).map(version => <li key={version.id}>v{version.configuration_version} · {version.status} · {version.active_from ?? "—"}{version.deactivation_reason ? ` · ${version.deactivation_reason}` : ""}</li>)}</ol></details>
                 {/* Explicit derivation — never a stored status enum. */}
                 <p className="ax-caption">
                   {t("admin.viol.derived", "Lifecycle derived from active-from")}{" "}
@@ -463,18 +477,10 @@ export default async function Violations({
                 {canWrite && !v.active_to && (
                   <DeactivateViolationForm violationId={v.id} violationCode={v.code} strings={strings} />
                 )}
+                {canWrite && v.status === "draft" && <PublishViolationForm violationId={v.id} violationCode={v.code} strings={strings} />}
               </div>
             );
           })}
-
-          {/* Contract targets — disabled, annotated (never working controls). */}
-          <section className="ax-surface ax-stack" aria-labelledby="cat-blocked-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
-            <h3 id="cat-blocked-h" style={{ margin: 0 }}>{t("admin.viol.blocked.heading", "Contract targets — not enabled on this schema")}</h3>
-            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.blocked.catBody", "violation_codes still has no category, applicability, edit/version model, or trigger-trace query. Usage, active-to deactivation, and scoped audit history are now wired.")}</p>
-            <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
-              {cd010Blocked.map(([id, label, owner]) => blockedTarget(id, label, owner))}
-            </div>
-          </section>
 
           <p className="ax-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one (M09-003/026). Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and its row changes are audit-tracked (trg_audit_violation_codes).")}</p>
         </>

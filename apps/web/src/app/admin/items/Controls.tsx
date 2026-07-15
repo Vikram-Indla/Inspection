@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useId, useState } from "react";
-import { createItem, toggleItemActive, type ItemResult } from "./actions";
+import { createItem, toggleItemActive, updateItem, type ItemResult } from "./actions";
 
 export type ClauseOption = { id: string; label: string };
 
@@ -45,6 +45,8 @@ export type ItemStrings = {
   reactivate: string;
   reasonNote: string;
   deactivationReason: string;
+  saveDraft: string;
+  draftSaved: string;
 };
 
 // SCR-ADM-020 · ENG-01 — create item against a clause with governed presets.
@@ -61,7 +63,6 @@ export function NewItemForm({
   strings: ItemStrings;
 }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(createItem, {});
-  const [requirement, setRequirement] = useState("required");
   const [scoring, setScoring] = useState(true);
   return (
     <form
@@ -107,24 +108,6 @@ export function NewItemForm({
         </select>
         <span className="ax-caption">{s.evidenceSource}</span>
       </div>
-      <div className="ax-field" style={{ minInlineSize: 200 }}>
-        <label className="ax-field__label" htmlFor="item-requirement">{s.requirementMode}</label>
-        <select id="item-requirement" className="ax-select" name="requirement_mode" value={requirement} onChange={e => setRequirement(e.target.value)}>
-          <option value="required">{s.requirementRequired}</option>
-          <option value="optional">{s.requirementOptional}</option>
-          <option value="conditional">{s.requirementConditional}</option>
-        </select>
-      </div>
-      {requirement === "conditional" && <>
-        <div className="ax-field" style={{ minInlineSize: 220 }}>
-          <label className="ax-field__label" htmlFor="item-visible-when">{s.visibleWhen}</label>
-          <input id="item-visible-when" className="ax-input ax-numeric" name="visible_when" placeholder="ITEM-001=compliant" pattern="[A-Za-z0-9_.-]+=[A-Za-z0-9_.-]+" required aria-describedby="item-visible-when-hint" />
-          <span id="item-visible-when-hint" className="ax-caption">{s.visibleWhenHint}</span>
-        </div>
-        <label className="ax-row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
-          <input type="checkbox" name="mandatory_when_visible" value="true" /> {s.mandatoryWhenVisible}
-        </label>
-      </>}
       <label className="ax-row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
         <input type="hidden" name="scoring_enabled" value={scoring ? "true" : "false"} />
         <input type="checkbox" checked={scoring} onChange={e => setScoring(e.target.checked)} /> {scoring ? s.scoringEnabled : s.scoringDisabled}
@@ -151,10 +134,29 @@ export function NewItemForm({
   );
 }
 
-// M09-014 — deactivate/reactivate; history is preserved, never deleted. There is
-// NO stored deactivation reason, but the row change IS audited at the DB
-// (trg_audit_inspection_items) — the caption states this so the toggle is read as
-// an audited, but not reason-captured, mutation.
+export function EditItemForm({ item, clauses, strings: s }: {
+  item: { id: string; title: string; clauseId: string; guidance: string | null; version: number };
+  clauses: ClauseOption[];
+  strings: ItemStrings;
+}) {
+  const [state, formAction, pending] = useActionState<ItemResult, FormData>(updateItem, {});
+  return (
+    <details className="ax-stack">
+      <summary className="ax-btn ax-btn--subtle">Edit · v{item.version}</summary>
+      <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 280 }}>
+        <input type="hidden" name="item_id" value={item.id} />
+        <label className="ax-field"><span className="ax-field__label">{s.title}</span><input className="ax-input" name="title" defaultValue={item.title} required /></label>
+        <label className="ax-field"><span className="ax-field__label">{s.clause}</span><select className="ax-select" name="clause_id" defaultValue={item.clauseId} required>{clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
+        <label className="ax-field"><span className="ax-field__label">{s.guidance}</span><textarea className="ax-input" name="guidance_en" defaultValue={item.guidance ?? ""} /></label>
+        <button className="ax-btn" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
+        {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.draftSaved}</span>}
+      </form>
+    </details>
+  );
+}
+
+// M09-014 — deactivate/reactivate; history and the required reason are preserved.
 export function ToggleActive({ itemId, active, strings: s }: { itemId: string; active: boolean; strings: ItemStrings }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(toggleItemActive, {});
   return (
