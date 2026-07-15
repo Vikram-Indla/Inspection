@@ -42,7 +42,22 @@ therefore *strengthens* the contract — it does not weaken accepted behaviour.
 4. **DEC-012** — the merged result requires a fresh independent wiring audit; the
    guard/audit/maker-checker legs cannot be self-certified.
 
-## Disposition
+## RECONCILED 2026-07-15 ✅
+The unique work of `0c9c897` is now represented in the baseline:
+- Migration `20260715173000_admin_configuration_audit.sql` — confirmed **already
+  applied live** on `iiozvqntawxfwbgffzqu` (all objects exist); added to source.
+- `apps/web/src/lib/admin-configuration.ts` added to source.
+- `requireConfigurationWriter()` wired into all config-writing admin actions
+  (defence-in-depth over RLS); existing validation preserved.
+- Now-true legs flipped to live (maker-checker, published immutability, config-table
+  audit triggers); audit-timeline READ views correctly kept blocked (no
+  `audit_events` SELECT grant to config roles).
+- HUMAN_APPROVALS row `CD-006-011-backend-authorization` recorded.
+- Commit `7862282`. tsc 0, next build 0/0, color-clean.
+- Branch is now a **deletion candidate** once the baseline is consolidated + pushed
+  (still gated on the release/change task + main consolidation). Do not delete yet.
+
+## Disposition (superseded by RECONCILED above)
 - **PRESERVE** `feat/cd-006-regulation-detail-and-version`. Do NOT delete; do NOT
   silently absorb.
 - **Recommended follow-up (own slice, sponsor-scoped under DEC-ADMIN-CP-001):**
