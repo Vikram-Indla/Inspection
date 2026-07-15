@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
+import { requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type VioResult = { error?: string; ok?: boolean };
 
@@ -29,13 +30,14 @@ function code(error: unknown): string | undefined {
 }
 
 // CD-010 · M09-003/026 — violation codes are catalogue entries; inspectors never
-// type one. Writes require compliance_admin/form_admin (RLS is the authority).
-// There is NO audit trigger on violation_codes — no audit claim is made here.
+// type one. Writes require compliance_admin/form_admin (RLS is the authority,
+// backed by the fail-closed requireConfigurationWriter guard). violation_codes
+// row changes are audit-tracked (trg_audit_violation_codes → audit_events).
 export async function createViolationCode(_: VioResult, formData: FormData): Promise<VioResult> {
   const { t } = await useT();
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: t("admin.viol.err.session", "Session expired — sign in again.") };
 
   const codeValue = String(formData.get("code") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
@@ -61,12 +63,13 @@ export async function createViolationCode(_: VioResult, formData: FormData): Pro
 // CD-011 · M09-004 — one violation = one penalty; the DB unique constraint on
 // violation_code_id rejects a second mapping. FLD-PEN-001 — inspection results
 // reference the exact mapping_version forever (an immutable REFERENCE, not a row
-// lock). No lifecycle/maker-checker/audit trigger exists on penalty_mappings.
+// lock). penalty_mappings row changes are audit-tracked (trg_audit_penalty_mappings
+// → audit_events); a lifecycle/maker-checker model is not yet implemented.
 export async function createPenaltyMapping(_: VioResult, formData: FormData): Promise<VioResult> {
   const { t } = await useT();
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: t("admin.viol.err.session", "Session expired — sign in again.") };
 
   const violation_code_id = String(formData.get("violation_code_id") ?? "");
   const penalty_ref = String(formData.get("penalty_ref") ?? "").trim();

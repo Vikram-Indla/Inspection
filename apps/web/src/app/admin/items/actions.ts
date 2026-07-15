@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
+import { requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type ItemResult = { error?: string; ok?: boolean };
 
@@ -28,9 +29,9 @@ const EVIDENCE_PRESETS: Record<string, object | null> = {
 
 // M09-002 — item belongs to a regulation clause and is reused across packages.
 export async function createItem(_: ItemResult, formData: FormData): Promise<ItemResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const code = String(formData.get("code") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
@@ -71,9 +72,9 @@ export async function createItem(_: ItemResult, formData: FormData): Promise<Ite
 
 // M09-014 — deactivation preserves history; items are never deleted.
 export async function toggleItemActive(_: ItemResult, formData: FormData): Promise<ItemResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const id = String(formData.get("item_id") ?? "");
   const next = String(formData.get("next_active") ?? "") === "true";
