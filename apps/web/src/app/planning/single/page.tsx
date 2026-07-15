@@ -68,8 +68,10 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     );
   }
 
+  const today = new Date().toISOString().slice(0, 10);
   const [packageRead, inspectorRead, otpRead] = await Promise.all([
-    sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"]).order("published_at", { ascending: false }),
+    sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).order("published_at", { ascending: false }),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
     sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
   ]);

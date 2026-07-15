@@ -1,7 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import { NewViolationForm, AddMappingForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
+import { NewViolationForm, AddMappingForm, PublishMappingForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
 import { getViolationUsage, type ViolationUsage } from "./actions";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
@@ -16,19 +16,16 @@ import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 //    to the violation-code row. Config violation_codes ≠ runtime `violations`.
 //  • active/future/deactivated is DERIVED from active_from/active_to + today —
 //    there is no stored status enum.
-//  • penalty_mappings(id, UNIQUE violation_code_id, penalty_ref, penalty_range
-//    JSON preset, repeat_rule JSON preset, legal_basis, mapping_version) — exactly
-//    ONE mapping per violation. Presets are config tokens, never monetary/legal
-//    values. FLD-PEN-001: mapping_version is an immutable REFERENCE, not a row lock.
+//  • penalty mappings are versioned drafts with effective periods. Atomic
+//    maker-checker publication deactivates the prior active version; database
+//    indexes enforce one active and one draft per violation.
 //  • violation_codes AND penalty_mappings row changes ARE audit-tracked at the DB
 //    (trg_audit_violation_codes / trg_audit_penalty_mappings → audit_events). RLS:
 //    SELECT any authenticated; writes compliance_admin/form_admin (fail-closed
 //    requireConfigurationWriter guard), plus a module route-visibility guard.
 //
-// Every capability the schema lacks (category, applicability, edit, version,
-// trigger-trace query, effective periods, overlap/gap engine, >1:1 cardinality,
-// submit/approve/publish lifecycle, maker-checker and mapping immutability) is a
-// CONTRACT TARGET — rendered as a
+// Remaining violation-code capabilities (category, applicability, edit/version,
+// trigger trace) are CONTRACT TARGETS rendered as a
 // disabled, annotated element, never a working control.
 export const dynamic = "force-dynamic";
 
@@ -58,6 +55,11 @@ type CodeRow = {
     legal_basis: string;
     penalty_range: { schedule?: string } | null;
     repeat_rule: { repeat_12mo?: string } | null;
+    status: string;
+    effective_from: string | null;
+    effective_to: string | null;
+    created_by: string | null;
+    approved_by: string | null;
   }[] | null;
 };
 
@@ -80,7 +82,7 @@ export default async function Violations({
 
   const [{ data: codesRaw, error }, { data: clauses, error: clauseError }] = await Promise.all([
     sb.from("violation_codes")
-      .select("id, code, title, level, active_from, active_to, regulation_clauses(clause_ref, regulations(code)), penalty_mappings(id, penalty_ref, mapping_version, legal_basis, penalty_range, repeat_rule)")
+      .select("id, code, title, level, active_from, active_to, regulation_clauses(clause_ref, regulations(code)), penalty_mappings(id, penalty_ref, mapping_version, legal_basis, penalty_range, repeat_rule, status, effective_from, effective_to, created_by, approved_by)")
       .order("code"),
     sb.from("regulation_clauses")
       .select("id, clause_ref, title, regulations(code)")
@@ -109,7 +111,8 @@ export default async function Violations({
   // Both RPCs are config-writer scoped. A failed/unapplied RPC is represented as
   // unavailable, never as a fabricated zero-event/zero-usage fact.
   const evidenceEntries = canWrite ? await Promise.all(codes.map(async v => {
-    const mappingId = v.penalty_mappings?.[0]?.id;
+    const mappingId = (v.penalty_mappings ?? []).find(mapping => mapping.status === "draft")?.id
+      ?? (v.penalty_mappings ?? []).find(mapping => ["published", "locked"].includes(mapping.status))?.id;
     const [usage, codeAuditResult, mappingAuditResult] = await Promise.all([
       getViolationUsage(v.code),
       sb.rpc("admin_configuration_audit", { p_object_type: "violation_codes", p_object_id: v.id }),
@@ -152,6 +155,9 @@ export default async function Violations({
     mapping: t("admin.viol.map.mapping", "Mapping…"),
     mapTo: t("admin.viol.map.mapTo", "Map penalty to"),
     mapped: t("admin.viol.map.done", "mapped"),
+    approveMapping: t("admin.viol.map.approve", "Approve and publish mapping"),
+    publishingMapping: t("admin.viol.map.publishing", "Publishing mapping…"),
+    mappingPublished: t("admin.viol.map.published", "mapping published"),
     activeTo: t("admin.viol.form.activeTo", "Active to"),
     deactivating: t("admin.viol.form.deactivating", "Deactivating…"),
     deactivate: t("admin.viol.form.deactivate", "Deactivate"),
@@ -251,14 +257,7 @@ export default async function Violations({
     ["version", t("admin.viol.blk.version", "Version history"), "product/backend"],
     ["trigger-trace", t("admin.viol.blk.trace", "Trigger-trace query"), "backend"],
   ];
-  const cd011Blocked: [string, string, string][] = [
-    ["effective-periods", t("admin.viol.blk.effective", "Effective periods"), "product/backend"],
-    ["overlap-gap", t("admin.viol.blk.overlap", "Overlap / gap engine"), "product/backend"],
-    ["cardinality", t("admin.viol.blk.cardinality", "Cardinality > 1:1"), "product/backend"],
-    ["lifecycle", t("admin.viol.blk.lifecycle", "Submit → approve → publish"), "product/backend"],
-    ["maker-checker", t("admin.viol.blk.makerChecker", "Maker-checker"), "product/backend"],
-    ["immutability", t("admin.viol.blk.immutability", "Mapping row lock"), "backend"],
-  ];
+  const cd011Blocked: [string, string, string][] = [];
 
   const title = penaltyMode
     ? t("admin.viol.penalty.title", "Penalty Mapping")
@@ -329,7 +328,10 @@ export default async function Violations({
 
           {/* S01 POPULATED — per violation: violation | lens status | mapping record/create. */}
           {codes.map(v => {
-            const pm = v.penalty_mappings?.[0];
+            const mappings = v.penalty_mappings ?? [];
+            const draft = mappings.find(mapping => mapping.status === "draft");
+            const activeMapping = mappings.find(mapping => ["published", "locked"].includes(mapping.status));
+            const pm = draft ?? activeMapping ?? mappings[0];
             const lc = deriveLifecycle(v.active_from, v.active_to, today);
             const evidence = evidenceById.get(v.id);
             return (
@@ -346,8 +348,10 @@ export default async function Violations({
                 {/* Column 2 — lens status */}
                 <div className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 180, flex: "1 1 180px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.lens", "Validation lens")}</span>
-                  {pm
-                    ? <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {t("admin.viol.lens.mapped", "one-to-one mapping satisfied")}</span>
+                  {activeMapping
+                    ? <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {t("admin.viol.lens.mapped", "one active mapping; one-to-one satisfied")}</span>
+                    : draft
+                    ? <span className="ax-lozenge ax-lozenge--warning" role="status"><span aria-hidden="true">◷</span> {t("admin.viol.lens.draft", "draft awaiting a distinct approver")}</span>
                     : <span className="ax-lozenge ax-lozenge--warning" role="status"><span aria-hidden="true">○</span> {t("admin.viol.lens.unmapped", "no mapping yet — one is required")}</span>}
                 </div>
                 {/* Column 3 — mapping record or create form */}
@@ -364,8 +368,9 @@ export default async function Violations({
                       </span>
                       <span className="ax-caption">
                         <span className="ax-version">{pm.mapping_version}</span>{" "}
-                        {t("admin.viol.map.versionRef", "— immutable reference for inspection results (FLD-PEN-001); the row itself is not locked.")}
+                        {pm.status} · {pm.effective_from ?? "—"}{pm.effective_to ? ` → ${pm.effective_to}` : ""}
                       </span>
+                      {draft && canWrite ? <PublishMappingForm mappingId={draft.id} violationCode={v.code} strings={strings} /> : null}
                       {auditSummary(evidence?.mappingAudit, t("admin.viol.audit.mapping", "Mapping audit events"))}
                     </div>
                   ) : canWrite ? (
@@ -373,19 +378,20 @@ export default async function Violations({
                   ) : (
                     <span className="ax-caption">{t("admin.viol.penalty.readonly", "Unmapped — a compliance/form admin can add the mapping.")}</span>
                   )}
+                  {canWrite && !draft && pm ? <AddMappingForm violationId={v.id} violationCode={v.code} strings={strings} /> : null}
                 </div>
               </div>
             );
           })}
 
           {/* Contract targets — disabled, annotated (never working controls). */}
-          <section className="ax-surface ax-stack" aria-labelledby="pen-blocked-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+          {cd011Blocked.length > 0 && <section className="ax-surface ax-stack" aria-labelledby="pen-blocked-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
             <h3 id="pen-blocked-h" style={{ margin: 0 }}>{t("admin.viol.blocked.heading", "Contract targets — not enabled on this schema")}</h3>
             <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.blocked.body", "These capabilities remain blocked because no column, policy, lifecycle model, or route exists for them. Scoped audit history is available to configuration writers.")}</p>
             <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
               {cd011Blocked.map(([id, label, owner]) => blockedTarget(id, label, owner))}
             </div>
-          </section>
+          </section>}
 
           <p className="ax-caption">{t("admin.viol.penalty.footer", "One violation = one penalty (M09-004) — the database rejects a second mapping. Presets are governed tokens, never monetary or legal values. The contract route /admin/penalties is not a live URL; this is its logical mode.")}</p>
         </>

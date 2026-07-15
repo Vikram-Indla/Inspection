@@ -118,12 +118,14 @@ export async function createPenaltyMapping(_: VioResult, formData: FormData): Pr
   const penalty_ref = String(formData.get("penalty_ref") ?? "").trim();
   const legal_basis = String(formData.get("legal_basis") ?? "").trim();
   const mapping_version = String(formData.get("mapping_version") ?? "").trim();
+  const effective_from = String(formData.get("effective_from") ?? "").trim();
   const rangeKey = String(formData.get("penalty_range_preset") ?? "");
   const repeatKey = String(formData.get("repeat_rule_preset") ?? "");
 
   // Mapping Validation Lens — the four proven checks, in order.
   if (!violation_code_id) return { error: t("admin.viol.map.err.pickViolation", "Pick the violation code to map.") };
   if (!penalty_ref || !mapping_version) return { error: t("admin.viol.map.err.refVersion", "Penalty ref and mapping version are required.") };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(effective_from)) return { error: t("admin.viol.map.err.effectiveFrom", "A valid effective-from date is required.") };
   if (!legal_basis) return { error: t("admin.viol.map.err.legalBasis", "Legal basis is required (never invent one).") };
   if (!(rangeKey in PENALTY_RANGE_PRESETS)) return { error: t("admin.viol.map.err.range", "Pick a penalty range preset.") };
   if (!(repeatKey in REPEAT_RULE_PRESETS)) return { error: t("admin.viol.map.err.repeat", "Pick a repeat rule preset.") };
@@ -132,10 +134,30 @@ export async function createPenaltyMapping(_: VioResult, formData: FormData): Pr
     violation_code_id, penalty_ref, legal_basis, mapping_version,
     penalty_range: PENALTY_RANGE_PRESETS[rangeKey],
     repeat_rule: REPEAT_RULE_PRESETS[repeatKey],
+    effective_from, status: "draft", created_by: gate.userId,
   });
   if (error) {
     logProviderError("admin penalty mapping", error);
     if (code(error) === UNIQUE_VIOLATION) return { error: t("admin.viol.map.err.dupMapping", "This violation already has a penalty mapping (one mapping per violation).") };
+    return { error: t("admin.viol.err.write", NEUTRAL_WRITE_ERROR) };
+  }
+  revalidatePath("/admin/violations");
+  return { ok: true };
+}
+
+export async function publishPenaltyMapping(_: VioResult, formData: FormData): Promise<VioResult> {
+  const { t } = await useT();
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
+  const sb = await supabaseServer();
+  const mappingId = String(formData.get("mapping_id") ?? "");
+  if (!mappingId) return { error: t("admin.viol.map.err.missing", "Missing penalty mapping draft.") };
+  const { error } = await sb.rpc("publish_penalty_mapping", { p_mapping_id: mappingId });
+  if (error) {
+    logProviderError("admin penalty mapping publish", error);
+    const message = String(error.message ?? "");
+    if (message.includes("maker-checker")) return { error: t("admin.viol.map.err.makerChecker", "A different configuration writer must approve this draft.") };
+    if (message.includes("effective date")) return { error: t("admin.viol.map.err.effectiveOrder", "The successor effective date must follow the active mapping.") };
     return { error: t("admin.viol.err.write", NEUTRAL_WRITE_ERROR) };
   }
   revalidatePath("/admin/violations");

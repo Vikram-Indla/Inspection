@@ -15,7 +15,7 @@ const WRITER_ROLES = new Set(["compliance_admin", "form_admin"]);
 type Section = { key: string; title: string; items?: string[]; mandatory?: boolean };
 type ActionFormDef = { key: string; title: string; blocking?: boolean; fields?: string[] };
 type Definition = { sections?: Section[]; action_forms?: ActionFormDef[] };
-type VersionRow = { id: string; version_label: string; status: string; published_at: string | null; definition: Definition };
+type VersionRow = { id: string; version_label: string; status: string; published_at: string | null; effective_from: string | null; effective_to: string | null; supersedes_id: string | null; definition: Definition };
 type PkgRow = { id: string; code: string; title: string; scope: string | null; package_versions: VersionRow[] | null };
 type ResponseModel = {
   responses?: string[];
@@ -55,8 +55,11 @@ function orderedVersions(pkg: PkgRow): VersionRow[] {
 }
 
 function currentPublished(pkg: PkgRow): VersionRow | null {
+  const today = new Date().toISOString().slice(0, 10);
   return orderedVersions(pkg)
-    .filter(version => version.status === "published" || version.status === "locked")
+    .filter(version => (version.status === "published" || version.status === "locked")
+      && (!version.effective_from || version.effective_from <= today)
+      && (!version.effective_to || version.effective_to >= today))
     .sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? ""))[0] ?? null;
 }
 
@@ -64,7 +67,7 @@ export default async function Packages() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const [packageRead, itemRead, authRead] = await Promise.all([
-    sb.from("packages").select("id, code, title, scope, package_versions(id, version_label, status, published_at, definition)").order("code"),
+    sb.from("packages").select("id, code, title, scope, package_versions(id, version_label, status, published_at, effective_from, effective_to, supersedes_id, definition)").order("code"),
     sb.from("inspection_items").select("id, code, title, active, response_model, evidence_rule, score_weight, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)").order("code"),
     sb.auth.getUser(),
   ]);
@@ -162,6 +165,7 @@ export default async function Packages() {
     createDraft: t("admin.pkg.newDraft.create", "Create draft"),
     draftCreated: t("admin.pkg.newDraft.created", "Draft created"),
     versionPlaceholder: t("admin.pkg.newDraft.placeholder", "Example: v2026.08"),
+    effectiveFrom: t("admin.pkg.newDraft.effectiveFrom", "Effective from"),
     publishing: t("admin.pkg.publish.publishing", "Publishing…"),
     approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
     published: t("admin.pkg.publish.published", "Version published. It is now immutable."),
@@ -384,7 +388,7 @@ export default async function Packages() {
 
         {!packageUnavailable && <section className={`ax-surface ${styles.governance}`} aria-labelledby="pkg-blockers">
           <h3 id="pkg-blockers" style={{ margin: 0 }}>{t("admin.pkg.blockers.title", "Boundaries kept visible")}</h3>
-          <p className="ax-caption">{t("admin.pkg.blockers.body", "Effective dates, scheduled activation, a stored supersede lifecycle, package footprint/fingerprint counts, package-level item reordering or policy authoring, simulation, and circular-rule detection remain unavailable. No value or working control is fabricated for them.")}</p>
+          <p className="ax-caption">{t("admin.pkg.blockers.body", "Package footprint/fingerprint counts, visual simulation, and richer package-level policy authoring remain unavailable. Effective windows, supersede lineage, item ordering, condition validation and circular-rule rejection are enforced. No value or working control is fabricated.")}</p>
           <p className="ax-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="ax-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
         </section>}
       </div>

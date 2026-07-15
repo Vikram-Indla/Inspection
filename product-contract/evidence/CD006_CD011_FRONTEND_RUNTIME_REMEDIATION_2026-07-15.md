@@ -28,6 +28,13 @@ claim.
 - Package editor dirty-state, draft input label, violation clause-source failure,
   permission-read failure, future-date deactivation semantics, loading localization,
   and stale Arabic claims were corrected.
+- Governed package publication freezes item semantics into `item_snapshot`; existing
+  published definitions remain immutable and receive append-only companion snapshots
+  before item edits are enabled. Item deactivation now requires and audits a reason.
+  Circular item-response visibility chains block package publication.
+- Penalty mappings now have one-draft/one-active indexes, effective periods, atomic
+  successor publication, maker-checker enforcement, immutable published/deactivated
+  rows, and preserved mapping-version references.
 
 ## Local verification
 
@@ -52,8 +59,8 @@ After the two named migrations are explicitly approved and applied:
 
 ## Remaining capabilities
 
-Version-lineage comparison, broad dependency visualization, package effective
-dates/scheduled activation/supersede lifecycle, package simulation and circular
-rule tooling, item edit/new-version and deactivation reason, and the richer
-violation/penalty version lifecycle remain explicit capabilities outside the six
-remediated ACs. They are not represented as complete by this record.
+Regulation side-by-side lineage comparison, broad dependency visualization, a visual
+package simulation tool, and the item-edit form remain frontend capabilities. The
+violation category/applicability/version controls remain disabled because the current
+approved database contract defines no governed values or version model for them; this
+record does not invent those policy semantics.

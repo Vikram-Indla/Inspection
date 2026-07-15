@@ -42,12 +42,11 @@ test.describe("CD-008 package library — version-led runtime", () => {
     await expect(page.getByRole("button", { name: /Approve & publish/i })).toHaveCount(0);
   });
 
-  test("published history states supersede only as a derived display", async ({ page }) => {
+  test("published history exposes governed effective and supersede lineage read-only", async ({ page }) => {
     await page.goto("/admin/packages");
     const derived = page.getByText(/older than current publish \(derived\)/i);
     if (await derived.count()) await expect(derived.first()).toBeVisible();
     await expect(page.getByRole("button", { name: /schedule|effective date|supersede/i })).toHaveCount(0);
-    await expect(page.getByRole("textbox", { name: /schedule|effective date|supersede/i })).toHaveCount(0);
   });
 });
 
@@ -146,7 +145,7 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
     expect(actions).toContain("visibility rule must use key=value grammar");
     expect(actions).toContain("evidenceRuleBlockers");
     expect(actions).toContain("has no penalty mapping");
-    expect(actions).toContain("approved_by: userId");
+    expect(actions).toContain('sb.rpc("publish_package_version"');
     expect(page).toContain("The approver must differ from the creator (RBAC-002)");
   });
 
@@ -168,12 +167,12 @@ test.describe("CD-008/009 source wiring — writer, no-op, validation and hard s
     expect(page).toContain('href="/admin/packages"');
   });
 
-  test("unsupported package-level capabilities remain disabled or disclosure-only", () => {
+  test("unsupported rich package authoring remains disabled or disclosure-only", () => {
     for (const target of ["targetReorder", "targetConditions", "targetItemPolicies", "targetActionForms", "targetSimulation"]) {
       expect(editor).toContain(`s.${target}`);
     }
     expect(editor).toContain('disabled aria-disabled="true"');
-    expect(page).toContain("Effective dates, scheduled activation, a stored supersede lifecycle");
+    expect(page).toContain("Effective windows, supersede lineage, item ordering, condition validation and circular-rule rejection are enforced");
   });
 });
 

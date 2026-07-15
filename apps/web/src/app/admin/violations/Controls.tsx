@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useEffect, useId, useRef, useState } from "react";
-import { createViolationCode, createPenaltyMapping, deactivateViolationCode, type VioResult } from "./actions";
+import { createViolationCode, createPenaltyMapping, deactivateViolationCode, publishPenaltyMapping, type VioResult } from "./actions";
 
 export type ClauseOption = { id: string; label: string };
 
@@ -30,6 +30,9 @@ export type VioStrings = {
   mapping: string;
   mapTo: string;
   mapped: string;
+  approveMapping: string;
+  publishingMapping: string;
+  mappingPublished: string;
   activeTo: string;
   deactivating: string;
   deactivate: string;
@@ -112,6 +115,8 @@ export function AddMappingForm({ violationId, violationCode, strings: s }: { vio
         <input id={`${baseId}-legal-basis`} className="ax-input" name="legal_basis" placeholder={s.legalBasisPlaceholder} required value={legalBasis} onChange={e => setLegalBasis(e.target.value)} /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-mapping-version`}>{s.mappingVersion}</label>
         <input id={`${baseId}-mapping-version`} className="ax-input ax-numeric" name="mapping_version" placeholder="v3" required style={{ maxInlineSize: 90 }} /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-effective-from`}>{s.activeFrom}</label>
+        <input id={`${baseId}-effective-from`} className="ax-input ax-numeric" name="effective_from" type="date" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-range`}>{s.penaltyRange}</label>
         <select id={`${baseId}-range`} className="ax-select" name="penalty_range_preset" required value={rangePreset} onChange={e => setRangePreset(e.target.value)}>
           <option value="schedule_approved">{s.rangeApproved}</option>
@@ -128,6 +133,16 @@ export function AddMappingForm({ violationId, violationCode, strings: s }: { vio
       </div>
     </form>
   );
+}
+
+export function PublishMappingForm({ mappingId, violationCode, strings: s }: { mappingId: string; violationCode: string; strings: VioStrings }) {
+  const [state, formAction, pending] = useActionState<VioResult, FormData>(publishPenaltyMapping, {});
+  return <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+    <input type="hidden" name="mapping_id" value={mappingId} />
+    <button className="ax-btn ax-btn--prominent" aria-label={`${s.approveMapping} ${violationCode}`} disabled={pending}>{pending ? s.publishingMapping : s.approveMapping}</button>
+    {state.error ? <span className="ax-validation" role="alert">{state.error}</span> : null}
+    {state.ok ? <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.mappingPublished}</span> : null}
+  </form>;
 }
 
 export function DeactivateViolationForm({ violationId, violationCode, strings: s }: { violationId: string; violationCode: string; strings: VioStrings }) {

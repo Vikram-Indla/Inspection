@@ -129,7 +129,8 @@ export default async function Items({
     saving: t("admin.items.r2.toggle.saving", "Saving…"),
     deactivate: t("admin.items.r2.toggle.deactivate", "Deactivate"),
     reactivate: t("admin.items.r2.toggle.reactivate", "Reactivate"),
-    reasonNote: t("admin.items.r2.toggle.reasonNote", "History is preserved; no deactivation reason is captured. The item-row change is recorded as an audit event (trg_audit_inspection_items)."),
+    reasonNote: t("admin.items.r2.toggle.reasonNote", "History is preserved; the required reason and item-row change are recorded in audit history."),
+    deactivationReason: t("admin.items.r2.form.deactivationReason", "Deactivation reason"),
   };
 
   const previewStrings: PreviewStrings = {
@@ -189,7 +190,6 @@ export default async function Items({
   // ---- blocked contract targets (rendered as disabled, annotated targets) ----
   const blocked: { label: string; owner: string }[] = [
     { label: t("admin.items.r2.blocked.edit", "Edit item / new version"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
-    { label: t("admin.items.r2.blocked.reason", "Deactivation reason capture"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
   ];
 
   return (

@@ -100,6 +100,35 @@ export async function createItem(_: ItemResult, formData: FormData): Promise<Ite
   return { ok: true };
 }
 
+// M09-014/030 — edit the current catalogue version only after every governed
+// package that references the code carries an immutable item snapshot.
+export async function updateItem(_: ItemResult, formData: FormData): Promise<ItemResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
+  const sb = await supabaseServer();
+  const id = String(formData.get("item_id") ?? "");
+  const title = String(formData.get("title") ?? "").trim();
+  const clause_id = String(formData.get("clause_id") ?? "");
+  const guidance_en = String(formData.get("guidance_en") ?? "").trim();
+  if (!id || !title || !clause_id) return { error: "Item, title, and regulation clause are required." };
+
+  const { data: current, error: readError } = await sb.from("inspection_items")
+    .select("code, configuration_version").eq("id", id).maybeSingle();
+  if (readError || !current) { if (readError) logProviderError("admin item edit read", readError); return { error: NEUTRAL_WRITE_ERROR }; }
+  const { data: frozen, error: frozenError } = await sb.rpc("inspection_item_versions_are_frozen", { p_code: current.code });
+  if (frozenError) { logProviderError("admin item frozen-version check", frozenError); return { error: NEUTRAL_WRITE_ERROR }; }
+  if (!frozen) return { error: "Edit blocked: a governed package version does not yet contain a frozen item snapshot." };
+
+  const { data, error } = await sb.from("inspection_items").update({
+    title, clause_id, guidance_en: guidance_en || null,
+    configuration_version: Number(current.configuration_version ?? 1) + 1,
+  }).eq("id", id).eq("configuration_version", current.configuration_version).select("id");
+  if (error) { logProviderError("admin item edit", error); return { error: NEUTRAL_WRITE_ERROR }; }
+  if (!data?.length) return { error: "The item changed while you were editing. Refresh before retrying." };
+  revalidatePath("/admin/items");
+  return { ok: true };
+}
+
 // M09-014 — deactivation preserves history; items are never deleted.
 export async function toggleItemActive(_: ItemResult, formData: FormData): Promise<ItemResult> {
   const gate = await requireConfigurationWriter();
@@ -108,10 +137,16 @@ export async function toggleItemActive(_: ItemResult, formData: FormData): Promi
 
   const id = String(formData.get("item_id") ?? "");
   const next = String(formData.get("next_active") ?? "") === "true";
+  const reason = String(formData.get("deactivation_reason") ?? "").trim();
   if (!id) return { error: "Missing item reference." };
+  if (!next && !reason) return { error: "A deactivation reason is required." };
 
   const { error, count } = await sb.from("inspection_items")
-    .update({ active: next }, { count: "exact" }).eq("id", id);
+    .update(next ? {
+      active: true, deactivated_at: null, deactivated_by: null, deactivation_reason: null,
+    } : {
+      active: false, deactivated_at: new Date().toISOString(), deactivated_by: gate.userId, deactivation_reason: reason,
+    }, { count: "exact" }).eq("id", id);
   if (error) { logProviderError("admin inspection item status", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!count) return { error: "No row updated — RLS requires compliance_admin/form_admin." };
   revalidatePath("/admin/items");

@@ -44,6 +44,7 @@ export type ItemStrings = {
   deactivate: string;
   reactivate: string;
   reasonNote: string;
+  deactivationReason: string;
 };
 
 // SCR-ADM-020 · ENG-01 — create item against a clause with governed presets.
@@ -157,9 +158,10 @@ export function NewItemForm({
 export function ToggleActive({ itemId, active, strings: s }: { itemId: string; active: boolean; strings: ItemStrings }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(toggleItemActive, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="item_id" value={itemId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
+      {active ? <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required /></label> : null}
       <button className="ax-btn" disabled={pending} title={s.reasonNote}>
         {pending ? s.saving : active ? s.deactivate : s.reactivate}
       </button>

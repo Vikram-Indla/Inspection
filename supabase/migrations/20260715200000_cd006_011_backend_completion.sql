@@ -6,6 +6,173 @@ alter table regulations
   add column if not exists deactivated_at timestamptz,
   add column if not exists deactivated_by uuid references profiles(user_id);
 
+alter table inspection_items
+  add column if not exists deactivated_at timestamptz,
+  add column if not exists deactivated_by uuid references profiles(user_id),
+  add column if not exists deactivation_reason text,
+  add column if not exists configuration_version integer not null default 1;
+
+alter table package_versions
+  add column if not exists effective_from date,
+  add column if not exists effective_to date,
+  add column if not exists supersedes_id uuid references package_versions(id);
+
+update package_versions
+set effective_from = coalesce(effective_from, published_at::date, current_date)
+where status in ('published','locked') and effective_from is null;
+
+-- Derive inclusive historical windows and predecessor lineage without changing
+-- any governed definition. Only the latest governed version remains open.
+with ordered as (
+  select id,
+    lead(effective_from) over (
+      partition by package_id order by effective_from, published_at nulls first, id
+    ) as next_effective_from,
+    lag(id) over (
+      partition by package_id order by effective_from, published_at nulls first, id
+    ) as previous_id
+  from public.package_versions
+  where status in ('published','locked')
+)
+update public.package_versions pv
+set effective_to = case
+      when ordered.next_effective_from is null then null
+      when ordered.next_effective_from > pv.effective_from then ordered.next_effective_from - 1
+      else pv.effective_from
+    end,
+    supersedes_id = coalesce(pv.supersedes_id, ordered.previous_id)
+from ordered where ordered.id = pv.id;
+
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'package_version_effective_window') then
+    alter table package_versions add constraint package_version_effective_window
+      check (effective_to is null or effective_from is null or effective_to >= effective_from) not valid;
+  end if;
+end $$;
+
+create unique index if not exists package_version_one_open_governed
+  on public.package_versions(package_id)
+  where status in ('published','locked') and effective_to is null;
+
+create or replace function public.publish_package_version(
+  p_version_id uuid,
+  p_definition jsonb
+) returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_new public.package_versions%rowtype;
+  v_old public.package_versions%rowtype;
+begin
+  if not public.has_any_role(array['compliance_admin','form_admin']) then
+    raise exception 'not authorized to publish package versions';
+  end if;
+  select * into v_new from public.package_versions where id = p_version_id for update;
+  if not found or v_new.status <> 'draft' then raise exception 'package draft not found'; end if;
+  if v_new.created_by is null or v_new.created_by = auth.uid() then
+    raise exception 'maker-checker requires a distinct approver';
+  end if;
+  if v_new.effective_from is null then raise exception 'effective_from is required'; end if;
+
+  select * into v_old from public.package_versions
+    where package_id = v_new.package_id
+      and status in ('published','locked')
+      and effective_to is null
+    order by effective_from desc nulls last, published_at desc nulls last
+    limit 1 for update;
+  if found then
+    if v_old.effective_from is not null and v_new.effective_from <= v_old.effective_from then
+      raise exception 'successor effective date must follow the active package version';
+    end if;
+    update public.package_versions set effective_to = v_new.effective_from - 1 where id = v_old.id;
+    update public.package_versions set supersedes_id = v_old.id where id = v_new.id;
+  end if;
+
+  update public.package_versions
+    set definition = p_definition, status = 'published', approved_by = auth.uid(), published_at = now()
+    where id = v_new.id;
+  return v_new.id;
+end $$;
+revoke all on function public.publish_package_version(uuid, jsonb) from public, anon;
+grant execute on function public.publish_package_version(uuid, jsonb) to authenticated;
+
+-- Preserve legacy governed package definitions exactly as published. Their item
+-- semantics are frozen in a companion append-only table; future publishes also
+-- embed the same snapshot in the new version definition before publication.
+create table if not exists public.package_version_item_snapshots (
+  package_version_id uuid not null references public.package_versions(id) on delete restrict,
+  item_code text not null,
+  snapshot jsonb not null,
+  frozen_at timestamptz not null default now(),
+  primary key (package_version_id, item_code)
+);
+
+insert into public.package_version_item_snapshots (package_version_id, item_code, snapshot)
+select pv.id, ii.code,
+    jsonb_build_object(
+      'id', ii.id, 'code', ii.code, 'title', ii.title,
+      'response_model', ii.response_model, 'evidence_rule', ii.evidence_rule,
+      'score_weight', ii.score_weight, 'score_excluded_on', ii.score_excluded_on,
+      'guidance_en', ii.guidance_en, 'guidance_ar', ii.guidance_ar,
+      'configuration_version', ii.configuration_version,
+      'regulation_clauses', case when rc.id is null then null else jsonb_build_object(
+        'clause_ref', rc.clause_ref, 'legal_source', rc.legal_source
+      ) end
+    )
+  from public.package_versions pv
+  cross join lateral jsonb_array_elements(coalesce(pv.definition->'sections', '[]'::jsonb)) section
+  cross join lateral jsonb_array_elements_text(coalesce(section->'items', '[]'::jsonb)) as item_code(code)
+  join public.inspection_items ii on ii.code = item_code.code
+  left join public.regulation_clauses rc on rc.id = ii.clause_id
+  where pv.status in ('published', 'locked', 'deactivated')
+on conflict (package_version_id, item_code) do nothing;
+
+alter table public.package_version_item_snapshots enable row level security;
+revoke all on table public.package_version_item_snapshots from anon;
+grant select on table public.package_version_item_snapshots to authenticated;
+drop policy if exists package_version_item_snapshots_read on public.package_version_item_snapshots;
+create policy package_version_item_snapshots_read on public.package_version_item_snapshots for select
+  using (auth.uid() is not null);
+
+create or replace function public.guard_package_version_item_snapshot()
+returns trigger language plpgsql set search_path = '' as $$
+begin
+  raise exception 'IMMUTABLE: package version item snapshots cannot be changed';
+end $$;
+drop trigger if exists trg_guard_package_version_item_snapshot on public.package_version_item_snapshots;
+create trigger trg_guard_package_version_item_snapshot
+  before update or delete on public.package_version_item_snapshots
+  for each row execute function public.guard_package_version_item_snapshot();
+
+create or replace function public.inspection_item_versions_are_frozen(p_code text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.has_any_role(array['compliance_admin','form_admin']) and not exists (
+    select 1 from public.package_versions pv
+    where pv.status in ('published','locked','deactivated')
+      and exists (
+        select 1
+        from jsonb_array_elements(coalesce(pv.definition->'sections', '[]'::jsonb)) section,
+             jsonb_array_elements_text(coalesce(section->'items', '[]'::jsonb)) as item_code(code)
+        where item_code.code = p_code
+      )
+      and not (coalesce(pv.definition->'item_snapshot', '{}'::jsonb) ? p_code)
+      and not exists (
+        select 1 from public.package_version_item_snapshots s
+        where s.package_version_id = pv.id and s.item_code = p_code
+      )
+  )
+$$;
+revoke all on function public.inspection_item_versions_are_frozen(text) from public, anon;
+grant execute on function public.inspection_item_versions_are_frozen(text) to authenticated;
+
 do $$
 begin
   if not exists (
@@ -15,6 +182,118 @@ begin
       check (active_to is null or active_from is null or active_to >= active_from) not valid;
   end if;
 end $$;
+
+-- CD-011 governed penalty mapping versions. Existing one-to-one rows become
+-- legacy published versions; future successor drafts may coexist until an
+-- atomic maker-checker publication deactivates the prior active version.
+alter table penalty_mappings
+  add column if not exists status config_status not null default 'draft',
+  add column if not exists effective_from date,
+  add column if not exists effective_to date,
+  add column if not exists created_by uuid references profiles(user_id),
+  add column if not exists approved_by uuid references profiles(user_id),
+  add column if not exists published_at timestamptz,
+  add column if not exists supersedes_id uuid references penalty_mappings(id);
+
+update penalty_mappings pm
+set status = 'published',
+    effective_from = coalesce(pm.effective_from, vc.active_from),
+    published_at = coalesce(pm.published_at, now())
+from violation_codes vc
+where vc.id = pm.violation_code_id and pm.created_by is null and pm.status = 'draft';
+
+alter table penalty_mappings drop constraint if exists penalty_mappings_violation_code_id_key;
+create unique index if not exists penalty_mapping_version_unique
+  on penalty_mappings(violation_code_id, mapping_version);
+create unique index if not exists penalty_mapping_one_active
+  on penalty_mappings(violation_code_id)
+  where status in ('published','locked');
+create unique index if not exists penalty_mapping_one_draft
+  on penalty_mappings(violation_code_id)
+  where status = 'draft';
+
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'penalty_mapping_effective_window') then
+    alter table penalty_mappings add constraint penalty_mapping_effective_window
+      check (effective_to is null or effective_from is null or effective_to >= effective_from) not valid;
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'penalty_mapping_maker_checker') then
+    alter table penalty_mappings add constraint penalty_mapping_maker_checker
+      check (approved_by is null or created_by is null or approved_by <> created_by);
+  end if;
+end $$;
+
+create or replace function public.guard_governed_penalty_mapping()
+returns trigger language plpgsql set search_path = '' as $$
+begin
+  if tg_op = 'DELETE' and old.status in ('published','locked','deactivated') then
+    raise exception 'IMMUTABLE: governed penalty mapping cannot be deleted';
+  end if;
+  if tg_op = 'UPDATE' and old.status in ('published','locked') then
+    if new.status = 'deactivated'
+       and new.effective_to is not null
+       and new.penalty_ref is not distinct from old.penalty_ref
+       and new.penalty_range is not distinct from old.penalty_range
+       and new.repeat_rule is not distinct from old.repeat_rule
+       and new.legal_basis is not distinct from old.legal_basis
+       and new.mapping_version is not distinct from old.mapping_version
+       and new.violation_code_id is not distinct from old.violation_code_id then
+      return new;
+    end if;
+    raise exception 'IMMUTABLE: published penalty mapping requires a governed successor';
+  end if;
+  if tg_op = 'UPDATE' and old.status = 'deactivated' and new is distinct from old then
+    raise exception 'IMMUTABLE: deactivated penalty mapping cannot be modified';
+  end if;
+  return coalesce(new, old);
+end $$;
+
+drop trigger if exists trg_guard_governed_penalty_mapping on penalty_mappings;
+create trigger trg_guard_governed_penalty_mapping
+  before update or delete on penalty_mappings
+  for each row execute function public.guard_governed_penalty_mapping();
+
+create or replace function public.publish_penalty_mapping(p_mapping_id uuid)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_new public.penalty_mappings%rowtype;
+  v_old public.penalty_mappings%rowtype;
+begin
+  if not public.has_any_role(array['compliance_admin','form_admin']) then
+    raise exception 'not authorized to publish penalty mappings';
+  end if;
+  select * into v_new from public.penalty_mappings where id = p_mapping_id for update;
+  if not found or v_new.status <> 'draft' then raise exception 'mapping draft not found'; end if;
+  if v_new.created_by is null or v_new.created_by = auth.uid() then
+    raise exception 'maker-checker requires a distinct approver';
+  end if;
+  if v_new.effective_from is null then raise exception 'effective_from is required'; end if;
+
+  select * into v_old from public.penalty_mappings
+    where violation_code_id = v_new.violation_code_id and status in ('published','locked')
+    for update;
+  if found then
+    if v_old.effective_from is not null and v_new.effective_from <= v_old.effective_from then
+      raise exception 'successor effective date must follow the active mapping';
+    end if;
+    update public.penalty_mappings
+      set status = 'deactivated', effective_to = v_new.effective_from - 1
+      where id = v_old.id;
+    update public.penalty_mappings set supersedes_id = v_old.id where id = v_new.id;
+  end if;
+
+  update public.penalty_mappings
+    set status = 'published', approved_by = auth.uid(), published_at = now()
+    where id = v_new.id;
+  return v_new.id;
+end $$;
+revoke all on function public.publish_penalty_mapping(uuid) from public, anon;
+grant execute on function public.publish_penalty_mapping(uuid) to authenticated;
 
 create table if not exists regulation_attachments (
   id uuid primary key default gen_random_uuid(),

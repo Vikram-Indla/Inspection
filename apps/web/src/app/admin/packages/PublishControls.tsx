@@ -9,6 +9,7 @@ export type PublishStrings = {
   createDraft: string;
   draftCreated: string;
   versionPlaceholder: string;
+  effectiveFrom: string;
   publishing: string;
   approvePublish: string;
   published: string;
@@ -26,6 +27,7 @@ export function NewDraftForm({ packageId, strings: s }: { packageId: string; str
         <label className="ax-field__label" htmlFor={`version-label-${packageId}`}>{s.newDraftLabel}</label>
         <input id={`version-label-${packageId}`} className="ax-input ax-numeric" name="version_label" placeholder={s.versionPlaceholder} required autoComplete="off" />
       </div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor={`effective-from-${packageId}`}>{s.effectiveFrom}</label><input id={`effective-from-${packageId}`} className="ax-input ax-numeric" type="date" name="effective_from" required /></div>
       <button className="ax-btn" disabled={pending}>{pending ? s.creating : s.createDraft}</button>
       <div ref={feedbackRef} tabIndex={-1}>
         {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}

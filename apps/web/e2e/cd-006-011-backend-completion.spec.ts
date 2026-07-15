@@ -106,8 +106,17 @@ test.describe("CD-006..011 backend completion", () => {
 
   test("CD-008/CD-009 publish validation rejects invalid condition grammar", () => {
     const actions = source("src/app/admin/packages/actions.ts");
+    const migration = source("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");
     expect(actions).toContain("conditional requirement has no visibility rule");
     expect(actions).toContain("visibility rule must use key=value grammar");
+    expect(actions).toContain("Circular visibility rule");
+    expect(actions).toContain("item_snapshot");
+    expect(actions).toContain('sb.rpc("publish_package_version"');
+    expect(migration).toContain("package_version_item_snapshots");
+    expect(migration).toContain("package_version_one_open_governed");
+    expect(migration).toContain("maker-checker requires a distinct approver");
+    expect(source("src/app/field/inspection/[id]/page.tsx")).toContain("frozenDefinition.item_snapshot");
+    expect(source("src/app/field/inspection/[id]/page.tsx")).toContain("companionSnapshot");
   });
 
   test("every CD-006..011 admin localization key has a guarded ui_strings source", () => {

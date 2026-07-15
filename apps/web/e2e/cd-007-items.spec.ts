@@ -72,7 +72,6 @@ test.describe("CD-007 supported authoring and genuine remaining blockers", () =>
     await expect(panel).toBeVisible();
     for (const label of [
       "Edit item / new version",
-      "Deactivation reason capture",
     ]) {
       await expect(panel.getByRole("button", { name: new RegExp(label, "i") })).toBeDisabled();
     }
@@ -187,9 +186,9 @@ test.describe("CD-007 wiring (DEC-012): completed authoring, usage and scoped au
     expect(page).toContain("admin_configuration_audit");
   });
 
-  test("only genuine edit/reason/route blockers remain", () => {
+  test("only genuine item edit/new-version blocker remains", () => {
     expect(page).toContain("admin.items.r2.blocked.edit");
-    expect(page).toContain("admin.items.r2.blocked.reason");
+    expect(page).not.toContain("admin.items.r2.blocked.reason");
     expect(page).not.toContain("admin.items.r2.blocked.guard");
     expect(page).not.toContain("admin.items.r2.blocked.conditional");
     expect(page).not.toContain("admin.items.r2.blocked.usage");

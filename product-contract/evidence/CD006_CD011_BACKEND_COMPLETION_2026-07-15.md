@@ -62,10 +62,19 @@ authorizing the frontend design, inventing policy values, or mutating `main`.
 - Violation deactivation requires an explicit valid active-to date and rejects
   a date before active-from; a database check enforces the same invariant.
 - Aggregate usage returns item-reference and runtime-reference counts.
-- Existing one-to-one penalty mapping, legal-basis requirement, governed presets,
-  neutral failures, audit triggers, and unique-constraint negatives are preserved.
+- Penalty mappings carry governed draft/published/deactivated lifecycle and effective
+  periods. One-draft/one-active indexes, atomic successor publication, maker-checker,
+  row immutability, legal-basis/preset validation, audit and historical mapping-version
+  references are enforced at the database boundary.
 
 ### Field/runtime enforcement
+
+- Published package versions remain byte-for-byte immutable. Legacy versions use an
+  append-only `package_version_item_snapshots` companion table; new publications embed
+  the same item snapshot in their governed definition.
+- Package effective windows and predecessor lineage are persisted and enforced through
+  an atomic maker-checker publish RPC. All planning entry points reject future or expired
+  package versions.
 
 - Optional visible items may remain unanswered.
 - Conditional items are mandatory only when visible and explicitly configured

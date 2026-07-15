@@ -42,16 +42,18 @@ export async function createDraftVersion(_: PkgResult, formData: FormData): Prom
 
   const package_id = String(formData.get("package_id") ?? "");
   const version_label = String(formData.get("version_label") ?? "").trim();
+  const effective_from = String(formData.get("effective_from") ?? "").trim();
   if (!package_id || !version_label) return { error: "Version label is required." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(effective_from)) return { error: "A valid effective-from date is required." };
 
   const { data: latest } = await sb.from("package_versions")
-    .select("definition").eq("package_id", package_id)
+    .select("id, definition").eq("package_id", package_id)
     .order("published_at", { ascending: false, nullsFirst: false }).limit(1).single();
 
   const { error } = await sb.from("package_versions").insert({
     package_id, version_label, status: "draft",
     definition: latest?.definition ?? { sections: [], action_forms: [] },
-    created_by: userId,
+    created_by: userId, effective_from, supersedes_id: latest?.id ?? null,
   });
   if (error) { logProviderError("admin package draft", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/packages");
@@ -88,7 +90,7 @@ export async function saveDraftDefinition(_: PkgResult, formData: FormData): Pro
 // ---------------------------------------------------------------------------
 type DefSection = { key?: string; title?: string; items?: unknown; fields?: unknown; mandatory?: boolean };
 type DefActionForm = { key?: string; title?: string; blocking?: boolean };
-type PkgDefinition = { sections?: unknown; action_forms?: unknown };
+type PkgDefinition = { sections?: unknown; action_forms?: unknown; item_snapshot?: unknown };
 type ItemBankRow = {
   code: string; active: boolean;
   regulation_clauses: { regulations: { status: string; effective_from: string | null } | { status: string; effective_from: string | null }[] | null } | { regulations: { status: string; effective_from: string | null }[] | null }[] | null;
@@ -225,6 +227,25 @@ async function validateDefinition(
   return blockers;
 }
 
+/** Freeze item semantics into the governed package version so later catalogue edits
+ * cannot change an already-published inspection contract (M09-008/030). */
+async function freezeDefinition(
+  sb: Awaited<ReturnType<typeof supabaseServer>>,
+  definition: PkgDefinition,
+): Promise<PkgDefinition> {
+  const codes = [...new Set((Array.isArray(definition.sections) ? definition.sections as DefSection[] : [])
+    .flatMap(section => Array.isArray(section.items) ? section.items.filter((item): item is string => typeof item === "string") : []))];
+  if (!codes.length) return { ...definition, item_snapshot: {} };
+  const { data, error } = await sb.from("inspection_items").select(
+    "id, code, title, response_model, evidence_rule, score_weight, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)",
+  ).in("code", codes);
+  if (error) throw error;
+  return {
+    ...definition,
+    item_snapshot: Object.fromEntries((data ?? []).map(row => [row.code, row])),
+  };
+}
+
 // RBAC-002 maker-checker — approver must differ from creator; the database
 // constraint pkg_maker_checker + trg_pkg_approver reject self-approval.
 // M09-012/029 — the definition is dependency-validated BEFORE the flip;
@@ -247,9 +268,16 @@ export async function approveAndPublish(_: PkgResult, formData: FormData): Promi
     return { error: `Publish blocked — ${blockers.length} validation issue(s) (M09-012/029):\n${blockers.join("\n")}` };
   }
 
-  const { error } = await sb.from("package_versions").update({
-    approved_by: userId, status: "published", published_at: new Date().toISOString(),
-  }).eq("id", version_id).eq("status", "draft");
+  let frozenDefinition: PkgDefinition;
+  try { frozenDefinition = await freezeDefinition(sb, (ver.definition ?? {}) as PkgDefinition); }
+  catch (freezeError) {
+    logProviderError("admin package frozen item snapshot", freezeError);
+    return { error: NEUTRAL_LOAD_ERROR };
+  }
+
+  const { error } = await sb.rpc("publish_package_version", {
+    p_version_id: version_id, p_definition: frozenDefinition,
+  });
   if (error) { logProviderError("admin package publish", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/packages");
   return { ok: true };

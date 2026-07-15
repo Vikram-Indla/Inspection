@@ -87,10 +87,10 @@ test.describe("CD-011 penalty mode — Mapping Validation Lens + one-to-one reco
     await expect(lens.locator("li")).toHaveCount(4);
     // Shared verification data may be mapped or genuinely unmapped; both states
     // are explicit and neither may fabricate a mapping record.
-    const mapped = page.getByText(/one-to-one mapping satisfied/i).first();
+    const mapped = page.getByText(/one active mapping; one-to-one satisfied/i).first();
     if (await mapped.count()) {
       await expect(mapped).toBeVisible();
-      await expect(page.getByText(/immutable reference for inspection results/i).first()).toBeVisible();
+      await expect(page.getByText(/published|locked/i).first()).toBeVisible();
     } else {
       await expect(page.getByText(/no mapping yet — one is required/i).first()).toBeVisible();
       await expect(page.getByText(/Unmapped — a compliance\/form admin can add the mapping/i).first()).toBeVisible();
@@ -113,12 +113,10 @@ test.describe("CD-011 penalty mode — Mapping Validation Lens + one-to-one reco
     await expect(page.getByText(/SAR|\$|ريال/).first()).toHaveCount(0);
   });
 
-  test("blocked contract targets render as disabled, annotated buttons (CD-011)", async ({ page }) => {
+  test("effective periods, maker-checker lifecycle and immutability are no longer blocked targets", async ({ page }) => {
     await page.goto("/admin/violations?mode=penalty");
     for (const leg of ["effective-periods", "overlap-gap", "cardinality", "lifecycle", "maker-checker", "immutability", "route-guard"]) {
-      const btn = page.locator(`button[data-blocked-leg="${leg}"]`);
-      await expect(btn).toHaveCount(1);
-      await expect(btn).toBeDisabled();
+      await expect(page.locator(`button[data-blocked-leg="${leg}"]`)).toHaveCount(0);
     }
     await expect(page.locator('button[data-blocked-leg="mapping-audit"]')).toHaveCount(0);
   });
@@ -216,6 +214,11 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
     expect(ACTIONS).toContain('admin.viol.map.err.legalBasis');
     // Presets are config tokens, not monetary/legal values.
     expect(ACTIONS).toContain("PENALTY_RANGE_PRESETS");
+    expect(ACTIONS).toContain('sb.rpc("publish_penalty_mapping"');
+    expect(COMPLETION_MIGRATION).toContain("penalty_mapping_one_active");
+    expect(COMPLETION_MIGRATION).toContain("penalty_mapping_one_draft");
+    expect(COMPLETION_MIGRATION).toContain("penalty_mapping_maker_checker");
+    expect(COMPLETION_MIGRATION).toContain("trg_guard_governed_penalty_mapping");
     expect(ACTIONS).not.toMatch(/SAR|ريال|amount:|price/);
   });
 
@@ -242,9 +245,11 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
   });
 
   test("every genuine blocked leg remains annotated and supported legs are enabled", () => {
-    for (const leg of ["category", "applicability", "edit", "version", "trigger-trace",
-                       "effective-periods", "overlap-gap", "cardinality", "lifecycle", "maker-checker", "immutability", "route-guard"]) {
+    for (const leg of ["category", "applicability", "edit", "version", "trigger-trace"]) {
       expect(PAGE).toContain(`"${leg}"`);
+    }
+    for (const closed of ["effective-periods", "overlap-gap", "cardinality", "lifecycle", "maker-checker", "immutability", "route-guard"]) {
+      expect(PAGE).not.toContain(`["${closed}"`);
     }
     for (const supported of ['["deactivate"', '["usage-count"', '["audit-timeline"', '["mapping-audit"']) {
       expect(PAGE).not.toContain(supported);
