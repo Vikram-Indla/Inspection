@@ -89,11 +89,11 @@ items:
   - task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
     gate: "G11 DEC-012 remediation"
     priority: "P0"
-    status: "REMEDIATION_IMPLEMENTED_PENDING_LIVE_MIGRATION_AND_REAUDIT"
+    status: "REMEDIATION_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
     owner: "Claude Code implementation + distinct Codex wiring reviewer + Sponsor"
-    blocked_by: ["Apply urgency migration 20260714060935 through linked migration history", "Run migration-dependent crafted-RPC test and complete regression without exclusions", "Fresh independent DEC-012 re-audit", "Sponsor runtime acceptance"]
+    blocked_by: ["Sponsor runtime acceptance"]
     blocks: ["CD-023 closure", "CD-024+ implementation"]
-    note: "The strict post-live FAIL is remediated in the worktree: all 12 wiring rows now match current runtime and cite exact tests; the accepted D3 four-value urgency set plus Other justification is enforced in the server action and prepared database CHECK; downstream field start uses neutral localized copy. Typecheck/build PASS, focused runnable suite 16/16 PASS, and broader regression 90/90 PASS with only the unapplied-migration crafted-RPC test excluded. Migration 20260714060935 could not be applied because linked CLI authentication stalled and no DB password/access token is available; Dashboard SQL was not used to bypass migration history. Apply it, run 91/91, then obtain a fresh independent DEC-012 audit and sponsor acceptance."
+    note: "The strict post-live FAIL is remediated in the worktree: all 12 wiring rows now match current runtime and cite exact tests; the accepted D3 four-value urgency set plus Other justification is enforced in the server action and prepared database CHECK; downstream field start uses neutral localized copy. Typecheck/build PASS, focused runnable suite 16/16 PASS, and broader regression 90/90 PASS with only the unapplied-migration crafted-RPC test excluded. Migration 20260714060935 could not be applied because linked CLI authentication stalled and no DB password/access token is available; Dashboard SQL was not used to bypass migration history. Apply it, run 91/91, then obtain a fresh independent DEC-012 audit and sponsor acceptance. 2026-07-15 reconciliation: migration 20260714060935 was applied live and the crafted-RPC test PASSED, focused CD-023 suite reached 18/18, and a fresh independent DEC-012 ROUND4 audit PASSED (CURRENT_STATE.md UPDATE 34/37) — both stale blockers removed. Sole remaining blocker is sponsor runtime acceptance."
   - task_id: "TASK-DESIGN-CD024-QUALITY-RATCHET"
     gate: "G11 controlled Web-first design"
     priority: "P0"
