@@ -867,3 +867,28 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 @media (max-width: 900px) {
   .lz-row { grid-template-columns: 1fr; gap: var(--ax-space-150); }
 }
+
+/* R2 evidence grammar — "Not available yet" boundary (CD-016/017/019).
+   States a deliberately-absent capability + its human consequence + one seam
+   id. Never a fake control: an honest boundary, not a disabled feature. */
+.nya {
+  border: 1px dashed var(--ax-color-border);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface);
+  padding: var(--ax-space-200);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nya__head { display: flex; align-items: center; gap: 8px; }
+.nya__glyph { color: var(--ax-color-text-secondary); }
+.nya__head b { font: var(--ax-text-body); font-weight: 600; }
+.nya__lbl {
+  margin-inline-start: auto;
+  font: var(--ax-text-micro); font-family: var(--ax-font-mono);
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ax-color-text-secondary);
+  border: 1px solid var(--ax-color-border); border-radius: 999px; padding: 2px 8px;
+}
+.nya__body { margin: 0; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.nya__seam { font: var(--ax-text-micro); font-family: var(--ax-font-mono); color: var(--ax-color-text-secondary); }

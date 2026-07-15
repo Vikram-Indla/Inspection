@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { NotYetBoundary } from "@/components/NotYetBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -167,6 +168,28 @@ export default async function AuditBrowser({ searchParams }: { searchParams: Pro
               ))}
             </tbody>
           </table></div>
+          <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            {t("admin.audit.rlsNote", "You see events your role is allowed to read. Events outside your scope are absent, not redacted rows.")}
+          </p>
+        </div>
+      )}
+
+      {/* R2 evidence grammar — capabilities deliberately absent from this reader.
+          Shown as honest boundaries so their absence is legible, not a bug. */}
+      {!error && (
+        <div className="ax-grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "var(--ax-space-200)" }}>
+          <NotYetBoundary
+            title={t("admin.audit.corr.title", "Correlation / timeline view")}
+            consequence={t("admin.audit.corr.desc", "Grouping events by a shared correlation across objects is a proposed read model — the current reader has no correlation column to group on.")}
+            seam="NEEDS_APPROVED_CONTRACT — correlation read model"
+            notAvailableLabel={t("admin.audit.notYet", "Not available yet")}
+          />
+          <NotYetBoundary
+            title={t("admin.audit.reveal.title", "Sensitive reveal & export")}
+            consequence={t("admin.audit.reveal.desc", "Revealing masked payload fields and exporting event sets need privacy, retention and audit contracts first. Neither action exists on this screen today.")}
+            seam="BLOCKED_BY_DECISION — privacy / retention"
+            notAvailableLabel={t("admin.audit.notYet", "Not available yet")}
+          />
         </div>
       )}
     </Shell>
