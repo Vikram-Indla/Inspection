@@ -38,6 +38,11 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
   }).select("id").single();
   if (error || !created) {
     console.error("[review start]", error);
+    // reviews_one_open_per_version (partial unique index) is the real guard
+    // against two reviewers claiming the same submission at once — the
+    // pre-check above only avoids the common sequential case.
+    if (error?.code === "23505")
+      return { error: "Another reviewer already started this review — refresh to see the current state." };
     return { error: "The review could not be started — you may not have the Level 2 Reviewer role for this scope." };
   }
   // Canonical transition follows the explicit start (never mutated on navigation).

@@ -95,6 +95,38 @@ export default async function Reviews() {
 
   const rows: Joined[] = (allReviews ?? []) as unknown as Joined[];
 
+  // CD-028 discoverability fix — a submitted inspection has no `reviews` row
+  // until an explicit startReview claims it, so the reviews-based query above
+  // structurally cannot show brand-new work. status='submitted' is exactly
+  // the set with no under_review/decided row for their current version
+  // (startReview and decide() both transition status away from 'submitted'
+  // the moment a row exists), so this can never duplicate a row already in
+  // `rows` above — no exists/not-exists check needed.
+  const { data: undiscovered, error: undiscoveredErr } = await sb.from("inspections")
+    .select(`id, status, submitted_at,
+      visits(visit_type, execution_mode, priority,
+        factories(name, factory_code, risk_band),
+        assignments(profiles(full_name))),
+      submission_versions(id, version_number, submitted_at, acknowledgement, snapshot),
+      violations(violation_codes(level)),
+      evidence(id)`)
+    .eq("status", "submitted");
+  for (const insp of (undiscovered ?? []) as unknown as {
+    id: string; status: string; submitted_at: string | null;
+    visits: Joined["inspections"] extends null ? never : NonNullable<Joined["inspections"]>["visits"];
+    submission_versions: { version_number: number; submitted_at: string; acknowledgement: unknown; snapshot: { answers?: Record<string, string> } | null }[];
+    violations: NonNullable<Joined["inspections"]>["violations"];
+    evidence: NonNullable<Joined["inspections"]>["evidence"];
+  }[]) {
+    const latest = (insp.submission_versions ?? []).slice().sort((a, b) => b.version_number - a.version_number)[0];
+    if (!latest) continue; // no submission on record yet — nothing to surface
+    rows.push({
+      id: `virtual:${insp.id}`, status: "pending_review", decided_at: null, reviewer_id: null,
+      submission_versions: latest,
+      inspections: { id: insp.id, status: insp.status, submitted_at: insp.submitted_at, visits: insp.visits, violations: insp.violations, evidence: insp.evidence },
+    });
+  }
+
   // Factory-data verification readiness (M04-190 / M06-017 / M06-034), batched
   // for every inspection in the page. Tolerant: a missing table (0020 pending)
   // or RLS gap leaves the map empty and marks the fact "unavailable" — never a
@@ -152,7 +184,7 @@ export default async function Reviews() {
     return { readiness: { checklist, evidence, ack, factory }, readable };
   };
 
-  let degraded = !!reviewsErr || !fvReadable;
+  let degraded = !!reviewsErr || !!undiscoveredErr || !fvReadable;
 
   const queueRows: QueueRow[] = rows.map(r => {
     const v = r.inspections?.visits;

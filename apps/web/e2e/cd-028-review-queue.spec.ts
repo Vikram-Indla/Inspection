@@ -126,4 +126,21 @@ test.describe("CD-028 resolved backend legs — source truth", () => {
     expect(list).toMatch(/unavailable/);
     expect(list).toContain("readinessFor");
   });
+
+  test("discoverability fix — the queue surfaces submitted inspections with no reviews row yet", () => {
+    const list = SRC("src/app/reviews/page.tsx");
+    // a second, inspections-first query covers the set no reviews-based query can see
+    expect(list).toMatch(/from\("inspections"\)/);
+    expect(list).toContain('.eq("status", "submitted")');
+    expect(list).toContain("undiscovered");
+    // synthetic rows are pushed into the same rows array real ones use — no
+    // separate rendering path, so filters/readiness/fingerprint apply unchanged
+    expect(list).toMatch(/rows\.push/);
+    // race guard: two reviewers claiming the same now-visible submission at once
+    const migration = SRC("../../supabase/migrations/20260715130000_cd028_one_open_review_per_version.sql");
+    expect(migration).toContain("reviews_one_open_per_version");
+    expect(migration).toMatch(/where decided_at is null/i);
+    const actions = SRC("src/app/reviews/[id]/actions.ts");
+    expect(actions).toContain('error?.code === "23505"');
+  });
 });
