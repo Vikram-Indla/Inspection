@@ -69,10 +69,27 @@ Env wired from the main checkout's `.env.local` (Supabase URL reachable, health
   (unauth body carries 0 `lz-row`, 0 `visits.*` keys). Guard is `Shell.tsx:14`
   `if (!user) redirect("/login")`, unchanged by this branch — pre-existing.
 
-### Still NOT verified
-Authenticated behavioral driving of the admin surfaces (render the localization
-`lz-row` grid, exercise live placeholder-diff / Save-disable, risk weights-sum,
-workflow SoD guard, boundary disclosures). Seeded users are non-admin
-(planner / inspector / ops) — they pass the login guard but hit RLS-empty data on
-control-plane tables, so driving them proves little. **Admin-role credentials or a
-seeded admin user are required** to complete the DEC-012 runtime audit.
+### Authenticated driving — DONE (admin seed account, `scripts/verify-admin.mjs`)
+
+Logged in through the real `/login` UI as `admin@mim.gov.sa` (role
+`compliance_admin`), drove all six surfaces headless (Chromium), asserted R2/R3
+DOM markers, captured full-page screenshots.
+
+| Screen | Route | Result |
+|---|---|---|
+| CD-018 | `/admin/localization` | **PASS** — 1000 `.lz-row` rendered with live `ui_strings`; KPIs 1000/958/0/96 %; AR input + Save + status lozenge + Mark reviewed + history per row; **AR-length risk hint fires** ("Arabic runs long — check narrow layouts") |
+| CD-014 | `/admin/risk` | **PASS after fix** — 5 `.rk-driver`, live `.rk-sum`, `.rk-band` strip |
+| CD-012/013 | `/admin/workflows` | PASS — renders, no error |
+| CD-019 | `/admin/audit` | PASS — `.nya` ×2 boundaries render |
+| CD-017 | `/admin/access` | PASS — `.ax-table` + `.nya` ×2 |
+| CD-015 | `/admin/gis` | PASS — renders |
+
+**Bug found + fixed by this pass:** `/admin/risk` threw a 500 (Server Components
+render error) — `labels.factorName` was a function prop crossing the server→client
+boundary. `tsc` and `next build` both passed; only the authenticated live render
+exposed it. Fixed in `fix(cd-014)` (resolve names server-side). Re-verified green.
+
+This closes the DEC-012 runtime-render audit for the six routes. Interactive
+mutation flows (actually saving a translation, publishing a workflow, saving risk
+weights) were not exercised end-to-end against the DB and remain for a functional
+E2E pass; the render + wiring layer is verified.
