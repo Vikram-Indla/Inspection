@@ -1,0 +1,10 @@
+state_id,trigger,persona,source_query,visible_result,prohibited_false_result,disposition
+S01_POPULATED,library loaded,form_admin,packages+versions+impact,version-led rows + impact,none,current
+S02_LOADING,fetch,any auth,pending,skeleton,counts,current
+S03_EMPTY,no packages,form_admin,empty read,create-first invite,zero-as-fact,current
+S04_VALIDATION,publish fails validateDefinition,form_admin,approveAndPublish,blocked publish + reasons,success,current
+S05_UNAUTHORIZED,non-writer,other,RLS write denied,read-only; publish hidden,enabled publish,current(guard BLOCKED)
+S06_READ_ONLY,published version,any,immutability trigger,read-only w/ reason,editable,current
+S07_STALE,data may have changed,any,no threshold,refresh hint,invented duration,current
+S08_DEGRADED,impact RPC denied/error,any,package_version_impact,impact unavailable; rest renders,zero,current
+S09_RECOVERY,retry,any,re-run RPC,success after return,optimistic success,current

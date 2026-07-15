@@ -1,0 +1,13 @@
+state_id,name,frame_node,announce,notes
+1,Loading,4g-1,role=status,structure first; no invented numbers
+2,First-use empty,4g-2,none,verified zero distinct from unavailable
+3,Publish-blocked context,4g-3,none,fact from package_versions status; no age/SLA; action module-owned
+4,Degraded one source,4a / 4e / 4g-4,role=alert once,isolated row; count unknown not zero; retry per source
+5,All sources fail,4g-5,role=alert,reads failed; no platform/provider verdict
+6,Stale/unverified,4g-6,role=status,age as fact; no threshold verdict
+7,Unauthorized,4g-7,none,designed; wiring HANDOFF_BLOCKED (CD004-QG-04)
+8,Read-only role view,4g-8,none,visibility != authority; no unauthorized affordance
+9,Recovery,4g-9,role=status,recovered source rejoins quietly
+10,Populated,4a / 4h / 4i / 4l,none,AR-first primary; EN dark; light; constrained width
+11,Offline,NOT_APPLICABLE,n/a,server-rendered home; no client mutation
+12,Sync conflict,NOT_APPLICABLE,n/a,same reason

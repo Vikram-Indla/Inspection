@@ -111,10 +111,11 @@ test.describe("CD-005/006 a11y / RTL / responsive (DSG-A11Y-001)", () => {
 });
 
 // DSG-CODE-001 / DEC-012 — code-layer proof of the closures that cannot be forced live.
-test.describe("CD-005/006 wiring (DEC-012): distinct states, direct-only publish, blocked legs, no invented lifecycle", () => {
+test.describe("CD-005/006 wiring (DEC-012): distinct states, maker-checker publish, blocked legs, no invented lifecycle", () => {
   const page = SRC("src/app/admin/regulations/page.tsx");
   const controls = SRC("src/app/admin/regulations/Controls.tsx");
   const actions = SRC("src/app/admin/regulations/actions.ts");
+  const auditMigration = SRC("../../supabase/migrations/20260715173000_admin_configuration_audit.sql");
 
   test("verified-zero and unavailable/unknown are DISTINCT — a failed read never renders zero", () => {
     // Empty = read succeeded, genuinely zero.
@@ -128,17 +129,18 @@ test.describe("CD-005/006 wiring (DEC-012): distinct states, direct-only publish
     expect(page).toContain("unknown ? null : items");
   });
 
-  test("only the direct draft→published publish is wired; no invented validate/approve/lifecycle", () => {
-    // The proven transition, guarded on status=draft, lives in actions.ts unchanged.
-    expect(actions).toContain('.update({ status: "published" })');
+  test("direct draft→published records a distinct checker and locks the result; mapped-clause validation stays blocked", () => {
+    // The proven transition records the checker and remains guarded on status=draft.
+    expect(actions).toContain('.update({ status: "published", approved_by: userId, published_at:');
     expect(actions).toContain('.eq("status", "draft")');
-    // No maker-checker / approve / submit server action was invented.
-    expect(actions).not.toMatch(/approved_by|submitForApproval|makerChecker|maker_checker/);
-    // The contract-safe validated publish is a DISCLOSURE, not a working button.
+    expect(actions).toContain("created_by: userId");
+    expect(auditMigration).toContain("regulations_maker_checker");
+    expect(auditMigration).toContain("trg_guard_published_regulation");
+    // Mapped-clause validation and a successor-version model remain disclosures.
     expect(page).toContain('t("admin.reg.r1.detail.validation.title"');
   });
 
-  test("blocked legs are disabled targets with owners; clause changes are NOT shown as audited", () => {
+  test("blocked read/lineage/validation legs stay disabled; regulation and clause writes disclose audit coverage", () => {
     for (const key of [
       "admin.reg.r1.detail.blocked.validatedPublish",
       "admin.reg.r1.detail.blocked.compare",
@@ -149,9 +151,10 @@ test.describe("CD-005/006 wiring (DEC-012): distinct states, direct-only publish
       expect(page).toContain(`t("${key}"`);
     }
     expect(page).toContain('aria-disabled="true"');
-    // Truthful audit boundary: regulations audited, clauses not.
+    // Write-side audit exists; only the audit-timeline read view remains blocked.
     expect(page).toContain('t("admin.reg.r1.detail.auditNote"');
-    expect(controls).toContain('t');
+    expect(page).toContain("trg_audit_regulation_clauses");
+    expect(auditMigration).toContain("regulation_clauses");
     expect(controls).toContain("clauseNotAudited");
   });
 

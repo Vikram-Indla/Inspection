@@ -1,0 +1,10 @@
+element,value_or_type,source,exact_columns,disposition
+regulation header,text,current,regulations(code,title,issuing_authority,status),current
+clause list,text,current,regulation_clauses(clause_ref,title,applicability,legal_source),current
+mapped items,codes,current,inspection_items.clause_id,current
+publish,transition,current,direct draft->published,current
+clause-validation gate,none,NONE,none,HANDOFF_BLOCKED
+maker-checker,none,NONE,none,HANDOFF_BLOCKED
+published lock,none,NONE,none,HANDOFF_BLOCKED
+version compare/lineage,none,NONE,none,HANDOFF_BLOCKED
+audit timeline (writer persona),none,NONE,audit_events read not granted,HANDOFF_BLOCKED

@@ -1,0 +1,11 @@
+finding_id,severity,original_defect,required_evidence,corrected_artifacts,verification_method,status,notes
+AUD-P0-01,P0,"Repository/source discovery absent","SOURCE_DISCOVERY_LOG + branch/commit/dirty + literal paths","cd-011-r2/SOURCE_DISCOVERY_LOG_CD-011.md; IMPLEMENTATION_MANIFEST_CD-011.yaml","inspect manifest source_* fields",PASS,"CD-011 done; CD-006–010 pending same pass"
+AUD-P0-02,P0,"CD-011 visuals+manifest absent","Complete CD-011 visual set + measured manifest","cd-011-r2/*.png + EVIDENCE_MANIFEST_CD-011.csv","open PNGs; verify hashes",PASS,"8 frames incl native 1024x1366"
+AUD-P0-03A,P0,"CD-006 implied validation/maker-checker/lock/compare/audit","Corrected CD-006 memo+ledger+annotations+wiring",,pending,PENDING,"todo 40"
+AUD-P0-03B,P0,"CD-007 treated confirmed item schema as unknown","Corrected CD-007 source-derived manifest+ledger+wiring",,pending,PENDING,"todo 41"
+AUD-P0-03C,P0,"CD-010 unsupported violation_codes audit/schema/action","Corrected CD-010 memo+ledger+wiring",,pending,PENDING,"todo 44"
+AUD-P0-03D,P0,"CD-011 invented overlap/effective-period/lifecycle/approval/immutability/audit","CD-011 bound to one-to-one schema + blocked legs","cd-011-r2/ full package","inspect frames + wiring blocked rows",PASS,"one-to-one enforced"
+AUD-P1-01,P1,"States asserted without evidence","Per-CD S01–S09 matrix + hard-state evidence","cd-011-r2/STATE_MATRIX_CD-011.csv + hard_states.png","map each state to frame",PASS,"CD-011 done; others pending"
+AUD-P1-02,P1,"1024x1366 files were 700x520","Native 1024x1366 exports","CD-011_SCR-ADM-041_constrained_1024x1366.png","measure dimensions",PASS,"native for CD-011; others pending"
+AUD-P1-03,P1,"Wiring not row-complete","Row-complete/blocked wiring maps","cd-011-r2/WIRING_MAP_CD-011.csv","inspect W01–W10",PASS,"per action+state"
+AUD-P1-04,P1,"CD-008/009 concepts without source pass","Source-derived CD-008/009 artifacts",,pending,PENDING,"todos 42,43"

@@ -37,6 +37,15 @@ test.describe("CD-029 server wiring — integrity guards", () => {
     expect(src).toMatch(/insErr \|\| !transitioned/);
     expect(src).toContain("This review is no longer open. Refresh before deciding.");
   });
+
+  test("read failures fail closed instead of becoming a false no-row or skipped notification", () => {
+    const src = SRC(ACTIONS);
+    expect(src).toContain("const REVIEW_READ_ERROR");
+    expect(src).toContain("existingReadError");
+    expect(src).toContain("currentReadError");
+    expect(src).toContain("inspector notification could not be verified");
+    expect(src).toContain("asgReadError");
+  });
 });
 
 test.describe("CD-029 trace and accessibility wiring", () => {
@@ -51,6 +60,7 @@ test.describe("CD-029 trace and accessibility wiring", () => {
     expect(trace).toContain("source");
     expect(trace).toContain("unavailable");
     expect(trace).not.toMatch(/<svg|<canvas/);
+    expect(page).toMatch(/actionForms\.find\(a => \(violation && a\.violation_id === violation\.id\)\)[\s\S]*\?\? actionForms\.find/);
   });
 
   test("legs 10/13/18 — provider errors and invalid decisions are accessible", () => {

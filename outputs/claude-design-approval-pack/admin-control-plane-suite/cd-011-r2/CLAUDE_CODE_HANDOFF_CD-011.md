@@ -1,0 +1,3 @@
+# CLAUDE_CODE_HANDOFF_CD-011
+NOT EXECUTABLE — SPONSOR DESIGN APPROVAL, INDEPENDENT WIRING AUDIT, AND EXPLICIT IMPLEMENTATION AUTHORIZATION REQUIRED. implementation_authorized: false.
+Scope: penalty logical mode inside apps/web/src/app/admin/violations/* only. Build strictly to the confirmed one-to-one penalty_mappings schema. Never invent effective periods, a lifecycle, maker-checker, immutability, a mapping audit trigger, or monetary/legal values — every such leg is HANDOFF_BLOCKED in WIRING_MAP_CD-011.csv with an owner. FLD-PEN-001 = version is an immutable reference for results, not a row lock. Preserve the frozen shell and the dirty worktree. Codex must audit the wiring map before any authorization.

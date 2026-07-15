@@ -12,8 +12,8 @@ import { storageStatePath } from "./personas";
 // compliance_admin/form_admin via RLS; NO Admin-family route guard is proven, so an
 // Inspector legitimately reaches /admin/items. These runtime specs use the Inspector
 // persona precisely to exercise that truth (visibility != authority) and to prove the
-// read-only spine renders for any authenticated user. inspection_items has NO audit
-// trigger — item changes are never presented as audited.
+// read-only spine renders for any authenticated user. inspection_items writes are
+// audit-tracked at the database; the audit-timeline read view remains unavailable.
 //
 // States that cannot be safely forced against the live backend (S02 loading, S03
 // verified-empty, S04 duplicate rejection, S05 unauthorized, S08 clause-degraded) are
@@ -30,11 +30,12 @@ test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
   test("renders the governed catalogue: title, governance note, blocked-targets panel", async ({ page }) => {
     await page.goto("/admin/items");
     await expect(page.getByRole("heading", { name: /Inspection Item Catalogue/i })).toBeVisible();
-    // Governance truth is stated, not implied: RLS is the authority; no audit trigger.
+    // Governance truth is stated, not implied: RLS is the authority; writes are audited.
     const gov = page.getByRole("region", { name: /How this catalogue is governed/i });
     await expect(gov).toBeVisible();
     await expect(gov).toContainText(/RLS is the authority/i);
-    await expect(gov).toContainText(/no audit trigger/i);
+    await expect(gov).toContainText(/recorded as audit events/i);
+    await expect(gov).toContainText(/audit-trail read view is.*not-yet-granted/i);
     await page.screenshot({ path: join(EVIDENCE_DIR, "catalogue-en-light-1440.png"), fullPage: true });
   });
 
@@ -95,7 +96,9 @@ test.describe("CD-007 blocked legs render as disabled, annotated targets (never 
 
   test("no approve/publish/edit mutation is presented as working; row Edit is disabled", async ({ page }) => {
     await page.goto("/admin/items");
-    await expect(page.getByRole("button", { name: /approve|publish/i })).toHaveCount(0);
+    // The disabled "Published-use warning" target contains the word published;
+    // only enabled mutation controls are prohibited here.
+    await expect(page.locator("button:not(:disabled)").filter({ hasText: /approve|publish/i })).toHaveCount(0);
     const rowEdit = page.locator("table.ax-table tbody").getByRole("button", { name: /^Edit$/ }).first();
     await expect(rowEdit).toBeDisabled();
   });
@@ -177,11 +180,14 @@ test.describe("CD-007 wiring (DEC-012): proven legs wired; unproven legs stay bl
     expect(controls).toContain("clauseUnavailable");
   });
 
-  test("blocked legs stay blocked — no invented audit event, usage count, or route guard", () => {
+  test("row-write audit is proven; audit read, usage count, and route guard stay blocked", () => {
     // No route-guard redirect invented on this route (guard is HANDOFF_BLOCKED).
     expect(page).not.toContain("redirect(");
-    // Item changes are NOT presented as audited (no audit_events read/write here).
-    expect(page).not.toContain("audit_events");
+    expect(page).toContain("trg_audit_inspection_items");
+    expect(page).toContain("audit_events read is not granted");
+    // Neither component performs an audit-timeline read.
+    expect(page).not.toContain('.from("audit_events")');
+    expect(actions).not.toContain('.from("audit_events")');
     // Published-use is surfaced as a target with an 'unavailable' state, never a count.
     expect(page).toContain("admin.items.r2.usage.unavailable");
     expect(page).toContain("HANDOFF_BLOCKED");

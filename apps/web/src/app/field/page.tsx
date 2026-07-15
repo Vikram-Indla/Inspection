@@ -184,6 +184,9 @@ export default async function Field() {
     inboxEmpty: t("field.home.inbox.empty", "Nothing new — assignment and planning updates land here."),
     markRead: t("field.home.inbox.markRead", "Mark read"),
     unreadBadge: t("field.home.inbox.unread", "unread"),
+    rescheduleHint: t("field.home.reschedule.hint", "Drag to another day to request a reschedule"),
+    rescheduleSent: t("field.home.reschedule.sent", "Reschedule request sent to the planner; the visit stays unchanged until approved."),
+    rescheduleFailed: t("field.home.reschedule.failed", "Reschedule request could not be sent; the visit stays unchanged."),
   };
 
   const headingStyle: React.CSSProperties = { font: "var(--ax-text-heading)", margin: 0 };

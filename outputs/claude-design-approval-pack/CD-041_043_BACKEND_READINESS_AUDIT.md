@@ -21,7 +21,8 @@ The live-video provider remains pending. No backend work may fabricate video con
 
 The correct guard was authored: migration `supabase/migrations/20260715170000_cd041_verified_transition_guard.sql` defines a `security invoker`, RLS-scoped `vs_mark_session_verified(p_session, p_participant)` that, in one transaction, locks the session `for update`, requires the named participant to be a `factory_rep` with `verified_at is not null`, requires that **no** factory-representative participant is left unverified, advances `state → verified` forward-only, and appends the `verified` timeline event atomically. `apps/web/src/app/virtual/[id]/actions.ts:markSessionVerified` calls it with `p_participant`; `Room.tsx` passes `participant_id`, never a display name. The forward-only trigger `guard_virtual_transition` (0018) is preserved.
 
-**However, the migration is not applied to the configured live Supabase project.** Proven by the driven E2E `apps/web/e2e/cd-041-virtual-verified-gate.spec.ts` and a direct PostgREST call:
+The initial live probe found the migration absent. The historical probe returned
+the following, before the owner-approved application:
 
 ```
 POST /rest/v1/rpc/vs_mark_session_verified  → 404 PGRST202
@@ -29,11 +30,18 @@ POST /rest/v1/rpc/vs_mark_session_verified  → 404 PGRST202
 POST /rest/v1/rpc/vp_otp_status             → 200   (an applied 0018 function, for contrast)
 ```
 
-Consequence in the running system: OTP verification sets `virtual_participants.verified_at`, but `markSessionVerified` hits the missing RPC, errors, and the session **never advances to `verified`** — so **no remote inspection can begin**. The earlier source-grep test `cd-041-virtual-backend.spec.ts` passes because it only reads the migration file; it cannot see that the function is absent from the database.
+At that point, OTP verification could set `virtual_participants.verified_at`,
+but `markSessionVerified` hit the missing RPC and the session could not advance
+to `verified`. The source-grep test `cd-041-virtual-backend.spec.ts` was
+insufficient by itself because it only read the migration file.
 
 **Closure (2026-07-15):** migration `20260715170000` applied to live project `iiozvqntawxfwbgffzqu` via the Supabase Management API using an owner-provided access token; PostgREST schema cache reloaded. Verified: `pg_proc` shows `vs_mark_session_verified(p_session uuid, p_participant uuid)` as `security invoker`; `POST /rpc/vs_mark_session_verified` now returns `400` (was `404 PGRST202`); driven E2E `cd-041-virtual-verified-gate.spec.ts` is **6/6 green**. The provided token is owner-flagged for rotation.
 
-Other follow-ups recorded in `outputs/cd-041-r1/WIRING_AUDIT_CD-041.md`: WA-02 `beginRemote` atomicity + WA-03/04 client eventual-consistency (addressed in source 2026-07-15); WA-05 driven E2E authored and now blocked on this unapplied migration (WA-06).
+Other follow-ups recorded in `outputs/cd-041-r1/WIRING_AUDIT_CD-041.md`: WA-02
+`beginRemote` atomicity and WA-03/04 client eventual-consistency were addressed
+in the 2026-07-15 source changes. CD-041 is not a release approval for the
+unimplemented CD-042/CD-043 design packages or for the separate
+arrival-evidence migration.
 
 ## Why implementation did not start
 

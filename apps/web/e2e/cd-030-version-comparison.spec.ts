@@ -43,6 +43,7 @@ test.describe("CD-030 source truth — scope authority, unavailable ≠ unchange
     const page = SRC(PAGE);
     expect(page).toMatch(/returned_sections/);
     expect(page).toMatch(/decidedReturns\[decidedReturns\.length - 1\]/);
+    expect(page).toMatch(/decidedReturns[\s\S]*\.sort\(\(a, b\) => String\(a\.decided_at\)/);
   });
 
   test("leg 6/9 — an unknown/unscoped change is 'unavailable', NEVER 'unchanged'", () => {
@@ -111,6 +112,21 @@ test.describe("CD-030 source truth — scope authority, unavailable ≠ unchange
     expect(page).toMatch(/\.maybeSingle\(\)/);
     expect(page).toMatch(/outside your permitted scope/);
   });
+
+  test("leg 1/16 — not-found, degraded, and read-only role states stay distinct", () => {
+    const page = SRC(PAGE);
+    // A zero-row result is rendered as Not found/outside-scope, while a real
+    // provider failure uses the degraded load-error copy. This guards the
+    // distinction that the older audit reports found missing under `.single()`.
+    expect(page).toMatch(/insErr\s*\?\s*t\("review\.ws\.loadError"/);
+    expect(page).toMatch(/t\("review\.ws\.notFound"/);
+    expect(page).toMatch(/t\("review\.ws\.notFoundDesc"/);
+    // Read-admitted non-deciding roles receive a visible badge and no mutation
+    // controls; reviewer/ops remain the only decision-capable roles.
+    expect(page).toMatch(/readOnlyRole/);
+    expect(page).toMatch(/!canDecide/);
+    expect(page).toMatch(/canDecide[\s\S]*reviewer[\s\S]*ops/);
+  });
 });
 
 test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", () => {
@@ -161,7 +177,10 @@ test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", ()
     const opened = await openFirstWorkspace(page);
     test.skip(!opened, "no reviews in this environment to open");
     await expect(page.getByRole("heading", { name: /Tamper-evident Scope Rail/i })).toBeVisible();
-    const rows = page.locator('tr[id^="cmp-"]');
+    // Unchanged rows intentionally remain in the comparison table and their
+    // rail category is collapsed by default. Target a changed row whose rail
+    // category is open, so this verifies changed-answer navigation exactly.
+    const rows = page.locator('tr[id^="cmp-"][data-changed="true"]');
     if (await rows.count() === 0) {
       await expect(page.getByRole("status").filter({ hasText: /No prior version to compare/i })).toHaveCount(1);
       return;

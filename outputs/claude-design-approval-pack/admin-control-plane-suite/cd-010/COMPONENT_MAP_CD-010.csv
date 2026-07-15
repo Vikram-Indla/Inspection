@@ -1,0 +1,7 @@
+design_component_or_state,existing_or_proposed_code_component,css_selector_or_token,notes
+Catalogue table,apps/web/src/app/admin/violations/page.tsx,ax-table semantics,HANDOFF_BLOCKED columns
+Trace Ribbon (signature),page.tsx disclosure region,ordered-list chain,response->clause->violation->action; downstream not evaluated
+Severity indicator,ax-lozenge,glyph+word+color,never color alone
+Orphan/duplicate flags,ax-lozenge,◐ + word,elevated rows
+Lifecycle actions (add/deactivate),apps/web/src/app/admin/violations/Controls.tsx,buttons,deactivation non-destructive
+Usage count,proposed query,none,HANDOFF_BLOCKED

@@ -13,10 +13,32 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const { id } = await params;  // inspection id
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  const { data: roleRows } = user
+  const { data: { user }, error: authError } = await sb.auth.getUser();
+  if (authError) {
+    console.error("[review workspace auth read]", authError.message, authError.code);
+    return (
+      <Shell current="/reviews" title={t("review.ws.loadError", "Could not load")}>
+        <section className="ax-surface cd-panelpad cd-result" role="alert">
+          <h3 tabIndex={-1}>{t("review.ws.loadError", "Could not load")}</h3>
+          <p>{t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")}</p>
+        </section>
+      </Shell>
+    );
+  }
+  const { data: roleRows, error: roleReadError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
-    : { data: null };
+    : { data: null, error: null };
+  if (roleReadError) {
+    console.error("[review workspace role read]", roleReadError.message, roleReadError.code);
+    return (
+      <Shell current="/reviews" title={t("review.ws.loadError", "Could not load")}>
+        <section className="ax-surface cd-panelpad cd-result" role="alert">
+          <h3 tabIndex={-1}>{t("review.ws.loadError", "Could not load")}</h3>
+          <p>{t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")}</p>
+        </section>
+      </Shell>
+    );
+  }
   // RLS (0002_rbac_audit.sql: inspections_read/subs_read/reviews_read) and the
   // CD-030 design scope itself ("P11 · Reviewer/Auditor") grant auditor,
   // planner and leadership read access to this record — the page-level gate
@@ -88,7 +110,13 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const sectionsDef = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[] } }).definition.sections;
   const itemSection: ItemSection = {};
   sectionsDef.forEach(s => (s.items ?? []).forEach(it => { itemSection[it] = { key: s.key, title: s.title }; }));
-  const decidedReturns = reviews.filter(r => { return !!r.decided_at && !!r.returned_sections && r.returned_sections.length > 0; });
+  // Relation order is not a contract of the nested Supabase read. Sort the
+  // stored return decisions explicitly before choosing the latest authority;
+  // otherwise the scope rail could classify against an older return merely
+  // because the database returned child rows in a different order.
+  const decidedReturns = reviews
+    .filter(r => { return !!r.decided_at && !!r.returned_sections && r.returned_sections.length > 0; })
+    .sort((a, b) => String(a.decided_at).localeCompare(String(b.decided_at)));
   const scopeReview = decidedReturns.length ? decidedReturns[decidedReturns.length - 1] : null;
   const returnedScope = scopeReview?.returned_sections ?? null;
   const scopeLabel = scopeReview
@@ -117,7 +145,11 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     const response = item ? responses.find(r => r.item_id === item.id) : undefined;
     const finding = item ? findings.find(f => f.item_id === item.id) : undefined;
     const violation = violations.find(v => (finding && v.finding_id === finding.id) || (response && v.triggered_by_response === response.id));
-    const action = actionForms.find(a => (item && a.item_id === item.id) || (violation && a.violation_id === violation.id));
+    // Prefer the explicit violation → corrective-action FK when present. An
+    // item-level action is only the fallback; choosing it first could display
+    // a different action when both the item and its violation have forms.
+    const action = actionForms.find(a => (violation && a.violation_id === violation.id))
+      ?? actionForms.find(a => (item && a.item_id === item.id));
     const linkedEvidence = evidenceRows.filter(e =>
       (item && e.linked_type === "item" && e.linked_id === item.id) ||
       (finding && e.linked_type === "finding" && e.linked_id === finding.id) ||

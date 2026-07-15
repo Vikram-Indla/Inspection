@@ -1,0 +1,8 @@
+wiring_id,state_or_action_id,ui_trigger,route_server_action,validation_guard,table_rpc,rls_role,audit_event,success_result,negative_result,disposition,blocker_owner
+W01,S01,open catalogue,server read,authenticated,violation_codes + nested penalty summary,SELECT auth,none,rows,unavailable not zero,current,none
+W02,S04,create code,createViolationCode,code+title+level+clause+active_from,violation_codes insert,writes compliance/form,trg_audit_violation_codes,code created,duplicate(unique)/missing required,current,none
+W03,active/future/deactivated,derive,client,active_from/active_to+now,none,n/a,none,derived label,n/a,current,none
+W04,legal basis (row),none,none,belongs to penalty mapping,none,none,none,none,none,HANDOFF_BLOCKED,backend
+W05,usage count,none,none,none,none,none,none,none,none,HANDOFF_BLOCKED,backend
+W06,deactivate action,none,none,none,none,none,none,none,none,HANDOFF_BLOCKED,product/backend
+W07,S05,unauthorized,route guard,Admin-family guard,none,none,none,denial,n/a,HANDOFF_BLOCKED,platform

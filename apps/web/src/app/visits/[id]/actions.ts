@@ -59,10 +59,11 @@ export async function republishVisit(_: ActionResult, fd: FormData): Promise<Act
   const id = String(fd.get("visit_id"));
   const { error } = await sb.from("visits").update({ planning_status: "published" }).eq("id", id).eq("planning_status", "returned");
   if (error) return { error: mapError(error, "update") };
-  // M02-009/030 — the assigned inspector is notified on republish.
-  const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
-  if (asg?.inspector_id) await insertNotification(sb, { event_key: "visit_republished", recipient: asg.inspector_id, payload: { visit_id: id } });
+  // M02-009/030 — the assigned inspector is notified on republish. Surface a
+  // failed queue write explicitly; never claim the notification was queued.
+  const nErr = await notifyAssignedInspector(sb, id, "visit_republished", {});
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
+  if (nErr) return { error: "Republished — same Visit ID retained, but the inspector notification could not be queued (M02-009)" };
   return { ok: "Republished — same Visit ID retained; inspector notification queued (not confirmed delivered) (M02-009)" };
 }
 

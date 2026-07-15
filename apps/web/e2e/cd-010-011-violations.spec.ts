@@ -20,6 +20,7 @@ const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screen
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 const PAGE = SRC("src/app/admin/violations/page.tsx");
 const ACTIONS = SRC("src/app/admin/violations/actions.ts");
+const AUDIT_MIGRATION = SRC("../../supabase/migrations/20260715173000_admin_configuration_audit.sql");
 
 test.use({ storageState: storageStatePath("inspector") });
 
@@ -63,7 +64,7 @@ test.describe("CD-010 catalogue mode — populated, trace, derived lifecycle (AC
   test("blocked contract targets render as disabled, annotated buttons (CD-010)", async ({ page }) => {
     await page.goto("/admin/violations");
     await expect(page.getByRole("heading", { name: /Contract targets — not enabled/i })).toBeVisible();
-    for (const leg of ["category", "applicability", "edit", "version", "deactivate", "usage-count", "trigger-trace", "audit-trigger"]) {
+    for (const leg of ["category", "applicability", "edit", "version", "deactivate", "usage-count", "trigger-trace", "audit-timeline"]) {
       const btn = page.locator(`button[data-blocked-leg="${leg}"]`);
       await expect(btn).toHaveCount(1);
       await expect(btn).toBeDisabled();
@@ -72,26 +73,33 @@ test.describe("CD-010 catalogue mode — populated, trace, derived lifecycle (AC
 });
 
 test.describe("CD-011 penalty mode — Mapping Validation Lens + one-to-one record (AC-0461..0478)", () => {
-  test("S01: lens shows exactly the four proven checks and a one-to-one record", async ({ page }) => {
+  test("S01: lens shows exactly four proven checks and a truthful mapping state for every violation", async ({ page }) => {
     await page.goto("/admin/violations?mode=penalty");
     await expect(page.getByRole("tab", { name: /Penalty mapping/i })).toHaveAttribute("aria-selected", "true");
     await expect(page.getByRole("heading", { name: /Mapping Validation Lens/i })).toBeVisible();
     // Four checks — no fifth capability implied.
     const lens = page.getByRole("heading", { name: /Mapping Validation Lens/i }).locator("xpath=ancestor::section");
     await expect(lens.locator("li")).toHaveCount(4);
-    // Seed maps all three violations → each lens status is satisfied one-to-one.
-    await expect(page.getByText(/one-to-one mapping satisfied/i).first()).toBeVisible();
-    // Record surfaces the penalty_ref + immutable mapping_version reference (FLD-PEN-001).
-    await expect(page.getByText("P-001").first()).toBeVisible();
-    await expect(page.getByText(/immutable reference for inspection results/i).first()).toBeVisible();
+    // Live verification data may be mapped or genuinely unmapped. Every violation
+    // must have exactly one explicit state; an absent mapping is never fabricated.
+    const mapped = page.getByText(/one-to-one mapping satisfied/i);
+    const unmapped = page.getByText(/no mapping yet — one is required/i);
+    expect(await mapped.count() + await unmapped.count()).toBe(3);
+    if (await mapped.count()) {
+      await expect(page.getByText(/immutable reference for inspection results/i).first()).toBeVisible();
+    } else {
+      await expect(page.getByText(/Unmapped — a compliance\/form admin can add the mapping/i).first()).toBeVisible();
+    }
     await page.screenshot({ path: join(EVIDENCE_DIR, "cd011-penalty-en-light-1440.png"), fullPage: true });
   });
 
   test("penalty presets render as tokens, never as monetary or legal values", async ({ page }) => {
     await page.goto("/admin/violations?mode=penalty");
-    // The record shows the governed preset token, never an amount.
-    await expect(page.getByText(/Range preset/i).first()).toBeVisible();
-    await expect(page.getByText(/approved/i).first()).toBeVisible();
+    // A mapped record shows governed tokens; a genuinely unmapped state must not
+    // invent a preset.
+    const rangePreset = page.getByText(/Range preset/i);
+    if (await rangePreset.count()) await expect(rangePreset.first()).toBeVisible();
+    else await expect(page.getByText(/no mapping yet — one is required/i).first()).toBeVisible();
     // No currency/amount leaks anywhere on the page.
     await expect(page.getByText(/SAR|\$|ريال/).first()).toHaveCount(0);
   });
@@ -198,10 +206,12 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
     expect(ACTIONS).not.toMatch(/SAR|ريال|amount:|price/);
   });
 
-  test("no audit trigger is claimed on violation_codes or penalty_mappings", () => {
-    // Neither the page nor the actions write or read an audit_events row for these.
-    expect(PAGE).not.toContain("audit_events");
-    expect(ACTIONS).not.toContain("audit_events");
+  test("row writes are audit-triggered while the audit-timeline read view stays blocked", () => {
+    expect(AUDIT_MIGRATION).toContain("'violation_codes','penalty_mappings'");
+    expect(AUDIT_MIGRATION).toContain("trg_audit_%s");
+    expect(PAGE).toContain("audit-timeline read view is not granted");
+    expect(PAGE).not.toContain('.from("audit_events")');
+    expect(ACTIONS).not.toContain('.from("audit_events")');
   });
 
   test("the contract route /admin/penalties is NOT created as a live URL", () => {
@@ -209,7 +219,7 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
   });
 
   test("every blocked leg is annotated in the page as a disabled target", () => {
-    for (const leg of ["category", "applicability", "edit", "version", "deactivate", "usage-count", "trigger-trace", "audit-trigger",
+    for (const leg of ["category", "applicability", "edit", "version", "deactivate", "usage-count", "trigger-trace", "audit-timeline",
                        "effective-periods", "overlap-gap", "cardinality", "lifecycle", "maker-checker", "immutability", "mapping-audit", "route-guard"]) {
       expect(PAGE).toContain(`"${leg}"`);
     }

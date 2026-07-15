@@ -1,36 +1,41 @@
 schema_version: "1.2"
-task_id: "TASK-BASELINE-WIRING-AUDIT-001"
-gate: "G11 production-readiness wiring audit and sponsor-authorized baseline consolidation"
-title: "CD-001..003 and CD-020..024 design-to-live wiring, branch reconciliation, and main baseline"
-status: "BASELINE_PUSHED_REMOTE_VERIFIED_WITH_DEFAULT_BRANCH_BLOCKER"
+task_id: "TASK-G11-REMEDIATION-001"
+parent_task_id: "TASK-BASELINE-WIRING-AUDIT-001"
+gate: "G11 production-readiness remediation"
+title: "CD-005..011, CD-025, CD-028, CD-030 and dashboard defect remediation"
+status: "APPROVED_IN_PROGRESS"
 enforce_stop_gate: false
 broad_implementation_allowed: true
+approval_ref: "HUMAN_APPROVALS.yaml#G11-remediation-CD-005-011-CD-025-CD-028-CD-030-dashboard"
 
 sponsor_direction:
   approver: "Vikram Indla"
-  date: "2026-07-14"
+  date: "2026-07-16"
   authorization:
-    - "Audit CD-001, CD-002, CD-003 and CD-020 through CD-024 from a complete wiring perspective."
-    - "Audit every delivered design and every D2L/design-to-live opportunity, including cross-screen dependencies."
-    - "Implement every contract-authorized wiring closure that can be safely proven."
-    - "Review every branch and stash, preserve concurrent Claude Code work, then commit, merge and push the verified baseline to main."
-    - "Delete stale branches only after proving their unique work is represented in the baseline."
+    - "Implement and verify the G11 remediation slice for CD-005 through CD-011, CD-025, CD-028, CD-030 and TASK-WEB-DASHBOARD-002."
+    - "Treat the CD-006 through CD-011 R2 frontend designs as sponsor-approved and implementation-authorized for this slice."
+    - "Work locally on a feature branch/worktree and preserve all concurrent changes."
   change_control_effect:
-    - "This direction supersedes older no-commit/no-push/no-main restrictions for this baseline task only."
+    - "This direction supersedes the CD-006 through CD-011 frontend/design authorization stop for this remediation slice only."
+    - "It authorizes local feature-branch code, tests, evidence and contract/session records; it does not authorize main modification/merge, production deployment or live DDL."
     - "It does not authorize invented product policy, weakening accepted behavior, destructive cleanup before reconciliation, production deployment, or self-approval of unresolved business decisions."
 
-branch_at_start: "feat/cd-022-single-identity-lens"
+branch_at_start: "feat/admin-control-plane"
+head_at_start: "c6187cb41a7b"
 remote_at_start:
   default_ref: "origin/setup/Inspection"
   remote_main_exists: false
   remote_heads: ["setup/Inspection"]
 concurrency_note: "Claude Code and Claude Design are running in parallel; all pre-existing and newly appearing changes must be attributed, preserved, audited, and reconciled before baseline creation."
 
-prompt_ids: ["CD-001", "CD-002", "CD-003", "CD-020", "CD-021", "CD-022", "CD-023", "CD-024"]
-process_ids: ["AUTH", "P01", "P02", "P03"]
+prompt_ids: ["CD-001", "CD-002", "CD-003", "CD-005", "CD-006", "CD-007", "CD-008", "CD-009", "CD-010", "CD-011", "CD-020", "CD-021", "CD-022", "CD-023", "CD-024", "CD-025", "CD-028", "CD-030", "TASK-WEB-DASHBOARD-002"]
+process_ids: ["AUTH", "P00", "P01", "P02", "P03", "P10", "P11", "P12"]
 requirement_ids:
   - "MVP1-M01-001..052"
   - "MVP1-M02-012"
+  - "MVP1-M06-001..053"
+  - "MVP1-M08-001..019"
+  - "MVP1-M09-001..030"
   - "MVP1-FND-001"
   - "MVP1-FND-002"
   - "MVP1-FND-003"
@@ -39,8 +44,8 @@ requirement_ids:
   - "MVP1-FND-010..013"
   - "RBAC-001..014"
   - "ERR-AUTH-001"
-screen_ids: ["AUTH-01", "AUTH-02", "AUTH-03", "SCR-WEB-100", "SCR-WEB-110", "SCR-WEB-120", "SCR-WEB-130", "SCR-WEB-140", "SCR-IPAD-610", "SCR-IPAD-620"]
-engine_ids: ["ENG-02", "ENG-03", "ENG-04", "ENG-05", "ENG-06", "ENG-11", "ENG-12"]
+screen_ids: ["AUTH-01", "AUTH-02", "AUTH-03", "SCR-ADM-010", "SCR-ADM-011", "SCR-ADM-020", "SCR-ADM-030", "SCR-ADM-031", "SCR-ADM-040", "SCR-ADM-041", "SCR-WEB-100", "SCR-WEB-110", "SCR-WEB-120", "SCR-WEB-130", "SCR-WEB-140", "SCR-WEB-150", "SCR-WEB-300", "SCR-WEB-320", "SCR-WEB-500", "SCR-IPAD-610", "SCR-IPAD-620"]
+engine_ids: ["ENG-01", "ENG-02", "ENG-03", "ENG-04", "ENG-05", "ENG-06", "ENG-07", "ENG-08", "ENG-09", "ENG-11", "ENG-12"]
 acceptance_ids:
   - "CD-001 P0/P1 runtime gate"
   - "UX-BS-009"
@@ -50,8 +55,17 @@ acceptance_ids:
   - "DSG-CODE-001"
   - "AC-0001..AC-0052"
   - "AC-0064"
+  - "AC-0430..AC-0478"
+  - "DASH-001..DASH-016"
+  - "DSG-020"
+  - "DSG-023"
+  - "DSG-025"
 
 dependencies:
+  - "Sponsor approval recorded 2026-07-16 for TASK-G11-REMEDIATION-001 and the CD-006 through CD-011 R2 frontend designs."
+  - "Current admin backend maker-checker/audit/RLS changes and live-applied 20260715173000_admin_configuration_audit.sql must be reconciled with the R2 blocked-leg manifests and tests."
+  - "CD-028 explicit Start Review must preserve canonical submitted -> under_review behavior and one-open-review race handling."
+  - "Dashboard aggregations must preserve DASH-001..016 formula/denominator truth, RLS scope, Asia/Riyadh date boundaries and unavailable-source semantics while removing O(total-history) navigation."
   - "Accepted CD-001 public-safe login baseline, Supabase auth, neutral errors, FND-003 audit and /launch RBAC routing."
   - "Sponsor-accepted shared authenticated shell and role-scoped navigation."
   - "Published/locked package versions, Planner/Inspector roles, RLS and append-only audit."
@@ -60,6 +74,8 @@ dependencies:
   - "CD-024 route/screen ownership must be reconciled before implementation: governed /planning/:id/configure versus current /planning/bulk/review and read-only /planning/plans/:id."
 
 open_decisions:
+  - "Admin R2 HANDOFF_BLOCKED legs without a proven current backend/source remain blocked even though the frontend design is sponsor-approved."
+  - "CD-025 route ownership remains unchanged; this slice fixes exact verification and proven runtime defects only."
   - "DEC-003 SLA calendar remains open; no default duration, SLA clock, pause or escalation value may be invented."
   - "DEC-012 requires an independent recorded wiring audit per implemented CD slice; implementation/self-review is not a substitute."
   - "CD-024 SCR-WEB-120/140 route and ownership collision is unresolved and blocks code implementation of the dedicated workspace."
@@ -71,19 +87,35 @@ do_not_touch:
   - "Do not edit applied migrations in place; add forward migrations only when the contract requires one."
   - "Do not directly mutate workflow status, immutable submitted versions, official factory master coordinates, or offline/server conflicts."
   - "Do not claim notification delivery, provider success, SLA/risk/capacity/proximity/travel values, or policy that the runtime cannot prove."
-  - "Do not implement CD-024 or CD-025 blocked route/lifecycle legs until the upstream governance decision is recorded."
+  - "Do not implement CD-024 or CD-025 blocked route/lifecycle legs beyond the exact sponsor-approved remediation; the unresolved canonical route decision remains blocked."
+  - "Do not edit the frozen shared shell, invent admin policy/lifecycle/provider values, or weaken fail-closed/RLS/maker-checker/audit behavior."
   - "Do not discard, reset, overwrite, or silently absorb concurrent Claude changes, stashes, evidence, or build artefacts."
   - "Do not deploy production as part of this baseline task."
 
 authorized_file_scope:
-  - "Read-only audit of the complete repository, every local/remote branch, worktree, stash, delivered design package and evidence record."
-  - "apps/web/src/app/login, reset, launch, planning, field startup handoff, and shared shell only for proven P0/P1 wiring defects."
+  - "apps/web/src/app/admin/regulations, admin/items, admin/packages and admin/violations for CD-005 through CD-011 R2 reconciliation."
+  - "apps/web/src/app/planning/bulk/review and cd-025 exact verification only; no new governed route."
+  - "apps/web/src/app/reviews/[id] for CD-028 Start Review continuity and CD-030 comparison navigation."
+  - "apps/web/src/app/dashboard for TASK-WEB-DASHBOARD-002 bounded, source-backed query performance."
+  - "Admin R2 manifests/status, HUMAN_APPROVALS.yaml and TASK-G11-REMEDIATION-001 evidence/session records."
   - "apps/web/e2e and existing verification scripts for exact positive, negative, role, audit, RTL/theme/responsive and regression proof."
   - "supabase/migrations/tests only for forward-only contract corrections; no live database mutation without existing authorization and reproducible evidence."
-  - "outputs/cd-001..024, product-contract acceptance/evidence/governance/execution/session records, and a branch/baseline audit report."
-  - "Git commits, merges, branch creation/deletion and push to main after the worktree is clean and the verified baseline is reproducible."
+  - "Relevant outputs plus product-contract acceptance/evidence/governance/execution/session records."
 
 task_specific_context:
+  - "product-contract/business/master_end_to_end_process.md"
+  - "product-contract/evidence/TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/CD006_CD011_CORRECTION_STATUS.yaml"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-006-r2/*"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-007-r2/*"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-008-r2/*"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-009-r2/*"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-010-r2/*"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-011-r2/*"
+  - "outputs/cd-025/*"
+  - "outputs/cd-030/*"
+  - "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md"
+  - "product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md"
   - "product-contract/governance/CODEX_WIRING_AUDIT_CHECKLIST.md"
   - "product-contract/screens/screen_route_catalogue.csv"
   - "product-contract/domain/field_dictionary.csv"
@@ -103,28 +135,27 @@ task_specific_context:
   - "product-contract/evidence/screens/immediate-v2/*"
 
 required_tests:
-  - "Branch/stash/worktree provenance and unique-commit audit; no unique validated work lost."
+  - "CD-005 through CD-011 source/runtime/RBAC/audit/maker-checker/RTL/theme/responsive tests reconciled to the approved R2 designs and current backend truth."
+  - "CD-025 blocker-first workspace verification uses exact accessible selectors and does not mask duplicated semantics."
+  - "CD-028 Start Review succeeds once, refreshes only after action completion, renders DecisionPanel and preserves race/error negatives."
+  - "CD-030 rail navigation targets a rendered changed row and preserves stored-scope/no-prior/unavailable truth."
+  - "Dashboard view/filter/theme navigation remains interactive under current live data volume with source-backed results, bounded reads and unchanged formula tests."
+  - "Focused remediation suite followed by the complete 275-test no-exclusion regression; every P0/P1 failure fixed and rerun."
   - "Per-row DEC-012 audit for every implemented wiring map with exact code/test/runtime evidence."
-  - "Authentication, anti-enumeration reset, /launch role/no-workspace/unauthorized routing and protected-route negatives."
-  - "CD-020 planning-home route/card/draft/degraded/role wiring."
-  - "CD-021 criteria/search/selection/review/atomic publish/RLS/audit/notification/idempotency/failure truth."
-  - "CD-022 identity search, ambiguity, duplicate/location/package/assignment/atomicity/retry/role/failure truth."
-  - "CD-023 dual-role, urgency, identity/location/package/window/assignment/atomicity/idempotency/audit/notification/field-handoff/error-sink truth."
-  - "CD-024 design-map blocked rows and current P02 subset checked against runtime without inventing the unresolved route."
   - "Typecheck, production build, color-law/static safety scans, focused Playwright specs, then complete Playwright regression with no exclusions."
-  - "Git diff check, clean baseline checkout verification, remote main existence/tip verification after push."
+  - "Git diff check and preservation of every pre-existing/concurrent worktree change."
 
 required_evidence:
-  - "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md"
-  - "Recorded per-slice audit companions for CD-001/002/003/020/021/022/023/024 as applicable."
+  - "product-contract/evidence/TASK-G11-REMEDIATION-001.md"
+  - "Focused test transcripts and the complete no-exclusion regression summary, including exact pass/fail/skip counts."
   - "Updated CURRENT_STATE.md, SESSION_LEDGER.json, WORK_QUEUE.yaml, ACCEPTANCE_STATUS.md, EVIDENCE_STATUS.md and AC ledger/summary where source status changes."
-  - "Final commit graph, branch disposition table, test transcript summary, baseline commit SHA and remote main SHA."
+  - "Final local diff attribution and test transcript summary."
 
 exit_condition: >-
-  Every implemented CD-001/002/003/020/021/022/023 wiring leg is either independently
-  verified PASS or fixed and then independently reverified; CD-024 and any later delivered
-  design rows are truthfully recorded PASS or BLOCKED_UPSTREAM without invented behavior;
-  all required focused and full tests pass without exclusions; concurrent work and stashes
-  are reconciled without loss; acceptance/evidence/session records are current; the validated
-  commit graph is consolidated to main and the exact main tip is pushed and verified before
-  any stale branch is deleted.
+  TASK-G11-REMEDIATION-001 exits only when the 20-failure baseline is reconciled,
+  every confirmed application/test defect is fixed, all CD-005..011 approval/runtime
+  conflicts are truthfully aligned, typecheck/build/static checks pass, and a fresh
+  complete no-exclusion regression has zero failures with every skip explained;
+  then the parent baseline may resume under its own separate authorization. This slice does
+  not merge or modify main, deploy production, apply live DDL, delete branches, or perform
+  destructive cleanup.

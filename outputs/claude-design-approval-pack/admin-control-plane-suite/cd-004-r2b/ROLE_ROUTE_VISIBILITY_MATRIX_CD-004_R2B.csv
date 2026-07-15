@@ -1,0 +1,10 @@
+route,destination,compliance_admin,form_admin,workflow_admin,security_admin,gis_admin,risk_owner,authority,enforcement_note
+/admin,Approval & Configuration home,visible,visible,visible,visible,visible,visible,shell-navigation.ts roles=adminRoles,route guard HANDOFF_BLOCKED
+/admin/regulations,Compliance Library,linked,read-only*,read-only*,read-only*,read-only*,read-only*,roles=[compliance_admin],module guard reconciliation BLOCKED
+/admin/packages,Packages & Surveys,linked,linked,read-only*,read-only*,read-only*,read-only*,"roles=[form_admin, compliance_admin]",module guard reconciliation BLOCKED
+/admin/violations,Enforcement Library,linked,read-only*,read-only*,read-only*,read-only*,read-only*,roles=[compliance_admin],module guard reconciliation BLOCKED
+/admin/workflows,Workflow Configuration,read-only*,read-only*,linked,read-only*,read-only*,read-only*,roles=[workflow_admin],module guard reconciliation BLOCKED
+/admin/risk,Risk Configuration,read-only*,read-only*,read-only*,read-only*,read-only*,linked,roles=[risk_owner],module guard reconciliation BLOCKED
+/admin/gis,GIS Configuration,read-only*,read-only*,read-only*,read-only*,linked,read-only*,roles=[gis_admin],module guard reconciliation BLOCKED
+/admin/access,Users & Roles,read-only*,read-only*,read-only*,linked,read-only*,read-only*,roles=[security_admin],module guard reconciliation BLOCKED
+/admin/audit,Audit trail browser,linked,linked,linked,linked,linked,linked,current home links it; RLS-scoped browse,append-only preserved

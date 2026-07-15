@@ -234,7 +234,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                 <th>{strings.colClass}</th>
               </tr></thead>
               <tbody>{rows.map(r => (
-                <tr key={r.key} id={`cmp-${r.key}`} tabIndex={-1}
+                <tr key={r.key} id={`cmp-${r.key}`} data-changed={r.changed ? "true" : "false"} tabIndex={-1}
                   ref={el => { rowRefs.current[r.key] = el; }}
                   style={r.category === "unexpected" ? { borderInlineStart: "4px solid var(--ax-color-critical)" } : undefined}>
                   <td><strong className="ax-numeric">{r.key}</strong></td>

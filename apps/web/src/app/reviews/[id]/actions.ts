@@ -6,6 +6,8 @@ import { insertNotification } from "@/lib/notify";
 
 export type DecisionResult = { error?: string; started?: boolean };
 
+const REVIEW_READ_ERROR = "Review data could not be verified. Nothing was changed — try again.";
+
 // CD-028 leg 5/10 — HANDOFF_BLOCKED_QUEUE_OPEN_MUTATION resolved: opening
 // /reviews/:id is now a pure read. The review-create + under_review transition
 // no longer happens as a render side-effect of navigation; it is an explicit,
@@ -24,24 +26,40 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
   // Only start against a genuinely submitted inspection whose latest version has
   // no open review. Re-checked server-side so a stale/tampered button cannot
   // bind a review to a different inspection or an older submission version.
-  const { data: ins } = await sb.from("inspections").select("status").eq("id", inspection_id).single();
+  const { data: ins, error: insReadError } = await sb.from("inspections").select("status").eq("id", inspection_id).maybeSingle();
+  if (insReadError) {
+    console.error("[review start inspection read]", insReadError.message, insReadError.code);
+    return { error: REVIEW_READ_ERROR };
+  }
   if (!ins) return { error: "Inspection not found, or outside your review scope (RLS)." };
   if (ins.status !== "submitted")
     return { error: "This inspection is not awaiting a Level 2 review (M06-005)." };
-  const { data: version } = await sb.from("submission_versions")
+  const { data: version, error: versionReadError } = await sb.from("submission_versions")
     .select("id, inspection_id, version_number")
     .eq("id", submission_version_id).maybeSingle();
+  if (versionReadError) {
+    console.error("[review start version read]", versionReadError.message, versionReadError.code);
+    return { error: REVIEW_READ_ERROR };
+  }
   if (!version || version.inspection_id !== inspection_id)
     return { error: "The submitted version does not belong to this inspection." };
-  const { data: latest } = await sb.from("submission_versions")
+  const { data: latest, error: latestReadError } = await sb.from("submission_versions")
     .select("id")
     .eq("inspection_id", inspection_id)
     .order("version_number", { ascending: false })
     .limit(1).maybeSingle();
+  if (latestReadError) {
+    console.error("[review start latest-version read]", latestReadError.message, latestReadError.code);
+    return { error: REVIEW_READ_ERROR };
+  }
   if (!latest || latest.id !== submission_version_id)
     return { error: "Only the latest submitted version can be started for review." };
-  const { data: existing } = await sb.from("reviews")
+  const { data: existing, error: existingReadError } = await sb.from("reviews")
     .select("id").eq("inspection_id", inspection_id).eq("submission_version_id", submission_version_id).is("decided_at", null).maybeSingle();
+  if (existingReadError) {
+    console.error("[review start open-review read]", existingReadError.message, existingReadError.code);
+    return { error: REVIEW_READ_ERROR };
+  }
   // The workspace is a server-rendered decision surface. The client refreshes
   // after this action resolves so the newly-created open review is rendered as
   // the DecisionPanel immediately; this is also the correct race-winner outcome.
@@ -91,9 +109,13 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
   // Re-read the review and package definition at submit time. The client form
   // is only a convenience; exact section membership and review state are
   // server-authoritative (M06-006/009/043).
-  const { data: current } = await sb.from("reviews")
+  const { data: current, error: currentReadError } = await sb.from("reviews")
     .select("id, inspection_id, status, decided_at, inspections(package_versions(definition))")
     .eq("id", review_id).maybeSingle();
+  if (currentReadError) {
+    console.error("[review decision read]", currentReadError.message, currentReadError.code);
+    return { error: REVIEW_READ_ERROR };
+  }
   if (!current) return { error: "The review could not be found, or is outside your review scope (RLS)." };
   if (current.decided_at || current.status !== "under_review")
     return { error: "This review is no longer open. Refresh before deciding." };
@@ -120,10 +142,18 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
     return { error: "The decision was recorded, but the inspection state could not be transitioned. Contact support." };
   }
   // M06-004/006/008 — the inspector is notified on every decision (ENG-11).
-  const { data: ins } = await sb.from("inspections").select("visit_id").eq("id", rev.inspection_id).single();
-  const { data: asg } = ins
+  const { data: ins, error: insReadError } = await sb.from("inspections").select("visit_id").eq("id", rev.inspection_id).maybeSingle();
+  if (insReadError) {
+    console.error("[review decision inspection read]", insReadError.message, insReadError.code);
+    return { error: "Decision recorded, but the inspector notification could not be verified." };
+  }
+  const { data: asg, error: asgReadError } = ins
     ? await sb.from("assignments").select("inspector_id").eq("visit_id", ins.visit_id).maybeSingle()
-    : { data: null };
+    : { data: null, error: null };
+  if (asgReadError) {
+    console.error("[review decision assignment read]", asgReadError.message, asgReadError.code);
+    return { error: "Decision recorded, but the inspector notification could not be queued." };
+  }
   if (asg?.inspector_id) {
     const n = await insertNotification(sb, {
       event_key: "review_decision",

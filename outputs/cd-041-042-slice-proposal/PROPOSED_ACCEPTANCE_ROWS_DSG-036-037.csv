@@ -1,0 +1,9 @@
+design_ac_id,screen_id,process_id,channel,design_outcome,required_evidence,status,reviewer,notes
+# ----------------------------------------------------------------------------
+# DRAFT proposal to REPLACE the two not_started rows in
+# design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv.
+# status is left as <SPONSOR_SETS> — do NOT copy 'accepted' until the design
+# review actually PASSES and the sponsor signs. Fill reviewer + date on signing.
+# ----------------------------------------------------------------------------
+DSG-036,SCR-VIR-700,P06B,Virtual,Appointment/waiting room exposes participants readiness timing join reschedule and fallback,"desktop/tablet/low-bandwidth; accepted CD-041 r1 design source in-repo; driven E2E for success + degraded + fallback states; no fabricated video connection",<SPONSOR_SETS: accepted|blocked>,<sponsor name>,"Precondition: CD-041 design review PASS (was REJECTED AT RECEIPT). Backend verified-gate already live (PR #17)."
+DSG-037,SCR-VIR-710,P06B,Virtual,OTP verification exposes identity counters cooldown expiry lockout and audit,"all verification failure states incl. identity-mismatch + provider-unavailable; audit-read display seam; driven E2E green; RBAC-014 enforced",<SPONSOR_SETS: accepted|blocked>,<sponsor name>,"Precondition: CD-042 design review PASS (was BLOCKED — R1 P0/P1). Backend OTP + RBAC-014 status gate already live (PR #18)."

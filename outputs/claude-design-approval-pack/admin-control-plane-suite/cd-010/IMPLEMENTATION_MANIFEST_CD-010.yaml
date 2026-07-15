@@ -1,0 +1,49 @@
+# IMPLEMENTATION_MANIFEST_CD-010.yaml
+prompt_id: CD-010
+screen_id: SCR-ADM-040
+route: /admin/violations
+source_branch: unknown — no fresh repository read this session
+source_commit: unknown
+dirty_worktree: unknown
+design_frame_ids: [ae, af, ag, ah, ai, aj, at, as, ao]
+pngs: [CD-010_SCR-ADM-040_primary.png, CD-010_SCR-ADM-040_outlier.png]
+status: READY_FOR_DESIGN_REVIEW
+implementation_authorized: false
+file_changes:
+  - path: apps/web/src/app/admin/violations/page.tsx
+    before_responsibility: unknown — not inspected this session (violation_codes head count proven via CD-004)
+    disposition: UPDATE (pending inspection)
+    after_responsibility: legal-taxonomy table with per-row Trace Ribbon disclosure
+    design_node: frames ae/ag/at
+    code_target: HANDOFF_BLOCKED — column schema (level/category/legal_basis/applicability/dates/trigger/usage) unconfirmed
+    protected_behavior: existing reads, RLS, audit triggers, historical-record persistence
+    dependencies: [violation_codes, inspection_items.clause_id]
+    rtl_theme_impact: per ae-ah
+    tests: HANDOFF_BLOCKED
+    rollback: single-file revert
+  - path: apps/web/src/app/admin/violations/Controls.tsx
+    before_responsibility: unknown
+    disposition: UPDATE (pending inspection)
+    after_responsibility: add/deactivate lifecycle controls; deactivation is non-destructive (locked-by-use)
+    design_node: aj
+    code_target: HANDOFF_BLOCKED
+    protected_behavior: unknown
+    dependencies: [actions.ts]
+    rtl_theme_impact: localized copy
+    tests: deactivate never rewrites historical records
+    rollback: revert file
+  - path: apps/web/src/app/admin/violations/actions.ts
+    before_responsibility: unknown
+    disposition: PRESERVE
+    after_responsibility: unchanged unless confirmed schema requires
+    design_node: n/a
+    code_target: n/a
+    protected_behavior: all existing actions + audit
+    dependencies: []
+    rtl_theme_impact: none
+    tests: existing tests unmodified
+    rollback: n/a
+forbidden_do_not_touch:
+  - frozen shell files
+  - rewriting historical violation records on deactivation
+  - inventing severity/legal-basis/trigger/usage schema as existing behavior (all proposed)

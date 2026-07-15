@@ -123,6 +123,19 @@ test.describe("CD-021 selection (frame 1a)", () => {
     await expect(page.getByRole("link", { name: /Back to targeting/i })).toBeVisible();
   });
 
+  test("review step distinguishes an out-of-scope selection from empty or unavailable data", async ({ page }) => {
+    await page.goto("/planning/bulk");
+    const realId = await firstFactoryId(page);
+    await page.addInitScript(([real]) => {
+      sessionStorage.setItem("cd021-bulk-selection", JSON.stringify([real, "00000000-0000-4000-8000-000000000000"]));
+    }, [realId]);
+    await page.goto("/planning/bulk/review");
+    await expect(page.getByRole("heading", { name: /no longer fully in scope/i })).toBeVisible();
+    await expect(page.getByText(/could not be read in your current scope/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toHaveCount(0);
+    await expect(page.getByText(/temporarily unavailable/i)).toHaveCount(0);
+  });
+
   test("selection persists across pagination", async ({ page }) => {
     await page.goto("/planning/bulk");
     const next = page.getByRole("button", { name: /^Next$/i });

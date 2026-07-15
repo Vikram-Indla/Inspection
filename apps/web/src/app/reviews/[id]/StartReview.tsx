@@ -27,12 +27,6 @@ export default function StartReview({ inspectionId, submissionVersionId, strings
   return (
     <form
       action={formAction}
-      onSubmit={() => {
-        // The action commits the transition before the RSC response is
-        // available. Refresh once the write has had a chance to commit so the
-        // same workspace cannot remain on a stale pending form.
-        window.setTimeout(() => window.location.reload(), 2_000);
-      }}
       className="ax-surface ax-panel"
       style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}
     >

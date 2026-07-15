@@ -26,7 +26,7 @@ missing map or for sponsor/runtime acceptance.
 | `npm run typecheck` | PASS (verified in the same continuation) |
 | `npm run build` | PASS (production build after review-workspace fixes) |
 | `cd-031-factory-360.spec.ts` | **15/15 PASS** after the neutral-error remediation; source/runtime assertions cover the corrected paths |
-| CD-004 focused regression | **17/17 PASS** after the existing guarded Arabic seed was applied live; the prior audit-era Arabic failure is closed |
+| CD-004 focused regression | **18/18 PASS** after the existing guarded Arabic seed was applied live; the prior audit-era Arabic failure is closed |
 | CD-028 focused regression | **13/13 PASS** after the shared-live row-selection assertion was hardened |
 | CD-022 focused regression | **13/13 PASS** after deterministic newest-first factory search and unique live-fixture term |
 | Complete no-exclusion Playwright regression | Prior baseline was 182 passed, 2 failed, 1 skipped; the two failures were CD-004 live Arabic seed and a shared-live CD-028 row-selection fixture, now each closed in focused reruns. A fresh full run remains the final regression check. |

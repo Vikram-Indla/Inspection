@@ -48,6 +48,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-15"
     change_ref: "product-contract/governance/DEC-ADMIN-CONTROL-PLANE-AUTH.md"
+  - gate: "G11-remediation-CD-005-011-CD-025-CD-028-CD-030-dashboard"
+    decision: "APPROVED — sponsor explicitly approved and directed execution ('approved' followed by 'go') of TASK-G11-REMEDIATION-001 covering CD-005 through CD-011, CD-025, CD-028, CD-030, and TASK-WEB-DASHBOARD-002. The CD-006 through CD-011 R2 frontend designs are sponsor-approved and implementation-authorized for this remediation slice. Scope is local feature-branch application code, exact automated tests, evidence, and contract/session records. Existing HANDOFF_BLOCKED provider/policy/schema legs remain blocked. This approval does not authorize production deployment, modification or merge of main, live DDL, destructive cleanup, or invented policy/provider values."
+    approver: "Vikram Indla"
+    date: "2026-07-16"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

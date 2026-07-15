@@ -1,0 +1,2 @@
+# CLAUDE_CODE_HANDOFF_CD-010
+NOT EXECUTABLE. implementation_authorized:false. Build to the confirmed violation_codes schema + createViolationCode only. There is NO audit trigger on violation_codes. Category, applicability, edit, version, deactivate, usage count, trigger-trace query, and a legal-basis field on the row are HANDOFF_BLOCKED (legal basis lives on the penalty mapping). Derive active/future/deactivated from active_from/active_to; never invent a status enum. Preserve frozen shell + dirty worktree.
