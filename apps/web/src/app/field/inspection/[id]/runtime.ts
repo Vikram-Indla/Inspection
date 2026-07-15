@@ -7,6 +7,8 @@ export type ResponseModel = {
   responses?: string[];
   mapping?: Record<string, { result?: string; violation?: string; action_form?: string }>;
   conditional?: { visible_when?: string; mandatory_when_visible?: boolean };
+  requirement?: "required" | "optional" | "conditional";
+  scoring_enabled?: boolean;
   score_excluded_on?: string[];
 };
 export type EvidenceRule = { on?: string; type?: string; min?: number; mandatory?: boolean; note?: boolean } | null;
@@ -49,8 +51,17 @@ export function contextFlags(items: Item[]): string[] {
 /** Is the current answer excluded from scoring (na handling, seed score_excluded_on)? */
 export function scoreExcluded(item: Item, value: string | undefined): boolean {
   if (!value) return false;
+  if (item.response_model.scoring_enabled === false) return true;
   const ex = item.response_model.score_excluded_on ?? item.score_excluded_on ?? [];
   return ex.includes(value);
+}
+
+/** Required/optional/conditional submission semantics (M09-018/021/022). */
+export function answerRequired(item: Item): boolean {
+  const mode = item.response_model.requirement ?? "required";
+  if (mode === "optional") return false;
+  if (mode === "conditional") return !!item.response_model.conditional?.mandatory_when_visible;
+  return true;
 }
 
 /** Evidence leg required by the item's rule for the current answer (M04-165). */
@@ -125,7 +136,7 @@ export function computeBlockers(
     for (const c of s.items ?? []) {
       const it = imap[c]; if (!it || !isVisible(it, ctx)) continue;
       const v = answers[it.id]?.value;
-      if (!v) { g.unanswered.push(it.code); continue; }
+      if (!v) { if (answerRequired(it)) g.unanswered.push(it.code); continue; }
       const leg = evidenceLeg(it, v);
       if (leg?.applies && leg.mandatory && (evidencePerItem[it.id] ?? 0) < leg.min) g.evidence.push(it.code);
       const def = formRequired(it, v, defs);

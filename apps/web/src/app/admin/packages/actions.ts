@@ -91,7 +91,11 @@ type DefActionForm = { key?: string; title?: string; blocking?: boolean };
 type PkgDefinition = { sections?: unknown; action_forms?: unknown };
 type ItemBankRow = {
   code: string; active: boolean;
-  response_model: { mapping?: Record<string, { violation?: string; action_form?: string }> } | null;
+  response_model: {
+    mapping?: Record<string, { violation?: string; action_form?: string }>;
+    requirement?: "required" | "optional" | "conditional";
+    conditional?: { visible_when?: string; mandatory_when_visible?: boolean };
+  } | null;
   evidence_rule: unknown;
 };
 
@@ -156,6 +160,12 @@ async function validateDefinition(
     if (nc?.violation && !violationRefs.has(nc.violation)) violationRefs.set(nc.violation, code);
     if (nc?.action_form && !formKeys.has(nc.action_form)) {
       blockers.push(`Item ${code}: non-compliant mapping triggers action form "${nc.action_form}" which is not defined in this package version (M09-029)`);
+    }
+    const condition = item.response_model?.conditional?.visible_when;
+    if (item.response_model?.requirement === "conditional" && !condition) {
+      blockers.push(`Item ${code}: conditional requirement has no visibility rule (M09-021)`);
+    } else if (condition && !/^[A-Za-z0-9_.-]+=[A-Za-z0-9_.-]+$/.test(condition)) {
+      blockers.push(`Item ${code}: visibility rule must use key=value grammar (M09-021)`);
     }
     blockers.push(...evidenceRuleBlockers(code, item.evidence_rule));
   }

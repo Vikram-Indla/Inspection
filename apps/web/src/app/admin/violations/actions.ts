@@ -7,6 +7,17 @@ import { requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type VioResult = { error?: string; ok?: boolean };
 
+export type ViolationUsage = { item_count: number; runtime_count: number };
+
+export async function getViolationUsage(codeValue: string): Promise<ViolationUsage | null> {
+  if (!codeValue) return null;
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc("violation_code_usage", { p_code: codeValue });
+  if (error || !data || typeof data !== "object") return null;
+  const d = data as Record<string, unknown>;
+  return { item_count: Number(d.item_count ?? 0), runtime_count: Number(d.runtime_count ?? 0) };
+}
+
 const LEVELS = ["L1", "L2", "L3"];
 // Postgres unique_violation — the DB rejects a duplicate `code` (CD-010) or a
 // second `violation_code_id` mapping (CD-011, one-to-one). Surfaced as a
@@ -56,6 +67,35 @@ export async function createViolationCode(_: VioResult, formData: FormData): Pro
     if (code(error) === UNIQUE_VIOLATION) return { error: t("admin.viol.err.dupCode", "A violation code with this identifier already exists.") };
     return { error: t("admin.viol.err.write", NEUTRAL_WRITE_ERROR) };
   }
+  revalidatePath("/admin/violations");
+  return { ok: true };
+}
+
+export async function deactivateViolationCode(_: VioResult, formData: FormData): Promise<VioResult> {
+  const { t } = await useT();
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
+  const sb = await supabaseServer();
+
+  const id = String(formData.get("violation_code_id") ?? "");
+  const active_to = String(formData.get("active_to") ?? "").trim();
+  if (!id) return { error: t("admin.viol.err.missing", "Missing violation reference.") };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(active_to)) {
+    return { error: t("admin.viol.err.activeTo", "A valid active-to date is required.") };
+  }
+
+  const { data: current, error: readError } = await sb.from("violation_codes")
+    .select("active_from, active_to").eq("id", id).maybeSingle();
+  if (readError) { logProviderError("admin violation deactivate read", readError); return { error: t("admin.viol.err.write", NEUTRAL_WRITE_ERROR) }; }
+  if (!current || current.active_to) return { error: t("admin.viol.err.inactive", "This violation is already inactive or unavailable.") };
+  if (current.active_from && active_to < current.active_from) {
+    return { error: t("admin.viol.err.activeWindow", "Active-to date cannot be before active-from date.") };
+  }
+
+  const { data, error } = await sb.from("violation_codes")
+    .update({ active_to }).eq("id", id).is("active_to", null).select("id");
+  if (error) { logProviderError("admin violation deactivate", error); return { error: t("admin.viol.err.write", NEUTRAL_WRITE_ERROR) }; }
+  if (!data?.length) return { error: t("admin.viol.err.inactive", "This violation is already inactive or unavailable.") };
   revalidatePath("/admin/violations");
   return { ok: true };
 }

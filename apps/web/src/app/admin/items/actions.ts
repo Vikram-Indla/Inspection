@@ -6,6 +6,17 @@ import { requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type ItemResult = { error?: string; ok?: boolean };
 
+export type ItemUsage = { package_count: number; version_count: number };
+
+export async function getItemUsage(code: string): Promise<ItemUsage | null> {
+  if (!code) return null;
+  const sb = await supabaseServer();
+  const { data, error } = await sb.rpc("inspection_item_usage", { p_code: code });
+  if (error || !data || typeof data !== "object") return null;
+  const d = data as Record<string, unknown>;
+  return { package_count: Number(d.package_count ?? 0), version_count: Number(d.version_count ?? 0) };
+}
+
 // M09-019/020 — response models are configured presets, never free text.
 // Shapes mirror the seeded catalogue (0003_seed_contract_data.sql).
 const RESPONSE_PRESETS: Record<string, object> = {
@@ -25,6 +36,9 @@ const RESPONSE_PRESETS: Record<string, object> = {
 const EVIDENCE_PRESETS: Record<string, object | null> = {
   none: null,
   photo_nc_mandatory: { on: "non_compliant", type: "photo", min: 1, mandatory: true },
+  video_nc_mandatory: { on: "non_compliant", type: "video", min: 1, mandatory: true },
+  document_nc_mandatory: { on: "non_compliant", type: "document", min: 1, mandatory: true },
+  comment_nc_mandatory: { on: "non_compliant", type: "comment", min: 1, mandatory: true },
 };
 
 // M09-002 — item belongs to a regulation clause and is reused across packages.
@@ -40,21 +54,37 @@ export async function createItem(_: ItemResult, formData: FormData): Promise<Ite
   const responseKey = String(formData.get("response_preset") ?? "");
   const evidenceKey = String(formData.get("evidence_preset") ?? "");
   const weightRaw = String(formData.get("score_weight") ?? "").trim();
+  const requirement = String(formData.get("requirement_mode") ?? "required");
+  const visibleWhen = String(formData.get("visible_when") ?? "").trim();
+  const mandatoryWhenVisible = String(formData.get("mandatory_when_visible") ?? "") === "true";
+  const scoringEnabled = String(formData.get("scoring_enabled") ?? "true") !== "false";
 
   if (!code || !title) return { error: "Code and title are required." };
   if (!clause_id) return { error: "A regulation clause is required (M09-002)." };
   if (!(responseKey in RESPONSE_PRESETS)) return { error: "Pick a response model preset (M09-019)." };
   if (!(evidenceKey in EVIDENCE_PRESETS)) return { error: "Pick an evidence rule preset (M09-005)." };
+  if (!["required", "optional", "conditional"].includes(requirement)) return { error: "Pick required, optional, or conditional." };
+  if (requirement === "conditional" && !/^[A-Za-z0-9_.-]+=[A-Za-z0-9_.-]+$/.test(visibleWhen)) {
+    return { error: "Conditional items require a key=value visibility rule." };
+  }
   const score_weight = weightRaw === "" ? null : Number(weightRaw);
   if (score_weight !== null && (!Number.isFinite(score_weight) || score_weight < 0)) {
     return { error: "Score weight must be a non-negative number." };
   }
 
+  const response_model = {
+    ...RESPONSE_PRESETS[responseKey],
+    requirement,
+    scoring_enabled: scoringEnabled,
+    ...(requirement === "conditional" ? { conditional: { visible_when: visibleWhen, mandatory_when_visible: mandatoryWhenVisible } } : {}),
+  };
+  const responses = (response_model as { responses?: string[] }).responses ?? [];
   const { error } = await sb.from("inspection_items").insert({
     code, title, clause_id,
-    response_model: RESPONSE_PRESETS[responseKey],
+    response_model,
     evidence_rule: EVIDENCE_PRESETS[evidenceKey],
-    score_weight,
+    score_weight: scoringEnabled ? score_weight : null,
+    score_excluded_on: scoringEnabled ? null : responses,
     guidance_en: guidance_en || null,
     active: true,
   });
