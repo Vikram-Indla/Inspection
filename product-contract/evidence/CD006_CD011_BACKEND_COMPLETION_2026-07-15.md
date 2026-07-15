@@ -110,7 +110,8 @@ columns, table, triggers, and RPCs remains pending.
 ## Claude Code frontend handoff
 
 Frontend work may proceed in a separate branch/worktree from backend commit
-`c4c5701` (preferred) or baseline commit `c6187cb` with `c4c5701` cherry-picked.
+`4af67c0` (preferred) or baseline commit `c6187cb` with implementation commits
+`c4c5701` and `4af67c0` cherry-picked.
 It should consume the exported
 actions/RPC helpers and replace superseded HANDOFF_BLOCKED UI states.
 
@@ -129,3 +130,8 @@ Frontend-owned files:
 Do not merge a frontend claim of live completion until the forward migration is
 explicitly approved, applied through the governed path, read-only reconciled,
 and the revised authenticated browser suites pass.
+
+Supabase's current security guidance was checked before finalization. The new
+table has explicit authenticated Data API privileges plus RLS, and the scoped
+`SECURITY DEFINER` readers use an empty search path, schema-qualified relations,
+internal role checks, and explicit `PUBLIC`/`anon` execution revocation.

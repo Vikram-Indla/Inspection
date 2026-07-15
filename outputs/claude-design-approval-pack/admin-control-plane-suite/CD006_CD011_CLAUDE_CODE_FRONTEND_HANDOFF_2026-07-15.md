@@ -8,9 +8,9 @@ stale. This file supersedes only the backend-blocked statements listed below.
 ## Start point
 
 - Repository: `/Users/vikramindla/Documents/GitHub/Inspection`
-- Preferred backend baseline: commit `c4c5701` on
+- Preferred backend baseline: commit `4af67c0` on
   `codex/cd006-011-backend-completion`.
-- If using another frontend worktree, cherry-pick `c4c5701` first.
+- If using another frontend worktree, cherry-pick `c4c5701` and `4af67c0` first.
 - Read:
   - `product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md`
   - the relevant CD-006..011 design package and implementation prompt
@@ -55,7 +55,7 @@ disabled. Preserve genuinely unresolved provider/policy/design boundaries.
 ## Required frontend outcome
 
 For each CD, update its source discovery log, implementation manifest, and
-wiring map against commit `c4c5701`. Wire every supported action and truthful
+wiring map against commit `4af67c0`. Wire every supported action and truthful
 load/empty/error/no-op/unauthorized state. Preserve the shared shell and tokens.
 Use Arabic `ui_strings`, document-level RTL, keyboard semantics, non-color-only
 status, 44px targets, and 1440/1024/narrow coverage. Revise the old CD browser

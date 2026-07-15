@@ -2113,7 +2113,7 @@
         "Governed live application and read-only reconciliation pending",
         "Frontend implementation and revised authenticated browser suites pending"
       ],
-      "commit_sha": "c4c5701 (implementation); documentation handoff commit follows",
+      "commit_sha": "c4c5701 (implementation), 4af67c0 (Supabase privilege hardening), 5111c46 (documentation handoff)",
       "next_task": "Obtain exact live-migration approval, apply and reconcile it, then integrate and verify the parallel frontend implementation",
       "resume_prompt": "Read product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md; do not claim live completion until the exact migration is approved/applied and authenticated frontend suites pass."
     }
