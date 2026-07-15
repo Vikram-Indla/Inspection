@@ -1,21 +1,70 @@
 # Compaction Checkpoint
-- Time: 2026-07-14T10:34:07.761218+00:00
-- Session: 3a85e154-1ec8-4711-a3b7-aaea22eed5f1
+- Time: 2026-07-15T08:21:28.945358+00:00
+- Session: 406bc4e4-f542-425a-b3ce-2e89dd47112d
 - Trigger: auto
-- Branch: main
-- Commit: d7490ed
+- Branch: setup/Inspection
+- Commit: 50dd08d
 - Working tree:
 ```
-M .project-memory/audit/instructions_loaded.jsonl
+M .project-memory/audit/compactions.jsonl
+ M .project-memory/audit/instructions_loaded.jsonl
+ M .project-memory/audit/session_end.jsonl
  M .project-memory/audit/tool_events.jsonl
+ M apps/web/e2e/cd-004-admin-control-plane-home.spec.ts
+ M apps/web/e2e/cd-022-identity-lens.spec.ts
+ M apps/web/e2e/cd-026-visit-management.spec.ts
+ M apps/web/e2e/cd-028-review-queue.spec.ts
+ M apps/web/e2e/cd-030-version-comparison.spec.ts
+ M apps/web/src/app/admin/access/page.tsx
+ M apps/web/src/app/admin/audit/page.tsx
+ M apps/web/src/app/admin/gis/actions.ts
+ M apps/web/src/app/admin/items/actions.ts
+ M apps/web/src/app/admin/localization/actions.ts
+ M apps/web/src/app/admin/localization/page.tsx
+ M apps/web/src/app/admin/packages/actions.ts
+ M apps/web/src/app/admin/regulations/actions.ts
+ M apps/web/src/app/admin/risk/actions.ts
+ M apps/web/src/app/admin/violations/actions.ts
+ M apps/web/src/app/admin/workflows/actions.ts
+ M apps/web/src/app/admin/workflows/page.tsx
+ M apps/web/src/app/astryx.css
+ M apps/web/src/app/factories/[id]/actions.ts
+ M apps/web/src/app/factories/[id]/loading.tsx
+ M apps/web/src/app/factories/[id]/page.tsx
+ M apps/web/src/app/factories/page.tsx
+ M apps/web/src/app/operations/actions.ts
+ M apps/web/src/app/operations/page.tsx
+ M apps/web/src/app/planning/single/page.tsx
+ M apps/web/src/app/reports/inspection/[id]/page.tsx
+ M apps/web/src/app/reviews/[id]/DecisionPanel.tsx
+ M apps/web/src/app/reviews/[id]/StartReview.tsx
+ M apps/web/src/app/reviews/[id]/VersionCompare.tsx
+ M apps/web/src/app/reviews/[id]/actions.ts
+ M apps/web/src/app/reviews/[id]/page.tsx
+ M apps/web/src/app/visits/calendar/page.tsx
+ M apps/web/src/app/visits/page.tsx
+ M apps/web/src/app/visits/workload/page.tsx
+ M outputs/cd-030/WIRING_MAP_CD-030.csv
+ M product-contract/CURRENT_STATE.md
+ M product-contract/acceptance/ACCEPTANCE_STATUS.md
+ M product-contract/evidence/EVIDENCE_STATUS.md
  M product-contract/evidence/screens/cd-021-bulk-v1/ar-rtl.png
  M product-contract/evidence/screens/cd-021-bulk-v1/narrow.png
  M product-contract/evidence/screens/cd-021-bulk-v1/primary.png
+ M product-contract/evidence/screens/cd-025-plan-review-v1/review-ar-rtl.png
+ M product-contract/evidence/screens/cd-025-plan-review-v1/review-narrow-412.png
+ M product-contract/evidence/screens/cd-025-plan-review-v1/review-primary.png
+ M product-contract/evidence/screens/cd-026-visit-management-v1/CODEX_AUDIT_CD-026.md
+ M product-contract/evidence/screens/cd-026-visit-management-v1/ar-rtl.png
+ M product-contract/evidence/screens/cd-026-visit-management-v1/eligibility-preview.png
+ M product-contract/evidence/screens/cd-026-visit-management-v1/narrow-412.png
+ M product-contract/evidence/screens/cd-026-visit-management-v1/primary.png
  M product-contract/evidence/screens/dashboard-business-v1/operational-en-dark-desktop.png
  M product-contract/evidence/screens/dashboard-business-v1/strategic-ar-mobile.png
  M product-contract/evidence/screens/dashboard-business-v1/strategic-en-dark-desktop.png
  M product-contract/evidence/screens/dashboard-business-v1/strategic-en-light-desktop.png
  M product-contract/evidence/screens/dashboard-kpi-seed/live-operations-en-light.png
+ M product-contract/evidence/screens/dashboard-kpi-seed/operations-scoped-en-light.png
  M product-contract/evidence/screens/immediate-v2/ar-dark-desktop.png
  M product-contract/evidence/screens/immediate-v2/ar-dark-narrow.png
  M product-contract/evidence/screens/immediate-v2/ar-light-desktop.png
@@ -34,7 +83,101 @@ M .project-memory/audit/instructions_loaded.jsonl
  M product-contract/evidence/screens/login-v7-atlas/mobile-light-ar.png
  M product-contract/evidence/screens/shell-v1/planner-desktop-en-collapsed.png
  M product-contract/evidence/screens/shell-v1/planner-desktop-en-dark.png
+ M product-contract/evidence/screens/shell-v1/planner-mobile-ar-light-drawer.png
+ M product-contract/evidence/screens/single-v2/ar-light-desktop.png
+ M product-contract/evidence/screens/single-v2/ar-light-narrow.png
+ M product-contract/evidence/screens/single-v2/en-light-desktop.png
+ M product-contract/evidence/screens/single-v2/en-light-narrow.png
+ M product-contract/execution/WORK_QUEUE.yaml
+ M product-contract/governance/OPEN_DECISIONS.yaml
+ M product-contract/governance/decision_register.csv
+ M product-contract/sessions/COMPACTION_CHECKPOINT.md
+ M product-contract/sessions/LAST_SESSION.md
+ M product-contract/sessions/SESSION_LEDGER.json
 ?? apps/web/.next-stale-backup/
+?? apps/web/e2e/cd-029-review-workspace.spec.ts
+?? apps/web/e2e/cd-031-factory-360.spec.ts
+?? apps/web/src/app/factories/[id]/neutral.ts
+?? apps/web/src/app/reviews/[id]/FindingTraceChain.tsx
+?? apps/web/src/app/reviews/[id]/stale-check.ts
+?? apps/web/src/lib/neutral-error.ts
+?? outputs/cd-029/
+?? outputs/cd-031-r3/
+?? outputs/claude-design-approval-pack/CD-025_CLAUDE_DESIGN_END_TO_END_R2_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-025_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CD-025_DESIGN_REVIEW_R2.md
+?? outputs/claude-design-approval-pack/CD-025_DESIGN_REVIEW_R3.md
+?? outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R2.md
+?? outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md
+?? outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-026_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CD-026_DESIGN_REVIEW_R2.md
+?? outputs/claude-design-approval-pack/CD-026_DESIGN_REVIEW_R3.md
+?? outputs/claude-design-approval-pack/CD-026_PROGRESSIVE_CORRECTION_PROMPT_R3.md
+?? outputs/claude-design-approval-pack/CD-027_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-027_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CD-027_DESIGN_REVIEW_R2.md
+?? outputs/claude-design-approval-pack/CD-027_PROGRESSIVE_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/CD-027_PROGRESSIVE_CORRECTION_PROMPT_R2.md
+?? outputs/claude-design-approval-pack/CD-028_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-028_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CD-028_PROGRESSIVE_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/CD-029_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-029_CONSOLIDATED_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-029_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CD-029_DESIGN_REVIEW_R2.md
+?? outputs/claude-design-approval-pack/CD-029_DESIGN_REVIEW_R3.md
+?? outputs/claude-design-approval-pack/CD-029_PROGRESSIVE_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/CD-029_PROGRESSIVE_CORRECTION_PROMPT_R2.md
+?? outputs/claude-design-approval-pack/CD-030_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-030_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CD-030_DESIGN_REVIEW_R2.md
+?? outputs/claude-design-approval-pack/CD-030_PROGRESSIVE_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/CD-031_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-031_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CD-031_DESIGN_REVIEW_R2.md
+?? outputs/claude-design-approval-pack/CD-031_PROGRESSIVE_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/CD-031_PROGRESSIVE_CORRECTION_PROMPT_R2.md
+?? outputs/claude-design-approval-pack/CD-032_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-032_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CD-032_DESIGN_REVIEW_R2.md
+?? outputs/claude-design-approval-pack/CD-032_PROGRESSIVE_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/CD-041_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
+?? outputs/claude-design-approval-pack/CD-041_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/CLAUDE_DESIGN_PROGRESSIVE_QUALITY_MEMORY_V1.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/ADMIN_COMPONENT_INHERITANCE_LEDGER_V1.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/ADMIN_MASTER_FOUNDATION_V1.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/ADMIN_QUALITY_GATE_V1.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/ADMIN_STATUS.yaml
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CD-004_DESIGN_REVIEW_R1.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CD-004_DESIGN_REVIEW_R2.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CD006_CD011_CLAUDE_DESIGN_CONSOLIDATED_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CD006_CD011_CORRECTION_CLOSURE_TEMPLATE.csv
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CD006_CD011_CORRECTION_EXECUTION_GUIDE.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CD006_CD011_CORRECTION_SOURCE_TRUTH_2026-07-15.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CD006_CD011_CORRECTION_STATUS.yaml
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CD006_CD011_INDEPENDENT_REVIEW_2026-07-15.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CHAPTER_01_CD-004_CLAUDE_DESIGN_CORRECTION_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CHAPTER_01_CD-004_CLAUDE_DESIGN_CORRECTION_PROMPT_R2.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/CHAPTER_01_CD-004_CLAUDE_DESIGN_PROMPT_R1.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/PARALLEL_OWNERSHIP.yaml
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/transfer/
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/verify_cd006_cd011_corrected_return.sh
+?? product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md
+?? product-contract/evidence/CODEX_AUDIT_CD-022_TO_CD-029_2026-07-15.md
+?? product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md
+?? product-contract/evidence/CODEX_AUDIT_CD-030_2026-07-15.md
+?? product-contract/evidence/CODEX_AUDIT_CD-030_2026-07-15_R2.md
+?? product-contract/evidence/CODEX_AUDIT_CD-030_2026-07-15_R3.md
+?? product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md
+?? product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md
+?? product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md
+?? product-contract/evidence/screens/cd-004-admin-home-v1/
+?? product-contract/sessions/HANDOFF_2026-07-14_ADMIN_CONTROL_PLANE_PARALLEL_START.md
+?? product-contract/sessions/HANDOFF_2026-07-14_CD025_R4_CD026_CD027_NEXT.md
+?? supabase/migrations/20260715140000_cd030_review_decision_check.sql
+?? supabase/migrations/20260715160000_cd030_review_scope_rbac.sql
 ```
 - Current slice: `product-contract/execution/CURRENT_SLICE.yaml`
 - Resume protocol: `product-contract/execution/RESUME_PROTOCOL.md`

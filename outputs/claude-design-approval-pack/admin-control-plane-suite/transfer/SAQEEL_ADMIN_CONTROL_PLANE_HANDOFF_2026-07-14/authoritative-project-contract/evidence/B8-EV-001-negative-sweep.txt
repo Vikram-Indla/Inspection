@@ -1,0 +1,9 @@
+=== B8 EVIDENCE — negative permission sweep (least privilege, RLS-enforced) ===
+[1] inspector creates visit plan → 403 ✓ BLOCKED
+[2] inspector decides a review → 200 rows=0 ✓ BLOCKED (0 rows — RLS filter)
+[3] planner edits checklist response → 200 rows=0 ✓ BLOCKED
+[4] inspector assignment visibility → 2 rows, foreign rows: 0 ✓ own-only
+[5] planner edits risk settings → 200 rows=0 ✓ BLOCKED
+[6] anonymous reads factories → 0 rows ✓ ZERO
+
+VERDICT: unauthorized writes return errors or affect 0 rows (RLS deny-by-default); no cross-role leakage.

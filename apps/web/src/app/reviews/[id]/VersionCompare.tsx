@@ -1,5 +1,9 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { latestVersionNumber } from "./stale-check";
+
+const STALE_POLL_MS = 45_000;
 
 // CD-030 / SCR-WEB-320 — Version Comparison, route-neutral compare mode inside
 // /reviews/:id. The signature interaction is the Tamper-evident Scope Rail: it
@@ -35,6 +39,9 @@ export type VersionCompareStrings = {
   unavailEvidence: string; unavailPackage: string; unavailMetadata: string;
   unavailNote: string;
   enumLabels: Record<string, string>;   // stored answer value -> translated label
+  // S08-stale (STATE_MATRIX_CD-030.csv) — optional so this can ship ahead of a
+  // page.tsx string-table wire-up; EN-only fallback text is used when absent.
+  staleTitle?: string; staleBody?: string; staleRefresh?: string;
 };
 
 type Category = "expected" | "unexpected" | "unchanged" | "unavailable";
@@ -60,6 +67,27 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
   const [fromN, setFromN] = useState<number | undefined>(prior);
   const [open, setOpen] = useState<Record<Category, boolean>>({ expected: true, unexpected: true, unchanged: false, unavailable: true });
   const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
+  const params = useParams<{ id: string }>();
+  const router = useRouter();
+  const [staleAt, setStaleAt] = useState<number | null>(null);
+
+  // S08-stale — poll for a version submitted after this surface loaded. Never
+  // invents a freshness threshold beyond "a higher version number now exists
+  // on record" (HANDOFF_BLOCKED-free: this is a real, verifiable DB read, not
+  // a guessed staleness window). Resets once `versions` itself refreshes past
+  // the version that was flagged (i.e. a real refetch happened, not a timer).
+  useEffect(() => {
+    setStaleAt(null);
+    const id = params?.id;
+    if (!id) return;
+    const check = () => {
+      latestVersionNumber(id).then(n => {
+        if (n != null && n > latest) setStaleAt(n);
+      }).catch(() => { /* transient poll failure — not a state to surface, next tick retries */ });
+    };
+    const timer = setInterval(check, STALE_POLL_MS);
+    return () => clearInterval(timer);
+  }, [params?.id, latest]);
 
   const from = versions.find(v => v.n === fromN);
   const to = versions.find(v => v.n === toN);
@@ -101,6 +129,19 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
   return (
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
       <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.heading}</h4>
+
+      {staleAt != null && (
+        <div className="ax-banner ax-banner--warning" role="alert" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+          <div>
+            <strong>{strings.staleTitle ?? "A newer version was submitted."}</strong>{" "}
+            {(strings.staleBody ?? "Version v{n} arrived while you had this open — refresh before relying on this comparison.").replace("{n}", String(staleAt))}
+            {" "}
+            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => router.refresh()}>
+              {strings.staleRefresh ?? "Refresh"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Version selectors — explicit from/to. Default latest vs prior. */}
       <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>

@@ -1,0 +1,24 @@
+transition_id,object,source_state,trigger,target_state,actor,guard,side_effects,notification_sla,audit,scope
+STM-PLAN-001,Visit Plan,Draft,Planner creates or edits plan,Validated,Planner,Mandatory planning fields and valid targets,Store validation result,None,Audit validation,MVP1
+STM-PLAN-002,Visit Plan,Validated,Publish,Published,Planner/Approver,Assignments valid; package published; no blockers,Create visits; notify; lock version,Assignment notification,Publish audit,MVP1
+STM-VIS-001,Visit,Published,Return for update,Returned,Authorized Planner/Ops,Mandatory reason,Reopen allowed fields,Owner notification,State/reason audit,MVP1
+STM-VIS-002,Visit,Published/Returned,Cancel,Cancelled,Authorized role,Mandatory reason,Stop execution; release assignment where required,Cancellation notification,Cancellation audit,MVP1
+STM-VIS-003,Visit,Eligible active,Expiry trigger,Expired,System,Configured threshold reached,Block execution; notify if configured,Expiry notification,Rule/version audit,MVP1
+STM-ASG-001,Assignment,Assigned,Accept/Prepare,Preparing,Inspector,Own valid assignment,Start readiness workflow,Optional,Audit,MVP1
+STM-ASG-002,Assignment,Assigned/Preparing,Return assignment,Returned,Inspector,Mandatory reason,Notify planner/ops; release or reassign,Return notification,Audit reason,MVP1
+STM-JRN-001,Journey,Not Started,Start Journey,On Journey,Inspector,Visit active; readiness passed,Start telemetry,Ops status,Device/time audit,MVP1
+STM-JRN-002,Journey,On Journey,Arrival detected,Arrived,System,Within configured radius/confidence,Create arrival event,Ops status,Geo event,MVP1
+STM-JRN-003,Journey,Arrived,Geofence check-in,Checked In,Inspector/System,Inside geofence or approved override,Create check-in evidence,Ops status,Geo/audit event,MVP1
+STM-INS-001,Inspection,Not Started,Start Inspection,In Progress,Inspector,Check-in/readiness/eligibility pass,Initialize draft/autosave,Status update,Audit,MVP1
+STM-INS-002,Inspection,In Progress,Submit,Submitted,Inspector,All blockers cleared,Create immutable version; lock; create review,Reviewer notification,Submission audit,MVP1
+STM-REV-001,Review,Pending,Open Review,Under Review,Reviewer,Assigned/authorized,Start SLA/activity,Optional,Audit,MVP1
+STM-REV-002,Review,Under Review,Approve,Approved,Reviewer,Decision guards pass,Finalize review; update downstream,Outcome notification,Immutable decision,MVP1
+STM-REV-003,Review,Under Review,Return,Returned,Reviewer,Reason and sections supplied,Unlock only selected sections,Inspector notification,Immutable return event,MVP1
+STM-REV-004,Review,Under Review,Reject,Rejected,Reviewer,Mandatory explanation,Close per workflow,Outcome notification,Immutable decision,MVP1
+STM-COR-001,Returned Inspection,Returned,Begin correction,Correction In Progress,Inspector,Own returned task,Allow selected sections only,None,Audit edits,MVP1
+STM-COR-002,Returned Inspection,Correction In Progress,Resubmit,Submitted,Inspector,Returned scope complete; blockers cleared,Create Version N+1; relock,Reviewer notification,Version/audit,MVP1
+STM-VIR-001,Virtual Session,Scheduled,Start,Waiting,Inspector,Appointment valid,Create session,Participant reminder,Audit,MVP1
+STM-VIR-002,Participant,Joined,Identity+OTP verified,Verified,System,Verification rules pass,Unlock readiness,None,Verification audit,MVP1
+STM-VIR-003,Virtual Session,Verified/Ready,Begin Inspection,In Progress,Inspector,Readiness pass,Enable capture,Status update,Audit,MVP1
+STM-SYNC-001,Offline Queue,Pending,Sync,Synced,System,Idempotency and server validation,Apply operations once,Sync status,Sync audit,MVP1
+STM-SYNC-002,Offline Queue,Pending,Conflict detected,Conflict,System,Server/local versions differ,Create conflict record; no overwrite,Inspector/support notification,Conflict audit,MVP1

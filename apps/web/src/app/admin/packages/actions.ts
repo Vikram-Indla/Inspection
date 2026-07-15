@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logProviderError, NEUTRAL_LOAD_ERROR, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export type PkgResult = { error?: string; ok?: boolean };
 
@@ -50,7 +51,7 @@ export async function createDraftVersion(_: PkgResult, formData: FormData): Prom
     definition: latest?.definition ?? { sections: [], action_forms: [] },
     created_by: user.id,
   });
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin package draft", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/packages");
   return { ok: true };
 }
@@ -70,7 +71,7 @@ export async function saveDraftDefinition(_: PkgResult, formData: FormData): Pro
   const { error, count } = await sb.from("package_versions")
     .update({ definition }, { count: "exact" })
     .eq("id", version_id).eq("status", "draft");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin package definition", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!count) return { error: "Only draft versions are editable (M09-030 — published is immutable)." };
   revalidatePath("/admin/packages");
   return { ok: true };
@@ -139,7 +140,7 @@ async function validateDefinition(
   if (codes.length > 0) {
     const { data, error } = await sb.from("inspection_items")
       .select("code, active, response_model, evidence_rule").in("code", codes);
-    if (error) return [ `Validation could not read the item bank: ${error.message}` ];
+    if (error) { logProviderError("admin package item-bank validation", error); return [NEUTRAL_LOAD_ERROR]; }
     for (const row of (data ?? []) as ItemBankRow[]) bank.set(row.code, row);
   }
 
@@ -161,13 +162,13 @@ async function validateDefinition(
   if (violationRefs.size > 0) {
     const vioCodes = [...violationRefs.keys()];
     const { data: vios, error: vErr } = await sb.from("violation_codes").select("id, code").in("code", vioCodes);
-    if (vErr) return [...blockers, `Validation could not read violation codes: ${vErr.message}`];
+    if (vErr) { logProviderError("admin package violation validation", vErr); return [...blockers, NEUTRAL_LOAD_ERROR]; }
     const vioByCode = new Map((vios ?? []).map(v => [v.code as string, v.id as string]));
     const vioIds = [...vioByCode.values()];
     let mappedIds = new Set<string>();
     if (vioIds.length > 0) {
       const { data: pens, error: pErr } = await sb.from("penalty_mappings").select("violation_code_id").in("violation_code_id", vioIds);
-      if (pErr) return [...blockers, `Validation could not read penalty mappings: ${pErr.message}`];
+      if (pErr) { logProviderError("admin package penalty validation", pErr); return [...blockers, NEUTRAL_LOAD_ERROR]; }
       mappedIds = new Set((pens ?? []).map(p => p.violation_code_id as string));
     }
     for (const [vCode, itemCode] of violationRefs) {
@@ -192,7 +193,7 @@ export async function approveAndPublish(_: PkgResult, formData: FormData): Promi
   const version_id = String(formData.get("version_id") ?? "");
   const { data: ver, error: verErr } = await sb.from("package_versions")
     .select("status, definition").eq("id", version_id).maybeSingle();
-  if (verErr) return { error: verErr.message };
+  if (verErr) { logProviderError("admin package version read", verErr); return { error: NEUTRAL_LOAD_ERROR }; }
   if (!ver) return { error: "Version not found or outside your scope (RLS)." };
   if (ver.status !== "draft") return { error: "Only draft versions can be published (M09-030)." };
 
@@ -204,7 +205,7 @@ export async function approveAndPublish(_: PkgResult, formData: FormData): Promi
   const { error } = await sb.from("package_versions").update({
     approved_by: user.id, status: "published", published_at: new Date().toISOString(),
   }).eq("id", version_id).eq("status", "draft");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin package publish", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/packages");
   return { ok: true };
 }

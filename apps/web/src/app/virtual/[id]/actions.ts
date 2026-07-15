@@ -10,11 +10,14 @@ import { supabaseServer } from "@/lib/supabase-server";
 const SYSTEM_ERROR = "The session could not be updated. Try again or contact support.";
 import { insertNotification } from "@/lib/notify";
 
+const DELIVERY_DEGRADED = "Some follow-up updates could not be queued. The session change itself was saved.";
+
 export type RoomActionResult = { error?: string; ok?: string };
 
 async function appendEvent(sb: Awaited<ReturnType<typeof supabaseServer>>, session_id: string, event: string, detail: Record<string, unknown> = {}) {
   const { error } = await sb.rpc("vs_append_event", { p_session: session_id, p_event: event, p_detail: detail });
-  return error?.message;
+  if (error) console.error(`[virtual ${event} timeline]`, error);
+  return !!error;
 }
 
 // M05-002 — reschedule: appointment change is only legal before anyone joins.
@@ -39,19 +42,19 @@ export async function rescheduleSession(_: RoomActionResult, fd: FormData): Prom
   const evErr = await appendEvent(sb, session_id, "rescheduled", { appointment_at: appointmentIso });
   const asg = (s.visits as unknown as { assignments: { inspector_id: string }[]; factories: { name: string } } | null);
   const notes: string[] = [];
-  if (evErr) notes.push(`timeline append failed: ${evErr}`);
+  if (evErr) notes.push(DELIVERY_DEGRADED);
   if (asg?.assignments?.[0]?.inspector_id) {
     const n = await insertNotification(sb, {
       event_key: "virtual_rescheduled", recipient: asg.assignments[0].inspector_id,
       payload: { session_id, appointment_at: appointmentIso, factory: asg.factories?.name },
     });
-    if (n.error) notes.push(`inspector notification failed: ${n.error}`);
+    if (n.error) { console.error("[virtual rescheduled inspector notification]", n.error); notes.push(DELIVERY_DEGRADED); }
   }
   const rep = await insertNotification(sb, {
     event_key: "virtual_rescheduled", recipient: null, channel: "sms",
     payload: { session_id, appointment_at: appointmentIso, factory: asg?.factories?.name },
   });
-  if (rep.error) notes.push(`factory-rep notification failed: ${rep.error}`);
+  if (rep.error) { console.error("[virtual rescheduled factory notification]", rep.error); notes.push(DELIVERY_DEGRADED); }
   revalidatePath(`/virtual/${session_id}`);
   return { ok: `Rescheduled to ${appointmentIso.slice(0, 16).replace("T", " ")}${notes.length ? ` — ${notes.join("; ")}` : ""}` };
 }
@@ -68,7 +71,7 @@ export async function openWaitingRoom(_: RoomActionResult, fd: FormData): Promis
   if (!upd?.length) return { error: "No transition — session is not in scheduled state, or RLS denied (STM-VIR)." };
   const evErr = await appendEvent(sb, session_id, "waiting_opened");
   revalidatePath(`/virtual/${session_id}`);
-  return { ok: evErr ? `Waiting room opened — timeline append failed: ${evErr}` : "Waiting room opened" };
+  return { ok: evErr ? `Waiting room opened — ${DELIVERY_DEGRADED}` : "Waiting room opened" };
 }
 
 // M05-009/010 — participant join: joined_at persisted + session advances.
@@ -89,7 +92,7 @@ export async function joinParticipant(_: RoomActionResult, fd: FormData): Promis
     .eq("id", session_id).in("state", ["scheduled", "waiting"]);
   const evErr = await appendEvent(sb, session_id, "joined", { participant: p.display_name, role: p.role });
   revalidatePath(`/virtual/${session_id}`);
-  return { ok: evErr ? `${p.display_name} joined — timeline append failed: ${evErr}` : `${p.display_name} joined` };
+  return { ok: evErr ? `${p.display_name} joined — ${DELIVERY_DEGRADED}` : `${p.display_name} joined` };
 }
 
 // M05-018 — one RLS-scoped RPC proves the verified factory representative(s),

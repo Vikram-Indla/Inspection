@@ -1,0 +1,51 @@
+CD001-V7-EV-001 — PUBLIC-SAFE SAUDI INDUSTRIAL INSPECTION ATLAS
+Captured: 2026-07-13
+Branch: feat/cd-001-v7-atlas
+Task: TASK-DESIGN-CD001-V7-IMPLEMENTATION
+Screen: SCR-PUB-010
+Storyboard: SB02
+
+IMPLEMENTED OUTCOME
+- Public-safe 3D atlas derivative is the default login visual foundation.
+- AVIF (131743 bytes) is primary; WebP (211622 bytes) is fallback; PNG master is preserved for provenance.
+- Unsanitized source image is not referenced by application code.
+- Native DOM hotspots, dossiers, lifecycle tablist, persistent illustrative disclosure and list alternative remain accessible independently of the raster.
+- Leaflet/CSS atlas is retained as image-failure and reduced-data fallback.
+- Demo identities render only when server-only SAQEEL_DEMO_ACCESS_ENABLED=1.
+- Authentication provider errors are mapped to neutral public-safe messages.
+- Supabase authentication, password reset anti-enumeration, FND-003 audit and /launch server-side role routing are preserved.
+
+VERIFICATION
+1. npm run typecheck — PASS
+2. npm run build — PASS
+3. Targeted CD-001 + negative-auth Playwright — PASS 9/9
+   - public-safe image and nine accessible hotspots
+   - lifecycle state changes
+   - hover/focus, click lock and close/focus return dossier
+   - image failure to generated Leaflet/CSS fallback
+   - production demo identity suppression
+   - 1440x900, 1280x800, 1024x768 and 390x844 overflow checks
+   - wrong-password, unknown-account and unauthenticated-route negatives
+4. Visual evidence capture — PASS 1/1
+5. Complete Playwright suite — PASS 26/26
+   - three authenticated persona setups
+   - CD-001 runtime and visual evidence
+   - golden plan/publish/execute/submit/return/correct/resubmit/approve journey
+   - offline queue/replay drill
+   - negative authentication
+   - planner, inspector and reviewer persona tours
+
+VISUAL EVIDENCE
+- screens/login-v7-atlas/desktop-dark-en.png
+- screens/login-v7-atlas/desktop-light-en.png
+- screens/login-v7-atlas/desktop-dark-ar.png
+- screens/login-v7-atlas/laptop-dark-en.png
+- screens/login-v7-atlas/mobile-dark-en.png
+
+P0 RESULT: PASS
+
+P1 RELEASE CONFIRMATIONS STILL OPEN
+- Sponsor confirmation of source and derivative image rights.
+- Official-source confirmation of public geographic anchor coordinates.
+
+These P1 items block production release claims, not controlled human runtime review.

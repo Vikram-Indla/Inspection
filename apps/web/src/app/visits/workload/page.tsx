@@ -23,7 +23,8 @@ type Row = {
 export default async function Workload() {
   const { t } = await useT();
   const sb = await supabaseServer();
-  await sb.rpc("expire_lapsed_visits"); // count real published load, not lapsed windows (M02-016)
+  const { error: expiryError } = await sb.rpc("expire_lapsed_visits"); // count real published load, not lapsed windows (M02-016)
+  if (expiryError) console.error(`[visits.workload] expiry refresh failed: ${expiryError.message}`);
   const { data, error } = await sb.from("assignments")
     .select("inspector_id, profiles(full_name), visits(id, planning_status, operational_state, window_start, window_end)")
     .limit(2000);

@@ -49,9 +49,10 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
     sb.from("inspection_items").select("code, title"),
   ]);
   if (error || !ins) {
+    if (error) console.error("[inspection report] load failed", error);
     return (
       <div className="rp-page"><div className="rp-doc">
-        <p className="ax-caption">{error ? error.message : t("report.notFound", "Report unavailable — inspection not in your scope or does not exist (RLS).")}</p>
+        <p className="ax-caption">{error ? t("report.loadError", "The inspection report is temporarily unavailable. Nothing was changed. Try again.") : t("report.notFound", "Report unavailable — inspection not in your scope or does not exist (RLS).")}</p>
       </div></div>
     );
   }

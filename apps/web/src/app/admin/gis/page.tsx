@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import GisStudio, { type GisFactory, type GisSettings, type GisStrings } from "./GisStudio";
+import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,9 @@ export default async function GisStudioPage() {
       .select("id, factory_code, name, city, region, official_lat, official_lng, risk_band, risk_score, geofence_radius_m")
       .order("name"),
   ]);
-  const err = engRes.error?.message ?? facRes.error?.message;
+  if (engRes.error) logProviderError("admin gis settings read", engRes.error);
+  if (facRes.error) logProviderError("admin gis factories read", facRes.error);
+  const err = engRes.error || facRes.error;
   const s = (engRes.data?.settings ?? {}) as Record<string, unknown>;
   const factories = (facRes.data ?? []) as GisFactory[];
   const settingsRows: [string, string, string][] = [
@@ -74,7 +77,7 @@ export default async function GisStudioPage() {
 
         {err && (
           <div className="ax-banner ax-banner--critical" role="alert">
-            <div><strong>{t("gis.error.title", "GIS data unavailable.")}</strong> {err}</div>
+            <div><strong>{t("gis.error.title", "GIS data unavailable.")}</strong> {t("gis.error.body", NEUTRAL_LOAD_ERROR)}</div>
           </div>
         )}
 

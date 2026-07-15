@@ -1,0 +1,40 @@
+scope:
+- classification: MVP1
+  capability: All 478 customer/auditor spreadsheet rows
+  rule: Mandatory non-regression baseline
+- classification: MVP1
+  capability: 9 spreadsheet modules
+  rule: M01-M09 exactly as defined
+- classification: MVP1 Foundation
+  capability: Identity, RBAC, audit, notifications, versioning, data integrity, offline
+    recovery, GIS controls
+  rule: Required only to make spreadsheet functionality implementable and safe
+- classification: MVP1 Foundation
+  capability: Risk calculation/consumption sufficient for approved targeting and visibility
+  rule: Not the advanced Risk Studio
+- classification: MVP1 Foundation
+  capability: Workflow configuration sufficient for MVP1 states, transitions and guards
+  rule: Not the advanced visual Workflow Studio
+- classification: MVP1 Foundation
+  capability: Inspection package/form configuration sufficient for MVP1 reports, checklists
+    and action forms
+  rule: Not a general-purpose no-code platform
+- classification: MVP1
+  capability: Operational Factory 360 and Operations Center visibility
+  rule: Not national strategic executive intelligence
+- classification: MVP2
+  capability: Advanced Risk Studio, simulation, backtesting and AI recommendations
+  rule: Deferred
+- classification: MVP2
+  capability: Advanced Workflow Studio and broad no-code automation
+  rule: Deferred
+- classification: MVP2
+  capability: General-purpose no-code Form Builder
+  rule: Deferred
+- classification: MVP2
+  capability: Formal objection/appeal and broader committee decisioning
+  rule: Deferred
+- classification: MVP2
+  capability: External self-service portal, correction/re-inspection programme and
+    advanced national dashboards
+  rule: Deferred

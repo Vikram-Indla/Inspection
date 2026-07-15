@@ -1,0 +1,9 @@
+# P02 — Visit Design and Assignment
+
+Use the master constitution and the V4 quality ratchet. Cover SCR-WEB-140 and SB04/SB05, but reconcile ownership before composing: `/planning/plans/:id` is now a read-only/post-publish drill-down; `/planning/bulk/review` contains an implemented pre-publish P02 step; the contract route `/planning/:id/configure` is not implemented. The current bulk review's `SCR-WEB-120` label collides with the governed Single Visit Planning identity. Preserve the read-only route and mark the implementation route leg `HANDOFF_BLOCKED` until this is resolved.
+
+Inspect plan detail, package versions, assignment actions, inspector availability, schedule conflicts, execution-mode eligibility, GIS location, and notifications. Design a structured configuration workspace for visit type, window, priority, exact package version, physical/virtual eligibility, team, notes, and manual/automatic assignment.
+
+Make only verified conflicts actionable. The current runtime can prove inspector-role membership, duplicate active visits and manual-selection overlap; it cannot yet prove skills, work hours, capacity, proximity, travel time, automatic overlap avoidance, virtual eligibility, override policy or attempted-conflict audit. Show unsupported facts as unavailable or blocked, never as a score. Automatic assignment is deterministic round-robin, not a recommendation engine.
+
+Return equal-fidelity decision-zone hypotheses, desktop high-fidelity configuration, an Assignment Evidence Ledger, conflict-resolution panel, semantic candidate comparison, read-only published state, Arabic/RTL, narrow layout, loading/stale/concurrent states, linked error-summary focus, and exact P03 readiness criteria. Do not redesign assignment as a cosmetic dropdown or imply unsupported optimization.

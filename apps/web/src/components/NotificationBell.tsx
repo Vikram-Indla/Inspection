@@ -53,7 +53,7 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
         .is("read_at", null)
         .not("delivery_state", "in", "(read,handled)"),
     ]);
-    if (error) { setErr(error.message); return; }
+    if (error) { setErr(strings.loadError); return; }
     setErr("");
     setRows((data ?? []) as Row[]);
     setUnreadTotal(count ?? 0);
@@ -82,7 +82,7 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
     const patch: Record<string, unknown> = { read_at: new Date().toISOString() };
     if (r.delivery_state === "queued") patch.delivery_state = "read";
     const { error } = await sb.from("notifications").update(patch).eq("id", r.id);
-    if (error) { setErr(error.message); return; }
+    if (error) { setErr(strings.loadError); return; }
     setRows(rs => rs.map(x => x.id === r.id ? { ...x, ...patch } as Row : x));
     setUnreadTotal(n => Math.max(0, n - 1));
   }
@@ -112,7 +112,7 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
             <strong>{strings.heading}</strong>
             {unread > 0 && <button className="ax-btn ax-btn--subtle" onClick={markAllRead}>{strings.markAll}</button>}
           </div>
-          {err && <p className="ax-caption" role="alert">{strings.loadError} {err}</p>}
+          {err && <p className="ax-caption" role="alert">{err}</p>}
           {rows.length === 0 && <p className="ax-caption">{strings.empty}</p>}
           <div style={{ maxBlockSize: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
             {rows.map(r => (

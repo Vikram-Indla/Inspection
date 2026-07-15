@@ -10,6 +10,7 @@
 // (0002) scopes reads to the recipient; notif_update_recipient (0015) scopes
 // read receipts.
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { NEUTRAL_WRITE_ERROR } from "./neutral-error";
 
 export type NotifyChannel = "inapp" | "push" | "sms" | "email";
 
@@ -59,7 +60,8 @@ export async function insertNotification(sb: SupabaseClient, input: NotifyInput)
       if (r.delivered) { delivery_state = "delivered"; delivered_at = new Date().toISOString(); }
       else delivery_state = `failed:${(r.detail ?? "unknown").slice(0, 60)}`;
     } catch (e) {
-      delivery_state = `failed:${String((e as Error).message).slice(0, 60)}`;
+      console.error(`[notification ${channel} adapter]`, e);
+      delivery_state = "failed";
     }
   }
   const { error } = await sb.from("notifications").insert({
@@ -70,5 +72,9 @@ export async function insertNotification(sb: SupabaseClient, input: NotifyInput)
     delivery_state,
     delivered_at,
   });
-  return error ? { error: error.message } : { delivery_state };
+  if (error) {
+    console.error("[notification insert]", error);
+    return { error: NEUTRAL_WRITE_ERROR };
+  }
+  return { delivery_state };
 }

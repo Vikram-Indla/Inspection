@@ -4,6 +4,7 @@ import { useT } from "@/lib/i18n";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
 import StartReview, { type StartReviewStrings } from "./StartReview";
 import VersionCompare, { type VersionCompareStrings, type ItemSection } from "./VersionCompare";
+import FindingTraceChain, { type FindingTrace, type TraceNode } from "./FindingTraceChain";
 import { fetchFactoryChecks, updatedCount, FACTORY_FIELD_EN } from "@/lib/factory-verification";
 
 export const dynamic = "force-dynamic";
@@ -12,14 +13,42 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const { id } = await params;  // inspection id
   const { t } = await useT();
   const sb = await supabaseServer();
+  const { data: { user } } = await sb.auth.getUser();
+  const { data: roleRows } = user
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    : { data: null };
+  // RLS (0002_rbac_audit.sql: inspections_read/subs_read/reviews_read) and the
+  // CD-030 design scope itself ("P11 · Reviewer/Auditor") grant auditor,
+  // planner and leadership read access to this record — the page-level gate
+  // must not be narrower than that or it silently weakens an accepted
+  // permission (CLAUDE.md). canDecide stays reviewer/ops-only: it gates
+  // StartReview/DecisionPanel, which is the real guard against the read
+  // roles ever submitting a decision (reviews_insert's RLS is not itself a
+  // tight boundary here).
+  const authorized = !!user && (roleRows ?? []).some(r => ["reviewer", "ops", "auditor", "planner", "leadership"].includes(r.role_key));
+  const canDecide = !!user && (roleRows ?? []).some(r => r.role_key === "reviewer" || r.role_key === "ops");
+  const viewerRole = (roleRows ?? []).find(r => ["reviewer", "ops", "auditor", "planner", "leadership"].includes(r.role_key))?.role_key ?? null;
+  if (!authorized) {
+    return (
+      <Shell current="/reviews" title={t("review.ws.unauthTitle", "You don’t have access to this review")}>
+        <section className="ax-surface cd-panelpad cd-result" role="alert">
+          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
+            <div className="cd-stack"><h3 tabIndex={-1}>{t("review.ws.unauthTitle", "You don’t have access to this review")}</h3>
+              <p>{t("review.ws.unauthBody", "This workspace requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p></div></div>
+        </section>
+      </Shell>
+    );
+  }
   const { data: ins, error: insErr } = await sb.from("inspections")
     .select(`id, status, visits(factories(name, factory_code)), package_versions(version_label, definition),
       submission_versions(id, version_number, snapshot, acknowledgement, submitted_at),
-      violations(mapping_version, violation_codes(code, title, level)),
-      action_forms(owner_name, due_at, status, required_correction),
+      checklist_responses(id, item_id, response),
+      findings(id, item_id, severity, description),
+      violations(id, finding_id, triggered_by_response, mapping_version, violation_codes(code, title, level, clause_id, regulation_clauses(clause_ref, legal_source))),
+      action_forms(id, item_id, violation_id, owner_name, due_at, status, required_correction),
       evidence(storage_path, evidence_type, content_sha256, captured_at, linked_type, linked_id),
       reviews(id, status, decision, decision_reason, returned_sections, decided_at, submission_version_id)`)
-    .eq("id", id).single();
+    .eq("id", id).maybeSingle();
   if (!ins) {
     // insErr distinguishes an actual fetch failure (degraded source) from a
     // genuinely missing id — a failed fetch is never labeled "not found".
@@ -31,7 +60,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
           <p className="ax-caption">
             {insErr
               ? t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")
-              : t("review.ws.notFoundDesc", "No record matches this ID.")}
+              : t("review.ws.notFoundDesc", "No record matches this ID or it is outside your permitted scope.")}
           </p>
         </div></div>
       </Shell>
@@ -39,6 +68,9 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   }
   const subs = (ins.submission_versions as unknown as { id: string; version_number: number; snapshot: { answers?: Record<string, string> }; acknowledgement: unknown; submitted_at: string }[]).sort((a, b) => b.version_number - a.version_number);
   const latest = subs[0];
+  const [{ data: itemRows }] = await Promise.all([
+    sb.from("inspection_items").select("id, code, title, regulation_clauses(clause_ref, legal_source)"),
+  ]);
   const reviews = ins.reviews as unknown as { id: string; status: string; decision: string | null; decision_reason: string | null; returned_sections: string[] | null; decided_at: string | null; submission_version_id: string }[];
   // CD-028 leg 5 — opening is read-only. The review is NOT created and the
   // inspection is NOT transitioned as a side-effect of this render; that now
@@ -62,6 +94,60 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const scopeLabel = scopeReview
     ? `${(returnedScope ?? []).join(", ")} · ${scopeReview.decided_at ? new Date(scopeReview.decided_at).toISOString().slice(0, 10) : "—"}`
     : null;
+
+  type ItemRow = { id: string; code: string; title: string; regulation_clauses: { clause_ref: string; legal_source: string | null } | { clause_ref: string; legal_source: string | null }[] | null };
+  type ResponseRow = { id: string; item_id: string; response: { value?: string } | string | null };
+  type FindingRow = { id: string; item_id: string | null; severity: string; description: string };
+  type ViolationRow = { id: string; finding_id: string | null; triggered_by_response: string | null; mapping_version: string; violation_codes: { code: string; title: string; level: string; clause_id: string | null; regulation_clauses: { clause_ref: string; legal_source: string | null } | { clause_ref: string; legal_source: string | null }[] | null } | null };
+  type ActionRow = { id: string; item_id: string | null; violation_id: string | null; owner_name: string | null; due_at: string | null; status: string; required_correction: string | null };
+  type EvidenceRow = { storage_path: string; evidence_type: string; content_sha256: string | null; linked_type: string; linked_id: string };
+  const items = (itemRows ?? []) as ItemRow[];
+  const responses = (ins.checklist_responses ?? []) as unknown as ResponseRow[];
+  const findings = (ins.findings ?? []) as unknown as FindingRow[];
+  const violations = (ins.violations ?? []) as unknown as ViolationRow[];
+  const actionForms = (ins.action_forms ?? []) as unknown as ActionRow[];
+  const evidenceRows = (ins.evidence ?? []) as unknown as EvidenceRow[];
+  const decidedReview = reviews.filter(r => !!r.decided_at).sort((a, b) => String(b.decided_at).localeCompare(String(a.decided_at)))[0] ?? null;
+  const versionLabel = `Submission snapshot · v${latest?.version_number ?? "—"}`;
+  const unavailable = (source: string, value: string): TraceNode => ({ value, source, unavailable: true });
+  const present = (value: string, source: string): TraceNode => ({ value, source });
+  const answerEntries = Object.entries(latest?.snapshot?.answers ?? {});
+  const traceRows: FindingTrace[] = answerEntries.map(([key, raw]) => {
+    const item = items.find(i => i.code === key);
+    const response = item ? responses.find(r => r.item_id === item.id) : undefined;
+    const finding = item ? findings.find(f => f.item_id === item.id) : undefined;
+    const violation = violations.find(v => (finding && v.finding_id === finding.id) || (response && v.triggered_by_response === response.id));
+    const action = actionForms.find(a => (item && a.item_id === item.id) || (violation && a.violation_id === violation.id));
+    const linkedEvidence = evidenceRows.filter(e =>
+      (item && e.linked_type === "item" && e.linked_id === item.id) ||
+      (finding && e.linked_type === "finding" && e.linked_id === finding.id) ||
+      (action && e.linked_type === "action" && e.linked_id === action.id),
+    );
+    const itemClause = Array.isArray(item?.regulation_clauses) ? item?.regulation_clauses[0] : item?.regulation_clauses;
+    const violationClause = Array.isArray(violation?.violation_codes?.regulation_clauses) ? violation?.violation_codes?.regulation_clauses[0] : violation?.violation_codes?.regulation_clauses;
+    const clause = itemClause ?? violationClause ?? null;
+    const responseValue = typeof raw === "string" ? raw : JSON.stringify(raw);
+    return {
+      key,
+      question: present(item?.title ?? key, `${versionLabel} · package item`),
+      response: present(responseValue, versionLabel),
+      evidence: linkedEvidence.length > 0
+        ? present(`${linkedEvidence.length} linked record(s) · ${linkedEvidence[0].evidence_type}`, `${versionLabel} · evidence metadata`)
+        : unavailable(`${versionLabel} · evidence linkage`, "Evidence link unavailable"),
+      clause: clause
+        ? present(`${clause.clause_ref}${clause.legal_source ? ` · ${clause.legal_source}` : ""}`, "Published regulation mapping")
+        : unavailable("Published regulation mapping", "Clause link unavailable"),
+      violation: violation?.violation_codes
+        ? present(`${violation.violation_codes.code} · ${violation.violation_codes.title} · ${violation.violation_codes.level}`, `Violation mapping ${violation.mapping_version}`)
+        : present("No violation recorded", "Inspection violation set"),
+      action: action
+        ? present(`${action.required_correction ?? "Corrective action"} · ${action.status}`, `Action form · ${action.owner_name ?? "owner unavailable"}`)
+        : present("No corrective action recorded", "Inspection action-form set"),
+      decision: decidedReview
+        ? present(`${decidedReview.decision ?? "decision"}${decidedReview.decision_reason ? ` · ${decidedReview.decision_reason}` : ""}`, `Review decision · ${decidedReview.decided_at}`)
+        : unavailable("Review decision record", "Decision comment pending"),
+    };
+  });
   const compareVersions = subs.map(s => { return { n: s.version_number, answers: (s.snapshot?.answers ?? {}) as Record<string, string> }; });
   const enumLabels: Record<string, string> = {};
   Array.from(new Set(compareVersions.flatMap(v => { return Object.values(v.answers); }))).forEach(v => { enumLabels[v] = t(`enum.${v}`, String(v).replace(/_/g, " ")); });
@@ -90,12 +176,16 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     unavailPackage: t("review.cmp.unavailPackage", "Package-semantic comparison — answer meaning across package versions is not reconciled."),
     unavailMetadata: t("review.cmp.unavailMetadata", "Metadata / section-order comparison — not diffed."),
     unavailNote: t("review.cmp.unavailNote", "These are honestly unavailable (HANDOFF_BLOCKED_MEDIADIFF/_PKGSEMANTIC/_METADIFF), not equal."),
+    staleTitle: t("review.cmp.staleTitle", "A newer version was submitted."),
+    staleBody: t("review.cmp.staleBody", "Version v{n} arrived while you had this open — refresh before relying on this comparison."),
+    staleRefresh: t("review.cmp.staleRefresh", "Refresh"),
     enumLabels,
   };
   // M04-190 / M06-017 / M06-034 — factory-data verification checks for the
   // reviewer: Source (Senaei) vs Observed, Verified/Updated, before/after,
   // linked evidence. Tolerant fetch: 0020 pending → verbatim error, no crash.
   const fv = await fetchFactoryChecks(sb, ins.id);
+  if (fv.error) console.error("[review factory verification]", fv.error);
   const fvUpdated = updatedCount(fv.checks);
   const fvEvidence = (ins.evidence as unknown as { storage_path: string; linked_type?: string; linked_id?: string }[]).filter(e => e.linked_type === "factory_field");
   const fvEvCount = (checkId: string) => fvEvidence.filter(e => e.linked_id === checkId).length;
@@ -128,11 +218,25 @@ const panelStrings: WorkspaceDecisionStrings = {
     start: t("review.ws.startAction", "Start review"),
     starting: t("review.ws.starting", "Starting…"),
   };
+  const traceStrings = {
+    heading: t("review.ws.trace.heading", "Finding trace chain"),
+    hint: t("review.ws.trace.hint", "Question → response → evidence → clause → violation → corrective action → decision comment. Each link is labelled by its source and version; unavailable links are never inferred."),
+    empty: t("review.ws.trace.empty", "No checklist answers are available to build the trace chain."),
+    question: t("review.ws.trace.question", "Question"),
+    response: t("review.ws.trace.response", "Response"),
+    evidence: t("review.ws.trace.evidence", "Evidence"),
+    clause: t("review.ws.trace.clause", "Clause"),
+    violation: t("review.ws.trace.violation", "Violation"),
+    action: t("review.ws.trace.action", "Corrective action"),
+    decision: t("review.ws.trace.decision", "Decision comment"),
+    unavailable: t("review.ws.trace.unavailable", "Unavailable"),
+  };
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
-      context={<><span className="ax-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span><a className="ax-btn ax-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report →")}</a></>}>
+      context={<><span className="ax-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="ax-lozenge ax-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="ax-btn ax-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report →")}</a></>}>
       <div className="ax-banner ax-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version (M06-012).")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.5fr) minmax(0,1fr)", gap: "var(--ax-space-300)", alignItems: "start" }}>
+      <FindingTraceChain traces={traceRows} strings={traceStrings} />
+      <div className="cd-review-workspace-grid">
         <div className="ax-stack">
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h4>
@@ -166,7 +270,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               </span>
             </h4>
             {fv.error ? (
-              <p className="ax-caption">{t("review.ws.fvError", "Verification data unavailable: {error}").replace("{error}", fv.error)}</p>
+              <p className="ax-caption">{t("review.ws.fvError", "Verification data is temporarily unavailable. Source-versus-observed comparison cannot be shown yet.")}</p>
             ) : fv.checks.length === 0 ? (
               <p className="ax-caption">{t("review.ws.fvEmpty", "No factory-field checks recorded for this inspection.")}</p>
             ) : (
@@ -250,7 +354,12 @@ const panelStrings: WorkspaceDecisionStrings = {
             <div key={r.id} className="ax-banner ax-banner--warning"><div><strong>{t("review.ws.priorDecision", "Prior decision:")}</strong> {r.decision ? t(`enum.${r.decision}`, r.decision) : "—"} · {r.decision_reason} {r.returned_sections && `· ${t("review.ws.sections", "sections")} ${r.returned_sections.join(", ")}`} <span className="ax-caption">({t("review.ws.immutable", "immutable")})</span></div></div>
           ))}
         </div>
-        {open && ins.status === "under_review"
+        {!canDecide
+          // HANDOFF read-only path — auditor/planner/leadership can read the
+          // whole workspace above but never see Start review / the decision
+          // controls, regardless of open/canStart state.
+          ? <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
+          : open && ins.status === "under_review"
           ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))} strings={panelStrings} />
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />

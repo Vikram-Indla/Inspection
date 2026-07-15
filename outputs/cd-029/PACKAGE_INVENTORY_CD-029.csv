@@ -1,0 +1,19 @@
+relative_path,revision,baseline,design_id,screen_id,implementation_facing,synchronization_result
+CD-029 Level 2 Review Workspace.dc.html,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,PRESENT — synchronized R1 (remote design server)
+CD-029 Level 2 Review Workspace.standalone.html,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,PRESENT — synchronized R1 (remote design server)
+cd29-stage.js,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,PRESENT — synchronized R1 (remote design server)
+cd29-annot.js,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,PRESENT — synchronized R1 (remote design server)
+saqeel-tokens.css,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,PRESENT — synchronized R1 (remote design server)
+saqeel-astryx.css,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,PRESENT — synchronized R1 (remote design server)
+saqeel-prism.svg,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,PRESENT — synchronized R1 (remote design server)
+IMPLEMENTATION_MANIFEST_CD-029.yaml,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,yes,PRESENT — imported local
+COMPONENT_MAP_CD-029.csv,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,yes,PRESENT — imported local
+WIRING_MAP_CD-029.csv,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,yes,PRESENT — imported local
+STATE_MATRIX_CD-029.csv,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,partial,PRESENT — imported local
+ACCEPTANCE_CHECKLIST_CD-029.md,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,yes,PRESENT — imported local
+RESEARCH_PROVENANCE_CD-029.md,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,PRESENT — imported local
+CLAUDE_CODE_HANDOFF_CD-029.md,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,yes,PRESENT — imported local
+CLAUDE_CODE_IMPLEMENTATION_PROMPT_CD-029.md,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,yes,PRESENT — imported local
+PACKAGE_INVENTORY_CD-029.csv,R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,yes,PRESENT — imported local
+(evidence PNGs CD-029_SCR-WEB-310_*),R1,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-029,SCR-WEB-310,no,REMOTE ONLY — on design server (binary; not pulled into local context)
+apps/web/e2e/cd-029-review-workspace.spec.ts,R1 (proposed),same,CD-029,SCR-WEB-310,yes (CREATE_AFTER_APPROVAL),NOT IN PACKAGE — proposed; does not exist

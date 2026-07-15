@@ -7,7 +7,7 @@ export type OpsResult = { error?: string; ok?: boolean };
 // SB12 · M08 — Operations Center write leg: acknowledge / close a corrective action.
 // RLS policy `actions_rw` (0002_rbac_audit.sql) governs: USING admits ops/reviewer/auditor
 // or the assigned inspector; WITH CHECK is the authority on the written row. We never
-// bypass — any RLS rejection is surfaced verbatim below.
+// bypass — any RLS rejection is mapped to stable recovery copy below.
 export async function updateActionFormStatus(_: OpsResult, formData: FormData): Promise<OpsResult> {
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
@@ -24,7 +24,7 @@ export async function updateActionFormStatus(_: OpsResult, formData: FormData): 
     .eq("id", action_form_id)
     .neq("status", "closed") // closed is terminal; never reopen from here (M09-027 blocking stays authoritative)
     .select("id");
-  if (error) return { error: error.message };
+  if (error) { console.error("[operations action status]", error); return { error: "The corrective action could not be updated. Nothing was changed. Try again." }; }
   if (!data || data.length === 0) return { error: "No row updated — outside your RLS scope (actions_rw) or already closed." };
 
   revalidatePath("/operations");
@@ -63,7 +63,7 @@ export async function fetchMonitoringRows(region: string, city: string): Promise
     .select("id, operational_state, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
     .eq("planning_status", "published")
     .order("window_start", { ascending: true });
-  if (error) return { error: `visits: ${error.message}` };
+  if (error) { console.error("[operations monitoring visits]", error); return { error: "Live monitoring is temporarily unavailable. Try again." }; }
 
   const visits = ((data ?? []) as unknown as MonitorVisitRow[]).filter(v =>
     (!region || v.factories?.region === region) && (!city || v.factories?.city === city));
@@ -79,7 +79,7 @@ export async function fetchMonitoringRows(region: string, city: string): Promise
       .not("geofence_result", "is", null)
       .order("occurred_at", { ascending: false })
       .limit(300);
-    if (gErr) return { error: `geo_events: ${gErr.message}` };
+    if (gErr) { console.error("[operations monitoring geofence]", gErr); return { error: "Live geofence data is temporarily unavailable. Try again." }; }
     latest = new Map();
     for (const g of (geo ?? []) as { visit_id: string; geofence_result: string | null }[]) {
       if (g.geofence_result && !latest.has(g.visit_id)) latest.set(g.visit_id, g.geofence_result);
@@ -116,7 +116,7 @@ export async function markNotificationHandled(_: OpsResult, formData: FormData):
     .eq("id", notification_id)
     .neq("delivery_state", "handled")
     .select("id");
-  if (error) return { error: error.message };
+  if (error) { console.error("[operations notification status]", error); return { error: "The notification could not be marked handled. Try again." }; }
   if (!data || data.length === 0) return { error: "No row updated — outside your notification scope or already handled." };
 
   revalidatePath("/operations");

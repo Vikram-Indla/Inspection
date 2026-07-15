@@ -1,0 +1,32 @@
+=== B3 GOLDEN VERTICAL SLICE — one inspection end-to-end on production · 2026-07-11 ===
+
+[P01] Visit plan d2f9c1dd (single, draft) — planner · 201
+[P02] Visit 4bc16078 vs Al Amal Plastics Factory · pkg v2026.08 · 201
+[P02] Assigned to inspector (auto) · 201
+[P03] Published (STM-PLAN-002) · visit 204 plan 204
+
+[P06A] Journey 36976154 started · 201
+[P06A] telemetry→arrival→geofence check-in INSIDE (±4.2 m ≤ 25 m) · gis config version stamped · 201
+
+[P07] Inspection bf7b4a07 in progress · 201
+[P07] 4 responses recorded (FS-101=NON-COMPLIANT) · 201
+
+--- resume from P08 (fix: 1:1 embed is an object) ---
+[P08] FS-101 NC → V-FS-09 auto (mapping v3) → penalty P-014 context · 201
+[P08] mandatory photo linked to FS-101 · sha256 stamped · 201
+[P08] blocking corrective action form complete · 201
+
+[P09] immutable v1 1c8b6e12 · acknowledgement (DEC-009) · 201
+[P09-NEG] duplicate retry same idempotency key → 409 · duplicate key value violates unique constraint "submission_versions_idempot ✓ ERR-SUB-002
+[P09-NEG] edit response after submit → 400 · IMMUTABLE: inspection bf7b4a07-4971-490c-bd33-5ad9ca83762b content is locked (status  ✓
+
+[P10] RETURNED · exact scope ['s1'] + mandatory reason · 204
+[P10-NEG] edit decided review → 400 · IMMUTABLE: review 3a4615bd-331f-4953-878c-b00c2845a659 already decided (return) — dec ✓ M06-009
+
+[P11] correction within returned scope → immutable v2 3e951fe3 · v1 preserved · 201
+[P10] v2 APPROVED · 204
+
+[P12] Factory 360 truth: {"status": "approved", "submission_versions": [{"submitted_at": "2026-07-11T16:34:32.727468+00:00", "version_number": 1}, {"submitted_at": "2026-07-11T16:34:37.317234+00:00", "version_number": 2}], "violations": [{"mapping_version": "v3", "violation_codes": {"code": "V-FS-09"}}], "reviews": [{"status": "returned", "decision": "return", "returned_sections": ["s1"]}, {"status": "approved", "decision": "approve", "returned_sections": null}]}
+audit events total: [{"c":37}]
+
+VERDICT: P01→P12 complete · 4 role-scoped users · public API only · negative paths rejected by DB.

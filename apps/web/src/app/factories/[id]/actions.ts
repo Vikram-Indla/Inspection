@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logFactoryError, mapFactoryError } from "./neutral";
 
 export type F360Result = { error?: string; ok?: boolean };
 
@@ -33,7 +34,7 @@ export async function addFactoryDocument(_: F360Result, formData: FormData): Pro
     storage_path: null, // file custody via evidence pipeline — metadata only here
     uploaded_by: user.id,
   });
-  if (error) return { error: error.message };
+  if (error) { logFactoryError("add-document", error); return { error: mapFactoryError(error, "update") }; }
   revalidatePath(`/factories/${factory_id}`);
   return { ok: true };
 }
@@ -61,7 +62,7 @@ export async function addRepresentative(_: F360Result, formData: FormData): Prom
     email: email || null,
     is_primary,
   });
-  if (error) return { error: error.message };
+  if (error) { logFactoryError("add-representative", error); return { error: mapFactoryError(error, "update") }; }
   revalidatePath(`/factories/${factory_id}`);
   return { ok: true };
 }
@@ -96,7 +97,7 @@ export async function addFactoryProduct(_: F360Result, formData: FormData): Prom
     is_primary,
     created_by: user.id,
   });
-  if (error) return { error: error.message };
+  if (error) { logFactoryError("add-product", error); return { error: mapFactoryError(error, "update") }; }
   revalidatePath(`/factories/${factory_id}`);
   return { ok: true };
 }
@@ -124,7 +125,7 @@ export async function addFactoryMaterial(_: F360Result, formData: FormData): Pro
     hs_code: hs_code || null,
     created_by: user.id,
   });
-  if (error) return { error: error.message };
+  if (error) { logFactoryError("add-material", error); return { error: mapFactoryError(error, "update") }; }
   revalidatePath(`/factories/${factory_id}`);
   return { ok: true };
 }
@@ -141,7 +142,7 @@ export async function toggleRepresentativeActive(_: F360Result, formData: FormDa
   if (!rep_id || !factory_id) return { error: "Missing representative id." };
 
   const { error } = await sb.from("factory_representatives").update({ active: next_active }).eq("id", rep_id);
-  if (error) return { error: error.message };
+  if (error) { logFactoryError("toggle-representative", error); return { error: mapFactoryError(error, "update") }; }
   revalidatePath(`/factories/${factory_id}`);
   return { ok: true };
 }

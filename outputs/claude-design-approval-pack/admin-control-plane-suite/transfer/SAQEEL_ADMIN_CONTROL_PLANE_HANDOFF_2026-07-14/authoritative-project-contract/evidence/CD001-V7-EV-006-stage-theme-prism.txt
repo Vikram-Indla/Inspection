@@ -1,0 +1,26 @@
+CD001-V7-EV-006 — Sponsor UX-003 stage, theme and prism correction
+Date: 2026-07-13
+Branch: feat/cd-001-v7-atlas
+Screen: SCR-PUB-010
+
+Implemented
+- Removed public landing location-list UI.
+- Removed visible illustrative/not-live labels and dossier disclaimer line.
+- Preserved sanitized public asset and all operational-map safeguards.
+- Added localized stage event copy and map-anchored glyphs for all six stages.
+- Travel glyph moves; reduced-motion disables the movement.
+- Fixed dark atlas viewport across dark/light shells; no CSS image recolouring.
+- Added magenta-violet prism SVG and 32/180/192/512 PNGs.
+- Updated metadata, web manifest and service-worker cache key/asset paths.
+
+Verification
+- npm run typecheck: PASS
+- npm run build: PASS
+- e2e/cd-001-v7-atlas.spec.ts: PASS 6/6
+- e2e/cd-001-v7-visual-evidence.spec.ts: PASS 1/1
+- Light/dark, EN/AR, laptop and mobile evidence refreshed under screens/login-v7-atlas/.
+
+Scope boundary
+- SCR-PUB-010 is a public narrative surface, not an operational/shared map.
+- SPC-GIS-001 list alternatives remain mandatory for operational planning, monitoring and field maps.
+- Authentication, audit, RBAC routing, backend data and workflow state are unchanged.

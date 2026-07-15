@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NewItemForm, ToggleActive, type ClauseOption, type ItemStrings } from "./Controls";
+import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,8 @@ export default async function Items() {
       .select("id, clause_ref, title, regulations(code)")
       .order("clause_ref"),
   ]);
+  if (error) logProviderError("admin items read", error);
+  if (clauseError) logProviderError("admin item clauses read", clauseError);
   const clauseOptions: ClauseOption[] = (clauses ?? []).map(c => {
     const reg = c.regulations as unknown as { code: string } | null;
     return { id: c.id, label: `${reg?.code ?? "?"} §${c.clause_ref} — ${c.title ?? ""}` };
@@ -48,7 +51,7 @@ export default async function Items() {
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-020 · ENG-01</span>}>
       {(error || clauseError) && (
         <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("admin.items.error.title", "Couldn’t load the item catalogue.")}</strong> {error?.message ?? clauseError?.message} {t("admin.items.error.retry", "— retry.")}
+          <strong>{t("admin.items.error.title", "Couldn’t load the item catalogue.")}</strong> {t("admin.items.error.body", NEUTRAL_LOAD_ERROR)} {t("admin.items.error.retry", "— retry.")}
         </div></div>
       )}
       <NewItemForm clauses={clauseOptions} strings={strings} />

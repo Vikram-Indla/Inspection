@@ -1,0 +1,18 @@
+n,state_id,frame_id,label,key_evidence
+01,under-review,S01-UNDERREVIEW,Under review — decision open,"three-zone: section strip + trace chain (7 links) + governed rail; guard ladder offered->recheck->recorded->transitioned->queued"
+02,pending,S02-PENDING,Page-load review creation,"opening created review + moved inspection to under_review; HANDOFF_BLOCKED_PAGELOAD_MUTATION banner (role=alert)"
+03,decided-locked,S03-DECIDEDLOCK,Decided locked immutable,"rail replaced by immutable prior decision; no controls; trace decision comment resolved"
+04,return-noscope,S04-RETURNNOSCOPE,Return missing scope,"return selected, no sections; invalid scope + role=alert; focus target"
+05,reject-noreason,S05-REJECTNOREASON,Reject missing reason,"reject selected, no reason; mandatory reason alert; focus target"
+06,partial-sideeffect,S06-PARTIAL,Partial decision side-effect,"decision recorded, inspection NOT transitioned, notification NOT queued; HANDOFF_BLOCKED_ATOMIC; neutral copy"
+07,stale,S07-STALE,Stale / concurrent decision,"newer version/decision since load; rail disabled; refresh before deciding (role=alert)"
+08,unauthorized,S08-UNAUTH,Unauthorized / RLS denial,"nav visibility != authorization; RLS boundary"
+09,missing-evidence,S09-MISSINGEV,Missing evidence,"finding F2 evidence link shown 'unavailable'; chain not broken; not fabricated"
+10,degraded-media,S10-DEGRADED,Provider-degraded media,"integrity facts present; preview explicitly unavailable; HANDOFF_BLOCKED_MEDIA"
+11,multi-critical,S11-MULTICRIT,Multiple critical findings,"more than one L1-critical; approval triggers full compliance chain; read every critical trace"
+12,linked-failure,S12-LINKEDFAIL,Linked-source failure,"clause/violation mapping source failed; affected links 'unavailable'; HANDOFF_BLOCKED_LINKED"
+13,loading,S13-LOADING,Loading skeleton,role=status
+14,counterfactual,S14-COUNTERFACTUAL,Trace chain removed,"flat checklist + separate lists + decision box; chain reassembled from memory; irreversible-error risk"
+H-A,hyp-a,HYP-A-TRACE,Hypothesis A (selected),"trace-chain-first zone order; full three-zone workspace"
+H-B,hyp-b,HYP-B-EVIDENCE,Hypothesis B,"evidence-viewer-first; degraded-media context; full workspace"
+H-C,hyp-c,HYP-C-RAIL,Hypothesis C,"decision-rail-first zone order; full workspace"

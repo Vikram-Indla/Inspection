@@ -153,6 +153,14 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     }
   });
 
+  test("expiry refresh failures are observable without changing the rendered state contract", () => {
+    for (const p of ["src/app/visits/page.tsx", "src/app/visits/calendar/page.tsx", "src/app/visits/workload/page.tsx"]) {
+      const src = SRC(p);
+      expect(src, `${p} must inspect expiry RPC failures`).toContain("const { error: expiryError } = await sb.rpc(\"expire_lapsed_visits\")");
+      expect(src, `${p} must log expiry failures server-side`).toContain("expiry refresh failed");
+    }
+  });
+
   test("the Map lens is represented as unavailable — no route or provider is invented", () => {
     const page = SRC("src/app/visits/page.tsx");
     expect(page).toContain("HANDOFF_BLOCKED_MAP");

@@ -25,7 +25,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   const sb = await supabaseServer();
   // M02-016 — persist published→expired before reading (parity with field home;
   // security-definer rpc runs the canonical transition, audit trigger records it).
-  await sb.rpc("expire_lapsed_visits");
+  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
+  if (expiryError) console.error(`[visits.list] expiry refresh failed: ${expiryError.message}`);
   const [{ data: visits, error, count }, { data: inspRows }] = await Promise.all([
     sb.from("visits")
       .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, visit_plan_id,

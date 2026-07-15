@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logProviderError, NEUTRAL_LOAD_ERROR, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export type WfResult = { error?: string; ok?: boolean };
 
@@ -20,14 +21,14 @@ export async function proposeWorkflowDraft(_: WfResult, formData: FormData): Pro
 
   const { data: base, error: baseError } = await sb.from("config_versions")
     .select("engine, object_id, payload").eq("id", base_id).eq("engine", "workflow").single();
-  if (baseError) return { error: baseError.message };
+  if (baseError) { logProviderError("admin workflow base read", baseError); return { error: NEUTRAL_LOAD_ERROR }; }
   if (!base) return { error: "Base workflow version not found." };
 
   const { error } = await sb.from("config_versions").insert({
     engine: "workflow", object_id: base.object_id, version_label,
     status: "draft", payload: base.payload, created_by: user.id,
   });
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin workflow draft", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/workflows");
   return { ok: true };
 }
@@ -49,7 +50,7 @@ export async function saveWorkflowDraft(_: WfResult, formData: FormData): Promis
   const { error, count } = await sb.from("config_versions")
     .update({ payload }, { count: "exact" })
     .eq("id", version_id).eq("engine", "workflow").eq("status", "draft");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin workflow save", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!count) return { error: "Only draft versions are editable — published workflow config is immutable." };
   revalidatePath("/admin/workflows");
   return { ok: true };
@@ -66,7 +67,7 @@ export async function approvePublishWorkflow(_: WfResult, formData: FormData): P
   const { error, count } = await sb.from("config_versions").update({
     approved_by: user.id, status: "published", effective_from: new Date().toISOString(),
   }, { count: "exact" }).eq("id", version_id).eq("engine", "workflow").eq("status", "draft");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin workflow publish", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!count) return { error: "No draft to publish — RLS requires a workflow-scope admin role." };
   revalidatePath("/admin/workflows");
   return { ok: true };

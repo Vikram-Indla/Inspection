@@ -11,11 +11,12 @@ export default async function Access() {
     sb.from("profiles").select("user_id, full_name, email, region, user_roles!user_roles_user_id_fkey(role_key)").order("full_name"),
     sb.from("roles").select("role_key, title, is_admin").order("role_key"),
   ]);
+  if (error) console.error("[admin access] load failed", error);
   return (
     <Shell current="/admin" title={t("admin.access.title", "Roles & permissions")}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-090 · RBAC-001..014</span>}>
       <div className="ax-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
-      {error && <div className="ax-banner ax-banner--critical"><div><strong>{t("admin.access.error.title", "Couldn’t load roster.")}</strong> {error.message} {t("admin.access.error.retry", "— retry.")}</div></div>}
+      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load roster. Nothing was changed. Try again.")}</strong></div></div>}
       <div className="ax-tablewrap"><table className="ax-table">
         <thead><tr><th>{t("admin.access.table.user", "User")}</th><th>{t("admin.access.table.email", "Email")}</th><th>{t("admin.access.table.region", "Region")}</th><th>{t("admin.access.table.roles", "Roles")}</th></tr></thead>
         <tbody>

@@ -1,5 +1,133 @@
 # Current State
 
+## 2026-07-15 UPDATE 52 — CD-031 neutral-error remediation and CD-004 evidence closure
+
+The CD-031 audit's fixable P1 is closed: `factories/[id]/neutral.ts` now logs raw provider
+errors server-side and maps page/action failures to neutral copy; the page and all CRUD
+actions use it. Typecheck/build and the focused CD-031 suite are **15/15 PASS**. The
+existing guarded CD-004 Arabic string seed was applied live and its focused suite is now
+**17/17 PASS**; the CD-028 shared-live row-selection assertion is **13/13 PASS**. Evidence
+ledgers and the CD-031 audit have been refreshed. CD-031 remains blocked only by the missing
+authoritative `WIRING_MAP_CD-031.csv`, unresolved leadership contact-privacy policy, and
+design-package preflight; no merge, push, deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 53 — CD-022 live-search determinism closure
+
+The fresh regression isolated a real CD-022 search defect: the server-side factory search
+was capped at 50 rows without deterministic ordering, so accumulated live fixtures could
+hide a newly-created name match. The query now orders by `created_at DESC`; the focused
+fixture also uses its unique name to avoid historical-row collisions. Typecheck and
+production build pass; the CD-022 focused suite is **13/13 PASS**. The earlier long-run
+failures are therefore classified as shared-live fixture/order drift, not a remaining
+CD-022 wiring defect. No merge, push, deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 54 — CD-030 audit-finding remediation
+
+Closed the fixable CD-030 NF-1 cluster in code: `submission_versions` read RLS now aligns
+with the review workspace's admitted roles without adding write access; the inspection
+read uses `maybeSingle()` and explicitly distinguishes outside-scope/no-row from degraded
+provider failure; stale comparison copy is localized through `useT()`; and a forward
+`reviews.returned_sections` JSON-array shape check was added while dynamic package-section
+membership remains server-validated. Typecheck/build PASS and the focused CD-030 suite is
+**16 passed / 1 data-dependent skip**. Live migration application remains unverified: the
+Management API returned 403 and the previously used local PAT is unavailable. Provider
+media/package/metadata diff boundaries remain intentionally unavailable; no merge, push,
+deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 55 — cross-cutting neutral-error sweep
+
+The delivered Operations, Factory Registry/Factory 360, Inspection Report, Admin
+control-plane, notification, field/offline, and virtual-session surfaces now keep raw
+provider/database details server-side and return neutral user copy on load/write
+failures. This closes the cross-cutting raw-error rule on those delivered routes without
+changing RLS, workflow, provider, or policy behavior. Typecheck/build PASS; expanded
+neutral-error sweep plus CD-004/dashboard regression **25/25 PASS**.
+Evidence: `evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md`.
+
+## 2026-07-15 UPDATE 56 — auth-safe error and offline-state remediation
+
+The full regression exposed two reproducible runtime wiring defects: an empty
+Supabase session could leave failed sign-in without the required neutral alert, and
+an in-flight replay could overwrite the browser's offline state back to `synced`.
+`LoginClient` now requires a non-null session before `/launch`; field `Workspace`
+guards stale replay completions and cleans up the offline listener. Typecheck/build
+PASS; focused auth-negative + offline drill **7/7 PASS**; isolated CD-031 + shell
+regression **24/24 PASS**. Evidence:
+`evidence/CODEX_AUDIT_AUTH_OFFLINE_REMEDIATION_2026-07-15.md`.
+
+## 2026-07-15 UPDATE 57 — final regression reconciliation and CD-031 data-shape closure
+
+Factory 360 now renders an explicit `—` for nullable source identity fields inside
+direction-isolated nodes, closing the empty-`bdi` RTL finding. The canonical KPI seed
+was rerun through its authenticated idempotent path after live windows aged into
+`expired`; all six operational states were refreshed without duplicate inserts. A
+concurrent virtual-room string-contract expansion was completed so typecheck/build
+remain green. Verification: `seed:kpi` PASS; typecheck/build PASS; golden journey
+**9/9 PASS**; affected CD-027/CD-030 slice **26/26 PASS** (one data-dependent skip);
+final CD-031 + KPI **18/18 PASS**. Evidence:
+`evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md`.
+
+## 2026-07-15 UPDATE 58 — virtual-session provider-error sink closure
+
+The final source sweep found one user-visible raw-error path in virtual-session
+reschedule/wait/join outcomes: timeline RPC and notification failures were appended
+verbatim to otherwise successful messages. Those failures are now retained only in
+server diagnostics and mapped to stable follow-up-unavailable copy. Typecheck/build
+PASS and the focused virtual + CD-027 + CD-023 regression is **33/33 PASS**. Evidence:
+`evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md`. No provider, workflow,
+authorization, migration, merge, push, deployment, or `main` change was made.
+
+## 2026-07-15 UPDATE 59 — CD-029 responsive wiring follow-up
+
+The CD-029 leg-18 Arabic/RTL 412px runtime check exposed a real 48px document overflow,
+traced to the intentionally closed RTL navigation drawer being translated off-canvas;
+the visible review workspace itself remained within the viewport. Root horizontal overflow
+is now contained, the reviewer workspace grid has an explicit narrow-screen one-column
+layout, and the check measures visible workspace bounds rather than the closed drawer.
+Verification after the fix: focused CD-029 responsive leg **4/4 PASS**; focused CD-030
+navigation/source checks **5 PASS / 1 data-dependent skip**; typecheck/build PASS. The
+responsive evidence is recorded in `evidence/CODEX_AUDIT_CD-029_2026-07-15.md`.
+Provider/media, authorization, claim/reassign, linked-source, atomicity, and live
+migration boundaries remain governed blockers. No merge, push, deployment, or `main`
+modification occurred.
+
+## 2026-07-15 UPDATE 60 — CD-022 duplicate-status acceptance closure
+
+The remaining safe acceptance residual from the independent CD-022 remediation
+review is closed. The selection-time M02-012 warning now reads the conflicting
+visit's `planning_status` from the shared duplicate helper and renders it beside
+the visit ID and deep link, so the warning exposes the full required cause rather
+than only a generic rule. `WIRING_MAP_CD-022.csv` now cites the lifecycle-status
+assertion. Fresh live verification: `cd-022-identity-lens.spec.ts` **13/13 PASS**;
+typecheck and production build PASS. Provider, atomicity, discard-draft and
+sponsor-runtime-acceptance boundaries remain unchanged; no merge, push,
+deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 51 — Independent Codex CD-031 wiring audit attempted
+
+The requested independent audit against `WIRING_MAP_CD-031.csv` was performed against the
+current dirty `setup/Inspection` worktree and recorded at
+`evidence/CODEX_AUDIT_CD-031_2026-07-15.md`. The authoritative map is not present in this
+checkout (nor in the sibling GitHub workspaces), so DEC-012 row-level certification is
+**BLOCKED_UPSTREAM** rather than reconstructed or self-approved. The supplemental review of
+the 18 named legs plus 4b/4c confirms the intended PASS/HANDOFF_BLOCKED split, and identifies
+an additional P1: raw provider/database error messages are rendered by the Factory 360 page
+and its CRUD server actions; leadership contact masking remains policy-blocked. CD-031 stays
+implemented-pending-independent-audit and not sponsor-runtime-accepted. No merge, push,
+deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 50 — Full audit-finding reconciliation continuation
+
+The current worktree was re-audited against the prior CD-021–CD-030 findings. Safe implementation defects are now closed or independently verified: CD-021's eight prior FAIL findings have a PASS remediation audit; CD-022's three P1 findings have a PASS remediation audit; CD-023's ROUND4 row-by-row audit is PASS; CD-026's raw-error and expiry-refresh findings are closed; and CD-029's four P1 findings are remediated with a 10/10 focused suite. New CD-026 hardening inspects `expire_lapsed_visits` errors on `/visits`, `/visits/calendar`, and `/visits/workload` and logs diagnostics server-side without changing the best-effort rendered-state contract. Fresh continuation verification: typecheck PASS, production build PASS, CD-021 + CD-026 focused suites 32/32 PASS (29 product cases + 3 auth setup). Rollup: `evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md`. Remaining items are explicit policy/provider/release boundaries (CD-024/CD-025 route ownership, CD-026/CD-027 map/role/atomic policies, CD-028 live race-migration/claim policy, CD-029 authorization/media/claim/linked-source/atomic semantics) and are not safely inventable. No merge, push, deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 49 — CD-029 wiring remediation and independent verification
+
+The four P1 defects from the focused independent CD-029 audit are remediated in the current dirty `setup/Inspection` worktree: `startReview` now binds the supplied version to the inspection and latest submitted version; `decide` allow-lists decisions and validates returned section keys; DecisionPanel errors are focusable `role=alert` content; and `FindingTraceChain` links question → response → evidence → clause → violation → corrective action → decision with source/version labels and explicit unavailable states. Verification is typecheck PASS, production build PASS, CD-029 focused runtime/source suite 10/10 PASS, and combined CD-028/CD-029/CD-030 regression 31 PASS / 1 skipped on an isolated production server. CD-030's authority test now waits for the async workspace heading before inspecting loaded copy. Overall CD-029 remains BLOCKED, not because of these four defects, but because its package remains `implementation_authorized: false` and provider/media, claim/reassign, atomic notification semantics, and governed linked-source behavior require explicit policy/provider decisions. No merge, push, deployment, or main modification occurred. The earlier golden-journey CD-022 publish timeout remains an open upstream evidence item.
+
+## 2026-07-15 UPDATE 46 — Independent Codex wiring audit CD-022..CD-029
+
+Fresh independent audit completed on canonical `setup/Inspection` at `2f24a7b` and recorded in `evidence/CODEX_AUDIT_CD-022_TO_CD-029_2026-07-15.md`. The audit intentionally separates delivered runtime wiring from design-only or handoff-blocked scope: CD-022 and CD-023 pass for their delivered scenarios; CD-024 is blocked; CD-025 is conditional for the staged bulk-review subset; CD-026 and CD-027 are conditional for implemented tracks; CD-028 is conditional for the scan-first queue; CD-029 is blocked because its manifest still sets `implementation_authorized: false` and no independent runtime suite exists. Typecheck/build pass and the focused CD-022/023/025/026/027/028 suite is 67/67 including auth setup. This audit does not authorize implementation, sponsor closure, merge, push, deployment, or main modification. Existing dirty/untracked parallel-agent work was preserved.
+
 - Repository: `Vikram-Indla/Inspection`
 - Default branch: `main`
 - Working branch: `feat/cd-023-immediate-authority-bar` (main not touched)
@@ -65,4 +193,8 @@
 - 2026-07-15 UPDATE 45 (CD-028 Level 2 Review Queue, SCR-WEB-300 `/reviews` / P03 — IMPLEMENTED, LANDED ON CANONICAL): sponsor (V. Indla, in-session) authorized full implementation including backend, overriding the R2 pack's `implementation_authorized:false` gate for this slice. CD-028 refines the existing live `/reviews` route into the scan-first design and resolves two of its four HANDOFF_BLOCKED wiring legs. (leg 5/10 QUEUE_OPEN_MUTATION) Opening `/reviews/:id` is now a pure read: the review-create + `under_review` transition moved out of the render side-effect into an explicit reviewer-intentful `startReview` server action (`reviews/[id]/actions.ts`) + `StartReview.tsx`; the queue renders zero decision controls. (leg 3b QUEUE_READINESS) The queue now derives the four readiness facts (checklist/evidence/acknowledgement/factory-verify) from RLS-scoped joins + a batched `inspection_factory_checks` read; a source that cannot be read shows `unavailable`, never an invented result. Fingerprint = labelled facts (non-colour, FND-011). Added negative states: unauthorized (distinct from queue-clear via `user_roles` read), missing-SLA, degraded, unreadable-row flag, no-match; `role=status/alert`, keyboard focus, Arabic/RTL, dark/light, 1024/412. KEPT BLOCKED (no policy to invent): claim/reassign (leg 11/12) shown unavailable only; decision atomicity/copy (leg 13, CD-029) untouched. Files: `reviews/page.tsx`, `reviews/DecisionPanel.tsx` (scan-first ReviewQueue + fingerprint), `reviews/[id]/page.tsx`, `reviews/[id]/actions.ts` (+startReview), `reviews/[id]/StartReview.tsx`, `astryx.css` (CD-028 block, tokens only), `e2e/cd-028-review-queue.spec.ts`; deleted orphaned `reviews/actions.ts`; golden-journey P3/P5 updated to click explicit "Start review". VERIFIED: `next build` 0 errors; `tsc --noEmit` 0 errors; color-law 0 violations; e2e cd-028 12/12, golden-journey 9/9, persona-tours+cd-025 17/17. Committed `b9b3a5c`; landed on canonical `setup/Inspection` via PR #11. BRANCH RECONCILIATION (this session): stale `main` retired (deleted) after proving zero unique content vs `setup/Inspection`; `setup/Inspection` confirmed the canonical default branch; merged CD-028 branch `feat/cd-028-review-queue` deleted (proven merged); `feat/cd-025/026`, `docs/cd-004-open-evidence` kept (each has 1 unmerged commit). DEC-012 CAVEAT: the recorded 14-leg wiring audit was performed by Claude Code (this implementer), NOT an independent Codex reviewer — per DEC-012 an independent audit against `WIRING_MAP_CD-028.csv` is still required before CD-028 may be marked sponsor-runtime-accepted/closed.
 - 2026-07-15 UPDATE 47 (CD-028 — DEC-012 partially resolved by a real independent Codex audit; RLS discoverability gap found and fixed): the independent Codex audit recorded separately at `evidence/CODEX_AUDIT_CD-022_TO_CD-029_2026-07-15.md` (run at `setup/Inspection`/`2f24a7b`, a reviewer independent of this implementation session) gives CD-028's scan-first-queue scope **CONDITIONAL PASS** — this genuinely satisfies DEC-012 for that scope, correcting UPDATE 45's "audit still open" note. Separately, this session's own fresh-context adversarial subagent review (Claude, not an independent tool — does not itself satisfy DEC-012) found a real defect the Codex audit did not surface: `reviews_read` RLS (`0002_rbac_audit.sql:71-73`) omitted the `reviewer` role from its broad-access grant, and no `reviews` row is ever created at inspection-submit time — together meaning a reviewer-only account had no way to discover a genuinely new submission (the queue would show "queue clear" while real work sat unreviewed; masked in this environment because seed data pre-assigns every existing review row to the one seeded reviewer account, and the CD-028 e2e spec navigates by a captured inspection ID rather than simulating organic discovery). Sponsor authorized and applied migration `20260715120000_cd028_reviewer_read_fix.sql` live (adds `reviewer` to `reviews_read`); sanity-checked via a negative-control REST query (`planner` role still correctly denied, no over-broadening) since no positive discriminating test was safely possible (every existing review row already belongs to the sole reviewer persona, and no `reviews_delete` RLS policy exists to clean up a throwaway test row). Sponsor chose Option B to close the deeper discoverability gap: `reviews/page.tsx` now also queries `FROM inspections WHERE status='submitted'`, synthesizing pending queue rows for submissions with no `reviews` row yet — safe by the state-machine invariant that `startReview`/`decide()` always move `inspections.status` off `'submitted'` the instant a row exists, so it structurally cannot duplicate a reviews-based row; chosen over a `SECURITY DEFINER` submit-time trigger (Option A) as the smaller, lower-risk diff. New migration `20260715130000_cd028_one_open_review_per_version.sql` (partial unique index `reviews(submission_version_id) WHERE decided_at IS NULL`) closes the race two reviewers could now hit since they can see the same unclaimed item; `startReview` (`reviews/[id]/actions.ts`) now detects the resulting unique-violation (23505) and reports "already started by another reviewer" instead of a generic error. Verified: `tsc --noEmit`/`next build` clean, color-law 0 violations, e2e `cd-028-review-queue` 13/13 (new discoverability + race-guard source-truth test added), `golden-journey`+`persona-tours`+`cd-025` 23/23, no regressions. The partial-unique-index migration is drafted but **not yet applied live** (same non-interactive-`SUPABASE_ACCESS_TOKEN` constraint noted in prior sessions — pending sponsor SQL Editor run). CD-028 remains **not closed**: the discoverability fix post-dates the independent Codex audit and has not itself been independently re-verified. Concurrent session's uncommitted UPDATE 46 (same file) was read and preserved untouched. No push, merge, or `main` modification occurred in this update.
 
-- 2026-07-15 UPDATE 49 (CD-028 — race-guard migration confirmed live end-to-end): the partial unique index (`20260715130000_cd028_one_open_review_per_version.sql`) failed on first application — `23505 could not create unique index — Key (submission_version_id)=(91116402-...) is duplicated` — because two pre-existing `under_review`/undecided review rows already shared that submission version, almost certainly artifacts of repeated `golden-journey` P3 test runs against the same seeded inspection before this constraint existed (`CREATE UNIQUE INDEX` refuses to apply over pre-existing violations). Sponsor deleted the duplicates via SQL Editor (the only path that can — `reviews_delete` has no RLS policy, so this was not possible via the anon/ops REST API) and re-ran the migration; it applied cleanly. Verified independently via a direct REST insert attempt against the surviving row's submission_version_id: rejected with `409 / 23505 duplicate key value violates unique constraint "reviews_one_open_per_version"`. CD-028's discoverability fix (RLS reviewer-read grant + Option B inspections-first query + this race guard) is now fully live and functionally confirmed end-to-end — no longer merely drafted/pending. CD-028 remains not closed overall: the discoverability work post-dates the independent Codex audit (UPDATE 47) and has not itself been independently re-verified.
+- 2026-07-15 UPDATE 48 (CD-029 FOCUSED INDEPENDENT CODEX RE-AUDIT): at the user's direction, Codex rechecked all 18 CD-029 wiring legs against the current dirty `setup/Inspection` state. Verdict **BLOCKED**. Typecheck/build passed; CD-028 dependency regression passed 13/13; CD-030 comparison checks passed 11 with 2 data-dependent skips. Four P1 gaps prevent certification: `startReview` does not bind the supplied submission version to the supplied inspection/latest version; `decide` does not allow-list decisions or returned-section keys; decision errors lack accessible alert/focus recovery; and the required linked Finding Trace Chain is not implemented (the page renders separate lists). No dedicated `cd-029-review-workspace.spec.ts` exists. The golden journey had an upstream CD-022 publish timeout, so P3–P5 downstream review steps did not run on this exact dirty state. CD-029 remains unauthorized (`implementation_authorized:false`); no implementation, sponsor acceptance, merge, push, deployment or `main` modification was performed. Evidence: `product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md`.
+
+- 2026-07-15 UPDATE 49 (CD-031 FACTORY 360 DOSSIER — TASK-SLICE + DESIGN-GATE OVERRIDE, DEC-014): sponsor asked to import and implement CD-031 Factory 360 (r3) from claude_design project 20cb0dce. Two governance stops were raised and explicitly overridden by the sponsor in-chat, recorded as DEC-014: (1) CD-031 is outside the currently authorized TASK-BASELINE-WIRING-AUDIT-001 slice (CD-001..003/CD-020..024 only); (2) the design package itself is `implementation_authorized:false` with a DO-NOT-EXECUTE / BASELINE_REVERIFY_REQUIRED flag. Verified locally before proceeding: `/factories/[id]` already existed as a 7-tab dossier fully wired to real schema, and no risk-driver/coordinate-conflict/boundary-polygon columns exist anywhere in migrations — the design's HANDOFF_BLOCKED assumptions hold against this repo, not just its stale claimed "main" baseline. Restructured the route into a two-column provenance-led dossier (aside: identity/freshness/risk/location; main: sticky section strip + Spatial Case Timeline signature + history/documents/representatives/products/materials/workforce), preserving every existing query and Add*/Toggle control. Added leadership-only representative-contact masking (HANDOFF_BLOCKED_ROLE) and explicit unavailable rows for risk drivers, risk-version history, evidence timeline, map/boundary, and document preview — none fabricated. No invented staleness threshold. Verified: typecheck clean, production build clean, new `apps/web/e2e/cd-031-factory-360.spec.ts` 15/15 PASS (source-truth + live planner persona + Arabic/RTL). Full no-exclusion regression: 178 PASS / 4 FAIL / 3 skipped — all 4 failures are in files this change never touched (admin, planning/bulk/review, dashboard-kpi-seed, golden-journey P5 review-approve timing); two reproduced as flaky on isolated re-run, the other two are pre-existing gaps unrelated to CD-031 (confirmed by touching none of the same files). CD-031 is `IMPLEMENTED_PENDING_CODEX_WIRING_AUDIT` per DEC-012 — the independent Codex wiring audit against `WIRING_MAP_CD-031.csv` (18 legs + 4b/4c) has not run and this is not a self-certified closure. No commit, push, merge, deploy, or `main` modification occurred.
+
+- 2026-07-15 UPDATE 50 (CD-030 NEW-1 ACCESS-REGRESSION FIX): a concurrent session's independent CD-030 R2 audit (`product-contract/evidence/CODEX_AUDIT_CD-030_2026-07-15_R2.md`, finding NEW-1) flagged that the `/reviews/:id` page-level `authorized` check (added earlier the same day) only allowed `reviewer`/`ops`, silently blocking `auditor`/`planner`/`leadership` from a route that RLS (`0002_rbac_audit.sql` `inspections_read`/`subs_read`/`reviews_read`) and the CD-030 design scope itself ("P11 · Reviewer/Auditor", `screen_route_catalogue.csv:26`) explicitly grant read access to — a regression against an accepted permission (CLAUDE.md: never weaken accepted behavior/permission), flagged via a cross-session message while this session was mid-CD-031-work in the same dirty tree. Independently re-verified the claim against the migration and catalogue before acting (not taken on trust). Fixed: `authorized` broadened to `reviewer/ops/auditor/planner/leadership`; a new `canDecide` (`reviewer/ops` only, unchanged from the original narrower check) now gates `DecisionPanel`/`StartReview` so the previously-open RLS `reviews_insert` policy doesn't become a live path for a read-only role to submit a decision; a `{role} · read-only` lozenge renders for non-deciding viewers. Verified: `tsc --noEmit`/`next build` clean; `cd-030-version-comparison`/`cd-029-review-workspace`/`cd-028-review-queue` 30/31 PASS, 1 skip — the single failure (`cd-028` leg 5) reproduces identically with or without this fix and is explained by shared live review data already advanced to `under_review` by earlier same-day test runs (queue's first open-workspace link no longer points at a start/no-open-decision row), not a defect in this change. No commit, push, merge, deploy, or `main` modification occurred.

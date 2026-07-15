@@ -64,12 +64,16 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
     await open.click();
     await expect(page).toHaveURL(/\/reviews\/[0-9a-f-]+$/);
     await expect(page.getByText(/Read-only submitted version/i)).toBeVisible();
-    // opening changed nothing: either an explicit Start button, or (already
-    // decided) 'no open decision' — never an auto-rendered decision form.
+    // Opening changed nothing: an unclaimed row shows the explicit Start
+    // button, a decided row shows "no open decision", and a row already
+    // claimed by another run legitimately shows its existing decision panel.
+    // The queue test must not mistake that shared-live precondition for a
+    // navigation side-effect.
     const started = await page.getByRole("button", { name: /^start review$/i }).count();
     const done = await page.getByText(/No open decision/i).count();
-    expect(started + done).toBeGreaterThan(0);
-    if (started === 0) await expect(page.getByRole("button", { name: /confirm (approve|return|reject)/i })).toHaveCount(0);
+    const existingClaim = await page.getByRole("button", { name: /confirm (approve|return|reject)/i }).count();
+    expect(started + done + existingClaim).toBeGreaterThan(0);
+    if (existingClaim > 0) await expect(page.getByText(/under review/i).first()).toBeVisible();
   });
 
   test("leg 14 — Arabic/RTL parity: the queue renders under dir=rtl", async ({ page }) => {

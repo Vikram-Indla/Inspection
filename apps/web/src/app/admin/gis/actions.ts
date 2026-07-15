@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 import { useT } from "@/lib/i18n";
 
 export type GisResult = { error?: string; ok?: boolean };
@@ -24,7 +25,7 @@ export async function updateGeofenceRadius(_: GisResult, formData: FormData): Pr
     .update({ geofence_radius_m: Math.round(radius) })
     .eq("id", factory_id)
     .select("id");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin GIS", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!data?.length) return { error: t("gis.action.rls", "Update blocked by RLS (factories_update) — gis_admin role required.") };
 
   revalidatePath("/admin/gis");

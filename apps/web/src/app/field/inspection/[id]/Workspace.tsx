@@ -138,7 +138,14 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     });
   }, [inspection.id]);
 
-  const onState = useCallback((s: SyncState, d?: string) => { setSync(s); setDetail(d); local.conflicts().then(setConflicts); }, []);
+  const onState = useCallback((s: SyncState, d?: string) => {
+    // A replay started while online can finish after the browser goes offline.
+    // Do not let that stale completion overwrite the durable offline state.
+    const effective = !navigator.onLine && s !== "offline" ? "offline" : s;
+    setSync(effective);
+    setDetail(effective === "offline" ? undefined : d);
+    local.conflicts().then(setConflicts);
+  }, []);
   const refreshQueued = useCallback(async () => {
     const ops = await local.peekAll();
     setQueuedEv(ops.filter((o): o is QueuedEvidence => o.kind === "evidence" && o.inspection_id === inspection.id));
@@ -146,9 +153,10 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   useEffect(() => {
     const tick = () => { processOutbox(onState); refreshQueued(); flushRef.current(); };
     tick();
-    window.addEventListener("online", tick); window.addEventListener("offline", () => onState("offline"));
+    const goOffline = () => onState("offline");
+    window.addEventListener("online", tick); window.addEventListener("offline", goOffline);
     const iv = setInterval(tick, 8000);
-    return () => { clearInterval(iv); window.removeEventListener("online", tick); };
+    return () => { clearInterval(iv); window.removeEventListener("online", tick); window.removeEventListener("offline", goOffline); };
   }, [onState, refreshQueued]);
 
   // --- Persistence beyond the outbox (context · action forms · runtime violations) ---

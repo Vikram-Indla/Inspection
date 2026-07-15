@@ -88,10 +88,10 @@ test.describe("CD-022 graded identity search", () => {
   });
 
   test("name search is a new leg — SIMILAR NAME always shows the differing identifier", async ({ page }) => {
-    // Search by a name fragment the CR/code/license do not contain — the
-    // prior runtime never matched on name at all (client-side CR/code/license
-    // filter only).
-    await search(page, "Similar Steelworks");
+    // Search by the unique name (the CR/code/license do not contain it). A
+    // unique term keeps this live fixture isolated from accumulated historical
+    // rows while still exercising the name-only SIMILAR NAME path.
+    await search(page, similarNameFactory.name);
     const row = page.locator("li", { hasText: similarNameFactory.name });
     await expect(row.locator(".ax-lozenge--warning", { hasText: "SIMILAR NAME" })).toBeVisible();
     await row.locator('input[type="radio"]').check();
@@ -117,6 +117,7 @@ test.describe("CD-022 graded identity search", () => {
     // own visit-ID text), not just a generic message.
     const warning = page.locator(".ax-banner--warning", { hasText: /active visit already exists/i });
     await expect(warning).toBeVisible();
+    await expect(warning).toContainText(/status:\s*draft/i);
     await expect(warning.locator("a")).toBeVisible();
     await expect(warning.locator("a")).toHaveAttribute("href", /\/visits\/[0-9a-f-]+/);
     // The same rule is still a hard block at publish (M02-012 unchanged).

@@ -1,0 +1,11 @@
+# G4-EV-006 PreToolUse guard denials
+-- git push origin main --
+{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "Direct push to main requires human approval."}}
+-- rm -rf --
+{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "Destructive recursive deletion is blocked."}}
+-- git merge --
+{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "Merge requires an approved release/change task."}}
+-- DROP TABLE --
+{"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "Destructive database operation is blocked."}}
+-- benign git status (allowed, empty) --
+(exit 0, no denial = allowed)

@@ -18,7 +18,8 @@ type Joined = {
 export default async function VisitsCalendar() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
-  await sb.rpc("expire_lapsed_visits");
+  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
+  if (expiryError) console.error(`[visits.calendar] expiry refresh failed: ${expiryError.message}`);
   const { data, error } = await sb.from("visits")
     .select("id, visit_type, planning_status, operational_state, window_start, window_end, factories(name)")
     .order("window_start", { ascending: true })

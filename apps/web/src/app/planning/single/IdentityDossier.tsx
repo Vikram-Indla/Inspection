@@ -60,7 +60,8 @@ export default function IdentityDossier({
           <div>
             {strings.duplicateWarning}
             {factory.duplicateVisitId && (
-              <> — <bdi>{factory.duplicateVisitId.slice(0, 8)}</bdi>{" "}
+              <> — <bdi>{factory.duplicateVisitId.slice(0, 8)}</bdi>
+                {factory.duplicateVisitStatus && <> · {strings.duplicateStatusLabel}: <bdi>{factory.duplicateVisitStatus}</bdi></>}{" "}
                 <a href={`/visits/${factory.duplicateVisitId}`} target="_blank" rel="noopener noreferrer">{strings.duplicateOpenVisit}</a>
               </>
             )}

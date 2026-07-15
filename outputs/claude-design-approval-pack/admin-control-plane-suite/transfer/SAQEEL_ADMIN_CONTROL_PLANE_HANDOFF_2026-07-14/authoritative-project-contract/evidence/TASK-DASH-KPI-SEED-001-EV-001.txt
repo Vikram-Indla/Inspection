@@ -1,0 +1,66 @@
+TASK-DASH-KPI-SEED-001 — deterministic Operations KPI verification fixture
+Date: 2026-07-13
+Branch: feat/cd-003-role-resolution
+Status: PASS
+
+OUTCOME
+- SCR-WEB-500 now has a reusable, clearly labelled fixture set in the configured verification Supabase project.
+- Run from apps/web with: npm run seed:kpi
+- The script is idempotent: it checks fixed UUIDs and inserts only missing records.
+- All writes use the existing planner, inspector and operations personas through authenticated PostgREST. No service-role key, SQL bypass, schema change, RLS change, engine-setting change or production KPI formula is used.
+- Fixture scope in the UI: Region = "Verification Fixtures"; City = "Dashboard KPI".
+
+STATE FIXTURES
+| Factory code | Factory label | Visit UUID suffix | Operational state | Intended verification |
+| KPI-VERIFY-01 | KPI Verify — New | ...000001 | new | state KPI and monitoring |
+| KPI-VERIFY-02 | KPI Verify — Prepared overdue | ...000002 | prepared | state KPI, monitoring and overdue-start SLA |
+| KPI-VERIFY-03 | KPI Verify — En route | ...000003 | on_the_way | state KPI, monitoring, projected live route |
+| KPI-VERIFY-04 | KPI Verify — Arrived | ...000004 | arrived | state KPI, monitoring, inside geofence |
+| KPI-VERIFY-05 | KPI Verify — Executing overdue | ...000005 | executing | state KPI, overdue-submit SLA, finding/violation/action |
+| KPI-VERIFY-06 | KPI Verify — Submitted | ...000006 | submitted | state KPI and high-risk board |
+
+RELATED FIXTURE MANIFEST
+- factories: 6
+- visit_plans: 6, published
+- visits: 6, one in every SCR-WEB-500 operational state; created as published, with canonical expiry allowed to move lapsed rows to planning_status=expired
+- assignments: 6, assigned to the existing inspector verification persona
+- journey_sessions: 3
+- geo_events: 3 (telemetry, arrival/inside, checkin/inside)
+- inspections: 2 (in_progress and approved)
+- findings: 1
+- violations: 1, using an existing active violation code and its existing penalty mapping version
+- action_forms: 2 (open/blocking/overdue and acknowledged/non-blocking)
+- notifications: 2 (assignment and review_decision, delivered/inapp)
+
+IDEMPOTENCE PROOF
+Repeat command result: PASS.
+- stateCounts: new=1, prepared=1, on_the_way=1, arrived=1, executing=1, submitted=1
+- inserted on repeat: 0 for all 11 record groups
+- existing on repeat: factories=6, visit_plans=6, visits=6, assignments=6, journey_sessions=3, geo_events=3, inspections=2, findings=1, violations=1, action_forms=2, notifications=2
+
+AUTOMATED VERIFICATION
+- npm run typecheck: PASS (run after production build generated stable Next type artifacts)
+- npm run build: PASS
+- focused Playwright: PASS 6/6 including 3 persona setup checks and 3 TASK-DASH-KPI-SEED-001 checks
+  1. record truth exposes exactly one labelled fixture for every operational state;
+  2. operations persona verifies all six KPI cards plus monitoring, SLA, risk, action, geo and notification panels;
+  3. live Operations consumes the seeded region and active visits.
+- complete Playwright regression: PASS 44/44 in 2.4 minutes.
+
+VISUAL EVIDENCE
+- screens/dashboard-kpi-seed/operations-scoped-en-light.png
+- screens/dashboard-kpi-seed/live-operations-en-light.png
+- Both captures were visually reviewed. The scoped dashboard exposes the six fixture rows and supporting panels; the live map exposes the labelled Verification Fixtures region and active route/on-site counters.
+
+CONTRACT / SECURITY CHECK
+- FND-002 preserved: operational_state and planning_status remain separate fields.
+- FND-003 preserved: normal authenticated table paths and database audit behavior remain active.
+- RLS preserved and exercised by all seed writes and record-truth reads.
+- Existing ENG-04 risk, ENG-06 GIS, ENG-09 SLA, ENG-11 notification and ENG-12 evidence semantics are consumed; their settings and formulas are not changed.
+- No raw provider errors, service-role credentials, schema mutations or destructive cleanup are introduced.
+- Data is explicitly marked source/activity_class=verification_fixture and is not represented as production truth.
+
+KNOWN BOUNDARY
+- This is verification-project data only. It is not a production migration or deployment.
+- The command deliberately has no delete/reset operation; rerunning cannot discard user or test data.
+- The seed does not freeze or directly rewrite workflow state. The canonical expiry job may transition time-lapsed fixture visits from published to expired while preserving their independent operational-state coverage (FND-002).

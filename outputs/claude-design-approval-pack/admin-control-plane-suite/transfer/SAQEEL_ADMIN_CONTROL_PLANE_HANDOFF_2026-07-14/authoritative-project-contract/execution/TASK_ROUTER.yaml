@@ -1,0 +1,47 @@
+schema_version: "1.0"
+project: "MIM Inspection Platform MVP1"
+routing_rules:
+  - intent: gate
+    id_pattern: "G[0-9]+-*"
+    required_context:
+      - product-contract/GATE_STATUS.md
+      - product-contract/CURRENT_STATE.md
+  - intent: admin
+    id_pattern: "TASK-ADM-*"
+    required_context:
+      - product-contract/screens/screen_route_catalogue.csv
+      - product-contract/domain/field_dictionary.csv
+      - product-contract/domain/rbac_matrix.csv
+      - product-contract/domain/state_transitions.csv
+      - product-contract/governance/decision_register.csv
+  - intent: web
+    id_pattern: "TASK-WEB-*"
+    required_context:
+      - product-contract/business/master_end_to_end_process.md
+      - product-contract/screens/screen_route_catalogue.csv
+      - product-contract/domain/field_dictionary.csv
+      - product-contract/domain/state_transitions.csv
+  - intent: ipad
+    id_pattern: "TASK-IPAD-*"
+    required_context:
+      - product-contract/business/master_end_to_end_process.md
+      - product-contract/screens/screen_route_catalogue.csv
+      - product-contract/domain/field_dictionary.csv
+      - product-contract/governance/error_catalogue.csv
+  - intent: virtual
+    id_pattern: "TASK-VIR-*"
+    required_context:
+      - product-contract/screens/screen_route_catalogue.csv
+      - product-contract/domain/state_transitions.csv
+      - product-contract/governance/decision_register.csv
+  - intent: design
+    id_pattern: "TASK-DESIGN-*"
+    required_context:
+      - product-contract/design/DESIGN_AUTHORITY_STATUS.md
+      - product-contract/screens/screen_route_catalogue.csv
+  - intent: qa
+    id_pattern: "TASK-QA-*"
+    required_context:
+      - product-contract/acceptance/ACCEPTANCE_STATUS.md
+      - product-contract/evidence/EVIDENCE_STATUS.md
+hard_rule: "A task may not start unless CURRENT_SLICE.yaml lists its complete context and evidence."

@@ -1,5 +1,5 @@
 leg_id,ui_trigger_state,client_component,route_action,guard,canonical_transition,table_rpc_provider,rls_role,audit,notification,success,negative_partial,test,runtime_evidence,status
-1,Open compare,ReviewComparePage,/reviews/:id,RLS scope,none,submission_versions,RLS Reviewer/Auditor,read,none,versions load,not-found distinct,cd-030 spec,page.tsx,PASS
+1,Open compare,ReviewComparePage,/reviews/:id,RLS scope,none,submission_versions,RLS Reviewer/Auditor/Ops/Planner/Leadership,read,none,versions load,not-found or outside-scope distinct from degraded fetch,cd-030 spec,page.tsx,PASS
 2,Version selection from/to,VersionSelectors,/reviews/:id,none,none,submission_versions,RLS,none,none,latest vs prior default,no-prior handled,cd-030 spec,version sort,PASS
 3,Stored-answer diff,AnswerDiffTable,/reviews/:id,none,none,snapshot.answers union of keys,RLS,none,none,changed cells flagged,empty diff computed,cd-030 spec,diffRows,PASS
 4,Returned-scope read,TamperScopeRail,/reviews/:id,none,none,reviews.returned_sections,RLS,none,none,scope shown,authoritative not inferred,cd-030 spec,reviews row,PASS
@@ -14,5 +14,5 @@ leg_id,ui_trigger_state,client_component,route_action,guard,canonical_transition
 13,No prior version,ReviewComparePage,/reviews/:id,none,none,submission_versions,RLS,none,none,empty surface,not fabricated,cd-030 spec,version count,PASS
 14,Empty diff,AnswerDiffTable,/reviews/:id,none,none,identical snapshots,RLS,none,none,computed empty,not a failure,cd-030 spec,diffRows,PASS
 15,Degraded source,UnavailablePanel,/reviews/:id,none,none,version/answer source,RLS,none,none,affected rows unavailable,not silently empty,cd-030 spec,design,HANDOFF_BLOCKED_LINKED
-16,Stale/unauth/auditor,ReviewComparePage,/reviews/:id,RLS,none,submission_versions,RLS,none,none,stale flagged; auditor read-only,unauthorized distinct,cd-030 spec,RLS + design,PASS
+16,Stale/unauth/auditor,ReviewComparePage,/reviews/:id,RLS,none,submission_versions,RLS Reviewer/Auditor/Ops/Planner/Leadership,none,none,stale flagged; non-deciding roles read-only,unauthorized/outside-scope distinct from degraded fetch,cd-030 spec,RLS + design,PASS
 17,Arabic/theme/responsive/keyboard/SR,Shell+TamperScopeRail,/reviews/:id,none,none,none,n/a,none,none,parity,disclosure buttons; role=status/alert; reduced-motion,cd-030 spec,astryx.css,PASS

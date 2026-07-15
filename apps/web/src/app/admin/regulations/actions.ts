@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export type RegResult = { error?: string; ok?: boolean };
 
@@ -16,7 +17,7 @@ export async function createRegulation(_: RegResult, formData: FormData): Promis
   if (!code || !title) return { error: "Code and title are required." };
 
   const { error } = await sb.from("regulations").insert({ code, title, issuing_authority, status: "draft" });
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin regulation", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/regulations");
   return { ok: true };
 }
@@ -34,7 +35,7 @@ export async function addClause(_: RegResult, formData: FormData): Promise<RegRe
   if (!regulation_id || !clause_ref || !title) return { error: "Clause ref and title are required." };
 
   const { error } = await sb.from("regulation_clauses").insert({ regulation_id, clause_ref, title, legal_source: legal_source || null });
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin regulation clause", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/regulations");
   return { ok: true };
 }
@@ -46,7 +47,7 @@ export async function publishRegulation(_: RegResult, formData: FormData): Promi
 
   const id = String(formData.get("regulation_id") ?? "");
   const { error } = await sb.from("regulations").update({ status: "published" }).eq("id", id).eq("status", "draft");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin regulation status", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/regulations");
   return { ok: true };
 }

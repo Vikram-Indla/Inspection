@@ -12,6 +12,7 @@ export default async function Factories() {
   const { data: fs, error } = await sb.from("factories")
     .select("id, factory_code, name, cr_number, region, city, risk_band, risk_score")
     .order("risk_score", { ascending: false });
+  if (error) console.error("[factory registry] load failed", error);
   const listStrings: FactoryListStrings = {
     regionLabel: t("f360.list.region", "Region"),
     allRegions: t("f360.list.allRegions", "All regions"),
@@ -34,7 +35,7 @@ export default async function Factories() {
   const isEmpty = (fs ?? []).length === 0;
   return (
     <Shell current="/factories" title={t("f360.title", "Factory 360")} context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-400</span>}>
-      {error && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {error.message} — {t("f360.err.retry", "retry")}.</div></div>}
+      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The factory registry is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
       {!error && isEmpty && (
         <div className="ax-surface"><div className="ax-state">
           <span className="ax-state__glyph">🏭</span><h4>{t("f360.empty.title", "No factories in the registry")}</h4>

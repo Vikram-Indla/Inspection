@@ -119,7 +119,10 @@ test.describe("CD-004 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     // Codes/dates stay LTR-isolated (spec §12).
     await expect(page.locator("table.ax-table bdi[dir=ltr]").first()).toBeVisible();
-    await expect(page.getByText(/سلسلة أدلة التهيئة/)).toBeVisible(); // spine caption, Arabic
+    // The visible section heading and the semantic table caption intentionally
+    // share the same localized text; scope to the visible heading to avoid a
+    // strict-mode collision between those two valid landmarks.
+    await expect(page.getByRole("heading", { name: "سلسلة أدلة التهيئة", exact: true })).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "spine-ar-rtl-1440.png"), fullPage: true });
     await page.goto("/locale?set=en");
   });

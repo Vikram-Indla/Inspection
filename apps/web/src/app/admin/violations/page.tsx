@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NewViolationForm, AddMappingForm, type ClauseOption, type VioStrings } from "./Controls";
+import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,8 @@ export default async function Violations() {
       .select("id, clause_ref, title, regulations(code)")
       .order("clause_ref"),
   ]);
+  if (error) logProviderError("admin violations read", error);
+  if (clauseError) logProviderError("admin violation clauses read", clauseError);
   const clauseOptions: ClauseOption[] = (clauses ?? []).map(c => {
     const reg = c.regulations as unknown as { code: string } | null;
     return { id: c.id, label: `${reg?.code ?? "?"} §${c.clause_ref} — ${c.title ?? ""}` };
@@ -51,7 +54,7 @@ export default async function Violations() {
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-040/041 · ENG-08</span>}>
       {(error || clauseError) && (
         <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("admin.viol.error.title", "Couldn’t load the violation catalogue.")}</strong> {error?.message ?? clauseError?.message} {t("admin.viol.error.retry", "— retry.")}
+          <strong>{t("admin.viol.error.title", "Couldn’t load the violation catalogue.")}</strong> {t("admin.viol.error.body", NEUTRAL_LOAD_ERROR)} {t("admin.viol.error.retry", "— retry.")}
         </div></div>
       )}
       <NewViolationForm clauses={clauseOptions} strings={strings} />

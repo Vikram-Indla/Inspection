@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export type ItemResult = { error?: string; ok?: boolean };
 
@@ -56,7 +57,7 @@ export async function createItem(_: ItemResult, formData: FormData): Promise<Ite
     guidance_en: guidance_en || null,
     active: true,
   });
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin inspection item", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/items");
   return { ok: true };
 }
@@ -73,7 +74,7 @@ export async function toggleItemActive(_: ItemResult, formData: FormData): Promi
 
   const { error, count } = await sb.from("inspection_items")
     .update({ active: next }, { count: "exact" }).eq("id", id);
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin inspection item status", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!count) return { error: "No row updated — RLS requires compliance_admin/form_admin." };
   revalidatePath("/admin/items");
   return { ok: true };

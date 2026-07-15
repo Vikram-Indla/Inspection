@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export type VioResult = { error?: string; ok?: boolean };
 
@@ -35,7 +36,7 @@ export async function createViolationCode(_: VioResult, formData: FormData): Pro
   if (!active_from) return { error: "Active-from date is required." };
 
   const { error } = await sb.from("violation_codes").insert({ code, title, level, clause_id, active_from });
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin violation code", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/violations");
   return { ok: true };
 }
@@ -66,7 +67,7 @@ export async function createPenaltyMapping(_: VioResult, formData: FormData): Pr
     penalty_range: PENALTY_RANGE_PRESETS[rangeKey],
     repeat_rule: REPEAT_RULE_PRESETS[repeatKey],
   });
-  if (error) return { error: error.message };
+  if (error) { logProviderError("admin penalty mapping", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/violations");
   return { ok: true };
 }

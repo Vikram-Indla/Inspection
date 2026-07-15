@@ -189,14 +189,21 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   ]);
 
   const loadErrors = [
-    visitsRes.error && `visits: ${visitsRes.error.message}`,
-    geoRes.error && `geo_events: ${geoRes.error.message}`,
-    actionsRes.error && `action_forms: ${actionsRes.error.message}`,
-    notifsRes.error && `notifications: ${notifsRes.error.message}`,
-    factoriesRes.error && `factories: ${factoriesRes.error.message}`,
-    engineRes.error && `engine_settings: ${engineRes.error.message}`,
-    riskRes.error && `factories(risk): ${riskRes.error.message}`,
+    visitsRes.error && "visit monitoring",
+    geoRes.error && "geofence events",
+    actionsRes.error && "corrective actions",
+    notifsRes.error && "notifications",
+    factoriesRes.error && "factory registry",
+    engineRes.error && "engine settings",
+    riskRes.error && "risk board",
   ].filter(Boolean) as string[];
+  if (visitsRes.error) console.error(`[operations] visits read failed: ${visitsRes.error.message}`);
+  if (geoRes.error) console.error(`[operations] geo_events read failed: ${geoRes.error.message}`);
+  if (actionsRes.error) console.error(`[operations] action_forms read failed: ${actionsRes.error.message}`);
+  if (notifsRes.error) console.error(`[operations] notifications read failed: ${notifsRes.error.message}`);
+  if (factoriesRes.error) console.error(`[operations] factories read failed: ${factoriesRes.error.message}`);
+  if (engineRes.error) console.error(`[operations] engine_settings read failed: ${engineRes.error.message}`);
+  if (riskRes.error) console.error(`[operations] risk read failed: ${riskRes.error.message}`);
 
   const visits = (visitsRes.data ?? []) as unknown as VisitRow[];
   const geo = (geoRes.data ?? []) as unknown as GeoRow[];

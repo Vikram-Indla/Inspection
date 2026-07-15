@@ -141,7 +141,10 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const factoryProducts = (prodRows ?? []) as FactoryProductRow[];
   const factoryMaterials = (matRows ?? []) as FactoryMaterialRow[];
   const factoryChecks = (checkRows ?? []) as { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }[];
-  const factoryChecksError = checksErr ? checksErr.message : null;   // errors verbatim (M04-114)
+  const factoryChecksError = checksErr
+    ? t("field.fv.loadError", "Saved checks could not be loaded: {error}")
+      .replace("{error}", t("field.fv.unavailable", "data source unavailable"))
+    : null;
   const factoryFieldEvidence: FactoryFieldEvidence[] = evidenceRows
     .filter(e => e.linked_type === "factory_field")
     .map(e => ({ linked_id: e.linked_id }));

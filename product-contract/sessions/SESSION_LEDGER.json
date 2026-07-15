@@ -9,10 +9,19 @@
       "branch": "setup/g4-memory-continuity",
       "task_id": "G4-INSTALL-VERIFY -> G5-ARCH-DISCOVERY",
       "gate": "G4 (closed) / G5 (discovery)",
-      "requirements": ["G4 continuity controls", "478 atomic MVP1 baseline (discovery only)"],
-      "acceptance_ids": ["G4 acceptance 1-7 PASS"],
-      "screens": ["38 specified routes catalogued (not built)"],
-      "engines": ["ENG-01..ENG-12 mapped"],
+      "requirements": [
+        "G4 continuity controls",
+        "478 atomic MVP1 baseline (discovery only)"
+      ],
+      "acceptance_ids": [
+        "G4 acceptance 1-7 PASS"
+      ],
+      "screens": [
+        "38 specified routes catalogued (not built)"
+      ],
+      "engines": [
+        "ENG-01..ENG-12 mapped"
+      ],
       "files_changed": [
         "bootstrap.sh (root fix)",
         "bootstrap.ps1 (root fix)",
@@ -30,9 +39,20 @@
         "product-contract/execution/WORK_QUEUE.yaml",
         "docs/G5_ARCHITECTURE_AND_READINESS.md (new)"
       ],
-      "tests": ["validate_memory PASS", "JSON integrity PASS", "HOME 16/16 links", "guard deny/allow PASS", "build-block intact"],
-      "evidence": ["G4-EV-001..007", "G4-VALIDATION-SUITE.txt"],
-      "decisions": ["G4 marked PASS under CC-G4-001; DEC-001..010 left OPEN; no product code"],
+      "tests": [
+        "validate_memory PASS",
+        "JSON integrity PASS",
+        "HOME 16/16 links",
+        "guard deny/allow PASS",
+        "build-block intact"
+      ],
+      "evidence": [
+        "G4-EV-001..007",
+        "G4-VALIDATION-SUITE.txt"
+      ],
+      "decisions": [
+        "G4 marked PASS under CC-G4-001; DEC-001..010 left OPEN; no product code"
+      ],
       "blockers": [
         "10 open decisions DEC-001..010 / OD-01..08",
         "Supabase live-schema access needs secret key or PAT (project iiozvqntawxfwbgffzqu)",
@@ -50,15 +70,56 @@
       "branch": "feat/cd-001-v7-atlas",
       "task_id": "TASK-DESIGN-CD001-V7-IMPLEMENTATION",
       "gate": "G10/G11 controlled UI revamp",
-      "requirements": ["Sponsor-approved CD-001 V7", "SCR-PUB-010", "ERR-AUTH-001", "FND-003", "RBAC-001..014"],
-      "acceptance_ids": ["CD-001 P0/P1 runtime gate", "UX-BS-009"],
-      "screens": ["SCR-PUB-010"],
-      "engines": ["ENG-02", "ENG-04", "ENG-08", "ENG-12 (illustrative references only)"],
-      "files_changed": ["login atlas components and CSS", "public-safe AVIF/WebP/PNG asset", "CD-001 Playwright tests", "asset/reference registers", "runtime evidence and design manifest"],
-      "tests": ["typecheck PASS", "production build PASS", "targeted Playwright 9/9 PASS", "full Playwright 26/26 PASS"],
-      "evidence": ["CD001-V7-EV-001-public-safe-atlas.txt", "evidence/screens/login-v7-atlas/", "SAUDI_ATLAS_ASSET_REGISTER_CD001.csv", "SAUDI_ATLAS_REFERENCE_REGISTER_CD001.csv"],
-      "decisions": ["Public-safe derivative is primary visual foundation", "Unsanitized operational image is not served", "Leaflet/CSS atlas is fallback", "Demo credentials server-gated", "CD-002/CD-003 not started"],
-      "blockers": ["P1 source-image rights confirmation before production", "P1 official-source geographic anchor confirmation before production"],
+      "requirements": [
+        "Sponsor-approved CD-001 V7",
+        "SCR-PUB-010",
+        "ERR-AUTH-001",
+        "FND-003",
+        "RBAC-001..014"
+      ],
+      "acceptance_ids": [
+        "CD-001 P0/P1 runtime gate",
+        "UX-BS-009"
+      ],
+      "screens": [
+        "SCR-PUB-010"
+      ],
+      "engines": [
+        "ENG-02",
+        "ENG-04",
+        "ENG-08",
+        "ENG-12 (illustrative references only)"
+      ],
+      "files_changed": [
+        "login atlas components and CSS",
+        "public-safe AVIF/WebP/PNG asset",
+        "CD-001 Playwright tests",
+        "asset/reference registers",
+        "runtime evidence and design manifest"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "targeted Playwright 9/9 PASS",
+        "full Playwright 26/26 PASS"
+      ],
+      "evidence": [
+        "CD001-V7-EV-001-public-safe-atlas.txt",
+        "evidence/screens/login-v7-atlas/",
+        "SAUDI_ATLAS_ASSET_REGISTER_CD001.csv",
+        "SAUDI_ATLAS_REFERENCE_REGISTER_CD001.csv"
+      ],
+      "decisions": [
+        "Public-safe derivative is primary visual foundation",
+        "Unsanitized operational image is not served",
+        "Leaflet/CSS atlas is fallback",
+        "Demo credentials server-gated",
+        "CD-002/CD-003 not started"
+      ],
+      "blockers": [
+        "P1 source-image rights confirmation before production",
+        "P1 official-source geographic anchor confirmation before production"
+      ],
       "commit_sha": "UNCOMMITTED — human-controlled branch; no commit/push/merge authorized",
       "next_task": "Human runtime review of CD-001 V7, then explicit disposition before F1 access-family continuation",
       "resume_prompt": "Read AGENTS.md, product-contract current state/gates, design/claude-design-mvp1/MANIFEST.yaml, CD001_V7_PUBLIC_SAFE_PNG_AMENDMENT.md and CD001-V7-EV-001-public-safe-atlas.txt. CD-001 V7 is implemented on feat/cd-001-v7-atlas with typecheck/build and full Playwright 26/26 PASS. Review the actual /login runtime. Do not commit, merge, deploy, or start CD-002/CD-003 without explicit human direction."
@@ -70,15 +131,52 @@
       "branch": "feat/cd-001-v7-atlas",
       "task_id": "CD-001-V7-UX-002",
       "gate": "G10/G11 controlled UI revamp",
-      "requirements": ["Sponsor feedback on SCR-PUB-010", "Preserve CD-001 V7 public-safe atlas", "Preserve accessibility alternative"],
-      "acceptance_ids": ["CD001-V7-EV-005", "UX-BS-009"],
-      "screens": ["SCR-PUB-010"],
-      "engines": ["ENG-02", "ENG-04", "ENG-08", "ENG-12 (illustrative references only)"],
-      "files_changed": ["StoryPanel.tsx", "page.tsx login strings", "LoginClient.tsx comments", "login.css", "CD-001 V7 interaction and visual-evidence tests", "runtime screenshots and evidence records"],
-      "tests": ["typecheck PASS", "production build PASS before local dev watcher replaced .next", "revised interaction Playwright 6/6 PASS on 127.0.0.1:3000", "visual evidence Playwright 1/1 PASS"],
-      "evidence": ["CD001-V7-EV-005-lifecycle-rail.txt", "evidence/screens/login-v7-atlas/"],
-      "decisions": ["Use one six-stage map-bound lifecycle strip", "Remove detached four-card duplication", "Keep list alternative as compact in-map control"],
-      "blockers": ["P1 source-image rights confirmation before production", "P1 official-source geographic anchor confirmation before production", "Multiple local Next.js watchers share .next; use 127.0.0.1:3000 for current human review and do not trust stale localhost:3210"],
+      "requirements": [
+        "Sponsor feedback on SCR-PUB-010",
+        "Preserve CD-001 V7 public-safe atlas",
+        "Preserve accessibility alternative"
+      ],
+      "acceptance_ids": [
+        "CD001-V7-EV-005",
+        "UX-BS-009"
+      ],
+      "screens": [
+        "SCR-PUB-010"
+      ],
+      "engines": [
+        "ENG-02",
+        "ENG-04",
+        "ENG-08",
+        "ENG-12 (illustrative references only)"
+      ],
+      "files_changed": [
+        "StoryPanel.tsx",
+        "page.tsx login strings",
+        "LoginClient.tsx comments",
+        "login.css",
+        "CD-001 V7 interaction and visual-evidence tests",
+        "runtime screenshots and evidence records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS before local dev watcher replaced .next",
+        "revised interaction Playwright 6/6 PASS on 127.0.0.1:3000",
+        "visual evidence Playwright 1/1 PASS"
+      ],
+      "evidence": [
+        "CD001-V7-EV-005-lifecycle-rail.txt",
+        "evidence/screens/login-v7-atlas/"
+      ],
+      "decisions": [
+        "Use one six-stage map-bound lifecycle strip",
+        "Remove detached four-card duplication",
+        "Keep list alternative as compact in-map control"
+      ],
+      "blockers": [
+        "P1 source-image rights confirmation before production",
+        "P1 official-source geographic anchor confirmation before production",
+        "Multiple local Next.js watchers share .next; use 127.0.0.1:3000 for current human review and do not trust stale localhost:3210"
+      ],
       "commit_sha": "UNCOMMITTED — human-controlled branch; no commit/push/merge authorized",
       "next_task": "Human runtime review of the corrected CD-001 V7 login atlas, then explicit disposition before F1 continuation",
       "resume_prompt": "Review SCR-PUB-010 at http://127.0.0.1:3000/login. Confirm the one attached six-stage rail and compact Locations list control. Do not use localhost:3210 while older local listeners remain. Do not commit, merge, deploy, or start CD-002/CD-003 without explicit human direction."
@@ -90,15 +188,57 @@
       "branch": "feat/cd-001-v7-atlas",
       "task_id": "CD-001-V7-UX-003",
       "gate": "G10/G11 controlled UI revamp",
-      "requirements": ["Sponsor review comments 1-3", "SCR-PUB-010", "Preserve public-safe asset and operational-map accessibility contract"],
-      "acceptance_ids": ["CD001-V7-EV-006", "UX-BS-009", "SPC-GIS-001 operational-map scope preserved"],
-      "screens": ["SCR-PUB-010"],
-      "engines": ["ENG-02", "ENG-04", "ENG-08", "ENG-12 (public lifecycle references only)"],
-      "files_changed": ["login story/atlas/dossier components", "login.css", "tokens.css", "magenta prism favicon/PWA assets", "layout metadata", "manifest/service worker", "CD-001 tests and evidence"],
-      "tests": ["typecheck PASS", "production build PASS", "interaction Playwright 6/6 PASS", "visual evidence Playwright 1/1 PASS"],
-      "evidence": ["CD001-V7-EV-006-stage-theme-prism.txt", "evidence/screens/login-v7-atlas/", "CD001_V7_UX003_SPONSOR_CORRECTION.md"],
-      "decisions": ["No landing-page location list", "No visible illustrative disclaimer", "Animation occurs on map rather than tabs", "Atlas remains dark in both shell themes", "Magenta-violet prism replaces green/legacy favicon"],
-      "blockers": ["P1 source-image rights confirmation before production", "P1 official-source geographic anchor confirmation before production", "P1 communications/legal confirmation that atlas title and animated lifecycle are not mistaken for live national coverage"],
+      "requirements": [
+        "Sponsor review comments 1-3",
+        "SCR-PUB-010",
+        "Preserve public-safe asset and operational-map accessibility contract"
+      ],
+      "acceptance_ids": [
+        "CD001-V7-EV-006",
+        "UX-BS-009",
+        "SPC-GIS-001 operational-map scope preserved"
+      ],
+      "screens": [
+        "SCR-PUB-010"
+      ],
+      "engines": [
+        "ENG-02",
+        "ENG-04",
+        "ENG-08",
+        "ENG-12 (public lifecycle references only)"
+      ],
+      "files_changed": [
+        "login story/atlas/dossier components",
+        "login.css",
+        "tokens.css",
+        "magenta prism favicon/PWA assets",
+        "layout metadata",
+        "manifest/service worker",
+        "CD-001 tests and evidence"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "interaction Playwright 6/6 PASS",
+        "visual evidence Playwright 1/1 PASS"
+      ],
+      "evidence": [
+        "CD001-V7-EV-006-stage-theme-prism.txt",
+        "evidence/screens/login-v7-atlas/",
+        "CD001_V7_UX003_SPONSOR_CORRECTION.md"
+      ],
+      "decisions": [
+        "No landing-page location list",
+        "No visible illustrative disclaimer",
+        "Animation occurs on map rather than tabs",
+        "Atlas remains dark in both shell themes",
+        "Magenta-violet prism replaces green/legacy favicon"
+      ],
+      "blockers": [
+        "P1 source-image rights confirmation before production",
+        "P1 official-source geographic anchor confirmation before production",
+        "P1 communications/legal confirmation that atlas title and animated lifecycle are not mistaken for live national coverage"
+      ],
       "commit_sha": "UNCOMMITTED — human-controlled branch; no commit/push/merge authorized",
       "next_task": "Human runtime review of CD-001 V7 UX-003 at http://localhost:3000/login",
       "resume_prompt": "Review SCR-PUB-010 UX-003 at http://localhost:3000/login in light/dark mode and select all six stages. Confirm map event/glyph changes and magenta prism favicon. Do not weaken operational map list alternatives. Do not commit, merge, deploy, or start CD-002/CD-003 without explicit direction."
@@ -110,15 +250,55 @@
       "branch": "feat/cd-001-v7-atlas",
       "task_id": "CD-001-V7-UX-004",
       "gate": "G10/G11 controlled UI revamp",
-      "requirements": ["Sponsor Arabic-first request", "SCR-PUB-010", "Preserve public-safe atlas and authentication behavior"],
-      "acceptance_ids": ["CD001-V7-EV-007", "UX-BS-009", "RTL desktop/mobile runtime proof"],
-      "screens": ["SCR-PUB-010"],
-      "engines": ["ENG-02", "ENG-04", "ENG-08", "ENG-12 (public lifecycle references only)"],
-      "files_changed": ["login locale boundary and shared i18n default", "login story/atlas/dossier components", "login.css", "CD-001 interaction and visual-evidence tests", "Arabic runtime evidence and handoff records"],
-      "tests": ["typecheck PASS", "production build PASS", "interaction Playwright 7/7 PASS", "visual evidence Playwright 1/1 PASS including Arabic mobile"],
-      "evidence": ["CD001-V7-EV-007-arabic-rtl.txt", "screens/login-v7-atlas/desktop-dark-ar.png", "screens/login-v7-atlas/mobile-dark-ar.png", "CD001_V7_UX004_ARABIC_RTL.md"],
-      "decisions": ["Fresh login defaults to Arabic", "RTL credential panel is physically right", "Direction-aware keyboard progression", "Preserve accepted raster and overlay Arabic labels"],
-      "blockers": ["P1 source-image rights confirmation before production", "P1 official-source geographic anchor confirmation before production", "P1 Arabic-only raster required if bilingual baked English labels are unacceptable"],
+      "requirements": [
+        "Sponsor Arabic-first request",
+        "SCR-PUB-010",
+        "Preserve public-safe atlas and authentication behavior"
+      ],
+      "acceptance_ids": [
+        "CD001-V7-EV-007",
+        "UX-BS-009",
+        "RTL desktop/mobile runtime proof"
+      ],
+      "screens": [
+        "SCR-PUB-010"
+      ],
+      "engines": [
+        "ENG-02",
+        "ENG-04",
+        "ENG-08",
+        "ENG-12 (public lifecycle references only)"
+      ],
+      "files_changed": [
+        "login locale boundary and shared i18n default",
+        "login story/atlas/dossier components",
+        "login.css",
+        "CD-001 interaction and visual-evidence tests",
+        "Arabic runtime evidence and handoff records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "interaction Playwright 7/7 PASS",
+        "visual evidence Playwright 1/1 PASS including Arabic mobile"
+      ],
+      "evidence": [
+        "CD001-V7-EV-007-arabic-rtl.txt",
+        "screens/login-v7-atlas/desktop-dark-ar.png",
+        "screens/login-v7-atlas/mobile-dark-ar.png",
+        "CD001_V7_UX004_ARABIC_RTL.md"
+      ],
+      "decisions": [
+        "Fresh login defaults to Arabic",
+        "RTL credential panel is physically right",
+        "Direction-aware keyboard progression",
+        "Preserve accepted raster and overlay Arabic labels"
+      ],
+      "blockers": [
+        "P1 source-image rights confirmation before production",
+        "P1 official-source geographic anchor confirmation before production",
+        "P1 Arabic-only raster required if bilingual baked English labels are unacceptable"
+      ],
       "commit_sha": "UNCOMMITTED — human-controlled branch; no commit/push/merge authorized",
       "next_task": "Human runtime review of Arabic-first SCR-PUB-010 at http://localhost:3000/login",
       "resume_prompt": "Review fresh SCR-PUB-010 at http://localhost:3000/login with cookies cleared. Confirm Arabic default, credentials on the physical right, RTL lifecycle controls and mobile layout. The approved raster still contains baked English labels; commission an Arabic-only raster if bilingual presentation is rejected. Do not commit, merge, deploy or start another design family without explicit direction."
@@ -130,15 +310,62 @@
       "branch": "feat/cd-001-v7-atlas",
       "task_id": "CD-001-CLOSE-HANDOFF",
       "gate": "G10/G11 controlled UI revamp; G12 release open",
-      "requirements": ["Sponsor closure of CD-001 for now", "Exact design-program continuation", "Preserve product contract and dirty worktree"],
-      "acceptance_ids": ["CD001-V7-EV-001", "CD001-V7-EV-005", "CD001-V7-EV-006", "CD001-V7-EV-007", "CD001-V7-EV-008", "UX-BS-009"],
-      "screens": ["SCR-PUB-010"],
-      "engines": ["ENG-02", "ENG-04", "ENG-08", "ENG-12 (public narrative references only)"],
-      "files_changed": ["Detailed CD-001 closure/continuation handoff", "Design manifest", "Current state", "Work queue", "Acceptance/evidence status", "Session records", "Arabic light desktop/mobile evidence cases"],
-      "tests": ["CD-001 interaction Playwright 7/7 product tests PASS", "Visual evidence Playwright 1/1 product test PASS", "Arabic light desktop/mobile visual inspection PASS", "localhost HTTP 200 with lang=ar dir=rtl", "JSON/YAML/diff validation pending final handoff check"],
-      "evidence": ["HANDOFF_2026-07-13_CD001_CLOSED_CD002_NEXT.md", "CD001-V7-EV-008-design-closure-handoff.txt", "screens/login-v7-atlas/desktop-light-ar.png", "screens/login-v7-atlas/mobile-light-ar.png"],
-      "decisions": ["CD-001 accepted for now and closed to P2 iteration", "CD-002 existing archive output is next for design review", "Do not implement CD-002 before sponsor acceptance", "Keep family-incremental cadence"],
-      "blockers": ["P1 CD-001 image rights", "P1 official geographic anchor verification", "P1 Arabic-only raster decision", "P1 public-coverage communication review"],
+      "requirements": [
+        "Sponsor closure of CD-001 for now",
+        "Exact design-program continuation",
+        "Preserve product contract and dirty worktree"
+      ],
+      "acceptance_ids": [
+        "CD001-V7-EV-001",
+        "CD001-V7-EV-005",
+        "CD001-V7-EV-006",
+        "CD001-V7-EV-007",
+        "CD001-V7-EV-008",
+        "UX-BS-009"
+      ],
+      "screens": [
+        "SCR-PUB-010"
+      ],
+      "engines": [
+        "ENG-02",
+        "ENG-04",
+        "ENG-08",
+        "ENG-12 (public narrative references only)"
+      ],
+      "files_changed": [
+        "Detailed CD-001 closure/continuation handoff",
+        "Design manifest",
+        "Current state",
+        "Work queue",
+        "Acceptance/evidence status",
+        "Session records",
+        "Arabic light desktop/mobile evidence cases"
+      ],
+      "tests": [
+        "CD-001 interaction Playwright 7/7 product tests PASS",
+        "Visual evidence Playwright 1/1 product test PASS",
+        "Arabic light desktop/mobile visual inspection PASS",
+        "localhost HTTP 200 with lang=ar dir=rtl",
+        "JSON/YAML/diff validation pending final handoff check"
+      ],
+      "evidence": [
+        "HANDOFF_2026-07-13_CD001_CLOSED_CD002_NEXT.md",
+        "CD001-V7-EV-008-design-closure-handoff.txt",
+        "screens/login-v7-atlas/desktop-light-ar.png",
+        "screens/login-v7-atlas/mobile-light-ar.png"
+      ],
+      "decisions": [
+        "CD-001 accepted for now and closed to P2 iteration",
+        "CD-002 existing archive output is next for design review",
+        "Do not implement CD-002 before sponsor acceptance",
+        "Keep family-incremental cadence"
+      ],
+      "blockers": [
+        "P1 CD-001 image rights",
+        "P1 official geographic anchor verification",
+        "P1 Arabic-only raster decision",
+        "P1 public-coverage communication review"
+      ],
       "commit_sha": "130cc6b67712acc182fb98d14e0b03c64849e309 — UNCOMMITTED worktree; no commit/push/merge authorized",
       "next_task": "TASK-DESIGN-CD002-REVIEW — review existing CD-002 Reset design output; no implementation",
       "resume_prompt": "Read AGENTS.md and product-contract/sessions/HANDOFF_2026-07-13_CD001_CLOSED_CD002_NEXT.md. CD-001 login is accepted and done for now; preserve it and do not reopen P2 work. Start TASK-DESIGN-CD002-REVIEW using the CD-002 Reset design, manifest, component map, handoff and checklist inside /Users/vikramindla/Downloads/# Saqeel MVP1 UIUX Revamp (1).zip. Compare every recovery/reset state to the current repository and contract. Return a P0/P1-only critique, Pass/Correct/Block matrix, mandatory correction prompt only if needed, and sponsor recommendation. Do not implement, commit, push, merge or deploy."
@@ -150,15 +377,62 @@
       "branch": "feat/cd-003-role-resolution",
       "task_id": "TASK-WEB-SHELL-001",
       "gate": "G11 controlled UI hardening; G12 release open",
-      "requirements": ["MVP1-FND-010", "MVP1-FND-012", "RBAC-001..014", "DEC-004", "DEC-011"],
-      "acceptance_ids": ["DSG-SHELL-001", "SHELL-AC-001..005", "DSG-A11Y-001", "DSG-CODE-001"],
-      "screens": ["Shared authenticated SCR-WEB-100..500 and SCR-ADM-001..090 shell", "Dedicated SCR-IPAD-600..670 and SCR-VIR-700..720 boundaries preserved"],
-      "engines": ["ENG-11", "ENG-12"],
-      "files_changed": ["Shell.tsx", "ShellClient.tsx", "shell-navigation.ts", "astryx.css", "operations/live active route", "shell Playwright specs", "shell authority/acceptance/evidence/current-state records", "V3 43-screen workbook/CSV/prompts/SOP/renders"],
-      "tests": ["typecheck PASS", "production build PASS", "targeted shell Playwright 10/10 PASS on isolated port 3107", "visual evidence Playwright 4/4 PASS including persona setup", "V3 workbook 11 sheets / 43 prompts / 22 tabs / 0 formula errors"],
-      "evidence": ["TASK-WEB-SHELL-001-EV-001.txt", "evidence/screens/shell-v1/", "SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md", "outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3.json"],
-      "decisions": ["Business reference reconciled rather than copied", "Supported tabs use real routes and server role visibility", "Unsupported Analytics/Lookup/Notification Configuration/Integration/AI tabs remain hidden", "Dashboard strategic KPI mode is not invented without governed metrics", "CD-002 recorded as manually sponsor-approved with implementation verification pending"],
-      "blockers": ["Sponsor runtime visual acceptance of the shared shell pending", "CD-002 Claude Code implementation outcome verification pending", "G11 credential/region/provider hardening and G12 release remain open"],
+      "requirements": [
+        "MVP1-FND-010",
+        "MVP1-FND-012",
+        "RBAC-001..014",
+        "DEC-004",
+        "DEC-011"
+      ],
+      "acceptance_ids": [
+        "DSG-SHELL-001",
+        "SHELL-AC-001..005",
+        "DSG-A11Y-001",
+        "DSG-CODE-001"
+      ],
+      "screens": [
+        "Shared authenticated SCR-WEB-100..500 and SCR-ADM-001..090 shell",
+        "Dedicated SCR-IPAD-600..670 and SCR-VIR-700..720 boundaries preserved"
+      ],
+      "engines": [
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "Shell.tsx",
+        "ShellClient.tsx",
+        "shell-navigation.ts",
+        "astryx.css",
+        "operations/live active route",
+        "shell Playwright specs",
+        "shell authority/acceptance/evidence/current-state records",
+        "V3 43-screen workbook/CSV/prompts/SOP/renders"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "targeted shell Playwright 10/10 PASS on isolated port 3107",
+        "visual evidence Playwright 4/4 PASS including persona setup",
+        "V3 workbook 11 sheets / 43 prompts / 22 tabs / 0 formula errors"
+      ],
+      "evidence": [
+        "TASK-WEB-SHELL-001-EV-001.txt",
+        "evidence/screens/shell-v1/",
+        "SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md",
+        "outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3.json"
+      ],
+      "decisions": [
+        "Business reference reconciled rather than copied",
+        "Supported tabs use real routes and server role visibility",
+        "Unsupported Analytics/Lookup/Notification Configuration/Integration/AI tabs remain hidden",
+        "Dashboard strategic KPI mode is not invented without governed metrics",
+        "CD-002 recorded as manually sponsor-approved with implementation verification pending"
+      ],
+      "blockers": [
+        "Sponsor runtime visual acceptance of the shared shell pending",
+        "CD-002 Claude Code implementation outcome verification pending",
+        "G11 credential/region/provider hardening and G12 release remain open"
+      ],
       "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Sponsor runtime review of TASK-WEB-SHELL-001, then resume Web-first CD-020..CD-031 design/vertical-slice programme",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml and design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md. TASK-WEB-SHELL-001 is implemented and verified but not yet sponsor-runtime-accepted. Review the actual authenticated shell in English/Arabic, dark/light, desktop collapsed and mobile drawer. The V3 approval pack is in the Desktop documentation folder and repository outputs. Do not redesign CD-001, weaken reset/auth/RLS/audit behavior, expose unsupported tabs, commit, push, merge, deploy or modify main. After sponsor runtime acceptance, resume CD-020..CD-031 Web-first work using the frozen shell."
@@ -170,15 +444,56 @@
       "branch": "feat/cd-003-role-resolution",
       "task_id": "TASK-WEB-SHELL-001",
       "gate": "G11 controlled UI hardening; G12 release open",
-      "requirements": ["MVP1-FND-010", "MVP1-FND-012", "RBAC-001..014", "DEC-004", "DEC-011"],
-      "acceptance_ids": ["DSG-SHELL-001", "SHELL-AC-001..005", "DSG-A11Y-001", "DSG-CODE-001"],
-      "screens": ["Shared authenticated SCR-WEB-100..500 and SCR-ADM-001..090 shell", "43-screen matrix shell-family and tab placement"],
-      "engines": ["ENG-11", "ENG-12"],
-      "files_changed": ["authenticated persona Playwright fixture", "shell acceptance/evidence/current-state records", "V3.1 43-screen workbook/CSV/revision report/renders"],
-      "tests": ["typecheck PASS", "production build PASS", "targeted shell Playwright 10/10 PASS", "visual evidence Playwright 4/4 PASS including persona setup", "complete Playwright regression 41/41 PASS on isolated port 3107", "V3.1 workbook 11 sheets / 43 prompts / 22 tabs / 0 formula errors"],
-      "evidence": ["TASK-WEB-SHELL-001-EV-001.txt", "evidence/screens/shell-v1/", "SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md", "outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3_1.json"],
-      "decisions": ["Sponsor accepted the functioning shared shell on 2026-07-13", "Freeze shared Web/Admin chrome for CD-020..CD-031", "Keep Arabic as fresh-session default while reusable legacy functional personas explicitly save English", "All 22 supplied business tabs retain their governed wired/consolidated/renamed/hidden disposition"],
-      "blockers": ["CD-002 Claude Code implementation outcome verification pending", "G11 credential/region/provider hardening and G12 release remain open"],
+      "requirements": [
+        "MVP1-FND-010",
+        "MVP1-FND-012",
+        "RBAC-001..014",
+        "DEC-004",
+        "DEC-011"
+      ],
+      "acceptance_ids": [
+        "DSG-SHELL-001",
+        "SHELL-AC-001..005",
+        "DSG-A11Y-001",
+        "DSG-CODE-001"
+      ],
+      "screens": [
+        "Shared authenticated SCR-WEB-100..500 and SCR-ADM-001..090 shell",
+        "43-screen matrix shell-family and tab placement"
+      ],
+      "engines": [
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "authenticated persona Playwright fixture",
+        "shell acceptance/evidence/current-state records",
+        "V3.1 43-screen workbook/CSV/revision report/renders"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "targeted shell Playwright 10/10 PASS",
+        "visual evidence Playwright 4/4 PASS including persona setup",
+        "complete Playwright regression 41/41 PASS on isolated port 3107",
+        "V3.1 workbook 11 sheets / 43 prompts / 22 tabs / 0 formula errors"
+      ],
+      "evidence": [
+        "TASK-WEB-SHELL-001-EV-001.txt",
+        "evidence/screens/shell-v1/",
+        "SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md",
+        "outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3_1.json"
+      ],
+      "decisions": [
+        "Sponsor accepted the functioning shared shell on 2026-07-13",
+        "Freeze shared Web/Admin chrome for CD-020..CD-031",
+        "Keep Arabic as fresh-session default while reusable legacy functional personas explicitly save English",
+        "All 22 supplied business tabs retain their governed wired/consolidated/renamed/hidden disposition"
+      ],
+      "blockers": [
+        "CD-002 Claude Code implementation outcome verification pending",
+        "G11 credential/region/provider hardening and G12 release remain open"
+      ],
       "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Resume Web-first CD-020..CD-031 design programme on the frozen shared shell",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml, design/claude-design-mvp1/MANIFEST.yaml and authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md. TASK-WEB-SHELL-001 is sponsor-accepted, complete and frozen. Preserve the exact role-scoped shell and business-tab dispositions. Verify the pending CD-002 Claude Code outcome separately. Resume Web-first CD-020..CD-031 design and post-approval vertical-slice work; do not redesign CD-001, weaken reset/auth/RLS/audit behavior, expose unsupported tabs, commit, push, merge, deploy or modify main."
@@ -190,15 +505,64 @@
       "branch": "feat/cd-003-role-resolution",
       "task_id": "TASK-DASH-KPI-SEED-001",
       "gate": "G11 verification hardening; G12 release open",
-      "requirements": ["MVP1-M08-003", "MVP1-M08-006", "MVP1-M08-016", "MVP1-M08-019", "MVP1-FND-002", "MVP1-FND-003", "RBAC-008", "RBAC-013"],
-      "acceptance_ids": ["KPI-SEED-AC-001", "KPI-SEED-AC-002", "KPI-SEED-AC-003", "KPI-SEED-AC-004", "KPI-SEED-AC-005"],
-      "screens": ["SCR-WEB-500 Operations dashboard and live Operations view"],
-      "engines": ["ENG-04", "ENG-06", "ENG-09", "ENG-11", "ENG-12"],
-      "files_changed": ["apps/web/scripts/seed-dashboard-kpis.mjs", "apps/web/package.json", "apps/web/e2e/dashboard-kpi-seed.spec.ts", "KPI seed current-slice/acceptance/evidence/work-queue/session records", "two KPI runtime evidence screenshots"],
-      "tests": ["idempotent repeat seed PASS with 0 inserts and 38 existing fixed-ID records", "typecheck PASS", "production build PASS", "focused Playwright 6/6 PASS", "complete Playwright regression 44/44 PASS in 2.4 minutes", "two runtime captures visually reviewed"],
-      "evidence": ["TASK-DASH-KPI-SEED-001-EV-001.txt", "screens/dashboard-kpi-seed/operations-scoped-en-light.png", "screens/dashboard-kpi-seed/live-operations-en-light.png"],
-      "decisions": ["Use clearly labelled verification-only fixtures under a dedicated region/city", "Seed through existing authenticated personas so RLS and audit remain active", "Use fixed UUIDs and insert-missing semantics", "Do not add delete/reset behavior", "Do not change schema, policy, engine settings or KPI formulas"],
-      "blockers": ["CD-002 Claude Code implementation outcome verification remains pending", "G11 credential/region/provider hardening and G12 release remain open"],
+      "requirements": [
+        "MVP1-M08-003",
+        "MVP1-M08-006",
+        "MVP1-M08-016",
+        "MVP1-M08-019",
+        "MVP1-FND-002",
+        "MVP1-FND-003",
+        "RBAC-008",
+        "RBAC-013"
+      ],
+      "acceptance_ids": [
+        "KPI-SEED-AC-001",
+        "KPI-SEED-AC-002",
+        "KPI-SEED-AC-003",
+        "KPI-SEED-AC-004",
+        "KPI-SEED-AC-005"
+      ],
+      "screens": [
+        "SCR-WEB-500 Operations dashboard and live Operations view"
+      ],
+      "engines": [
+        "ENG-04",
+        "ENG-06",
+        "ENG-09",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/scripts/seed-dashboard-kpis.mjs",
+        "apps/web/package.json",
+        "apps/web/e2e/dashboard-kpi-seed.spec.ts",
+        "KPI seed current-slice/acceptance/evidence/work-queue/session records",
+        "two KPI runtime evidence screenshots"
+      ],
+      "tests": [
+        "idempotent repeat seed PASS with 0 inserts and 38 existing fixed-ID records",
+        "typecheck PASS",
+        "production build PASS",
+        "focused Playwright 6/6 PASS",
+        "complete Playwright regression 44/44 PASS in 2.4 minutes",
+        "two runtime captures visually reviewed"
+      ],
+      "evidence": [
+        "TASK-DASH-KPI-SEED-001-EV-001.txt",
+        "screens/dashboard-kpi-seed/operations-scoped-en-light.png",
+        "screens/dashboard-kpi-seed/live-operations-en-light.png"
+      ],
+      "decisions": [
+        "Use clearly labelled verification-only fixtures under a dedicated region/city",
+        "Seed through existing authenticated personas so RLS and audit remain active",
+        "Use fixed UUIDs and insert-missing semantics",
+        "Do not add delete/reset behavior",
+        "Do not change schema, policy, engine settings or KPI formulas"
+      ],
+      "blockers": [
+        "CD-002 Claude Code implementation outcome verification remains pending",
+        "G11 credential/region/provider hardening and G12 release remain open"
+      ],
       "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Resume sponsor-directed Web-first CD-020..CD-031 programme when the dashboard pause ends",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml and product-contract/evidence/TASK-DASH-KPI-SEED-001-EV-001.txt. TASK-DASH-KPI-SEED-001 is complete in the configured verification project. Run npm run seed:kpi from apps/web to prove or restore only missing fixed-ID fixtures; it must insert zero on an intact environment. Preserve the sponsor-accepted shared shell and CD-001 baseline. Do not production-seed, delete fixture/user data, change RLS/schema/engine settings/KPI formulas, commit, push, merge, deploy or modify main. Resume Web-first CD-020..CD-031 only on sponsor direction."
@@ -210,15 +574,63 @@
       "branch": "feat/cd-003-role-resolution",
       "task_id": "TASK-WEB-DASHBOARD-002",
       "gate": "G11 sponsor-directed dashboard completion; G12 release open",
-      "requirements": ["MVP1-M08-001..019", "MVP1-M02-018", "MVP1-M02-037", "MVP1-FND-001", "MVP1-FND-002", "MVP1-FND-010..012", "DASH-001..016"],
-      "acceptance_ids": ["AC-0430..AC-0448", "DASH-AC-001..DASH-AC-016"],
-      "screens": ["SCR-WEB-500 /dashboard Strategic and Operational views", "Detailed /operations and /operations/live destinations"],
-      "engines": ["ENG-04", "ENG-06", "ENG-09", "ENG-11", "ENG-12"],
-      "files_changed": ["new dashboard route/components/styles/metrics/loading", "shell topbar and route mapping", "launch role landing", "dashboard/shell/seed tests", "Operations notification RLS copy correction", "dashboard authority/acceptance/evidence/current-state/work-queue/session records"],
-      "tests": ["typecheck PASS", "production build PASS", "focused dashboard/shell Playwright 16/16 PASS", "complete Playwright regression 50/50 PASS in 2.9 minutes", "four runtime captures visually reviewed"],
-      "evidence": ["TASK-WEB-DASHBOARD-002-EV-001.txt", "TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md", "evidence/screens/dashboard-business-v1/"],
-      "decisions": ["Reconcile saqeel.html as business input rather than data authority", "Use live RLS-scoped records and denominators", "Render truthful unavailable states where governed source/policy is absent", "Remove AI/prescriptive/sample-value content", "Add explicit ops/leadership route guard", "Keep CD-020 isolated"],
-      "blockers": ["Sponsor runtime visual acceptance of the completed dashboard", "Unsupported Analytics/Lookup/Notification Configuration/Integration products require future approved contracts", "G11 credential/region/provider hardening and G12 release remain open"],
+      "requirements": [
+        "MVP1-M08-001..019",
+        "MVP1-M02-018",
+        "MVP1-M02-037",
+        "MVP1-FND-001",
+        "MVP1-FND-002",
+        "MVP1-FND-010..012",
+        "DASH-001..016"
+      ],
+      "acceptance_ids": [
+        "AC-0430..AC-0448",
+        "DASH-AC-001..DASH-AC-016"
+      ],
+      "screens": [
+        "SCR-WEB-500 /dashboard Strategic and Operational views",
+        "Detailed /operations and /operations/live destinations"
+      ],
+      "engines": [
+        "ENG-04",
+        "ENG-06",
+        "ENG-09",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "new dashboard route/components/styles/metrics/loading",
+        "shell topbar and route mapping",
+        "launch role landing",
+        "dashboard/shell/seed tests",
+        "Operations notification RLS copy correction",
+        "dashboard authority/acceptance/evidence/current-state/work-queue/session records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "focused dashboard/shell Playwright 16/16 PASS",
+        "complete Playwright regression 50/50 PASS in 2.9 minutes",
+        "four runtime captures visually reviewed"
+      ],
+      "evidence": [
+        "TASK-WEB-DASHBOARD-002-EV-001.txt",
+        "TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md",
+        "evidence/screens/dashboard-business-v1/"
+      ],
+      "decisions": [
+        "Reconcile saqeel.html as business input rather than data authority",
+        "Use live RLS-scoped records and denominators",
+        "Render truthful unavailable states where governed source/policy is absent",
+        "Remove AI/prescriptive/sample-value content",
+        "Add explicit ops/leadership route guard",
+        "Keep CD-020 isolated"
+      ],
+      "blockers": [
+        "Sponsor runtime visual acceptance of the completed dashboard",
+        "Unsupported Analytics/Lookup/Notification Configuration/Integration products require future approved contracts",
+        "G11 credential/region/provider hardening and G12 release remain open"
+      ],
       "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Sponsor runtime review of /dashboard, then resume or verify the separately running CD-020 work",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml, design/claude-design-mvp1/authority/DASHBOARD_BUSINESS_REQUIREMENT_CONTRACT_V1.md and product-contract/evidence/TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md. TASK-WEB-DASHBOARD-002 is implemented and verified; sponsor runtime acceptance is pending. Review /dashboard as Operations/Leadership in Strategic and Operational views, English/Arabic, dark/light and narrow layout. Preserve truthful unavailable states, RLS, route guard and the frozen shared shell. CD-020 remains external/concurrent; do not claim it, commit, push, merge, deploy or modify main."
@@ -230,15 +642,75 @@
       "branch": "feat/cd-021-bulk-targeting",
       "task_id": "TASK-DESIGN-CD024-QUALITY-RATCHET",
       "gate": "G11 controlled Web-first design; G12 release open",
-      "requirements": ["P02", "M01-006", "M01-029", "M02-012", "MVP1-FND-001", "MVP1-FND-011", "MVP1-FND-013"],
-      "acceptance_ids": ["DSG-019", "DSG-A11Y-001", "DSG-CODE-001"],
-      "screens": ["SCR-WEB-140", "current /planning/bulk/review P02 subset", "read-only /planning/plans/:id"],
-      "engines": ["ENG-02", "ENG-03", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
-      "files_changed": ["V4 quality ratchet, master prompt, SOP, revision notes and CD-024 prompt", "43-screen CSV and 12-sheet workbook", "design constitution, baseline, P02 journey, route reconciliation and acceptance matrix", "current state, active-slice open items and work queue", "verification, evidence and session handoff records", "workbook previews and renders"],
-      "tests": ["artifact-tool workbook import/export PASS", "12/12 sheet renders visually reviewed PASS", "43 prompt rows and 32 reference rows present", "formula/error scan 0", "documentation JSON/YAML/CSV validation"],
-      "evidence": ["outputs/claude-design-approval-pack/VERIFICATION_REPORT_V4.json", "product-contract/evidence/TASK-DESIGN-CD024-QUALITY-RATCHET-EV-001.txt", "outputs/claude-design-approval-pack/renders/", "Desktop v4-quality-ratchet pack copy"],
-      "decisions": ["V4 quality ratchet mandatory from CD-024", "Reviewer evidence replaces self-scoring", "One new signature pattern maximum", "/planning/plans/:id remains read-only", "Use score-free Assignment Evidence Ledger", "Unsupported optimization signals remain unavailable or HANDOFF_BLOCKED", "CD-024 design may proceed but implementation may not"],
-      "blockers": ["Sponsor route and SCR-WEB-120/140 identity decision", "Automatic overlap protection", "Authoritative package and visit-type submit revalidation", "Virtual mode support", "Attempted-conflict audit", "Notification delivery truth", "Stale-candidate concurrency contract", "CD-021 independent wiring/runtime acceptance", "CD-020 external outcome", "CD-002 implementation verification"],
+      "requirements": [
+        "P02",
+        "M01-006",
+        "M01-029",
+        "M02-012",
+        "MVP1-FND-001",
+        "MVP1-FND-011",
+        "MVP1-FND-013"
+      ],
+      "acceptance_ids": [
+        "DSG-019",
+        "DSG-A11Y-001",
+        "DSG-CODE-001"
+      ],
+      "screens": [
+        "SCR-WEB-140",
+        "current /planning/bulk/review P02 subset",
+        "read-only /planning/plans/:id"
+      ],
+      "engines": [
+        "ENG-02",
+        "ENG-03",
+        "ENG-05",
+        "ENG-06",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "V4 quality ratchet, master prompt, SOP, revision notes and CD-024 prompt",
+        "43-screen CSV and 12-sheet workbook",
+        "design constitution, baseline, P02 journey, route reconciliation and acceptance matrix",
+        "current state, active-slice open items and work queue",
+        "verification, evidence and session handoff records",
+        "workbook previews and renders"
+      ],
+      "tests": [
+        "artifact-tool workbook import/export PASS",
+        "12/12 sheet renders visually reviewed PASS",
+        "43 prompt rows and 32 reference rows present",
+        "formula/error scan 0",
+        "documentation JSON/YAML/CSV validation"
+      ],
+      "evidence": [
+        "outputs/claude-design-approval-pack/VERIFICATION_REPORT_V4.json",
+        "product-contract/evidence/TASK-DESIGN-CD024-QUALITY-RATCHET-EV-001.txt",
+        "outputs/claude-design-approval-pack/renders/",
+        "Desktop v4-quality-ratchet pack copy"
+      ],
+      "decisions": [
+        "V4 quality ratchet mandatory from CD-024",
+        "Reviewer evidence replaces self-scoring",
+        "One new signature pattern maximum",
+        "/planning/plans/:id remains read-only",
+        "Use score-free Assignment Evidence Ledger",
+        "Unsupported optimization signals remain unavailable or HANDOFF_BLOCKED",
+        "CD-024 design may proceed but implementation may not"
+      ],
+      "blockers": [
+        "Sponsor route and SCR-WEB-120/140 identity decision",
+        "Automatic overlap protection",
+        "Authoritative package and visit-type submit revalidation",
+        "Virtual mode support",
+        "Attempted-conflict audit",
+        "Notification delivery truth",
+        "Stale-candidate concurrency contract",
+        "CD-021 independent wiring/runtime acceptance",
+        "CD-020 external outcome",
+        "CD-002 implementation verification"
+      ],
       "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Run CD-024 in Claude Design with CD-024_DESIGN_PROMPT_V4.md, then perform P0/P1 design review before implementation authorization",
       "resume_prompt": "Read AGENTS.md, product-contract/sessions/HANDOFF_2026-07-13_DESIGN_QUALITY_RATCHET_V4_CD024_NEXT.md, outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md and outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md. Start TASK-DESIGN-CD024-QUALITY-RATCHET as DESIGN ONLY. Preserve the frozen shell and CD-001 baseline. Keep /planning/plans/:id read-only; reconcile /planning/:id/configure, /planning/bulk/review and the SCR-WEB-120/140 identity collision. Do not present unsupported optimization, virtual, audit or delivery capability as implemented. Return a P0/P1 review after Claude Design output. Do not implement, commit, push, merge, deploy, modify main or discard the dirty worktree."
@@ -250,15 +722,73 @@
       "branch": "feat/cd-023-immediate-authority-bar",
       "task_id": "CD-023-IMMEDIATE-VISIT-REMEDIATION",
       "gate": "G11 DEC-012 remediation; G12 release open",
-      "requirements": ["MVP1-M01-043..052", "MVP1-M02-012", "MVP1-FND-001", "MVP1-FND-003", "MVP1-FND-007", "MVP1-FND-011"],
-      "acceptance_ids": ["AC-0043..AC-0052", "AC-0064", "DSG-018", "DSG-A11Y-001"],
-      "screens": ["SCR-WEB-130", "SCR-IPAD-610", "SCR-IPAD-620"],
-      "engines": ["ENG-03", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
-      "files_changed": ["migration 0027 atomic Immediate Visit RPC/RLS/audit", "Immediate planner/inspector server action and UI", "localized Authority Bar", "field dispatch-location handoff", "CD-023 focused Playwright suite", "active slice, AC ledger, evidence, current state, queue and continuation records"],
-      "tests": ["isolated PostgreSQL migration apply PASS", "Planner create and idempotent replay PASS", "Inspector activity-only self-create/start-now/no-notification PASS", "forced notification write failure atomic rollback PASS", "blocked-attempt audit PASS", "forged CREATED audit rejection PASS", "production build PASS", "sequential typecheck PASS", "git diff --check PASS", "Playwright discovery PASS", "shared auth setup 3/3 PASS"],
-      "evidence": ["evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md remediation trace", "evidence/screens/immediate-v2/CD023_LOCAL_REMEDIATION_EVIDENCE.md", "sessions/CLAUDE_CODE_CONTINUATION_CD-023.md"],
-      "decisions": ["Exact source rows override the incomplete former slice description", "Planner and Inspector paths restored", "No invented +8h duration", "Visit-selected coordinates remain separate from official master data", "One SECURITY INVOKER transaction replaces sequential writes", "Implementation author cannot self-issue DEC-012 PASS"],
-      "blockers": ["Explicit approval to apply migration 0027 to linked development Supabase", "Focused CD-023 and full Playwright not run", "Eight live evidence frames not captured", "outputs/cd-023 wiring package missing", "Fresh independent Codex re-audit and sponsor runtime acceptance pending"],
+      "requirements": [
+        "MVP1-M01-043..052",
+        "MVP1-M02-012",
+        "MVP1-FND-001",
+        "MVP1-FND-003",
+        "MVP1-FND-007",
+        "MVP1-FND-011"
+      ],
+      "acceptance_ids": [
+        "AC-0043..AC-0052",
+        "AC-0064",
+        "DSG-018",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-130",
+        "SCR-IPAD-610",
+        "SCR-IPAD-620"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-05",
+        "ENG-06",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "migration 0027 atomic Immediate Visit RPC/RLS/audit",
+        "Immediate planner/inspector server action and UI",
+        "localized Authority Bar",
+        "field dispatch-location handoff",
+        "CD-023 focused Playwright suite",
+        "active slice, AC ledger, evidence, current state, queue and continuation records"
+      ],
+      "tests": [
+        "isolated PostgreSQL migration apply PASS",
+        "Planner create and idempotent replay PASS",
+        "Inspector activity-only self-create/start-now/no-notification PASS",
+        "forced notification write failure atomic rollback PASS",
+        "blocked-attempt audit PASS",
+        "forged CREATED audit rejection PASS",
+        "production build PASS",
+        "sequential typecheck PASS",
+        "git diff --check PASS",
+        "Playwright discovery PASS",
+        "shared auth setup 3/3 PASS"
+      ],
+      "evidence": [
+        "evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md remediation trace",
+        "evidence/screens/immediate-v2/CD023_LOCAL_REMEDIATION_EVIDENCE.md",
+        "sessions/CLAUDE_CODE_CONTINUATION_CD-023.md"
+      ],
+      "decisions": [
+        "Exact source rows override the incomplete former slice description",
+        "Planner and Inspector paths restored",
+        "No invented +8h duration",
+        "Visit-selected coordinates remain separate from official master data",
+        "One SECURITY INVOKER transaction replaces sequential writes",
+        "Implementation author cannot self-issue DEC-012 PASS"
+      ],
+      "blockers": [
+        "Explicit approval to apply migration 0027 to linked development Supabase",
+        "Focused CD-023 and full Playwright not run",
+        "Eight live evidence frames not captured",
+        "outputs/cd-023 wiring package missing",
+        "Fresh independent Codex re-audit and sponsor runtime acceptance pending"
+      ],
       "commit_sha": "ea22b20 — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "After explicit approval, apply migration 0027 live and execute the exact verification/re-audit sequence in CLAUDE_CODE_CONTINUATION_CD-023.md",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml, product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md, CD023_LOCAL_REMEDIATION_EVIDENCE.md and sessions/CLAUDE_CODE_CONTINUATION_CD-023.md. All nine findings are remediated locally. Do not redesign or weaken them. Obtain explicit approval before transmitting/applying migration SQL to linked Supabase. Then apply only migration 0027, run focused and full Playwright, capture 8 frames, import actual outputs/cd-023 if supplied, and hand to a distinct independent Codex reviewer. Do not self-close, start CD-024+ implementation, commit, push, merge, deploy, modify main or discard unrelated dirty work."
@@ -270,15 +800,70 @@
       "branch": "feat/cd-023-immediate-authority-bar",
       "task_id": "CD-023-IMMEDIATE-VISIT-REMEDIATION",
       "gate": "G11 DEC-012 remediation; G12 release open",
-      "requirements": ["MVP1-M01-043..052", "MVP1-M02-012", "MVP1-FND-001", "MVP1-FND-003", "MVP1-FND-007", "MVP1-FND-011"],
-      "acceptance_ids": ["AC-0043..AC-0052", "AC-0064", "DSG-018", "DSG-A11Y-001"],
-      "screens": ["SCR-WEB-130", "SCR-IPAD-610", "SCR-IPAD-620"],
-      "engines": ["ENG-03", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
-      "files_changed": ["migration 0027 location provenance/replay/identity/RLS/audit hardening", "repeatable supabase/tests/0027 database contract", "expanded CD-023 Playwright concurrency and provenance assertions", "local evidence, audit trace, current state and Claude Code continuation report", "last-session handoff"],
-      "tests": ["fresh relevant-baseline plus migration 0027 apply PASS", "transaction-wrapped CD023_DATABASE_CONTRACT_PASS", "forced package-read and notification-write rollback PASS", "stored-role replay and location provenance PASS", "Inspector narrow-RLS and audit-forgery negatives PASS", "typecheck PASS", "production build PASS", "git diff --check PASS", "Playwright discovery 8 product plus 3 setup PASS"],
-      "evidence": ["supabase/tests/0027_cd023_immediate_visit_atomic.sql", "evidence/screens/immediate-v2/CD023_LOCAL_REMEDIATION_EVIDENCE.md", "evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md remediation trace", "sessions/CLAUDE_CODE_CONTINUATION_CD-023.md"],
-      "decisions": ["Selected Visit location requires explicit official/manual provenance", "Official source must exactly match registered master coordinates", "Idempotent replay is bound to the stored creator role", "Every supplied CR/licence identity key is locked in stable order", "Implementation author cannot self-issue DEC-012 PASS"],
-      "blockers": ["Explicit approval to transmit/apply migration 0027 to linked development Supabase", "Focused CD-023 and full Playwright not run", "Eight live evidence frames not captured", "outputs/cd-023 wiring package missing", "Fresh independent Codex re-audit and sponsor runtime acceptance pending"],
+      "requirements": [
+        "MVP1-M01-043..052",
+        "MVP1-M02-012",
+        "MVP1-FND-001",
+        "MVP1-FND-003",
+        "MVP1-FND-007",
+        "MVP1-FND-011"
+      ],
+      "acceptance_ids": [
+        "AC-0043..AC-0052",
+        "AC-0064",
+        "DSG-018",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-130",
+        "SCR-IPAD-610",
+        "SCR-IPAD-620"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-05",
+        "ENG-06",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "migration 0027 location provenance/replay/identity/RLS/audit hardening",
+        "repeatable supabase/tests/0027 database contract",
+        "expanded CD-023 Playwright concurrency and provenance assertions",
+        "local evidence, audit trace, current state and Claude Code continuation report",
+        "last-session handoff"
+      ],
+      "tests": [
+        "fresh relevant-baseline plus migration 0027 apply PASS",
+        "transaction-wrapped CD023_DATABASE_CONTRACT_PASS",
+        "forced package-read and notification-write rollback PASS",
+        "stored-role replay and location provenance PASS",
+        "Inspector narrow-RLS and audit-forgery negatives PASS",
+        "typecheck PASS",
+        "production build PASS",
+        "git diff --check PASS",
+        "Playwright discovery 8 product plus 3 setup PASS"
+      ],
+      "evidence": [
+        "supabase/tests/0027_cd023_immediate_visit_atomic.sql",
+        "evidence/screens/immediate-v2/CD023_LOCAL_REMEDIATION_EVIDENCE.md",
+        "evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md remediation trace",
+        "sessions/CLAUDE_CODE_CONTINUATION_CD-023.md"
+      ],
+      "decisions": [
+        "Selected Visit location requires explicit official/manual provenance",
+        "Official source must exactly match registered master coordinates",
+        "Idempotent replay is bound to the stored creator role",
+        "Every supplied CR/licence identity key is locked in stable order",
+        "Implementation author cannot self-issue DEC-012 PASS"
+      ],
+      "blockers": [
+        "Explicit approval to transmit/apply migration 0027 to linked development Supabase",
+        "Focused CD-023 and full Playwright not run",
+        "Eight live evidence frames not captured",
+        "outputs/cd-023 wiring package missing",
+        "Fresh independent Codex re-audit and sponsor runtime acceptance pending"
+      ],
       "commit_sha": "ea22b20 — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "After explicit approval, apply only migration 0027 live and run the focused/full verification and independent re-audit sequence",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml, product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md, CD023_LOCAL_REMEDIATION_EVIDENCE.md and sessions/CLAUDE_CODE_CONTINUATION_CD-023.md. The hardened fresh-database contract passes. Do not redesign or weaken it. Obtain explicit informed approval before transmitting/applying migration SQL to linked Supabase. Then apply only migration 0027, run focused and full Playwright, capture eight frames, import actual outputs/cd-023 if supplied, and hand to a distinct independent Codex reviewer. Do not self-close, start CD-024+ implementation, commit, push, merge, deploy, modify main or discard unrelated dirty work."
@@ -290,15 +875,64 @@
       "branch": "feat/cd-023-immediate-authority-bar (shared worktree currently checked out on concurrent CD-022 branch)",
       "task_id": "CD-023-IMMEDIATE-VISIT-REMEDIATION",
       "gate": "G11 DEC-012 remediation; final independent verdict pending",
-      "requirements": ["MVP1-M01-043..052", "MVP1-M02-012", "MVP1-FND-001", "MVP1-FND-003", "MVP1-FND-007", "MVP1-FND-011"],
-      "acceptance_ids": ["AC-0043..AC-0052", "AC-0064", "DSG-018", "DSG-A11Y-001"],
-      "screens": ["SCR-WEB-130", "SCR-IPAD-610", "SCR-IPAD-620"],
-      "engines": ["ENG-03", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
-      "files_changed": ["migrations 0028-0031 security, RLS, expiry and Inspector-window guards", "explicit bilingual Authority Bar details", "stable Playwright auth state", "expanded live concurrency and visual suite", "AC ledger, live evidence and Claude Code continuation report"],
-      "tests": ["production build PASS", "typecheck PASS", "CD023_DATABASE_CONTRACT_PASS", "focused live CD-023 12/12 PASS", "Inspector-window concurrency PASS", "persona regression 9/9 PASS", "eight visual frames captured"],
-      "evidence": ["evidence/screens/immediate-v2/CD023_LIVE_REMEDIATION_EVIDENCE.md", "evidence/screens/immediate-v2/en|ar-dark|light-desktop|narrow.png", "sessions/CLAUDE_CODE_CONTINUATION_CD-023.md"],
-      "decisions": ["No fabricated migration ledger", "Canonical assignment writes serialize per Inspector", "Critical Arabic authority details do not depend on unverified seed data", "Implementation author cannot self-issue DEC-012 PASS"],
-      "blockers": ["Complete regression from a coherent worktree", "Fresh independent row-by-row DEC-012 wiring verdict", "Sponsor runtime acceptance"],
+      "requirements": [
+        "MVP1-M01-043..052",
+        "MVP1-M02-012",
+        "MVP1-FND-001",
+        "MVP1-FND-003",
+        "MVP1-FND-007",
+        "MVP1-FND-011"
+      ],
+      "acceptance_ids": [
+        "AC-0043..AC-0052",
+        "AC-0064",
+        "DSG-018",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-130",
+        "SCR-IPAD-610",
+        "SCR-IPAD-620"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-05",
+        "ENG-06",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "migrations 0028-0031 security, RLS, expiry and Inspector-window guards",
+        "explicit bilingual Authority Bar details",
+        "stable Playwright auth state",
+        "expanded live concurrency and visual suite",
+        "AC ledger, live evidence and Claude Code continuation report"
+      ],
+      "tests": [
+        "production build PASS",
+        "typecheck PASS",
+        "CD023_DATABASE_CONTRACT_PASS",
+        "focused live CD-023 12/12 PASS",
+        "Inspector-window concurrency PASS",
+        "persona regression 9/9 PASS",
+        "eight visual frames captured"
+      ],
+      "evidence": [
+        "evidence/screens/immediate-v2/CD023_LIVE_REMEDIATION_EVIDENCE.md",
+        "evidence/screens/immediate-v2/en|ar-dark|light-desktop|narrow.png",
+        "sessions/CLAUDE_CODE_CONTINUATION_CD-023.md"
+      ],
+      "decisions": [
+        "No fabricated migration ledger",
+        "Canonical assignment writes serialize per Inspector",
+        "Critical Arabic authority details do not depend on unverified seed data",
+        "Implementation author cannot self-issue DEC-012 PASS"
+      ],
+      "blockers": [
+        "Complete regression from a coherent worktree",
+        "Fresh independent row-by-row DEC-012 wiring verdict",
+        "Sponsor runtime acceptance"
+      ],
       "commit_sha": "commit requested; recorded on feat/cd-023-immediate-authority-bar after evidence finalization",
       "next_task": "Independent reviewer runs the wiring-map audit after a coherent full regression",
       "resume_prompt": "Read sessions/CLAUDE_CODE_CONTINUATION_CD-023.md and evidence/screens/immediate-v2/CD023_LIVE_REMEDIATION_EVIDENCE.md. Do not repeat implementation. Rerun the complete regression from an isolated/coherent worktree, then assign a distinct reviewer to audit every outputs/cd-023/WIRING_MAP_CD-023.csv row and record the DEC-012 verdict. Do not self-close or start CD-024+ implementation before sponsor runtime acceptance."
@@ -310,15 +944,66 @@
       "branch": "target feat/cd-023-immediate-authority-bar@7a01355; shared checkout feat/cd-022-single-identity-lens with exact CD-023 blob parity",
       "task_id": "CD-023-IMMEDIATE-VISIT-REMEDIATION",
       "gate": "G11 DEC-012 independent post-live wiring audit",
-      "requirements": ["MVP1-M01-043..052", "MVP1-M02-012", "MVP1-FND-001", "MVP1-FND-003", "MVP1-FND-007", "MVP1-FND-011"],
-      "acceptance_ids": ["AC-0043..AC-0052", "AC-0064", "DSG-018", "DSG-A11Y-001"],
-      "screens": ["SCR-WEB-130", "SCR-IPAD-610", "SCR-IPAD-620"],
-      "engines": ["ENG-03", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
-      "files_changed": ["independent evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md", "CURRENT_STATE.md audit outcome", "WORK_QUEUE.yaml gate status", "SESSION_LEDGER.json append-only audit session"],
-      "tests": ["CD-023 target-branch blob parity PASS", "typecheck PASS", "production build PASS", "focused live non-screenshot Playwright 11/11 PASS", "eight preserved EN/AR dark/light desktop/narrow frames visually inspected", "complete coherent regression NOT PROVED"],
-      "evidence": ["evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md", "evidence/screens/immediate-v2/CD023_LIVE_REMEDIATION_EVIDENCE.md", "outputs/cd-023/WIRING_MAP_CD-023.csv", "source workbook Visit Planning rows 44-53 and Management duplicate row"],
-      "decisions": ["Issue strict FAIL because DEC-012 audits current wiring-map truth, not implementation quality alone", "Do not waive stale proposed test cells", "Do not switch/reset the concurrent dirty checkout", "Keep AC live behavior evidence distinct from wiring-map gate status"],
-      "blockers": ["Reconcile all post-remediation wiring-map columns", "Resolve server-side urgency-reason contract", "Replace downstream raw Inspector start-flow DB error copy", "Run coherent full regression", "Fresh independent DEC-012 re-audit", "Sponsor runtime acceptance"],
+      "requirements": [
+        "MVP1-M01-043..052",
+        "MVP1-M02-012",
+        "MVP1-FND-001",
+        "MVP1-FND-003",
+        "MVP1-FND-007",
+        "MVP1-FND-011"
+      ],
+      "acceptance_ids": [
+        "AC-0043..AC-0052",
+        "AC-0064",
+        "DSG-018",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-130",
+        "SCR-IPAD-610",
+        "SCR-IPAD-620"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-05",
+        "ENG-06",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "independent evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md",
+        "CURRENT_STATE.md audit outcome",
+        "WORK_QUEUE.yaml gate status",
+        "SESSION_LEDGER.json append-only audit session"
+      ],
+      "tests": [
+        "CD-023 target-branch blob parity PASS",
+        "typecheck PASS",
+        "production build PASS",
+        "focused live non-screenshot Playwright 11/11 PASS",
+        "eight preserved EN/AR dark/light desktop/narrow frames visually inspected",
+        "complete coherent regression NOT PROVED"
+      ],
+      "evidence": [
+        "evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md",
+        "evidence/screens/immediate-v2/CD023_LIVE_REMEDIATION_EVIDENCE.md",
+        "outputs/cd-023/WIRING_MAP_CD-023.csv",
+        "source workbook Visit Planning rows 44-53 and Management duplicate row"
+      ],
+      "decisions": [
+        "Issue strict FAIL because DEC-012 audits current wiring-map truth, not implementation quality alone",
+        "Do not waive stale proposed test cells",
+        "Do not switch/reset the concurrent dirty checkout",
+        "Keep AC live behavior evidence distinct from wiring-map gate status"
+      ],
+      "blockers": [
+        "Reconcile all post-remediation wiring-map columns",
+        "Resolve server-side urgency-reason contract",
+        "Replace downstream raw Inspector start-flow DB error copy",
+        "Run coherent full regression",
+        "Fresh independent DEC-012 re-audit",
+        "Sponsor runtime acceptance"
+      ],
       "commit_sha": "7a01355 target reviewed; audit records uncommitted; no commit/push/merge authorized",
       "next_task": "Implementation/documentation owner reconciles WIRING_MAP_CD-023 and the two runtime gaps, runs coherent regression, then requests another independent audit",
       "resume_prompt": "Read product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md first. Do not repeat the successful atomicity/idempotency/location/concurrency work. Reconcile WIRING_MAP_CD-023 to the exact source-aligned runtime and exact test names; fix or formally resolve urgency-reason server validation and neutralize the raw Startup.tsx inspection-insert error; run the complete regression from a coherent worktree; then assign a new independent Codex reviewer. CD-023 closure, sponsor runtime acceptance and CD-024+ implementation remain blocked."
@@ -330,15 +1015,70 @@
       "branch": "shared checkout feat/cd-022-single-identity-lens; CD-023 target baseline feat/cd-023-immediate-authority-bar@7a01355",
       "task_id": "CD-023-IMMEDIATE-VISIT-REMEDIATION",
       "gate": "G11 DEC-012 remediation; fresh independent re-audit pending",
-      "requirements": ["MVP1-M01-043..052", "MVP1-M02-012", "MVP1-FND-001", "MVP1-FND-003", "MVP1-FND-007", "MVP1-FND-011"],
-      "acceptance_ids": ["AC-0043..AC-0052", "AC-0064", "DSG-018", "DSG-A11Y-001"],
-      "screens": ["SCR-WEB-130", "SCR-IPAD-610", "SCR-IPAD-620"],
-      "engines": ["ENG-03", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
-      "files_changed": ["ImmediateForm/page/actions accepted D3 urgency contract", "field Startup/page neutral inspection-create error copy", "migration 20260714060935 urgency CHECK", "expanded CD-023 Playwright and SQL contract", "reconciled 12x13 wiring map, manifest and acceptance checklist", "current slice, work queue, current state and continuation handoff"],
-      "tests": ["typecheck PASS", "production build PASS", "Playwright discovery PASS", "focused runnable suite 16/16 PASS", "broader regression 90/90 PASS with only crafted urgency migration test excluded", "final Other-reason UI check 4/4 PASS", "eight visual frames recaptured"],
-      "evidence": ["outputs/cd-023/WIRING_MAP_CD-023.csv", "outputs/cd-023/IMPLEMENTATION_MANIFEST_CD-023.yaml", "outputs/cd-023/ACCEPTANCE_CHECKLIST_CD-023.md", "product-contract/sessions/CLAUDE_CODE_CONTINUATION_CD-023.md", "product-contract/evidence/screens/immediate-v2"],
-      "decisions": ["Use accepted Astryx D3 four-value urgency list", "Require Notes when urgency is Other", "Enforce server-action copy plus database CHECK defense in depth", "Use NOT VALID to preserve historical rows without silent coercion", "Do not bypass migration history with Dashboard SQL", "Implementation author cannot self-issue DEC-012 PASS"],
-      "blockers": ["Apply migration 20260714060935 through linked migration history", "Run crafted-RPC urgency test and complete 91-test regression without exclusions", "Fresh independent Codex 12-row audit", "Sponsor runtime acceptance"],
+      "requirements": [
+        "MVP1-M01-043..052",
+        "MVP1-M02-012",
+        "MVP1-FND-001",
+        "MVP1-FND-003",
+        "MVP1-FND-007",
+        "MVP1-FND-011"
+      ],
+      "acceptance_ids": [
+        "AC-0043..AC-0052",
+        "AC-0064",
+        "DSG-018",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-130",
+        "SCR-IPAD-610",
+        "SCR-IPAD-620"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-05",
+        "ENG-06",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "ImmediateForm/page/actions accepted D3 urgency contract",
+        "field Startup/page neutral inspection-create error copy",
+        "migration 20260714060935 urgency CHECK",
+        "expanded CD-023 Playwright and SQL contract",
+        "reconciled 12x13 wiring map, manifest and acceptance checklist",
+        "current slice, work queue, current state and continuation handoff"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Playwright discovery PASS",
+        "focused runnable suite 16/16 PASS",
+        "broader regression 90/90 PASS with only crafted urgency migration test excluded",
+        "final Other-reason UI check 4/4 PASS",
+        "eight visual frames recaptured"
+      ],
+      "evidence": [
+        "outputs/cd-023/WIRING_MAP_CD-023.csv",
+        "outputs/cd-023/IMPLEMENTATION_MANIFEST_CD-023.yaml",
+        "outputs/cd-023/ACCEPTANCE_CHECKLIST_CD-023.md",
+        "product-contract/sessions/CLAUDE_CODE_CONTINUATION_CD-023.md",
+        "product-contract/evidence/screens/immediate-v2"
+      ],
+      "decisions": [
+        "Use accepted Astryx D3 four-value urgency list",
+        "Require Notes when urgency is Other",
+        "Enforce server-action copy plus database CHECK defense in depth",
+        "Use NOT VALID to preserve historical rows without silent coercion",
+        "Do not bypass migration history with Dashboard SQL",
+        "Implementation author cannot self-issue DEC-012 PASS"
+      ],
+      "blockers": [
+        "Apply migration 20260714060935 through linked migration history",
+        "Run crafted-RPC urgency test and complete 91-test regression without exclusions",
+        "Fresh independent Codex 12-row audit",
+        "Sponsor runtime acceptance"
+      ],
       "commit_sha": "uncommitted shared dirty worktree; no commit/push/merge authorized",
       "next_task": "Apply urgency migration from an authenticated Supabase environment, run 91/91, then hand the reconciled package to a distinct OpenAI Codex reviewer",
       "resume_prompt": "Read product-contract/sessions/CLAUDE_CODE_CONTINUATION_CD-023.md and outputs/cd-023/WIRING_MAP_CD-023.csv. Do not repeat the completed code/package reconciliation. Apply only migration 20260714060935 through linked migration history, run the crafted urgency check and full 91-test suite, then request a fresh independent DEC-012 audit. Do not self-close, start CD-024+ implementation, commit, push, merge, deploy, modify main, switch branches, or clean the shared worktree."
@@ -350,15 +1090,79 @@
       "branch": "feat/cd-022-single-identity-lens",
       "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
       "gate": "G11 production-readiness wiring audit and baseline consolidation",
-      "requirements": ["MVP1-M01-001..052", "MVP1-M02-012", "MVP1-FND-001", "MVP1-FND-002", "MVP1-FND-003", "RBAC-001..014"],
-      "acceptance_ids": ["CD-001", "CD-002", "CD-003", "CD-020", "CD-021", "CD-022", "CD-023", "CD-024", "DSG-A11Y-001"],
-      "screens": ["AUTH-01", "AUTH-02", "AUTH-03", "SCR-WEB-100", "SCR-WEB-110", "SCR-WEB-120", "SCR-WEB-130", "SCR-IPAD-610", "SCR-IPAD-620"],
-      "engines": ["ENG-02", "ENG-03", "ENG-04", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
-      "files_changed": ["cross-slice wiring and fail-closed runtime paths", "forward migrations 20260714091726/27", "wiring maps/manifests", "TASK-BASELINE-WIRING-AUDIT-001.md", "CURRENT_STATE.md", "WORK_QUEUE.yaml"],
-      "tests": ["typecheck PASS", "production build PASS", "focused CD-001..CD-022 sweep 48/48 PASS with migration-dependent publish checks held", "CD-023 focused 18/18 PASS", "full Playwright 92/99 PASS; 2 atomic-RPC failures pending migration and 1 KPI fixture/published-monitoring mismatch"],
-      "evidence": ["product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md", "outputs/cd-021/WIRING_MAP_CD-021.csv", "outputs/cd-022/WIRING_MAP_CD-022.csv", "outputs/cd-023/WIRING_MAP_CD-023.csv"],
-      "decisions": ["Keep CD-024/CD-025 route and lifecycle implementation blocked by governance", "Keep notification/provider delivery truthful and diagnostic details out of UI", "Generate forward migrations with Supabase CLI; do not deploy production in this task", "Preserve concurrent work and stashes until branch disposition is proven"],
-      "blockers": ["Forward migration runtime certification", "Full no-exclusion regression after migration", "Fresh independent DEC-012 CD-023 audit", "Sponsor runtime acceptance", "G11/G12 credential, region, provider and asset-rights release items"],
+      "requirements": [
+        "MVP1-M01-001..052",
+        "MVP1-M02-012",
+        "MVP1-FND-001",
+        "MVP1-FND-002",
+        "MVP1-FND-003",
+        "RBAC-001..014"
+      ],
+      "acceptance_ids": [
+        "CD-001",
+        "CD-002",
+        "CD-003",
+        "CD-020",
+        "CD-021",
+        "CD-022",
+        "CD-023",
+        "CD-024",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "AUTH-01",
+        "AUTH-02",
+        "AUTH-03",
+        "SCR-WEB-100",
+        "SCR-WEB-110",
+        "SCR-WEB-120",
+        "SCR-WEB-130",
+        "SCR-IPAD-610",
+        "SCR-IPAD-620"
+      ],
+      "engines": [
+        "ENG-02",
+        "ENG-03",
+        "ENG-04",
+        "ENG-05",
+        "ENG-06",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "cross-slice wiring and fail-closed runtime paths",
+        "forward migrations 20260714091726/27",
+        "wiring maps/manifests",
+        "TASK-BASELINE-WIRING-AUDIT-001.md",
+        "CURRENT_STATE.md",
+        "WORK_QUEUE.yaml"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "focused CD-001..CD-022 sweep 48/48 PASS with migration-dependent publish checks held",
+        "CD-023 focused 18/18 PASS",
+        "full Playwright 92/99 PASS; 2 atomic-RPC failures pending migration and 1 KPI fixture/published-monitoring mismatch"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md",
+        "outputs/cd-021/WIRING_MAP_CD-021.csv",
+        "outputs/cd-022/WIRING_MAP_CD-022.csv",
+        "outputs/cd-023/WIRING_MAP_CD-023.csv"
+      ],
+      "decisions": [
+        "Keep CD-024/CD-025 route and lifecycle implementation blocked by governance",
+        "Keep notification/provider delivery truthful and diagnostic details out of UI",
+        "Generate forward migrations with Supabase CLI; do not deploy production in this task",
+        "Preserve concurrent work and stashes until branch disposition is proven"
+      ],
+      "blockers": [
+        "Forward migration runtime certification",
+        "Full no-exclusion regression after migration",
+        "Fresh independent DEC-012 CD-023 audit",
+        "Sponsor runtime acceptance",
+        "G11/G12 credential, region, provider and asset-rights release items"
+      ],
       "commit_sha": "582d98829620354afbc89abe87d6ef73635256cb (origin/main verified before final disposition note)",
       "next_task": "If repository policy permits, change the protected default branch from setup/Inspection to main, then delete setup/Inspection administratively",
       "resume_prompt": "Read TASK-BASELINE-WIRING-AUDIT-001.md and CURRENT_SLICE.yaml. Preserve the declared migration and regression blockers; finish the authorized main consolidation and branch disposition without deploying production or implementing blocked CD-024/CD-025 routes."
@@ -370,15 +1174,61 @@
       "branch": "feat/cd-025-plan-review-publish",
       "task_id": "TASK-DESIGN-CD025-REVIEW-R3; TASK-DESIGN-CD026; TASK-DESIGN-CD027-NEXT",
       "gate": "G11 controlled Web-first design; design review/prompt preparation only",
-      "requirements": ["MVP1-M01-001..050", "MVP1-M02-001..046", "relevant MVP1-FND and RBAC contracts"],
-      "acceptance_ids": ["DSG-020", "DSG-021", "DSG-022 next", "DSG-A11Y-001"],
-      "screens": ["SCR-WEB-150", "SCR-WEB-200", "SCR-WEB-210 next"],
-      "engines": ["ENG-03", "ENG-05", "ENG-06", "ENG-11", "ENG-12"],
-      "files_changed": ["CD-025 R3 review", "CD-025 R3-to-R4 progressive correction prompt", "CD-026 end-to-end fresh-session Claude Design prompt", "current state/work queue/acceptance/evidence status", "human and machine session handoff"],
-      "tests": ["archive inventory and cross-file consistency review", "root R3 design and drawer static inspection", "stale R2/R3 claim scan", "JSON/YAML validation"],
-      "evidence": ["outputs/claude-design-approval-pack/CD-025_DESIGN_REVIEW_R3.md", "outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md", "outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md", "product-contract/sessions/HANDOFF_2026-07-14_CD025_R4_CD026_CD027_NEXT.md"],
-      "decisions": ["Preserve corrected CD-025 R3 page design", "Block hybrid R2/R3 archive and prohibit stale R2 Claude Code prompt", "Request synchronization-only R4 correction", "Treat CD-026 as prompt-ready only", "Handoff before CD-027 to protect quality"],
-      "blockers": ["CD-025 synchronized R4 archive and re-review", "CD-026 Claude Design generation/review/sponsor disposition", "CD-026 Branch Manager role mapping and map wiring remain blocked without evidence", "No CD-025/CD-026/CD-027 implementation authorization"],
+      "requirements": [
+        "MVP1-M01-001..050",
+        "MVP1-M02-001..046",
+        "relevant MVP1-FND and RBAC contracts"
+      ],
+      "acceptance_ids": [
+        "DSG-020",
+        "DSG-021",
+        "DSG-022 next",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-150",
+        "SCR-WEB-200",
+        "SCR-WEB-210 next"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-05",
+        "ENG-06",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "CD-025 R3 review",
+        "CD-025 R3-to-R4 progressive correction prompt",
+        "CD-026 end-to-end fresh-session Claude Design prompt",
+        "current state/work queue/acceptance/evidence status",
+        "human and machine session handoff"
+      ],
+      "tests": [
+        "archive inventory and cross-file consistency review",
+        "root R3 design and drawer static inspection",
+        "stale R2/R3 claim scan",
+        "JSON/YAML validation"
+      ],
+      "evidence": [
+        "outputs/claude-design-approval-pack/CD-025_DESIGN_REVIEW_R3.md",
+        "outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md",
+        "outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md",
+        "product-contract/sessions/HANDOFF_2026-07-14_CD025_R4_CD026_CD027_NEXT.md"
+      ],
+      "decisions": [
+        "Preserve corrected CD-025 R3 page design",
+        "Block hybrid R2/R3 archive and prohibit stale R2 Claude Code prompt",
+        "Request synchronization-only R4 correction",
+        "Treat CD-026 as prompt-ready only",
+        "Handoff before CD-027 to protect quality"
+      ],
+      "blockers": [
+        "CD-025 synchronized R4 archive and re-review",
+        "CD-026 Claude Design generation/review/sponsor disposition",
+        "CD-026 Branch Manager role mapping and map wiring remain blocked without evidence",
+        "No CD-025/CD-026/CD-027 implementation authorization"
+      ],
       "commit_sha": "9360fc9; uncommitted dirty worktree preserved; no commit/push/merge/deploy",
       "next_task": "Fresh conversation: TASK-DESIGN-CD027 complete end-to-end Claude Design prompt for SCR-WEB-210 Visit Detail",
       "resume_prompt": "Read product-contract/sessions/HANDOFF_2026-07-14_CD025_R4_CD026_CD027_NEXT.md first, then the CD-025 R3 review/correction prompt and CD-026 end-to-end prompt. Preserve CD-025 R3 page design but block its hybrid archive; CD-026 is prompt-ready only. Produce the full fresh-account Claude Design prompt for CD-027 / SCR-WEB-210 Visit Detail. Claude Design must generate the design and sponsor-gated Claude Code handoff. Do not implement, commit, push, merge, deploy, modify main or discard the dirty worktree."
@@ -390,15 +1240,64 @@
       "branch": "feat/cd-026-visit-management",
       "task_id": "CD-027-VISIT-DETAIL-TRACK1; TASK-DESIGN-CD027",
       "gate": "G11 production-readiness wiring",
-      "requirements": ["MVP1-M02-001..046", "MVP1-FND-002", "MVP1-FND-004", "MVP1-FND-011", "RBAC read/write scopes"],
-      "acceptance_ids": ["DSG-022", "DSG-A11Y-001"],
-      "screens": ["SCR-WEB-210"],
-      "engines": ["ENG-05", "ENG-11", "ENG-12"],
-      "files_changed": ["apps/web/src/app/visits/[id]/DualStateRibbon.tsx (new)", "apps/web/src/app/visits/[id]/neutral.ts (new)", "apps/web/src/app/visits/[id]/page.tsx", "apps/web/src/app/visits/[id]/ActionBar.tsx", "apps/web/src/app/visits/[id]/Attachments.tsx", "apps/web/src/app/visits/[id]/actions.ts", "apps/web/src/app/astryx.css", "apps/web/e2e/cd-027-visit-detail.spec.ts (new)", "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (new)", "CURRENT_STATE.md", "WORK_QUEUE.yaml", "ACCEPTANCE_STATUS.md", "EVIDENCE_STATUS.md"],
-      "tests": ["typecheck PASS", "production build PASS (/visits/[id] 3.52 kB)", "cd-027-visit-detail spec 16/16 PASS on local production build (ribbon tablist/APG-keys/narrow-reflow/action-zones runtime + 9 code-layer wiring proofs)"],
-      "evidence": ["outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md", "product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-primary.png", "product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-narrow-412.png", "apps/web/e2e/cd-027-visit-detail.spec.ts"],
-      "decisions": ["Sponsor approved audit-first (Vikram Indla, 2026-07-14); recorded 14-leg wiring audit before code", "Track 1: Dual-State Ribbon + action zones + honest queued-not-delivered copy (actions.ts success strings only, no guard/behavior change)", "Track 2 closed only where no invention required: ERRORMAP, ORPHAN, NOTIFY_PREV", "Held BLOCKED: MAP (never invent provider/geofence), ASSIGNMENT_RELEASE (open product/state-machine decision), ATOMIC (would weaken accepted best-effort-notify contract)", "Preserved all RLS reads, five state machines, guards, append-only audit(30), immutable submissions, soft-delete, signed URLs, system-only expiry, grouped shell"],
-      "blockers": ["Fresh independent DEC-012 re-audit of the Track 1 + Track 2 closures", "Sponsor runtime acceptance", "Change-control for the 3 held-blocked legs", "Live-migration/region/provider/credential G11 release items"],
+      "requirements": [
+        "MVP1-M02-001..046",
+        "MVP1-FND-002",
+        "MVP1-FND-004",
+        "MVP1-FND-011",
+        "RBAC read/write scopes"
+      ],
+      "acceptance_ids": [
+        "DSG-022",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-210"
+      ],
+      "engines": [
+        "ENG-05",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/src/app/visits/[id]/DualStateRibbon.tsx (new)",
+        "apps/web/src/app/visits/[id]/neutral.ts (new)",
+        "apps/web/src/app/visits/[id]/page.tsx",
+        "apps/web/src/app/visits/[id]/ActionBar.tsx",
+        "apps/web/src/app/visits/[id]/Attachments.tsx",
+        "apps/web/src/app/visits/[id]/actions.ts",
+        "apps/web/src/app/astryx.css",
+        "apps/web/e2e/cd-027-visit-detail.spec.ts (new)",
+        "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (new)",
+        "CURRENT_STATE.md",
+        "WORK_QUEUE.yaml",
+        "ACCEPTANCE_STATUS.md",
+        "EVIDENCE_STATUS.md"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS (/visits/[id] 3.52 kB)",
+        "cd-027-visit-detail spec 16/16 PASS on local production build (ribbon tablist/APG-keys/narrow-reflow/action-zones runtime + 9 code-layer wiring proofs)"
+      ],
+      "evidence": [
+        "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md",
+        "product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-primary.png",
+        "product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-narrow-412.png",
+        "apps/web/e2e/cd-027-visit-detail.spec.ts"
+      ],
+      "decisions": [
+        "Sponsor approved audit-first (Vikram Indla, 2026-07-14); recorded 14-leg wiring audit before code",
+        "Track 1: Dual-State Ribbon + action zones + honest queued-not-delivered copy (actions.ts success strings only, no guard/behavior change)",
+        "Track 2 closed only where no invention required: ERRORMAP, ORPHAN, NOTIFY_PREV",
+        "Held BLOCKED: MAP (never invent provider/geofence), ASSIGNMENT_RELEASE (open product/state-machine decision), ATOMIC (would weaken accepted best-effort-notify contract)",
+        "Preserved all RLS reads, five state machines, guards, append-only audit(30), immutable submissions, soft-delete, signed URLs, system-only expiry, grouped shell"
+      ],
+      "blockers": [
+        "Fresh independent DEC-012 re-audit of the Track 1 + Track 2 closures",
+        "Sponsor runtime acceptance",
+        "Change-control for the 3 held-blocked legs",
+        "Live-migration/region/provider/credential G11 release items"
+      ],
       "commit_sha": "committed on branch feat/cd-026-visit-management; no push/merge/deploy/main modification; no migration",
       "next_task": "Independent Codex re-audit of the CD-027 closures; then sponsor runtime acceptance; draft change-control for MAP/ASSIGNMENT_RELEASE/ATOMIC",
       "resume_prompt": "CD-027 / SCR-WEB-210 Visit Detail Track 1 + safe Track 2 are implemented and green (cd-027-visit-detail spec 16/16 on local prod build), recorded in CD-027_WIRING_AUDIT_R1.md. Do NOT close the three held-blocked legs (MAP/ASSIGNMENT_RELEASE/ATOMIC) without recorded change-control — each would breach a hard rule. Next: obtain a fresh independent DEC-012 wiring audit of the closures and sponsor runtime acceptance. Preserve the dirty worktree; no push/merge/main without explicit approval."
@@ -410,27 +1309,787 @@
       "branch": "feat/cd-026-visit-management",
       "task_id": "CD-027-VISIT-DETAIL-TRACK1",
       "gate": "G11 production-readiness wiring",
-      "requirements": ["MVP1-M02-001..046", "MVP1-FND-002", "MVP1-FND-004", "MVP1-FND-011"],
-      "acceptance_ids": ["DSG-022", "DSG-A11Y-001"],
-      "screens": ["SCR-WEB-210"],
-      "engines": ["ENG-05", "ENG-11", "ENG-12"],
-      "files_changed": ["product-contract/governance/HUMAN_APPROVALS.yaml", "product-contract/acceptance/ACCEPTANCE_STATUS.md", "product-contract/execution/WORK_QUEUE.yaml", "product-contract/CURRENT_STATE.md", "product-contract/sessions/SESSION_LEDGER.json"],
-      "tests": ["none this session — ledger/governance records only; prior cd-027-visit-detail spec 16/16 PASS stands"],
-      "evidence": ["governance/HUMAN_APPROVALS.yaml gate CD-027-closure-waiver", "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md", "outputs/claude-design-approval-pack/CD-027_CHANGE_CONTROL_BLOCKED_LEGS.md"],
-      "decisions": ["CD-027 marked CLOSED (SPONSOR-WAIVED) 2026-07-15 (Vikram Indla): runtime acceptance granted", "DEC-012 independent (non-implementer) audit WAIVED for CD-027 — not satisfied; the recorded audit is Claude Code's own", "MAP/ASSIGNMENT_RELEASE/ATOMIC DEFERRED to change-control — not implemented", "Declined a no-caveat all-conditions-met close because it would fabricate DEC-012 + blocked-leg state; recorded honest waiver instead"],
-      "blockers": ["Optional later independent Codex re-audit of the closures (waived, not deleted)", "The three change-control decisions (DEC-008/DEC-002 for MAP; assignment state-machine policy; FND-004 override for ATOMIC)"],
+      "requirements": [
+        "MVP1-M02-001..046",
+        "MVP1-FND-002",
+        "MVP1-FND-004",
+        "MVP1-FND-011"
+      ],
+      "acceptance_ids": [
+        "DSG-022",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-210"
+      ],
+      "engines": [
+        "ENG-05",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "product-contract/governance/HUMAN_APPROVALS.yaml",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "none this session — ledger/governance records only; prior cd-027-visit-detail spec 16/16 PASS stands"
+      ],
+      "evidence": [
+        "governance/HUMAN_APPROVALS.yaml gate CD-027-closure-waiver",
+        "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md",
+        "outputs/claude-design-approval-pack/CD-027_CHANGE_CONTROL_BLOCKED_LEGS.md"
+      ],
+      "decisions": [
+        "CD-027 marked CLOSED (SPONSOR-WAIVED) 2026-07-15 (Vikram Indla): runtime acceptance granted",
+        "DEC-012 independent (non-implementer) audit WAIVED for CD-027 — not satisfied; the recorded audit is Claude Code's own",
+        "MAP/ASSIGNMENT_RELEASE/ATOMIC DEFERRED to change-control — not implemented",
+        "Declined a no-caveat all-conditions-met close because it would fabricate DEC-012 + blocked-leg state; recorded honest waiver instead"
+      ],
+      "blockers": [
+        "Optional later independent Codex re-audit of the closures (waived, not deleted)",
+        "The three change-control decisions (DEC-008/DEC-002 for MAP; assignment state-machine policy; FND-004 override for ATOMIC)"
+      ],
       "commit_sha": "closure records staged on feat/cd-026-visit-management; implementation commits c6c2195 + e6c444c already pushed to origin/feat/cd-026-visit-management; no push/merge/main in this step",
       "next_task": "Optional: obtain the independent Codex re-audit to convert the waiver into a satisfied DEC-012; otherwise progress CD-027 change-control decisions",
       "resume_prompt": "CD-027 is CLOSED (SPONSOR-WAIVED) — runtime acceptance granted, DEC-012 independent audit waived (NOT satisfied), MAP/ASSIGNMENT_RELEASE/ATOMIC deferred to change-control. Do not represent CD-027 as a clean DEC-012 pass. Reopen only on P0/P1 regression, a later independent-audit finding, or a blocked-leg decision. Preserve concurrent work; no main modification without explicit approval."
+    },
+    {
+      "session_id": "2026-07-15-independent-codex-wiring-audit-cd022-cd029",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "INDEPENDENT-CODEX-WIRING-AUDIT-CD022-CD029",
+      "gate": "G11 production-readiness wiring",
+      "requirements": [
+        "MVP1-M01..M06 relevant screen requirements",
+        "MVP1-FND and RBAC contracts"
+      ],
+      "acceptance_ids": [
+        "DEC-012",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-120",
+        "SCR-WEB-130",
+        "SCR-WEB-140",
+        "SCR-WEB-150",
+        "SCR-WEB-200",
+        "SCR-WEB-210",
+        "SCR-WEB-300",
+        "SCR-WEB-310"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-05",
+        "ENG-06",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "product-contract/evidence/CODEX_AUDIT_CD-022_TO_CD-029_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "focused CD-022/023/025/026/027/028 suite 67/67 PASS including auth setup",
+        "no independent CD-029 runtime suite"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_CD-022_TO_CD-029_2026-07-15.md",
+        "apps/web/e2e/cd-022-identity-lens.spec.ts",
+        "apps/web/e2e/cd-023-immediate-authority-bar.spec.ts",
+        "apps/web/e2e/cd-025-plan-review-publish.spec.ts",
+        "apps/web/e2e/cd-026-visit-management.spec.ts",
+        "apps/web/e2e/cd-027-visit-detail.spec.ts",
+        "apps/web/e2e/cd-028-review-queue.spec.ts"
+      ],
+      "decisions": [
+        "CD-022 and CD-023 PASS for delivered scope",
+        "CD-024 BLOCKED",
+        "CD-025 CONDITIONAL PASS for staged subset",
+        "CD-026/CD-027/CD-028 CONDITIONAL PASS for implemented scopes",
+        "CD-029 BLOCKED; implementation remains unauthorized",
+        "No implementation, merge, push, deployment or main modification"
+      ],
+      "blockers": [
+        "CD-024 canonical configure route and blocked legs",
+        "CD-025 canonical route and persisted lifecycle",
+        "CD-026 continuity/map/role/export/server guards",
+        "CD-027 MAP/ASSIGNMENT_RELEASE/ATOMIC",
+        "CD-028 CLAIM/REASSIGN and CD-029 dependency",
+        "CD-029 media/claim/linked-source/atomic decision and independent runtime suite"
+      ],
+      "commit_sha": "2f24a7bbbb0bbb6554af0ee992688cf46ad71c5d (audit evidence uncommitted)",
+      "next_task": "Resolve or change-control the listed blocked legs; add independent CD-029 runtime evidence before a green baseline claim",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-022_TO_CD-029_2026-07-15.md. Preserve the per-screen verdicts and do not represent conditional or blocked slices as end-to-end production-ready."
+    },
+    {
+      "session_id": "2026-07-15-independent-codex-audit-cd029-focused",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "INDEPENDENT-CODEX-AUDIT-CD029-FOCUSED",
+      "gate": "G11 production-readiness wiring",
+      "requirements": [
+        "MVP1-M06-001..039,049,051,052",
+        "MVP1-FND and RBAC contracts"
+      ],
+      "acceptance_ids": [
+        "DSG-024",
+        "DSG-A11Y-001",
+        "DEC-012"
+      ],
+      "screens": [
+        "SCR-WEB-310"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "cd-028-review-queue 13/13 PASS",
+        "cd-030-version-comparison 11 PASS / 2 skipped",
+        "golden-journey 4 PASS / 1 upstream CD-022 timeout / 4 not run"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "outputs/cd-029/WIRING_MAP_CD-029.csv",
+        "outputs/cd-029/IMPLEMENTATION_MANIFEST_CD-029.yaml"
+      ],
+      "decisions": [
+        "CD-029 remains BLOCKED",
+        "implementation_authorized false remains respected",
+        "No source implementation changes made by this audit",
+        "P1 gaps recorded for version binding, input allow-lists, error accessibility and trace chain"
+      ],
+      "blockers": [
+        "Four P1 wiring findings",
+        "Atomic decision contract",
+        "Media/claim/linked-source boundaries",
+        "Missing CD-029 runtime suite",
+        "Upstream CD-022 golden-journey timeout"
+      ],
+      "commit_sha": "2f24a7bbbb0bbb6554af0ee992688cf46ad71c5d (audit evidence uncommitted)",
+      "next_task": "Resolve P1 findings and add/run the dedicated CD-029 negative/runtime suite; rerun golden downstream journey",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md. Do not certify CD-029 until all four P1 findings and mandatory runtime evidence are closed."
+    },
+    {
+      "session_id": "2026-07-15-independent-codex-cd029-remediation",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "CD029-WIRING-REMEDIATION",
+      "gate": "G11 production-readiness wiring",
+      "requirements": [
+        "MVP1-M06-001..039,049,051,052",
+        "MVP1-FND and RBAC contracts"
+      ],
+      "acceptance_ids": [
+        "DSG-024",
+        "DSG-A11Y-001",
+        "DEC-012"
+      ],
+      "screens": [
+        "SCR-WEB-310"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/src/app/reviews/[id]/actions.ts",
+        "apps/web/src/app/reviews/[id]/DecisionPanel.tsx",
+        "apps/web/src/app/reviews/[id]/FindingTraceChain.tsx",
+        "apps/web/src/app/reviews/[id]/page.tsx",
+        "apps/web/src/app/astryx.css",
+        "apps/web/e2e/cd-029-review-workspace.spec.ts",
+        "apps/web/e2e/cd-030-version-comparison.spec.ts",
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "cd-029-review-workspace 10/10 PASS",
+        "combined cd-028/cd-029/cd-030 31 PASS / 1 skipped"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "apps/web/e2e/cd-029-review-workspace.spec.ts",
+        "apps/web/e2e/cd-028-review-queue.spec.ts",
+        "apps/web/e2e/cd-030-version-comparison.spec.ts"
+      ],
+      "decisions": [
+        "Closed four P1 defects: version binding, decision/section allow-lists, accessible error recovery, and linked trace chain",
+        "Preserved explicit media, claim/reassign, atomic-notification, and linked-source/provider handoff boundaries",
+        "Implementation authorization remains false; no sponsor certification, merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Implementation authorization false",
+        "Provider-backed media and governed linked-source decisions",
+        "Claim/reassign policy",
+        "Atomic decision→inspection→notification contract",
+        "Upstream CD-022 golden-journey publish timeout",
+        "Live application of the one-open-review partial unique index"
+      ],
+      "commit_sha": "2f24a7bbbb0bbb6554af0ee992688cf46ad71c5d (remediation uncommitted)",
+      "next_task": "Obtain explicit policy/provider authorization for remaining handoff boundaries, apply the migration in deployment, and rerun the golden journey after CD-022 publish is stable",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md. Four P1 defects are remediated and independently regression-tested; keep CD-029 overall BLOCKED until the explicitly listed handoff boundaries and authorization are resolved."
+    },
+    {
+      "session_id": "2026-07-15-independent-codex-remediation-rollup",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "CD021-CD030-AUDIT-REMEDIATION-ROLLUP",
+      "gate": "G11 production-readiness wiring",
+      "requirements": [
+        "MVP1-M01..M06 relevant screen requirements",
+        "MVP1-FND and RBAC contracts"
+      ],
+      "acceptance_ids": [
+        "DEC-012",
+        "DSG-A11Y-001"
+      ],
+      "screens": [
+        "SCR-WEB-110",
+        "SCR-WEB-120",
+        "SCR-WEB-130",
+        "SCR-WEB-140",
+        "SCR-WEB-150",
+        "SCR-WEB-200",
+        "SCR-WEB-210",
+        "SCR-WEB-300",
+        "SCR-WEB-310",
+        "SCR-WEB-320"
+      ],
+      "engines": [
+        "ENG-03",
+        "ENG-04",
+        "ENG-05",
+        "ENG-06",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/src/app/visits/page.tsx",
+        "apps/web/src/app/visits/calendar/page.tsx",
+        "apps/web/src/app/visits/workload/page.tsx",
+        "apps/web/e2e/cd-026-visit-management.spec.ts",
+        "product-contract/evidence/screens/cd-026-visit-management-v1/CODEX_AUDIT_CD-026.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "cd-021 + cd-026 focused suites 32/32 PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md",
+        "product-contract/evidence/screens/cd-021-bulk-v1/CODEX_AUDIT_CD-021_REMEDIATION_VERIFICATION.md",
+        "product-contract/evidence/screens/single-v2/CODEX_AUDIT_CD-022_REMEDIATION_VERIFICATION.md",
+        "product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_ROUND4.md",
+        "product-contract/evidence/screens/cd-026-visit-management-v1/CODEX_AUDIT_CD-026.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md"
+      ],
+      "decisions": [
+        "Closed all safe code/documentation findings verified by prior independent audits",
+        "Added expiry-RPC observability without changing best-effort state semantics",
+        "Preserved all explicit policy/provider/authorization handoff boundaries; no invented thresholds, roles, providers, geofences, or atomicity semantics",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "CD-024/CD-025 route and lifecycle ownership",
+        "CD-026/CD-027 policy/provider handoffs",
+        "CD-028 live unique-index migration and claim policy",
+        "CD-029 authorization/media/claim/linked-source/atomic semantics",
+        "Upstream golden-journey evidence and sponsor acceptance"
+      ],
+      "commit_sha": "27789a4 (current setup/Inspection HEAD; continuation changes uncommitted)",
+      "next_task": "Obtain explicit human change-control for remaining boundaries, then rerun the full no-exclusion regression and baseline verification",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md. Safe findings are closed; do not claim the remaining policy/provider boundaries are wired without approved contracts and evidence."
+    },
+    {
+      "session_id": "2026-07-15-cd031-factory-360-dossier",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "CD-031-FACTORY-360-DOSSIER",
+      "gate": "G11 production-readiness wiring",
+      "requirements": [
+        "MVP1-M07 (identity/risk/documents/reps/products/materials/workforce/history)",
+        "MVP1-FND and RBAC contracts"
+      ],
+      "acceptance_ids": [
+        "DSG-026",
+        "DSG-A11Y-001",
+        "DEC-012",
+        "DEC-014"
+      ],
+      "screens": [
+        "SCR-WEB-400"
+      ],
+      "engines": [
+        "ENG-04",
+        "ENG-06",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/src/app/astryx.css",
+        "apps/web/src/app/factories/[id]/page.tsx",
+        "apps/web/src/app/factories/[id]/loading.tsx",
+        "apps/web/e2e/cd-031-factory-360.spec.ts",
+        "apps/web/src/app/reviews/[id]/page.tsx",
+        "product-contract/governance/decision_register.csv",
+        "product-contract/governance/OPEN_DECISIONS.yaml",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS (0 errors)",
+        "cd-031-factory-360 15/15 PASS",
+        "full no-exclusion regression 178 PASS / 4 FAIL (unrelated pre-existing, see ACCEPTANCE_STATUS.md) / 3 skipped",
+        "cd-030-version-comparison/cd-029-review-workspace/cd-028-review-queue 30/31 PASS, 1 pre-existing-unrelated skip-explained failure"
+      ],
+      "evidence": [
+        "apps/web/e2e/cd-031-factory-360.spec.ts"
+      ],
+      "decisions": [
+        "DEC-014: sponsor overrode task-slice scope (CD-031 outside TASK-BASELINE-WIRING-AUDIT-001) and the design package own implementation_authorized:false/DO-NOT-EXECUTE gate, in-chat 2026-07-15",
+        "Confirmed no risk-driver/coordinate-conflict/boundary-polygon columns exist in migrations before implementing — HANDOFF_BLOCKED premises hold against this repo",
+        "Representative contact fields masked for leadership role only (HANDOFF_BLOCKED_ROLE), not a page-level gate",
+        "No computed staleness threshold added; no map provider/boundary/risk-driver/document-viewer invented",
+        "No commit, push, merge, deployment, or main modification",
+        "Fixed CD-030 NEW-1 access regression flagged by a concurrent-session independent audit (cross-session message): /reviews/:id authorized gate broadened to match RLS/design-scoped read roles (reviewer/ops/auditor/planner/leadership); new canDecide (reviewer/ops only) keeps decision controls restricted"
+      ],
+      "blockers": [
+        "DEC-012 independent Codex wiring audit against WIRING_MAP_CD-031.csv (18 legs + 4b/4c) has not run"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Run the independent Codex wiring audit against WIRING_MAP_CD-031.csv before any sponsor-runtime-acceptance claim",
+      "resume_prompt": "Read product-contract/acceptance/ACCEPTANCE_STATUS.md CD-031 section. Implementation is done and tested; DEC-012 Codex audit is the only open item before closure."
+    },
+    {
+      "session_id": "2026-07-15-independent-codex-cd031-wiring-audit",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "CD-031-FACTORY-360-DOSSIER",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M07", "MVP1-FND", "RBAC"],
+      "acceptance_ids": ["DSG-026", "DSG-A11Y-001", "DEC-012", "DEC-014"],
+      "screens": ["SCR-WEB-400"],
+      "engines": ["ENG-04", "ENG-06", "ENG-07", "ENG-08", "ENG-09", "ENG-12"],
+      "files_changed": [
+        "product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "cd-031-factory-360 source/live suite 15/15 PASS (prior implementation evidence)",
+        "complete no-exclusion regression: 182 passed / 2 failed / 1 skipped; CD-031 cases all passed"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md"],
+      "decisions": [
+        "The authoritative WIRING_MAP_CD-031.csv is absent from the checkout and sibling workspaces; no map was reconstructed",
+        "Supplemental 18-leg + 4b/4c review records PASS/HANDOFF_BLOCKED states only and withholds DEC-012 certification",
+        "Raw provider/database error exposure and leadership contact privacy remain open findings",
+        "No commit, push, merge, deployment, or main modification"
+      ],
+      "blockers": [
+        "Missing authoritative WIRING_MAP_CD-031.csv",
+        "Neutral error catalog/logging correction required",
+        "Leadership contact-privacy decision required",
+        "Design R3 machine-readable preflight/map completeness not proven"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Supply WIRING_MAP_CD-031.csv and resolve the recorded P1 findings before rerunning DEC-012 audit",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md; do not mark CD-031 closed or sponsor-runtime-accepted."
+    },
+    {
+      "session_id": "2026-07-15-cd030-remediation-and-cross-slice-audit",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M06", "RBAC", "FND-003"],
+      "acceptance_ids": ["DEC-012", "DSG-A11Y-001", "DSG-CODE-001"],
+      "screens": ["SCR-WEB-320", "SCR-WEB-310", "SCR-WEB-400"],
+      "engines": ["ENG-06", "ENG-11", "ENG-12"],
+      "files_changed": [
+        "apps/web/src/app/reviews/[id]/page.tsx",
+        "apps/web/e2e/cd-030-version-comparison.spec.ts",
+        "supabase/migrations/20260715160000_cd030_review_scope_rbac.sql",
+        "outputs/cd-030/WIRING_MAP_CD-030.csv",
+        "product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "cd-030-version-comparison.spec.ts: 16 passed / 1 data-dependent skip",
+        "CD-022 focused suite: 13/13 PASS",
+        "CD-031 focused suite: 15/15 PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md"],
+      "decisions": [
+        "No write RLS permission was added; only submission_versions SELECT scope was aligned",
+        "returned_sections membership remains package-defined and server-validated; DB guard is shape-only",
+        "Live migration application was not claimed after Management API 403 and missing PAT",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Authorized Supabase SQL path required to apply and verify 20260715160000_cd030_review_scope_rbac.sql",
+        "CD-031 authoritative WIRING_MAP_CD-031.csv remains absent",
+        "CD-031 leadership contact-privacy policy and design preflight remain unresolved"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Apply the authorized CD-030 forward migration, verify pg_policies/pg_constraint, then rerun the focused and complete regression suites",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md and continue the audit-finding closure loop; do not claim live migration application without direct evidence."
+    },
+    {
+      "session_id": "2026-07-15-auth-offline-remediation-and-full-regression",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["ERR-AUTH-001", "MVP1-FND-005", "MVP1-FND-006", "STM-SYNC-001", "STM-SYNC-002"],
+      "acceptance_ids": ["DEC-012", "DSG-A11Y-001", "DSG-CODE-001"],
+      "screens": ["SCR-PUB-010", "SCR-IPAD-410"],
+      "engines": ["ENG-03", "ENG-06", "ENG-12"],
+      "files_changed": [
+        "apps/web/src/app/login/LoginClient.tsx",
+        "apps/web/src/app/field/inspection/[id]/Workspace.tsx",
+        "product-contract/evidence/CODEX_AUDIT_AUTH_OFFLINE_REMEDIATION_2026-07-15.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "complete no-exclusion regression: 170 passed / 11 failed / 1 skipped / 5 not run",
+        "isolated CD-031 + shell regression: 24/24 PASS",
+        "focused negative-auth + offline drill: 7/7 PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_AUTH_OFFLINE_REMEDIATION_2026-07-15.md"],
+      "decisions": [
+        "Empty Supabase session is a safe authentication denial; no-session success is never routed to /launch",
+        "Offline state wins over stale in-flight replay completion; listener cleanup is explicit",
+        "Golden-journey RETURN failure remains shared-live package-fixture drift (returned_section s1 absent), not changed here",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Authorized Supabase SQL path required to apply and verify 20260715160000_cd030_review_scope_rbac.sql",
+        "CD-031 authoritative WIRING_MAP_CD-031.csv remains absent",
+        "CD-031 leadership contact-privacy policy and design preflight remain unresolved",
+        "Full no-exclusion run still has shared-live golden-journey RETURN drift"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Obtain authorized migration credentials, rerun the complete suite after live verification, then reconcile remaining policy/design blockers",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_AUTH_OFFLINE_REMEDIATION_2026-07-15.md and continue without claiming live migration or release readiness."
+    },
+    {
+      "session_id": "2026-07-15-final-regression-and-data-shape-reconciliation",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M07", "TASK-DASH-KPI-SEED-001", "CD-041"],
+      "acceptance_ids": ["DEC-012", "DSG-A11Y-001", "DSG-CODE-001"],
+      "screens": ["SCR-WEB-400", "SCR-WEB-500", "SCR-VIR-700"],
+      "engines": ["ENG-04", "ENG-06", "ENG-09", "ENG-12"],
+      "files_changed": [
+        "apps/web/src/app/factories/[id]/page.tsx",
+        "apps/web/src/app/virtual/[id]/page.tsx",
+        "product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "seed:kpi PASS (six states; six visit upserts; zero duplicate factory/plan inserts)",
+        "typecheck PASS",
+        "production build PASS",
+        "golden journey 9/9 PASS",
+        "CD-027/CD-030 affected slice 26/26 PASS (one data-dependent skip)",
+        "CD-031 + KPI focused slice 18/18 PASS",
+        "complete no-exclusion regression: 180 passed / 6 environmental failures / 3 skipped"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md"],
+      "decisions": [
+        "Nullable factory identity is rendered as explicit unavailable copy, never an empty direction-isolated node",
+        "KPI verification data is refreshed only through the existing authenticated idempotent seed path",
+        "Virtual-room readiness strings are supplied through useT() without adding provider or state-machine behavior",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Authorized Supabase SQL path required to apply and verify 20260715160000_cd030_review_scope_rbac.sql",
+        "CD-031 authoritative WIRING_MAP_CD-031.csv remains absent",
+        "CD-031 leadership contact-privacy policy and design preflight remain unresolved",
+        "Complete-run environmental failures require stable Supabase/network and browser runtime for one final clean run"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Obtain authorized migration credentials and authoritative CD-031 map, then rerun a stable complete suite before baseline consolidation",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md; do not claim release readiness while migration/map/policy/design blockers remain."
+    },
+    {
+      "session_id": "2026-07-15-virtual-neutral-error-follow-up",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["ENG-11", "MVP1-FND-004"],
+      "acceptance_ids": ["DEC-012", "DSG-CODE-001"],
+      "screens": ["SCR-VIR-700", "SCR-WEB-210", "SCR-WEB-130"],
+      "engines": ["ENG-06", "ENG-11", "ENG-12"],
+      "files_changed": [
+        "apps/web/src/app/virtual/[id]/actions.ts",
+        "product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "focused virtual + CD-027 + CD-023 regression: 33/33 PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md"],
+      "decisions": [
+        "Timeline/notification provider details remain server diagnostics only; success messages use stable follow-up-unavailable copy",
+        "No provider, workflow, authorization, migration, merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Authorized Supabase SQL path required to apply and verify 20260715160000_cd030_review_scope_rbac.sql",
+        "CD-031 authoritative WIRING_MAP_CD-031.csv remains absent",
+        "CD-031 leadership contact-privacy policy and design preflight remain unresolved"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Obtain authorized migration credentials and authoritative CD-031 map, then rerun a stable complete suite before baseline consolidation",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md; do not claim release readiness while migration/map/policy/design blockers remain."
+    },
+    {
+      "session_id": "2026-07-15-expanded-neutral-error-sweep",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-FND-004", "MVP1-FND-005", "MVP1-FND-006"],
+      "acceptance_ids": ["DEC-012", "DSG-CODE-001"],
+      "screens": ["SCR-ADM-020", "SCR-ADM-040", "SCR-ADM-070", "SCR-IPAD-630", "SCR-VIR-700"],
+      "engines": ["ENG-01", "ENG-03", "ENG-06", "ENG-08", "ENG-11", "ENG-12"],
+      "files_changed": [
+        "apps/web/src/app/admin/items/page.tsx",
+        "apps/web/src/app/admin/violations/page.tsx",
+        "apps/web/src/app/admin/gis/page.tsx",
+        "apps/web/src/app/admin/packages/actions.ts",
+        "apps/web/src/app/admin/workflows/actions.ts",
+        "apps/web/src/components/NotificationBell.tsx",
+        "apps/web/src/lib/offline.ts",
+        "apps/web/src/lib/notify.ts",
+        "apps/web/src/app/field/inspection/[id]/page.tsx",
+        "apps/web/src/app/field/inspection/[id]/FactoryVerification.tsx",
+        "apps/web/e2e/neutral-error-sweep.spec.ts",
+        "product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "expanded neutral-error + CD-004 + dashboard regression: 25/25 PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md"],
+      "decisions": [
+        "Provider details remain server diagnostics; user-visible errors use localized neutral copy",
+        "Notification delivery failures persist as stable failed state without provider-detail suffix",
+        "No provider, workflow, authorization, migration, merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Authorized Supabase SQL path required to apply and verify 20260715160000_cd030_review_scope_rbac.sql",
+        "CD-031 authoritative WIRING_MAP_CD-031.csv remains absent",
+        "CD-031 leadership contact-privacy policy and design preflight remain unresolved"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Reconcile remaining non-code policy/design/live-migration blockers and rerun a stable complete suite before baseline consolidation",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_NEUTRAL_ERROR_SWEEP_2026-07-15.md; continue finding closure without claiming release readiness while external blockers remain."
+    },
+    {
+      "session_id": "2026-07-15-cd029-responsive-wiring-follow-up",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-FND-004", "MVP1-FND-005", "MVP1-FND-006"],
+      "acceptance_ids": ["DEC-012", "DSG-A11Y-001"],
+      "screens": ["SCR-WEB-310", "SCR-WEB-300"],
+      "engines": ["ENG-03", "ENG-06", "ENG-08", "ENG-11"],
+      "files_changed": [
+        "apps/web/src/app/astryx.css",
+        "apps/web/src/app/reviews/[id]/page.tsx",
+        "apps/web/e2e/cd-029-review-workspace.spec.ts",
+        "apps/web/e2e/cd-030-version-comparison.spec.ts",
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "CD-029 responsive leg 18: 4/4 PASS",
+        "CD-030 navigation/source follow-up: 5 PASS / 1 data-dependent skip",
+        "typecheck PASS",
+        "production build PASS",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md"],
+      "decisions": [
+        "Closed RTL drawer is excluded from visible workspace overflow measurement; root horizontal overflow is contained",
+        "Responsive fix does not alter provider, authorization, claim/reassign, linked-source, atomicity, or migration boundaries",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "CD-029 implementation authorization and provider/claim/atomic handoffs remain governed",
+        "CD-030 forward migration remains not live-verified; Management API returned 403 and no PAT is available",
+        "CD-031 authoritative WIRING_MAP_CD-031.csv remains absent"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Reconcile governed blockers and rerun stable complete suite before any baseline consolidation",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md; preserve blocked handoff boundaries and do not claim release readiness."
+    },
+    {
+      "session_id": "2026-07-15-cd022-duplicate-status-follow-up",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M01-035", "MVP1-M02-012"],
+      "acceptance_ids": ["DEC-012", "DSG-A11Y-001"],
+      "screens": ["SCR-WEB-120"],
+      "engines": ["ENG-03", "ENG-05", "ENG-11"],
+      "files_changed": [
+        "apps/web/src/app/planning/single/duplicate.ts",
+        "apps/web/src/app/planning/single/page.tsx",
+        "apps/web/src/app/planning/single/Wizard.tsx",
+        "apps/web/src/app/planning/single/IdentityDossier.tsx",
+        "apps/web/e2e/cd-022-identity-lens.spec.ts",
+        "outputs/cd-022/WIRING_MAP_CD-022.csv",
+        "product-contract/evidence/screens/single-v2/CODEX_AUDIT_CD-022_REMEDIATION_VERIFICATION.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "CD-022 identity-lens live suite: 13/13 PASS",
+        "typecheck PASS",
+        "production build PASS",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": ["product-contract/evidence/screens/single-v2/CODEX_AUDIT_CD-022_REMEDIATION_VERIFICATION.md"],
+      "decisions": [
+        "Expose lifecycle status from the shared duplicate read; no invented status labels or policy",
+        "Preserve atomicity/provider/discard-draft boundaries as governed blockers",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "CD-022 sponsor runtime acceptance remains outstanding",
+        "CD-022 atomic publish/discard-draft boundaries remain governed or canonical-transition blocked",
+        "Baseline still contains unrelated parallel dirty work"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Continue closure audit across remaining safe residuals; preserve governed blockers",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md and current WIRING_MAP files; do not claim full baseline completion while external blockers remain."
     }
   ],
-  "last_session": "2026-07-15-cd027-closure-waiver",
+  "last_session": "2026-07-15-cd022-duplicate-status-follow-up",
   "rules": {
     "append_only": true,
     "required_fields": [
-      "session_id","started_at","ended_at","branch","task_id","gate","requirements",
-      "acceptance_ids","screens","engines","files_changed","tests","evidence","decisions",
-      "blockers","commit_sha","next_task","resume_prompt"
+      "session_id",
+      "started_at",
+      "ended_at",
+      "branch",
+      "task_id",
+      "gate",
+      "requirements",
+      "acceptance_ids",
+      "screens",
+      "engines",
+      "files_changed",
+      "tests",
+      "evidence",
+      "decisions",
+      "blockers",
+      "commit_sha",
+      "next_task",
+      "resume_prompt"
     ]
   }
 }

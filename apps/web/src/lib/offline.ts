@@ -127,7 +127,9 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
       }
       await local.remove(key);
     } catch (e) {
-      onState("failed", String((e as Error).message).slice(0, 80));
+      // Provider details stay diagnostic-only. The field surface supplies the
+      // localized neutral recovery copy for the failed-sync state.
+      onState("failed");
       return;  // stop; order preserved; retry later — no data loss
     }
   }

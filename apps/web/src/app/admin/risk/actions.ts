@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export async function saveRiskSettings(formData: FormData) {
   const sb = await supabaseServer();
@@ -16,7 +17,7 @@ export async function saveRiskSettings(formData: FormData) {
   const { error } = await sb.from("engine_settings")
     .update({ settings: { factors, bands }, version_label: `v-edit-${new Date().toISOString().slice(0, 10)}`, updated_at: new Date().toISOString() })
     .eq("engine", "risk");
-  if (error) return { error: `${error.message} (RLS: risk_owner scope required — RBAC-004)` };
+  if (error) { logProviderError("admin risk settings", error); return { error: `${NEUTRAL_WRITE_ERROR} (risk-owner scope required — RBAC-004).` }; }
   revalidatePath("/admin/risk");
   return { ok: true };
 }

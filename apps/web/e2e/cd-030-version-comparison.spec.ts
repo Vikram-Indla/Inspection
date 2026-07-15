@@ -18,6 +18,8 @@ const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 const CMP = "src/app/reviews/[id]/VersionCompare.tsx";
 const PAGE = "src/app/reviews/[id]/page.tsx";
 const LOADING = "src/app/reviews/[id]/loading.tsx";
+const STALE = "src/app/reviews/[id]/stale-check.ts";
+const RBAC = "../../supabase/migrations/20260715160000_cd030_review_scope_rbac.sql";
 
 // Open the first workspace from the queue; skip the test if the env has no rows.
 async function openFirstWorkspace(page: Page): Promise<boolean> {
@@ -85,6 +87,30 @@ test.describe("CD-030 source truth — scope authority, unavailable ≠ unchange
     expect(loading).toMatch(/role="status"/);
     expect(loading).toMatch(/aria-busy="true"/);
   });
+
+  test("S08 — a newer version submitted mid-view is detected and flagged, role=alert", () => {
+    const cmp = SRC(CMP);
+    const stale = SRC(STALE);
+    // Real DB read of the max version on record — not a guessed freshness window.
+    expect(stale).toMatch(/order\("version_number",\s*\{\s*ascending:\s*false\s*\}\)/);
+    // Polled periodically and compared against the version this surface loaded with.
+    expect(cmp).toMatch(/setInterval\(check,\s*STALE_POLL_MS\)/);
+    expect(cmp).toMatch(/n\s*>\s*latest/);
+    expect(cmp).toMatch(/role="alert"/);
+    const page = SRC(PAGE);
+    expect(page).toMatch(/staleTitle:\s*t\(/);
+    expect(page).toMatch(/staleBody:\s*t\(/);
+    expect(page).toMatch(/staleRefresh:\s*t\(/);
+  });
+
+  test("leg 1/16 — authorized roles have submission-version read scope and malformed return scopes are rejected by DB shape", () => {
+    const rbac = SRC(RBAC);
+    expect(rbac).toMatch(/has_any_role\(array\['reviewer','auditor','ops','planner','leadership'\]\)/);
+    expect(rbac).toMatch(/reviews_returned_sections_array_check/);
+    const page = SRC(PAGE);
+    expect(page).toMatch(/\.maybeSingle\(\)/);
+    expect(page).toMatch(/outside your permitted scope/);
+  });
 });
 
 test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", () => {
@@ -100,6 +126,7 @@ test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", ()
   test("leg 4 — the returned-scope authority is always stated (stored, not inferred)", async ({ page }) => {
     const opened = await openFirstWorkspace(page);
     test.skip(!opened, "no reviews in this environment to open");
+    await expect(page.getByRole("heading", { name: /Tamper-evident Scope Rail/i })).toBeVisible();
     // Either a scope is on record, or the honest no-scope statement — never silent.
     const authority = await page.getByText(/Returned-scope authority \(stored\)/i).count();
     const noScope = await page.getByText(/No returned scope on record/i).count();
@@ -128,6 +155,24 @@ test.describe("CD-030 reviewer — live compare surface (legs 1,3,10,11,17)", ()
     const before = await first.getAttribute("aria-expanded");
     await first.click();
     await expect(first).not.toHaveAttribute("aria-expanded", String(before));
+  });
+
+  test("leg 12/13 — rail navigation focuses the changed answer, and no-prior is a live status", async ({ page }) => {
+    const opened = await openFirstWorkspace(page);
+    test.skip(!opened, "no reviews in this environment to open");
+    await expect(page.getByRole("heading", { name: /Tamper-evident Scope Rail/i })).toBeVisible();
+    const rows = page.locator('tr[id^="cmp-"]');
+    if (await rows.count() === 0) {
+      await expect(page.getByRole("status").filter({ hasText: /No prior version to compare/i })).toHaveCount(1);
+      return;
+    }
+    const row = rows.first();
+    const key = (await row.locator("td").first().innerText()).trim();
+    const rail = page.locator('div[aria-label*="Tamper-evident Scope Rail"]');
+    const target = rail.getByRole("button", { name: new RegExp(`\\b${key}\\b`) }).first();
+    await expect(target).toBeVisible();
+    await target.click();
+    await expect(row).toBeFocused();
   });
 
   test("legs 7/8/9 — 'not derived in the runtime' unavailable block is present", async ({ page }) => {

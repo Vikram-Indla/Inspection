@@ -1,0 +1,51 @@
+schema_version: "1.0"
+handoff_type: "Admin Control Plane design-only transfer"
+prepared_at: "2026-07-14T23:31:16+03:00"
+task_id: "TASK-DESIGN-ADMIN-SUITE-001"
+lane: "Admin Control Plane Suite"
+admin_cd_sequence: ["CD-004", "CD-005", "CD-006", "CD-007", "CD-008", "CD-009", "CD-010", "CD-011", "CD-012", "CD-013", "CD-014", "CD-015", "CD-016", "CD-017", "CD-018", "CD-019"]
+active_cd: "CD-004"
+screen_id: "SCR-ADM-001"
+route: "/admin"
+process_ids: ["P00"]
+storyboard_ids: ["SB03", "SB13", "SB18"]
+requirements: ["MVP1-M09-001..030", "MVP1-FND-001", "MVP1-FND-003", "MVP1-FND-004", "MVP1-FND-010..013", "MVP1-FND-015", "RBAC-001..006"]
+acceptance_ids: ["AC-0449..0478", "DSG-001", "DSG-SHELL-001", "DSG-A11Y-001", "DSG-CODE-001", "EV-DESIGN-001"]
+engines: ["ENG-01..ENG-12"]
+repository_snapshot:
+  branch: "feat/cd-026-visit-management"
+  commit: "8af01857477893e6a9521e5ecd139ec50990fdbc"
+  dirty_worktree: true
+  note: "Concurrent work is not part of this Admin transfer."
+review_history:
+  r1:
+    verdict: "FAIL"
+    findings: {p0: 7, p1: 6, p2: 2}
+    review: "admin-design-lane/CD-004_DESIGN_REVIEW_R1.md"
+  r2:
+    verdict: "FAIL"
+    findings: {p0: 3, p1: 1}
+    review: "admin-design-lane/CD-004_DESIGN_REVIEW_R2.md"
+selected_design_direction: "Configuration Evidence Spine"
+next_action:
+  owner: "Claude Design"
+  instruction: "Run admin-design-lane/CHAPTER_01_CD-004_CLAUDE_DESIGN_CORRECTION_PROMPT_R2.md"
+  required_return_marker: "READY_FOR_MANDATORY_R2B_REVIEW"
+authorization:
+  design_documentation: true
+  implementation: false
+  database_or_migration_changes: false
+  global_contract_updates: false
+  sponsor_design_approval: false
+  independent_wiring_audit_complete: false
+blockers:
+  - "R2 evidence files are crops and falsely declared as full viewport exports."
+  - "R2 proposed data-truth rows use nonexistent schema fields."
+  - "R2 manifest/component map lacks exact valid implementation paths and localization mechanism."
+  - "R2 research IDs do not map to the required authorities."
+included_source_archives:
+  r1_archive_sha256: "ce9ebc31f4b5822267212554d9c2d9be446a11faaf3768c329b8f9fa2ed91620"
+  r2_archive_sha256: "4023337c583b929e0aed0e750d66379d3935e378e2e4aee55762f3bea13c2d04"
+write_scope_in_receiving_workspace:
+  allowed: ["outputs/claude-design-approval-pack/admin-control-plane-suite/**"]
+  prohibited: ["apps/**", "supabase/**", "product-contract/**", "main branch", "any non-Admin CD output"]

@@ -1,0 +1,20 @@
+=== B2 EVIDENCE — package draft->approve->publish, maker-checker enforced end-to-end ===
+[0] approver@mim.example created with compliance_admin role
+
+[1] Form admin creates DRAFT v2026.08 (clone of published definition):
+    201 draft id: 6b0fb20c
+
+[2] Maker tries to publish WITHOUT approver (must fail — trg_pkg_approver):
+    400 · BLOCKED: publishing requires a distinct approver (RBAC-002 maker-checker)
+
+[3] Maker tries to SELF-approve (must fail — pkg_maker_checker constraint):
+    400 · new row for relation "package_versions" violates check constraint "pkg_maker_checker"
+
+[4] DISTINCT approver publishes (must succeed):
+    200 · v2026.08 → published
+
+[5] Now-published v2026.08 is immutable (edit must fail — trg_guard_pkg):
+    400 · IMMUTABLE: published package version v2026.08 cannot be modified (M09-030)
+
+[6] Audit trail captured the whole flow automatically:
+    [{"action":"INSERT","st":"draft","occurred_at":"2026-07-11 16:19:39.276115+00"},{"action":"UPDATE","st":"published","occurred_at":"2026-07-11 16:19:40.843678+00"}]

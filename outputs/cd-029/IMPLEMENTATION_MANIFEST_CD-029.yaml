@@ -1,0 +1,53 @@
+# IMPLEMENTATION_MANIFEST_CD-029.yaml
+# DO NOT EXECUTE UNTIL SPONSOR DESIGN APPROVAL AND INDEPENDENT CODEX WIRING AUDIT
+implementation_authorized: false
+design_id: CD-029
+task: TASK-DESIGN-CD029
+screen_id: SCR-WEB-310
+title: Level 2 Review Workspace
+route: /reviews/:id
+persona: Level 2 Reviewer
+revision: R1
+baseline: BASELINE_REVERIFY_REQUIRED  # main sources read this session; no exact-baseline equivalence claim; deferred to Codex
+engines: [ENG-03, ENG-07, ENG-08, ENG-09, ENG-12]
+requirements: "MVP1-M06-001..039,049,051,052 + foundation/RBAC/audit/accessibility contracts"
+acceptance: [DSG-024, DSG-A11Y-001]
+
+signature_interaction:
+  name: Finding Trace Chain
+  chain: question -> response -> evidence -> clause -> violation -> corrective action -> decision comment
+  properties: [keyboard-operable, list-equivalent, source-and-version-labelled, never-decorative-graph, unavailable-links-shown-not-fabricated]
+
+zones:
+  - section_navigation   # sticky section strip (zone 1)
+  - immutable_content_evidence   # read-only content + evidence + factory verification + comparison + audit (zone 2)
+  - governed_decision_rail       # approve / return-with-scope / reject; guard ladder; immutable result (zone 3)
+
+binding_runtime_truth:
+  - immutable_submitted_version: "submission_versions snapshot answers + acknowledgement; content edits DB-rejected (read-only)."
+  - version_diff: "computed from stored answers latest vs prior; changed cells flagged; never re-derived."
+  - factory_verification: "Senaei source vs observed; verified/updated; tolerant fetch (0020 pending -> verbatim error, not 'no changes')."
+  - audit_timeline: "append-only audit_events; newest first; limit 25; edits/deletes DB-rejected."
+  - decision_validation: "return requires exact sections + reason; reject requires reason; approve neither (detail action)."
+  - notification: "insertNotification queues a row; a row is not delivery/receipt."
+
+handoff_blocked:
+  - HANDOFF_BLOCKED_PAGELOAD_MUTATION   # open of submitted+no-open-review inserts review + sets inspection under_review on load; ownership/atomicity unresolved
+  - HANDOFF_BLOCKED_ATOMIC              # decision write = review update -> inspection update -> notification insert; non-transactional; partial commit possible; no rollback
+  - HANDOFF_BLOCKED_MEDIA               # no provider-backed media viewer proven; evidence preview explicitly unavailable
+  - HANDOFF_BLOCKED_CLAIM               # no claim/reassign action or ownership path proven
+  - HANDOFF_BLOCKED_ERRORMAP            # neutral copy; 'contact support' has no governed destination
+  - HANDOFF_BLOCKED_LINKED              # clause/violation or factory-verification linked source can fail; affected links shown 'unavailable'
+  - HANDOFF_BLOCKED_BASELINE
+
+scope_separation:
+  - CD-029 owns the decision workspace (/reviews/:id)
+  - CD-028 owns the scan-first queue (/reviews) — not redesigned here
+
+hypotheses:
+  - {id: A, name: Trace-chain-first, selected: true}
+  - {id: B, name: Evidence-viewer-first, selected: false}
+  - {id: C, name: Decision-rail-first, selected: false}
+counterfactual: trace-chain-removed
+
+files_facing: [IMPLEMENTATION_MANIFEST_CD-029.yaml, COMPONENT_MAP_CD-029.csv, WIRING_MAP_CD-029.csv, STATE_MATRIX_CD-029.csv, ACCEPTANCE_CHECKLIST_CD-029.md, CLAUDE_CODE_HANDOFF_CD-029.md, CLAUDE_CODE_IMPLEMENTATION_PROMPT_CD-029.md, PACKAGE_INVENTORY_CD-029.csv]

@@ -201,6 +201,19 @@ test.describe("CD-021 remediation — invalid criteria never silently drops (ERR
     await expect(alert).toBeVisible();
     await expect(alert).toContainText(/could not be read/i);
   });
+
+  test("mixed valid and blank ct leaves fail closed as invalid, never silently narrowing criteria", async ({ page }) => {
+    const mixed = encodeURIComponent(JSON.stringify({
+      k: "g", c: "all", n: [
+        { k: "c", f: "region", o: "is", v: "Riyadh" },
+        { k: "c", f: "city", o: "is", v: "" },
+      ],
+    }));
+    await page.goto(`/planning/bulk?ct=${mixed}`);
+    const alert = page.locator('[role="alert"].ax-banner');
+    await expect(alert).toBeVisible();
+    await expect(alert).toContainText(/could not be read/i);
+  });
 });
 
 test.describe("CD-021 remediation — focus condition contribution highlight (finding 2)", () => {

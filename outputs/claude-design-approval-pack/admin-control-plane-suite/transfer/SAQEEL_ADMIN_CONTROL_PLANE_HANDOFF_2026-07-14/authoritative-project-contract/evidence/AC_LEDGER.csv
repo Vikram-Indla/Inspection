@@ -1,0 +1,494 @@
+requirement_id,acceptance_id,module,channel,status,note
+MVP1-M01-001,AC-0001,Visit Planning - Planning,Web Portal,implemented,[audit] planning/page.tsx selects Bulk/Single/Immediate and loads each workflow route.
+MVP1-M01-002,AC-0002,Visit Planning - Planning,Web Portal,implemented,"[audit] Bulk: criteria→search→select→configure→publish; plan+visit IDs, assign, notify, audit trigger."
+MVP1-M01-003,AC-0003,Visit Planning - Planning,Web Portal,implemented,[audit] CriteriaBuilder add/remove rows + AND/OR toggle; server evaluates over factory set.
+MVP1-M01-004,AC-0004,Visit Planning - Planning,Web Portal,implemented,"[audit] Server fetches all factories, evaluates conditions, returns every match (M01-004)."
+MVP1-M01-005,AC-0005,Visit Planning - Planning,Web Portal,implemented,"[audit] Checkbox multi-select tracked in state and feeds plan (no select-all, minor)."
+MVP1-M01-006,AC-0006,Visit Planning - Planning,Web Portal,implemented,[audit] Visit type/window/package fields; mandatory validation in bulk action blockers.
+MVP1-M01-007,AC-0007,Visit Planning - Planning,Web Portal,implemented,[audit] Auto round-robin assignment over inspector pool (ENG-05).
+MVP1-M01-008,AC-0008,Visit Planning - Planning,Web Portal,implemented,[audit] Per-row manual inspector picks; availability/double-booking validated server-side.
+MVP1-M01-009,AC-0009,Visit Planning - Planning,Web Portal,implemented,[audit] Deterministic campaign summary + server validation before publish.
+MVP1-M01-010,AC-0010,Visit Planning - Planning,Web Portal,implemented,"[audit] Publish creates plan+visits atomically, assigns, notifies, audit via trigger."
+MVP1-M01-011,AC-0011,Visit Planning - Planning,Web Portal,implemented,"[audit] Planning home offers three methods, loads chosen workspace (M01-011)."
+MVP1-M01-012,AC-0012,Visit Planning - Planning,Web Portal,implemented,[audit] Criteria builder AND/OR filters parsed+validated server-side.
+MVP1-M01-013,AC-0013,Visit Planning - Planning,Web Portal,implemented,"[audit] Apply submits GET; server executes search, returns matching factories."
+MVP1-M01-014,AC-0014,Visit Planning - Planning,Web Portal,implemented,"[audit] Factory info displayed + criteria filter (fixed risk sort; no profile link, minor)."
+MVP1-M01-015,AC-0015,Visit Planning - Planning,Web Portal,implemented,[audit] Individual/multi checkbox selection stored in state.
+MVP1-M01-016,AC-0016,Visit Planning - Planning,Web Portal,implemented,[audit] Deterministic campaign summary present; AI summary MVP2 by contract.
+MVP1-M01-017,AC-0017,Visit Planning - Planning,Web Portal,implemented,[audit] Visit type/window/package config with mandatory validation.
+MVP1-M01-018,AC-0018,Visit Planning - Planning,Web Portal,implemented,[audit] Auto-assign round-robin over eligible pool.
+MVP1-M01-019,AC-0019,Visit Planning - Planning,Web Portal,implemented,[audit] Manual pick validated for availability/double-booking.
+MVP1-M01-020,AC-0020,Visit Planning - Planning,Web Portal,implemented,"[audit] Review+confirm: duplicate check, create plan/visits, notify, audit."
+MVP1-M01-021,AC-0021,Visit Planning - Planning,Web Portal,implemented,[audit] Bulk workspace loads (page.tsx + BulkForm).
+MVP1-M01-022,AC-0022,Visit Planning - Planning,Web Portal,implemented,[audit] Add/remove/combine filter conditions AND/OR; validated server-side.
+MVP1-M01-023,AC-0023,Visit Planning - Planning,Web Portal,implemented,[audit] Search executes and retrieves all matching factories.
+MVP1-M01-024,AC-0024,Visit Planning - Planning,Web Portal,implemented,"[audit] Factory details displayed + filter (no user sort/profile link, minor)."
+MVP1-M01-025,AC-0025,Visit Planning - Planning,Web Portal,implemented,"[audit] Select/unselect multi stored (no select-all control, minor)."
+MVP1-M01-026,AC-0026,Visit Planning - Planning,Web Portal,implemented,[audit] Deterministic campaign summary present; AI recommendations MVP2 by contract.
+MVP1-M01-027,AC-0027,Visit Planning - Planning,Web Portal,implemented,[audit] Config fields validated as mandatory.
+MVP1-M01-028,AC-0028,Visit Planning - Planning,Web Portal,implemented,[audit] Auto-assign per configured round-robin strategy.
+MVP1-M01-029,AC-0029,Visit Planning - Planning,Web Portal,implemented,[audit] Per-visit eligibility (pool) + same-window double-booking conflict validation.
+MVP1-M01-030,AC-0030,Visit Planning - Planning,Web Portal,implemented,"[audit] Summary + duplicate/mandatory validation, blockers surfaced."
+MVP1-M01-031,AC-0031,Visit Planning - Planning,Web Portal,implemented,"[audit] Publish: plan+per-visit IDs, assign, publish, notify, audit; status→published."
+MVP1-M01-032,AC-0032,Visit Planning - Planning,Web Portal,implemented,"[audit] Bulk reschedule/reassign apply to selected child visits, audited."
+MVP1-M01-033,AC-0033,Visit Planning - Planning,Web Portal,implemented,"[audit] Bulk cancel with reason, notifies inspectors, audit."
+MVP1-M01-034,AC-0034,Visit Planning - Planning,Web Portal,verified_live,Single-visit wizard rendered + publish gate live-tested.
+MVP1-M01-035,AC-0035,Visit Planning - Planning,Web Portal,verified_live,CR/code factory search exercised in wizard.
+MVP1-M01-036,AC-0036,Visit Planning - Planning,Web Portal,implemented,[audit] License radio-select required before publish in wizard.
+MVP1-M01-037,AC-0037,Visit Planning - Planning,Web Portal,implemented,[audit] Factory identity (name/code/CR/city/risk) displayed on match.
+MVP1-M01-038,AC-0038,Visit Planning - Planning,Web Portal,implemented,[audit] GeoMap + planner lat/lng pin + confirm checkbox; saves planner pin when overridden.
+MVP1-M01-039,AC-0039,Visit Planning - Planning,Web Portal,implemented,[audit] Visit type/window/mode/package config validated.
+MVP1-M01-040,AC-0040,Visit Planning - Planning,Web Portal,implemented,[audit] Auto/manual assignment with in-window availability check.
+MVP1-M01-041,AC-0041,Visit Planning - Planning,Web Portal,implemented,"[audit] Review validates duplicate/mandatory; blockers surfaced, entered work preserved."
+MVP1-M01-042,AC-0042,Visit Planning - Planning,Web Portal,implemented,"[audit] Publish: visit ID, assign, notify, audit; planner pin persisted."
+MVP1-M01-043,AC-0043,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Planner and Inspector Immediate workspace verified in focused live suite; DEC-012 closure verdict remains independent.
+MVP1-M01-044,AC-0044,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Registered search and authoritative identity-match blocker verified live.
+MVP1-M01-045,AC-0045,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Minimum manual identity and generated-label provenance verified live.
+MVP1-M01-046,AC-0046,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Blank guard and Visit-level location provenance verified without master-coordinate overwrite.
+MVP1-M01-047,AC-0047,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Planner window and Inspector start-now/no-expiry behavior verified live; no invented duration.
+MVP1-M01-048,AC-0048,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Eligibility, overlap serialization and Inspector self-assignment verified by concurrent live test.
+MVP1-M01-049,AC-0049,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Review plus package/duplicate blockers and blocked-attempt audit verified live.
+MVP1-M01-050,AC-0050,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Direct no-plan creation is atomic/idempotent and audit-complete in live concurrency tests.
+MVP1-M01-051,AC-0051,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Inspector-created Visit enters the standard field start flow using confirmed Visit location.
+MVP1-M01-052,AC-0052,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Planner notification truth and Inspector no-notification behavior verified live.
+MVP1-M02-001,AC-0053,Visit Planning - Management,Web Portal,implemented,"[audit] VisitsBoard loads KPIs, search, filters, visit list."
+MVP1-M02-002,AC-0054,Visit Planning - Management,Web Portal,implemented,[audit] KPI tiles show draft/published/returned/cancelled/expired counts and filter list.
+MVP1-M02-003,AC-0055,Visit Planning - Management,Web Portal,implemented,[audit] Search over Visit ID/factory/CR/license/inspector.
+MVP1-M02-004,AC-0056,Visit Planning - Management,Web Portal,implemented,[audit] Status/type/mode/date-range filters refresh list.
+MVP1-M02-005,AC-0057,Visit Planning - Management,Web Portal,implemented,"[audit] Detail: config, assignment, plan, versions, journey timeline; audit via browser."
+MVP1-M02-006,AC-0058,Visit Planning - Management,Web Portal,implemented,[audit] Edit type/window/inspector/notes validated+audited (location edit not exposed).
+MVP1-M02-007,AC-0059,Visit Planning - Management,Web Portal,implemented,"[audit] Multi-select bulk reschedule/reassign apply to selected, per-row audited."
+MVP1-M02-008,AC-0060,Visit Planning - Management,Web Portal,implemented,[audit] Return reason surfaced; republish/cancel/reschedule in ActionBar.
+MVP1-M02-009,AC-0061,Visit Planning - Management,Web Portal,partial,[audit] republishVisit flips status+audit but omits the required assigned-inspector notification.
+MVP1-M02-010,AC-0062,Visit Planning - Management,Web Portal,implemented,"[audit] Cancel with mandatory reason, notifies inspector, audit."
+MVP1-M02-011,AC-0063,Visit Planning - Management,Web Portal,implemented,"[audit] Bulk cancel with reason, per-row outcome, notifies, audit."
+MVP1-M02-012,AC-0064,Visit Planning - Management,Web Portal,verified_live,[CD-023 live] Same-factory active Visit detection is transaction-locked, blocked and audited in the live suite.
+MVP1-M02-013,AC-0065,Visit Planning - Management,Web Portal,implemented,[audit] Journey/location event timeline chronological on detail; audit browser for events.
+MVP1-M02-014,AC-0066,Visit Planning - Management,Web Portal,implemented,[audit] audit_events trigger records before/after/actor/timestamp; admin/audit browser.
+MVP1-M02-015,AC-0067,Visit Planning - Management,Web Portal,implemented,[audit] guardPublishedNew/guardPreStart + canonical transitions enforce lifecycle.
+MVP1-M02-016,AC-0068,Visit Planning - Management,Web Portal,implemented,"[audit] expire_lapsed_visits RPC persists published→expired, audit trigger records it."
+MVP1-M02-017,AC-0069,Visit Planning - Management,Web Portal,implemented,[audit] plans/[id] drill-down lists every child visit with assignment.
+MVP1-M02-018,AC-0070,Visit Planning - Management,Web Portal,implemented,[audit] Workload view: per-inspector active visits by week + capacity bars.
+MVP1-M02-019,AC-0071,Visit Planning - Management,Web Portal,implemented,[audit] Planner workspace loads KPIs/filters/search/list/bulk actions.
+MVP1-M02-020,AC-0072,Visit Planning - Management,Web Portal,implemented,[audit] Planning KPIs computed and displayed (counts + register).
+MVP1-M02-021,AC-0073,Visit Planning - Management,Web Portal,implemented,[audit] Search includes Plan/Campaign ID (bulk plan doubles as campaign key).
+MVP1-M02-022,AC-0074,Visit Planning - Management,Web Portal,implemented,[audit] Filters refresh list client-side over RLS-scoped page.
+MVP1-M02-023,AC-0075,Visit Planning - Management,Web Portal,implemented,"[audit] Sort (window/factory) + row select + open (no group-by, minor)."
+MVP1-M02-024,AC-0076,Visit Planning - Management,Web Portal,implemented,[audit] Detail shows factory/assignment/plan/location/timeline/attachments/versions.
+MVP1-M02-025,AC-0077,Visit Planning - Management,Web Portal,implemented,"[audit] Editable fields validated, saved, audited via triggers."
+MVP1-M02-026,AC-0078,Visit Planning - Management,Web Portal,implemented,[audit] Reassign: constrained eligible pool + pre-start guard + notify (no workload check).
+MVP1-M02-027,AC-0079,Visit Planning - Management,Web Portal,implemented,"[audit] Reschedule validates dates + published/new state guard, updates window."
+MVP1-M02-028,AC-0080,Visit Planning - Management,Web Portal,implemented,"[audit] Cancel with reason, notify inspector, audit."
+MVP1-M02-029,AC-0081,Visit Planning - Management,Web Portal,implemented,[audit] Return reason shown + editable fields allow corrections.
+MVP1-M02-030,AC-0082,Visit Planning - Management,Web Portal,partial,[audit] republishVisit validates+audits but omits the required inspector notification.
+MVP1-M02-031,AC-0083,Visit Planning - Management,Web Portal,implemented,[audit] Bulk shared-field update (reschedule/reassign) across selected.
+MVP1-M02-032,AC-0084,Visit Planning - Management,Web Portal,implemented,[audit] Bulk reassign updates assignments + notifies new inspector per row.
+MVP1-M02-033,AC-0085,Visit Planning - Management,Web Portal,implemented,[audit] Bulk reschedule validates window + updates selected.
+MVP1-M02-034,AC-0086,Visit Planning - Management,Web Portal,implemented,[audit] Bulk cancel selected + notify inspectors.
+MVP1-M02-035,AC-0087,Visit Planning - Management,Web Portal,implemented,"[audit] Plan register + drill-down: campaign info, progress, child stats."
+MVP1-M02-036,AC-0088,Visit Planning - Management,Web Portal,implemented,[audit] Per-plan progress buckets completed/published/returned/cancelled/expired + bar.
+MVP1-M02-037,AC-0089,Visit Planning - Management,Web Portal,implemented,[audit] Relative utilization bars; no absolute threshold invented (honest ENG-05).
+MVP1-M02-038,AC-0090,Visit Planning - Management,Web Portal,implemented,[audit] CalendarBoard Day/Week/Month views in visit management.
+MVP1-M02-039,AC-0091,Visit Planning - Management,Web Portal,partial,[audit] Ops map shows factory+visit pins but no inspector locations/region-select; not wired into visit mgmt.
+MVP1-M02-040,AC-0092,Visit Planning - Management,Web Portal,implemented,[audit] Duplicate/overlap/missing-location detected at publish; capacity relative (no threshold).
+MVP1-M02-041,AC-0093,Visit Planning - Management,Web Portal,implemented,[audit] Notifications for publish/return/cancel/reassign/reschedule/expiry all present.
+MVP1-M02-042,AC-0094,Visit Planning - Management,Web Portal,implemented,"[audit] Attachments upload/list/soft-remove, signed URLs, audit trigger."
+MVP1-M02-043,AC-0095,Visit Planning - Management,Web Portal,implemented,"[audit] Notes add/edit guarded update (visits_update RLS), audited."
+MVP1-M02-044,AC-0096,Visit Planning - Management,Web Portal,implemented,[audit] audit_events records every activity chronologically; browser displays.
+MVP1-M02-045,AC-0097,Visit Planning - Management,Web Portal,implemented,[audit] Audit trigger records before/after state on every data modification.
+MVP1-M02-046,AC-0098,Visit Planning - Management,Web Portal,implemented,[audit] expire RPC notifies planner (and inspector) on published→expired flip.
+MVP1-M03-001,AC-0099,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] SCR-IPAD-600 FieldHome: workload/inbox/views/search/filter/sort/expiry — BUILT
+MVP1-M03-002,AC-0100,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,"[audit] FieldHome loads RLS-scoped visits + open/switch views, offline sync engine — BUILT"
+MVP1-M03-003,AC-0101,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] Calendar/List/Map view switch over same rows (FieldHome) — BUILT
+MVP1-M03-004,AC-0102,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] Text search + status/type/mode filter + window sort (FieldHome) — BUILT
+MVP1-M03-005,AC-0103,Inspection Execution - Pre-Start,iPad / Inspector Workspace,partial,"[audit] Reschedule persists via visits reschedule action, but no drag-and-drop calendar gesture exists in any view"
+MVP1-M03-006,AC-0104,Inspection Execution - Pre-Start,iPad / Inspector Workspace,partial,"[audit] requestVisitReturn RPC+notify exist, but the return form in Startup.tsx is dead code (fn/strings never rendered)"
+MVP1-M03-007,AC-0105,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] [visitId] page renders visit details + readiness — BUILT
+MVP1-M03-008,AC-0106,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] Factory profile/history via factories 360 + Startup factory context — BUILT
+MVP1-M03-009,AC-0107,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,"[audit] AI insights sub-capability — MVP2 by contract; recommendation panel is a scaffold, no live inference"
+MVP1-M03-010,AC-0108,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,"[audit] planning/single Wizard: date/mode/package/inspector, resolves+publishes visit — BUILT"
+MVP1-M03-011,AC-0109,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,"[audit] [visitId] eligibility panel: physical=GIS coords, virtual=OTP engine — BUILT"
+MVP1-M03-012,AC-0110,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] admin/packages PackagePreview (inspector-view) + version-locked package — BUILT
+MVP1-M03-013,AC-0111,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] Planning actions send notifications via configured-channel adapter (lib/notify) — BUILT
+MVP1-M03-014,AC-0112,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] virtual ScheduleForm appointment + OTP room + reschedule actions — BUILT
+MVP1-M03-015,AC-0113,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] expire_lapsed_visits rpc + FieldHome new/ready/expired/overdue display — BUILT
+MVP1-M04-001,AC-0114,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-002,AC-0115,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-003,AC-0116,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-004,AC-0117,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-005,AC-0118,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-006,AC-0119,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-007,AC-0120,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-008,AC-0121,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-009,AC-0122,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-010,AC-0123,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-011,AC-0124,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-012,AC-0125,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Only constant device_id 'field-pwa' stamped on geo_events; OS version and app version are not captured
+MVP1-M04-013,AC-0126,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-014,AC-0127,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-015,AC-0128,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-016,AC-0129,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-017,AC-0130,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Distance-to-destination + progress% computed; ETA is never calculated or displayed
+MVP1-M04-018,AC-0131,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-019,AC-0132,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
+MVP1-M04-020,AC-0133,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-021,AC-0134,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-022,AC-0135,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-023,AC-0136,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-024,AC-0137,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Straight-line distance/progress only; ETA and road-network routing are not computed or refreshed
+MVP1-M04-025,AC-0138,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-026,AC-0139,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-027,AC-0140,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-028,AC-0141,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-029,AC-0142,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-030,AC-0143,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-031,AC-0144,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-032,AC-0145,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-033,AC-0146,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-034,AC-0147,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-035,AC-0148,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-036,AC-0149,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
+MVP1-M04-037,AC-0150,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-038,AC-0151,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-039,AC-0152,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-040,AC-0153,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-041,AC-0154,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-042,AC-0155,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-043,AC-0156,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Outside-fence check-in blocks + records an exception; no override-confirm dialog that continues on actual coords
+MVP1-M04-044,AC-0157,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-045,AC-0158,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] Arrival event recorded in geo_events, but no arrival-evidence (photo/comment) capture UI is rendered"
+MVP1-M04-046,AC-0159,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-047,AC-0160,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-048,AC-0161,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-049,AC-0162,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
+MVP1-M04-050,AC-0163,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Check-in+pre-start substitute; the Arrival Confirmation screen (cards+summary) is dead code in Startup.tsx
+MVP1-M04-051,AC-0164,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Factory Card strings are passed to Startup but never rendered on the arrival screen (dead)
+MVP1-M04-052,AC-0165,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Visit Card strings are passed to Startup but never rendered on the arrival screen (dead)
+MVP1-M04-053,AC-0166,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] Arrival summary (journey duration, distance travelled, GPS validation) is never rendered (dead strings)"
+MVP1-M04-054,AC-0167,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Expand/collapse Factory/Visit cards not rendered; the card block is dead code in Startup.tsx
+MVP1-M04-055,AC-0168,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup proceed/session + guarded STM-OPS to executing; cancellation guard — BUILT
+MVP1-M04-056,AC-0169,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] start guard honors cancelRequested, but the inspector Cancel Visit form is dead code (submitCancellation unwired)"
+MVP1-M04-057,AC-0170,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Governed reasons loaded + request_visit_cancellation RPC exist; the reason-selection UI is not rendered
+MVP1-M04-058,AC-0171,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Cancellation-evidence enqueue lives only inside the unrendered submitCancellation(); unreachable
+MVP1-M04-059,AC-0172,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup proceed/session + guarded STM-OPS to executing; cancellation guard — BUILT
+MVP1-M04-060,AC-0173,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup proceed/session + guarded STM-OPS to executing; cancellation guard — BUILT
+MVP1-M04-061,AC-0174,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup proceed/session + guarded STM-OPS to executing; cancellation guard — BUILT
+MVP1-M04-062,AC-0175,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-063,AC-0176,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-064,AC-0177,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-065,AC-0178,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-066,AC-0179,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-067,AC-0180,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-068,AC-0181,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-069,AC-0182,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-070,AC-0183,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-071,AC-0184,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-072,AC-0185,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-073,AC-0186,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-074,AC-0187,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-075,AC-0188,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-076,AC-0189,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-077,AC-0190,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-078,AC-0191,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-079,AC-0192,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-080,AC-0193,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-081,AC-0194,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-082,AC-0195,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-083,AC-0196,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-084,AC-0197,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-085,AC-0198,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-086,AC-0199,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-087,AC-0200,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-088,AC-0201,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-089,AC-0202,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-090,AC-0203,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-091,AC-0204,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-092,AC-0205,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-093,AC-0206,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-094,AC-0207,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace wizard: sections/progress/completion/autosave/draft-resume/validation — BUILT
+MVP1-M04-095,AC-0208,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-096,AC-0209,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-097,AC-0210,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-098,AC-0211,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-099,AC-0212,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-100,AC-0213,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-101,AC-0214,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-102,AC-0215,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-103,AC-0216,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-104,AC-0217,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-105,AC-0218,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-106,AC-0219,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-107,AC-0220,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-108,AC-0221,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-109,AC-0222,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-110,AC-0223,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-111,AC-0224,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-112,AC-0225,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-113,AC-0226,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-114,AC-0227,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] FactoryVerification source-vs-observed, verify/update, evidence, change review — BUILT"
+MVP1-M04-115,AC-0228,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-116,AC-0229,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-117,AC-0230,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-118,AC-0231,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-119,AC-0232,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-120,AC-0233,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-121,AC-0234,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-122,AC-0235,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-123,AC-0236,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-124,AC-0237,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-125,AC-0238,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-126,AC-0239,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-127,AC-0240,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-128,AC-0241,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-129,AC-0242,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-130,AC-0243,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-131,AC-0244,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace report step: dynamic fields/conditional/validation/evidence/autosave — BUILT
+MVP1-M04-132,AC-0245,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-133,AC-0246,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-134,AC-0247,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-135,AC-0248,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-136,AC-0249,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-137,AC-0250,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-138,AC-0251,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-139,AC-0252,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-140,AC-0253,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-141,AC-0254,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-142,AC-0255,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-143,AC-0256,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-144,AC-0257,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-145,AC-0258,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-146,AC-0259,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-147,AC-0260,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-148,AC-0261,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-149,AC-0262,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-150,AC-0263,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-151,AC-0264,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-152,AC-0265,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-153,AC-0266,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Workspace checklist: items/categories/prev-answer, violations+penalties config — BUILT"
+MVP1-M04-154,AC-0267,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-155,AC-0268,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-156,AC-0269,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-157,AC-0270,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-158,AC-0271,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-159,AC-0272,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-160,AC-0273,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-161,AC-0274,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-162,AC-0275,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-163,AC-0276,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-164,AC-0277,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-165,AC-0278,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-166,AC-0279,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-167,AC-0280,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-168,AC-0281,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-169,AC-0282,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-170,AC-0283,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace evidence: capture/compress/annotate/link/replace-archive/soft-delete — BUILT
+MVP1-M04-171,AC-0284,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-172,AC-0285,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-173,AC-0286,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-174,AC-0287,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-175,AC-0288,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-176,AC-0289,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-177,AC-0290,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-178,AC-0291,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-179,AC-0292,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-180,AC-0293,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-181,AC-0294,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-182,AC-0295,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-183,AC-0296,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-184,AC-0297,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-185,AC-0298,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-186,AC-0299,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-187,AC-0300,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-188,AC-0301,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace action forms: trigger/instantiate/validate/complete/blocking/autosave — BUILT
+MVP1-M04-189,AC-0302,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-190,AC-0303,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] FactoryVerification change-review list: before/after + evidence per field — BUILT
+MVP1-M04-191,AC-0304,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-192,AC-0305,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-193,AC-0306,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-194,AC-0307,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-195,AC-0308,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-196,AC-0309,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-197,AC-0310,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-198,AC-0311,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-199,AC-0312,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-200,AC-0313,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-201,AC-0314,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-202,AC-0315,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-203,AC-0316,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-204,AC-0317,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-205,AC-0318,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-206,AC-0319,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Workspace review: live summary/implied violations/grouped submit blockers — BUILT
+MVP1-M04-207,AC-0320,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-208,AC-0321,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-209,AC-0322,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-210,AC-0323,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-211,AC-0324,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-212,AC-0325,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-213,AC-0326,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-214,AC-0327,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-215,AC-0328,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-216,AC-0329,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-217,AC-0330,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-218,AC-0331,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-219,AC-0332,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-220,AC-0333,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-221,AC-0334,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-222,AC-0335,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M04-223,AC-0336,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] submit op: inspection_no trigger/freeze snapshot/PDF/workflow+reviewer notify trigger — BUILT
+MVP1-M05-001,AC-0337,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] virtual/[id]/page loads session with factory, appointment, participants, package, inspection embed."
+MVP1-M05-002,AC-0338,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] Guarded transitions validate state/window; reschedule+beginRemote enforce assignment; session created at schedule.
+MVP1-M05-003,AC-0339,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] vs_append_event writes timeline; timeline column rendered; start timestamp captured on begin event.
+MVP1-M05-004,AC-0340,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] Operational state machine scheduled->waiting->joined->verified->in_progress separate from workflow status.
+MVP1-M05-005,AC-0341,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] closeSession renders cancel form with mandatory reason + comments (Room.tsx).
+MVP1-M05-006,AC-0342,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] closeSession persists reason+comments into closed timeline event; guard makes row immutable after.
+MVP1-M05-007,AC-0343,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] trg_guard_virtual + vs_append_event record creation, cancellation, operational-state updates."
+MVP1-M05-008,AC-0344,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] MVP2 by contract: live-video provider is the single sanctioned DEC deferral; adapter placeholder honest, join legs live."
+MVP1-M05-009,AC-0345,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] Participants rendered with joined/verified status; refreshStatus polls vp_otp_status per participant.
+MVP1-M05-010,AC-0346,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] joinParticipant persists joined_at per participant (inspector + factory rep).
+MVP1-M05-011,AC-0347,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] MVP2 by contract: join/end tracked live via timeline; disconnect/reconnect ride deferred video-provider adapter (DEC).
+MVP1-M05-012,AC-0348,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] MVP2 by contract: join event recorded; leave/disconnect/reconnect are provider-adapter legs (deferred DEC), honest state."
+MVP1-M05-013,AC-0349,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] Verify-identity surfaces OTP method (Send OTP) for factory_rep participants.
+MVP1-M05-014,AC-0350,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] vp_request_otp RPC generates code; DEV provider shows code, release Unifonic adapter (honest)."
+MVP1-M05-015,AC-0351,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] vp_verify_otp validates entered code server-side; hash never reaches client.
+MVP1-M05-016,AC-0352,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] attempts/resends counters + lock on exhaustion; DEC-007 policy server-enforced, cooldown honored."
+MVP1-M05-017,AC-0353,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] verified_at + verification_record captured server-side; counters exposed via safe status RPC.
+MVP1-M05-018,AC-0354,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] markSessionVerified transitions operational state joined->verified with timeline event.
+MVP1-M05-019,AC-0355,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,"[audit] beginRemote gated on verified; creates in_progress inspection, started_at seeds SLA, begin timeline event."
+MVP1-M05-020,AC-0356,Virtual Inspection Execution,Virtual Session + Web Portal,implemented,[audit] redirect to /field/inspection/[id] — same shared workspace + submission flow as physical.
+MVP1-M06-001,AC-0357,Level 2 Review & Resubmission,Web Portal,implemented,[audit] DecisionPanel shows approve/return/reject radios; only when status under_review (permission+status gated).
+MVP1-M06-002,AC-0358,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Workspace shows checklist, violations, action forms, evidence, FV updates, version, approve-warning preview."
+MVP1-M06-003,AC-0359,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Penalties via violation mapping, corrective actions, official report link; approve chain preview in warning."
+MVP1-M06-004,AC-0360,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] decide(approve) locks version, sets approved, audit event, notifies inspector; compliance fires on approved status."
+MVP1-M06-005,AC-0361,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Return path renders section checkboxes + mandatory reason + return-scope hint (workspace DecisionPanel).
+MVP1-M06-006,AC-0362,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] decide(return) sets returned+returned_sections, notifies inspector; field page unlocks only those sections."
+MVP1-M06-007,AC-0363,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Reject shows final-impact banner (no compliance, new visit needed)."
+MVP1-M06-008,AC-0364,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] decide(reject) locks version, sets rejected, notifies inspector, audit event; no compliance trigger."
+MVP1-M06-009,AC-0365,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] reviews row stores reviewer, decision, reason, sections, decided_at; audit_events immutable, prev/new status."
+MVP1-M06-010,AC-0366,Level 2 Review & Resubmission,Web Portal,implemented,[audit] audit_events trail rendered chronologically for approve/return/reject.
+MVP1-M06-011,AC-0367,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] submission_versions immutable; resubmit creates new version, prior preserved (diff proves both retained)."
+MVP1-M06-012,AC-0368,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Read-only submitted-version banner; DB rejects edits (proven B3); corrections only via return.
+MVP1-M06-013,AC-0369,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Queue columns: inspector, type/mode, risk, SLA, critical count, priority, version, submitted date."
+MVP1-M06-014,AC-0370,Level 2 Review & Resubmission,Web Portal,implemented,[audit] ReviewQueue search (factory/code/inspector) + status + risk + overdue-only filters over RLS page.
+MVP1-M06-015,AC-0371,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Workspace loads latest version: checklist, violations, evidence, FV, action forms, timeline, audit."
+MVP1-M06-016,AC-0372,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Summary across workspace+queue: factory, inspector, mode, type, submitted, violations, critical, evidence, forms."
+MVP1-M06-017,AC-0373,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] FV table shows Source(Senaei) vs Observed, before/after, updated highlight, linked evidence count."
+MVP1-M06-018,AC-0374,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Checklist rendered read-only; official report link to /reports/inspection/[id].
+MVP1-M06-019,AC-0375,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Checklist answers + implied violations + evidence list shown read-only.
+MVP1-M06-020,AC-0376,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Evidence listed with storage_path + sha256; FV field evidence separated; annotations flattened upstream.
+MVP1-M06-021,AC-0377,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Action forms rendered; acknowledgement signature image displayed (DEC-009).
+MVP1-M06-022,AC-0378,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] audit_events timeline chronological planning->submission, append-only."
+MVP1-M06-023,AC-0379,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Version comparison table diffs prior vs latest snapshot answers, changed cells flagged."
+MVP1-M06-024,AC-0380,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] decide(return) requires reason+sections, unlocks scope, notifies inspector, audit event."
+MVP1-M06-025,AC-0381,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] decide(approve) validates, locks, sets approved, notifies, audit; compliance chain on approved."
+MVP1-M06-026,AC-0382,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] decide(reject) requires reason, sets rejected, notifies inspector, audit event."
+MVP1-M06-027,AC-0383,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Decisions + reason + sections logged to reviews + audit_events; material review actions recorded.
+MVP1-M06-028,AC-0384,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Actions surface errors: RLS no-op detection, insErr/transErr handling, immutability rejection messages."
+MVP1-M06-029,AC-0385,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Queue RLS-scoped to reviewer; pending panels for undecided reviews auto-create under_review.
+MVP1-M06-030,AC-0386,Level 2 Review & Resubmission,Web Portal,implemented,[audit] ReviewQueue applies search/status/risk/overdue filters; returns matching subset with count.
+MVP1-M06-031,AC-0387,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] badgesFor computes SLA (config working-days), overdue, risk band, L1 critical count, priority."
+MVP1-M06-032,AC-0388,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Open workspace loads latest submission_version read-only (immutable banner).
+MVP1-M06-033,AC-0389,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Workspace loads report, checklist, evidence, FV observations, forms, violations, timeline, audit, versions."
+MVP1-M06-034,AC-0390,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] FV table: Source, Observed, verified/updated status, before/after, evidence count + note."
+MVP1-M06-035,AC-0391,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Report rendered read-only from submitted version; official report link.
+MVP1-M06-036,AC-0392,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Answers, violations with penalty mapping, corrective action forms, evidence shown."
+MVP1-M06-037,AC-0393,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Evidence displayed; FV factory-field evidence grouped separately from item/violation evidence.
+MVP1-M06-038,AC-0394,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Action forms with owner/due/status + acknowledgement signature/name rendered.
+MVP1-M06-039,AC-0395,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Immutable audit_events timeline; DB rejects edits/deletes (FND-003).
+MVP1-M06-040,AC-0396,Level 2 Review & Resubmission,Web Portal,implemented,[audit] All submission_versions sorted; version comparison table highlights diffs.
+MVP1-M06-041,AC-0397,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Return notifies inspector (review_decision); field page shows returned scope in assigned work.
+MVP1-M06-042,AC-0398,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Prior-decision banner shows decision, reason, returned sections; field workspace returnedScope note."
+MVP1-M06-043,AC-0399,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Field page unlocks only returned_sections; non-returned locked read-only, DB rejects (M06-043)."
+MVP1-M06-044,AC-0400,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Workspace autosaves edits/evidence/notes/values locally via outbox.
+MVP1-M06-045,AC-0401,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Submit validates returned scope, creates new immutable version, status back to pending review."
+MVP1-M06-046,AC-0402,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] diffRows compares prev vs resubmitted snapshot, changed answers highlighted."
+MVP1-M06-047,AC-0403,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] submission_versions snapshot holds report, checklist, evidence, observations, forms, ack (immutable)."
+MVP1-M06-048,AC-0404,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] Each version stored with version_number, submitted_at; reviews carry reviewer decision per version."
+MVP1-M06-049,AC-0405,Level 2 Review & Resubmission,Web Portal,implemented,"[audit] decide logs reviewer, decision, reason, sections, prev/new status, decided_at; audit mirror."
+MVP1-M06-050,AC-0406,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Resubmission records edited sections/changed fields/evidence via audit_events + new version snapshot.
+MVP1-M06-051,AC-0407,Level 2 Review & Resubmission,Web Portal,implemented,[audit] audit_events emit Submitted/Review-Opened/Returned/Resubmitted/Approved/Rejected across the chain.
+MVP1-M06-052,AC-0408,Level 2 Review & Resubmission,Web Portal,implemented,[audit] decision_reason stored immutably; decided reviews rejected on edit by DB.
+MVP1-M06-053,AC-0409,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Version diff table computes before/after answer changes between selected versions.
+MVP1-M07-001,AC-0410,Factory 360,Web Portal,implemented,[audit] factories/[id] loads dossier: identity/license#/CR#/visits/inspections/violations/risk; penalties+timeline thin
+MVP1-M07-002,AC-0411,Factory 360,Web Portal,implemented,[audit] overview tab renders name/CR/license/activity/region/city; status/stage/sector absent (no source columns)
+MVP1-M07-003,AC-0412,Factory 360,Web Portal,partial,[audit] only license_number+activity shown; no license status/stage/issue/expiry/holder columns or section
+MVP1-M07-004,AC-0413,Factory 360,Web Portal,partial,[audit] only cr_number shown; no legal_name/cr_status/owner columns; no CR detail block
+MVP1-M07-005,AC-0414,Factory 360,Web Portal,partial,"[audit] overview shows official_lat/lng as text only; no map, pins, observed locations or GPS override history"
+MVP1-M07-006,AC-0415,Factory 360,Web Portal,implemented,"[audit] products tab: name/HS/unit/capacity/primary, add form, empty+error states (M07-006)"
+MVP1-M07-007,AC-0416,Factory 360,Web Portal,implemented,"[audit] materials tab: name/source/HS, add form, empty+error states (M07-007)"
+MVP1-M07-008,AC-0417,Factory 360,Web Portal,implemented,"[audit] workforce tab: employees_total/saudi + Saudization%, source-owned read-only (M07-008)"
+MVP1-M07-009,AC-0418,Factory 360,Web Portal,implemented,[audit] workforce tab: capital_invested + production_capacity_note indicators (M07-009)
+MVP1-M07-010,AC-0419,Factory 360,Web Portal,implemented,[audit] history tab lists visits w/ planning_status+operational_state+window covering planned/cancelled/completed/expired
+MVP1-M07-011,AC-0420,Factory 360,Web Portal,implemented,[audit] history shows inspection status+versions+report link; inspector/result columns not surfaced
+MVP1-M07-012,AC-0421,Factory 360,Web Portal,implemented,[audit] history shows violation codes + action_forms(status/owner/due); issued-penalty notices not surfaced
+MVP1-M07-013,AC-0422,Factory 360,Web Portal,implemented,[audit] action_forms render status/owner/due in history; source-violation link + evidence ref thin
+MVP1-M07-014,AC-0423,Factory 360,Web Portal,partial,"[audit] only current risk_score+version shown; no score_history table, drivers or recalc-date leg"
+MVP1-M07-015,AC-0424,Factory 360,Web Portal,partial,[audit] only current risk_band shown; no risk drivers/history tables; not linked to related violations
+MVP1-M07-016,AC-0425,Factory 360,Web Portal,implemented,[audit] history has real /reports/inspection/[id] link; docs show storage_path text; penalty-notice download thin
+MVP1-M07-017,AC-0426,Factory 360,Web Portal,partial,[audit] no event timeline component; history table substitutes partially; no sync/penalty/score-update events
+MVP1-M07-018,AC-0427,Factory 360,Web Portal,implemented,[audit] /factories/[id] page exists; ops/SLA/risk rows link into it (M07-018)
+MVP1-M07-019,AC-0428,Factory 360,Web Portal,partial,[audit] all tabs shown to everyone; only RLS gates data; no role-based tab/document/penalty section visibility
+MVP1-M07-020,AC-0429,Factory 360,Web Portal,implemented,[audit] per-section error banners w/ retry (dErr/rErr/pErr/mErr) + not-found guard; partial-data honest
+MVP1-M08-001,AC-0430,Operations Center,Operations Center / Web Portal,implemented,[audit] ops page loads visits/inspectors/SLA watch/map/high-risk/notifications live (M08-001)
+MVP1-M08-002,AC-0431,Operations Center,Operations Center / Web Portal,implemented,"[audit] OpsMap Leaflet KSA pins (factory+active visit), geofence radius, href open, legend (M08-002)"
+MVP1-M08-003,AC-0432,Operations Center,Operations Center / Web Portal,implemented,[audit] KPI counts per operational_state + monitoring table + open-visit link; cancelled/expired not in KPI row
+MVP1-M08-004,AC-0433,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] per-inspector assigned/active/completed/overdue workload; presence/online state truthfully unavailable because no source or timeout policy exists
+MVP1-M08-005,AC-0434,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] visit SLA plus configured business-day review SLA; engine_settings only and no predictive forecast
+MVP1-M08-006,AC-0435,Operations Center,Operations Center / Web Portal,implemented,[audit] high-risk board top-8 by risk_score (ENG-04) + map risk pins (M08-006)
+MVP1-M08-007,AC-0436,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] deterministic overdue/review/override/cancellation alert board plus RLS-scoped mark-handled; offline/stuck truthfully unavailable without source/policy
+MVP1-M08-008,AC-0437,Operations Center,Operations Center / Web Portal,implemented,[audit] visit rows link to /visits/[id] detail across monitoring/SLA/geo (M08-008)
+MVP1-M08-009,AC-0438,Operations Center,Operations Center / Web Portal,implemented,[audit] factory names link to /factories/[id] Factory 360 (M08-009)
+MVP1-M08-010,AC-0439,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] region/city source-backed filtering; branch truthfully unavailable because the runtime has no branch field
+MVP1-M08-011,AC-0440,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] per-inspector scoped workload with relative active load; no absolute capacity threshold or invented balancing recommendation
+MVP1-M08-012,AC-0441,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] scoped cancelled count, reason distribution and deterministic alert rows
+MVP1-M08-013,AC-0442,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] planned-versus-observed coordinates, reason and timestamp; confirmation truthfully unavailable because no field exists
+MVP1-M08-014,AC-0443,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] append-only location-event history with visit drilldown; projected routes never claim recorded GPS history
+MVP1-M08-015,AC-0444,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] scoped append-only planning-to-review audit timeline
+MVP1-M08-016,AC-0445,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] planned/completed/cancelled/overdue/active-inspector/duration/SLA scorecard with formulas and denominators
+MVP1-M08-017,AC-0446,Operations Center,Operations Center / Web Portal,implemented,"[audit] OpsExport CSV of monitoring/SLA/high-risk, region/city scope honored, UTF-8 BOM (M08-017)"
+MVP1-M08-018,AC-0447,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] RLS plus role-scoped shell and direct /dashboard route guard; region scope applied and branch unavailable without source
+MVP1-M08-019,AC-0448,Operations Center,Operations Center / Web Portal,implemented,[audit] loadErrors partial-service banner per source + monitoring 30s auto-refresh re-fetch (M08-019)
+MVP1-M09-001,AC-0449,Compliance Configuration,Admin Portal,partial,"[audit] createRegulation/addClause/publishRegulation+view exist; no effective-date/attachments capture, no edit/deactivate leg"
+MVP1-M09-002,AC-0450,Compliance Configuration,Admin Portal,implemented,"[audit] createItem links clause, response preset, evidence preset, weight; stored active in inspection_items"
+MVP1-M09-003,AC-0451,Compliance Configuration,Admin Portal,implemented,[audit] createViolationCode stores code/title/level(severity)/clause/active_from; item NC-mapping links to item
+MVP1-M09-004,AC-0452,Compliance Configuration,Admin Portal,implemented,[audit] createPenaltyMapping: penalty_ref/legal_basis/mapping_version/range/repeat; unique violation_code_id enforces one penalty
+MVP1-M09-005,AC-0453,Compliance Configuration,Admin Portal,partial,[audit] EVIDENCE_PRESETS only none/photo_nc_mandatory; video/document/comment types not authorable via UI though runtime honors any type
+MVP1-M09-006,AC-0454,Compliance Configuration,Admin Portal,implemented,[audit] NewDraftForm+DraftEditor build package definition (sections/items/action_forms) selectable at prep
+MVP1-M09-007,AC-0455,Compliance Configuration,Admin Portal,implemented,"[audit] DraftEditor add/remove items, section=category, array order; package-item relationship stored (per-item req/opt is section-level)"
+MVP1-M09-008,AC-0456,Compliance Configuration,Admin Portal,implemented,[audit] package_versions carry version_label+definition; visit locks version reference (M09-030)
+MVP1-M09-009,AC-0457,Compliance Configuration,Admin Portal,implemented,[audit] response_model.mapping.non_compliant.action_form + runtime formRequired generates form on trigger
+MVP1-M09-010,AC-0458,Compliance Configuration,Admin Portal,implemented,[audit] approveAndPublish flips draft→published; trg_guard_pkg makes published immutable (B1-EV-001)
+MVP1-M09-011,AC-0459,Compliance Configuration,Admin Portal,implemented,"[audit] saveDraftDefinition (draft-only), validateDefinition dependency check, approveAndPublish; maker-checker in DB"
+MVP1-M09-012,AC-0460,Compliance Configuration,Admin Portal,implemented,"[audit] validateDefinition checks items exist/active, violations+penalty, evidence rules, action-form refs before publish; blockers verbatim"
+MVP1-M09-013,AC-0461,Compliance Configuration,Admin Portal,implemented,[audit] ImpactPanel: referencing packages + definition diff + getPinnedActiveImpact RPC (active visits/inspections by prior version)
+MVP1-M09-014,AC-0462,Compliance Configuration,Admin Portal,implemented,[audit] toggleItemActive marks inactive; validateDefinition blocks publish on inactive item (no free-text reason captured)
+MVP1-M09-015,AC-0463,Compliance Configuration,Admin Portal,implemented,[audit] audit_events trigger covers package_versions/regulations/violations/engine_settings etc; browsable in admin/audit
+MVP1-M09-016,AC-0464,Compliance Configuration,Admin Portal,implemented,"[audit] DraftEditor create section, mandatory flag, assign items, array order rendered in checklist (title EN-only, no bilingual field)"
+MVP1-M09-017,AC-0465,Compliance Configuration,Admin Portal,implemented,"[audit] item order = section.items array position, rendered accordingly in preview+runtime (add/remove only, no drag reorder)"
+MVP1-M09-018,AC-0466,Compliance Configuration,Admin Portal,partial,[audit] section mandatory flag stored/enforced; per-item Required/Optional/Conditional not authorable (conditional comes from seed only)
+MVP1-M09-019,AC-0467,Compliance Configuration,Admin Portal,implemented,[audit] RESPONSE_PRESETS map responses to result (non_compliant→Non-Compliant); consumed at execution via runtime mapping
+MVP1-M09-020,AC-0468,Compliance Configuration,Admin Portal,implemented,[audit] tri_state/binary presets define compliant/non_compliant/na; runtime summarize evaluates result (needs_review not a preset)
+MVP1-M09-021,AC-0469,Compliance Configuration,Admin Portal,partial,"[audit] runtime.isVisible/parseCondition evaluate visible_when show/hide, but no admin UI authors condition rules; seed-only"
+MVP1-M09-022,AC-0470,Compliance Configuration,Admin Portal,partial,"[audit] mandatory_when_visible typed+visibility gates requirement at runtime, but no authoring UI to define the mandatory condition"
+MVP1-M09-023,AC-0471,Compliance Configuration,Admin Portal,implemented,[audit] item form score_weight input stored; runtime scoreExcluded/summarize consume weight for health/risk
+MVP1-M09-024,AC-0472,Compliance Configuration,Admin Portal,partial,[audit] score_excluded_on set by preset (na) and null weight excludes; no explicit per-item enable/disable-scoring toggle in UI
+MVP1-M09-025,AC-0473,Compliance Configuration,Admin Portal,implemented,[audit] evidence_rule on/type/min/mandatory per response; runtime evidenceLeg+computeBlockers enforce at execution
+MVP1-M09-026,AC-0474,Compliance Configuration,Admin Portal,implemented,[audit] mapping.non_compliant.violation + runtime impliedViolations generate violation when NC selected
+MVP1-M09-027,AC-0475,Compliance Configuration,Admin Portal,implemented,[audit] action_form.blocking flag; runtime formRequired+formComplete block submit when mandatory form incomplete
+MVP1-M09-028,AC-0476,Compliance Configuration,Admin Portal,implemented,"[audit] PackagePreview renders version in inspector-facing shape (locale guidance, evidence/conditional/NC), toggled per version"
+MVP1-M09-029,AC-0477,Compliance Configuration,Admin Portal,implemented,[audit] validateDefinition (shared with M09-012) validates sections/items/response mapping/violations/penalties/evidence/action forms
+MVP1-M09-030,AC-0478,Compliance Configuration,Admin Portal,verified_live,Published-version immutability banner + DB trigger; new draft v2026.09 created in browser.
+MVP1-FND-001,FND-ACC-001,FND (foundation),All channels,implemented,[audit] RLS across 0002/0007/0008/0010/0012/0019/0021 enforces role+scope least-privilege; writes return no-row when unauthorized
+MVP1-FND-002,FND-ACC-002,FND (foundation),All channels,implemented,[audit] separate enum state machines: visit plan/operational_state/inspection status/review/virtual session/sync_state distinct
+MVP1-FND-003,FND-ACC-003,FND (foundation),All channels,implemented,[audit] append-only audit_events trigger records actor/ts/object/before-after; UPDATE/DELETE rejected (0005)
+MVP1-FND-004,FND-ACC-004,FND (foundation),All channels,implemented,"[audit] insertNotification single path, event_key/recipient(role-aware), SLA server ts + pause_on_return rule; dedup not enforced by unique index"
+MVP1-FND-005,FND-ACC-005,FND (foundation),iPad,implemented,"[audit] offline.ts version-locked package cache, sha256 checksum, IndexedDB autosave, explicit conflict records (no silent overwrite); at-rest encryption is OS-level"
+MVP1-FND-006,FND-ACC-006,FND (foundation),Web;iPad;Virtual,implemented,"[audit] idempotency_key unique on submission_versions; unique(inspection,item), unique(visit) inspection; outbox replay upserts idempotently"
+MVP1-FND-007,FND-ACC-007,FND (foundation),Web,implemented,"[audit] FactoryVerification mounted first in field page (line 352, above Workspace); observed values in inspection_factory_checks, factories source untouched"
+MVP1-FND-008,FND-ACC-008,FND (foundation),iPad;Virtual;Web,implemented,[audit] evidence rows linked to inspection/item/actor/ts; returned_sections scope re-open; archived_at/deleted_at lifecycle keeps post-submit read-only
+MVP1-FND-009,FND-ACC-009,FND (foundation),iPad;Operations,implemented,"[audit] OpsMap pins active visits only, toned by operational_state; geo telemetry retention 90d (ENG-06); access RLS-scoped"
+MVP1-FND-010,FND-ACC-010,FND (foundation),All channels,implemented,[audit] engine_settings + ui_strings + Postgres enums centrally govern lookups; no hard-coded per-screen lists
+MVP1-FND-011,FND-ACC-011,FND (foundation),All channels,implemented,[audit] ADS tokens for type/spacing; lozenges carry text label + appearance (non-color-only status cue) across web/iPad
+MVP1-FND-012,FND-ACC-012,FND (foundation),Web;Operations,implemented,"[audit] Operations page collects per-source errors into problems array; each widget degrades independently, page never crashes"
+MVP1-FND-013,FND-ACC-013,FND (foundation),Web,implemented,[audit] factories.source + source_synced_at exposed; FactoryVerification shows Senaei source_value vs observed with freshness
+MVP1-FND-014,FND-ACC-014,FND (foundation),iPad;Virtual;Web,implemented,[audit] evidence engine_settings enforce formats/max_mb per type; sha256 at sync; audit events; malware scan deferred (where-available)
+MVP1-FND-015,FND-ACC-015,FND (foundation),All channels,implemented,[audit] traceability maintained in FABLE_UNDERSTANDING_TRACEABILITY.csv / ACCEPTANCE_UNDERSTANDING.csv mapping rows→requirement/acceptance

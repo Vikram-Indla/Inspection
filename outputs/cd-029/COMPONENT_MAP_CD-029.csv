@@ -1,0 +1,13 @@
+component,role,before_responsibility,disposition,after_responsibility,protected_behavior,rtl_theme,tests,rollback,blocker
+Shell,Grouped role-scoped shell,nav+topbar+drawer,PRESERVE,unchanged,brand+groups+topbar+collapse+skip+drawer,full,shell-navigation.spec,revert,none
+ReviewWorkspacePage,/reviews/:id route,RLS detail read + page-load review creation + stacked panels + decision panel,UPDATE,three-zone workspace; trace chain; honest page-load mutation surface,RLS read + immutable version,full,cd-029 spec,revert,HANDOFF_BLOCKED_PAGELOAD_MUTATION
+FindingTraceChain,Signature interaction,none,CREATE,binds question->response->evidence->clause->violation->action->comment as keyboard disclosure list,source/version labels; unavailable not faked,full,cd-029 spec,delete,HANDOFF_BLOCKED_MEDIA/LINKED
+SectionStrip,Zone 1 navigation,none (no in-page nav),CREATE,sticky section strip with counts,anchors only; no state write,full,cd-029 spec,delete,none
+ImmutableContent,Zone 2,checklist/violations/evidence/factory/compare/audit surfaces,UPDATE,read-only content zone bound to trace chain,content DB-rejected on edit,full,cd-029 spec,revert,none
+DecisionRail,Zone 3,DecisionPanel (approve/return/reject + reason + scope),UPDATE,persistent governed rail + guard ladder + partial-failure state,server/RLS recheck; immutable result,full,cd-029 spec,revert,HANDOFF_BLOCKED_ATOMIC
+PageLoadMutation,Open behaviour,insert review + inspection under_review on load,SURFACE_HONESTLY (no backend change here),shown as mutation; making open side-effect-free deferred,RLS,n/a,cd-029 spec,revert,HANDOFF_BLOCKED_PAGELOAD_MUTATION
+decideAction,Decision server action,review update -> inspection update -> notification insert (non-transactional),PRESERVE,unchanged unless approved remediation,RLS + immutability guard,n/a,cd-029 spec,revert,HANDOFF_BLOCKED_ATOMIC/ERRORMAP
+EvidenceViewer,Media preview,path + sha256 only,CREATE_AFTER_APPROVAL,provider-backed viewer,integrity facts; degrade explicit,n/a,cd-029 spec,delete,HANDOFF_BLOCKED_MEDIA
+ClaimReassign,Ownership,none,CREATE_AFTER_APPROVAL,shown unavailable,n/a,n/a,cd-029 spec,delete,HANDOFF_BLOCKED_CLAIM
+FactoryVerification,Zone 2 sub,source vs observed; tolerant fetch,PRESERVE,unchanged; linked failure explicit,never modifies Senaei source,full,cd-029 spec,revert,HANDOFF_BLOCKED_LINKED
+CD029Spec,E2E evidence,none,CREATE,trace/decision/validation/atomic-partial/media/stale/locked/unauth/a11y/RTL/theme/responsive,n/a,n/a,delete,HANDOFF_BLOCKED_BASELINE
