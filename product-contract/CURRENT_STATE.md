@@ -1,5 +1,23 @@
 # Current State
 
+## 2026-07-15 UPDATE 87 — CD-006 through CD-011 backend source completion
+
+The sponsor-authorized Admin Control Plane backend completion is source-ready on
+`codex/cd006-011-backend-completion`. The six remaining M09 authoring/runtime
+partials are implemented: regulation effective-date/draft-edit/deactivation/
+attachment lifecycle (AC-0449), all four evidence types (AC-0453), required/
+optional/conditional and conditional-mandatory behavior (AC-0466/0469/0470),
+and explicit scoring enable/disable (AC-0472). Supporting usage aggregates,
+object-scoped audit history, violation deactivation, publish dependency guards,
+neutral failure paths, RLS, audit, and immutable regulation-child boundaries are
+included. Typecheck and production build pass; the focused suite is **7/7 PASS**.
+The forward migration `20260715200000_cd006_011_backend_completion.sql` is not
+live-applied because explicit approval for this exact shared-schema mutation is
+still required. Claude Code frontend work may proceed in a separate worktree,
+but live completion cannot be claimed until migration approval/application and
+revised authenticated browser verification. Evidence:
+`CD006_CD011_BACKEND_COMPLETION_2026-07-15.md`.
+
 ## 2026-07-15 UPDATE 86 — CD-043 / SCR-VIR-720 slice ACCEPTED
 
 The provider-neutral virtual inspection session boundary (P06B) design-to-live

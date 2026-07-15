@@ -1,5 +1,15 @@
 # Acceptance Status
 
+## CD-006 through CD-011 backend completion — 2026-07-15
+
+- AC-0449, AC-0453, AC-0466, AC-0469, AC-0470 and AC-0472: **BACKEND
+  IMPLEMENTED / LOCAL VERIFICATION PASS / LIVE VERIFICATION PENDING**.
+- Typecheck and production build pass; focused backend contract suite 7/7 pass.
+- This is not frontend or sponsor runtime acceptance. The forward migration
+  `20260715200000_cd006_011_backend_completion.sql` requires explicit approval,
+  governed live application, reconciliation, and authenticated browser proof.
+- Exact evidence: `../evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md`.
+
 G4 acceptance: **PASS** (cloud-verifiable) — 2026-07-11.
 
 Pass criteria (all satisfied):

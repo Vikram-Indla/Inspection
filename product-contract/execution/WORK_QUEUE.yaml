@@ -102,6 +102,14 @@ items:
     blocked_by: ["Sponsor design approval", "SCR-WEB-120/140 route ownership decision"]
     blocks: ["CD-024 implementation authorization"]
     note: "V4 quality audit and exact CD-024 prompt are ready. Design exploration may proceed, but implementation is blocked until sponsor design approval, SCR-WEB-120/140 ownership and route reconciliation, independent wiring audit, and explicit authorization. Preserve /planning/plans/:id as read-only. 2026-07-15 reconciliation: the CD-023 DEC-012 independent wiring audit is already PASS (ROUND4, CURRENT_STATE.md UPDATE ~34-38/60/61) — removed as a satisfied blocker. No route/ownership decision has been recorded in governance/decision_register.csv or OPEN_DECISIONS.yaml; that sponsor decision remains the actual open blocker, unresolved as of this check."
+  - task_id: "TASK-CD006-011-BACKEND-COMPLETION"
+    gate: "G11 admin control-plane backend completion"
+    priority: "P0"
+    status: "SOURCE_COMPLETE_LOCAL_PASS_LIVE_MIGRATION_APPROVAL_PENDING"
+    owner: "Codex backend + Claude Code frontend + Sponsor live approval"
+    blocked_by: ["Explicit sponsor approval to apply 20260715200000_cd006_011_backend_completion.sql", "Governed migration application and live reconciliation", "Revised authenticated CD-006..011 frontend/browser verification"]
+    blocks: ["CD-006..011 live runtime completion claim", "CD-006..011 sponsor runtime acceptance"]
+    note: "Sponsor-authorized backend source is complete on codex/cd006-011-backend-completion: AC-0449/0453/0466/0469/0470/0472 plus usage, scoped audit, deactivation, validation, RLS/audit and immutability contracts. Typecheck/build PASS; focused suite 7/7 PASS. Claude Code frontend work may proceed in a separate worktree under the ownership boundary in CD006_CD011_BACKEND_COMPLETION_2026-07-15.md. Do not claim live completion until the exact forward migration is explicitly approved, applied, reconciled, and the revised authenticated suites pass."
   - task_id: "TASK-BASELINE-WIRING-AUDIT-001"
     gate: "G10 verification / G11 hardening"
     priority: "P0"

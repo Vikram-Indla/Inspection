@@ -2066,9 +2066,59 @@
       "commit_sha": "uncommitted (setup/Inspection working tree)",
       "next_task": "Continue closure audit across remaining safe residuals; preserve governed blockers",
       "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md and current WIRING_MAP files; do not claim full baseline completion while external blockers remain."
+    },
+    {
+      "session_id": "2026-07-15-cd006-011-backend-completion",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "codex/cd006-011-backend-completion",
+      "task_id": "TASK-CD006-011-BACKEND-COMPLETION",
+      "gate": "G11 admin control-plane backend completion",
+      "requirements": ["MVP1-M09-001", "MVP1-M09-005", "MVP1-M09-018", "MVP1-M09-021", "MVP1-M09-022", "MVP1-M09-024"],
+      "acceptance_ids": ["AC-0449", "AC-0453", "AC-0466", "AC-0469", "AC-0470", "AC-0472"],
+      "screens": ["CD-006", "CD-007", "CD-008", "CD-009", "CD-010", "CD-011"],
+      "engines": ["ENG-08", "ENG-12"],
+      "files_changed": [
+        "supabase/migrations/20260715200000_cd006_011_backend_completion.sql",
+        "apps/web/src/app/admin/regulations/actions.ts",
+        "apps/web/src/app/admin/items/actions.ts",
+        "apps/web/src/app/admin/packages/actions.ts",
+        "apps/web/src/app/admin/violations/actions.ts",
+        "apps/web/src/app/field/inspection/[id]/runtime.ts",
+        "apps/web/e2e/cd-006-011-backend-completion.spec.ts",
+        "outputs/claude-design-approval-pack/admin-control-plane-suite/CD006_CD011_CLAUDE_CODE_FRONTEND_HANDOFF_2026-07-15.md",
+        "product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "CD-006..011 focused backend completion suite 7/7 PASS",
+        "git diff check PASS",
+        "old frontend suite invoked but non-certifying: missing persona/runtime configuration and superseded blocked-state assertions"
+      ],
+      "evidence": ["product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md"],
+      "decisions": [
+        "Implement only source-backed authoring/runtime rules; no legal, scoring, SLA, provider or lifecycle policy value invented",
+        "Preserve published/deactivated regulation parent and child content at the database boundary",
+        "Expose usage as aggregate counts and audit as exact-object history without broad operational/audit row access",
+        "Allow Claude Code frontend work in a separate worktree with backend-owned files excluded"
+      ],
+      "blockers": [
+        "Explicit sponsor approval required for the exact live migration 20260715200000_cd006_011_backend_completion.sql",
+        "Governed live application and read-only reconciliation pending",
+        "Frontend implementation and revised authenticated browser suites pending"
+      ],
+      "commit_sha": "c4c5701 (implementation); documentation handoff commit follows",
+      "next_task": "Obtain exact live-migration approval, apply and reconcile it, then integrate and verify the parallel frontend implementation",
+      "resume_prompt": "Read product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md; do not claim live completion until the exact migration is approved/applied and authenticated frontend suites pass."
     }
   ],
-  "last_session": "2026-07-15-cd022-duplicate-status-follow-up",
+  "last_session": "2026-07-15-cd006-011-backend-completion",
   "rules": {
     "append_only": true,
     "required_fields": [
