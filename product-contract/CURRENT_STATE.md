@@ -1,5 +1,33 @@
 # Current State
 
+## 2026-07-15 — CD-043 / SCR-VIR-720 slice ACCEPTED (cherry-picked to baseline)
+
+The provider-neutral virtual inspection session boundary (P06B) design-to-live
+slice is accepted and cherry-picked onto this baseline ahead of the full
+`feat/admin-control-plane` merge (that branch was mid-flight with an unrelated
+dirty tree, so only the four self-contained CD-043 commits were brought over).
+The proven boundary (`beginRemote`, `closeSession`, CD-042 verified gate,
+provider-pending bounded room) was already live on `/virtual/:id`; this slice
+wired the remaining honest states without inventing policy or shipping any
+blocked seam: **S12** closed/read-only immutable affordance, **S15** offline
+(begin/reschedule/close disabled, nothing queued), **S13** stale/concurrent
+optimistic-concurrency rev token (`state:timelineLength`, refused before any
+write in begin/close/reschedule), **S08** loading skeleton, and **S20** route
+reconciliation (catalogue `SCR-VIR-720` → canonical `/virtual/:id`, already on
+baseline).
+
+Acceptance chain: independent DEC-012 wiring audit (adversarial, not the
+implementer) returned ACCEPT-WITH-FIXES; Finding 1 (a pre-existing
+`rescheduleSession` STM-VIR TOCTOU) fixed with an `.in("state",[…])`
+compare-and-swap; Finding 2 (e2e) closed —
+`cd-043-virtual-boundary-states.spec.ts` ran 6 passed (persona setup +
+S12/S13/S15) against the configured live project, S13 proving the
+concurrent-change close never lands. Blocked seams remain surfaced-only.
+Evidence: `evidence/CD-043_D2L_WIRING_CLOSURE_2026-07-15.md`,
+`evidence/CD-043_DEC-012_INDEPENDENT_WIRING_AUDIT_2026-07-15.md`. Baseline commits
+cherry-picked from `feat/admin-control-plane` (`81ba156`, `503a56c`, `b4061cc`,
+`b8ddc46`).
+
 ## 2026-07-15 UPDATE 52 — CD-031 neutral-error remediation and CD-004 evidence closure
 
 The CD-031 audit's fixable P1 is closed: `factories/[id]/neutral.ts` now logs raw provider
