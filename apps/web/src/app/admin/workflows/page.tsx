@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { ProposeDraftForm, DraftPayloadEditor, ApprovePublish, type WfStrings } from "./Controls";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +11,7 @@ type Transition = { id: string; from: string; to: string; actor: string; guard: 
 export default async function Workflows() {
   const { t } = await useT();
   const sb = await supabaseServer();
+  const { data: { user } } = await sb.auth.getUser();
   const { data: wfs, error } = await sb.from("config_versions")
     .select("id, version_label, status, payload, effective_from, created_at, created_by, approved_by")
     .eq("engine", "workflow").order("effective_from", { ascending: false });
@@ -48,13 +50,22 @@ export default async function Workflows() {
       )}
       {(wfs ?? []).map(w => {
         const p = w.payload as { object?: string; states?: string[]; transitions?: Transition[] };
+        // RBAC-002 separation of duties: the maker cannot be the checker. When the
+        // viewer proposed this draft, the DB will reject self-approval — so we
+        // pre-empt it with an explanation rather than an Approve button that fails.
+        const isOwnDraft = w.status === "draft" && !!user && w.created_by === user.id;
         return (
           <div key={w.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
             <div className="ax-row" style={{ justifyContent: "space-between" }}>
               <h3>{t("admin.wf.object", "Object:")} {p.object ?? "—"} <span className="ax-version">{w.version_label}</span></h3>
               <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
                 <span className={`ax-lozenge ${w.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${w.status}`, String(w.status).replace(/_/g, " "))}</span>
-                {w.status === "draft" && <ApprovePublish versionId={w.id} strings={strings} />}
+                {w.status === "draft" && !isOwnDraft && <ApprovePublish versionId={w.id} strings={strings} />}
+                {isOwnDraft && (
+                  <span className="ax-lozenge ax-lozenge--warning" title={t("admin.wf.sod.desc", "You proposed this draft (the maker). A different checker must approve it — separation of duties is enforced by a DB constraint.")}>
+                    ⛔ {t("admin.wf.sod.title", "You proposed this — a distinct checker must approve")}
+                  </span>
+                )}
               </div>
             </div>
             <p className="ax-caption">{t("admin.wf.states", "States:")} {(p.states ?? []).join(" · ")} {t("admin.wf.statesNote", "— runtime evaluates transitions against this published version; no status bypass (RBAC-003; maker-checker on config_versions enforced by DB constraint).")}</p>
@@ -80,7 +91,21 @@ export default async function Workflows() {
                 ))}
               </tbody>
             </table></div>
-            {w.status === "draft" && <DraftPayloadEditor versionId={w.id} payload={w.payload as object} strings={strings} />}
+            {w.status === "draft" && (
+              <>
+                <DraftPayloadEditor versionId={w.id} payload={w.payload as object} strings={strings} />
+                {/* CD-013: the visual designer / graph-validation / replay lane is
+                    non-executable — no canvas spec, simulation engine, or persisted
+                    replay exists. The truthful editor is the payload above; this is
+                    an honest boundary, kept out of the working flow. */}
+                <NotYetBoundary
+                  title={t("admin.wf.designer.title", "Visual designer, graph validation & replay")}
+                  consequence={t("admin.wf.designer.desc", "Editing transitions on a canvas, validating the graph, and replaying a run against a draft are proposed capabilities with no engine, fixtures, or persistence today. The state-machine payload above is the real editor.")}
+                  seam="NEEDS_APPROVED_CONTRACT — designer / simulation engine"
+                  notAvailableLabel={t("admin.wf.notYet", "Not available yet")}
+                />
+              </>
+            )}
             {w.status === "published" && <ProposeDraftForm baseVersionId={w.id} baseLabel={w.version_label} strings={strings} />}
           </div>
         );
