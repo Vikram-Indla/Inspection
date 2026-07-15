@@ -1,40 +1,43 @@
 schema_version: "1.0"
-change_id: "CC-G4-001"
-title: "G4 closure: verification evidence, gate-report PASS and control-file status updates"
-requestor: "Vikram Indla"
+change_id: "CC-CD030-ROUTE-001"
+title: "SCR-WEB-320 route & action reconciliation — route-neutral compare mode; Accept changes deferred"
+requestor: "Claude Code (on behalf of the CD-030 slice)"
 approver: "Vikram Indla"
-authorization: "Explicit human instruction to proceed autonomously and stop requesting mechanical approvals (session 2026-07-11)."
+authorization: "Sponsor ruling recorded in session 2026-07-15 (decision owner): (1) approve route-neutral consolidation; (2) confirm accept/merge out of MVP1."
 business_reason: >
-  Close G4 (memory / Obsidian / Claude continuity) after installation and functional
-  verification, and open G5 architecture discovery. Human authorized correcting the
-  two bootstrap root-resolution defects, creating this change-approval record,
-  capturing all available G4 mechanical evidence, running the G4 validation suite,
-  marking G4 PASS on cloud-verifiable tests, and committing on the controlled branch.
+  CD-030 / SCR-WEB-320 Version Comparison shipped as a route-neutral compare mode
+  inside /reviews/:id (the review's own immutable submission versions + stored
+  returned scope), rather than a dedicated /reviews/:id/compare route. The
+  catalogue "Accept changes" action implies a merge/mutation of an immutable
+  submitted version for which no lawful transition, RLS policy or audit event
+  exists. This change reconciles the frozen catalogue with the shipped, verified
+  runtime and records the accept/merge deferral.
+decision:
+  sub_1_route: "APPROVED — /reviews/:id/compare consolidated into /reviews/:id (route-neutral compare mode). No dedicated compare route built."
+  sub_2_accept_merge: "CONFIRMED OUT OF MVP1 — Accept/merge on immutable submitted versions is out of scope. Remains HANDOFF_BLOCKED_ACCEPT until a future decision defines a lawful merge transition (RLS role, audit event, effect on version immutability). No merge code invented."
 scope_allowed:
-  - "product-contract/evidence/** (capture G4-EV-001..007 and validation suite)"
-  - "product-contract/G4_GATE_REPORT.md (CONDITIONAL PASS -> PASS)"
-  - "product-contract/GATE_STATUS.md (G4 row; G5 discovery status)"
-  - "product-contract/CURRENT_STATE.md (gate status lines)"
-  - "product-contract/MANIFEST.json (current_gate, gate_status)"
-  - "product-contract/acceptance/ACCEPTANCE_STATUS.md (G4 result)"
-  - "product-contract/evidence/EVIDENCE_STATUS.md (captured)"
-  - "product-contract/execution/CURRENT_SLICE.yaml (advance to G5-ARCH-DISCOVERY)"
-  - "product-contract/execution/WORK_QUEUE.yaml (G4 done; G5 in progress)"
-  - "product-contract/governance/HUMAN_APPROVALS.yaml (record G4 authorization)"
-  - "product-contract/sessions/SESSION_LEDGER.json (append session, append-only)"
-  - "docs/G5_ARCHITECTURE_AND_READINESS.md (new discovery report)"
+  - "product-contract/screens/screen_route_catalogue.csv — SCR-WEB-320 row only: route /reviews/:id/compare -> /reviews/:id; primary_actions drop 'Accept changes' (deferred), keep 'Navigate changed sections'."
+  - "product-contract/governance/decision_register.csv — append DEC-013 (this reconciliation)."
+  - "outputs/claude-design-approval-pack/CD-030_CHANGE_CONTROL_ROUTE_RECONCILIATION.md — mark CC-CD030-ROUTE-001 APPROVED."
 scope_forbidden:
-  - "Any frozen domain contract row (field_dictionary, rbac_matrix, state_transitions, atomic_scope, reference_data, process_catalog, screen_route_catalogue, decision_register, error_catalogue, scope_boundary) — IDs and semantics preserved unchanged."
-  - "Any application/product code — none created."
-  - "Any push, merge or modification of main."
-  - "Resolving any open DEC-001..010 / OD-01..08 decision."
-mvp1_mvp2_impact: "None. No scope added, removed or weakened."
-regression_impact: "None. Control/status files only; all stable IDs preserved."
+  - "Any other frozen contract row or screen; all other IDs/semantics preserved."
+  - "SCR-WEB-320 mandatory_regions — unchanged; 'evidence diff' remains a design region, shown unavailable at runtime (HANDOFF_BLOCKED_MEDIADIFF) pending its own decision."
+  - "Building any accept/merge action, a dedicated /reviews/:id/compare route, or any semantic/evidence/package/metadata diff derivation."
+  - "Resolving DEC-012 (the independent Codex wiring audit for CD-030 remains PENDING)."
+  - "Any push, merge or modification of main as part of recording this decision."
+mvp1_mvp2_impact: >
+  None removed or weakened. MVP1 comparison capability (stored-answer diff +
+  Tamper-evident Scope Rail + explicit unavailable categories + navigate-to-section)
+  is fully delivered. Accept/merge was never a proven MVP1 capability; its deferral
+  removes no accepted behavior.
+regression_impact: "None. CD-028 queue and CD-029 decision workspace untouched; opening the review stays read-only; the prior inline version-diff is superseded by VersionCompare with equal-or-greater truth (same stored-answer union-of-keys diff)."
 decision_owner: "Vikram Indla"
-effective_version: "G4-CLOSED / G5-DISCOVERY-OPEN"
-effective_date: "2026-07-11"
+effective_version: "CD-030 / SCR-WEB-320 route-neutral compare mode"
+effective_date: "2026-07-15"
 notes: >
-  G4-EV-003 Obsidian vault is recorded as a structure-verification note; the desktop
-  screenshot is a NON-BLOCKING post-check per human instruction (do not fabricate a
-  screenshot). This approval is narrow and expires on G4 closure commit; it does not
-  authorize G5 implementation, which remains blocked until G8 PASS.
+  Supersedes the expired CC-G4-001 record in this single-active-record file.
+  This approval covers ONLY the route reconciliation and the accept/merge
+  deferral. It does not clear CD-030's other HANDOFF_BLOCKED legs
+  (MEDIADIFF/PKGSEMANTIC/METADIFF/LINKED/START_REVIEW_ATOMIC/ATOMIC) and does not
+  substitute for the independent Codex wiring audit required by DEC-012, which
+  remains PENDING for CD-030.

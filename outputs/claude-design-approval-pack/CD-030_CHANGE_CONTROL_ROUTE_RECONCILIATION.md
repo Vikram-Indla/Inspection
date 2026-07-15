@@ -1,10 +1,13 @@
 # CD-030 Change-Control Request — SCR-WEB-320 route & action reconciliation
 
-**Status: DRAFT — UNAPPROVED.** Follows the required fields in
-`product-contract/governance/CHANGE_CONTROL.md`. Not authorized. On sponsor
-signoff, the approved request graduates into
-`product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml` (one active record per
-approval) and any decision it depends on is recorded in `decision_register.csv`.
+**Status: APPROVED — sponsor ruling 2026-07-15 (V. Indla, decision owner).**
+Sub-decision 1 (route): **APPROVED** — route-neutral consolidation into
+`/reviews/:id`. Sub-decision 2 (accept/merge): **CONFIRMED OUT OF MVP1** — stays
+`HANDOFF_BLOCKED_ACCEPT`. Graduated into
+`product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml` (CC-CD030-ROUTE-001);
+recorded as **DEC-013** in `decision_register.csv`; `screen_route_catalogue.csv`
+SCR-WEB-320 row updated (route `/reviews/:id`, action "Navigate changed sections",
+"Accept changes" deferred). Follows `product-contract/governance/CHANGE_CONTROL.md`.
 
 The CD-030 design (SCR-WEB-320 Version Comparison) was implemented as a
 **route-neutral compare mode inside `/reviews/:id`** rather than at the frozen
@@ -63,10 +66,11 @@ only). Files already changed in the slice: `apps/web/src/app/reviews/[id]/page.t
   block is replaced by the `VersionCompare` component with equal-or-greater truth
   (same stored-answer union-of-keys diff, now classified against stored scope).
 - **Decision owner:** Vikram Indla
-- **Approval:** ☐ pending
-- **Effective version:** on approval, SCR-WEB-320 catalogue row updated to
-  route `/reviews/:id` (compare mode) and action set "navigate changed sections"
-  with "Accept changes" moved to a deferred/blocked note referencing this CR.
+- **Approval:** ☑ APPROVED — sponsor 2026-07-15 (both sub-decisions); recorded as
+  DEC-013 and in ACTIVE_CHANGE_APPROVAL.yaml.
+- **Effective version:** SCR-WEB-320 catalogue row updated — route `/reviews/:id`
+  (compare mode), action "Navigate changed sections", "Accept changes" deferred
+  (HANDOFF_BLOCKED_ACCEPT) with this CR referenced. Effective 2026-07-15.
 
 ---
 
