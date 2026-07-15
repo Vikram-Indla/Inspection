@@ -50,6 +50,29 @@ reviewable per screen.
 
 Design-of-record for this branch = **R3**. Implementation unchanged from the R2
 pass (see `../cd-012-019-r2/WIRING_AUDIT_CD-012-019_R2_FRONTEND.md` for the
-per-slice map). Verification level unchanged: `tsc` + color-law clean; runtime
-unverified (no test DB in this worktree); independent DEC-012 runtime audit still
-required.
+per-slice map).
+
+## Runtime verification (2026-07-15, env available)
+
+Env wired from the main checkout's `.env.local` (Supabase URL reachable, health
+401 as expected without apikey).
+
+- **`next build` — PASS (exit 0).** All routes compile; every touched admin
+  route emits as dynamic server-rendered (`/admin/{localization,audit,risk,
+  workflows,access,gis}`). Confirms client/server boundaries (`RiskForm`),
+  `NotYetBoundary` imports, and client→server-action wiring resolve with no RSC
+  violations. Only warning: benign workspace-root lockfile inference (pre-existing).
+- **Live server (`next start`) route check — PASS.** All six admin routes load
+  without a 500. Five 307-redirect to `/login` unauthenticated; `/admin/
+  localization` returns 200 then client-redirects to `/login` (`Router`) — a
+  redirect-mechanism quirk, **not** an auth bypass and **not a data leak**
+  (unauth body carries 0 `lz-row`, 0 `visits.*` keys). Guard is `Shell.tsx:14`
+  `if (!user) redirect("/login")`, unchanged by this branch — pre-existing.
+
+### Still NOT verified
+Authenticated behavioral driving of the admin surfaces (render the localization
+`lz-row` grid, exercise live placeholder-diff / Save-disable, risk weights-sum,
+workflow SoD guard, boundary disclosures). Seeded users are non-admin
+(planner / inspector / ops) — they pass the login guard but hit RLS-empty data on
+control-plane tables, so driving them proves little. **Admin-role credentials or a
+seeded admin user are required** to complete the DEC-012 runtime audit.
