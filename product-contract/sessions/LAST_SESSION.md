@@ -1,10 +1,15 @@
 # Last Session
-
-- Time: 2026-07-14T16:45:00+03:00
-- Session ID: 2026-07-14-baseline-wiring-audit-001
-- End reason: baseline audit complete; main pushed and remote verified
-- Branch: `main`
-- Baseline commit: `02c2965` (includes baseline commit `24326ae`, reconciled CD-023 merge, and documentation status)
-- Verification: typecheck PASS; production build PASS; focused CD-001..CD-022 48/48; CD-023 18/18; full Playwright 92/99 with two expected linked-RPC migration failures and one KPI fixture/published-monitoring mismatch.
-- Evidence: `product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md`
-- Remaining authorized work: change the repository default branch from protected `setup/Inspection` to `main` if desired, then delete that remote branch administratively. Do not deploy production, drop stashes, or implement blocked CD-024/CD-025 routes.
+- Time: 2026-07-15T04:47:38.729836+00:00
+- Session ID: 2688bbc1-56fe-4ea1-9ee6-42a7c5ce6dfa
+- End reason: other
+- Branch: docs/cd-004-open-evidence
+- Commit: 0e13c9e
+- Working tree:
+```
+M .project-memory/audit/instructions_loaded.jsonl
+ M .project-memory/audit/session_end.jsonl
+ M .project-memory/audit/tool_events.jsonl
+ M product-contract/sessions/LAST_SESSION.md
+?? outputs/claude-design-approval-pack/admin-control-plane-suite/
+```
+- Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.
