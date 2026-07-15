@@ -81,11 +81,11 @@ items:
   - task_id: "CD-021-BULK-TARGETING"
     gate: "G11 sponsor-directed design implementation"
     priority: "P1"
-    status: "BUILD_IMPLEMENTED_VERIFIED_AWAITING_REVIEW"
+    status: "BUILD_IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_RUNTIME_ACCEPTANCE"
     owner: "Claude Code + Sponsor / product owner"
-    blocked_by: []
+    blocked_by: ["Sponsor runtime acceptance"]
     blocks: []
-    note: "Now the active slice (2026-07-13, sponsor-directed). SCR-WEB-110 /planning/bulk + SCR-WEB-120 /planning/bulk/review. Increments 1-6 done and verified on branch feat/cd-021-bulk-targeting (uncommitted). Migration 0026 atomic publish RPC applied live. Open: Codex wiring review, full regression rerun, AC-ledger recompute, sponsor runtime acceptance."
+    note: "Now the active slice (2026-07-13, sponsor-directed). SCR-WEB-110 /planning/bulk + SCR-WEB-120 /planning/bulk/review. Migration 0026 atomic publish RPC applied live. 2026-07-15 reconciliation: feat/cd-021-bulk-targeting branch no longer exists — reconciled into setup/Inspection; Codex wiring review (DEC-012) is PASS with 23/23 focused suite (CURRENT_STATE.md UPDATE 60/61); full regression has rerun multiple times since (99/99 at UPDATE 38, latest baseline sweep further); AC-ledger has been recomputed (493 rows). All three removed as satisfied blockers. Sole remaining item is sponsor runtime acceptance."
   - task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
     gate: "G11 DEC-012 remediation"
     priority: "P0"
