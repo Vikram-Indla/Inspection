@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
   beginRemote, closeSession, joinParticipant, markSessionVerified,
@@ -70,7 +71,9 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
   const [verifiedIds, setVerifiedIds] = useState(() => new Set(parts.filter(p => { return !!p.verified_at; }).map(p => { return p.id; })));
   const [codes, setCodes] = useState({} as Record<string, string>);
   const [busy, setBusy] = useState(false);
+  const [verifyMsg, setVerifyMsg] = useState({} as RoomActionResult);
   const sb = supabaseBrowser();
+  const router = useRouter();
 
   const [joinState, joinAction, joinPending] = useActionState<RoomActionResult, FormData>(joinParticipant, {});
   const [waitState, waitAction, waitPending] = useActionState<RoomActionResult, FormData>(openWaitingRoom, {});
@@ -126,7 +129,12 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
       setOtpInfo(o => ({ ...o, [p.id]: { msg: t.otpVerified } }));
       const fd = new FormData();
       fd.set("session_id", session.id); fd.set("participant_id", p.id);
-      await markSessionVerified({}, fd);
+      // WA-03: surface the session-advance result (previously dropped); WA-04:
+      // re-read server truth so the begin gate reflects the real session state
+      // rather than the optimistic client set.
+      const res = await markSessionVerified({}, fd);
+      setVerifyMsg(res);
+      if (res.ok) router.refresh();
     } else {
       const msg = d.status === "wrong" ? fmt(t.otpWrong, { n: d.attempts_left ?? 0 })
         : d.status === "locked" ? t.otpLocked
@@ -139,10 +147,14 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
   }
 
   const reps = parts.filter(p => { return p.role === "factory_rep"; });
+  // Client-optimistic aggregate — drives the informational participant link only.
   const allVerified = reps.length > 0 && reps.every(p => { return verifiedIds.has(p.id); });
+  // WA-04: the begin transition gate is server-authoritative — a session is only
+  // begin-ready once the server has actually advanced it to verified/in_progress.
+  const serverReady = session.state === "verified" || session.state === "in_progress";
   const open = session.state !== "closed";
-  const errors = [joinState.error, waitState.error, reschedState.error, closeState.error, beginState.error].filter(Boolean);
-  const oks = [joinState.ok, waitState.ok, reschedState.ok, closeState.ok].filter(Boolean);
+  const errors = [joinState.error, waitState.error, reschedState.error, closeState.error, beginState.error, verifyMsg.error].filter(Boolean);
+  const oks = [joinState.ok, waitState.ok, reschedState.ok, closeState.ok, verifyMsg.ok].filter(Boolean);
 
   // Derived (client-clock) lateness — no server guard exists for this (RUNTIME_TRUTH_LEDGER row 11);
   // the stored appointment_at above is authoritative, this is only a relative hint.
@@ -157,7 +169,7 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
       ? { key: "open", label: t.openWaiting, sub: t.actOpenSub, action: waitAction, pending: waitPending }
       : session.state === "in_progress"
         ? { key: "continue", label: t.actContinue, sub: t.actContinueSub, action: beginAction, pending: beginPending }
-        : allVerified
+        : serverReady
           ? { key: "begin", label: t.beginReady, sub: t.actBeginSub, action: beginAction, pending: beginPending }
           : { key: "begin", label: t.beginGated, blocked: true, why: t.needVerify, action: beginAction, pending: beginPending };
 
