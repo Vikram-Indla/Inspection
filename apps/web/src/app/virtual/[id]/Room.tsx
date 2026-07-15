@@ -101,7 +101,7 @@ export default function Room({ session, strings }: { session: S; strings: RoomSt
       setOtpInfo(o => ({ ...o, [p.id]: { msg: strings.otpVerified } }));
       // Guarded server transition + timeline event (M05-003/018).
       const fd = new FormData();
-      fd.set("session_id", session.id); fd.set("participant", p.display_name);
+      fd.set("session_id", session.id); fd.set("participant_id", p.id);
       await markSessionVerified({}, fd);
     } else {
       const msg = d.status === "wrong" ? fmt(strings.otpWrong, { n: d.attempts_left ?? 0 })

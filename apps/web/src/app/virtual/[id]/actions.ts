@@ -92,21 +92,23 @@ export async function joinParticipant(_: RoomActionResult, fd: FormData): Promis
   return { ok: evErr ? `${p.display_name} joined — timeline append failed: ${evErr}` : `${p.display_name} joined` };
 }
 
-// M05-018 — verified transition + timeline (invoked right after vp_verify_otp).
+// M05-018 — one RLS-scoped RPC proves the verified factory representative(s),
+// advances the canonical state and appends the timeline event atomically.
 export async function markSessionVerified(_: RoomActionResult, fd: FormData): Promise<RoomActionResult> {
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { error: "Session expired — sign in again." };
   const session_id = String(fd.get("session_id") ?? "");
-  const participant = String(fd.get("participant") ?? "");
-  const { data: upd, error } = await sb.from("virtual_sessions")
-    .update({ state: "verified" }).eq("id", session_id)
-    .in("state", ["scheduled", "waiting", "joined"]).select("id");
-  if (error) { console.error("[virtual participant join]", error); return { error: SYSTEM_ERROR }; }
-  const evErr = await appendEvent(sb, session_id, "verified", { participant });
+  const participant_id = String(fd.get("participant_id") ?? "");
+  if (!session_id || !participant_id) return { error: SYSTEM_ERROR };
+  const { data: transitioned, error } = await sb.rpc("vs_mark_session_verified", {
+    p_session: session_id,
+    p_participant: participant_id,
+  });
+  if (error) { console.error("[virtual session verified]", error); return { error: SYSTEM_ERROR }; }
   revalidatePath(`/virtual/${session_id}`);
-  if (!upd?.length) return { ok: "Identity verified (session already verified or further along)" };
-  return { ok: evErr ? `Session verified — timeline append failed: ${evErr}` : "Session verified" };
+  if (!transitioned) return { ok: "Identity verified (session already verified or further along)" };
+  return { ok: "Session verified" };
 }
 
 // M05-019/020 — begin remote inspection: same workspace + submission flow as
