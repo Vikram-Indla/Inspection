@@ -19,6 +19,58 @@ const CHECKS = [
   { route: "/admin/gis", name: "cd015-gis", markers: [".ax-pagehead"] },
 ];
 
+// Non-destructive localization save round-trip: edit a row's Arabic through the
+// real UI → saveTranslation server action → DB write (RLS) → reload and confirm
+// persistence + status flip to draft → restore the original value. Proves the
+// mutation path end-to-end without leaving the store changed.
+async function localizationRoundTrip(page) {
+  const goList = async () => {
+    await page.goto(`${BASE}/admin/localization`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".lz-list", { timeout: 20000 });
+    await page.waitForTimeout(600);
+  };
+  const rowFor = key => page.locator(`.lz-row:has(.lz-key:text-is(${JSON.stringify(key)}))`).first();
+  const arOf = async key => rowFor(key).locator('input[name="ar"]').inputValue();
+  const saveRow = async (key, value) => {
+    const r = rowFor(key);
+    const inp = r.locator('input[name="ar"]');
+    await inp.fill(value);
+    await r.locator('form:has(input[name="ar"]) button').first().click();
+    // saveTranslation revalidates the path; give the action + re-render time.
+    await page.waitForTimeout(2500);
+  };
+
+  await goList();
+  // Choose the first row that already has non-empty Arabic (avoids empty/missing edge).
+  const count = await page.locator(".lz-row").count();
+  let key = null, original = null;
+  for (let i = 0; i < Math.min(count, 20); i++) {
+    const r = page.locator(".lz-row").nth(i);
+    const v = await r.locator('input[name="ar"]').inputValue();
+    if (v && v.trim() !== "") { key = (await r.locator(".lz-key").first().innerText()).trim(); original = v; break; }
+  }
+  if (!key) return { ran: false, reason: "no row with existing Arabic found" };
+
+  const testVal = original + " ✎rt";
+  await saveRow(key, testVal);
+  await goList();
+  const persisted = await arOf(key);
+  const statusText = (await rowFor(key).locator(".ax-lozenge").first().innerText().catch(() => "")).trim();
+
+  // Restore original — leaves the store as it was.
+  await saveRow(key, original);
+  await goList();
+  const restored = await arOf(key);
+
+  return {
+    ran: true, key,
+    savedOk: persisted === testVal,
+    statusAfterSave: statusText,
+    restoredOk: restored === original,
+    original, testVal, persisted, restored,
+  };
+}
+
 const results = [];
 const browser = await chromium.launch();
 const ctx = await browser.newContext();
@@ -56,7 +108,8 @@ try {
     const allMarkersPresent = c.markers.every(s => (markerHits[s] ?? 0) > 0);
     results.push({ route: c.route, status, allMarkersPresent, markerHits, bodyErr, jsErrors: newErrors });
   }
-  console.log(JSON.stringify({ landed, results }, null, 2));
+  const roundTrip = process.env.VERIFY_ROUNDTRIP ? await localizationRoundTrip(page) : { ran: false, reason: "skipped (set VERIFY_ROUNDTRIP=1)" };
+  console.log(JSON.stringify({ landed, results, roundTrip }, null, 2));
 } finally {
   await browser.close();
 }

@@ -89,7 +89,17 @@ render error) — `labels.factorName` was a function prop crossing the server→
 boundary. `tsc` and `next build` both passed; only the authenticated live render
 exposed it. Fixed in `fix(cd-014)` (resolve names server-side). Re-verified green.
 
-This closes the DEC-012 runtime-render audit for the six routes. Interactive
-mutation flows (actually saving a translation, publishing a workflow, saving risk
-weights) were not exercised end-to-end against the DB and remain for a functional
-E2E pass; the render + wiring layer is verified.
+### Save round-trip — DONE (CD-018, `VERIFY_ROUNDTRIP=1`)
+
+Non-destructive end-to-end mutation test through the real UI:
+- Edited `admin.access.banner.body` Arabic via the row's input + Save →
+  `saveTranslation` server action → `ui_strings` write (RLS, `compliance_admin`)
+  → reload confirms the edited value **persisted** (`savedOk: true`).
+- Status correctly flipped to **DRAFT** on the Arabic edit (contract behavior:
+  any AR change returns the string to draft).
+- Original value **restored** afterwards (`restoredOk: true`) — the store is left
+  exactly as before the test.
+
+This closes the DEC-012 runtime audit for the six routes AND the CD-018 write
+path. Still not E2E-exercised: workflow publish (maker-checker) and risk-weights
+save round-trips — same pattern, extendable in `scripts/verify-admin.mjs`.
