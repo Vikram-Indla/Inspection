@@ -67,6 +67,8 @@ test.describe("CD-006..011 backend completion", () => {
     expect(migration).toContain("inspection_item_usage");
     expect(migration).toContain("violation_code_usage");
     expect(migration).toContain("admin_configuration_audit");
+    expect(migration).toContain("set search_path = ''");
+    expect(migration).toContain("from anon");
     expect(itemActions).toContain("getItemUsage");
     expect(regulationActions).toContain("getRegulationAudit");
     expect(violationActions).toContain("getViolationUsage");

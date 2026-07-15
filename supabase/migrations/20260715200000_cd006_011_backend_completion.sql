@@ -29,6 +29,8 @@ create table if not exists regulation_attachments (
 );
 
 alter table regulation_attachments enable row level security;
+revoke all on table regulation_attachments from anon;
+grant select, insert, update, delete on table regulation_attachments to authenticated;
 drop policy if exists regulation_attachments_read on regulation_attachments;
 create policy regulation_attachments_read on regulation_attachments
   for select using (auth.uid() is not null);
@@ -114,12 +116,12 @@ returns jsonb
 language plpgsql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   v_result jsonb;
 begin
-  if not has_any_role(array['compliance_admin','form_admin']) then
+  if not public.has_any_role(array['compliance_admin','form_admin']) then
     raise exception 'not authorized for item usage (RBAC-001)';
   end if;
 
@@ -128,7 +130,7 @@ begin
     'version_count', count(distinct pv.id)
   )
   into v_result
-  from package_versions pv
+  from public.package_versions pv
   cross join lateral jsonb_array_elements(coalesce(pv.definition->'sections', '[]'::jsonb)) as sections(section_json)
   cross join lateral jsonb_array_elements_text(coalesce(sections.section_json->'items', '[]'::jsonb)) as item_codes(item_code)
   where item_codes.item_code = p_code;
@@ -141,23 +143,23 @@ returns jsonb
 language plpgsql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   v_result jsonb;
 begin
-  if not has_any_role(array['compliance_admin','form_admin']) then
+  if not public.has_any_role(array['compliance_admin','form_admin']) then
     raise exception 'not authorized for violation usage (RBAC-001)';
   end if;
 
   select jsonb_build_object(
     'item_count', (
-      select count(*) from inspection_items i
+      select count(*) from public.inspection_items i
       where i.response_model #>> '{mapping,non_compliant,violation}' = p_code
     ),
     'runtime_count', (
-      select count(*) from violations v
-      join violation_codes vc on vc.id = v.violation_code_id
+      select count(*) from public.violations v
+      join public.violation_codes vc on vc.id = v.violation_code_id
       where vc.code = p_code
     )
   ) into v_result;
@@ -165,23 +167,25 @@ begin
   return v_result;
 end $$;
 
-revoke execute on function inspection_item_usage(text) from public;
-revoke execute on function violation_code_usage(text) from public;
-grant execute on function inspection_item_usage(text) to authenticated;
-grant execute on function violation_code_usage(text) to authenticated;
+revoke execute on function public.inspection_item_usage(text) from public;
+revoke execute on function public.violation_code_usage(text) from public;
+revoke execute on function public.inspection_item_usage(text) from anon;
+revoke execute on function public.violation_code_usage(text) from anon;
+grant execute on function public.inspection_item_usage(text) to authenticated;
+grant execute on function public.violation_code_usage(text) to authenticated;
 
 -- Configuration authors need the audit trail for the exact object they are
 -- editing, but must not receive broad audit-table access. This definer function
 -- preserves that boundary and rejects arbitrary object types.
 create or replace function admin_configuration_audit(p_object_type text, p_object_id uuid)
-returns setof audit_events
+returns setof public.audit_events
 language plpgsql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
 begin
-  if not has_any_role(array['compliance_admin','form_admin']) then
+  if not public.has_any_role(array['compliance_admin','form_admin']) then
     raise exception 'not authorized for configuration audit (RBAC-001)';
   end if;
   if p_object_type <> all(array[
@@ -193,10 +197,11 @@ begin
   end if;
 
   return query
-    select ae.* from audit_events ae
+    select ae.* from public.audit_events ae
     where ae.object_type = p_object_type and ae.object_id = p_object_id
     order by ae.occurred_at desc;
 end $$;
 
-revoke execute on function admin_configuration_audit(text, uuid) from public;
-grant execute on function admin_configuration_audit(text, uuid) to authenticated;
+revoke execute on function public.admin_configuration_audit(text, uuid) from public;
+revoke execute on function public.admin_configuration_audit(text, uuid) from anon;
+grant execute on function public.admin_configuration_audit(text, uuid) to authenticated;
