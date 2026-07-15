@@ -101,9 +101,15 @@ export default async function Workflows() {
                     an honest boundary, kept out of the working flow. */}
                 <NotYetBoundary
                   title={t("admin.wf.designer.title", "Visual designer, graph validation & replay")}
-                  consequence={t("admin.wf.designer.desc", "Editing transitions on a canvas, validating the graph, and replaying a run against a draft are proposed capabilities with no engine, fixtures, or persistence today. The state-machine payload above is the real editor.")}
+                  consequence={t("admin.wf.designer.desc", "There’s no canvas, graph check, or run-replay yet — the state-machine payload above is the real editor.")}
                   seam="NEEDS_APPROVED_CONTRACT — designer / simulation engine"
+                  prerequisites={[
+                    t("admin.wf.designer.pre1", "A canvas / graph editing spec"),
+                    t("admin.wf.designer.pre2", "A named graph-validation algorithm"),
+                    t("admin.wf.designer.pre3", "A simulation engine with fixtures, replay persistence and audit"),
+                  ]}
                   notAvailableLabel={t("admin.wf.notYet", "Not available yet")}
+                  detailLabel={t("common.whyPrereq", "Why / prerequisites")}
                 />
               </>
             )}

@@ -42,15 +42,26 @@ export default async function Access() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}>
         <NotYetBoundary
           title={t("admin.access.explainer.title", "Effective-access explainer")}
-          consequence={t("admin.access.explainer.desc", "A conclusive “why can this user do X” answer needs the RLS policy set cited per grant; this view shows role holdings, not a derived effective-permission proof.")}
+          consequence={t("admin.access.explainer.desc", "This view shows role holdings, not a conclusive “why can this user do X” proof.")}
           seam="NEEDS_APPROVED_CONTRACT — effective-access explainer"
+          prerequisites={[
+            t("admin.access.explainer.pre1", "Per-grant RLS policy citations available as data"),
+            t("admin.access.explainer.pre2", "A derived effective-permission model"),
+          ]}
           notAvailableLabel={t("admin.access.notYet", "Not available yet")}
+          detailLabel={t("common.whyPrereq", "Why / prerequisites")}
         />
         <NotYetBoundary
           title={t("admin.access.change.title", "Role change workflow")}
-          consequence={t("admin.access.change.desc", "Granting or revoking roles (with separation-of-duties and self-escalation guards) is a governed change that does not exist on this read-only screen today.")}
+          consequence={t("admin.access.change.desc", "Granting or revoking roles is not possible on this read-only screen today.")}
           seam="NEEDS_APPROVED_CONTRACT — role change workflow"
+          prerequisites={[
+            t("admin.access.change.pre1", "A grant/revoke workflow with separation-of-duties"),
+            t("admin.access.change.pre2", "A self-escalation guard"),
+            t("admin.access.change.pre3", "An approval + audit path"),
+          ]}
           notAvailableLabel={t("admin.access.notYet", "Not available yet")}
+          detailLabel={t("common.whyPrereq", "Why / prerequisites")}
         />
       </div>
     </Shell>

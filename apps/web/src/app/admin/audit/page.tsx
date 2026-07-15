@@ -181,15 +181,26 @@ export default async function AuditBrowser({ searchParams }: { searchParams: Pro
         <div className="ax-grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "var(--ax-space-200)" }}>
           <NotYetBoundary
             title={t("admin.audit.corr.title", "Correlation / timeline view")}
-            consequence={t("admin.audit.corr.desc", "Grouping events by a shared correlation across objects is a proposed read model — the current reader has no correlation column to group on.")}
+            consequence={t("admin.audit.corr.desc", "Events can't yet be grouped into a single cross-object story.")}
             seam="NEEDS_APPROVED_CONTRACT — correlation read model"
+            prerequisites={[
+              t("admin.audit.corr.pre1", "A correlation identifier on audit_events to group by"),
+              t("admin.audit.corr.pre2", "An approved read model for cross-object timelines"),
+            ]}
             notAvailableLabel={t("admin.audit.notYet", "Not available yet")}
+            detailLabel={t("common.whyPrereq", "Why / prerequisites")}
           />
           <NotYetBoundary
             title={t("admin.audit.reveal.title", "Sensitive reveal & export")}
-            consequence={t("admin.audit.reveal.desc", "Revealing masked payload fields and exporting event sets need privacy, retention and audit contracts first. Neither action exists on this screen today.")}
+            consequence={t("admin.audit.reveal.desc", "Masked fields can't be revealed and event sets can't be exported from this screen.")}
             seam="BLOCKED_BY_DECISION — privacy / retention"
+            prerequisites={[
+              t("admin.audit.reveal.pre1", "A field-level privacy / masking policy"),
+              t("admin.audit.reveal.pre2", "A retention and export-audit contract"),
+              t("admin.audit.reveal.pre3", "An export authorization role"),
+            ]}
             notAvailableLabel={t("admin.audit.notYet", "Not available yet")}
+            detailLabel={t("common.whyPrereq", "Why / prerequisites")}
           />
         </div>
       )}
