@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { NotYetBoundary } from "@/components/NotYetBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,27 @@ export default async function Access() {
           ))}
         </tbody>
       </table></div>
+      <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+        {t("admin.access.rlsNote", "This roster is itself RLS-scoped: users outside your visibility are absent, not hidden rows. This screen is read-only.")}
+      </p>
+
+      {/* R2: effective-access explanation and role changes are deliberately not
+          actionable here — both need approved contracts, so they are honest
+          boundaries rather than non-conclusive explainers or fake controls. */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}>
+        <NotYetBoundary
+          title={t("admin.access.explainer.title", "Effective-access explainer")}
+          consequence={t("admin.access.explainer.desc", "A conclusive “why can this user do X” answer needs the RLS policy set cited per grant; this view shows role holdings, not a derived effective-permission proof.")}
+          seam="NEEDS_APPROVED_CONTRACT — effective-access explainer"
+          notAvailableLabel={t("admin.access.notYet", "Not available yet")}
+        />
+        <NotYetBoundary
+          title={t("admin.access.change.title", "Role change workflow")}
+          consequence={t("admin.access.change.desc", "Granting or revoking roles (with separation-of-duties and self-escalation guards) is a governed change that does not exist on this read-only screen today.")}
+          seam="NEEDS_APPROVED_CONTRACT — role change workflow"
+          notAvailableLabel={t("admin.access.notYet", "Not available yet")}
+        />
+      </div>
     </Shell>
   );
 }
