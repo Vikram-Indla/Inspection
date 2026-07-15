@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { configurationFailure, requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type PkgResult = { error?: string; ok?: boolean };
 
@@ -33,9 +34,9 @@ export async function getPinnedActiveImpact(versionId: string): Promise<PinnedAc
 
 // M09-030 — new draft version clones the latest definition; published versions stay immutable.
 export async function createDraftVersion(_: PkgResult, formData: FormData): Promise<PkgResult> {
+  const access = await requireConfigurationWriter();
+  if (!access.ok) return { error: access.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const package_id = String(formData.get("package_id") ?? "");
   const version_label = String(formData.get("version_label") ?? "").trim();
@@ -48,9 +49,9 @@ export async function createDraftVersion(_: PkgResult, formData: FormData): Prom
   const { error } = await sb.from("package_versions").insert({
     package_id, version_label, status: "draft",
     definition: latest?.definition ?? { sections: [], action_forms: [] },
-    created_by: user.id,
+    created_by: access.userId,
   });
-  if (error) return { error: error.message };
+  if (error) return configurationFailure("create package draft", error);
   revalidatePath("/admin/packages");
   return { ok: true };
 }
@@ -58,9 +59,9 @@ export async function createDraftVersion(_: PkgResult, formData: FormData): Prom
 // M09-019/025 — draft definitions are editable; published versions are immutable
 // (trg_guard_pkg). Save is rejected server-side unless status is still draft.
 export async function saveDraftDefinition(_: PkgResult, formData: FormData): Promise<PkgResult> {
+  const access = await requireConfigurationWriter();
+  if (!access.ok) return { error: access.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const version_id = String(formData.get("version_id") ?? "");
   let definition: unknown;
@@ -70,7 +71,7 @@ export async function saveDraftDefinition(_: PkgResult, formData: FormData): Pro
   const { error, count } = await sb.from("package_versions")
     .update({ definition }, { count: "exact" })
     .eq("id", version_id).eq("status", "draft");
-  if (error) return { error: error.message };
+  if (error) return configurationFailure("save package draft", error);
   if (!count) return { error: "Only draft versions are editable (M09-030 — published is immutable)." };
   revalidatePath("/admin/packages");
   return { ok: true };
@@ -139,7 +140,10 @@ async function validateDefinition(
   if (codes.length > 0) {
     const { data, error } = await sb.from("inspection_items")
       .select("code, active, response_model, evidence_rule").in("code", codes);
-    if (error) return [ `Validation could not read the item bank: ${error.message}` ];
+    if (error) {
+      console.error("[admin configuration validate package item bank]", error.message);
+      return ["Publish validation could not read the item bank. Try again."];
+    }
     for (const row of (data ?? []) as ItemBankRow[]) bank.set(row.code, row);
   }
 
@@ -161,13 +165,19 @@ async function validateDefinition(
   if (violationRefs.size > 0) {
     const vioCodes = [...violationRefs.keys()];
     const { data: vios, error: vErr } = await sb.from("violation_codes").select("id, code").in("code", vioCodes);
-    if (vErr) return [...blockers, `Validation could not read violation codes: ${vErr.message}`];
+    if (vErr) {
+      console.error("[admin configuration validate package violations]", vErr.message);
+      return [...blockers, "Publish validation could not read violation mappings. Try again."];
+    }
     const vioByCode = new Map((vios ?? []).map(v => [v.code as string, v.id as string]));
     const vioIds = [...vioByCode.values()];
     let mappedIds = new Set<string>();
     if (vioIds.length > 0) {
       const { data: pens, error: pErr } = await sb.from("penalty_mappings").select("violation_code_id").in("violation_code_id", vioIds);
-      if (pErr) return [...blockers, `Validation could not read penalty mappings: ${pErr.message}`];
+      if (pErr) {
+        console.error("[admin configuration validate package penalties]", pErr.message);
+        return [...blockers, "Publish validation could not read penalty mappings. Try again."];
+      }
       mappedIds = new Set((pens ?? []).map(p => p.violation_code_id as string));
     }
     for (const [vCode, itemCode] of violationRefs) {
@@ -185,14 +195,14 @@ async function validateDefinition(
 // M09-012/029 — the definition is dependency-validated BEFORE the flip;
 // blockers are returned verbatim and publish is refused while any remain.
 export async function approveAndPublish(_: PkgResult, formData: FormData): Promise<PkgResult> {
+  const access = await requireConfigurationWriter();
+  if (!access.ok) return { error: access.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const version_id = String(formData.get("version_id") ?? "");
   const { data: ver, error: verErr } = await sb.from("package_versions")
     .select("status, definition").eq("id", version_id).maybeSingle();
-  if (verErr) return { error: verErr.message };
+  if (verErr) return configurationFailure("read package version for publish", verErr);
   if (!ver) return { error: "Version not found or outside your scope (RLS)." };
   if (ver.status !== "draft") return { error: "Only draft versions can be published (M09-030)." };
 
@@ -202,9 +212,9 @@ export async function approveAndPublish(_: PkgResult, formData: FormData): Promi
   }
 
   const { error } = await sb.from("package_versions").update({
-    approved_by: user.id, status: "published", published_at: new Date().toISOString(),
+    approved_by: access.userId, status: "published", published_at: new Date().toISOString(),
   }).eq("id", version_id).eq("status", "draft");
-  if (error) return { error: error.message };
+  if (error) return configurationFailure("publish package", error);
   revalidatePath("/admin/packages");
   return { ok: true };
 }

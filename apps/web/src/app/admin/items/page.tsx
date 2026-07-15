@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { logConfigurationReadFailure } from "@/lib/admin-configuration";
 import { NewItemForm, ToggleActive, type ClauseOption, type ItemStrings } from "./Controls";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,8 @@ export default async function Items() {
     const reg = c.regulations as unknown as { code: string } | null;
     return { id: c.id, label: `${reg?.code ?? "?"} §${c.clause_ref} — ${c.title ?? ""}` };
   });
+  if (error) logConfigurationReadFailure("read inspection items", error);
+  if (clauseError) logConfigurationReadFailure("read regulation clauses for items", clauseError);
   const strings: ItemStrings = {
     code: t("admin.items.form.code", "Code"),
     title: t("admin.items.form.title", "Title"),
@@ -48,7 +51,7 @@ export default async function Items() {
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-020 · ENG-01</span>}>
       {(error || clauseError) && (
         <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("admin.items.error.title", "Couldn’t load the item catalogue.")}</strong> {error?.message ?? clauseError?.message} {t("admin.items.error.retry", "— retry.")}
+          <strong>{t("admin.items.error.title", "Couldn’t load the item catalogue.")}</strong> {t("admin.items.error.retry", "Try again.")}
         </div></div>
       )}
       <NewItemForm clauses={clauseOptions} strings={strings} />

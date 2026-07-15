@@ -6,6 +6,7 @@ import DraftEditor, { type DraftEditorStrings } from "./DraftEditor";
 import PackagePreview, { type PreviewStrings, type PreviewItem } from "./PackagePreview";
 import ImpactPanel, { type ImpactStrings, type ImpactData, type ReferencingPackage, type DefinitionDiff } from "./ImpactPanel";
 import { getPinnedActiveImpact } from "./actions";
+import { logConfigurationReadFailure } from "@/lib/admin-configuration";
 
 export const dynamic = "force-dynamic";
 
@@ -41,10 +42,12 @@ function currentPublished(p: PkgRow): VersionRow | null {
 export default async function Packages() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
-  const [{ data: pkgsData }, { data: itemsData }] = await Promise.all([
+  const [{ data: pkgsData, error: packagesError }, { data: itemsData, error: itemsError }] = await Promise.all([
     sb.from("packages").select("id, code, title, scope, package_versions(id, version_label, status, published_at, definition)").order("code"),
     sb.from("inspection_items").select("id, code, title, response_model, evidence_rule, score_weight, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)"),
   ]);
+  if (packagesError) logConfigurationReadFailure("read packages", packagesError);
+  if (itemsError) logConfigurationReadFailure("read package item bank", itemsError);
   const pkgs = (pkgsData ?? []) as unknown as PkgRow[];
   const items = (itemsData ?? []) as unknown as ItemRow[];
   const itemMap = new Map(items.map(i => [i.code, i] as const));
@@ -187,6 +190,9 @@ export default async function Packages() {
   return (
     <Shell current="/admin" title={t("admin.pkg.title", "Package & Form Designer")}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-030/031 · ENG-02</span>}>
+      {(packagesError || itemsError) && <div className="ax-banner ax-banner--critical" role="alert"><div>
+        <strong>{t("admin.pkg.error.title", "Couldn’t load package configuration.")}</strong> {t("admin.pkg.error.retry", "Try again.")}
+      </div></div>}
       {pkgs.map(p => (<div key={p.id} className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
       {(p.package_versions ?? []).map(v => {
         const def = v.definition;

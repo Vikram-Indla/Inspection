@@ -43,6 +43,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-15"
     change_ref: "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md"
+  - gate: "CD-006-011-backend-authorization"
+    decision: "APPROVED — sponsor explicitly authorized Codex to move forward with backend implementation and wiring for the CD-006 through CD-011 Admin Control Plane screens. Scope is backend contracts, forward-only migrations, RLS/audit hardening, server actions, neutral failures, automated tests, and implementation evidence. This does not authorize invented policy values, design self-approval, frontend redesign, production deployment, or modification of main."
+    approver: "Vikram Indla"
+    date: "2026-07-15"
+    change_ref: "Codex session authorization: 'I'm authorizing. Just move forward.'"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

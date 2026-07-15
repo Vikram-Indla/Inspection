@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { configurationFailure, requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type ItemResult = { error?: string; ok?: boolean };
 
@@ -27,9 +28,9 @@ const EVIDENCE_PRESETS: Record<string, object | null> = {
 
 // M09-002 — item belongs to a regulation clause and is reused across packages.
 export async function createItem(_: ItemResult, formData: FormData): Promise<ItemResult> {
+  const access = await requireConfigurationWriter();
+  if (!access.ok) return { error: access.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const code = String(formData.get("code") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
@@ -56,16 +57,16 @@ export async function createItem(_: ItemResult, formData: FormData): Promise<Ite
     guidance_en: guidance_en || null,
     active: true,
   });
-  if (error) return { error: error.message };
+  if (error) return configurationFailure("create inspection item", error);
   revalidatePath("/admin/items");
   return { ok: true };
 }
 
 // M09-014 — deactivation preserves history; items are never deleted.
 export async function toggleItemActive(_: ItemResult, formData: FormData): Promise<ItemResult> {
+  const access = await requireConfigurationWriter();
+  if (!access.ok) return { error: access.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const id = String(formData.get("item_id") ?? "");
   const next = String(formData.get("next_active") ?? "") === "true";
@@ -73,7 +74,7 @@ export async function toggleItemActive(_: ItemResult, formData: FormData): Promi
 
   const { error, count } = await sb.from("inspection_items")
     .update({ active: next }, { count: "exact" }).eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return configurationFailure("change inspection item state", error);
   if (!count) return { error: "No row updated — RLS requires compliance_admin/form_admin." };
   revalidatePath("/admin/items");
   return { ok: true };

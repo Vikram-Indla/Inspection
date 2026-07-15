@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { logConfigurationReadFailure } from "@/lib/admin-configuration";
 import { NewViolationForm, AddMappingForm, type ClauseOption, type VioStrings } from "./Controls";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,8 @@ export default async function Violations() {
     const reg = c.regulations as unknown as { code: string } | null;
     return { id: c.id, label: `${reg?.code ?? "?"} §${c.clause_ref} — ${c.title ?? ""}` };
   });
+  if (error) logConfigurationReadFailure("read violation codes", error);
+  if (clauseError) logConfigurationReadFailure("read regulation clauses for violations", clauseError);
   const strings: VioStrings = {
     code: t("admin.viol.form.code", "Code"),
     title: t("admin.viol.form.title", "Title"),
@@ -51,7 +54,7 @@ export default async function Violations() {
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-040/041 · ENG-08</span>}>
       {(error || clauseError) && (
         <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("admin.viol.error.title", "Couldn’t load the violation catalogue.")}</strong> {error?.message ?? clauseError?.message} {t("admin.viol.error.retry", "— retry.")}
+          <strong>{t("admin.viol.error.title", "Couldn’t load the violation catalogue.")}</strong> {t("admin.viol.error.retry", "Try again.")}
         </div></div>
       )}
       <NewViolationForm clauses={clauseOptions} strings={strings} />

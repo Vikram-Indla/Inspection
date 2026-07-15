@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { configurationFailure, requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type VioResult = { error?: string; ok?: boolean };
 
@@ -19,9 +20,9 @@ const REPEAT_RULE_PRESETS: Record<string, object | null> = {
 
 // M09-003/026 — violation codes are catalogue entries; inspectors never type one.
 export async function createViolationCode(_: VioResult, formData: FormData): Promise<VioResult> {
+  const access = await requireConfigurationWriter();
+  if (!access.ok) return { error: access.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const code = String(formData.get("code") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
@@ -35,7 +36,7 @@ export async function createViolationCode(_: VioResult, formData: FormData): Pro
   if (!active_from) return { error: "Active-from date is required." };
 
   const { error } = await sb.from("violation_codes").insert({ code, title, level, clause_id, active_from });
-  if (error) return { error: error.message };
+  if (error) return configurationFailure("create violation code", error);
   revalidatePath("/admin/violations");
   return { ok: true };
 }
@@ -44,9 +45,9 @@ export async function createViolationCode(_: VioResult, formData: FormData): Pro
 // violation_code_id rejects a second mapping. FLD-PEN-001 — results reference
 // the exact mapping_version forever.
 export async function createPenaltyMapping(_: VioResult, formData: FormData): Promise<VioResult> {
+  const access = await requireConfigurationWriter();
+  if (!access.ok) return { error: access.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const violation_code_id = String(formData.get("violation_code_id") ?? "");
   const penalty_ref = String(formData.get("penalty_ref") ?? "").trim();
@@ -66,7 +67,7 @@ export async function createPenaltyMapping(_: VioResult, formData: FormData): Pr
     penalty_range: PENALTY_RANGE_PRESETS[rangeKey],
     repeat_rule: REPEAT_RULE_PRESETS[repeatKey],
   });
-  if (error) return { error: error.message };
+  if (error) return configurationFailure("create penalty mapping", error);
   revalidatePath("/admin/violations");
   return { ok: true };
 }

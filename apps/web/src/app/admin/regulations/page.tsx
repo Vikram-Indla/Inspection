@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { logConfigurationReadFailure } from "@/lib/admin-configuration";
 import { NewRegulationForm, PublishRegulation, AddClauseForm, type RegStrings } from "./Controls";
 
 export const dynamic = "force-dynamic";
@@ -8,9 +9,10 @@ export const dynamic = "force-dynamic";
 export default async function Regulations() {
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: regs } = await sb.from("regulations")
+  const { data: regs, error } = await sb.from("regulations")
     .select("id, code, title, issuing_authority, status, regulation_clauses(id, clause_ref, title, inspection_items(id, code))")
     .order("code");
+  if (error) logConfigurationReadFailure("read regulations", error);
   const strings: RegStrings = {
     code: t("admin.reg.form.code", "Code"),
     title: t("admin.reg.form.title", "Title"),
@@ -32,7 +34,10 @@ export default async function Regulations() {
     <Shell current="/admin" title={t("admin.reg.title", "Regulation library")}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-010/011</span>}>
       <NewRegulationForm strings={strings} />
-      {(regs ?? []).length === 0 && (
+      {error && <div className="ax-banner ax-banner--critical" role="alert"><div>
+        <strong>{t("admin.reg.error.title", "Couldn’t load regulations.")}</strong> {t("admin.reg.error.retry", "Try again.")}
+      </div></div>}
+      {!error && (regs ?? []).length === 0 && (
         <div className="ax-surface"><div className="ax-state">
           <span className="ax-state__glyph">📜</span><h4>{t("admin.reg.empty.title", "No regulations configured")}</h4>
           <p className="ax-caption">{t("admin.reg.empty.body", "Regulations are the parents of inspection items (MVP1-M09-001).")}</p>
