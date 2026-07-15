@@ -54,8 +54,8 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
       <div className="ax-field"><label className="ax-field__label">{s.activeFrom}</label>
         <input className="ax-input ax-numeric" name="active_from" type="date" required /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.creating : s.create}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.created}</span>}
+      {state.error && <span className="ax-validation" role="alert">{state.error}</span>}
+      {state.ok && <span className="ax-lozenge ax-lozenge--success"><span aria-hidden="true">✓</span> {s.created}</span>}
     </form>
   );
 }
@@ -84,8 +84,8 @@ export function AddMappingForm({ violationId, violationCode, strings: s }: { vio
           <option value="none">{s.repeatNone}</option>
         </select></div>
       <button className="ax-btn" disabled={pending}>{pending ? s.mapping : `${s.mapTo} ${violationCode}`}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.mapped}</span>}
+      {state.error && <span className="ax-validation" role="alert">{state.error}</span>}
+      {state.ok && <span className="ax-lozenge ax-lozenge--success"><span aria-hidden="true">✓</span> {s.mapped}</span>}
     </form>
   );
 }

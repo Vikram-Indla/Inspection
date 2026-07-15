@@ -57,7 +57,14 @@ export async function createItem(_: ItemResult, formData: FormData): Promise<Ite
     guidance_en: guidance_en || null,
     active: true,
   });
-  if (error) { logProviderError("admin inspection item", error); return { error: NEUTRAL_WRITE_ERROR }; }
+  if (error) {
+    logProviderError("admin inspection item", error);
+    // Duplicate item code is enforced by the inspection_items UNIQUE(code)
+    // constraint (Postgres 23505). Surface that proven fact instead of a generic
+    // failure so the writer can correct it; every other provider error stays neutral.
+    const code23505 = (error as { code?: string }).code === "23505";
+    return { error: code23505 ? `Item code “${code}” already exists — codes are unique.` : NEUTRAL_WRITE_ERROR };
+  }
   revalidatePath("/admin/items");
   return { ok: true };
 }
