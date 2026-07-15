@@ -16,8 +16,10 @@ import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 // runtime-preview strip). Truth-over-completion: SELECT is any authenticated (RLS);
 // writes require compliance_admin/form_admin (RLS is the authority — no Admin-family
 // route guard is proven, so the unauthorized/route-guard leg is HANDOFF_BLOCKED,
-// owner platform). inspection_items has NO audit trigger, so item changes are never
-// presented as audited. Item edit/version lifecycle, deactivation-reason capture,
+// owner platform). inspection_items row changes ARE audit-tracked at the DB
+// (trg_audit_inspection_items → audit_events); the audit-timeline READ view stays
+// blocked because audit_events read is not granted to compliance/form admin.
+// Item edit/version lifecycle, deactivation-reason capture,
 // per-item published-use count, and conditional-rule authoring are contract targets
 // with no runtime leg today — they render as disabled, annotated HANDOFF_BLOCKED
 // targets, never as working controls, and never as a fabricated count.
@@ -94,7 +96,7 @@ export default async function Items() {
     saving: t("admin.items.r2.toggle.saving", "Saving…"),
     deactivate: t("admin.items.r2.toggle.deactivate", "Deactivate"),
     reactivate: t("admin.items.r2.toggle.reactivate", "Reactivate"),
-    reasonNote: t("admin.items.r2.toggle.reasonNote", "History is preserved; no reason is captured and no item-row audit trigger exists."),
+    reasonNote: t("admin.items.r2.toggle.reasonNote", "History is preserved; no deactivation reason is captured. The item-row change is recorded as an audit event (trg_audit_inspection_items)."),
   };
 
   const previewStrings: PreviewStrings = {
@@ -150,7 +152,7 @@ export default async function Items() {
     { label: t("admin.items.r2.blocked.conditional", "Author conditional rule"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
     { label: t("admin.items.r2.blocked.usage", "Published-use warning — unavailable"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
     { label: t("admin.items.r2.blocked.reason", "Deactivation reason capture"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
-    { label: t("admin.items.r2.blocked.audit", "Item change audit trail"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
+    { label: t("admin.items.r2.blocked.audit", "Item change audit trail — read view (changes are captured; audit_events read is not granted)"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
     { label: t("admin.items.r2.blocked.guard", "Route guard / unauthorized redirect"), owner: t("admin.items.r2.owner.platform", "owner: platform") },
   ];
 
@@ -190,12 +192,12 @@ export default async function Items() {
         </div>
       )}
 
-      {/* Permission + governance truth (S05/S06 + no-audit fact). Visibility is not
-          authorization; the write path is RLS-guarded and there is no audit trigger. */}
+      {/* Permission + governance truth (S05/S06 + audit fact). Visibility is not
+          authorization; the write path is RLS-guarded and every row change is audited. */}
       <section className="ax-surface ax-permission ax-stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
         <p className="ax-caption" style={{ margin: 0 }}>
-          {t("admin.items.r2.gov.body", "Anyone signed in can read the catalogue; creating items and changing active state require compliance_admin or form_admin — RLS is the authority and navigation visibility grants nothing. Deactivation preserves history and stores no reason. inspection_items has no audit trigger, so item changes are not recorded as audit events.")}
+          {t("admin.items.r2.gov.body", "Anyone signed in can read the catalogue; creating items and changing active state require compliance_admin or form_admin — RLS is the authority and navigation visibility grants nothing. Deactivation preserves history and stores no reason. inspection_items row changes are recorded as audit events (trg_audit_inspection_items); the audit-trail read view is a separate, not-yet-granted leg.")}
         </p>
       </section>
 
@@ -309,7 +311,7 @@ export default async function Items() {
       </section>
 
       <p className="ax-caption">
-        {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages (M09-002/007); deactivation preserves history (M09-014). Writes require compliance_admin/form_admin — RLS is the authority. inspection_items has no audit trigger.")}
+        {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages (M09-002/007); deactivation preserves history (M09-014). Writes require compliance_admin/form_admin — RLS is the authority. inspection_items row changes are audit-tracked (trg_audit_inspection_items).")}
       </p>
     </Shell>
   );

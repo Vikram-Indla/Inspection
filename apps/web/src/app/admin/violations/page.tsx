@@ -19,14 +19,17 @@ import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 //    JSON preset, repeat_rule JSON preset, legal_basis, mapping_version) — exactly
 //    ONE mapping per violation. Presets are config tokens, never monetary/legal
 //    values. FLD-PEN-001: mapping_version is an immutable REFERENCE, not a row lock.
-//  • NO audit trigger on violation_codes or penalty_mappings. RLS: SELECT any
-//    authenticated; writes compliance_admin/form_admin. No Admin-family route
-//    guard is proven (HANDOFF_BLOCKED, owner platform).
+//  • violation_codes AND penalty_mappings row changes ARE audit-tracked at the DB
+//    (trg_audit_violation_codes / trg_audit_penalty_mappings → audit_events). RLS:
+//    SELECT any authenticated; writes compliance_admin/form_admin (fail-closed
+//    requireConfigurationWriter guard). No Admin-family route guard is proven
+//    (HANDOFF_BLOCKED, owner platform).
 //
 // Every capability the schema lacks (category, applicability, edit, version,
 // deactivate, usage count, trigger-trace query, effective periods, overlap/gap
 // engine, >1:1 cardinality, submit/approve/publish lifecycle, maker-checker,
-// mapping immutability, mapping audit) is a CONTRACT TARGET — rendered as a
+// mapping immutability, and the audit-timeline READ view — write-side audit exists,
+// but audit_events read is not granted) is a CONTRACT TARGET — rendered as a
 // disabled, annotated element, never a working control.
 export const dynamic = "force-dynamic";
 
@@ -186,7 +189,7 @@ export default async function Violations({
     ["deactivate", t("admin.viol.blk.deactivate", "Deactivate"), "product/backend"],
     ["usage-count", t("admin.viol.blk.usage", "Usage count"), "backend"],
     ["trigger-trace", t("admin.viol.blk.trace", "Trigger-trace query"), "backend"],
-    ["audit-trigger", t("admin.viol.blk.audit", "Audit timeline"), "backend"],
+    ["audit-timeline", t("admin.viol.blk.audit", "Audit timeline (read view)"), "backend"],
   ];
   const cd011Blocked: [string, string, string][] = [
     ["effective-periods", t("admin.viol.blk.effective", "Effective periods"), "product/backend"],
@@ -195,7 +198,7 @@ export default async function Violations({
     ["lifecycle", t("admin.viol.blk.lifecycle", "Submit → approve → publish"), "product/backend"],
     ["maker-checker", t("admin.viol.blk.makerChecker", "Maker-checker"), "product/backend"],
     ["immutability", t("admin.viol.blk.immutability", "Mapping row lock"), "backend"],
-    ["mapping-audit", t("admin.viol.blk.mappingAudit", "Mapping audit timeline"), "backend"],
+    ["mapping-audit", t("admin.viol.blk.mappingAudit", "Mapping audit timeline (read view)"), "backend"],
     ["route-guard", t("admin.viol.blk.routeGuard", "Admin-family route guard"), "platform"],
   ];
 
@@ -317,7 +320,7 @@ export default async function Violations({
           {/* Contract targets — disabled, annotated (never working controls). */}
           <section className="ax-surface ax-stack" aria-labelledby="pen-blocked-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
             <h3 id="pen-blocked-h" style={{ margin: 0 }}>{t("admin.viol.blocked.heading", "Contract targets — not enabled on this schema")}</h3>
-            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.blocked.body", "These capabilities are HANDOFF_BLOCKED: no column, policy, trigger, or route exists for them yet.")}</p>
+            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.blocked.body", "These capabilities are HANDOFF_BLOCKED: no column, policy, lifecycle model, or route exists for them yet. Row changes are audited at the DB, but the audit-timeline read view is not granted.")}</p>
             <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
               {cd011Blocked.map(([id, label, owner]) => blockedTarget(id, label, owner))}
             </div>
@@ -376,13 +379,13 @@ export default async function Violations({
           {/* Contract targets — disabled, annotated (never working controls). */}
           <section className="ax-surface ax-stack" aria-labelledby="cat-blocked-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
             <h3 id="cat-blocked-h" style={{ margin: 0 }}>{t("admin.viol.blocked.heading", "Contract targets — not enabled on this schema")}</h3>
-            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.blocked.catBody", "violation_codes has no category, applicability, edit, version, deactivate, usage count, trace query, or audit trigger. Each stays HANDOFF_BLOCKED.")}</p>
+            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.blocked.catBody", "violation_codes has no category, applicability, edit, version, deactivate, usage count, or trace query. Row changes are audited at the DB, but the audit-timeline read view is not granted. Each stays HANDOFF_BLOCKED.")}</p>
             <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
               {cd010Blocked.map(([id, label, owner]) => blockedTarget(id, label, owner))}
             </div>
           </section>
 
-          <p className="ax-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one (M09-003/026). Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and has no audit trigger.")}</p>
+          <p className="ax-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one (M09-003/026). Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and its row changes are audit-tracked (trg_audit_violation_codes).")}</p>
         </>
       )}
     </Shell>

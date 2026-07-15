@@ -2,21 +2,26 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
+import { requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type RegResult = { error?: string; ok?: boolean };
 
 // MVP1-M09-001 — regulations are the parents of clauses and inspection items.
 export async function createRegulation(_: RegResult, formData: FormData): Promise<RegResult> {
+  // Fail-closed config-writer guard (defense-in-depth over RLS, never a replacement).
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
+  const userId = gate.userId;
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const code = String(formData.get("code") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
   const issuing_authority = String(formData.get("issuing_authority") ?? "").trim();
   if (!code || !title) return { error: "Code and title are required." };
 
-  const { error } = await sb.from("regulations").insert({ code, title, issuing_authority, status: "draft" });
+  // created_by anchors the DB maker-checker constraint (regulations_maker_checker):
+  // a later approver must differ from this creator, enforced at the DB boundary.
+  const { error } = await sb.from("regulations").insert({ code, title, issuing_authority, status: "draft", created_by: userId });
   if (error) { logProviderError("admin regulation", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/regulations");
   return { ok: true };
@@ -24,9 +29,9 @@ export async function createRegulation(_: RegResult, formData: FormData): Promis
 
 // M09-001 — clauses anchor inspection items to legal sources.
 export async function addClause(_: RegResult, formData: FormData): Promise<RegResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const regulation_id = String(formData.get("regulation_id") ?? "");
   const clause_ref = String(formData.get("clause_ref") ?? "").trim();
@@ -41,17 +46,19 @@ export async function addClause(_: RegResult, formData: FormData): Promise<RegRe
 }
 
 export async function publishRegulation(_: RegResult, formData: FormData): Promise<RegResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
+  const userId = gate.userId;
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const id = String(formData.get("regulation_id") ?? "");
   if (!id) return { error: "Missing regulation id." };
-  // CD006-WA-01 — record approval provenance (published_at / approved_by, columns
-  // that already exist on regulations); CD006-WA-02 — a forward-only draft→published
-  // transition that reports honestly when nothing changed (RLS-denied or not draft).
+  // approved_by + published_at record the checker leg; regulations_maker_checker
+  // rejects self-approval (approver <> creator) and trg_guard_published_regulation
+  // locks the row once published — enforced at the DB boundary. Forward-only
+  // draft→published that reports honestly when nothing changed (RLS-denied / not draft).
   const { data, error } = await sb.from("regulations")
-    .update({ status: "published", published_at: new Date().toISOString(), approved_by: user.id })
+    .update({ status: "published", approved_by: userId, published_at: new Date().toISOString() })
     .eq("id", id).eq("status", "draft").select("id");
   if (error) { logProviderError("admin regulation status", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!data?.length) return { error: "This regulation could not be published — it is not in draft, or you are not authorized." };

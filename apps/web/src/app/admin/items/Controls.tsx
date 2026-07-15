@@ -112,8 +112,9 @@ export function NewItemForm({
 }
 
 // M09-014 — deactivate/reactivate; history is preserved, never deleted. There is
-// NO stored deactivation reason and NO item-row audit trigger — the caption states
-// that fact so the toggle is never read as an audited, reason-captured mutation.
+// NO stored deactivation reason, but the row change IS audited at the DB
+// (trg_audit_inspection_items) — the caption states this so the toggle is read as
+// an audited, but not reason-captured, mutation.
 export function ToggleActive({ itemId, active, strings: s }: { itemId: string; active: boolean; strings: ItemStrings }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(toggleItemActive, {});
   return (
