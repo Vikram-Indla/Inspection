@@ -139,7 +139,18 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     degraded: t("virtual.room.degraded", "Related source unavailable"),
     degradedBody: t("virtual.room.degradedBody", "Some linked appointment data could not be loaded; no missing fact is inferred."),
     emptyPart: t("virtual.room.emptyPart", "No participants are recorded for this session."),
+    closedTitle: t("virtual.room.closedTitle", "Session closed — read-only"),
+    closedBody: t("virtual.room.closedBody", "This session is immutable; the recorded reason is preserved on the timeline."),
+    closedHandoff: t("virtual.room.closedHandoff", "Closing is not submission approval — continue on the inspection engine for submission and Level 2 (P08) review."),
+    offlineTitle: t("virtual.room.offlineTitle", "You are offline"),
+    offlineBody: t("virtual.room.offlineBody", "Begin, reschedule and close are disabled. Nothing is queued and no reconnection is promised — reload when your connection returns."),
+    staleTitle: t("virtual.room.staleTitle", "This session changed"),
+    staleBody: t("virtual.room.staleBody", "A concurrent change was detected, so nothing was submitted. Reload to see the latest state before acting again."),
+    reload: t("virtual.room.reload", "Reload"),
   };
+  // S13 — server-authoritative revision the client acts against (state + append-only
+  // timeline length). A mismatch on submit means the session moved on concurrently.
+  const rev = `${s.state}:${((s.timeline as unknown[]) ?? []).length}`;
   const timeline = ((s.timeline as unknown as TimelineEvent[]) ?? []).slice().reverse();
   const eventLabels: Record<string, string> = {
     scheduled: t("virtual.tl.scheduled", "session scheduled"),
@@ -156,7 +167,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
         <span className="ax-numeric ax-caption">{new Date(s.appointment_at).toISOString().slice(0, 16).replace("T", " ")}</span>
         <span className={`ax-lozenge ax-lozenge--virtual ${STATE_TONE[s.state] ?? "ax-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span>
       </>}>
-      <Room session={s as never} strings={strings} />
+      <Room session={s as never} strings={strings} rev={rev} />
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)", marginBlockStart: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("virtual.room.timelineHeading", "Session timeline (M05-003 · audited)")}</h4>
         {timeline.length === 0 && <p className="ax-caption">{t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close.")}</p>}
