@@ -28,9 +28,23 @@ composition.
 
 **Item 7 is NOT present in the delivered R3 runtime files** — they are identical
 to R2, so none of those visual refinements were applied in the design source.
-Applying them now would be authored-by-implementer design, not implementation of
-an approved golden screen, and is left as an explicit follow-up decision rather
-than silently invented.
+
+### Item-7 intent applied (sponsor-authorized, authored-by-implementer)
+
+Commit `7f849f6`:
+- **#1 reduce technical microcopy → detail panel — DONE.** `NotYetBoundary` main
+  surface now shows only the plain-language consequence; the technical seam id +
+  full prerequisite list moved behind a collapsible "Why / prerequisites"
+  disclosure. Applied to every boundary (audit ×2, access ×2, risk, workflows).
+- **#2 dark-theme hierarchy / #3 light contrast — SCOPED OUT.** These require
+  retuning the global Astryx/DEC-011 tokens, which are frozen and shared
+  app-wide; changing them here risks other screens. Only the added components
+  (`.lz-*`, `.nya`, `.rk-*`) establish local hierarchy with existing tokens.
+- **#4 true-412 narrow — already handled.** `.lz-row` collapses to one column
+  <900px; boundary grids use `auto-fit minmax(280px,1fr)` → single column narrow.
+
+No rendered golden target existed for R3, so #1 is implementer design judgment,
+reviewable per screen.
 
 ## Status
 
