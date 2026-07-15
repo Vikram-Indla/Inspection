@@ -1,0 +1,49 @@
+# IMPLEMENTATION_MANIFEST_CD-030.yaml
+# DO NOT EXECUTE UNTIL SPONSOR DESIGN APPROVAL AND INDEPENDENT CODEX WIRING AUDIT
+implementation_authorized: false
+design_id: CD-030
+task: TASK-DESIGN-CD030
+screen_id: SCR-WEB-320
+title: Version Comparison
+route: /reviews/:id (route-neutral compare mode; /reviews/:id/compare consolidated, not a separate route)
+persona: [Reviewer, Auditor]
+revision: R1
+baseline: BASELINE_REVERIFY_REQUIRED  # /reviews/:id version-diff sources read this session at main; no exact-baseline equivalence claim; deferred to Codex
+engines: [ENG-07, ENG-09, ENG-12]
+requirements: "MVP1-M06-040..048,050,053 + foundation/RBAC/audit contracts"
+acceptance: [DSG-025, DSG-A11Y-001]
+
+signature_interaction:
+  name: Tamper-evident Scope Rail
+  categories: [expected-within-returned-scope, unexpected-locked-section-change, unchanged-locked-content, comparison-unavailable]
+  authority: reviews.returned_sections (stored) — classification never inferred from the diff itself
+  properties: [keyboard-operable, list-equivalent, source-and-version-labelled, non-color-only, never-unchanged-for-unknown]
+
+binding_runtime_truth:
+  - version_diff: "reviews/[id]/page.tsx compares stored answer snapshots by union of keys (latest vs prior); changed cells flagged."
+  - returned_scope: "stored on reviews (returned_sections); authoritative; not inferred from changed answers."
+  - immutability: "submission versions + audit immutable; diff never written back."
+  - route: "/reviews/:id/compare consolidated into /reviews/:id; route-neutral compare mode; no separate route claimed."
+
+handoff_blocked:
+  - HANDOFF_BLOCKED_MEDIADIFF     # no evidence/media comparison derivation proven
+  - HANDOFF_BLOCKED_PKGSEMANTIC   # answer meaning across package versions not reconciled
+  - HANDOFF_BLOCKED_METADIFF      # metadata / section-order not diffed
+  - HANDOFF_BLOCKED_ACCEPT        # no accept/merge action or authorization path; navigation-only
+  - HANDOFF_BLOCKED_LINKED        # comparison source degradation shows unavailable, not empty
+  - HANDOFF_BLOCKED_START_REVIEW_ATOMIC  # opening is read-only; StartReview.tsx startReview inserts review then separately sets inspection under_review — non-atomic
+  - HANDOFF_BLOCKED_ATOMIC        # CD-029 non-transactional decision writes NOT resolved here
+  - HANDOFF_BLOCKED_BASELINE
+
+scope_separation:
+  - CD-030 compares immutable versions inside /reviews/:id
+  - CD-029 owns the decision workspace — not redesigned; opening is read-only, but its startReview sequence and atomic-decision gaps neither hidden nor resolved
+  - CD-028 owns the queue — untouched
+
+hypotheses:
+  - {id: A, name: Scope-rail-first, selected: true}
+  - {id: B, name: Side-by-side answer-first, selected: false}
+  - {id: C, name: Chronological-version-first, selected: false}
+counterfactual: scope-rail-removed
+
+files_facing: [IMPLEMENTATION_MANIFEST_CD-030.yaml, COMPONENT_MAP_CD-030.csv, WIRING_MAP_CD-030.csv, STATE_MATRIX_CD-030.csv, ACCEPTANCE_CHECKLIST_CD-030.md, CLAUDE_CODE_HANDOFF_CD-030.md, CLAUDE_CODE_IMPLEMENTATION_PROMPT_CD-030.md, PACKAGE_INVENTORY_CD-030.csv, PACKAGE_PREFLIGHT_CD-030.md]

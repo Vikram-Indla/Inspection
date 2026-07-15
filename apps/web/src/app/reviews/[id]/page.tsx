@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
 import StartReview, { type StartReviewStrings } from "./StartReview";
+import VersionCompare, { type VersionCompareStrings, type ItemSection } from "./VersionCompare";
 import { fetchFactoryChecks, updatedCount, FACTORY_FIELD_EN } from "@/lib/factory-verification";
 
 export const dynamic = "force-dynamic";
@@ -32,18 +33,51 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const canStart = !open && !!latest && ins.status === "submitted";
   const sections = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[] } }).definition.sections.filter(s => { return !!s.items?.length; });
   const f = (ins.visits as unknown as { factories: { name: string; factory_code: string } }).factories;
-  // M06-023/046/053 — real diff of the resubmitted snapshot against the prior
-  // version: union of answer keys, changed cells flagged.
-  const prev = subs[1];
-  const diffRows = prev ? Array.from(new Set([
-    ...Object.keys(prev.snapshot?.answers ?? {}),
-    ...Object.keys(latest?.snapshot?.answers ?? {}),
-  ])).sort().map(k => {
-    const a = (prev.snapshot?.answers ?? {})[k];
-    const b = (latest?.snapshot?.answers ?? {})[k];
-    return { key: k, prev: a, latest: b, changed: a !== b };
-  }) : [];
-  const changedCount = diffRows.filter(d => { return d.changed; }).length;
+  // CD-030 / SCR-WEB-320 (M06-023/046/053) — version-compare data. itemSection maps each answer key
+  // (item code, e.g. "FS-101") to its owning section (M06-040..048). returnedScope
+  // is the STORED scope of the last decided return (reviews.returned_sections holds
+  // section keys) and is the SOLE authority for expected-vs-unexpected — never
+  // inferred from the diff (M06-050/053). No scope on record → classification
+  // unavailable, never "unchanged".
+  const sectionsDef = (ins.package_versions as unknown as { definition: { sections: { key: string; title: string; items?: string[] }[] } }).definition.sections;
+  const itemSection: ItemSection = {};
+  sectionsDef.forEach(s => (s.items ?? []).forEach(it => { itemSection[it] = { key: s.key, title: s.title }; }));
+  const decidedReturns = reviews.filter(r => { return !!r.decided_at && !!r.returned_sections && r.returned_sections.length > 0; });
+  const scopeReview = decidedReturns.length ? decidedReturns[decidedReturns.length - 1] : null;
+  const returnedScope = scopeReview?.returned_sections ?? null;
+  const scopeLabel = scopeReview
+    ? `${(returnedScope ?? []).join(", ")} · ${scopeReview.decided_at ? new Date(scopeReview.decided_at).toISOString().slice(0, 10) : "—"}`
+    : null;
+  const compareVersions = subs.map(s => { return { n: s.version_number, answers: (s.snapshot?.answers ?? {}) as Record<string, string> }; });
+  const enumLabels: Record<string, string> = {};
+  Array.from(new Set(compareVersions.flatMap(v => { return Object.values(v.answers); }))).forEach(v => { enumLabels[v] = t(`enum.${v}`, String(v).replace(/_/g, " ")); });
+  const compareStrings: VersionCompareStrings = {
+    heading: t("review.cmp.heading", "Version comparison — Tamper-evident Scope Rail (SCR-WEB-320)"),
+    scopeSource: t("review.cmp.scopeSource", "Returned-scope authority (stored): {label}. Classification is never inferred from the diff."),
+    noScope: t("review.cmp.noScope", "No returned scope on record — expected/unexpected cannot be established, so changes are shown 'unavailable', never 'unchanged'."),
+    from: t("review.cmp.from", "Compare from"),
+    to: t("review.cmp.to", "Compare to"),
+    colItem: t("review.cmp.colItem", "Item"),
+    colSection: t("review.cmp.colSection", "Section"),
+    colClass: t("review.cmp.colClass", "Scope classification"),
+    catExpected: t("review.cmp.catExpected", "Expected (in returned scope)"),
+    catUnexpected: t("review.cmp.catUnexpected", "Unexpected — locked-section change"),
+    catUnchanged: t("review.cmp.catUnchanged", "Unchanged"),
+    catUnavailable: t("review.cmp.catUnavailable", "Unavailable"),
+    tamperTitle: t("review.cmp.tamperTitle", "Out-of-scope change detected."),
+    tamperBody: t("review.cmp.tamperBody", "An answer changed outside the sections the reviewer returned. Read every flagged row before deciding (M06-050)."),
+    cleanTitle: t("review.cmp.cleanTitle", "Changes within returned scope."),
+    cleanBody: t("review.cmp.cleanBody", "Every changed answer falls inside the returned sections. Non-answer comparisons remain unavailable below."),
+    noPrior: t("review.cmp.noPrior", "No prior version to compare — this is the first submitted version."),
+    emptyDiff: t("review.cmp.emptyDiff", "No answer changed between these two versions (computed from stored snapshots — not a failure)."),
+    navHint: t("review.cmp.navHint", "Comparison is navigation-only — there is no accept/merge action. When a diff is shown, selecting a scope-rail row scrolls to its answer."),
+    unavailableHeading: t("review.cmp.unavailHeading", "Comparisons not derived in the runtime"),
+    unavailEvidence: t("review.cmp.unavailEvidence", "Evidence / media comparison — not derived; shown unavailable, never 'unchanged'."),
+    unavailPackage: t("review.cmp.unavailPackage", "Package-semantic comparison — answer meaning across package versions is not reconciled."),
+    unavailMetadata: t("review.cmp.unavailMetadata", "Metadata / section-order comparison — not diffed."),
+    unavailNote: t("review.cmp.unavailNote", "These are honestly unavailable (HANDOFF_BLOCKED_MEDIADIFF/_PKGSEMANTIC/_METADIFF), not equal."),
+    enumLabels,
+  };
   // M04-190 / M06-017 / M06-034 — factory-data verification checks for the
   // reviewer: Source (Senaei) vs Observed, Verified/Updated, before/after,
   // linked evidence. Tolerant fetch: 0020 pending → verbatim error, no crash.
@@ -165,32 +199,14 @@ const panelStrings: WorkspaceDecisionStrings = {
               </div>
             );
           })()}
-          {prev && (
-            <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-              <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>
-                {t("review.ws.compareHeading", "Version comparison — v{a} vs v{b}").replace("{a}", String(prev.version_number)).replace("{b}", String(latest.version_number))}{" "}
-                <span className="ax-lozenge ax-lozenge--info">{t("review.ws.changedCount", "{n} changed").replace("{n}", String(changedCount))}</span>
-              </h4>
-              <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr>
-                  <th>{t("review.ws.colItem", "Item")}</th>
-                  <th>v{prev.version_number}</th>
-                  <th>v{latest.version_number}</th>
-                  <th>{t("review.ws.colChange", "Change")}</th>
-                </tr></thead>
-                <tbody>{diffRows.map(d => (
-                  <tr key={d.key}>
-                    <td><strong>{d.key}</strong></td>
-                    <td>{d.prev != null ? <span className={`ax-lozenge ${d.prev === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{t(`enum.${d.prev}`, String(d.prev).replace(/_/g, " "))}</span> : "—"}</td>
-                    <td>{d.latest != null ? <span className={`ax-lozenge ${d.latest === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{t(`enum.${d.latest}`, String(d.latest).replace(/_/g, " "))}</span> : "—"}</td>
-                    <td>{d.changed
-                      ? <span className="ax-lozenge ax-lozenge--warning">{t("review.ws.changed", "changed")}</span>
-                      : <span className="ax-caption">{t("review.ws.unchanged", "unchanged")}</span>}</td>
-                  </tr>
-                ))}</tbody>
-              </table></div>
-              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.compareNote", "Both versions are immutable snapshots (M06-011/023); the diff is computed from the stored answers, never re-derived.")}</p>
-            </div>
+          {latest && (
+            <VersionCompare
+              versions={compareVersions}
+              itemSection={itemSection}
+              returnedScope={returnedScope}
+              scopeLabel={scopeLabel}
+              strings={compareStrings}
+            />
           )}
           {(trail ?? []).length > 0 && (
             <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

@@ -137,8 +137,10 @@ items:
   - task_id: "CD-027-VISIT-DETAIL-TRACK1"
     gate: "G11 production-readiness wiring"
     priority: "P0"
-    status: "TRACK1_AND_SAFE_TRACK2_IMPLEMENTED_PENDING_REAUDIT_AND_ACCEPTANCE"
-    owner: "Claude Code implementation + distinct Codex wiring reviewer + Sponsor"
-    blocked_by: ["Fresh independent DEC-012 re-audit of the Track 1 + Track 2 closures", "Sponsor runtime acceptance", "Change-control for the 3 held-blocked legs (MAP / ASSIGNMENT_RELEASE / ATOMIC)"]
-    blocks: ["CD-027 closure"]
+    status: "CLOSED_SPONSOR_WAIVED"
+    owner: "Claude Code implementation + Sponsor (independent audit waived)"
+    blocked_by: []
+    blocks: []
+    closure: "CLOSED (SPONSOR-WAIVED) 2026-07-15 (Vikram Indla) — runtime acceptance granted; DEC-012 independent audit WAIVED (not satisfied); MAP/ASSIGNMENT_RELEASE/ATOMIC DEFERRED to change-control (not done). See governance/HUMAN_APPROVALS.yaml gate CD-027-closure-waiver. Reopen on P0/P1 regression, later independent-audit finding, or a blocked-leg decision."
+    follow_ups: ["Optional later independent Codex re-audit of the closures (waived, not deleted)", "CC-CD027-MAP-001 / CC-CD027-ASSIGNMENT-RELEASE-001 / CC-CD027-ATOMIC-001 pending sponsor decisions"]
     note: "SCR-WEB-210 /visits/:id. Sponsor approved audit-first (Vikram Indla, 2026-07-14). Dual-State Ribbon (five domains, keyboard tablist, S36 ledger), available/disabled-with-why/unavailable action zones, honest queued-not-delivered copy. Track 2 closed ERRORMAP (neutral errors), ORPHAN (storage cleanup), NOTIFY_PREV (prev-inspector notify via REF-014 assignment event). Held BLOCKED: MAP (never invent provider/geofence), ASSIGNMENT_RELEASE (open product decision), ATOMIC (would weaken best-effort-notify contract). Recorded audit outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (DEC-012). e2e cd-027-visit-detail.spec.ts 16/16 PASS on local prod build; typecheck+build clean. Preserved: RLS reads, five state machines, guards, append-only audit(30), immutable submissions, soft-delete, signed URLs, system-only expiry, grouped shell. Branch feat/cd-026-visit-management, unmerged."

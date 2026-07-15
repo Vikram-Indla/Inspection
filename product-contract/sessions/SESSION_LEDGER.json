@@ -402,9 +402,29 @@
       "commit_sha": "committed on branch feat/cd-026-visit-management; no push/merge/deploy/main modification; no migration",
       "next_task": "Independent Codex re-audit of the CD-027 closures; then sponsor runtime acceptance; draft change-control for MAP/ASSIGNMENT_RELEASE/ATOMIC",
       "resume_prompt": "CD-027 / SCR-WEB-210 Visit Detail Track 1 + safe Track 2 are implemented and green (cd-027-visit-detail spec 16/16 on local prod build), recorded in CD-027_WIRING_AUDIT_R1.md. Do NOT close the three held-blocked legs (MAP/ASSIGNMENT_RELEASE/ATOMIC) without recorded change-control — each would breach a hard rule. Next: obtain a fresh independent DEC-012 wiring audit of the closures and sponsor runtime acceptance. Preserve the dirty worktree; no push/merge/main without explicit approval."
+    },
+    {
+      "session_id": "2026-07-15-cd027-closure-waiver",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "feat/cd-026-visit-management",
+      "task_id": "CD-027-VISIT-DETAIL-TRACK1",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M02-001..046", "MVP1-FND-002", "MVP1-FND-004", "MVP1-FND-011"],
+      "acceptance_ids": ["DSG-022", "DSG-A11Y-001"],
+      "screens": ["SCR-WEB-210"],
+      "engines": ["ENG-05", "ENG-11", "ENG-12"],
+      "files_changed": ["product-contract/governance/HUMAN_APPROVALS.yaml", "product-contract/acceptance/ACCEPTANCE_STATUS.md", "product-contract/execution/WORK_QUEUE.yaml", "product-contract/CURRENT_STATE.md", "product-contract/sessions/SESSION_LEDGER.json"],
+      "tests": ["none this session — ledger/governance records only; prior cd-027-visit-detail spec 16/16 PASS stands"],
+      "evidence": ["governance/HUMAN_APPROVALS.yaml gate CD-027-closure-waiver", "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md", "outputs/claude-design-approval-pack/CD-027_CHANGE_CONTROL_BLOCKED_LEGS.md"],
+      "decisions": ["CD-027 marked CLOSED (SPONSOR-WAIVED) 2026-07-15 (Vikram Indla): runtime acceptance granted", "DEC-012 independent (non-implementer) audit WAIVED for CD-027 — not satisfied; the recorded audit is Claude Code's own", "MAP/ASSIGNMENT_RELEASE/ATOMIC DEFERRED to change-control — not implemented", "Declined a no-caveat all-conditions-met close because it would fabricate DEC-012 + blocked-leg state; recorded honest waiver instead"],
+      "blockers": ["Optional later independent Codex re-audit of the closures (waived, not deleted)", "The three change-control decisions (DEC-008/DEC-002 for MAP; assignment state-machine policy; FND-004 override for ATOMIC)"],
+      "commit_sha": "closure records staged on feat/cd-026-visit-management; implementation commits c6c2195 + e6c444c already pushed to origin/feat/cd-026-visit-management; no push/merge/main in this step",
+      "next_task": "Optional: obtain the independent Codex re-audit to convert the waiver into a satisfied DEC-012; otherwise progress CD-027 change-control decisions",
+      "resume_prompt": "CD-027 is CLOSED (SPONSOR-WAIVED) — runtime acceptance granted, DEC-012 independent audit waived (NOT satisfied), MAP/ASSIGNMENT_RELEASE/ATOMIC deferred to change-control. Do not represent CD-027 as a clean DEC-012 pass. Reopen only on P0/P1 regression, a later independent-audit finding, or a blocked-leg decision. Preserve concurrent work; no main modification without explicit approval."
     }
   ],
-  "last_session": "2026-07-14-cd027-visit-detail-track1",
+  "last_session": "2026-07-15-cd027-closure-waiver",
   "rules": {
     "append_only": true,
     "required_fields": [

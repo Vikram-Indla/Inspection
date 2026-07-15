@@ -59,8 +59,9 @@ reconciliation (see docs/G5_ARCHITECTURE_AND_READINESS.md).
 - CD-026: **PROMPT READY ONLY** — no Claude Design output, sponsor approval, wiring audit or implementation authorization exists yet.
 - CD-027: superseded by the disposition below.
 
-## CD-027 / SCR-WEB-210 / P03 — Visit Detail disposition — 2026-07-14
+## CD-027 / SCR-WEB-210 / P03 — Visit Detail disposition — 2026-07-14 (CLOSED-WAIVED 2026-07-15)
 
+- **Closure: CLOSED (SPONSOR-WAIVED) — 2026-07-15 (Vikram Indla).** Runtime acceptance granted; DEC-012 independent (non-implementer) audit **waived, not satisfied**; the three blocked legs **deferred to change-control, not done**. Recorded in `governance/HUMAN_APPROVALS.yaml` (gate `CD-027-closure-waiver`). Reopen on any P0/P1 regression, a later independent-audit finding, or a blocked-leg decision landing.
 - Sponsor status: **APPROVED (Vikram Indla, 2026-07-14)** for Track 1 + safe Track 2 wiring closures; recorded in `outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md` (DEC-012).
 - Baseline: `BASELINE_REVERIFY_REQUIRED` cleared — reverified against local `HEAD 8af0185` (`9360fc9` in history); `setup/Inspection` not used; dirty tree preserved.
 - Design source: imported CD-027 r2 (`READY_FOR_DESIGN_REVIEW_R2`) from Claude Design project `Plan Review and Publish`.
