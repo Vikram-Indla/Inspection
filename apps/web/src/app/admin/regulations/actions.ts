@@ -46,8 +46,15 @@ export async function publishRegulation(_: RegResult, formData: FormData): Promi
   if (!user) return { error: "Session expired — sign in again." };
 
   const id = String(formData.get("regulation_id") ?? "");
-  const { error } = await sb.from("regulations").update({ status: "published" }).eq("id", id).eq("status", "draft");
+  if (!id) return { error: "Missing regulation id." };
+  // CD006-WA-01 — record approval provenance (published_at / approved_by, columns
+  // that already exist on regulations); CD006-WA-02 — a forward-only draft→published
+  // transition that reports honestly when nothing changed (RLS-denied or not draft).
+  const { data, error } = await sb.from("regulations")
+    .update({ status: "published", published_at: new Date().toISOString(), approved_by: user.id })
+    .eq("id", id).eq("status", "draft").select("id");
   if (error) { logProviderError("admin regulation status", error); return { error: NEUTRAL_WRITE_ERROR }; }
+  if (!data?.length) return { error: "This regulation could not be published — it is not in draft, or you are not authorized." };
   revalidatePath("/admin/regulations");
   return { ok: true };
 }
