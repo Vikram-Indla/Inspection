@@ -59,9 +59,11 @@ close outcome. R1 failure modes were not reintroduced.
   refuses close before any write + reload prompt; asserts session not closed),
   S15 (offline disables begin/close + banner, recovery on reconnect). Follows the
   cd-041 sacrificial-fixture + persona-JWT/RLS pattern.
-- **E2E not yet run:** the suite (and `cd-041/042`) requires a Supabase test DB,
-  which is parked (no token / test project). `playwright --list` discovers all 3
-  tests and they typecheck; **runtime pass is PENDING** the test DB.
+- **E2E PASS (runtime):** `cd-043-virtual-boundary-states.spec.ts` — **6 passed**
+  (3 persona setup + S12/S13/S15) against the configured live project
+  (`iiozvqntawxfwbgffzqu`) over the local production build, 2026-07-15. S13
+  drives a real concurrent timeline bump and asserts the close write never lands
+  (`state != closed` on re-read). Sacrificial fixtures, best-effort teardown.
 
 ## DEC-012
 

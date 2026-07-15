@@ -42,10 +42,12 @@ rule. The rev check narrowed but did not close it.
 `.in("state", ["scheduled","waiting"])` CAS to the reschedule UPDATE (mirrors
 `openWaitingRoom`); a race now loses the row and the reschedule is refused.
 
-**Finding 2 — LOW (completion gate) — e2e authored but not executed.**
-`cd-043-virtual-boundary-states.spec.ts` typechecks and is discovered, but runtime
-pass is PENDING the Supabase test DB. Per CLAUDE.md the slice cannot be marked
-accepted until S12/S13/S15 pass live. Not a code defect. **OPEN.**
+**Finding 2 — LOW (completion gate) — e2e execution.**
+**RESOLVED** — `cd-043-virtual-boundary-states.spec.ts` run 2026-07-15 against the
+configured live project (`iiozvqntawxfwbgffzqu`) over the local production build:
+**6 passed** (3 persona setup + S12/S13/S15). S13 proved the concurrent-change
+close is refused before any write (`state != closed` on re-read). Slice is now
+runtime-evidenced.
 
 **Finding 3 — COSMETIC — no action.** Auditor flagged a missing 🔒 glyph in the
 immutable banner markup. Not a defect: the glyph is supplied by CSS
@@ -55,6 +57,7 @@ runtime. Offline/stale banners share `.ax-banner--warning` disambiguated by text
 begin/reschedule/close scope, not a violation.
 
 ## Residual gate to acceptance
-- Finding 1: **closed** (CAS fix committed).
-- Finding 2: **open** — execute the authored e2e against a test DB before the slice
-  is marked complete (shared blocker with cd-041/042).
+- Finding 1: **closed** (CAS fix committed, 503a56c).
+- Finding 2: **closed** — e2e executed live, 6 passed (2026-07-15).
+- **No residual gates. Slice is implementation-complete, independently audited,
+  fix-remediated, and runtime-evidenced.**
