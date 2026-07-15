@@ -72,3 +72,18 @@ reconciliation (see docs/G5_ARCHITECTURE_AND_READINESS.md).
 - Preserved: RLS reads + joins, five state machines, field/journey ownership of operational state, state-guarded actions + guards, append-only audit (limit 30), immutable submissions, private attachments + soft delete, signed URLs, queued-not-delivered notifications, system-only expiry, the grouped shell.
 - Reopen rule: demonstrated P0/P1 regression, a11y/security failure, protected-behavior break, or recorded release blocker only.
 - Production not approved: the three blocked legs and an independent Codex re-audit of the closures remain open items.
+
+## CD-028 / SCR-WEB-300 / P03 — Level 2 Review Queue disposition — 2026-07-15
+
+- **Status: IMPLEMENTED AND LANDED ON CANONICAL (`setup/Inspection`, PR #11, commit `b9b3a5c`). NOT CLOSED.** Sponsor design approval + backend authorization granted in-session (Vikram Indla, 2026-07-15), overriding the R2 pack's `implementation_authorized:false` for this slice. Runtime acceptance **pending**; DEC-012 independent audit **OPEN** (see caveat below).
+- Design source: imported CD-028 r2 from Claude Design project `20cb0dce-94f1-4423-b923-00d6fd0d2c24` (`CD-028 Level 2 Review Queue.dc.html`, `outputs/cd-028-r2/*`).
+- **Scan-first queue (leg 10): IMPLEMENTED AND VERIFIED** — the `/reviews` list renders zero decision controls; inline decision panels removed; a row opens `/reviews/:id` (read-only navigation).
+- **Scan-only open (leg 5, HANDOFF_BLOCKED_QUEUE_OPEN_MUTATION): RESOLVED** — opening `/reviews/:id` no longer creates the review or transitions to `under_review` as a render side-effect; that moved to an explicit reviewer-intentful `startReview` server action + `StartReview.tsx`. Preserves the M06 decision flow (started reviews reach `decideReview` unchanged).
+- **Readiness derivation (leg 3b, HANDOFF_BLOCKED_QUEUE_READINESS): RESOLVED** — checklist/evidence/acknowledgement/factory-verify derived from RLS-scoped joins + batched `inspection_factory_checks`; unreadable source → `unavailable`, never invented. Fingerprint = labelled facts (SLA/risk/critical/priority + four readiness facts), non-colour (FND-011).
+- **DSG-A11Y-001** (semantic, RTL, responsive, non-color): **IMPLEMENTED** — `role=status/alert` empty/degraded/unauthorized blocks, keyboard focus, glyph+label status, Arabic/RTL + dark/light + 1024/412; strings via `t()` (Arabic seed deferred, EN fallback per i18n design).
+- Negative states: unauthorized (distinct from queue-clear via `user_roles` read), missing-SLA, degraded (linked source unreadable), unreadable-row flag, no-match.
+- Still blocked (not closed — no policy to invent): **CLAIM / REASSIGN** (leg 11/12) shown `unavailable` only; **ATOMIC** decision notification (leg 13, CD-029) untouched. Each needs its own change-control.
+- Preserved: RLS reviews scope, Level 2 role boundary, immutable decided reviews + append-only audit + `trg_guard_review`, config-derived SLA (null → unavailable), queued-not-delivered notifications, decision atomicity/copy, the grouped shell.
+- Verified: `next build` 0 errors; `tsc --noEmit` 0 errors; color-law 0 violations; e2e `cd-028-review-queue` 12/12, `golden-journey` 9/9 (P3/P5 exercise the explicit Start flow), `persona-tours`+`cd-025` 17/17.
+- **DEC-012 CAVEAT (blocks closure):** the recorded 14-leg wiring audit was performed by Claude Code (the implementer of this slice), NOT an independent non-implementer/Codex reviewer. Per DEC-012 an independent audit against `WIRING_MAP_CD-028.csv` is required before CD-028 may be sponsor-runtime-accepted or closed.
+- Reopen rule: demonstrated P0/P1 regression, a11y/security failure, protected-behavior break, or recorded release blocker only.

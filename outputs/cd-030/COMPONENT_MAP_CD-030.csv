@@ -1,0 +1,9 @@
+component,role,before_responsibility,disposition,after_responsibility,protected_behavior,rtl_theme,tests,rollback,blocker
+Shell,Grouped role-scoped shell,nav+topbar+drawer,PRESERVE,unchanged,brand+groups+topbar+collapse+skip+drawer,full,shell-navigation.spec,revert,none
+ReviewComparePage,/reviews/:id compare mode,stored-answer diff by union of keys,UPDATE,route-neutral compare mode + scope rail + unavailable categories,RLS read + immutable versions,full,cd-030 spec,revert,none
+TamperScopeRail,Signature interaction,none,CREATE,classifies changed answers vs stored returned scope; expected/unexpected/unchanged/unavailable,authority=stored scope; never infer from diff,full,cd-030 spec,delete,HANDOFF_BLOCKED_MEDIADIFF/PKGSEMANTIC
+VersionSelectors,From/To selection,implicit latest vs prior,UPDATE,explicit from/to selectors,RLS versions,full,cd-030 spec,revert,none
+AnswerDiffTable,Answer comparison,changed-cell diff,UPDATE,semantic table + classification column,immutable snapshots,full,cd-030 spec,revert,none
+UnavailablePanel,Non-answer categories,silent absence,CREATE,explicit unavailable categories (evidence/package/metadata/order/ack),never 'unchanged',full,cd-030 spec,delete,HANDOFF_BLOCKED_MEDIADIFF/PKGSEMANTIC/METADIFF
+AcceptChanges,Merge action,none,CREATE_AFTER_APPROVAL,shown absent,navigation-only,n/a,cd-030 spec,delete,HANDOFF_BLOCKED_ACCEPT
+CD030Spec,E2E evidence,none,CREATE,scope-rail/tamper/diff/unavailable/no-prior/stale/unauth/auditor/a11y/RTL/theme/responsive,n/a,n/a,delete,HANDOFF_BLOCKED_BASELINE
