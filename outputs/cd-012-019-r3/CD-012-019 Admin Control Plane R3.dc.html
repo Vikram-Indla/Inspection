@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="saqeel-tokens.css">
+<link rel="stylesheet" href="saqeel-astryx.css">
+<link rel="stylesheet" href="cdm-frame.css">
+<style>
+body{margin:0;background:#05050b}
+.hn{position:sticky;top:0;z-index:200;background:#0c0c16;border-block-end:1px solid #26263a;color:#cfcfe2;font-family:var(--ax-font-mono)}
+.hn__row{display:flex;align-items:center;gap:12px;padding:9px 16px;flex-wrap:wrap}
+.hn__brand{font-weight:600;letter-spacing:.08em;color:#9487ff;font-size:12px;text-transform:uppercase}
+.hn__sep{width:1px;align-self:stretch;background:#26263a}
+.hn__lab{color:#6f6f88;text-transform:uppercase;letter-spacing:.1em;font-size:10px}
+.hn__btn{font:11px/1 var(--ax-font-mono);color:#cfcfe2;background:#14141f;border:1px solid #2c2c42;border-radius:6px;padding:7px 9px;cursor:pointer}
+.hn__btn:hover{border-color:#4a4a6a;color:#fff}
+.hn__btn[aria-pressed=true]{background:#7c6cff;border-color:#7c6cff;color:#0b0b14;font-weight:600}
+.hn__sel{font:11px/1 var(--ax-font-mono);color:#cfcfe2;background:#14141f;border:1px solid #2c2c42;border-radius:6px;padding:8px 10px;max-width:460px}
+.hn__grp{display:flex;gap:5px;flex-wrap:wrap}
+.frameband{display:flex;align-items:center;gap:10px;padding:8px 16px;background:#0f0f1c;color:#8f8fb0;font:11px/1.4 var(--ax-font-mono);flex-wrap:wrap}
+.frameband b{color:#c9c4ff}
+.capwrap{overflow:auto}
+.stageframe{margin:0 auto;position:relative;transform-origin:top left}
+.w-desktop{inline-size:1440px}
+.w-tablet{inline-size:1024px}
+.w-narrow{inline-size:412px}
+</style>
+</helmet>
+<div class="cd-root">
+<template id="__bundler_thumbnail"><svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg"><rect width="240" height="240" fill="#0A0A14"/><rect x="34" y="58" width="76" height="56" rx="10" fill="#14141F" stroke="#7C6CFF" stroke-width="2"/><rect x="130" y="58" width="76" height="56" rx="10" fill="#14141F" stroke="#D946EF" stroke-width="2"/><rect x="34" y="130" width="76" height="56" rx="10" fill="#14141F" stroke="#2DE08E" stroke-width="2"/><rect x="130" y="130" width="76" height="56" rx="10" fill="#14141F" stroke="#E8B84B" stroke-width="2"/><text x="120" y="215" font-family="monospace" font-size="15" font-weight="700" fill="#7C6CFF" text-anchor="middle">CD-012→019</text></svg></template>
+<div class="hn" role="region" aria-label="Design harness (non-product)">
+<div class="hn__row">
+<span class="hn__brand">Saqeel MVP1 · Admin control plane · CD-012 → CD-019 · R2</span>
+<span class="hn__sep"></span>
+<span class="hn__lab">Screen</span>
+<div class="hn__grp"><sc-for list="{{ screens }}" as="s" hint-placeholder-count="8"><button class="hn__btn" aria-pressed="{{ s.on }}" onClick="{{ s.pick }}">{{ s.label }}</button></sc-for></div>
+</div>
+<div class="hn__row">
+<span class="hn__lab">State</span>
+<select class="hn__sel" value="{{ stateId }}" onChange="{{ onPickState }}"><sc-for list="{{ states }}" as="st" hint-placeholder-count="12"><option value="{{ st.id }}">{{ st.opt }}</option></sc-for></select>
+<span class="hn__sep"></span>
+<span class="hn__lab">Theme</span>
+<div class="hn__grp"><button class="hn__btn" aria-pressed="{{ isDark }}" onClick="{{ setDark }}">Dark</button><button class="hn__btn" aria-pressed="{{ isLight }}" onClick="{{ setLight }}">Light</button></div>
+<span class="hn__sep"></span>
+<span class="hn__lab">Lang</span>
+<div class="hn__grp"><button class="hn__btn" aria-pressed="{{ isEn }}" onClick="{{ setEn }}">EN · LTR</button><button class="hn__btn" aria-pressed="{{ isAr }}" onClick="{{ setAr }}">AR · RTL</button></div>
+<span class="hn__sep"></span>
+<span class="hn__lab">Width</span>
+<div class="hn__grp"><button class="hn__btn" aria-pressed="{{ wDesktop }}" onClick="{{ setWDesktop }}">1440</button><button class="hn__btn" aria-pressed="{{ wTablet }}" onClick="{{ setWTablet }}">1024</button><button class="hn__btn" aria-pressed="{{ wNarrow }}" onClick="{{ setWNarrow }}">412</button></div>
+<span class="hn__sep"></span>
+<button class="hn__btn" aria-pressed="{{ fit }}" onClick="{{ toggleFit }}">Fit-to-view</button>
+</div>
+</div>
+<div class="frameband"><span>FRAME</span><b>{{ frameId }}</b><span>·</span><span>{{ frameTitle }}</span><span class="hn__sep"></span><span>DESIGN FIXTURE — NOT RUNTIME EVIDENCE</span></div>
+<div class="capwrap">
+<div class="stageframe {{ frameClass }}">
+<x-import component-from-global-scope="cdm-stage" from="./cdm-common.js ./cd12.js ./cd12-register.js ./cd13.js ./cd14.js ./cd15.js ./cd16.js ./cd17.js ./cd18.js ./cd19.js ./cdm-stage.js" screen="{{ screenId }}" state="{{ stateId }}" lang="{{ lang }}" theme="{{ theme }}" hint-size="100%,700px"></x-import>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { screenId:'cd12', stateId:'published', theme:'dark', lang:'en', width:'desktop', fit:true };
+  componentDidMount(){ this.applyFit(); }
+  componentDidUpdate(){ this.applyFit(); }
+  applyFit(){
+    const f=(typeof document!=='undefined')?document.querySelector('.stageframe'):null; if(!f) return;
+    if(this.state.fit){
+      const wrap=f.parentElement; const avail=wrap?wrap.clientWidth:900;
+      const design=this.state.width==='tablet'?1024:this.state.width==='narrow'?412:1440;
+      f.style.zoom=Math.min(1, avail/design);
+    } else { f.style.zoom=''; }
+  }
+  set(k,v){ this.setState({[k]:v}); }
+  renderVals(){
+    const S=this.state;
+    const screens=SCREENS.map(sc=>({id:sc.id,label:sc.label,on:S.screenId===sc.id,
+      pick:()=>this.setState({screenId:sc.id, stateId:sc.states[0].id})}));
+    const cur=SCREENS.find(sc=>sc.id===S.screenId)||SCREENS[0];
+    const states=cur.states.map(st=>({id:st.id,opt:`${st.n}. ${st.label}`}));
+    const curState=cur.states.find(st=>st.id===S.stateId)||cur.states[0];
+    return {
+      screens, states, screenId:S.screenId, stateId:curState.id, lang:S.lang, theme:S.theme,
+      onPickState:(e)=>this.set('stateId',e.target.value),
+      isDark:S.theme==='dark', isLight:S.theme==='light', isEn:S.lang==='en', isAr:S.lang==='ar',
+      wDesktop:S.width==='desktop', wTablet:S.width==='tablet', wNarrow:S.width==='narrow', fit:S.fit,
+      setDark:()=>this.set('theme','dark'), setLight:()=>this.set('theme','light'),
+      setEn:()=>this.set('lang','en'), setAr:()=>this.set('lang','ar'),
+      setWDesktop:()=>this.set('width','desktop'), setWTablet:()=>this.set('width','tablet'), setWNarrow:()=>this.set('width','narrow'),
+      toggleFit:()=>this.set('fit',!S.fit),
+      frameClass:`w-${S.width}`,
+      frameId:`${cur.cd}_${cur.screen}_${curState.n}_${S.theme}_${S.lang}_${S.width}`,
+      frameTitle:`${cur.label} — ${curState.label}`,
+    };
+  }
+}
+const SCREENS=[
+  {id:'cd12',cd:'CD-012',screen:'SCR-ADM-050',label:'012 Workflow library',states:[
+    {id:'published',n:'S01',label:'Published — primary populated'},{id:'draft',n:'S02',label:'Draft awaiting approval'},
+    {id:'outlier',n:'S03',label:'Outlier — separation of duties (own draft)'},{id:'submitted',n:'S04',label:'Published version immutable'},
+    {id:'superseded',n:'S05',label:'Superseded (read-only)'},{id:'in-use',n:'S06',label:'In-use — blocked health input'},
+    {id:'empty',n:'S07',label:'Empty'},{id:'loading',n:'S08',label:'Loading'},{id:'validation',n:'S09',label:'Validation — cannot save/propose'},
+    {id:'unauthorized',n:'S10',label:'Unauthorized'},{id:'offline',n:'S11',label:'Offline'},{id:'stale',n:'S12',label:'Stale detection blocked'}]},
+  {id:'cd13',cd:'CD-013',screen:'SCR-ADM-051',label:'013 Draft editor',states:[
+    {id:'draft',n:'S01',label:'Draft — primary (payload editor + quarantined designer lane)'},{id:'validation',n:'S02',label:'Save rejected — parse error + bad reference (outlier)'},
+    {id:'saved',n:'S03',label:'Draft saved (saveWorkflowDraft)'},{id:'own-draft',n:'S04',label:'Own draft — approve disabled (SoD)'},
+    {id:'submitted',n:'S05',label:'Submitted — frozen for review'},{id:'published-locked',n:'S06',label:'Published v7 — read-only'},
+    {id:'empty',n:'S07',label:'Empty — no draft open'},{id:'loading',n:'S08',label:'Loading'},{id:'unauthorized',n:'S09',label:'Unauthorized'},{id:'offline',n:'S10',label:'Offline'}]},
+  {id:'cd14',cd:'CD-014',screen:'SCR-ADM-060',label:'014 Risk configuration',states:[
+    {id:'complete',n:'S01',label:'Stored model — primary (trace + factors + bands)'},{id:'sum-fail',n:'S02',label:'Weights-sum fails — save blocked (outlier)'},
+    {id:'missing-input',n:'S03',label:'Factory cannot be fully scored'},{id:'threshold-edge',n:'S04',label:'Threshold-edge factory'},
+    {id:'saved',n:'S05',label:'Saved — effective immediately'},{id:'rls-denied',n:'S06',label:'Save rejected by RLS'},
+    {id:'empty',n:'S07',label:'Empty — no model stored'},{id:'loading',n:'S08',label:'Loading'},{id:'unauthorized',n:'S09',label:'Unauthorized'},{id:'offline',n:'S10',label:'Offline'}]},
+  {id:'cd15',cd:'CD-015',screen:'SCR-ADM-070',label:'015 GIS & geofence',states:[
+    {id:'valid',n:'S01',label:'Coordinates + radius — primary'},{id:'invalid-radius',n:'S02',label:'Radius input rejected (outlier)'},
+    {id:'missing-coordinate',n:'S03',label:'No official coordinate — flagged'},{id:'rls-denied',n:'S04',label:'Save rejected by RLS'},
+    {id:'saved',n:'S05',label:'Radius saved (updateGeofenceRadius)'},{id:'provider-unavailable',n:'S06',label:'Map preview unavailable — facts intact'},
+    {id:'empty',n:'S07',label:'Empty — no factory selected'},{id:'loading',n:'S08',label:'Loading'},{id:'unauthorized',n:'S09',label:'Unauthorized'},{id:'offline',n:'S10',label:'Offline'}]},
+  {id:'cd16',cd:'CD-016',screen:'SCR-ADM-080',label:'016 Notifications (blocked)',states:[
+    {id:'blocked',n:'S01',label:'Blocked concept boundary — primary (the honest state)'},{id:'concept',n:'S02',label:'Concept preview + prerequisites (non-executable, outlier)'},
+    {id:'unauthorized',n:'S03',label:'Unauthorized'}]},
+  {id:'cd17',cd:'CD-017',screen:'SCR-ADM-090',label:'017 Roles (read-only)',states:[
+    {id:'view',n:'S01',label:'Read-only holdings — primary'},{id:'explainer',n:'S02',label:'Explainer proposal — non-conclusive (outlier)'},
+    {id:'rls-scoped',n:'S03',label:'RLS-scoped visibility'},{id:'empty',n:'S04',label:'Empty — nothing readable'},
+    {id:'loading',n:'S05',label:'Loading'},{id:'unauthorized',n:'S06',label:'Unauthorized'},{id:'offline',n:'S07',label:'Offline'}]},
+  {id:'cd18',cd:'CD-018',screen:'ADM-LOCALIZATION',label:'018 Localization',states:[
+    {id:'review',n:'S01',label:'Working view — primary (real ui_strings actions)'},{id:'source-drift',n:'S02',label:'Source drift — back to draft (outlier)'},
+    {id:'placeholder-error',n:'S03',label:'Placeholder mismatch — save disabled'},{id:'orphaned',n:'S04',label:'Orphaned key — kept, not deleted'},
+    {id:'sync-ok',n:'S05',label:'Sync from code — result summary'},{id:'sync-error',n:'S06',label:'Sync failed — store untouched'},
+    {id:'restored',n:'S07',label:'Restored as draft'},{id:'rls-denied',n:'S08',label:'Save rejected by RLS'},
+    {id:'empty',n:'S09',label:'Filtered empty'},{id:'loading',n:'S10',label:'Loading'},{id:'unauthorized',n:'S11',label:'Unauthorized'},{id:'offline',n:'S12',label:'Offline'}]},
+  {id:'cd19',cd:'CD-019',screen:'ADM-AUDIT',label:'019 Audit trail',states:[
+    {id:'stream',n:'S01',label:'Reader — primary (filters + pagination + diff)'},{id:'partial-payload',n:'S02',label:'Historical gap in payload (outlier)'},
+    {id:'degraded',n:'S03',label:'Query timed out — narrow and retry'},{id:'filtered-empty',n:'S04',label:'Filtered empty'},
+    {id:'no-events',n:'S05',label:'No events in scope'},{id:'loading',n:'S06',label:'Loading'},
+    {id:'unauthorized',n:'S07',label:'Unauthorized'},{id:'offline',n:'S08',label:'Offline'}]}
+];
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+screen,ui_trigger,client_component,route_or_action,guard,storage,rls_role,result_success,result_negative,test,truth_class
+CD-012,Open library,workflows/page.tsx,GET /admin/workflows,RLS,config_versions+profiles,workflow admin,list,empty/unauthorized,library-loads,STATED_BY_CORRECTION
+CD-012,Propose draft,workflows/Controls.tsx,proposeWorkflowDraft,RLS,config_versions insert draft,workflow admin,new draft,denied,propose-draft,STATED_BY_CORRECTION
+CD-012,Save draft,workflows/Controls.tsx,saveWorkflowDraft,input validation,config_versions update draft,workflow admin,saved,validation list,save-draft,STATED_BY_CORRECTION
+CD-012,Approve & publish,workflows/Controls.tsx,approvePublishWorkflow,maker-checker,config_versions draft->published,checker,published,own-draft denied,approve-publish,STATED_BY_CORRECTION
+CD-013,Edit payload,workflows editor,client state,none,in-memory,workflow admin,edited,—,editor-edit,STATED_BY_CORRECTION
+CD-013,Save payload,workflows/actions.ts,saveWorkflowDraft,parse+reference+initial-state validation,config_versions update,workflow admin,saved,rejected with list,editor-save,STATED_BY_CORRECTION
+CD-013,Canvas/replay/graph-validate,(none),none,—,—,—,—,—,—,NEEDS_APPROVED_CONTRACT (non-executable lane)
+CD-014,Open model,risk/page.tsx,GET /admin/risk,RLS,engine_settings read,risk owner,model+trace,empty/unauthorized,risk-loads,STATED_BY_CORRECTION
+CD-014,Save model,risk/actions.ts,save (TBD-cite symbol),weights sum = 1.00,engine_settings write,risk owner,saved effective immediately,sum-fail blocked / RLS denied,risk-save,STATED_BY_CORRECTION
+CD-014,Why-this-factory,client,arithmetic over shown inputs,—,payload only,—,trace,missing input scored 0 + shown,risk-trace,COMPUTED_FROM_ENGINE_SETTINGS
+CD-015,Open factory,gis/page.tsx,GET /admin/gis,RLS,factory coords + engine settings,gis admin,coords+radius,missing coordinate flagged,gis-loads,STATED_BY_CORRECTION
+CD-015,Save radius,gis/actions.ts,updateGeofenceRadius,range 25-500,engine settings write,gis admin,saved,invalid input / RLS denied,gis-radius,STATED_BY_CORRECTION
+CD-015,Map tiles,(none),none,—,external,—,—,preview-unavailable (facts intact),gis-tiles,NEEDS_APPROVED_CONTRACT
+CD-016,All actions,(none — no route),none,—,—,—,—,—,—,HANDOFF_BLOCKED_ROUTE (blocked boundary is the screen)
+CD-017,View holdings,access/page.tsx,GET /admin/access,RLS,profiles+user roles read,security admin,holdings,rls-scoped absence,access-loads,STATED_BY_CORRECTION
+CD-017,Change access,(none),none,—,—,—,—,—,—,NEEDS_APPROVED_CONTRACT
+CD-018,Load strings,localization/page.tsx,GET /admin/localization,RLS,ui_strings read,admin,rows,filtered empty,l10n-loads,STATED_BY_CORRECTION
+CD-018,Save translation,localization/actions.ts,save translation (TBD-cite symbol),placeholder match,ui_strings write,admin,saved draft,placeholder blocked / RLS denied,l10n-save,STATED_BY_CORRECTION
+CD-018,Mark reviewed,localization/actions.ts,mark reviewed (TBD-cite),draft only,ui_strings status,admin,reviewed,—,l10n-review,STATED_BY_CORRECTION
+CD-018,Add key,localization/actions.ts,add key (TBD-cite),unique key,ui_strings insert,admin,draft added,duplicate rejected,l10n-add,STATED_BY_CORRECTION
+CD-018,Sync from code,localization/actions.ts,sync (TBD-cite),scan succeeds,ui_strings upsert+orphan marks,admin,summary counts,scan error — store untouched,l10n-sync,STATED_BY_CORRECTION
+CD-018,Restore revision,localization/actions.ts,restore (TBD-cite),revision exists,ui_strings new draft revision,admin,restored as draft,denied,l10n-restore,STATED_BY_CORRECTION
+CD-019,Query events,audit/page.tsx,GET /admin/audit,RLS,audit_events read,auditor,page of events,filtered empty / timeout narrow-retry,audit-loads,STATED_BY_CORRECTION
+CD-019,Open event detail,audit/page.tsx,row select,RLS,before/after JSON,auditor,diff,historical gap shown,audit-detail,STATED_BY_CORRECTION
+CD-019,Correlation/reveal/export,(none),none,—,—,—,—,—,—,NEEDS_APPROVED_CONTRACT / BLOCKED_BY_DECISION

@@ -1,0 +1,31 @@
+screen,ui_trigger,client_component,route_or_action,validation_guard,canonical_transition,table_rpc_storage,rls_role,audit_event,side_effect,success_result,negative_result,test,runtime_evidence,truth_class
+CD-012,Open library,WorkflowLibraryPage,GET /admin/workflows,RLS,none,config_versions+profiles read,workflow_admin,none,none,Populated list,Empty/Unauthorized,workflow-library-loads,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-012,Propose draft,WorkflowControls,proposeWorkflowDraft,RLS,none,config_versions insert draft,workflow_admin,TBD-cite,none,New draft,Denied,propose-draft,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-012,Save draft,WorkflowControls,saveWorkflowDraft,input validation,none,config_versions update draft,workflow_admin,TBD-cite,none,Draft saved,Validation blockers,save-draft,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-012,Approve & publish,WorkflowControls,approvePublishWorkflow,maker-checker (SoD),draft->published,config_versions status change,workflow_admin (checker),TBD-cite,none,Published,Own-draft denied,approve-publish,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-013,Edit canvas/inspector,WorkflowDesigner,client state,none,none,in-memory draft,workflow_admin,none,none,Draft edited,—,designer-edit,PROVEN_CLIENT,intent-render
+CD-013,Save draft,WorkflowDesigner,saveWorkflowDraft,input validation,none,config_versions update draft,workflow_admin,TBD-cite,none,Saved,Rejected (invalid edge/fields),designer-save,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-013,Scenario replay,ScenarioReplay(CREATE-blocked),none located,none,none,none located,—,none,none,Preview only,—,—,HANDOFF_BLOCKED_SIMULATION,intent
+CD-013,Graph analysis (unreachable/cycles),LifecycleAnalyzer(CREATE-blocked),none located,none,none,none located,—,none,none,—,—,—,HANDOFF_BLOCKED_GRAPH_ANALYSIS,intent
+CD-014,Open risk model,RiskPage,GET /admin/risk,RLS,none,risk model read (admin/risk),risk_owner,none,none,Model + trace,Empty/Unauthorized,risk-loads,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-014,Why this factory? trace,RiskTrace(CREATE),client compute over payload,weights sum=1,none,payload only,risk_owner,none,none,Line-by-line trace,Missing input flagged,risk-trace,PROVEN_CLIENT (arithmetic),intent-render
+CD-014,Validate model,risk actions.ts (cite),TBD-cite,shape validation,none,TBD-cite,risk_owner,TBD-cite,none,Pass,Fail list,risk-validate,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-014,Publish model,risk actions.ts (cite),TBD-cite,maker-checker,draft->published,TBD-cite,risk_owner,TBD-cite,none,Published,Denied,risk-publish,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-015,Open factory geometry,GisStudio,GET /admin/gis,RLS,none,factory geometry read,gis_admin,none,none,Confidence stack,Missing coordinate,gis-loads,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-015,Validate geometry,GisStudio actions (cite),TBD-cite,polygon validity,none,TBD-cite,gis_admin,TBD-cite,none,Valid,Self-intersection rejected,gis-validate,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-015,Publish geometry,GisStudio actions (cite),TBD-cite,maker-checker,draft->published,TBD-cite,gis_admin,TBD-cite,none,Published,Denied,gis-publish,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-015,Load map tiles,TileLayer,provider adapter,none,none,external provider,—,none,none,Tiles,Tiles unavailable (facts still readable),gis-tiles,HANDOFF_BLOCKED_TILE_PROVIDER,blocked
+CD-016,Everything on screen,(proposed route),no dedicated route,—,—,—,—,—,—,—,—,—,HANDOFF_BLOCKED_ROUTE,intent
+CD-016,Send test,RuleStudio(intent),outbox write,template compiles,none,outbox insert,business_admin,TBD-cite,queue only,Queued to outbox,Template error,notif-test,outbox=stated; delivery HANDOFF_BLOCKED_DELIVERY_RECEIPTS,mixed
+CD-016,Activate rule,RuleStudio(intent),TBD,recipient resolves >0; provider configured,draft->active,TBD,business_admin,TBD,none,Active,Zero-recipient blocked; channel disabled,notif-activate,HANDOFF_BLOCKED_EMAIL_PROVIDER/_SMS_PROVIDER,intent
+CD-017,View matrix,AccessPage,GET /admin/access,RLS,none,rbac_matrix read,security_admin,none,none,Matrix,Unauthorized,access-loads,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-017,Can-user-do-this simulator,AccessExplainer(CREATE),client explain over matrix+RLS citations,never grants,none,matrix payload; RLS cite pending,security_admin,none,none,Explained verdict,—,access-simulate,HANDOFF_BLOCKED_RLS_CITATION,intent-render
+CD-017,Submit permission change,access actions (cite),TBD-cite,SoD conflict check; no self-escalation,draft->submitted,TBD-cite,security_admin,TBD-cite,none,Submitted,Conflict/self-escalation blocked,access-submit,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-017,Approve & publish matrix,access actions (cite),TBD-cite,different security admin,submitted->published,TBD-cite,security_admin (checker),TBD-cite,none,Published,Denied,access-publish,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-018,List/filter strings,LocalizationManager,GET /admin/localization,RLS,none,ui_strings read,localization_reviewer,none,none,Rows,Filtered empty,l10n-loads,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-018,Approve string,localization actions.ts (cite),TBD-cite,placeholders match; no drift,draft->approved,ui_strings version insert,localization_reviewer,TBD-cite,none,Approved,Placeholder/drift blocked,l10n-approve,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-018,Restore version,localization actions.ts (cite),TBD-cite,version exists,restore (versioned),ui_strings version insert,localization_reviewer,TBD-cite,none,Restored (v kept),Denied,l10n-restore,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-018,Export CSV,LocalizationManager,client export,none,none,payload,localization_reviewer,none,download,CSV,—,l10n-export,PROVEN_CLIENT,intent-render
+CD-019,Query events,AuditPage,GET /admin/audit,RLS,none,audit_events read,auditor,none,none,Stream/timeline/diff,Filtered empty; degraded truncation,audit-loads,HANDOFF_BLOCKED_RUNTIME_EVIDENCE,stated
+CD-019,Reveal masked payload,AuditReveal(intent),TBD,role >= security_admin,none,audit_events,security_admin,reveal audited (TBD-cite),none,Revealed,Denied,audit-reveal,HANDOFF_BLOCKED_PRIVACY_MASKING,intent
+CD-019,Export events,AuditExport(intent),none located,retention policy,none,none located,—,TBD,download,—,—,audit-export,HANDOFF_BLOCKED_RETENTION_POLICY,blocked
