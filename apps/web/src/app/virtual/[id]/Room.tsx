@@ -58,13 +58,17 @@ export type RoomStrings = {
   fallback: string; fallbackBody: string; fallbackTag: string; fallbackResched: string;
   degraded: string; degradedBody: string;
   emptyPart: string;
+  // CD-043 / SCR-VIR-720 — closed/immutable (S12), offline (S15), stale (S13)
+  closedTitle: string; closedBody: string; closedHandoff: string;
+  offlineTitle: string; offlineBody: string;
+  staleTitle: string; staleBody: string; reload: string;
 };
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] ?? m) as string); };
 
 const ORDER = ["scheduled", "waiting", "joined", "verified", "in_progress", "closed"];
 
-export default function Room({ session, strings: t }: { session: S; strings: RoomStrings }) {
+export default function Room({ session, strings: t, rev }: { session: S; strings: RoomStrings; rev: string }) {
   const [parts] = useState(session.virtual_participants);
   const [otpInfo, setOtpInfo] = useState({} as Record<string, { dev_code?: string; msg: string }>);
   const [otpStatus, setOtpStatus] = useState({} as Record<string, OtpStatus>);
@@ -80,6 +84,20 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
   const [reschedState, reschedAction, reschedPending] = useActionState<RoomActionResult, FormData>(rescheduleSession, {});
   const [closeState, closeAction, closePending] = useActionState<RoomActionResult, FormData>(closeSession, {});
   const [beginState, beginAction, beginPending] = useActionState<RoomActionResult, FormData>(beginRemote, {});
+
+  // S15 — offline is a UI truth only: nothing is queued and no reconnection is
+  // promised; mutating actions are disabled until the browser is back online.
+  const [offline, setOffline] = useState(false);
+  useEffect(() => {
+    const sync = () => setOffline(typeof navigator !== "undefined" && !navigator.onLine);
+    sync();
+    window.addEventListener("online", sync);
+    window.addEventListener("offline", sync);
+    return () => { window.removeEventListener("online", sync); window.removeEventListener("offline", sync); };
+  }, []);
+  // S13 — a server rev-mismatch (concurrent change) surfaces a reload prompt;
+  // the guard already refused the write, so nothing was submitted.
+  const isStale = [beginState, closeState, reschedState].some(s => { return s?.stale; });
 
   async function refreshStatus(pid: string) {
     const { data } = await sb.rpc("vp_otp_status", { p_participant: pid });
@@ -153,7 +171,10 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
   // begin-ready once the server has actually advanced it to verified/in_progress.
   const serverReady = session.state === "verified" || session.state === "in_progress";
   const open = session.state !== "closed";
-  const errors = [joinState.error, waitState.error, reschedState.error, closeState.error, beginState.error, verifyMsg.error].filter(Boolean);
+  // Stale rev-mismatch gets its own reload banner (below) — keep it out of the
+  // generic critical list so it is not shown twice.
+  const errors = [joinState, waitState, reschedState, closeState, beginState, verifyMsg]
+    .filter(s => { return s?.error && !s?.stale; }).map(s => { return s.error; });
   const oks = [joinState.ok, waitState.ok, reschedState.ok, closeState.ok, verifyMsg.ok].filter(Boolean);
 
   // Derived (client-clock) lateness — no server guard exists for this (RUNTIME_TRUTH_LEDGER row 11);
@@ -182,6 +203,26 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
 
   return (
     <div className="cd-vir">
+      {/* S12 — closed session is immutable and read-only; the reason is preserved
+          and continuation is a hand-off to the shared engine (submission → P08). */}
+      {!open && (
+        <div className="ax-banner ax-banner--immutable" role="status">
+          <div><strong>{t.closedTitle}</strong> — {t.closedBody} <span className="cd-sub">{t.closedHandoff}</span></div>
+        </div>
+      )}
+      {/* S15 — offline: mutating actions disabled; nothing queued. */}
+      {offline && (
+        <div className="ax-banner ax-banner--warning" role="alert">
+          <div><strong>{t.offlineTitle}</strong> — {t.offlineBody}</div>
+        </div>
+      )}
+      {/* S13 — stale: a concurrent change was detected; reload the true state. */}
+      {isStale && (
+        <div className="ax-banner ax-banner--warning" role="alert">
+          <div><strong>{t.staleTitle}</strong> — {t.staleBody}</div>
+          <button className="ax-btn ax-btn--secondary" onClick={() => { router.refresh(); }}>{t.reload}</button>
+        </div>
+      )}
       {errors.map((e, i) => <div key={i} className="ax-banner ax-banner--critical" role="alert"><div>{e}</div></div>)}
       {oks.map((m, i) => <div key={i} className="ax-banner ax-banner--success"><div>{m}</div></div>)}
       {degraded && (
@@ -277,7 +318,8 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
             {next.key !== "none" && (
               <form action={next.action} className={`cd-primaryzone ${next.blocked ? "is-blocked" : "is-ready"}`}>
                 <input type="hidden" name="session_id" value={session.id} />
-                <button className="ax-btn ax-btn--prominent ax-btn--field cd-primary" disabled={next.blocked || next.pending}>
+                <input type="hidden" name="rev" value={rev} />
+                <button className="ax-btn ax-btn--prominent ax-btn--field cd-primary" disabled={next.blocked || next.pending || offline}>
                   {next.pending ? t.working : next.label}
                 </button>
                 {next.blocked ? <p className="cd-sub cd-warn" role="status">{next.why}</p> : <p className="cd-sub">{next.sub}</p>}
@@ -288,9 +330,10 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
                 {canReschedule ? (
                   <form action={reschedAction} className="cd-secact">
                     <input type="hidden" name="session_id" value={session.id} />
+                    <input type="hidden" name="rev" value={rev} />
                     <div className="ax-field"><label className="ax-field__label">{t.rescheduleLabel}</label>
                       <input className="ax-input ax-numeric" type="datetime-local" name="appointment_at" defaultValue={session.appointment_at.slice(0, 16)} required /></div>
-                    <button className="ax-btn ax-btn--secondary" disabled={reschedPending}>{reschedPending ? t.working : t.rescheduleSubmit}</button>
+                    <button className="ax-btn ax-btn--secondary" disabled={reschedPending || offline}>{reschedPending ? t.working : t.rescheduleSubmit}</button>
                   </form>
                 ) : (
                   <div className="cd-secact cd-secact--dis"><button className="ax-btn ax-btn--secondary" aria-disabled="true" disabled>{t.actReschedule}</button><span className="cd-sub cd-warn">{t.reschedNo}</span></div>
@@ -301,12 +344,13 @@ export default function Room({ session, strings: t }: { session: S; strings: Roo
               <form action={closeAction} className="cd-closebox ax-field">
                 <h4>{t.closeTitle}</h4>
                 <input type="hidden" name="session_id" value={session.id} />
+                <input type="hidden" name="rev" value={rev} />
                 <label className="ax-field__label">{t.closeReason} <span className="ax-req">*</span></label>
                 <input className="ax-input" name="reason" placeholder={t.reasonPh} required />
                 <label className="ax-field__label">{t.closeComments}</label>
                 <textarea className="ax-textarea" name="comments" rows={2} />
                 <div className="ax-row" style={{ justifyContent: "flex-end" }}>
-                  <button className="ax-btn ax-btn--danger" disabled={closePending}>{closePending ? t.closeWorking : t.closeSubmit}</button>
+                  <button className="ax-btn ax-btn--danger" disabled={closePending || offline}>{closePending ? t.closeWorking : t.closeSubmit}</button>
                 </div>
               </form>
             )}
