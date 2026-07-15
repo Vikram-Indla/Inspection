@@ -12,9 +12,13 @@ export default async function RiskStudio() {
   const { data } = await sb.from("engine_settings").select("settings, version_label, updated_at").eq("engine", "risk").single();
   const s = data?.settings as { factors: { key: string; weight: number }[]; bands: Record<string, number[]> } | undefined;
 
+  const factors = (s?.factors ?? []).map(f => ({
+    ...f,
+    name: t(`enum.${f.key}`, f.key.replace(/_/g, " ")),
+  }));
+
   const labels: RiskLabels = {
     factorsTitle: t("admin.risk.factors.title", "Factors & weights (must sum to 1.00)"),
-    factorName: (key: string) => t(`enum.${key}`, key.replace(/_/g, " ")),
     bandsTitle: t("admin.risk.bands.title", "Bands"),
     lowEnds: t("admin.risk.bands.lowEnds", "Low ends at"),
     mediumEnds: t("admin.risk.bands.mediumEnds", "Medium ends at"),
@@ -46,7 +50,7 @@ export default async function RiskStudio() {
 
       {data && s && (
         <RiskForm
-          factors={s.factors ?? []}
+          factors={factors}
           lowMax={s.bands?.low?.[1] ?? 39}
           medMax={s.bands?.medium?.[1] ?? 69}
           updatedAt={data.updated_at}
