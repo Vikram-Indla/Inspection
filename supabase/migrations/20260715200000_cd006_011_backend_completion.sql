@@ -28,6 +28,26 @@ create table if not exists regulation_attachments (
   unique (regulation_id, storage_path)
 );
 
+insert into storage.buckets (id, name, public)
+values ('regulation-documents', 'regulation-documents', false)
+on conflict (id) do update set public = false;
+
+drop policy if exists regulation_documents_read on storage.objects;
+create policy regulation_documents_read on storage.objects for select
+  using (bucket_id = 'regulation-documents' and auth.uid() is not null);
+drop policy if exists regulation_documents_write on storage.objects;
+create policy regulation_documents_write on storage.objects for insert
+  with check (
+    bucket_id = 'regulation-documents'
+    and public.has_any_role(array['compliance_admin','form_admin'])
+  );
+drop policy if exists regulation_documents_remove_draft on storage.objects;
+create policy regulation_documents_remove_draft on storage.objects for delete
+  using (
+    bucket_id = 'regulation-documents'
+    and public.has_any_role(array['compliance_admin','form_admin'])
+  );
+
 alter table regulation_attachments enable row level security;
 revoke all on table regulation_attachments from anon;
 grant select, insert, update, delete on table regulation_attachments to authenticated;
@@ -107,6 +127,43 @@ drop trigger if exists trg_guard_published_regulation on regulations;
 create trigger trg_guard_published_regulation
   before update or delete on regulations
   for each row execute function guard_published_regulation();
+
+-- A deactivated or not-yet-effective regulation cannot enter a future package
+-- version. Previously published package versions and inspections remain frozen.
+create or replace function public.guard_package_regulation_dependencies()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+declare
+  v_bad_code text;
+begin
+  if new.status not in ('published', 'locked') then
+    return new;
+  end if;
+
+  select coalesce(ii.code, item_code.code) into v_bad_code
+  from jsonb_array_elements(coalesce(new.definition->'sections', '[]'::jsonb)) section
+  cross join lateral jsonb_array_elements_text(coalesce(section->'items', '[]'::jsonb)) as item_code(code)
+  left join public.inspection_items ii on ii.code = item_code.code
+  left join public.regulation_clauses rc on rc.id = ii.clause_id
+  left join public.regulations r on r.id = rc.regulation_id
+  where ii.id is null
+     or r.id is null
+     or r.status not in ('published', 'locked')
+     or (r.effective_from is not null and r.effective_from > current_date)
+  limit 1;
+
+  if v_bad_code is not null then
+    raise exception 'DEPENDENCY: item % is not anchored to an active effective regulation', v_bad_code;
+  end if;
+  return new;
+end $$;
+
+drop trigger if exists trg_guard_package_regulation_dependencies on package_versions;
+create trigger trg_guard_package_regulation_dependencies
+  before insert or update of status, definition on package_versions
+  for each row execute function public.guard_package_regulation_dependencies();
 
 -- CD-007/CD-010 — scoped usage readers for safe deactivate/change previews.
 -- They return counts only, never operational rows, and remain limited to the

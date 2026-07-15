@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 import { requireConfigurationWriter } from "@/lib/admin-configuration";
+import { createHash, randomUUID } from "node:crypto";
 
 export type RegResult = { error?: string; ok?: boolean };
 
@@ -130,16 +131,23 @@ export async function addRegulationAttachment(_: RegResult, formData: FormData):
   if (!gate.ok) return { error: gate.message };
   const sb = await supabaseServer();
   const regulation_id = String(formData.get("regulation_id") ?? "");
-  const file_name = String(formData.get("file_name") ?? "").trim();
-  const storage_path = String(formData.get("storage_path") ?? "").trim();
-  const media_type = String(formData.get("media_type") ?? "").trim();
-  const sha256 = String(formData.get("sha256") ?? "").trim();
-  if (!regulation_id || !file_name || !storage_path) return { error: "Regulation, file name, and storage path are required." };
+  const file = formData.get("file");
+  if (!regulation_id || !(file instanceof File) || file.size === 0) return { error: "Regulation and source file are required." };
+  const bytes = Buffer.from(await file.arrayBuffer());
+  const safeName = file.name.replace(/[^A-Za-z0-9._-]+/g, "-").slice(-120) || "source-document";
+  const storage_path = `${regulation_id}/${randomUUID()}-${safeName}`;
+  const sha256 = createHash("sha256").update(bytes).digest("hex");
+  const upload = await sb.storage.from("regulation-documents").upload(storage_path, bytes, { contentType: file.type || "application/octet-stream", upsert: false });
+  if (upload.error) { logProviderError("admin regulation attachment upload", upload.error); return { error: NEUTRAL_WRITE_ERROR }; }
   const { error } = await sb.from("regulation_attachments").insert({
-    regulation_id, file_name, storage_path, media_type: media_type || null,
-    sha256: sha256 || null, uploaded_by: gate.userId,
+    regulation_id, file_name: file.name, storage_path, media_type: file.type || null,
+    sha256, uploaded_by: gate.userId,
   });
-  if (error) { logProviderError("admin regulation attachment", error); return { error: NEUTRAL_WRITE_ERROR }; }
+  if (error) {
+    await sb.storage.from("regulation-documents").remove([storage_path]);
+    logProviderError("admin regulation attachment", error);
+    return { error: NEUTRAL_WRITE_ERROR };
+  }
   revalidatePath("/admin/regulations");
   return { ok: true };
 }

@@ -21,7 +21,19 @@ export type ItemStrings = {
   evidenceRule: string;
   evidenceNone: string;
   evidencePhotoNc: string;
+  evidenceVideoNc: string;
+  evidenceDocumentNc: string;
+  evidenceCommentNc: string;
   evidenceSource: string;
+  requirementMode: string;
+  requirementRequired: string;
+  requirementOptional: string;
+  requirementConditional: string;
+  visibleWhen: string;
+  visibleWhenHint: string;
+  mandatoryWhenVisible: string;
+  scoringEnabled: string;
+  scoringDisabled: string;
   guidance: string;
   guidancePlaceholder: string;
   creating: string;
@@ -48,6 +60,8 @@ export function NewItemForm({
   strings: ItemStrings;
 }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(createItem, {});
+  const [requirement, setRequirement] = useState("required");
+  const [scoring, setScoring] = useState(true);
   return (
     <form
       action={formAction}
@@ -71,7 +85,7 @@ export function NewItemForm({
       </div>
       <div className="ax-field">
         <label className="ax-field__label" htmlFor="item-weight">{s.weight}</label>
-        <input id="item-weight" className="ax-input ax-numeric" name="score_weight" inputMode="decimal" placeholder="5" style={{ maxInlineSize: 80 }} />
+        <input id="item-weight" className="ax-input ax-numeric" name="score_weight" inputMode="decimal" placeholder="5" style={{ maxInlineSize: 80 }} disabled={!scoring} />
       </div>
       <div className="ax-field" style={{ minInlineSize: 240 }}>
         <label className="ax-field__label" htmlFor="item-response">{s.responseModel}</label>
@@ -86,9 +100,34 @@ export function NewItemForm({
         <select id="item-evidence" className="ax-select" name="evidence_preset" required defaultValue="none">
           <option value="none">{s.evidenceNone}</option>
           <option value="photo_nc_mandatory">{s.evidencePhotoNc}</option>
+          <option value="video_nc_mandatory">{s.evidenceVideoNc}</option>
+          <option value="document_nc_mandatory">{s.evidenceDocumentNc}</option>
+          <option value="comment_nc_mandatory">{s.evidenceCommentNc}</option>
         </select>
         <span className="ax-caption">{s.evidenceSource}</span>
       </div>
+      <div className="ax-field" style={{ minInlineSize: 200 }}>
+        <label className="ax-field__label" htmlFor="item-requirement">{s.requirementMode}</label>
+        <select id="item-requirement" className="ax-select" name="requirement_mode" value={requirement} onChange={e => setRequirement(e.target.value)}>
+          <option value="required">{s.requirementRequired}</option>
+          <option value="optional">{s.requirementOptional}</option>
+          <option value="conditional">{s.requirementConditional}</option>
+        </select>
+      </div>
+      {requirement === "conditional" && <>
+        <div className="ax-field" style={{ minInlineSize: 220 }}>
+          <label className="ax-field__label" htmlFor="item-visible-when">{s.visibleWhen}</label>
+          <input id="item-visible-when" className="ax-input ax-numeric" name="visible_when" placeholder="ITEM-001=compliant" pattern="[A-Za-z0-9_.-]+=[A-Za-z0-9_.-]+" required aria-describedby="item-visible-when-hint" />
+          <span id="item-visible-when-hint" className="ax-caption">{s.visibleWhenHint}</span>
+        </div>
+        <label className="ax-row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
+          <input type="checkbox" name="mandatory_when_visible" value="true" /> {s.mandatoryWhenVisible}
+        </label>
+      </>}
+      <label className="ax-row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
+        <input type="hidden" name="scoring_enabled" value={scoring ? "true" : "false"} />
+        <input type="checkbox" checked={scoring} onChange={e => setScoring(e.target.checked)} /> {scoring ? s.scoringEnabled : s.scoringDisabled}
+      </label>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}>
         <label className="ax-field__label" htmlFor="item-guidance">{s.guidance}</label>
         <input id="item-guidance" className="ax-input" name="guidance_en" placeholder={s.guidancePlaceholder} />
@@ -144,7 +183,10 @@ export type PreviewItem = {
   responses: string[];
   ncTarget: string | null;
   evidence: { on?: string; type?: string; min?: number; mandatory?: boolean } | null;
-  conditional: boolean;
+  requirement: string;
+  conditionalRule: string | null;
+  mandatoryWhenVisible: boolean;
+  scoringEnabled: boolean;
   guidance: string | null;
   scoreWeight: number | null;
   scoreExcludedOn: string[];
@@ -156,7 +198,7 @@ export type PreviewStrings = {
   responsesLabel: string;
   evidenceLabel: string;
   evidenceNone: string;
-  evidencePhoto: string; // carries {min}
+  evidenceRequired: string; // carries {type} and {min}
   evidenceSource: string;
   guidanceLabel: string;
   guidanceNone: string;
@@ -166,6 +208,10 @@ export type PreviewStrings = {
   scoreExcluded: string; // carries {responses}
   ncMaps: string; // carries {target}
   conditional: string;
+  required: string;
+  optional: string;
+  mandatoryVisible: string;
+  scoringOff: string;
   readonly: string;
   deactivated: string;
   active: string;
@@ -222,14 +268,15 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
               ))}
             </div>
             {item.ncTarget && <p className="ax-caption">{fill(s.ncMaps, { target: item.ncTarget })}</p>}
-            {item.conditional && <p className="ax-caption"><span aria-hidden="true">◇ </span>{s.conditional}</p>}
+            <p className="ax-caption"><span aria-hidden="true">◇ </span>{item.requirement === "optional" ? s.optional : item.requirement === "conditional" ? s.conditional : s.required}</p>
+            {item.conditionalRule && <p className="ax-caption"><bdi dir="ltr" className="ax-numeric">{item.conditionalRule}</bdi>{item.mandatoryWhenVisible ? ` · ${s.mandatoryVisible}` : ""}</p>}
           </div>
 
           <div>
             <p className="ax-overline">{s.evidenceLabel}</p>
             <p className="ax-caption">
               {item.evidence?.mandatory
-                ? fill(s.evidencePhoto, { min: item.evidence.min ?? 1 })
+                ? fill(s.evidenceRequired, { type: item.evidence.type ?? "evidence", min: item.evidence.min ?? 1 })
                 : s.evidenceNone}
             </p>
             <p className="ax-caption"><em>{s.evidenceSource}</em></p>
@@ -238,7 +285,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
           <div>
             <p className="ax-overline">{s.scoringLabel}</p>
             <p className="ax-caption">
-              {item.scoreWeight != null ? fill(s.weight, { weight: item.scoreWeight }) : s.noWeight}
+              {!item.scoringEnabled ? s.scoringOff : item.scoreWeight != null ? fill(s.weight, { weight: item.scoreWeight }) : s.noWeight}
               {item.scoreExcludedOn.length > 0 &&
                 ` · ${fill(s.scoreExcluded, { responses: item.scoreExcludedOn.map(label).join(", ") })}`}
             </p>

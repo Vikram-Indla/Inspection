@@ -17,7 +17,7 @@ type VCodeRow = { id: string; code: string; title: string; level: string; penalt
 type ItemRow = {
   id: string; code: string; title: string;
   response_model: Item["response_model"]; evidence_rule: Item["evidence_rule"];
-  score_excluded_on: string[] | null; guidance_en: string | null; guidance_ar: string | null;
+  score_excluded_on: string[] | null; score_weight: number | null; guidance_en: string | null; guidance_ar: string | null;
   regulation_clauses: { clause_ref: string; legal_source: string | null } | null;
 };
 
@@ -27,7 +27,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const sb = await supabaseServer();
   const [{ data: ins }, { data: itemRows }, { data: resp }, { data: ev }, { data: vios }, { data: vcodes }, { data: engines }] = await Promise.all([
     sb.from("inspections").select("id, status, visit_id, package_versions(version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)").eq("id", id).single(),
-    sb.from("inspection_items").select("id, code, title, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)"),
+    sb.from("inspection_items").select("id, code, title, response_model, evidence_rule, score_excluded_on, score_weight, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)"),
     sb.from("checklist_responses").select("item_id, response, updated_at").eq("inspection_id", id),
     sb.from("evidence").select("id, linked_type, linked_id, evidence_type, storage_path, captured_at").eq("inspection_id", id),
     sb.from("violations").select("id, violation_code_id").eq("inspection_id", id),
@@ -91,7 +91,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const items: Item[] = ((itemRows ?? []) as unknown as ItemRow[]).map(r => ({
     id: r.id, code: r.code, title: r.title,
     response_model: r.response_model, evidence_rule: r.evidence_rule,
-    score_excluded_on: r.score_excluded_on,
+    score_excluded_on: r.score_excluded_on, score_weight: r.score_weight,
     guidance: (locale === "ar" && r.guidance_ar) ? r.guidance_ar : r.guidance_en,
     clause: r.regulation_clauses ? { clause_ref: r.regulation_clauses.clause_ref, legal_source: r.regulation_clauses.legal_source } : null,
   }));

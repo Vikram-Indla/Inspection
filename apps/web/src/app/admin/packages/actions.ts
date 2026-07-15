@@ -91,6 +91,7 @@ type DefActionForm = { key?: string; title?: string; blocking?: boolean };
 type PkgDefinition = { sections?: unknown; action_forms?: unknown };
 type ItemBankRow = {
   code: string; active: boolean;
+  regulation_clauses: { regulations: { status: string; effective_from: string | null } | { status: string; effective_from: string | null }[] | null } | { regulations: { status: string; effective_from: string | null }[] | null }[] | null;
   response_model: {
     mapping?: Record<string, { violation?: string; action_form?: string }>;
     requirement?: "required" | "optional" | "conditional";
@@ -145,16 +146,26 @@ async function validateDefinition(
   const bank = new Map<string, ItemBankRow>();
   if (codes.length > 0) {
     const { data, error } = await sb.from("inspection_items")
-      .select("code, active, response_model, evidence_rule").in("code", codes);
+      .select("code, active, response_model, evidence_rule, regulation_clauses(regulations(status, effective_from))").in("code", codes);
     if (error) { logProviderError("admin package item-bank validation", error); return [NEUTRAL_LOAD_ERROR]; }
-    for (const row of (data ?? []) as ItemBankRow[]) bank.set(row.code, row);
+    for (const row of (data ?? []) as unknown as ItemBankRow[]) bank.set(row.code, row);
   }
 
   const violationRefs = new Map<string, string>();  // violation code -> item code (first reference)
+  const conditionEdges = new Map<string, string>();
   for (const [code, sectionTitle] of wanted) {
     const item = bank.get(code);
     if (!item) { blockers.push(`Section "${sectionTitle}": item ${code} does not exist in the item bank (M09-012)`); continue; }
     if (!item.active) blockers.push(`Section "${sectionTitle}": item ${code} is inactive (M09-012)`);
+    const clause = Array.isArray(item.regulation_clauses) ? item.regulation_clauses[0] : item.regulation_clauses;
+    const relation = clause?.regulations;
+    const regulation = Array.isArray(relation) ? relation[0] : relation;
+    const today = new Date().toISOString().slice(0, 10);
+    if (!regulation || !["published", "locked"].includes(regulation.status)) {
+      blockers.push(`Section "${sectionTitle}": item ${code} is not anchored to an active published regulation (M09-001/012)`);
+    } else if (regulation.effective_from && regulation.effective_from > today) {
+      blockers.push(`Section "${sectionTitle}": item ${code} regulation is not effective until ${regulation.effective_from} (M09-001/012)`);
+    }
     const mapping = item.response_model?.mapping ?? {};
     const nc = mapping["non_compliant"];
     if (nc?.violation && !violationRefs.has(nc.violation)) violationRefs.set(nc.violation, code);
@@ -166,8 +177,29 @@ async function validateDefinition(
       blockers.push(`Item ${code}: conditional requirement has no visibility rule (M09-021)`);
     } else if (condition && !/^[A-Za-z0-9_.-]+=[A-Za-z0-9_.-]+$/.test(condition)) {
       blockers.push(`Item ${code}: visibility rule must use key=value grammar (M09-021)`);
+    } else if (condition) {
+      const dependency = condition.slice(0, condition.indexOf("="));
+      if (wanted.has(dependency)) conditionEdges.set(code, dependency);
     }
     blockers.push(...evidenceRuleBlockers(code, item.evidence_rule));
+  }
+
+  // Each item has at most one visible_when dependency. Follow the chain from
+  // every item and reject self/circular activation before publication.
+  for (const start of conditionEdges.keys()) {
+    const path: string[] = [];
+    const seen = new Map<string, number>();
+    let cursor: string | undefined = start;
+    while (cursor && conditionEdges.has(cursor)) {
+      const at = seen.get(cursor);
+      if (at !== undefined) {
+        blockers.push(`Circular visibility rule: ${[...path.slice(at), cursor].join(" -> ")} (M09-021/029)`);
+        break;
+      }
+      seen.set(cursor, path.length);
+      path.push(cursor);
+      cursor = conditionEdges.get(cursor);
+    }
   }
 
   // Violation codes must exist AND carry a penalty mapping (M09-004).

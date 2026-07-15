@@ -2,7 +2,7 @@
 
 ## Disposition
 
-**SOURCE COMPLETE / LOCALLY VERIFIED / LIVE MIGRATION AWAITING EXPLICIT APPROVAL.**
+**SOURCE REMEDIATED / LOCALLY VERIFIED / LIVE MIGRATIONS AWAITING EXPLICIT APPROVAL.**
 
 Sponsor authorization is recorded under `CD-006-011-backend-authorization` in
 `product-contract/governance/HUMAN_APPROVALS.yaml`. This slice closes the
@@ -27,12 +27,14 @@ authorizing the frontend design, inventing policy values, or mutating `main`.
 ### CD-006 — regulation detail and lifecycle
 
 - Effective date, draft update, governed publish, governed deactivation, and
-  attachment metadata are represented by server actions and a forward migration.
+  private-storage attachment upload/retrieval are represented by server actions
+  and a forward migration; files are SHA-256 checksummed and metadata-audited.
 - Publish rejects empty regulations and clauses that are not mapped to an item.
 - Publish records the checker and rejects no-op/stale transitions.
 - Published/deactivated parent rows are immutable; clauses and attachment
   metadata are editable only while the parent regulation remains a draft.
-- Deactivation prevents future active use without deleting prior references.
+- Deactivation prevents future package publication through both application
+  validation and a database trigger without deleting prior version references.
 - Object-scoped audit retrieval exposes the exact regulation timeline to config
   authors without granting broad access to `audit_events`.
 
@@ -69,8 +71,12 @@ authorizing the frontend design, inventing policy values, or mutating `main`.
 - Conditional items are mandatory only when visible and explicitly configured
   `mandatory_when_visible`.
 - Scoring-disabled answers are always excluded from scoring.
-- Hidden items remain outside mandatory validation through the existing
-  visibility evaluation.
+- Item-answer conditions such as `ITEM-001=compliant` feed visibility directly;
+  manual site flags are reserved for non-item keys.
+- Mandatory evidence is counted by configured type, so a document cannot satisfy
+  a required video leg; offline replay preserves photo/video/document/comment.
+- Weighted health-score calculation excludes disabled/N/A answers from both the
+  numerator and denominator and is persisted in the immutable submission snapshot.
 
 ## Files
 
@@ -87,25 +93,26 @@ authorizing the frontend design, inventing policy values, or mutating `main`.
 
 - `npm run typecheck` — PASS.
 - `npm run build` — PASS.
-- focused backend completion suite — **7/7 PASS**.
+- focused backend/runtime completion suite — **8/8 PASS**.
 - `git diff --check` — PASS.
 - The older CD-006..011 browser specs were also invoked, but cannot certify this
   isolated backend worktree: their persona storage states and Supabase runtime
   variables are intentionally absent, and several source assertions encode the
   superseded state where audit/usage/authoring legs were blocked. Result:
-  7 replacement backend checks passed; 62 old frontend/environment checks failed
-  before meaningful runtime assertions. They must be revised and rerun by the
-  frontend implementation lane with generated personas and configured runtime.
+  Those specs have now been revised: stale route/blocker assertions were removed,
+  admin authentication was added, screenshot waits require real content, and the
+  regulation suite treats the unavailable completion schema as a failure. Final
+  authenticated rerun remains pending the live migrations below.
 
 ## Live boundary
 
 Migration `20260715173000_admin_configuration_audit.sql` is already live and was
-read-only verified on project `iiozvqntawxfwbgffzqu`. The new forward migration
-`20260715200000_cd006_011_backend_completion.sql` has **not** been applied: the
-shared live schema change requires the sponsor's explicit approval for this exact
-migration after risk disclosure. Until that approval, frontend implementation may
-compile against the source contract but live runtime verification of the new
-columns, table, triggers, and RPCs remains pending.
+read-only verified on project `iiozvqntawxfwbgffzqu`. The forward migrations
+`20260715200000_cd006_011_backend_completion.sql` and
+`20260715210000_cd006_011_frontend_strings.sql` have **not** been applied. Exact
+live approval has been requested. Until it is given, the strict regulation browser
+suite intentionally treats the unavailable completion schema as a certification
+failure rather than accepting the degraded UI as a pass.
 
 ## Claude Code frontend handoff
 

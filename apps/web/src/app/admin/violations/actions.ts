@@ -83,6 +83,9 @@ export async function deactivateViolationCode(_: VioResult, formData: FormData):
   if (!/^\d{4}-\d{2}-\d{2}$/.test(active_to)) {
     return { error: t("admin.viol.err.activeTo", "A valid active-to date is required.") };
   }
+  if (active_to > new Date().toISOString().slice(0, 10)) {
+    return { error: t("admin.viol.err.futureActiveTo", "Deactivation must take effect today or earlier; future dates are scheduled expiry, not deactivation.") };
+  }
 
   const { data: current, error: readError } = await sb.from("violation_codes")
     .select("active_from, active_to").eq("id", id).maybeSingle();

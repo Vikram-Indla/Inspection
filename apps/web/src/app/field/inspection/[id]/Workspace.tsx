@@ -4,7 +4,7 @@ import { local, processOutbox, sha256b64, type SyncState, type Conflict, type Ou
 import { supabaseBrowser } from "@/lib/supabase";
 import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section,
-  isVisible, contextFlags, scoreExcluded, evidenceLeg, formRequired, formComplete,
+  isVisible, contextFlags, conditionContext, scoreExcluded, computeHealthScore, evidenceLeg, formRequired, formComplete,
   sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
@@ -84,6 +84,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   const [forms, setForms] = useState(() => Object.fromEntries(serverForms.filter(f => !!f.item_id).map(f =>
     [f.item_id!, { owner_name: f.owner_name ?? "", owner_role: f.owner_role ?? "", due_at: f.due_at ? f.due_at.slice(0, 10) : "", required_correction: f.required_correction ?? "" }])) as { [itemId: string]: FormDraft });
   const [queuedEv, setQueuedEv] = useState([] as QueuedEvidence[]);
+  const [commentDrafts, setCommentDrafts] = useState({} as Record<string, string>);
   // F2 — captured photos awaiting the annotation overlay (pre-enqueue, offline-safe)
   const [pendingShots, setPendingShots] = useState([] as { item: Item; b64: string; mime: string; fname: string; replaceId?: string }[]);
   // F2 — local overlay for archive/delete applied before the server round-trip lands
@@ -281,10 +282,10 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     if (cur?.value) answer(item, {});                                    // re-enqueue merged {value, note, date}
   }
   /** F2 — single enqueue path for evidence; `replaceId` = replace-with-archive (M04-163). */
-  async function enqueueEvidence(item: Item, b64: string, mime: string, fname: string, replaceId?: string) {
+  async function enqueueEvidence(item: Item, b64: string, mime: string, fname: string, replaceId?: string, evidenceType?: "photo" | "video" | "document" | "comment") {
     const sha = await sha256b64(b64);
     const name = `${item.code}-${Date.now()}-${fname}`;
-    await local.enqueue({ kind: "evidence", inspection_id: inspection.id, linked_type: "item", linked_id: item.id, name, mime, data_b64: b64, captured_at: new Date().toISOString(), sha256: sha, queued_at: new Date().toISOString() });
+    await local.enqueue({ kind: "evidence", inspection_id: inspection.id, linked_type: "item", linked_id: item.id, evidence_type: evidenceType, name, mime, data_b64: b64, captured_at: new Date().toISOString(), sha256: sha, queued_at: new Date().toISOString() });
     if (replaceId) {
       // archive (never delete) the superseded row once the replacement syncs — superseded_by needs the new id
       pendingArch.current = [...pendingArch.current, { oldId: replaceId, newPath: `${inspection.id}/${name}` }];
@@ -319,8 +320,17 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         }
       }
       const b64 = btoa(String.fromCharCode(...new Uint8Array(await file.arrayBuffer())));
-      await enqueueEvidence(item, b64, file.type || "image/jpeg", file.name, replaceId);
+      await enqueueEvidence(item, b64, file.type || "application/octet-stream", file.name, replaceId, rule.type as "photo" | "video" | "document");
     }
+  }
+  async function attachComment(item: Item) {
+    const value = commentDrafts[item.id]?.trim();
+    if (!value) return;
+    const bytes = new TextEncoder().encode(value);
+    let binary = "";
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    await enqueueEvidence(item, btoa(binary), "text/plain;charset=utf-8", "comment.txt", undefined, "comment");
+    setCommentDrafts(current => ({ ...current, [item.id]: "" }));
   }
   // F2 — soft delete with mandatory reason; audited by the evidence audit trigger (0020)
   async function confirmDelete() {
@@ -345,7 +355,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   async function confirmShot(b64: string, mime: string) {
     const s = pendingShots[0]; if (!s) return;
     setPendingShots(q => q.slice(1));
-    await enqueueEvidence(s.item, b64, mime, s.fname, s.replaceId);
+    await enqueueEvidence(s.item, b64, mime, s.fname, s.replaceId, "photo");
   }
 
   // --- Derived runtime views ---
@@ -356,22 +366,29 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   }, [evState]);
   const activeEvidence = useMemo(() => serverEvidence.filter(isActiveEv), [serverEvidence, isActiveEv]);
   const evidencePerItem = useMemo(() => {
-    const m: { [itemId: string]: number } = {};
-    for (const e of activeEvidence) if (e.linked_type === "item") m[e.linked_id] = (m[e.linked_id] ?? 0) + 1;
-    for (const q of queuedEv) if (q.linked_type === "item") m[q.linked_id] = (m[q.linked_id] ?? 0) + 1;
+    const m: Record<string, Record<string, number>> = {};
+    const add = (itemId: string, type: string) => {
+      m[itemId] ??= {};
+      m[itemId][type] = (m[itemId][type] ?? 0) + 1;
+    };
+    for (const e of activeEvidence) if (e.linked_type === "item") add(e.linked_id, e.evidence_type);
+    for (const q of queuedEv) if (q.linked_type === "item") add(q.linked_id, q.evidence_type ?? (q.mime.startsWith("image") ? "photo" : q.mime.startsWith("video") ? "video" : "document"));
     return m;
   }, [activeEvidence, queuedEv]);
-  const progress = sectionProgress(sections, imap, answers, ctx);
+  const runtimeCtx = conditionContext(sectionItems, answers, ctx);
+  const progress = sectionProgress(sections, imap, answers, runtimeCtx);
   const totals = progress.reduce((t, p) => ({ a: t.a + p.answered, b: t.b + p.total }), { a: 0, b: 0 });
   const overallPct = totals.b ? Math.round(100 * totals.a / totals.b) : 100;
-  const summary = summarize(sections, imap, answers, ctx, activeEvidence.length + queuedEv.length);
-  const implied = impliedViolations(sectionItems, answers, ctx, vioConfig);
-  const liveBlockers = computeBlockers(sections, imap, answers, ctx, evidencePerItem, forms, formDefs);
+  const summary = summarize(sections, imap, answers, runtimeCtx, activeEvidence.length + queuedEv.length);
+  const healthScore = computeHealthScore(sectionItems, answers, runtimeCtx);
+  const implied = impliedViolations(sectionItems, answers, runtimeCtx, vioConfig);
+  const liveBlockers = computeBlockers(sections, imap, answers, runtimeCtx, evidencePerItem, forms, formDefs);
   const blockCount = liveBlockers.reduce((n, g) => n + g.unanswered.length + g.evidence.length + g.forms.length, 0);
 
   async function submit() {
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
-    const blockers = computeBlockers(sections, imap, answersRef.current, ctxRef.current, evidencePerItem, formsRef.current, formDefs);
+    const submitCtx = conditionContext(sectionItems, answersRef.current, ctxRef.current);
+    const blockers = computeBlockers(sections, imap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs);
     if (blockers.length) {
       setValidation(blockers);
       const missing = blockers.flatMap(b => b.unanswered);
@@ -400,7 +417,8 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         const def = formRequired(item, answers[itemId]?.value, formDefs);
         return def ? { item: item.code, form_type: def.key, ...draft, status: formComplete(def, draft) ? "complete" : "open" } : null;
       }).filter(Boolean),
-      evidence: { total: activeEvidence.length + queuedEv.length, by_item: Object.fromEntries(Object.entries(evidencePerItem).map(([id, n]) => [byCode(id), n])) },
+      health_score: healthScore,
+      evidence: { total: activeEvidence.length + queuedEv.length, by_item_and_type: Object.fromEntries(Object.entries(evidencePerItem).map(([id, counts]) => [byCode(id), counts])) },
       submitted_offline: !navigator.onLine,
     };
     await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: nextVersion, snapshot, idempotency_key: key, acknowledgement: { name: ack.name, signed: true, ts: ack.signed_at, signed_at: ack.signed_at, signature_data_url: ack.signature_data_url }, queued_at: new Date().toISOString() });
@@ -518,11 +536,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
           </div>
           {(s.items ?? []).map(code => {
             const it = imap[code]; if (!it) return null;
-            if (!isVisible(it, ctx)) return null;                        // conditional visibility (M04-119)
+            if (!isVisible(it, runtimeCtx)) return null;                 // item-answer + site conditional visibility (M04-119/M09-021)
             const val = answers[it.id];
             const isDate = (it.response_model.responses ?? []).includes("value_date");
             const leg = evidenceLeg(it, val?.value);
-            const evCount = evidencePerItem[it.id] ?? 0;
+            const evCount = leg ? (evidencePerItem[it.id]?.[leg.type] ?? 0) : 0;
             const thumbs = queuedEv.filter(q => q.linked_type === "item" && q.linked_id === it.id && q.mime.startsWith("image"));
             const def = formRequired(it, val?.value, formDefs);
             const draft = forms[it.id];
@@ -555,11 +573,20 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                     <button key={r} className="ax-btn ax-btn--field" style={{ background: val?.value === r ? (r === "non_compliant" ? "var(--ax-color-critical)" : "var(--ax-color-primary)") : "var(--ax-color-surface)", color: val?.value === r ? "var(--ax-color-inverse-text)" : "var(--ax-color-text)", border: "1.5px solid var(--ax-color-border)" }}
                       onClick={() => answer(it, { value: r })}>{strings.enumLabels[r] ?? r.replace(/_/g, " ")}</button>
                   ))}
-                  {leg?.applies && (
+                  {leg?.applies && leg.type !== "comment" && (
                     <label className="ax-btn ax-btn--field ax-btn--secondary" style={{ cursor: "pointer" }}>
                       {val?.value === "non_compliant" && leg.mandatory ? strings.mandatoryPhoto : (leg.type === "document" ? strings.evAddDoc : strings.evAdd)}
                       <input type="file" accept={acceptFor(leg.type)} multiple hidden onChange={e => { if (e.target.files?.length) { attachFiles(it, e.target.files); e.target.value = ""; } }} />
                     </label>
+                  )}
+                  {leg?.applies && leg.type === "comment" && (
+                    <span className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+                      <label className="ax-field">
+                        <span className="ax-field__label">{strings.noteLabel}</span>
+                        <textarea className="ax-input" value={commentDrafts[it.id] ?? ""} onChange={e => setCommentDrafts(current => ({ ...current, [it.id]: e.target.value }))} />
+                      </label>
+                      <button type="button" className="ax-btn ax-btn--field ax-btn--secondary" disabled={!commentDrafts[it.id]?.trim()} onClick={() => attachComment(it)}>{strings.evAdd}</button>
+                    </span>
                   )}
                   {leg?.applies && leg.mandatory && (
                     <span className={`ax-lozenge ${evCount >= leg.min ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{fmt(strings.evCount, { n: evCount, min: leg.min })}</span>

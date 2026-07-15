@@ -17,6 +17,7 @@ export type Item = {
   id: string; code: string; title: string;
   response_model: ResponseModel; evidence_rule: EvidenceRule;
   score_excluded_on: string[] | null;
+  score_weight: number | null;
   guidance: string | null;        // locale-resolved server-side (guidance_en/ar, M04-138)
   clause: Clause;                 // regulation reference (M04-138)
 };
@@ -43,9 +44,22 @@ export function isVisible(item: Item, ctx: Record<string, string>): boolean {
 
 /** All distinct context flags referenced by any item's visible_when. */
 export function contextFlags(items: Item[]): string[] {
+  const itemCodes = new Set(items.map(it => it.code));
   const keys = new Set<string>();
-  for (const it of items) { const c = parseCondition(it.response_model); if (c) keys.add(c.key); }
+  for (const it of items) {
+    const c = parseCondition(it.response_model);
+    if (c && !itemCodes.has(c.key)) keys.add(c.key);
+  }
   return [...keys].sort();
+}
+
+/** Item-answer conditions override site context; ITEM-001=compliant is runtime-native. */
+export function conditionContext(items: Item[], answers: Record<string, Answer>, site: Record<string, string>): Record<string, string> {
+  const itemAnswers = Object.fromEntries(items.flatMap(it => {
+    const value = answers[it.id]?.value;
+    return value ? [[it.code, value]] : [];
+  }));
+  return { ...site, ...itemAnswers };
 }
 
 /** Is the current answer excluded from scoring (na handling, seed score_excluded_on)? */
@@ -54,6 +68,24 @@ export function scoreExcluded(item: Item, value: string | undefined): boolean {
   if (item.response_model.scoring_enabled === false) return true;
   const ex = item.response_model.score_excluded_on ?? item.score_excluded_on ?? [];
   return ex.includes(value);
+}
+
+/** Weighted compliance score; unanswered, N/A/excluded and scoring-disabled items never enter the denominator. */
+export function computeHealthScore(items: Item[], answers: Record<string, Answer>, ctx: Record<string, string>): number | null {
+  let earned = 0;
+  let possible = 0;
+  for (const item of items) {
+    if (!isVisible(item, ctx)) continue;
+    const value = answers[item.id]?.value;
+    if (!value || scoreExcluded(item, value)) continue;
+    const result = item.response_model.mapping?.[value]?.result;
+    if (result !== "compliant" && result !== "non_compliant") continue;
+    const weight = item.score_weight ?? 0;
+    if (!(weight > 0)) continue;
+    possible += weight;
+    if (result === "compliant") earned += weight;
+  }
+  return possible > 0 ? Math.round((earned / possible) * 1000) / 10 : null;
 }
 
 /** Required/optional/conditional submission semantics (M09-018/021/022). */
@@ -127,7 +159,7 @@ export function impliedViolations(items: Item[], answers: Record<string, Answer>
 export type SectionBlockers = { key: string; title: string; unanswered: string[]; evidence: string[]; forms: string[] };
 export function computeBlockers(
   sections: Section[], imap: Record<string, Item>, answers: Record<string, Answer>,
-  ctx: Record<string, string>, evidencePerItem: Record<string, number>,
+  ctx: Record<string, string>, evidencePerItem: Record<string, Record<string, number>>,
   formDrafts: Record<string, FormDraft>, defs: FormDef[],
 ): SectionBlockers[] {
   const out: SectionBlockers[] = [];
@@ -138,7 +170,7 @@ export function computeBlockers(
       const v = answers[it.id]?.value;
       if (!v) { if (answerRequired(it)) g.unanswered.push(it.code); continue; }
       const leg = evidenceLeg(it, v);
-      if (leg?.applies && leg.mandatory && (evidencePerItem[it.id] ?? 0) < leg.min) g.evidence.push(it.code);
+      if (leg?.applies && leg.mandatory && (evidencePerItem[it.id]?.[leg.type] ?? 0) < leg.min) g.evidence.push(it.code);
       const def = formRequired(it, v, defs);
       if (def?.blocking && !formComplete(def, formDrafts[it.id])) g.forms.push(it.code);
     }
