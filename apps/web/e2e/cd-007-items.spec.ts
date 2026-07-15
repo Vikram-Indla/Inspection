@@ -8,12 +8,9 @@ import { storageStatePath } from "./personas";
 // 019/020/025, RBAC-001..006, FND-*. Acceptance: AC-0454..0458, DSG-003..008,
 // DSG-A11Y-001, DSG-CODE-001.
 //
-// Shared runtime truth (0002_rbac_audit.sql): SELECT = any authenticated; writes =
-// compliance_admin/form_admin via RLS; NO Admin-family route guard is proven, so an
-// Inspector legitimately reaches /admin/items. These runtime specs use the Inspector
-// persona precisely to exercise that truth (visibility != authority) and to prove the
-// read-only spine renders for any authenticated user. inspection_items has NO audit
-// trigger — item changes are never presented as audited.
+// Current runtime truth: the route is server-role-gated; writes remain enforced by
+// compliance_admin/form_admin RLS and server-action guards. Configuration mutations
+// are covered by the scoped Admin audit reader and database audit trigger.
 //
 // States that cannot be safely forced against the live backend (S02 loading, S03
 // verified-empty, S04 duplicate rejection, S05 unauthorized, S08 clause-degraded) are
@@ -24,7 +21,10 @@ const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 test.use({ storageState: storageStatePath("admin") });
 
 test.beforeAll(() => { mkdirSync(EVIDENCE_DIR, { recursive: true }); });
-test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
+test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.titlePath.some(part => part.startsWith("CD-007 wiring"))) return;
+  await page.goto("/locale?set=en");
+});
 
 test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
   test("renders the governed catalogue: title, governance note, blocked-targets panel", async ({ page }) => {
@@ -186,7 +186,10 @@ test.describe("CD-007 wiring (DEC-012): completed authoring, usage and scoped au
     expect(page).toContain("admin_configuration_audit");
   });
 
-  test("only genuine item edit/new-version blocker remains", () => {
+  test("backend item version update is wired while its final frontend edit control remains", () => {
+    expect(actions).toContain("export async function updateItem");
+    expect(actions).toContain("inspection_item_versions_are_frozen");
+    expect(actions).toContain("configuration_version");
     expect(page).toContain("admin.items.r2.blocked.edit");
     expect(page).not.toContain("admin.items.r2.blocked.reason");
     expect(page).not.toContain("admin.items.r2.blocked.guard");

@@ -9,10 +9,9 @@ import { storageStatePath } from "./personas";
 //   /form_admin), FLD-PEN-001, ERR-PUB-001, ERR-AUTH-001.
 // Acceptance: AC-0449..0478, DSG-003..008, DSG-A11Y-001, DSG-CODE-001.
 //
-// Route-guard is HANDOFF_BLOCKED (no Admin-family guard proven): an Inspector
-// legitimately reaches /admin/violations, so the Inspector persona is used to
-// exercise the truthful read-only surface (visibility != authority; RLS is the
-// write authority). States that cannot be forced against live data (loading,
+// The route is server-role-gated and RLS remains the write authority. A permitted
+// non-writer persona exercises the truthful read-only surface. States that cannot
+// be forced against live data (loading,
 // unauthorized-guard, degraded, recovery, future/deactivated lifecycle,
 // duplicate/missing-legal-basis negatives) are proven at the code layer below
 // (DSG-CODE-001 / DEC-012), exactly as CD-004 did.
