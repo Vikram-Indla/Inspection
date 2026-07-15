@@ -837,3 +837,33 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .cd-result__icon--critical { background: var(--ax-color-critical-tint); color: var(--ax-color-critical-strong); }
 .cd-result__icon--ok { background: var(--ax-color-success-tint); color: var(--ax-color-success-strong); }
 .cd-result h3 { font: var(--ax-text-heading); margin: 0; }
+
+/* CD-018 · localization studio — source / Arabic / status split rows.
+   Present-truth ui_strings workflow: placeholder-diff, source-drift, orphan. */
+.lz-list { display: flex; flex-direction: column; gap: var(--ax-space-100); }
+.lz-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr) minmax(200px, 0.8fr);
+  gap: var(--ax-space-200);
+  padding: var(--ax-space-200);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface);
+  align-items: start;
+}
+.lz-row--orphan { opacity: .8; }
+.lz-cell { display: flex; flex-direction: column; gap: 6px; min-inline-size: 0; }
+.lz-cell--actions { align-items: flex-start; }
+.lz-key { font: var(--ax-text-micro); font-family: var(--ax-font-mono); color: var(--ax-color-text-secondary); letter-spacing: .03em; }
+.lz-src { font: var(--ax-text-body); color: var(--ax-color-text); word-break: break-word; }
+.lz-ar { font: var(--ax-text-body); font-family: var(--ax-font-arabic, inherit); color: var(--ax-color-text); word-break: break-word; }
+.lz-ph { font-family: var(--ax-font-mono); font-size: .9em; padding: 0 3px; border-radius: 4px; background: var(--ax-color-neutral-tint); color: var(--ax-color-text-secondary); }
+.lz-ph--err { background: var(--ax-color-critical-tint); color: var(--ax-color-critical-strong); }
+.lz-drift { background: var(--ax-color-warning-tint); color: var(--ax-color-warning-strong); border-radius: 4px; padding: 0 3px; }
+.lz-risk { display: flex; gap: 6px; align-items: baseline; font: var(--ax-text-caption); color: var(--ax-color-warning-strong); }
+.lz-risk--muted { color: var(--ax-color-text-secondary); }
+.lz-risk--critical { color: var(--ax-color-critical-strong); }
+.lz-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 900px) {
+  .lz-row { grid-template-columns: 1fr; gap: var(--ax-space-150); }
+}
