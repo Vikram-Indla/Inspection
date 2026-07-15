@@ -137,7 +137,15 @@ export async function beginRemote(_: RoomActionResult, fd: FormData): Promise<Ro
     }).select("id").single();
     if (iErr) { console.error("[virtual begin inspection]", iErr); return { error: SYSTEM_ERROR }; }
     inspectionId = ins.id;
-    await sb.from("virtual_sessions").update({ state: "in_progress" }).eq("id", session_id).eq("state", "verified");
+  }
+  // Advance verified → in_progress and record the begin event on EVERY entry
+  // path (not only when the inspection is freshly created — WA-02). The
+  // .eq("state","verified") filter makes this forward-only and fires the begin
+  // event exactly once; a session already in_progress no-ops safely.
+  const { data: adv, error: aErr } = await sb.from("virtual_sessions")
+    .update({ state: "in_progress" }).eq("id", session_id).eq("state", "verified").select("id");
+  if (aErr) { console.error("[virtual begin advance]", aErr); return { error: SYSTEM_ERROR }; }
+  if (adv?.length) {
     const evErr = await appendEvent(sb, session_id, "begin", { inspection_id: inspectionId });
     if (evErr) { console.error("[virtual begin timeline]", evErr); return { error: "The inspection started, but its timeline could not be updated. Contact support." }; }
   }
