@@ -14,6 +14,7 @@ const humanize = (k: string) => k.replace(/_/g, " ").replace(/^./, c => c.toUppe
 
 type PenaltyRow = { penalty_ref: string; legal_basis: string | null; mapping_version: string | null };
 type VCodeRow = { id: string; code: string; title: string; level: string; penalty_mappings: PenaltyRow | PenaltyRow[] | null };
+type FrozenVCodeRow = VCodeRow & { configuration_version?: number; corrective_action?: string | null; grace_period_days?: number | null };
 type ItemRow = {
   id: string; code: string; title: string;
   response_model: Item["response_model"]; evidence_rule: Item["evidence_rule"];
@@ -92,10 +93,12 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   }
   // Items with locale-resolved guidance (M04-138 · guidance_en/ar) + regulation ref.
   const liveItems = new Map(((itemRows ?? []) as unknown as ItemRow[]).map(row => [row.code, row]));
-  const packageVersion = ins.package_versions as unknown as { id: string; definition: { sections?: { items?: string[] }[]; item_snapshot?: Record<string, FrozenItemRow> } };
+  const packageVersion = ins.package_versions as unknown as { id: string; definition: { sections?: { items?: string[] }[]; item_snapshot?: Record<string, FrozenItemRow>; violation_snapshot?: Record<string, FrozenVCodeRow> } };
   const frozenDefinition = packageVersion.definition;
   const { data: legacySnapshots } = await sb.from("package_version_item_snapshots")
     .select("item_code, snapshot").eq("package_version_id", packageVersion.id);
+  const { data: dependencySnapshots } = await sb.from("package_version_dependency_snapshots")
+    .select("dependency_key, snapshot").eq("package_version_id", packageVersion.id).eq("dependency_type", "violation");
   const companionSnapshot = Object.fromEntries(((legacySnapshots ?? []) as { item_code: string; snapshot: FrozenItemRow }[])
     .map(row => [row.item_code, row.snapshot]));
   const packageCodes = [...new Set((frozenDefinition.sections ?? []).flatMap(section => section.items ?? []))];
@@ -112,7 +115,11 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   });
   // Compliance configuration for the violation auto-display panel (M04-142/143/144).
   const vioConfig = {} as Record<string, VioConfig>;
-  for (const v of ((vcodes ?? []) as unknown as VCodeRow[])) {
+  const liveViolationConfig = Object.fromEntries(((vcodes ?? []) as unknown as VCodeRow[]).map(v => [v.code, v]));
+  const companionViolations = Object.fromEntries(((dependencySnapshots ?? []) as { dependency_key: string; snapshot: FrozenVCodeRow }[])
+    .map(row => [row.dependency_key, row.snapshot]));
+  const configuredViolations = { ...liveViolationConfig, ...companionViolations, ...(frozenDefinition.violation_snapshot ?? {}) };
+  for (const v of Object.values(configuredViolations)) {
     const pm = Array.isArray(v.penalty_mappings) ? v.penalty_mappings[0] : v.penalty_mappings;
     vioConfig[v.code] = { id: v.id, code: v.code, title: v.title, level: v.level, penalty_ref: pm?.penalty_ref ?? null, legal_basis: pm?.legal_basis ?? null, mapping_version: pm?.mapping_version ?? null };
   }

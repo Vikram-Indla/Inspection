@@ -410,7 +410,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       notes: Object.fromEntries(Object.entries(answers).filter(([, v]) => !!v.note).map(([id, v]) => [byCode(id), v.note!])),
       dates: Object.fromEntries(Object.entries(answers).filter(([, v]) => !!v.date).map(([id, v]) => [byCode(id), v.date!])),
       context: ctx,
-      violations: implied.map(v => ({ item: v.itemCode, code: v.code, level: v.config?.level ?? null, penalty_ref: v.config?.penalty_ref ?? null, mapping_version: v.config?.mapping_version ?? null })),
+      violations: implied.map(v => ({
+        item: v.itemCode, code: v.code, title: v.config?.title ?? null, level: v.config?.level ?? null,
+        penalty_ref: v.config?.penalty_ref ?? null, legal_basis: v.config?.legal_basis ?? null,
+        mapping_version: v.config?.mapping_version ?? null,
+      })),
       action_forms: Object.entries(forms).map(([itemId, draft]) => {
         const item = items.find(i => i.id === itemId);
         if (!item) return null;

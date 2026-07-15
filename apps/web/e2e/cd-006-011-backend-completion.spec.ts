@@ -29,11 +29,38 @@ test.describe("CD-006..011 backend completion", () => {
 
   test("regulation publish validates mapped clauses, maker-checker provenance, and no-op failure", () => {
     const actions = source("src/app/admin/regulations/actions.ts");
-    expect(actions).toContain('select("id, inspection_items(id)")');
+    const authoritative = source("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
+    expect(actions).toContain('sb.rpc("publish_regulation"');
     expect(actions).toContain("every clause must map to an inspection item");
-    expect(actions).toContain("approved_by: userId");
-    expect(actions).toContain('.select("id")');
-    expect(actions).toContain("The draft was not published");
+    expect(authoritative).toContain("maker-checker requires a distinct approver");
+    expect(authoritative).toContain("successor effective date must follow active version");
+    expect(authoritative).toContain("every regulation clause must map to an inspection item");
+  });
+
+  test("authoritative M09 contract closes versioning, templates, relationship rules, outcomes and frozen dependencies", () => {
+    const migration = source("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
+    const packages = source("src/app/admin/packages/actions.ts");
+    const items = source("src/app/admin/items/actions.ts");
+    const violations = source("src/app/admin/violations/actions.ts");
+    const templates = source("src/app/admin/templates/actions.ts");
+    const field = source("src/app/field/inspection/[id]/page.tsx");
+    const report = source("src/app/reports/inspection/[id]/page.tsx");
+    for (const token of [
+      "configuration_templates", "inspection_item_versions", "corrective_action", "grace_period_days",
+      "penalty_type", "template_version_id", "title_en and title_ar", "item_rules",
+      "package_version_dependency_snapshots", "inspection_penalties", "issue_penalties_after_approval",
+    ]) expect(migration).toContain(token);
+    expect(packages).toContain("response_mapping");
+    expect(packages).toContain("violation_snapshot");
+    expect(packages).toContain("template_snapshot");
+    expect(packages).toContain("English and Arabic names are required");
+    expect(items).toContain('"needs_review"');
+    expect(items).toContain("reviewer_flag: true");
+    expect(violations).toContain("publishViolationCode");
+    expect(violations).toContain("corrective_action");
+    expect(templates).toContain("publishTemplateVersion");
+    expect(field).toContain("companionViolations");
+    expect(report).toContain("snap.violations");
   });
 
   test("M09-005 exposes all four accepted evidence types without free-form policy values", () => {
