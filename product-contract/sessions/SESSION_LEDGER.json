@@ -3047,9 +3047,100 @@
       "commit_sha": "CD-031 implementation/audit commit 19251de on codex/g11-g12-integration; exact provenance follow-up is documentation-only",
       "next_task": "Obtain the exact CD-031 privacy/provider decisions and sponsor runtime acceptance without reopening the now-PASS wiring audit; separately resolve the remaining G11/G12 external blockers.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 89 and product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md. DEC-012 is PASS and the four write paths are locally/live rollback-proven. Do not fabricate the explicitly blocked privacy/provider rows or call CD-031/G11/G12 closed."
+    },
+    {
+      "session_id": "2026-07-16-m09-write-flow-hardening",
+      "started_at": "2026-07-16",
+      "ended_at": "2026-07-16",
+      "branch": "codex/g11-g12-integration",
+      "task_id": "TASK-G11-G12-RELEASE-001 / TASK-CD006-011-BACKEND-COMPLETION",
+      "gate": "G10 verification PASS / G11 hardening and G12 release open",
+      "requirements": [
+        "MVP1-M09-001",
+        "MVP1-M09-005",
+        "MVP1-M09-018",
+        "MVP1-M09-021",
+        "MVP1-M09-022",
+        "MVP1-M09-024",
+        "MVP1-M01-004",
+        "MVP1-FND-003",
+        "RBAC-001..006"
+      ],
+      "acceptance_ids": [
+        "AC-0449",
+        "AC-0453",
+        "AC-0466",
+        "AC-0469",
+        "AC-0470",
+        "AC-0472",
+        "DSG-A11Y-001",
+        "DSG-CODE-001"
+      ],
+      "screens": [
+        "CD-006..011 / SCR-ADM-010..060",
+        "SCR-WEB-110",
+        "SCR-WEB-500"
+      ],
+      "engines": [
+        "ENG-08",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/src/app/admin/packages/actions.ts",
+        "apps/web/src/app/operations/actions.ts",
+        "apps/web/src/app/operations/live/page.tsx",
+        "apps/web/src/app/operations/page.tsx",
+        "apps/web/src/app/planning/bulk/page.tsx",
+        "apps/web/src/lib/supabase-pagination.ts",
+        "apps/web/e2e CD-006..011, CD-010/011, CD-021, dashboard and KPI specs",
+        "supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql",
+        "supabase/tests/0032_m09_live_release_probe.sql",
+        "product-contract acceptance, evidence, gate, queue, current-state and session records"
+      ],
+      "tests": [
+        "M09 full-history local migration replay and rollback contract PASS",
+        "Authenticated live M09 object-state readback and idempotent repeat PASS",
+        "Authenticated live M09 rollback probe PASS with zero residual profiles/packages",
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "focused CD-006..011 15/15 PASS",
+        "focused Operations/dashboard 15/15 PASS",
+        "complete CD-021 suite after provider-page repair 25/25 PASS",
+        "final complete production inventory 294/294 PASS: 4 authenticated setup + 290 application; 0 failed / 0 skipped / 0 excluded",
+        "AC ledger generator PASS: 493 rows = 15 verified_live / 466 implemented / 12 partial / 0 missing",
+        "audit reconciliation validator PASS",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md",
+        "product-contract/evidence/AC_LEDGER.csv",
+        "product-contract/evidence/AC_LEDGER_SUMMARY.md",
+        "product-contract/evidence/STORYBOARD_STATUS.md",
+        "supabase/tests/0032_m09_live_release_probe.sql",
+        "product-contract/evidence/EVIDENCE_STATUS.md"
+      ],
+      "decisions": [
+        "Move the six M09 rows from partial to implemented only; do not infer sponsor runtime acceptance",
+        "Enforce authoring contracts at application and database boundaries, including direct RPC/base-table callers",
+        "Treat immutable item snapshots as exact runtime authority and reject contradictory publish payloads",
+        "Page every complete Operations/Bulk Planning read with stable ordering and fail closed on any later-page error",
+        "Record live object-state proof without claiming remote migration-history governance is repaired",
+        "Preserve generated screenshots and the node_modules link as user-owned dirty work"
+      ],
+      "blockers": [
+        "Twelve provider/schema/policy/RBAC acceptance rows",
+        "Credential rotation and historical-secret response",
+        "Remote migration-history hardening",
+        "Region/provider/asset/geographic and CD-031 privacy/provider authority",
+        "Sponsor runtime acceptance",
+        "No configured production hosting/deployment/rollback target"
+      ],
+      "commit_sha": "Implementation/evidence commit 37e8e05 on codex/g11-g12-integration; exact handoff provenance is the commit containing this entry",
+      "next_task": "Obtain sponsor runtime acceptance for CD-006..011 or resolve one of the twelve source-authority rows; separately configure and approve a real production hosting/rollback target before G12.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 90 and product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md. Continue on codex/g11-g12-integration from implementation commit 37e8e05 plus the following handoff-record commit. M09-001/005/018/021/022/024 are implemented with live rollback/negative/audit proof and the full production inventory is 294/294. Do not reopen them without a demonstrated regression, do not fabricate the twelve upstream rows, and do not call G11/G12 closed without sponsor runtime acceptance and a configured production deployment/rollback target."
     }
   ],
-  "last_session": "2026-07-16-cd031-r3-audit-hardening",
+  "last_session": "2026-07-16-m09-write-flow-hardening",
   "rules": {
     "append_only": true,
     "required_fields": [

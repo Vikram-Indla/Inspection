@@ -5,13 +5,23 @@
 | ID | Item | File | Status |
 |---|---|---|---|
 | G11-G12-REL-EV-001 | Release provenance, defect iterations, exact verification and blocker disposition | `TASK-G11-G12-RELEASE-001.md` | Captured — authorized subset complete; G11/G12 remain open |
-| G11-G12-REL-EV-002 | Exact production-candidate inventory | `../../apps/web/e2e/`; `../../apps/web/playwright.config.ts` | Captured — **291/291 PASS**: 4 setup + 287 application; 0 failed/skipped/excluded |
+| G11-G12-REL-EV-002 | Exact current-candidate inventory | `../../apps/web/e2e/`; `../../apps/web/playwright.config.ts` | Captured — **294/294 PASS**: 4 setup + 290 application; 0 failed/skipped/excluded |
 | G11-G12-REL-EV-003 | M04-045 arrival offline replay/readback | `../../apps/web/e2e/golden-journey.spec.ts`; `../../supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql` | Captured — visit-linked before inspection, exact note persisted; no DDL replay because live object already existed |
 | G11-G12-REL-EV-004 | CD-028 one-open-review live negative | `../../supabase/tests/0028_cd028_live_release_probe.sql` | Captured — second open review rejected by exact index; transaction rolled back |
 | G11-G12-REL-EV-005 | RTL 412 px release defect repair | `../../apps/web/src/app/reviews/[id]/VersionCompare.tsx`; `../../apps/web/src/app/astryx.css` | Captured — focused PASS and affected shard **25/25 PASS** |
 | G11-G12-REL-EV-006 | Production bundle secret/artifact scan | `../../apps/web/.next/`; `../../.gitignore` | Captured — 379 files; 0 demo-password/database-URL/PAT/secret/non-public-JWT hits; historical rotation remains open |
-| G11-G12-REL-EV-007 | Acceptance/audit reconciliation | `AC_LEDGER.csv`; `AC_LEDGER_SUMMARY.md`; `validate_audit_reconciliation.py` | Captured — 493 = 15 verified_live / 460 implemented / 18 partial / 0 missing |
+| G11-G12-REL-EV-007 | Acceptance/audit reconciliation | `AC_LEDGER.csv`; `AC_LEDGER_SUMMARY.md`; `validate_audit_reconciliation.py` | Captured — 493 = 15 verified_live / 466 implemented / 12 partial / 0 missing |
 | G11-G12-REL-EV-008 | Production deployment target discovery | repository and connected environment | BLOCKED — no configured hosting/deployment/rollback target; no provider invented |
+
+## M09 requirement-level write-flow audit — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| M09-WRITE-EV-001 | Contract reconciliation and implementation verdict for M09-001/005/018/021/022/024 | `CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md`; `AC_LEDGER.csv` | Captured — six rows **IMPLEMENTED / PASS**; sponsor runtime acceptance pending |
+| M09-WRITE-EV-002 | Live idempotent relationship/direct-write/audit hardening | `../../supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql` | Captured — guards and search-path-safe audit function live; repeat PASS |
+| M09-WRITE-EV-003 | Local and authenticated live rollback contract | `../../supabase/tests/0032_m09_live_release_probe.sql` | Captured — maker/checker positive, malformed direct-write negatives, frozen snapshot, Inspector RLS and audit PASS; zero residual profiles/packages |
+| M09-WRITE-EV-004 | Provider page-boundary regression protection | `../../apps/web/src/lib/supabase-pagination.ts`; `../../apps/web/e2e/dashboard-business.spec.ts`; `../../apps/web/e2e/cd-021-bulk-targeting.spec.ts` | Captured — Operations and Bulk Planning complete stable-order reads; later-page errors fail closed; 2,001-row unit proof and live-volume browser proof PASS |
+| M09-WRITE-EV-005 | Final production regression after defect iteration | `../../apps/web/e2e/`; `../../apps/web/playwright.config.ts` | Captured — **294/294 PASS** after the first run exposed and the implementation fixed Bulk Planning truncation |
 
 ## CD-031 R3 Factory 360 reconciliation — 2026-07-16
 

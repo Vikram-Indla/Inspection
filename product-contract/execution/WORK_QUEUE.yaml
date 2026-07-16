@@ -7,7 +7,7 @@ items:
     owner: "Codex release implementation and QA + Sponsor decision owners"
     blocked_by: []
     blocks: ["G11 PASS", "G12 PASS", "production release claim"]
-    note: "Authorized subset completed 2026-07-16 on codex/g11-g12-integration: reconciled production candidate, real RTL overflow found/fixed, M04-045 arrival outbox/readback and CD-028 rollback-only concurrency negative live-proven, and required Admin/OTP objects reconciled without replaying existing DDL. CD-031 continuation is DEC-012 PASS with focused 18/18, complete rebuilt inventory 293/293 (4 setup + 289 application; zero failed/skipped/excluded), and live rollback/audit proof; only its exact privacy/provider rows remain upstream-blocked. Ledger is 15 verified_live / 460 implemented / 18 partial. Main promotion uses immutable tag g11-g12-release-2026-07-16 and final handoff SHA verification. Deployment remains blocked because no production hosting/rollback target exists; credential rotation, migration-history hardening, provider/region/asset/geographic/sponsor-runtime and 18 upstream acceptance boundaries remain explicit."
+    note: "Authorized subset completed 2026-07-16 on codex/g11-g12-integration: reconciled production candidate, RTL overflow, complete-read provider paging, M04-045 arrival outbox/readback and CD-028 rollback-only concurrency negative are proven. CD-031 is DEC-012 PASS. The six retained M09 write-flow rows now have local/live maker-checker, direct-write, frozen-snapshot, RLS, audit and zero-residual proof; their verdict is implemented pending sponsor runtime acceptance. Final inventory is 294/294 (4 setup + 290 application; zero failed/skipped/excluded), ledger 15 verified_live / 466 implemented / 12 partial. Deployment remains blocked because no production hosting/rollback target exists; credential rotation, migration-history hardening, provider/region/asset/geographic/sponsor-runtime and 12 upstream acceptance boundaries remain explicit."
   - task_id: "TASK-G11-REMEDIATION-001"
     gate: "G11 verification hardening"
     priority: "P0"
@@ -121,11 +121,11 @@ items:
   - task_id: "TASK-CD006-011-BACKEND-COMPLETION"
     gate: "G11 admin control-plane backend completion"
     priority: "P0"
-    status: "INTEGRATED_LIVE_OBJECT_VERIFIED_ACCEPTANCE_AUDIT_PENDING"
+    status: "IMPLEMENTED_WRITE_FLOW_AUDIT_PASS_AWAITING_SPONSOR_RUNTIME_ACCEPTANCE"
     owner: "Codex release verification + Sponsor runtime/acceptance owners"
-    blocked_by: ["Independent requirement-level write-flow audit for the six retained M09 partials", "Sponsor runtime acceptance"]
+    blocked_by: ["Sponsor runtime acceptance"]
     blocks: ["CD-006..011 full acceptance closure"]
-    note: "Reconciled into codex/g11-g12-integration. Live object-state probe confirms the versioned CD-006..011 tables/routines/grants already exist, so no DDL was replayed. Production candidate build/typecheck and the complete 291/291 inventory pass, including current CD-006..011 frontend/browser/source contracts. This closes the stale migration/application blocker but does not silently upgrade AC-0449/0453/0466/0469/0470/0472: those six M09 ledger rows remain partial pending an independent requirement-level write-flow audit and sponsor runtime acceptance."
+    note: "Requirement-level audit PASS for M09-001/005/018/021/022/024 and AC-0449/0453/0466/0469/0470/0472. Forward hardening is live and idempotent; local/live rollback probes prove maker-checker publication, direct item/package rejections, frozen snapshot consistency, RLS, canonical audit and zero residual rows. Typecheck/build and the complete 294/294 inventory pass. The six rows are implemented, not sponsor-runtime accepted; sponsor acceptance remains the sole task blocker. Evidence: product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md; implementation commit 37e8e05."
   - task_id: "TASK-BASELINE-WIRING-AUDIT-001"
     gate: "G10 verification / G11 hardening"
     priority: "P0"

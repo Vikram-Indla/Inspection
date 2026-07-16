@@ -70,7 +70,7 @@ real product defect:
    constrains its grid/flex ancestors and uses a wrapping fixed-layout table only
    at the field breakpoint.
 
-Final exact-candidate verification:
+Initial promoted-baseline verification (superseded by the M09 continuation below):
 
 - TypeScript validation: PASS;
 - optimized production build: PASS;
@@ -108,10 +108,10 @@ not print, copy or claim to rotate those values.
 
 ## Acceptance reconciliation
 
-The regenerated ledger is **493 rows = 15 verified_live / 460 implemented / 18
-partial / 0 missing**. Only MVP1-M04-045 moved from partial to verified_live.
-The remaining 18 rows retain their provider, schema, policy, RBAC or
-configuration blockers in
+At the promoted baseline, the regenerated ledger was **493 rows = 15
+verified_live / 460 implemented / 18 partial / 0 missing**. Only MVP1-M04-045
+moved from partial to verified_live in that wave. The later M09 continuation
+below supersedes these counts; the retained rows keep their blockers in
 `CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md`. The integrated CD-006..011 code
 and live objects do not silently upgrade the six M09 rows without an independent
 requirement-level write-flow audit.
@@ -130,9 +130,9 @@ authority. Consequently no deployment was attempted and G12 remains OPEN.
 
 G11 also remains OPEN for credential rotation, region disposition, provider
 adapters, migration-history hardening, CD-031 privacy/provider runtime authority,
-the 18 acceptance partials, asset/geographic confirmations and outstanding
-sponsor runtime acceptance. G10 may close because its exact exit suite is now
-291/291 with no skips; neither that result nor main promotion is a G11/G12 PASS.
+the acceptance partials, asset/geographic confirmations and outstanding sponsor
+runtime acceptance. G10 closed at this baseline and is strengthened by the
+294/294 continuation below; neither result nor main promotion is a G11/G12 PASS.
 
 ## 2026-07-16 CD-031 continuation
 
@@ -164,3 +164,36 @@ contracts and reconciled records are commit `19251de` on
 `codex/g11-g12-integration` and are pushed to the matching remote branch. This
 post-release continuation does not modify remote `main` or the immutable release
 tag without separate human promotion authority.
+
+## 2026-07-16 M09 write-flow and scale-hardening continuation
+
+The six retained M09 partials received the independent requirement-level audit
+that the prior release record explicitly required. The authoritative result is
+`CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md`: M09-001/005/018/021/022/024 and
+AC-0449/0453/0466/0469/0470/0472 are **implemented / PASS**, not sponsor-runtime
+accepted.
+
+The audit found direct JSON/RPC bypasses, contradictory frozen snapshots,
+unguarded base-item writes and an audit-trigger search-path defect. Forward
+migration `20260716210000_m09_relationship_contract_hardening.sql` is applied
+live, read back and idempotency-proven. Local and authenticated live executions
+of `0032_m09_live_release_probe.sql` pass maker/checker publication, malformed
+direct-write negatives, frozen-runtime consistency, Inspector RLS and canonical
+audit, then roll back with zero residual profiles/packages. Remote migration
+history remains absent and is not claimed repaired.
+
+The verification loop separately found the provider's 1,000-row response cap
+could turn Operations and Bulk Planning into false business truth. Complete,
+stable-order paging now covers Operations, its refresh, national live view and
+Bulk Planning and fails closed on any incomplete later page. The first full run
+found the Bulk Planning instance; the second complete production run passed
+**294/294** (4 setup + 290 application; 0 failed/skipped/excluded). Typecheck and
+optimized production build pass.
+
+The regenerated ledger is **493 = 15 verified_live / 466 implemented / 12
+partial / 0 missing**. The twelve remaining rows keep their independent
+provider/schema/policy/RBAC boundaries. Implementation/evidence commit:
+`37e8e05` on `codex/g11-g12-integration`. This continuation does not modify
+remote `main` or the immutable prior release tag. G11/G12 remain open for the
+recorded external boundaries and unavailable production deployment/rollback
+target.

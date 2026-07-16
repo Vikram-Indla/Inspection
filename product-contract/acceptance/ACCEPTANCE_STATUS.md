@@ -1,11 +1,27 @@
 # Acceptance Status
 
+## M09 requirement-level write-flow audit — 2026-07-16
+
+- MVP1-M09-001/005/018/021/022/024 and
+  AC-0449/0453/0466/0469/0470/0472: **IMPLEMENTED — AUDIT PASS**.
+- Local and authenticated live rollback contracts prove maker-checker
+  regulation/package publication, direct item/package negative paths, exact
+  evidence/scoring/condition rules, frozen runtime consistency, Inspector RLS
+  denial and canonical audit, with zero residual rows.
+- The hardened migration is live and its repeat is idempotent. Remote migration
+  history remains a separate G11 governance blocker.
+- Typecheck/build PASS; focused CD-006..011 15/15; complete production inventory
+  **294/294 PASS** (4 setup + 290 application; zero failed/skipped/excluded).
+- Ledger: **493 = 15 verified_live / 466 implemented / 12 partial / 0 missing**.
+- Sponsor runtime acceptance remains pending; this audit does not close G11/G12.
+- Evidence: `../evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md`.
+
 ## TASK-G11-G12-RELEASE-001 disposition — 2026-07-16
 
 - Sponsor authority for versioned live reconciliation, audited main promotion
   and configured-target deployment: **RECORDED**.
-- Exact release-candidate verification: **PASS** — typecheck, production build,
-  4/4 authenticated setup and 287/287 application tests; **291/291 total**, zero
+- Exact current-candidate verification: **PASS** — typecheck, production build,
+  4/4 authenticated setup and 290/290 application tests; **294/294 total**, zero
   failed/skipped/excluded.
 - Defect iteration: **PASS** — the detected 412 px Arabic/RTL review-comparison
   overflow is fixed and the full affected shard passes 25/25 on the rebuilt
@@ -14,9 +30,10 @@
   object-state reconciliation found the versioned arrival, CD-028, Admin and OTP
   objects already live; no DDL was replayed; the CD-028 rollback probe and
   M04-045 real-outbox/readback journey pass.
-- Ledger acceptance: **493 = 15 verified_live / 460 implemented / 18 partial / 0
-  missing**. Only M04-045 / AC-0158 is upgraded; the 18 upstream rows remain
-  blocked and separately dispositioned.
+- Ledger acceptance: **493 = 15 verified_live / 466 implemented / 12 partial / 0
+  missing**. M04-045 remains verified live; the six M09 rows are implemented
+  after the requirement-level audit; twelve upstream rows remain blocked and
+  separately dispositioned.
 - Security acceptance: current production bundle scan **PASS**; historical
   credential rotation remains open until atomic replacement is possible.
 - Main promotion: authorized through immutable tag
@@ -29,18 +46,18 @@
 
 ## CD-006 through CD-011 backend completion — 2026-07-15
 
-2026-07-16 reconciliation: the versioned objects are already live and the
-integrated 291/291 suite passes; see the release disposition above. The six M09
-rows remain partial only for their independent requirement-level write-flow
-audit and sponsor runtime acceptance, not for unapplied DDL.
+2026-07-16 reconciliation: the versioned objects and the new relationship
+hardening are live, the independent requirement-level audit passes and the
+integrated 294/294 suite passes; see the M09 disposition above. The six M09 rows
+are implemented and await sponsor runtime acceptance.
 
-- AC-0449, AC-0453, AC-0466, AC-0469, AC-0470 and AC-0472: **BACKEND
-  IMPLEMENTED / LOCAL VERIFICATION PASS / LIVE VERIFICATION PENDING**.
-- Typecheck and production build pass; focused backend contract suite 7/7 pass.
-- This is not frontend or sponsor runtime acceptance. The forward migration
-  `20260715200000_cd006_011_backend_completion.sql` requires explicit approval,
-  governed live application, reconciliation, and authenticated browser proof.
-- Exact evidence: `../evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md`.
+- AC-0449, AC-0453, AC-0466, AC-0469, AC-0470 and AC-0472: **IMPLEMENTED /
+  REQUIREMENT-LEVEL AUDIT PASS / LIVE WRITE-NEGATIVE-AUDIT PROOF PASS**.
+- Typecheck and production build pass; focused backend contract suite 15/15 and
+  final complete inventory 294/294 pass.
+- This is not sponsor runtime acceptance. Exact current evidence:
+  `../evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md`; historical backend
+  evidence remains in `../evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md`.
 
 G4 acceptance: **PASS** (cloud-verifiable) — 2026-07-11.
 

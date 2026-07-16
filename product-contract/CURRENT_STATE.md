@@ -1,5 +1,38 @@
 # Current State
 
+## 2026-07-16 UPDATE 90 — M09 write-flow audit PASS; final inventory 294/294
+
+The independent requirement-level audit for MVP1-M09-001/005/018/021/022/024
+(AC-0449/0453/0466/0469/0470/0472) is complete. The audit found and repaired
+direct package-payload bypasses, contradictory frozen snapshots, unguarded
+direct item writes and a search-path defect in the canonical audit trigger. New
+forward migration `20260716210000_m09_relationship_contract_hardening.sql`
+enforces the exact evidence vocabulary, boolean/numeric types, condition
+grammar and acyclic references, scoring-disable contract and immutable snapshot
+consistency. It is applied to live Supabase, its object-state readback and
+idempotent repeat pass, and the rollback-only M09 probe passes with zero
+residual profiles or packages. Exact evidence:
+`evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md`.
+
+Verification also found a provider-page-cap defect at the current data volume:
+Operations, national live view, monitoring refresh and Bulk Planning could
+silently stop at 1,000 rows and show false empty filters/maps/criteria. Complete
+stable-order paging now fails closed if any page is unavailable. A first full
+run exposed the Bulk Planning instance of the same defect; its full 25-check
+suite passed after repair. Typecheck and optimized build pass. The second full
+production run is **294/294 PASS**: 4 authenticated setup plus 290 application
+checks, with zero failures, skips or exclusions.
+
+The acceptance ledger is regenerated at **493 rows = 15 verified_live / 466
+implemented / 12 partial / 0 missing**. The six M09 rows move from partial to
+implemented; sponsor runtime acceptance is still pending. The twelve remaining
+partials keep their provider/schema/policy/RBAC boundaries. G10 stays PASS;
+G11/G12 are not closed because credential rotation, migration-history
+hardening, provider/region/asset authority, sponsor runtime acceptance and a
+configured production deployment/rollback target remain open. Implementation
+and audit evidence are commit `37e8e05` on `codex/g11-g12-integration`; remote
+main and the immutable prior release tag are not modified by this continuation.
+
 ## 2026-07-16 UPDATE 89 — CD-031 R3 wiring audit PASS; write path hardened
 
 The exact CD-031 R3 authority package was recovered and imported under

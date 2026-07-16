@@ -1,137 +1,50 @@
 # Last Session
-- Time: 2026-07-15T18:19:14.262272+00:00
-- Session ID: ab76673a-fe66-4f0a-b09e-031aece3de75
-- End reason: other
-- Branch: feat/admin-control-plane
-- Commit: 8ecbf1b
-- Working tree:
-```
-M .project-memory/audit/instructions_loaded.jsonl
- M .project-memory/audit/session_end.jsonl
- M .project-memory/audit/tool_events.jsonl
- M apps/web/e2e/cd-004-admin-control-plane-home.spec.ts
- M apps/web/e2e/cd-021-bulk-targeting.spec.ts
- M apps/web/e2e/cd-023-immediate-authority-bar.spec.ts
- M apps/web/e2e/cd-027-visit-detail.spec.ts
- M apps/web/e2e/cd-029-review-workspace.spec.ts
- M apps/web/e2e/cd-030-version-comparison.spec.ts
- M apps/web/e2e/dashboard-kpi-seed.spec.ts
- M apps/web/src/app/field/[visitId]/Startup.tsx
- M apps/web/src/app/field/[visitId]/page.tsx
- M apps/web/src/app/field/inspection/[id]/page.tsx
- M apps/web/src/app/field/page.tsx
- M apps/web/src/app/operations/actions.ts
- M apps/web/src/app/operations/page.tsx
- M apps/web/src/app/reviews/[id]/actions.ts
- M apps/web/src/app/reviews/[id]/page.tsx
- M apps/web/src/app/visits/[id]/actions.ts
- M apps/web/src/components/field/FieldHome.tsx
- M apps/web/src/lib/offline.ts
- M outputs/cd-004/CD-004_WIRING_AUDIT.md
- M outputs/cd-004/WIRING_MAP_CD-004_R2.csv
- M outputs/cd-021/WIRING_MAP_CD-021.csv
- M outputs/cd-024/WIRING_MAP_CD-024.csv
- M outputs/cd-029/WIRING_MAP_CD-029.csv
- M outputs/cd-030/WIRING_MAP_CD-030.csv
- M outputs/claude-design-approval-pack/CD-041_043_BACKEND_READINESS_AUDIT.md
- M product-contract/GATE_STATUS.md
- M product-contract/evidence/AC_LEDGER.csv
- M product-contract/evidence/AC_LEDGER_SUMMARY.md
- M product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_CD-022_TO_CD-029_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md
- M product-contract/evidence/EVIDENCE_STATUS.md
- M product-contract/evidence/STORYBOARD_STATUS.md
- M product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md
- M product-contract/evidence/generate_ac_ledger.py
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-ar-rtl-1440.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-dark-1024.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-dark-1440.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-light-1024.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-light-1440.png
- M product-contract/evidence/screens/cd-021-bulk-v1/CODEX_AUDIT_CD-021_REMEDIATION_VERIFICATION.md
- M product-contract/evidence/screens/cd-021-bulk-v1/ar-rtl.png
- M product-contract/evidence/screens/cd-021-bulk-v1/narrow.png
- M product-contract/evidence/screens/cd-021-bulk-v1/primary.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-ar-rtl.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-narrow-412.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-primary.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/ar-rtl.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/eligibility-preview.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/narrow-412.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/primary.png
- M product-contract/evidence/screens/dashboard-business-v1/operational-en-dark-desktop.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-ar-mobile.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-en-dark-desktop.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-en-light-desktop.png
- M product-contract/evidence/screens/dashboard-kpi-seed/live-operations-en-light.png
- M product-contract/evidence/screens/dashboard-kpi-seed/operations-scoped-en-light.png
- M product-contract/evidence/screens/immediate-v2/ar-dark-desktop.png
- M product-contract/evidence/screens/immediate-v2/ar-dark-narrow.png
- M product-contract/evidence/screens/immediate-v2/ar-light-desktop.png
- M product-contract/evidence/screens/immediate-v2/ar-light-narrow.png
- M product-contract/evidence/screens/immediate-v2/en-dark-desktop.png
- M product-contract/evidence/screens/immediate-v2/en-dark-narrow.png
- M product-contract/evidence/screens/immediate-v2/en-light-desktop.png
- M product-contract/evidence/screens/immediate-v2/en-light-narrow.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-en.png
- M product-contract/evidence/screens/login-v7-atlas/laptop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-light-ar.png
- M product-contract/evidence/screens/shell-v1/planner-desktop-en-collapsed.png
- M product-contract/evidence/screens/shell-v1/planner-desktop-en-dark.png
- M product-contract/evidence/screens/shell-v1/planner-mobile-ar-light-drawer.png
- M product-contract/execution/CURRENT_SLICE.yaml
- M product-contract/execution/WORK_QUEUE.yaml
- M product-contract/sessions/LAST_SESSION.md
- M product-contract/sessions/SESSION_LEDGER.json
-?? apps/web/e2e/cd-042-otp-status-authz.spec.ts
-?? outputs/cd-006-cd-011/
-?? outputs/cd-041-042-slice-proposal/
-?? outputs/cd-042-r2/
-?? outputs/claude-design-approval-pack/CD-012_019_BACKEND_WIRING_READINESS_R1.md
-?? outputs/claude-design-approval-pack/CD-012_019_CONSOLIDATED_CORRECTION_PROMPT_R2.md
-?? outputs/claude-design-approval-pack/CD-012_019_CONSOLIDATED_DEEP_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/CD-012_CORRECTION_PROMPT_R2.md
-?? outputs/claude-design-approval-pack/CD-012_DESIGN_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/CD-042_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
-?? outputs/claude-design-approval-pack/CD-042_CORRECTION_PROMPT_R2.md
-?? outputs/claude-design-approval-pack/CD-042_DESIGN_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/CD-043_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
-?? outputs/claude-design-approval-pack/CD-043_CORRECTION_PROMPT_R2.md
-?? outputs/claude-design-approval-pack/CD-043_DESIGN_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/CLAUDE_CODE_MCP_PROMPT_CD-004_TO_CD-011_CONSOLIDATED.md
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-004-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-004-r2b/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-004/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-005-r1/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-006-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-006/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-007-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-007/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-008-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-008/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-009-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-009/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-010-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-010/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-011-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-011/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/implementation-prompts/
-?? product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md
-?? product-contract/evidence/CODEX_AUDIT_FIELD_HANDOFF_REMEDIATION_2026-07-15.md
-?? product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md
-?? product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png
-?? product-contract/evidence/validate_audit_reconciliation.py
-?? supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
-?? supabase/migrations/20260715180000_field_arrival_evidence.sql
-?? supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql
-```
-- Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.
+
+- Time: `2026-07-16T13:11:30+03:00`
+- Session ID: `2026-07-16-m09-write-flow-hardening`
+- Branch: `codex/g11-g12-integration`
+- Starting commit: `e235498`
+- Implementation/evidence commit: `37e8e05`
+- Record commit: the commit containing this handoff
+- Task: `TASK-G11-G12-RELEASE-001 / TASK-CD006-011-BACKEND-COMPLETION`
+- Gate result: M09 write-flow audit **PASS**; G10 **PASS**; G11/G12 remain open
+- Acceptance: 493 = 15 verified_live / 466 implemented / 12 partial / 0 missing
+- Regression: **294/294 PASS** (4 authenticated setup + 290 application; 0 failed/skipped/excluded)
+
+## Delivered
+
+- Live, idempotent M09 direct-write, relationship, frozen-snapshot and audit
+  hardening with local/live rollback proof and zero residual fixtures.
+- M09-001/005/018/021/022/024 and AC-0449/0453/0466/0469/0470/0472 moved
+  from partial to implemented; sponsor runtime acceptance remains pending.
+- Complete stable-order paging for Operations, live Operations, monitoring
+  refresh and Bulk Planning, with later-page errors failing closed.
+- Deterministic dashboard fixture refresh and streamed-route accessibility test
+  stabilization.
+- Full acceptance, evidence, gate, queue and session reconciliation.
+
+## Open blockers
+
+- Twelve provider/schema/policy/RBAC acceptance rows.
+- Credential rotation and historical-secret response.
+- Remote migration-history hardening.
+- Region/provider/asset/geographic and CD-031 privacy/provider authority.
+- Sponsor runtime acceptance.
+- No configured production hosting/deployment/rollback target.
+
+## Exact next action
+
+Obtain sponsor runtime acceptance for CD-006..011 or resolve one of the twelve
+source-authority rows. Treat production release as blocked until an actual
+hosting and rollback target is configured and approved.
+
+## Resume prompt
+
+Read CURRENT_STATE UPDATE 90 and
+`product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md`. Continue on
+`codex/g11-g12-integration` from implementation commit `37e8e05` plus the
+following handoff-record commit. M09-001/005/018/021/022/024 are implemented
+with live rollback/negative/audit proof and the full production inventory is
+294/294. Do not reopen them without a demonstrated regression, do not fabricate
+the twelve upstream rows, and do not call G11/G12 closed without sponsor runtime
+acceptance and a configured production deployment/rollback target.

@@ -1,22 +1,22 @@
 # Session Handoff
 
-- Session ID:
-- Date/time:
-- Gate:
-- Task ID:
-- Branch:
-- Starting commit:
-- Ending commit:
-- Requirements:
-- Acceptance IDs:
-- Screens:
-- Engines:
-- Files changed:
-- Database/API changes:
-- Tests run:
-- Evidence captured:
-- Decisions made:
-- Open blockers:
-- Regression result:
-- Exact next task:
-- Ready-to-paste resume prompt:
+- Session ID: `2026-07-16-m09-write-flow-hardening`
+- Date/time: `2026-07-16T13:11:30+03:00`
+- Gate: G10 verification PASS; G11 hardening / G12 release remain open
+- Task ID: `TASK-G11-G12-RELEASE-001 / TASK-CD006-011-BACKEND-COMPLETION`
+- Branch: `codex/g11-g12-integration`
+- Starting commit: `e235498`
+- Ending commit: implementation/evidence `37e8e05`; handoff provenance is the commit containing this record
+- Requirements: MVP1-M09-001/005/018/021/022/024, MVP1-M01-004, FND-003, RBAC-001..006
+- Acceptance IDs: AC-0449/0453/0466/0469/0470/0472, DSG-A11Y-001, DSG-CODE-001
+- Screens: CD-006..011 / SCR-ADM-010..060; SCR-WEB-110; SCR-WEB-500
+- Engines: ENG-08, ENG-12
+- Files changed: M09 application/database/test contracts; complete PostgREST paging for Operations/Bulk Planning; deterministic regression fixtures; acceptance/evidence/gate/session records
+- Database/API changes: idempotent live forward migration `20260716210000_m09_relationship_contract_hardening.sql`; no destructive cleanup; no direct workflow mutation; rollback probe left zero synthetic profiles/packages
+- Tests run: typecheck PASS; optimized build PASS; focused CD-006..011 15/15; focused Operations/dashboard 15/15; CD-021 25/25; final complete inventory 294/294 (4 setup + 290 application, zero failed/skipped/excluded)
+- Evidence captured: `product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md`, live pre/post/idempotency and rollback-probe results, regenerated 493-row acceptance/storyboard ledgers
+- Decisions made: six M09 rows move partial→implemented; sponsor runtime acceptance is not inferred; complete multi-page reads fail closed; remote migration history is not reconstructed
+- Open blockers: twelve provider/schema/policy/RBAC acceptance rows; credential rotation and historical-secret response; migration-history hardening; region/provider/asset authority; CD-031 privacy/provider authority; sponsor runtime acceptance; no configured production deployment/rollback target
+- Regression result: **294/294 PASS**, zero failed/skipped/excluded after two full-suite iterations
+- Exact next task: obtain sponsor runtime acceptance for CD-006..011 or resolve one of the twelve source-authority rows; separately configure/approve a real production hosting and rollback target before G12
+- Ready-to-paste resume prompt: Read CURRENT_STATE UPDATE 90 and `product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md`. Continue on `codex/g11-g12-integration` from implementation commit `37e8e05` plus the following handoff-record commit. M09-001/005/018/021/022/024 are implemented with live rollback/negative/audit proof and the full production inventory is 294/294. Do not reopen them without a demonstrated regression, do not fabricate the twelve upstream rows, and do not call G11/G12 closed without sponsor runtime acceptance and a configured production deployment/rollback target.
