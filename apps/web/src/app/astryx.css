@@ -484,6 +484,17 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   .ax-content { padding: var(--ax-space-200); }
 }
 
+/* DEF-UX-002 — between the full desktop sidebar (>=900px, no drawer collapse
+   yet) and the drawer breakpoint, the topbar search + theme/bell icons +
+   account identity text could crowd/wrap on tablet landscape widths (e.g.
+   1024px iPad landscape). Shrink search and drop the identity text a little
+   earlier than the drawer/backdrop switch, matching the file's existing
+   1099px tablet boundary. */
+@media (max-width: 1099px) {
+  .ax-shell-search { inline-size: min(260px, 30vw); }
+  .ax-shell-account__identity { display: none; }
+}
+
 @media (max-width: 560px) {
   .ax-pagehead__topbar { flex-wrap: wrap; }
   .ax-shell-search { order: 3; inline-size: 100%; }

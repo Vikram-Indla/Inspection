@@ -23,6 +23,7 @@ export type ShellClientStrings = {
   noSearchResults: string;
   account: string;
   roles: string;
+  profileSettings: string;
   signOut: string;
   themeLight: string;
   themeDark: string;
@@ -228,6 +229,7 @@ export default function ShellClient({
                     <strong>{email}</strong>
                     <span className="ax-caption">{strings.roles}: {roles.join(", ")}</span>
                     <a href={languageHref} lang={languageLang}>{languageLabel}</a>
+                    <a href="/profile">{strings.profileSettings}</a>
                     <a href="/signout">{strings.signOut}</a>
                   </div>
                 )}
