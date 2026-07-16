@@ -1,167 +1,99 @@
-schema_version: "1.0"
-task_id: "TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001"
-gate: "G11 production-readiness requirement closure"
-title: "Close all 19 recorded partial MVP1 requirements with production-grade vertical slices"
-status: "COMPLETE"
+schema_version: "1.2"
+task_id: "TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003"
+parent_task_id: "TASK-G11-G12-RELEASE-001"
+gate: "G11 hardening"
+title: "Governed Operations approval for out-of-geofence iPad check-in"
+status: "SOURCE_VERIFIED_AWAITING_CONTROLLED_DATABASE_RUNTIME"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#G11-remaining-requirements-closure"
+approval_ref: "HUMAN_APPROVALS.yaml#IPAD-GEO-OVERRIDE-APPROVAL-WORKFLOW"
 
 sponsor_direction:
   approver: "Vikram Indla"
   date: "2026-07-16"
   authorization:
-    - "Proceed through every recorded partial requirement one by one using the best production-grade recommendation."
-    - "Perform the backend, frontend, migration, integration, offline, security, audit, negative-path, evidence and regression work needed for genuine completion."
-    - "Use the sponsor-accepted DEC-001..DEC-010 recommendations as operative configurable MVP1 decisions."
-    - "Apply and verify forward-only live migrations through the already-authorized Supabase path."
-    - "Modify the frozen current-slice, approval, decision, acceptance, evidence and session records required to govern and certify this change-control task."
+    - "Implement the Operations-approved override workflow selected as 1A, 2A, 3A and 4A."
+    - "Create a clean, separate iPad pull request with source, tests, evidence and contract records."
+  policy:
+    - "Only the existing RBAC Operations approver group may decide; the requester can never decide their own request."
+    - "A request requires a governed reason code, mandatory narrative, actual GPS/time and either photo evidence or a safety/security capture exception."
+    - "A request expires after 30 minutes for one inspector, visit and arrival attempt, or earlier when the visit closes."
+    - "Offline may queue real GPS/evidence, but never self-approves or unlocks check-in; Operations approval occurs online."
   limits:
-    - "Do not weaken a requirement, replace an integration with a permanent mock, or mark completion without runtime proof."
-    - "Provider-specific code must remain behind an adapter; unavailable credentials must produce honest degraded behavior and must not be claimed provider-live."
-    - "Do not expose secrets, destructively rewrite live data, edit an applied migration, or discard concurrent/user-owned work."
+    - "This does not resolve DEC-002's formal numeric GIS governance record, the maps-provider decision, or the migration-history repair."
 
-change_control:
-  id: "CC-G11-REMAINING-19-001"
-  status: "SPONSOR_APPROVED"
-  approval_text: "I approve the change"
-  approved_at: "2026-07-16"
+branch_at_start: "codex/ipad/m04-geofence-policy-promotion-002"
+head_at_start: "9ba5a24"
+worktree_at_start: "Clean dedicated worktree; two in-slice uncommitted telemetry regression-test edits."
 
-branch_at_start: "codex/remaining-requirements-closure"
-head_at_start: "9e7c669"
-baseline_ref: "codex/g11-g12-integration@9e7c669"
-worktree_at_start: "clean dedicated worktree /private/tmp/Inspection-requirements-closure"
-
-process_ids: ["P00", "P02", "P03", "P06A", "P07", "P08", "P09", "P12"]
-requirement_ids:
-  - "MVP1-M02-039"
-  - "MVP1-M04-012"
-  - "MVP1-M04-017"
-  - "MVP1-M04-024"
-  - "MVP1-M04-043"
-  - "MVP1-M04-045"
-  - "MVP1-M07-003"
-  - "MVP1-M07-004"
-  - "MVP1-M07-005"
-  - "MVP1-M07-014"
-  - "MVP1-M07-015"
-  - "MVP1-M07-017"
-  - "MVP1-M07-019"
-  - "MVP1-M09-001"
-  - "MVP1-M09-005"
-  - "MVP1-M09-018"
-  - "MVP1-M09-021"
-  - "MVP1-M09-022"
-  - "MVP1-M09-024"
-screen_ids:
-  - "SCR-ADM-010"
-  - "SCR-ADM-011"
-  - "SCR-ADM-020"
-  - "SCR-ADM-030"
-  - "SCR-ADM-031"
-  - "SCR-ADM-060"
-  - "SCR-ADM-070"
-  - "SCR-ADM-090"
-  - "SCR-WEB-200"
-  - "SCR-WEB-210"
-  - "SCR-WEB-400"
-  - "SCR-IPAD-620"
-  - "SCR-IPAD-630"
-  - "SCR-IPAD-640"
-engine_ids: ["ENG-01", "ENG-02", "ENG-03", "ENG-04", "ENG-06", "ENG-07", "ENG-10", "ENG-11", "ENG-12"]
-acceptance_ids:
-  - "AC-0091"
-  - "AC-0125"
-  - "AC-0130"
-  - "AC-0137"
-  - "AC-0156"
-  - "AC-0158"
-  - "AC-0412"
-  - "AC-0413"
-  - "AC-0414"
-  - "AC-0423"
-  - "AC-0424"
-  - "AC-0426"
-  - "AC-0428"
-  - "AC-0449"
-  - "AC-0453"
-  - "AC-0466"
-  - "AC-0469"
-  - "AC-0470"
-  - "AC-0472"
+process_ids: ["P06A"]
+requirement_ids: ["MVP1-M04-039", "MVP1-M04-043", "MVP1-M04-045", "MVP1-M08-013"]
+screen_ids: ["SCR-IPAD-620", "SCR-WEB-500", "SCR-ADM-070"]
+engine_ids: ["ENG-06", "ENG-08", "ENG-11"]
+acceptance_ids: ["AC-0152", "AC-0153", "AC-0154", "AC-0155", "AC-0156"]
 
 dependencies:
-  - "G8 PASS and sponsor-approved G11 change control."
-  - "Sponsor-accepted DEC-001 risk, DEC-002 GIS/geofence, DEC-004 Arabic, DEC-006 evidence, DEC-008 maps and DEC-010 NFR/stack decisions."
-  - "Configured Supabase project iiozvqntawxfwbgffzqu and secret-safe Management API access."
-  - "Existing CD-006..CD-011 backend/frontend baseline and M09 authoritative completion migrations."
-  - "Existing field offline outbox, append-only audit, RLS, immutable versions and canonical transition guards."
+  - "RBAC-008 permits Operations to approve an override per policy."
+  - "STM-JRN-003 permits check-in only inside the fence or with an approved override."
+  - "Existing immutable geo events, canonical operational state transition, offline outbox and audit events remain authoritative."
 
-approved_recommendations:
-  - "Provider architecture: Google Maps production adapter with MapLibre/offline adapter boundary; no feature code directly depends on provider SDKs."
-  - "Risk architecture: versioned weighted-sum 0-100 model using accepted DEC-001 factors/weights/bands, storing driver snapshots for reproducibility."
-  - "Registry architecture: source-owned, freshness-stamped license/CR snapshots with explicit unavailable/stale states and no silent master overwrite."
-  - "Device architecture: privacy-minimized app/device capability snapshot captured at journey start and replayed idempotently."
-  - "Configuration architecture: typed versioned rule schema, cycle detection, simulation, maker-checker publication and immutable runtime consumption."
-
-open_decisions: []
+open_decisions:
+  - "DEC-002 formal numeric GPS/geofence governance remains recorded separately; existing configured values remain unchanged."
+  - "DEC-008 runtime maps/routing provider remains untouched."
+  - "Remote migration-history repair remains a release-hardening prerequisite, not a reason to apply DDL blindly."
 
 do_not_touch:
-  - "Do not directly mutate workflow states or immutable submitted versions."
-  - "Do not overwrite official factory coordinates with inspector observations."
-  - "Do not silently resolve offline/server conflicts."
-  - "Do not weaken RLS, append-only audit, maker-checker or published-version immutability."
-  - "Do not hardcode provider credentials or expose PATs/database passwords in commands, logs, tests or evidence."
-  - "Do not reset, delete or absorb dirty worktrees, stashes, screenshots or concurrent changes."
+  - "Do not alter official factory coordinates, immutable submitted versions, prior geo/audit records or main."
+  - "Do not permit direct state mutation, inspector self-approval, offline approval, expired approval, or a permanent integration mock."
+  - "Do not apply this source migration to the shared remote while migration history is unreconciled."
 
 authorized_file_scope:
-  - "apps/web/src application, adapter, server-action, i18n and style files required by the 19 requirements."
-  - "apps/web/e2e and verification scripts for exact positive, negative, role, offline, provider-degraded, RTL, accessibility and concurrency proof."
-  - "supabase/migrations and tests using forward-only idempotent changes."
-  - "Product-contract governance, acceptance, evidence, execution and session records for this approved change-control task."
+  - "Forward-only Supabase migration, RLS/RPC authorization, iPad Startup, Operations Center approval queue, offline outbox, tests and required contract/evidence records."
 
 task_specific_context:
-  - "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md"
-  - "product-contract/evidence/AC_LEDGER.csv"
-  - "product-contract/governance/DECISIONS_ACCEPTED_2026-07-11.yaml"
-  - "product-contract/governance/decision_register.csv"
+  - "product-contract/business/master_end_to_end_process.md"
   - "product-contract/screens/screen_route_catalogue.csv"
-  - "product-contract/domain/atomic_scope.csv"
   - "product-contract/domain/field_dictionary.csv"
   - "product-contract/domain/rbac_matrix.csv"
   - "product-contract/domain/state_transitions.csv"
   - "product-contract/governance/error_catalogue.csv"
-  - "product-contract/business/master_end_to_end_process.md"
-  - "design/claude-design-mvp1/00_START_HERE.md"
-  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-006-r2/*"
-  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-007-r2/*"
-  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-008-r2/*"
-  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-009-r2/*"
-  - "apps/web/src/app/admin/*"
-  - "apps/web/src/app/field/*"
-  - "apps/web/src/app/factories/*"
-  - "apps/web/src/app/visits/*"
-  - "apps/web/src/app/operations/*"
-  - "supabase/migrations/*"
+  - "product-contract/governance/HUMAN_APPROVALS.yaml"
+  - "supabase/migrations/0001_foundation.sql"
+  - "supabase/migrations/0002_rbac_audit.sql"
+  - "supabase/migrations/0015_w1_journey_state.sql"
+  - "supabase/migrations/0020_fix_field_journey.sql"
+  - "apps/web/src/app/field/[visitId]/Startup.tsx"
+  - "apps/web/src/app/field/[visitId]/actions.ts"
+  - "apps/web/src/app/field/[visitId]/page.tsx"
+  - "apps/web/src/app/operations/page.tsx"
+  - "apps/web/src/app/operations/actions.ts"
+  - "apps/web/src/lib/offline.ts"
 
 required_tests:
-  - "Per-requirement positive, negative, unauthorized, stale, degraded, offline/conflict and audit checks where applicable."
-  - "Migration preflight, idempotency, RLS, function-grant and post-application live verification."
-  - "Provider adapter contract tests including unavailable, timeout, stale and invalid-response states."
-  - "EN/AR, RTL, responsive and keyboard/accessibility checks for changed screens."
-  - "Typecheck, production build, focused Playwright slices and complete no-exclusion regression."
-  - "Independent acceptance reconciliation proving zero partial rows before closure."
+  - "Database/RLS source contracts for requester ownership, Operations-only decision, self-approval refusal, mandatory evidence or safety exception, expiry and visit-close refusal."
+  - "Field source contract for actual GPS/time capture, offline durable queue and no direct arrival/self-approval transition."
+  - "Operations queue and server-action contract for approve/reject through the guarded RPC."
+  - "Typecheck, production build and focused Playwright iPad policy tests."
 
 required_evidence:
-  - "product-contract/evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md"
-  - "Per-slice source/runtime/negative/live evidence mapped to all 19 acceptance IDs."
-  - "Updated AC_LEDGER.csv and AC_LEDGER_SUMMARY.md with no unsupported upgrades."
-  - "Updated CURRENT_STATE.md, GATE_STATUS.md, WORK_QUEUE.yaml, ACCEPTANCE_STATUS.md, EVIDENCE_STATUS.md and SESSION_LEDGER.json."
+  - "product-contract/evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md"
+  - "Updated CURRENT_STATE.md, WORK_QUEUE.yaml, acceptance/evidence records and session ledger."
+
+source_verification:
+  source_commit: "62916ee"
+  passed:
+    - "npm run typecheck"
+    - "npm run build"
+    - "Focused static Playwright policy contracts: 3/3"
+    - "git diff --check"
+  blocked_runtime:
+    - "Clean worktree has no Supabase URL/key, so authenticated browser setup cannot start."
+    - "No local Supabase configuration, PostgreSQL service or Docker daemon is available for migration/RLS execution."
+    - "Shared remote migration history/access remains unreconciled; the source migration was not applied blindly."
 
 exit_condition: >-
-  This task may complete only when all 19 named acceptance rows have working source,
-  migration/data, authorization, audit, negative-path, frontend/runtime and live evidence;
-  the full regression passes without exclusions; provider integrations either pass against
-  configured production credentials or pass a production adapter contract while rendering
-  an explicit non-delivery state that is not claimed as provider-live; and the acceptance
-  ledger independently reconciles to zero partial rows for these requirements.
+  The slice is complete only when an outside-fence inspector can create a durable,
+  evidence-governed request with actual GPS/time, cannot self-approve or enter offline,
+  Operations can approve or reject through a guarded/audited online decision, expired or
+  closed requests cannot unlock the visit, and all stated source/runtime tests and evidence
+  are captured. This does not claim shared-remote migration application or release.

@@ -1,5 +1,26 @@
 # Current State
 
+## 2026-07-16 UPDATE 89 — governed iPad geofence override source delivered
+
+The sponsor-approved `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003` is source
+verified on the dedicated branch `codex/ipad/m04-geofence-policy-promotion-002`
+at `62916ee`. It replaces inspector self-override with a durable, audited
+Operations approval workflow: a governed reason, narrative, immutable outside
+GPS/time and photo evidence (or narrowly declared safety/security exception)
+are required; only Operations may decide; self-decision is blocked; one
+attempt expires after 30 minutes or a visit close; and offline work queues the
+actual check-in/evidence/request without unlocking arrival. The Operations
+queue includes captured facts and a signed evidence link where storage policy
+permits it.
+
+Typecheck, production build, `git diff --check`, and 3/3 focused static
+Playwright policy contracts pass. Runtime DB/RLS and authenticated browser
+tests are deliberately **not claimed**: this clean worktree has no Supabase
+runtime credentials, local database configuration or Docker daemon, and the
+remote migration-history/access boundary is unreconciled. The two forward
+migrations have not been blindly applied. Exact evidence:
+`evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md`.
+
 ## 2026-07-16 UPDATE 88 — all 19 remaining requirement rows closed
 
 The sponsor-approved `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001` is complete

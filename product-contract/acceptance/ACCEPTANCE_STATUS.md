@@ -1,5 +1,20 @@
 # Acceptance Status
 
+## TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — 2026-07-16
+
+- Source acceptance for `AC-0152..AC-0156`: **PASS** — requester ownership,
+  Operations-only decision, self-decision refusal, evidence/safety exception,
+  expiry/visit-close guards, durable offline ordering and the guarded arrival
+  transition are present in the database and UI contracts.
+- Compile and source-contract verification: **PASS** — typecheck, production
+  build, diff check and focused Playwright 3/3.
+- Runtime acceptance: **AWAITING CONTROLLED DATABASE RUNTIME** — no local
+  Supabase/Docker configuration and no authenticated clean-worktree runtime
+  credentials; remote migration history/access remains unreconciled. This
+  status must not be promoted to live verified until the forward migrations and
+  inspector/Operations acceptance journey pass in a controlled environment.
+- Exact evidence: `../evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md`.
+
 ## TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001 — 2026-07-16
 
 - AC-0091, AC-0125, AC-0130, AC-0137, AC-0156, AC-0158, AC-0412,
