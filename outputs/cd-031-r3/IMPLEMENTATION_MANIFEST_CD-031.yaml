@@ -1,0 +1,59 @@
+# IMPLEMENTATION_MANIFEST_CD-031.yaml
+# DO NOT EXECUTE UNTIL SPONSOR DESIGN APPROVAL AND INDEPENDENT CODEX WIRING AUDIT
+implementation_authorized: false
+design_id: CD-031
+task: TASK-DESIGN-CD031
+screen_id: SCR-WEB-400
+title: Factory 360
+route: /factories/:id
+persona: [Planner, Inspector, Reviewer, Operations, Leadership]
+revision: R3
+baseline: BASELINE_REVERIFY_REQUIRED  # factories/[id] sources read this session at main; no exact-baseline equivalence claim; deferred to Codex
+engines: [ENG-04, ENG-06, ENG-07, ENG-08, ENG-09, ENG-12]
+requirements: "MVP1-M07 (identity/risk/documents/reps/products/materials/workforce/history) + foundation/RBAC/audit/data-provenance/accessibility contracts"
+acceptance: [DSG-026, DSG-A11Y-001]
+
+signature_interaction:
+  name: Spatial Case Timeline
+  links: [registered-location-context, inspection-events, evidence/document-availability, findings/actions, review-decisions, risk-version-observations]
+  properties: [source-labelled, list-equivalent, keyboard-operable, non-color-only, reduced-motion-safe, never-fabricated-spatial-path-or-causal-link]
+  r2_truth_correction: "Timeline is built only from facts the route reads (identity, current risk version, visits/inspections, findings/actions, review status, document-metadata availability). Evidence events and risk-version HISTORY are NOT live-sourced; both are explicit unavailable rows (HANDOFF_BLOCKED_EVIDENCE_TIMELINE / HANDOFF_BLOCKED_RISK_HISTORY)."
+
+binding_runtime_truth:
+  - identity: "factories row read-only from source: code, name, CR, licence, region, city, activity, official_lat/lng, source, source_synced_at, geofence_radius_m."
+  - risk: "risk_score/band/version read; recomputable per engine_settings.risk; NO driver breakdown or recalculation action exposed."
+  - history: "visits -> inspections -> submission_versions, violations+violation_codes, action_forms, reviews joined; sorted by window_start."
+  - sections: "documents, representatives, products, materials are separate queries with per-section error isolation."
+  - documents: "metadata + storage_path only (storage_path null from this surface); no signed URL/viewer/custody retrieval."
+  - controls: "add document/representative/product/material + representative activation exist; product/material writes RLS-restricted to planner/ops/compliance_admin (0017)."
+
+handoff_blocked:
+  - HANDOFF_BLOCKED_RISK_DRIVERS       # no risk-driver breakdown or recalculation action
+  - HANDOFF_BLOCKED_RISK_HISTORY       # only the current risk version is read; no historical risk observations
+  - HANDOFF_BLOCKED_EVIDENCE_TIMELINE  # no inspection-evidence query/derivation on this route
+  - HANDOFF_BLOCKED_MAP                # no map provider proven
+  - HANDOFF_BLOCKED_BOUNDARY           # no authoritative boundary polygon
+  - HANDOFF_BLOCKED_COORDINATE_CONFLICT # no coordinate-conflict resolution path
+  - HANDOFF_BLOCKED_DOCUMENT_VIEWER    # no signed URL/viewer/custody retrieval
+  - HANDOFF_BLOCKED_ROLE               # leadership aggregation/edit, contact privacy, doc custody/visibility unproven
+  - HANDOFF_BLOCKED_BASELINE
+
+scope_separation:
+  - CD-031 reads the factory dossier; invents no aggregate lifecycle, causal link, map authority or role permission
+  - shell frozen (CD-020..031); Factory 360 current in Command group
+
+hypotheses:
+  - {id: A, name: Provenance-first, selected: true}
+  - {id: B, name: Case-timeline-first, selected: false}
+  - {id: C, name: Decision-context-first, selected: false}
+counterfactual: spatial-case-timeline-removed
+
+files_facing: [IMPLEMENTATION_MANIFEST_CD-031.yaml, COMPONENT_MAP_CD-031.csv, WIRING_MAP_CD-031.csv, STATE_MATRIX_CD-031.csv, ACCEPTANCE_CHECKLIST_CD-031.md, CLAUDE_CODE_HANDOFF_CD-031.md, CLAUDE_CODE_IMPLEMENTATION_PROMPT_CD-031.md, PACKAGE_INVENTORY_CD-031.csv, PACKAGE_PREFLIGHT_CD-031.md]
+
+r3_micro_correction:
+  summary: "R2 acceptance micro-correction. No redesign, no application code."
+  fixes:
+    - "Every Factory 360 section-navigation pill (.cd-secitem) is now >=48x48px in desktop, Arabic RTL and 412px narrow layouts (min-block-size:48px; min-inline-size:48px; inline-flex centering; box-sizing:border-box). Separated labels, boundaries, selected state and visible keyboard focus preserved."
+    - "PACKAGE_PREFLIGHT_CD-031.md now records the literal SHA-256 of each complete A/B/C hypothesis PNG and confirms all three differ."
+  preserved: [single-root-archive, R2-timeline-truth-blocks, all-states, routes-roles-blocked-classifications, frozen-shared-shell]
+  design_status: READY_FOR_DESIGN_REVIEW_R3

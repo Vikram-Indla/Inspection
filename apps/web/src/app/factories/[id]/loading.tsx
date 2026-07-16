@@ -1,7 +1,7 @@
 // CD-031 / SCR-WEB-400 — loading state for the Factory 360 dossier.
 export default function Loading() {
   return (
-    <div style={{ padding: "var(--ax-space-400)" }} aria-busy="true" aria-label="Loading factory dossier">
+    <div style={{ padding: "var(--ax-space-400)" }} role="status" aria-live="polite" aria-busy="true" aria-label="Loading factory dossier">
       <div className="ax-skeleton" style={{ blockSize: 28, inlineSize: "40%", marginBlockEnd: "var(--ax-space-200)" }} />
       <div className="cd-w3">
         <div style={{ display: "grid", gap: "var(--ax-space-200)" }}>

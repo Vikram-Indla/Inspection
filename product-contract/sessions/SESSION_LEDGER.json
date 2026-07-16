@@ -2961,9 +2961,95 @@
       "commit_sha": "Application release 01e4226; release-record commit is identified by immutable tag g11-g12-release-2026-07-16 and verified against remote main in the final handoff",
       "next_task": "Configure and approve a real production hosting/rollback target, rotate historical credentials atomically, harden migration history and resolve the remaining provider/region/CD-031/acceptance boundaries before G11/G12 PASS.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 88 and product-contract/evidence/TASK-G11-G12-RELEASE-001.md. G10 is PASS at 291/291. Do not reopen the verified release candidate without a demonstrated regression; G11/G12 remain open for the explicitly recorded external boundaries."
+    },
+    {
+      "session_id": "2026-07-16-cd031-r3-audit-hardening",
+      "started_at": "2026-07-16",
+      "ended_at": "2026-07-16",
+      "branch": "codex/g11-g12-integration",
+      "task_id": "TASK-G11-G12-RELEASE-001 / CD-031-FACTORY-360-DOSSIER",
+      "gate": "G11 production-readiness wiring / G12 release",
+      "requirements": [
+        "MVP1-M07-001..020",
+        "MVP1-FND-001",
+        "MVP1-FND-003",
+        "MVP1-FND-007",
+        "MVP1-FND-011",
+        "RBAC-013"
+      ],
+      "acceptance_ids": [
+        "DSG-026",
+        "DSG-A11Y-001",
+        "DSG-CODE-001",
+        "DEC-012"
+      ],
+      "screens": [
+        "SCR-WEB-400"
+      ],
+      "engines": [
+        "ENG-04",
+        "ENG-06",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "outputs/cd-031-r3 exact authority-package text artifacts",
+        "apps/web/src/app/factories/[id]/actions.ts",
+        "apps/web/src/app/factories/[id]/page.tsx",
+        "apps/web/src/app/factories/[id]/loading.tsx",
+        "apps/web/e2e/cd-031-factory-360.spec.ts",
+        "supabase/migrations/20260716120000_cd031_factory360_audit.sql",
+        "supabase/tests/0031_cd031_factory360_contract.sql",
+        "supabase/tests/0031_cd031_live_release_probe.sql",
+        "product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md",
+        "product-contract/evidence/validate_audit_reconciliation.py",
+        "product-contract release, gate, acceptance, evidence, queue and session records"
+      ],
+      "tests": [
+        "CD-031 R3 package SHA-256 verification PASS",
+        "DEC-012 rows 1-18 plus 4b/4c wiring audit PASS",
+        "focused Playwright 18/18 PASS across source, live Planner, RTL, light/dark and 1440/1024/412",
+        "complete rebuilt inventory 293/293 PASS: 4 authenticated setup + 289 application; 0 failed / 0 skipped / 0 excluded",
+        "application shards: 31 + 24 + 32 + 20 + 24 + 28 + 18 + 24 + 25 + 17 + 24 + 22 = 289 PASS",
+        "local rollback SQL contract PASS: four Planner writes, activation, five audit events and four Inspector denials",
+        "live canonical-trigger readback PASS: four of four",
+        "hardened migration repeat PASS locally and live: four canonical triggers accepted idempotently; conflicting same-name definitions fail closed",
+        "authenticated live rollback probe PASS with zero residual rows",
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "validate_audit_reconciliation.py PASS",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md",
+        "outputs/cd-031-r3/WIRING_MAP_CD-031.csv",
+        "outputs/cd-031-r3/PACKAGE_PREFLIGHT_CD-031.md",
+        "supabase/tests/0031_cd031_factory360_contract.sql",
+        "supabase/tests/0031_cd031_live_release_probe.sql",
+        "product-contract/evidence/EVIDENCE_STATUS.md"
+      ],
+      "decisions": [
+        "Treat DEC-012 wiring accuracy separately from slice closure: wiring PASS does not supply missing privacy/provider authority",
+        "Apply only the new idempotent canonical-audit correction after a live trigger inventory proved it absent",
+        "Use rollback-only synthetic local and existing-persona live probes; leave no test rows",
+        "Retain the 18-row acceptance partial count because CD-031 unsupported provider/policy capabilities were not invented",
+        "Preserve all test-generated screenshots and the node_modules link as unrelated dirty work"
+      ],
+      "blockers": [
+        "Exact leadership representative-contact privacy policy",
+        "Provider/source authority for risk drivers/history, evidence timeline, map/boundary/coordinate conflicts and document viewer/custody",
+        "Sponsor runtime acceptance",
+        "Credential rotation, migration-history hardening, provider/region/asset/geographic and 18 upstream acceptance boundaries",
+        "No configured production hosting/deployment/rollback target"
+      ],
+      "commit_sha": "Release parent 5812c7fa5bf0a5e84ea64e8259b35211d9ce2bd1; CD-031 continuation commit identified in final Git handoff",
+      "next_task": "Obtain the exact CD-031 privacy/provider decisions and sponsor runtime acceptance without reopening the now-PASS wiring audit; separately resolve the remaining G11/G12 external blockers.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 89 and product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md. DEC-012 is PASS and the four write paths are locally/live rollback-proven. Do not fabricate the explicitly blocked privacy/provider rows or call CD-031/G11/G12 closed."
     }
   ],
-  "last_session": "2026-07-16-g11-g12-release-001",
+  "last_session": "2026-07-16-cd031-r3-audit-hardening",
   "rules": {
     "append_only": true,
     "required_fields": [

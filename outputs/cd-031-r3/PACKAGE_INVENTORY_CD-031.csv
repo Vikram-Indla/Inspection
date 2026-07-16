@@ -1,0 +1,22 @@
+relative_path,revision,baseline,design_id,screen_id,implementation_facing,synchronization_result
+CD-031 Factory 360.dc.html,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+CD-031 Factory 360.standalone.html,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+cd31-stage.js,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+cd31.css,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+cd31-annot.js,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+support.js,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+saqeel-tokens.css,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+saqeel-astryx.css,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+saqeel-prism.svg,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+IMPLEMENTATION_MANIFEST_CD-031.yaml,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,yes,PRESENT — synchronized R3
+COMPONENT_MAP_CD-031.csv,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,yes,PRESENT — synchronized R3
+WIRING_MAP_CD-031.csv,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,yes,PRESENT — synchronized R3
+STATE_MATRIX_CD-031.csv,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,partial,PRESENT — synchronized R3
+ACCEPTANCE_CHECKLIST_CD-031.md,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,yes,PRESENT — synchronized R3
+RESEARCH_PROVENANCE_CD-031.md,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+CLAUDE_CODE_HANDOFF_CD-031.md,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,yes,PRESENT — synchronized R3
+CLAUDE_CODE_IMPLEMENTATION_PROMPT_CD-031.md,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,yes,PRESENT — synchronized R3
+PACKAGE_INVENTORY_CD-031.csv,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,yes,PRESENT — synchronized R3
+PACKAGE_PREFLIGHT_CD-031.md,R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,yes,PRESENT — synchronized R3
+(evidence PNGs CD-031_SCR-WEB-400_*),R3,BASELINE_REVERIFY_REQUIRED (main sources read this session; no equivalence claim),CD-031,SCR-WEB-400,no,PRESENT — synchronized R3
+apps/web/e2e/cd-031-factory-360.spec.ts,R3 (proposed),same,CD-031,SCR-WEB-400,yes (CREATE_AFTER_APPROVAL),NOT IN PACKAGE — proposed; does not exist

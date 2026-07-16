@@ -67,7 +67,7 @@ dependencies:
 
 open_decisions:
   - "Eighteen non-migration AC-ledger partials remain provider/schema/policy/configuration blocked and are not resolved by this release-operation approval."
-  - "CD-024 route/ownership and CD-031 authoritative wiring-map/privacy/preflight decisions remain open."
+  - "CD-024 route/ownership remains open. CD-031's map/preflight evidence is reconciled and DEC-012 is PASS; its exact leadership contact-privacy and provider/source-backed rows remain open."
   - "CD-001 asset rights, official geographic anchors and Arabic-only raster treatment remain release confirmations."
   - "Region migration, provider adapters and credential replacement values require actual configured targets; no target/provider may be invented."
 
@@ -91,6 +91,7 @@ task_specific_context:
   - "product-contract/GATE_STATUS.md"
   - "product-contract/evidence/TASK-G11-REMEDIATION-001.md"
   - "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md"
+  - "product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md"
   - "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md"
   - "product-contract/evidence/AC_LEDGER.csv"
   - "product-contract/governance/HUMAN_APPROVALS.yaml"
@@ -100,7 +101,11 @@ task_specific_context:
   - "supabase/migrations/20260715130000_cd028_one_open_review_per_version.sql"
   - "supabase/migrations/20260715180000_field_arrival_evidence.sql"
   - "supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql"
+  - "supabase/migrations/20260716120000_cd031_factory360_audit.sql"
   - "supabase/tests/*"
+  - "outputs/cd-031-r3/*"
+  - "apps/web/src/app/factories/[id]/*"
+  - "apps/web/e2e/cd-031-factory-360.spec.ts"
   - "apps/web/package.json"
   - "apps/web/playwright.config.ts"
   - "Hosting/deployment configuration discovered in the repository or connected environment"
@@ -116,9 +121,11 @@ required_tests:
   - "Production URL smoke: auth boundary, role launch, representative planner/field/review/admin/dashboard routes, RTL, health and neutral-error behavior."
   - "Rollback-readiness evidence for database and application deployment; no destructive rollback execution against live data."
   - "Git diff/attribution check and preservation of every unrelated dirty or concurrent file."
+  - "CD-031 exact-package hash verification, row-by-row DEC-012 audit, local/live rollback SQL contracts, focused responsive/runtime regression and zero-residual live check."
 
 required_evidence:
   - "product-contract/evidence/TASK-G11-G12-RELEASE-001.md"
+  - "product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md"
   - "Live migration history and post-application verification transcript with no secret values."
   - "Release commit SHA, remote main SHA, deployment identifier/URL and smoke result."
   - "Updated GATE_STATUS.md, CURRENT_STATE.md, WORK_QUEUE.yaml, ACCEPTANCE_STATUS.md, EVIDENCE_STATUS.md and SESSION_LEDGER.json."
@@ -138,8 +145,9 @@ execution_reconciliation:
   release_branch: "codex/g11-g12-integration"
   application_release_commit: "01e4226"
   release_tag: "g11-g12-release-2026-07-16"
-  verification: "291/291 PASS: 4 authenticated setup + 287 application; zero failed/skipped/excluded; typecheck/build PASS."
-  live_database: "Required versioned objects already live; no DDL replayed. CD-028 rollback negative and M04-045 real-outbox replay/readback PASS. Remote migration-history rows remain absent."
+  verification: "Post-CD-031 continuation candidate 293/293 PASS: 4 authenticated setup + 289 application in 12 shards; zero failed/skipped/excluded; typecheck/build PASS."
+  cd031_continuation: "Exact R3 package hash-verified; DEC-012 wiring PASS; focused 18/18 and complete inventory 293/293; local/live rollback contracts prove four Planner write paths, activation, five audit events and Inspector denials; zero live residual rows. Slice remains upstream-blocked for exact privacy/provider authority."
+  live_database: "Required release objects already live; no prior DDL replayed. CD-028 rollback negative and M04-045 real-outbox replay/readback PASS. New idempotent CD-031 canonical-audit correction applied and live-proven; remote migration-history rows remain absent."
   acceptance_ledger: "493 rows: 15 verified_live / 460 implemented / 18 partial / 0 missing."
   deployment: "BLOCKED: no configured production hosting/deployment/rollback target exists; provider/target selection not authorized."
   gate_disposition: "G10 PASS; G11 and G12 remain OPEN."

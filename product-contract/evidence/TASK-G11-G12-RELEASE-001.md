@@ -129,7 +129,32 @@ provider or destination would exceed the approval and invent production
 authority. Consequently no deployment was attempted and G12 remains OPEN.
 
 G11 also remains OPEN for credential rotation, region disposition, provider
-adapters, migration-history hardening, CD-031 wiring/privacy/preflight authority,
+adapters, migration-history hardening, CD-031 privacy/provider runtime authority,
 the 18 acceptance partials, asset/geographic confirmations and outstanding
 sponsor runtime acceptance. G10 may close because its exact exit suite is now
 291/291 with no skips; neither that result nor main promotion is a G11/G12 PASS.
+
+## 2026-07-16 CD-031 continuation
+
+After release promotion, the exact CD-031 R3 authority package was recovered,
+imported and hash-verified. A fresh independent row audit of wiring rows 1–18
+plus 4b/4c returned **PASS** and is recorded in
+`CODEX_AUDIT_CD-031_R3_2026-07-16.md`. The audit found five correctable defects:
+missing canonical audit triggers on all four Factory 360 write tables;
+representative activation not constrained to the submitted factory; nullable
+facts rendered as implied low/zero values; degraded section actions that stayed
+available; and incomplete status/reload semantics. All five were remediated.
+
+The idempotent forward migration
+`20260716120000_cd031_factory360_audit.sql` is applied to live object state. A
+local rollback contract and a separate authenticated live rollback probe prove
+Planner writes across documents, representatives, products and materials,
+representative activation, five append-only audit events and Inspector write
+denials. The live probe left zero residual rows. Focused browser coverage is
+18/18 across source truth, live Planner runtime, English/Arabic RTL, themes and
+1440/1024/412 widths. The rebuilt continuation candidate passes the complete
+inventory at **293/293** (4 authenticated setup + 289 application checks in 12
+shards), with zero failed, skipped or excluded. This evidence removes only the
+stale missing-map/preflight
+blocker; it does not supply the still-missing privacy/provider decisions, repair
+remote migration history, configure deployment or close G11/G12.

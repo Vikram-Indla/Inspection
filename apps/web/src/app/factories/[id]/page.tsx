@@ -95,8 +95,8 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
       reviews: { decision: string | null; status: string }[] } | null;
   }[];
   const sortedVisits = [...visits].sort((a, b) => b.window_start.localeCompare(a.window_start));
-  const bandTone = f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success";
-  const riskTone = f.risk_band === "high" ? "cd-risk-high" : f.risk_band === "medium" ? "cd-risk-medium" : "cd-risk-low";
+  const bandTone = f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : f.risk_band === "low" ? "ax-lozenge--success" : "";
+  const riskTone = f.risk_band === "high" ? "cd-risk-high" : f.risk_band === "medium" ? "cd-risk-medium" : f.risk_band === "low" ? "cd-risk-low" : "";
   const today = new Date().toISOString().slice(0, 10);
   const soon = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
   const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
@@ -206,8 +206,8 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
     <Shell current="/factories" title={`${f.name} — ${identity(f.factory_code)}`}
       context={<>
         <span className="ax-lozenge ax-lozenge--info">SB11</span>
-        <span className={`ax-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</span>
-        <span className="ax-freshness">{t("f360.meta.source", "source")} {f.source} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
+        <span className={`ax-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {identity(f.risk_score)}</span>
+        <span className="ax-freshness">{t("f360.meta.source", "source")} {identity(f.source)} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
       </>}>
 
       <div className="cd-w3">
@@ -218,29 +218,29 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             <span className="cd-idcard__code"><bdi>{identity(f.factory_code)}</bdi></span>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.cr", "CR")}</span> <span className="cd-idv"><bdi>{identity(f.cr_number)}</bdi></span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.license", "license")}</span> <span className="cd-idv"><bdi>{identity(f.license_number)}</bdi></span></p>
-            <p className="cd-idrow">{f.activity_class} · {f.region} · {f.city}</p>
+            <p className="cd-idrow">{identity(f.activity_class)} · {identity(f.region)} · {identity(f.city)}</p>
           </div>
 
           <div className="ax-surface cd-fresh">
             <span className="cd-fresh__g" aria-hidden="true">⏱</span>
-            <span>{t("f360.meta.source", "source")} <strong>{f.source}</strong> · {t("f360.meta.synced", "synced")} <bdi className="cd-idv">{f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</bdi></span>
+            <span>{t("f360.meta.source", "source")} <strong>{identity(f.source)}</strong> · {t("f360.meta.synced", "synced")} <bdi className="cd-idv">{f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</bdi></span>
           </div>
 
           <div className="ax-surface cd-riskcard">
-            <h4>{t("f360.risk.heading", "Risk — reproducible (EV-004)")}</h4>
-            <span className={`cd-riskscore ${riskTone}`}>{f.risk_score}</span>
-            <p>{t("f360.risk.band", "band")} <strong>{f.risk_band ? enumLabel(f.risk_band) : "—"}</strong> · <span className="ax-version">{f.risk_version}</span></p>
-            <p className="ax-caption">{t("f360.risk.desc", "Recomputable from stored inputs + this version; drivers per engine_settings.risk.")}</p>
+            <h4>{t("f360.risk.heading", "Risk — stored source summary (EV-004)")}</h4>
+            <span className={`cd-riskscore ${riskTone}`}>{identity(f.risk_score)}</span>
+            <p>{t("f360.risk.band", "band")} <strong>{f.risk_band ? enumLabel(f.risk_band) : "—"}</strong> · <span className="ax-version">{identity(f.risk_version)}</span></p>
+            <p className="ax-caption">{t("f360.risk.desc", "Stored score, band and version from the factory source record.")}</p>
             <p className="ax-caption cd-warn">{t("f360.risk.driversUnavail", "Risk-driver breakdown and recalculation are unavailable from this route (HANDOFF_BLOCKED_RISK_DRIVERS).")}</p>
           </div>
 
           <div className="ax-surface cd-maplens">
             <h4>{t("f360.geo.heading", "Location")}</h4>
-            <p className="cd-coords"><bdi>{f.official_lat}, {f.official_lng}</bdi> <span className="ax-caption">{t("f360.id.gisOwned", "(GIS-Admin-owned, FND-007)")}</span></p>
+            <p className="cd-coords"><bdi>{identity(f.official_lat)}, {identity(f.official_lng)}</bdi> <span className="ax-caption">{t("f360.id.gisOwned", "(GIS-Admin-owned, FND-007)")}</span></p>
             <p className="ax-caption">{t("f360.geo.label", "Geofence (G-MAP):")} {f.geofence_radius_m != null
               ? <><span className="ax-numeric">{f.geofence_radius_m} {t("f360.geo.unitM", "m")}</span> — {t("f360.geo.override", "per-factory override")}</>
-              : t("f360.geo.engineDefault", "engine default (engine_settings gis.geofence_default_radius_m)")}</p>
-            <div className="cd-mapph"><span className="cd-mapph__t">{t("f360.geo.mapUnavail", "Map and boundary are unavailable — no map provider or authoritative boundary polygon is proven for this route (HANDOFF_BLOCKED_MAP / HANDOFF_BLOCKED_BOUNDARY).")}</span></div>
+              : t("f360.geo.engineDefault", "No per-factory override is recorded; the engine default is not read on this route.")}</p>
+            <div className="cd-mapph"><span className="cd-mapph__t">{t("f360.geo.mapUnavail", "Map, boundary and coordinate-conflict handling are unavailable — no map provider, authoritative boundary polygon or conflict-resolution path is proven for this route (HANDOFF_BLOCKED_MAP / HANDOFF_BLOCKED_BOUNDARY / HANDOFF_BLOCKED_COORDINATE_CONFLICT).")}</span></div>
           </div>
         </aside>
 
@@ -347,7 +347,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
           {/* Documents — metadata registry; per-section failure isolation (SB11) */}
           <section id="documents" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.docs.heading", "Documents — metadata registry (SB11)")}</h4>
-            {dErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.docs.err", "Couldn’t load documents.")}</strong> {mapFactoryError(dErr, "load")} — {retry}.</div></div>}
+            {dErr && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.docs.err", "Couldn’t load documents.")}</strong> {mapFactoryError(dErr, "load")} — <a className="ax-link" href={`/factories/${f.id}#documents`}>{retry}</a>.</div></div>}
             {!dErr && docsEmpty && (
               <div className="ax-state ax-state--inline"><span className="ax-state__glyph">📄</span>
                 <h4>{t("f360.docs.empty.title", "No documents recorded")}</h4>
@@ -371,19 +371,19 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
                     );
                   })}</tbody>
                 </table></div>
-                <div className="cd-docrow is-unavail" role="status">
-                  <span className="cd-docrow__icon" aria-hidden="true">📄</span>
-                  <span>{t("f360.docs.previewUnavail", "Document preview is unavailable — this surface exposes metadata and storage path only, with no signed URL, viewer or custody retrieval (HANDOFF_BLOCKED_DOCUMENT_VIEWER).")}</span>
-                </div>
               </>
             )}
-            <AddDocumentForm factoryId={f.id} strings={docStrings} />
+            {!dErr && <div className="cd-docrow is-unavail" role="status">
+              <span className="cd-docrow__icon" aria-hidden="true">📄</span>
+              <span>{t("f360.docs.previewUnavail", "Document preview is unavailable — this surface exposes metadata and storage path only, with no signed URL, viewer or custody retrieval (HANDOFF_BLOCKED_DOCUMENT_VIEWER).")}</span>
+            </div>}
+            {!dErr && <AddDocumentForm factoryId={f.id} strings={docStrings} />}
           </section>
 
           {/* Representatives — contact fields masked for leadership only (HANDOFF_BLOCKED_ROLE) */}
           <section id="representatives" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
-            {rErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — {retry}.</div></div>}
+            {rErr && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — <a className="ax-link" href={`/factories/${f.id}#representatives`}>{retry}</a>.</div></div>}
             {!rErr && repsEmpty && (
               <div className="ax-state ax-state--inline"><span className="ax-state__glyph">👤</span>
                 <h4>{t("f360.reps.empty.title", "No representatives on record")}</h4>
@@ -409,13 +409,13 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
                 ))}</tbody>
               </table></div>
             )}
-            <AddRepresentativeForm factoryId={f.id} strings={repStrings} />
+            {!rErr && <AddRepresentativeForm factoryId={f.id} strings={repStrings} />}
           </section>
 
           {/* Products & HS codes (maintainable, W3 / M07-006) */}
           <section id="products" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.prod.heading", "Products & HS codes (M07-006)")}</h4>
-            {pErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.prod.err", "Couldn’t load products.")}</strong> {mapFactoryError(pErr, "load")} — {retry}.</div></div>}
+            {pErr && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.prod.err", "Couldn’t load products.")}</strong> {mapFactoryError(pErr, "load")} — <a className="ax-link" href={`/factories/${f.id}#products`}>{retry}</a>.</div></div>}
             {!pErr && productsEmpty && (
               <div className="ax-state ax-state--inline"><span className="ax-state__glyph">📦</span>
                 <h4>{t("f360.prod.empty.title", "No products recorded")}</h4>
@@ -435,13 +435,13 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
                 ))}</tbody>
               </table></div>
             )}
-            <AddProductForm factoryId={f.id} strings={productStrings} />
+            {!pErr && <AddProductForm factoryId={f.id} strings={productStrings} />}
           </section>
 
           {/* Raw materials (maintainable, W3 / M07-007) */}
           <section id="materials" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.mat.heading", "Raw materials (M07-007)")}</h4>
-            {mErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.mat.err", "Couldn’t load materials.")}</strong> {mapFactoryError(mErr, "load")} — {retry}.</div></div>}
+            {mErr && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.mat.err", "Couldn’t load materials.")}</strong> {mapFactoryError(mErr, "load")} — <a className="ax-link" href={`/factories/${f.id}#materials`}>{retry}</a>.</div></div>}
             {!mErr && materialsEmpty && (
               <div className="ax-state ax-state--inline"><span className="ax-state__glyph">🧱</span>
                 <h4>{t("f360.mat.empty.title", "No raw materials recorded")}</h4>
@@ -459,7 +459,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
                 ))}</tbody>
               </table></div>
             )}
-            <AddMaterialForm factoryId={f.id} strings={materialStrings} />
+            {!mErr && <AddMaterialForm factoryId={f.id} strings={materialStrings} />}
           </section>
 
           {/* Workforce & industrial indicators — source-owned, display-only (W3 / M07-008/009) */}

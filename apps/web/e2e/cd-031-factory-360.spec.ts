@@ -21,6 +21,8 @@ import { storageStatePath } from "./personas";
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 const PAGE = "src/app/factories/[id]/page.tsx";
 const LOADING = "src/app/factories/[id]/loading.tsx";
+const ACTIONS = "src/app/factories/[id]/actions.ts";
+const AUDIT_MIGRATION = "../../supabase/migrations/20260716120000_cd031_factory360_audit.sql";
 
 async function openFirstFactory(page: Page): Promise<boolean> {
   await page.goto("/factories");
@@ -50,6 +52,7 @@ test.describe("CD-031 source truth — HANDOFF_BLOCKED discipline, masking, isol
     const src = SRC(PAGE);
     expect(src).toMatch(/HANDOFF_BLOCKED_MAP/);
     expect(src).toMatch(/HANDOFF_BLOCKED_BOUNDARY/);
+    expect(src).toMatch(/HANDOFF_BLOCKED_COORDINATE_CONFLICT/);
     // No map/tile provider dependency was introduced for this route.
     expect(src).not.toMatch(/leaflet|mapbox|google\.maps|<Map[A-Z]?\s/);
   });
@@ -84,6 +87,18 @@ test.describe("CD-031 source truth — HANDOFF_BLOCKED discipline, masking, isol
     expect(actions).not.toMatch(/return \{ error: error\.message \}/);
   });
 
+  test("legs 12-14 — mutation audit coverage is canonical and representative activation is factory-bound", () => {
+    const migration = SRC(AUDIT_MIGRATION);
+    for (const table of ["factory_documents", "factory_representatives", "factory_products", "factory_materials"]) {
+      expect(migration).toContain(`'${table}'`);
+    }
+    expect(migration).toContain("execute function public.audit_row_change()");
+
+    const actions = SRC(ACTIONS);
+    expect(actions).toMatch(/\.eq\("id", rep_id\)\s*\.eq\("factory_id", factory_id\)/);
+    expect(actions).toMatch(/if \(!updated\) return \{ error:/);
+  });
+
   test("no invented staleness threshold — freshness is a plain fact, not a computed rule", () => {
     const src = SRC(PAGE);
     expect(src).not.toMatch(/is-stale/);
@@ -93,6 +108,7 @@ test.describe("CD-031 source truth — HANDOFF_BLOCKED discipline, masking, isol
   test("S11 — a route-level loading skeleton exists for /factories/:id", () => {
     const loading = SRC(LOADING);
     expect(loading).toMatch(/aria-busy="true"/);
+    expect(loading).toMatch(/role="status"/);
   });
 });
 
@@ -122,7 +138,7 @@ test.describe("CD-031 planner — live dossier (legs 1,2,3,5-10,13,14,18)", () =
     const opened = await openFirstFactory(page);
     test.skip(!opened, "no factories in this environment to open");
     await expect(page.getByText(/Risk-driver breakdown and recalculation are unavailable/i)).toBeVisible();
-    await expect(page.getByText(/Map and boundary are unavailable/i)).toBeVisible();
+    await expect(page.getByText(/Map, boundary and coordinate-conflict handling are unavailable/i)).toBeVisible();
   });
 
   test("leg 5-9 — the timeline renders as an ordered list (list-equivalent, not a decorative graph)", async ({ page }) => {
@@ -142,5 +158,20 @@ test.describe("CD-031 accessibility / RTL (leg 18, DSG-A11Y-001)", () => {
     test.skip(!opened, "no factories in this environment to open");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.locator("bdi").first()).toBeVisible();
+  });
+
+  test("light/dark at 1440, 1024 and 412 — dossier stays within the viewport", async ({ page }) => {
+    for (const width of [1440, 1024, 412]) {
+      await page.setViewportSize({ width, height: width === 412 ? 900 : 820 });
+      for (const theme of ["light", "dark"] as const) {
+        await page.goto("/factories");
+        await page.evaluate(mode => localStorage.setItem("saqeel-theme", mode), theme);
+        const opened = await openFirstFactory(page);
+        test.skip(!opened, "no factories in this environment to open");
+        await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(overflow, `${theme} theme at ${width}px`).toBeLessThanOrEqual(1);
+      }
+    }
   });
 });

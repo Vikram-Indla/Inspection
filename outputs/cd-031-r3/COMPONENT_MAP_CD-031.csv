@@ -1,0 +1,11 @@
+component,role,before_responsibility,disposition,after_responsibility,protected_behavior,rtl_theme,tests,rollback,blocker
+Shell,Grouped role-scoped shell,nav+topbar+drawer,PRESERVE,unchanged,brand+groups+topbar+collapse+skip+drawer,full,shell-navigation.spec,revert,none
+Factory360Page,/factories/:id route,tabbed dossier (7 ?tab= panes),UPDATE,provenance-led dossier + Spatial Case Timeline; per-section isolation preserved,RLS read + read-only source identity,full,cd-031 spec,revert,none
+SpatialCaseTimeline,Signature interaction,none,CREATE,source-labelled list-equivalent timeline linking location/inspection/finding/review/risk,never fabricated path/causal link; unavailable shown,full,cd-031 spec,delete,HANDOFF_BLOCKED_MAP/RISK_DRIVERS
+ProvenanceAside,Identity+freshness+risk,top-bar only,UPDATE,persistent provenance aside (source/sync/risk version),read-only source-owned identity,full,cd-031 spec,revert,none
+MapLens,Location/boundary,coordinates inline text,CREATE,coordinates+geofence facts + explicit unavailable map/boundary,no fabricated map/boundary,full,cd-031 spec,delete,HANDOFF_BLOCKED_MAP/BOUNDARY/COORDINATE_CONFLICT
+RiskCard,Risk summary,inline score/band/version,UPDATE,source-labelled summary; drivers unavailable,no fabricated drivers/recalc,full,cd-031 spec,revert,HANDOFF_BLOCKED_RISK_DRIVERS
+DocumentsSection,Documents,metadata table + add form,UPDATE,metadata + explicit preview-unavailable,storage_path null; no viewer,full,cd-031 spec,revert,HANDOFF_BLOCKED_DOCUMENT_VIEWER
+AddControls,Mutations,add doc/rep/product/material + toggle,PRESERVE,unchanged; exact role outcomes verified server-side,RLS 0017,n/a,cd-031 spec,revert,HANDOFF_BLOCKED (exact role)
+MaskedSection,Role masking,per-query error only,CREATE,role-masked/unavailable treatment,data minimisation,full,cd-031 spec,delete,HANDOFF_BLOCKED_ROLE
+CD031Spec,E2E evidence,none,CREATE,timeline/provenance/service-fail/map/boundary/masked/high-risk/doc/no-history/not-found/a11y/RTL/theme/responsive,n/a,n/a,delete,HANDOFF_BLOCKED_BASELINE

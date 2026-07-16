@@ -114,3 +114,13 @@ handoff, and sponsor runtime acceptance are resolved.
 ## Exit conditions
 
 Do not call G11/G12 released: provider adapters, credential rotation, region confirmation, image rights/geographic-source confirmation and sponsor runtime acceptance remain open. After the full regression and migration certification are complete, commit the audited tree, merge to `main`, verify the remote SHA, and delete only branches proven represented by this baseline.
+
+## 2026-07-16 CD-031 supersession note
+
+The historical missing-map/preflight finding above is superseded by
+`CODEX_AUDIT_CD-031_R3_2026-07-16.md`. The exact R3 package is now imported and
+hash-verified, and the DEC-012 row-level wiring verdict is **PASS**. CD-031
+closure remains upstream-blocked for the exact leadership contact-privacy rule
+and provider/source-backed risk, evidence, map/boundary/coordinate-conflict and
+document-viewer/custody rows. This supersession does not change this historical
+task's disposition or declare G11/G12 released.

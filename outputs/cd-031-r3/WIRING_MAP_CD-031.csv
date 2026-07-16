@@ -1,0 +1,21 @@
+leg_id,ui_trigger_state,client_component,route_action,guard,canonical_transition,table_rpc_provider,rls_role,audit,notification,success,negative_partial,test,runtime_evidence,status
+1,Factory identity read,Factory360Page,/factories/:id,RLS scope,none,factories,RLS,read,none,identity renders,not-found distinct,cd-031 spec,page.tsx,PASS
+2,Registry provenance/freshness,ProvenanceAside,/factories/:id,none,none,factories.source/source_synced_at,RLS,none,none,source+sync shown,no invented threshold,cd-031 spec,page.tsx,PASS
+3,Risk summary/version,RiskCard,/factories/:id,none,none,factories.risk_score/band/version,RLS,none,none,source-labelled summary,—,cd-031 spec,page.tsx,PASS
+4,Risk drivers,RiskCard,/factories/:id,none,none,none,n/a,none,none,shown unavailable,no breakdown/recalc,cd-031 spec,none in route,HANDOFF_BLOCKED_RISK_DRIVERS
+5,Visits/inspection history,Factory360Page,/factories/:id,none,none,visits->inspections,RLS,read,none,sorted history,—,cd-031 spec,page.tsx,PASS
+6,Submission-version history,Factory360Page,/factories/:id,none,none,submission_versions,RLS,read,none,versions per inspection,—,cd-031 spec,page.tsx,PASS
+7,Violations,Factory360Page,/factories/:id,none,none,violations+violation_codes,RLS,read,none,violation codes,—,cd-031 spec,page.tsx,PASS
+8,Corrective actions,Factory360Page,/factories/:id,none,none,action_forms,RLS,read,none,owner/due/status,—,cd-031 spec,page.tsx,PASS
+9,Reviews,Factory360Page,/factories/:id,none,none,reviews,RLS,read,none,decision/status,—,cd-031 spec,page.tsx,PASS
+10,Document metadata,DocumentsSection,/factories/:id,none,none,factory_documents,RLS,read,none,metadata table,per-section error isolated,cd-031 spec,page.tsx,PASS
+11,Document preview,DocumentsSection,/factories/:id,none,none,storage_path (null),n/a,none,none,shown unavailable,no signed URL/viewer,cd-031 spec,actions.ts storage_path:null,HANDOFF_BLOCKED_DOCUMENT_VIEWER
+12,Representative read/add/activation,AddControls,addRepresentative/toggleRepresentativeActive,server,none,factory_representatives,RLS,audit,none,roster read+add+toggle,exact role outcome unproven,cd-031 spec,actions.ts,PASS reads; HANDOFF_BLOCKED_ROLE exact
+13,Product read/add,AddControls,addFactoryProduct,server RLS fprod_write,none,factory_products,planner/ops/compliance_admin,audit,none,add product,RLS-restricted (0017),cd-031 spec,actions.ts,PASS
+14,Material read/add,AddControls,addFactoryMaterial,server RLS fmat_write,none,factory_materials,planner/ops/compliance_admin,audit,none,add material,RLS-restricted (0017),cd-031 spec,actions.ts,PASS
+15,Map/boundary,MapLens,/factories/:id,none,none,official_lat/lng+geofence,n/a,none,none,coordinates+geofence facts,map/boundary unavailable,cd-031 spec,fields only,HANDOFF_BLOCKED_MAP / HANDOFF_BLOCKED_BOUNDARY
+16,Coordinate conflict,MapLens,/factories/:id,none,none,none,n/a,none,none,flagged conflict,no resolution path,cd-031 spec,none in route,HANDOFF_BLOCKED_COORDINATE_CONFLICT
+17,Section-specific service failure,Factory360Page,/factories/:id,none,none,per-query,RLS,none,none,section banner; dossier usable,never whole-record failure,cd-031 spec,page.tsx per-query errors,PASS
+18,Role masking/RLS/not-found + Arabic/theme/responsive/keyboard/SR,Shell+SpatialCaseTimeline,/factories/:id,RLS,none,factories,RLS,none,none,masked sections; parity,unauthorized/not-found distinct; RTL/theme/1024/412; timeline list-equivalent+reduced-motion,cd-031 spec,astryx.css,PASS + HANDOFF_BLOCKED_ROLE exact
+4b,Risk-version history,SpatialCaseTimeline,/factories/:id,none,none,factories.risk_version (current only),n/a,none,none,current version shown as sole fact,no historical risk observations read; explicit unavailable timeline row,cd-031 spec,page.tsx reads current risk_version only,HANDOFF_BLOCKED_RISK_HISTORY
+4c,Evidence timeline,SpatialCaseTimeline,/factories/:id,none,none,none (no evidence query),n/a,none,none,shown unavailable,no inspection-evidence query/signed URL/derivation; per-event evidence not placed on timeline,cd-031 spec,no evidence read in route,HANDOFF_BLOCKED_EVIDENCE_TIMELINE

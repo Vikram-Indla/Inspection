@@ -13,6 +13,17 @@
 | G11-G12-REL-EV-007 | Acceptance/audit reconciliation | `AC_LEDGER.csv`; `AC_LEDGER_SUMMARY.md`; `validate_audit_reconciliation.py` | Captured — 493 = 15 verified_live / 460 implemented / 18 partial / 0 missing |
 | G11-G12-REL-EV-008 | Production deployment target discovery | repository and connected environment | BLOCKED — no configured hosting/deployment/rollback target; no provider invented |
 
+## CD-031 R3 Factory 360 reconciliation — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| CD031-R3-EV-001 | Exact R3 authority package and row-level DEC-012 audit | `../../outputs/cd-031-r3/`; `CODEX_AUDIT_CD-031_R3_2026-07-16.md` | Captured — package hashes verified; wiring verdict **PASS**; slice remains upstream-blocked |
+| CD031-R3-EV-002 | Factory 360 canonical append-only audit correction | `../../supabase/migrations/20260716120000_cd031_factory360_audit.sql` | Captured — four canonical triggers live-verified; hardened repeat is idempotent and rejects conflicting same-name definitions |
+| CD031-R3-EV-003 | Local rollback database contract | `../../supabase/tests/0031_cd031_factory360_contract.sql` | Captured — four Planner writes + activation + five audit rows; Inspector writes denied; rollback PASS |
+| CD031-R3-EV-004 | Authenticated live rollback probe | `../../supabase/tests/0031_cd031_live_release_probe.sql` | Captured — same positive/negative/audit contract PASS; rollback; zero residual rows |
+| CD031-R3-EV-005 | Focused responsive/runtime regression | `../../apps/web/e2e/cd-031-factory-360.spec.ts` | Captured — **18/18 PASS** across source, live Planner, RTL, theme and 1440/1024/412 widths |
+| CD031-R3-EV-006 | Complete rebuilt continuation inventory | `../../apps/web/e2e/`; `../../apps/web/playwright.config.ts` | Captured — **293/293 PASS**: 4 setup + 289 application in 12 shards; 0 failed/skipped/excluded |
+
 ## CD-006 through CD-011 backend completion — 2026-07-15
 
 2026-07-16 reconciliation: live object state and the integrated candidate are

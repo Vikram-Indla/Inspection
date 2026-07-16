@@ -1,5 +1,41 @@
 # Current State
 
+## 2026-07-16 UPDATE 89 — CD-031 R3 wiring audit PASS; write path hardened
+
+The exact CD-031 R3 authority package was recovered and imported under
+`outputs/cd-031-r3/`; its wiring map, manifest, preflight, state matrix,
+component map, checklist and handoff hashes match the source package. A fresh
+DEC-012 audit compared every row (1–18 plus 4b/4c) with the current route,
+permissions, schema and tests. **Wiring verdict: PASS.** The audit remains
+honest about upstream product boundaries: risk drivers/history, evidence
+timeline, document viewer/custody, map/boundary/coordinate-conflict behavior and
+the exact leadership contact-privacy policy are not authorized sources and stay
+explicitly unavailable. CD-031 is therefore not sponsor-runtime accepted or
+closed.
+
+The audit found and repaired five concrete defects: the four Factory 360 write
+tables now use the canonical append-only audit trigger; representative
+activation is constrained to the submitted factory; nullable risk/source/
+identity/location facts no longer imply false values; degraded sections expose
+accessible reload actions and withhold unsafe writes; loading and responsive
+states have explicit status semantics. A rollback-only local database contract
+proved Planner writes for documents, representatives, products and materials,
+representative activation, five audit events and Inspector denials. The same
+authenticated contract passed against live Supabase after the idempotent audit
+trigger correction, rolled back, and left **zero residual rows**. Focused
+Playwright is **18/18 PASS** across source truth, live Planner runtime,
+English/Arabic RTL, light/dark and 1440/1024/412 widths. The rebuilt continuation
+candidate then passed the complete inventory at **293/293**: four authenticated
+persona setups plus 289 application checks in 12 deterministic shards, with
+zero failures, skips or exclusions. Evidence:
+`evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md`.
+
+This removes the stale missing-map/preflight blocker. It does not change the
+493-row acceptance ledger or close G11/G12: exact privacy/provider authority,
+the remaining 18 upstream partials, credential/migration-history/region/asset
+boundaries, sponsor runtime acceptance and a configured production deployment
+target remain open.
+
 ## 2026-07-16 UPDATE 88 — release candidate 291/291; live seams closed safely
 
 `TASK-G11-G12-RELEASE-001` completed the sponsor-authorized subset without

@@ -62,7 +62,7 @@ def main() -> int:
         fail("no authoritative wiring maps found")
 
     session = json.loads(SESSION.read_text())
-    if session.get("last_session") != "2026-07-16-g11-g12-release-001":
+    if session.get("last_session") != "2026-07-16-cd031-r3-audit-hardening":
         fail(f"unexpected last_session {session.get('last_session')!r}")
     if not session.get("sessions"):
         fail("session ledger has no sessions")
