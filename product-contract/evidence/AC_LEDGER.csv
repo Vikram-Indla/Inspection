@@ -89,7 +89,7 @@ MVP1-M02-035,AC-0087,Visit Planning - Management,Web Portal,implemented,"[audit]
 MVP1-M02-036,AC-0088,Visit Planning - Management,Web Portal,implemented,[audit] Per-plan progress buckets completed/published/returned/cancelled/expired + bar.
 MVP1-M02-037,AC-0089,Visit Planning - Management,Web Portal,implemented,[audit] Relative utilization bars; no absolute threshold invented (honest ENG-05).
 MVP1-M02-038,AC-0090,Visit Planning - Management,Web Portal,implemented,[audit] CalendarBoard Day/Week/Month views in visit management.
-MVP1-M02-039,AC-0091,Visit Planning - Management,Web Portal,partial,[audit] Ops map shows factory+visit pins but no inspector locations/region-select; not wired into visit mgmt.
+MVP1-M02-039,AC-0091,Visit Planning - Management,Web Portal,verified_live,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] RLS-scoped Visit map, region filter, factory/Visit pins and list equivalent rendered through the planner persona against the live project on 2026-07-16."
 MVP1-M02-040,AC-0092,Visit Planning - Management,Web Portal,implemented,[audit] Duplicate/overlap/missing-location detected at publish; capacity relative (no threshold).
 MVP1-M02-041,AC-0093,Visit Planning - Management,Web Portal,implemented,[audit] Notifications for publish/return/cancel/reassign/reschedule/expiry all present.
 MVP1-M02-042,AC-0094,Visit Planning - Management,Web Portal,implemented,"[audit] Attachments upload/list/soft-remove, signed URLs, audit trigger."
@@ -123,19 +123,19 @@ MVP1-M04-008,AC-0121,Physical Inspection Execution,iPad / Inspector Workspace,im
 MVP1-M04-009,AC-0122,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
 MVP1-M04-010,AC-0123,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
 MVP1-M04-011,AC-0124,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
-MVP1-M04-012,AC-0125,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Only constant device_id 'field-pwa' stamped on geo_events; OS version and app version are not captured
+MVP1-M04-012,AC-0125,Physical Inspection Execution,iPad / Inspector Workspace,verified_live,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Inspector live replay persisted privacy-minimized device_id, os_version and app_version on the journey session through normal RLS on 2026-07-16."
 MVP1-M04-013,AC-0126,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
 MVP1-M04-014,AC-0127,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
 MVP1-M04-015,AC-0128,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
 MVP1-M04-016,AC-0129,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
-MVP1-M04-017,AC-0130,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Distance-to-destination + progress% computed; ETA is never calculated or displayed
+MVP1-M04-017,AC-0130,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Traffic-aware Google Routes adapter, initial ETA request, neutral unavailable/no-route states and journey persistence are wired; the deployment has no provider API key and is not claimed provider-live."
 MVP1-M04-018,AC-0131,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
 MVP1-M04-019,AC-0132,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup journey: validate/session/device+GPS capture/nav/STM-OPS transition — BUILT
 MVP1-M04-020,AC-0133,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
 MVP1-M04-021,AC-0134,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
 MVP1-M04-022,AC-0135,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
 MVP1-M04-023,AC-0136,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
-MVP1-M04-024,AC-0137,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Straight-line distance/progress only; ETA and road-network routing are not computed or refreshed
+MVP1-M04-024,AC-0137,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] ETA refresh runs from live journey telemetry at the governed cadence and persists latest distance/time/provider facts; provider-unavailable behavior rendered live without fabricated ETA.
 MVP1-M04-025,AC-0138,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
 MVP1-M04-026,AC-0139,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
 MVP1-M04-027,AC-0140,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup continuous tracking: telemetry/deviation/status/offline-queue/exception — BUILT
@@ -154,9 +154,9 @@ MVP1-M04-039,AC-0152,Physical Inspection Execution,iPad / Inspector Workspace,im
 MVP1-M04-040,AC-0153,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
 MVP1-M04-041,AC-0154,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
 MVP1-M04-042,AC-0155,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
-MVP1-M04-043,AC-0156,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Outside-fence check-in blocks + records an exception; no override-confirm dialog that continues on actual coords
+MVP1-M04-043,AC-0156,Physical Inspection Execution,iPad / Inspector Workspace,verified_live,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Outside-fence live replay proved mandatory reason, actual 1,112m-away coordinates, 5m accuracy, immutable override event, guarded arrived transition and visit audit on 2026-07-16."
 MVP1-M04-044,AC-0157,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
-MVP1-M04-045,AC-0158,Physical Inspection Execution,iPad / Inspector Workspace,partial,[Codex pending live proof 2026-07-16] Arrival photo/comment capture UI and visit-linked offline outbox are implemented; live evidence_note and arrival replay still require database proof.
+MVP1-M04-045,AC-0158,Physical Inspection Execution,iPad / Inspector Workspace,verified_live,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Live inspector replay persisted arrival-linked comment evidence through normal RLS with SHA-256, synced_at and one private evidence object; independent database reconciliation passed on 2026-07-16."
 MVP1-M04-046,AC-0159,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
 MVP1-M04-047,AC-0160,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
 MVP1-M04-048,AC-0161,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
@@ -410,9 +410,9 @@ MVP1-M06-052,AC-0408,Level 2 Review & Resubmission,Web Portal,implemented,[audit
 MVP1-M06-053,AC-0409,Level 2 Review & Resubmission,Web Portal,implemented,[audit] Version diff table computes before/after answer changes between selected versions.
 MVP1-M07-001,AC-0410,Factory 360,Web Portal,implemented,[audit] factories/[id] loads dossier: identity/license#/CR#/visits/inspections/violations/risk; penalties+timeline thin
 MVP1-M07-002,AC-0411,Factory 360,Web Portal,implemented,[audit] overview tab renders name/CR/license/activity/region/city; status/stage/sector absent (no source columns)
-MVP1-M07-003,AC-0412,Factory 360,Web Portal,partial,[audit] only license_number+activity shown; no license status/stage/issue/expiry/holder columns or section
-MVP1-M07-004,AC-0413,Factory 360,Web Portal,partial,[audit] only cr_number shown; no legal_name/cr_status/owner columns; no CR detail block
-MVP1-M07-005,AC-0414,Factory 360,Web Portal,partial,"[audit] overview shows official_lat/lng as text only; no map, pins, observed locations or GPS override history"
+MVP1-M07-003,AC-0412,Factory 360,Web Portal,implemented,[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-owned license status/stage/issue/expiry/holder fields exist live and Factory 360 renders source values or explicit unavailable states.
+MVP1-M07-004,AC-0413,Factory 360,Web Portal,implemented,[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-owned CR legal-name/status/owner fields exist live and Factory 360 renders source values or explicit unavailable states.
+MVP1-M07-005,AC-0414,Factory 360,Web Portal,implemented,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Factory 360 spatial map renders official, observed and override facts without changing official master coordinates; registered-factory live browser path passed."
 MVP1-M07-006,AC-0415,Factory 360,Web Portal,implemented,"[audit] products tab: name/HS/unit/capacity/primary, add form, empty+error states (M07-006)"
 MVP1-M07-007,AC-0416,Factory 360,Web Portal,implemented,"[audit] materials tab: name/source/HS, add form, empty+error states (M07-007)"
 MVP1-M07-008,AC-0417,Factory 360,Web Portal,implemented,"[audit] workforce tab: employees_total/saudi + Saudization%, source-owned read-only (M07-008)"
@@ -421,12 +421,12 @@ MVP1-M07-010,AC-0419,Factory 360,Web Portal,implemented,[audit] history tab list
 MVP1-M07-011,AC-0420,Factory 360,Web Portal,implemented,[audit] history shows inspection status+versions+report link; inspector/result columns not surfaced
 MVP1-M07-012,AC-0421,Factory 360,Web Portal,implemented,[audit] history shows violation codes + action_forms(status/owner/due); issued-penalty notices not surfaced
 MVP1-M07-013,AC-0422,Factory 360,Web Portal,implemented,[audit] action_forms render status/owner/due in history; source-violation link + evidence ref thin
-MVP1-M07-014,AC-0423,Factory 360,Web Portal,partial,"[audit] only current risk_score+version shown; no score_history table, drivers or recalc-date leg"
-MVP1-M07-015,AC-0424,Factory 360,Web Portal,partial,[audit] only current risk_band shown; no risk drivers/history tables; not linked to related violations
+MVP1-M07-014,AC-0423,Factory 360,Web Portal,implemented,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Versioned append-only risk snapshots, accepted-model driver contributions and current projection are live; Factory 360 risk-history rendering passed against a registered factory."
+MVP1-M07-015,AC-0424,Factory 360,Web Portal,implemented,[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Reproducible risk driver/history schema and related-violation rendering are live; normalized driver/weight validation and least-privilege RPC grants were reconciled.
 MVP1-M07-016,AC-0425,Factory 360,Web Portal,implemented,[audit] history has real /reports/inspection/[id] link; docs show storage_path text; penalty-notice download thin
-MVP1-M07-017,AC-0426,Factory 360,Web Portal,partial,[audit] no event timeline component; history table substitutes partially; no sync/penalty/score-update events
+MVP1-M07-017,AC-0426,Factory 360,Web Portal,implemented,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-labelled Factory timeline combines Visit, inspection, review, evidence, penalty, sync and risk events with explicit unavailable legacy facts; live dossier path passed."
 MVP1-M07-018,AC-0427,Factory 360,Web Portal,implemented,[audit] /factories/[id] page exists; ops/SLA/risk rows link into it (M07-018)
-MVP1-M07-019,AC-0428,Factory 360,Web Portal,partial,[audit] all tabs shown to everyone; only RLS gates data; no role-based tab/document/penalty section visibility
+MVP1-M07-019,AC-0428,Factory 360,Web Portal,implemented,"[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Sensitive history, documents, contacts, evidence and penalty sections are UI-scoped and backed by live RLS; anon denial and authenticated read-only grants were independently reconciled."
 MVP1-M07-020,AC-0429,Factory 360,Web Portal,implemented,[audit] per-section error banners w/ retry (dErr/rErr/pErr/mErr) + not-found guard; partial-data honest
 MVP1-M08-001,AC-0430,Operations Center,Operations Center / Web Portal,implemented,[audit] ops page loads visits/inspectors/SLA watch/map/high-risk/notifications live (M08-001)
 MVP1-M08-002,AC-0431,Operations Center,Operations Center / Web Portal,implemented,"[audit] OpsMap Leaflet KSA pins (factory+active visit), geofence radius, href open, legend (M08-002)"

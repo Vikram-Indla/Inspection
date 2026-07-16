@@ -1,5 +1,28 @@
 # Current State
 
+## 2026-07-16 UPDATE 88 — all 19 remaining requirement rows closed
+
+The sponsor-approved `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001` is complete
+on `codex/remaining-requirements-closure`. All 19 rows previously recorded as
+partial now have production-grade source, authorization, audit, negative-path,
+runtime and evidence coverage. The live project received the forward-only
+remaining-requirements migration and passed schema, RLS/grant, arrival,
+outside-geofence override, private-evidence and audit reconciliation. CD-006
+through CD-011 authoring/runtime contracts are live-backed and browser-verified;
+the governed Visit map, routing adapter boundary, device facts, registry facts,
+risk snapshots, penalties and Factory 360 history are wired. The Google Routes
+credential is intentionally absent in this environment, so the provider adapter
+renders an honest unavailable state and provider delivery is not claimed.
+
+The machine-generated acceptance ledger now reconciles **493 rows = 18
+verified_live / 475 implemented / 0 partial / 0 missing**. Typecheck and the
+production build pass. The complete 286-test inventory passed in bounded
+browser-runner shards: **283 passed / 3 intentional skips / 0 product failures**;
+the opt-in destructive arrival/override replays were separately executed and
+reconciled live. G11 remains open only for release-hardening boundaries
+(credential rotation, region decision and provider credentials/adapters); those
+boundaries no longer make any of the 493 MVP1 requirement rows partial.
+
 ## 2026-07-15 UPDATE 87 — CD-006 through CD-011 backend source completion
 
 The sponsor-authorized Admin Control Plane backend completion is source-ready on

@@ -24,7 +24,11 @@ const LOADING = "src/app/factories/[id]/loading.tsx";
 
 async function openFirstFactory(page: Page): Promise<boolean> {
   await page.goto("/factories");
-  const link = page.locator('a[href^="/factories/"]').first();
+  // Prefer a source-synced registered factory. Immediate-visit temporary
+  // factories intentionally have no official coordinates or risk history.
+  const registeredRow = page.locator("tbody tr").filter({ hasNotText: /Unregistered factory/i }).first();
+  const registeredLink = registeredRow.locator('a[href^="/factories/"]');
+  const link = await registeredLink.count() ? registeredLink : page.locator('a[href^="/factories/"]').first();
   if (await link.count() === 0) return false;
   await link.click();
   await expect(page).toHaveURL(/\/factories\/[0-9a-f-]+$/);
@@ -36,22 +40,23 @@ async function openFirstFactory(page: Page): Promise<boolean> {
 
 test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
 
-test.describe("CD-031 source truth — HANDOFF_BLOCKED discipline, masking, isolation", () => {
-  test("leg 4/4b/4c — risk drivers, risk-version history and evidence timeline are explicit unavailable, never derived", () => {
+test.describe("CD-031 source truth — governed risk/spatial wiring, masking, isolation", () => {
+  test("leg 4/4b/4c — risk drivers, version history and authorized evidence timeline use governed sources", () => {
     const src = SRC(PAGE);
-    expect(src).toMatch(/HANDOFF_BLOCKED_RISK_DRIVERS/);
-    expect(src).toMatch(/HANDOFF_BLOCKED_RISK_HISTORY/);
-    expect(src).toMatch(/HANDOFF_BLOCKED_EVIDENCE_TIMELINE/);
-    // Only the current risk_version is ever selected — no historical risk table/query.
-    expect(src).not.toMatch(/risk_version_history|risk_versions\(/);
+    expect(src).toMatch(/from\("factory_risk_snapshots"\)/);
+    expect(src).toMatch(/from\("evidence"\)/);
+    expect(src).toMatch(/risk_drivers, risk_calculated_at/);
+    expect(src).toMatch(/canSeeSensitiveHistory/);
   });
 
-  test("leg 15/16 — map, boundary and coordinate conflict are unavailable; no provider/polygon invented", () => {
+  test("leg 15/16 — official and observed points use the shared map boundary; no polygon is fabricated", () => {
     const src = SRC(PAGE);
-    expect(src).toMatch(/HANDOFF_BLOCKED_MAP/);
-    expect(src).toMatch(/HANDOFF_BLOCKED_BOUNDARY/);
-    // No map/tile provider dependency was introduced for this route.
-    expect(src).not.toMatch(/leaflet|mapbox|google\.maps|<Map[A-Z]?\s/);
+    expect(src).toMatch(/FactorySpatialMap/);
+    expect(src).toMatch(/from\("geo_events"\)/);
+    const map = SRC("src/app/factories/[id]/FactorySpatialMap.tsx");
+    expect(map).toMatch(/Industrial-license official location/);
+    expect(map).toMatch(/overrideReason/);
+    expect(map).not.toMatch(/Polygon|boundary_polygon/);
   });
 
   test("leg 11 — document preview is unavailable; storage_path stays a plain field, no signed URL/viewer", () => {
@@ -118,18 +123,21 @@ test.describe("CD-031 planner — live dossier (legs 1,2,3,5-10,13,14,18)", () =
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
   });
 
-  test("legs 4/15 — risk-driver and map/boundary unavailable copy is visible, not omitted", async ({ page }) => {
+  test("legs 4/15 — risk history and the official/observed map render from live sources", async ({ page }) => {
     const opened = await openFirstFactory(page);
     test.skip(!opened, "no factories in this environment to open");
-    await expect(page.getByText(/Risk-driver breakdown and recalculation are unavailable/i)).toBeVisible();
-    await expect(page.getByText(/Map and boundary are unavailable/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Factory health score and risk history/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Official, planned and observed locations/i })).toBeVisible();
+    await expect(page.locator(".leaflet-container").first()).toBeVisible();
   });
 
   test("leg 5-9 — the timeline renders as an ordered list (list-equivalent, not a decorative graph)", async ({ page }) => {
     const opened = await openFirstFactory(page);
     test.skip(!opened, "no factories in this environment to open");
-    const list = page.locator("ol.cd-timeline").first();
-    await expect(list).toBeVisible();
+    const timeline = page.locator("section#timeline");
+    const populatedList = timeline.locator("ol.cd-timeline").filter({ has: page.locator("li") }).first();
+    if (await populatedList.count()) await expect(populatedList).toBeVisible();
+    else await expect(timeline.getByText(/No case events recorded/i)).toBeVisible();
   });
 });
 

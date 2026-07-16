@@ -104,10 +104,80 @@ Verification:
 - `remaining-requirements-backend.spec.ts` — **3/3 PASS**.
 - `git diff --check` — PASS.
 
-Live disposition:
+### Live migration and reconciliation
 
-- No acceptance row is upgraded by this checkpoint. The linked Supabase
-  migrations, persona/RLS checks, risk-RPC negative paths, arrival replay and
-  live route/dossier browser checks remain mandatory.
-- Clipboard credential classification returned `empty`; no secret was printed
-  or logged and no database mutation was attempted.
+- The authorized management path applied
+  `20260716210000_remaining_requirements_backend.sql` to project
+  `iiozvqntawxfwbgffzqu`. The project has no migration-history table, so the
+  preflight and postflight used schema/object probes rather than fabricating
+  migration ledger entries.
+- Postflight proved: risk RPC present; 155 risk snapshot rows; penalty notices
+  present; three scoped audit triggers; ten registry fields; three journey
+  fields; private evidence bucket; and three evidence object policies.
+- Least-privilege probes proved anon cannot execute the risk RPC, read risk
+  snapshots or call the storage helper; authenticated users may read snapshots
+  and call the helper but cannot insert snapshots directly. Authenticated RPC
+  execution remains role-guarded inside the function.
+- Existing scores were preserved as explicitly labelled legacy snapshots. The
+  155 rows with unavailable historical drivers remain labelled as such; no
+  driver history or calculation timestamp was invented.
+
+### Live browser and durable-row evidence
+
+- Production build and typecheck: PASS.
+- Registered-factory Factory 360 map/risk focused run: **5/5 PASS** including
+  authenticated setup. The old test assertions that expected those sections to
+  be unavailable were removed because this approved slice implements them.
+- Planner `/visits/map` and inspector migrated startup reads: **6/6 PASS**
+  including persona setup.
+- Arrival replay through the ordinary inspector session/RLS path: **5/5 PASS**
+  including setup. Independent database reconciliation for Visit
+  `b6b524c9-14f9-4b74-ae7c-ddb65580acad` proved `arrived` state, arrived journey,
+  device keys `app_version/device_id/os_version`, 5m inside check-in, device
+  timestamp, synced arrival-linked evidence, SHA-256, one private stored object
+  and three Visit audit records.
+- Outside-fence negative replay for Visit
+  `e00f3359-61af-4eff-9aec-5e51fc195181` proved the confirmation action remains
+  disabled without a reason; after the governed reason was supplied it stored
+  the actual `25.0798000,45.5722000` observation, 5m accuracy, explicit
+  `override` result, immutable reason, arrived journey/Visit state and three
+  Visit audit records. The observed point was 1,112m from a 150m fence.
+- Destructive live replays are retained as opt-in tests under
+  `RUN_G11_LIVE_REPLAY=1`; ordinary full regression runs do not reuse consumed
+  fixed Visit fixtures.
+- The deployment does not expose `GOOGLE_MAPS_ROUTES_API_KEY`. The production
+  adapter and persistence wiring are complete, and the live UI truthfully
+  rendered `routing provider unavailable`; provider delivery is not claimed.
+
+### Slice 2 disposition
+
+All thirteen remaining historical partial rows now have complete source and
+backend/data wiring. Four rows with exact live end-to-end evidence move to
+`verified_live` (`M02-039`, `M04-012`, `M04-043`, `M04-045`); the provider-bound
+ETA rows and Factory 360 breadth rows move to `implemented` without overstating
+provider or legacy-data availability. The regenerated ledger is now **18
+verified_live / 475 implemented / 0 partial / 0 missing** across all 493 rows.
+
+## Final regression reconciliation
+
+- Typecheck: PASS.
+- Production build: PASS; `/visits/map` and `/api/routing/eta` compile as
+  dynamic production routes.
+- The original 286-test monolithic run reached **281 passed / 3 intentional
+  skips** before the local Chromium headless process crashed (`SIGSEGV`). The
+  two interrupted checks passed 2/2 in a fresh process.
+- The same complete inventory was then split into bounded runner shards to
+  avoid the Chromium lifetime crash. Shard 1 passed **90/90**. Shard 2 exposed
+  and closed two test defects rather than product defects: a loading-skeleton
+  race before measuring CD-010/011 targets, and a stale fixed count of ten
+  high-risk factories after the live risk migration. Both corrected checks
+  pass against current live data. Shard 3 exited successfully with **66 pass /
+  1 intentional data-dependent skip / 1 infrastructure-flaky retry**.
+- Shard 4 initially encountered a host DNS outage for
+  `iiozvqntawxfwbgffzqu.supabase.co`; after resolution recovered, the complete
+  shard passed **66/66** with the two intentionally opt-in destructive replays
+  skipped because their live evidence had already been captured separately.
+- Unique inventory reconciliation across the four bounded shards: **283 passed /
+  3 intentional skips / 0 product failures** across all 286 discovered tests.
+  The three skips are the pre-existing data-dependent Arabic comparison and the
+  two already-certified destructive live replays.

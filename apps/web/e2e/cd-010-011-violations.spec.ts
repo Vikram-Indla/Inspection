@@ -132,6 +132,7 @@ test.describe("CD-010/011 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", 
 
   test("mode-tab targets are at least 44px (spec §10)", async ({ page }) => {
     await page.goto("/admin/violations");
+    await expect(page.getByRole("tablist", { name: /Catalogue view/i })).toBeVisible();
     const links = page.locator(".ax-segmented a.ax-btn");
     const n = await links.count();
     expect(n).toBeGreaterThan(0);

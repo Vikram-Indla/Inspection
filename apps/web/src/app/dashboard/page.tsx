@@ -106,7 +106,20 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       visits(planner_lat, planner_lng, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
     `).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
     collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
-    collect<AuditRow>((from, to) => sb.from("audit_events").select("id, object_type, object_id, action, requirement_refs, occurred_at").order("occurred_at", { ascending: false }).range(from, to) as unknown as PromiseLike<RowPage<AuditRow>>),
+    // The UI renders only the 12 newest lifecycle events. Fetch a bounded,
+    // newest-first candidate set for the four lifecycle object types it can
+    // display, then metrics applies the exact visible-object/date filter. This
+    // avoids paging through the entire append-only audit history forever.
+    (async () => {
+      const result = await sb.from("audit_events")
+        .select("id, object_type, object_id, action, requirement_refs, occurred_at")
+        .in("object_type", ["visits", "inspections", "reviews", "violations"])
+        .gte("occurred_at", new Date(scope.fromMs).toISOString())
+        .lte("occurred_at", new Date(scope.toMs).toISOString())
+        .order("occurred_at", { ascending: false })
+        .limit(1000);
+      return { rows: (result.data ?? []) as AuditRow[], failed: !!result.error };
+    })(),
     sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
   ]);
 

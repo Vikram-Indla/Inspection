@@ -1,10 +1,20 @@
 # Evidence Status
 
+## TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001 — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| G11-RR-EV-001 | All 19 row source/live/runtime/negative reconciliation | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md` | Captured — PASS; 493 rows, 0 partial, 0 missing |
+| G11-RR-EV-002 | Machine-generated acceptance ledger and summary | `AC_LEDGER.csv`; `AC_LEDGER_SUMMARY.md` | Captured — 18 verified_live / 475 implemented |
+| G11-RR-EV-003 | Live arrival, device, private evidence, storage and audit replay | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md` | Captured — PASS; ordinary inspector/RLS path |
+| G11-RR-EV-004 | Outside-geofence reason/coordinates/override negative replay | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md` | Captured — PASS; 1,112m outside 150m fence |
+| G11-RR-EV-005 | Typecheck, production build and complete browser inventory | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md` | Captured — 283 pass / 3 intentional skips / 0 product failures |
+
 ## CD-006 through CD-011 backend completion — 2026-07-15
 
 | ID | Item | File | Status |
 |---|---|---|---|
-| CD006-011-BE-EV-001 | Requirement reconciliation, implementation, security boundaries, test results, live boundary and frontend handoff | `CD006_CD011_BACKEND_COMPLETION_2026-07-15.md` | Captured — source complete; typecheck/build PASS; focused 7/7; live migration approval/application pending |
+| CD006-011-BE-EV-001 | Requirement reconciliation, implementation, security boundaries, test results, live boundary and frontend handoff | `CD006_CD011_BACKEND_COMPLETION_2026-07-15.md` | Superseded by G11-RR-EV-001 — live migration and authenticated verification complete |
 
 G4 evidence: **CAPTURED** — 2026-07-11 (branch `setup/g4-memory-continuity`).
 

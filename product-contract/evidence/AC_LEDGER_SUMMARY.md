@@ -4,9 +4,9 @@ Total governed rows: **493**
 
 | Status | Rows | % |
 |---|---|---|
-| verified_live | 14 | 2% |
-| implemented | 466 | 94% |
-| partial | 13 | 2% |
+| verified_live | 18 | 3% |
+| implemented | 475 | 96% |
+| partial | 0 | 0% |
 | missing | 0 | 0% |
 
 ## By module
@@ -15,13 +15,13 @@ Total governed rows: **493**
 |---|---|---|---|---|
 | Compliance Configuration | 1 | 29 | 0 | 0 |
 | FND (foundation) | 0 | 15 | 0 | 0 |
-| Factory 360 | 0 | 13 | 7 | 0 |
+| Factory 360 | 0 | 20 | 0 | 0 |
 | Inspection Execution - Pre-Start | 0 | 15 | 0 | 0 |
 | Level 2 Review & Resubmission | 0 | 53 | 0 | 0 |
 | Operations Center | 0 | 19 | 0 | 0 |
-| Physical Inspection Execution | 0 | 218 | 5 | 0 |
+| Physical Inspection Execution | 3 | 220 | 0 | 0 |
 | Virtual Inspection Execution | 0 | 20 | 0 | 0 |
-| Visit Planning - Management | 1 | 44 | 1 | 0 |
+| Visit Planning - Management | 2 | 44 | 0 | 0 |
 | Visit Planning - Planning | 12 | 40 | 0 | 0 |
 
 **Reading rule:** only `verified_live` counts as done-done. `implemented` means the code path exists

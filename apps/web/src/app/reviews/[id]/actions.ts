@@ -47,7 +47,7 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
   // the DecisionPanel immediately; this is also the correct race-winner outcome.
   if (existing) {
     revalidatePath(`/reviews/${inspection_id}`);
-    return { started: true };
+    redirect(`/reviews/${inspection_id}`);
   }
 
   // RBAC-011 — reviewer/ops only. RLS reviews_insert is the real boundary; a
@@ -73,7 +73,7 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
   }
   revalidatePath(`/reviews/${inspection_id}`);
   revalidatePath("/reviews");
-  return { started: true };
+  redirect(`/reviews/${inspection_id}`);
 }
 
 export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionResult> {

@@ -1,6 +1,5 @@
 "use client";
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { startReview, type DecisionResult } from "./actions";
 
 // CD-028 leg 5 — explicit, reviewer-intentful start. Replaces the old
@@ -14,25 +13,10 @@ export type StartReviewStrings = {
 export default function StartReview({ inspectionId, submissionVersionId, strings }: {
   inspectionId: string; submissionVersionId: string; strings: StartReviewStrings;
 }) {
-  const router = useRouter();
   const [state, formAction, pending] = useActionState<DecisionResult, FormData>(startReview, {});
-  // startReview mutates the server-rendered workspace. A server action's
-  // revalidatePath invalidates the cache but does not replace the current RSC
-  // tree, so explicitly refresh after the committed action resolves. Without
-  // this, the button remains in its pending "Starting…" state while the
-  // database is already under_review.
-  useEffect(() => {
-    if (state.started) router.refresh();
-  }, [router, state.started]);
   return (
     <form
       action={formAction}
-      onSubmit={() => {
-        // The action commits the transition before the RSC response is
-        // available. Refresh once the write has had a chance to commit so the
-        // same workspace cannot remain on a stale pending form.
-        window.setTimeout(() => window.location.reload(), 2_000);
-      }}
       className="ax-surface ax-panel"
       style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}
     >

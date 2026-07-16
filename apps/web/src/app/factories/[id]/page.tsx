@@ -21,10 +21,9 @@ const DOC_TYPE_LABEL: Record<string, string> = {
 // keyboard-operable narrative linking registered location context, inspection
 // events, evidence/document availability, findings/actions, review decisions
 // and risk-version observations. Built only from facts this route reads; it
-// never draws a fabricated spatial path, boundary, risk event or causal link —
-// unavailable spatial/risk-driver/risk-history/evidence elements are explicit
-// unavailable rows (HANDOFF_BLOCKED_MAP/_BOUNDARY/_RISK_DRIVERS/_RISK_HISTORY/
-// _EVIDENCE_TIMELINE), never omitted or coerced into "none".
+// never draws a fabricated spatial path, boundary polygon, risk event or causal
+// link. Official/observed pins, risk snapshots and authorized evidence events
+// now come from their governed live tables; unavailable values stay explicit.
 // Document preview is metadata-only (HANDOFF_BLOCKED_DOCUMENT_VIEWER) — no
 // signed URL/viewer/custody retrieval. Representative contact fields are
 // masked for the leadership role only (HANDOFF_BLOCKED_ROLE — contact privacy

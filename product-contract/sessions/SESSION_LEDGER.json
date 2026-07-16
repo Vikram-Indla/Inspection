@@ -2116,9 +2116,29 @@
       "commit_sha": "c4c5701 (implementation), 4af67c0 (Supabase privilege hardening), 5111c46 (documentation handoff)",
       "next_task": "Obtain exact live-migration approval, apply and reconcile it, then integrate and verify the parallel frontend implementation",
       "resume_prompt": "Read product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md; do not claim live completion until the exact migration is approved/applied and authenticated frontend suites pass."
+    },
+    {
+      "session_id": "2026-07-16-g11-remaining-requirements-closure",
+      "started_at": "2026-07-16",
+      "ended_at": "2026-07-16",
+      "branch": "codex/remaining-requirements-closure",
+      "task_id": "TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001",
+      "gate": "G11 production-readiness requirement closure",
+      "requirements": ["MVP1-M02-039", "MVP1-M04-012", "MVP1-M04-017", "MVP1-M04-024", "MVP1-M04-043", "MVP1-M04-045", "MVP1-M07-003", "MVP1-M07-004", "MVP1-M07-005", "MVP1-M07-014", "MVP1-M07-015", "MVP1-M07-017", "MVP1-M07-019", "MVP1-M09-001", "MVP1-M09-005", "MVP1-M09-018", "MVP1-M09-021", "MVP1-M09-022", "MVP1-M09-024"],
+      "acceptance_ids": ["AC-0091", "AC-0125", "AC-0130", "AC-0137", "AC-0156", "AC-0158", "AC-0412", "AC-0413", "AC-0414", "AC-0423", "AC-0424", "AC-0426", "AC-0428", "AC-0449", "AC-0453", "AC-0466", "AC-0469", "AC-0470", "AC-0472"],
+      "screens": ["SCR-ADM-010", "SCR-ADM-011", "SCR-ADM-020", "SCR-ADM-030", "SCR-ADM-031", "SCR-ADM-060", "SCR-ADM-070", "SCR-ADM-090", "SCR-WEB-200", "SCR-WEB-210", "SCR-WEB-400", "SCR-IPAD-620", "SCR-IPAD-630", "SCR-IPAD-640"],
+      "engines": ["ENG-01", "ENG-02", "ENG-03", "ENG-04", "ENG-06", "ENG-07", "ENG-10", "ENG-11", "ENG-12"],
+      "files_changed": ["supabase/migrations/20260716210000_remaining_requirements_backend.sql", "apps/web/src/app/visits/map", "apps/web/src/app/api/routing/eta/route.ts", "apps/web/src/app/field/[visitId]", "apps/web/src/app/factories/[id]", "apps/web/e2e/remaining-requirements-backend.spec.ts", "product-contract/evidence/AC_LEDGER.csv", "product-contract/evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md", "product-contract/CURRENT_STATE.md", "product-contract/acceptance/ACCEPTANCE_STATUS.md", "product-contract/evidence/EVIDENCE_STATUS.md", "product-contract/GATE_STATUS.md", "product-contract/execution/CURRENT_SLICE.yaml", "product-contract/execution/WORK_QUEUE.yaml", "product-contract/sessions/SESSION_LEDGER.json"],
+      "tests": ["typecheck PASS", "production build PASS", "live migration/RLS/grant reconciliation PASS", "inside-fence arrival replay PASS", "outside-fence mandatory-reason override replay PASS", "complete 286-test inventory: 283 PASS / 3 intentional skips / 0 product failures"],
+      "evidence": ["product-contract/evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md", "product-contract/evidence/AC_LEDGER.csv", "product-contract/evidence/AC_LEDGER_SUMMARY.md"],
+      "decisions": ["Use accepted DEC-001 risk weights/bands with reproducible snapshots", "Keep provider-specific routing behind an adapter and render honest unavailable state without credentials", "Preserve official factory coordinates and store observed/override points separately", "Use bounded Playwright shards after a reproducible long-lived Chromium runner crash"],
+      "blockers": ["G11 credential rotation, region decision and configured provider delivery remain release-hardening work", "G12 deployment/release remains open"],
+      "commit_sha": "pending final closure commit",
+      "next_task": "Integrate the committed closure branch through the approved main/release workflow, then complete G11/G12 hardening",
+      "resume_prompt": "Read product-contract/evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md and CURRENT_STATE UPDATE 88. All 493 requirement rows are closed; do not reopen them for remaining release-hardening boundaries."
     }
   ],
-  "last_session": "2026-07-15-cd006-011-backend-completion",
+  "last_session": "2026-07-16-g11-remaining-requirements-closure",
   "rules": {
     "append_only": true,
     "required_fields": [

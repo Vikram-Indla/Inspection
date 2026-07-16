@@ -528,6 +528,19 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-table th[aria-sort="ascending"]::after { content: " ↑"; }
 .ax-table th[aria-sort="descending"]::after { content: " ↓"; }
 .ax-table td { padding-block: var(--ax-space-150); padding-inline: var(--ax-space-200); border-block-end: 1px solid var(--ax-color-border); vertical-align: middle; }
+@media (max-width: 640px) {
+  .cd-compare-table { table-layout: fixed; min-inline-size: 0; }
+  .cd-compare-table th, .cd-compare-table td {
+    min-inline-size: 0;
+    padding-inline: var(--ax-space-050);
+    overflow-wrap: anywhere;
+  }
+  .cd-compare-table .ax-lozenge {
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
 .ax-table tbody tr:last-child td { border-block-end: 0; }
 .ax-table tbody tr:hover { background: var(--ax-color-neutral-tint); }
 .ax-table tbody tr[aria-selected="true"] { background: var(--ax-color-primary-tint); }

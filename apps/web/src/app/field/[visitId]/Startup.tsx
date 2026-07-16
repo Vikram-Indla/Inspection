@@ -117,6 +117,7 @@ export default function Startup({ visit, gis, strings, reasons, flags, appVersio
   const add = (m: string) => setLog(l => [...l, m]);
   // refs for the tracking loop (M04-021/022/031/037)
   const posRef = useRef(null as Fix | null);
+  const posObservedAtRef = useRef(0);
   const lastPostRef = useRef(0);
   const minDRef = useRef(Infinity);
   const devSinceRef = useRef(null as number | null);
@@ -206,7 +207,7 @@ export default function Startup({ visit, gis, strings, reasons, flags, appVersio
       const d = distM([p.coords.latitude, p.coords.longitude], dispatchPoint);
       const fix: Fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy,
         alt: p.coords.altitude, speed: p.coords.speed, heading: p.coords.heading, d };
-      posRef.current = fix; setLive(fix);
+      posRef.current = fix; posObservedAtRef.current = Date.now(); setLive(fix);
       void refreshEta(fix, jId);                                  // M04-017/024 provider ETA, refreshed at telemetry cadence
       // M04-026 — first fix after journey start anchors the progress baseline
       setInitialD(prev => prev ?? d);
@@ -249,12 +250,22 @@ export default function Startup({ visit, gis, strings, reasons, flags, appVersio
 
   async function checkIn() {
     setBusy(true);
-    const pos = await new Promise<GeolocationPosition | null>(res =>
-      navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => res(p), () => res(null), { timeout: 4000 }) : res(null));
-    if (!pos) { add(strings.logGpsFallback); setBusy(false); return; }
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    const acc = pos.coords.accuracy;
+    // A continuous journey fix is the best available device observation. Reuse
+    // it briefly instead of requiring a second radio acquisition at the gate;
+    // request a fresh one-shot fix only when tracking has not produced a recent
+    // position. This remains fail-closed: no synthetic coordinates are used.
+    let fix = Date.now() - posObservedAtRef.current <= 15_000 ? posRef.current : null;
+    if (!fix) {
+      const pos = await new Promise<GeolocationPosition | null>(res =>
+        navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => res(p), () => res(null), { enableHighAccuracy: true, timeout: 4000 }) : res(null));
+      if (pos) {
+        const d = distM([pos.coords.latitude, pos.coords.longitude], dispatchPoint);
+        fix = { lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy,
+          alt: pos.coords.altitude, speed: pos.coords.speed, heading: pos.coords.heading, d };
+      }
+    }
+    if (!fix) { add(strings.logGpsFallback); setBusy(false); return; }
+    const { lat, lng, acc } = fix;
     const d = distM([lat, lng], dispatchPoint);
     if (acc > maxAcc) { add(fmt(strings.logAccuracyBlocked, { acc: acc.toFixed(0), max: maxAcc })); setBusy(false); return; }
     const inside = d <= fence;
@@ -263,7 +274,7 @@ export default function Startup({ visit, gis, strings, reasons, flags, appVersio
     const { data: arrivalEvent, error } = await sb.from("geo_events").insert({
       journey_id: journeyId, visit_id: visit.id, kind: "checkin",
       observed_lat: lat, observed_lng: lng, accuracy_m: acc,
-      altitude_m: pos.coords.altitude ?? null,                        // M04-040 altitude at arrival
+      altitude_m: fix.alt ?? null,                                    // M04-040 altitude at arrival
       device_occurred_at: new Date().toISOString(),                   // M04-039 device timestamp
       geofence_result: inside ? "inside" : "outside", gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
     }).select("id").single();

@@ -84,9 +84,7 @@ REMEDIATION_OVERRIDES = {
     "MVP1-M08-016": "Operations dashboard renders the governed operational scorecard with labelled denominators and no invented values.",
 }
 
-PARTIAL_OVERRIDES = {
-    "MVP1-M04-045": "Arrival photo/comment capture UI and visit-linked offline outbox are implemented; live evidence_note and arrival replay still require database proof.",
-}
+PARTIAL_OVERRIDES = {}
 
 LIVE_OVERRIDES = {
     "MVP1-M01-043": "Immediate visit Planner/Inspector workspace verified in the focused live suite.",
@@ -105,6 +103,19 @@ LIVE_OVERRIDES = {
 # Sponsor-authorized G11 closure wave. These rows supersede the development
 # audit only after production-build/browser evidence was captured.
 CLOSURE_OVERRIDES = {
+    "MVP1-M02-039": ("verified_live", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] RLS-scoped Visit map, region filter, factory/Visit pins and list equivalent rendered through the planner persona against the live project on 2026-07-16."),
+    "MVP1-M04-012": ("verified_live", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Inspector live replay persisted privacy-minimized device_id, os_version and app_version on the journey session through normal RLS on 2026-07-16."),
+    "MVP1-M04-017": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Traffic-aware Google Routes adapter, initial ETA request, neutral unavailable/no-route states and journey persistence are wired; the deployment has no provider API key and is not claimed provider-live."),
+    "MVP1-M04-024": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] ETA refresh runs from live journey telemetry at the governed cadence and persists latest distance/time/provider facts; provider-unavailable behavior rendered live without fabricated ETA."),
+    "MVP1-M04-043": ("verified_live", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Outside-fence live replay proved mandatory reason, actual 1,112m-away coordinates, 5m accuracy, immutable override event, guarded arrived transition and visit audit on 2026-07-16."),
+    "MVP1-M04-045": ("verified_live", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Live inspector replay persisted arrival-linked comment evidence through normal RLS with SHA-256, synced_at and one private evidence object; independent database reconciliation passed on 2026-07-16."),
+    "MVP1-M07-003": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-owned license status/stage/issue/expiry/holder fields exist live and Factory 360 renders source values or explicit unavailable states."),
+    "MVP1-M07-004": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-owned CR legal-name/status/owner fields exist live and Factory 360 renders source values or explicit unavailable states."),
+    "MVP1-M07-005": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Factory 360 spatial map renders official, observed and override facts without changing official master coordinates; registered-factory live browser path passed."),
+    "MVP1-M07-014": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Versioned append-only risk snapshots, accepted-model driver contributions and current projection are live; Factory 360 risk-history rendering passed against a registered factory."),
+    "MVP1-M07-015": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Reproducible risk driver/history schema and related-violation rendering are live; normalized driver/weight validation and least-privilege RPC grants were reconciled."),
+    "MVP1-M07-017": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-labelled Factory timeline combines Visit, inspection, review, evidence, penalty, sync and risk events with explicit unavailable legacy facts; live dossier path passed."),
+    "MVP1-M07-019": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Sensitive history, documents, contacts, evidence and penalty sections are UI-scoped and backed by live RLS; anon denial and authenticated read-only grants were independently reconciled."),
     "MVP1-M09-001": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Governed effective dates, private attachments, draft edit, successor/deactivation lifecycle, lineage, scoped audit and maker-checker publish are wired; M09 focused production-browser inventory 49/49 PASS on 2026-07-16."),
     "MVP1-M09-005": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Package authoring supports inherited/none/photo/video/document/comment evidence rules with governed validation and runtime projection; M09 focused inventory 49/49 PASS."),
     "MVP1-M09-018": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Per-item required, optional and conditional relationship rules are authorable, validated, frozen in package versions and consumed by field runtime; M09 focused inventory 49/49 PASS."),

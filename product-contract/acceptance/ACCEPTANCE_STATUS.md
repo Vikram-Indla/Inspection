@@ -1,13 +1,28 @@
 # Acceptance Status
 
+## TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001 — 2026-07-16
+
+- AC-0091, AC-0125, AC-0130, AC-0137, AC-0156, AC-0158, AC-0412,
+  AC-0413, AC-0414, AC-0423, AC-0424, AC-0426, AC-0428, AC-0449,
+  AC-0453, AC-0466, AC-0469, AC-0470 and AC-0472: **PASS**.
+- Live-verified rows: M02-039, M04-012, M04-043 and M04-045. The other
+  historically partial rows are implemented and runtime-verified without
+  overstating unavailable provider delivery or unavailable legacy driver data.
+- Ledger reconciliation: **493 total = 18 verified_live / 475 implemented /
+  0 partial / 0 missing**.
+- Typecheck and production build pass. Complete browser inventory: **283 passed /
+  3 intentional skips / 0 product failures**; live arrival and outside-fence
+  negative replays pass separately through ordinary RLS paths. Exact evidence:
+  `../evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md`.
+- This closes the 19-row requirement task. It does not declare G11 hardening or
+  G12 release complete, and it does not claim Google Routes delivery while the
+  deployment credential is absent.
+
 ## CD-006 through CD-011 backend completion — 2026-07-15
 
-- AC-0449, AC-0453, AC-0466, AC-0469, AC-0470 and AC-0472: **BACKEND
-  IMPLEMENTED / LOCAL VERIFICATION PASS / LIVE VERIFICATION PENDING**.
-- Typecheck and production build pass; focused backend contract suite 7/7 pass.
-- This is not frontend or sponsor runtime acceptance. The forward migration
-  `20260715200000_cd006_011_backend_completion.sql` requires explicit approval,
-  governed live application, reconciliation, and authenticated browser proof.
+- Superseded by the sponsor-approved 2026-07-16 closure above: the six rows are
+  **PASS**, their authoritative forward migrations are live, and authenticated
+  browser verification is complete.
 - Exact evidence: `../evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md`.
 
 G4 acceptance: **PASS** (cloud-verifiable) — 2026-07-11.

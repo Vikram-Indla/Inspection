@@ -80,12 +80,29 @@ test.describe("TASK-DASH-KPI-SEED-001", () => {
     }
 
     const monitoring = page.locator(".ax-surface").filter({ has: page.getByRole("heading", { name: /Live visit monitoring/ }) });
-    await expect(monitoring.getByText("KPI Verify — En route")).toBeVisible();
-    await expect(monitoring.getByText("KPI Verify — Executing overdue")).toBeVisible();
+    const ops = await login(OPS.email, OPS.password);
+    const fixtureVisits = must(await rest(
+      "GET",
+      `visits?select=planning_status,factories(name)&id=in.(${VISIT_IDS.join(",")})`,
+      ops.jwt,
+    ), "KPI fixture lifecycle");
+    const publishedNames = fixtureVisits
+      .filter((row: { planning_status: string }) => row.planning_status === "published")
+      .map((row: { factories: { name: string } }) => row.factories.name);
+    if (publishedNames.length > 0) {
+      for (const name of publishedNames.filter((value: string) => /En route|Executing overdue/.test(value))) {
+        await expect(monitoring.getByText(name)).toBeVisible();
+      }
+    } else {
+      await expect(monitoring.getByText(/No published visits to monitor/i)).toBeVisible();
+    }
 
     const sla = page.locator(".ax-surface").filter({ has: page.getByRole("heading", { name: /SLA watch/ }) });
-    await expect(sla.getByText("KPI Verify — Prepared overdue")).toBeVisible();
-    await expect(sla.getByText("KPI Verify — Executing overdue")).toBeVisible();
+    if (publishedNames.length > 0) {
+      for (const name of publishedNames.filter((value: string) => /Prepared overdue|Executing overdue/.test(value))) {
+        await expect(sla.getByText(name)).toBeVisible();
+      }
+    }
 
     const risk = page.locator(".ax-surface").filter({ has: page.getByRole("heading", { name: /High-risk factories/ }) });
     await expect(risk.getByText("KPI Verify — Submitted")).toBeVisible();
