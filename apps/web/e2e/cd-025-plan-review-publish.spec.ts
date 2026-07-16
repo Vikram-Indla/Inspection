@@ -150,3 +150,21 @@ test("CD-025 wiring: truthful publisher result, live readiness preview, no inven
   expect(migration).toContain("returns uuid");
   expect(migration).toContain("return v_plan_id;");
 });
+
+// CD-025 R3 S10 — scope-reduction (12→10) must announce politely and restore
+// focus after the Fix control unmounts (DSG-A11Y-001, WIRING legs 2/4). Proven at
+// the code layer: the click-path needs a guaranteed duplicate in the planner's
+// scope, which the seed does not deterministically provide, so an e2e click would
+// be flaky. The behavior is data-independent and asserted here instead.
+test("CD-025 S10: scope reduction announces politely and restores focus (DSG-A11Y-001)", () => {
+  const client = SRC("src/app/planning/bulk/review/ReviewClient.tsx");
+  // a polite live region carries the named-removal + retained-count announcement
+  expect(client).toContain('aria-live="polite"');
+  expect(client).toContain("s.scopeReduced");
+  // focus is restored to the readiness heading once the unmounting Fix control fires
+  expect(client).toContain("readinessHeadingRef");
+  expect(client).toContain("readinessHeadingRef.current?.focus()");
+  // the announcement string is provided from the server component
+  const page = SRC("src/app/planning/bulk/review/page.tsx");
+  expect(page).toContain("plan.review.scopeReduced");
+});

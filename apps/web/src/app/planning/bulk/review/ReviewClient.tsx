@@ -27,7 +27,7 @@ export type ReviewStrings = {
   // phases
   loading: string; loadingNote: string; stagedBanner: string; stagedSub: string;
   unavailable: string; emptyTitle: string; emptyBody: string; backToTargeting: string;
-  scopeTitle: string; scopeBody: string;
+  scopeTitle: string; scopeBody: string; scopeReduced: string;
   // context
   method: string; freshnessPrefix: string; selected: string; retained: string; visits: string;
   assignments: string; manual: string; auto: string; packageLabel: string; visitType: string;
@@ -109,7 +109,11 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   const windowRef = useRef<HTMLInputElement>(null);
   const successHeadingRef = useRef<HTMLHeadingElement>(null);
   const failHeadingRef = useRef<HTMLHeadingElement>(null);
+  const readinessHeadingRef = useRef<HTMLHeadingElement>(null);
   const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
+  // CD-025 S10 — polite announcement + focus target for the scope-reduction (12→10)
+  // correction, whose Fix control unmounts on click (WIRING leg 2/4).
+  const [announce, setAnnounce] = useState("");
 
   // ---- load the staged selection (no persistence exists yet) ----
   useEffect(() => {
@@ -168,9 +172,17 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   }, [data, workingIds.join(","), windowStart, windowEnd]);
 
   const removeExcluded = useCallback(() => {
+    const removed = dupIds.size;
     setRemovedDups(true);
     setPicks(p => { const next = { ...p }; for (const id of dupIds) delete next[id]; return next; });
-  }, [dupIds]);
+    // S10 — announce the named removal and new retained count politely; the Fix
+    // button that triggered this is about to unmount, so focus moves in the effect.
+    setAnnounce(s.scopeReduced.replace("{removed}", String(removed)).replace("{retained}", String(nonDupIds.length)));
+  }, [dupIds, nonDupIds.length, s.scopeReduced]);
+
+  // Restore focus after the scope-reduction Fix control unmounts: land on the
+  // readiness heading so the (now recomputed) state is where focus resumes.
+  useEffect(() => { if (removedDups) readinessHeadingRef.current?.focus(); }, [removedDups]);
 
   const focusWindow = useCallback(() => windowRef.current?.focus(), []);
   const focusRow = useCallback((code?: string) => {
@@ -377,6 +389,8 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-400)" }} id="cd-main">
       <a href="#cd-publish" className="ax-link cd-skip">{s.skipToPublish}</a>
+      {/* S10 — polite scope-reduction announcement (visually hidden, does not shift layout) */}
+      <p className="ax-sr-only" role="status" aria-live="polite">{announce}</p>
 
       {/* ---- context card ---- */}
       <section className="ax-surface ax-panel">
@@ -405,7 +419,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       {/* ---- readiness rail (error summary) ---- */}
       <section className={`ax-surface ax-panel cd-panelpad cd-ready ${validating ? "" : blockers.length ? "is-blocked" : "is-clear"}`}
         role={blockers.length ? "alert" : "status"} aria-label={s.readiness}>
-        <div className="cd-sectionhead"><h3>{s.readiness}</h3></div>
+        <div className="cd-sectionhead"><h3 tabIndex={-1} ref={readinessHeadingRef}>{s.readiness}</h3></div>
         {validating ? (
           <p className="ax-caption" role="status">{s.loadingNote}</p>
         ) : blockers.length ? (
