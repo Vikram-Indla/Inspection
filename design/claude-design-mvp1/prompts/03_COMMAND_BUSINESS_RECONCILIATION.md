@@ -81,16 +81,21 @@ Report Git commit + dirty-worktree state. Never design from screenshots alone.
 
 Populated · loading · empty · **not-configured/unavailable-boundary** · validation · unauthorized · read-only · stale · degraded · partial-source-isolated · masked (leadership) · offline (n/a here) · deferred-AI placeholder.
 
-## Stop-lines — halt implementation handoff for these (do NOT design past them)
+## Stop-lines — status after schema/code verification 2026-07-16
 
-- **SL-1** Auditor `role_key` unconfirmed → nav entry stays gated placeholder.
-- **SL-2** Regional-map colour thresholds not governed → no colour banding.
-- **SL-3** CR↔license↔plant relation unverified in staging → CR/selector shell is spec-only until confirmed.
-- **SL-4** No governed Senaei **government** feed → Government Information is unavailable-boundary only.
-- **SL-5** No governed Senaei **machines** feed → Machines is OUT/unavailable-boundary.
-- **SL-6** No governed PDF export → Export is spec-only.
-- **SL-7** Inspection-cycle / inspection-year policy absent → Coverage/Uninspected-overdue stay "Not available".
-- **SL-8** Document/image **viewer** blocked (HANDOFF_BLOCKED_DOCUMENT_VIEWER) → galleries are layout + metadata only.
+Resolved against staging (`supabase/migrations`, `apps/web/src`). See `CD042_DECISION_SHEET.md`.
+
+- **SL-1 — RESOLVED.** `role_key = 'auditor'` exists (`supabase/migrations/0001_foundation.sql:360`). Wire the Auditor nav entry normally; drop the gated placeholder.
+- **SL-2 — OPEN (governance).** Regional-map colour thresholds ungoverned → greyscale/ranked default only; no colour banding. Awaits sponsor decision D1.
+- **SL-3 — RESOLVED-NO (schema gap).** Schema is flat: `factories.cr_number` + `license_number` are plain columns; no `licenses` table, no one-CR→many-licenses relation (`0001_foundation.sql:126-138`). **Do NOT design the CR-Overview-portfolio / License-Selector multi-license shell** — it has no data. Design Factory 360 as single-factory (one CR + one license). Multi-license IA is blocked pending an approved schema change (D3).
+- **SL-4 — RESOLVED-NO.** No governed government feed (`senaei` is only a provenance tag). Government Information renders as an unavailable-boundary section.
+- **SL-5 — RESOLVED-NO.** No machines/equipment source (only `factory_products`, `factory_materials`). Machines renders as unavailable-boundary / OUT.
+- **SL-6 — RESOLVED-NO.** No factory PDF export exists. Export is spec-only, gated on a build decision (D4); design the action + permission but mark unbuilt.
+- **SL-7 — OPEN (governance).** No inspection-cycle / inspection-year policy → Coverage and Uninspected-overdue stay "Not available — not configured". Awaits sponsor decision D2.
+- **SL-8 — RESOLVED-NO.** `factory_documents` is metadata-only, `storage_path` null, no signed-URL viewer. Grouped galleries are layout + metadata only.
+- **SL-9 (new) — RESOLVED-partial.** Only `penalty_mappings` (violation-code → penalty ref/range) exists; no issued penalty records with status/effective/end dates. Factory 360 Penalties shows the mapped penalty reference for a violation only — no penalty lifecycle (status/dates). Design accordingly.
+
+Design may proceed now: everything except the CR/selector shell (SL-3) is designable, with SL-2/SL-4/SL-5/SL-6/SL-7/SL-8/SL-9 surfaces rendered as explicit unavailable/not-configured/spec-only states. Only two sponsor decisions (D1, D2) and two build/schema decisions (D3, D4) remain — none block the design run.
 
 ## Saqeel language
 

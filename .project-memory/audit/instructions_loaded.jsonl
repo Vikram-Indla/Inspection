@@ -455,3 +455,7 @@
 {"time": "2026-07-15T19:33:05.759770+00:00", "session_id": "900828f3-9d84-4581-845b-63ae92a11ea5", "file_path": "/Users/vikramindla/.claude/CLAUDE.md", "memory_type": "User", "load_reason": "session_start"}
 {"time": "2026-07-15T19:33:05.759727+00:00", "session_id": "900828f3-9d84-4581-845b-63ae92a11ea5", "file_path": "/Users/vikramindla/Documents/GitHub/Inspection/CLAUDE.md", "memory_type": "Project", "load_reason": "session_start"}
 {"time": "2026-07-15T19:33:05.759805+00:00", "session_id": "900828f3-9d84-4581-845b-63ae92a11ea5", "file_path": "/Users/vikramindla/Documents/GitHub/Inspection/.claude/rules/governance.md", "memory_type": "Project", "load_reason": "session_start"}
+{"time": "2026-07-16T13:47:33.989984+00:00", "session_id": "8e0a5cf6-3a85-4653-a977-a332e17054e2", "file_path": "/Users/vikramindla/.claude/RTK.md", "memory_type": "User", "load_reason": "include"}
+{"time": "2026-07-16T13:47:33.990016+00:00", "session_id": "8e0a5cf6-3a85-4653-a977-a332e17054e2", "file_path": "/Users/vikramindla/Documents/GitHub/Inspection/CLAUDE.md", "memory_type": "Project", "load_reason": "session_start"}
+{"time": "2026-07-16T13:47:33.989981+00:00", "session_id": "8e0a5cf6-3a85-4653-a977-a332e17054e2", "file_path": "/Users/vikramindla/.claude/CLAUDE.md", "memory_type": "User", "load_reason": "session_start"}
+{"time": "2026-07-16T13:47:33.990039+00:00", "session_id": "8e0a5cf6-3a85-4653-a977-a332e17054e2", "file_path": "/Users/vikramindla/Documents/GitHub/Inspection/.claude/rules/governance.md", "memory_type": "Project", "load_reason": "session_start"}
