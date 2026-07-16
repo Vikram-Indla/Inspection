@@ -127,3 +127,38 @@ export async function markNotificationHandled(_: OpsResult, formData: FormData):
   revalidatePath("/operations");
   return { ok: true };
 }
+
+// TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — only the database RPC may
+// decide an outside-fence request. It performs RBAC-008, requester/approver
+// separation, evidence, expiry, immutable geo-event and STM-JRN-003 checks in
+// one transaction; this action never updates visits or requests directly.
+export async function decideGeoOverride(_: OpsResult, formData: FormData): Promise<OpsResult> {
+  const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { error: "Session expired — sign in again." };
+
+  const requestId = String(formData.get("request_id") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  const reason = String(formData.get("decision_reason") ?? "").trim();
+  if (!requestId || !["approved", "rejected"].includes(decision)) return { error: "Invalid override decision." };
+  if (decision === "rejected" && !reason) return { error: "A rejection reason is mandatory." };
+
+  const { data, error } = await sb.rpc("decide_geo_override", {
+    p_request: requestId,
+    p_decision: decision,
+    p_decision_reason: reason || null,
+  });
+  if (error) {
+    // Keep detailed RLS/RPC diagnostics server-side. The database has already
+    // refused the write, so the UI must not claim a decision occurred.
+    console.error("[operations decideGeoOverride]", error);
+    return { error: "The override could not be decided. It may be expired, outside your Operations scope, or no longer pending." };
+  }
+  const decided = (Array.isArray(data) ? data[0] : data) as { status?: string } | null;
+  if (decided?.status === "expired") {
+    return { error: "No decision was saved — the override expired before Operations could act." };
+  }
+  revalidatePath("/operations");
+  revalidatePath("/field");
+  return { ok: true };
+}

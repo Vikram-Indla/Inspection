@@ -19,8 +19,11 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
   // M04-057 — governed cancellation reasons (engine_settings.field, 0020 seed).
   // Reason labels are configuration data, localized from the config itself.
   const fieldCfg = (engines?.find(e => e.engine === "field")?.settings ?? {}) as
-    { cancellation_reasons?: { key: string; en: string; ar?: string }[] };
+    { cancellation_reasons?: { key: string; en: string; ar?: string }[]; geo_override_reasons?: { key: string; en: string; ar?: string }[] };
   const reasons = (fieldCfg.cancellation_reasons ?? []).map(r => ({
+    key: r.key, label: (locale === "ar" && r.ar) ? r.ar : r.en,
+  }));
+  const overrideReasons = (fieldCfg.geo_override_reasons ?? []).map(r => ({
     key: r.key, label: (locale === "ar" && r.ar) ? r.ar : r.en,
   }));
   // F3 request flags — separate tolerant read so a pending 0020 (columns not
@@ -32,6 +35,19 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     cancellationRequested: !!flagRow?.cancellation_requested,
     returnRequested: !!flagRow?.return_requested,
   };
+  // Materialize elapsed requests before reading state. The database decision
+  // guard independently checks the deadline, so this is usability/audit
+  // maintenance rather than an authorization shortcut.
+  const { error: expiryError } = await sb.rpc("expire_stale_geo_override_requests");
+  if (expiryError) console.error("[field geo override expiry]", expiryError.message);
+  // The request is an Operations workflow object. A missing forward migration
+  // degrades to no server state; it never fabricates approval in the field UI.
+  const { data: overrideRows } = await sb.from("geo_override_requests")
+    .select("id, status, expires_at, decision_event_id")
+    .eq("visit_id", visitId)
+    .order("requested_at", { ascending: false })
+    .limit(1);
+  const initialOverride = overrideRows?.[0] ?? null;
   if (!v) {
     return (
       <Shell current="/field" title={t("field.start.notFoundTitle", "Not found")}>
@@ -184,11 +200,20 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     etaAvailable: t("field.start.etaAvailable", "{minutes} min · {distance} m · updated {at}"),
     etaUnavailable: t("field.start.etaUnavailable", "routing provider unavailable — navigation remains available"),
     overrideHeading: t("field.start.overrideHeading", "Outside the planned location"),
-    overrideBody: t("field.start.overrideBody", "You are {d} m from the planned point (fence {fence} m). Confirming records the actual coordinates {lat}, {lng}, your reason and an immutable override event."),
-    overrideReason: t("field.start.overrideReason", "Override reason — mandatory"),
-    overrideConfirm: t("field.start.overrideConfirm", "Confirm and use actual coordinates"),
+    overrideBody: t("field.start.overrideBody", "You are {d} m from the planned point (fence {fence} m). Request Operations approval using the captured actual coordinates {lat}, {lng}. Check-in remains blocked until approval."),
+    overrideReason: t("field.start.overrideReason", "Explanation — mandatory"),
+    overrideReasonCode: t("field.start.overrideReasonCode", "Governed reason code — mandatory"),
+    overrideEvidence: t("field.start.overrideEvidence", "Photo evidence — mandatory unless safety/security makes capture unsafe"),
+    overrideSafetyException: t("field.start.overrideSafetyException", "Photo cannot be captured safely because of the selected safety/security condition"),
+    overrideConfirm: t("field.start.overrideConfirm", "Request Operations override"),
     overrideCancel: t("common.cancel", "Cancel"),
-    logOverrideSaved: t("field.start.logOverrideSaved", "Outside-location override confirmed and audited — actual coordinates retained (M04-043)"),
+    overridePending: t("field.start.overridePending", "Operations override pending — check-in remains blocked until an Operations Supervisor or Manager approves online."),
+    overrideQueued: t("field.start.overrideQueued", "Override request safely queued — it will be sent with its captured GPS/evidence when online. Check-in remains blocked."),
+    overrideApproved: t("field.start.overrideApproved", "Operations override approved — actual coordinates and decision are immutably recorded."),
+    overrideClosed: t("field.start.overrideClosed", "This arrival attempt has already been rejected or expired. Check-in remains blocked; return the visit or contact Operations."),
+    logOverrideQueued: t("field.start.logOverrideQueued", "Operations override requested with captured GPS/time and evidence — check-in remains blocked pending approval."),
+    logOverrideOfflineQueued: t("field.start.logOverrideOfflineQueued", "Override request queued offline with captured GPS/evidence — it cannot self-approve or unlock check-in."),
+    logOverrideEvidenceRequired: t("field.start.logOverrideEvidenceRequired", "A photo is mandatory unless the selected safety/security condition makes capture unsafe."),
     logOverrideFailed: t("field.start.logOverrideFailed", "The override could not be saved. Nothing was changed."),
     arrivalEvidenceHeading: t("field.start.arrivalEvidenceHeading", "Arrival evidence (M04-045)"),
     arrivalEvidenceCaption: t("field.start.arrivalEvidenceCaption", "Add a photo or comment. Evidence is linked to this exact arrival event and remains queued safely while offline."),
@@ -233,7 +258,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
             </p>
           </div>
         </div>
-        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} flags={flags} appVersion={packageInfo.version} />
+        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} />
       </div>
     </Shell>
   );

@@ -8,6 +8,7 @@ import {
 import { MonitoringTable, RegionCityFilter, type MonitoringStrings } from "./Monitoring";
 import OpsMap, { type OpsPin, type OpsMapStrings } from "./OpsMap";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
+import OverrideQueue, { type GeoOverrideQueueRow, type OverrideQueueStrings } from "./OverrideQueue";
 import type { MonitorRow } from "./actions";
 import type { GeoTone } from "@/components/GeoMap";
 
@@ -49,6 +50,12 @@ type FactoryRow = {
   activity_class: string | null;
 };
 type EngineRow = { engine: string; settings: Record<string, unknown> };
+type OverrideRow = {
+  id: string; visit_id: string; status: string; reason_label: string; explanation: string;
+  safety_security_exception: boolean; observed_lat: number; observed_lng: number;
+  accuracy_m: number; distance_m: number; device_occurred_at: string; requested_at: string; expires_at: string;
+  visits: { factories: { name: string } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
+};
 
 const NOTIF_TONE: Record<string, string> = {
   queued: "ax-lozenge--warning",
@@ -154,7 +161,11 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const city = typeof sp.city === "string" ? sp.city : "";
   const { t } = await useT();
   const sb = await supabaseServer();
-  const [visitsRes, geoRes, actionsRes, notifsRes, factoriesRes, engineRes, riskRes] = await Promise.all([
+  // Materialize elapsed requests before composing the actionable queue. The
+  // decision RPC also checks expiry inside its transaction.
+  const { error: overrideExpiryError } = await sb.rpc("expire_stale_geo_override_requests");
+  if (overrideExpiryError) console.error(`[operations] override expiry failed: ${overrideExpiryError.message}`);
+  const [visitsRes, geoRes, actionsRes, notifsRes, factoriesRes, engineRes, riskRes, overrideRes, overrideEvidenceRes] = await Promise.all([
     // KPI counts by operational_state span ALL visits — operational state is its own
     // domain (FND-002); filtering by planning_status here previously zeroed the cards.
     sb.from("visits")
@@ -186,6 +197,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       .not("risk_score", "is", null)
       .order("risk_score", { ascending: false })
       .limit(8),
+    // M04-043 / RBAC-008 — only Operations sees pending requests through RLS.
+    sb.from("geo_override_requests")
+      .select("id, visit_id, status, reason_label, explanation, safety_security_exception, observed_lat, observed_lng, accuracy_m, distance_m, device_occurred_at, requested_at, expires_at, visits(factories(name), assignments(profiles(full_name)))")
+      .eq("status", "pending")
+      .order("expires_at", { ascending: true }),
+    sb.from("evidence")
+      .select("linked_id, storage_path")
+      .eq("linked_type", "geo_override").eq("evidence_type", "photo"),
   ]);
 
   const loadErrors = [
@@ -196,6 +215,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     factoriesRes.error && "factory registry",
     engineRes.error && "engine settings",
     riskRes.error && "risk board",
+    overrideRes.error && "override approvals",
+    overrideEvidenceRes.error && "override evidence",
   ].filter(Boolean) as string[];
   if (visitsRes.error) console.error(`[operations] visits read failed: ${visitsRes.error.message}`);
   if (geoRes.error) console.error(`[operations] geo_events read failed: ${geoRes.error.message}`);
@@ -204,6 +225,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   if (factoriesRes.error) console.error(`[operations] factories read failed: ${factoriesRes.error.message}`);
   if (engineRes.error) console.error(`[operations] engine_settings read failed: ${engineRes.error.message}`);
   if (riskRes.error) console.error(`[operations] risk read failed: ${riskRes.error.message}`);
+  if (overrideRes.error) console.error(`[operations] override queue read failed: ${overrideRes.error.message}`);
+  if (overrideEvidenceRes.error) console.error(`[operations] override evidence read failed: ${overrideEvidenceRes.error.message}`);
 
   const visits = (visitsRes.data ?? []) as unknown as VisitRow[];
   const geo = (geoRes.data ?? []) as unknown as GeoRow[];
@@ -212,6 +235,29 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const factories = (factoriesRes.data ?? []) as unknown as FactoryRow[];
   const engines = (engineRes.data ?? []) as unknown as EngineRow[];
   const highRisk = (riskRes.data ?? []) as unknown as FactoryRow[];
+  const overrides = (overrideRes.data ?? []) as unknown as OverrideRow[];
+  const evidenceByRequest = new Map<string, number>();
+  const evidenceUrls = new Map<string, string>();
+  const overrideIds = new Set(overrides.map(row => row.id));
+  const overrideEvidence = (overrideEvidenceRes.data ?? []) as { linked_id: string; storage_path: string | null }[];
+  for (const evidence of overrideEvidence) {
+    evidenceByRequest.set(evidence.linked_id, (evidenceByRequest.get(evidence.linked_id) ?? 0) + 1);
+  }
+  await Promise.all(overrideEvidence
+    .filter(evidence => overrideIds.has(evidence.linked_id) && !!evidence.storage_path)
+    .map(async evidence => {
+      const { data: signed } = await sb.storage.from("evidence").createSignedUrl(evidence.storage_path!, 600);
+      if (signed?.signedUrl && !evidenceUrls.has(evidence.linked_id)) evidenceUrls.set(evidence.linked_id, signed.signedUrl);
+    }));
+  const overrideQueueRows: GeoOverrideQueueRow[] = overrides.map(row => ({
+    id: row.id, visit_id: row.visit_id, reason_label: row.reason_label, explanation: row.explanation,
+    safety_security_exception: row.safety_security_exception, observed_lat: Number(row.observed_lat), observed_lng: Number(row.observed_lng),
+    accuracy_m: Number(row.accuracy_m), distance_m: Number(row.distance_m), device_occurred_at: row.device_occurred_at,
+    requested_at: row.requested_at, expires_at: row.expires_at, evidence_count: evidenceByRequest.get(row.id) ?? 0,
+    evidence_url: evidenceUrls.get(row.id) ?? null,
+    factory_name: row.visits?.factories?.name ?? null,
+    inspector_name: row.visits?.assignments?.[0]?.profiles?.full_name ?? null,
+  }));
 
   const gisConf = (engines.find(e => e.engine === "gis")?.settings ?? {}) as { geofence_default_radius_m?: number };
   const slaConf = (engines.find(e => e.engine === "sla")?.settings ?? {}) as SlaConf;
@@ -324,6 +370,21 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     legendEnRoute: t("ops.map.legend.enRoute", "en route / arrived"),
     legendFactory: t("ops.map.legend.factory", "factory"),
   };
+  const overrideQueueStrings: OverrideQueueStrings = {
+    heading: t("ops.override.heading", "Geofence override approvals (M04-043)"),
+    caption: t("ops.override.caption", "Approve only the exact captured arrival attempt. The requester cannot decide; a pending request expires after 30 minutes or when the visit closes."),
+    emptyTitle: t("ops.override.empty.title", "No override approvals pending"),
+    emptyDesc: t("ops.override.empty.desc", "Outside-fence requests with their evidence appear here for Operations review."),
+    factory: t("ops.override.factory", "Factory"), inspector: t("ops.override.inspector", "Inspector"),
+    captured: t("ops.override.captured", "Captured"), accuracy: t("ops.override.accuracy", "Accuracy"),
+    distance: t("ops.override.distance", "Distance"), evidence: t("ops.override.evidence", "Photo evidence"),
+    safetyException: t("ops.override.safetyException", "Safety/security photo exception declared"), expires: t("ops.override.expires", "Expires"),
+    viewEvidence: t("ops.override.viewEvidence", "View photo"), evidenceUnavailable: t("ops.override.evidenceUnavailable", "photo link unavailable"),
+    approve: t("ops.override.approve", "Approve override"), reject: t("ops.override.reject", "Reject"),
+    rejectReason: t("ops.override.rejectReason", "Rejection reason (mandatory to reject)"),
+    deciding: t("ops.override.deciding", "Saving decision…"), decided: t("ops.override.decided", "Decision saved and the queue will refresh."),
+    failure: t("ops.override.failure", "The decision could not be saved. Nothing changed."),
+  };
 
   const slaKindLabel = (f: SlaFlag) =>
     f.kind === "overdue_start" ? t("ops.sla.overdueStart", "Overdue to start")
@@ -401,6 +462,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         ))}
       </div>
       <p className="ax-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
+
+      <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} />
 
       {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>
