@@ -3,11 +3,11 @@ items:
   - task_id: "TASK-G11-G12-RELEASE-001"
     gate: "G11 hardening / G12 release"
     priority: "P0"
-    status: "APPROVED_IN_PROGRESS"
+    status: "AUTHORIZED_SUBSET_COMPLETE_DEPLOYMENT_BLOCKED"
     owner: "Codex release implementation and QA + Sponsor decision owners"
     blocked_by: []
     blocks: ["G11 PASS", "G12 PASS", "production release claim"]
-    note: "Sponsor separately authorized live DDL, audited main promotion and production deployment on 2026-07-16. Start state: feat/admin-control-plane@330398781042 with 123 dirty entries; remote main absent; remediation inventory 276/276 PASS. Execute only versioned forward migrations and an actually configured deployment target. Eighteen non-migration provider/schema/policy/configuration partials, CD-024/CD-031 decisions, asset/geographic confirmation, region/provider configuration and credential-safe replacement remain explicit gates unless independently resolved."
+    note: "Authorized subset completed 2026-07-16 on codex/g11-g12-integration: reconciled production candidate, typecheck/build PASS, 291/291 current checks PASS with zero failed/skipped/excluded, real RTL overflow found/fixed, M04-045 arrival outbox/readback and CD-028 rollback-only concurrency negative live-proven, and required Admin/OTP objects reconciled without replaying existing DDL. Ledger is 15 verified_live / 460 implemented / 18 partial. Main promotion uses immutable tag g11-g12-release-2026-07-16 and final handoff SHA verification. Deployment remains blocked because no production hosting/rollback target exists; credential rotation, migration-history hardening, provider/region/CD-031/asset/geographic/sponsor-runtime and 18 upstream acceptance boundaries remain explicit."
   - task_id: "TASK-G11-REMEDIATION-001"
     gate: "G11 verification hardening"
     priority: "P0"
@@ -121,19 +121,19 @@ items:
   - task_id: "TASK-CD006-011-BACKEND-COMPLETION"
     gate: "G11 admin control-plane backend completion"
     priority: "P0"
-    status: "SOURCE_COMPLETE_LOCAL_PASS_LIVE_MIGRATION_APPROVAL_PENDING"
-    owner: "Codex backend + Claude Code frontend + Sponsor live approval"
-    blocked_by: ["Explicit sponsor approval to apply 20260715200000_cd006_011_backend_completion.sql", "Governed migration application and live reconciliation", "Revised authenticated CD-006..011 frontend/browser verification"]
-    blocks: ["CD-006..011 live runtime completion claim", "CD-006..011 sponsor runtime acceptance"]
-    note: "Sponsor-authorized backend source is complete on codex/cd006-011-backend-completion: AC-0449/0453/0466/0469/0470/0472 plus usage, scoped audit, deactivation, validation, RLS/audit and immutability contracts. Typecheck/build PASS; focused suite 7/7 PASS. Claude Code frontend work may proceed in a separate worktree under the ownership boundary in CD006_CD011_BACKEND_COMPLETION_2026-07-15.md. Do not claim live completion until the exact forward migration is explicitly approved, applied, reconciled, and the revised authenticated suites pass."
+    status: "INTEGRATED_LIVE_OBJECT_VERIFIED_ACCEPTANCE_AUDIT_PENDING"
+    owner: "Codex release verification + Sponsor runtime/acceptance owners"
+    blocked_by: ["Independent requirement-level write-flow audit for the six retained M09 partials", "Sponsor runtime acceptance"]
+    blocks: ["CD-006..011 full acceptance closure"]
+    note: "Reconciled into codex/g11-g12-integration. Live object-state probe confirms the versioned CD-006..011 tables/routines/grants already exist, so no DDL was replayed. Production candidate build/typecheck and the complete 291/291 inventory pass, including current CD-006..011 frontend/browser/source contracts. This closes the stale migration/application blocker but does not silently upgrade AC-0449/0453/0466/0469/0470/0472: those six M09 ledger rows remain partial pending an independent requirement-level write-flow audit and sponsor runtime acceptance."
   - task_id: "TASK-BASELINE-WIRING-AUDIT-001"
     gate: "G10 verification / G11 hardening"
     priority: "P0"
-    status: "REMEDIATION_INCOMPLETE_EXTERNAL_BLOCKERS"
+    status: "SUPERSEDED_BY_TASK-G11-G12-RELEASE-001"
     owner: "Codex"
-    blocked_by: ["Apply and replay-verify field arrival evidence column repair migration 20260715193000", "Apply and verify CD-028 one-open-review partial unique index migration 20260715130000", "Resolve the 19 AC_LEDGER partial rows at their provider/schema/policy/configuration boundaries", "Resolve CD-031 authoritative wiring-map/privacy/design-preflight handoff", "Sponsor runtime acceptance", "Clean baseline promotion and branch disposition"]
+    blocked_by: ["Resolve the 18 AC_LEDGER partial rows at their provider/schema/policy/configuration boundaries", "Resolve CD-031 authoritative wiring-map/privacy/design-preflight handoff", "Sponsor runtime acceptance"]
     blocks: ["G11/G12 release claim", "CD-024 implementation authorization"]
-    note: "Cross-slice wiring audit and remediation evidence are recorded in product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md and the dated Codex audit records. Fail-closed UI/API wiring, neutral-error sinks, auth/offline guards, CD-021/CD-022/CD-029 wiring, republish notification handling, field return/reschedule/cancellation/arrival handoffs, fail-closed arrival persistence, downstream visit-linked evidence, active Operations refresh wiring, and the CD-029 downstream golden journey are implemented and source/runtime checked. The staged bulk-review handoff now explicitly blocks client-held factory IDs that leave the caller's RLS scope; complete CD-021 verification is 24/24. The isolated golden journey now passes 9/9, including the prior CD-022 publish-timeout leg. The CD-028 unique-index migration remains versioned but not live-applied. The AC ledger generator now preserves dated Codex closures and regenerates 493 rows as 14 verified_live / 460 implemented / 19 partial / 0 missing. The latest complete no-exclusion run reached 207 passed / 1 skipped / 0 failed across 208 tests; the one skip is the expected data-dependent Arabic/RTL comparison path, and CD-041 driven verification passed live. A read-only probe shows the arrival enum live but evidence.evidence_note missing; the forward repair migration and field replay remain open. The remaining provider/policy/schema/configuration boundaries remain open. CD-024 remains BLOCKED_UPSTREAM on route/design ownership, and CD-031 remains blocked on its absent authoritative wiring map/privacy/preflight artifacts. Baseline is not complete and has not been committed, pushed, merged, deployed, or applied to main."
+    note: "Historical baseline audit preserved; current disposition is superseded by TASK-G11-G12-RELEASE-001. The reconciled candidate is 291/291 with zero failed/skipped/excluded; arrival outbox/readback and CD-028 live uniqueness negative pass; ledger is 15 verified_live / 460 implemented / 18 partial. Remaining upstream boundaries are carried by the active release task and G11/G12 records."
   - task_id: "TASK-DESIGN-CD025-R4"
     gate: "G11 controlled Web-first design"
     priority: "P0"

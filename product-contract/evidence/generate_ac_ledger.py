@@ -89,11 +89,10 @@ CLOSURE_OVERRIDES = {
 # Dated remediation can improve the evidence note without upgrading a row whose
 # live schema/provider/policy boundary is still unverified.  Keep these rows
 # partial until the external proof exists.
-PARTIAL_OVERRIDES = {
-    "MVP1-M04-045": "Arrival photo/comment capture UI and visit-linked offline outbox are implemented; the live evidence_note column is absent and arrival replay remains pending migration 20260715193000.",
-}
+PARTIAL_OVERRIDES = {}
 
 LIVE_OVERRIDES = {
+    "MVP1-M04-045": "Arrival photo/comment capture queued through the real visit-linked IndexedDB outbox and replayed to live evidence storage before an inspection existed; evidence_note and arrival linkage were read back exactly.",
     "MVP1-M01-043": "Immediate visit Planner/Inspector workspace verified in the focused live suite.",
     "MVP1-M01-044": "Registered factory search and identity-match blocker verified live.",
     "MVP1-M01-045": "Minimum manual identity and generated-label provenance verified live.",

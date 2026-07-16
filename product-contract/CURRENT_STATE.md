@@ -1,5 +1,38 @@
 # Current State
 
+## 2026-07-16 UPDATE 88 — release candidate 291/291; live seams closed safely
+
+`TASK-G11-G12-RELEASE-001` completed the sponsor-authorized subset without
+inventing a provider, policy or production target. The reconciled release branch
+`codex/g11-g12-integration` contains the full current application, the
+CD-006..011 integration and the verified remediation line. A first release
+iteration found a real 412 px Arabic/RTL Version Comparison overflow; the table
+now wraps within the field viewport while retaining table semantics. The rebuilt
+production candidate then passed **291/291** checks: four authenticated persona
+setups plus 287 application tests, with **0 failed, 0 skipped and 0 excluded**.
+Typecheck and production build also pass.
+
+Live object-state reconciliation found the arrival-evidence repair, CD-028
+one-open-review guard, integrated Admin objects/routines and OTP authorization
+already present, so no DDL was replayed. The rollback-only CD-028 SQL probe
+proved the exact duplicate-open-review rejection. The golden journey queued
+arrival evidence through the real offline outbox and read back the visit-linked
+row, exact note and null pre-inspection link, closing MVP1-M04-045 / AC-0158.
+The regenerated acceptance ledger is **493 rows = 15 verified_live / 460
+implemented / 18 partial / 0 missing**. The remote database has no migration
+history rows, so blind migration push was deliberately refused.
+
+The optimized bundle scan found no demo passwords, database URLs, PAT values,
+secret keys or non-public JWTs. Previously committed history still requires
+credential rotation once replacement values and every dependent target are
+available. The release record is
+`evidence/TASK-G11-G12-RELEASE-001.md`; promotion uses the immutable tag
+`g11-g12-release-2026-07-16` and the final handoff verifies remote-main equality.
+No configured production hosting/deployment target exists, so deployment was
+not attempted. **G10 is PASS; G11 and G12 remain OPEN** for the recorded
+credential, migration-history, provider, region, CD-031, asset/geographic,
+acceptance-partial, sponsor-runtime and production-target boundaries.
+
 ## 2026-07-16 UPDATE 87 — G11 remediation slice verified 276/276
 
 `TASK-G11-REMEDIATION-001` has reached its local engineering exit. The

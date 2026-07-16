@@ -1,9 +1,11 @@
 # Codex remaining-partial disposition — 2026-07-15
 
 This is the requirement-by-requirement disposition after the field-handoff
-remediation. `partial` is retained where the current repository cannot prove
-the missing leg without inventing policy, a provider, a source field, a route,
-or a live migration.
+remediation and the 2026-07-16 live release proof. `partial` is retained where
+the current repository cannot prove the missing leg without inventing policy,
+a provider, a source field or a route. M04-045 is no longer in this table: its
+live column, outbox replay, visit-before-inspection link and exact note readback
+were verified under TASK-G11-G12-RELEASE-001.
 
 | Requirement | Current disposition | Why it is not closed in this checkout |
 |---|---|---|
@@ -12,7 +14,6 @@ or a live migration.
 | M04-017 | BLOCKED_PROVIDER | `eta_minutes` is explicitly sourced from a routing provider in the field dictionary; no provider or fallback policy is authorized. |
 | M04-024 | BLOCKED_PROVIDER | ETA refresh and road-network travel time require the same unavailable routing provider; straight-line distance remains honestly labelled. |
 | M04-043 | BLOCKED_POLICY | Outside-fence continuation requires an approved GPS override permission/reason policy; current behavior records outside and blocks, as required by ERR-GEO-002. |
-| M04-045 | PENDING_LIVE_MIGRATION | Arrival event and photo/comment capture are implemented. The live project already exposes the `arrival` enum but not `evidence.evidence_note`; apply the idempotent repair `20260715193000_field_arrival_evidence_column_repair.sql` (or the full forward migration `20260715180000_field_arrival_evidence.sql` in migration order) and replay-test before closure. |
 | M07-003 | BLOCKED_SCHEMA | License status/stage/issue/expiry/holder fields are absent from the authoritative factory/document source used by this checkout. |
 | M07-004 | BLOCKED_SCHEMA | CR status/legal-name/owner fields are absent from the authoritative source schema. |
 | M07-005 | BLOCKED_PROVIDER_SCHEMA | Map/observed-location/GPS-override history requires a map/provider and persisted history fields not present in the current source contract. |
@@ -27,6 +28,13 @@ or a live migration.
 | M09-022 | BLOCKED_CONFIGURATION_SCOPE | Runtime `mandatory_when_visible` exists; authoring those conditions requires the same missing admin model. |
 | M09-024 | BLOCKED_CONFIGURATION_SCOPE | Explicit scoring enable/disable needs a governed package scoring field and semantics; current null weight/preset behavior is the only accepted rule. |
 
-These are not silently reclassified as complete. They remain in
+These 18 rows are not silently reclassified as complete. They remain in
 `evidence/AC_LEDGER.csv` as partial until their upstream authority exists and a
 new independent audit can verify the resulting implementation.
+
+M04-045 closure evidence: the live object-state probe found `evidence_note` and
+the `arrival` evidence-link value already present, so no DDL was replayed. The
+golden journey then queued arrival evidence through the actual offline outbox,
+replayed it, and read back one visit-linked row with `inspection_id` null and
+the exact note. This upgrades only AC-0158; it does not change any of the 18
+provider/schema/policy/configuration rows above.

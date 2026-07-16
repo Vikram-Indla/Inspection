@@ -1,6 +1,24 @@
 # Evidence Status
 
+## TASK-G11-G12-RELEASE-001 — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| G11-G12-REL-EV-001 | Release provenance, defect iterations, exact verification and blocker disposition | `TASK-G11-G12-RELEASE-001.md` | Captured — authorized subset complete; G11/G12 remain open |
+| G11-G12-REL-EV-002 | Exact production-candidate inventory | `../../apps/web/e2e/`; `../../apps/web/playwright.config.ts` | Captured — **291/291 PASS**: 4 setup + 287 application; 0 failed/skipped/excluded |
+| G11-G12-REL-EV-003 | M04-045 arrival offline replay/readback | `../../apps/web/e2e/golden-journey.spec.ts`; `../../supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql` | Captured — visit-linked before inspection, exact note persisted; no DDL replay because live object already existed |
+| G11-G12-REL-EV-004 | CD-028 one-open-review live negative | `../../supabase/tests/0028_cd028_live_release_probe.sql` | Captured — second open review rejected by exact index; transaction rolled back |
+| G11-G12-REL-EV-005 | RTL 412 px release defect repair | `../../apps/web/src/app/reviews/[id]/VersionCompare.tsx`; `../../apps/web/src/app/astryx.css` | Captured — focused PASS and affected shard **25/25 PASS** |
+| G11-G12-REL-EV-006 | Production bundle secret/artifact scan | `../../apps/web/.next/`; `../../.gitignore` | Captured — 379 files; 0 demo-password/database-URL/PAT/secret/non-public-JWT hits; historical rotation remains open |
+| G11-G12-REL-EV-007 | Acceptance/audit reconciliation | `AC_LEDGER.csv`; `AC_LEDGER_SUMMARY.md`; `validate_audit_reconciliation.py` | Captured — 493 = 15 verified_live / 460 implemented / 18 partial / 0 missing |
+| G11-G12-REL-EV-008 | Production deployment target discovery | repository and connected environment | BLOCKED — no configured hosting/deployment/rollback target; no provider invented |
+
 ## CD-006 through CD-011 backend completion — 2026-07-15
+
+2026-07-16 reconciliation: live object state and the integrated candidate are
+verified under G11-G12-REL-EV-001/002. This historical record is retained; its
+old migration-pending boundary is superseded, while the six M09 acceptance
+audits remain open.
 
 | ID | Item | File | Status |
 |---|---|---|---|

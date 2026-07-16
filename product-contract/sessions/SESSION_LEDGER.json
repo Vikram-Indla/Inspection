@@ -2848,9 +2848,122 @@
       "commit_sha": "No Codex commit; branch advanced concurrently from c6187cb41a7b to user-authored/pushed 330398781042",
       "next_task": "Resume the parent G11/G12 baseline only under its separate authorization; prioritize remaining live-migration, provider/policy and sponsor-runtime boundaries without changing main or production.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 87 and product-contract/evidence/TASK-G11-REMEDIATION-001.md. The local remediation slice is 276/276 PASS; do not reopen it without a demonstrated regression."
+    },
+    {
+      "session_id": "2026-07-16-g11-g12-release-001",
+      "started_at": "2026-07-16",
+      "ended_at": "2026-07-16",
+      "branch": "codex/g11-g12-integration",
+      "task_id": "TASK-G11-G12-RELEASE-001",
+      "gate": "G11 hardening / G12 release",
+      "requirements": [
+        "MVP1-M04-045",
+        "MVP1-M06-001..053",
+        "MVP1-M09-001..030",
+        "MVP1-FND-001..013",
+        "MVP1-INT-001..011",
+        "MVP1-SEC-001..006",
+        "MVP1-NFR-001..006",
+        "RBAC-001..014"
+      ],
+      "acceptance_ids": [
+        "AC-0158",
+        "AC-0357..AC-0409",
+        "AC-0449..AC-0478",
+        "G10 complete regression",
+        "G11 hardening evidence",
+        "G12 release and rollback evidence",
+        "DSG-A11Y-001",
+        "DSG-CODE-001"
+      ],
+      "screens": [
+        "AUTH-01..03",
+        "SCR-WEB-100..500",
+        "SCR-IPAD-600..650",
+        "SCR-VIR-700..720",
+        "SCR-ADM-001..100"
+      ],
+      "engines": [
+        "ENG-01",
+        "ENG-02",
+        "ENG-03",
+        "ENG-04",
+        "ENG-05",
+        "ENG-06",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-10",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/src/app/astryx.css",
+        "apps/web/src/app/reviews/[id]/VersionCompare.tsx",
+        "apps/web/playwright.config.ts",
+        ".gitignore and tracked generated-artifact cleanup",
+        "supabase/tests/0028_cd028_live_release_probe.sql",
+        "product-contract/evidence/generate_ac_ledger.py",
+        "product-contract/evidence/AC_LEDGER.csv",
+        "product-contract/evidence/AC_LEDGER_SUMMARY.md",
+        "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md",
+        "product-contract/evidence/validate_audit_reconciliation.py",
+        "product-contract/evidence/TASK-G11-G12-RELEASE-001.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/GATE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/execution/CURRENT_SLICE.yaml",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "authenticated persona setup 4/4 PASS",
+        "complete current inventory 291/291 PASS: 4 setup + 287 application; 0 failed / 0 skipped / 0 excluded",
+        "application shards: 31 + 24 + 32 + 20 + 24 + 28 + 18 + 24 + 25 + 15 + 24 + 22 = 287 PASS",
+        "corrected CD-029/CD-030 shard 25/25 PASS",
+        "golden journey arrival/outbox plus return/correct/resubmit/approve PASS",
+        "CD-028 rollback-only live SQL negative PASS",
+        "read-only Admin module sweep PASS after focused localization timing recheck",
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "production bundle scan PASS: 379 files and 0 private-secret/demo-password hits",
+        "validate_audit_reconciliation.py PASS: 493 rows / 18 partials / 8 rectangular maps",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-G11-G12-RELEASE-001.md",
+        "product-contract/evidence/AC_LEDGER.csv",
+        "product-contract/evidence/AC_LEDGER_SUMMARY.md",
+        "product-contract/GATE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "supabase/tests/0028_cd028_live_release_probe.sql"
+      ],
+      "decisions": [
+        "Use live object-state reconciliation and refuse blind migration push because the remote migration-history table is absent",
+        "Do not replay already-present DDL; prove CD-028 in a rollback transaction and M04-045 through the real outbox/readback journey",
+        "Move only M04-045 from partial to verified_live; retain the 18 provider/schema/policy/RBAC/configuration rows",
+        "Use full Chromium headless after native standalone-shell crashes and rerun every shard on one production candidate",
+        "Treat the 412px Arabic/RTL comparison overflow as a release defect, repair it and rerun the affected plus full inventory",
+        "Skip live Admin mutation round-trips that would leave permanent audit/revision noise; use authenticated read verification",
+        "Promote through an immutable release tag and report remote-main equality in the final handoff",
+        "Do not invent a hosting provider or deployment target when none is configured"
+      ],
+      "blockers": [
+        "No configured production hosting/deployment/rollback target",
+        "Credential rotation and historical-secret response need replacement values and atomic dependent-target updates",
+        "Remote migration-history records are absent even though required objects are live",
+        "18 provider/schema/policy/RBAC/configuration AC-ledger partials",
+        "CD-024 route/ownership and CD-031 wiring/privacy/preflight authority",
+        "Region/provider configuration, asset/geographic confirmations and sponsor runtime acceptance"
+      ],
+      "commit_sha": "Application release 01e4226; release-record commit is identified by immutable tag g11-g12-release-2026-07-16 and verified against remote main in the final handoff",
+      "next_task": "Configure and approve a real production hosting/rollback target, rotate historical credentials atomically, harden migration history and resolve the remaining provider/region/CD-031/acceptance boundaries before G11/G12 PASS.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 88 and product-contract/evidence/TASK-G11-G12-RELEASE-001.md. G10 is PASS at 291/291. Do not reopen the verified release candidate without a demonstrated regression; G11/G12 remain open for the explicitly recorded external boundaries."
     }
   ],
-  "last_session": "2026-07-16-g11-remediation-001",
+  "last_session": "2026-07-16-g11-g12-release-001",
   "rules": {
     "append_only": true,
     "required_fields": [

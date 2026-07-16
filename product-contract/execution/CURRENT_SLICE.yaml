@@ -3,7 +3,7 @@ task_id: "TASK-G11-G12-RELEASE-001"
 parent_task_id: "TASK-BASELINE-WIRING-AUDIT-001"
 gate: "G11 hardening / G12 release"
 title: "Live migration certification, audited main promotion and configured production deployment"
-status: "APPROVED_IN_PROGRESS"
+status: "AUTHORIZED_SUBSET_COMPLETE_DEPLOYMENT_BLOCKED"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 approval_ref: "HUMAN_APPROVALS.yaml#G11-G12-live-promotion-release"
@@ -96,8 +96,7 @@ task_specific_context:
   - "product-contract/governance/HUMAN_APPROVALS.yaml"
   - "product-contract/governance/OPEN_DECISIONS.yaml"
   - "product-contract/governance/decision_register.csv"
-  - "supabase/.temp/linked-project.json (linked CLI state; no supabase/config.toml is present)"
-  - "supabase/.temp/project-ref"
+  - "Local linked Supabase CLI state was discovered and used read-only; it is intentionally untracked and no supabase/config.toml is present."
   - "supabase/migrations/20260715130000_cd028_one_open_review_per_version.sql"
   - "supabase/migrations/20260715180000_field_arrival_evidence.sql"
   - "supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql"
@@ -133,3 +132,14 @@ exit_condition: >-
   smoke-verified; rollback readiness is recorded; credentials are safe; and no unresolved
   provider/policy/schema/asset/region decision remains release-blocking. Otherwise complete
   the safely authorized subset and leave the affected gate explicitly OPEN or BLOCKED.
+
+execution_reconciliation:
+  date: "2026-07-16"
+  release_branch: "codex/g11-g12-integration"
+  application_release_commit: "01e4226"
+  release_tag: "g11-g12-release-2026-07-16"
+  verification: "291/291 PASS: 4 authenticated setup + 287 application; zero failed/skipped/excluded; typecheck/build PASS."
+  live_database: "Required versioned objects already live; no DDL replayed. CD-028 rollback negative and M04-045 real-outbox replay/readback PASS. Remote migration-history rows remain absent."
+  acceptance_ledger: "493 rows: 15 verified_live / 460 implemented / 18 partial / 0 missing."
+  deployment: "BLOCKED: no configured production hosting/deployment/rollback target exists; provider/target selection not authorized."
+  gate_disposition: "G10 PASS; G11 and G12 remain OPEN."
