@@ -63,6 +63,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-16"
     change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-G11-G12-RELEASE-001"
+  - gate: "IPAD-GEO-OVERRIDE-APPROVAL-WORKFLOW"
+    decision: "APPROVED — sponsor selected the recommended governed override policy: only Operations Supervisor or Operations Manager may approve (never the requesting inspector); a governed reason code plus written explanation and actual GPS/time are mandatory; photo evidence is mandatory unless safety/security makes capture unsafe; approval expires after 30 minutes for one inspector, one visit and one arrival attempt (or earlier when the visit closes); offline requests may queue with real GPS/evidence but cannot self-approve or unlock check-in until Operations approves online."
+    approver: "Vikram Indla"
+    date: "2026-07-16"
+    change_ref: "Sponsor response: 1a,2a,3a,4a"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

@@ -1,5 +1,13 @@
 # Evidence Status
 
+## TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| IPAD-GEO-EV-001 | Sponsor policy and source implementation | `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md` | Captured — source commit `62916ee` |
+| IPAD-GEO-EV-002 | Typecheck, production build, static source contracts and diff check | `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md`; `../../apps/web/e2e/ipad-gps-policy.spec.ts` | Captured — PASS; 3/3 focused contracts |
+| IPAD-GEO-EV-003 | Database/RLS and authenticated multi-persona runtime journey | `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md` | Pending controlled environment — no local DB/Docker or clean-worktree credentials; no remote DDL applied |
+
 ## TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001 — 2026-07-16
 
 | ID | Item | File | Status |

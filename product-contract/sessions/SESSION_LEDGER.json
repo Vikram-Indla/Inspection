@@ -3408,9 +3408,78 @@
       "commit_sha": "Application release 01e4226; release-record commit is identified by immutable tag g11-g12-release-2026-07-16 and verified against remote main in the final handoff",
       "next_task": "Configure and approve a real production hosting/rollback target, rotate historical credentials atomically, harden migration history and resolve the remaining provider/region/CD-031/acceptance boundaries before G11/G12 PASS.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 88 and product-contract/evidence/TASK-G11-G12-RELEASE-001.md. G10 is PASS at 291/291. Do not reopen the verified release candidate without a demonstrated regression; G11/G12 remain open for the explicitly recorded external boundaries."
+    },
+    {
+      "session_id": "2026-07-16-ipad-geofence-override-approval",
+      "started_at": "2026-07-16",
+      "ended_at": "2026-07-16",
+      "branch": "codex/ipad/m04-geofence-policy-promotion-002",
+      "task_id": "TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003",
+      "gate": "G11 hardening",
+      "requirements": [
+        "MVP1-M04-039",
+        "MVP1-M04-043",
+        "MVP1-M04-045",
+        "MVP1-M08-013"
+      ],
+      "acceptance_ids": [
+        "AC-0152",
+        "AC-0153",
+        "AC-0154",
+        "AC-0155",
+        "AC-0156"
+      ],
+      "screens": [
+        "SCR-IPAD-620",
+        "SCR-WEB-500",
+        "SCR-ADM-070"
+      ],
+      "engines": [
+        "ENG-06",
+        "ENG-08",
+        "ENG-11"
+      ],
+      "files_changed": [
+        "apps/web/src/app/field/[visitId]/Startup.tsx",
+        "apps/web/src/app/field/[visitId]/page.tsx",
+        "apps/web/src/app/operations/actions.ts",
+        "apps/web/src/app/operations/OverrideQueue.tsx",
+        "apps/web/src/app/operations/page.tsx",
+        "apps/web/src/lib/offline.ts",
+        "apps/web/e2e/ipad-gps-policy.spec.ts",
+        "apps/web/playwright.static.config.ts",
+        "supabase/migrations/20260716161604_add_geo_override_evidence_link.sql",
+        "supabase/migrations/20260716161605_ipad_geo_override_approval_workflow.sql",
+        "product-contract/evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md",
+        "product-contract governance, execution, acceptance and evidence records"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "npx playwright test --config=playwright.static.config.ts PASS (3/3)",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md"
+      ],
+      "decisions": [
+        "Sponsor policy 1A/2A/3A/4A is recorded: Operations-only decision, reason/narrative/GPS/time plus photo or safety exception, 30-minute single attempt, offline queue without local unlock.",
+        "Split the enum addition into its own committed migration before functions consume it.",
+        "Do not apply remote DDL while migration history/access is unreconciled."
+      ],
+      "blockers": [
+        "No local Supabase configuration, PostgreSQL service or Docker daemon for migration/RLS fixture execution.",
+        "Clean worktree has no Supabase URL/key, so authenticated browser setup cannot run.",
+        "Shared remote migration history/access must be reconciled before controlled promotion."
+      ],
+      "commit_sha": "62916ee (source implementation; documentation record commit follows)",
+      "next_task": "Apply the two forward migrations in a reconciled staging or approved shared environment and run the inspector, Operations, expiry and offline-reconnect acceptance journey.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 89, execution/CURRENT_SLICE.yaml and evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md. Source commit 62916ee is verified on codex/ipad/m04-geofence-policy-promotion-002. Do not apply migrations blindly; reconcile migration history/access first, then execute the controlled runtime suite."
     }
   ],
-  "last_session": "2026-07-16-g11-remaining-requirements-closure",
+  "last_session": "2026-07-16-ipad-geofence-override-approval",
   "rules": {
     "append_only": true,
     "required_fields": [
