@@ -127,7 +127,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
   const categories: Category[] = ["unexpected", "expected", "unavailable", "unchanged"];
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+    <div className="ax-surface cd-version-compare" style={{ padding: "var(--ax-space-300)" }}>
       <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.heading}</h4>
 
       {staleAt != null && (

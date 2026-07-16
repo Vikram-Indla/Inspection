@@ -808,7 +808,28 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
    keeping the grid's minmax tracks intact at 412px causes RTL horizontal
    overflow and hides the decision surface off-canvas. */
 .cd-review-workspace-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--ax-space-300); align-items: start; min-inline-size: 0; }
+.cd-review-workspace-grid > * { min-inline-size: 0; }
+.cd-version-compare { min-inline-size: 0; max-inline-size: 100%; }
+.cd-version-compare .ax-tablewrap { inline-size: 100%; min-inline-size: 0; max-inline-size: 100%; }
 @media (max-width: 899px) { .cd-review-workspace-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) {
+  /* The five comparison fields remain a real table, but must reflow rather
+     than preserve a desktop min-content width in the RTL field viewport. */
+  .cd-version-compare .ax-table { table-layout: fixed; inline-size: 100%; }
+  .cd-version-compare .ax-table th,
+  .cd-version-compare .ax-table td {
+    min-inline-size: 0;
+    padding-inline: var(--ax-space-050);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .cd-version-compare .ax-lozenge {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
 
 /* filters */
 .cd-filters { padding: var(--ax-space-200); display: flex; flex-wrap: wrap; gap: var(--ax-space-150); align-items: flex-end; }
