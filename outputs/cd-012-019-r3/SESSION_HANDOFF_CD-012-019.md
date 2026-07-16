@@ -63,3 +63,18 @@ held**: the active remediation slice forbids main promotion, Codex's backend is 
 yet on a canonical base, and multi-branch reconciliation belongs to the parent
 baseline task. No frozen product-contract records were modified — that is a separate
 change-control step.
+
+## Session end (2026-07-16)
+
+- Scratch integration worktree `Inspection-integrate` and branch
+  `integrate/cd012-019-on-codex` removed after the dry-run passed. No product code
+  affected; the dry-run evidence is captured above.
+- CD-012-019 frontend slice records are current: tests (`verify-admin.mjs`),
+  evidence (`WIRING_AUDIT_*`), and this handoff are committed on
+  `feat/cd-012-019-admin-frontend`.
+- **Out of scope for this session:** the now-active slice
+  `TASK-G11-G12-RELEASE-001` (live migration certification, main promotion,
+  production deploy) is Codex's release work — it requires live DDL / prod actions
+  this session is explicitly limited from and cannot mark PASS. No CD-012-019
+  test/evidence delta remains; the frozen release ledger/state are Codex's to update
+  under that slice's approval.
