@@ -135,3 +135,34 @@ Original `[0.3,0.2,0.2,0.15,0.15]` → saved `[0.25,0.25,0.2,0.15,0.15]` → res
 
 Still not E2E-exercised (by design / risk): a successful workflow *publish*
 (irreversible; needs a second user as maker).
+
+## Integration dry-run vs Codex backend — DONE (2026-07-16)
+
+Local, unpushed. Worktree `Inspection-integrate`, branch `integrate/cd012-019-on-codex`,
+base = Codex's `a6f0989` ("fix(admin): harden CD-006 through CD-011"). The 7
+frontend feat/fix commits were cherry-picked on top (proper 3-way).
+
+- **Overlap resolved:** `astryx.css` tail = keep-both (my `lz-`/`nya`/`rk-` classes +
+  Codex's `cd-tl`/`ax-trace`, disjoint); the 4 admin `page.tsx` = Codex's error
+  logging/copy vs my guards/boundaries — different lines, trivial. Verified both
+  sides coexist; zero stray conflict markers.
+- **Static:** `tsc --noEmit` PASS; `next build` PASS (all 6 admin routes compile).
+- **Authenticated drive (admin seed):** all 6 routes render 200.
+- **Write round-trips on Codex backend:** l10n `saveTranslation` PASS (save→restore),
+  risk `saveRiskSettings` PASS (save→restore, `rlsDenied:false`). Codex's backend
+  changes did not break my server-action calls.
+
+Conclusion: frontend and Codex backend are compatible; the eventual baseline merge
+is de-risked. It remains gated on (1) Codex backend landing on a canonical base,
+(2) main-promotion authorization (active slice `TASK-G11-REMEDIATION-001` forbids
+it), (3) multi-branch reconciliation under the parent baseline task.
+
+## Frozen records deliberately NOT touched
+
+Per the active slice's change-control boundary and Codex's concurrent ownership,
+this session did **not** modify `product-contract/CURRENT_STATE.md`,
+`execution/WORK_QUEUE.yaml`, `GATE_STATUS.md`, `AC_LEDGER`, or the
+`TASK-G11-REMEDIATION-001` records. All CD-012-019 evidence lives on the feature
+branch (`outputs/cd-012-019-r2|r3/`); tests live in `apps/web/scripts/verify-admin.mjs`
+and the touched `apps/web/e2e` conventions. Baseline reconciliation of these frozen
+records is the parent baseline task's job.
