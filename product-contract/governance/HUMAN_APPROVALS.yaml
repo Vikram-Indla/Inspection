@@ -58,6 +58,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-16"
     change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-G11-G12-RELEASE-001"
+  - gate: "TASK-IPAD-M04-functional-stub-authorization"
+    decision: "APPROVED — sponsor requested delivery of MVP1-M04-012/017/024/043 as a functional end-to-end testable iPad slice and explicitly authorized stubs where external help is required. Routing and Operations approval simulations must be test-only, visibly labelled and disabled by default; production behavior must fail closed. This approval does not resolve DEC-002, DEC-008, provider licensing, geofence values or the real Operations approval policy, and does not authorize a production-complete claim for stub-backed legs."
+    approver: "Vikram Indla"
+    date: "2026-07-16"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

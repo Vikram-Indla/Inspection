@@ -1,5 +1,40 @@
 # Current State
 
+## 2026-07-16 UPDATE 91 — four iPad test flows complete; production seams retained
+
+`TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001` is
+**FUNCTIONAL_E2E_STUB_COMPLETE_EXTERNAL_RELEASE_BLOCKED**. The iPad field flow
+now persists a stable per-install device ID, browser-reported OS and application
+version; creates and refreshes a provider-neutral ETA; warns against the planned
+execution window; preserves an immediately stale offline last value; and runs
+the outside-location cancel/reason/actual-coordinate path through a replaceable
+approval boundary. Test routing and approval are visibly labelled, server-gated
+and disabled by default. Production mode fails closed when routing, approval or
+GPS is unavailable, and weak GPS writes no false check-in.
+
+Multiple defect iterations repaired real-coordinate loss after a one-shot GPS
+timeout, ETA-window logic, offline stale-state timing, an unhandled background
+network rejection and a pre-existing Operations 200-event truncation/scoping
+defect. Typecheck and optimized build pass. Focused M04 is **4/4 PASS**;
+authentication negatives **3/3 PASS**; the recovered dashboard set **11/11
+PASS**; the golden journey and offline drill pass. All 298 enumerated checks
+have passing evidence across the complete run and deterministic recovery shard.
+One unsharded attempt recorded an external provider `UND_ERR_CONNECT_TIMEOUT`
+that interrupted eight dashboard cases; those exact cases then passed on the
+fresh recovery run. The evidence does not misstate that outage as an
+uninterrupted single-run pass.
+
+The additive migration is idempotent locally and live. The rollback-only local
+and authenticated live contracts prove device/ETA/provider/override positives,
+negative constraints, immutable geo history and zero residual rows. The ledger
+is regenerated at **493 rows = 15 verified_live / 467 implemented / 11 partial
+/ 0 missing**. M04-012 moves to implemented. M04-017, M04-024 and M04-043 stay
+partial only at their production routing/real-approval boundaries. G10 remains
+PASS; G11/G12 remain open for DEC-008, real Operations approval, DEC-002,
+credential/migration-history/region/asset authority, sponsor runtime acceptance
+and a configured production deployment/rollback target. Exact evidence:
+`evidence/TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001.md`.
+
 ## 2026-07-16 UPDATE 90 — M09 write-flow audit PASS; final inventory 294/294
 
 The independent requirement-level audit for MVP1-M09-001/005/018/021/022/024

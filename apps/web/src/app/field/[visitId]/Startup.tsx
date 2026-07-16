@@ -4,7 +4,14 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { local, processOutbox, sha256b64 } from "@/lib/offline";
+import { local, processOutbox, sha256b64, type CachedRouteEstimate } from "@/lib/offline";
+import { getFieldDeviceMetadata, type FieldDeviceMetadata } from "@/lib/field-device";
+import {
+  estimateFieldRoute,
+  requestFieldLocationOverride,
+  TEST_STUB_LABEL,
+  type FieldIntegrationMode,
+} from "@/lib/field-integrations";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
 
@@ -26,7 +33,12 @@ export type StartupStrings = {
   logPrestartBlocked: string; logPrestartSaved: string;
   exceptionHeading: string; exceptionPlaceholder: string; exceptionSend: string;
   logExceptionSent: string; logExceptionFailed: string; logDeviation: string;
-  logOpState: string; logOpBlocked: string; logGpsFallback: string;
+  logOpState: string; logOpBlocked: string; logGpsFallback: string; logGpsUnavailable: string;
+  deviceHeading: string; devicePending: string; deviceIdLabel: string; deviceOsLabel: string; appVersionLabel: string;
+  routeHeading: string; routeUnavailable: string; routeOfflineLast: string; routeValue: string; routeUpdated: string;
+  routeWindowWarning: string; routeWithinWindow: string; testStubBadge: string;
+  overrideHeading: string; overrideCaption: string; overrideActualCoords: string; overrideReasonLabel: string;
+  overrideConfirm: string; overrideCancel: string; overrideUnavailable: string; overrideApproved: string; overrideReasonRequired: string;
   mapsOpen: string; mapsGeo: string; mapsCaption: string; progressLabel: string; progressCaption: string; cardsFactoryTitle: string; cardsVisitTitle: string; lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string; lblCoords: string; lblFence: string; lblType: string; lblMode: string; lblWindow: string; lblPackage: string; lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string; cancelHeading: string; cancelCaption: string; cancelSelectReason: string; cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string; cancelRequestedChip: string; cancelReasonsMissing: string; logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string; returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string; returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
   arrivalEvidenceHeading: string; arrivalEvidenceCaption: string; arrivalEvidenceNote: string; arrivalEvidenceFile: string; arrivalEvidenceSubmit: string; arrivalEvidenceQueued: string; arrivalEvidenceMissing: string;
 };
@@ -71,7 +83,15 @@ function distM(a: [number, number], b: [number, number]) {
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 
-export default function Startup({ visit, gis, strings, reasons, flags }: { visit: V; gis: Gis; strings: StartupStrings; reasons: { key: string; label: string }[]; flags: { cancellationRequested: boolean; returnRequested: boolean } }) {
+export default function Startup({ visit, gis, strings, reasons, flags, applicationVersion, integrationMode }: {
+  visit: V;
+  gis: Gis;
+  strings: StartupStrings;
+  reasons: { key: string; label: string }[];
+  flags: { cancellationRequested: boolean; returnRequested: boolean };
+  applicationVersion: string;
+  integrationMode: FieldIntegrationMode;
+}) {
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
   const [log, setLog] = useState([] as string[]);
@@ -101,6 +121,15 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const [arrivalEvidenceFile, setArrivalEvidenceFile] = useState<File | null>(null);
   const [arrivalEvidenceNote, setArrivalEvidenceNote] = useState("");
   const [arrivalEvidenceQueued, setArrivalEvidenceQueued] = useState(false);
+  // TASK-IPAD-M04 · real device provenance + replaceable ETA/override adapters.
+  const [deviceMetadata, setDeviceMetadata] = useState<FieldDeviceMetadata | null>(null);
+  const [routeEstimate, setRouteEstimate] = useState<CachedRouteEstimate | null>(null);
+  const [routeState, setRouteState] = useState<"idle" | "available" | "offline" | "unavailable" | "failed">("idle");
+  const [overrideOpen, setOverrideOpen] = useState(false);
+  const [overrideReason, setOverrideReason] = useState("");
+  const [overrideBusy, setOverrideBusy] = useState(false);
+  const [overrideBlocked, setOverrideBlocked] = useState(false);
+  const [overrideApproved, setOverrideApproved] = useState(false);
   const maxAcc = gis.gps_accuracy_checkin_max_m ?? 25;
   // SB20 — per-factory geofence override, else ENG-06 engine default.
   const fence = visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? 150;
@@ -117,7 +146,121 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const devSinceRef = useRef(null as number | null);
   const devDoneRef = useRef(false);
   const lastFixRef = useRef(null as Fix | null);
+  const routeBusyRef = useRef(false);
+  const routeNextRefreshRef = useRef(0);
+  const routeEstimateRef = useRef<CachedRouteEstimate | null>(null);
   const stringsRef = useRef(strings); stringsRef.current = strings;
+
+  useEffect(() => { routeEstimateRef.current = routeEstimate; }, [routeEstimate]);
+
+  // M04-024/FND-005 — the display must react to connectivity immediately,
+  // even when an in-flight provider persistence call is still pending. The
+  // last known value remains display-only and is visibly stale until a later
+  // successful online refresh replaces it.
+  useEffect(() => {
+    const markOffline = () => {
+      const current = routeEstimateRef.current;
+      if (current) {
+        const stale = { ...current, stale: true };
+        routeEstimateRef.current = stale;
+        setRouteEstimate(stale);
+        setRouteState("offline");
+      }
+      routeNextRefreshRef.current = 0;
+    };
+    const allowOnlineRefresh = () => { routeNextRefreshRef.current = 0; };
+    window.addEventListener("offline", markOffline);
+    window.addEventListener("online", allowOnlineRefresh);
+    return () => {
+      window.removeEventListener("offline", markOffline);
+      window.removeEventListener("online", allowOnlineRefresh);
+    };
+  }, []);
+
+  function currentDevice(): FieldDeviceMetadata {
+    if (deviceMetadata) return deviceMetadata;
+    const captured = getFieldDeviceMetadata(applicationVersion);
+    setDeviceMetadata(captured);
+    return captured;
+  }
+
+  function geoProvenance(approvalProvider?: string) {
+    const device = currentDevice();
+    return {
+      gis_version: "v1-accepted-2026-07-11",
+      device_id: device.deviceId,
+      device_os_version: device.osVersion,
+      application_version: device.applicationVersion,
+      integration_mode: integrationMode,
+      ...(approvalProvider ? { approval_provider: approvalProvider } : {}),
+    };
+  }
+
+  async function refreshRouteEstimate(fix: Fix, jId: string): Promise<void> {
+    if (routeBusyRef.current || Date.now() < routeNextRefreshRef.current) return;
+    routeBusyRef.current = true;
+    try {
+      if (!navigator.onLine) {
+        const cached = await local.getRouteEstimate(visit.id);
+        if (cached) {
+          setRouteEstimate({ ...cached, stale: true });
+          setRouteState("offline");
+        } else setRouteState("unavailable");
+        routeNextRefreshRef.current = Date.now() + 5_000;
+        return;
+      }
+      const result = await estimateFieldRoute({
+        mode: integrationMode,
+        online: true,
+        origin: { lat: fix.lat, lng: fix.lng },
+        destination: { lat: visit.dispatch_lat, lng: visit.dispatch_lng },
+        straightDistanceM: fix.d,
+      });
+      if (result.status !== "available") {
+        setRouteState("unavailable");
+        // A configured production provider will supply its own refresh cadence.
+        // Until then, do not fabricate a retry interval or estimated value.
+        routeNextRefreshRef.current = integrationMode === "test_stub" ? Date.now() + 5_000 : Number.MAX_SAFE_INTEGER;
+        return;
+      }
+      const estimate = result.estimate;
+      const sb = supabaseBrowser();
+      const { error } = await sb.from("journey_sessions").update({
+        eta_minutes: estimate.etaMinutes,
+        remaining_distance_m: estimate.remainingDistanceM,
+        routing_provider: estimate.provider,
+        route_estimate_mode: estimate.mode,
+        route_estimated_at: estimate.estimatedAt,
+      }).eq("id", jId);
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("[field route estimate persistence]", error);
+        setRouteState("failed");
+        routeNextRefreshRef.current = Date.now() + estimate.refreshAfterMs;
+        return;
+      }
+      setRouteEstimate(estimate);
+      setRouteState("available");
+      await local.cacheRouteEstimate(visit.id, estimate);
+      routeNextRefreshRef.current = Date.now() + estimate.refreshAfterMs;
+    } catch (error) {
+      // Connectivity can change while the provider result is being persisted.
+      // A rejected background request must never escape as a client exception
+      // or destroy the field workspace; retain the last value as visibly stale.
+      // eslint-disable-next-line no-console
+      console.error("[field route estimate refresh]", error);
+      const current = routeEstimateRef.current;
+      if (current) {
+        const stale = { ...current, stale: true };
+        routeEstimateRef.current = stale;
+        setRouteEstimate(stale);
+      }
+      setRouteState(navigator.onLine ? "failed" : "offline");
+      routeNextRefreshRef.current = integrationMode === "test_stub" ? Date.now() + 5_000 : Number.MAX_SAFE_INTEGER;
+    } finally {
+      routeBusyRef.current = false;
+    }
+  }
 
   // STM-OPS — guarded server-action transition (guard = set_operational_state RPC, 0015)
   async function opTransition(next: "on_the_way" | "arrived" | "executing"): Promise<boolean> {
@@ -137,8 +280,16 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     setBusy(true);
     const sb = supabaseBrowser();
     const { data: { user } } = await getVerifiedUser(sb);
+    const device = currentDevice();
     const { data, error } = await sb.from("journey_sessions")
-      .insert({ visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString() })  // M04-009 device clock
+      .insert({
+        visit_id: visit.id,
+        inspector_id: user!.id,
+        device_started_at: new Date().toISOString(),
+        device_id: device.deviceId,
+        device_os_version: device.osVersion,
+        application_version: device.applicationVersion,
+      })  // M04-009/012 device clock and provenance
       .select().single();
     setBusy(false);
     if (error) {
@@ -173,9 +324,11 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       // M04-026 — first fix after journey start anchors the progress baseline
       setInitialD(prev => prev ?? d);
       if (d < minDRef.current) { minDRef.current = d; devSinceRef.current = null; }
+      void refreshRouteEstimate(fix, jId);                            // M04-017 initial, M04-024 refresh
     }, () => { /* GPS unavailable — one-shot check-in path handles fallback (M04-049) */ }, { enableHighAccuracy: true });
     const timer = setInterval(async () => {
       const fix = posRef.current;
+      if (fix) void refreshRouteEstimate(fix, jId);
       if (!fix || !navigator.onLine) return;                         // offline: skip; check-in remains the durable record
       if (Date.now() - lastPostRef.current < telemetryS * 1000 - 500) return;  // throttle to engine interval
       lastPostRef.current = Date.now();
@@ -185,7 +338,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
         observed_lat: fix.lat, observed_lng: fix.lng, accuracy_m: fix.acc,
         altitude_m: fix.alt, speed_mps: fix.speed, heading_deg: fix.heading,   // M04-022
         device_occurred_at: new Date().toISOString(),
-        gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
+        ...geoProvenance(),
       });
       if (!error) setTelemetryCount(c => c + 1);
       // route-deviation heuristic vs closest approach (planned route service is out of MVP1 scope)
@@ -197,7 +350,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
             journey_id: jId, visit_id: visit.id, kind: "deviation",
             observed_lat: fix.lat, observed_lng: fix.lng, accuracy_m: fix.acc,
             device_occurred_at: new Date().toISOString(),
-            gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
+            ...geoProvenance(),
           });
           add(fmt(stringsRef.current.logDeviation, { d: (fix.d - minDRef.current).toFixed(0), s: sustainS }));
         }
@@ -213,11 +366,21 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     setBusy(true);
     const pos = await new Promise<GeolocationPosition | null>(res =>
       navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => res(p), () => res(null), { timeout: 4000 }) : res(null));
-    // demo fallback: near the governed dispatch point, good accuracy — surfaced in the log (M04-049)
-    if (!pos) add(strings.logGpsFallback);
-    const lat = pos?.coords.latitude ?? visit.dispatch_lat + 0.0005;
-    const lng = pos?.coords.longitude ?? visit.dispatch_lng + 0.0002;
-    const acc = pos?.coords.accuracy ?? 4.2;
+    // The continuous watcher may already hold the current device fix even when
+    // WebKit/Chromium times out a concurrent one-shot request. Preserve that
+    // real observed position before considering any explicit test substitute.
+    const tracked = posRef.current;
+    // M04-049 — production must never turn a missing GPS reading into a false
+    // arrival. The deterministic substitute exists only in explicit test mode.
+    if (!pos && !tracked && integrationMode !== "test_stub") {
+      add(strings.logGpsUnavailable);
+      setBusy(false);
+      return;
+    }
+    if (!pos && !tracked) add(strings.logGpsFallback);
+    const lat = pos?.coords.latitude ?? tracked?.lat ?? visit.dispatch_lat + 0.0005;
+    const lng = pos?.coords.longitude ?? tracked?.lng ?? visit.dispatch_lng + 0.0002;
+    const acc = pos?.coords.accuracy ?? tracked?.acc ?? 4.2;
     const d = distM([lat, lng], dispatchPoint);
     if (acc > maxAcc) { add(fmt(strings.logAccuracyBlocked, { acc: acc.toFixed(0), max: maxAcc })); setBusy(false); return; }
     const inside = d <= fence;
@@ -226,9 +389,9 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     const { error } = await sb.from("geo_events").insert({
       journey_id: journeyId, visit_id: visit.id, kind: "checkin",
       observed_lat: lat, observed_lng: lng, accuracy_m: acc,
-      altitude_m: pos?.coords.altitude ?? null,                       // M04-040 altitude at arrival
+      altitude_m: pos?.coords.altitude ?? tracked?.alt ?? null,       // M04-040 altitude at arrival
       device_occurred_at: new Date().toISOString(),                   // M04-039 device timestamp
-      geofence_result: inside ? "inside" : "outside", gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
+      geofence_result: inside ? "inside" : "outside", ...geoProvenance(),
     });
     setBusy(false);
     if (error) {
@@ -237,15 +400,20 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       add(strings.logCheckinRejected);
       return;
     }
-    if (!inside) { add(fmt(strings.logOutside, { d: d.toFixed(0), fence })); return; }
+    if (!inside) {
+      add(fmt(strings.logOutside, { d: d.toFixed(0), fence }));
+      setOverrideBlocked(false);
+      setOverrideOpen(true);
+      return;
+    }
     const arrivedAt = new Date().toISOString();
     // M04-039/047 — arrival is a distinct immutable geo event, separate from
     // the check-in event that establishes the geofence result.
     const { error: arrivalError } = await sb.from("geo_events").insert({
       journey_id: journeyId, visit_id: visit.id, kind: "arrival",
       observed_lat: lat, observed_lng: lng, accuracy_m: acc,
-      altitude_m: pos?.coords.altitude ?? null, device_occurred_at: arrivedAt,
-      geofence_result: "inside", gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
+      altitude_m: pos?.coords.altitude ?? tracked?.alt ?? null, device_occurred_at: arrivedAt,
+      geofence_result: "inside", ...geoProvenance(),
     });
     if (arrivalError) {
       // Do not present arrival as complete when its immutable event was not
@@ -255,9 +423,65 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       add(strings.logArrivalRejected);
       return;
     }
+    setOverrideApproved(false);
     setCheckedIn(true); setArrivalAt(arrivedAt); add(fmt(strings.logInside, { d: d.toFixed(0), acc: acc.toFixed(1) }));
     await sb.from("journey_sessions").update({ status: "arrived" }).eq("id", journeyId!);
     await opTransition("arrived");                                    // M04-046 · STM-OPS leg 2
+  }
+
+  async function confirmLocationOverride() {
+    const reason = overrideReason.trim();
+    if (!reason || !checkin || checkin.inside) return;
+    setOverrideBusy(true);
+    setOverrideBlocked(false);
+    try {
+      const decision = await requestFieldLocationOverride({
+        mode: integrationMode,
+        reason,
+        actual: { lat: checkin.lat, lng: checkin.lng, accuracyM: checkin.acc },
+      });
+      if (decision.status !== "approved") {
+        setOverrideBlocked(true);
+        add(strings.overrideUnavailable);
+        return;
+      }
+      const arrivedAt = new Date().toISOString();
+      const sb = supabaseBrowser();
+      // One PostgREST insert carries both immutable events in a single database
+      // statement: the approved override and arrival at the actual coordinates.
+      const shared = {
+        journey_id: journeyId,
+        visit_id: visit.id,
+        observed_lat: checkin.lat,
+        observed_lng: checkin.lng,
+        accuracy_m: checkin.acc,
+        device_occurred_at: arrivedAt,
+        geofence_result: "override" as const,
+        override_reason: reason,
+        ...geoProvenance(decision.provider),
+      };
+      const { error } = await sb.from("geo_events").insert([
+        { ...shared, kind: "override" },
+        { ...shared, kind: "arrival" },
+      ]);
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("[field governed override]", error);
+        setOverrideBlocked(true);
+        add(strings.logArrivalRejected);
+        return;
+      }
+      setOverrideApproved(true);
+      setCheckedIn(true);
+      setArrivalAt(arrivedAt);
+      setOverrideOpen(false);
+      setOverrideReason("");
+      add(strings.overrideApproved);
+      await sb.from("journey_sessions").update({ status: "arrived" }).eq("id", journeyId!);
+      await opTransition("arrived");
+    } finally {
+      setOverrideBusy(false);
+    }
   }
 
   async function submitArrivalEvidence() {
@@ -306,7 +530,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       journey_id: journeyId, visit_id: visit.id, kind: "exception",
       observed_lat: fix.lat, observed_lng: fix.lng, accuracy_m: fix.acc,
       override_reason: note, device_occurred_at: new Date().toISOString(),
-      gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
+      ...geoProvenance(),
     });
     setBusy(false);
     if (error) {
@@ -420,14 +644,32 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const journeyDurationM = journeyStartedAt
     ? Math.max(0, Math.round(((new Date(arrivalAt ?? new Date().toISOString()).getTime() - new Date(journeyStartedAt).getTime()) / 60000)))
     : null;
+  const projectedArrivalMs = routeEstimate
+    ? new Date(routeEstimate.estimatedAt).getTime() + routeEstimate.etaMinutes * 60_000
+    : null;
+  const executionWindowMs = new Date(visit.window_end).getTime() - new Date(visit.window_start).getTime();
+  const etaExceedsWindow = projectedArrivalMs != null && routeEstimate
+    ? projectedArrivalMs > new Date(visit.window_end).getTime()
+      || routeEstimate.etaMinutes * 60_000 > executionWindowMs
+    : false;
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+      {integrationMode === "test_stub" && (
+        <div className="ax-banner ax-banner--warning" role="status" data-testid="field-test-stub-banner">
+          <strong>{strings.testStubBadge}</strong> · {TEST_STUB_LABEL}
+        </div>
+      )}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.readiness}</h4>
         <div className="ax-stack" style={{ gap: 8 }}>
           <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {new Date(visit.window_start).toISOString().slice(0,16).replace("T"," ")} → {new Date(visit.window_end).toISOString().slice(11,16)}</div>
           <div style={{ display: "flex", gap: 8 }}>{cached ? "✓" : "○"} {strings.packageLine} {visit.package_versions.packages.code} · {visit.package_versions.version_label} {cached && strings.packageCached}</div>
           <div style={{ display: "flex", gap: 8 }}>{journeyId ? "✓" : "○"} {strings.journeySession}</div>
+          <div style={{ display: "flex", gap: 8 }} data-testid="field-device-readiness">
+            {deviceMetadata ? "✓" : "○"} {deviceMetadata
+              ? `${strings.deviceIdLabel}: ${deviceMetadata.deviceId.slice(0, 18)}… · ${strings.deviceOsLabel}: ${deviceMetadata.osVersion} · ${strings.appVersionLabel}: ${deviceMetadata.applicationVersion}`
+              : strings.devicePending}
+          </div>
           <div style={{ display: "flex", gap: 8 }}>{telemetryCount > 0 ? "✓" : "○"} {fmt(strings.telemetryRow, { s: telemetryS, n: telemetryCount })}</div>
           <div style={{ display: "flex", gap: 8 }}>{checkedIn ? "✓" : "○"} {fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</div>
         </div>
@@ -461,6 +703,38 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           </div>
         )}
       </div>
+      {/* MVP1-M04-017/024 — provider-neutral road ETA with offline last value. */}
+      {journeyId && (
+        <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="route-estimate" aria-live="polite">
+          <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <h4>{strings.routeHeading}</h4>
+            {routeEstimate?.mode === "test_stub" && <span className="ax-lozenge ax-lozenge--warning">{strings.testStubBadge}</span>}
+          </div>
+          {routeEstimate ? (
+            <div className="ax-stack" style={{ gap: 8, marginBlockStart: "var(--ax-space-150)" }}>
+              <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }}>
+                <span className="ax-badge ax-numeric">{fmt(strings.routeValue, {
+                  eta: routeEstimate.etaMinutes,
+                  distance: routeEstimate.remainingDistanceM,
+                })}</span>
+                <span className="ax-badge">{routeEstimate.provider}</span>
+                <span className="ax-caption">{fmt(strings.routeUpdated, {
+                  time: new Date(routeEstimate.estimatedAt).toISOString().replace("T", " ").slice(0, 19),
+                })}</span>
+              </div>
+              {routeEstimate.stale || routeState === "offline"
+                ? <div className="ax-banner ax-banner--warning">{strings.routeOfflineLast}</div>
+                : etaExceedsWindow
+                  ? <div className="ax-banner ax-banner--critical" role="alert">{strings.routeWindowWarning}</div>
+                  : <div className="ax-banner ax-banner--success">{strings.routeWithinWindow}</div>}
+            </div>
+          ) : (
+            <div className="ax-banner ax-banner--warning" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+              {routeState === "offline" ? strings.routeOfflineLast : strings.routeUnavailable}
+            </div>
+          )}
+        </section>
+      )}
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-150)" }}>
@@ -473,8 +747,8 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
               </span>
             )}
             {checkin && (
-              <span className={`ax-lozenge ${checkin.inside ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
-                {fmt(checkin.inside ? strings.insideFence : strings.outsideFence, { d: checkin.d.toFixed(0) })}
+              <span className={`ax-lozenge ${checkin.inside || overrideApproved ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+                {overrideApproved ? strings.overrideApproved : fmt(checkin.inside ? strings.insideFence : strings.outsideFence, { d: checkin.d.toFixed(0) })}
               </span>
             )}
           </span>
@@ -486,15 +760,48 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}
         </p>
       </div>
+      {/* MVP1-M04-043 / ERR-GEO-002 — confirmation never self-approves in production. */}
+      {overrideOpen && checkin && !checkin.inside && (
+        <div className="ax-surface" role="alertdialog" aria-modal="true" aria-labelledby="field-override-title"
+          style={{ padding: "var(--ax-space-300)", borderColor: "var(--ax-color-warning)" }}>
+          <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+            <div>
+              <h4 id="field-override-title">{strings.overrideHeading}</h4>
+              <p className="ax-caption">{strings.overrideCaption}</p>
+            </div>
+            <div className="ax-banner ax-banner--warning">
+              {fmt(strings.overrideActualCoords, {
+                lat: checkin.lat.toFixed(7), lng: checkin.lng.toFixed(7),
+                acc: checkin.acc.toFixed(1), distance: checkin.d.toFixed(0),
+              })}
+            </div>
+            {integrationMode === "test_stub" && <span className="ax-lozenge ax-lozenge--warning">{strings.testStubBadge}</span>}
+            <label className="ax-field">
+              <span className="ax-field__label">{strings.overrideReasonLabel}</span>
+              <textarea className="ax-textarea" rows={3} value={overrideReason}
+                onChange={e => { setOverrideReason(e.target.value); setOverrideBlocked(false); }} />
+              {!overrideReason.trim() && <span className="ax-caption">{strings.overrideReasonRequired}</span>}
+            </label>
+            {overrideBlocked && <div className="ax-banner ax-banner--critical" role="alert">{strings.overrideUnavailable}</div>}
+            <div className="ax-row" style={{ justifyContent: "flex-end", gap: 8, flexWrap: "wrap" }}>
+              <button className="ax-btn" onClick={() => {
+                setOverrideOpen(false); setOverrideReason(""); setOverrideBlocked(false);
+              }} disabled={overrideBusy}>{strings.overrideCancel}</button>
+              <button className="ax-btn ax-btn--field ax-btn--prominent" onClick={confirmLocationOverride}
+                disabled={overrideBusy || !overrideReason.trim()}>{strings.overrideConfirm}</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* M04-050..054 — arrival confirmation, context cards and journey summary. */}
       {checkedIn && (
         <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }} aria-label={strings.cardsVisitTitle}>
           <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
             <div>
               <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cardsVisitTitle}</h4>
-              <p className="ax-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {strings.insideFence}</p>
+              <p className="ax-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {overrideApproved ? strings.overrideApproved : fmt(strings.insideFence, { d: checkin?.d.toFixed(0) ?? "0" })}</p>
             </div>
-            <span className="ax-lozenge ax-lozenge--success">{strings.arrivalDetected}</span>
+            <span className="ax-lozenge ax-lozenge--success">{overrideApproved ? strings.overrideApproved : strings.arrivalDetected}</span>
           </div>
           <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlock: "var(--ax-space-200)" }}>
             <span className="ax-badge">{strings.progressLabel}: {progress == null ? "—" : `${progress.toFixed(0)}%`}</span>

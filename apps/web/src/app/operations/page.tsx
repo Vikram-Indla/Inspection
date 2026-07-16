@@ -30,7 +30,7 @@ type VisitRow = {
   factories: FactoryEmbed;
   assignments: { profiles: { full_name: string } | null }[] | null;
 };
-type GeoRow = { visit_id: string; kind: string; geofence_result: string | null; accuracy_m: number; occurred_at: string };
+type GeoRow = { id: string; visit_id: string; kind: string; geofence_result: string | null; accuracy_m: number; occurred_at: string };
 type ActionRow = {
   id: string;
   form_type: string;
@@ -163,10 +163,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       .order("window_start", { ascending: true })
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
-    sb.from("geo_events")
-      .select("visit_id, kind, geofence_result, accuracy_m, occurred_at")
+    // M08-014 location history must not silently disappear once the table
+    // exceeds an arbitrary recent-row limit. Page the immutable ledger using a
+    // stable order, then scope it to the monitored visits below.
+    collectPostgrestPages<GeoRow>((from, to) => sb.from("geo_events")
+      .select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at")
       .order("occurred_at", { ascending: false })
-      .limit(200),
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoRow>>),
     // Corrective actions queue (M09-027 blocking flag; DEC-003 due default 14d)
     collectPostgrestPages<ActionRow>((from, to) => sb.from("action_forms")
       .select("id, form_type, owner_name, owner_role, due_at, status, is_blocking, required_correction, inspections(visit_id, visits(factories(id, name)))")
@@ -234,10 +238,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const monitored = visits.filter(v =>
     (v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)) &&
     (!region || v.factories?.region === region) && (!city || v.factories?.city === city));
+  const monitoredVisitIds = new Set(monitored.map(v => v.id));
+  const scopedGeo = geo.filter(g => monitoredVisitIds.has(g.visit_id));
 
   // Latest geofence result per visit (geo list already newest-first) — M08-014
   const latestGeofence = new Map<string, string>();
-  for (const g of geo) {
+  for (const g of scopedGeo) {
     if (g.geofence_result && !latestGeofence.has(g.visit_id)) latestGeofence.set(g.visit_id, g.geofence_result);
   }
   const now = Date.now();
@@ -538,12 +544,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           {/* Location events — M08-014 immutable */}
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
-            {geo.length === 0 ? (
+            {scopedGeo.length === 0 ? (
               <div className="ax-state"><span className="ax-state__glyph">📍</span><h4>{t("ops.geo.empty.title", "No location events yet")}</h4>
                 <p className="ax-caption">{t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")}</p></div>
             ) : (
-              <ul className="ax-timeline">{geo.slice(0, 10).map((g, i) => (
-                <li key={i} className={g.kind === "checkin" ? "is-key" : undefined}>
+              <ul className="ax-timeline">{scopedGeo.slice(0, 10).map(g => (
+                <li key={g.id} className={g.kind === "checkin" ? "is-key" : undefined}>
                   <div><strong>{enumLabel(g.kind)}</strong> ±{g.accuracy_m}m{" "}
                     {g.geofence_result && <span className={`ax-lozenge ${g.geofence_result === "inside" ? "ax-lozenge--success" : g.geofence_result === "override" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{enumLabel(g.geofence_result)}</span>}{" "}
                     <a className="ax-link ax-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />

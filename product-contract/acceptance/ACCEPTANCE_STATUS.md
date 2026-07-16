@@ -1,5 +1,31 @@
 # Acceptance Status
 
+## TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001 — 2026-07-16
+
+- AC-0125 / MVP1-M04-012: **IMPLEMENTED** — stable per-install device ID,
+  browser-reported OS and application version persist on journey and immutable
+  geo records; live browser/database readback passes.
+- AC-0130 / MVP1-M04-017: **FUNCTIONAL TEST-MODE E2E PASS / PRODUCTION
+  PARTIAL** — initial ETA, persistence and planned-window warning pass with the
+  visibly labelled deterministic adapter; production remains fail-closed until
+  DEC-008 supplies a routing provider.
+- AC-0137 / MVP1-M04-024: **FUNCTIONAL TEST-MODE E2E PASS / PRODUCTION
+  PARTIAL** — periodic ETA/distance refresh, offline stale last-value and online
+  recovery pass; production road routing remains provider-blocked.
+- AC-0156 / MVP1-M04-043: **FUNCTIONAL TEST-MODE E2E PASS / PRODUCTION
+  PARTIAL** — outside-location dialog, cancel, mandatory reason, actual
+  coordinates and simulated approval pass; real governed Operations approval
+  remains external.
+- Production/default mode never fabricates ETA, GPS or approval. Weak GPS and
+  missing GPS remain blocked without a false location event.
+- Typecheck/build PASS; focused M04 4/4, authentication negatives 3/3 and
+  dashboard recovery 11/11 PASS. Every one of the 298 enumerated regression
+  checks has passing evidence across the full run and deterministic recovery
+  shard; the recovery was required after an evidenced external provider
+  connection timeout interrupted one dashboard segment.
+- Ledger: **493 = 15 verified_live / 467 implemented / 11 partial / 0 missing**.
+- Evidence: `../evidence/TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001.md`.
+
 ## M09 requirement-level write-flow audit — 2026-07-16
 
 - MVP1-M09-001/005/018/021/022/024 and

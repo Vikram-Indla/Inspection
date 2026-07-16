@@ -5,8 +5,8 @@ Total governed rows: **493**
 | Status | Rows | % |
 |---|---|---|
 | verified_live | 15 | 3% |
-| implemented | 466 | 94% |
-| partial | 12 | 2% |
+| implemented | 467 | 94% |
+| partial | 11 | 2% |
 | missing | 0 | 0% |
 
 ## By module
@@ -19,7 +19,7 @@ Total governed rows: **493**
 | Inspection Execution - Pre-Start | 0 | 15 | 0 | 0 |
 | Level 2 Review & Resubmission | 0 | 53 | 0 | 0 |
 | Operations Center | 0 | 19 | 0 | 0 |
-| Physical Inspection Execution | 1 | 218 | 4 | 0 |
+| Physical Inspection Execution | 1 | 219 | 3 | 0 |
 | Virtual Inspection Execution | 0 | 20 | 0 | 0 |
 | Visit Planning - Management | 1 | 44 | 1 | 0 |
 | Visit Planning - Planning | 12 | 40 | 0 | 0 |

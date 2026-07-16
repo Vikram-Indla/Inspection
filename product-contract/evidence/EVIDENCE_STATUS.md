@@ -1,5 +1,17 @@
 # Evidence Status
 
+## TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001 — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| M04-DEV-ETA-EV-001 | Exact task scope, defect iterations, verification and external-boundary disposition | `TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001.md` | Captured — functional E2E test delivery complete; production provider/approval boundaries retained |
+| M04-DEV-ETA-EV-002 | Device/OS/application provenance | `../../apps/web/src/lib/field-device.ts`; `../../apps/web/src/app/field/[visitId]/Startup.tsx`; `../../supabase/migrations/20260716102921_m04_device_eta_override_test_boundary.sql` | Captured — live journey/geo persistence and readback PASS |
+| M04-DEV-ETA-EV-003 | Routing and approval adapter isolation | `../../apps/web/src/lib/field-integrations.ts`; `../../apps/web/src/app/field/[visitId]/page.tsx` | Captured — labelled test adapters; server-only enablement; production fail-closed |
+| M04-DEV-ETA-EV-004 | Positive and negative browser verification | `../../apps/web/e2e/m04-device-eta-override.spec.ts` | Captured — **4/4 PASS**; no client exception during offline transition |
+| M04-DEV-ETA-EV-005 | Database migration/immutability contract | `../../supabase/tests/0033_m04_device_eta_override_contract.sql` | Captured — local replay/idempotency PASS; authenticated live rollback probe PASS; zero residual rows |
+| M04-DEV-ETA-EV-006 | Regression and self-found defect recovery | `../../apps/web/e2e/`; `../../apps/web/playwright.config.ts` | Captured — all **298** enumerated checks have passing evidence; provider-timeout-interrupted dashboard segment recovered **11/11 PASS** |
+| M04-DEV-ETA-EV-007 | Acceptance reconciliation | `AC_LEDGER.csv`; `AC_LEDGER_SUMMARY.md`; `validate_audit_reconciliation.py` | Captured — 493 = 15 verified_live / 467 implemented / 11 partial / 0 missing |
+
 ## TASK-G11-G12-RELEASE-001 — 2026-07-16
 
 | ID | Item | File | Status |

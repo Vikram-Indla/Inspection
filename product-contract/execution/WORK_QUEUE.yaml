@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001"
+    gate: "G11 iPad functional hardening"
+    priority: "P0"
+    status: "FUNCTIONAL_E2E_STUB_COMPLETE_EXTERNAL_RELEASE_BLOCKED"
+    owner: "Codex implementation and QA + external provider/Operations decision owners"
+    blocked_by: []
+    blocks: []
+    note: "Functional test delivery completed 2026-07-16. M04-012 is implemented with durable device/OS/app provenance. M04-017/024/043 pass complete labelled test-adapter E2E and production fail-closed negatives, but remain production-partial for DEC-008 and the real Operations approval integration/policy. Typecheck/build, focused M04 4/4, auth negatives 3/3, dashboard recovery 11/11, local/live database contracts and all 298 enumerated regression checks have passing evidence."
   - task_id: "TASK-G11-G12-RELEASE-001"
     gate: "G11 hardening / G12 release"
     priority: "P0"

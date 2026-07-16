@@ -18,6 +18,15 @@ export type OutboxOp =
   // Upsert on (inspection_id, field_key) → idempotent replay; never touches factories (FND-007/M04-112).
   | { kind: "factory_check"; inspection_id: string; check: { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }; queued_at: string };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
+export type CachedRouteEstimate = {
+  etaMinutes: number;
+  remainingDistanceM: number;
+  estimatedAt: string;
+  provider: string;
+  mode: "production" | "test_stub";
+  refreshAfterMs: number;
+  stale?: boolean;
+};
 
 function idb(): Promise<IDBDatabase> {
   return new Promise((res, rej) => {
@@ -51,6 +60,10 @@ export const local = {
   }),
   cachePackage: (inspection: string, def: unknown) => tx("packages", "readwrite", s => s.put(def, inspection)),
   getPackage: (inspection: string) => tx<unknown>("packages", "readonly", s => s.get(inspection)),
+  // FLD-JRN-003/004 — the last provider estimate is a display-only offline
+  // value. It never mutates workflow state and is always surfaced as stale.
+  cacheRouteEstimate: (visit: string, estimate: CachedRouteEstimate) => tx("packages", "readwrite", s => s.put(estimate, `route:${visit}`)),
+  getRouteEstimate: (visit: string) => tx<CachedRouteEstimate | undefined>("packages", "readonly", s => s.get(`route:${visit}`)),
   enqueue: (op: OutboxOp) => tx("outbox", "readwrite", s => s.add(op)),
   peekAll: () => tx<OutboxOp[]>("outbox", "readonly", s => s.getAll() as IDBRequest<OutboxOp[]>),
   keys: () => tx<IDBValidKey[]>("outbox", "readonly", s => s.getAllKeys()),

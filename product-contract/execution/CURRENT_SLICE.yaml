@@ -1,172 +1,125 @@
-schema_version: "1.2"
-task_id: "TASK-G11-G12-RELEASE-001"
-parent_task_id: "TASK-BASELINE-WIRING-AUDIT-001"
-gate: "G11 hardening / G12 release"
-title: "Live migration certification, audited main promotion and configured production deployment"
-status: "AUTHORIZED_SUBSET_COMPLETE_DEPLOYMENT_BLOCKED"
+schema_version: "1.3"
+task_id: "TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001"
+parent_task_id: "TASK-G11-G12-RELEASE-001"
+gate: "G11 iPad functional hardening"
+title: "Device metadata, provider-neutral ETA and governed geofence override test flow"
+status: "FUNCTIONAL_E2E_STUB_COMPLETE_EXTERNAL_RELEASE_BLOCKED"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#G11-G12-live-promotion-release"
+approval_ref: "HUMAN_APPROVALS.yaml#TASK-IPAD-M04-functional-stub-authorization"
 
 sponsor_direction:
   approver: "Vikram Indla"
   date: "2026-07-16"
   authorization:
-    - "Apply and verify already-versioned forward-only live migrations whose contract and negative tests are present."
-    - "Create an audited release commit, promote/push the verified baseline to main, and preserve exact Git provenance."
-    - "Deploy through the actually configured production target and run smoke plus rollback-readiness checks."
-    - "Rotate exposed credentials only when replacement values and every dependent configured target can be updated atomically without exposing secrets."
+    - "Deliver MVP1-M04-012, MVP1-M04-017, MVP1-M04-024 and MVP1-M04-043 as a functional end-to-end iPad field slice."
+    - "Use explicit test-only stubs where routing-provider service or Operations override approval is externally unavailable."
+    - "Implement the real provider/approval boundaries so test stubs can be replaced without changing the field workflow."
   limits:
-    - "Approval does not invent or resolve provider selections, policy values, routes, thresholds, risk/scoring semantics, geographic authority or asset rights."
-    - "Do not destructively clean live data, edit an applied migration in place, print secrets, or discard concurrent/user-owned work."
-    - "Do not mark G11/G12 PASS while a mandatory P0/P1 criterion is failed, skipped, unevidenced or blocked without approved change control."
+    - "Test-stub output must be visibly labelled and must never be represented as production routing truth or real Operations approval."
+    - "Production/default mode must fail closed when the routing provider or governed override approval is unavailable."
+    - "This authorization does not resolve DEC-002, DEC-008, provider licensing, geofence values or Operations approval policy."
 
-branch_at_start: "feat/admin-control-plane"
-head_at_start: "330398781042"
-worktree_at_start: "123 dirty/untracked status entries; includes audited remediation code/records, runtime evidence screenshots and user/concurrent changes"
-remote_at_start:
-  feature_ref: "origin/feat/admin-control-plane@330398781042"
-  setup_ref: "origin/setup/Inspection@3b5cf37"
-  remote_main_exists: false
-  local_main: "9360fc9"
+branch_at_start: "codex/g11-g12-integration"
+head_at_start: "4c01bc0"
+worktree_at_start: "User-owned generated screenshots plus apps/web/node_modules symlink are dirty/untracked and must be preserved."
 
-process_ids: ["AUTH", "P00", "P01", "P02", "P03", "P04", "P05", "P06A", "P06B", "P07", "P08", "P09", "P10", "P11", "P12"]
+process_ids: ["P06A"]
 requirement_ids:
-  - "MVP1-M01-004"
-  - "MVP1-M09-001"
-  - "MVP1-M09-005"
-  - "MVP1-M09-018"
-  - "MVP1-M09-021"
-  - "MVP1-M09-022"
-  - "MVP1-M09-024"
-  - "MVP1-M04-045"
-  - "MVP1-M06-001..053"
-  - "MVP1-FND-001..013"
-  - "MVP1-INT-001..011"
-  - "MVP1-SEC-001..006"
-  - "MVP1-NFR-001..006"
-  - "RBAC-001..014"
-screen_ids:
-  - "AUTH-01..03"
-  - "SCR-WEB-100..500"
-  - "SCR-IPAD-600..650"
-  - "SCR-VIR-700..720"
-  - "SCR-ADM-001..090"
-engine_ids: ["ENG-01", "ENG-02", "ENG-03", "ENG-04", "ENG-05", "ENG-06", "ENG-07", "ENG-08", "ENG-09", "ENG-10", "ENG-11", "ENG-12"]
-acceptance_ids:
-  - "AC-0449"
-  - "AC-0453"
-  - "AC-0466"
-  - "AC-0469"
-  - "AC-0470"
-  - "AC-0472"
-  - "AC-0158"
-  - "AC-0357..AC-0409"
-  - "B8-EV-001"
-  - "B9-EV-001"
-  - "G10 complete regression"
-  - "G11 hardening evidence"
-  - "G12 release and rollback evidence"
-  - "DSG-A11Y-001"
-  - "DSG-CODE-001"
+  - "MVP1-M04-012"
+  - "MVP1-M04-017"
+  - "MVP1-M04-024"
+  - "MVP1-M04-043"
+acceptance_ids: ["AC-0125", "AC-0130", "AC-0137", "AC-0156"]
+screen_ids: ["SCR-IPAD-610", "SCR-IPAD-620"]
+engine_ids: ["ENG-06", "ENG-08"]
 
 dependencies:
-  - "TASK-G11-REMEDIATION-001 engineering exit: 276/276 PASS with zero failed/skipped/excluded."
-  - "Configured Supabase project iiozvqntawxfwbgffzqu and an authenticated, auditable migration path."
-  - "Versioned migrations 20260715130000_cd028_one_open_review_per_version.sql and 20260715193000_field_arrival_evidence_column_repair.sql plus their prerequisite migrations."
-  - "A production hosting target must be configured and its deployment/rollback mechanism discoverable before deployment."
-  - "The audited application tree must be committed without absorbing unrelated screenshots, logs, stashes or concurrent work."
-  - "Remote main currently does not exist; promotion must create it from the verified release candidate and verify the remote SHA."
+  - "Existing authenticated Inspector field workspace and canonical STM-OPS transitions."
+  - "Existing journey_sessions ETA/distance fields and immutable geo_events contract."
+  - "A forward-only Supabase migration for device and provider provenance fields."
+  - "Test-only routing and override adapters for deterministic browser verification."
 
 open_decisions:
-  - "Twelve non-migration AC-ledger partials remain provider/schema/policy/RBAC blocked and are not resolved by this release-operation approval."
-  - "CD-024 route/ownership remains open. CD-031's map/preflight evidence is reconciled and DEC-012 is PASS; its exact leadership contact-privacy and provider/source-backed rows remain open."
-  - "CD-001 asset rights, official geographic anchors and Arabic-only raster treatment remain release confirmations."
-  - "Region migration, provider adapters and credential replacement values require actual configured targets; no target/provider may be invented."
+  - "DEC-002 remains open for production GPS accuracy, arrival radius, geofence and telemetry policy."
+  - "DEC-008 remains open for production maps/routing provider selection and licensing."
+  - "The real Operations override approval mechanism and approver policy remain external; only the provider boundary and test simulation are authorized here."
 
 do_not_touch:
-  - "Do not edit applied migrations in place; use only existing forward migrations or add a new idempotent forward correction."
-  - "Do not directly mutate workflow states, immutable submissions, audit history, official factory coordinates or offline/server conflicts."
-  - "Do not delete branches, stashes, screenshots, logs or user/concurrent changes to manufacture a clean tree."
-  - "Do not expose PATs, API keys, database passwords, demo passwords or replacement credentials in commands, logs or evidence."
-  - "Do not claim provider delivery, map/routing truth, SLA/risk/scoring policy, asset rights or geographic authority without the missing approved source."
-  - "Do not call G11/G12 PASS merely because main is pushed or a deployment succeeds."
+  - "Do not edit an applied migration in place; add one idempotent forward migration."
+  - "Do not directly mutate operational workflow state outside canonical transitions."
+  - "Do not alter official factory coordinates, immutable submissions, audit history or offline/server conflict behavior."
+  - "Do not enable test stubs by default or hide their test-only provenance."
+  - "Do not modify main, the immutable release tag, credentials or user-owned generated evidence."
 
 authorized_file_scope:
-  - "Known forward migrations and their database tests/probes."
-  - "Audited remediation application/test files already verified under TASK-G11-REMEDIATION-001."
-  - "Release, hosting and environment configuration only where an actual configured target exists."
-  - "Git branch/commit/promotion records and G11/G12 contract, acceptance, evidence and session records."
-  - "Credential references/configuration only through secret-safe mechanisms; never plaintext secret values."
+  - "apps/web/src/app/field/[visitId]/*"
+  - "apps/web/src/lib field device/routing/override adapters and offline last-value support"
+  - "apps/web/e2e iPad field functional and negative-path tests"
+  - "One forward Supabase migration and one rollback-only database probe"
+  - "Product-contract task, acceptance, evidence, queue and session records for this slice"
 
 task_specific_context:
-  - "FINAL_CERTIFICATION.md"
-  - "product-contract/GATE_STATUS.md"
-  - "product-contract/evidence/TASK-G11-REMEDIATION-001.md"
-  - "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md"
-  - "product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md"
-  - "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md"
-  - "product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md"
-  - "product-contract/evidence/AC_LEDGER.csv"
-  - "product-contract/governance/HUMAN_APPROVALS.yaml"
-  - "product-contract/governance/OPEN_DECISIONS.yaml"
+  - "product-contract/business/master_end_to_end_process.md"
+  - "product-contract/screens/screen_route_catalogue.csv"
+  - "product-contract/domain/field_dictionary.csv"
+  - "product-contract/domain/rbac_matrix.csv"
+  - "product-contract/domain/state_transitions.csv"
+  - "product-contract/governance/error_catalogue.csv"
   - "product-contract/governance/decision_register.csv"
-  - "Local linked Supabase CLI state was discovered and used read-only; it is intentionally untracked and no supabase/config.toml is present."
-  - "supabase/migrations/20260715130000_cd028_one_open_review_per_version.sql"
-  - "supabase/migrations/20260715180000_field_arrival_evidence.sql"
-  - "supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql"
-  - "supabase/migrations/20260716120000_cd031_factory360_audit.sql"
-  - "supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql"
-  - "supabase/tests/*"
-  - "outputs/cd-031-r3/*"
-  - "apps/web/src/app/factories/[id]/*"
-  - "apps/web/e2e/cd-031-factory-360.spec.ts"
-  - "apps/web/package.json"
-  - "apps/web/playwright.config.ts"
-  - "Hosting/deployment configuration discovered in the repository or connected environment"
+  - "product-contract/acceptance/ACCEPTANCE_STATUS.md"
+  - "product-contract/evidence/AC_LEDGER.csv"
+  - "apps/web/src/app/field/[visitId]/Startup.tsx"
+  - "apps/web/src/app/field/[visitId]/page.tsx"
+  - "apps/web/src/app/field/[visitId]/actions.ts"
+  - "apps/web/src/lib/offline.ts"
+  - "supabase/migrations/0001_foundation.sql"
+  - "supabase/migrations/0015_w1_journey_state.sql"
 
 required_tests:
-  - "Read-only live migration-history reconciliation before applying anything."
-  - "Preflight duplicate/open-review and arrival-evidence data-shape checks; abort instead of destructive cleanup on conflict."
-  - "Apply only missing versioned migrations through the authenticated migration path; verify recorded migration history."
-  - "CD-028 one-open-review concurrency negative and M04-045 arrival capture/offline replay/readback proof after live application."
-  - "Secret-safe source/configuration scan and verification that no production bundle contains demo credentials."
-  - "Typecheck, production build and the complete current Playwright inventory on the exact release commit."
-  - "Remote-main SHA verification after promotion."
-  - "Production URL smoke: auth boundary, role launch, representative planner/field/review/admin/dashboard routes, RTL, health and neutral-error behavior."
-  - "Rollback-readiness evidence for database and application deployment; no destructive rollback execution against live data."
-  - "Git diff/attribution check and preservation of every unrelated dirty or concurrent file."
-  - "CD-031 exact-package hash verification, row-by-row DEC-012 audit, local/live rollback SQL contracts, focused responsive/runtime regression and zero-residual live check."
-  - "M09 direct-item/package write, frozen-snapshot, maker-checker, RLS, audit and zero-residual local/live rollback contract."
-  - "Provider-page-boundary coverage for complete Operations and Bulk Planning reads, including fail-closed later-page errors."
+  - "M04-012: stable per-install device identifier plus browser-reported OS and application version persist on journey/geo records."
+  - "M04-017: first valid GPS fix produces, displays, caches and persists a test-stub route ETA and warns when projected arrival exceeds the visit window."
+  - "M04-024: route ETA/distance refresh periodically, preserve last-known offline value and expose provider timestamp/provenance."
+  - "M04-043: outside-fence dialog supports cancel, requires a reason, and continues at actual coordinates only after an approved test-stub decision."
+  - "Negative: default/production mode never fabricates ETA or self-approves an override when external services are unavailable."
+  - "Negative: weak GPS, failed writes, offline provider and cancelled override leave the workflow blocked without false completion."
+  - "Migration idempotency, RLS/immutability continuity and rollback-only database probe."
+  - "Typecheck, production build, focused field browser suite and complete Playwright regression."
 
 required_evidence:
-  - "product-contract/evidence/TASK-G11-G12-RELEASE-001.md"
-  - "product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md"
-  - "product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md"
-  - "Live migration history and post-application verification transcript with no secret values."
-  - "Release commit SHA, remote main SHA, deployment identifier/URL and smoke result."
-  - "Updated GATE_STATUS.md, CURRENT_STATE.md, WORK_QUEUE.yaml, ACCEPTANCE_STATUS.md, EVIDENCE_STATUS.md and SESSION_LEDGER.json."
-  - "Explicit disposition of every still-open partial or release blocker; no silent closure."
+  - "product-contract/evidence/TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001.md"
+  - "Focused browser results for AC-0125/0130/0137/0156 including test-stub labels and production fail-closed states."
+  - "Database probe/readback for device/provider provenance and immutable override geo event."
+  - "Updated CURRENT_STATE.md, GATE_STATUS.md, WORK_QUEUE.yaml, ACCEPTANCE_STATUS.md, EVIDENCE_STATUS.md, AC_LEDGER.csv and SESSION_LEDGER.json."
 
 exit_condition: >-
-  TASK-G11-G12-RELEASE-001 may mark G11/G12 PASS only when every mandatory P0/P1
-  release criterion has source, runtime, negative-path and evidence proof; all required
-  live migrations are recorded and verified; the exact release commit passes the complete
-  inventory; remote main equals that commit; an actual production target is deployed and
-  smoke-verified; rollback readiness is recorded; credentials are safe; and no unresolved
-  provider/policy/schema/asset/region decision remains release-blocking. Otherwise complete
-  the safely authorized subset and leave the affected gate explicitly OPEN or BLOCKED.
+  The slice may be recorded FUNCTIONAL_E2E_STUB_COMPLETE_EXTERNAL_RELEASE_BLOCKED only
+  when all four positive test-mode flows and all production fail-closed negative paths pass,
+  device metadata is durable, no stub is enabled by default, and regression remains green.
+  MVP1-M04-012 may move to implemented with real runtime proof. MVP1-M04-017,
+  MVP1-M04-024 and MVP1-M04-043 must retain explicit provider/approval release boundaries
+  and may not be called production-complete until DEC-008 and the governed Operations
+  approval integration are resolved.
 
-execution_reconciliation:
-  date: "2026-07-16"
-  release_branch: "codex/g11-g12-integration"
-  application_release_commit: "37e8e05"
-  release_tag: "g11-g12-release-2026-07-16"
-  verification: "Post-M09 hardening candidate 294/294 PASS: 4 authenticated setup + 290 application; zero failed/skipped/excluded; typecheck/build PASS. Two full-run iterations found and repaired the Bulk Planning provider-page truncation."
-  cd031_continuation: "Exact R3 package hash-verified; DEC-012 wiring PASS; focused 18/18 and complete inventory 293/293; local/live rollback contracts prove four Planner write paths, activation, five audit events and Inspector denials; zero live residual rows. Slice remains upstream-blocked for exact privacy/provider authority."
-  live_database: "Required release objects already live; no prior DDL replayed. CD-028 rollback negative and M04-045 real-outbox replay/readback PASS. Idempotent CD-031 canonical-audit and M09 relationship-contract corrections are applied and live-proven; M09 rollback probe PASS with zero residual rows; remote migration-history rows remain absent."
-  m09_write_flow: "M09-001/005/018/021/022/024 requirement-level verdict PASS; direct item/package payloads, condition grammar/cycles, scoring disable, frozen snapshots, maker-checker, RLS and audit are enforced. Sponsor runtime acceptance remains pending."
-  acceptance_ledger: "493 rows: 15 verified_live / 466 implemented / 12 partial / 0 missing."
-  deployment: "BLOCKED: no configured production hosting/deployment/rollback target exists; provider/target selection not authorized."
-  gate_disposition: "G10 PASS; G11 and G12 remain OPEN."
+completion:
+  completed_at: "2026-07-16"
+  verdict: "FUNCTIONAL_E2E_STUB_COMPLETE_EXTERNAL_RELEASE_BLOCKED"
+  acceptance_disposition:
+    MVP1-M04-012: "implemented"
+    MVP1-M04-017: "partial — functional test adapter complete; production routing provider pending DEC-008"
+    MVP1-M04-024: "partial — functional refresh/offline flow complete; production routing provider pending DEC-008"
+    MVP1-M04-043: "partial — functional simulated approval complete; real Operations approval integration/policy pending"
+  verification:
+    - "npm run typecheck PASS"
+    - "npm run build PASS"
+    - "Focused M04 browser suite 4/4 PASS"
+    - "Focused authentication negatives 3/3 PASS"
+    - "Focused dashboard recovery 11/11 PASS"
+    - "All 298 enumerated checks have passing evidence across the full run and deterministic recovery shard; one full-run dashboard segment was interrupted by an evidenced external provider connect timeout and then passed 11/11 on recovery."
+    - "Local migration replay/idempotency and rollback SQL contract PASS"
+    - "Authenticated live schema readback and rollback SQL contract PASS with zero residual rows"
+  retained_release_boundaries:
+    - "DEC-008 production routing provider selection/licensing"
+    - "Real governed Operations override approval integration and policy"
+    - "DEC-002 production GPS/geofence policy values"
+    - "Remote migration-history governance"

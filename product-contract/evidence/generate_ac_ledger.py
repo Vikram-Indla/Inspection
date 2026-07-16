@@ -63,6 +63,7 @@ OVERRIDES = {
 # from the historical development audit.  They are deliberately limited to
 # rows with dated, independent evidence in the current evidence ledger.
 CLOSURE_OVERRIDES = {
+    "MVP1-M04-012": "Stable per-install device ID plus browser-reported OS and application version persist on journey and geo records; live browser and database readback pass.",
     "MVP1-M02-009": "Republish queues the assigned-inspector notification through the shared adapter; queue failure is reported neutrally after the state change.",
     "MVP1-M02-030": "Republish notification wiring and failure truth are covered by the shared adapter and focused CD-027 checks.",
     "MVP1-M03-005": "Field calendar drag submits a planner-owned reschedule request with the existing server guard.",
@@ -88,7 +89,11 @@ CLOSURE_OVERRIDES = {
 # Dated remediation can improve the evidence note without upgrading a row whose
 # live schema/provider/policy boundary is still unverified.  Keep these rows
 # partial until the external proof exists.
-PARTIAL_OVERRIDES = {}
+PARTIAL_OVERRIDES = {
+    "MVP1-M04-017": "Initial ETA, persistence and execution-window warning pass end-to-end with the visibly labelled deterministic test adapter; DEC-008 production routing provider remains unresolved.",
+    "MVP1-M04-024": "Periodic ETA/distance refresh plus visibly stale offline last-value and recovery pass end-to-end with the test adapter; production road-routing refresh remains provider-blocked.",
+    "MVP1-M04-043": "Outside-fence dialog, cancel, mandatory reason, actual-coordinate persistence and simulated Operations approval pass end-to-end; the real governed Operations approval integration/policy remains external.",
+}
 
 LIVE_OVERRIDES = {
     "MVP1-M04-045": "Arrival photo/comment capture queued through the real visit-linked IndexedDB outbox and replayed to live evidence storage before an inspection existed; evidence_note and arrival linkage were read back exactly.",
@@ -127,10 +132,11 @@ def main() -> int:
             status, note = "verified_live", f"[Codex live verification 2026-07-14] {live}"
         closure = CLOSURE_OVERRIDES.get(r["requirement_id"])
         if closure:
-            status, note = "implemented", f"[Codex remediation 2026-07-15] {closure}"
+            closure_date = "2026-07-16" if r["requirement_id"] == "MVP1-M04-012" else "2026-07-15"
+            status, note = "implemented", f"[Codex remediation {closure_date}] {closure}"
         partial = PARTIAL_OVERRIDES.get(r["requirement_id"])
         if partial:
-            status, note = "partial", f"[Codex pending live proof 2026-07-15] {partial}"
+            status, note = "partial", f"[Codex functional test-boundary proof 2026-07-16] {partial}"
         # live-proven rows keep their stronger status only if the audit says BUILT
         ov = OVERRIDES.get(r["requirement_id"])
         if ov and verdicts.get(r["requirement_id"], ("", ""))[0] == "implemented":

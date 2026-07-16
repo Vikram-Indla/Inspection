@@ -3138,9 +3138,93 @@
       "commit_sha": "Implementation/evidence commit 37e8e05 on codex/g11-g12-integration; exact handoff provenance is the commit containing this entry",
       "next_task": "Obtain sponsor runtime acceptance for CD-006..011 or resolve one of the twelve source-authority rows; separately configure and approve a real production hosting/rollback target before G12.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 90 and product-contract/evidence/CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md. Continue on codex/g11-g12-integration from implementation commit 37e8e05 plus the following handoff-record commit. M09-001/005/018/021/022/024 are implemented with live rollback/negative/audit proof and the full production inventory is 294/294. Do not reopen them without a demonstrated regression, do not fabricate the twelve upstream rows, and do not call G11/G12 closed without sponsor runtime acceptance and a configured production deployment/rollback target."
+    },
+    {
+      "session_id": "2026-07-16-m04-device-eta-override-functional-stubs",
+      "started_at": "2026-07-16",
+      "ended_at": "2026-07-16",
+      "branch": "codex/g11-g12-integration",
+      "task_id": "TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001",
+      "gate": "G10 verification PASS / G11 iPad functional hardening complete with external release boundaries",
+      "requirements": [
+        "MVP1-M04-012",
+        "MVP1-M04-017",
+        "MVP1-M04-024",
+        "MVP1-M04-043"
+      ],
+      "acceptance_ids": [
+        "AC-0125",
+        "AC-0130",
+        "AC-0137",
+        "AC-0156"
+      ],
+      "screens": [
+        "SCR-IPAD-610",
+        "SCR-IPAD-620"
+      ],
+      "engines": [
+        "ENG-06",
+        "ENG-08"
+      ],
+      "files_changed": [
+        "apps/web/src/app/field/[visitId]/Startup.tsx",
+        "apps/web/src/app/field/[visitId]/page.tsx",
+        "apps/web/src/lib/field-device.ts",
+        "apps/web/src/lib/field-integrations.ts",
+        "apps/web/src/lib/offline.ts",
+        "apps/web/src/app/operations/page.tsx",
+        "apps/web/playwright.config.ts and focused/browser harness specs",
+        "supabase/migrations/20260716102921_m04_device_eta_override_test_boundary.sql",
+        "supabase/tests/0033_m04_device_eta_override_contract.sql",
+        "product-contract task, gate, acceptance, evidence, queue and session records"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "focused M04 device/ETA/override suite 4/4 PASS",
+        "focused authentication negatives 3/3 PASS",
+        "focused dashboard paging/scoping and provider-outage recovery 11/11 PASS",
+        "golden planner-field-review journey PASS",
+        "offline answer/outbox replay drill PASS",
+        "all 298 enumerated checks have passing evidence across the complete run and deterministic recovery shard",
+        "one complete-run dashboard segment recorded external UND_ERR_CONNECT_TIMEOUT and then passed in the recovery shard; not represented as an uninterrupted single-run pass",
+        "local full migration replay/idempotency and rollback contract PASS",
+        "authenticated live object-state readback and rollback contract PASS with zero residual rows",
+        "AC ledger generator and audit reconciliation validator PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001.md",
+        "product-contract/evidence/AC_LEDGER.csv",
+        "product-contract/evidence/AC_LEDGER_SUMMARY.md",
+        "product-contract/evidence/STORYBOARD_STATUS.md",
+        "supabase/tests/0033_m04_device_eta_override_contract.sql",
+        "product-contract/evidence/EVIDENCE_STATUS.md"
+      ],
+      "decisions": [
+        "Use explicit server-gated and visibly labelled test adapters for unavailable routing and Operations approval",
+        "Keep production/default behavior fail-closed and prevent query-string opt-in to test mode",
+        "Move M04-012 to implemented with live durability proof",
+        "Keep M04-017, M04-024 and M04-043 partial at their production provider/approval boundaries",
+        "Contain offline background persistence failures without losing the last route estimate or crashing the field page",
+        "Page and scope Operations geo history rather than retaining a false global 200-event window",
+        "Record external provider timeout recovery truthfully instead of claiming a single uninterrupted 298/298 run",
+        "Preserve user-owned generated screenshots and the node_modules link"
+      ],
+      "blockers": [
+        "DEC-008 production road-routing provider selection/licensing",
+        "Real governed Operations override approval integration and policy",
+        "DEC-002 production GPS/geofence policy authority",
+        "Remote migration-history hardening",
+        "Credential/region/asset/geographic and CD-031 provider/privacy authority",
+        "Sponsor runtime acceptance",
+        "No configured production hosting/deployment/rollback target"
+      ],
+      "commit_sha": "Implementation/evidence commit created after this append; exact provenance is the commit containing this entry on codex/g11-g12-integration",
+      "next_task": "Connect an approved production routing provider and real governed Operations approval mechanism through the delivered adapters, then rerun the same contracts before upgrading M04-017/024/043.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 91 and evidence/TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001.md. The four flows are complete for functional E2E testing; M04-012 is implemented and M04-017/024/043 retain production-only provider/approval boundaries. Do not enable test adapters in production or invent DEC-002/DEC-008/approval policy values."
     }
   ],
-  "last_session": "2026-07-16-m09-write-flow-hardening",
+  "last_session": "2026-07-16-m04-device-eta-override-functional-stubs",
   "rules": {
     "append_only": true,
     "required_fields": [

@@ -2,11 +2,16 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Startup, { type StartupStrings } from "./Startup";
+import packageJson from "../../../../package.json";
 
 export const dynamic = "force-dynamic";
 
-export default async function FieldVisit({ params }: { params: Promise<{ visitId: string }> }) {
+export default async function FieldVisit({ params, searchParams }: {
+  params: Promise<{ visitId: string }>;
+  searchParams?: Promise<{ integrationMode?: string }>;
+}) {
   const { visitId } = await params;
+  const query = await searchParams;
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data: v } = await sb.from("visits")
@@ -31,6 +36,15 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     cancellationRequested: !!flagRow?.cancellation_requested,
     returnRequested: !!flagRow?.return_requested,
   };
+  // Test adapters are server-gated and disabled by default. A test-mode page
+  // may opt down to production behavior for fail-closed browser verification;
+  // a production page can never opt up through a query parameter.
+  const integrationMode = process.env.FIELD_TEST_STUBS_ENABLED === "true"
+    && query?.integrationMode !== "production" ? "test_stub" : "production";
+  const buildSha = process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GITHUB_SHA ?? process.env.BUILD_SHA;
+  const applicationVersion = buildSha
+    ? `${packageJson.version}+${buildSha.slice(0, 12)}`
+    : packageJson.version;
   if (!v) {
     return (
       <Shell current="/field" title={t("field.start.notFoundTitle", "Not found")}>
@@ -127,7 +141,30 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     logOpBlocked: locale === "ar"
       ? "تعذر تحديث حالة الزيارة. تحقق من الجاهزية والاتصال ثم أعد المحاولة."
       : t("field.start.logOpBlockedSafe", "The visit state could not be updated. Check readiness and the connection, then try again."),
-    logGpsFallback: t("field.start.logGpsFallback", "GPS unavailable — demo coordinates substituted for check-in (M04-049 handled)"),
+    logGpsFallback: t("field.start.logGpsFallback", "TEST STUB: GPS unavailable — deterministic test coordinates substituted; not production location truth"),
+    logGpsUnavailable: t("field.start.logGpsUnavailable", "GPS unavailable — check-in remains blocked. Retry location access or use the governed override path when an actual position is available."),
+    deviceHeading: t("field.start.deviceHeading", "Device information (M04-012)"),
+    devicePending: t("field.start.devicePending", "Device information is captured when the journey starts"),
+    deviceIdLabel: t("field.start.deviceIdLabel", "Device ID"),
+    deviceOsLabel: t("field.start.deviceOsLabel", "OS"),
+    appVersionLabel: t("field.start.appVersionLabel", "App version"),
+    routeHeading: t("field.start.routeHeading", "Road-route ETA (M04-017/024)"),
+    routeUnavailable: t("field.start.routeUnavailable", "Routing provider unavailable — ETA is not calculated. No straight-line value is presented as road-route truth."),
+    routeOfflineLast: t("field.start.routeOfflineLast", "Offline — showing the last known route estimate as stale; it is not refreshed."),
+    routeValue: t("field.start.routeValue", "ETA {eta} min · road distance {distance} m"),
+    routeUpdated: t("field.start.routeUpdated", "Estimated {time}"),
+    routeWindowWarning: t("field.start.routeWindowWarning", "Warning: projected arrival exceeds the planned execution window."),
+    routeWithinWindow: t("field.start.routeWithinWindow", "Projected arrival is within the planned execution window."),
+    testStubBadge: t("field.start.testStubBadge", "TEST STUB"),
+    overrideHeading: t("field.start.overrideHeading", "Outside planned location — confirm governed override"),
+    overrideCaption: t("field.start.overrideCaption", "Normal check-in is blocked. Confirm or cancel; continuation requires an approved Operations decision and always uses the actual observed coordinates."),
+    overrideActualCoords: t("field.start.overrideActualCoords", "Actual position {lat}, {lng} · GPS ±{acc} m · {distance} m from planned location"),
+    overrideReasonLabel: t("field.start.overrideReasonLabel", "Override reason — mandatory"),
+    overrideConfirm: t("field.start.overrideConfirm", "Confirm governed override"),
+    overrideCancel: t("field.start.overrideCancel", "Cancel"),
+    overrideUnavailable: t("field.start.overrideUnavailable", "Operations approval integration is unavailable — check-in remains blocked and no override was recorded."),
+    overrideApproved: t("field.start.overrideApproved", "Override approved · actual coordinates recorded"),
+    overrideReasonRequired: t("field.start.overrideReasonRequired", "Enter a reason before requesting the override."),
     // F3 — navigation launch (M04-016)
     mapsOpen: t("field.start.mapsOpen", "Open in Google Maps"),
     mapsGeo: t("field.start.mapsGeo", "Open in navigation app"),
@@ -216,7 +253,8 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
             </p>
           </div>
         </div>
-        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} flags={flags} />
+        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} flags={flags}
+          applicationVersion={applicationVersion} integrationMode={integrationMode} />
       </div>
     </Shell>
   );

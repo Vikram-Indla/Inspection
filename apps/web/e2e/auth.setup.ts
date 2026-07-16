@@ -15,7 +15,10 @@ for (const key of Object.keys(PERSONAS) as PersonaKey[]) {
     await page.locator("#email").fill(p.email);
     await page.locator("#pw").fill(p.password);
     await submitCredentials(page);
-    await page.waitForURL((url) => url.pathname.startsWith(p.home), { timeout: 20_000 });
+    // /launch verifies identity and reads the user's live role grants before it
+    // redirects. Keep one deterministic attempt, but allow the remote identity
+    // and role lookups enough time under release-suite load.
+    await page.waitForURL((url) => url.pathname.startsWith(p.home), { timeout: 40_000 });
     await expect(page.locator("body")).not.toContainText("ERR-AUTH");
     // The product correctly defaults a fresh session to Arabic (covered by the
     // CD-001 locale test). The older journey specs intentionally assert their

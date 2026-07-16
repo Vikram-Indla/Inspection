@@ -22,7 +22,7 @@ PARTIALS = ROOT / "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026
 SESSION = ROOT / "product-contract/sessions/SESSION_LEDGER.json"
 MAPS = ROOT / "outputs"
 
-EXPECTED_COUNTS = {"verified_live": 15, "implemented": 466, "partial": 12, "missing": 0}
+EXPECTED_COUNTS = {"verified_live": 15, "implemented": 467, "partial": 11, "missing": 0}
 
 
 def fail(message: str) -> None:
@@ -62,7 +62,7 @@ def main() -> int:
         fail("no authoritative wiring maps found")
 
     session = json.loads(SESSION.read_text())
-    if session.get("last_session") != "2026-07-16-m09-write-flow-hardening":
+    if session.get("last_session") != "2026-07-16-m04-device-eta-override-functional-stubs":
         fail(f"unexpected last_session {session.get('last_session')!r}")
     if not session.get("sessions"):
         fail("session ledger has no sessions")

@@ -26,7 +26,7 @@ async function loginOps(page: import("@playwright/test").Page) {
   await page.locator("#email").fill(OPS.email);
   await page.locator("#pw").fill(OPS.password);
   await submitCredentials(page);
-  await page.waitForURL(/\/dashboard/, { timeout: 20_000 });
+  await page.waitForURL(/\/dashboard/, { timeout: 40_000 });
 }
 
 test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
@@ -35,7 +35,9 @@ test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
     const liveSource = readFileSync(join(process.cwd(), "src/app/operations/live/page.tsx"), "utf8");
     const refreshSource = readFileSync(join(process.cwd(), "src/app/operations/actions.ts"), "utf8");
     expect(source).toContain("collectPostgrestPages<VisitRow>");
+    expect(source).toContain("collectPostgrestPages<GeoRow>");
     expect(source).toContain("collectPostgrestPages<FactoryRow>");
+    expect(source).toContain("const scopedGeo = geo.filter(g => monitoredVisitIds.has(g.visit_id))");
     expect(liveSource).toContain("collectPostgrestPages<FactoryRow>");
     expect(refreshSource).toContain("collectPostgrestPages<MonitorVisitRow>");
 
@@ -167,7 +169,7 @@ test.describe("TASK-WEB-DASHBOARD-002 route authorization", () => {
 
   test("a non-dashboard persona cannot open the dashboard by URL", async ({ page }) => {
     await page.goto("/dashboard");
-    await page.waitForURL(/\/planning/, { timeout: 20_000 });
+    await page.waitForURL(/\/planning/, { timeout: 40_000 });
     await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toHaveCount(0);
   });
 });
