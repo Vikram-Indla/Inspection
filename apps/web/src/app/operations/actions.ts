@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 export type OpsResult = { error?: string; ok?: boolean };
 
@@ -10,7 +11,7 @@ export type OpsResult = { error?: string; ok?: boolean };
 // bypass — any RLS rejection is mapped to stable recovery copy below.
 export async function updateActionFormStatus(_: OpsResult, formData: FormData): Promise<OpsResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const action_form_id = String(formData.get("action_form_id") ?? "");
@@ -56,7 +57,7 @@ type MonitorVisitRow = {
 
 export async function fetchMonitoringRows(region: string, city: string): Promise<MonitorFetch> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const { data, error } = await sb
@@ -108,7 +109,7 @@ export async function fetchMonitoringRows(region: string, city: string): Promise
 // `notif_update_recipient` (0015). The database remains the authority.
 export async function markNotificationHandled(_: OpsResult, formData: FormData): Promise<OpsResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const notification_id = String(formData.get("notification_id") ?? "");

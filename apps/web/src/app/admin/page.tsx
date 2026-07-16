@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 
@@ -51,7 +52,7 @@ export default async function AdminHome() {
   const total = failed === sources.length;
 
   // Role scope (W02 pattern): server-rendered roles → the families this user can act in.
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   const { data: roleRows } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };

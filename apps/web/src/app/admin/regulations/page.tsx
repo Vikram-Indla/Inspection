@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import {
   NewRegulationForm,
@@ -76,7 +77,7 @@ export default async function Regulations({
 
   // Role scope — writes are RLS-gated to compliance_admin/form_admin. This mirrors the
   // RLS write grant in the UI (S05/S06); it is NOT a route guard (that leg stays BLOCKED).
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   const { data: roleRows } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };

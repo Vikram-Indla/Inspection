@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import Wizard, { type WizardStrings, type GradedFactory } from "./Wizard";
 import { findDuplicateActiveVisits } from "./duplicate";
@@ -41,7 +42,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   // just hides the nav link) — this page-level check is the actual boundary
   // for the UI state shown; the write path is separately RLS-gated
   // (has_role('planner') on visit_plans/visits inserts) regardless.
-  const { data: { user }, error: userError } = await sb.auth.getUser();
+  const { data: { user }, error: userError } = await getVerifiedUser(sb);
   const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabaseBrowser } from "@/lib/supabase";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { local, processOutbox, sha256b64 } from "@/lib/offline";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
@@ -135,7 +136,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   async function startJourney() {
     setBusy(true);
     const sb = supabaseBrowser();
-    const { data: { user } } = await sb.auth.getUser();
+    const { data: { user } } = await getVerifiedUser(sb);
     const { data, error } = await sb.from("journey_sessions")
       .insert({ visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString() })  // M04-009 device clock
       .select().single();

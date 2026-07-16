@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
 import StartReview, { type StartReviewStrings } from "./StartReview";
@@ -13,7 +14,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const { id } = await params;  // inspection id
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
     console.error("[review workspace auth read]", authError.message, authError.code);
     return (
@@ -90,10 +91,19 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   }
   const subs = (ins.submission_versions as unknown as { id: string; version_number: number; snapshot: { answers?: Record<string, string> }; acknowledgement: unknown; submitted_at: string }[]).sort((a, b) => b.version_number - a.version_number);
   const latest = subs[0];
-  const [{ data: itemRows }] = await Promise.all([
-    sb.from("inspection_items").select("id, code, title, regulation_clauses(clause_ref, legal_source)"),
-  ]);
   const reviews = ins.reviews as unknown as { id: string; status: string; decision: string | null; decision_reason: string | null; returned_sections: string[] | null; decided_at: string | null; submission_version_id: string }[];
+  const timelineIds = [ins.id, ...subs.map(s => s.id), ...reviews.map(r => r.id)];
+  // These reads are independent once the inspection aggregate is known. Run
+  // them together so the route remains responsive under live-provider latency.
+  const [{ data: itemRows }, fv, { data: trail }] = await Promise.all([
+    sb.from("inspection_items").select("id, code, title, regulation_clauses(clause_ref, legal_source)"),
+    fetchFactoryChecks(sb, ins.id),
+    sb.from("audit_events")
+      .select("id, action, object_type, occurred_at, actor")
+      .in("object_id", timelineIds)
+      .order("occurred_at", { ascending: false })
+      .limit(25),
+  ]);
   // CD-028 leg 5 — opening is read-only. The review is NOT created and the
   // inspection is NOT transitioned as a side-effect of this render; that now
   // happens only through the explicit StartReview action below.
@@ -216,19 +226,12 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   // M04-190 / M06-017 / M06-034 — factory-data verification checks for the
   // reviewer: Source (Senaei) vs Observed, Verified/Updated, before/after,
   // linked evidence. Tolerant fetch: 0020 pending → verbatim error, no crash.
-  const fv = await fetchFactoryChecks(sb, ins.id);
   if (fv.error) console.error("[review factory verification]", fv.error);
   const fvUpdated = updatedCount(fv.checks);
   const fvEvidence = (ins.evidence as unknown as { storage_path: string; linked_type?: string; linked_id?: string }[]).filter(e => e.linked_type === "factory_field");
   const fvEvCount = (checkId: string) => fvEvidence.filter(e => e.linked_id === checkId).length;
   // M06-010/022/039/051 — chronological audit timeline for this inspection's
   // review chain (immutable audit_events rows; audit_read grants reviewer).
-  const timelineIds = [ins.id, ...subs.map(s => { return s.id; }), ...reviews.map(r => { return r.id; })];
-  const { data: trail } = await sb.from("audit_events")
-    .select("id, action, object_type, occurred_at, actor")
-    .in("object_id", timelineIds)
-    .order("occurred_at", { ascending: false })
-    .limit(25);
 const panelStrings: WorkspaceDecisionStrings = {
     heading: t("review.ws.panelHeading", "Decision — irreversible once confirmed"),
     decisions: { approve: t("enum.approve", "approve"), return: t("enum.return", "return"), reject: t("enum.reject", "reject") },

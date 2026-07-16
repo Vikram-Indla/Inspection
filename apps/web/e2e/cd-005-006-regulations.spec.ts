@@ -30,8 +30,8 @@ test.describe("CD-005 register — discovery, impact rail, read-only truth", () 
     const search = page.getByRole("search");
     const emptyZero = page.getByText(/No regulations configured/i);
     // Exactly one of the two truthful states shows; both are legitimate.
-    const hasRegister = await search.count();
-    if (hasRegister > 0) {
+    await expect(search.or(emptyZero)).toBeVisible({ timeout: 30_000 });
+    if (await search.isVisible()) {
       await expect(search).toBeVisible();
       // Lifecycle chips are pressable filter controls (client-side over the loaded set).
       await expect(page.getByRole("button", { name: /^All/ })).toBeVisible();

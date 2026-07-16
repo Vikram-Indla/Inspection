@@ -5,6 +5,7 @@ import BarChart from "@/components/charts/BarChart";
 import DonutChart from "@/components/charts/DonutChart";
 import LineChart from "@/components/charts/LineChart";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import FieldHome, { type FieldHomeStrings, type FieldNotification, type FieldVisit } from "@/components/field/FieldHome";
 
@@ -47,7 +48,7 @@ function byMonth(dates: string[], locale: string): { label: string; value: numbe
 export default async function Field() {
   const sb = await supabaseServer();
   const { t, locale } = await useT();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");  // ERR-AUTH-001: never proceed with a null session
 
   // M03-015 — persist published→expired before reading (security-definer rpc,

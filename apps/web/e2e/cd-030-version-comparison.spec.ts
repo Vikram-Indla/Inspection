@@ -24,7 +24,8 @@ const RBAC = "../../supabase/migrations/20260715160000_cd030_review_scope_rbac.s
 // Open the first workspace from the queue; skip the test if the env has no rows.
 async function openFirstWorkspace(page: Page): Promise<boolean> {
   await page.goto("/reviews");
-  const open = page.getByRole("link", { name: /open workspace/i }).first();
+  // Select by the governed route contract so this helper remains locale-neutral.
+  const open = page.locator('a[href^="/reviews/"]').first();
   if (await open.count() === 0) return false;
   await open.click();
   await expect(page).toHaveURL(/\/reviews\/[0-9a-f-]+$/);

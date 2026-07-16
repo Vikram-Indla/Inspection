@@ -16,10 +16,10 @@ const TRACE = "src/app/reviews/[id]/FindingTraceChain.tsx";
 test.describe("CD-029 server wiring — integrity guards", () => {
   test("leg 3 — startReview binds version to inspection and latest submission", () => {
     const src = SRC(ACTIONS);
-    expect(src).toMatch(/from\("submission_versions"\)/);
-    expect(src).toContain("version.inspection_id !== inspection_id");
+    expect(src).toMatch(/from\("inspections"\)[\s\S]*submission_versions\(id, version_number\)/);
+    expect(src).toContain("ins.submission_versions.find");
     expect(src).toContain("Only the latest submitted version can be started");
-    expect(src).toMatch(/\.eq\("inspection_id", inspection_id\)[\s\S]*\.order\("version_number"/);
+    expect(src).toMatch(/ins\.submission_versions[\s\S]*sort\(\(a, b\) => b\.version_number - a\.version_number\)/);
     expect(src).toMatch(/\.eq\("status", "submitted"\)\.select\("id"\)\.maybeSingle\(\)/);
   });
 
@@ -41,7 +41,7 @@ test.describe("CD-029 server wiring — integrity guards", () => {
   test("read failures fail closed instead of becoming a false no-row or skipped notification", () => {
     const src = SRC(ACTIONS);
     expect(src).toContain("const REVIEW_READ_ERROR");
-    expect(src).toContain("existingReadError");
+    expect(src).toContain("aggregateError");
     expect(src).toContain("currentReadError");
     expect(src).toContain("inspector notification could not be verified");
     expect(src).toContain("asgReadError");

@@ -63,7 +63,9 @@ test.describe("CD-028 queue — reviewer (leg 1, 3, 4, 10, 14)", () => {
     test.skip(has === 0, "no rows to open in this environment");
     await open.click();
     await expect(page).toHaveURL(/\/reviews\/[0-9a-f-]+$/);
-    await expect(page.getByText(/Read-only submitted version/i)).toBeVisible();
+    // The route exposes an honest loading boundary while its RLS-scoped sources
+    // resolve. It must settle to the immutable submitted-version banner.
+    await expect(page.getByText(/Read-only submitted version/i)).toBeVisible({ timeout: 30_000 });
     // Opening changed nothing: an unclaimed row shows the explicit Start
     // button, a decided row shows "no open decision", and a row already
     // claimed by another run legitimately shows its existing decision panel.
@@ -113,6 +115,11 @@ test.describe("CD-028 resolved backend legs — source truth", () => {
     expect(actions).toContain("export async function startReview");
     expect(actions).toMatch(/from\("reviews"\)\.insert/);
     expect(actions).toMatch(/status: "under_review"/);
+    const start = SRC("src/app/reviews/[id]/StartReview.tsx");
+    expect(start).not.toMatch(/window\.location\.reload|setTimeout|router\.refresh/);
+    expect(actions).toContain("redirect(`/reviews/${inspection_id}/started?review=${created.id}`)");
+    const bridge = SRC("src/app/reviews/[id]/started/page.tsx");
+    expect(bridge).toContain("redirect(`/reviews/${id}${query}`)");
     // the queue module carries no decision form (scan-first)
     const queue = SRC("src/app/reviews/DecisionPanel.tsx");
     expect(queue).not.toContain('name="decision"');

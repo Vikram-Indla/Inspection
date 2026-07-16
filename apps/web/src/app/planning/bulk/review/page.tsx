@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import ReviewClient, { type ReviewStrings } from "./ReviewClient";
 import "./review.css";
@@ -19,7 +20,7 @@ export default async function BulkReview() {
   // RBAC-007 — independent Planner gate. Navigation visibility is never
   // authorization; RLS remains the data boundary and the guarded RPC re-checks.
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };

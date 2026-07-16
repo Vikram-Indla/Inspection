@@ -5,6 +5,7 @@
 // SB19 — strings built server-side with t() and passed as props.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 export type BellStrings = {
   label: string;            // accessible name for the toggle
@@ -38,7 +39,7 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
 
   const load = useCallback(async () => {
     const sb = sbRef.current;
-    const { data: { user } } = await sb.auth.getUser();
+    const { data: { user } } = await getVerifiedUser(sb);
     if (!user) { setAuthed(false); return; }
     setAuthed(true);
     const [{ data, error }, { count }] = await Promise.all([

@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { NewViolationForm, AddMappingForm, type ClauseOption, type VioStrings } from "./Controls";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
@@ -85,7 +86,7 @@ export default async function Violations({
   // Reflect RLS in the UI: writes require compliance_admin/form_admin. This is a
   // truthful mirror of the write policy, NOT a route guard (guard is BLOCKED) —
   // RLS remains the enforcement layer and rejects a non-writer at the database.
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   const { data: roleRows } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };

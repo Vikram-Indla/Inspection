@@ -1,6 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { findDuplicateActiveVisits } from "./duplicate";
 
 export type StepStatus = "pending" | "done" | "failed";
@@ -20,7 +21,7 @@ const NEUTRAL_READ_ERROR =
 
 export async function publishSingleVisit(_: PublishResult, formData: FormData): Promise<PublishResult> {
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
     console.error("[CD-022 publishSingleVisit] auth read failed:", authError.message);
     return { error: NEUTRAL_READ_ERROR };

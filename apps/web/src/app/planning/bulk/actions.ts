@@ -1,5 +1,6 @@
 "use server";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 // CD-025 (SCR-WEB-150 / P03): publish no longer hard-redirects. It returns the
 // authoritative result so the review workspace can render the success state
@@ -182,7 +183,7 @@ const NEUTRAL_READ_ERROR =
 
 export async function publishBulkPlan(_: BulkResult, formData: FormData): Promise<BulkResult> {
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
     console.error("[CD-021 publishBulkPlan] auth read failed:", authError.message);
     return { error: NEUTRAL_READ_ERROR };
