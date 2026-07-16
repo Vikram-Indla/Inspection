@@ -10,6 +10,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 
 const SYSTEM_ERROR = "The session could not be updated. Try again or contact support.";
 import { insertNotification } from "@/lib/notify";
+import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
 
 const DELIVERY_DEGRADED = "Some follow-up updates could not be queued. The session change itself was saved.";
 
@@ -40,6 +41,7 @@ export async function rescheduleSession(_: RoomActionResult, fd: FormData): Prom
   const clientRev = String(fd.get("rev") ?? "");
   if (!appointment_at || Number.isNaN(Date.parse(appointment_at)))
     return { error: "A valid appointment date/time is required (M05-002)." };
+  if (!isPlausibleDate(appointment_at)) return { error: PLAUSIBLE_DATE_ERROR };
   const { data: s, error: sErr } = await sb.from("virtual_sessions")
     .select("id, state, timeline, visit_id, visits(factories(name), assignments(inspector_id))").eq("id", session_id).single();
   if (sErr) { console.error("[virtual reschedule session read]", sErr); return { error: SYSTEM_ERROR }; }

@@ -216,6 +216,7 @@ export default async function BulkReview() {
       packageInvalid: { title: t("plan.review.bl.pkginv.t", "Selected package is no longer published at the authoritative check"), detail: t("plan.review.bl.pkginv.d", "Revalidate and choose a currently published version before publishing.") },
       nopool: { title: t("plan.review.bl.nopool.t", "No Inspector exists in the Inspector role pool"), detail: t("plan.review.bl.nopool.d", "Automatic assignment cannot be derived — a legitimate empty pool, not a source failure.") },
       configMissing: { title: t("plan.review.bl.cfg.t", "Mandatory configuration is missing"), detail: t("plan.review.bl.cfg.d", "Set the visit type, a valid window (end after start) and a package.") },
+      windowImplausible: { title: t("plan.review.bl.win.t", "Visit window date looks like a data-entry error"), detail: t("plan.review.bl.win.d", "Check for a mistyped year — the date is outside the plausible range (DEF-DATA-005).") },
       srcFactory: { title: t("plan.review.bl.srcf.t", "Factory/target source could not be verified"), detail: t("plan.review.bl.srcf.d", "Not evaluated — blocks safely rather than showing false emptiness.") },
       srcPackage: { title: t("plan.review.bl.srcp.t", "Package source is unavailable"), detail: t("plan.review.bl.srcp.d", "Distinct from ‘no package’ — the state is not evaluated, not empty.") },
       srcInspector: { title: t("plan.review.bl.srci.t", "Inspector source is unavailable"), detail: t("plan.review.bl.srci.d", "Distinct from ‘empty pool’ — an empty pool cannot be confirmed.") },

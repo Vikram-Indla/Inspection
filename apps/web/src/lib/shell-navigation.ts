@@ -28,7 +28,7 @@ export const BUSINESS_ROLE_KEYS = [
 export type ShellIcon =
   | "dashboard" | "radar" | "factory" | "calendar" | "visits"
   | "inspect" | "virtual" | "review" | "admin" | "library"
-  | "forms" | "enforcement" | "workflow" | "risk" | "map" | "access";
+  | "forms" | "enforcement" | "workflow" | "risk" | "map" | "access" | "notify";
 
 export type ShellNavItemDefinition = {
   id: string;
@@ -92,6 +92,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
       { id: "risk", labelKey: "shell.nav.risk", labelEn: "Risk Configuration", labelAr: "تهيئة المخاطر", href: "/admin/risk", icon: "risk", roles: ["risk_owner"], businessTab: "Risk Configuration" },
       { id: "gis", labelKey: "shell.nav.gis", labelEn: "GIS Configuration", labelAr: "تهيئة نظم المعلومات الجغرافية", href: "/admin/gis", icon: "map", roles: ["gis_admin"], businessTab: "Administration" },
       { id: "access", labelKey: "shell.nav.access", labelEn: "Users & Roles", labelAr: "المستخدمون والأدوار", href: "/admin/access", icon: "access", roles: ["security_admin"], businessTab: "Users & Roles" },
+      { id: "notifications", labelKey: "shell.nav.notifications", labelEn: "Notification & SLA Rules", labelAr: "قواعد الإشعارات واتفاقية مستوى الخدمة", href: "/admin/notifications", icon: "notify", roles: adminRoles, businessTab: "Administration" },
       { id: "localization", labelKey: "shell.nav.localization", labelEn: "Localization", labelAr: "الترجمة", href: "/admin/localization", icon: "library", roles: ["compliance_admin", "security_admin", "workflow_admin"], businessTab: "Localization" },
       { id: "audit", labelKey: "shell.nav.audit", labelEn: "Audit Trail", labelAr: "سجل التدقيق", href: "/admin/audit", icon: "access", roles: adminRoles, businessTab: "Audit" },
     ],

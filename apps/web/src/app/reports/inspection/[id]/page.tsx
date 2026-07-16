@@ -82,6 +82,13 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
   for (const sv of snap.violations ?? []) (vioByItem[sv.item] ??= []).push({ code: sv.code, level: sv.level });
   const enumL = (x: string | null | undefined) => x ? t(`enum.${x}`, x.replace(/_/g, " ")) : "—";
   const versionByReview = (rid: string) => subs.find(s => s.id === rid)?.version_number;
+  // DEF-WF-006 — an inspection must never be represented as approved without an
+  // immutable submitted version backing it (M04-215/M06-018 integrity invariant,
+  // now also enforced at the DB layer by trg_guard_approved_requires_submission).
+  const approvedWithoutVersion = ins.status === "approved" && !latest;
+  const displayStatus = approvedWithoutVersion
+    ? t("report.integrityBlocked.status", "approval invalid — no immutable version")
+    : enumL(ins.status);
   const strings = {
     print: t("report.print", "Print / Save as PDF"),
     hint: t("report.print.hint", "A4 print layout — the browser's Save-as-PDF is the official PDF path"),
@@ -109,10 +116,14 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
 
         <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           <h2 className="rp-title">{t("report.title", "Inspection report — {factory}").replace("{factory}", f.name)}</h2>
-          <span className="ax-caption ax-numeric">{t("report.ref", "Inspection")} {ins.id.slice(0, 8)} · {latest ? `v${latest.version_number}` : t("report.noVersion", "no submitted version")} · {enumL(ins.status)}</span>
+          <span className="ax-caption ax-numeric">{t("report.ref", "Inspection")} {ins.id.slice(0, 8)} · {latest ? `v${latest.version_number}` : t("report.noVersion", "no submitted version")} · {displayStatus}</span>
         </div>
 
-        {!latest && (
+        {approvedWithoutVersion ? (
+          <div className="ax-banner ax-banner--critical no-print" role="alert"><div>
+            <strong>{t("report.integrityBlocked.title", "Data-integrity defect — invalid approval")}</strong> {t("report.integrityBlocked.body", "This inspection is recorded as approved but has no immutable submitted version on file. The approval is not valid and must not be relied on as an official decision until an immutable submission exists (DEF-WF-006).")}
+          </div></div>
+        ) : !latest && (
           <div className="ax-banner ax-banner--warning no-print"><div>
             <strong>{t("report.notSubmitted.title", "No immutable submission yet.")}</strong> {t("report.notSubmitted.body", "The official report is generated from the submitted version snapshot; identity and configuration below are live records (M04-215).")}
           </div></div>

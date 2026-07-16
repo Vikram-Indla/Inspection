@@ -64,6 +64,12 @@ export async function insertNotification(sb: SupabaseClient, input: NotifyInput)
       delivery_state = "failed";
     }
   }
+  // SCR-ADM-080 / DEF-ADM-080 — when a governed rule is published for this
+  // event+channel, stamp the delivered row with which rule/version handled it
+  // (runtime consumption + audit proof; a rule-less send is unaffected).
+  const { data: rule } = await sb.from("notification_rules")
+    .select("id, version_label").eq("event_key", input.event_key).eq("channel", channel)
+    .eq("status", "published").maybeSingle();
   const { error } = await sb.from("notifications").insert({
     event_key: input.event_key,
     recipient: input.recipient,
@@ -71,6 +77,8 @@ export async function insertNotification(sb: SupabaseClient, input: NotifyInput)
     channel,
     delivery_state,
     delivered_at,
+    notification_rule_id: rule?.id ?? null,
+    rule_version_label: rule?.version_label ?? null,
   });
   if (error) {
     console.error("[notification insert]", error);
