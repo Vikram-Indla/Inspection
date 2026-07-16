@@ -162,8 +162,8 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   };
   useEffect(() => { refreshQueued(); const iv = setInterval(refreshQueued, 8000); return () => clearInterval(iv); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [inspectionId]);
 
-  const onState = (s: SyncState, detail?: string) => {
-    if (s === "failed") setFailDetail(detail ?? "");            // error verbatim (M04-114)
+  const onState = (s: SyncState) => {
+    if (s === "failed") setFailDetail("failed");
     else if (s === "synced" || s === "pending") setFailDetail(null);
   };
 

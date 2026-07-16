@@ -22,6 +22,7 @@ export type GradedFactory = {
   degraded: boolean;
   duplicate: boolean;
   duplicateVisitId: string | null;
+  duplicateVisitStatus: string | null;
 };
 
 type Pkg = { id: string; version_label: string; packages: { code: string; title: string } };
@@ -31,7 +32,7 @@ type Insp = { user_id: string; full_name: string };
 export type WizardStrings = {
   findFactory: string; searchPlaceholder: string; noMatch: string; registryUnavailable: string; crPrefix: string;
   exactBadge: string; exactRule: string; similarBadge: string; similarRule: string;
-  degradedBadge: string; degradedRule: string; duplicateWarning: string; duplicateOpenVisit: string;
+  degradedBadge: string; degradedRule: string; duplicateWarning: string; duplicateOpenVisit: string; duplicateStatusLabel: string;
   licenseStep: string; licenseSelect: string; licenseLabel: string; licenseNone: string;
   locationStep: string; officialPin: string; noOfficialPin: string;
   plannerLat: string; plannerLng: string; plannerPin: string; locationConfirmed: string; mapLoading: string;

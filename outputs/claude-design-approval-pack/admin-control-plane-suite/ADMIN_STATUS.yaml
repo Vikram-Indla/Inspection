@@ -1,0 +1,112 @@
+schema_version: "1.0"
+task_id: "TASK-DESIGN-ADMIN-SUITE-001"
+lane: "Admin Control Plane Suite"
+lane_type: "design_only"
+status: "CHAPTER_01_CD004_R2_CORRECTION_REQUIRED"
+updated_at: "2026-07-14T23:31:16+03:00"
+
+repository_observation:
+  branch: "feat/cd-026-visit-management"
+  commit: "8af01857477893e6a9521e5ecd139ec50990fdbc"
+  dirty_worktree: true
+  note: "Concurrent unrelated work exists and was not edited, staged, cleaned, reset, committed, pushed, merged, or absorbed."
+
+authorization:
+  design_documentation: true
+  claude_design_r1_generation: true
+  application_implementation: false
+  database_or_migration_changes: false
+  global_contract_updates: false
+  git_commit_push_merge_branch_switch: false
+  deployment: false
+
+active_chapter:
+  chapter_id: 1
+  cds: ["CD-004"]
+  screen_ids: ["SCR-ADM-001"]
+  route: "/admin"
+  process_ids: ["P00"]
+  storyboard_ids: ["SB03", "SB13", "SB18"]
+  requirement_ids:
+    - "MVP1-M09-001..030"
+    - "MVP1-FND-001"
+    - "MVP1-FND-003"
+    - "MVP1-FND-004"
+    - "MVP1-FND-010..013"
+    - "MVP1-FND-015"
+    - "RBAC-001..006"
+  acceptance_ids:
+    - "AC-0449..0478"
+    - "DSG-001"
+    - "DSG-SHELL-001"
+    - "DSG-A11Y-001"
+    - "DSG-CODE-001"
+    - "EV-DESIGN-001"
+  engine_ids: ["ENG-01..ENG-12"]
+
+artifacts:
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/ADMIN_MASTER_FOUNDATION_V1.md"
+    status: "ready"
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/ADMIN_QUALITY_GATE_V1.md"
+    status: "ready"
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/ADMIN_COMPONENT_INHERITANCE_LEDGER_V1.md"
+    status: "ready"
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/CHAPTER_01_CD-004_CLAUDE_DESIGN_PROMPT_R1.md"
+    status: "ready_for_direct_paste"
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/CD-004_DESIGN_REVIEW_R1.md"
+    status: "complete_fail"
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/CHAPTER_01_CD-004_CLAUDE_DESIGN_CORRECTION_PROMPT_R1.md"
+    status: "ready_for_direct_paste"
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/CD-004_DESIGN_REVIEW_R2.md"
+    status: "complete_fail"
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/CHAPTER_01_CD-004_CLAUDE_DESIGN_CORRECTION_PROMPT_R2.md"
+    status: "ready_for_direct_paste"
+  - path: "outputs/claude-design-approval-pack/admin-control-plane-suite/PARALLEL_OWNERSHIP.yaml"
+    status: "preserved"
+
+runtime_truth_blockers:
+  - id: "CD004-AUTH-ROUTE"
+    severity: "P0"
+    status: "HANDOFF_BLOCKED"
+    reason: "The catalogue requires unauthorized state, while current middleware/page/tests do not prove an Admin-family direct-route guard."
+  - id: "CD004-HEALTH-SOURCE"
+    severity: "P0"
+    status: "HANDOFF_BLOCKED"
+    reason: "Current counts and engine_settings timestamps do not prove a governed engine-health verdict."
+  - id: "CD004-APPROVAL-DEPENDENCY-RUNTIME"
+    severity: "P0"
+    status: "HANDOFF_BLOCKED"
+    reason: "Current /admin queries do not provide approval queue, dependency blocker, impact, or runtime-consumption evidence."
+  - id: "CD004-PARTIAL-FAILURE"
+    severity: "P0"
+    status: "DESIGN_REQUIRED"
+    reason: "Current route does not distinguish query failure from a legitimate zero."
+
+next_action:
+  owner: "Claude Design"
+  action: "Run CHAPTER_01_CD-004_CLAUDE_DESIGN_CORRECTION_PROMPT_R2.md against the complete R2 package and return the corrected package ending READY_FOR_MANDATORY_R2B_REVIEW."
+  later_chapters_blocked: true
+
+quality_cycle:
+  r1_generated: true
+  mandatory_independent_review_complete: true
+  independent_review_verdict: "FAIL"
+  p0_findings: 7
+  p1_findings: 6
+  p2_findings: 2
+  consolidated_correction_complete: true
+  r2_generated: true
+  mandatory_independent_r2_review_complete: true
+  independent_r2_review_verdict: "FAIL"
+  r2_p0_findings: 3
+  r2_p1_findings: 1
+  r2_correction_prompt_ready: true
+  r2b_generated: false
+  sponsor_design_approved: false
+  independent_wiring_audit_complete: false
+  implementation_authorized: false
+
+write_scope_check:
+  only_admin_suite_output_directory_modified_by_this_lane: true
+  prohibited_paths_modified_by_this_lane: false
+  concurrent_external_changes_observed: true

@@ -1,0 +1,33 @@
+# IMPLEMENTATION_MANIFEST_CD-004.yaml
+task: CD-004
+logical_screen: SCR-ADM-001
+route: /admin
+process: P00
+suite: TASK-DESIGN-ADMIN-SUITE-001 (Chapter 1)
+design_file: "CD-004 Admin Control Plane Home.dc.html"
+status: R1_SUBMITTED_FOR_INDEPENDENT_REVIEW
+implementation_authorized: false
+gate_cycle_remaining: [independent_codex_review, consolidated_correction_prompt, R2, sponsor_decision, wiring_audit, explicit_authorization]
+selected_hypothesis: governance_evidence_spine
+signature_pattern: Configuration Evidence Spine (single novelty; deletion-tested at frame 4e)
+candidate_paths:
+  minimum: apps/web/src/app/admin/page.tsx  # only verified candidate; imports/tests to be mapped at wiring audit
+  forbidden:
+    - any edit to Shell.tsx / ShellClient.tsx / shell-navigation.ts / NotificationBell.tsx / tokens.css (FREEZE)
+    - treating design/astryx/d2/admin.css as production CSS
+    - naming a directory as a file change or inventing component filenames
+handoff_blocked_legs:
+  - admin-family direct-route authorization guard (middleware auth-only today) — unauthorized state designed, wiring blocked (CD004-QG-04)
+  - per-source structured query failure semantics (Promise.all errors uninspected; null renders as zero today)
+  - per-family lifecycle facts beyond schema evidence (regulations distinct-approver; engine ownership)
+  - approval queue/age/SLA/overdue anything (no source)
+  - runtime-consumption counts / runtime version map (no source)
+  - provider reachability or delivery truth (bell is not engine-health evidence)
+  - stale threshold (age shown as fact only until a governed threshold exists)
+  - localization keys (exact new keys proposed only at wiring audit; no hard-coded production copy)
+protected_behavior:
+  - frozen shell + Arabic-first document direction untouched
+  - no placeholder destination (no analytics/lookup/notification-config/integration/AI route)
+  - the home never carries approve/publish/edit affordances (module-owned, CD004-QG-07)
+  - a failed count is never rendered as zero, healthy, delivered, or platform-wide failure
+  - counts in frames are DESIGN FIXTURE — NOT RUNTIME EVIDENCE

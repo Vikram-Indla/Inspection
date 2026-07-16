@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { decide, type DecisionResult } from "./actions";
 
 // SB19 — strings built server-side with t() and passed as props.
@@ -16,6 +16,11 @@ export type WorkspaceDecisionStrings = {
 export default function DecisionPanel({ reviewId, sections, strings }: { reviewId: string; sections: { key: string; title: string }[]; strings: WorkspaceDecisionStrings }) {
   const [state, formAction, pending] = useActionState<DecisionResult, FormData>(decide, {});
   const [decision, setDecision] = useState("approve");
+  const errorRef = useRef<HTMLDivElement>(null);
+  const reasonId = `review-reason-${reviewId}`;
+  useEffect(() => {
+    if (state.error) errorRef.current?.focus();
+  }, [state.error]);
   return (
     <form action={formAction} className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4>{strings.heading}</h4>
@@ -35,10 +40,10 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
         </div>
       )}
       <div className="ax-field" style={{ maxInlineSize: "none" }}>
-        <label className="ax-field__label">{strings.reason} {decision !== "approve" && <span className="ax-req">*</span>}</label>
-        <textarea className="ax-textarea" name="reason" placeholder={strings.reasonPlaceholder} />
+        <label className="ax-field__label" htmlFor={reasonId}>{strings.reason} {decision !== "approve" && <span className="ax-req">*</span>}</label>
+        <textarea id={reasonId} className="ax-textarea" name="reason" placeholder={strings.reasonPlaceholder} aria-required={decision !== "approve"} />
       </div>
-      {state.error && <div className="ax-banner ax-banner--critical"><div>{state.error}</div></div>}
+      {state.error && <div ref={errorRef} tabIndex={-1} className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
       {decision === "approve" && <div className="ax-banner ax-banner--warning"><div><strong>{strings.approveWarnTitle}</strong> {strings.approveWarnBody}</div></div>}
       {decision === "reject" && <div className="ax-banner ax-banner--critical"><div><strong>{strings.rejectWarnTitle}</strong> {strings.rejectWarnBody}</div></div>}
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.recording : strings.confirm.replace("{decision}", strings.decisions[decision] ?? decision)}</button>

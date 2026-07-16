@@ -1,0 +1,16 @@
+n,state_id,frame_id,label,key_evidence
+01,scope-clean,S01-SCOPECLEAN,Returned-scope changes only,"all 3 changed answers inside returned scope; scope rail: 3 expected / 0 unexpected / 3 unchanged; role=status"
+02,locked-change,S02-LOCKEDCHANGE,Unexpected locked-section change,"ENV-01 changed outside returned scope; tamper banner (role=alert); rail flags 1 unexpected; diff row highlighted; never 'unchanged'"
+03,no-prior,S03-NOPRIOR,No prior version,"single version (v1); empty comparison surface; not fabricated; role=status"
+04,empty-diff,S04-EMPTYDIFF,Compatible versions empty diff,"identical stored answers; computed empty result, not a failure; role=status"
+05,unavail-media,S05-UNAVAILMEDIA,Evidence/media comparison unavailable,"no derivation; HANDOFF_BLOCKED_MEDIADIFF; shown unavailable not equal/changed"
+06,unavail-package,S06-UNAVAILPKG,Incompatible package semantics,"answer meaning not reconciled; HANDOFF_BLOCKED_PKGSEMANTIC"
+07,degraded,S07-DEGRADED,Comparison source degradation,"affected rows unavailable; HANDOFF_BLOCKED_LINKED; not silently empty"
+08,stale,S08-STALE,Stale/concurrent version,"newer version arrived; refresh before relying (role=alert)"
+09,unauthorized,S09-UNAUTH,Unauthorized/RLS denial,"nav visibility != authorization; RLS boundary"
+10,readonly-auditor,S10-AUDITOR,Auditor read-only comparison,"full diff+scope+provenance visible; no decision/accept; navigation-only; AUDITOR badge"
+11,loading,S11-LOADING,Loading skeleton,role=status
+12,counterfactual,S12-COUNTERFACTUAL,Scope rail removed,"flat diff with tampered ENV-01 indistinguishable from expected FS-01; integrity failure exposed"
+H-A,hyp-a,HYP-A-SCOPERAIL,Hypothesis A (selected),"scope-rail-first (rail leads); full compare"
+H-B,hyp-b,HYP-B-SIDEBYSIDE,Hypothesis B,"side-by-side answer-first; scope as column; tamper present"
+H-C,hyp-c,HYP-C-CHRONO,Hypothesis C,"chronological-version-first; provenance leads"

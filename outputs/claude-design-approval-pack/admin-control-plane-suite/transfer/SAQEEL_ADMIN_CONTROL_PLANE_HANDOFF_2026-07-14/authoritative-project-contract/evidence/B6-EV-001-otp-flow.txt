@@ -1,0 +1,14 @@
+=== B6 EVIDENCE — OTP flow, policy-driven from engine_settings (DEC-007) ===
+[participant f1ca5236 in session d87f06bc]
+[3] request → sent · dev provider (release: Unifonic) · expires 5 min · resends left 2
+[4-NEG 1] wrong code → wrong · attempts left 2
+[4-NEG 2] wrong code → wrong · attempts left 1
+[4-NEG 3] wrong code → wrong · attempts left 0
+[4-NEG 4] CORRECT code after lockout → locked (locked — no bypass even with the right code)
+[5] immediate resend → cooldown · retry after 60s (cooldown enforced)
+[5] after 61s → sent · resends left 1
+[6] fresh correct code → verified ✓ (STM-VIR-002 → Verified)
+[7] verification audit: [{"action":"OTP_FAILED","c":3},{"action":"OTP_SENT","c":2},{"action":"OTP_VERIFIED","c":1}]
+
+VERDICT: attempts/lockout/cooldown/resend/expiry all read from engine_settings.otp;
+verification is server-side and unbypassable; every attempt audited. Dev provider explicitly flagged.

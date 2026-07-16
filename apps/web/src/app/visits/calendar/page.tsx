@@ -18,15 +18,18 @@ type Joined = {
 export default async function VisitsCalendar() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
-  await sb.rpc("expire_lapsed_visits");
+  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
+  if (expiryError) console.error(`[visits.calendar] expiry refresh failed: ${expiryError.message}`);
   const { data, error } = await sb.from("visits")
     .select("id, visit_type, planning_status, operational_state, window_start, window_end, factories(name)")
     .order("window_start", { ascending: true })
     .limit(1000);
   if (error) {
+    // CD-026 query-degraded — neutralise provider error (log server-side only).
+    console.error(`[visits.calendar] load failed: ${error.message}`);
     return (
       <Shell current="/visits" title={t("visit.cal.title", "Visit calendar")}>
-        <div className="ax-banner ax-banner--critical"><div>{t("visit.list.loadError", "Could not load visits:")} {error.message}</div></div>
+        <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.list.loadErrorNeutral", "Visits are temporarily unavailable. Please try again.")}</div></div>
       </Shell>
     );
   }

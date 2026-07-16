@@ -44,14 +44,15 @@ export const FACTORY_FIELD_EN: Record<string, string> = {
   production_capacity_note: "Production capacity", // M04-101
 };
 
-/** Tolerant fetch: a missing table (0020 pending) degrades to [] + verbatim error. */
+/** Tolerant fetch: a missing table (0020 pending) degrades to [] + a stable unavailable marker. */
 export async function fetchFactoryChecks(sb: unknown, inspectionId: string): Promise<{ checks: FactoryCheckRow[]; error: string | null }> {
   const { data, error } = await (sb as MinimalClient)
     .from("inspection_factory_checks")
     .select("id, field_key, source_value, observed_value, status, evidence_note, updated_at")
     .eq("inspection_id", inspectionId)
     .order("field_key");
-  return { checks: ((data ?? []) as FactoryCheckRow[]), error: error ? error.message : null };
+  if (error) console.error("[factory verification read]", error);
+  return { checks: ((data ?? []) as FactoryCheckRow[]), error: error ? "unavailable" : null };
 }
 
 /** M04-110 — change counter: fields whose observed value differs from Senaei. */

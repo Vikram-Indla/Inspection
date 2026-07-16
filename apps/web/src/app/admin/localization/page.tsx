@@ -15,6 +15,7 @@ export default async function Localization() {
   const { data, error } = await sb.from("ui_strings")
     .select("key, en, ar, status, context, orphaned")
     .order("key");
+  if (error) console.error("[localization] load failed", error);
   const rows = (data ?? []) as UiString[];
 
   const total = rows.length;
@@ -82,7 +83,7 @@ export default async function Localization() {
       }>
       {error ? (
         <div className="ax-banner ax-banner--critical" role="alert">
-          {t("l10n.error.load", "Could not load ui_strings:")} {error.message}
+          {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
         </div>
       ) : (
         <>

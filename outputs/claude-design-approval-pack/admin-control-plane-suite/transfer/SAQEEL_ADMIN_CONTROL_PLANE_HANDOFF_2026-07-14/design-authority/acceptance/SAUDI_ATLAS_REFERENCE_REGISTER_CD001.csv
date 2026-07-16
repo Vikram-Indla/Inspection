@@ -1,0 +1,14 @@
+reference_id,node_id,label_en,latitude,longitude,reference_class,official_source,verification_status,release_effect
+ATL-REF-001,jubail,Jubail,27.00,49.66,public_industrial_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-002,riyadh,Riyadh,24.63,46.85,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-003,yanbu,Yanbu,24.02,38.19,public_industrial_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-004,ras-al-khair,Ras Al-Khair,27.52,49.20,public_industrial_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-005,dammam,Dammam,26.35,49.98,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-006,jeddah,Jeddah,21.36,39.27,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-007,qassim,Qassim,26.30,43.77,public_region_anchor,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-008,hail,Ha'il,27.44,41.69,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-009,jazan,Jazan,16.89,42.62,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-010,tabuk,Tabuk,28.38,36.57,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-011,sakaka,Sakaka,29.97,40.21,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-012,abha,Abha,18.22,42.51,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only
+ATL-REF-013,najran,Najran,17.49,44.13,public_city,PENDING,PENDING_OFFICIAL_SOURCE_CONFIRMATION,Blocks production geography claim only

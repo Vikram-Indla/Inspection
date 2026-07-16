@@ -16,6 +16,9 @@ export type PreviewItem = {
   isDate: boolean;
   evidence: { type: string; min: number; mandatory: boolean } | null;
   conditional: string | null;
+  requirement: "required" | "optional" | "conditional";
+  mandatoryWhenVisible: boolean;
+  scoringEnabled: boolean;
   guidance: string | null;
   clause: { clause_ref: string; legal_source: string | null } | null;
   ncViolation: string | null;
@@ -28,6 +31,7 @@ export type PreviewActionForm = { key: string; title: string; blocking?: boolean
 export type PreviewStrings = {
   open: string; close: string; title: string; asInspector: string;
   conditionalBadge: string; conditionalWhen: string;
+  required: string; optional: string; mandatoryWhenVisible: string; scoringDisabled: string;
   guidanceLabel: string; dateLabel: string;
   evidenceLabel: string; evidenceMandatory: string; evidenceOptional: string; evidenceMin: string;
   noteLabel: string; notePlaceholder: string;
@@ -58,7 +62,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
       </div>
 
       {open && (
-        <div className="ipad-preview ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", background: "var(--ax-color-surface-sunken)", borderRadius: "var(--ax-radius-large)" }}>
+        <div className="ipad-preview ax-surface" role="region" aria-label={s.title} style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", background: "var(--ax-color-surface-sunken)", borderRadius: "var(--ax-radius-large)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <strong style={{ font: "var(--ax-text-body-strong)" }}>{s.title}</strong>
             <span className="ax-caption">{s.asInspector}</span>
@@ -85,6 +89,12 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                         <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{it.code} · {it.title}</p>
                         {it.clause && <span className="ax-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
                         {it.conditional && <span className="ax-lozenge ax-lozenge--info" title={`${s.conditionalWhen} ${it.conditional}`}>{s.conditionalBadge}</span>}
+                        <span className={`ax-lozenge ${it.requirement === "required" ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>
+                          <span aria-hidden="true">{it.requirement === "required" ? "● " : "○ "}</span>
+                          {it.requirement === "required" ? s.required : it.requirement === "conditional" ? s.conditionalBadge : s.optional}
+                        </span>
+                        {it.mandatoryWhenVisible && <span className="ax-lozenge ax-lozenge--warning">{s.mandatoryWhenVisible}</span>}
+                        {!it.scoringEnabled && <span className="ax-lozenge ax-lozenge--info">{s.scoringDisabled}</span>}
                       </div>
                       {it.conditional && <p className="ax-caption">{s.conditionalWhen} <code>{it.conditional}</code></p>}
                       {it.guidance && <p className="ax-caption">💡 {s.guidanceLabel}: {it.guidance}</p>}

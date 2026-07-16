@@ -13,6 +13,7 @@ export default async function Workflows() {
   const { data: wfs, error } = await sb.from("config_versions")
     .select("id, version_label, status, payload, effective_from, created_at, created_by, approved_by")
     .eq("engine", "workflow").order("effective_from", { ascending: false });
+  if (error) console.error("[admin workflows] load failed", error);
   // Approval-chain visibility (RBAC-002 maker-checker): resolve maker/checker names.
   const chainIds = [...new Set((wfs ?? []).flatMap(w => [w.created_by, w.approved_by]).filter((x): x is string => !!x))];
   const profRes = chainIds.length ? await sb.from("profiles").select("user_id, full_name").in("user_id", chainIds) : null;
@@ -37,7 +38,7 @@ export default async function Workflows() {
       </div></div>
       {error && (
         <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("admin.wf.error.title", "Couldn’t load workflow configuration.")}</strong> {error.message} {t("admin.wf.error.retry", "— retry.")}
+          <strong>{t("admin.wf.error.title", "Couldn’t load workflow configuration. Nothing was changed. Try again.")}</strong>
         </div></div>
       )}
       {!error && (wfs ?? []).length === 0 && (

@@ -93,9 +93,13 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(null);
-    const { error } = await supabaseBrowser().auth.signInWithPassword({ email, password });
+    const { data, error } = await supabaseBrowser().auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) { setError(safeSignInError(error, s)); return; }  // ERR-AUTH-001: deny with neutral copy
+    // Supabase can return an empty session without a transport error (for
+    // example when an auth gateway denies the exchange). Treat that exactly
+    // like invalid credentials; never fall through to /launch with no session
+    // and leave the user on a silent login page (ERR-AUTH-001).
+    if (error || !data.session) { setError(safeSignInError(error ?? new Error("invalid credentials"), s)); return; }
     // Hard navigation: guarantees the auth cookie is on the request before
     // /launch renders server-side (router.push races the cookie write).
     // /launch decides the landing by role — the URL never does.

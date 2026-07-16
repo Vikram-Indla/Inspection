@@ -1,0 +1,29 @@
+CD001-V7-EV-005 — SCR-PUB-010 lifecycle-rail correction
+Date: 2026-07-13
+Branch: feat/cd-001-v7-atlas
+Task: CD-001-V7-UX-002
+
+Sponsor finding
+- The detached four-card Plan/Inspect/Review/Decide explanation duplicated the journey and did not control the map.
+- The separate full-width list row looked like a second process strip.
+- Six lifecycle stages above four static cards created an inconsistent story.
+
+Implemented correction
+- Removed the four detached static cards.
+- Kept one Plan→Travel→Arrive→Inspect→Review→Decide lifecycle rail.
+- Attached the rail inside the atlas frame.
+- Preserved the direct stage-to-active-hotspot interaction and keyboard tab semantics.
+- Moved the same-data list alternative into a compact in-map Locations · List control.
+- Preserved public-safe imagery, dossiers, fallback, authentication, audit and RBAC routing.
+
+Verification
+- npm run typecheck: PASS
+- npm run build: PASS before a separate already-running Next.js dev watcher replaced the shared .next directory
+- Playwright e2e/cd-001-v7-atlas.spec.ts on http://127.0.0.1:3000: PASS 6/6
+- Playwright e2e/cd-001-v7-visual-evidence.spec.ts on http://127.0.0.1:3000: PASS 1/1
+- Runtime evidence refreshed under product-contract/evidence/screens/login-v7-atlas/
+
+Local review note
+- Multiple pre-existing local listeners occupy ports 3000 and 3210 across IPv4/IPv6.
+- Current verified runtime: http://127.0.0.1:3000/login
+- Do not use localhost:3210 for this review; it can resolve to a stale listener.

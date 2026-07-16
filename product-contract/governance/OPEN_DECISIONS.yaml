@@ -17,3 +17,4 @@ priority_decisions:
   - DEC-009 digital acknowledgement
   - DEC-010 NFR targets
   - DEC-012 CD-0XX Codex wiring-audit gate (session-direction vs. actual audit)
+  - DEC-014 CD-031 Factory 360 scope + design-gate override (sponsor-resolved 2026-07-15; Codex audit still open)

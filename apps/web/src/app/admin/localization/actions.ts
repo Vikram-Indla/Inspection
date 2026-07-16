@@ -1,13 +1,14 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { logProviderError, NEUTRAL_LOAD_ERROR, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export type L10nResult = { error?: string; ok?: boolean };
 
 // SCR-ADM-100 · SB19 — ui_strings is the live Arabic dictionary consumed by
 // src/lib/i18n.ts (30s TTL cache). RLS is the authority: world read;
-// writes = compliance_admin / security_admin / workflow_admin. Errors are
-// surfaced verbatim; a 0-row update means RLS filtered the write silently.
+// writes = compliance_admin / security_admin / workflow_admin. Provider errors
+// remain diagnostic-only; a 0-row update means RLS filtered the write silently.
 
 export async function saveTranslation(_: L10nResult, formData: FormData): Promise<L10nResult> {
   const sb = await supabaseServer();
@@ -25,7 +26,7 @@ export async function saveTranslation(_: L10nResult, formData: FormData): Promis
     .update({ ar, status: "draft", updated_by: user.id, updated_at: new Date().toISOString() })
     .eq("key", key)
     .select("key");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("localization save", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!data || data.length === 0) {
     return { error: "No row updated — key not found or RLS denied the write (compliance_admin / security_admin / workflow_admin only)." };
   }
@@ -47,7 +48,7 @@ export async function markReviewed(_: L10nResult, formData: FormData): Promise<L
     .eq("key", key)
     .not("ar", "is", null)
     .select("key");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("localization review", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!data || data.length === 0) {
     return { error: "Not marked — Arabic is empty, the key is unknown, or RLS denied the write." };
   }
@@ -75,7 +76,7 @@ export async function addKey(_: L10nResult, formData: FormData): Promise<L10nRes
     status: "draft",
     updated_by: user.id,
   });
-  if (error) return { error: error.message };
+  if (error) { logProviderError("localization add", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/localization");
   return { ok: true };
 }
@@ -96,31 +97,31 @@ export async function syncFromCode(_: SyncResult, __: FormData): Promise<SyncRes
 
   let code;
   try { code = scanCodeForKeys(); }
-  catch (e) { return { error: `Source scan unavailable on this host: ${String((e as Error).message)}` }; }
+  catch (e) { logProviderError("localization source scan", e); return { error: "Source scan is temporarily unavailable. Try again." }; }
 
   const { data: db, error: dbErr } = await sb.from("ui_strings").select("key, en, orphaned");
-  if (dbErr) return { error: dbErr.message };
+  if (dbErr) { logProviderError("localization read", dbErr); return { error: NEUTRAL_LOAD_ERROR }; }
   const plan = planSync(code, db ?? []);
 
   if (plan.inserts.length) {
     const { error } = await sb.from("ui_strings").insert(
       plan.inserts.map(p => ({ key: p.key, en: p.en, status: "draft", updated_by: user.id })));
-    if (error) return { error: `insert: ${error.message}` };
+    if (error) { logProviderError("localization sync insert", error); return { error: NEUTRAL_WRITE_ERROR }; }
   }
   for (const p of plan.enUpdates) {
     const { error } = await sb.from("ui_strings")
       .update({ en: p.en, updated_by: user.id, updated_at: new Date().toISOString() }).eq("key", p.key);
-    if (error) return { error: `en-update ${p.key}: ${error.message}` };
+    if (error) { logProviderError("localization sync English update", error); return { error: NEUTRAL_WRITE_ERROR }; }
   }
   if (plan.orphanKeys.length) {
     const { error } = await sb.from("ui_strings")
       .update({ orphaned: true, updated_by: user.id }).in("key", plan.orphanKeys);
-    if (error) return { error: `orphan: ${error.message}` };
+    if (error) { logProviderError("localization orphan", error); return { error: NEUTRAL_WRITE_ERROR }; }
   }
   if (plan.reviveKeys.length) {
     const { error } = await sb.from("ui_strings")
       .update({ orphaned: false, updated_by: user.id }).in("key", plan.reviveKeys);
-    if (error) return { error: `revive: ${error.message}` };
+    if (error) { logProviderError("localization revive", error); return { error: NEUTRAL_WRITE_ERROR }; }
   }
   revalidatePath("/admin/localization");
   return { ok: true, report: plan.report };
@@ -140,7 +141,7 @@ export async function getHistory(key: string): Promise<{ error?: string; revisio
   const { data, error } = await sb.from("ui_string_revisions")
     .select("id, en, ar, status, change_source, changed_at")
     .eq("key", key).order("changed_at", { ascending: false }).limit(5);
-  if (error) return { error: error.message };
+  if (error) { logProviderError("localization history", error); return { error: NEUTRAL_LOAD_ERROR }; }
   return { revisions: data ?? [] };
 }
 
@@ -155,13 +156,13 @@ export async function restoreRevision(_: L10nResult, formData: FormData): Promis
 
   const { data: rev, error: rErr } = await sb.from("ui_string_revisions")
     .select("key, ar").eq("id", revisionId).eq("key", key).single();
-  if (rErr || !rev) return { error: rErr?.message ?? "Revision not found." };
+  if (rErr || !rev) { if (rErr) logProviderError("localization revision", rErr); return { error: rErr ? NEUTRAL_LOAD_ERROR : "Revision not found." }; }
 
   // Restore Arabic only (EN belongs to code); restoring re-enters review as draft.
   const { data, error } = await sb.from("ui_strings")
     .update({ ar: rev.ar, status: "draft", updated_by: user.id, updated_at: new Date().toISOString() })
     .eq("key", key).select("key");
-  if (error) return { error: error.message };
+  if (error) { logProviderError("localization restore", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (!data || data.length === 0) return { error: "No row updated — RLS denied the write." };
   revalidatePath("/admin/localization");
   return { ok: true };

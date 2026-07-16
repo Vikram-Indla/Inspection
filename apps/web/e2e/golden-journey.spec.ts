@@ -214,9 +214,13 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
 
 test("P3 reviewer: RETURN with exact scope and mandatory reason (M06-006, STM-REV-003)", async ({ browser }) => {
   const page = await personaPage(browser, "reviewer");
-  await page.goto(`/reviews/${inspectionId}`); // opening the submission creates the review
+  await page.goto(`/reviews/${inspectionId}`); // CD-028 scan-first: opening is read-only, changes nothing
   await expect(page.locator(".ax-table, table")).toContainText("FS-101");
 
+  // CD-028 leg 5 — starting the review is now an explicit, audited action
+  // (opening the workspace no longer creates the review as a side-effect).
+  await page.getByRole("button", { name: /^start review$/i }).click();
+  await page.locator('input[name="decision"][value="return"]').waitFor({ timeout: 20_000 });
   await page.locator('input[name="decision"][value="return"]').check();
   await page.locator(`input[name="returned_section"][value="${scopeSectionKey}"]`).check();
   await page.locator('textarea[name="reason"]').fill("FS-101 evidence insufficient — retag and re-shoot (G10 Playwright golden journey).");
@@ -254,6 +258,9 @@ test("P5 reviewer: APPROVE v2; decided reviews lock; v1 stays intact (M06-009)",
   await page.goto(`/reviews/${inspectionId}`);
   await expect(page.locator(".ax-banner--warning").first()).toContainText("Prior decision");
 
+  // CD-028 leg 5 — v2 review is started explicitly before the approve decision.
+  await page.getByRole("button", { name: /^start review$/i }).click();
+  await page.locator('input[name="decision"][value="approve"]').waitFor({ timeout: 20_000 });
   await page.locator('input[name="decision"][value="approve"]').check();
   await page.locator('textarea[name="reason"]').fill("Corrected evidence adequate (G10 Playwright golden journey).");
   await page.getByRole("button", { name: /confirm approve/i }).click();

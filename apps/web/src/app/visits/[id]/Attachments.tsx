@@ -72,7 +72,7 @@ export default function Attachments({ visitId, rows, strings }: {
                   <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
                     {a.url
                       ? <a className="ax-btn ax-btn--subtle" href={a.url} download={a.name}>{strings.download}</a>
-                      : <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{strings.urlFailed}{a.urlError ? ` — ${a.urlError}` : ""}</span>}
+                      : <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="status">{a.urlError ?? strings.urlFailed}</span>}
                     <RemoveButton attachmentId={a.id} visitId={visitId} name={a.name} strings={strings} />
                   </div>
                 </td>

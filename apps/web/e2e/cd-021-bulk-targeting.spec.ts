@@ -99,14 +99,21 @@ test.describe("CD-021 selection (frame 1a)", () => {
     await expect(page.getByRole("button", { name: /Review & continue/i })).toBeDisabled();
   });
 
-  test("P02 review step configures, assigns and exposes atomic publish", async ({ page }) => {
+  // CD-025 (SCR-WEB-150 / P03): the review step is now the staged Plan Review &
+  // Publish workspace — blocker-first readiness, targets table and the Publish
+  // Consequence Ledger, with a single publish action. Read-only assertions.
+  test("CD-025 review workspace shows readiness, ledger and the single publish action", async ({ page }) => {
     await page.goto("/planning/bulk");
     const realId = await firstFactoryId(page);
     await page.addInitScript(([real]) => { sessionStorage.setItem("cd021-bulk-selection", JSON.stringify([real])); }, [realId]);
     await page.goto("/planning/bulk/review");
-    await expect(page.getByText(/Visit configuration/i)).toBeVisible();
-    await expect(page.getByText(/Inspector assignment/i)).toBeVisible();
-    await expect(page.getByRole("button", { name: /Publish plan/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Readiness/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Targets & proposed visits/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toBeVisible();
+    // Single publish control — enabled (ready) or disabled (blocked), never absent.
+    await expect(page.getByRole("button", { name: /Publish plan and create|Publish blocked/i })).toBeVisible();
+    // Truthful automatic-assignment copy — the stale "round-robin" claim is gone.
+    await expect(page.getByText(/round-robin/i)).toHaveCount(0);
   });
 
   test("review step with empty selection routes back to targeting", async ({ page }) => {
@@ -194,6 +201,19 @@ test.describe("CD-021 remediation — invalid criteria never silently drops (ERR
     await expect(alert).toBeVisible();
     await expect(alert).toContainText(/could not be read/i);
   });
+
+  test("mixed valid and blank ct leaves fail closed as invalid, never silently narrowing criteria", async ({ page }) => {
+    const mixed = encodeURIComponent(JSON.stringify({
+      k: "g", c: "all", n: [
+        { k: "c", f: "region", o: "is", v: "Riyadh" },
+        { k: "c", f: "city", o: "is", v: "" },
+      ],
+    }));
+    await page.goto(`/planning/bulk?ct=${mixed}`);
+    const alert = page.locator('[role="alert"].ax-banner');
+    await expect(alert).toBeVisible();
+    await expect(alert).toContainText(/could not be read/i);
+  });
 });
 
 test.describe("CD-021 remediation — focus condition contribution highlight (finding 2)", () => {
@@ -241,7 +261,10 @@ test.describe("CD-021 remediation — Planner-only role guard (finding 8)", () =
     await page.goto("/planning/bulk");
     await expect(page.getByText(/Authorized role required/i)).toBeVisible();
     await expect(page.getByRole("tree")).toHaveCount(0);
+    // CD-025 review route: independent Planner denial (RBAC-007). Navigation is
+    // not authorization; the review workspace never renders for a non-Planner.
     await page.goto("/planning/bulk/review");
-    await expect(page.getByText(/Authorized role required/i)).toBeVisible();
+    await expect(page.getByText(/access to review this plan/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toHaveCount(0);
   });
 });

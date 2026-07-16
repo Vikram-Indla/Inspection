@@ -40,17 +40,18 @@ export function serializeCriteria(tree: GroupNode): string {
   return JSON.stringify(toWire(tree));
 }
 
-// Parse + sanitize. Drops unknown fields, bad operators, blank values and
-// empty groups; enforces depth/node caps. Returns null when nothing valid
-// remains so callers can treat it as "no criteria".
-function fromWire(w: unknown, depth: number, counter: { n: number }): CriteriaNode | null {
+// Parse + sanitize. Unknown fields/bad operators remain forward-compatible and
+// are dropped, but a known condition with an empty value marks the whole URL
+// criteria payload invalid. That prevents a crafted URL containing one valid
+// condition plus one blank condition from silently narrowing the user's intent.
+function fromWire(w: unknown, depth: number, counter: { n: number; invalidBlank: boolean }): CriteriaNode | null {
   if (depth > MAX_DEPTH || counter.n >= MAX_NODES || typeof w !== "object" || w === null) return null;
   counter.n += 1;
   const o = w as Record<string, unknown>;
   if (o.k === "c") {
     if (!isField(o.f) || !isOp(o.o)) return null;
     const value = String(o.v ?? "").trim();
-    if (value === "") return null;
+    if (value === "") { counter.invalidBlank = true; return null; }
     return { kind: "cond", field: o.f, op: o.o, value };
   }
   if (o.k === "g") {
@@ -66,7 +67,9 @@ function fromWire(w: unknown, depth: number, counter: { n: number }): CriteriaNo
 export function parseCt(ct: string | undefined): GroupNode | null {
   if (!ct) return null;
   try {
-    const node = fromWire(JSON.parse(ct), 0, { n: 0 });
+    const counter = { n: 0, invalidBlank: false };
+    const node = fromWire(JSON.parse(ct), 0, counter);
+    if (counter.invalidBlank) return null;
     if (node && node.kind === "group") return node;
     if (node && node.kind === "cond") return { kind: "group", combine: "all", children: [node] };
     return null;

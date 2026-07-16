@@ -1,0 +1,16 @@
+component,file,disposition,notes
+Admin home route,apps/web/src/app/admin/page.tsx,REFINE_IN_DESIGN,minimum candidate path; spine replaces KPI wall after approval
+Shell server wrapper,apps/web/src/components/Shell.tsx,FREEZE,compose inside; no role/nav change
+Shell interaction layer,apps/web/src/components/ShellClient.tsx,FREEZE,no page-specific shell variant
+Shell navigation contract,apps/web/src/lib/shell-navigation.ts,FREEZE,/admin stays Approval & Configuration; no new destination
+Notification bell,apps/web/src/components/NotificationBell.tsx,FREEZE,never engine-health evidence
+Theme tokens,apps/web/src/app/tokens.css,FREEZE,all values resolve through semantic tokens
+Shared grammar,apps/web/src/app/astryx.css,PRESERVE,reuse ax-surface/table/lozenge/version/freshness/banner/state semantics
+Localization runtime,apps/web/src/lib/i18n.ts,PRESERVE,exact new keys only at wiring audit
+Audit browser,apps/web/src/app/admin/audit/page.tsx,PRESERVE,link target only; no embedded audit control
+KPI row grammar,.ax-kpi-row/.ax-kpi,REFINE_IN_DESIGN,equal-card wall replaced by evidence spine
+Live-database lozenge,page-local,REFINE_IN_DESIGN,replaced by per-read source-state lozenge (fact not verdict)
+Query aggregation,page-local Promise.all,REFINE_IN_DESIGN,per-source outcome required; null never zero
+Direct-route authorization,middleware+RLS,HANDOFF_BLOCKED,unauthorized state designed; guard wiring unproven
+Proposed: ConfigurationEvidenceSpine,ROUTE_TARGET_BLOCKED,proposed_new,component name only; no filename invented
+Astryx D2 admin home,design/astryx/d2/D2-01_admin-home.html,DESIGN_HISTORY_ONLY,vocabulary lessons only; assertions rejected

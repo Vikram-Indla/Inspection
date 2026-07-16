@@ -1,7 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import DecisionPanel, { ReviewQueue, type DecisionPanelStrings, type QueueBadges, type QueueRow, type ReviewQueueStrings } from "./DecisionPanel";
+import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./DecisionPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -42,9 +42,8 @@ function slaDeadline(submittedISO: string | null, days: number | null, work: Set
 }
 
 type Joined = {
-  id: string; status: string; decision: string | null; decision_reason: string | null;
-  returned_sections: string[] | null; decided_at: string | null;
-  submission_versions: { version_number: number; submitted_at: string } | null;
+  id: string; status: string; decided_at: string | null; reviewer_id: string | null;
+  submission_versions: { version_number: number; submitted_at: string; acknowledgement: unknown; snapshot: { answers?: Record<string, string> } | null } | null;
   inspections: {
     id: string; status: string; submitted_at: string | null;
     visits: {
@@ -53,6 +52,7 @@ type Joined = {
       assignments: { profiles: { full_name: string } | null }[] | null;
     } | null;
     violations: { violation_codes: { level: string } | null }[] | null;
+    evidence: { id: string }[] | null;
   } | null;
 };
 
@@ -61,17 +61,29 @@ const fmt = (iso: string | null) => iso ? new Date(iso).toISOString().slice(0, 1
 export default async function Reviews() {
   const { t } = await useT();
   const sb = await supabaseServer();
+  const { data: { user } } = await sb.auth.getUser();
+
+  // Distinguish unauthorized from queue-clear (WIRING leg 1). RLS is still the
+  // real boundary; this only lets us render the correct empty/denied state
+  // instead of a misleading "queue clear".
+  const { data: roleRows } = user ? await sb.from("user_roles").select("role_key").eq("user_id", user.id) : { data: null };
+  const roles = new Set((roleRows ?? []).map(r => r.role_key));
+  const authorized = roles.has("reviewer") || roles.has("ops");
+
   // Load the RLS-scoped queue page; search/status/risk/overdue filtering happens
-  // client-side over these rows (M06-014/030).
-  const [{ data: allReviews }, { data: slaRow }] = await Promise.all([
+  // client-side over these rows (M06-014/030). Readiness sources (checklist
+  // answers, acknowledgement, evidence) are joined so the fingerprint can derive
+  // real facts (CD-028 leg 3b) instead of showing everything "unavailable".
+  const [{ data: allReviews, error: reviewsErr }, { data: slaRow }] = await Promise.all([
     sb.from("reviews")
-      .select(`id, status, decision, decision_reason, returned_sections, decided_at,
-        submission_versions(version_number, submitted_at),
+      .select(`id, status, decided_at, reviewer_id,
+        submission_versions(version_number, submitted_at, acknowledgement, snapshot),
         inspections(id, status, submitted_at,
           visits(visit_type, execution_mode, priority,
             factories(name, factory_code, risk_band),
             assignments(profiles(full_name))),
-          violations(violation_codes(level)))`)
+          violations(violation_codes(level)),
+          evidence(id))`)
       .order("decided_at", { ascending: false, nullsFirst: true }),
     sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
   ]);
@@ -79,11 +91,57 @@ export default async function Reviews() {
   const reviewDays = sla?.review_business_days ?? null;
   const work = workingDays(sla?.calendar?.days);
   const now = Date.now();
+  const missingSla = reviewDays == null;
 
   const rows: Joined[] = (allReviews ?? []) as unknown as Joined[];
 
-  // M06-031 — compute badges per review: SLA status vs config threshold, risk
-  // band from the factory, critical-violation (level L1) count, priority.
+  // CD-028 discoverability fix — a submitted inspection has no `reviews` row
+  // until an explicit startReview claims it, so the reviews-based query above
+  // structurally cannot show brand-new work. status='submitted' is exactly
+  // the set with no under_review/decided row for their current version
+  // (startReview and decide() both transition status away from 'submitted'
+  // the moment a row exists), so this can never duplicate a row already in
+  // `rows` above — no exists/not-exists check needed.
+  const { data: undiscovered, error: undiscoveredErr } = await sb.from("inspections")
+    .select(`id, status, submitted_at,
+      visits(visit_type, execution_mode, priority,
+        factories(name, factory_code, risk_band),
+        assignments(profiles(full_name))),
+      submission_versions(id, version_number, submitted_at, acknowledgement, snapshot),
+      violations(violation_codes(level)),
+      evidence(id)`)
+    .eq("status", "submitted");
+  for (const insp of (undiscovered ?? []) as unknown as {
+    id: string; status: string; submitted_at: string | null;
+    visits: Joined["inspections"] extends null ? never : NonNullable<Joined["inspections"]>["visits"];
+    submission_versions: { version_number: number; submitted_at: string; acknowledgement: unknown; snapshot: { answers?: Record<string, string> } | null }[];
+    violations: NonNullable<Joined["inspections"]>["violations"];
+    evidence: NonNullable<Joined["inspections"]>["evidence"];
+  }[]) {
+    const latest = (insp.submission_versions ?? []).slice().sort((a, b) => b.version_number - a.version_number)[0];
+    if (!latest) continue; // no submission on record yet — nothing to surface
+    rows.push({
+      id: `virtual:${insp.id}`, status: "pending_review", decided_at: null, reviewer_id: null,
+      submission_versions: latest,
+      inspections: { id: insp.id, status: insp.status, submitted_at: insp.submitted_at, visits: insp.visits, violations: insp.violations, evidence: insp.evidence },
+    });
+  }
+
+  // Factory-data verification readiness (M04-190 / M06-017 / M06-034), batched
+  // for every inspection in the page. Tolerant: a missing table (0020 pending)
+  // or RLS gap leaves the map empty and marks the fact "unavailable" — never a
+  // fabricated "verified".
+  const inspectionIds = [...new Set(rows.map(r => r.inspections?.id).filter((x): x is string => !!x))];
+  const { data: fvRows, error: fvErr } = inspectionIds.length
+    ? await sb.from("inspection_factory_checks").select("inspection_id, status").in("inspection_id", inspectionIds)
+    : { data: [], error: null };
+  const fvMap = new Map<string, { any: boolean; updated: boolean }>();
+  for (const c of (fvRows ?? []) as { inspection_id: string; status: string }[]) {
+    const cur = fvMap.get(c.inspection_id) ?? { any: false, updated: false };
+    fvMap.set(c.inspection_id, { any: true, updated: cur.updated || c.status === "updated" });
+  }
+  const fvReadable = !fvErr;
+
   const criticalLabel = t("review.list.criticalBadge", "{n} critical");
   const slaOnTimeLabel = t("review.list.slaOnTime", "on time");
   const slaOverdueLabel = t("review.list.slaOverdue", "overdue");
@@ -109,29 +167,31 @@ export default async function Reviews() {
     };
   };
 
-  const pending = rows.filter(r => !r.decided_at);
-
-  const panelStrings: DecisionPanelStrings = {
-    heading: t("review.panel.heading", "Decision — {factory}"),
-    awaiting: t("review.panel.awaiting", "awaiting decision"),
-    decisions: {
-      approve: t("enum.approve", "Approve"),
-      return: t("enum.return", "Return"),
-      reject: t("enum.reject", "Reject"),
-    },
-    returnScope: t("review.panel.returnScope", "Return scope — sections, comma-separated (FLD-REV-004)"),
-    reason: t("review.panel.reason", "Reason — mandatory (FLD-REV-003)"),
-    record: t("review.panel.record", "Record decision (immutable — M06-009)"),
-    recording: t("review.panel.recording", "Recording…"),
+  // CD-028 leg 3b — the four readiness facts, each derived from a real RLS
+  // read. A row whose linked sources cannot be read is marked unreadable and
+  // every fact reads "unavailable"; nothing is defaulted to ready.
+  const readinessFor = (r: Joined): { readiness: Readiness; readable: boolean } => {
+    const readable = !!r.inspections;
+    const sv = r.submission_versions;
+    const checklist: ReadinessFact = !sv ? "unavailable" : (Object.keys(sv.snapshot?.answers ?? {}).length > 0 ? "present" : "missing");
+    const ack: ReadinessFact = !sv ? "unavailable" : (sv.acknowledgement != null ? "present" : "missing");
+    const evidence: ReadinessFact = !readable ? "unavailable" : ((r.inspections?.evidence?.length ?? 0) > 0 ? "present" : "missing");
+    let factory: ReadinessFact = "unavailable";
+    if (fvReadable && readable) {
+      const fv = fvMap.get(r.inspections!.id);
+      factory = !fv ? "missing" : (fv.updated ? "updated" : "verified");
+    }
+    return { readiness: { checklist, evidence, ack, factory }, readable };
   };
 
-  // M06-013/016 — enriched queue rows: inspector, execution mode, visit type,
-  // risk, SLA/overdue, critical count, priority — all pre-translated for the
-  // client table.
+  let degraded = !!reviewsErr || !!undiscoveredErr || !fvReadable;
+
   const queueRows: QueueRow[] = rows.map(r => {
     const v = r.inspections?.visits;
     const f = v?.factories;
     const inspector = v?.assignments?.[0]?.profiles?.full_name ?? "";
+    const { readiness, readable } = readinessFor(r);
+    if (!readable) degraded = true;
     return {
       ...badgesFor(r),
       id: r.id,
@@ -144,11 +204,11 @@ export default async function Reviews() {
       status: r.status,
       statusLabel: t(`enum.${r.status}`, r.status.replace(/_/g, " ")),
       statusTone: TONE[r.status] ?? "",
-      decisionLabel: r.decision ? t(`enum.${r.decision}`, r.decision) : "—",
-      returnScope: r.returned_sections?.length ? r.returned_sections.join(", ") : "—",
-      reason: r.decision_reason ?? "—",
       modeLabel: v ? t(`enum.${v.execution_mode}`, v.execution_mode) : "—",
       typeLabel: v ? t(`enum.${v.visit_type}`, v.visit_type) : "—",
+      readiness,
+      readable,
+      unassigned: r.reviewer_id == null && !r.decided_at,
     };
   });
 
@@ -165,36 +225,70 @@ export default async function Reviews() {
     clearFilters: t("review.list.clearFilters", "Clear filters"),
     showing: t("review.list.showing", "{shown} of {total}"),
     noMatch: t("review.list.noMatch", "No reviews match the filters"),
+    noMatchBody: t("review.list.noMatchBody", "Adjust or clear the search, status, risk and overdue filters."),
     colFactory: t("review.list.colFactory", "Factory"),
     colInspector: t("review.list.colInspector", "Inspector"),
     colTypeMode: t("review.list.colTypeMode", "Type · mode"),
-    colSubmitted: t("review.list.colSubmitted", "Submitted"),
     colVersion: t("review.list.colVersion", "Version"),
-    colRisk: t("review.list.colRisk", "Risk"),
-    colSla: t("review.list.colSla", "SLA"),
-    colCritical: t("review.list.colCritical", "Critical"),
-    colPriority: t("review.list.colPriority", "Priority"),
+    colFingerprint: t("review.list.colFingerprint", "Evidence readiness & SLA-risk"),
     colStatus: t("review.list.colStatus", "Status"),
-    colDecision: t("review.list.colDecision", "Decision"),
-    colReturnScope: t("review.list.colReturnScope", "Return scope"),
-    colReason: t("review.list.colReason", "Reason"),
     colOpen: t("review.list.colOpen", "Workspace"),
-    open: t("review.list.open", "Open"),
+    open: t("review.list.open", "Open workspace"),
+    openHint: t("review.list.openHint", "Opens /reviews/:id read-only. Starting and deciding the review happen there, as explicit audited actions — this queue changes nothing."),
+    fpTitle: t("review.list.fpTitle", "Evidence readiness & SLA-risk fingerprint"),
+    fpHint: t("review.list.fpHint", "Labelled facts only — never a single severity score or colour-only signal. Missing SLA is not on-time; a risk band is not a recommendation. Any fact that cannot be read shows 'unavailable', never an invented result."),
+    fp: {
+      sla: t("review.list.fp.sla", "SLA"),
+      slaOverdue: t("review.list.fp.slaOverdue", "overdue"),
+      slaOnTime: t("review.list.fp.slaOnTime", "on time"),
+      slaUnavailable: t("review.list.fp.slaUnavailable", "SLA unavailable — required config/timestamp missing"),
+      risk: t("review.list.fp.risk", "Risk"),
+      critical: t("review.list.fp.critical", "critical (L1)"),
+      priority: t("review.list.fp.priority", "priority"),
+      checklist: t("review.list.fp.checklist", "Checklist"),
+      evidence: t("review.list.fp.evidence", "Evidence"),
+      ack: t("review.list.fp.ack", "Acknowledgement"),
+      factory: t("review.list.fp.factory", "Factory verify"),
+      present: t("review.list.fp.present", "present"),
+      missing: t("review.list.fp.missing", "missing"),
+      verified: t("review.list.fp.verified", "verified"),
+      updated: t("review.list.fp.updated", "updated"),
+      unavailable: t("review.list.fp.unavailable", "unavailable"),
+      readyBlockTag: t("review.list.fp.readyBlockTag", "derived (RLS-scoped)"),
+      noEvidenceTitle: t("review.list.fp.noEvidenceTitle", "Evidence not yet readable"),
+      noEvidenceBody: t("review.list.fp.noEvidenceBody", "A linked submission/evidence source could not be read for this row. It is flagged, not counted as ready — do not decide from an unreadable record."),
+      unassignedTitle: t("review.list.fp.unassignedTitle", "Unassigned reviewer"),
+      unassignedBlocked: t("review.list.fp.unassignedBlocked", "claim/reassign unavailable"),
+    },
   };
 
   return (
-    <Shell current="/reviews" title={t("review.list.title", "Level 2 review")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("review.list.context", "SCR-WEB-300/310 · live data from golden slice")}</span>}>
-      {pending.map(r => {
-        const factory = r.inspections?.visits?.factories?.name ?? r.id.slice(0, 8);
-        return <DecisionPanel key={r.id} reviewId={r.id} factory={factory} strings={panelStrings} meta={badgesFor(r)} />;
-      })}
-      {rows.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">✅</span><h4>{t("review.list.empty", "Queue clear")}</h4></div></div>
+    <Shell current="/reviews" title={t("review.list.title", "Level 2 review queue")}
+      context={<span className="ax-lozenge ax-lozenge--info">{t("review.list.context", "SCR-WEB-300 · /reviews · RLS-scoped")}</span>}>
+      {!authorized ? (
+        <section className="ax-surface cd-panelpad cd-result" role="alert">
+          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
+            <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h3>
+              <p>{t("review.list.unauthBody", "This queue requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p></div></div>
+        </section>
       ) : (
-        <ReviewQueue rows={queueRows} statusOptions={statusOptions} riskOptions={riskOptions} strings={queueStrings} />
+        <>
+          {/* opening is read-only now (CD-028 leg 5/10 resolved) — say so plainly */}
+          <div className="ax-banner" role="note"><div><strong>{t("review.list.scanTitle", "Scan-first queue")}</strong> — {t("review.list.scanBody", "Opening a review is read-only. Starting and deciding happen in the workspace as explicit, audited actions. This queue never edits inspector content or mutates state.")}</div></div>
+          {missingSla && <div className="ax-banner ax-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "SLA configuration missing")}</strong> — {t("review.list.missingSlaBody", "engine_settings has no review_business_days / working-day calendar, so no SLA state is derived. Rows show 'SLA unavailable' — never invented as on-time.")}</div></div>}
+          {degraded && <div className="ax-banner ax-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is unavailable")}</strong> — {t("review.list.degradedBody", "The queue loaded, but a linked source (evidence, factory-verification or violation counts) could not be read for some rows. Those facts read 'unavailable', never a default value.")}</div></div>}
+          {rows.length === 0 ? (
+            <section className="ax-surface cd-panelpad cd-result" role="status">
+              <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--ok" aria-hidden="true">✅</div>
+                <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.empty", "Queue clear")}</h3>
+                  <p>{t("review.list.emptyBody", "No reviews in your scope await a Level 2 decision.")}</p></div></div>
+            </section>
+          ) : (
+            <ReviewQueue rows={queueRows} statusOptions={statusOptions} riskOptions={riskOptions} strings={queueStrings} />
+          )}
+          <div className="ax-banner ax-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions are immutable")}</strong> {t("review.list.immutableBody", "— the database rejects edits to decided reviews (proven live: B3-EV-001 P10-NEG). Every resubmission creates a new version; v1 remains locked forever.")}</div></div>
+        </>
       )}
-      <div className="ax-banner ax-banner--immutable"><div><strong>{t("review.list.immutableTitle", "Decisions are immutable")}</strong> {t("review.list.immutableBody", "— the database rejects edits to decided reviews (proven live: B3-EV-001 P10-NEG). Every resubmission creates a new version; v1 remains locked forever.")}</div></div>
     </Shell>
   );
 }

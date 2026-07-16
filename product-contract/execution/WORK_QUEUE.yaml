@@ -81,32 +81,82 @@ items:
   - task_id: "CD-021-BULK-TARGETING"
     gate: "G11 sponsor-directed design implementation"
     priority: "P1"
-    status: "BUILD_IMPLEMENTED_VERIFIED_AWAITING_REVIEW"
+    status: "BUILD_IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_RUNTIME_ACCEPTANCE"
     owner: "Claude Code + Sponsor / product owner"
-    blocked_by: []
+    blocked_by: ["Sponsor runtime acceptance"]
     blocks: []
-    note: "Now the active slice (2026-07-13, sponsor-directed). SCR-WEB-110 /planning/bulk + SCR-WEB-120 /planning/bulk/review. Increments 1-6 done and verified on branch feat/cd-021-bulk-targeting (uncommitted). Migration 0026 atomic publish RPC applied live. Open: Codex wiring review, full regression rerun, AC-ledger recompute, sponsor runtime acceptance."
+    note: "Now the active slice (2026-07-13, sponsor-directed). SCR-WEB-110 /planning/bulk + SCR-WEB-120 /planning/bulk/review. Migration 0026 atomic publish RPC applied live. 2026-07-15 reconciliation: feat/cd-021-bulk-targeting branch no longer exists — reconciled into setup/Inspection; Codex wiring review (DEC-012) is PASS with 23/23 focused suite (CURRENT_STATE.md UPDATE 60/61); full regression has rerun multiple times since (99/99 at UPDATE 38, latest baseline sweep further); AC-ledger has been recomputed (493 rows). All three removed as satisfied blockers. Sole remaining item is sponsor runtime acceptance."
   - task_id: "CD-023-IMMEDIATE-VISIT-REMEDIATION"
     gate: "G11 DEC-012 remediation"
     priority: "P0"
-    status: "REMEDIATION_IMPLEMENTED_PENDING_LIVE_MIGRATION_AND_REAUDIT"
+    status: "REMEDIATION_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
     owner: "Claude Code implementation + distinct Codex wiring reviewer + Sponsor"
-    blocked_by: ["Apply urgency migration 20260714060935 through linked migration history", "Run migration-dependent crafted-RPC test and complete regression without exclusions", "Fresh independent DEC-012 re-audit", "Sponsor runtime acceptance"]
+    blocked_by: ["Sponsor runtime acceptance"]
     blocks: ["CD-023 closure", "CD-024+ implementation"]
-    note: "The strict post-live FAIL is remediated in the worktree: all 12 wiring rows now match current runtime and cite exact tests; the accepted D3 four-value urgency set plus Other justification is enforced in the server action and prepared database CHECK; downstream field start uses neutral localized copy. Typecheck/build PASS, focused runnable suite 16/16 PASS, and broader regression 90/90 PASS with only the unapplied-migration crafted-RPC test excluded. Migration 20260714060935 could not be applied because linked CLI authentication stalled and no DB password/access token is available; Dashboard SQL was not used to bypass migration history. Apply it, run 91/91, then obtain a fresh independent DEC-012 audit and sponsor acceptance."
+    note: "The strict post-live FAIL is remediated in the worktree: all 12 wiring rows now match current runtime and cite exact tests; the accepted D3 four-value urgency set plus Other justification is enforced in the server action and prepared database CHECK; downstream field start uses neutral localized copy. Typecheck/build PASS, focused runnable suite 16/16 PASS, and broader regression 90/90 PASS with only the unapplied-migration crafted-RPC test excluded. Migration 20260714060935 could not be applied because linked CLI authentication stalled and no DB password/access token is available; Dashboard SQL was not used to bypass migration history. Apply it, run 91/91, then obtain a fresh independent DEC-012 audit and sponsor acceptance. 2026-07-15 reconciliation: migration 20260714060935 was applied live and the crafted-RPC test PASSED, focused CD-023 suite reached 18/18, and a fresh independent DEC-012 ROUND4 audit PASSED (CURRENT_STATE.md UPDATE 34/37) — both stale blockers removed. Sole remaining blocker is sponsor runtime acceptance."
   - task_id: "TASK-DESIGN-CD024-QUALITY-RATCHET"
     gate: "G11 controlled Web-first design"
     priority: "P0"
     status: "READY_FOR_DESIGN_ONLY_ROUTE_RECONCILIATION_REQUIRED"
     owner: "Claude Design + Codex design reviewer + Sponsor"
-    blocked_by: ["CD-023 DEC-012 independent wiring audit PASS"]
+    blocked_by: ["Sponsor design approval", "SCR-WEB-120/140 route ownership decision"]
     blocks: ["CD-024 implementation authorization"]
-    note: "V4 quality audit and exact CD-024 prompt are ready. Design exploration may proceed, but implementation is blocked until sponsor design approval, SCR-WEB-120/140 ownership and route reconciliation, independent wiring audit, and explicit authorization. Preserve /planning/plans/:id as read-only."
+    note: "V4 quality audit and exact CD-024 prompt are ready. Design exploration may proceed, but implementation is blocked until sponsor design approval, SCR-WEB-120/140 ownership and route reconciliation, independent wiring audit, and explicit authorization. Preserve /planning/plans/:id as read-only. 2026-07-15 reconciliation: the CD-023 DEC-012 independent wiring audit is already PASS (ROUND4, CURRENT_STATE.md UPDATE ~34-38/60/61) — removed as a satisfied blocker. No route/ownership decision has been recorded in governance/decision_register.csv or OPEN_DECISIONS.yaml; that sponsor decision remains the actual open blocker, unresolved as of this check."
+  - task_id: "TASK-CD006-011-BACKEND-COMPLETION"
+    gate: "G11 admin control-plane backend completion"
+    priority: "P0"
+    status: "SOURCE_COMPLETE_LOCAL_PASS_LIVE_MIGRATION_APPROVAL_PENDING"
+    owner: "Codex backend + Claude Code frontend + Sponsor live approval"
+    blocked_by: ["Explicit sponsor approval to apply 20260715200000_cd006_011_backend_completion.sql", "Governed migration application and live reconciliation", "Revised authenticated CD-006..011 frontend/browser verification"]
+    blocks: ["CD-006..011 live runtime completion claim", "CD-006..011 sponsor runtime acceptance"]
+    note: "Sponsor-authorized backend source is complete on codex/cd006-011-backend-completion: AC-0449/0453/0466/0469/0470/0472 plus usage, scoped audit, deactivation, validation, RLS/audit and immutability contracts. Typecheck/build PASS; focused suite 7/7 PASS. Claude Code frontend work may proceed in a separate worktree under the ownership boundary in CD006_CD011_BACKEND_COMPLETION_2026-07-15.md. Do not claim live completion until the exact forward migration is explicitly approved, applied, reconciled, and the revised authenticated suites pass."
   - task_id: "TASK-BASELINE-WIRING-AUDIT-001"
     gate: "G10 verification / G11 hardening"
     priority: "P0"
-    status: "AUDIT_IN_PROGRESS_PENDING_REGRESSION_AND_MAIN_CONSOLIDATION"
+    status: "REMEDIATION_INCOMPLETE_EXTERNAL_BLOCKERS"
     owner: "Codex"
-    blocked_by: ["Full no-exclusion Playwright regression", "Forward migration runtime certification", "DEC-012 fresh independent CD-023 audit", "Sponsor runtime acceptance"]
+    blocked_by: ["Apply and replay-verify field arrival evidence migration 20260715180000", "Apply and replay-verify CD-041 verified-transition migration 20260715170000", "Resolve the 19 AC_LEDGER partial rows at their provider/schema/policy/configuration boundaries", "Sponsor runtime acceptance"]
     blocks: ["G11/G12 release claim", "CD-024 implementation authorization"]
-    note: "Cross-slice wiring audit for CD-001/CD-002/CD-003/CD-020/CD-021/CD-022/CD-023 plus CD-024 boundary recorded at product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md. Fail-closed UI/API wiring and raw-error sinks are remediated; migrations 20260714091726/27 are generated but not deployed."
+    note: "Cross-slice wiring audit and remediation evidence are recorded in product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md and the dated Codex audit records. Fail-closed UI/API wiring, neutral-error sinks, auth/offline guards, CD-021/CD-022/CD-029 wiring, republish notification handling, field return/reschedule/cancellation/arrival handoffs, fail-closed arrival persistence, downstream visit-linked evidence, and active Operations refresh wiring are implemented and source/runtime checked. The AC ledger generator now preserves dated Codex closures and regenerates 493 rows as 14 verified_live / 460 implemented / 19 partial / 0 missing. Focused slices remain green, and the latest complete no-exclusion run reached 197 passed / 3 failed / 1 skipped / 2 not run; the isolated CD-004 and KPI failures passed on rerun. CD-041 no longer has a fixture-window collision, but its focused live journey is blocked by missing public.vs_mark_session_verified in the shared schema (CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md). The field-arrival migration/replay and the remaining provider/policy/schema/configuration boundaries remain open. CD-024 remains BLOCKED_UPSTREAM on route/design ownership. Baseline is not complete and has not been committed, pushed, merged, deployed, or applied to main."
+  - task_id: "TASK-DESIGN-CD025-R4"
+    gate: "G11 controlled Web-first design"
+    priority: "P0"
+    status: "BLOCKED_PENDING_SYNCHRONIZED_R4_RESUBMISSION"
+    owner: "Claude Design + Codex design reviewer + Sponsor"
+    blocked_by: ["Clean synchronized CD-025 R4 archive generated from exact baseline"]
+    blocks: ["CD-025 sponsor design approval", "CD-025 Claude Code execution", "CD-025 implementation authorization"]
+    note: "R3 page-specific design is preserved, but Plan Review and Publish (1).zip is a contradictory R2/R3 hybrid. Run outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md in the same Claude Design project. Do not execute the stale R2 Claude Code prompt."
+  - task_id: "TASK-DESIGN-CD026"
+    gate: "G11 controlled Web-first design"
+    priority: "P0"
+    status: "PROMPT_READY_AWAITING_CLAUDE_DESIGN"
+    owner: "Claude Design + Codex design reviewer + Sponsor"
+    blocked_by: []
+    blocks: ["CD-026 sponsor design approval", "CD-026 implementation authorization"]
+    note: "The complete fresh-session prompt is outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md. Design only: list/calendar/workload/map continuity, truthful partial bulk outcomes, full AR/RTL/theme/responsive/a11y/security coverage. Map and Branch Manager mapping remain HANDOFF_BLOCKED where runtime evidence is absent."
+  - task_id: "TASK-DESIGN-CD027"
+    gate: "G11 controlled Web-first design"
+    priority: "P0"
+    status: "DESIGN_DELIVERED_R2_IMPORTED_AND_IMPLEMENTED"
+    owner: "Codex prompt author + Claude Design + Sponsor"
+    blocked_by: []
+    blocks: []
+    note: "CD-027 r2 design delivered by Claude Design (project 20cb0dce, READY_FOR_DESIGN_REVIEW_R2) and imported via DesignSync. Superseded by implementation task CD-027-VISIT-DETAIL-TRACK1 below."
+  - task_id: "CD-027-VISIT-DETAIL-TRACK1"
+    gate: "G11 production-readiness wiring"
+    priority: "P0"
+    status: "CLOSED_SPONSOR_WAIVED"
+    owner: "Claude Code implementation + Sponsor (independent audit waived)"
+    blocked_by: []
+    blocks: []
+    closure: "CLOSED (SPONSOR-WAIVED) 2026-07-15 (Vikram Indla) — runtime acceptance granted; DEC-012 independent audit WAIVED (not satisfied); MAP/ASSIGNMENT_RELEASE/ATOMIC DEFERRED to change-control (not done). See governance/HUMAN_APPROVALS.yaml gate CD-027-closure-waiver. Reopen on P0/P1 regression, later independent-audit finding, or a blocked-leg decision."
+    follow_ups: ["Optional later independent Codex re-audit of the closures (waived, not deleted)", "CC-CD027-MAP-001 / CC-CD027-ASSIGNMENT-RELEASE-001 / CC-CD027-ATOMIC-001 pending sponsor decisions"]
+    note: "SCR-WEB-210 /visits/:id. Sponsor approved audit-first (Vikram Indla, 2026-07-14). Dual-State Ribbon (five domains, keyboard tablist, S36 ledger), available/disabled-with-why/unavailable action zones, honest queued-not-delivered copy. Track 2 closed ERRORMAP (neutral errors), ORPHAN (storage cleanup), NOTIFY_PREV (prev-inspector notify via REF-014 assignment event). Held BLOCKED: MAP (never invent provider/geofence), ASSIGNMENT_RELEASE (open product decision), ATOMIC (would weaken best-effort-notify contract). Recorded audit outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (DEC-012). e2e cd-027-visit-detail.spec.ts 16/16 PASS on local prod build; typecheck+build clean. Preserved: RLS reads, five state machines, guards, append-only audit(30), immutable submissions, soft-delete, signed URLs, system-only expiry, grouped shell. Branch feat/cd-026-visit-management, unmerged."
+  - task_id: "CD-031-FACTORY-360-DOSSIER"
+    gate: "G11 production-readiness wiring"
+    priority: "P1"
+    status: "IMPLEMENTED_PENDING_CODEX_WIRING_AUDIT"
+    owner: "Claude Code implementation + Sponsor (task-slice + design-gate overridden 2026-07-15)"
+    blocked_by: ["DEC-012 independent Codex wiring audit against WIRING_MAP_CD-031.csv (18 legs + 4b/4c)"]
+    blocks: []
+    note: "SCR-WEB-400 /factories/:id. Design imported from claude_design project 20cb0dce (outputs/cd-031-r3/), which is marked implementation_authorized:false / DO-NOT-EXECUTE / BASELINE_REVERIFY_REQUIRED, and is outside TASK-BASELINE-WIRING-AUDIT-001's authorized slice — sponsor explicitly overrode both stops in-chat (DEC-014). Restructured the existing 7-tab dossier into a two-column provenance-led layout (aside: identity/freshness/risk/location facts; main: sticky section strip + Spatial Case Timeline signature + history/documents/representatives/products/materials/workforce sections), preserving every existing query, AddDocument/AddRepresentative/AddProduct/AddMaterial/ToggleRepActive control, and per-section error isolation. New: representative contact fields masked for the leadership role only (HANDOFF_BLOCKED_ROLE); explicit unavailable rows for risk-driver breakdown (HANDOFF_BLOCKED_RISK_DRIVERS), risk-version history (HANDOFF_BLOCKED_RISK_HISTORY), evidence timeline (HANDOFF_BLOCKED_EVIDENCE_TIMELINE), map/boundary (HANDOFF_BLOCKED_MAP/_BOUNDARY), document preview (HANDOFF_BLOCKED_DOCUMENT_VIEWER); no computed staleness threshold added (freshness is a plain fact per the state matrix's own 'no invented staleness threshold' note); no map provider, boundary polygon, coordinate-conflict resolution, or risk recalculation added — confirmed no such columns exist in migrations, so the design's HANDOFF_BLOCKED assumptions hold against this repo, not just its stale claimed baseline. Verified: typecheck clean, production build clean (0 errors), new apps/web/e2e/cd-031-factory-360.spec.ts 15/15 PASS (source-truth + live planner persona + RTL). Not closed: independent Codex wiring audit against WIRING_MAP_CD-031.csv has not run (DEC-012 applies same as CD-030/CD-029). No commit, push, merge, deploy, or main modification occurred."

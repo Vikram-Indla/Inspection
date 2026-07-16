@@ -46,6 +46,7 @@ export default async function AuditBrowser({ searchParams }: { searchParams: Pro
     // profiles visibility is itself RLS-scoped (profiles_self); unknown actors fall back to short ids
     sb.from("profiles").select("user_id, full_name"),
   ]);
+  if (error) console.error("[admin audit] load failed", error);
   const nameOf = (id: string | null) =>
     id === null ? t("admin.audit.systemActor", "system") : (profs ?? []).find(p => p.user_id === id)?.full_name ?? `${id.slice(0, 8)}…`;
   const events = (rows ?? []) as Row[];
@@ -109,7 +110,7 @@ export default async function AuditBrowser({ searchParams }: { searchParams: Pro
 
       {error && (
         <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("admin.audit.error", "Couldn’t load audit events.")}</strong> {error.message}
+          <strong>{t("admin.audit.error", "Couldn’t load audit events. Nothing was changed. Try again.")}</strong>
         </div></div>
       )}
 

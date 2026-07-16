@@ -45,3 +45,13 @@ This file is the fresh independent re-audit DEC-012 requires after a FAIL/PARTIA
 ## Next allowed action
 
 Per DEC-012 and the checklist's verdict rollup, this PASS satisfies the *fresh reviewer pass over the changed rows* the prior audit required. CD-022 has now cleared its DEC-012 wiring-audit requirement. The remaining path to closure is unchanged from before: (a) sponsor runtime acceptance (tracked separately, still outstanding per UPDATE 26/27), and (b) at the sponsor's discretion, real automated coverage for the retry/resume path (wiring row 8), which remains a traced-but-untested gap and was out of scope for this remediation. Optionally, correct the `CURRENT_STATE.md` UPDATE 27 test-count wording (11/11 → 8/8) for internal consistency; this is not a blocking item.
+
+## Follow-up closure — 2026-07-15
+
+The previously noted acceptance residual is now closed in the current worktree: the
+selection-time duplicate warning includes the conflicting visit's lifecycle status
+(`planning_status`) alongside its ID, M02-012 rule and deep link. The CD-022 map row
+now cites the lifecycle-status assertion, and the fresh live `cd-022-identity-lens.spec.ts`
+run is **13/13 PASS** (including the resumable retry and duplicate-status assertions).
+Typecheck and production build also pass. The historical note above is preserved as
+the prior audit's state; it is superseded by this follow-up.

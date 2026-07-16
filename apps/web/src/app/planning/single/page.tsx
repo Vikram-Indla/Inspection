@@ -68,8 +68,10 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     );
   }
 
+  const today = new Date().toISOString().slice(0, 10);
   const [packageRead, inspectorRead, otpRead] = await Promise.all([
-    sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"]).order("published_at", { ascending: false }),
+    sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).order("published_at", { ascending: false }),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
     sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
   ]);
@@ -100,6 +102,10 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     const { data: candidates, error: searchError } = await sb.from("factories")
       .select("id, factory_code, name, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, geofence_radius_m, source_synced_at")
       .or(`cr_number.eq.${q},factory_code.ilike.%${esc}%,license_number.ilike.%${esc}%,name.ilike.%${esc}%`)
+      // Keep the bounded search deterministic and make a newly-created
+      // registry record discoverable when live test/manual data contains
+      // older matches for the same name fragment.
+      .order("created_at", { ascending: false })
       .limit(50);
     if (searchError) {
       // eslint-disable-next-line no-console
@@ -122,6 +128,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
         degraded: !f.license_number || f.official_lat == null || f.official_lng == null,
         duplicate: dups.visits.length > 0,
         duplicateVisitId: dups.visits[0]?.id ?? null,
+        duplicateVisitStatus: dups.visits[0]?.planning_status ?? null,
       }));
   }
 
@@ -139,6 +146,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     degradedRule: t("plan.single.degradedRule", "Missing Industrial License or official coordinates"),
     duplicateWarning: t("plan.single.duplicateWarning", "An active visit already exists for this factory (M02-012) — shown as a warning here, blocked at publish"),
     duplicateOpenVisit: t("plan.single.duplicateOpenVisit", "Open existing visit"),
+    duplicateStatusLabel: t("plan.single.duplicateStatusLabel", "status"),
     licenseStep: t("plan.single.licenseStep", "2 · Industrial License (M01-036)"),
     licenseSelect: t("plan.single.licenseSelect", "Select the Industrial License this visit is planned against"),
     licenseLabel: t("plan.single.licenseLabel", "Industrial license"),

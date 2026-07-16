@@ -23,14 +23,17 @@ type Row = {
 export default async function Workload() {
   const { t } = await useT();
   const sb = await supabaseServer();
-  await sb.rpc("expire_lapsed_visits"); // count real published load, not lapsed windows (M02-016)
+  const { error: expiryError } = await sb.rpc("expire_lapsed_visits"); // count real published load, not lapsed windows (M02-016)
+  if (expiryError) console.error(`[visits.workload] expiry refresh failed: ${expiryError.message}`);
   const { data, error } = await sb.from("assignments")
     .select("inspector_id, profiles(full_name), visits(id, planning_status, operational_state, window_start, window_end)")
     .limit(2000);
   if (error) {
+    // CD-026 query-degraded — neutralise provider error (log server-side only).
+    console.error(`[visits.workload] load failed: ${error.message}`);
     return (
       <Shell current="/visits" title={t("visit.load.title", "Inspector workload")}>
-        <div className="ax-banner ax-banner--critical"><div>{t("visit.load.loadError", "Could not load assignments:")} {error.message}</div></div>
+        <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.load.loadErrorNeutral", "Assignments are temporarily unavailable. Please try again.")}</div></div>
       </Shell>
     );
   }

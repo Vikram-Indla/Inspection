@@ -14,11 +14,15 @@ const humanize = (k: string) => k.replace(/_/g, " ").replace(/^./, c => c.toUppe
 
 type PenaltyRow = { penalty_ref: string; legal_basis: string | null; mapping_version: string | null };
 type VCodeRow = { id: string; code: string; title: string; level: string; penalty_mappings: PenaltyRow | PenaltyRow[] | null };
+type FrozenVCodeRow = VCodeRow & { configuration_version?: number; corrective_action?: string | null; grace_period_days?: number | null };
 type ItemRow = {
   id: string; code: string; title: string;
   response_model: Item["response_model"]; evidence_rule: Item["evidence_rule"];
-  score_excluded_on: string[] | null; guidance_en: string | null; guidance_ar: string | null;
+  score_excluded_on: string[] | null; score_weight: number | null; guidance_en: string | null; guidance_ar: string | null;
   regulation_clauses: { clause_ref: string; legal_source: string | null } | null;
+};
+type FrozenItemRow = Omit<ItemRow, "regulation_clauses"> & {
+  regulation_clauses: ItemRow["regulation_clauses"] | ItemRow["regulation_clauses"][];
 };
 
 export default async function FieldInspection({ params }: { params: Promise<{ id: string }> }) {
@@ -26,8 +30,8 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const [{ data: ins }, { data: itemRows }, { data: resp }, { data: ev }, { data: vios }, { data: vcodes }, { data: engines }] = await Promise.all([
-    sb.from("inspections").select("id, status, visit_id, package_versions(version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)").eq("id", id).single(),
-    sb.from("inspection_items").select("id, code, title, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)"),
+    sb.from("inspections").select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)").eq("id", id).single(),
+    sb.from("inspection_items").select("id, code, title, response_model, evidence_rule, score_excluded_on, score_weight, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)"),
     sb.from("checklist_responses").select("item_id, response, updated_at").eq("inspection_id", id),
     sb.from("evidence").select("id, linked_type, linked_id, evidence_type, storage_path, captured_at").eq("inspection_id", id),
     sb.from("violations").select("id, violation_code_id").eq("inspection_id", id),
@@ -88,16 +92,34 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     };
   }
   // Items with locale-resolved guidance (M04-138 · guidance_en/ar) + regulation ref.
-  const items: Item[] = ((itemRows ?? []) as unknown as ItemRow[]).map(r => ({
+  const liveItems = new Map(((itemRows ?? []) as unknown as ItemRow[]).map(row => [row.code, row]));
+  const packageVersion = ins.package_versions as unknown as { id: string; definition: { sections?: { items?: string[] }[]; item_snapshot?: Record<string, FrozenItemRow>; violation_snapshot?: Record<string, FrozenVCodeRow> } };
+  const frozenDefinition = packageVersion.definition;
+  const { data: legacySnapshots } = await sb.from("package_version_item_snapshots")
+    .select("item_code, snapshot").eq("package_version_id", packageVersion.id);
+  const { data: dependencySnapshots } = await sb.from("package_version_dependency_snapshots")
+    .select("dependency_key, snapshot").eq("package_version_id", packageVersion.id).eq("dependency_type", "violation");
+  const companionSnapshot = Object.fromEntries(((legacySnapshots ?? []) as { item_code: string; snapshot: FrozenItemRow }[])
+    .map(row => [row.item_code, row.snapshot]));
+  const packageCodes = [...new Set((frozenDefinition.sections ?? []).flatMap(section => section.items ?? []))];
+  const configuredRows = packageCodes.map(code => frozenDefinition.item_snapshot?.[code] ?? companionSnapshot[code] ?? liveItems.get(code)).filter((row): row is ItemRow | FrozenItemRow => !!row);
+  const items: Item[] = configuredRows.map(r => {
+    const clauseRelation = Array.isArray(r.regulation_clauses) ? r.regulation_clauses[0] : r.regulation_clauses;
+    return ({
     id: r.id, code: r.code, title: r.title,
     response_model: r.response_model, evidence_rule: r.evidence_rule,
-    score_excluded_on: r.score_excluded_on,
+    score_excluded_on: r.score_excluded_on, score_weight: r.score_weight,
     guidance: (locale === "ar" && r.guidance_ar) ? r.guidance_ar : r.guidance_en,
-    clause: r.regulation_clauses ? { clause_ref: r.regulation_clauses.clause_ref, legal_source: r.regulation_clauses.legal_source } : null,
-  }));
+    clause: clauseRelation ? { clause_ref: clauseRelation.clause_ref, legal_source: clauseRelation.legal_source } : null,
+  });
+  });
   // Compliance configuration for the violation auto-display panel (M04-142/143/144).
   const vioConfig = {} as Record<string, VioConfig>;
-  for (const v of ((vcodes ?? []) as unknown as VCodeRow[])) {
+  const liveViolationConfig = Object.fromEntries(((vcodes ?? []) as unknown as VCodeRow[]).map(v => [v.code, v]));
+  const companionViolations = Object.fromEntries(((dependencySnapshots ?? []) as { dependency_key: string; snapshot: FrozenVCodeRow }[])
+    .map(row => [row.dependency_key, row.snapshot]));
+  const configuredViolations = { ...liveViolationConfig, ...companionViolations, ...(frozenDefinition.violation_snapshot ?? {}) };
+  for (const v of Object.values(configuredViolations)) {
     const pm = Array.isArray(v.penalty_mappings) ? v.penalty_mappings[0] : v.penalty_mappings;
     vioConfig[v.code] = { id: v.id, code: v.code, title: v.title, level: v.level, penalty_ref: pm?.penalty_ref ?? null, legal_basis: pm?.legal_basis ?? null, mapping_version: pm?.mapping_version ?? null };
   }
@@ -141,7 +163,10 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const factoryProducts = (prodRows ?? []) as FactoryProductRow[];
   const factoryMaterials = (matRows ?? []) as FactoryMaterialRow[];
   const factoryChecks = (checkRows ?? []) as { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }[];
-  const factoryChecksError = checksErr ? checksErr.message : null;   // errors verbatim (M04-114)
+  const factoryChecksError = checksErr
+    ? t("field.fv.loadError", "Saved checks could not be loaded: {error}")
+      .replace("{error}", t("field.fv.unavailable", "data source unavailable"))
+    : null;
   const factoryFieldEvidence: FactoryFieldEvidence[] = evidenceRows
     .filter(e => e.linked_type === "factory_field")
     .map(e => ({ linked_id: e.linked_id }));

@@ -1,0 +1,28 @@
+CD001-V7-EV-007 — Arabic-first and RTL runtime proof
+Date: 2026-07-13
+Branch: feat/cd-001-v7-atlas
+Screen: SCR-PUB-010
+
+Implemented
+- Fresh /login defaults to Arabic through the login locale cookie boundary.
+- Root document and login surface render lang=ar and dir=rtl before interaction.
+- Desktop credentials are physically right of the atlas.
+- Arabic lifecycle order and arrow-key progression are direction-aware.
+- Login, lifecycle, hotspot and five zone labels are localized.
+- Atlas interaction overlays are aligned to the actual contained raster plane.
+- Dossier placement uses physical left/right behavior independent of text direction.
+- Dedicated Arabic desktop and mobile runtime evidence captured in both dark and light shells.
+
+Verification
+- npm run typecheck: PASS
+- npm run build: PASS
+- e2e/cd-001-v7-atlas.spec.ts: PASS 7/7
+- e2e/cd-001-v7-visual-evidence.spec.ts: PASS 1/1
+- Arabic evidence: screens/login-v7-atlas/desktop-dark-ar.png, desktop-light-ar.png, mobile-dark-ar.png and mobile-light-ar.png
+
+Known P1 limitation
+- The approved source raster contains baked-in English labels. Current Arabic DOM overlays create a bilingual atlas. An Arabic-only raster remains a separate asset commission and approval task.
+
+Scope boundary
+- Authentication, reset anti-enumeration, audit, RBAC routing, backend data and workflows are unchanged.
+- No commit, push, merge or deployment was performed.
