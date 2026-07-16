@@ -59,6 +59,7 @@ export default async function BulkReview() {
     backToTargeting: t("plan.review.back", "Back to targeting"),
     scopeTitle: t("plan.review.scopeTitle", "Selection is no longer fully in scope"),
     scopeBody: t("plan.review.scopeBody", "{n} selected factory record(s) could not be read in your current scope. Nothing was silently removed or published; return to targeting and refresh the selection."),
+    scopeReduced: t("plan.review.scopeReduced", "Removed {removed} duplicate factory record(s). {retained} retained — readiness re-checked."),
 
     method: t("plan.review.method", "Bulk plan — periodic compliance campaign"),
     freshnessPrefix: t("plan.review.freshness", "Sources last checked"),
