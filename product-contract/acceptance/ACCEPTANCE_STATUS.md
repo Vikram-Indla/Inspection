@@ -181,3 +181,11 @@ live migration/replay boundary remains explicitly open.
 - Blocked seams remain surfaced-only and out of scope: provider adapter/selection, remote evidence capture, media custody, embedded live continuity preview, physical follow-up write, close state-vs-notification distinction.
 - Reopen rule: demonstrated P0/P1 regression, security/accessibility failure, protected-behavior break, or approved change control only.
 - Commits on `feat/admin-control-plane`: `81ba156` → `503a56c` → `b4061cc`.
+
+### G11 remaining-requirements closure — M09 slice (2026-07-16)
+
+`AC-0449`, `AC-0453`, `AC-0466`, `AC-0469`, `AC-0470` and `AC-0472` now have
+complete governed authoring/runtime paths and a focused production-browser
+inventory of **49/49 PASS**. The previous THIN findings predated the
+CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
+`evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md`.

@@ -184,3 +184,9 @@ Owner: CD004-EV-003 is closed. CD004-EV-004..005 remain open because failure/ver
 | CD030-NEW1-EV-001 | Independent audit finding: page-level gate on `/reviews/:id` blocked auditor/planner/leadership despite RLS (`inspections_read`/`subs_read`/`reviews_read`) and the CD-030 design scope ("P11 · Reviewer/Auditor") granting them read | `CODEX_AUDIT_CD-030_2026-07-15_R2.md` (finding NEW-1) | Captured — flagged via cross-session message, independently re-verified against `0002_rbac_audit.sql:39-40,65-66,71-73` and `screen_route_catalogue.csv:26` before fixing |
 | CD030-NEW1-EV-002 | Fix: `authorized` broadened to `reviewer/ops/auditor/planner/leadership` (view); new `canDecide` (`reviewer/ops` only) gates `DecisionPanel`/`StartReview`; a `{role} · read-only` lozenge renders for non-deciding viewers | `../../apps/web/src/app/reviews/[id]/page.tsx` | Captured — restores the accepted RLS/design-scoped read permission without widening who can submit a decision |
 | CD030-NEW1-EV-003 | Regression check on the same fix | `../../apps/web/e2e/cd-030-version-comparison.spec.ts`; `cd-029-review-workspace.spec.ts`; `cd-028-review-queue.spec.ts` | Captured — typecheck/build clean; 30/31 PASS, 1 skip; the single failure (`cd-028` leg 5) is a pre-existing shared-live-data ordering fragility (the queue's first open workspace had already been advanced to `under_review` by earlier same-day test runs), reproduced identically regardless of this fix, not a new defect |
+
+## G11 remaining-requirements closure — M09 slice (2026-07-16)
+
+| ID | Scope | Evidence | Status |
+|---|---|---|---|
+| G11-R19-M09-EV-001 | M09-001/005/018/021/022/024 source, backend, runtime, RLS, audit, RTL and degraded-state reconciliation | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md`; focused M09 production-browser inventory | Captured — 49/49 PASS; six historical partial rows superseded to implemented |
