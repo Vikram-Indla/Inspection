@@ -1,15 +1,17 @@
 # Last Session
-- Time: 2026-07-16T14:12:11.204189+00:00
-- Session ID: 900828f3-9d84-4581-845b-63ae92a11ea5
+- Time: 2026-07-16T18:29:39.012952+00:00
+- Session ID: 8e0a5cf6-3a85-4653-a977-a332e17054e2
 - End reason: other
 - Branch: codex/g11-g12-release-001
-- Commit: b0cf1a7
+- Commit: 5078999
 - Working tree:
 ```
-M .claude/settings.json
+M .project-memory/audit/config_changes.jsonl
  M .project-memory/audit/instructions_loaded.jsonl
  M .project-memory/audit/session_end.jsonl
  M .project-memory/audit/tool_events.jsonl
+ M product-contract/CURRENT_STATE.md
+ M product-contract/GATE_STATUS.md
  M product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png
  M product-contract/evidence/screens/cd-004-admin-home-v1/spine-ar-rtl-1440.png
  M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-dark-1024.png
@@ -45,7 +47,7 @@ M .claude/settings.json
  M product-contract/evidence/screens/cd-026-visit-management-v1/eligibility-preview.png
  M product-contract/evidence/screens/cd-026-visit-management-v1/narrow-412.png
  M product-contract/evidence/screens/cd-026-visit-management-v1/primary.png
- M product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-narrow-412.png
+ M product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-primary.png
  M product-contract/evidence/screens/dashboard-business-v1/operational-en-dark-desktop.png
  M product-contract/evidence/screens/dashboard-business-v1/strategic-ar-mobile.png
  M product-contract/evidence/screens/dashboard-business-v1/strategic-en-dark-desktop.png
@@ -71,19 +73,6 @@ M .claude/settings.json
  M product-contract/evidence/screens/shell-v1/planner-desktop-en-collapsed.png
  M product-contract/evidence/screens/shell-v1/planner-desktop-en-dark.png
  M product-contract/evidence/screens/shell-v1/planner-mobile-ar-light-drawer.png
- M product-contract/evidence/screens/single-v2/ar-dark-desktop.png
- M product-contract/evidence/screens/single-v2/ar-dark-narrow.png
- M product-contract/evidence/screens/single-v2/ar-light-desktop.png
- M product-contract/evidence/screens/single-v2/ar-light-narrow.png
- M product-contract/evidence/screens/single-v2/en-dark-desktop.png
- M product-contract/evidence/screens/single-v2/en-dark-narrow.png
- M product-contract/evidence/screens/single-v2/en-light-desktop.png
- M product-contract/evidence/screens/single-v2/en-light-narrow.png
  M product-contract/sessions/LAST_SESSION.md
-?? .claude/settings.json.bak-stopgate
-?? .project-memory/audit/config_changes.jsonl
-?? design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv.pre-cd042.bak
-?? design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv.pre-cd042.bak
-?? product-contract/evidence/BRANCH_CLEANUP_PENDING_MAIN_SETTLE.md
 ```
 - Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.

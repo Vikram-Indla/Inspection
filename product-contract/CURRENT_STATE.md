@@ -1,5 +1,37 @@
 # Current State
 
+## 2026-07-16 UPDATE 88 — G11 staging migrations applied + CD-025 landed + regression certified
+
+Under `TASK-G11-G12-RELEASE-001` (sponsor-approved, staging-as-operating-env):
+
+- **Three G11 forward-only migrations applied and verified live** on
+  `iiozvqntawxfwbgffzqu` via the Supabase Management API (token from `~/.zshenv`,
+  never printed): CD-028 `reviews_one_open_per_version` partial unique index
+  (0-duplicate pre-check), `evidence.evidence_note` column, and CD-025
+  `plan.review.scopeReduced` AR string. Idempotent, guarded; no applied migration
+  edited in place; no destructive change. Verified by catalogue queries.
+- **CD-025 (SCR-WEB-150 Plan Review & Publish) R3 S10 accessibility fix** —
+  polite scope-reduction announcement + focus restore — implemented on the
+  existing `/planning/bulk/review` surface (additive a11y; no logic/RPC/guard
+  change), typecheck + build clean, landed on `main` (PR #28, `cead7a1`).
+- **Arrival-evidence replay verified** — golden-journey 9/9 PASS incl P2
+  inspector arrival `evidence_note` queue (M04-045).
+- **Full regression** against the `main` release candidate (`bbef6f6`): 293/302
+  in a single-worker serial pass on shared staging; **all failures pass on
+  isolated re-run** = shared-DB serial contamination, not code faults (baseline
+  276/276 used 12 fresh shards). CD-025 + migrations regressed nothing.
+- **Decisions:** R1 = `main` is the release candidate (CD-025 landed onto it);
+  R2 = **G12 deploy deferred** — no hosting target configured, a provider
+  selection the approval does not resolve.
+- Not marked PASS: G11/G12 remain OPEN — credential rotation, region, video/
+  notification providers, CD-031 wiring/privacy, and sponsor runtime acceptance
+  are still outstanding (decision- or evidence-blocked). No production DDL beyond
+  the three authorized staging migrations; no deploy.
+
+Evidence: `evidence/G11-G12-RELEASE-PREP-2026-07-16.md`. Design/reconciliation
+side-work this session (CD-042 business-direction package, committed `b0cf1a7`)
+is separate analysis, not built.
+
 ## 2026-07-16 UPDATE 87 — G11 remediation slice verified 276/276
 
 `TASK-G11-REMEDIATION-001` has reached its local engineering exit. The
