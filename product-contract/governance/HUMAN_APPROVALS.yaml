@@ -48,6 +48,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-15"
     change_ref: "product-contract/governance/DEC-ADMIN-CONTROL-PLANE-AUTH.md"
+  - gate: "G11-remaining-requirements-closure"
+    decision: "APPROVED — sponsor explicitly approved change control CC-G11-REMAINING-19-001 and directed Codex to select the best non-simplistic production recommendations and complete every currently partial requirement one by one, including backend, frontend, migration, integration, offline, security, audit, test and evidence work. Sponsor-authorized DEC-001..DEC-010 recommendations are operative configurable MVP1 decisions. This approval includes the frozen current-slice, approvals, decisions, acceptance, evidence and session records required to govern and certify this task. It does not permit weakening requirements, permanent mocks, secret exposure, destructive live-data cleanup, direct workflow-state mutation, or unsupported completion claims."
+    approver: "Vikram Indla"
+    date: "2026-07-16"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."
