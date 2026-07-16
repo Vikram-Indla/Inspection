@@ -158,3 +158,9 @@ shards), with zero failed, skipped or excluded. This evidence removes only the
 stale missing-map/preflight
 blocker; it does not supply the still-missing privacy/provider decisions, repair
 remote migration history, configure deployment or close G11/G12.
+
+Git provenance: the CD-031 implementation, authority package, audit, SQL
+contracts and reconciled records are commit `19251de` on
+`codex/g11-g12-integration` and are pushed to the matching remote branch. This
+post-release continuation does not modify remote `main` or the immutable release
+tag without separate human promotion authority.

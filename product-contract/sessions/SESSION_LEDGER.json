@@ -3044,7 +3044,7 @@
         "Credential rotation, migration-history hardening, provider/region/asset/geographic and 18 upstream acceptance boundaries",
         "No configured production hosting/deployment/rollback target"
       ],
-      "commit_sha": "Release parent 5812c7fa5bf0a5e84ea64e8259b35211d9ce2bd1; CD-031 continuation commit identified in final Git handoff",
+      "commit_sha": "CD-031 implementation/audit commit 19251de on codex/g11-g12-integration; exact provenance follow-up is documentation-only",
       "next_task": "Obtain the exact CD-031 privacy/provider decisions and sponsor runtime acceptance without reopening the now-PASS wiring audit; separately resolve the remaining G11/G12 external blockers.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 89 and product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md. DEC-012 is PASS and the four write paths are locally/live rollback-proven. Do not fabricate the explicitly blocked privacy/provider rows or call CD-031/G11/G12 closed."
     }

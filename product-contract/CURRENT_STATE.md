@@ -36,6 +36,11 @@ the remaining 18 upstream partials, credential/migration-history/region/asset
 boundaries, sponsor runtime acceptance and a configured production deployment
 target remain open.
 
+The audited continuation is committed and pushed on
+`codex/g11-g12-integration` as `19251de`. Remote `main` and the immutable
+`g11-g12-release-2026-07-16` tag remain at the prior release baseline; this
+continuation does not silently repoint either.
+
 ## 2026-07-16 UPDATE 88 — release candidate 291/291; live seams closed safely
 
 `TASK-G11-G12-RELEASE-001` completed the sponsor-authorized subset without
