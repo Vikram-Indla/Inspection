@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
+import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 
 export type OpsResult = { error?: string; ok?: boolean };
 
@@ -60,10 +61,11 @@ export async function fetchMonitoringRows(region: string, city: string): Promise
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
-  const { data, error } = await sb
-    .from("visits")
+  const { data, error } = await collectPostgrestPages<MonitorVisitRow>((from, to) => sb.from("visits")
     .select("id, planning_status, operational_state, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
-    .order("window_start", { ascending: true });
+    .order("window_start", { ascending: true })
+    .order("id", { ascending: true })
+    .range(from, to) as unknown as PromiseLike<PostgrestPage<MonitorVisitRow>>);
   if (error) { console.error("[operations monitoring visits]", error); return { error: "Live monitoring is temporarily unavailable. Try again." }; }
 
   const visits = ((data ?? []) as unknown as MonitorVisitRow[]).filter(v =>

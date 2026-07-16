@@ -14,6 +14,7 @@ import {
 } from "../src/app/dashboard/metrics";
 import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 import { storageStatePath } from "./personas";
+import { collectPostgrestPages } from "../src/lib/supabase-pagination";
 
 const OPS = { email: "ops@mim.gov.sa", password: "MimOps!2026" };
 const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/dashboard-business-v1");
@@ -29,6 +30,31 @@ async function loginOps(page: import("@playwright/test").Page) {
 }
 
 test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
+  test("complete operational reads cross the provider page boundary without truncation", async () => {
+    const source = readFileSync(join(process.cwd(), "src/app/operations/page.tsx"), "utf8");
+    const liveSource = readFileSync(join(process.cwd(), "src/app/operations/live/page.tsx"), "utf8");
+    const refreshSource = readFileSync(join(process.cwd(), "src/app/operations/actions.ts"), "utf8");
+    expect(source).toContain("collectPostgrestPages<VisitRow>");
+    expect(source).toContain("collectPostgrestPages<FactoryRow>");
+    expect(liveSource).toContain("collectPostgrestPages<FactoryRow>");
+    expect(refreshSource).toContain("collectPostgrestPages<MonitorVisitRow>");
+
+    const rows = Array.from({ length: 2001 }, (_, id) => ({ id }));
+    const calls: [number, number][] = [];
+    const collected = await collectPostgrestPages((from, to) => {
+      calls.push([from, to]);
+      return Promise.resolve({ data: rows.slice(from, to + 1), error: null });
+    });
+    expect(collected.error).toBeNull();
+    expect(collected.data).toHaveLength(2001);
+    expect(calls).toEqual([[0, 999], [1000, 1999], [2000, 2999]]);
+
+    const failed = await collectPostgrestPages((from) => Promise.resolve(from === 0
+      ? { data: rows.slice(0, 1000), error: null }
+      : { data: null, error: { message: "page unavailable" } }));
+    expect(failed).toEqual({ data: null, error: { message: "page unavailable" } });
+  });
+
   test("audit timeline query is bounded to scoped dashboard objects", () => {
     const source = readFileSync(join(process.cwd(), "src/app/dashboard/page.tsx"), "utf8");
     expect(source).toContain("collectLatestAudit");

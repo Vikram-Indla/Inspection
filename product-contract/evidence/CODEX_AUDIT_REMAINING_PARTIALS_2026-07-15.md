@@ -1,5 +1,14 @@
 # Codex remaining-partial disposition — 2026-07-15
 
+## 2026-07-16 superseding reconciliation
+
+The independent M09 requirement-level audit in
+`CODEX_AUDIT_M09_WRITE_FLOW_2026-07-16.md` closed the six stale M09 partials
+(M09-001, M09-005, M09-018, M09-021, M09-022 and M09-024) as implemented after
+local and authenticated live write/negative/audit proof. They are removed from
+the active table below. **Twelve partial rows remain.** The original dated M09
+assessment is superseded; it is not silently treated as proof for the closure.
+
 This is the requirement-by-requirement disposition after the field-handoff
 remediation and the 2026-07-16 live release proof. `partial` is retained where
 the current repository cannot prove the missing leg without inventing policy,
@@ -21,14 +30,7 @@ were verified under TASK-G11-G12-RELEASE-001.
 | M07-015 | BLOCKED_SCHEMA_POLICY | Risk drivers/history and violation linkage are not present as authoritative fields or rules. |
 | M07-017 | BLOCKED_SCHEMA | No event-source contract exists for sync, penalty or score-update events on Factory 360. |
 | M07-019 | BLOCKED_RBAC_POLICY | Role-based tab/document/penalty visibility needs an accepted visibility matrix beyond the current RLS data boundary. |
-| M09-001 | BLOCKED_SCHEMA_POLICY | Regulation effective-date/attachment/edit/deactivate lifecycle fields and transition policy are not present in the accepted admin contract. |
-| M09-005 | BLOCKED_CONFIGURATION_SCOPE | Runtime accepts evidence types, but authoring additional presets needs an accepted configuration vocabulary and admin design scope. |
-| M09-018 | BLOCKED_CONFIGURATION_SCOPE | Per-item required/optional/conditional authoring needs a package-definition contract beyond the current section-level flag. |
-| M09-021 | BLOCKED_CONFIGURATION_SCOPE | Runtime conditional visibility exists; authoring condition rules requires an accepted admin authoring model. |
-| M09-022 | BLOCKED_CONFIGURATION_SCOPE | Runtime `mandatory_when_visible` exists; authoring those conditions requires the same missing admin model. |
-| M09-024 | BLOCKED_CONFIGURATION_SCOPE | Explicit scoring enable/disable needs a governed package scoring field and semantics; current null weight/preset behavior is the only accepted rule. |
-
-These 18 rows are not silently reclassified as complete. They remain in
+These 12 rows are not silently reclassified as complete. They remain in
 `evidence/AC_LEDGER.csv` as partial until their upstream authority exists and a
 new independent audit can verify the resulting implementation.
 
@@ -36,5 +38,5 @@ M04-045 closure evidence: the live object-state probe found `evidence_note` and
 the `arrival` evidence-link value already present, so no DDL was replayed. The
 golden journey then queued arrival evidence through the actual offline outbox,
 replayed it, and read back one visit-linked row with `inspection_id` null and
-the exact note. This upgrades only AC-0158; it does not change any of the 18
-provider/schema/policy/configuration rows above.
+the exact note. This upgrades only AC-0158; it does not change any of the twelve
+provider/schema/policy/RBAC rows above.

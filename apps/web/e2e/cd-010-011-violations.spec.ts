@@ -133,10 +133,15 @@ test.describe("CD-010/011 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", 
   test("mode-tab targets are at least 44px (spec §10)", async ({ page }) => {
     await page.goto("/admin/violations");
     const links = page.locator(".ax-segmented a.ax-btn");
-    const n = await links.count();
-    expect(n).toBeGreaterThan(0);
-    for (let i = 0; i < n; i++) {
-      const box = await links.nth(i).boundingBox();
+    // The App Router streams a loading boundary before the server component.
+    // Wait on the final tablist rather than sampling a locator count while the
+    // previous streamed tree is being replaced.
+    await expect(page.getByRole("tablist", { name: /Catalogue view/i })).toBeVisible();
+    await expect(links).toHaveCount(2);
+    for (let i = 0; i < 2; i++) {
+      const link = links.nth(i);
+      await expect(link).toBeVisible();
+      const box = await link.boundingBox();
       expect(box, `tab ${i} has a box`).not.toBeNull();
       expect(box!.height).toBeGreaterThanOrEqual(44 - 0.5);
     }

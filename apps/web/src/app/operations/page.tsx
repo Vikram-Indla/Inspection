@@ -10,6 +10,7 @@ import OpsMap, { type OpsPin, type OpsMapStrings } from "./OpsMap";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
 import type { MonitorRow } from "./actions";
 import type { GeoTone } from "@/components/GeoMap";
+import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -157,27 +158,33 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const [visitsRes, geoRes, actionsRes, notifsRes, factoriesRes, engineRes, riskRes] = await Promise.all([
     // KPI counts by operational_state span ALL visits — operational state is its own
     // domain (FND-002); filtering by planning_status here previously zeroed the cards.
-    sb.from("visits")
+    collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
       .select("id, operational_state, planning_status, window_start, window_end, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
-      .order("window_start", { ascending: true }),
+      .order("window_start", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
     sb.from("geo_events")
       .select("visit_id, kind, geofence_result, accuracy_m, occurred_at")
       .order("occurred_at", { ascending: false })
       .limit(200),
     // Corrective actions queue (M09-027 blocking flag; DEC-003 due default 14d)
-    sb.from("action_forms")
+    collectPostgrestPages<ActionRow>((from, to) => sb.from("action_forms")
       .select("id, form_type, owner_name, owner_role, due_at, status, is_blocking, required_correction, inspections(visit_id, visits(factories(id, name)))")
       .neq("status", "closed")
-      .order("due_at", { ascending: true }),
+      .order("due_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<ActionRow>>),
     // ENG-11 notification outbox — latest 20
     sb.from("notifications")
       .select("id, event_key, channel, delivery_state, created_at")
       .order("created_at", { ascending: false })
       .limit(20),
     // Factory master for the KSA map + region/city options (M08-002/010)
-    sb.from("factories")
+    collectPostgrestPages<FactoryRow>((from, to) => sb.from("factories")
       .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class")
-      .order("name", { ascending: true }),
+      .order("name", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
     // ENG-06/ENG-09 configuration — geofence default + SLA thresholds
     sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "sla"]),
     // M08-006 — high-risk factory board (ENG-04 output, top scores)

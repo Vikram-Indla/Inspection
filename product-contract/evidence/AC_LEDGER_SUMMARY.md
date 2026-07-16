@@ -5,15 +5,15 @@ Total governed rows: **493**
 | Status | Rows | % |
 |---|---|---|
 | verified_live | 15 | 3% |
-| implemented | 460 | 93% |
-| partial | 18 | 3% |
+| implemented | 466 | 94% |
+| partial | 12 | 2% |
 | missing | 0 | 0% |
 
 ## By module
 
 | Module | verified_live | implemented | partial | missing |
 |---|---|---|---|---|
-| Compliance Configuration | 1 | 23 | 6 | 0 |
+| Compliance Configuration | 1 | 29 | 0 | 0 |
 | FND (foundation) | 0 | 15 | 0 | 0 |
 | Factory 360 | 0 | 13 | 7 | 0 |
 | Inspection Execution - Pre-Start | 0 | 15 | 0 | 0 |

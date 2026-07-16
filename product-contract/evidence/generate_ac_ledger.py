@@ -55,7 +55,6 @@ OVERRIDES = {
     # Verified in browser against live DB on 2026-07-11 (this session)
     "MVP1-M01-034": ("verified_live", "Single-visit wizard rendered + publish gate live-tested."),
     "MVP1-M01-035": ("verified_live", "CR/code factory search exercised in wizard."),
-    "MVP1-M09-001": ("verified_live", "Regulation SBC-501 created draft->published in browser."),
     "MVP1-M09-030": ("verified_live", "Published-version immutability banner + DB trigger; new draft v2026.09 created in browser."),
 }
 

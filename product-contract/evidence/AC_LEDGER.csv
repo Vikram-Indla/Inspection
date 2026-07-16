@@ -447,11 +447,11 @@ MVP1-M08-016,AC-0445,Operations Center,Operations Center / Web Portal,implemente
 MVP1-M08-017,AC-0446,Operations Center,Operations Center / Web Portal,implemented,"[audit] OpsExport CSV of monitoring/SLA/high-risk, region/city scope honored, UTF-8 BOM (M08-017)"
 MVP1-M08-018,AC-0447,Operations Center,Operations Center / Web Portal,implemented,[audit] RLS role scope + region/city filter applied to all widgets; branch/explicit-permission dimension thin
 MVP1-M08-019,AC-0448,Operations Center,Operations Center / Web Portal,implemented,[audit] loadErrors partial-service banner per source + monitoring 30s auto-refresh re-fetch (M08-019)
-MVP1-M09-001,AC-0449,Compliance Configuration,Admin Portal,partial,"[audit] createRegulation/addClause/publishRegulation+view exist; no effective-date/attachments capture, no edit/deactivate leg"
+MVP1-M09-001,AC-0449,Compliance Configuration,Admin Portal,implemented,"[audit] Regulation create/edit/deactivate/view, effective date, attachment metadata, issuing authority, parentage/history, maker-checker publication and audit are implemented and live rollback-proven."
 MVP1-M09-002,AC-0450,Compliance Configuration,Admin Portal,implemented,"[audit] createItem links clause, response preset, evidence preset, weight; stored active in inspection_items"
 MVP1-M09-003,AC-0451,Compliance Configuration,Admin Portal,implemented,[audit] createViolationCode stores code/title/level(severity)/clause/active_from; item NC-mapping links to item
 MVP1-M09-004,AC-0452,Compliance Configuration,Admin Portal,implemented,[audit] createPenaltyMapping: penalty_ref/legal_basis/mapping_version/range/repeat; unique violation_code_id enforces one penalty
-MVP1-M09-005,AC-0453,Compliance Configuration,Admin Portal,partial,[audit] EVIDENCE_PRESETS only none/photo_nc_mandatory; video/document/comment types not authorable via UI though runtime honors any type
+MVP1-M09-005,AC-0453,Compliance Configuration,Admin Portal,implemented,"[audit] Photo/video/document/comment evidence is authorable; application and database guards enforce exact types, minimums and runtime blockers."
 MVP1-M09-006,AC-0454,Compliance Configuration,Admin Portal,implemented,[audit] NewDraftForm+DraftEditor build package definition (sections/items/action_forms) selectable at prep
 MVP1-M09-007,AC-0455,Compliance Configuration,Admin Portal,implemented,"[audit] DraftEditor add/remove items, section=category, array order; package-item relationship stored (per-item req/opt is section-level)"
 MVP1-M09-008,AC-0456,Compliance Configuration,Admin Portal,implemented,[audit] package_versions carry version_label+definition; visit locks version reference (M09-030)
@@ -464,13 +464,13 @@ MVP1-M09-014,AC-0462,Compliance Configuration,Admin Portal,implemented,[audit] t
 MVP1-M09-015,AC-0463,Compliance Configuration,Admin Portal,implemented,[audit] audit_events trigger covers package_versions/regulations/violations/engine_settings etc; browsable in admin/audit
 MVP1-M09-016,AC-0464,Compliance Configuration,Admin Portal,implemented,"[audit] DraftEditor create section, mandatory flag, assign items, array order rendered in checklist (title EN-only, no bilingual field)"
 MVP1-M09-017,AC-0465,Compliance Configuration,Admin Portal,implemented,"[audit] item order = section.items array position, rendered accordingly in preview+runtime (add/remove only, no drag reorder)"
-MVP1-M09-018,AC-0466,Compliance Configuration,Admin Portal,partial,[audit] section mandatory flag stored/enforced; per-item Required/Optional/Conditional not authorable (conditional comes from seed only)
+MVP1-M09-018,AC-0466,Compliance Configuration,Admin Portal,implemented,"[audit] Required/optional/conditional item modes are authorable, stored in the immutable package definition and enforced at runtime."
 MVP1-M09-019,AC-0467,Compliance Configuration,Admin Portal,implemented,[audit] RESPONSE_PRESETS map responses to result (non_compliant→Non-Compliant); consumed at execution via runtime mapping
 MVP1-M09-020,AC-0468,Compliance Configuration,Admin Portal,implemented,[audit] tri_state/binary presets define compliant/non_compliant/na; runtime summarize evaluates result (needs_review not a preset)
-MVP1-M09-021,AC-0469,Compliance Configuration,Admin Portal,partial,"[audit] runtime.isVisible/parseCondition evaluate visible_when show/hide, but no admin UI authors condition rules; seed-only"
-MVP1-M09-022,AC-0470,Compliance Configuration,Admin Portal,partial,"[audit] mandatory_when_visible typed+visibility gates requirement at runtime, but no authoring UI to define the mandatory condition"
+MVP1-M09-021,AC-0469,Compliance Configuration,Admin Portal,implemented,"[audit] Visibility conditions are authorable with validated grammar and cycle rejection, stored and evaluated for runtime show/hide."
+MVP1-M09-022,AC-0470,Compliance Configuration,Admin Portal,implemented,"[audit] mandatory_when_visible is authorable, type-validated and enforced only while its condition is active."
 MVP1-M09-023,AC-0471,Compliance Configuration,Admin Portal,implemented,[audit] item form score_weight input stored; runtime scoreExcluded/summarize consume weight for health/risk
-MVP1-M09-024,AC-0472,Compliance Configuration,Admin Portal,partial,[audit] score_excluded_on set by preset (na) and null weight excludes; no explicit per-item enable/disable-scoring toggle in UI
+MVP1-M09-024,AC-0472,Compliance Configuration,Admin Portal,implemented,[audit] Scoring has explicit enable/disable semantics; disabled items require null weight and exclusion of every response.
 MVP1-M09-025,AC-0473,Compliance Configuration,Admin Portal,implemented,[audit] evidence_rule on/type/min/mandatory per response; runtime evidenceLeg+computeBlockers enforce at execution
 MVP1-M09-026,AC-0474,Compliance Configuration,Admin Portal,implemented,[audit] mapping.non_compliant.violation + runtime impliedViolations generate violation when NC selected
 MVP1-M09-027,AC-0475,Compliance Configuration,Admin Portal,implemented,[audit] action_form.blocking flag; runtime formRequired+formComplete block submit when mandatory form incomplete

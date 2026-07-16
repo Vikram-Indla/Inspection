@@ -162,8 +162,11 @@ test.describe("CD-021 selection (frame 1a)", () => {
 });
 
 test("CD-021 publish boundary revalidates inside one transaction and follows STM-PLAN-001/002", () => {
+  const page = readFileSync(join(process.cwd(), "src/app/planning/bulk/page.tsx"), "utf8");
   const action = readFileSync(join(process.cwd(), "src/app/planning/bulk/actions.ts"), "utf8");
   const migration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260714091727_planning_publish_guards.sql"), "utf8");
+  expect(page).toContain("collectPostgrestPages<FactoryForCriteria & Record<string, unknown>>");
+  expect(page).toContain(".range(from, to)");
   expect(action).toContain('sb.rpc("publish_bulk_plan"');
   expect(migration).toContain("not has_role('planner')");
   expect(migration).toContain("bulk publish duplicate active visit");

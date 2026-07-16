@@ -1,13 +1,13 @@
 import { test, expect } from "@playwright/test";
+import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { login, rest, must, assertOk } from "./live-rest";
+import { login, rest, must } from "./live-rest";
 import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 
 const OPS = { email: "ops@mim.gov.sa", password: "MimOps!2026" };
 const VISIT_IDS = Array.from({ length: 6 }, (_, i) => `b7000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`);
 const GEO_IDS = Array.from({ length: 3 }, (_, i) => `e7000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`);
-const NOTIFICATION_IDS = ["84000000-0000-4000-8000-000000000001", "84000000-0000-4000-8000-000000000002"];
 const STATES = ["new", "prepared", "on_the_way", "arrived", "executing", "submitted"];
 const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/dashboard-kpi-seed");
 
@@ -21,23 +21,15 @@ test.describe("TASK-DASH-KPI-SEED-001", () => {
     expect(refreshSource).toContain('v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)');
   });
 
-  // Operations' Notifications panel is "latest 20 by created_at" against the
-  // shared live project (operations/page.tsx) — a real, intentional product
-  // limit, not something to relax for tests. Across a 90+ test full-suite run,
-  // enough other notifications get created that this fixture's row ages out of
-  // the top 20 by the time this test runs, regardless of suite position. Refresh
-  // its timestamp to "now" immediately before checking, same upsert semantics
-  // scripts/seed-dashboard-kpis.mjs already uses (see its own comment on why
-  // visits/notifications must be upsertable, not insert-once).
-  test.beforeAll(async () => {
-    const ops = await login(OPS.email, OPS.password);
-    const now = new Date().toISOString();
-    const refresh = NOTIFICATION_IDS.map((id, i) => ({
-      id, event_key: i === 0 ? "assignment" : "review_decision", recipient: ops.userId,
-      payload: { fixture: "TASK-DASH-KPI-SEED-001" }, channel: "inapp",
-      delivery_state: "delivered", delivered_at: now, created_at: now,
-    }));
-    assertOk(await rest("POST", "notifications", ops.jwt, refresh, "resolution=merge-duplicates,return=minimal"), "refresh KPI notification fixtures");
+  // The fixture's visit windows and notification timestamps are deliberately
+  // relative to the seeding time. Re-run the accepted idempotent seed before
+  // this group so the canonical expiry job and the latest-20 notification cap
+  // cannot turn a later release run into stale evidence.
+  test.beforeAll(() => {
+    const output = execFileSync(process.execPath, ["scripts/seed-dashboard-kpis.mjs"], {
+      cwd: process.cwd(), encoding: "utf8", env: process.env,
+    });
+    expect(output).toContain('"status": "PASS"');
   });
 
   test("record truth exposes exactly one labelled fixture for every operational state without freezing planning lifecycle", async () => {
@@ -79,6 +71,9 @@ test.describe("TASK-DASH-KPI-SEED-001", () => {
     await page.goto("/operations?region=Verification%20Fixtures&city=Dashboard%20KPI");
 
     await expect(page.getByRole("heading", { name: "Operations Center", exact: true })).toBeVisible();
+    await expect(page.getByRole("combobox", { name: "Region" })).toHaveValue("Verification Fixtures");
+    await expect(page.getByRole("combobox", { name: "City" })).toHaveValue("Dashboard KPI");
+    await expect(page.getByRole("heading", { name: "No mappable factories in scope" })).toHaveCount(0);
     await expect(page.locator(".ax-kpi").first()).toBeVisible({ timeout: 20_000 });
     for (const state of STATES) {
       const label = state.replace(/_/g, " ");
