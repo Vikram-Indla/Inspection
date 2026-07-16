@@ -18,7 +18,7 @@ decision:
 scope_allowed:
   - "product-contract/screens/screen_route_catalogue.csv — SCR-WEB-320 row only: route /reviews/:id/compare -> /reviews/:id; primary_actions drop 'Accept changes' (deferred), keep 'Navigate changed sections'."
   - "product-contract/governance/decision_register.csv — append DEC-013 (this reconciliation)."
-  - "outputs/claude-design-approval-pack/CD-030_CHANGE_CONTROL_ROUTE_RECONCILIATION.md — mark CC-CD030-ROUTE-001 APPROVED."
+  - "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-030_CHANGE_CONTROL_ROUTE_RECONCILIATION.md — mark CC-CD030-ROUTE-001 APPROVED."
 scope_forbidden:
   - "Any other frozen contract row or screen; all other IDs/semantics preserved."
   - "SCR-WEB-320 mandatory_regions — unchanged; 'evidence diff' remains a design region, shown unavailable at runtime (HANDOFF_BLOCKED_MEDIADIFF) pending its own decision."

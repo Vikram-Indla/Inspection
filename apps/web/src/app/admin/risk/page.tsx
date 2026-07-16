@@ -11,7 +11,7 @@ export default async function RiskStudio() {
   const { data } = await sb.from("engine_settings").select("settings, version_label, updated_at").eq("engine", "risk").single();
   const s = data?.settings as { factors: { key: string; weight: number }[]; bands: Record<string, number[]> };
   return (
-    <Shell current="/admin" title={t("admin.risk.title", "Risk Engine configuration")}
+    <Shell current="/admin/risk" title={t("admin.risk.title", "Risk Engine configuration")}
       context={<><span className="ax-lozenge ax-lozenge--info">SCR-ADM-060 · ENG-04</span><span className="ax-version">{data?.version_label}</span></>}>
       <div className="ax-banner"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 foundation scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live configuration in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be reproducible from stored inputs + this version (EV-004). Writes require the risk_owner role; RLS rejects everyone else. Every save lands in the immutable audit trail.")}</div></div>
       <form action={saveRiskSettings as unknown as (formData: FormData) => void} className="ax-surface" style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", maxInlineSize: 720 }}>

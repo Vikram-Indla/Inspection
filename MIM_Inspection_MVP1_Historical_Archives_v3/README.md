@@ -1,3 +1,3 @@
-# Historical and Convenience Archives
+# Historical Documentation Moved
 
-These are prior packaged ZIP deliverables preserved exactly as they existed. They are redundant with the expanded master pack but retained for audit, convenience and historical recovery.
+The verified contents formerly stored here are now distributed by category under `INSPECTION_DOCS_ROOT` and indexed in `MANIFESTS/move_plan.csv`. Historical archives and duplicate packs are under `09_HISTORICAL_ARCHIVES`; source requirements, MVP1/MVP2 documents, storyboards, gate records, and repository exports use their corresponding numbered categories.

@@ -13,7 +13,7 @@
 - Engines: `ENG-01..ENG-12`, constrained per screen
 - Database/API changes: none authorized
 - Tests run: repository status/branch/commit inspection only
-- Evidence captured: this handoff and `outputs/claude-design-approval-pack/admin-control-plane-suite/PARALLEL_OWNERSHIP.yaml`
+- Evidence captured: this handoff and `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/admin-control-plane-suite/PARALLEL_OWNERSHIP.yaml`
 - Regression result: not applicable; design-only parallel lane
 - Exact next task: create the Admin family foundation and the complete direct-to-Claude-Design prompt for Chapter 1 / CD-004 only
 
@@ -116,7 +116,7 @@ The Admin conversation may read the complete repository.
 
 The Admin conversation may write only beneath:
 
-`outputs/claude-design-approval-pack/admin-control-plane-suite/`
+`${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/admin-control-plane-suite/`
 
 Permitted outputs include:
 
@@ -181,7 +181,7 @@ The CD-004 prompt must be pasted directly into Claude Design. Claude Design must
 
 ## Exact ready-to-paste resume prompt
 
-> Continue the Saqeel MVP1 Admin Control Plane design programme from `/Users/vikramindla/Documents/GitHub/Inspection`. Read `AGENTS.md`, then `product-contract/sessions/HANDOFF_2026-07-14_ADMIN_CONTROL_PLANE_PARALLEL_START.md`, then every file listed in its read order and the machine ownership contract at `outputs/claude-design-approval-pack/admin-control-plane-suite/PARALLEL_OWNERSHIP.yaml`. This is a parallel DESIGN-ONLY lane for CD-004..CD-019. The active Web/CD-025+ lane continues elsewhere. Do not edit application code, Supabase, the frozen shared shell, global current-state/router/queue/ledger/acceptance files, the shared 43-screen workbook/CSV, Web prompts, or any existing dirty file. Write only under `outputs/claude-design-approval-pack/admin-control-plane-suite/`. First produce `ADMIN_MASTER_FOUNDATION_V1.md`, `ADMIN_QUALITY_GATE_V1.md`, `ADMIN_COMPONENT_INHERITANCE_LEDGER_V1.md`, `CHAPTER_01_CD-004_CLAUDE_DESIGN_PROMPT_R1.md`, and `ADMIN_STATUS.yaml`. Treat CD-004 as the foundation and do not generate CD-005+ yet. Preserve the eight-chapter plan and the mandatory R1 review/correction/R2 cycle. Highest premium UI/UX, Arabic-first RTL, dark/light, responsive, accessibility, runtime truth and per-CD wiring evidence are non-negotiable. Do not commit, push, merge, deploy, modify main, switch branches or clean the shared worktree.
+> Continue the Saqeel MVP1 Admin Control Plane design programme from `/Users/vikramindla/Documents/GitHub/Inspection`. Read `AGENTS.md`, then `product-contract/sessions/HANDOFF_2026-07-14_ADMIN_CONTROL_PLANE_PARALLEL_START.md`, then every file listed in its read order and the machine ownership contract at `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/admin-control-plane-suite/PARALLEL_OWNERSHIP.yaml`. This is a parallel DESIGN-ONLY lane for CD-004..CD-019. The active Web/CD-025+ lane continues elsewhere. Do not edit application code, Supabase, the frozen shared shell, global current-state/router/queue/ledger/acceptance files, the shared 43-screen workbook/CSV, Web prompts, or any existing dirty file. Write only under `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/admin-control-plane-suite/`. First produce `ADMIN_MASTER_FOUNDATION_V1.md`, `ADMIN_QUALITY_GATE_V1.md`, `ADMIN_COMPONENT_INHERITANCE_LEDGER_V1.md`, `CHAPTER_01_CD-004_CLAUDE_DESIGN_PROMPT_R1.md`, and `ADMIN_STATUS.yaml`. Treat CD-004 as the foundation and do not generate CD-005+ yet. Preserve the eight-chapter plan and the mandatory R1 review/correction/R2 cycle. Highest premium UI/UX, Arabic-first RTL, dark/light, responsive, accessibility, runtime truth and per-CD wiring evidence are non-negotiable. Do not commit, push, merge, deploy, modify main, switch branches or clean the shared worktree.
 
 ## Status at handoff
 

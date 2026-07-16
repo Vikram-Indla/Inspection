@@ -46,9 +46,24 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   if (!ins) {
     return <Shell current="/field" title={t("field.ws.notFound", "Not found")}><div /></Shell>;
   }
+  // Arrival/cancellation evidence is captured before an inspection exists and
+  // is therefore anchored to visit_id. Read it back into the inspection
+  // workspace when the additive visit-level column is available; an older
+  // schema must degrade to inspection-only evidence rather than breaking the
+  // field page (M04-045/M04-058).
+  const visitEvidenceRead = ins.visit_id
+    ? await sb.from("evidence").select("id, linked_type, linked_id, evidence_type, storage_path, captured_at").eq("visit_id", ins.visit_id)
+    : { data: [], error: null };
+  if (visitEvidenceRead.error) {
+    // eslint-disable-next-line no-console
+    console.error("[field inspection visit evidence]", visitEvidenceRead.error.message);
+  }
   // Merge lifecycle columns (0020) into the evidence rows the client sees.
   const evLife = Object.fromEntries(((evMeta ?? []) as { id: string; archived_at: string | null; superseded_by: string | null; deleted_at: string | null }[]).map(m => [m.id, m]));
-  const evidenceRows = ((ev ?? []) as { id: string; linked_type: string; linked_id: string; evidence_type: string; storage_path: string | null; captured_at: string | null }[])
+  const evidenceRows = ([
+    ...((ev ?? []) as { id: string; linked_type: string; linked_id: string; evidence_type: string; storage_path: string | null; captured_at: string | null }[]),
+    ...((visitEvidenceRead.data ?? []) as { id: string; linked_type: string; linked_id: string; evidence_type: string; storage_path: string | null; captured_at: string | null }[]),
+  ].filter((row, index, all) => all.findIndex(candidate => candidate.id === row.id) === index))
     .map(e => ({ ...e, ...(evLife[e.id] ?? {}) }));
   // F2 — signed thumbnails for synced photo evidence (RLS + storage policy decide access).
   const evidenceUrls: Record<string, string> = {};

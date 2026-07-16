@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-008 / SCR-ADM-030 — Package Library (/admin/packages) and
@@ -20,7 +21,7 @@ import { storageStatePath } from "./personas";
 // be forced against the live backend (no seeded draft version, no writer persona,
 // and those legs are HANDOFF_BLOCKED), so they are proven at the code layer below
 // (DSG-CODE-001 / DEC-012) — the same discipline CD-004 and CD-025 used.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-008-009-packages-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-008-009-packages-v1");
 const PKG = (p: string) => readFileSync(join(process.cwd(), "src/app/admin/packages", p), "utf8");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
@@ -35,7 +36,7 @@ test.describe("CD-008 package library — populated, version-led (S01 / W01)", (
     // Not a KPI wall — the surface is package → version rows (spec §3).
     await expect(page.getByRole("heading", { name: /Package & Form Designer/i })).toBeVisible();
     // Seeded package PKG-FS with its published version v2026.07.02.
-    await expect(page.getByRole("heading", { name: /PKG-FS/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /PKG-FS/ }).first()).toBeVisible();
     await expect(page.locator(".ax-version", { hasText: "v2026.07.02" })).toBeVisible();
     await expect(page.locator(".ax-lozenge--success", { hasText: /published/i }).first()).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "library-en-light-1440.png"), fullPage: true });
@@ -44,17 +45,19 @@ test.describe("CD-008 package library — populated, version-led (S01 / W01)", (
   test("S06 read-only: a published version shows the immutability reason and NO draft-editor / publish controls", async ({ page }) => {
     await page.goto("/admin/packages");
     // The published version states WHY it is read-only (DB trigger trg_guard_pkg).
-    await expect(page.getByText(/Published version — immutable/i)).toBeVisible();
-    await expect(page.locator("code", { hasText: "trg_guard_pkg" })).toBeVisible();
-    // No seeded draft → the designer save + the approve/publish gate must NOT render
-    // (they are draft-only; the published version is never editable — M09-030).
-    await expect(page.getByRole("button", { name: /Save draft definition/i })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /Approve & publish/i })).toHaveCount(0);
+    const immutable = page.getByText(/Published version — immutable/i).first();
+    await expect(immutable).toBeVisible();
+    const publishedCard = immutable.locator("xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' ax-surface ')][1]");
+    await expect(publishedCard.locator("code", { hasText: "trg_guard_pkg" })).toBeVisible();
+    // Other packages may legitimately have a draft. The published card itself must
+    // never expose draft-editor or publish controls (M09-030).
+    await expect(publishedCard.getByRole("button", { name: /Save draft definition/i })).toHaveCount(0);
+    await expect(publishedCard.getByRole("button", { name: /Approve & publish/i })).toHaveCount(0);
   });
 
   test("W03: the new-draft-version create control is present (draft is the only path to change)", async ({ page }) => {
     await page.goto("/admin/packages");
-    await expect(page.getByText(/New draft version/i)).toBeVisible();
+    await expect(page.locator("label.ax-field__label", { hasText: /^New draft version \(M09-030\)$/ })).toBeVisible();
     await expect(page.getByRole("button", { name: /Create draft/i })).toBeVisible();
     // Create-draft is the authored write path — publishing/editing is never done on
     // a published version, only on a fresh draft it clones (M09-030).
@@ -127,7 +130,7 @@ test.describe("CD-008/009 a11y · RTL · dark/light · responsive (DSG-A11Y-001)
     // The version-led surface renders in RTL. (Arabic strings for admin.pkg.* arrive
     // via the seeded ui_strings migration and are review-gated; this spec does not
     // assert the translated copy so it stays green whether or not the seed is applied.)
-    await expect(page.getByRole("heading", { name: /PKG-FS/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /PKG-FS/ }).first()).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "library-ar-rtl-1440.png"), fullPage: true });
     await page.goto("/locale?set=en");
   });
@@ -138,7 +141,7 @@ test.describe("CD-008/009 a11y · RTL · dark/light · responsive (DSG-A11Y-001)
       await page.setViewportSize({ width: w, height: h });
       for (const theme of ["light", "dark"] as const) {
         await page.emulateMedia({ colorScheme: theme });
-        await expect(page.getByRole("heading", { name: /PKG-FS/ })).toBeVisible();
+        await expect(page.getByRole("heading", { name: /PKG-FS/ }).first()).toBeVisible();
         await page.screenshot({ path: join(EVIDENCE_DIR, `library-en-${theme}-${w}.png`), fullPage: true });
       }
     }
@@ -228,7 +231,7 @@ test.describe("CD-008 impact + RBAC-002: unavailable-never-zero and the distinct
     // The approve/publish control names the maker-checker rule (RBAC-002).
     expect(page).toContain("Approve & publish (maker-checker — RBAC-002)");
     // The server flips draft→published recording approved_by, and only after zero blockers.
-    expect(actions).toContain("approved_by: user.id");
+    expect(actions).toContain("approved_by: userId");
     expect(actions).toContain('status: "published"');
     expect(actions).toContain("Publish blocked —");
   });

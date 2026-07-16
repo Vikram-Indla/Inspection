@@ -2,6 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath, PERSONAS } from "./personas";
 import { login, rest, must } from "./live-rest";
 
@@ -9,7 +10,7 @@ import { login, rest, must } from "./live-rest";
 // Runtime contract: migration 0027 must be present on the linked development
 // project. Every direct write uses the acting persona JWT, so RLS and immutable
 // audit triggers are exercised rather than bypassed.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/immediate-v2");
+const EVIDENCE_DIR = evidenceDirectory("immediate-v2");
 test.beforeAll(() => mkdirSync(EVIDENCE_DIR, { recursive: true }));
 
 type RpcPayload = {
@@ -357,6 +358,44 @@ test.describe("CD-023 authorization and neutral errors", () => {
     expect(startup).not.toMatch(/add\(fmt\(strings\.(?:logInspectionCreateFailed|logJourneyBlocked|logCheckinRejected|logExceptionFailed|logOpBlocked|logCancelFailed|logReturnFailed)[\s\S]{0,160}(?:error\.message|r\.error)/);
     const actions = readFileSync(join(process.cwd(), "src/app/field/[visitId]/actions.ts"), "utf8");
     expect(actions).not.toMatch(/return \{ error: error\.message \}/);
+  });
+
+  test("field calendar drag requests a planner-owned reschedule without moving the visit optimistically", () => {
+    const home = readFileSync(join(process.cwd(), "src/components/field/FieldHome.tsx"), "utf8");
+    const actions = readFileSync(join(process.cwd(), "src/app/field/actions.ts"), "utf8");
+    expect(home).toContain("requestVisitReschedule");
+    expect(home).toContain("draggable={s.key !== \"expired\" && s.key !== \"approved\"}");
+    expect(home).toContain("onDrop={() => void dropOnDay(day)}");
+    expect(home).toContain("setRescheduleMessage(result.error");
+    expect(actions).toContain("request_visit_reschedule");
+  });
+
+  test("arrival handoff renders context cards, journey summary, cancellation and arrival evidence controls", () => {
+    const startup = readFileSync(join(process.cwd(), "src/app/field/[visitId]/Startup.tsx"), "utf8");
+    expect(startup).toContain("M04-050..054");
+    expect(startup).toContain("strings.cardsFactoryTitle");
+    expect(startup).toContain("strings.cardsVisitTitle");
+    expect(startup).toContain("distanceTravelledM");
+    expect(startup).toContain("submitCancellation");
+    expect(startup).toContain('linked_type: "arrival"');
+    expect(startup).toContain("arrivalEvidenceQueued");
+    expect(startup).toContain('kind: "arrival"');
+    expect(startup).toContain("const { error: arrivalError }");
+    expect(startup).toContain("add(strings.logArrivalRejected)");
+  });
+
+  test("arrival evidence remains visit-linked before an inspection row exists", () => {
+    const migration = readFileSync(join(process.cwd(), "../../supabase/migrations/20260715180000_field_arrival_evidence.sql"), "utf8");
+    const repair = readFileSync(join(process.cwd(), "../../supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql"), "utf8");
+    const offline = readFileSync(join(process.cwd(), "src/lib/offline.ts"), "utf8");
+    expect(migration).toContain("add value if not exists 'arrival'");
+    expect(migration).toContain("evidence_note");
+    expect(repair).toContain("alter table evidence add column if not exists evidence_note text");
+    expect(offline).toContain('inspection_id: string | null');
+    expect(offline).toContain("row.visit_id = op.visit_id; row.inspection_id = null");
+    const workspace = readFileSync(join(process.cwd(), "src/app/field/inspection/[id]/page.tsx"), "utf8");
+    expect(workspace).toContain('eq("visit_id", ins.visit_id)');
+    expect(workspace).toContain("visitEvidenceRead");
   });
 });
 

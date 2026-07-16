@@ -185,7 +185,7 @@ export default async function Packages() {
   };
 
   return (
-    <Shell current="/admin" title={t("admin.pkg.title", "Package & Form Designer")}
+    <Shell current="/admin/packages" title={t("admin.pkg.title", "Package & Form Designer")}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-030/031 · ENG-02</span>}>
       {pkgs.map(p => (<div key={p.id} className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
       {(p.package_versions ?? []).map(v => {

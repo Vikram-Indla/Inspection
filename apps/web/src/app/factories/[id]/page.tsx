@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import {
   AddDocumentForm, AddMaterialForm, AddProductForm, AddRepresentativeForm, ToggleRepActive,
@@ -32,7 +33,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
   const { id } = await params;
   const { t, locale } = await useT();
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   const [
     { data: f, error: fErr },
     { data: docs, error: dErr },

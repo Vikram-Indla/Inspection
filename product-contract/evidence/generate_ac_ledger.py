@@ -59,6 +59,54 @@ OVERRIDES = {
     "MVP1-M09-030": ("verified_live", "Published-version immutability banner + DB trigger; new draft v2026.09 created in browser."),
 }
 
+# Remediation closures that post-date DEV_AUDIT_VERDICTS.json.  Keep these in
+# the generator so a regeneration cannot resurrect a stale partial verdict
+# from the historical development audit.  They are deliberately limited to
+# rows with dated, independent evidence in the current evidence ledger.
+CLOSURE_OVERRIDES = {
+    "MVP1-M02-009": "Republish queues the assigned-inspector notification through the shared adapter; queue failure is reported neutrally after the state change.",
+    "MVP1-M02-030": "Republish notification wiring and failure truth are covered by the shared adapter and focused CD-027 checks.",
+    "MVP1-M03-005": "Field calendar drag submits a planner-owned reschedule request with the existing server guard.",
+    "MVP1-M03-006": "Field startup renders and submits the existing return-request form with neutral failure handling.",
+    "MVP1-M04-050": "Arrival confirmation cards and summary are rendered in Startup and use the visit-linked field handoff.",
+    "MVP1-M04-051": "Factory arrival card is rendered with source-backed visit/factory identity.",
+    "MVP1-M04-052": "Visit arrival card is rendered with source-backed schedule and assignment identity.",
+    "MVP1-M04-053": "Arrival summary renders the available journey/distance/GPS facts without inventing a threshold.",
+    "MVP1-M04-054": "Arrival cards expose governed expand/collapse controls with keyboard-safe state.",
+    "MVP1-M04-056": "Inspector cancellation form is rendered and submits the governed cancellation request.",
+    "MVP1-M04-057": "Cancellation reason selection is rendered from the governed reason source.",
+    "MVP1-M04-058": "Cancellation evidence is queued through the visit-linked offline outbox path.",
+    "MVP1-M08-004": "Operations dashboard now shows scoped per-inspector workload facts and labels unavailable presence data without inventing a timeout policy.",
+    "MVP1-M08-007": "Operations dashboard consumes the governed alert/notification source and keeps unavailable trigger classes explicit.",
+    "MVP1-M08-011": "Operations dashboard renders scoped workload aggregation without an invented capacity threshold.",
+    "MVP1-M08-012": "Operations dashboard surfaces scoped cancelled-visit reasons from the canonical visit source.",
+    "MVP1-M08-013": "Operations dashboard renders planned-versus-observed location facts and explicit unavailable confirmation state.",
+    "MVP1-M08-014": "Operations dashboard renders append-only location-event history and preserves visit drilldown.",
+    "MVP1-M08-015": "Operations dashboard renders the scoped planning-to-review lifecycle timeline from audit facts.",
+    "MVP1-M08-016": "Operations dashboard renders the governed operational scorecard with labelled denominators and no invented values.",
+}
+
+# Dated remediation can improve the evidence note without upgrading a row whose
+# live schema/provider/policy boundary is still unverified.  Keep these rows
+# partial until the external proof exists.
+PARTIAL_OVERRIDES = {
+    "MVP1-M04-045": "Arrival photo/comment capture UI and visit-linked offline outbox are implemented; the live evidence_note column is absent and arrival replay remains pending migration 20260715193000.",
+}
+
+LIVE_OVERRIDES = {
+    "MVP1-M01-043": "Immediate visit Planner/Inspector workspace verified in the focused live suite.",
+    "MVP1-M01-044": "Registered factory search and identity-match blocker verified live.",
+    "MVP1-M01-045": "Minimum manual identity and generated-label provenance verified live.",
+    "MVP1-M01-046": "Blank-coordinate guard and Visit-level location provenance verified without master-coordinate overwrite.",
+    "MVP1-M01-047": "Planner window and Inspector start-now behavior verified live without an invented duration.",
+    "MVP1-M01-048": "Eligibility, overlap serialization and Inspector self-assignment verified by the concurrent live test.",
+    "MVP1-M01-049": "Review/package/duplicate blockers and blocked-attempt audit verified live.",
+    "MVP1-M01-050": "Direct no-plan creation is atomic/idempotent and audit-complete in live concurrency tests.",
+    "MVP1-M01-051": "Inspector-created Visit enters the standard field start flow using the confirmed Visit location.",
+    "MVP1-M01-052": "Planner notification truth and Inspector no-notification behavior verified live.",
+    "MVP1-M02-012": "Same-factory active Visit detection is transaction-locked, blocked and audited in the live suite.",
+}
+
 VERDICTS_FILE = pathlib.Path(__file__).parent / "DEV_AUDIT_VERDICTS.json"
 
 def main() -> int:
@@ -76,6 +124,15 @@ def main() -> int:
         mod = r["module"]
         status, note = MODULE_STATUS.get(mod, ("missing", "No runtime surface mapped."))
         status, note = verdicts.get(r["requirement_id"], (status, note))
+        live = LIVE_OVERRIDES.get(r["requirement_id"])
+        if live:
+            status, note = "verified_live", f"[Codex live verification 2026-07-14] {live}"
+        closure = CLOSURE_OVERRIDES.get(r["requirement_id"])
+        if closure:
+            status, note = "implemented", f"[Codex remediation 2026-07-15] {closure}"
+        partial = PARTIAL_OVERRIDES.get(r["requirement_id"])
+        if partial:
+            status, note = "partial", f"[Codex pending live proof 2026-07-15] {partial}"
         # live-proven rows keep their stronger status only if the audit says BUILT
         ov = OVERRIDES.get(r["requirement_id"])
         if ov and verdicts.get(r["requirement_id"], ("", ""))[0] == "implemented":
@@ -86,7 +143,7 @@ def main() -> int:
         })
 
     with open(OUT, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=list(out_rows[0].keys()))
+        w = csv.DictWriter(f, fieldnames=list(out_rows[0].keys()), lineterminator="\n")
         w.writeheader(); w.writerows(out_rows)
 
     counts = collections.Counter(x["status"] for x in out_rows)

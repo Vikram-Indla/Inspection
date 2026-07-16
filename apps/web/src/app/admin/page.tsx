@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 
@@ -51,7 +52,7 @@ export default async function AdminHome() {
   const total = failed === sources.length;
 
   // Role scope (W02 pattern): server-rendered roles → the families this user can act in.
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   const { data: roleRows } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };
@@ -127,10 +128,13 @@ export default async function AdminHome() {
   );
 
   const linkOnly = [
+    { href: "/admin/items", key: "shell.nav.items", en: "Inspection Items" },
     { href: "/admin/workflows", key: "shell.nav.workflows", en: "Workflow Configuration" },
     { href: "/admin/risk", key: "shell.nav.risk", en: "Risk Configuration" },
     { href: "/admin/gis", key: "shell.nav.gis", en: "GIS Configuration" },
     { href: "/admin/access", key: "shell.nav.access", en: "Users & Roles" },
+    { href: "/admin/localization", key: "shell.nav.localization", en: "Localization" },
+    { href: "/admin/audit", key: "shell.nav.audit", en: "Audit Trail" },
   ];
 
   const readAtNode = withSlot(

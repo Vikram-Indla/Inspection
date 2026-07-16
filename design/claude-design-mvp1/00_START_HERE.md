@@ -9,7 +9,7 @@ This directory is the design-execution layer for ChatGPT, Codex, Claude Design, 
 3. `CURRENT_UI_BASELINE.md`.
 4. `authority/SOURCE_AUTHORITY.md` and `authority/DESIGN_DECISIONS.md`.
 5. `prompts/00_MASTER_DESIGN_CONSTITUTION.md`.
-6. `../../outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md`.
+6. `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md`.
 7. `prompts/01_CODE_AND_RUNTIME_DISCOVERY.md`.
 8. `prompts/02_SAQEEL_FOUNDATIONS_AND_COMPONENTS.md`.
 9. One journey prompt and any linked system prompts.

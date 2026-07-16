@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { logProviderError, NEUTRAL_LOAD_ERROR, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export type L10nResult = { error?: string; ok?: boolean };
@@ -12,7 +13,7 @@ export type L10nResult = { error?: string; ok?: boolean };
 
 export async function saveTranslation(_: L10nResult, formData: FormData): Promise<L10nResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const key = String(formData.get("key") ?? "").trim();
@@ -36,7 +37,7 @@ export async function saveTranslation(_: L10nResult, formData: FormData): Promis
 
 export async function markReviewed(_: L10nResult, formData: FormData): Promise<L10nResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const key = String(formData.get("key") ?? "").trim();
@@ -58,7 +59,7 @@ export async function markReviewed(_: L10nResult, formData: FormData): Promise<L
 
 export async function addKey(_: L10nResult, formData: FormData): Promise<L10nResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const key = String(formData.get("key") ?? "").trim();
@@ -92,7 +93,7 @@ export type SyncResult = { error?: string; ok?: boolean; report?: SyncReport };
 
 export async function syncFromCode(_: SyncResult, __: FormData): Promise<SyncResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   let code;
@@ -147,7 +148,7 @@ export async function getHistory(key: string): Promise<{ error?: string; revisio
 
 export async function restoreRevision(_: L10nResult, formData: FormData): Promise<L10nResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const key = String(formData.get("key") ?? "").trim();

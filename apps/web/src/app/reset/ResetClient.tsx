@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { logAuthEvent } from "@/lib/audit";
 import { IconEye, IconEyeOff } from "../icons";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -120,7 +121,7 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
     }
     // Audit the completion (FND-003) while the recovery session still exists,
     // so actor = auth.uid() is captured. Best-effort; email hashed client-side.
-    const { data } = await sb.auth.getUser();
+    const { data } = await getVerifiedUser(sb);
     if (data.user?.email) await logAuthEvent("password_reset_completed", data.user.email);
     // Drop the short-lived recovery session so sign-in starts clean.
     await sb.auth.signOut();

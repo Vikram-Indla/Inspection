@@ -28,8 +28,12 @@ export async function middleware(request: NextRequest) {
       },
     }
   );
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user && !isLogin) {
+  // Verify the signed access token without calling Auth /user on every asset-
+  // adjacent navigation. getClaims refreshes an expiring session through the
+  // cookie adapter, but verifies healthy asymmetric JWTs locally (cached JWKS).
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const authenticated = !!claimsData?.claims.sub;
+  if (!authenticated && !isLogin) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   if (isLogin && loginLocale) {

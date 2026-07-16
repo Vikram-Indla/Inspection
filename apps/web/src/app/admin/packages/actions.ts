@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { logProviderError, NEUTRAL_LOAD_ERROR, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
+import { requireConfigurationWriter } from "@/lib/admin-configuration";
 
 export type PkgResult = { error?: string; ok?: boolean };
 
@@ -34,9 +35,10 @@ export async function getPinnedActiveImpact(versionId: string): Promise<PinnedAc
 
 // M09-030 — new draft version clones the latest definition; published versions stay immutable.
 export async function createDraftVersion(_: PkgResult, formData: FormData): Promise<PkgResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
+  const userId = gate.userId;
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const package_id = String(formData.get("package_id") ?? "");
   const version_label = String(formData.get("version_label") ?? "").trim();
@@ -49,7 +51,7 @@ export async function createDraftVersion(_: PkgResult, formData: FormData): Prom
   const { error } = await sb.from("package_versions").insert({
     package_id, version_label, status: "draft",
     definition: latest?.definition ?? { sections: [], action_forms: [] },
-    created_by: user.id,
+    created_by: userId,
   });
   if (error) { logProviderError("admin package draft", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/packages");
@@ -59,9 +61,9 @@ export async function createDraftVersion(_: PkgResult, formData: FormData): Prom
 // M09-019/025 — draft definitions are editable; published versions are immutable
 // (trg_guard_pkg). Save is rejected server-side unless status is still draft.
 export async function saveDraftDefinition(_: PkgResult, formData: FormData): Promise<PkgResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const version_id = String(formData.get("version_id") ?? "");
   let definition: unknown;
@@ -186,9 +188,10 @@ async function validateDefinition(
 // M09-012/029 — the definition is dependency-validated BEFORE the flip;
 // blockers are returned verbatim and publish is refused while any remain.
 export async function approveAndPublish(_: PkgResult, formData: FormData): Promise<PkgResult> {
+  const gate = await requireConfigurationWriter();
+  if (!gate.ok) return { error: gate.message };
+  const userId = gate.userId;
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return { error: "Session expired — sign in again." };
 
   const version_id = String(formData.get("version_id") ?? "");
   const { data: ver, error: verErr } = await sb.from("package_versions")
@@ -203,7 +206,7 @@ export async function approveAndPublish(_: PkgResult, formData: FormData): Promi
   }
 
   const { error } = await sb.from("package_versions").update({
-    approved_by: user.id, status: "published", published_at: new Date().toISOString(),
+    approved_by: userId, status: "published", published_at: new Date().toISOString(),
   }).eq("id", version_id).eq("status", "draft");
   if (error) { logProviderError("admin package publish", error); return { error: NEUTRAL_WRITE_ERROR }; }
   revalidatePath("/admin/packages");

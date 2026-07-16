@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import {
   NewRegulationForm,
@@ -18,12 +19,14 @@ import {
 //
 // Truth law: a failed read renders unavailable/unknown — never zero/healthy/complete.
 // verified-zero (read succeeded, empty) and unavailable/unknown (read failed) stay
-// DISTINCT. The only proven regulation lifecycle mutation is the DIRECT draft→published
-// publish; every contract-safe leg (mapped-clause validation, maker-checker, published
-// lock, version compare/lineage, dependency engine, writer-persona audit timeline, the
-// dedicated detail route, and the Admin-family route guard) is rendered as a visibly
-// disabled HANDOFF_BLOCKED target, wired to nothing. regulations row changes are audited;
-// clause changes are NOT — the UI never presents clause edits as audited.
+// DISTINCT. Publish is now the governed maker-checker path: created_by/approved_by are
+// persisted and the DB constraint regulations_maker_checker rejects self-approval, while
+// trg_guard_published_regulation locks a published/locked row against modification — both
+// enforced at the database boundary. The legs still wired to nothing (rendered as visibly
+// disabled HANDOFF_BLOCKED targets) are the mapped-clause validation gate, version
+// compare/lineage, the dependency engine, the audit-timeline read (write-side audit exists,
+// but audit_events read is not granted), the dedicated detail route, and the Admin-family
+// route guard. Both regulation-row and clause changes are now audit-tracked at the DB.
 export const dynamic = "force-dynamic";
 
 type RawItem = { id: string; code: string | null };
@@ -74,7 +77,7 @@ export default async function Regulations({
 
   // Role scope — writes are RLS-gated to compliance_admin/form_admin. This mirrors the
   // RLS write grant in the UI (S05/S06); it is NOT a route guard (that leg stays BLOCKED).
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   const { data: roleRows } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };
@@ -105,7 +108,7 @@ export default async function Regulations({
     adding: t("admin.reg.clause.adding", "Adding…"),
     addClause: t("admin.reg.clause.add", "Add clause"),
     added: t("admin.reg.clause.added", "Clause added"),
-    clauseNotAudited: t("admin.reg.clause.notAudited", "Clause changes are not audit-tracked — only regulation-row changes are."),
+    clauseNotAudited: t("admin.reg.clause.notAudited", "Clause changes are audit-tracked at the database (trg_audit_regulation_clauses), the same as regulation-row changes."),
     publishing: t("admin.reg.publishing", "Publishing…"),
     publish: t("admin.reg.publish", "Publish now (direct)"),
     searchPlaceholder: t("admin.reg.r1.search.placeholder", "Search code, title, authority…"),
@@ -205,7 +208,7 @@ export default async function Regulations({
     const unmappedClauses = clauses.filter(c => !Array.isArray(c.inspection_items) || c.inspection_items.length === 0).length;
 
     return (
-      <Shell current="/admin" title={title} context={context}>
+      <Shell current="/admin/regulations" title={title} context={context}>
         {degradedBanner}
         {readOnlyBanner}
 
@@ -239,7 +242,7 @@ export default async function Regulations({
                 </span>
               </div>
               <p className="ax-caption" style={{ margin: 0 }}>
-                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Regulation-row changes are audit-tracked by the generic trigger. Clause additions on this dossier are NOT audited.")}
+                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Regulation-row changes are audit-tracked by the generic trigger. Clause additions on this dossier are audit-tracked too (trg_audit_regulation_clauses).")}
               </p>
             </section>
 
@@ -312,21 +315,21 @@ export default async function Regulations({
                   <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
                     <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
                       <PublishRegulation regulationId={reg.id} strings={strings} />
-                      <span className="ax-caption">{t("admin.reg.r1.detail.publish.direct", "Direct draft→published — applies immediately, no validation gate, and is audited on the regulation row.")}</span>
+                      <span className="ax-caption">{t("admin.reg.r1.detail.publish.direct", "Direct draft→published — applies immediately with no mapped-clause validation gate, but the DB maker-checker rejects self-approval (approver must differ from creator) and the change is audited on the regulation row.")}</span>
                     </div>
                     {/* S04 VALIDATION — disclosure only; there is no working validation button */}
                     <div className="ax-banner" role="note">
-                      <strong><span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.validation.title", "Contract-safe validated publish is not available")}</strong>{" "}
-                      {t("admin.reg.r1.detail.validation.body", "The mapped-clause validation gate, maker-checker, and published-immutability lock do not exist yet — the only proven publish is the direct one above.")}
+                      <strong><span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.validation.title", "Mapped-clause validation gate is not available")}</strong>{" "}
+                      {t("admin.reg.r1.detail.validation.body", "Maker-checker (distinct approver) and the published-immutability lock are now enforced by the database on publish. The one unbuilt leg is the mapped-clause validation gate — the direct publish above does not pre-check clause→item mappings.")}
                       {unmappedClauses > 0 ? (
                         <> {fill(t("admin.reg.r1.detail.validation.unmapped", "For awareness: {n} clause(s) have no mapped inspection items. This is disclosure, not a blocker — direct publish will still apply."), { n: unmappedClauses })}</>
                       ) : null}
                     </div>
                   </div>
                 ) : (
-                  <div className="ax-banner" role="note">
-                    <strong><span aria-hidden="true">⚠</span> {t("admin.reg.r1.detail.published.title", "Published — immutability is not enforced")}</strong>{" "}
-                    {t("admin.reg.r1.detail.published.body", "No published-version lock exists for regulations (HANDOFF_BLOCKED, owner: product/backend). Changes are not prevented by the platform; treat published regulations as authoritative by process, not by lock.")}
+                  <div className="ax-banner ax-banner--immutable" role="note">
+                    <strong><span aria-hidden="true">🔒</span> {t("admin.reg.r1.detail.published.title", "Published — immutable at the database")}</strong>{" "}
+                    {t("admin.reg.r1.detail.published.body", "trg_guard_published_regulation rejects any modification of a published or locked regulation at the database boundary; a change requires a governed successor draft. The successor-version lineage model itself remains a separate backend contract (owner: product/backend).")}
                   </div>
                 )}
               </section>
@@ -342,7 +345,7 @@ export default async function Regulations({
               <div className="ax-row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap" }}>
                 <Blocked
                   label={t("admin.reg.r1.detail.blocked.validatedPublish", "Submit for validated publish")}
-                  reason={t("admin.reg.r1.detail.blocked.validatedPublish.reason", "mapped-clause validation + maker-checker + published lock")}
+                  reason={t("admin.reg.r1.detail.blocked.validatedPublish.reason", "mapped-clause validation gate not built (maker-checker + published lock are already DB-enforced on direct publish)")}
                   owner={t("admin.reg.r1.detail.blocked.owner.productBackend", "product/backend")}
                 />
                 <Blocked
@@ -390,7 +393,7 @@ export default async function Regulations({
   });
 
   return (
-    <Shell current="/admin" title={title} context={context}>
+    <Shell current="/admin/regulations" title={title} context={context}>
       {degradedBanner}
       {readOnlyBanner}
 

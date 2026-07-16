@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 import ShellClient, { type ShellClientStrings } from "@/components/ShellClient";
 import { type BellStrings } from "@/components/NotificationBell";
@@ -10,7 +11,7 @@ export default async function Shell({ current, children, title, context, topbar 
   current: string; children: ReactNode; title: string; context?: ReactNode; topbar?: ReactNode;
 }) {
   const [{ t, locale }, sb] = await Promise.all([useT(), supabaseServer()]);
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
 
   // Server-side role-scoped navigation. RLS remains the authorization boundary;

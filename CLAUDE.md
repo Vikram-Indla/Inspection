@@ -50,6 +50,12 @@ Before completion:
 - Claude auto memory is advisory only and may never override the product contract.
 - `CLAUDE.local.md` is personal and must not contain shared scope decisions.
 
+## Documentation storage
+- Human-readable master documents and binary evidence are stored under `INSPECTION_DOCS_ROOT`; Vikram's approved local root is `/Users/vikramindla/Desktop/Inspection Documentation`.
+- Read `docs/README.md` and `docs/DOCUMENTATION_STORAGE_POLICY.md` before adding documentation or evidence.
+- Do not recommit external BRDs, workbooks, PDFs, storyboards, screenshots, videos, archives, or packaged handoff exports.
+- Keep the live product contract, Claude continuity controls, machine-readable acceptance/wiring maps, and code-ready design authority in Git.
+
 ## Design policy
 - Figma golden screens and tokens become authoritative only after G6 approval.
 - Mobbin is for pattern research and provenance, never direct copying.

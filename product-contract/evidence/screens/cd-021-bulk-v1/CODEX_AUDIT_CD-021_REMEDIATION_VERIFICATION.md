@@ -44,3 +44,15 @@ This file is the fresh independent re-audit DEC-012 requires after a FAIL verdic
 ## Next allowed action
 
 Per DEC-012, this PASS satisfies the fresh reviewer pass the prior FAIL verdict required. CD-021 has now cleared its DEC-012 wiring-audit requirement. Remaining path to closure is unchanged in kind from CD-022: (a) sponsor runtime acceptance, tracked separately, still outstanding; (b) at the sponsor's discretion, real automated coverage for the still-`HANDOFF_BLOCKED` retry/resume path (row 11) and a monitoring-event insert for the `ERR-OPS-001` outage state (finding 7's disclosed residual), neither of which was in scope for this remediation and neither of which blocks this verdict.
+
+## Follow-up closure — 2026-07-15
+
+The narrow residual noted above is now closed: `parseCt()` marks a known condition
+with a blank value as invalid for the whole untrusted `ct` payload, so a crafted URL
+containing one valid and one blank leaf cannot silently narrow criteria. The CD-021
+wiring map now states this strict behavior, and a new live test covers the mixed
+valid/blank case. The staged-review handoff now also blocks and names out-of-scope
+selected IDs rather than silently dropping them. Fresh `cd-021-bulk-targeting.spec.ts`
+verification is **24/24 PASS**;
+typecheck and production build pass. The monitoring-event and governed retry rows
+remain explicitly separate boundaries and are not claimed as implemented.

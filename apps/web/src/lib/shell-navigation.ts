@@ -73,10 +73,13 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
       { id: "regulations", labelKey: "shell.nav.regulations", labelEn: "Compliance Library", labelAr: "مكتبة الامتثال", href: "/admin/regulations", icon: "library", roles: ["compliance_admin"], businessTab: "Compliance Library" },
       { id: "packages", labelKey: "shell.nav.packages", labelEn: "Packages & Surveys", labelAr: "الحزم والاستبيانات", href: "/admin/packages", icon: "forms", roles: ["form_admin", "compliance_admin"], businessTab: "Survey Configuration" },
       { id: "violations", labelKey: "shell.nav.enforcement", labelEn: "Enforcement Library", labelAr: "مكتبة الإنفاذ", href: "/admin/violations", icon: "enforcement", roles: ["compliance_admin"], businessTab: "Enforcement" },
+      { id: "items", labelKey: "shell.nav.items", labelEn: "Inspection Items", labelAr: "بنود التفتيش", href: "/admin/items", icon: "forms", roles: ["compliance_admin", "form_admin"], businessTab: "Inspection Item Catalogue" },
       { id: "workflows", labelKey: "shell.nav.workflows", labelEn: "Workflow Configuration", labelAr: "تهيئة سير العمل", href: "/admin/workflows", icon: "workflow", roles: ["workflow_admin"], businessTab: "Administration" },
       { id: "risk", labelKey: "shell.nav.risk", labelEn: "Risk Configuration", labelAr: "تهيئة المخاطر", href: "/admin/risk", icon: "risk", roles: ["risk_owner"], businessTab: "Risk Configuration" },
       { id: "gis", labelKey: "shell.nav.gis", labelEn: "GIS Configuration", labelAr: "تهيئة نظم المعلومات الجغرافية", href: "/admin/gis", icon: "map", roles: ["gis_admin"], businessTab: "Administration" },
       { id: "access", labelKey: "shell.nav.access", labelEn: "Users & Roles", labelAr: "المستخدمون والأدوار", href: "/admin/access", icon: "access", roles: ["security_admin"], businessTab: "Users & Roles" },
+      { id: "localization", labelKey: "shell.nav.localization", labelEn: "Localization", labelAr: "الترجمة", href: "/admin/localization", icon: "library", roles: ["compliance_admin", "security_admin", "workflow_admin"], businessTab: "Localization" },
+      { id: "audit", labelKey: "shell.nav.audit", labelEn: "Audit Trail", labelAr: "سجل التدقيق", href: "/admin/audit", icon: "access", roles: adminRoles, businessTab: "Audit" },
     ],
   },
 ] as const;

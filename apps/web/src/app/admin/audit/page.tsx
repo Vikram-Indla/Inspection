@@ -66,7 +66,7 @@ export default async function AuditBrowser({ searchParams }: { searchParams: Pro
   const enumL = (x: string) => t(`enum.${x}`, x.replace(/_/g, " "));
 
   return (
-    <Shell current="/admin" title={t("admin.audit.title", "Audit trail browser")}
+    <Shell current="/admin/audit" title={t("admin.audit.title", "Audit trail browser")}
       context={<><span className="ax-lozenge ax-lozenge--info">ENG-12</span><span className="ax-lozenge ax-lozenge--success">{t("admin.audit.appendOnly", "append-only · immutable")}</span></>}>
       <div className="ax-banner"><div>
         <strong>{t("admin.audit.banner.title", "Immutable record.")}</strong> {t("admin.audit.banner.body", "Every write to audited tables lands here via database trigger (0002); UPDATE/DELETE on audit_events is rejected at trigger level (0005). Visibility is enforced by RLS — audit-reading roles only.")}

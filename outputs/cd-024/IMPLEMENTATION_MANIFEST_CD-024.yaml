@@ -10,7 +10,7 @@ dirty_worktree: UNVERIFIED_HANDOFF_BLOCKED  # CURRENT_STATE records CD-021/CD-02
 design_frame_ids: [4route, 4log, 4a, 4b, 4c, 4d, 4e, 4f, 4g, 4h, 4i]
 design_file: "CD-024 Visit Configuration and Assignment.dc.html (dedicated file; frames 4route, 4log, 4a-4i)"
 png_paths:
-  - outputs/cd-024/CD-024_SCR-WEB-140_primary.png
+  - ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/cd-024/CD-024_SCR-WEB-140_primary.png
   - outputs/cd-024/CD-024_SCR-WEB-140_decision_zone.png
   - outputs/cd-024/CD-024_SCR-WEB-140_ar_rtl.png
   - outputs/cd-024/CD-024_SCR-WEB-140_narrow.png

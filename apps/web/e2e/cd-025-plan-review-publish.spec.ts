@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
@@ -10,7 +11,7 @@ import { storageStatePath } from "./personas";
 // Tests are READ-ONLY — publish is never clicked (it mutates live data); atomic
 // all-or-nothing publication is proven at the DB layer + the guarded RPC. Runtime
 // evidence is supplementary to the functional assertions (.claude/rules/tests.md).
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-025-plan-review-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-025-plan-review-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 test.use({ storageState: storageStatePath("planner") });
@@ -37,7 +38,7 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
     await expect(page.getByText(/nothing is saved until you publish/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /^Readiness$/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Targets & proposed visits/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Assignment evidence/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Assignment evidence", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Corrections & publish/i })).toBeVisible();
     // Complete the mandatory window so the readiness preview resolves (proves the

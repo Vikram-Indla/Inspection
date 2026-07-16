@@ -66,3 +66,14 @@ Do not present as delivered end-to-end:
 - Close or change-control CD-027 map, assignment-release and atomic transition legs.
 - Obtain authorization for CD-029 media, claim/reassign, linked-source failure handling, and transactional decision side effects; do not invent providers or policy.
 - Preserve the 10/10 CD-029 suite and rerun the cross-slice golden journey after the upstream CD-022 publish timeout is resolved.
+
+## Follow-up verification — CD-028 post-audit discoverability changes (2026-07-15)
+
+The post-audit reviewer-read/discoverability and one-open-review race changes were
+independently re-run against the current worktree. `cd-028-review-queue.spec.ts`
+completed **13/13 PASS**, including the submitted-inspection-without-review-row
+discoverability assertion and source checks for the explicit start flow and readiness
+derivation. This strengthens the queue-scope evidence but does not change the
+conditional disposition: claim/reassign remains unavailable and decision atomicity
+belongs to CD-029; the drafted partial unique-index migration remains live-application
+work until directly verified.

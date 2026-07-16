@@ -72,7 +72,8 @@ export function NewRegulationForm({ strings: s }: { strings: RegStrings }) {
   );
 }
 
-// Proven action W02/add-clause — clause insert (accepts legal_source). NOT audited.
+// Proven action W02/add-clause — clause insert (accepts legal_source). Audit-tracked
+// at the DB (trg_audit_regulation_clauses → audit_events).
 export function AddClauseForm({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
   const [state, formAction, pending] = useActionState<RegResult, FormData>(addClause, {});
   return (
@@ -94,9 +95,10 @@ export function AddClauseForm({ regulationId, strings: s }: { regulationId: stri
   );
 }
 
-// Proven action W03a/publish — DIRECT draft → published. No mapped-clause validation,
-// no maker-checker, no lock. The contract-safe validated publish is a blocked disclosure
-// rendered by the page, never here.
+// Proven action W03a/publish — draft → published. There is no mapped-clause validation
+// gate, but the DB now enforces maker-checker (approved_by <> created_by) and locks a
+// published row (trg_guard_published_regulation). The still-unbuilt mapped-clause
+// validation gate is a blocked disclosure rendered by the page, never here.
 export function PublishRegulation({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
   const [state, formAction, pending] = useActionState<RegResult, FormData>(publishRegulation, {});
   return (

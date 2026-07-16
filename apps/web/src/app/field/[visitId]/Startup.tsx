@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabaseBrowser } from "@/lib/supabase";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { local, processOutbox, sha256b64 } from "@/lib/offline";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
@@ -17,7 +18,7 @@ export type StartupStrings = {
   step1: string; step2: string; step3: string; step4: string; resume: string;
   officialLabel: string; plannedLabel: string; youLabel: string; insideWord: string; outsideWord: string;
   logCached: string; logJourneyBlocked: string; logJourneyStarted: string;
-  logAccuracyBlocked: string; logCheckinRejected: string; logOutside: string; logInside: string; logStartBlocked: string;
+  logAccuracyBlocked: string; logCheckinRejected: string; logArrivalRejected: string; logOutside: string; logInside: string; logStartBlocked: string;
   logInspectionCreateFailed: string;
   // E3 — telemetry / arrival auto-detect / deviation / exception / pre-start / STM-OPS
   telemetryRow: string; liveDistance: string; arrivalDetected: string; liveLabel: string;
@@ -27,6 +28,7 @@ export type StartupStrings = {
   logExceptionSent: string; logExceptionFailed: string; logDeviation: string;
   logOpState: string; logOpBlocked: string; logGpsFallback: string;
   mapsOpen: string; mapsGeo: string; mapsCaption: string; progressLabel: string; progressCaption: string; cardsFactoryTitle: string; cardsVisitTitle: string; lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string; lblCoords: string; lblFence: string; lblType: string; lblMode: string; lblWindow: string; lblPackage: string; lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string; cancelHeading: string; cancelCaption: string; cancelSelectReason: string; cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string; cancelRequestedChip: string; cancelReasonsMissing: string; logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string; returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string; returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
+  arrivalEvidenceHeading: string; arrivalEvidenceCaption: string; arrivalEvidenceNote: string; arrivalEvidenceFile: string; arrivalEvidenceSubmit: string; arrivalEvidenceQueued: string; arrivalEvidenceMissing: string;
 };
 
 // Module-level label so the dynamic() loading component (defined outside the
@@ -93,6 +95,12 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const [cancelRequested, setCancelRequested] = useState(flags.cancellationRequested);
   const [returnReason, setReturnReason] = useState("");
   const [returnRequested, setReturnRequested] = useState(flags.returnRequested);
+  const [journeyStartedAt, setJourneyStartedAt] = useState<string | null>(null);
+  const [arrivalAt, setArrivalAt] = useState<string | null>(null);
+  const [distanceTravelledM, setDistanceTravelledM] = useState(0);
+  const [arrivalEvidenceFile, setArrivalEvidenceFile] = useState<File | null>(null);
+  const [arrivalEvidenceNote, setArrivalEvidenceNote] = useState("");
+  const [arrivalEvidenceQueued, setArrivalEvidenceQueued] = useState(false);
   const maxAcc = gis.gps_accuracy_checkin_max_m ?? 25;
   // SB20 — per-factory geofence override, else ENG-06 engine default.
   const fence = visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? 150;
@@ -108,6 +116,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const minDRef = useRef(Infinity);
   const devSinceRef = useRef(null as number | null);
   const devDoneRef = useRef(false);
+  const lastFixRef = useRef(null as Fix | null);
   const stringsRef = useRef(strings); stringsRef.current = strings;
 
   // STM-OPS — guarded server-action transition (guard = set_operational_state RPC, 0015)
@@ -127,7 +136,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   async function startJourney() {
     setBusy(true);
     const sb = supabaseBrowser();
-    const { data: { user } } = await sb.auth.getUser();
+    const { data: { user } } = await getVerifiedUser(sb);
     const { data, error } = await sb.from("journey_sessions")
       .insert({ visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString() })  // M04-009 device clock
       .select().single();
@@ -140,7 +149,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       add(strings.logJourneyBlocked);
       return;
     }
-    setJourneyId(data.id); add(strings.logJourneyStarted);
+    setJourneyId(data.id); setJourneyStartedAt(new Date().toISOString()); add(strings.logJourneyStarted);
     await opTransition("on_the_way");                                // M04-018 · STM-OPS leg 1
   }
 
@@ -157,6 +166,9 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       const d = distM([p.coords.latitude, p.coords.longitude], dispatchPoint);
       const fix: Fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy,
         alt: p.coords.altitude, speed: p.coords.speed, heading: p.coords.heading, d };
+      const prior = lastFixRef.current;
+      if (prior) setDistanceTravelledM(total => total + distM([prior.lat, prior.lng], [fix.lat, fix.lng]));
+      lastFixRef.current = fix;
       posRef.current = fix; setLive(fix);
       // M04-026 — first fix after journey start anchors the progress baseline
       setInitialD(prev => prev ?? d);
@@ -226,9 +238,61 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       return;
     }
     if (!inside) { add(fmt(strings.logOutside, { d: d.toFixed(0), fence })); return; }
-    setCheckedIn(true); add(fmt(strings.logInside, { d: d.toFixed(0), acc: acc.toFixed(1) }));
+    const arrivedAt = new Date().toISOString();
+    // M04-039/047 — arrival is a distinct immutable geo event, separate from
+    // the check-in event that establishes the geofence result.
+    const { error: arrivalError } = await sb.from("geo_events").insert({
+      journey_id: journeyId, visit_id: visit.id, kind: "arrival",
+      observed_lat: lat, observed_lng: lng, accuracy_m: acc,
+      altitude_m: pos?.coords.altitude ?? null, device_occurred_at: arrivedAt,
+      geofence_result: "inside", gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
+    });
+    if (arrivalError) {
+      // Do not present arrival as complete when its immutable event was not
+      // persisted; the operator can retry without creating a false state.
+      // eslint-disable-next-line no-console
+      console.error("[field arrival]", arrivalError);
+      add(strings.logArrivalRejected);
+      return;
+    }
+    setCheckedIn(true); setArrivalAt(arrivedAt); add(fmt(strings.logInside, { d: d.toFixed(0), acc: acc.toFixed(1) }));
     await sb.from("journey_sessions").update({ status: "arrived" }).eq("id", journeyId!);
     await opTransition("arrived");                                    // M04-046 · STM-OPS leg 2
+  }
+
+  async function submitArrivalEvidence() {
+    const note = arrivalEvidenceNote.trim();
+    if (!arrivalEvidenceFile && !note) { add(strings.arrivalEvidenceMissing); return; }
+    setBusy(true);
+    try {
+      if (arrivalEvidenceFile) {
+        const b64 = btoa(String.fromCharCode(...new Uint8Array(await arrivalEvidenceFile.arrayBuffer())));
+        const sha = await sha256b64(b64);
+        await local.enqueue({
+          kind: "evidence", inspection_id: null, visit_id: visit.id,
+          linked_type: "arrival", linked_id: visit.id,
+          name: `arrival-${Date.now()}-${arrivalEvidenceFile.name}`, mime: arrivalEvidenceFile.type || "image/jpeg",
+          data_b64: b64, captured_at: arrivalAt ?? new Date().toISOString(), sha256: sha,
+          evidence_note: note || undefined, queued_at: new Date().toISOString(),
+        });
+      } else {
+        // Comment-only evidence is still custody-stamped through the same
+        // outbox path; the note is stored with a zero-byte text attachment.
+        const noteBytes = new TextEncoder().encode(note);
+        const b64 = btoa(String.fromCharCode(...noteBytes));
+        const sha = await sha256b64(b64);
+        await local.enqueue({
+          kind: "evidence", inspection_id: null, visit_id: visit.id,
+          linked_type: "arrival", linked_id: visit.id,
+          name: `arrival-note-${Date.now()}.txt`, mime: "text/plain", data_b64: b64,
+          captured_at: arrivalAt ?? new Date().toISOString(), sha256: sha,
+          evidence_note: note, queued_at: new Date().toISOString(),
+        });
+      }
+      setArrivalEvidenceQueued(true); setArrivalEvidenceFile(null); setArrivalEvidenceNote("");
+      add(strings.arrivalEvidenceQueued);
+      processOutbox(() => { /* workspace runner retries queued evidence */ });
+    } finally { setBusy(false); }
   }
 
   // ENG-06 / FLD-GEO-005 — manual exception record (immutable geo_events row)
@@ -353,6 +417,9 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       tone: (checkin.inside ? "low" : "high") as GeoMarkerData["tone"],
     }] : []),
   ];
+  const journeyDurationM = journeyStartedAt
+    ? Math.max(0, Math.round(((new Date(arrivalAt ?? new Date().toISOString()).getTime() - new Date(journeyStartedAt).getTime()) / 60000)))
+    : null;
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
@@ -419,6 +486,66 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}
         </p>
       </div>
+      {/* M04-050..054 — arrival confirmation, context cards and journey summary. */}
+      {checkedIn && (
+        <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }} aria-label={strings.cardsVisitTitle}>
+          <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+            <div>
+              <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cardsVisitTitle}</h4>
+              <p className="ax-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {strings.insideFence}</p>
+            </div>
+            <span className="ax-lozenge ax-lozenge--success">{strings.arrivalDetected}</span>
+          </div>
+          <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlock: "var(--ax-space-200)" }}>
+            <span className="ax-badge">{strings.progressLabel}: {progress == null ? "—" : `${progress.toFixed(0)}%`}</span>
+            <span className="ax-badge">{strings.lblCoords}: {checkin ? `${checkin.lat.toFixed(5)}, ${checkin.lng.toFixed(5)}` : "—"}</span>
+            <span className="ax-badge">GPS ±{checkin?.acc.toFixed(1) ?? "—"}m</span>
+            <span className="ax-badge">{strings.lblWindow}: {journeyDurationM == null ? "—" : `${journeyDurationM} min`}</span>
+            <span className="ax-badge">{Math.round(distanceTravelledM)} m travelled</span>
+          </div>
+          <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+            <details open>
+              <summary style={{ cursor: "pointer", font: "var(--ax-text-body-strong)" }}>{strings.cardsFactoryTitle}</summary>
+              <dl className="ax-detail-grid" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+                <dt>{strings.lblCode}</dt><dd>{visit.factories.factory_code ?? "—"}</dd>
+                <dt>{strings.lblCity}</dt><dd>{visit.factories.city ?? "—"}</dd>
+                <dt>{strings.lblRegion}</dt><dd>{visit.factories.region ?? "—"}</dd>
+                <dt>{strings.lblCr}</dt><dd>{visit.factories.cr_number ?? "—"}</dd>
+                <dt>{strings.lblLicense}</dt><dd>{visit.factories.license_number ?? "—"}</dd>
+                <dt>{strings.lblCoords}</dt><dd>{`${visit.factories.official_lat}, ${visit.factories.official_lng}`}</dd>
+                <dt>{strings.lblFence}</dt><dd>{fence} m</dd>
+              </dl>
+            </details>
+            <details open>
+              <summary style={{ cursor: "pointer", font: "var(--ax-text-body-strong)" }}>{strings.cardsVisitTitle}</summary>
+              <dl className="ax-detail-grid" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+                <dt>{strings.lblType}</dt><dd>{visit.visit_type}</dd>
+                <dt>{strings.lblMode}</dt><dd>{visit.execution_mode}</dd>
+                <dt>{strings.lblWindow}</dt><dd>{new Date(visit.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(visit.window_end).toISOString().slice(11, 16)}</dd>
+                <dt>{strings.lblPackage}</dt><dd>{visit.package_versions.packages.code} · {visit.package_versions.version_label}</dd>
+                <dt>{strings.lblPriority}</dt><dd>{visit.priority ?? "—"}</dd>
+                <dt>{strings.lblPlanningStatus}</dt><dd>{visit.planning_status}</dd>
+                <dt>{strings.lblPlannerNotes}</dt><dd>{visit.notes ?? "—"}</dd>
+              </dl>
+            </details>
+          </div>
+          <div className="ax-surface" style={{ padding: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}>
+            <h5 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.arrivalEvidenceHeading}</h5>
+            <p className="ax-caption">{strings.arrivalEvidenceCaption}</p>
+            {arrivalEvidenceQueued ? <span className="ax-lozenge ax-lozenge--success">{strings.arrivalEvidenceQueued}</span> : (
+              <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+                <label className="ax-field"><span className="ax-field__label">{strings.arrivalEvidenceFile}</span>
+                  <input className="ax-input" type="file" accept="image/*" onChange={e => setArrivalEvidenceFile(e.target.files?.[0] ?? null)} />
+                </label>
+                <label className="ax-field"><span className="ax-field__label">{strings.arrivalEvidenceNote}</span>
+                  <textarea className="ax-textarea" rows={2} value={arrivalEvidenceNote} onChange={e => setArrivalEvidenceNote(e.target.value)} />
+                </label>
+                <button className="ax-btn" onClick={submitArrivalEvidence} disabled={busy || (!arrivalEvidenceFile && !arrivalEvidenceNote.trim())}>{strings.arrivalEvidenceSubmit}</button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
       {/* M03-010 — mandatory pre-start confirmations, persisted to journey_sessions.prestart */}
       {checkedIn && !existing && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

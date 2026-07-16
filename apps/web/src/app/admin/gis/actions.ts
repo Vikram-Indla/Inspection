@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 import { useT } from "@/lib/i18n";
 
@@ -12,7 +13,7 @@ export type GisResult = { error?: string; ok?: boolean };
 export async function updateGeofenceRadius(_: GisResult, formData: FormData): Promise<GisResult> {
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: t("gis.action.expired", "Session expired — sign in again.") };
 
   const factory_id = String(formData.get("factory_id") ?? "");
