@@ -275,7 +275,7 @@ export default async function Violations({
     : t("admin.viol.title", "Violation Catalogue");
 
   return (
-    <Shell current="/admin" title={title}
+    <Shell current="/admin/violations" title={title}
       context={<span className="ax-lozenge ax-lozenge--info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
 
       {modeTabs}

@@ -192,7 +192,7 @@ export default async function Items({
 
   return (
     <Shell
-      current="/admin"
+      current="/admin/items"
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={
         <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>

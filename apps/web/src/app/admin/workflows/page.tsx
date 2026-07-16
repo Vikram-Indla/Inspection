@@ -33,7 +33,7 @@ export default async function Workflows() {
     approvePublish: t("admin.wf.publish.approve", "Approve & publish"),
   };
   return (
-    <Shell current="/admin" title={t("admin.wf.title", "Workflow configuration")}
+    <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow configuration")}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-050/051 · ENG-03</span>}>
       <div className="ax-banner"><div>
         <strong>{t("admin.wf.banner.title", "Governed change only.")}</strong> {t("admin.wf.banner.before", "Runtime evaluates transitions against the published version — no status bypass (RBAC-003). Changes flow draft → distinct-approver publish (RBAC-002 maker-checker, enforced by a DB constraint on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions are immutable. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and are not editable here.")}

@@ -234,7 +234,7 @@ export default async function Regulations({
     }> : [];
 
     return (
-      <Shell current="/admin" title={title} context={context}>
+      <Shell current="/admin/regulations" title={title} context={context}>
         {degradedBanner}
         {readOnlyBanner}
 
@@ -425,7 +425,7 @@ export default async function Regulations({
   });
 
   return (
-    <Shell current="/admin" title={title} context={context}>
+    <Shell current="/admin/regulations" title={title} context={context}>
       {degradedBanner}
       {readOnlyBanner}
 
