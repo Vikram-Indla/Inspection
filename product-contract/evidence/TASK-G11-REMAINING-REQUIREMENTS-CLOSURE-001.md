@@ -64,4 +64,50 @@ destructive production mutations as live-verified.
 
 Thirteen recorded partial rows remain after Slice 1. M04-045 has exact
 forward migrations represented on this branch; live probing is pending a
-restored Supabase PAT because the clipboard currently contains a screenshot.
+restored Supabase credential because the clipboard is currently empty.
+
+## Slice 2 — remaining backend and wiring checkpoint (2026-07-16)
+
+Requirements: `MVP1-M02-039`, `MVP1-M04-012`, `MVP1-M04-017`,
+`MVP1-M04-024`, `MVP1-M04-043`, `MVP1-M04-045`, `MVP1-M07-003`,
+`MVP1-M07-004`, `MVP1-M07-005`, `MVP1-M07-014`, `MVP1-M07-015`,
+`MVP1-M07-017`, `MVP1-M07-019`.
+
+Implemented source contracts:
+
+- RLS-scoped `/visits/map` route with region selection, factory/Visit pins,
+  authorized latest inspector positions, list equivalent and dossier links.
+- Persistent bounded device identity, OS version and package-derived app
+  version on the journey session.
+- Authenticated Google Routes adapter using traffic-aware road distance/ETA,
+  neutral unavailable/no-route states, telemetry-cadence refresh and latest
+  estimate persistence. The API key remains a deployment secret.
+- Outside-geofence confirmation with mandatory reason, actual coordinates,
+  immutable override event and guarded operational transition.
+- Offline-safe arrival photo/comment evidence linked to the exact arrival
+  event, private storage policy, SHA-256, replay-safe path and visit-level RLS.
+- Source-owned license and CR detail fields with explicit unavailable values;
+  official, observed and override map/history without master-coordinate writes.
+- Append-only penalty-notice and reproducible risk-snapshot records; the
+  `recalculate_factory_risk` RPC validates normalized drivers/weights, applies
+  the accepted DEC-001 model and bands atomically, stores driver contributions,
+  updates the current projection and audits both records.
+- Factory 360 now renders risk/health history, driver traces, related
+  violations, source sync, Visit/inspection/review, evidence, penalty and score
+  events. Documents, contacts, evidence and penalty details are both UI- and
+  RLS-scoped by role.
+
+Verification:
+
+- `npm run typecheck` — PASS.
+- `npm run build` — PASS, including `/visits/map` and `/api/routing/eta`.
+- `remaining-requirements-backend.spec.ts` — **3/3 PASS**.
+- `git diff --check` — PASS.
+
+Live disposition:
+
+- No acceptance row is upgraded by this checkpoint. The linked Supabase
+  migrations, persona/RLS checks, risk-RPC negative paths, arrival replay and
+  live route/dossier browser checks remain mandatory.
+- Clipboard credential classification returned `empty`; no secret was printed
+  or logged and no database mutation was attempted.

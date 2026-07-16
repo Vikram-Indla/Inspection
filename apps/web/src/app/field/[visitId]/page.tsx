@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Startup, { type StartupStrings } from "./Startup";
+import packageInfo from "../../../../package.json";
 
 export const dynamic = "force-dynamic";
 
@@ -124,7 +125,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     logOpBlocked: locale === "ar"
       ? "تعذر تحديث حالة الزيارة. تحقق من الجاهزية والاتصال ثم أعد المحاولة."
       : t("field.start.logOpBlockedSafe", "The visit state could not be updated. Check readiness and the connection, then try again."),
-    logGpsFallback: t("field.start.logGpsFallback", "GPS unavailable — demo coordinates substituted for check-in (M04-049 handled)"),
+    logGpsFallback: t("field.start.logGpsFallback", "GPS unavailable — check-in remains blocked. Restore location access and retry (M04-049)."),
     // F3 — navigation launch (M04-016)
     mapsOpen: t("field.start.mapsOpen", "Open in Google Maps"),
     mapsGeo: t("field.start.mapsGeo", "Open in navigation app"),
@@ -175,6 +176,24 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     logReturnFailed: locale === "ar"
       ? "تعذر إرسال طلب الإرجاع. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logReturnFailedSafe", "The return request could not be sent. Check the connection, then try again."),
+    deviceInfo: t("field.start.deviceInfo", "Device information (M04-012)"),
+    etaLabel: t("field.start.etaLabel", "Road-network ETA (M04-017/024)"),
+    etaAvailable: t("field.start.etaAvailable", "{minutes} min · {distance} m · updated {at}"),
+    etaUnavailable: t("field.start.etaUnavailable", "routing provider unavailable — navigation remains available"),
+    overrideHeading: t("field.start.overrideHeading", "Outside the planned location"),
+    overrideBody: t("field.start.overrideBody", "You are {d} m from the planned point (fence {fence} m). Confirming records the actual coordinates {lat}, {lng}, your reason and an immutable override event."),
+    overrideReason: t("field.start.overrideReason", "Override reason — mandatory"),
+    overrideConfirm: t("field.start.overrideConfirm", "Confirm and use actual coordinates"),
+    overrideCancel: t("common.cancel", "Cancel"),
+    logOverrideSaved: t("field.start.logOverrideSaved", "Outside-location override confirmed and audited — actual coordinates retained (M04-043)"),
+    logOverrideFailed: t("field.start.logOverrideFailed", "The override could not be saved. Nothing was changed."),
+    arrivalEvidenceHeading: t("field.start.arrivalEvidenceHeading", "Arrival evidence (M04-045)"),
+    arrivalEvidenceCaption: t("field.start.arrivalEvidenceCaption", "Add a photo or comment. Evidence is linked to this exact arrival event and remains queued safely while offline."),
+    arrivalPhoto: t("field.start.arrivalPhoto", "Arrival photo"),
+    arrivalComment: t("field.start.arrivalComment", "Arrival comment"),
+    arrivalSave: t("field.start.arrivalSave", "Save arrival evidence"),
+    arrivalSaved: t("field.start.arrivalSaved", "Arrival evidence saved or queued for sync"),
+    arrivalRequired: t("field.start.arrivalRequired", "arrival evidence is required by the active GIS configuration"),
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (
@@ -206,7 +225,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
             </p>
           </div>
         </div>
-        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} flags={flags} />
+        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} flags={flags} appVersion={packageInfo.version} />
       </div>
     </Shell>
   );
