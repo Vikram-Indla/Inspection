@@ -59,11 +59,9 @@ OVERRIDES = {
     "MVP1-M09-030": ("verified_live", "Published-version immutability banner + DB trigger; new draft v2026.09 created in browser."),
 }
 
-# Remediation closures that post-date DEV_AUDIT_VERDICTS.json.  Keep these in
-# the generator so a regeneration cannot resurrect a stale partial verdict
-# from the historical development audit.  They are deliberately limited to
-# rows with dated, independent evidence in the current evidence ledger.
-CLOSURE_OVERRIDES = {
+# Remediation closures that post-date DEV_AUDIT_VERDICTS.json. Keep these in
+# the generator so regeneration cannot resurrect stale historical verdicts.
+REMEDIATION_OVERRIDES = {
     "MVP1-M02-009": "Republish queues the assigned-inspector notification through the shared adapter; queue failure is reported neutrally after the state change.",
     "MVP1-M02-030": "Republish notification wiring and failure truth are covered by the shared adapter and focused CD-027 checks.",
     "MVP1-M03-005": "Field calendar drag submits a planner-owned reschedule request with the existing server guard.",
@@ -86,12 +84,7 @@ CLOSURE_OVERRIDES = {
     "MVP1-M08-016": "Operations dashboard renders the governed operational scorecard with labelled denominators and no invented values.",
 }
 
-# Dated remediation can improve the evidence note without upgrading a row whose
-# live schema/provider/policy boundary is still unverified.  Keep these rows
-# partial until the external proof exists.
-PARTIAL_OVERRIDES = {
-    "MVP1-M04-045": "Arrival photo/comment capture UI and visit-linked offline outbox are implemented; the live evidence_note column is absent and arrival replay remains pending migration 20260715193000.",
-}
+PARTIAL_OVERRIDES = {}
 
 LIVE_OVERRIDES = {
     "MVP1-M01-043": "Immediate visit Planner/Inspector workspace verified in the focused live suite.",
@@ -105,6 +98,30 @@ LIVE_OVERRIDES = {
     "MVP1-M01-051": "Inspector-created Visit enters the standard field start flow using the confirmed Visit location.",
     "MVP1-M01-052": "Planner notification truth and Inspector no-notification behavior verified live.",
     "MVP1-M02-012": "Same-factory active Visit detection is transaction-locked, blocked and audited in the live suite.",
+}
+
+# Sponsor-authorized G11 closure wave. These rows supersede the development
+# audit only after production-build/browser evidence was captured.
+CLOSURE_OVERRIDES = {
+    "MVP1-M02-039": ("verified_live", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] RLS-scoped Visit map, region filter, factory/Visit pins and list equivalent rendered through the planner persona against the live project on 2026-07-16."),
+    "MVP1-M04-012": ("verified_live", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Inspector live replay persisted privacy-minimized device_id, os_version and app_version on the journey session through normal RLS on 2026-07-16."),
+    "MVP1-M04-017": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Traffic-aware Google Routes adapter, initial ETA request, neutral unavailable/no-route states and journey persistence are wired; the deployment has no provider API key and is not claimed provider-live."),
+    "MVP1-M04-024": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] ETA refresh runs from live journey telemetry at the governed cadence and persists latest distance/time/provider facts; provider-unavailable behavior rendered live without fabricated ETA."),
+    "MVP1-M04-043": ("verified_live", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Outside-fence live replay proved mandatory reason, actual 1,112m-away coordinates, 5m accuracy, immutable override event, guarded arrived transition and visit audit on 2026-07-16."),
+    "MVP1-M04-045": ("verified_live", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Live inspector replay persisted arrival-linked comment evidence through normal RLS with SHA-256, synced_at and one private evidence object; independent database reconciliation passed on 2026-07-16."),
+    "MVP1-M07-003": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-owned license status/stage/issue/expiry/holder fields exist live and Factory 360 renders source values or explicit unavailable states."),
+    "MVP1-M07-004": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-owned CR legal-name/status/owner fields exist live and Factory 360 renders source values or explicit unavailable states."),
+    "MVP1-M07-005": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Factory 360 spatial map renders official, observed and override facts without changing official master coordinates; registered-factory live browser path passed."),
+    "MVP1-M07-014": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Versioned append-only risk snapshots, accepted-model driver contributions and current projection are live; Factory 360 risk-history rendering passed against a registered factory."),
+    "MVP1-M07-015": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Reproducible risk driver/history schema and related-violation rendering are live; normalized driver/weight validation and least-privilege RPC grants were reconciled."),
+    "MVP1-M07-017": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Source-labelled Factory timeline combines Visit, inspection, review, evidence, penalty, sync and risk events with explicit unavailable legacy facts; live dossier path passed."),
+    "MVP1-M07-019": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Sensitive history, documents, contacts, evidence and penalty sections are UI-scoped and backed by live RLS; anon denial and authenticated read-only grants were independently reconciled."),
+    "MVP1-M09-001": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Governed effective dates, private attachments, draft edit, successor/deactivation lifecycle, lineage, scoped audit and maker-checker publish are wired; M09 focused production-browser inventory 49/49 PASS on 2026-07-16."),
+    "MVP1-M09-005": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Package authoring supports inherited/none/photo/video/document/comment evidence rules with governed validation and runtime projection; M09 focused inventory 49/49 PASS."),
+    "MVP1-M09-018": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Per-item required, optional and conditional relationship rules are authorable, validated, frozen in package versions and consumed by field runtime; M09 focused inventory 49/49 PASS."),
+    "MVP1-M09-021": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Conditional visibility is authorable with key=value grammar, dependency validation and cycle detection, then evaluated by field runtime; M09 focused inventory 49/49 PASS."),
+    "MVP1-M09-022": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] mandatory_when_visible is authorable, version-frozen and enforced only while the condition is visible; M09 focused inventory 49/49 PASS."),
+    "MVP1-M09-024": ("implemented", "[TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001] Explicit scoring enable/disable and excluded-response semantics are authorable, validated and projected into field scoring; M09 focused inventory 49/49 PASS."),
 }
 
 VERDICTS_FILE = pathlib.Path(__file__).parent / "DEV_AUDIT_VERDICTS.json"
@@ -127,16 +144,17 @@ def main() -> int:
         live = LIVE_OVERRIDES.get(r["requirement_id"])
         if live:
             status, note = "verified_live", f"[Codex live verification 2026-07-14] {live}"
-        closure = CLOSURE_OVERRIDES.get(r["requirement_id"])
-        if closure:
-            status, note = "implemented", f"[Codex remediation 2026-07-15] {closure}"
+        remediation = REMEDIATION_OVERRIDES.get(r["requirement_id"])
+        if remediation:
+            status, note = "implemented", f"[Codex remediation 2026-07-15] {remediation}"
         partial = PARTIAL_OVERRIDES.get(r["requirement_id"])
         if partial:
-            status, note = "partial", f"[Codex pending live proof 2026-07-15] {partial}"
+            status, note = "partial", f"[Codex pending live proof 2026-07-16] {partial}"
         # live-proven rows keep their stronger status only if the audit says BUILT
         ov = OVERRIDES.get(r["requirement_id"])
         if ov and verdicts.get(r["requirement_id"], ("", ""))[0] == "implemented":
             status, note = ov
+        status, note = CLOSURE_OVERRIDES.get(r["requirement_id"], (status, note))
         out_rows.append({
             "requirement_id": r["requirement_id"], "acceptance_id": r["acceptance_id"],
             "module": mod, "channel": r["channel"], "status": status, "note": note,

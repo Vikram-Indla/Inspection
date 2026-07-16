@@ -60,6 +60,7 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
   // treats a redirect to this same pathname (even with a new query) as a
   // no-op, so use the internal /started bridge to force the route transition.
   if (existing) {
+    revalidatePath(`/reviews/${inspection_id}`);
     redirect(`/reviews/${inspection_id}/started?review=${existing.id}`);
   }
 
@@ -84,6 +85,8 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
     console.error("[review start transition]", transErr ?? "no row transitioned");
     return { error: "The review was started, but the inspection state could not be transitioned. Contact support." };
   }
+  revalidatePath(`/reviews/${inspection_id}`);
+  revalidatePath("/reviews");
   redirect(`/reviews/${inspection_id}/started?review=${created.id}`);
 }
 

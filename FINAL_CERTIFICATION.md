@@ -1,5 +1,20 @@
 # MIM Inspection Platform MVP1 — Build Certification Report
 
+## 2026-07-16 release-verification addendum
+
+The current authority is `product-contract/evidence/TASK-G11-G12-RELEASE-001.md`.
+The reconciled production candidate passes **291/291** checks with no failure,
+skip or exclusion; typecheck/build pass; the live arrival-outbox/readback and
+CD-028 duplicate-open-review negative pass; and the ledger is **493 rows = 15
+verified_live / 460 implemented / 18 partial / 0 missing**. G10 is PASS.
+
+This does **not** supersede the honest release-gap principle below. G11 and G12
+remain OPEN because credential rotation, migration-history governance,
+provider/region/CD-031/asset/geographic/sponsor-runtime boundaries and the 18
+upstream partials remain, and no production hosting/deployment/rollback target
+is configured. The original 2026-07-11 report is preserved below as historical
+build certification.
+
 **Date:** 2026-07-11 · **Branch:** `setup/g4-memory-continuity` · **Backend:** Supabase `iiozvqntawxfwbgffzqu` (live)
 **Status: FUNCTIONAL CORE COMPLETE — all 9 build slices delivered; certified against the evidence contract with the known-gaps register below. READY_FOR_REVIEW, not self-approved.**
 

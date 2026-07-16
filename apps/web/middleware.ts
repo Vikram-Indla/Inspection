@@ -28,11 +28,12 @@ export async function middleware(request: NextRequest) {
       },
     }
   );
-  // Verify the signed access token without calling Auth /user on every asset-
-  // adjacent navigation. getClaims refreshes an expiring session through the
-  // cookie adapter, but verifies healthy asymmetric JWTs locally (cached JWKS).
+  // Hosted projects use asymmetric signing keys, so getClaims verifies valid
+  // access tokens locally and only reaches Auth when an expired session needs
+  // one refresh. Calling getUser here made every page request consume Auth API
+  // rate-limit budget before the route boundary rendered.
   const { data: claimsData } = await supabase.auth.getClaims();
-  const authenticated = !!claimsData?.claims.sub;
+  const authenticated = Boolean(claimsData?.claims.sub);
   if (!authenticated && !isLogin) {
     return NextResponse.redirect(new URL("/login", request.url));
   }

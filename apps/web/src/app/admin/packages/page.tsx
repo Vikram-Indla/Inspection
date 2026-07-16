@@ -1,260 +1,422 @@
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import { NewDraftForm, ApprovePublish, type PublishStrings } from "./PublishControls";
+import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
+import { NewDraftForm, ApprovePublish, DeactivatePackage, type PublishStrings } from "./PublishControls";
 import DraftEditor, { type DraftEditorStrings } from "./DraftEditor";
 import PackagePreview, { type PreviewStrings, type PreviewItem } from "./PackagePreview";
 import ImpactPanel, { type ImpactStrings, type ImpactData, type ReferencingPackage, type DefinitionDiff } from "./ImpactPanel";
 import { getPinnedActiveImpact } from "./actions";
+import styles from "./packages.module.css";
+import TemplateRegistry, { type TemplateRow, type TemplateStrings } from "./TemplateRegistry";
 
 export const dynamic = "force-dynamic";
 
-type Section = { key: string; title: string; items?: string[]; mandatory?: boolean };
-type ActionFormDef = { key: string; title: string; blocking?: boolean; fields?: string[] };
-type Definition = { sections?: Section[]; action_forms?: ActionFormDef[] };
-type VersionRow = { id: string; version_label: string; status: string; published_at: string | null; definition: Definition };
+const WRITER_ROLES = new Set(["compliance_admin", "form_admin"]);
+type ItemRule = { requirement?: "required" | "optional" | "conditional"; conditional?: { visible_when?: string; mandatory_when_visible?: boolean }; evidence_rule?: ItemRow["evidence_rule"]; scoring_enabled?: boolean; score_weight?: number | null; response_mapping?: ResponseModel["mapping"] };
+type Section = { key: string; title?: string; title_en?: string; title_ar?: string; items?: string[]; mandatory?: boolean };
+type ActionFormDef = { key: string; title: string; blocking?: boolean; fields?: string[]; template_version_id?: string };
+type Definition = { sections?: Section[]; action_forms?: ActionFormDef[]; item_rules?: Record<string, ItemRule>; template_refs?: string[] };
+type VersionRow = { id: string; version_label: string; status: string; published_at: string | null; effective_from: string | null; effective_to: string | null; supersedes_id: string | null; definition: Definition };
 type PkgRow = { id: string; code: string; title: string; scope: string | null; package_versions: VersionRow[] | null };
+type ResponseModel = {
+  responses?: string[];
+  mapping?: Record<string, { violation?: string; action_form?: string }>;
+  requirement?: "required" | "optional" | "conditional";
+  scoring_enabled?: boolean;
+  conditional?: { visible_when?: string; mandatory_when_visible?: boolean };
+};
 type ItemRow = {
-  id: string; code: string; title: string;
-  response_model: { responses?: string[]; mapping?: Record<string, { violation?: string; action_form?: string }>; conditional?: { visible_when?: string } } | null;
+  id: string; code: string; title: string; active: boolean;
+  response_model: ResponseModel | null;
   evidence_rule: { on?: string; type?: string; min?: number; mandatory?: boolean } | null;
   score_weight: number | null; score_excluded_on: string[] | null;
   guidance_en: string | null; guidance_ar: string | null;
   regulation_clauses: { clause_ref: string; legal_source: string | null } | null;
 };
 
-// Ordered item-code → owning section, for the definition diff (moved-item detection).
-function codeSectionMap(def: Definition): Map<string, string> {
-  const m = new Map<string, string>();
-  for (const sec of def.sections ?? []) for (const c of sec.items ?? []) if (!m.has(c)) m.set(c, sec.key ?? sec.title);
-  return m;
+function codeSectionMap(definition: Definition): Map<string, string> {
+  const result = new Map<string, string>();
+  for (const section of definition.sections ?? []) {
+    for (const code of section.items ?? []) if (!result.has(code)) result.set(code, section.key ?? section.title);
+  }
+  return result;
 }
-function formKeys(def: Definition): Set<string> {
-  return new Set((def.action_forms ?? []).map(f => f.key).filter((k): k is string => !!k));
+
+function formKeys(definition: Definition): Set<string> {
+  return new Set((definition.action_forms ?? []).map(form => form.key).filter(Boolean));
 }
-function currentPublished(p: PkgRow): VersionRow | null {
-  const pub = (p.package_versions ?? []).filter(v => v.status === "published" || v.status === "locked");
-  pub.sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? ""));
-  return pub[0] ?? null;
+
+function orderedVersions(pkg: PkgRow): VersionRow[] {
+  return [...(pkg.package_versions ?? [])].sort((a, b) => {
+    const aDraft = a.status === "draft" ? 1 : 0;
+    const bDraft = b.status === "draft" ? 1 : 0;
+    if (aDraft !== bDraft) return bDraft - aDraft;
+    return (b.published_at ?? b.version_label).localeCompare(a.published_at ?? a.version_label);
+  });
+}
+
+function currentPublished(pkg: PkgRow): VersionRow | null {
+  const today = new Date().toISOString().slice(0, 10);
+  return orderedVersions(pkg)
+    .filter(version => (version.status === "published" || version.status === "locked")
+      && (!version.effective_from || version.effective_from <= today)
+      && (!version.effective_to || version.effective_to >= today))
+    .sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? ""))[0] ?? null;
 }
 
 export default async function Packages() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
-  const [{ data: pkgsData }, { data: itemsData }] = await Promise.all([
-    sb.from("packages").select("id, code, title, scope, package_versions(id, version_label, status, published_at, definition)").order("code"),
-    sb.from("inspection_items").select("id, code, title, response_model, evidence_rule, score_weight, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)"),
+  const [packageRead, itemRead, templateRead, violationRead, authRead] = await Promise.all([
+    sb.from("packages").select("id, code, title, scope, package_versions(id, version_label, status, published_at, effective_from, effective_to, supersedes_id, definition)").order("code"),
+    sb.from("inspection_items").select("id, code, title, active, response_model, evidence_rule, score_weight, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)").order("code"),
+    sb.from("configuration_templates").select("id, template_key, template_type, version_label, title_en, title_ar, schema, status, effective_from").order("template_key"),
+    sb.from("violation_codes").select("code, title, status").in("status", ["published", "locked"]).order("code"),
+    getServerUser(),
   ]);
-  const pkgs = (pkgsData ?? []) as unknown as PkgRow[];
-  const items = (itemsData ?? []) as unknown as ItemRow[];
-  const itemMap = new Map(items.map(i => [i.code, i] as const));
+  if (packageRead.error) logProviderError("admin packages read", packageRead.error);
+  if (itemRead.error) logProviderError("admin package item-bank read", itemRead.error);
+  if (templateRead.error) logProviderError("admin template registry read", templateRead.error);
+  if (violationRead.error) logProviderError("admin package violation read", violationRead.error);
 
-  // M09-028 — item bank projected to the inspector-facing preview shape (locale-resolved guidance).
+  const user = authRead.data.user;
+  const roleRead = user
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    : { data: [] as { role_key: string }[], error: authRead.error };
+  if (roleRead.error) logProviderError("admin package role read", roleRead.error);
+  const roles = (roleRead.data ?? []).map(row => row.role_key);
+  const canWrite = !roleRead.error && roles.some(role => WRITER_ROLES.has(role));
+  const packageUnavailable = !!packageRead.error;
+  const itemBankUnavailable = !!itemRead.error;
+  const pkgs = (packageRead.data ?? []) as unknown as PkgRow[];
+  const items = (itemRead.data ?? []) as unknown as ItemRow[];
+  const templates = (templateRead.data ?? []) as unknown as TemplateRow[];
+  const templateChoices = templates.filter(template => ["published", "locked"].includes(template.status)).map(template => ({ id: template.id, label: `${template.template_key} · ${template.version_label} — ${locale === "ar" ? template.title_ar : template.title_en}` }));
+  const violationChoices = (violationRead.data ?? []).map(violation => ({ id: violation.code, label: `${violation.code} — ${violation.title}` }));
+  const itemMap = new Map(items.map(item => [item.code, item]));
+  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+
   const previewItems: Record<string, PreviewItem> = {};
-  for (const i of items) {
-    const rm = i.response_model ?? {};
-    const responses = rm.responses ?? [];
-    const nc = rm.mapping?.["non_compliant"];
-    const er = i.evidence_rule;
-    previewItems[i.code] = {
-      code: i.code, title: i.title, responses,
+  for (const item of items) {
+    const response = item.response_model ?? {};
+    const responses = response.responses ?? [];
+    const nonCompliant = response.mapping?.non_compliant;
+    const evidence = item.evidence_rule;
+    previewItems[item.code] = {
+      code: item.code,
+      title: item.title,
+      responses,
       isDate: responses.includes("value_date"),
-      evidence: er?.on ? { type: er.type ?? "photo", min: Math.max(1, er.min ?? 1), mandatory: !!er.mandatory } : null,
-      conditional: rm.conditional?.visible_when ?? null,
-      guidance: (locale === "ar" && i.guidance_ar) ? i.guidance_ar : i.guidance_en,
-      clause: i.regulation_clauses ? { clause_ref: i.regulation_clauses.clause_ref, legal_source: i.regulation_clauses.legal_source } : null,
-      ncViolation: nc?.violation ?? null, ncActionForm: nc?.action_form ?? null,
+      evidence: evidence?.on ? { type: evidence.type ?? "photo", min: Math.max(1, evidence.min ?? 1), mandatory: !!evidence.mandatory } : null,
+      conditional: response.conditional?.visible_when ?? null,
+      requirement: response.requirement ?? "required",
+      mandatoryWhenVisible: !!response.conditional?.mandatory_when_visible,
+      scoringEnabled: response.scoring_enabled !== false,
+      guidance: locale === "ar" ? (item.guidance_ar ?? item.guidance_en) : (item.guidance_en ?? item.guidance_ar),
+      clause: item.regulation_clauses ? { clause_ref: item.regulation_clauses.clause_ref, legal_source: item.regulation_clauses.legal_source } : null,
+      ncViolation: nonCompliant?.violation ?? null,
+      ncActionForm: nonCompliant?.action_form ?? null,
     };
   }
-  // Enum / field / evidence display labels (DB values untouched — SB19).
-  const enumLabels: Record<string, string> = {};
-  for (const i of items) for (const r of (i.response_model?.responses ?? [])) enumLabels[r] ??= t(`enum.${r}`, r.replace(/_/g, " "));
-  const afFieldLabels: Record<string, string> = {};
-  for (const p of pkgs) for (const v of p.package_versions ?? []) for (const f of (v.definition.action_forms ?? [])) for (const fl of (f.fields ?? [])) afFieldLabels[fl] ??= t(`field.ws.af.${fl}`, fl.replace(/_/g, " "));
-  const evTypeLabels: Record<string, string> = {
-    photo: t("enum.evidence.photo", "photo"), document: t("enum.evidence.document", "document"), video: t("enum.evidence.video", "video"),
-  };
 
-  // M09-013 — per-version impact, server-computed. Referencing packages + definition
-  // diff read from package_versions (any authed user); the in-flight pinned counts
-  // come from the aggregate SECURITY DEFINER RPC (0024, degrades to null if scoped out).
-  const versionList = pkgs.flatMap(p => (p.package_versions ?? []).map(v => ({ p, v })));
-  const impactEntries = await Promise.all(versionList.map(async ({ p, v }) => {
-    const codes = new Set(codeSectionMap(v.definition).keys());
+  const enumLabels: Record<string, string> = {};
+  for (const item of items) for (const response of item.response_model?.responses ?? []) {
+    enumLabels[response] ??= t(`enum.${response}`, response.replace(/_/g, " "));
+  }
+  const afFieldLabels: Record<string, string> = {};
+  for (const pkg of pkgs) for (const version of pkg.package_versions ?? []) {
+    for (const form of version.definition.action_forms ?? []) for (const field of form.fields ?? []) {
+      afFieldLabels[field] ??= t(`field.ws.af.${field}`, field.replace(/_/g, " "));
+    }
+  }
+
+  const versionList = pkgs.flatMap(pkg => orderedVersions(pkg).map(version => ({ pkg, version })));
+  const impactEntries = await Promise.all(versionList.map(async ({ pkg, version }) => {
+    const codes = new Set(codeSectionMap(version.definition).keys());
     const referencing: ReferencingPackage[] = [];
     for (const other of pkgs) {
-      if (other.id === p.id) continue;
-      const cur = currentPublished(other);
-      if (!cur) continue;
-      const shared = [...codes].filter(c => codeSectionMap(cur.definition).has(c)).sort();
-      if (shared.length) referencing.push({ code: other.code, title: other.title, label: cur.version_label, sharedItems: shared });
+      if (other.id === pkg.id) continue;
+      const published = currentPublished(other);
+      if (!published) continue;
+      const sharedItems = [...codes].filter(code => codeSectionMap(published.definition).has(code)).sort();
+      if (sharedItems.length) referencing.push({ code: other.code, title: other.title, label: published.version_label, sharedItems });
     }
-    const cur = currentPublished(p);
+    const baseline = currentPublished(pkg);
     let diff: DefinitionDiff | null = null;
-    if (cur && cur.id === v.id) {
-      diff = { isCurrentPublished: true, comparedLabel: cur.version_label, added: [], removed: [], moved: [], formsAdded: [], formsRemoved: [] };
-    } else if (cur) {
-      const thisSec = codeSectionMap(v.definition), curSec = codeSectionMap(cur.definition);
-      const thisCodes = new Set(thisSec.keys()), curCodes = new Set(curSec.keys());
-      const thisForms = formKeys(v.definition), curForms = formKeys(cur.definition);
+    if (baseline?.id === version.id) {
+      diff = { isCurrentPublished: true, comparedLabel: baseline.version_label, added: [], removed: [], moved: [], formsAdded: [], formsRemoved: [] };
+    } else if (baseline) {
+      const nextSections = codeSectionMap(version.definition);
+      const baseSections = codeSectionMap(baseline.definition);
+      const nextCodes = new Set(nextSections.keys());
+      const baseCodes = new Set(baseSections.keys());
+      const nextForms = formKeys(version.definition);
+      const baseForms = formKeys(baseline.definition);
       diff = {
-        isCurrentPublished: false, comparedLabel: cur.version_label,
-        added: [...thisCodes].filter(c => !curCodes.has(c)).sort(),
-        removed: [...curCodes].filter(c => !thisCodes.has(c)).sort(),
-        moved: [...thisCodes].filter(c => curCodes.has(c) && thisSec.get(c) !== curSec.get(c)).sort(),
-        formsAdded: [...thisForms].filter(k => !curForms.has(k)).sort(),
-        formsRemoved: [...curForms].filter(k => !thisForms.has(k)).sort(),
+        isCurrentPublished: false,
+        comparedLabel: baseline.version_label,
+        added: [...nextCodes].filter(code => !baseCodes.has(code)).sort(),
+        removed: [...baseCodes].filter(code => !nextCodes.has(code)).sort(),
+        moved: [...nextCodes].filter(code => baseCodes.has(code) && nextSections.get(code) !== baseSections.get(code)).sort(),
+        formsAdded: [...nextForms].filter(key => !baseForms.has(key)).sort(),
+        formsRemoved: [...baseForms].filter(key => !nextForms.has(key)).sort(),
       };
     }
-    const pinned = await getPinnedActiveImpact(v.id);
-    return [v.id, { pinned, referencing, diff } as ImpactData] as const;
+    const pinned = await getPinnedActiveImpact(version.id);
+    return [version.id, { pinned, referencing, diff } as ImpactData] as const;
   }));
   const impactMap = new Map(impactEntries);
 
   const publishStrings: PublishStrings = {
-    newDraftLabel: t("admin.pkg.newDraft.label", "New draft version (M09-030)"),
+    newDraftLabel: t("admin.pkg.newDraft.label", "New draft version label"),
     creating: t("admin.pkg.newDraft.creating", "Creating…"),
     createDraft: t("admin.pkg.newDraft.create", "Create draft"),
-    draftCreated: t("admin.pkg.newDraft.created", "draft created"),
+    draftCreated: t("admin.pkg.newDraft.created", "Draft created"),
+    versionPlaceholder: t("admin.pkg.newDraft.placeholder", "Example: v2026.08"),
+    effectiveFrom: t("admin.pkg.newDraft.effectiveFrom", "Effective from"),
     publishing: t("admin.pkg.publish.publishing", "Publishing…"),
-    approvePublish: t("admin.pkg.publish.approve", "Approve & publish (maker-checker — RBAC-002)"),
+    approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
+    published: t("admin.pkg.publish.published", "Version published. It is now immutable."),
+    publishHint: t("admin.pkg.publish.hint", "Publish rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must differ from the creator (RBAC-002)."),
+    effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
   };
   const editorStrings: DraftEditorStrings = {
-    heading: t("admin.pkg.editor.heading", "Draft editor — sections & items (M09-019/025)"),
-    editableWhileDraft: t("admin.pkg.editor.editable", "editable while draft"),
-    mandatory: t("admin.pkg.editor.mandatory", "mandatory"),
+    heading: t("admin.pkg.editor.heading", "Package designer"),
+    editableWhileDraft: t("admin.pkg.editor.editable", "Draft · editable"),
+    mandatory: t("admin.pkg.editor.mandatory", "Mandatory section"),
+    structure: t("admin.pkg.editor.structure", "1 · Structure"),
+    fieldCanvas: t("admin.pkg.editor.canvas", "2 · Field canvas"),
+    preview: t("admin.pkg.editor.preview", "3 · Read-only preview"),
     sectionTitleAria: t("admin.pkg.editor.sectionTitleAria", "Section title"),
+    sectionTitleEn: t("admin.pkg.editor.sectionTitleEn", "Section title (English)"), sectionTitleAr: t("admin.pkg.editor.sectionTitleAr", "Section title (Arabic)"),
+    moveUp: t("admin.pkg.editor.moveUp", "Move up"), moveDown: t("admin.pkg.editor.moveDown", "Move down"),
     removeAria: t("admin.pkg.editor.removeAria", "Remove"),
-    addItem: t("admin.pkg.editor.addItem", "+ add item…"),
-    addItemAria: t("admin.pkg.editor.addItemAria", "Add item"),
+    addItem: t("admin.pkg.editor.addItem", "Choose an item…"),
+    addItemAria: t("admin.pkg.editor.addItemAria", "Add item from catalogue"),
     newSectionTitle: t("admin.pkg.editor.newSectionTitle", "New section title"),
+    newSectionTitleAr: t("admin.pkg.editor.newSectionTitleAr", "New section title (Arabic)"),
     addSection: t("admin.pkg.editor.addSection", "Add section"),
-    draftSaved: t("admin.pkg.editor.draftSaved", "draft saved"),
+    draftSaved: t("admin.pkg.editor.draftSaved", "Draft definition saved"),
     saving: t("admin.pkg.editor.saving", "Saving…"),
     save: t("admin.pkg.editor.save", "Save draft definition"),
+    noChanges: t("admin.pkg.editor.noChanges", "No unsaved changes"),
+    unsaved: t("admin.pkg.editor.unsaved", "Unsaved changes"),
+    emptyTitle: t("admin.pkg.editor.emptyTitle", "No sections yet"),
+    emptyBody: t("admin.pkg.editor.emptyBody", "Add the first section to begin this draft."),
+    itemCount: t("admin.pkg.editor.itemCount", "{n} item(s)"),
+    validationTitle: t("admin.pkg.editor.validationTitle", "Draft checks"),
+    validationClear: t("admin.pkg.editor.validationClear", "The editable structure has no duplicate items or blank section titles. Full dependency validation runs again at publish."),
+    duplicateItem: t("admin.pkg.editor.duplicateItem", "Item {code} appears in more than one section."),
+    blankSection: t("admin.pkg.editor.blankSection", "Section {key} needs a title."),
+    bilingualSection: t("admin.pkg.editor.bilingualSection", "Section {key} needs English and Arabic titles."),
+    relationship: t("admin.pkg.editor.relationship", "Package-item policy"), requirement: t("admin.pkg.editor.requirement", "Requirement"), required: t("admin.pkg.editor.required", "Required"), optional: t("admin.pkg.editor.optional", "Optional"), conditional: t("admin.pkg.editor.conditional", "Conditional"),
+    visibleWhen: t("admin.pkg.editor.visibleWhen", "Visible when (key=value)"), mandatoryWhenVisible: t("admin.pkg.editor.mandatoryWhenVisible", "Mandatory when visible"), evidence: t("admin.pkg.editor.evidence", "Evidence override"), inheritEvidence: t("admin.pkg.editor.inheritEvidence", "Use base item policy"), scoring: t("admin.pkg.editor.scoring", "Scoring enabled"), scoreWeight: t("admin.pkg.editor.scoreWeight", "Score weight override"), violation: t("admin.pkg.editor.violation", "Non-compliant violation"), actionForm: t("admin.pkg.editor.actionForm", "Non-compliant action form"), none: t("admin.pkg.editor.none", "None"),
+    forms: t("admin.pkg.editor.forms", "Action forms"), formKey: t("admin.pkg.editor.formKey", "Form key"), formTitle: t("admin.pkg.editor.formTitle", "Form title"), blocking: t("admin.pkg.editor.blocking", "Blocking"), template: t("admin.pkg.editor.template", "Governed template version"), addForm: t("admin.pkg.editor.addForm", "Add action form"), removeForm: t("admin.pkg.editor.removeForm", "Remove form"), circularCheck: t("admin.pkg.editor.circularCheck", "Circular dependencies are rejected again at publish."),
+  };
+  const templateStrings: TemplateStrings = {
+    heading: t("admin.template.heading", "Governed template registry"), intro: t("admin.template.intro", "Create versioned bilingual form, report, action-form, or penalty templates. Published versions are immutable and can be referenced by package action forms and penalty mappings."),
+    key: t("admin.template.key", "Template key"), type: t("admin.template.type", "Type"), version: t("admin.template.version", "Version"), effectiveFrom: t("admin.template.effectiveFrom", "Effective from"), titleEn: t("admin.template.titleEn", "English title"), titleAr: t("admin.template.titleAr", "Arabic title"), schema: t("admin.template.schema", "Schema (JSON object)"), create: t("admin.template.create", "Create draft template version"), creating: t("admin.template.creating", "Creating…"), save: t("admin.template.save", "Save draft"), saving: t("admin.template.saving", "Saving…"), publish: t("admin.template.publish", "Approve & publish"), publishing: t("admin.template.publishing", "Publishing…"), effectiveTo: t("admin.template.effectiveTo", "Effective to"), reason: t("admin.template.reason", "Reason"), deactivate: t("admin.template.deactivate", "Deactivate"), deactivating: t("admin.template.deactivating", "Deactivating…"), historical: t("admin.template.historical", "Immutable historical template version."), saved: t("admin.template.saved", "Saved"),
   };
   const previewStrings: PreviewStrings = {
-    open: t("admin.pkg.preview.open", "Preview as inspector (M09-028)"),
-    close: t("admin.pkg.preview.close", "Close preview"),
+    open: t("admin.pkg.preview.open", "Open field preview"), close: t("admin.pkg.preview.close", "Close field preview"),
     title: t("admin.pkg.preview.title", "Field preview"),
-    asInspector: t("admin.pkg.preview.asInspector", "Rendered exactly as the inspector sees this version in the field workspace."),
-    conditionalBadge: t("field.ws.conditional", "Conditional"),
-    conditionalWhen: t("admin.pkg.preview.conditionalWhen", "Shown when"),
-    guidanceLabel: t("field.ws.guidance", "Guidance"),
-    dateLabel: t("field.ws.date.label", "Recorded date"),
-    evidenceLabel: t("admin.pkg.preview.evidence", "Evidence"),
-    evidenceMandatory: t("admin.pkg.preview.evMandatory", "required"),
-    evidenceOptional: t("admin.pkg.preview.evOptional", "optional"),
-    evidenceMin: t("admin.pkg.preview.evMin", "min"),
-    noteLabel: t("field.ws.note.label", "Inspector note"),
-    notePlaceholder: t("field.ws.note.placeholder", "Add an observation note (saved with the answer)…"),
-    ncViolation: t("admin.pkg.ncArrow", "NC →"),
-    triggersForm: t("admin.pkg.preview.triggersForm", "triggers action form"),
-    formBlocking: t("admin.pkg.preview.formBlocking", "blocking"),
-    formNonBlocking: t("admin.pkg.preview.formNonBlocking", "non-blocking"),
+    asInspector: t("admin.pkg.preview.asInspector", "Read-only projection of the stored package and live item configuration."),
+    conditionalBadge: t("field.ws.conditional", "Conditional"), conditionalWhen: t("admin.pkg.preview.conditionalWhen", "Shown when"),
+    required: t("admin.pkg.preview.required", "Required"), optional: t("admin.pkg.preview.optional", "Optional"),
+    mandatoryWhenVisible: t("admin.pkg.preview.mandatoryWhenVisible", "Mandatory when visible"),
+    scoringDisabled: t("admin.pkg.preview.scoringDisabled", "Scoring disabled"),
+    guidanceLabel: t("field.ws.guidance", "Guidance"), dateLabel: t("field.ws.date.label", "Recorded date"),
+    evidenceLabel: t("admin.pkg.preview.evidence", "Evidence"), evidenceMandatory: t("admin.pkg.preview.evMandatory", "required"),
+    evidenceOptional: t("admin.pkg.preview.evOptional", "optional"), evidenceMin: t("admin.pkg.preview.evMin", "min"),
+    noteLabel: t("field.ws.note.label", "Inspector note"), notePlaceholder: t("field.ws.note.placeholder", "Add an observation note…"),
+    ncViolation: t("admin.pkg.ncArrow", "NC →"), triggersForm: t("admin.pkg.preview.triggersForm", "triggers action form"),
+    formBlocking: t("admin.pkg.preview.formBlocking", "blocking"), formNonBlocking: t("admin.pkg.preview.formNonBlocking", "non-blocking"),
     formAppearsWhen: t("admin.pkg.preview.formAppearsWhen", "This form opens when the inspector marks the item non-compliant."),
-    sectionMandatory: t("admin.pkg.mandatory", "mandatory"),
-    emptySection: t("admin.pkg.preview.emptySection", "Report-head fields — no checklist items."),
-    missingItem: t("admin.pkg.preview.missingItem", "item is not in the live item bank"),
-    readOnly: t("admin.pkg.preview.readOnly", "read-only"),
-    enumLabels, afFieldLabels, evTypeLabels,
+    sectionMandatory: t("admin.pkg.mandatory", "mandatory"), emptySection: t("admin.pkg.preview.emptySection", "Report-head fields — no checklist items."),
+    missingItem: t("admin.pkg.preview.missingItem", "Item is not in the live item bank"), readOnly: t("admin.pkg.preview.readOnly", "Read-only"),
+    enumLabels, afFieldLabels,
+    evTypeLabels: {
+      photo: t("enum.evidence.photo", "photo"), document: t("enum.evidence.document", "document"),
+      video: t("enum.evidence.video", "video"), comment: t("enum.evidence.comment", "comment"),
+    },
   };
   const impactStrings: ImpactStrings = {
-    title: t("admin.pkg.impact.title", "Publish impact (M09-013)"),
+    title: t("admin.pkg.impact.title", "Publish impact"),
     pinnedTitle: t("admin.pkg.impact.pinnedTitle", "In-flight work on prior published versions"),
     pinnedNone: t("admin.pkg.impact.pinnedNone", "No active visits or inspections are pinned to a prior published version."),
-    pinnedVisits: t("admin.pkg.impact.pinnedVisits", "{n} active visit(s)"),
-    pinnedInspections: t("admin.pkg.impact.pinnedInspections", "{n} active inspection(s)"),
-    pinnedHint: t("admin.pkg.impact.pinnedHint", "These run on the version they downloaded (frozen — M09-030); publishing does not re-version them."),
-    pinnedUnavailable: t("admin.pkg.impact.pinnedUnavailable", "In-flight counts are outside your read scope."),
-    priorLead: t("admin.pkg.impact.priorLead", "By prior version:"),
-    priorLine: t("admin.pkg.impact.priorLine", "{label}: {visits} visit(s), {inspections} inspection(s)"),
+    pinnedVisits: t("admin.pkg.impact.pinnedVisits", "{n} active visit(s)"), pinnedInspections: t("admin.pkg.impact.pinnedInspections", "{n} active inspection(s)"),
+    pinnedHint: t("admin.pkg.impact.pinnedHint", "Existing work stays on the frozen version it downloaded; publishing never silently re-versions it."),
+    pinnedUnavailable: t("admin.pkg.impact.pinnedUnavailable", "In-flight counts are unavailable or outside your read scope — this is not zero."),
+    priorLead: t("admin.pkg.impact.priorLead", "By prior version:"), priorLine: t("admin.pkg.impact.priorLine", "{label}: {visits} visit(s), {inspections} inspection(s)"),
     refTitle: t("admin.pkg.impact.refTitle", "Other published packages sharing these items"),
     refNone: t("admin.pkg.impact.refNone", "No other published package references items in this version."),
     refShares: t("admin.pkg.impact.refShares", "shares {n} item(s)"),
-    diffTitle: t("admin.pkg.impact.diffTitle", "Changes vs the currently-published version"),
-    diffVsCurrent: t("admin.pkg.impact.diffVsCurrent", "Compared against {label}:"),
-    diffIsCurrent: t("admin.pkg.impact.diffIsCurrent", "This is the currently-published version."),
-    diffNoBaseline: t("admin.pkg.impact.diffNoBaseline", "No published version yet — this would be the first."),
-    added: t("admin.pkg.impact.added", "Added"),
-    removed: t("admin.pkg.impact.removed", "Removed"),
-    moved: t("admin.pkg.impact.moved", "Moved section"),
-    formsAdded: t("admin.pkg.impact.formsAdded", "Forms added"),
-    formsRemoved: t("admin.pkg.impact.formsRemoved", "Forms removed"),
-    noChanges: t("admin.pkg.impact.noChanges", "No item or action-form changes vs the published version."),
+    diffTitle: t("admin.pkg.impact.diffTitle", "Changes vs the currently published version"),
+    diffVsCurrent: t("admin.pkg.impact.diffVsCurrent", "Compared with {label}:"),
+    diffIsCurrent: t("admin.pkg.impact.diffIsCurrent", "This is the currently published version."),
+    diffNoBaseline: t("admin.pkg.impact.diffNoBaseline", "No published version exists yet — this would be the first."),
+    added: t("admin.pkg.impact.added", "Added"), removed: t("admin.pkg.impact.removed", "Removed"), moved: t("admin.pkg.impact.moved", "Moved section"),
+    formsAdded: t("admin.pkg.impact.formsAdded", "Forms added"), formsRemoved: t("admin.pkg.impact.formsRemoved", "Forms removed"),
+    noChanges: t("admin.pkg.impact.noChanges", "No item or action-form changes from the published version."),
+  };
+
+  const previewFor = (definition: Definition) => {
+    const projected = { ...previewItems };
+    for (const [code, override] of Object.entries(definition.item_rules ?? {})) {
+      const base = projected[code]; if (!base) continue;
+      const nc = override.response_mapping?.non_compliant;
+      projected[code] = { ...base, requirement: override.requirement ?? base.requirement, conditional: override.conditional?.visible_when ?? null, mandatoryWhenVisible: !!override.conditional?.mandatory_when_visible, scoringEnabled: override.scoring_enabled ?? base.scoringEnabled, evidence: override.evidence_rule === undefined ? base.evidence : override.evidence_rule?.on ? { type: override.evidence_rule.type ?? "photo", min: Math.max(1, override.evidence_rule.min ?? 1), mandatory: !!override.evidence_rule.mandatory } : null, ncViolation: nc?.violation ?? base.ncViolation, ncActionForm: nc?.action_form ?? base.ncActionForm };
+    }
+    return (
+    <PackagePreview
+      sections={(definition.sections ?? []).map(section => ({ key: section.key, title: locale === "ar" ? (section.title_ar ?? section.title_en ?? section.title ?? section.key) : (section.title_en ?? section.title ?? section.title_ar ?? section.key), items: section.items, mandatory: section.mandatory }))}
+      actionForms={(definition.action_forms ?? []).map(form => ({ key: form.key, title: form.title, blocking: form.blocking, fields: form.fields }))}
+      itemMap={projected}
+      strings={previewStrings}
+    />
+    );
   };
 
   return (
-    <Shell current="/admin/packages" title={t("admin.pkg.title", "Package & Form Designer")}
-      context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-030/031 · ENG-02</span>}>
-      {pkgs.map(p => (<div key={p.id} className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
-      {(p.package_versions ?? []).map(v => {
-        const def = v.definition;
-        const published = v.status === "published" || v.status === "locked";
-        return (
-          <div key={v.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-            <div className="ax-row" style={{ justifyContent: "space-between" }}>
-              <h3>{p.code} — {p.title}</h3>
-              <div className="ax-row">
-                <span className="ax-version">{v.version_label}</span>
-                <span className={`ax-lozenge ${published ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${v.status}`, String(v.status).replace(/_/g, " "))}</span>
-              </div>
+    <Shell current="/admin/packages" title={t("admin.pkg.title", "Package library & designer")}
+      context={<span className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+        <span className="ax-lozenge ax-lozenge--info">SCR-ADM-030/031 · ENG-02</span>
+        <span className="ax-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
+      </span>}>
+      <div className={styles.pageStack}>
+        {!packageUnavailable && canWrite && <TemplateRegistry templates={templates} strings={templateStrings} />}
+        <section className={`ax-surface ${styles.hero}`} aria-labelledby="pkg-overview">
+          <div className={styles.heroRow}>
+            <div>
+              <h2 id="pkg-overview" style={{ margin: 0 }}>{t("admin.pkg.overview.title", "Version-governed inspection packages")}</h2>
+              <p className="ax-caption">{t("admin.pkg.overview.body", "Drafts are editable. Publishing runs dependency validation and maker-checker approval; published and locked definitions remain immutable.")}</p>
+              <p className="ax-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></p>
             </div>
-            {published && (
-              <div className="ax-banner ax-banner--immutable"><div>
-                <strong>{t("admin.pkg.immutable.title", "Published version — immutable.")}</strong> {t("admin.pkg.immutable.before", "Edits are rejected by the database itself (trigger")} <code>trg_guard_pkg</code>{t("admin.pkg.immutable.after", ", proven in B1-EV-001). Changes require a new draft version.")}
-              </div></div>
-            )}
-            {(def.sections ?? []).map(s => (
-              <div key={s.key} className="adm-designer-section" style={{ border: "1px solid var(--ax-color-border)", borderRadius: "var(--ax-radius-standard)", overflow: "hidden" }}>
-                <div style={{ padding: "var(--ax-space-150) var(--ax-space-200)", background: "var(--ax-color-surface-sunken)", borderBlockEnd: "1px solid var(--ax-color-border)", font: "var(--ax-text-body-strong)" }}>
-                  {s.title} {s.mandatory && <span className="ax-lozenge ax-lozenge--critical" style={{ marginInlineStart: 8 }}>{t("admin.pkg.mandatory", "mandatory")}</span>}
-                </div>
-                {(s.items ?? []).map(code => {
-                  const it = itemMap.get(code);
-                  const rm = it?.response_model as { mapping?: Record<string, { violation?: string; action_form?: string }>; conditional?: object } | undefined;
-                  const nc = rm?.mapping?.["non_compliant"];
-                  return (
-                    <div key={code} style={{ padding: "var(--ax-space-150) var(--ax-space-200)", borderBlockEnd: "1px solid var(--ax-color-border)", display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                      <strong>{code}</strong> <span>{it?.title}</span>
-                      {nc?.violation && <span className="ax-lozenge ax-lozenge--warning">{t("admin.pkg.ncArrow", "NC →")} {nc.violation}</span>}
-                      {nc?.action_form && <span className="ax-lozenge ax-lozenge--critical">{t("admin.pkg.blockingActionForm", "blocking action form")}</span>}
-                      {rm?.conditional && <span className="ax-lozenge ax-lozenge--info">{t("admin.pkg.conditional", "conditional")}</span>}
-                      {it?.evidence_rule != null && <span className="ax-lozenge ax-lozenge--info">{t("admin.pkg.evidenceRule", "evidence rule")}</span>}
-                      <span className="ax-caption" style={{ marginInlineStart: "auto" }}>{t("admin.pkg.weight", "weight")} {it?.score_weight ?? "—"}</span>
-                    </div>
-                  );
-                })}
-                {(s.items ?? []).length === 0 && <p className="ax-caption" style={{ padding: "var(--ax-space-150) var(--ax-space-200)" }}>{t("admin.pkg.reportHead", "report-head fields")}</p>}
-              </div>
-            ))}
-            <p className="ax-caption">
-              {t("admin.pkg.actionForms", "Action forms:")} {(def.action_forms ?? []).map(a => `${a.title}${a.blocking ? ` (${t("admin.pkg.blocking", "blocking")})` : ""}`).join(", ") || "—"} {t("admin.pkg.actionFormsNote", "· consumed at runtime exactly as configured (M09-019/030).")}
-            </p>
-
-            {/* M09-028 — faithful read-only inspector render, toggled per version. */}
-            <PackagePreview
-              sections={(def.sections ?? []).map(s => ({ key: s.key, title: s.title, items: s.items, mandatory: s.mandatory }))}
-              actionForms={(def.action_forms ?? []).map(a => ({ key: a.key, title: a.title, blocking: a.blocking, fields: a.fields }))}
-              itemMap={previewItems} strings={previewStrings} />
-
-            {/* M09-013 — impact sits with the version, directly above Approve & publish for drafts. */}
-            {!published && v.status === "draft" ? (
-              <>
-                <DraftEditor versionId={v.id} definition={def} catalog={items.map(i => ({ code: i.code, title: i.title }))} strings={editorStrings} />
-                <ImpactPanel data={impactMap.get(v.id)!} strings={impactStrings} />
-                <ApprovePublish versionId={v.id} strings={publishStrings} />
-              </>
-            ) : (
-              <ImpactPanel data={impactMap.get(v.id)!} strings={impactStrings} />
-            )}
+            <span className={`ax-lozenge ${canWrite ? "ax-lozenge--success" : "ax-lozenge--info"}`}>
+              <span aria-hidden="true">{canWrite ? "✎ " : "◉ "}</span>
+              {canWrite ? t("admin.pkg.writer", "Configuration writer") : t("admin.pkg.reader", "Read-only access")}
+            </span>
           </div>
-        );
-      })}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <NewDraftForm packageId={p.id} strings={publishStrings} />
+        </section>
+
+        {packageUnavailable && (
+          <div className="ax-banner ax-banner--critical" role="alert"><div>
+            <strong>{t("admin.pkg.error.title", "Couldn’t load the package library.")}</strong>{" "}
+            {t("admin.pkg.error.body", NEUTRAL_LOAD_ERROR)}{" "}
+            <a className="ax-link" href="/admin/packages">{t("admin.pkg.retry", "Reload to try again")}</a>.
+          </div></div>
+        )}
+
+        {!packageUnavailable && itemBankUnavailable && (
+          <div className="ax-banner ax-banner--warning" role="status"><div>
+            <strong>{t("admin.pkg.itemsUnavailable.title", "Item catalogue unavailable.")}</strong>{" "}
+            {t("admin.pkg.itemsUnavailable.body", "Package versions and impact remain visible, but editing and field preview are paused because their item dependency could not be read. This is not an empty catalogue.")}
+          </div></div>
+        )}
+
+        {!packageUnavailable && (roleRead.error || !canWrite) && (
+          <section className={`ax-surface ${styles.governance}`} aria-labelledby="pkg-access">
+            <h3 id="pkg-access" style={{ margin: 0 }}>{t("admin.pkg.readonly.title", "Read-only package access")}</h3>
+            <p className="ax-caption">{roleRead.error
+              ? t("admin.pkg.readonly.unknown", "Your write permissions could not be verified, so all mutation controls are hidden. Reload to retry; RLS remains authoritative.")
+              : t("admin.pkg.readonly.body", "You can inspect versions, previews and publish impact. Creating, saving and publishing require compliance_admin or form_admin; navigation access does not grant write permission.")}</p>
+          </section>
+        )}
+
+        {!packageUnavailable && pkgs.length === 0 && (
+          <section className={`ax-surface ${styles.emptyState}`}>
+            <div className="ax-state">
+              <span className="ax-state__glyph" aria-hidden="true">▦</span>
+              <h3>{t("admin.pkg.empty.title", "No packages configured")}</h3>
+              <p className="ax-caption">{t("admin.pkg.empty.body", "The package read succeeded and returned no rows. Package creation is not exposed by this route, so no unsupported create control is shown.")}</p>
+            </div>
+          </section>
+        )}
+
+        {!packageUnavailable && pkgs.map(pkg => {
+          const versions = orderedVersions(pkg);
+          const latestPublished = currentPublished(pkg);
+          return (
+            <details key={pkg.id} className={`ax-surface ${styles.packageGroup}`} open>
+              <summary>
+                <span className={styles.packageHeading}>
+                  <span><strong><bdi dir="ltr">{pkg.code}</bdi> — {pkg.title}</strong><br /><span className="ax-caption">{pkg.scope ?? t("admin.pkg.scopeNone", "No scope recorded")}</span></span>
+                  <span className="ax-lozenge ax-lozenge--info">{versions.length} {t("admin.pkg.versions", "version(s)")}</span>
+                </span>
+              </summary>
+              <div className={styles.packageBody}>
+                {versions.length === 0 ? (
+                  <div className="ax-state"><span className="ax-state__glyph" aria-hidden="true">□</span><strong>{t("admin.pkg.noVersions", "No versions yet")}</strong></div>
+                ) : (
+                  <div className="ax-tablewrap">
+                    <table className={styles.versionTable}>
+                      <caption className="ax-sr-only">{pkg.code} {t("admin.pkg.versions", "versions")}</caption>
+                      <thead><tr><th>{t("admin.pkg.col.version", "Version")}</th><th>{t("admin.pkg.col.state", "State")}</th><th>{t("admin.pkg.col.published", "Published")}</th><th>{t("admin.pkg.col.definition", "Definition")}</th></tr></thead>
+                      <tbody>{versions.map(version => {
+                        const derivedSuperseded = (version.status === "published" || version.status === "locked") && !!latestPublished && latestPublished.id !== version.id;
+                        const itemCount = (version.definition.sections ?? []).reduce((sum, section) => sum + (section.items?.length ?? 0), 0);
+                        return <tr key={version.id}>
+                          <td data-label={t("admin.pkg.col.version", "Version")}><bdi dir="ltr" className="ax-version">{version.version_label}</bdi></td>
+                          <td data-label={t("admin.pkg.col.state", "State")}><span className={`ax-lozenge ${version.status === "draft" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}><span aria-hidden="true">{version.status === "draft" ? "✎ " : "✓ "}</span>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>{derivedSuperseded && <span className="ax-caption"> · {t("admin.pkg.derivedSuperseded", "older than current publish (derived)")}</span>}</td>
+                          <td data-label={t("admin.pkg.col.published", "Published")}><bdi dir="ltr">{version.published_at ? version.published_at.slice(0, 10) : "—"}</bdi></td>
+                          <td data-label={t("admin.pkg.col.definition", "Definition")}>{version.definition.sections?.length ?? 0} {t("admin.pkg.sections", "section(s)")} · {itemCount} {t("admin.pkg.items", "item(s)")}</td>
+                        </tr>;
+                      })}</tbody>
+                    </table>
+                  </div>
+                )}
+
+                <div className={styles.versionList}>{versions.map((version, index) => {
+                  const published = version.status === "published" || version.status === "locked";
+                  const definition = version.definition ?? {};
+                  const impact = impactMap.get(version.id) ?? { pinned: null, referencing: [], diff: null };
+                  return (
+                    <details key={version.id} className={`ax-panel ${styles.versionCard}`} open={version.status === "draft" || index === 0}>
+                      <summary>
+                        <span className={styles.versionHeading}>
+                          <strong><bdi dir="ltr">{version.version_label}</bdi></strong>
+                          <span className={`ax-lozenge ${published ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>
+                        </span>
+                      </summary>
+                      <div className={styles.versionBody}>
+                        {published && <div className="ax-banner ax-banner--immutable"><div>
+                          <strong><span aria-hidden="true">🔒 </span>{t("admin.pkg.immutable.title", "Published version — immutable.")}</strong>{" "}
+                          {t("admin.pkg.immutable.body", "The database rejects definition and label edits. Create a new draft to change this package while existing inspections stay pinned to their downloaded version.")}
+                        </div></div>}
+
+                        {version.status === "draft" && canWrite && !itemBankUnavailable ? (
+                          <DraftEditor versionId={version.id} definition={definition}
+                            catalog={items.filter(item => item.active).map(item => ({ code: item.code, title: item.title }))}
+                            violations={violationChoices} templates={templateChoices}
+                            strings={editorStrings} preview={previewFor(definition)} />
+                        ) : !itemBankUnavailable ? previewFor(definition) : null}
+
+                        <ImpactPanel data={impact} strings={impactStrings} />
+                        {published && canWrite && <DeactivatePackage versionId={version.id} strings={publishStrings} />}
+
+                        {version.status === "draft" && canWrite && (
+                          <section className="ax-surface" style={{ padding: "var(--ax-space-200)" }} aria-label={t("admin.pkg.publish.heading", "Publish gate")}>
+                            <ApprovePublish versionId={version.id} strings={publishStrings} />
+                          </section>
+                        )}
+                      </div>
+                    </details>
+                  );
+                })}</div>
+
+                {canWrite && <section className="ax-surface" style={{ padding: "var(--ax-space-200)" }}><NewDraftForm packageId={pkg.id} strings={publishStrings} /></section>}
+              </div>
+            </details>
+          );
+        })}
+
+        {!packageUnavailable && <section className={`ax-surface ${styles.governance}`} aria-labelledby="pkg-blockers">
+          <h3 id="pkg-blockers" style={{ margin: 0 }}>{t("admin.pkg.blockers.title", "Boundaries kept visible")}</h3>
+          <p className="ax-caption">{t("admin.pkg.blockers.body", "The designer now authors ordered bilingual sections, package-item policy, action forms, and governed template references. Publish revalidates dependencies and rejects circular conditions. Package footprint/fingerprint metrics and visual simulation remain unclaimed because no approved metric or simulator contract exists.")}</p>
+          <p className="ax-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="ax-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
+        </section>}
       </div>
-      </div>))}
     </Shell>
   );
 }

@@ -5,7 +5,7 @@ import PrintReport from "@/components/PrintReport";
 
 export const dynamic = "force-dynamic";
 
-// M04-215 / M06-018 — official inspection report assembled from live records:
+// M04-215 / M06-018 — official inspection report assembled from governed records:
 // factory identity, visit configuration, locked package version, per-item
 // responses (from the immutable submission snapshot), violations + penalties,
 // action forms, evidence manifest, version history, review decisions and the
@@ -18,7 +18,7 @@ type Snapshot = {
   notes?: Record<string, string>;
   dates?: Record<string, string>;
   context?: Record<string, string>;
-  violations?: { item: string; code: string; level: string | null; penalty_ref: string | null; mapping_version: string | null }[];
+  violations?: { item: string; code: string; title?: string | null; level: string | null; penalty_ref: string | null; legal_basis?: string | null; mapping_version: string | null }[];
   action_forms?: { item: string; form_type: string; owner_name?: string; owner_role?: string; due_at?: string; required_correction?: string; status: string }[];
   evidence?: { total: number; by_item: Record<string, number> };
   submitted_offline?: boolean;
@@ -42,6 +42,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
       package_versions(version_label, definition, packages(code, title)),
       submission_versions(id, version_number, snapshot, acknowledgement, submitted_at, profiles(full_name)),
       violations(mapping_version, violation_codes(code, title, level, penalty_mappings(penalty_ref, legal_basis))),
+      inspection_penalties(status, mapping_snapshot),
       action_forms(form_type, owner_name, owner_role, due_at, status, required_correction),
       evidence(storage_path, evidence_type, content_sha256, captured_at),
       reviews(status, decision, decision_reason, returned_sections, decided_at, submission_version_id, profiles(full_name))`)
@@ -71,6 +72,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
   const reviews = ((ins.reviews as unknown as Rev[]) ?? []).filter(r => !!r.decided_at)
     .sort((a, b) => String(a.decided_at).localeCompare(String(b.decided_at)));
   const vios = (ins.violations as unknown as { mapping_version: string; violation_codes: { code: string; title: string; level: string; penalty_mappings: PenaltyRow | PenaltyRow[] | null } }[]) ?? [];
+  const penaltyNotices = (ins.inspection_penalties as unknown as { status: string; mapping_snapshot: { mapping_version?: string } }[]) ?? [];
   const forms = (ins.action_forms as unknown as { form_type: string; owner_name: string | null; owner_role: string | null; due_at: string | null; status: string; required_correction: string | null }[]) ?? [];
   const evd = (ins.evidence as unknown as { storage_path: string; evidence_type: string; content_sha256: string | null; captured_at: string | null }[]) ?? [];
   const titleByCode = Object.fromEntries((itemRows ?? []).map(r => [r.code as string, r.title as string]));
@@ -179,21 +181,24 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           </section>
         )}
 
-        {/* 4 · Violations & penalties (live records + accepted mapping) */}
+        {/* 4 · Violations & penalties (immutable submission/config snapshots) */}
         <section className="rp-section">
           <h3>{t("report.vio.heading", "Violations and penalty references")}</h3>
-          {vios.length === 0 ? <p className="ax-caption">{t("report.vio.none", "No violations recorded for this inspection.")}</p> : (
+          {(snap.violations?.length ?? vios.length) === 0 ? <p className="ax-caption">{t("report.vio.none", "No violations recorded for this inspection.")}</p> : (
             <table className="rp-table">
               <thead><tr><th>{t("report.vio.th.code", "Code")}</th><th>{t("report.vio.th.title", "Title")}</th><th>{t("report.vio.th.level", "Severity")}</th><th>{t("report.vio.th.penalty", "Penalty ref · legal basis")}</th><th>{t("report.vio.th.mapping", "Mapping version")}</th></tr></thead>
               <tbody>
-                {vios.map((x, i) => {
+                {(snap.violations ?? vios.map(x => {
                   const pm = Array.isArray(x.violation_codes.penalty_mappings) ? x.violation_codes.penalty_mappings[0] : x.violation_codes.penalty_mappings;
+                  return { item: "", code: x.violation_codes.code, title: x.violation_codes.title, level: x.violation_codes.level, penalty_ref: pm?.penalty_ref ?? null, legal_basis: pm?.legal_basis ?? null, mapping_version: x.mapping_version };
+                })).map((x, i) => {
+                  const notice = penaltyNotices.find(p => p.mapping_snapshot?.mapping_version === x.mapping_version);
                   return (
                     <tr key={i}>
-                      <td><strong>{x.violation_codes.code}</strong></td>
-                      <td>{x.violation_codes.title}</td>
-                      <td>{enumL(x.violation_codes.level)}</td>
-                      <td>{pm ? `${pm.penalty_ref} · ${pm.legal_basis ?? "—"}` : "—"}</td>
+                      <td><strong>{x.code}</strong></td>
+                      <td>{x.title ?? "—"}</td>
+                      <td>{enumL(x.level)}</td>
+                      <td>{x.penalty_ref ? `${x.penalty_ref} · ${x.legal_basis ?? "—"} · ${enumL(notice?.status ?? "informational")}` : "—"}</td>
                       <td className="ax-numeric">{x.mapping_version}</td>
                     </tr>
                   );

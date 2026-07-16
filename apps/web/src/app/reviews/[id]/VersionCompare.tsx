@@ -127,7 +127,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
   const categories: Category[] = ["unexpected", "expected", "unavailable", "unchanged"];
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+    <div className="ax-surface cd-version-compare" style={{ padding: "var(--ax-space-300)" }}>
       <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.heading}</h4>
 
       {staleAt != null && (
@@ -225,7 +225,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
           {changedRows.length === 0 ? (
             <div className="ax-banner" role="status"><div>{strings.emptyDiff}</div></div>
           ) : (
-            <div className="ax-tablewrap"><table className="ax-table">
+            <div className="ax-tablewrap"><table className="ax-table cd-compare-table">
               <thead><tr>
                 <th>{strings.colItem}</th>
                 <th>{strings.colSection}</th>

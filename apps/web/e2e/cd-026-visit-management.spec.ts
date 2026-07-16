@@ -39,12 +39,10 @@ test.describe("CD-026 workspace shell + continuity spine (DSG-021)", () => {
     await expect(page.getByText(/Select a visit to see its identity/i)).toBeVisible();
     // KPI status tiles (M02-002) and both independent state columns exist.
     await expect(page.getByRole("group", { name: /Status counts/i })).toBeVisible();
-    // Lens switcher — List/Calendar/Workload navigable, Map shown UNAVAILABLE.
+    // Lens switcher — List/Calendar/Workload/Map are governed routes.
     await expect(page.getByRole("link", { name: /^Calendar$/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /^Workload$/i })).toBeVisible();
-    const map = page.getByRole("button", { name: /^Map$/i });
-    await expect(map).toBeDisabled();
-    await expect(map).toHaveAttribute("title", /not available yet/i);
+    await expect(page.getByRole("link", { name: /^Map$/i })).toHaveAttribute("href", "/visits/map");
     // Scope truth: RLS-scoped loaded-vs-total.
     await expect(page.getByText(/RLS-scoped — showing \d+ of \d+/i)).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "primary.png"), fullPage: true });
@@ -92,7 +90,7 @@ test.describe("CD-026 a11y / RTL / responsive (DSG-A11Y-001)", () => {
       await expect(heading).toBeVisible({ timeout: 2000 });
     }).toPass({ timeout: 40_000 });
     await expect(page.getByText(/حدّد زيارة لعرض هويتها/)).toBeVisible(); // visit.spine.empty
-    await expect(page.getByRole("button", { name: "خريطة" })).toBeDisabled(); // visit.views.map (unavailable)
+    await expect(page.getByRole("link", { name: "خريطة" })).toHaveAttribute("href", "/visits/map");
     await page.screenshot({ path: join(EVIDENCE_DIR, "ar-rtl.png"), fullPage: true });
     await page.goto("/locale?set=en");
   });
@@ -162,14 +160,11 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     }
   });
 
-  test("the Map lens is represented as unavailable — no route or provider is invented", () => {
+  test("the Map lens uses the delivered governed route", () => {
     const page = SRC("src/app/visits/page.tsx");
-    expect(page).toContain("HANDOFF_BLOCKED_MAP");
-    expect(page).toContain('disabled aria-disabled="true"');
-    // No /visits/map route was created for Track 1.
-    let mapRouteExists = true;
-    try { readFileSync(join(process.cwd(), "src/app/visits/map/page.tsx"), "utf8"); }
-    catch { mapRouteExists = false; }
-    expect(mapRouteExists).toBe(false);
+    expect(page).toContain('href="/visits/map"');
+    const mapRoute = readFileSync(join(process.cwd(), "src/app/visits/map/page.tsx"), "utf8");
+    expect(mapRoute).toContain('from("geo_events")');
+    expect(mapRoute).toContain("official_lat");
   });
 });

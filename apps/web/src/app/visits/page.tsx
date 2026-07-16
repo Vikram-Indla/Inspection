@@ -207,10 +207,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits">{t("visit.views.list", "List")}</a>
           <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
           <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
-          <button type="button" className="ax-btn ax-btn--subtle" disabled aria-disabled="true"
-            title={t("visit.views.mapUnavailable", "Map view is not available yet — use the list below.")}>
-            {t("visit.views.map", "Map")}
-          </button>
+          <a className="ax-btn ax-btn--subtle" href="/visits/map">{t("visit.views.map", "Map")}</a>
         </div>
         <span className="ax-caption ax-numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>

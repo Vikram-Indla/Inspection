@@ -99,11 +99,13 @@ async function readOverlappingAssignments(
 
 export async function loadBulkSelection(ids: string[], window?: { start: string; end: string }): Promise<ReviewData> {
   const sb = await supabaseServer();
+  const today = new Date().toISOString().slice(0, 10);
   const clean = [...new Set(ids)].filter(id => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 500);
   if (clean.length === 0) return { factories: [], packages: [], inspectors: [] };
   const [factoryRead, packageRead, inspectorRead] = await Promise.all([
     sb.from("factories").select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, visits(planning_status, visit_type)").in("id", clean),
-    sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"]),
+    sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
   ]);
   if (factoryRead.error || packageRead.error || inspectorRead.error) {
@@ -221,8 +223,10 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const endMs = Date.parse(window_end);
   if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) blockers.push("Invalid window (FLD-PLAN-005)");
   if (package_version_id) {
+    const today = new Date().toISOString().slice(0, 10);
     const { data: packageVersion, error: packageError } = await sb.from("package_versions")
-      .select("id").eq("id", package_version_id).in("status", ["published", "locked"]).maybeSingle();
+      .select("id").eq("id", package_version_id).in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).maybeSingle();
     if (packageError) {
       console.error("[CD-021 publishBulkPlan] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
@@ -350,8 +354,10 @@ export async function validateBulkPlan(input: {
   if (!input.package_version_id) {
     blockers.push({ kind: "nopackage" });
   } else {
+    const today = new Date().toISOString().slice(0, 10);
     const { data: pv, error } = await sb.from("package_versions")
-      .select("id").eq("id", input.package_version_id).in("status", ["published", "locked"]).maybeSingle();
+      .select("id").eq("id", input.package_version_id).in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).maybeSingle();
     if (error) { console.error("[CD-025 validate] package:", error.message); blockers.push({ kind: "srcPackage" }); }
     else if (!pv) blockers.push({ kind: "packageInvalid" });
   }

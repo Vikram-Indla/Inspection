@@ -1,6 +1,14 @@
 "use client";
 import { useActionState, useMemo, useState } from "react";
-import { createRegulation, publishRegulation, addClause, type RegResult } from "./actions";
+import {
+  addClause,
+  addRegulationAttachment,
+  createRegulation,
+  deactivateRegulation,
+  publishRegulation,
+  updateRegulationDraft,
+  type RegResult,
+} from "./actions";
 
 // SCR-ADM-010 (CD-005) + SCR-ADM-011 (CD-006) — client controls consume
 // server-built strings only (SB19). Colour comes exclusively from ax tokens/classes;
@@ -10,6 +18,9 @@ export type RegStrings = {
   code: string;
   title: string;
   issuingAuthority: string;
+  effectiveFrom: string;
+  versionLabel: string;
+  deactivationReason: string;
   titlePlaceholder: string;
   creating: string;
   create: string;
@@ -24,14 +35,29 @@ export type RegStrings = {
   clauseNotAudited: string;
   publishing: string;
   publish: string;
+  saveDraft: string;
+  savingDraft: string;
+  draftSaved: string;
+  deactivate: string;
+  deactivating: string;
+  deactivated: string;
+  attachmentName: string;
+  attachmentPath: string;
+  attachmentType: string;
+  attachmentHash: string;
+  addAttachment: string;
+  addingAttachment: string;
+  attachmentAdded: string;
   // register / discovery (CD-005)
   searchPlaceholder: string;
   filterAll: string;
   filterPublished: string;
   filterDraft: string;
+  filterDeactivated: string;
   filterLegend: string;
   statusPublished: string;
   statusDraft: string;
+  statusDeactivated: string;
   openDossier: string;
   filteredEmptyTitle: string;
   filteredEmptyBody: string;
@@ -65,6 +91,10 @@ export function NewRegulationForm({ strings: s }: { strings: RegStrings }) {
         <input id="reg-title" className="ax-input" name="title" placeholder={s.titlePlaceholder} required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="reg-auth">{s.issuingAuthority}</label>
         <input id="reg-auth" className="ax-input" name="issuing_authority" /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="reg-effective">{s.effectiveFrom}</label>
+        <input id="reg-effective" className="ax-input ax-numeric" type="date" name="effective_from" required /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="reg-version">{s.versionLabel}</label>
+        <input id="reg-version" className="ax-input ax-numeric" name="version_label" defaultValue="v1" required /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.creating : s.create}</button>
       {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
@@ -95,10 +125,8 @@ export function AddClauseForm({ regulationId, strings: s }: { regulationId: stri
   );
 }
 
-// Proven action W03a/publish — draft → published. There is no mapped-clause validation
-// gate, but the DB now enforces maker-checker (approved_by <> created_by) and locks a
-// published row (trg_guard_published_regulation). The still-unbuilt mapped-clause
-// validation gate is a blocked disclosure rendered by the page, never here.
+// Governed publish validates clause mappings in the server action, records the checker,
+// and relies on the DB for maker-checker and post-publication immutability.
 export function PublishRegulation({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
   const [state, formAction, pending] = useActionState<RegResult, FormData>(publishRegulation, {});
   return (
@@ -106,6 +134,57 @@ export function PublishRegulation({ regulationId, strings: s }: { regulationId: 
       <input type="hidden" name="regulation_id" value={regulationId} />
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.publishing : s.publish}</button>
       {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+    </form>
+  );
+}
+
+export function EditRegulationDraft({ regulation, strings: s }: {
+  regulation: { id: string; title: string; issuingAuthority: string | null; effectiveFrom: string | null };
+  strings: RegStrings;
+}) {
+  const [state, formAction, pending] = useActionState<RegResult, FormData>(updateRegulationDraft, {});
+  return (
+    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-150)" }} aria-label={s.saveDraft}>
+      <input type="hidden" name="regulation_id" value={regulation.id} />
+      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+        <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor={`reg-edit-title-${regulation.id}`}>{s.title}</label>
+          <input id={`reg-edit-title-${regulation.id}`} className="ax-input" name="title" defaultValue={regulation.title} required /></div>
+        <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor={`reg-edit-auth-${regulation.id}`}>{s.issuingAuthority}</label>
+          <input id={`reg-edit-auth-${regulation.id}`} className="ax-input" name="issuing_authority" defaultValue={regulation.issuingAuthority ?? ""} /></div>
+        <div className="ax-field"><label className="ax-field__label" htmlFor={`reg-edit-effective-${regulation.id}`}>{s.effectiveFrom}</label>
+          <input id={`reg-edit-effective-${regulation.id}`} className="ax-input ax-numeric" type="date" name="effective_from" defaultValue={regulation.effectiveFrom?.slice(0, 10) ?? ""} /></div>
+        <button className="ax-btn" disabled={pending}>{pending ? s.savingDraft : s.saveDraft}</button>
+      </div>
+      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
+      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.draftSaved}</span>}
+    </form>
+  );
+}
+
+export function AddRegulationAttachment({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
+  const [state, formAction, pending] = useActionState<RegResult, FormData>(addRegulationAttachment, {});
+  return (
+    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-150)" }} aria-label={s.addAttachment}>
+      <input type="hidden" name="regulation_id" value={regulationId} />
+      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+        <div className="ax-field" style={{ flex: 1, minInlineSize: 260 }}><label className="ax-field__label" htmlFor={`att-file-${regulationId}`}>{s.attachmentName}</label><input id={`att-file-${regulationId}`} className="ax-input" type="file" name="file" required /></div>
+        <button className="ax-btn" disabled={pending}>{pending ? s.addingAttachment : s.addAttachment}</button>
+      </div>
+      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
+      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.attachmentAdded}</span>}
+    </form>
+  );
+}
+
+export function DeactivateRegulation({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
+  const [state, formAction, pending] = useActionState<RegResult, FormData>(deactivateRegulation, {});
+  return (
+    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-100)", alignItems: "flex-start" }}>
+      <input type="hidden" name="regulation_id" value={regulationId} />
+      <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><textarea className="ax-input" name="deactivation_reason" required /></label>
+      <button className="ax-btn ax-btn--subtle" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>
+      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
+      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.deactivated}</span>}
     </form>
   );
 }
@@ -126,9 +205,10 @@ export type RegRowLite = {
 
 function StatusChip({ status, s }: { status: string; s: RegStrings }) {
   const published = status === "published";
+  const deactivated = status === "deactivated";
   return (
-    <span className={`ax-lozenge ${published ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>
-      <span aria-hidden="true">{published ? "●" : "◌"}</span> {published ? s.statusPublished : s.statusDraft}
+    <span className={`ax-lozenge ${published ? "ax-lozenge--success" : deactivated ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
+      <span aria-hidden="true">{published ? "●" : deactivated ? "✕" : "◌"}</span> {published ? s.statusPublished : deactivated ? s.statusDeactivated : s.statusDraft}
     </span>
   );
 }
@@ -172,7 +252,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
             <span className="ax-caption"><span aria-hidden="true">✓</span> <span className="ax-numeric"><bdi dir="ltr">{r.itemCount}</bdi></span></span>
           )}
         </div>
-        {/* Beyond items — no verified source (HANDOFF_BLOCKED) */}
+        {/* Beyond items — list disclosure stays conservative; dossier publication evaluates mappings. */}
         <div className="ax-stack" style={{ gap: "2px", minInlineSize: 180 }}>
           <span className="ax-overline">{s.railBeyond}</span>
           <span className="ax-caption"><span aria-hidden="true">⋯</span> {s.railNotEvaluated}</span>
@@ -186,12 +266,13 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
 // Search + lifecycle filtering never touch the backend — no new read leg is invented.
 export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; strings: RegStrings }) {
   const [q, setQ] = useState("");
-  const [life, setLife] = useState<"all" | "published" | "draft">("all");
+  const [life, setLife] = useState<"all" | "published" | "draft" | "deactivated">("all");
 
   const counts = useMemo(() => ({
     all: rows.length,
     published: rows.filter(r => r.status === "published").length,
     draft: rows.filter(r => r.status === "draft").length,
+    deactivated: rows.filter(r => r.status === "deactivated").length,
   }), [rows]);
 
   const filtered = useMemo(() => {
@@ -203,7 +284,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
     });
   }, [rows, q, life]);
 
-  const chip = (key: "all" | "published" | "draft", label: string, n: number) => (
+  const chip = (key: "all" | "published" | "draft" | "deactivated", label: string, n: number) => (
     <button
       type="button"
       className={`ax-filterchip ${life === key ? "is-active" : ""}`}
@@ -231,6 +312,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
           {chip("all", s.filterAll, counts.all)}
           {chip("published", s.filterPublished, counts.published)}
           {chip("draft", s.filterDraft, counts.draft)}
+          {chip("deactivated", s.filterDeactivated, counts.deactivated)}
         </div>
       </div>
 
@@ -255,7 +337,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
                 <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
                   <StatusChip status={r.status} s={s} />
                   {/* Logical detail mode — same route, ?id= query param (CD-006). */}
-                  <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/regulations?id=${encodeURIComponent(r.id)}`}>
+                  <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/regulations/${encodeURIComponent(r.id)}`}>
                     {s.openDossier}
                   </a>
                 </div>

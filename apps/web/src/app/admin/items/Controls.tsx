@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useId, useState } from "react";
-import { createItem, toggleItemActive, type ItemResult } from "./actions";
+import { createItem, toggleItemActive, updateItem, type ItemResult } from "./actions";
 
 export type ClauseOption = { id: string; label: string };
 
@@ -21,7 +21,19 @@ export type ItemStrings = {
   evidenceRule: string;
   evidenceNone: string;
   evidencePhotoNc: string;
+  evidenceVideoNc: string;
+  evidenceDocumentNc: string;
+  evidenceCommentNc: string;
   evidenceSource: string;
+  requirementMode: string;
+  requirementRequired: string;
+  requirementOptional: string;
+  requirementConditional: string;
+  visibleWhen: string;
+  visibleWhenHint: string;
+  mandatoryWhenVisible: string;
+  scoringEnabled: string;
+  scoringDisabled: string;
   guidance: string;
   guidancePlaceholder: string;
   creating: string;
@@ -32,6 +44,9 @@ export type ItemStrings = {
   deactivate: string;
   reactivate: string;
   reasonNote: string;
+  deactivationReason: string;
+  saveDraft: string;
+  draftSaved: string;
 };
 
 // SCR-ADM-020 · ENG-01 — create item against a clause with governed presets.
@@ -48,6 +63,7 @@ export function NewItemForm({
   strings: ItemStrings;
 }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(createItem, {});
+  const [scoring, setScoring] = useState(true);
   return (
     <form
       action={formAction}
@@ -71,7 +87,7 @@ export function NewItemForm({
       </div>
       <div className="ax-field">
         <label className="ax-field__label" htmlFor="item-weight">{s.weight}</label>
-        <input id="item-weight" className="ax-input ax-numeric" name="score_weight" inputMode="decimal" placeholder="5" style={{ maxInlineSize: 80 }} />
+        <input id="item-weight" className="ax-input ax-numeric" name="score_weight" inputMode="decimal" placeholder="5" style={{ maxInlineSize: 80 }} disabled={!scoring} />
       </div>
       <div className="ax-field" style={{ minInlineSize: 240 }}>
         <label className="ax-field__label" htmlFor="item-response">{s.responseModel}</label>
@@ -86,9 +102,16 @@ export function NewItemForm({
         <select id="item-evidence" className="ax-select" name="evidence_preset" required defaultValue="none">
           <option value="none">{s.evidenceNone}</option>
           <option value="photo_nc_mandatory">{s.evidencePhotoNc}</option>
+          <option value="video_nc_mandatory">{s.evidenceVideoNc}</option>
+          <option value="document_nc_mandatory">{s.evidenceDocumentNc}</option>
+          <option value="comment_nc_mandatory">{s.evidenceCommentNc}</option>
         </select>
         <span className="ax-caption">{s.evidenceSource}</span>
       </div>
+      <label className="ax-row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
+        <input type="hidden" name="scoring_enabled" value={scoring ? "true" : "false"} />
+        <input type="checkbox" checked={scoring} onChange={e => setScoring(e.target.checked)} /> {scoring ? s.scoringEnabled : s.scoringDisabled}
+      </label>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}>
         <label className="ax-field__label" htmlFor="item-guidance">{s.guidance}</label>
         <input id="item-guidance" className="ax-input" name="guidance_en" placeholder={s.guidancePlaceholder} />
@@ -111,16 +134,36 @@ export function NewItemForm({
   );
 }
 
-// M09-014 — deactivate/reactivate; history is preserved, never deleted. There is
-// NO stored deactivation reason, but the row change IS audited at the DB
-// (trg_audit_inspection_items) — the caption states this so the toggle is read as
-// an audited, but not reason-captured, mutation.
+export function EditItemForm({ item, clauses, strings: s }: {
+  item: { id: string; title: string; clauseId: string; guidance: string | null; version: number };
+  clauses: ClauseOption[];
+  strings: ItemStrings;
+}) {
+  const [state, formAction, pending] = useActionState<ItemResult, FormData>(updateItem, {});
+  return (
+    <details className="ax-stack">
+      <summary className="ax-btn ax-btn--subtle">Edit · v{item.version}</summary>
+      <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 280 }}>
+        <input type="hidden" name="item_id" value={item.id} />
+        <label className="ax-field"><span className="ax-field__label">{s.title}</span><input className="ax-input" name="title" defaultValue={item.title} required /></label>
+        <label className="ax-field"><span className="ax-field__label">{s.clause}</span><select className="ax-select" name="clause_id" defaultValue={item.clauseId} required>{clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
+        <label className="ax-field"><span className="ax-field__label">{s.guidance}</span><textarea className="ax-input" name="guidance_en" defaultValue={item.guidance ?? ""} /></label>
+        <button className="ax-btn" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
+        {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.draftSaved}</span>}
+      </form>
+    </details>
+  );
+}
+
+// M09-014 — deactivate/reactivate; history and the required reason are preserved.
 export function ToggleActive({ itemId, active, strings: s }: { itemId: string; active: boolean; strings: ItemStrings }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(toggleItemActive, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="item_id" value={itemId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
+      {active ? <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required /></label> : null}
       <button className="ax-btn" disabled={pending} title={s.reasonNote}>
         {pending ? s.saving : active ? s.deactivate : s.reactivate}
       </button>
@@ -144,7 +187,10 @@ export type PreviewItem = {
   responses: string[];
   ncTarget: string | null;
   evidence: { on?: string; type?: string; min?: number; mandatory?: boolean } | null;
-  conditional: boolean;
+  requirement: string;
+  conditionalRule: string | null;
+  mandatoryWhenVisible: boolean;
+  scoringEnabled: boolean;
   guidance: string | null;
   scoreWeight: number | null;
   scoreExcludedOn: string[];
@@ -156,7 +202,7 @@ export type PreviewStrings = {
   responsesLabel: string;
   evidenceLabel: string;
   evidenceNone: string;
-  evidencePhoto: string; // carries {min}
+  evidenceRequired: string; // carries {type} and {min}
   evidenceSource: string;
   guidanceLabel: string;
   guidanceNone: string;
@@ -166,6 +212,10 @@ export type PreviewStrings = {
   scoreExcluded: string; // carries {responses}
   ncMaps: string; // carries {target}
   conditional: string;
+  required: string;
+  optional: string;
+  mandatoryVisible: string;
+  scoringOff: string;
   readonly: string;
   deactivated: string;
   active: string;
@@ -222,14 +272,15 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
               ))}
             </div>
             {item.ncTarget && <p className="ax-caption">{fill(s.ncMaps, { target: item.ncTarget })}</p>}
-            {item.conditional && <p className="ax-caption"><span aria-hidden="true">◇ </span>{s.conditional}</p>}
+            <p className="ax-caption"><span aria-hidden="true">◇ </span>{item.requirement === "optional" ? s.optional : item.requirement === "conditional" ? s.conditional : s.required}</p>
+            {item.conditionalRule && <p className="ax-caption"><bdi dir="ltr" className="ax-numeric">{item.conditionalRule}</bdi>{item.mandatoryWhenVisible ? ` · ${s.mandatoryVisible}` : ""}</p>}
           </div>
 
           <div>
             <p className="ax-overline">{s.evidenceLabel}</p>
             <p className="ax-caption">
               {item.evidence?.mandatory
-                ? fill(s.evidencePhoto, { min: item.evidence.min ?? 1 })
+                ? fill(s.evidenceRequired, { type: item.evidence.type ?? "evidence", min: item.evidence.min ?? 1 })
                 : s.evidenceNone}
             </p>
             <p className="ax-caption"><em>{s.evidenceSource}</em></p>
@@ -238,7 +289,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
           <div>
             <p className="ax-overline">{s.scoringLabel}</p>
             <p className="ax-caption">
-              {item.scoreWeight != null ? fill(s.weight, { weight: item.scoreWeight }) : s.noWeight}
+              {!item.scoringEnabled ? s.scoringOff : item.scoreWeight != null ? fill(s.weight, { weight: item.scoreWeight }) : s.noWeight}
               {item.scoreExcludedOn.length > 0 &&
                 ` · ${fill(s.scoreExcluded, { responses: item.scoreExcludedOn.map(label).join(", ") })}`}
             </p>

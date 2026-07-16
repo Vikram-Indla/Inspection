@@ -1,5 +1,34 @@
 # Evidence Status
 
+## TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| IPAD-GEO-EV-001 | Sponsor policy and source implementation | `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md` | Captured — source commit `62916ee` |
+| IPAD-GEO-EV-002 | Typecheck, production build, static source contracts and diff check | `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md`; `../../apps/web/e2e/ipad-gps-policy.spec.ts` | Captured — PASS; 3/3 focused contracts |
+| IPAD-GEO-EV-003 | Database/RLS and authenticated multi-persona runtime journey | `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md` | Pending controlled environment — no local DB/Docker or clean-worktree credentials; no remote DDL applied |
+
+## TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001 — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| G11-RR-EV-001 | All 19 row source/live/runtime/negative reconciliation | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md` | Captured — PASS; 493 rows, 0 partial, 0 missing |
+| G11-RR-EV-002 | Machine-generated acceptance ledger and summary | `AC_LEDGER.csv`; `AC_LEDGER_SUMMARY.md` | Captured — 18 verified_live / 475 implemented |
+| G11-RR-EV-003 | Live arrival, device, private evidence, storage and audit replay | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md` | Captured — PASS; ordinary inspector/RLS path |
+| G11-RR-EV-004 | Outside-geofence reason/coordinates/override negative replay | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md` | Captured — PASS; 1,112m outside 150m fence |
+| G11-RR-EV-005 | Typecheck, production build and complete browser inventory | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md` | Captured — 283 pass / 3 intentional skips / 0 product failures |
+
+## CD-006 through CD-011 backend completion — 2026-07-15
+
+2026-07-16 reconciliation: live object state and the integrated candidate are
+verified under G11-G12-REL-EV-001/002. This historical record is retained; its
+old migration-pending boundary is superseded, while the six M09 acceptance
+audits remain open.
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| CD006-011-BE-EV-001 | Requirement reconciliation, implementation, security boundaries, test results, live boundary and frontend handoff | `CD006_CD011_BACKEND_COMPLETION_2026-07-15.md` | Superseded by G11-RR-EV-001 — live migration and authenticated verification complete |
+
 G4 evidence: **CAPTURED** — 2026-07-11 (branch `setup/g4-memory-continuity`).
 
 | ID | Item | File | Status |
@@ -226,3 +255,9 @@ Owner: CD004-EV-003 and CD004-EV-005 are closed. CD004-EV-004 remains blocked be
 | CD030-NEW1-EV-001 | Independent audit finding: page-level gate on `/reviews/:id` blocked auditor/planner/leadership despite RLS (`inspections_read`/`subs_read`/`reviews_read`) and the CD-030 design scope ("P11 · Reviewer/Auditor") granting them read | `CODEX_AUDIT_CD-030_2026-07-15_R2.md` (finding NEW-1) | Captured — flagged via cross-session message, independently re-verified against `0002_rbac_audit.sql:39-40,65-66,71-73` and `screen_route_catalogue.csv:26` before fixing |
 | CD030-NEW1-EV-002 | Fix: `authorized` broadened to `reviewer/ops/auditor/planner/leadership` (view); new `canDecide` (`reviewer/ops` only) gates `DecisionPanel`/`StartReview`; a `{role} · read-only` lozenge renders for non-deciding viewers | `../../apps/web/src/app/reviews/[id]/page.tsx` | Captured — restores the accepted RLS/design-scoped read permission without widening who can submit a decision |
 | CD030-NEW1-EV-003 | Regression check on the same fix | `../../apps/web/e2e/cd-030-version-comparison.spec.ts`; `cd-029-review-workspace.spec.ts`; `cd-028-review-queue.spec.ts` | Captured — typecheck/build clean; 30/31 PASS, 1 skip; the single failure (`cd-028` leg 5) is a pre-existing shared-live-data ordering fragility (the queue's first open workspace had already been advanced to `under_review` by earlier same-day test runs), reproduced identically regardless of this fix, not a new defect |
+
+## G11 remaining-requirements closure — M09 slice (2026-07-16)
+
+| ID | Scope | Evidence | Status |
+|---|---|---|---|
+| G11-R19-M09-EV-001 | M09-001/005/018/021/022/024 source, backend, runtime, RLS, audit, RTL and degraded-state reconciliation | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md`; focused M09 production-browser inventory | Captured — 49/49 PASS; six historical partial rows superseded to implemented |

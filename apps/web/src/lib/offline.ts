@@ -9,14 +9,21 @@ const DB = "mim-field-v1";
 export type SyncState = "synced" | "offline" | "pending" | "syncing" | "conflict" | "failed";
 export type OutboxOp =
   | { kind: "response"; inspection_id: string; item_id: string; response: unknown; baseline_updated_at: string | null; queued_at: string }
+  // A real outside-fence check-in may be captured while offline. It is replayed
+  // before its linked override request, and it never changes visit state.
+  | { kind: "geo_checkin"; id: string; journey_id: string; visit_id: string; observed_lat: number; observed_lng: number; accuracy_m: number; altitude_m: number | null; distance_m: number; device_occurred_at: string; gis_version: string; device_id: string; queued_at: string }
   // Additive (slice F3 · M04-058): visit_id set = VISIT-linked evidence
   // (cancellation — no inspections row exists yet); inspection_id then only
   // namespaces the storage path. Ops without visit_id replay exactly as before.
-  | { kind: "evidence"; inspection_id: string | null; linked_type: string; linked_id: string; name: string; mime: string; data_b64: string; captured_at: string; sha256: string; queued_at: string; visit_id?: string; evidence_note?: string }
+  | { kind: "evidence"; inspection_id: string | null; linked_type: string; linked_id: string; evidence_type?: "photo" | "video" | "document" | "comment"; evidence_note?: string; name: string; mime: string; data_b64: string; captured_at: string; sha256: string; queued_at: string; visit_id?: string }
   | { kind: "submit"; inspection_id: string; version_number: number; snapshot: unknown; idempotency_key: string; acknowledgement: unknown; queued_at: string }
   // Additive (slice F1 · M04-095..114): factory-field verification check.
   // Upsert on (inspection_id, field_key) → idempotent replay; never touches factories (FND-007/M04-112).
-  | { kind: "factory_check"; inspection_id: string; check: { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }; queued_at: string };
+  | { kind: "factory_check"; inspection_id: string; check: { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null }; queued_at: string }
+  // TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — the request is replayed
+  // only after its visit-linked photo evidence, if required, has synced. The
+  // server derives all GPS/time facts from checkin_event_id, not this payload.
+  | { kind: "geo_override_request"; request_id: string; visit_id: string; journey_id: string; checkin_event_id: string; reason_key: string; explanation: string; safety_security_exception: boolean; queued_at: string };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
 
 function idb(): Promise<IDBDatabase> {
@@ -88,6 +95,18 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
           { inspection_id: op.inspection_id, item_id: op.item_id, response: op.response, is_complete: true, updated_at: new Date().toISOString() },
           { onConflict: "inspection_id,item_id" });
         if (error) throw error;
+      } else if (op.kind === "geo_checkin") {
+        // M04-039/043 — durable captured facts for a later offline override.
+        // This is deliberately only a check-in event; it cannot arrive or
+        // unlock the visit without the separately guarded Operations decision.
+        const { error } = await sb.from("geo_events").insert({
+          id: op.id, journey_id: op.journey_id, visit_id: op.visit_id, kind: "checkin",
+          observed_lat: op.observed_lat, observed_lng: op.observed_lng,
+          accuracy_m: op.accuracy_m, altitude_m: op.altitude_m,
+          device_occurred_at: op.device_occurred_at, geofence_result: "outside",
+          gis_version: op.gis_version, device_id: op.device_id,
+        });
+        if (error && !String(error.message).includes("duplicate")) throw error;
       } else if (op.kind === "evidence") {
         const path = `${op.visit_id ?? op.inspection_id}/${op.name}`;
         const bytes = Uint8Array.from(atob(op.data_b64), c => c.charCodeAt(0));
@@ -95,7 +114,8 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
         if (up.error) throw up.error;
         const { data: { user } } = await getVerifiedUser(sb);
         const row: Record<string, unknown> = {
-          inspection_id: op.inspection_id, evidence_type: op.mime.startsWith("image") ? "photo" : "document",
+          inspection_id: op.inspection_id,
+          evidence_type: op.evidence_type ?? (op.mime.startsWith("image") ? "photo" : op.mime.startsWith("video") ? "video" : "document"),
           linked_type: op.linked_type, linked_id: op.linked_id, storage_path: path,
           captured_at: op.captured_at, content_sha256: op.sha256, captured_by: user?.id, synced_at: new Date().toISOString(),
         };
@@ -125,6 +145,21 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
           status: op.check.status, evidence_note: op.check.evidence_note,
           updated_by: user?.id, updated_at: new Date().toISOString(),
         }, { onConflict: "inspection_id,field_key" });
+        if (error) throw error;
+      } else if (op.kind === "geo_override_request") {
+        // M04-043 / STM-JRN-003 — canonical database guard validates the
+        // immutable outside check-in, evidence, expiry and inspector identity.
+        // It is intentionally the only replay path; offline never unlocks the
+        // visit locally or synthesises an approval.
+        const { error } = await sb.rpc("request_geo_override", {
+          p_request: op.request_id,
+          p_visit: op.visit_id,
+          p_journey: op.journey_id,
+          p_checkin_event: op.checkin_event_id,
+          p_reason_key: op.reason_key,
+          p_explanation: op.explanation,
+          p_safety_security_exception: op.safety_security_exception,
+        });
         if (error) throw error;
       }
       await local.remove(key);

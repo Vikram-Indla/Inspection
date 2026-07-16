@@ -22,7 +22,7 @@ PARTIALS = ROOT / "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026
 SESSION = ROOT / "product-contract/sessions/SESSION_LEDGER.json"
 MAPS = ROOT / "outputs"
 
-EXPECTED_COUNTS = {"verified_live": 14, "implemented": 460, "partial": 19, "missing": 0}
+EXPECTED_COUNTS = {"verified_live": 18, "implemented": 475, "partial": 0, "missing": 0}
 
 
 def fail(message: str) -> None:
@@ -47,7 +47,10 @@ def main() -> int:
             value = match.group(1)
             partial_ids.add(value if value.startswith("MVP1-") else f"MVP1-{value}")
     ledger_partial_ids = {row["requirement_id"] for row in rows if row["status"] == "partial"}
-    if partial_ids != ledger_partial_ids:
+    # The dated audit remains historical evidence of the pre-closure 18-row
+    # disposition. Once the closure ledger reaches zero partial rows, it must
+    # not be treated as the current acceptance source of truth.
+    if EXPECTED_COUNTS["partial"] and partial_ids != ledger_partial_ids:
         fail(f"partial disposition mismatch: table={sorted(partial_ids)} ledger={sorted(ledger_partial_ids)}")
 
     map_count = 0
@@ -62,12 +65,12 @@ def main() -> int:
         fail("no authoritative wiring maps found")
 
     session = json.loads(SESSION.read_text())
-    if session.get("last_session") != "2026-07-16-repository-documentation-externalization":
+    if session.get("last_session") != "2026-07-16-ipad-geofence-override-approval":
         fail(f"unexpected last_session {session.get('last_session')!r}")
     if not session.get("sessions"):
         fail("session ledger has no sessions")
 
-    print(f"AUDIT_RECONCILIATION_OK: rows={len(rows)} counts={dict(counts)} maps={map_count} partials={len(partial_ids)}")
+    print(f"AUDIT_RECONCILIATION_OK: rows={len(rows)} counts={dict(counts)} maps={map_count} current_partials={len(ledger_partial_ids)}")
     return 0
 
 

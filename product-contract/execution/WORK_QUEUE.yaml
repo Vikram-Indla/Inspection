@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003"
+    gate: "G11 hardening"
+    priority: "P0"
+    status: "SOURCE_VERIFIED_AWAITING_CONTROLLED_DATABASE_RUNTIME"
+    owner: "Codex + Operations runtime verifier"
+    blocked_by: ["Controlled Supabase migration environment with reconciled history/access", "Authenticated inspector and Operations runtime personas"]
+    blocks: ["Runtime certification of AC-0152..AC-0156", "Production promotion of the new override workflow"]
+    note: "Sponsor policy 1A/2A/3A/4A is implemented in source commit 62916ee on the dedicated iPad branch. Typecheck/build and 3/3 focused static policy contracts pass. The forward migrations were deliberately not applied to the shared remote because the migration-history/access boundary is unreconciled; full RLS/browser runtime verification is therefore pending rather than claimed."
   - task_id: "TASK-REPO-DOC-EXTERNALIZE-001"
     gate: "Repository maintenance (no product gate change)"
     priority: "P1"

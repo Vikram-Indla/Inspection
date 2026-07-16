@@ -26,8 +26,10 @@ export default async function PlanningHome() {
       </Shell>
     );
   }
+  const today = new Date().toISOString().slice(0, 10);
   const [{ data: pkg, error: packageError }, { count: drafts, error: draftsError }] = await Promise.all([
-    sb.from("package_versions").select("id").in("status", ["published", "locked"]).limit(1),
+    sb.from("package_versions").select("id").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).limit(1),
     sb.from("visit_plans").select("id", { count: "exact", head: true }).eq("status", "draft"),
   ]);
   if (packageError || draftsError) {

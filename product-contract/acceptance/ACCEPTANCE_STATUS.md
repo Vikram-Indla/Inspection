@@ -1,5 +1,45 @@
 # Acceptance Status
 
+## TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — 2026-07-16
+
+- Source acceptance for `AC-0152..AC-0156`: **PASS** — requester ownership,
+  Operations-only decision, self-decision refusal, evidence/safety exception,
+  expiry/visit-close guards, durable offline ordering and the guarded arrival
+  transition are present in the database and UI contracts.
+- Compile and source-contract verification: **PASS** — typecheck, production
+  build, diff check and focused Playwright 3/3.
+- Runtime acceptance: **AWAITING CONTROLLED DATABASE RUNTIME** — no local
+  Supabase/Docker configuration and no authenticated clean-worktree runtime
+  credentials; remote migration history/access remains unreconciled. This
+  status must not be promoted to live verified until the forward migrations and
+  inspector/Operations acceptance journey pass in a controlled environment.
+- Exact evidence: `../evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md`.
+
+## TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001 — 2026-07-16
+
+- AC-0091, AC-0125, AC-0130, AC-0137, AC-0156, AC-0158, AC-0412,
+  AC-0413, AC-0414, AC-0423, AC-0424, AC-0426, AC-0428, AC-0449,
+  AC-0453, AC-0466, AC-0469, AC-0470 and AC-0472: **PASS**.
+- Live-verified rows: M02-039, M04-012, M04-043 and M04-045. The other
+  historically partial rows are implemented and runtime-verified without
+  overstating unavailable provider delivery or unavailable legacy driver data.
+- Ledger reconciliation: **493 total = 18 verified_live / 475 implemented /
+  0 partial / 0 missing**.
+- Typecheck and production build pass. Complete browser inventory: **283 passed /
+  3 intentional skips / 0 product failures**; live arrival and outside-fence
+  negative replays pass separately through ordinary RLS paths. Exact evidence:
+  `../evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md`.
+- This closes the 19-row requirement task. It does not declare G11 hardening or
+  G12 release complete, and it does not claim Google Routes delivery while the
+  deployment credential is absent.
+
+## CD-006 through CD-011 backend completion — 2026-07-15
+
+- Superseded by the sponsor-approved 2026-07-16 closure above: the six rows are
+  **PASS**, their authoritative forward migrations are live, and authenticated
+  browser verification is complete.
+- Exact evidence: `../evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md`.
+
 G4 acceptance: **PASS** (cloud-verifiable) — 2026-07-11.
 
 Pass criteria (all satisfied):
@@ -39,15 +79,6 @@ reconciliation (see docs/G5_ARCHITECTURE_AND_READINESS.md).
   acceptance, G11/G12 release certification, production deployment, live-DDL
   approval or branch/main promotion.
 - Evidence: `../evidence/TASK-G11-REMEDIATION-001.md`.
-
-## TASK-REPO-DOC-EXTERNALIZE-001 maintenance disposition — 2026-07-16
-
-- Cleanup contract: **LOCALLY COMPLETE** — 1,004 approved D/E files copied, SHA-256 verified, and removed only after the verified backup existed.
-- Integrity: dependency install, typecheck, production build, documentation/hash/link validation, memory validation, audit reconciliation, script syntax, secret scan, and diff checks pass; the 276-test Playwright inventory loads.
-- Safety boundary: the live-data E2E suite was not executed because this maintenance task prohibits production/shared-database writes.
-- Pre-existing exceptions: two malformed historical YAML manifests, 12 i18n coverage findings, and invalid shared-Git reflog entries for the separate release worktree/branch reproduce independently of this cleanup; push remains withheld pending correction or explicit waiver.
-- Product acceptance: **UNCHANGED** — this maintenance record does not upgrade, downgrade, close, or reopen any requirement, acceptance ID, screen, engine, gate, or release criterion.
-- Evidence: external `MANIFESTS/validation_results.md`, `move_plan.csv`, and `documentation_link_check.txt` under `INSPECTION_DOCS_ROOT`.
 
 ## CD-001 V7 login design disposition — 2026-07-13
 
@@ -95,7 +126,7 @@ reconciliation (see docs/G5_ARCHITECTURE_AND_READINESS.md).
 ## CD-027 / SCR-WEB-210 / P03 — Visit Detail disposition — 2026-07-14 (CLOSED-WAIVED 2026-07-15)
 
 - **Closure: CLOSED (SPONSOR-WAIVED) — 2026-07-15 (Vikram Indla).** Runtime acceptance granted; DEC-012 independent (non-implementer) audit **waived, not satisfied**; the three blocked legs **deferred to change-control, not done**. Recorded in `governance/HUMAN_APPROVALS.yaml` (gate `CD-027-closure-waiver`). Reopen on any P0/P1 regression, a later independent-audit finding, or a blocked-leg decision landing.
-- Sponsor status: **APPROVED (Vikram Indla, 2026-07-14)** for Track 1 + safe Track 2 wiring closures; recorded in `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md` (DEC-012).
+- Sponsor status: **APPROVED (Vikram Indla, 2026-07-14)** for Track 1 + safe Track 2 wiring closures; recorded in `outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md` (DEC-012).
 - Baseline: `BASELINE_REVERIFY_REQUIRED` cleared — reverified against local `HEAD 8af0185` (`9360fc9` in history); `setup/Inspection` not used; dirty tree preserved.
 - Design source: imported CD-027 r2 (`READY_FOR_DESIGN_REVIEW_R2`) from Claude Design project `Plan Review and Publish`.
 - **DSG-022** (integrated Visit Detail): **IMPLEMENTED AND VERIFIED** — Dual-State Ribbon (five never-collapsed domains: planning/operational/assignment/inspection/review), identity header, evidence chapters, available/disabled-with-why/unavailable action zones. 16/16 e2e pass on the local production build.
@@ -204,3 +235,11 @@ live migration/replay boundary remains explicitly open.
 - Blocked seams remain surfaced-only and out of scope: provider adapter/selection, remote evidence capture, media custody, embedded live continuity preview, physical follow-up write, close state-vs-notification distinction.
 - Reopen rule: demonstrated P0/P1 regression, security/accessibility failure, protected-behavior break, or approved change control only.
 - Commits on `feat/admin-control-plane`: `81ba156` → `503a56c` → `b4061cc`.
+
+### G11 remaining-requirements closure — M09 slice (2026-07-16)
+
+`AC-0449`, `AC-0453`, `AC-0466`, `AC-0469`, `AC-0470` and `AC-0472` now have
+complete governed authoring/runtime paths and a focused production-browser
+inventory of **49/49 PASS**. The previous THIN findings predated the
+CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
+`evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md`.

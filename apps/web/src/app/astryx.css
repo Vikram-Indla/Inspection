@@ -528,6 +528,19 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-table th[aria-sort="ascending"]::after { content: " ↑"; }
 .ax-table th[aria-sort="descending"]::after { content: " ↓"; }
 .ax-table td { padding-block: var(--ax-space-150); padding-inline: var(--ax-space-200); border-block-end: 1px solid var(--ax-color-border); vertical-align: middle; }
+@media (max-width: 640px) {
+  .cd-compare-table { table-layout: fixed; min-inline-size: 0; }
+  .cd-compare-table th, .cd-compare-table td {
+    min-inline-size: 0;
+    padding-inline: var(--ax-space-050);
+    overflow-wrap: anywhere;
+  }
+  .cd-compare-table .ax-lozenge {
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
 .ax-table tbody tr:last-child td { border-block-end: 0; }
 .ax-table tbody tr:hover { background: var(--ax-color-neutral-tint); }
 .ax-table tbody tr[aria-selected="true"] { background: var(--ax-color-primary-tint); }
@@ -808,7 +821,28 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
    keeping the grid's minmax tracks intact at 412px causes RTL horizontal
    overflow and hides the decision surface off-canvas. */
 .cd-review-workspace-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: var(--ax-space-300); align-items: start; min-inline-size: 0; }
+.cd-review-workspace-grid > * { min-inline-size: 0; }
+.cd-version-compare { min-inline-size: 0; max-inline-size: 100%; }
+.cd-version-compare .ax-tablewrap { inline-size: 100%; min-inline-size: 0; max-inline-size: 100%; }
 @media (max-width: 899px) { .cd-review-workspace-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 560px) {
+  /* The five comparison fields remain a real table, but must reflow rather
+     than preserve a desktop min-content width in the RTL field viewport. */
+  .cd-version-compare .ax-table { table-layout: fixed; inline-size: 100%; }
+  .cd-version-compare .ax-table th,
+  .cd-version-compare .ax-table td {
+    min-inline-size: 0;
+    padding-inline: var(--ax-space-050);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .cd-version-compare .ax-lozenge {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
 
 /* filters */
 .cd-filters { padding: var(--ax-space-200); display: flex; flex-wrap: wrap; gap: var(--ax-space-150); align-items: flex-end; }
@@ -998,3 +1032,75 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .cd-closebox { margin-block-start: var(--ax-space-150); padding-block-start: var(--ax-space-150); border-block-start: 1px solid var(--ax-color-border); max-inline-size: none; }
 .cd-recovery__acts { margin-block-start: var(--ax-space-100); }
 .cd-fallback { }
+/* CD-018 · localization studio — source / Arabic / status split rows.
+   Present-truth ui_strings workflow: placeholder-diff, source-drift, orphan. */
+.lz-list { display: flex; flex-direction: column; gap: var(--ax-space-100); }
+.lz-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr) minmax(200px, 0.8fr);
+  gap: var(--ax-space-200);
+  padding: var(--ax-space-200);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface);
+  align-items: start;
+}
+.lz-row--orphan { opacity: .8; }
+.lz-cell { display: flex; flex-direction: column; gap: 6px; min-inline-size: 0; }
+.lz-cell--actions { align-items: flex-start; }
+.lz-key { font: var(--ax-text-micro); font-family: var(--ax-font-mono); color: var(--ax-color-text-secondary); letter-spacing: .03em; }
+.lz-src { font: var(--ax-text-body); color: var(--ax-color-text); word-break: break-word; }
+.lz-ar { font: var(--ax-text-body); font-family: var(--ax-font-arabic, inherit); color: var(--ax-color-text); word-break: break-word; }
+.lz-ph { font-family: var(--ax-font-mono); font-size: .9em; padding: 0 3px; border-radius: 4px; background: var(--ax-color-neutral-tint); color: var(--ax-color-text-secondary); }
+.lz-ph--err { background: var(--ax-color-critical-tint); color: var(--ax-color-critical-strong); }
+.lz-drift { background: var(--ax-color-warning-tint); color: var(--ax-color-warning-strong); border-radius: 4px; padding: 0 3px; }
+.lz-risk { display: flex; gap: 6px; align-items: baseline; font: var(--ax-text-caption); color: var(--ax-color-warning-strong); }
+.lz-risk--muted { color: var(--ax-color-text-secondary); }
+.lz-risk--critical { color: var(--ax-color-critical-strong); }
+.lz-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 900px) {
+  .lz-row { grid-template-columns: 1fr; gap: var(--ax-space-150); }
+}
+
+/* R2 evidence grammar — "Not available yet" boundary (CD-016/017/019).
+   States a deliberately-absent capability + its human consequence + one seam
+   id. Never a fake control: an honest boundary, not a disabled feature. */
+.nya {
+  border: 1px dashed var(--ax-color-border);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface);
+  padding: var(--ax-space-200);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nya__head { display: flex; align-items: center; gap: 8px; }
+.nya__glyph { color: var(--ax-color-text-secondary); }
+.nya__head b { font: var(--ax-text-body); font-weight: 600; }
+.nya__lbl {
+  margin-inline-start: auto;
+  font: var(--ax-text-micro); font-family: var(--ax-font-mono);
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--ax-color-text-secondary);
+  border: 1px solid var(--ax-color-border); border-radius: 999px; padding: 2px 8px;
+}
+.nya__body { margin: 0; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+/* R3 item-7: technical seam + prerequisites tucked behind a disclosure. */
+.nya__more { margin-block-start: 2px; }
+.nya__more > summary { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); cursor: pointer; list-style-position: inside; }
+.nya__more > summary:hover { color: var(--ax-color-text); }
+.nya__more[open] > summary { margin-block-end: 6px; }
+.nya__prereq { margin: 0 0 6px; padding-inline-start: 1.1em; display: flex; flex-direction: column; gap: 2px; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.nya__seam { display: block; font: var(--ax-text-micro); font-family: var(--ax-font-mono); color: var(--ax-color-text-secondary); }
+
+/* CD-014 · risk model — weight bars, live sum, band strip. */
+.rk-driver { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding-block: var(--ax-space-150); border-block-end: 1px solid var(--ax-color-border); }
+.rk-driver__name { display: flex; flex-direction: column; gap: 2px; min-inline-size: 0; }
+.rk-w { font-family: var(--ax-font-mono); font-variant-numeric: tabular-nums; }
+.rk-w--err { color: var(--ax-color-critical-strong); }
+.rk-bar { grid-column: 1 / -1; block-size: 6px; background: var(--ax-color-neutral-tint); border-radius: 999px; overflow: hidden; }
+.rk-bar > span { display: block; block-size: 100%; background: var(--ax-color-info); }
+.rk-sum { display: flex; align-items: center; gap: var(--ax-space-150); flex-wrap: wrap; }
+.rk-band { display: flex; gap: 8px; flex-wrap: wrap; }
+.rk-bandchip { display: flex; gap: 8px; align-items: center; font: var(--ax-text-caption); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); padding: 6px 10px; }
+.rk-bandchip__dot { inline-size: 10px; block-size: 10px; border-radius: 999px; flex: none; }

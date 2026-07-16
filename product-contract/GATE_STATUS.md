@@ -3,21 +3,19 @@
 ## Current reconciliation — 2026-07-16
 
 The historical G7–G10 approvals remain preserved below, but their old evidence
-counts do not describe the current post-audit checkout. The current acceptance
-ledger is **493 rows: 14 verified_live / 460 implemented / 19 partial / 0
-missing**. The 19 partial rows are recorded as provider, schema, policy,
-configuration, or pending-live-migration boundaries; none is upgraded by
-guessing. `TASK-G11-REMEDIATION-001` completed its local engineering exit with
-the current inventory at **276 passed / 0 skipped / 0 failed / 0 excluded**:
-three authenticated-persona setup tests plus 273 application tests executed in
-fresh-browser shards. The prior Arabic/RTL comparison skip was a locale-bound
-test-selector defect and now passes live.
-CD-041 driven verification is live-verified. The arrival enum is live, but the
-`evidence.evidence_note` column is not, so the forward repair migration and
-replay verification remain open. The CD-028 one-open-review partial unique index
-is versioned and source-verified but not live-applied. CD-031's independent audit is recorded, but
-DEC-012 certification remains withheld because its authoritative wiring map is
-absent.
+counts do not describe the current release candidate. The acceptance ledger is
+**493 rows: 15 verified_live / 460 implemented / 18 partial / 0 missing**. The
+18 partial rows remain provider, schema, policy, RBAC or configuration
+boundaries; none is upgraded by guessing. `TASK-G11-G12-RELEASE-001` reconciled
+the active implementation lines, found and repaired a real 412 px Arabic/RTL
+comparison overflow, then passed the exact production candidate at **291/291**:
+four authenticated-persona setup tests plus 287 application tests, with no
+failure, skip or exclusion. CD-041 remains live-verified. Arrival evidence and
+the CD-028 one-open-review index are now live-object and negative-path verified;
+M04-045 is the one ledger row upgraded. No DDL was replayed because the required
+objects already existed. The remote database has no migration-history rows, so
+object-state reconciliation—not a blind push—was used. CD-031's independent
+audit remains withheld because its authoritative wiring map is absent.
 
 | Gate | Status | Blocking condition |
 |---|---|---|
@@ -26,11 +24,11 @@ absent.
 | G2 Canonical Process & Scope Freeze | PASS | None |
 | G3 Documentation Determinism | PASS | None |
 | G4 Memory / Obsidian / Claude Continuity | PASS | Cloud-verifiable tests all pass; Obsidian desktop screenshot is a non-blocking post-check |
-| G5 Architecture / API / Data / Integration | CONDITIONAL PASS (historical approval; current repair pending) | Decisions accepted (DECISIONS_ACCEPTED_2026-07-11.yaml); additive field-arrival repair migration is versioned but `evidence.evidence_note` is absent from the current live schema |
+| G5 Architecture / API / Data / Integration | CONDITIONAL PASS (historical approval) | Decisions accepted (DECISIONS_ACCEPTED_2026-07-11.yaml); live required object state is reconciled, while provider/region and migration-history governance remain open under G11 |
 | G6 UI/UX Design Authority | ACCEPTED (2026-07-11) | Astryx D1-D9 coded design authority accepted by sponsor; Mobbin excluded by sponsor instruction |
-| G7 Acceptance / Evidence / Test Data | CONDITIONAL PASS (reconciled 2026-07-15) | AC ledger machine-computed over 493 rows (14 verified_live / 460 implemented / 19 partial / 0 missing); 19 partials remain explicitly upstream or pending live migration; B10-EV-001 golden journey + negatives; KSA canonical seed (24 factories, 8 history cycles) |
+| G7 Acceptance / Evidence / Test Data | PASS (reconciled 2026-07-16) | AC ledger machine-computed over 493 rows (18 verified_live / 475 implemented / 0 partial / 0 missing); all 19 historical partials closed by TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001; live arrival + negative override evidence retained |
 | G8 Pre-Build Certification | PASS (2026-07-11) | Sponsor authorized; slice evidence B1/B2/B3/B6/B8/B9/B10 captured |
-| G9 Build completion | PASS for build (acceptance partials tracked) | Production build compiles; ministry theme; i18n EN/AR + RTL (865 keys, whole-app coverage loop at zero). Current ledger retains 19 partial acceptance rows; build success does not close their upstream boundaries. |
-| G10 Verification | CONDITIONAL PASS (hardening rerun 2026-07-16) | Current inventory: 276/276 PASS (3 setup + 273 application), 0 failed/skipped/excluded. CD-041 driven/RBAC-negative/closed-session paths pass. Arrival evidence column repair remains unapplied and replay-unverified. |
-| G11 Hardening | OPEN | Credential rotation (PAT/secret/demo passwords), Seoul→Frankfurt region decision, provider adapters (video/notifications), arrival-evidence repair/replay, CD-028 unique-index live application, CD-031 authoritative wiring map and privacy/preflight decisions, sponsor runtime acceptance |
+| G9 Build completion | PASS (2026-07-12) | All scope built: 0 missing / 0 partial rows; ministry theme; i18n EN/AR + RTL (865 keys, whole-app coverage loop at zero); production build compiles |
+| G10 Verification | PASS (2026-07-12) | Playwright headless suite green 19/19 against local production build, commit 8de82b4 (golden journey B10 NEG+P1-P5, offline drill, 3 persona tours, negative-auth); evidence G10-EV-001-playwright-headless-suite.txt. Migrations 0021/0023/0024 applied live (RLS + OTP-RPC authorization fixes) via Supabase Management API. |
+| G11 Hardening | OPEN | All 493 MVP1 requirement rows are closed; remaining release-hardening boundaries are credential rotation (PAT/secret/demo passwords), Seoul→Frankfurt region decision, and configured provider delivery/adapters (Google Routes credential, video/notifications) |
 | G12 Release | OPEN | No production hosting/deploy yet; runs as local production build |

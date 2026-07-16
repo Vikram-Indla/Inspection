@@ -55,15 +55,15 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
 
   return (
     <div className="ax-panel ax-impact" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", borderInlineStart: "4px solid var(--ax-color-primary)" }}>
-      <strong style={{ font: "var(--ax-text-body-strong)" }}>{s.title}</strong>
+      <h4 style={{ font: "var(--ax-text-body-strong)", margin: 0 }}>{s.title}</h4>
 
       {/* 1 · in-flight items pinned to prior published versions */}
       <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <span className="ax-field__label">{s.pinnedTitle}</span>
         {pinned == null ? (
-          <p className="ax-caption">{s.pinnedUnavailable}</p>
+          <p className="ax-caption" role="status"><span aria-hidden="true">⚠ </span>{s.pinnedUnavailable}</p>
         ) : (pinned.active_visits + pinned.active_inspections === 0) ? (
-          <p className="ax-caption">{s.pinnedNone}</p>
+          <p className="ax-caption" role="status"><span aria-hidden="true">✓ </span>{s.pinnedNone}</p>
         ) : (
           <>
             <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>

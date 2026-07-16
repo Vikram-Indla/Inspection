@@ -95,8 +95,10 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   if (!location_confirmed) blockers.push("Location must be confirmed on the map before publish (M01-038)");
   if (!package_version_id) blockers.push("No published package selected (ERR-PUB-001)");
   if (package_version_id) {
+    const today = new Date().toISOString().slice(0, 10);
     const { data: packageVersion, error: packageError } = await sb.from("package_versions")
-      .select("id").eq("id", package_version_id).in("status", ["published", "locked"]).maybeSingle();
+      .select("id").eq("id", package_version_id).in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).maybeSingle();
     if (packageError) {
       console.error("[CD-022 publishSingleVisit] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
