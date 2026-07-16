@@ -25,6 +25,7 @@ import {
   SearchResults,
   StrategicView,
 } from "./DashboardView";
+import { BUSINESS_ROLE_KEYS } from "@/lib/shell-navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -91,13 +92,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
+  // The Dashboard is a shared Command destination for every non-admin persona
+  // (business direction 2026-07-16); admin-only users are redirected. Data is
+  // still RLS-scoped per persona (RBAC-001..014).
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
   const { data: dashboardRoles, error: roleError } = await sb
     .from("user_roles")
     .select("role_key")
     .eq("user_id", user.id);
-  const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => row.role_key === "ops" || row.role_key === "leadership");
+  const businessRoles = BUSINESS_ROLE_KEYS as readonly string[];
+  const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => businessRoles.includes(row.role_key));
   if (!mayViewDashboard) redirect("/launch");
 
   const [visitsResult, inspectionsResult, reviewsResult, responsesResult, violationsResult, geoResult, factoriesResult, slaResult] = await Promise.all([
