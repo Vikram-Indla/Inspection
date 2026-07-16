@@ -208,7 +208,7 @@ export default async function Regulations({
     const unmappedClauses = clauses.filter(c => !Array.isArray(c.inspection_items) || c.inspection_items.length === 0).length;
 
     return (
-      <Shell current="/admin" title={title} context={context}>
+      <Shell current="/admin/regulations" title={title} context={context}>
         {degradedBanner}
         {readOnlyBanner}
 
@@ -393,7 +393,7 @@ export default async function Regulations({
   });
 
   return (
-    <Shell current="/admin" title={title} context={context}>
+    <Shell current="/admin/regulations" title={title} context={context}>
       {degradedBanner}
       {readOnlyBanner}
 

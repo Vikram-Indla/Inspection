@@ -4,7 +4,7 @@ import Shell from "@/components/Shell";
 // same canon as /admin/localization/loading.tsx; no async useT() here).
 export default function Loading() {
   return (
-    <Shell current="/admin" title={"GIS Studio · استوديو الخرائط"}>
+    <Shell current="/admin/gis" title={"GIS Studio · استوديو الخرائط"}>
       <div className="ax-surface"><div className="ax-state">
         <span className="ax-state__glyph">…</span>
         <h4>{"Loading GIS Studio…"} · <span lang="ar">{"جارٍ تحميل استوديو الخرائط…"}</span></h4>

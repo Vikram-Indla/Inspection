@@ -128,10 +128,13 @@ export default async function AdminHome() {
   );
 
   const linkOnly = [
+    { href: "/admin/items", key: "shell.nav.items", en: "Inspection Items" },
     { href: "/admin/workflows", key: "shell.nav.workflows", en: "Workflow Configuration" },
     { href: "/admin/risk", key: "shell.nav.risk", en: "Risk Configuration" },
     { href: "/admin/gis", key: "shell.nav.gis", en: "GIS Configuration" },
     { href: "/admin/access", key: "shell.nav.access", en: "Users & Roles" },
+    { href: "/admin/localization", key: "shell.nav.localization", en: "Localization" },
+    { href: "/admin/audit", key: "shell.nav.audit", en: "Audit Trail" },
   ];
 
   const readAtNode = withSlot(
