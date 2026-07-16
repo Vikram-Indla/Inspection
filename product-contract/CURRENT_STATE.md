@@ -1,5 +1,22 @@
 # Current State
 
+## 2026-07-16 UPDATE 91 — Inspection staging database identified and read-only preflight passed
+
+The sponsor confirmed `iiozvqntawxfwbgffzqu` (Vikram-Indla's Project, Seoul) as
+the **Inspection staging** database. The Supabase CLI was linked exclusively to
+that ref and a read-only preflight reconciled the local/remote migration
+history, confirmed `evidence.evidence_note`, and confirmed the
+`reviews_one_open_per_version` guard. No DDL, data, RLS, workflow or production
+operation was performed; Catalyst was not touched.
+
+This confirms the controlled database target but does not itself make Mapbox
+runtime evidence. The repository has no configured staging hosting target and
+the two Mapbox environment variables are absent from the local ignored runtime
+environment. `TASK-IPAD-MAPBOX-RUNTIME-004` remains pending only a credentialed
+Inspection-staging application configuration and authenticated web/Admin/iPad
+tile, Arabic-label and Directions checks. Evidence:
+`evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md`.
+
 ## 2026-07-16 UPDATE 90 — Mapbox source migration delivered across web, Admin and iPad
 
 `TASK-IPAD-MAPBOX-RUNTIME-004` replaces Leaflet/OSM/CARTO renderers with Mapbox

@@ -73,6 +73,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-16"
     change_ref: "Sponsor directions: use Mapbox MCP/server; Mapbox across app web, admin and iPad"
+  - gate: "MAPBOX-INSPECTION-STAGING-TARGET"
+    decision: "CONFIRMED — sponsor identified iiozvqntawxfwbgffzqu (Vikram-Indla's Project, Seoul) as the Inspection staging database. Authorization is staging-only and supports controlled read-only preflight plus later Mapbox runtime verification; it does not authorize Catalyst, production deployment, DDL, staging-data mutation or secret exposure."
+    approver: "Vikram Indla"
+    date: "2026-07-16"
+    change_ref: "Sponsor response: '1. yes 2. attached staging project for inspection'"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

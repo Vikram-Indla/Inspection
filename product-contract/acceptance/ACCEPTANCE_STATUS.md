@@ -11,10 +11,12 @@
 - Compile and source-contract verification: **PASS** — typecheck, production
   build, no-Leaflet/no-Google runtime scan, diff check and focused Playwright
   5/5.
-- Runtime provider acceptance: **AWAITING INSPECTION STAGING CONFIGURATION** —
-  Mapbox tile/label and Directions calls require `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`
-  and `MAPBOX_ACCESS_TOKEN` in the correct Inspection staging environment.
-  This is not a Catalyst target and this status is not production acceptance.
+- Runtime provider acceptance: **AWAITING INSPECTION STAGING APPLICATION
+  CONFIGURATION** — the sponsor-confirmed Inspection staging database
+  (`iiozvqntawxfwbgffzqu`) passed read-only migration/schema preflight, but no
+  staging application target or `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` /
+  `MAPBOX_ACCESS_TOKEN` values are configured. This is not a Catalyst target
+  and this status is not production acceptance.
 - Exact evidence: `../evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md`.
 
 ## TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — 2026-07-16

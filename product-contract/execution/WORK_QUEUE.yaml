@@ -5,9 +5,9 @@ items:
     priority: "P1"
     status: "SOURCE_VERIFIED_AWAITING_INSPECTION_STAGING_PROVIDER_RUNTIME"
     owner: "Codex + Operations runtime verifier"
-    blocked_by: ["Correct Inspection staging target and configured Mapbox browser/server variables", "Credentialed web/Admin/iPad map and Directions runtime check"]
+    blocked_by: ["Configured Inspection staging application target with Mapbox browser/server variables", "Credentialed web/Admin/iPad map and Directions runtime check"]
     blocks: ["Mapbox provider runtime acceptance", "Provider-hardening closure for G11"]
-    note: "Mapbox GL JS is the sole shared interactive map renderer and Mapbox Directions is the in-app ETA provider. Typecheck/build, source scan and 5/5 focused contracts pass. No Mapbox access token, Catalyst target, live DDL, staging data or production deployment was used. Configure the variables named in apps/web/.env.example only in the actual Inspection staging environment, then capture browser/Admin/iPad and Directions evidence."
+    note: "Mapbox GL JS is the sole shared interactive map renderer and Mapbox Directions is the in-app ETA provider. Typecheck/build, source scan and 5/5 focused contracts pass. The sponsor-confirmed Inspection staging DB iiozvqntawxfwbgffzqu passed read-only migration/schema preflight; no Mapbox access token, Catalyst target, live DDL, staging data or production deployment was used. No staging application host or Mapbox variables are configured. Configure the variables named in apps/web/.env.example only in the actual Inspection staging application environment, then capture browser/Admin/iPad and Directions evidence."
   - task_id: "TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003"
     gate: "G11 hardening"
     priority: "P0"

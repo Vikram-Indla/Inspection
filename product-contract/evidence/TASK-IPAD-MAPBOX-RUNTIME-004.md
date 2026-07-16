@@ -44,10 +44,18 @@ recorded as the current resolution of `DEC-008` and in
 ## Honest runtime boundary
 
 Actual Mapbox tile, label-language and Directions calls have **not** been
-claimed here: this clean implementation worktree has no configured Inspection
-staging environment variables. To complete controlled staging runtime evidence,
-configure `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` and `MAPBOX_ACCESS_TOKEN` in the
-actual Inspection staging environment (never Catalyst), then run authenticated
+claimed here. The sponsor confirmed that `iiozvqntawxfwbgffzqu`
+(Vikram-Indla's Project, Seoul) is the Inspection staging database. The CLI was
+linked only to that project, and read-only migration-history/schema checks
+passed: the local and remote history reconcile, `evidence.evidence_note` is
+present, and `reviews_one_open_per_version` is present. No DDL, staging data,
+workflow mutation, Catalyst target or production target was used.
+
+The database confirmation does not configure the application runtime. This
+worktree has neither a staging hosting configuration nor local ignored values
+for `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` and `MAPBOX_ACCESS_TOKEN`. To complete
+controlled provider evidence, configure those values in the actual Inspection
+staging *application* environment (never Catalyst), then run authenticated
 web/Admin/iPad map and ETA checks. Mapbox offline packs and formal licence or
 data-residency confirmation are not delivered by this web migration.
 
