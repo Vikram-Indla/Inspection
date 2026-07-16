@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-010 (SCR-ADM-040 · Violation Catalogue) + CD-011 (SCR-ADM-041 · Penalty
@@ -16,7 +17,7 @@ import { storageStatePath } from "./personas";
 // unauthorized-guard, degraded, recovery, future/deactivated lifecycle,
 // duplicate/missing-legal-basis negatives) are proven at the code layer below
 // (DSG-CODE-001 / DEC-012), exactly as CD-004 did.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-010-011-violations-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-010-011-violations-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 const PAGE = SRC("src/app/admin/violations/page.tsx");
 const ACTIONS = SRC("src/app/admin/violations/actions.ts");

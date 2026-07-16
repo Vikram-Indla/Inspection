@@ -1,7 +1,0 @@
-wiring_id,ui_trigger,client_component,route_server_action,validation_guard,canonical_transition,table_rpc_provider,rls_role,audit_event,side_effect,success_result,negative_failure,automated_test,runtime_evidence,disposition
-W01,open catalogue,page.tsx,server read,authenticated,none,violation_codes read,authenticated read,none,none,catalogue populated,unavailable -> never zero,T-CD10-01,violation_codes proven (CD-004),current-after-modify
-W02,expand trace ribbon,page.tsx,uses payload,n/a,none,inspection_items.clause_id + trigger mapping (proposed),n/a,none,none,ribbon renders proven legs,downstream not-evaluated,T-CD10-02,HANDOFF_BLOCKED trigger mapping,HANDOFF_BLOCKED
-W03,add violation code,Controls.tsx,actions.ts (assumed),Compliance Admin RLS,none,violation_codes insert,RLS,config audit trigger,none,code added,duplicate-code validation error,T-CD10-03,HANDOFF_BLOCKED,HANDOFF_BLOCKED
-W04,deactivate code,Controls.tsx,actions.ts,Compliance Admin RLS,active->deactivated (proposed enum),violation_codes update,RLS,audit trigger,historical records untouched,new-use blocked; history preserved,T-CD10-04,HANDOFF_BLOCKED,HANDOFF_BLOCKED
-W05,usage count,proposed query,which submissions cite code,authenticated,none,submissions/packages (proposed),unknown,none,none,count renders,failure -> unknown not zero,T-CD10-05,HANDOFF_BLOCKED,HANDOFF_BLOCKED
-W06,unauthorized access,route guard,HANDOFF_BLOCKED (suite-wide),RLS broad reads,none,none,none,none,none,designed denial,n/a,T-CD10-06,suite chain,HANDOFF_BLOCKED

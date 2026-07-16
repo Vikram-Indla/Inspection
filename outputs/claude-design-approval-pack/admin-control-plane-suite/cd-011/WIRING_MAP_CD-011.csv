@@ -1,7 +1,0 @@
-wiring_id,ui_trigger,client_component,route_server_action,validation_guard,canonical_transition,table_rpc_provider,rls_role,audit_event,side_effect,success_result,negative_failure,automated_test,runtime_evidence,disposition
-W01,open penalty mode,page.tsx,server read,authenticated,none,violation_codes + penalty_mappings (schema unconfirmed),authenticated read,none,none,workspace populated,unavailable -> never zero,T-CD11-01,violation_codes proven only,HANDOFF_BLOCKED
-W02,select violation,page.tsx,uses payload,n/a,none,none,n/a,none,none,lens recomputes,n/a,T-CD11-02,HANDOFF_BLOCKED,HANDOFF_BLOCKED
-W03,map penalty,Controls.tsx,actions.ts (assumed),Compliance Admin RLS,none,penalty_mappings insert (proposed),RLS,config audit trigger,none,mapping created,conflict/legal-basis validation error,T-CD11-03,HANDOFF_BLOCKED,HANDOFF_BLOCKED
-W04,validate,Controls.tsx,proposed conflict scan,n/a,none,overlap/gap/cardinality checks (proposed),n/a,none,none,conflicts listed in lens,none,T-CD11-04,HANDOFF_BLOCKED,HANDOFF_BLOCKED
-W05,publish mapping,Controls.tsx,existing publish flow,zero conflicts + legal basis + distinct approver,submitted->approved->published (approver workflow unconfirmed),penalty_mappings update,RLS,audit trigger,mapping immutable,blocked while conflicts/missing basis,T-CD11-05,HANDOFF_BLOCKED (penalty approver),HANDOFF_BLOCKED
-W06,unauthorized access,route guard,HANDOFF_BLOCKED (suite-wide),RLS broad reads,none,none,none,none,none,designed denial,n/a,T-CD11-06,suite chain,HANDOFF_BLOCKED

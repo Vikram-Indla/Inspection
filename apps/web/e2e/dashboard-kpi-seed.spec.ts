@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { login, rest, must, assertOk } from "./live-rest";
 import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 
@@ -9,7 +10,7 @@ const VISIT_IDS = Array.from({ length: 6 }, (_, i) => `b7000000-0000-4000-8000-$
 const GEO_IDS = Array.from({ length: 3 }, (_, i) => `e7000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`);
 const NOTIFICATION_IDS = ["84000000-0000-4000-8000-000000000001", "84000000-0000-4000-8000-000000000002"];
 const STATES = ["new", "prepared", "on_the_way", "arrived", "executing", "submitted"];
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/dashboard-kpi-seed");
+const EVIDENCE_DIR = evidenceDirectory("dashboard-kpi-seed");
 
 test.describe("TASK-DASH-KPI-SEED-001", () => {
   test("Operations keeps active journeys visible after planning expiry", () => {

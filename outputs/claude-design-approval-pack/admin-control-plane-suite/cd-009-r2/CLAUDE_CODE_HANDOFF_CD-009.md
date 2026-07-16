@@ -1,2 +1,0 @@
-# CLAUDE_CODE_HANDOFF_CD-009
-NOT EXECUTABLE. implementation_authorized:false. Implement ONLY the proven DraftEditor controls + read-only PackagePreview. Reorder, condition authoring, scoring toggle, evidence/action-form authoring, simulation engine, and circular-condition detector are HANDOFF_BLOCKED — ship them as disabled target panels only. Preview is a projection, not a simulator. Preserve frozen shell + dirty worktree.

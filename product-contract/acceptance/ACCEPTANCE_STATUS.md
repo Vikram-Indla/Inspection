@@ -40,6 +40,15 @@ reconciliation (see docs/G5_ARCHITECTURE_AND_READINESS.md).
   approval or branch/main promotion.
 - Evidence: `../evidence/TASK-G11-REMEDIATION-001.md`.
 
+## TASK-REPO-DOC-EXTERNALIZE-001 maintenance disposition — 2026-07-16
+
+- Cleanup contract: **LOCALLY COMPLETE** — 1,004 approved D/E files copied, SHA-256 verified, and removed only after the verified backup existed.
+- Integrity: dependency install, typecheck, production build, documentation/hash/link validation, memory validation, audit reconciliation, script syntax, secret scan, and diff checks pass; the 276-test Playwright inventory loads.
+- Safety boundary: the live-data E2E suite was not executed because this maintenance task prohibits production/shared-database writes.
+- Pre-existing exceptions: two malformed historical YAML manifests, 12 i18n coverage findings, and invalid shared-Git reflog entries for the separate release worktree/branch reproduce independently of this cleanup; push remains withheld pending correction or explicit waiver.
+- Product acceptance: **UNCHANGED** — this maintenance record does not upgrade, downgrade, close, or reopen any requirement, acceptance ID, screen, engine, gate, or release criterion.
+- Evidence: external `MANIFESTS/validation_results.md`, `move_plan.csv`, and `documentation_link_check.txt` under `INSPECTION_DOCS_ROOT`.
+
 ## CD-001 V7 login design disposition — 2026-07-13
 
 - Sponsor status: **ACCEPTED FOR NOW; DESIGN ITERATION CLOSED**.
@@ -86,7 +95,7 @@ reconciliation (see docs/G5_ARCHITECTURE_AND_READINESS.md).
 ## CD-027 / SCR-WEB-210 / P03 — Visit Detail disposition — 2026-07-14 (CLOSED-WAIVED 2026-07-15)
 
 - **Closure: CLOSED (SPONSOR-WAIVED) — 2026-07-15 (Vikram Indla).** Runtime acceptance granted; DEC-012 independent (non-implementer) audit **waived, not satisfied**; the three blocked legs **deferred to change-control, not done**. Recorded in `governance/HUMAN_APPROVALS.yaml` (gate `CD-027-closure-waiver`). Reopen on any P0/P1 regression, a later independent-audit finding, or a blocked-leg decision landing.
-- Sponsor status: **APPROVED (Vikram Indla, 2026-07-14)** for Track 1 + safe Track 2 wiring closures; recorded in `outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md` (DEC-012).
+- Sponsor status: **APPROVED (Vikram Indla, 2026-07-14)** for Track 1 + safe Track 2 wiring closures; recorded in `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md` (DEC-012).
 - Baseline: `BASELINE_REVERIFY_REQUIRED` cleared — reverified against local `HEAD 8af0185` (`9360fc9` in history); `setup/Inspection` not used; dirty tree preserved.
 - Design source: imported CD-027 r2 (`READY_FOR_DESIGN_REVIEW_R2`) from Claude Design project `Plan Review and Publish`.
 - **DSG-022** (integrated Visit Detail): **IMPLEMENTED AND VERIFIED** — Dual-State Ribbon (five never-collapsed domains: planning/operational/assignment/inspection/review), identity header, evidence chapters, available/disabled-with-why/unavailable action zones. 16/16 e2e pass on the local production build.

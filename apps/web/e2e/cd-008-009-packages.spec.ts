@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-008 / SCR-ADM-030 — Package Library (/admin/packages) and
@@ -20,7 +21,7 @@ import { storageStatePath } from "./personas";
 // be forced against the live backend (no seeded draft version, no writer persona,
 // and those legs are HANDOFF_BLOCKED), so they are proven at the code layer below
 // (DSG-CODE-001 / DEC-012) — the same discipline CD-004 and CD-025 used.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-008-009-packages-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-008-009-packages-v1");
 const PKG = (p: string) => readFileSync(join(process.cwd(), "src/app/admin/packages", p), "utf8");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 

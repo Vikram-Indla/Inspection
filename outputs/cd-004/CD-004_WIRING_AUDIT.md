@@ -83,7 +83,7 @@ The configured project does contain the authoritative `admin@mim.gov.sa` persona
 (documented by CD-003). The new focused runtime check in
 `apps/web/e2e/cd-004-admin-control-plane-home.spec.ts` logs in with that seeded
 account, verifies the populated act-scope band, and captures
-`product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png`.
+`${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png`.
 That focused run completed **4/4 PASS** including the three auth setup cases.
 CD004-EV-005 is therefore captured. The per-source failure/verified-zero frames
 remain intentionally blocked because forcing those backend states would require

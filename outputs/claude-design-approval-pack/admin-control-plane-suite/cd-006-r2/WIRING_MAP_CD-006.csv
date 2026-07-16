@@ -1,7 +1,0 @@
-wiring_id,state_or_action_id,ui_trigger,route_server_action,validation_guard,canonical_transition,table_rpc,rls_role,audit_event,success_result,negative_result,disposition,blocker_owner
-W01,S01,open regulation,server read,authenticated,none,regulations+clauses,SELECT auth,none,dossier,unavailable not zero,current,none
-W02,S03,add clause,actions.addClause,writer,none,regulation_clauses insert,writes compliance/form,trg_audit_regulation_clauses,clause added,neutral error,current,none
-W03a,publish-current,publish,actions.publishRegulation,writer+distinct checker,draft->published,regulations update,writes,trg_audit_regulations,published+locked,neutral/self-approval rejection,current,none
-W03b,publish-safe,validated publish,none,mapped-clause validation+successor lineage,none,none,none,none,none,none,HANDOFF_BLOCKED,product/backend
-W04,S05,unauthorized,route guard,Admin-family guard,none,none,none,none,denial,n/a,HANDOFF_BLOCKED,platform
-W05,audit timeline,open timeline,none,audit_events read,none,audit_events,not granted to writer,n/a,unavailable,n/a,HANDOFF_BLOCKED,backend

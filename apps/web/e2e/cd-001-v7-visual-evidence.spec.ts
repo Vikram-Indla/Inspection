@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
 import path from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 
-const evidenceRoot = path.resolve(process.cwd(), "../../product-contract/evidence/screens/login-v7-atlas");
+const evidenceRoot = evidenceDirectory("login-v7-atlas");
 
 test("capture accepted CD-001 V7 runtime evidence", async ({ page }) => {
   const cases = [

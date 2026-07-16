@@ -20,13 +20,13 @@ CD-025 staged **Plan Review & Publish** workspace, imported from Claude Design p
 - `apps/web/src/app/planning/bulk/review/{page.tsx,ReviewClient.tsx,review.css}`
 - `apps/web/src/app/planning/bulk/actions.ts` (validate + publish result + copy fixes)
 - `apps/web/e2e/cd-025-plan-review-publish.spec.ts` (new, 11 read-only) · `cd-021-bulk-targeting.spec.ts` (updated)
-- `outputs/claude-design-approval-pack/cd-025-r2/` (imported manifest, state matrix, wiring audit, README)
-- `product-contract/evidence/screens/cd-025-plan-review-v1/` (primary, AR-RTL, narrow-412)
+- `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/cd-025-r2/` (imported manifest, state matrix, wiring audit, README)
+- `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/cd-025-plan-review-v1/` (primary, AR-RTL, narrow-412)
 
 ## Verification
 - `tsc --noEmit` PASS · `next build` PASS.
 - Playwright vs live Supabase: **30/30 PASS** (CD-025 11 + CD-021 19). Read-only — publish never clicked.
-- DEC-012 wiring audit: all 14 legs of the publish action CLOSED — `outputs/claude-design-approval-pack/cd-025-r2/CD-025_WIRING_AUDIT.md`.
+- DEC-012 wiring audit: all 14 legs of the publish action CLOSED — `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/cd-025-r2/CD-025_WIRING_AUDIT.md`.
 - A bug found + fixed during evidence: stale out-of-order `validateBulkPlan` responses could paint a **false "ready"**; added a sequence guard so only the latest preview applies.
 
 ## Still HANDOFF_BLOCKED (deferred, not invented)

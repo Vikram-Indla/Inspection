@@ -2,7 +2,7 @@
 
 Dashboard · Operations Center · Factory 360
 
-Paste `prompts/00_MASTER_DESIGN_CONSTITUTION.md` and `outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md` before this prompt. Where they conflict, the V4 ratchet governs.
+Paste `prompts/00_MASTER_DESIGN_CONSTITUTION.md` and `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md` before this prompt. Where they conflict, the V4 ratchet governs.
 
 ## Authority and outcome
 
@@ -111,5 +111,5 @@ Existing dark/light violet identity and typography. Calm operational density, st
 6. Responsive, RTL, dark/light, accessibility decisions (keyboard, focus, status semantics, map list-equivalent).
 7. Provider + unresolved-decision register mapping SL-1..SL-8 to affected frames.
 8. P0/P1 acceptance evidence against `CD042_ACCEPTANCE_ROWS.csv` without numerical self-scoring.
-9. Evidence assets at stable locations under `product-contract/evidence/screens/cd-042-command/`.
+9. Evidence assets at stable locations under `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/cd-042-command/`.
 10. `READY_FOR_DESIGN_REVIEW` — never self-approve.

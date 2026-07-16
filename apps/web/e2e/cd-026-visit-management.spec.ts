@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-026 / SCR-WEB-200 / P03 — Visit Management Workspace (Track 1: approved
@@ -14,7 +15,7 @@ import { storageStatePath } from "./personas";
 // client state and safe to exercise. The per-item outcome ledger, neutralised
 // errors and preserved guards are proven at the code layer (matches the
 // CD-025 read-only + wiring-proof convention, .claude/rules/tests.md).
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-026-visit-management-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-026-visit-management-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 test.use({ storageState: storageStatePath("planner") });

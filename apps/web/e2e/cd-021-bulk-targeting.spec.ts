@@ -2,6 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-021 remediation (DEC-012 audit CODEX_AUDIT_CD-021.md, 2026-07-14): 8
@@ -16,7 +17,7 @@ import { storageStatePath } from "./personas";
 // DSG-A11Y-001. Functional assertions first; screenshots are supplementary
 // evidence per .claude/rules/tests.md. Tests are READ-ONLY — publish is not
 // clicked (it mutates live data); atomicity is proven separately at the DB layer.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-021-bulk-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-021-bulk-v1");
 const ct = (obj: unknown) => encodeURIComponent(JSON.stringify(obj));
 const HIGH_RISK = { k: "g", c: "all", n: [{ k: "c", f: "risk_band", o: "is", v: "high" }] };
 

@@ -8,7 +8,7 @@
 
 ## Gate effect
 
-This file is the recorded independent audit DEC-012 requires (`CODEX_WIRING_AUDIT_CHECKLIST.md` → companion file under `product-contract/evidence/screens/<slice>/`). It satisfies the *audit-has-run* precondition. It does **not** satisfy the *slice-may-close* bar: per the checklist's verdict rollup, "FAIL — list the failing rows; slice returns to implementation, not closure." CD-021 may not be marked complete, closed, or sponsor-runtime-accepted until the 8 FAIL rows below are either fixed in code or the wiring map is corrected to truthfully describe what shipped (with any intentionally-deferred behavior recorded via `HANDOFF_BLOCKED` + a decision ID, not left as an unverified claim). Sponsor runtime acceptance remains separately outstanding regardless of this audit's outcome.
+This file is the recorded independent audit DEC-012 requires (`CODEX_WIRING_AUDIT_CHECKLIST.md` → companion file under `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/<slice>/`). It satisfies the *audit-has-run* precondition. It does **not** satisfy the *slice-may-close* bar: per the checklist's verdict rollup, "FAIL — list the failing rows; slice returns to implementation, not closure." CD-021 may not be marked complete, closed, or sponsor-runtime-accepted until the 8 FAIL rows below are either fixed in code or the wiring map is corrected to truthfully describe what shipped (with any intentionally-deferred behavior recorded via `HANDOFF_BLOCKED` + a decision ID, not left as an unverified claim). Sponsor runtime acceptance remains separately outstanding regardless of this audit's outcome.
 
 ## Independent re-verification performed
 

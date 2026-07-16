@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-REPO-DOC-EXTERNALIZE-001"
+    gate: "Repository maintenance (no product gate change)"
+    priority: "P1"
+    status: "LOCAL_CLEANUP_COMPLETE_PUSH_WITHHELD_VALIDATION_EXCEPTIONS"
+    owner: "Codex repository maintenance + Sponsor for push waiver/repair choice"
+    blocked_by: ["Two pre-existing malformed historical YAML manifests", "Twelve pre-existing i18n coverage findings", "Invalid shared Git reflog entries for the separate release worktree/branch"]
+    blocks: []
+    note: "1,004 D/E documentation files (427,729,308 bytes) copied with SHA-256 verification and removed on isolated branch chore/externalize-documentation. Original dirty release checkout preserved. External manifests and verified pre-move ZIP are under /Users/vikramindla/Desktop/Inspection Documentation. No product acceptance or gate status changed. Full live-data E2E was intentionally not run because this cleanup task prohibits production/shared-database writes; 276 tests load successfully. Current-ref/object connectivity passes with reflogs excluded, but the shared Git directory has invalid pre-existing reflog entries for the separate release worktree/branch. Push only after all recorded pre-existing validation exceptions are fixed or explicitly waived."
   - task_id: "TASK-G11-G12-RELEASE-001"
     gate: "G11 hardening / G12 release"
     priority: "P0"
@@ -133,7 +141,7 @@ items:
     owner: "Claude Design + Codex design reviewer + Sponsor"
     blocked_by: ["Clean synchronized CD-025 R4 archive generated from exact baseline"]
     blocks: ["CD-025 sponsor design approval", "CD-025 Claude Code execution", "CD-025 implementation authorization"]
-    note: "R3 page-specific design is preserved, but Plan Review and Publish (1).zip is a contradictory R2/R3 hybrid. Run outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md in the same Claude Design project. Do not execute the stale R2 Claude Code prompt."
+    note: "R3 page-specific design is preserved, but Plan Review and Publish (1).zip is a contradictory R2/R3 hybrid. Run ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md in the same Claude Design project. Do not execute the stale R2 Claude Code prompt."
   - task_id: "TASK-DESIGN-CD026"
     gate: "G11 controlled Web-first design"
     priority: "P0"
@@ -141,7 +149,7 @@ items:
     owner: "Claude Design + Codex design reviewer + Sponsor"
     blocked_by: []
     blocks: ["CD-026 sponsor design approval", "CD-026 implementation authorization"]
-    note: "The complete fresh-session prompt is outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md. Design only: list/calendar/workload/map continuity, truthful partial bulk outcomes, full AR/RTL/theme/responsive/a11y/security coverage. Map and Branch Manager mapping remain HANDOFF_BLOCKED where runtime evidence is absent."
+    note: "The complete fresh-session prompt is ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md. Design only: list/calendar/workload/map continuity, truthful partial bulk outcomes, full AR/RTL/theme/responsive/a11y/security coverage. Map and Branch Manager mapping remain HANDOFF_BLOCKED where runtime evidence is absent."
   - task_id: "TASK-DESIGN-CD027"
     gate: "G11 controlled Web-first design"
     priority: "P0"
@@ -159,7 +167,7 @@ items:
     blocks: []
     closure: "CLOSED (SPONSOR-WAIVED) 2026-07-15 (Vikram Indla) — runtime acceptance granted; DEC-012 independent audit WAIVED (not satisfied); MAP/ASSIGNMENT_RELEASE/ATOMIC DEFERRED to change-control (not done). See governance/HUMAN_APPROVALS.yaml gate CD-027-closure-waiver. Reopen on P0/P1 regression, later independent-audit finding, or a blocked-leg decision."
     follow_ups: ["Optional later independent Codex re-audit of the closures (waived, not deleted)", "CC-CD027-MAP-001 / CC-CD027-ASSIGNMENT-RELEASE-001 / CC-CD027-ATOMIC-001 pending sponsor decisions"]
-    note: "SCR-WEB-210 /visits/:id. Sponsor approved audit-first (Vikram Indla, 2026-07-14). Dual-State Ribbon (five domains, keyboard tablist, S36 ledger), available/disabled-with-why/unavailable action zones, honest queued-not-delivered copy. Track 2 closed ERRORMAP (neutral errors), ORPHAN (storage cleanup), NOTIFY_PREV (prev-inspector notify via REF-014 assignment event). Held BLOCKED: MAP (never invent provider/geofence), ASSIGNMENT_RELEASE (open product decision), ATOMIC (would weaken best-effort-notify contract). Recorded audit outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (DEC-012). e2e cd-027-visit-detail.spec.ts 16/16 PASS on local prod build; typecheck+build clean. Preserved: RLS reads, five state machines, guards, append-only audit(30), immutable submissions, soft-delete, signed URLs, system-only expiry, grouped shell. Branch feat/cd-026-visit-management, unmerged."
+    note: "SCR-WEB-210 /visits/:id. Sponsor approved audit-first (Vikram Indla, 2026-07-14). Dual-State Ribbon (five domains, keyboard tablist, S36 ledger), available/disabled-with-why/unavailable action zones, honest queued-not-delivered copy. Track 2 closed ERRORMAP (neutral errors), ORPHAN (storage cleanup), NOTIFY_PREV (prev-inspector notify via REF-014 assignment event). Held BLOCKED: MAP (never invent provider/geofence), ASSIGNMENT_RELEASE (open product decision), ATOMIC (would weaken best-effort-notify contract). Recorded audit ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (DEC-012). e2e cd-027-visit-detail.spec.ts 16/16 PASS on local prod build; typecheck+build clean. Preserved: RLS reads, five state machines, guards, append-only audit(30), immutable submissions, soft-delete, signed URLs, system-only expiry, grouped shell. Branch feat/cd-026-visit-management, unmerged."
   - task_id: "CD-031-FACTORY-360-DOSSIER"
     gate: "G11 production-readiness wiring"
     priority: "P1"

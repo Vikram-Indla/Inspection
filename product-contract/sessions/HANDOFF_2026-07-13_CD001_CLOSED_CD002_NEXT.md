@@ -133,7 +133,7 @@ None. No migration, Supabase schema change, API contract change, role change, wo
 - Stage/theme/prism correction: `product-contract/evidence/CD001-V7-EV-006-stage-theme-prism.txt`
 - Arabic/RTL evidence: `product-contract/evidence/CD001-V7-EV-007-arabic-rtl.txt`
 - Closure evidence: `product-contract/evidence/CD001-V7-EV-008-design-closure-handoff.txt`
-- Runtime screenshots: `product-contract/evidence/screens/login-v7-atlas/`
+- Runtime screenshots: `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/login-v7-atlas/`
 - Arabic handoff: `design/claude-design-mvp1/handoff/CD001_V7_UX004_ARABIC_RTL.md`
 - Public-safe asset contract: `design/claude-design-mvp1/handoff/CD001_V7_PUBLIC_SAFE_PNG_AMENDMENT.md`
 - Asset register: `design/claude-design-mvp1/acceptance/SAUDI_ATLAS_ASSET_REGISTER_CD001.csv`

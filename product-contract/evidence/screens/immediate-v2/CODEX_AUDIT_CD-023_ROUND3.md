@@ -91,7 +91,7 @@ Two things keep this from being an unconditional PASS:
   `immediate_reason` row into the live project.
 - Evidence PNG side effect (as warned): the "dark/light × EN/AR × desktop/narrow
   evidence" test **does** overwrite the 8 tracked PNGs in
-  `product-contract/evidence/screens/immediate-v2/` (`ar/en-dark/light-desktop/narrow.png`).
+  `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/` (`ar/en-dark/light-desktop/narrow.png`).
   `git status` confirmed all 8 as modified after the run; `git checkout --` was
   used to restore them before finishing. Confirmed clean afterward.
 - SQL contract test `supabase/tests/0027_cd023_immediate_visit_atomic.sql`:

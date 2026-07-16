@@ -2,6 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath, PERSONAS } from "./personas";
 import { login, rest, must } from "./live-rest";
 
@@ -9,7 +10,7 @@ import { login, rest, must } from "./live-rest";
 // Runtime contract: migration 0027 must be present on the linked development
 // project. Every direct write uses the acting persona JWT, so RLS and immutable
 // audit triggers are exercised rather than bypassed.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/immediate-v2");
+const EVIDENCE_DIR = evidenceDirectory("immediate-v2");
 test.beforeAll(() => mkdirSync(EVIDENCE_DIR, { recursive: true }));
 
 type RpcPayload = {

@@ -1,9 +1,0 @@
-research_id,primary_source,adopted_principle,rejected_treatment,saqeel_decision,affected_artifact
-R01,Saqeel product contract,designer edits only draft versions; publish is governed,ungoverned no-code platform,studio scoped to v-draft; published opens read-only,9e/9s-8
-R02,Saqeel DEC-011 + tokens,Arabic-first + targets baseline,raw values,consistent suite grammar,all frames
-R03,SafetyCulture inspection authoring,author sees response semantics and logic in context of the item,logic hidden in per-field dialogs,inspector pane co-visible with canvas,9e
-R07,Esri Field Maps form configuration,constrained configuration over free-form building; conditional visibility as first-class,drag-anything canvas,structure tree + canvas + inspector with button reordering,9e
-R10,Camunda test-before-deploy discipline,nothing deploys untested; failures link to paths,BPMN palette aesthetics,simulation + validation contract gating publish,9e/9s-6
-R11,SAP Fiori object page,object identity anchors the workspace,consumer-form aesthetic,version identity + lifecycle always in the header,9e header
-R16,Saudi DGA accessibility,operable Arabic AT + physical RTL,cosmetic mirroring,RTL default preview + full-document dir,9e/9f/9i
-R18,W3C WCAG 2.2,focus order/status messages/24px minimum (48px fields are Saqeel baseline),misattribution,linear pane order + singleton regions,9o

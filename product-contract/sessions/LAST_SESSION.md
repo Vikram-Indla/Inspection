@@ -1,89 +1,16 @@
 # Last Session
-- Time: 2026-07-16T14:12:11.204189+00:00
-- Session ID: 900828f3-9d84-4581-845b-63ae92a11ea5
-- End reason: other
-- Branch: codex/g11-g12-release-001
-- Commit: b0cf1a7
-- Working tree:
-```
-M .claude/settings.json
- M .project-memory/audit/instructions_loaded.jsonl
- M .project-memory/audit/session_end.jsonl
- M .project-memory/audit/tool_events.jsonl
- M product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-ar-rtl-1440.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-dark-1024.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-dark-1440.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-light-1024.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-light-1440.png
- M product-contract/evidence/screens/cd-005-006-regulations-v1/detail-blocked-en-light-1440.png
- M product-contract/evidence/screens/cd-005-006-regulations-v1/register-ar-rtl-1440.png
- M product-contract/evidence/screens/cd-005-006-regulations-v1/register-en-light-1440.png
- M product-contract/evidence/screens/cd-007-items-v1/catalogue-ar-rtl-1440.png
- M product-contract/evidence/screens/cd-007-items-v1/catalogue-en-dark-1024.png
- M product-contract/evidence/screens/cd-007-items-v1/catalogue-en-dark-1440.png
- M product-contract/evidence/screens/cd-007-items-v1/catalogue-en-light-1024.png
- M product-contract/evidence/screens/cd-007-items-v1/catalogue-en-light-1440.png
- M product-contract/evidence/screens/cd-008-009-packages-v1/library-ar-rtl-1440.png
- M product-contract/evidence/screens/cd-008-009-packages-v1/library-en-dark-1024.png
- M product-contract/evidence/screens/cd-008-009-packages-v1/library-en-dark-1440.png
- M product-contract/evidence/screens/cd-008-009-packages-v1/library-en-light-1024.png
- M product-contract/evidence/screens/cd-008-009-packages-v1/library-en-light-1440.png
- M product-contract/evidence/screens/cd-008-009-packages-v1/preview-readonly-en-light.png
- M product-contract/evidence/screens/cd-010-011-violations-v1/cd010-catalogue-ar-rtl-1440.png
- M product-contract/evidence/screens/cd-010-011-violations-v1/cd010-catalogue-en-light-1440.png
- M product-contract/evidence/screens/cd-010-011-violations-v1/cd010-writer-create-en-light.png
- M product-contract/evidence/screens/cd-010-011-violations-v1/cd011-penalty-ar-rtl-1440.png
- M product-contract/evidence/screens/cd-010-011-violations-v1/cd011-penalty-en-light-1440.png
- M product-contract/evidence/screens/cd-021-bulk-v1/ar-rtl.png
- M product-contract/evidence/screens/cd-021-bulk-v1/narrow.png
- M product-contract/evidence/screens/cd-021-bulk-v1/primary.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-ar-rtl.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-narrow-412.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-primary.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/ar-rtl.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/eligibility-preview.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/narrow-412.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/primary.png
- M product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-narrow-412.png
- M product-contract/evidence/screens/dashboard-business-v1/operational-en-dark-desktop.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-ar-mobile.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-en-dark-desktop.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-en-light-desktop.png
- M product-contract/evidence/screens/dashboard-kpi-seed/live-operations-en-light.png
- M product-contract/evidence/screens/dashboard-kpi-seed/operations-scoped-en-light.png
- M product-contract/evidence/screens/immediate-v2/ar-dark-desktop.png
- M product-contract/evidence/screens/immediate-v2/ar-dark-narrow.png
- M product-contract/evidence/screens/immediate-v2/ar-light-desktop.png
- M product-contract/evidence/screens/immediate-v2/ar-light-narrow.png
- M product-contract/evidence/screens/immediate-v2/en-dark-desktop.png
- M product-contract/evidence/screens/immediate-v2/en-dark-narrow.png
- M product-contract/evidence/screens/immediate-v2/en-light-desktop.png
- M product-contract/evidence/screens/immediate-v2/en-light-narrow.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-en.png
- M product-contract/evidence/screens/login-v7-atlas/laptop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-light-ar.png
- M product-contract/evidence/screens/shell-v1/planner-desktop-en-collapsed.png
- M product-contract/evidence/screens/shell-v1/planner-desktop-en-dark.png
- M product-contract/evidence/screens/shell-v1/planner-mobile-ar-light-drawer.png
- M product-contract/evidence/screens/single-v2/ar-dark-desktop.png
- M product-contract/evidence/screens/single-v2/ar-dark-narrow.png
- M product-contract/evidence/screens/single-v2/ar-light-desktop.png
- M product-contract/evidence/screens/single-v2/ar-light-narrow.png
- M product-contract/evidence/screens/single-v2/en-dark-desktop.png
- M product-contract/evidence/screens/single-v2/en-dark-narrow.png
- M product-contract/evidence/screens/single-v2/en-light-desktop.png
- M product-contract/evidence/screens/single-v2/en-light-narrow.png
- M product-contract/sessions/LAST_SESSION.md
-?? .claude/settings.json.bak-stopgate
-?? .project-memory/audit/config_changes.jsonl
-?? design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv.pre-cd042.bak
-?? design/claude-design-mvp1/acceptance/SPECIAL_COMPONENT_ACCEPTANCE.csv.pre-cd042.bak
-?? product-contract/evidence/BRANCH_CLEANUP_PENDING_MAIN_SETTLE.md
-```
-- Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.
+
+- Session ID: `2026-07-16-repository-documentation-externalization`
+- Date/time: `2026-07-16T20:40:05+03:00`
+- Gate: Repository maintenance; no product-gate change
+- Task: `TASK-REPO-DOC-EXTERNALIZE-001`
+- Branch: `chore/externalize-documentation`
+- Base: `4db2c374998982bbca505976459978b6c9385bac`
+- Result: 1,004 D/E documentation files (427,729,308 bytes) verified externally and removed from the checked-out Git tree; 455 A/B/C/F candidates retained; product scope and behavior unchanged.
+- External root: `/Users/vikramindla/Desktop/Inspection Documentation`
+- Evidence: external `MANIFESTS/**`, verified pre-move ZIP in `10_REPOSITORY_EXPORTS`, and repository `repo-cleanup/documentation_inventory.csv`.
+- Validation: dependency install, typecheck, production build, 276-test inventory load, copy/hash/link/symlink, memory, audit reconciliation, JSON/JSONL/CSV, script syntax, secret, and diff checks pass. Full live-data E2E not run under the explicit no-production/shared-database-write rule.
+- Push status: withheld because two malformed historical YAML manifests, 12 i18n findings, and invalid shared-Git reflog entries reproduce independently of the cleanup; correction/repair or explicit waiver required.
+- Original checkout: dirty `codex/g11-g12-release-001` preserved untouched.
+- Next task: resolve or waive the recorded YAML/i18n/reflog exceptions, rerun safe validation, push `chore/externalize-documentation`, and open a PR; do not merge automatically.
+- Resume prompt: Read `AGENTS.md`, `product-contract/CURRENT_STATE.md` UPDATE 88, `product-contract/sessions/HANDOFF_2026-07-16_DOCUMENTATION_EXTERNALIZATION.md`, and external `MANIFESTS/validation_results.md`. Do not repeat the move. Preserve the original dirty checkout. Resolve or waive the YAML/i18n/reflog exceptions, backing up the shared Git directory before any reflog repair; rerun safe validation, then push and open a PR. Do not run live-data tests, touch production/database state, rewrite history, force-push, merge, or modify main without explicit authorization.

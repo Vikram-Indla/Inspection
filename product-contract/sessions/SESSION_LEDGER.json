@@ -419,7 +419,7 @@
         "TASK-WEB-SHELL-001-EV-001.txt",
         "evidence/screens/shell-v1/",
         "SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md",
-        "outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3.json"
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3.json"
       ],
       "decisions": [
         "Business reference reconciled rather than copied",
@@ -482,7 +482,7 @@
         "TASK-WEB-SHELL-001-EV-001.txt",
         "evidence/screens/shell-v1/",
         "SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md",
-        "outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3_1.json"
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/VERIFICATION_REPORT_V3_1.json"
       ],
       "decisions": [
         "Sponsor accepted the functioning shared shell on 2026-07-13",
@@ -685,9 +685,9 @@
         "documentation JSON/YAML/CSV validation"
       ],
       "evidence": [
-        "outputs/claude-design-approval-pack/VERIFICATION_REPORT_V4.json",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/VERIFICATION_REPORT_V4.json",
         "product-contract/evidence/TASK-DESIGN-CD024-QUALITY-RATCHET-EV-001.txt",
-        "outputs/claude-design-approval-pack/renders/",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/renders/",
         "Desktop v4-quality-ratchet pack copy"
       ],
       "decisions": [
@@ -713,7 +713,7 @@
       ],
       "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Run CD-024 in Claude Design with CD-024_DESIGN_PROMPT_V4.md, then perform P0/P1 design review before implementation authorization",
-      "resume_prompt": "Read AGENTS.md, product-contract/sessions/HANDOFF_2026-07-13_DESIGN_QUALITY_RATCHET_V4_CD024_NEXT.md, outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md and outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md. Start TASK-DESIGN-CD024-QUALITY-RATCHET as DESIGN ONLY. Preserve the frozen shell and CD-001 baseline. Keep /planning/plans/:id read-only; reconcile /planning/:id/configure, /planning/bulk/review and the SCR-WEB-120/140 identity collision. Do not present unsupported optimization, virtual, audit or delivery capability as implemented. Return a P0/P1 review after Claude Design output. Do not implement, commit, push, merge, deploy, modify main or discard the dirty worktree."
+      "resume_prompt": "Read AGENTS.md, product-contract/sessions/HANDOFF_2026-07-13_DESIGN_QUALITY_RATCHET_V4_CD024_NEXT.md, ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md and ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md. Start TASK-DESIGN-CD024-QUALITY-RATCHET as DESIGN ONLY. Preserve the frozen shell and CD-001 baseline. Keep /planning/plans/:id read-only; reconcile /planning/:id/configure, /planning/bulk/review and the SCR-WEB-120/140 identity collision. Do not present unsupported optimization, virtual, audit or delivery capability as implemented. Return a P0/P1 review after Claude Design output. Do not implement, commit, push, merge, deploy, modify main or discard the dirty worktree."
     },
     {
       "session_id": "2026-07-13-cd023-source-wiring-remediation-local-pass",
@@ -1063,7 +1063,7 @@
         "outputs/cd-023/IMPLEMENTATION_MANIFEST_CD-023.yaml",
         "outputs/cd-023/ACCEPTANCE_CHECKLIST_CD-023.md",
         "product-contract/sessions/CLAUDE_CODE_CONTINUATION_CD-023.md",
-        "product-contract/evidence/screens/immediate-v2"
+        "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2"
       ],
       "decisions": [
         "Use accepted Astryx D3 four-value urgency list",
@@ -1211,9 +1211,9 @@
         "JSON/YAML validation"
       ],
       "evidence": [
-        "outputs/claude-design-approval-pack/CD-025_DESIGN_REVIEW_R3.md",
-        "outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md",
-        "outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-025_DESIGN_REVIEW_R3.md",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-025_PROGRESSIVE_CORRECTION_PROMPT_R3.md",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-026_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md",
         "product-contract/sessions/HANDOFF_2026-07-14_CD025_R4_CD026_CD027_NEXT.md"
       ],
       "decisions": [
@@ -1268,7 +1268,7 @@
         "apps/web/src/app/visits/[id]/actions.ts",
         "apps/web/src/app/astryx.css",
         "apps/web/e2e/cd-027-visit-detail.spec.ts (new)",
-        "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (new)",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md (new)",
         "CURRENT_STATE.md",
         "WORK_QUEUE.yaml",
         "ACCEPTANCE_STATUS.md",
@@ -1280,9 +1280,9 @@
         "cd-027-visit-detail spec 16/16 PASS on local production build (ribbon tablist/APG-keys/narrow-reflow/action-zones runtime + 9 code-layer wiring proofs)"
       ],
       "evidence": [
-        "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md",
-        "product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-primary.png",
-        "product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-narrow-412.png",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md",
+        "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-primary.png",
+        "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/cd-027-visit-detail-v1/ribbon-narrow-412.png",
         "apps/web/e2e/cd-027-visit-detail.spec.ts"
       ],
       "decisions": [
@@ -1339,8 +1339,8 @@
       ],
       "evidence": [
         "governance/HUMAN_APPROVALS.yaml gate CD-027-closure-waiver",
-        "outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md",
-        "outputs/claude-design-approval-pack/CD-027_CHANGE_CONTROL_BLOCKED_LEGS.md"
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-027_WIRING_AUDIT_R1.md",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-027_CHANGE_CONTROL_BLOCKED_LEGS.md"
       ],
       "decisions": [
         "CD-027 marked CLOSED (SPONSOR-WAIVED) 2026-07-15 (Vikram Indla): runtime acceptance granted",
@@ -1464,7 +1464,7 @@
         "outputs/cd-004/CD-004_WIRING_AUDIT.md",
         "outputs/cd-004/WIRING_MAP_CD-004_R2.csv",
         "apps/web/e2e/cd-004-admin-control-plane-home.spec.ts",
-        "product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png",
+        "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png",
         "product-contract/evidence/EVIDENCE_STATUS.md",
         "product-contract/acceptance/ACCEPTANCE_STATUS.md",
         "product-contract/CURRENT_STATE.md",
@@ -2526,7 +2526,7 @@
       ],
       "evidence": [
         "product-contract/evidence/EVIDENCE_STATUS.md",
-        "product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png"
+        "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png"
       ],
       "decisions": [
         "Update CD004 runtime evidence from 17/17 to 18/18 after the complete rerun",
@@ -2617,7 +2617,7 @@
         "product-contract/evidence/AC_LEDGER.csv",
         "product-contract/evidence/validate_audit_reconciliation.py",
         "product-contract/evidence/EVIDENCE_STATUS.md",
-        "outputs/claude-design-approval-pack/CD-041_043_BACKEND_READINESS_AUDIT.md",
+        "${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-041_043_BACKEND_READINESS_AUDIT.md",
         "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md",
         "product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md",
         "product-contract/sessions/SESSION_LEDGER.json"
@@ -2755,7 +2755,7 @@
         "product-contract/CURRENT_STATE.md",
         "product-contract/acceptance/ACCEPTANCE_STATUS.md",
         "product-contract/evidence/EVIDENCE_STATUS.md",
-        "product-contract/evidence/screens/"
+        "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/"
       ],
       "decisions": [
         "Treat CD-006 through CD-011 R2 designs as sponsor-approved for this remediation only",
@@ -2775,9 +2775,66 @@
       "commit_sha": "No Codex commit; branch advanced concurrently from c6187cb41a7b to user-authored/pushed 330398781042",
       "next_task": "Resume the parent G11/G12 baseline only under its separate authorization; prioritize remaining live-migration, provider/policy and sponsor-runtime boundaries without changing main or production.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 87 and product-contract/evidence/TASK-G11-REMEDIATION-001.md. The local remediation slice is 276/276 PASS; do not reopen it without a demonstrated regression."
+    },
+    {
+      "session_id": "2026-07-16-repository-documentation-externalization",
+      "started_at": "2026-07-16T19:00:00+03:00",
+      "ended_at": "2026-07-16T20:40:05+03:00",
+      "branch": "chore/externalize-documentation",
+      "task_id": "TASK-REPO-DOC-EXTERNALIZE-001",
+      "gate": "Repository maintenance; no product-gate change",
+      "requirements": [],
+      "acceptance_ids": [],
+      "screens": [],
+      "engines": [],
+      "files_changed": [
+        "1,004 approved D/E documentation and artifact files removed after external copy verification",
+        "README.md, docs/README.md, docs/DOCUMENTATION_STORAGE_POLICY.md and lightweight pointer files",
+        "AGENTS.md, CLAUDE.md, HOME.md and .claude/rules/documentation-storage.md",
+        ".gitignore, .githooks/pre-commit, .githooks/large-file-allowlist and scripts/check_large_files.sh",
+        "apps/web/e2e/evidence-path.ts and 15 browser evidence writers",
+        "tmp/saqeel-design-pack/build_pack.mjs and affected documentation references",
+        "repo-cleanup/documentation_inventory.csv and continuity records"
+      ],
+      "tests": [
+        "npm ci --offline PASS",
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "Playwright inventory loads 276 tests in 34 files; live-data execution intentionally excluded by safety contract",
+        "external copy/hash/link/symlink validation PASS: 1,004/1,004 files, 221 references, 0 broken links, 0 broken symlinks",
+        "scripts/validate_memory.py PASS",
+        "validate_audit_reconciliation.py PASS: 493 rows / 19 partials / 8 maps",
+        "JSON, JSONL and CSV validation PASS; two malformed historical YAML manifests reproduce on source checkout",
+        "shell and Node script syntax PASS; secret scans PASS; git diff --check PASS",
+        "git fsck --no-dangling --no-reflogs PASS; full reflog-aware fsck reports invalid entries for the separate release worktree/branch",
+        "i18n coverage reports 12 findings that reproduce on source checkout"
+      ],
+      "evidence": [
+        "repo-cleanup/documentation_inventory.csv",
+        "${INSPECTION_DOCS_ROOT}/MANIFESTS/move_plan.csv",
+        "${INSPECTION_DOCS_ROOT}/MANIFESTS/validation_results.md",
+        "${INSPECTION_DOCS_ROOT}/MANIFESTS/documentation_link_check.txt",
+        "${INSPECTION_DOCS_ROOT}/10_REPOSITORY_EXPORTS/Inspection_Documentation_PreMove_Backup_20260716T190000+0300.zip"
+      ],
+      "decisions": [
+        "Move only classification D/E and retain A/B/C/F",
+        "Preserve the original dirty release checkout by using a separate worktree",
+        "Route generated binary evidence through INSPECTION_DOCS_ROOT",
+        "Do not execute live-data E2E under the explicit no-production/shared-database-write rule",
+        "Withhold push until pre-existing validation exceptions are corrected or explicitly waived"
+      ],
+      "blockers": [
+        "Two pre-existing malformed historical YAML manifests",
+        "Twelve pre-existing i18n coverage findings",
+        "Invalid shared Git reflog entries for the separate dirty release worktree/branch",
+        "Sponsor correction or explicit waiver required before push"
+      ],
+      "commit_sha": "Branch HEAD; self-reference intentionally omitted",
+      "next_task": "Resolve or waive the recorded YAML/i18n/reflog validation exceptions, rerun the safe validation set, push chore/externalize-documentation, and open a pull request without merging.",
+      "resume_prompt": "Read AGENTS.md, CURRENT_STATE UPDATE 88, sessions/HANDOFF_2026-07-16_DOCUMENTATION_EXTERNALIZATION.md, and external MANIFESTS/validation_results.md. Do not repeat the move. Preserve the original dirty release checkout. Resolve or explicitly waive the YAML/i18n/reflog exceptions, backing up the shared Git directory before any reflog repair; rerun safe validation, then push and open a PR. Do not run live-data tests, touch production/database state, rewrite history, force-push, merge, or modify main without explicit authorization."
     }
   ],
-  "last_session": "2026-07-16-g11-remediation-001",
+  "last_session": "2026-07-16-repository-documentation-externalization",
   "rules": {
     "append_only": true,
     "required_fields": [

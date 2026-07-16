@@ -1,7 +1,0 @@
-design_component_or_state,existing_or_proposed_code_component,css_selector_or_token,notes
-Catalogue table,apps/web/src/app/admin/items/page.tsx,ax-surface / table semantics,HANDOFF_BLOCKED exact columns
-Runtime Preview Strip (signature),new dossier region,custom disclosure component,attached to selected row; iPad mock is illustrative only
-Duplicate-code lozenge,ax-lozenge,color-mix #E8B84B,glyph+word per non-color-cue rule
-Deactivated state,ax-lozenge,color-mix #767688,item 7j
-Published-use warning,role=alert banner,#F0625D,item 7j
-Reuse-risk panel,new region,ax-surface,shows package usage count (schema unconfirmed)

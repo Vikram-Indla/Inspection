@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-007 / SCR-ADM-020 / /admin/items — Inspection Item Catalogue (semantic
@@ -18,7 +19,7 @@ import { storageStatePath } from "./personas";
 // States that cannot be safely forced against the live backend (S02 loading, S03
 // verified-empty, S04 duplicate rejection, S05 unauthorized, S08 clause-degraded) are
 // proven at the code layer below (DSG-CODE-001 / DEC-012), exactly as CD-004 did.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-007-items-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-007-items-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 test.use({ storageState: storageStatePath("inspector") });
