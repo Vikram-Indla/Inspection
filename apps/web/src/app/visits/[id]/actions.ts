@@ -2,6 +2,7 @@
 // SB05 — Visit Management write legs: cancel (M02-006), reschedule (M02-008), reassign (M02-009/ENG-05)
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { insertNotification } from "@/lib/notify";
 import { mapError } from "./neutral";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -59,10 +60,11 @@ export async function republishVisit(_: ActionResult, fd: FormData): Promise<Act
   const id = String(fd.get("visit_id"));
   const { error } = await sb.from("visits").update({ planning_status: "published" }).eq("id", id).eq("planning_status", "returned");
   if (error) return { error: mapError(error, "update") };
-  // M02-009/030 — the assigned inspector is notified on republish.
-  const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
-  if (asg?.inspector_id) await insertNotification(sb, { event_key: "visit_republished", recipient: asg.inspector_id, payload: { visit_id: id } });
+  // M02-009/030 — the assigned inspector is notified on republish. Surface a
+  // failed queue write explicitly; never claim the notification was queued.
+  const nErr = await notifyAssignedInspector(sb, id, "visit_republished", {});
   revalidatePath(`/visits/${id}`); revalidatePath("/visits");
+  if (nErr) return { error: "Republished — same Visit ID retained, but the inspector notification could not be queued (M02-009)" };
   return { ok: "Republished — same Visit ID retained; inspector notification queued (not confirmed delivered) (M02-009)" };
 }
 
@@ -117,7 +119,7 @@ export async function rescheduleVisit(_: ActionResult, fd: FormData): Promise<Ac
 // authority — any rejection is surfaced verbatim.
 export async function uploadVisitAttachment(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const visitId = String(fd.get("visit_id") ?? "");
   const file = fd.get("file");
@@ -148,7 +150,7 @@ export async function uploadVisitAttachment(_: ActionResult, fd: FormData): Prom
 // M02-042 — soft delete: removed_at set, row and file retained (audit-safe).
 export async function removeVisitAttachment(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const attachmentId = String(fd.get("attachment_id") ?? "");
   const visitId = String(fd.get("visit_id") ?? "");

@@ -1,0 +1,50 @@
+# IMPLEMENTATION_MANIFEST_CD-011.yaml
+prompt_id: CD-011
+screen_id: SCR-ADM-041
+route: /admin/violations (penalty mode)
+source_branch: unknown — no fresh repository read this session
+source_commit: unknown
+dirty_worktree: unknown
+design_frame_ids: [be, bf, bg, bh, bi, bj, bt, bs, bo]
+pngs: [CD-011_SCR-ADM-041_primary.png, CD-011_SCR-ADM-041_outlier.png]
+status: READY_FOR_DESIGN_REVIEW
+implementation_authorized: false
+file_changes:
+  - path: apps/web/src/app/admin/violations/page.tsx
+    before_responsibility: unknown — not inspected; violation_codes proven, penalty_mappings NOT
+    disposition: UPDATE (pending inspection)
+    after_responsibility: adds penalty-mode three-column relationship workspace with Conflict Lens
+    design_node: frames be/bg/bt
+    code_target: HANDOFF_BLOCKED — penalty_mappings schema (range/repeat/cardinality/legal basis/version/effective periods) unconfirmed
+    protected_behavior: existing reads, RLS, audit; no invented monetary/legal values
+    dependencies: [violation_codes]
+    rtl_theme_impact: per be-bh; three columns stack at 1024
+    tests: HANDOFF_BLOCKED
+    rollback: single-file revert
+  - path: apps/web/src/app/admin/violations/Controls.tsx
+    before_responsibility: unknown
+    disposition: UPDATE (pending inspection)
+    after_responsibility: mapping create/validate controls; publish gated by zero conflicts + legal basis + approver
+    design_node: be header + bj
+    code_target: HANDOFF_BLOCKED — conflict detection + approver workflow unconfirmed
+    protected_behavior: unknown
+    dependencies: [actions.ts]
+    rtl_theme_impact: localized copy
+    tests: overlap/gap/cardinality validations; missing-legal-basis blocks publish
+    rollback: revert file
+  - path: apps/web/src/app/admin/violations/actions.ts
+    before_responsibility: unknown
+    disposition: PRESERVE
+    after_responsibility: unchanged unless confirmed schema requires
+    design_node: n/a
+    code_target: n/a
+    protected_behavior: all existing actions + audit
+    dependencies: []
+    rtl_theme_impact: none
+    tests: existing tests unmodified
+    rollback: n/a
+forbidden_do_not_touch:
+  - frozen shell files
+  - inventing monetary values, penalty amounts or legal rules
+  - presenting penalty approver workflow as working (HANDOFF_BLOCKED)
+  - inventing penalty_mappings schema/overlap-detection as existing behavior

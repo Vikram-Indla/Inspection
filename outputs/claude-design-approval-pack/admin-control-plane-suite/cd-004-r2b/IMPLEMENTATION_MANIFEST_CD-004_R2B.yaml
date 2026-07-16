@@ -1,0 +1,90 @@
+# IMPLEMENTATION_MANIFEST_CD-004_R2B.yaml
+task: CD-004
+logical_screen: SCR-ADM-001
+route: /admin
+status: READY_FOR_MANDATORY_R2B_REVIEW
+implementation_authorized: false
+gate_cycle_remaining: [independent_R2B_review, sponsor_decision, independent_wiring_audit, explicit_authorization, clean_worktree_assignment]
+selected_hypothesis: A_lifecycle_evidence_spine
+signature_pattern: Configuration Evidence Spine (single; deletion-tested, counterfactual export)
+implementation_shape_decision: >-
+  All proposed UI pieces (evidence spine, source lozenge, link-only band, role-scope band,
+  per-row retry, live regions) are implemented INLINE in apps/web/src/app/admin/page.tsx.
+  No new component files are created for CD-004. Recorded identically in COMPONENT_MAP_CD-004_R2B.md.
+
+file_changes:
+  - path: apps/web/src/app/admin/page.tsx
+    responsibility: control-plane home composition and per-source reads
+    disposition: modify
+    exact_change: >-
+      Replace KPI wall + static live-database lozenge + two-link footer with the inline
+      evidence spine (semantics per ACCESSIBILITY_KEYBOARD_SPEC section 3), per-source
+      result modelling for the existing six reads (verified-with-count / verified-zero /
+      unavailable), link-only family band (existing routes only), role-scope band from
+      server-rendered roles, audit row. Remove SCR-ADM-* IDs from user copy.
+    contract_ids: [SCR-ADM-001, MVP1-M09-001..030 gateway, RBAC-001..006, DSG-001]
+    dependencies: [frozen shell, astryx grammar, localization rows (see below)]
+    localization_keys: all admin.overview.r2.* keys in LOCALIZATION_INVENTORY_CD-004_R2B.csv
+    tests: >-
+      per-source failure renders unavailable-not-zero; verified zero renders first-use empty;
+      page renders with 1..6 sources failed; no health-verdict string; links resolve to
+      existing routes; a11y semantics (h1, main, table caption, accessible names, 44px targets)
+    evidence: R2B PNG set per EVIDENCE_MANIFEST_CD-004_R2B.csv
+    rollback: single-file revert of page.tsx (no schema/API change in this item)
+    authorization_status: BLOCKED — sponsor approval + wiring audit + explicit authorization required
+  - path: supabase/seed or migration for ui_strings rows
+    responsibility: localization strings
+    disposition: blocked
+    exact_change: >-
+      NONE now. CORRECTION over R2: apps/web/src/lib/i18n.ts is NOT a generated key store —
+      it performs Arabic lookup from the ui_strings table. The authorized localization
+      mechanism is therefore ui_strings ROWS (a data/migration change), which requires its
+      own authorization. LOCALIZATION_INVENTORY_CD-004_R2B.csv enumerates every key with
+      en/ar copy, interpolation and directionality; no i18n.ts code change is proposed.
+    contract_ids: [DSG-SHELL-001]
+    dependencies: [governance decision on the ui_strings change vehicle]
+    localization_keys: full inventory file
+    tests: key presence + Arabic default rendering + directionality
+    evidence: LOCALIZATION_INVENTORY_CD-004_R2B.csv
+    rollback: remove added rows
+    authorization_status: HANDOFF_BLOCKED
+  - path: apps/web/src/app/admin/actions.ts
+    responsibility: per-source Retry server action (candidate owner)
+    disposition: blocked
+    exact_change: >-
+      NONE now. The per-source Retry mechanism is undecided (candidate: a server action in
+      this NEW file apps/web/src/app/admin/actions.ts re-running one read; alternative:
+      full route refresh). Nothing implies it is currently implemented. Decision belongs
+      to the wiring audit.
+    contract_ids: [ADM-QG-11]
+    dependencies: [wiring-audit decision]
+    localization_keys: admin.overview.r2.read.retry
+    tests: to be defined with the decision
+    evidence: wiring row W10
+    rollback: delete file if created
+    authorization_status: HANDOFF_BLOCKED
+  - path: apps/web/middleware.ts
+    responsibility: admin-family direct-route guard (candidate location — alternatives; layout-level guard in apps/web/src/app/admin/layout.tsx)
+    disposition: blocked
+    exact_change: >-
+      NONE now. Current middleware authenticates only; tests permit an Inspector to reach
+      /admin; configuration-read RLS permits broad authenticated reads. Enforcement
+      requires an authorized guard/policy decision. The unauthorized state is designed
+      (hard-states export) but not wired.
+    contract_ids: [ERR-AUTH-001, RBAC-001..006, CD004-QG-04]
+    dependencies: [governance decision]
+    localization_keys: admin.overview.r2.unauthorized.*
+    tests: to be defined with the decision
+    evidence: hard-states export panel 6 + truth memo
+    rollback: n/a
+    authorization_status: HANDOFF_BLOCKED
+
+forbidden_do_not_touch:
+  - apps/web/src/components/Shell.tsx
+  - apps/web/src/components/ShellClient.tsx
+  - apps/web/src/lib/shell-navigation.ts
+  - apps/web/src/components/NotificationBell.tsx
+  - apps/web/src/app/tokens.css
+  - design/astryx/d2 (DESIGN_HISTORY_ONLY; never production CSS)
+  - any new shell destination or placeholder route
+  - any approve/publish/edit affordance on /admin

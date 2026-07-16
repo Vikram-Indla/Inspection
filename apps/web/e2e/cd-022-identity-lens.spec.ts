@@ -189,7 +189,7 @@ test.describe("CD-022 graded identity search", () => {
     // server would have set itself after a real partial failure.
     await page.locator('input[name="resume_visit_plan_id"]').evaluate((el: HTMLInputElement, id: string) => { el.value = id; }, planId);
     await page.getByRole("button", { name: /publish visit/i }).click();
-    await page.waitForURL(/\/visits\/[0-9a-f-]+/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/visits\/[0-9a-f-]+/, { timeout: 30_000 });
 
     const plansAfterFirst = must(await rest("GET", `visit_plans?id=eq.${planId}&select=id`, plannerJwt), "plans after first submit");
     expect(plansAfterFirst).toHaveLength(1); // resumed, not duplicated

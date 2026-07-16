@@ -41,16 +41,16 @@ MVP1-M01-039,AC-0039,Visit Planning - Planning,Web Portal,implemented,[audit] Vi
 MVP1-M01-040,AC-0040,Visit Planning - Planning,Web Portal,implemented,[audit] Auto/manual assignment with in-window availability check.
 MVP1-M01-041,AC-0041,Visit Planning - Planning,Web Portal,implemented,"[audit] Review validates duplicate/mandatory; blockers surfaced, entered work preserved."
 MVP1-M01-042,AC-0042,Visit Planning - Planning,Web Portal,implemented,"[audit] Publish: visit ID, assign, notify, audit; planner pin persisted."
-MVP1-M01-043,AC-0043,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Planner and Inspector Immediate workspace verified in focused live suite; DEC-012 closure verdict remains independent.
-MVP1-M01-044,AC-0044,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Registered search and authoritative identity-match blocker verified live.
-MVP1-M01-045,AC-0045,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Minimum manual identity and generated-label provenance verified live.
-MVP1-M01-046,AC-0046,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Blank guard and Visit-level location provenance verified without master-coordinate overwrite.
-MVP1-M01-047,AC-0047,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Planner window and Inspector start-now/no-expiry behavior verified live; no invented duration.
-MVP1-M01-048,AC-0048,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Eligibility, overlap serialization and Inspector self-assignment verified by concurrent live test.
-MVP1-M01-049,AC-0049,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Review plus package/duplicate blockers and blocked-attempt audit verified live.
-MVP1-M01-050,AC-0050,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Direct no-plan creation is atomic/idempotent and audit-complete in live concurrency tests.
-MVP1-M01-051,AC-0051,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Inspector-created Visit enters the standard field start flow using confirmed Visit location.
-MVP1-M01-052,AC-0052,Visit Planning - Planning,Web Portal,verified_live,[CD-023 live] Planner notification truth and Inspector no-notification behavior verified live.
+MVP1-M01-043,AC-0043,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Immediate visit Planner/Inspector workspace verified in the focused live suite.
+MVP1-M01-044,AC-0044,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Registered factory search and identity-match blocker verified live.
+MVP1-M01-045,AC-0045,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Minimum manual identity and generated-label provenance verified live.
+MVP1-M01-046,AC-0046,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Blank-coordinate guard and Visit-level location provenance verified without master-coordinate overwrite.
+MVP1-M01-047,AC-0047,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Planner window and Inspector start-now behavior verified live without an invented duration.
+MVP1-M01-048,AC-0048,Visit Planning - Planning,Web Portal,verified_live,"[Codex live verification 2026-07-14] Eligibility, overlap serialization and Inspector self-assignment verified by the concurrent live test."
+MVP1-M01-049,AC-0049,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Review/package/duplicate blockers and blocked-attempt audit verified live.
+MVP1-M01-050,AC-0050,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Direct no-plan creation is atomic/idempotent and audit-complete in live concurrency tests.
+MVP1-M01-051,AC-0051,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Inspector-created Visit enters the standard field start flow using the confirmed Visit location.
+MVP1-M01-052,AC-0052,Visit Planning - Planning,Web Portal,verified_live,[Codex live verification 2026-07-14] Planner notification truth and Inspector no-notification behavior verified live.
 MVP1-M02-001,AC-0053,Visit Planning - Management,Web Portal,implemented,"[audit] VisitsBoard loads KPIs, search, filters, visit list."
 MVP1-M02-002,AC-0054,Visit Planning - Management,Web Portal,implemented,[audit] KPI tiles show draft/published/returned/cancelled/expired counts and filter list.
 MVP1-M02-003,AC-0055,Visit Planning - Management,Web Portal,implemented,[audit] Search over Visit ID/factory/CR/license/inspector.
@@ -59,10 +59,10 @@ MVP1-M02-005,AC-0057,Visit Planning - Management,Web Portal,implemented,"[audit]
 MVP1-M02-006,AC-0058,Visit Planning - Management,Web Portal,implemented,[audit] Edit type/window/inspector/notes validated+audited (location edit not exposed).
 MVP1-M02-007,AC-0059,Visit Planning - Management,Web Portal,implemented,"[audit] Multi-select bulk reschedule/reassign apply to selected, per-row audited."
 MVP1-M02-008,AC-0060,Visit Planning - Management,Web Portal,implemented,[audit] Return reason surfaced; republish/cancel/reschedule in ActionBar.
-MVP1-M02-009,AC-0061,Visit Planning - Management,Web Portal,partial,[audit] republishVisit flips status+audit but omits the required assigned-inspector notification.
+MVP1-M02-009,AC-0061,Visit Planning - Management,Web Portal,implemented,[Codex remediation 2026-07-15] Republish queues the assigned-inspector notification through the shared adapter; queue failure is reported neutrally after the state change.
 MVP1-M02-010,AC-0062,Visit Planning - Management,Web Portal,implemented,"[audit] Cancel with mandatory reason, notifies inspector, audit."
 MVP1-M02-011,AC-0063,Visit Planning - Management,Web Portal,implemented,"[audit] Bulk cancel with reason, per-row outcome, notifies, audit."
-MVP1-M02-012,AC-0064,Visit Planning - Management,Web Portal,verified_live,[CD-023 live] Same-factory active Visit detection is transaction-locked, blocked and audited in the live suite.
+MVP1-M02-012,AC-0064,Visit Planning - Management,Web Portal,verified_live,"[Codex live verification 2026-07-14] Same-factory active Visit detection is transaction-locked, blocked and audited in the live suite."
 MVP1-M02-013,AC-0065,Visit Planning - Management,Web Portal,implemented,[audit] Journey/location event timeline chronological on detail; audit browser for events.
 MVP1-M02-014,AC-0066,Visit Planning - Management,Web Portal,implemented,[audit] audit_events trigger records before/after/actor/timestamp; admin/audit browser.
 MVP1-M02-015,AC-0067,Visit Planning - Management,Web Portal,implemented,[audit] guardPublishedNew/guardPreStart + canonical transitions enforce lifecycle.
@@ -80,7 +80,7 @@ MVP1-M02-026,AC-0078,Visit Planning - Management,Web Portal,implemented,[audit] 
 MVP1-M02-027,AC-0079,Visit Planning - Management,Web Portal,implemented,"[audit] Reschedule validates dates + published/new state guard, updates window."
 MVP1-M02-028,AC-0080,Visit Planning - Management,Web Portal,implemented,"[audit] Cancel with reason, notify inspector, audit."
 MVP1-M02-029,AC-0081,Visit Planning - Management,Web Portal,implemented,[audit] Return reason shown + editable fields allow corrections.
-MVP1-M02-030,AC-0082,Visit Planning - Management,Web Portal,partial,[audit] republishVisit validates+audits but omits the required inspector notification.
+MVP1-M02-030,AC-0082,Visit Planning - Management,Web Portal,implemented,[Codex remediation 2026-07-15] Republish notification wiring and failure truth are covered by the shared adapter and focused CD-027 checks.
 MVP1-M02-031,AC-0083,Visit Planning - Management,Web Portal,implemented,[audit] Bulk shared-field update (reschedule/reassign) across selected.
 MVP1-M02-032,AC-0084,Visit Planning - Management,Web Portal,implemented,[audit] Bulk reassign updates assignments + notifies new inspector per row.
 MVP1-M02-033,AC-0085,Visit Planning - Management,Web Portal,implemented,[audit] Bulk reschedule validates window + updates selected.
@@ -101,8 +101,8 @@ MVP1-M03-001,AC-0099,Inspection Execution - Pre-Start,iPad / Inspector Workspace
 MVP1-M03-002,AC-0100,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,"[audit] FieldHome loads RLS-scoped visits + open/switch views, offline sync engine — BUILT"
 MVP1-M03-003,AC-0101,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] Calendar/List/Map view switch over same rows (FieldHome) — BUILT
 MVP1-M03-004,AC-0102,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] Text search + status/type/mode filter + window sort (FieldHome) — BUILT
-MVP1-M03-005,AC-0103,Inspection Execution - Pre-Start,iPad / Inspector Workspace,partial,"[audit] Reschedule persists via visits reschedule action, but no drag-and-drop calendar gesture exists in any view"
-MVP1-M03-006,AC-0104,Inspection Execution - Pre-Start,iPad / Inspector Workspace,partial,"[audit] requestVisitReturn RPC+notify exist, but the return form in Startup.tsx is dead code (fn/strings never rendered)"
+MVP1-M03-005,AC-0103,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Field calendar drag submits a planner-owned reschedule request with the existing server guard.
+MVP1-M03-006,AC-0104,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Field startup renders and submits the existing return-request form with neutral failure handling.
 MVP1-M03-007,AC-0105,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] [visitId] page renders visit details + readiness — BUILT
 MVP1-M03-008,AC-0106,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,[audit] Factory profile/history via factories 360 + Startup factory context — BUILT
 MVP1-M03-009,AC-0107,Inspection Execution - Pre-Start,iPad / Inspector Workspace,implemented,"[audit] AI insights sub-capability — MVP2 by contract; recommendation panel is a scaffold, no live inference"
@@ -156,20 +156,20 @@ MVP1-M04-041,AC-0154,Physical Inspection Execution,iPad / Inspector Workspace,im
 MVP1-M04-042,AC-0155,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
 MVP1-M04-043,AC-0156,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Outside-fence check-in blocks + records an exception; no override-confirm dialog that continues on actual coords
 MVP1-M04-044,AC-0157,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
-MVP1-M04-045,AC-0158,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] Arrival event recorded in geo_events, but no arrival-evidence (photo/comment) capture UI is rendered"
+MVP1-M04-045,AC-0158,Physical Inspection Execution,iPad / Inspector Workspace,partial,[Codex pending live proof 2026-07-15] Arrival photo/comment capture UI and visit-linked offline outbox are implemented; the live evidence_note column is absent and arrival replay remains pending migration 20260715193000.
 MVP1-M04-046,AC-0159,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
 MVP1-M04-047,AC-0160,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
 MVP1-M04-048,AC-0161,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
 MVP1-M04-049,AC-0162,Physical Inspection Execution,iPad / Inspector Workspace,implemented,"[audit] Startup geofence check-in: arrival detect, coords/accuracy/altitude, distance — BUILT"
-MVP1-M04-050,AC-0163,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Check-in+pre-start substitute; the Arrival Confirmation screen (cards+summary) is dead code in Startup.tsx
-MVP1-M04-051,AC-0164,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Factory Card strings are passed to Startup but never rendered on the arrival screen (dead)
-MVP1-M04-052,AC-0165,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Visit Card strings are passed to Startup but never rendered on the arrival screen (dead)
-MVP1-M04-053,AC-0166,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] Arrival summary (journey duration, distance travelled, GPS validation) is never rendered (dead strings)"
-MVP1-M04-054,AC-0167,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Expand/collapse Factory/Visit cards not rendered; the card block is dead code in Startup.tsx
+MVP1-M04-050,AC-0163,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Arrival confirmation cards and summary are rendered in Startup and use the visit-linked field handoff.
+MVP1-M04-051,AC-0164,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Factory arrival card is rendered with source-backed visit/factory identity.
+MVP1-M04-052,AC-0165,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Visit arrival card is rendered with source-backed schedule and assignment identity.
+MVP1-M04-053,AC-0166,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Arrival summary renders the available journey/distance/GPS facts without inventing a threshold.
+MVP1-M04-054,AC-0167,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Arrival cards expose governed expand/collapse controls with keyboard-safe state.
 MVP1-M04-055,AC-0168,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup proceed/session + guarded STM-OPS to executing; cancellation guard — BUILT
-MVP1-M04-056,AC-0169,Physical Inspection Execution,iPad / Inspector Workspace,partial,"[audit] start guard honors cancelRequested, but the inspector Cancel Visit form is dead code (submitCancellation unwired)"
-MVP1-M04-057,AC-0170,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Governed reasons loaded + request_visit_cancellation RPC exist; the reason-selection UI is not rendered
-MVP1-M04-058,AC-0171,Physical Inspection Execution,iPad / Inspector Workspace,partial,[audit] Cancellation-evidence enqueue lives only inside the unrendered submitCancellation(); unreachable
+MVP1-M04-056,AC-0169,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Inspector cancellation form is rendered and submits the governed cancellation request.
+MVP1-M04-057,AC-0170,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Cancellation reason selection is rendered from the governed reason source.
+MVP1-M04-058,AC-0171,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[Codex remediation 2026-07-15] Cancellation evidence is queued through the visit-linked offline outbox path.
 MVP1-M04-059,AC-0172,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup proceed/session + guarded STM-OPS to executing; cancellation guard — BUILT
 MVP1-M04-060,AC-0173,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup proceed/session + guarded STM-OPS to executing; cancellation guard — BUILT
 MVP1-M04-061,AC-0174,Physical Inspection Execution,iPad / Inspector Workspace,implemented,[audit] Startup proceed/session + guarded STM-OPS to executing; cancellation guard — BUILT
@@ -431,21 +431,21 @@ MVP1-M07-020,AC-0429,Factory 360,Web Portal,implemented,[audit] per-section erro
 MVP1-M08-001,AC-0430,Operations Center,Operations Center / Web Portal,implemented,[audit] ops page loads visits/inspectors/SLA watch/map/high-risk/notifications live (M08-001)
 MVP1-M08-002,AC-0431,Operations Center,Operations Center / Web Portal,implemented,"[audit] OpsMap Leaflet KSA pins (factory+active visit), geofence radius, href open, legend (M08-002)"
 MVP1-M08-003,AC-0432,Operations Center,Operations Center / Web Portal,implemented,[audit] KPI counts per operational_state + monitoring table + open-visit link; cancelled/expired not in KPI row
-MVP1-M08-004,AC-0433,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] per-inspector assigned/active/completed/overdue workload; presence/online state truthfully unavailable because no source or timeout policy exists
-MVP1-M08-005,AC-0434,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] visit SLA plus configured business-day review SLA; engine_settings only and no predictive forecast
+MVP1-M08-004,AC-0433,Operations Center,Operations Center / Web Portal,implemented,[Codex remediation 2026-07-15] Operations dashboard now shows scoped per-inspector workload facts and labels unavailable presence data without inventing a timeout policy.
+MVP1-M08-005,AC-0434,Operations Center,Operations Center / Web Portal,implemented,[audit] computeSlaFlags: overdue_start/overdue_submit/reminders + L1/L2 escalation from engine_settings; review-overdue partial
 MVP1-M08-006,AC-0435,Operations Center,Operations Center / Web Portal,implemented,[audit] high-risk board top-8 by risk_score (ENG-04) + map risk pins (M08-006)
-MVP1-M08-007,AC-0436,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] deterministic overdue/review/override/cancellation alert board plus RLS-scoped mark-handled; offline/stuck truthfully unavailable without source/policy
+MVP1-M08-007,AC-0436,Operations Center,Operations Center / Web Portal,implemented,[Codex remediation 2026-07-15] Operations dashboard consumes the governed alert/notification source and keeps unavailable trigger classes explicit.
 MVP1-M08-008,AC-0437,Operations Center,Operations Center / Web Portal,implemented,[audit] visit rows link to /visits/[id] detail across monitoring/SLA/geo (M08-008)
 MVP1-M08-009,AC-0438,Operations Center,Operations Center / Web Portal,implemented,[audit] factory names link to /factories/[id] Factory 360 (M08-009)
-MVP1-M08-010,AC-0439,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] region/city source-backed filtering; branch truthfully unavailable because the runtime has no branch field
-MVP1-M08-011,AC-0440,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] per-inspector scoped workload with relative active load; no absolute capacity threshold or invented balancing recommendation
-MVP1-M08-012,AC-0441,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] scoped cancelled count, reason distribution and deterministic alert rows
-MVP1-M08-013,AC-0442,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] planned-versus-observed coordinates, reason and timestamp; confirmation truthfully unavailable because no field exists
-MVP1-M08-014,AC-0443,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] append-only location-event history with visit drilldown; projected routes never claim recorded GPS history
-MVP1-M08-015,AC-0444,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] scoped append-only planning-to-review audit timeline
-MVP1-M08-016,AC-0445,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] planned/completed/cancelled/overdue/active-inspector/duration/SLA scorecard with formulas and denominators
+MVP1-M08-010,AC-0439,Operations Center,Operations Center / Web Portal,implemented,[audit] RegionCityFilter scopes monitoring+map+SLA; branch dimension not implemented (region/city only)
+MVP1-M08-011,AC-0440,Operations Center,Operations Center / Web Portal,implemented,[Codex remediation 2026-07-15] Operations dashboard renders scoped workload aggregation without an invented capacity threshold.
+MVP1-M08-012,AC-0441,Operations Center,Operations Center / Web Portal,implemented,[Codex remediation 2026-07-15] Operations dashboard surfaces scoped cancelled-visit reasons from the canonical visit source.
+MVP1-M08-013,AC-0442,Operations Center,Operations Center / Web Portal,implemented,[Codex remediation 2026-07-15] Operations dashboard renders planned-versus-observed location facts and explicit unavailable confirmation state.
+MVP1-M08-014,AC-0443,Operations Center,Operations Center / Web Portal,implemented,[Codex remediation 2026-07-15] Operations dashboard renders append-only location-event history and preserves visit drilldown.
+MVP1-M08-015,AC-0444,Operations Center,Operations Center / Web Portal,implemented,[Codex remediation 2026-07-15] Operations dashboard renders the scoped planning-to-review lifecycle timeline from audit facts.
+MVP1-M08-016,AC-0445,Operations Center,Operations Center / Web Portal,implemented,[Codex remediation 2026-07-15] Operations dashboard renders the governed operational scorecard with labelled denominators and no invented values.
 MVP1-M08-017,AC-0446,Operations Center,Operations Center / Web Portal,implemented,"[audit] OpsExport CSV of monitoring/SLA/high-risk, region/city scope honored, UTF-8 BOM (M08-017)"
-MVP1-M08-018,AC-0447,Operations Center,Operations Center / Web Portal,implemented,[TASK-WEB-DASHBOARD-002] RLS plus role-scoped shell and direct /dashboard route guard; region scope applied and branch unavailable without source
+MVP1-M08-018,AC-0447,Operations Center,Operations Center / Web Portal,implemented,[audit] RLS role scope + region/city filter applied to all widgets; branch/explicit-permission dimension thin
 MVP1-M08-019,AC-0448,Operations Center,Operations Center / Web Portal,implemented,[audit] loadErrors partial-service banner per source + monitoring 30s auto-refresh re-fetch (M08-019)
 MVP1-M09-001,AC-0449,Compliance Configuration,Admin Portal,partial,"[audit] createRegulation/addClause/publishRegulation+view exist; no effective-date/attachments capture, no edit/deactivate leg"
 MVP1-M09-002,AC-0450,Compliance Configuration,Admin Portal,implemented,"[audit] createItem links clause, response preset, evidence preset, weight; stored active in inspection_items"

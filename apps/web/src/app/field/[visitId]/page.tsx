@@ -96,6 +96,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     logCheckinRejected: locale === "ar"
       ? "تعذر حفظ تسجيل الوصول. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logCheckinRejectedSafe", "Check-in could not be saved. Check the connection, then try again."),
+    logArrivalRejected: locale === "ar"
+      ? "تعذر حفظ الوصول. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logArrivalRejectedSafe", "Arrival could not be saved. Check the connection, then try again."),
     logOutside: t("field.start.logOutside", "OUTSIDE geofence ({d}m > {fence}m) — check-in recorded as outside; governed override required (ERR-GEO-002)"),
     logInside: t("field.start.logInside", "Checked in INSIDE fence ({d}m, ±{acc}m) — start allowed (STM-JRN-003)"),
     logStartBlocked: t("field.start.logStartBlocked", "Start blocked: {error}"),
@@ -175,6 +178,13 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     logReturnFailed: locale === "ar"
       ? "تعذر إرسال طلب الإرجاع. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logReturnFailedSafe", "The return request could not be sent. Check the connection, then try again."),
+    arrivalEvidenceHeading: t("field.start.arrivalEvidenceHeading", "Arrival evidence (M04-045)"),
+    arrivalEvidenceCaption: t("field.start.arrivalEvidenceCaption", "Attach a photo or note from the arrival confirmation. It is queued offline and linked to this Visit ID."),
+    arrivalEvidenceNote: t("field.start.arrivalEvidenceNote", "Arrival note"),
+    arrivalEvidenceFile: t("field.start.arrivalEvidenceFile", "Arrival photo (optional)"),
+    arrivalEvidenceSubmit: t("field.start.arrivalEvidenceSubmit", "Queue arrival evidence"),
+    arrivalEvidenceQueued: t("field.start.arrivalEvidenceQueued", "Arrival evidence queued — custody hash recorded; sync pending"),
+    arrivalEvidenceMissing: t("field.start.arrivalEvidenceMissing", "Add a photo or note before queueing arrival evidence."),
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (

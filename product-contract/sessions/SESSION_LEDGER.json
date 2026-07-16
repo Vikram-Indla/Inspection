@@ -1461,6 +1461,10 @@
       ],
       "files_changed": [
         "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "outputs/cd-004/CD-004_WIRING_AUDIT.md",
+        "outputs/cd-004/WIRING_MAP_CD-004_R2.csv",
+        "apps/web/e2e/cd-004-admin-control-plane-home.spec.ts",
+        "product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png",
         "product-contract/evidence/EVIDENCE_STATUS.md",
         "product-contract/acceptance/ACCEPTANCE_STATUS.md",
         "product-contract/CURRENT_STATE.md",
@@ -2068,15 +2072,620 @@
       "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md and current WIRING_MAP files; do not claim full baseline completion while external blockers remain."
     },
     {
+      "session_id": "2026-07-15-cd021-mixed-criteria-follow-up",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M01-003", "MVP1-M01-004", "MVP1-M01-012", "MVP1-M01-022"],
+      "acceptance_ids": ["DEC-012", "DSG-A11Y-001", "ERR-PLN-001"],
+      "screens": ["SCR-WEB-110"],
+      "engines": ["ENG-03", "ENG-04"],
+      "files_changed": [
+        "apps/web/src/app/planning/bulk/criteria.ts",
+        "apps/web/e2e/cd-021-bulk-targeting.spec.ts",
+        "outputs/cd-021/WIRING_MAP_CD-021.csv",
+        "product-contract/evidence/screens/cd-021-bulk-v1/CODEX_AUDIT_CD-021_REMEDIATION_VERIFICATION.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "CD-021 bulk-targeting live suite: 23/23 PASS",
+        "typecheck PASS",
+        "production build PASS",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": ["product-contract/evidence/screens/cd-021-bulk-v1/CODEX_AUDIT_CD-021_REMEDIATION_VERIFICATION.md"],
+      "decisions": [
+        "Known blank leaves invalidate the full untrusted ct payload; unknown fields/operators remain forward-compatible drops",
+        "Monitoring-event and governed retry boundaries remain explicitly separate",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "CD-021 sponsor runtime acceptance remains outstanding",
+        "Monitoring-event insert and governed retry lifecycle remain outside the safe closure",
+        "Baseline still contains unrelated parallel dirty work"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Continue closure audit across remaining safe residuals; preserve governed blockers",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md and current WIRING_MAP files; do not claim full baseline completion while external blockers remain."
+    },
+    {
+      "session_id": "2026-07-15-cd030-post-fix-rerun",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M03-001", "MVP1-M03-002", "MVP1-M03-003"],
+      "acceptance_ids": ["DEC-012", "ERR-REV-001"],
+      "screens": ["SCR-WEB-310"],
+      "engines": ["ENG-07", "ENG-09"],
+      "files_changed": [
+        "product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "outputs/cd-029/WIRING_MAP_CD-029.csv",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "CD-030 version-comparison live suite: 17 passed / 1 data-dependent skip",
+        "typecheck PASS",
+        "production build PASS",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md"],
+      "decisions": [
+        "Record the latest rerun separately from the historical 16-pass result",
+        "Keep live migration/provider/media/package/metadata diff boundaries explicit",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "CD-030 forward migration remains unverified live because Management API credentials are unavailable",
+        "Provider/media/package/metadata diff sources remain unavailable by contract",
+        "Sponsor/runtime acceptance remains outstanding"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Finalize cross-slice disposition and report remaining governed/external blockers",
+      "resume_prompt": "Read product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md and current WIRING_MAP files; do not claim full baseline completion while external blockers remain."
+    },
+    {
+      "session_id": "2026-07-15-review-read-failure-hardening",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M06-005", "MVP1-M06-009", "MVP1-M06-010", "MVP1-M06-011"],
+      "acceptance_ids": ["DEC-012", "DSG-A11Y-001", "ERR-REV-001"],
+      "screens": ["SCR-WEB-310", "SCR-WEB-320"],
+      "engines": ["ENG-07", "ENG-09", "ENG-12"],
+      "files_changed": [
+        "apps/web/src/app/reviews/[id]/actions.ts",
+        "apps/web/src/app/reviews/[id]/page.tsx",
+        "apps/web/e2e/cd-029-review-workspace.spec.ts",
+        "apps/web/e2e/cd-030-version-comparison.spec.ts",
+        "outputs/cd-030/WIRING_MAP_CD-030.csv",
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "isolated CD-029/CD-030 rerun: 26 passed / 1 data-dependent skip",
+        "targeted CD-029 integrity + CD-030 source-contract rerun: 15/15 PASS",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md"
+      ],
+      "decisions": [
+        "Provider/read failures fail closed and never become false no-row outcomes",
+        "Notification lookup failure remains explicit after a recorded decision; atomicity policy is unchanged",
+        "Latest stored returned scope is selected by decided_at, not nested relation order",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "CD-030 forward migration remains unverified live",
+        "Provider/media/package/metadata, claim/reassign, atomicity, and sponsor-acceptance boundaries remain governed"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Reconcile final governed blocker status after the verified isolated regression",
+      "resume_prompt": "Read current CODEX_AUDIT_CD-029_2026-07-15.md and CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md; verify the new read-error guards and decided_at scope ordering before any closure claim."
+    },
+    {
+      "session_id": "2026-07-15-m02-republish-notification-closure",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M02-009", "MVP1-M02-030"],
+      "acceptance_ids": ["AC-0061", "AC-0082", "DEC-012"],
+      "screens": ["SCR-WEB-210"],
+      "engines": ["ENG-11"],
+      "files_changed": [
+        "apps/web/src/app/visits/[id]/actions.ts",
+        "apps/web/e2e/cd-027-visit-detail.spec.ts",
+        "product-contract/evidence/AC_LEDGER.csv",
+        "product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "focused CD-027 notification checks: 5/5 PASS",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md"],
+      "decisions": [
+        "Republish uses the shared notification adapter and surfaces queue failure",
+        "No delivery provider or atomic transaction policy was invented",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "29 historical acceptance rows remain partial outside this closure",
+        "Provider, policy, authoritative-map, migration, design-preflight, and sponsor-release boundaries remain open"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Audit remaining partial rows against current-slice authority and reconcile release disposition",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 65, AC_LEDGER partial rows, and the current slice before implementing any further wiring."
+    },
+    {
+      "session_id": "2026-07-15-field-handoff-wiring-remediation",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["MVP1-M03-005", "MVP1-M03-006", "MVP1-M04-045", "MVP1-M04-050..058"],
+      "acceptance_ids": ["AC-0103", "AC-0104", "AC-0158", "AC-0163..AC-0171", "DEC-012"],
+      "screens": ["SCR-IPAD-600", "SCR-IPAD-610", "SCR-IPAD-620"],
+      "engines": ["ENG-06", "ENG-07", "ENG-11"],
+      "files_changed": [
+        "apps/web/src/components/field/FieldHome.tsx",
+        "apps/web/src/app/field/page.tsx",
+        "apps/web/src/app/field/[visitId]/Startup.tsx",
+        "apps/web/src/app/field/[visitId]/page.tsx",
+        "apps/web/src/app/field/inspection/[id]/page.tsx",
+        "apps/web/src/lib/offline.ts",
+        "apps/web/src/app/field/actions.ts",
+        "apps/web/e2e/cd-023-immediate-authority-bar.spec.ts",
+        "supabase/migrations/20260715180000_field_arrival_evidence.sql",
+        "product-contract/evidence/AC_LEDGER.csv",
+        "product-contract/evidence/CODEX_AUDIT_FIELD_HANDOFF_REMEDIATION_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "focused CD-023 field-handoff checks: 7/7 PASS",
+        "git diff --check PASS",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_FIELD_HANDOFF_REMEDIATION_2026-07-15.md"],
+      "decisions": [
+        "Drag reschedule preserves time and duration and remains a planner-owned request",
+        "Arrival evidence is visit-linked because check-in precedes inspection creation",
+        "Arrival UI remains unchecked until the immutable arrival event persists; downstream workspace merges visit-linked evidence",
+        "No geofence override policy or routing-provider ETA was invented",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Arrival-evidence forward migration is not yet applied live or replay-verified",
+        "ETA/provider, GPS override policy, source-schema, and remaining admin/configuration gaps remain open"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Re-audit remaining 19 partial rows and close only contract-authorized gaps",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 67, CODEX_AUDIT_FIELD_HANDOFF_REMEDIATION_2026-07-15.md, and the 19 AC_LEDGER partial rows before continuing."
+    },
+    {
+      "session_id": "2026-07-15-full-regression-hardening",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["M08 operations monitoring", "CD-041 verified transition", "DEC-012"],
+      "acceptance_ids": ["AC-0412..AC-0428", "CD-041 live gate"],
+      "screens": ["SCR-WEB-170", "SCR-WEB-180", "SCR-WEB-400"],
+      "engines": ["ENG-08", "ENG-11"],
+      "files_changed": [
+        "apps/web/src/app/operations/page.tsx",
+        "apps/web/src/app/operations/actions.ts",
+        "apps/web/e2e/cd-041-virtual-verified-gate.spec.ts",
+        "apps/web/e2e/cd-041-virtual-backend.spec.ts",
+        "apps/web/e2e/dashboard-kpi-seed.spec.ts",
+        "product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md",
+        "product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "complete Playwright regression: 197 passed / 3 failed / 1 skipped / 2 not run",
+        "isolated CD-004 source route check: 4/4 PASS including auth setup",
+        "focused KPI journey: 4/4 PASS including auth setup",
+        "CD-041 fixture/source checks: 5/5 PASS including auth setup",
+        "CD-041 focused live journey: blocked by PGRST202 missing RPC",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md",
+        "product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md"
+      ],
+      "decisions": [
+        "Operations refresh preserves active journeys after planning expiry",
+        "CD-041 remains fail-closed on the authoritative RPC and is not replaced with a client-side update or mock",
+        "No shared migration was applied without exact approved deployment authority",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "CD-041 migration 20260715170000 is not live-applied",
+        "Field arrival-evidence migration 20260715180000 is not live-applied/replay-verified",
+        "19 AC_LEDGER rows remain partial at external provider/schema/policy/configuration boundaries",
+        "Sponsor runtime acceptance"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Apply approved live migrations, rerun CD-041 and field replay checks, then reconcile the remaining partial rows",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 69, CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md, and the 19 AC_LEDGER partial dispositions before continuing."
+    },
+    {
+      "session_id": "2026-07-15-ledger-and-partial-reconciliation",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["AC ledger truthfulness", "M08 dashboard closures", "remaining partial audit disposition"],
+      "acceptance_ids": ["AC-0043..AC-0052", "AC-0061", "AC-0064", "AC-0082", "AC-0103..AC-0104", "AC-0163..AC-0167", "AC-0169..AC-0171", "AC-0433..AC-0445"],
+      "screens": ["SCR-WEB-200", "SCR-WEB-500", "SCR-IPAD-610", "SCR-IPAD-620"],
+      "engines": ["ENG-03", "ENG-06", "ENG-08", "ENG-11"],
+      "files_changed": [
+        "product-contract/evidence/generate_ac_ledger.py",
+        "product-contract/evidence/AC_LEDGER.csv",
+        "product-contract/evidence/AC_LEDGER_SUMMARY.md",
+        "product-contract/evidence/STORYBOARD_STATUS.md",
+        "product-contract/sessions/LAST_SESSION.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "AC ledger generator PASS: 493 rows = 14 verified_live / 460 implemented / 19 partial / 0 missing",
+        "partial-row identity check PASS: exactly the 19 documented provider/schema/policy/configuration or pending-migration rows",
+        "typecheck PASS",
+        "production build PASS",
+        "git diff --check PASS",
+        "SESSION_LEDGER JSON parse PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md",
+        "product-contract/evidence/TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md"
+      ],
+      "decisions": [
+        "Historical DEV_AUDIT_VERDICTS cannot override dated Codex remediation/live evidence; generator now preserves those closures",
+        "M08 dashboard unavailable boundaries remain contract-truthful while implemented parent requirements are credited",
+        "The 19 remaining partial rows remain partial; no provider, schema, policy, route or scoring semantics were invented",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "CD-041 verified-transition RPC missing from shared live schema",
+        "Field arrival-evidence migration/replay not live-verified",
+        "19 upstream partial rows remain",
+        "Sponsor runtime acceptance and baseline consolidation"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Obtain approved live migration execution, rerun affected journeys, then reassess whether any partial row authority has changed",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 69, AC_LEDGER_SUMMARY.md, CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md, and the CD-041 live gate evidence before continuing."
+    },
+    {
+      "session_id": "2026-07-15-live-reverification-and-arrival-repair",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["CD-028 discoverability", "CD-041 verified transition", "M04-045 arrival evidence"],
+      "acceptance_ids": ["CD-028 live source gate", "CD-041 live gate", "AC-0158"],
+      "screens": ["SCR-WEB-300", "SCR-VIR-710", "SCR-IPAD-620", "SCR-IPAD-640"],
+      "engines": ["ENG-06", "ENG-07", "ENG-10", "ENG-12"],
+      "files_changed": [
+        "supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql",
+        "apps/web/e2e/cd-023-immediate-authority-bar.spec.ts",
+        "product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "complete Playwright regression: 203 passed / 1 skipped / 1 environmental Chromium failure",
+        "isolated CD-028 discoverability test: 4/4 PASS",
+        "CD-041 driven verification, RBAC-negative and closed-session tests passed in complete regression",
+        "read-only live schema probe: vs_mark_session_verified present; arrival enum present; evidence_note absent",
+        "typecheck/build/diff/ledger checks remain PASS"
+      ],
+      "evidence": ["product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md"],
+      "decisions": [
+        "Close the CD-041 missing-RPC finding based on current live evidence",
+        "Add only an idempotent forward repair migration for the missing evidence column",
+        "Do not claim M04-045 complete until the repair is applied and replay is verified",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Apply and replay-verify 20260715193000_field_arrival_evidence_column_repair.sql",
+        "Apply and verify 20260715130000_cd028_one_open_review_per_version.sql",
+        "19 provider/schema/policy/configuration partial rows remain",
+        "Sponsor runtime acceptance and baseline consolidation"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Use the approved deployment path for the arrival-column repair, then run an online/offline arrival-evidence replay proof",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 71 and the CD-041 live-gate continuation before applying or verifying the arrival-column repair."
+    },
+    {
+      "session_id": "2026-07-15-gate-and-audit-reconciliation",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["authoritative gate truthfulness", "CD-030 audit evidence", "CD-031 queue disposition"],
+      "acceptance_ids": ["AC ledger 493-row reconciliation", "CD-030 legs 1/16", "CD-031 DEC-012 audit gate"],
+      "screens": ["SCR-WEB-320", "SCR-WEB-400"],
+      "engines": ["ENG-04", "ENG-06", "ENG-12"],
+      "files_changed": [
+        "product-contract/GATE_STATUS.md",
+        "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "apps/web/e2e/cd-030-version-comparison.spec.ts",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "focused CD-030 source-contract checks: 5/5 PASS including auth setup",
+        "CD-029 wiring map CSV parse PASS: 18 rows x 15 columns; stale/misaligned rows corrected",
+        "isolated golden journey: 9/9 PASS on fresh production server",
+        "focused CD-004 admin act-scope run: 4/4 PASS including auth setup",
+        "current CD-004/CD-021/CD-022/CD-023/CD-024/CD-025/CD-029/CD-030 wiring maps rectangular CSV parse PASS",
+        "read-only live schema re-probe: evidence_note still absent; arrival enum endpoint available",
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "WORK_QUEUE YAML parse PASS",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md",
+        "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md"
+      ],
+      "decisions": [
+        "Correct G7/G9/G10 stale gate counts; preserve historical approvals while making current reconciliation authoritative",
+        "Record CD-031 audit as performed but blocked upstream by the absent authoritative wiring map, privacy decision and design preflight",
+        "Do not apply shared Supabase DDL without an approved deployment path",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Apply and replay-verify 20260715193000_field_arrival_evidence_column_repair.sql",
+        "19 provider/schema/policy/configuration partial rows remain",
+        "CD-031 WIRING_MAP_CD-031.csv and related governance artifacts absent",
+        "Sponsor runtime acceptance and baseline consolidation"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Obtain approved live migration path and authoritative CD-031 handoff, then rerun live evidence and reassess completion",
+      "resume_prompt": "Read GATE_STATUS current reconciliation, the CD-030 remediation supersession section, and the CD-031 blocked-upstream audit before the next continuation."
+    },
+    {
+      "session_id": "2026-07-15-final-focused-suite-reconciliation",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["CD-004 populated admin control plane", "baseline evidence truthfulness"],
+      "acceptance_ids": ["CD004-EV-003", "CD004-EV-005"],
+      "screens": ["SCR-WEB-100"],
+      "engines": ["ENG-03", "ENG-12"],
+      "files_changed": [
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "full CD-004 admin control-plane suite: 18/18 PASS",
+        "AC ledger integrity: 493 rows = 14 verified_live / 460 implemented / 19 partial / 0 missing",
+        "authoritative wiring maps rectangular CSV parse PASS",
+        "git diff --check PASS",
+        "SESSION_LEDGER JSON parse PASS",
+        "WORK_QUEUE YAML parse PASS",
+        "no OPEN evidence statuses remain"
+      ],
+      "evidence": [
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png"
+      ],
+      "decisions": [
+        "Update CD004 runtime evidence from 17/17 to 18/18 after the complete rerun",
+        "Keep failure/verified-zero fixture evidence blocked rather than inventing live data",
+        "No merge, push, deployment, or main modification"
+      ],
+      "blockers": [
+        "Apply and replay-verify 20260715193000_field_arrival_evidence_column_repair.sql",
+        "Apply and verify 20260715130000_cd028_one_open_review_per_version.sql",
+        "19 provider/schema/policy/configuration partial rows remain",
+        "CD-031 authoritative wiring map and privacy/design preflight artifacts absent",
+        "Sponsor runtime acceptance and baseline consolidation"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Obtain approved live migration path and authoritative CD-031 handoff before claiming production-ready completion",
+      "resume_prompt": "Read GATE_STATUS current reconciliation, CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md, and the CD-031 blocked-upstream audit."
+    },
+    {
+      "session_id": "2026-07-15-staged-review-scope-guard",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["CD-024 staged review handoff", "scope-loss truthfulness"],
+      "acceptance_ids": ["CD024 Open workspace", "DSG-CODE-001", "DSG-A11Y-001"],
+      "screens": ["SCR-WEB-140", "SCR-WEB-150"],
+      "engines": ["ENG-03", "ENG-05", "ENG-06"],
+      "files_changed": [
+        "apps/web/src/app/planning/bulk/actions.ts",
+        "apps/web/src/app/planning/bulk/review/ReviewClient.tsx",
+        "apps/web/src/app/planning/bulk/review/page.tsx",
+        "apps/web/e2e/cd-021-bulk-targeting.spec.ts",
+        "outputs/cd-024/WIRING_MAP_CD-024.csv",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "focused CD-021 review subset: 5/5 PASS including auth setup",
+        "new out-of-scope selection assertion PASS",
+        "complete CD-021 bulk-targeting suite: 24/24 PASS including auth setup",
+        "complete no-exclusion Playwright regression: 207 passed / 1 skipped / 0 failed across 208 tests",
+        "git diff --check PASS",
+        "SESSION_LEDGER JSON and WORK_QUEUE YAML parse PASS",
+        "authoritative wiring-map rectangularity and AC ledger count assertions PASS"
+      ],
+      "evidence": [
+        "outputs/cd-024/WIRING_MAP_CD-024.csv",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md"
+      ],
+      "decisions": [
+        "Do not silently treat missing RLS-scoped factory rows as empty selection or source success",
+        "Block staged review until the user returns to targeting and refreshes the selection",
+        "No route ownership or CD-024 canonical configure behavior was invented"
+      ],
+      "blockers": [
+        "CD-024 canonical route/ownership decision",
+        "Apply and replay-verify arrival evidence column repair",
+        "Apply and verify CD-028 one-open-review index",
+        "19 provider/schema/policy/configuration partial rows",
+        "Sponsor runtime acceptance and baseline consolidation"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Re-run final integrity checks, then obtain the approved live migration path and remaining governance handoffs",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 77 and outputs/cd-024/WIRING_MAP_CD-024.csv before continuing the baseline audit."
+    },
+    {
+      "session_id": "2026-07-15-branch-provenance-reaudit",
+      "started_at": "2026-07-15",
+      "ended_at": "2026-07-15",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-BASELINE-WIRING-AUDIT-001",
+      "gate": "G11 production-readiness wiring",
+      "requirements": ["branch/stash provenance", "baseline record truthfulness"],
+      "acceptance_ids": ["baseline commit graph", "remote main verification"],
+      "screens": [],
+      "engines": [],
+      "files_changed": [
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/GATE_STATUS.md",
+        "product-contract/execution/CURRENT_SLICE.yaml",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/evidence/generate_ac_ledger.py",
+        "product-contract/evidence/AC_LEDGER.csv",
+        "product-contract/evidence/validate_audit_reconciliation.py",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "outputs/claude-design-approval-pack/CD-041_043_BACKEND_READINESS_AUDIT.md",
+        "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md",
+        "product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "branch graph and unique-commit audit PASS",
+        "CD-006 authority check: no HUMAN_APPROVALS entry; admin design lane remains implementation_authorized:false",
+        "read-only live probe: evidence.evidence_note absent (HTTP 400); arrival/reviews read surfaces reachable",
+        "AC ledger regeneration preserves M04-045 as partial with corrected capture/replay note",
+        "AC ledger: 493 rows = 14 verified_live / 460 implemented / 19 partial / 0 missing",
+        "npm run typecheck PASS",
+        "npm run build PASS (existing workspace-root lockfile warning only)",
+        "validate_audit_reconciliation.py PASS: 493 rows / 19 partials / 8 rectangular maps",
+        "SESSION_LEDGER JSON parse PASS",
+        "WORK_QUEUE YAML parse PASS",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md",
+        "product-contract/CURRENT_STATE.md"
+      ],
+      "decisions": [
+        "Preserve feat/cd-006-regulation-detail-and-version because it contains one unique unrepresented commit outside the authorized slice",
+        "Do not delete branches or stashes while the worktree is dirty",
+        "Correct stale baseline status/count records to the current 207/1/0 regression and current remote topology"
+      ],
+      "blockers": [
+        "Apply and replay-verify field arrival evidence column repair",
+        "Apply and verify CD-028 one-open-review index",
+        "19 provider/schema/policy/configuration partials",
+        "CD-031 authoritative wiring map/privacy/preflight artifacts",
+        "Sponsor runtime acceptance and clean baseline promotion"
+      ],
+      "commit_sha": "uncommitted (setup/Inspection working tree)",
+      "next_task": "Review whether the sponsor wants the out-of-scope CD-006 unique commit included, then obtain live migration and governance handoffs",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 79 and the current branch graph section of TASK-BASELINE-WIRING-AUDIT-001.md."
+    },
+    {
       "session_id": "2026-07-15-cd006-011-backend-completion",
       "started_at": "2026-07-15",
       "ended_at": "2026-07-15",
       "branch": "codex/cd006-011-backend-completion",
       "task_id": "TASK-CD006-011-BACKEND-COMPLETION",
       "gate": "G11 admin control-plane backend completion",
-      "requirements": ["MVP1-M09-001", "MVP1-M09-005", "MVP1-M09-018", "MVP1-M09-021", "MVP1-M09-022", "MVP1-M09-024"],
-      "acceptance_ids": ["AC-0449", "AC-0453", "AC-0466", "AC-0469", "AC-0470", "AC-0472"],
-      "screens": ["CD-006", "CD-007", "CD-008", "CD-009", "CD-010", "CD-011"],
+      "requirements": [
+        "MVP1-M09-001",
+        "MVP1-M09-005",
+        "MVP1-M09-018",
+        "MVP1-M09-021",
+        "MVP1-M09-022",
+        "MVP1-M09-024"
+      ],
+      "acceptance_ids": [
+        "AC-0449",
+        "AC-0453",
+        "AC-0466",
+        "AC-0469",
+        "AC-0470",
+        "AC-0472"
+      ],
+      "screens": [
+        "CD-006",
+        "CD-007",
+        "CD-008",
+        "CD-009",
+        "CD-010",
+        "CD-011"
+      ],
       "engines": ["ENG-08", "ENG-12"],
       "files_changed": [
         "supabase/migrations/20260715200000_cd006_011_backend_completion.sql",
@@ -2101,7 +2710,9 @@
         "git diff check PASS",
         "old frontend suite invoked but non-certifying: missing persona/runtime configuration and superseded blocked-state assertions"
       ],
-      "evidence": ["product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md"],
+      "evidence": [
+        "product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md"
+      ],
       "decisions": [
         "Implement only source-backed authoring/runtime rules; no legal, scoring, SLA, provider or lifecycle policy value invented",
         "Preserve published/deactivated regulation parent and child content at the database boundary",
@@ -2116,9 +2727,130 @@
       "commit_sha": "c4c5701 (implementation), 4af67c0 (Supabase privilege hardening), 5111c46 (documentation handoff)",
       "next_task": "Obtain exact live-migration approval, apply and reconcile it, then integrate and verify the parallel frontend implementation",
       "resume_prompt": "Read product-contract/evidence/CD006_CD011_BACKEND_COMPLETION_2026-07-15.md; do not claim live completion until the exact migration is approved/applied and authenticated frontend suites pass."
+    },
+    {
+      "session_id": "2026-07-16-g11-remediation-001",
+      "started_at": "2026-07-16",
+      "ended_at": "2026-07-16",
+      "branch": "feat/admin-control-plane",
+      "task_id": "TASK-G11-REMEDIATION-001",
+      "gate": "G11 production-readiness remediation",
+      "requirements": [
+        "MVP1-M01-001..052",
+        "MVP1-M02-012",
+        "MVP1-M06-001..053",
+        "MVP1-M08-001..019",
+        "MVP1-M09-001..030",
+        "MVP1-FND-001..004",
+        "MVP1-FND-007",
+        "MVP1-FND-010..013",
+        "RBAC-001..014",
+        "ERR-AUTH-001"
+      ],
+      "acceptance_ids": [
+        "DSG-015..DSG-020",
+        "DSG-023",
+        "DSG-025",
+        "DSG-A11Y-001",
+        "DSG-CODE-001",
+        "AC-0001..AC-0052",
+        "AC-0064",
+        "AC-0430..AC-0478",
+        "DASH-001..DASH-016"
+      ],
+      "screens": [
+        "SCR-ADM-010",
+        "SCR-ADM-011",
+        "SCR-ADM-020",
+        "SCR-ADM-030",
+        "SCR-ADM-031",
+        "SCR-ADM-040",
+        "SCR-ADM-041",
+        "SCR-WEB-140",
+        "SCR-WEB-300",
+        "SCR-WEB-320",
+        "SCR-WEB-500"
+      ],
+      "engines": [
+        "ENG-01",
+        "ENG-02",
+        "ENG-03",
+        "ENG-04",
+        "ENG-05",
+        "ENG-06",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/src/lib/verified-user.ts",
+        "apps/web/middleware.ts and authenticated runtime call sites",
+        "apps/web/src/app/dashboard/page.tsx",
+        "apps/web/src/app/reviews/[id]/actions.ts",
+        "apps/web/src/app/reviews/[id]/page.tsx",
+        "apps/web/src/app/reviews/[id]/StartReview.tsx",
+        "apps/web/src/app/reviews/[id]/started/page.tsx",
+        "apps/web/e2e/cd-005-006-regulations.spec.ts",
+        "apps/web/e2e/cd-007-items.spec.ts",
+        "apps/web/e2e/cd-008-009-packages.spec.ts",
+        "apps/web/e2e/cd-010-011-violations.spec.ts",
+        "apps/web/e2e/cd-022-identity-lens.spec.ts",
+        "apps/web/e2e/cd-025-plan-review-publish.spec.ts",
+        "apps/web/e2e/cd-028-review-queue.spec.ts",
+        "apps/web/e2e/cd-029-review-workspace.spec.ts",
+        "apps/web/e2e/cd-030-version-comparison.spec.ts",
+        "apps/web/e2e/dashboard-business.spec.ts",
+        "product-contract/execution/CURRENT_SLICE.yaml",
+        "product-contract/execution/WORK_QUEUE.yaml",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/GATE_STATUS.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/evidence/TASK-G11-REMEDIATION-001.md",
+        "product-contract/evidence/validate_audit_reconciliation.py",
+        "product-contract/sessions/SESSION_LEDGER.json"
+      ],
+      "tests": [
+        "authenticated persona setup 3/3 PASS",
+        "complete current inventory 276/276 PASS: 3 setup + 273 application; 0 failed / 0 skipped / 0 excluded",
+        "application shards: 31 + 28 + 16 + 18 + 24 + 28 + 18 + 24 + 25 + 18 + 21 + 22 = 273 PASS",
+        "golden journey 6/6 PASS inside final regression shard",
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "runtime auth.getUser source scan 0 matches",
+        "validate_audit_reconciliation.py PASS: 493 rows / 19 partials / 8 rectangular maps",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-G11-REMEDIATION-001.md",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/acceptance/ACCEPTANCE_STATUS.md",
+        "product-contract/evidence/EVIDENCE_STATUS.md",
+        "product-contract/evidence/screens/"
+      ],
+      "decisions": [
+        "Treat CD-006 through CD-011 R2 designs as sponsor-approved for this remediation only",
+        "Keep unproven provider/policy/schema legs explicitly HANDOFF_BLOCKED",
+        "Use cryptographically verified JWT claims for authenticated server reads without widening RLS",
+        "Execute the application inventory in fresh-browser shards and rerun every corrected shard",
+        "Do not upgrade the 19 independent AC-ledger partials",
+        "Preserve externally advanced commit 330398781042 and every concurrent dirty change"
+      ],
+      "blockers": [
+        "Production deployment and G12 release authorization",
+        "Live application/verification of separately recorded pending migrations",
+        "19 provider/schema/policy/configuration AC-ledger partials",
+        "CD-024 route/ownership and CD-031 authority/privacy/preflight decisions",
+        "Sponsor runtime acceptance and clean baseline promotion"
+      ],
+      "commit_sha": "No Codex commit; branch advanced concurrently from c6187cb41a7b to user-authored/pushed 330398781042",
+      "next_task": "Resume the parent G11/G12 baseline only under its separate authorization; prioritize remaining live-migration, provider/policy and sponsor-runtime boundaries without changing main or production.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 87 and product-contract/evidence/TASK-G11-REMEDIATION-001.md. The local remediation slice is 276/276 PASS; do not reopen it without a demonstrated regression."
     }
   ],
-  "last_session": "2026-07-15-cd006-011-backend-completion",
+  "last_session": "2026-07-16-g11-remediation-001",
   "rules": {
     "append_only": true,
     "required_fields": [

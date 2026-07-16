@@ -5,6 +5,7 @@
 // session (DB unique on visit_id backs the app check).
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { insertNotification } from "@/lib/notify";
 
 const SYSTEM_ERROR = "The session could not be scheduled. Try again or contact support.";
@@ -13,7 +14,7 @@ export type VirtualActionResult = { error?: string; ok?: string };
 
 export async function scheduleSession(_: VirtualActionResult, fd: FormData): Promise<VirtualActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const visit_id = String(fd.get("visit_id") ?? "");

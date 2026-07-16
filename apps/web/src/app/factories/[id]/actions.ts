@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { logFactoryError, mapFactoryError } from "./neutral";
 
 export type F360Result = { error?: string; ok?: boolean };
@@ -11,7 +12,7 @@ const DOC_TYPES = ["license", "cr", "safety_cert", "layout", "other"];
 // evidence pipeline; storage_path remains null from this surface.
 export async function addFactoryDocument(_: F360Result, formData: FormData): Promise<F360Result> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const factory_id = String(formData.get("factory_id") ?? "");
@@ -42,7 +43,7 @@ export async function addFactoryDocument(_: F360Result, formData: FormData): Pro
 // SB11 / M07-014 — factory representatives roster.
 export async function addRepresentative(_: F360Result, formData: FormData): Promise<F360Result> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const factory_id = String(formData.get("factory_id") ?? "");
@@ -71,7 +72,7 @@ export async function addRepresentative(_: F360Result, formData: FormData): Prom
 // RLS fprod_write restricts inserts to planner/ops/compliance_admin (0017).
 export async function addFactoryProduct(_: F360Result, formData: FormData): Promise<F360Result> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const factory_id = String(formData.get("factory_id") ?? "");
@@ -108,7 +109,7 @@ const MATERIAL_SOURCES = ["local", "imported"];
 // RLS fmat_write restricts inserts to planner/ops/compliance_admin (0017).
 export async function addFactoryMaterial(_: F360Result, formData: FormData): Promise<F360Result> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const factory_id = String(formData.get("factory_id") ?? "");
@@ -133,7 +134,7 @@ export async function addFactoryMaterial(_: F360Result, formData: FormData): Pro
 // SB11 / M07-014 — deactivate/reactivate a representative (no deletes; roster is historical).
 export async function toggleRepresentativeActive(_: F360Result, formData: FormData): Promise<F360Result> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const rep_id = String(formData.get("rep_id") ?? "");

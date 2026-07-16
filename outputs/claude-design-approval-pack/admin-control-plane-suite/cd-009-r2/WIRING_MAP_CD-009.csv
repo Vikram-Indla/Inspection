@@ -1,0 +1,9 @@
+wiring_id,state_or_action_id,ui_trigger,route_server_action,validation_guard,table_rpc,rls_role,audit_event,success_result,negative_result,disposition,blocker_owner
+W01,S01,open draft studio,server read,authenticated,package_versions(draft),SELECT auth,none,populated,unavailable not zero,current,none
+W02,edit-save-draft,save draft,saveDraftDefinition,writer + status=draft,package_versions update,writes,package_versions trigger,saved,neutral error,current,none
+W03,S04,publish,approveAndPublish,validateDefinition+distinct approver,package_versions update,writes,trigger,published,rejection,current,none
+W04,reorder,none,none,none,none,none,none,none,none,HANDOFF_BLOCKED,product/backend
+W05,condition authoring,none,none,none,none,none,none,none,none,HANDOFF_BLOCKED,product/backend
+W06,simulation,none,none,none,none,none,none,none,none,HANDOFF_BLOCKED,product/backend
+W07,circular detector,none,none,none,none,none,none,none,none,HANDOFF_BLOCKED,product/backend
+W08,S05,unauthorized,route guard,Admin-family guard,none,none,none,denial,n/a,HANDOFF_BLOCKED,platform

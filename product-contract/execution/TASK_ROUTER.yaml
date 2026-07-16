@@ -1,6 +1,14 @@
 schema_version: "1.0"
 project: "MIM Inspection Platform MVP1"
 routing_rules:
+  - intent: remediation
+    id_pattern: "TASK-G11-REMEDIATION-*"
+    required_context:
+      - product-contract/GATE_STATUS.md
+      - product-contract/CURRENT_STATE.md
+      - product-contract/execution/CURRENT_SLICE.yaml
+      - product-contract/acceptance/ACCEPTANCE_STATUS.md
+      - product-contract/evidence/EVIDENCE_STATUS.md
   - intent: gate
     id_pattern: "G[0-9]+-*"
     required_context:

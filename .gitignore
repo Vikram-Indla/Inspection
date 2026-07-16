@@ -33,9 +33,13 @@ __pycache__/
 
 # build artifacts
 apps/web/.next/
+apps/web/.next-stale-backup/
 *.tsbuildinfo
 node_modules/
 .env.local
+
+# Supabase CLI linked-project state (may contain connection credentials)
+supabase/.temp/
 
 # e2e artifacts (G10 Playwright suite)
 apps/web/test-results/

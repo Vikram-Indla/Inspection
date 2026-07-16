@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { login, rest, must, assertOk } from "./live-rest";
 import { waitForCredentialsForm, submitCredentials } from "./login-helper";
@@ -12,6 +12,15 @@ const STATES = ["new", "prepared", "on_the_way", "arrived", "executing", "submit
 const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/dashboard-kpi-seed");
 
 test.describe("TASK-DASH-KPI-SEED-001", () => {
+  test("Operations keeps active journeys visible after planning expiry", () => {
+    const source = readFileSync(join(process.cwd(), "src/app/operations/page.tsx"), "utf8");
+    expect(source).toContain('v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)');
+    expect(source).toContain("planning_status and operational_state are separate");
+    const refreshSource = readFileSync(join(process.cwd(), "src/app/operations/actions.ts"), "utf8");
+    expect(refreshSource).toContain('select("id, planning_status, operational_state');
+    expect(refreshSource).toContain('v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)');
+  });
+
   // Operations' Notifications panel is "latest 20 by created_at" against the
   // shared live project (operations/page.tsx) — a real, intentional product
   // limit, not something to relax for tests. Across a 90+ test full-suite run,

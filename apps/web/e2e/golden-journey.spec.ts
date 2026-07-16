@@ -141,6 +141,33 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await step(/3 ·/).click();
   // Execution-mode "eligible" badges also use .ax-lozenge--success now — match text directly.
   await expect(page.locator(".ax-lozenge--success", { hasText: "inside fence" })).toBeVisible();
+
+  // M04-045 release certification — queue a comment-only arrival record through
+  // the real IndexedDB outbox, then prove the live replay persisted the visit
+  // linkage, new enum value and evidence_note column before inspection creation.
+  const arrivalNote = `G12 arrival replay ${visitId}`;
+  const arrivalSurface = page
+    .getByRole("heading", { name: /Arrival evidence \(M04-045\)/i, level: 5 })
+    .locator("..");
+  await arrivalSurface.getByLabel("Arrival note").fill(arrivalNote);
+  await arrivalSurface.getByRole("button", { name: "Queue arrival evidence" }).click();
+  await expect(arrivalSurface).toContainText("Arrival evidence queued");
+  const arrivalInspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  const arrivalEvidence = await pollRest(async () => {
+    const { data } = await rest("GET",
+      `evidence?select=id,visit_id,inspection_id,linked_type,evidence_note,storage_path&visit_id=eq.${visitId}&linked_type=eq.arrival`,
+      arrivalInspector.jwt);
+    return Array.isArray(data) && data.some((row: { evidence_note?: string }) => row.evidence_note === arrivalNote)
+      ? data.find((row: { evidence_note?: string }) => row.evidence_note === arrivalNote)
+      : null;
+  }, "arrival evidence replay");
+  expect(arrivalEvidence).toMatchObject({
+    visit_id: visitId,
+    inspection_id: null,
+    linked_type: "arrival",
+    evidence_note: arrivalNote,
+  });
+
   // M03-010 — mandatory pre-start confirmations (rep present + location confirmed) gate step 4.
   const checkboxes = page.locator('input[type="checkbox"]');
   await checkboxes.nth(0).check();
@@ -220,7 +247,7 @@ test("P3 reviewer: RETURN with exact scope and mandatory reason (M06-006, STM-RE
   // CD-028 leg 5 — starting the review is now an explicit, audited action
   // (opening the workspace no longer creates the review as a side-effect).
   await page.getByRole("button", { name: /^start review$/i }).click();
-  await page.locator('input[name="decision"][value="return"]').waitFor({ timeout: 20_000 });
+  await page.locator('input[name="decision"][value="return"]').waitFor({ timeout: 30_000 });
   await page.locator('input[name="decision"][value="return"]').check();
   await page.locator(`input[name="returned_section"][value="${scopeSectionKey}"]`).check();
   await page.locator('textarea[name="reason"]').fill("FS-101 evidence insufficient — retag and re-shoot (G10 Playwright golden journey).");

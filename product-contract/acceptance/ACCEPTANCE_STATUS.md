@@ -26,6 +26,30 @@ Non-blocking post-check: Obsidian desktop screenshot (G4-EV-003 `.png`).
 G5 acceptance: not opened. Requires resolution of open decisions and live-schema
 reconciliation (see docs/G5_ARCHITECTURE_AND_READINESS.md).
 
+## TASK-G11-REMEDIATION-001 disposition — 2026-07-16
+
+- Sponsor authorization: **RECORDED** for CD-005..011, CD-025, CD-028, CD-030
+  and TASK-WEB-DASHBOARD-002; CD-006..011 R2 frontend designs accepted for this
+  remediation slice.
+- Historical baseline: **252 passed / 20 failed / 1 skipped / 2 not run** from
+  the then-current 275-test inventory.
+- Current inventory: **276/276 PASS** — three real-login persona setup tests and
+  273 application tests; **0 failed / 0 skipped / 0 excluded**.
+- Static acceptance: **PASS** — typecheck, production build, diff/static safety
+  checks and audit reconciliation.
+- Behavior acceptance: **PASS for the approved engineering slice** — Admin
+  maker-checker/audit/immutability truth, exact CD-025 semantics, continuous
+  CD-028 Start Review, CD-030 changed-row/Arabic navigation, bounded dashboard
+  reads, JWT-claim authenticated reads, negative paths, RTL/theme/responsive and
+  the complete cross-persona golden journey are verified.
+- No acceptance inflation: the AC ledger stays at 14 `verified_live`, 460
+  `implemented`, 19 `partial`; unavailable provider/policy/schema legs remain
+  blocked.
+- Overall status: **REMEDIATION VERIFIED COMPLETE**. This is not sponsor runtime
+  acceptance, G11/G12 release certification, production deployment, live-DDL
+  approval or branch/main promotion.
+- Evidence: `../evidence/TASK-G11-REMEDIATION-001.md`.
+
 ## CD-001 V7 login design disposition — 2026-07-13
 
 - Sponsor status: **ACCEPTED FOR NOW; DESIGN ITERATION CLOSED**.

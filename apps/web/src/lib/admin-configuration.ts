@@ -1,6 +1,7 @@
 import "server-only";
 
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 /**
  * Configuration writes are deliberately checked in the application as well as
@@ -12,7 +13,7 @@ export async function requireConfigurationWriter(): Promise<
   | { ok: false; message: string }
 > {
   const sb = await supabaseServer();
-  const { data: { user }, error: userError } = await sb.auth.getUser();
+  const { data: { user }, error: userError } = await getVerifiedUser(sb);
   if (userError || !user) return { ok: false, message: "Your session has ended. Sign in again." };
 
   const { data: rows, error: rolesError } = await sb

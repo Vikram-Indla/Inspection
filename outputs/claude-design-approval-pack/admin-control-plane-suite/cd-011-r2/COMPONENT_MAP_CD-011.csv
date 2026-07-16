@@ -1,0 +1,7 @@
+design_component_or_state,existing_or_proposed_code_component,exact_export_or_selector,disposition,notes
+Three-column penalty-mode workspace,apps/web/src/app/admin/violations/page.tsx,penalty mode branch,modify,logical mode; no new route
+Violation column,violations/page.tsx,violation_codes read,reuse,one-to-one left side
+Mapping Validation Lens (signature),violations/Controls.tsx,create-time validation list,create,four proven checks only
+Penalty mapping record,violations/page.tsx,penalty_mappings row,reuse,presets are tokens; no amounts
+Create control,violations/Controls.tsx,createPenaltyMapping,reuse,requires legal basis + presets
+Contract-target panel,none,disabled annotation,blocked,effective periods/approve/publish/audit HANDOFF_BLOCKED

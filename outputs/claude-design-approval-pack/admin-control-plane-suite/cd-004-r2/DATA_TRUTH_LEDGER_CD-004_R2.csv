@@ -1,0 +1,16 @@
+visual_element,label,value_type,source_status,exact_table_or_view,exact_columns,query_or_filter,rls_guard,error_null_rendering,fixture_or_runtime,evidence_ref
+Page lozenge,"1 source unavailable",derived per-source state,current (derived from per-source result objects),n/a (client derivation),n/a,count of failed results,authenticated read,shows count of failed sources; never a health verdict,fixture,r2e/r2g header
+Read timestamp,"page read 2026-07-14 11:36",timestamp fact,current (server render time),n/a,n/a,render time,n/a,shown as fact; no staleness verdict,fixture,r2e/r2g header
+Spine row 1 count,"38 regulations",integer,current,regulations,id,head count exact,authenticated read (broad),unavailable state — never zero,fixture,r2e row1
+Spine row 1 lifecycle,"per-regulation status lives in the module; no update timestamp is read here",copy,current truth statement,regulations,status (module-side),n/a,same,n/a,n/a,r2e row1
+Spine row 2 counts,"6 published · 412 items",integers,current,package_versions; inspection_items,id; id,status=published head count; head count,authenticated read,unavailable state — never zero,fixture,r2e row2
+Spine row 2 lifecycle,"draft/published proven · distinct approver enforced · immutable once published",copy,current schema truth,package_versions,status + approver constraint,n/a,same,n/a,n/a,r2e row2
+Spine row 3 count,Enforcement unavailable,unknown,current (failure case),violation_codes,id,head count exact,authenticated read,"read failed — count unknown, not zero + per-source retry",fixture (state),r2e row3
+Spine row 4 count,"6 domains",integer,current,engine_settings,engine,row count,authenticated read,unavailable state,fixture,r2e row4
+Spine row 4 provenance,"risk · v2026.07.11",domain key + version_label + updated_at,current,engine_settings,"engine, version_label, updated_at",order by engine,authenticated read,timestamp shown as provenance fact only,fixture,r2e row4
+Spine row 5 count,"1,284 events",integer,current,audit_events,id,head count exact,authenticated read,unavailable state,fixture,r2e row5
+Link-only family rows,workflow/risk/gis/access,links,current routes; no data read,n/a,n/a,n/a,module-side,links only; no invented facts,n/a,r2e band2
+Scope band,role scope copy,copy,current (shell-navigation roles arrays),shell-navigation.ts,roles[],client role set,server-rendered roles,n/a,n/a,r2e band3
+PROPOSED per-family last-mutation,not shown in frames,timestamp,HANDOFF_BLOCKED — IMPLEMENTATION/AUTHORIZATION REQUIRED,audit_events (proposed view),"entity, created_at",max(created_at) group by entity,RLS on audit_events,must fail closed per family,proposed,ledger only
+PROPOSED latest package version label,not shown in frames,text,HANDOFF_BLOCKED — IMPLEMENTATION/AUTHORIZATION REQUIRED,package_versions,"code, version, status",latest published order by published_at,authenticated read,must fail closed,proposed,ledger only
+PROPOSED draft queue count,not shown in frames,integer,HANDOFF_BLOCKED — IMPLEMENTATION/AUTHORIZATION REQUIRED,package_versions,id,status=draft head count,authenticated read,must fail closed; no age/SLA derivation,proposed,ledger only

@@ -193,3 +193,25 @@ test.describe("CD-004 wiring (DEC-012): per-source modelling, distinct states, b
     expect(mig).toContain("where ui_strings.status = 'draft'");
   });
 });
+
+// CD004-EV-005 — an authoritative seeded admin-family persona exists in the
+// configured project (CD-003 proves the same account lands on /admin). Capture
+// the real act-scope band without inventing a role or weakening the non-admin
+// visibility-vs-authority proof above.
+test.describe("CD-004 admin-family act-scope evidence", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test("admin-family persona renders a populated act-scope band", async ({ page }) => {
+    await page.goto("/locale?set=en");
+    await page.goto("/login");
+    await page.locator("#email").fill("admin@mim.gov.sa");
+    await page.locator("#pw").fill("MimAdmin!2026");
+    await page.getByRole("button", { name: /Sign In/i }).click();
+    await page.waitForURL(url => url.pathname.startsWith("/admin"), { timeout: 20_000 });
+    await page.goto("/admin");
+    const scope = page.getByRole("region", { name: /Your scope/i });
+    await expect(scope).toBeVisible();
+    await expect(scope).toContainText(/compliance admin|form admin|workflow admin|risk owner|gis admin|security admin/i);
+    await page.screenshot({ path: join(EVIDENCE_DIR, "scope-admin-en-light.png"), fullPage: true });
+  });
+});

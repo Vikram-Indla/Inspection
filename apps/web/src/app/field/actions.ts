@@ -6,12 +6,13 @@
 // surface that honestly instead of pretending success.
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 export type FieldActionResult = { error?: string; ok?: string };
 
 export async function markNotificationRead(_: FieldActionResult, fd: FormData): Promise<FieldActionResult> {
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
     console.error("[field mark notification auth]", authError.message);
     return { error: "Notification status could not be updated. Try again." };
@@ -49,7 +50,7 @@ export async function requestVisitReschedule(
     return { error: "Missing visit or proposed window (M03-005)." };
   }
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
     console.error("[field reschedule auth]", authError.message);
     return { error: "The reschedule request could not be sent. Your visit is unchanged — try again." };

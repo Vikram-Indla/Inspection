@@ -37,7 +37,7 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
     await expect(page.getByText(/nothing is saved until you publish/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /^Readiness$/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Targets & proposed visits/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Assignment evidence/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Assignment evidence", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Corrections & publish/i })).toBeVisible();
     // Complete the mandatory window so the readiness preview resolves (proves the

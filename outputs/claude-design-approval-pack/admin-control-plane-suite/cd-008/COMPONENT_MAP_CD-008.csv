@@ -1,0 +1,8 @@
+design_component_or_state,existing_or_proposed_code_component,css_selector_or_token,notes
+Package group + expandable version rows,apps/web/src/app/admin/packages/page.tsx,ax-surface / aria-expanded rows,Carbon expandable-row pattern
+Coverage Fingerprint (signature),candidate source apps/web/src/app/admin/packages/ImpactPanel.tsx,chip row,counts (proposed) until queries confirmed
+Version status lozenges,ax-lozenge,●/◈/◌ glyph+word,superseded is derived not stored
+Consumer count column,proposed usage query,none yet,HANDOFF_BLOCKED
+Approver-gate copy,apps/web/src/app/admin/packages/PublishControls.tsx,role=status,proven constraint, enum name (proposed)
+Preview link,apps/web/src/app/admin/packages/PackagePreview.tsx,existing,preview-runtime equivalence checked at audit
+Clone as draft,candidate actions.ts,button,HANDOFF_BLOCKED — clone action unconfirmed

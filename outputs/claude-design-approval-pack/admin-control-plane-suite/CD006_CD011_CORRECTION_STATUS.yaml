@@ -3,8 +3,8 @@ task_id: "TASK-DESIGN-ADMIN-SUITE-001"
 scope:
   cds: ["CD-006", "CD-007", "CD-008", "CD-009", "CD-010", "CD-011"]
   excluded: ["CD-004", "CD-005"]
-status: "CORRECTION_PROMPT_READY_AWAITING_CLAUDE_DESIGN_RETURN"
-updated_at: "2026-07-15"
+status: "SPONSOR_OVERRIDE_APPROVED_G11_REMEDIATION"
+updated_at: "2026-07-16"
 
 source_observation:
   branch: "setup/Inspection"
@@ -35,18 +35,23 @@ correction:
   owner: "Claude Design"
   expected_return_marker: "READY_FOR_MANDATORY_FINAL_REVIEW"
   blocked_return_marker: "CORRECTION_BLOCKED"
-  corrected_return_received: false
+  corrected_return_received: true
   mandatory_final_review_complete: false
 
 authorization:
   design_correction: true
-  sponsor_design_approved: false
+  sponsor_design_approved: true
   independent_wiring_audit_complete: false
-  implementation_authorized: false
-  application_or_database_changes: false
+  implementation_authorized: true
+  local_application_or_forward_migration_source_changes: true
+  live_database_changes: false
+  local_feature_branch_commit: false
   git_commit_push_merge: false
 
+authorization_ref: "product-contract/governance/HUMAN_APPROVALS.yaml#G11-remediation-CD-005-011-CD-025-CD-028-CD-030-dashboard"
+
 completion_condition: >-
-  A complete corrected CD-006 through CD-011 return is received and independently
-  verified with no remaining P0/P1 findings. Preparing the correction prompt alone
-  does not close the original audit findings.
+  Sponsor approval authorizes implementation, but completion still requires an
+  independent wiring/QA pass with no remaining P0/P1 findings and full regression
+  evidence. Existing HANDOFF_BLOCKED legs remain blocked unless current source and
+  backend evidence proves them closed.

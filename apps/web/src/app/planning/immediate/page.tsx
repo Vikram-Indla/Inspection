@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import ImmediateForm, { type ImmediateStrings } from "./ImmediateForm";
 
@@ -15,7 +16,7 @@ export default async function Immediate() {
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
 
   // The governed route catalogue and MVP1-M01-043 authorize Planner and
   // Inspector. The two paths remain distinct: Planner reviews/windows/assigns;

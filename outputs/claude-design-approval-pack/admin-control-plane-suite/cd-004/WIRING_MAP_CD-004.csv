@@ -1,0 +1,6 @@
+action,ui_trigger,client_component,route_or_action,guard,data_rls,transition,audit_side_effect,negative_result,test,status
+Load overview,route entry,server page,/admin,auth middleware (family guard BLOCKED),six RLS-scoped reads with per-source outcome (BLOCKED: structured errors),none,none,per-source unavailable row; never zero; never platform verdict,required,HANDOFF_BLOCKED
+Retry one source,row Retry button,proposed spine row,re-run single read,same RLS,none,none,role=status on recovery; role=alert stays if failed again,required,HANDOFF_BLOCKED
+Refresh page data,header refresh,proposed header,re-run all reads,same,none,none,read-timestamp fact updated; announced politely,required,HANDOFF_BLOCKED
+Open family module,row link,anchor,/admin/regulations|packages|violations|workflows|risk|gis|access|audit,each module's own guards + RLS,none,none,module-owned,existing routes,PROVEN (targets exist)
+Unauthorized direct access,URL entry,route guard,BLOCKED (no admin-family guard),RLS denies data today,none,none,neutral denial state (frame 4g-7),required,HANDOFF_BLOCKED

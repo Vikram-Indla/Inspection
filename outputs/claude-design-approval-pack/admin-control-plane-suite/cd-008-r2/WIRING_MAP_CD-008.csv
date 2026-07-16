@@ -1,0 +1,8 @@
+wiring_id,state_or_action_id,ui_trigger,route_server_action,validation_guard,canonical_transition,table_rpc,rls_role,audit_event,success_result,negative_result,disposition,blocker_owner
+W01,S01,open library,server read,authenticated,none,packages+package_versions,SELECT auth,none,rows,unavailable not zero,current,none
+W02,S08,pinned impact,getPinnedActiveImpact,config/checker,none,package_version_impact(uuid),RPC-internal,none,counts,unavailable not zero,current,none
+W03,create-draft,create draft,createDraftVersion,writer,none,package_versions insert(draft),writes,package_versions trigger,draft created,neutral error,current,none
+W04,S04,publish,approveAndPublish,validateDefinition+distinct approver,draft->published,package_versions update,writes,package_versions trigger,published+immutable,validation/approver rejection,current,none
+W05,S06,edit published,blocked by trigger,immutability,none,none,writes,n/a,edit refused w/ reason,n/a,current,none
+W06,S05,unauthorized,route guard,Admin-family guard,none,none,none,none,denial,n/a,HANDOFF_BLOCKED,platform
+W07,effective-dates,none,none,none,none,none,none,none,none,none,HANDOFF_BLOCKED,product/backend
