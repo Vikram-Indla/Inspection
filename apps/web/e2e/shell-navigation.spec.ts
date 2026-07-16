@@ -16,12 +16,28 @@ test.describe("TASK-WEB-SHELL-001 role matrix", () => {
   });
 
   test("admin-family grants compose without inventing unsupported tabs", () => {
+    // compliance_admin → regulations/packages/violations/items/localization/audit;
+    // security_admin → access/localization/audit; risk_owner → risk/audit.
+    // /admin (home) and /admin/audit are visible to every admin family.
     const hrefs = hrefsFor(["compliance_admin", "security_admin", "risk_owner"]);
-    expect(hrefs).toEqual(["/admin", "/admin/regulations", "/admin/packages", "/admin/violations", "/admin/risk", "/admin/access"]);
+    expect(hrefs).toEqual([
+      "/admin",
+      "/admin/regulations",
+      "/admin/packages",
+      "/admin/violations",
+      "/admin/items",
+      "/admin/risk",
+      "/admin/access",
+      "/admin/localization",
+      "/admin/audit",
+    ]);
     expect(hrefs).not.toContain("/analytics");
     expect(hrefs).not.toContain("/admin/lookups");
     expect(hrefs).not.toContain("/admin/integrations");
     expect(hrefs).not.toContain("/admin/notifications");
+    // workflows (workflow_admin) and gis (gis_admin) are outside this role set.
+    expect(hrefs).not.toContain("/admin/workflows");
+    expect(hrefs).not.toContain("/admin/gis");
   });
 
   test("dashboard and live operations have distinct active states", () => {
