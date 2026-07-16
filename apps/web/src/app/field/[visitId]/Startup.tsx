@@ -27,7 +27,7 @@ export type StartupStrings = {
   exceptionHeading: string; exceptionPlaceholder: string; exceptionSend: string;
   logExceptionSent: string; logExceptionFailed: string; logDeviation: string;
   logOpState: string; logOpBlocked: string; logGpsFallback: string;
-  mapsOpen: string; mapsGeo: string; mapsCaption: string; progressLabel: string; progressCaption: string; cardsFactoryTitle: string; cardsVisitTitle: string; lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string; lblCoords: string; lblFence: string; lblType: string; lblMode: string; lblWindow: string; lblPackage: string; lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string; cancelHeading: string; cancelCaption: string; cancelSelectReason: string; cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string; cancelRequestedChip: string; cancelReasonsMissing: string; logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string; returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string; returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
+  mapsGeo: string; mapsCaption: string; progressLabel: string; progressCaption: string; cardsFactoryTitle: string; cardsVisitTitle: string; lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string; lblCoords: string; lblFence: string; lblType: string; lblMode: string; lblWindow: string; lblPackage: string; lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string; cancelHeading: string; cancelCaption: string; cancelSelectReason: string; cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string; cancelRequestedChip: string; cancelReasonsMissing: string; logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string; returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string; returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
   deviceInfo: string; etaLabel: string; etaAvailable: string; etaUnavailable: string;
   overrideHeading: string; overrideBody: string; overrideReason: string; overrideReasonCode: string; overrideEvidence: string; overrideSafetyException: string; overrideConfirm: string; overrideCancel: string; overridePending: string; overrideQueued: string; overrideApproved: string; overrideClosed: string; logOverrideQueued: string; logOverrideOfflineQueued: string; logOverrideEvidenceRequired: string; logOverrideFailed: string;
   arrivalEvidenceHeading: string; arrivalEvidenceCaption: string; arrivalPhoto: string; arrivalComment: string; arrivalSave: string; arrivalSaved: string; arrivalRequired: string;
@@ -38,7 +38,7 @@ export type StartupStrings = {
 // component) can render the localized text passed via props at render time.
 let mapLoadingLabel = "Loading geofence map";
 
-// SB20 / ENG-08 — geofence map card. react-leaflet v5 is client-only (ssr:false).
+// SB20 / ENG-08 — Mapbox geofence card is client-only (ssr:false).
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
   loading: () => (
@@ -628,10 +628,6 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         </div>
         {/* F3 · M04-016 — real navigation handoff with this Visit's governed dispatch coordinates */}
         <div className="ax-row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--ax-space-200)" }}>
-          <a className="ax-btn" target="_blank" rel="noopener noreferrer"
-            href={`https://maps.google.com/?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
-            {strings.mapsOpen} ↗
-          </a>
           <a className="ax-btn" target="_blank" rel="noopener noreferrer"
             href={`geo:${visit.dispatch_lat},${visit.dispatch_lng}?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
             {strings.mapsGeo}

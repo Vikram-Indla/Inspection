@@ -3477,9 +3477,29 @@
       "commit_sha": "62916ee (source implementation; documentation record commit follows)",
       "next_task": "Apply the two forward migrations in a reconciled staging or approved shared environment and run the inspector, Operations, expiry and offline-reconnect acceptance journey.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 89, execution/CURRENT_SLICE.yaml and evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md. Source commit 62916ee is verified on codex/ipad/m04-geofence-policy-promotion-002. Do not apply migrations blindly; reconcile migration history/access first, then execute the controlled runtime suite."
+    },
+    {
+      "session_id": "2026-07-16-mapbox-cross-application-migration",
+      "started_at": "2026-07-16",
+      "ended_at": "2026-07-16",
+      "branch": "codex/ipad-mapbox-runtime-004",
+      "task_id": "TASK-IPAD-MAPBOX-RUNTIME-004",
+      "gate": "G11 provider hardening",
+      "requirements": ["MVP1-M04-016", "MVP1-M04-017", "MVP1-M04-024", "MVP1-M04-039", "MVP1-M04-043", "MVP1-M04-045"],
+      "acceptance_ids": ["AC-0152", "AC-0153", "AC-0154", "AC-0155", "AC-0156"],
+      "screens": ["SCR-IPAD-610", "SCR-IPAD-620", "SCR-WEB-500", "SCR-ADM-070"],
+      "engines": ["ENG-06", "ENG-08", "ENG-11"],
+      "files_changed": ["apps/web shared GeoMap, Operations Live, field ETA and provider configuration", "apps/web Mapbox provider tests", "provider decision, acceptance, evidence and queue records"],
+      "tests": ["npm run typecheck PASS", "npx playwright test --config=playwright.static.config.ts PASS (5/5)", "npm run build PASS", "Leaflet/Google runtime source scans PASS", "git diff --check PASS"],
+      "evidence": ["product-contract/evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md", "product-contract/acceptance/ACCEPTANCE_STATUS.md", "product-contract/evidence/EVIDENCE_STATUS.md"],
+      "decisions": ["Sponsor resolved DEC-008: Mapbox GL JS across web/Admin/iPad and Mapbox Directions for in-app ETA; device-native geo handoff remains neutral.", "Mapbox public/browser and server route credentials stay environment-only; no token is committed.", "Offline packs and licence/data-residency confirmation remain open and are not claimed."],
+      "blockers": ["Correct Inspection staging target and credentialed NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN plus MAPBOX_ACCESS_TOKEN configuration are required for actual tile/Arabic-label/Directions runtime proof.", "Mapbox MCP is configured but was not exposed as a callable tool in this existing session."],
+      "commit_sha": "Source commit SHA recorded by follow-up evidence commit",
+      "next_task": "Configure Mapbox variables only in the actual Inspection staging target, run credentialed web/Admin/iPad map and Directions verification, then seek explicit approval to merge the verified branch to main.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 90 and evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md. Do not use Catalyst. Do not claim credentialed Mapbox runtime until the actual Inspection staging target is identified and configured."
     }
   ],
-  "last_session": "2026-07-16-ipad-geofence-override-approval",
+  "last_session": "2026-07-16-mapbox-cross-application-migration",
   "rules": {
     "append_only": true,
     "required_fields": [

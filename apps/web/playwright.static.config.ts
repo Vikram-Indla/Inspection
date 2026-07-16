@@ -5,7 +5,7 @@ import { defineConfig } from "@playwright/test";
 // intentionally has no local Supabase credential file.
 export default defineConfig({
   testDir: "./e2e",
-  testMatch: /ipad-gps-policy\.spec\.ts/,
+  testMatch: /(ipad-gps-policy|mapbox-provider)\.spec\.ts/,
   reporter: "line",
   workers: 1,
 });

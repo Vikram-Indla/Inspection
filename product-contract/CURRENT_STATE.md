@@ -1,5 +1,28 @@
 # Current State
 
+## 2026-07-16 UPDATE 90 — Mapbox source migration delivered across web, Admin and iPad
+
+`TASK-IPAD-MAPBOX-RUNTIME-004` replaces Leaflet/OSM/CARTO renderers with Mapbox
+GL JS across the shared web map component, Admin GIS/Operations view and iPad
+field map. Operations Live retains its explicit projected-route label rather
+than claiming live GPS. Mapbox Directions now provides in-app road-network ETA;
+the field device handoff is provider-neutral (`geo:`). The supplied Mapbox
+credential is not committed: browser rendering reads
+`NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` and the route service reads
+`MAPBOX_ACCESS_TOKEN`, both documented in `apps/web/.env.example`.
+
+The migration preserves the server-authoritative geofence engine, existing
+configuration values, workflow guards, audit behavior and offline rules. Fence
+geometry is rendered as metre-based geodesic polygons, not zoom-dependent
+screen circles. The sponsor’s cross-application provider decision resolves
+`DEC-008`; offline packs and licence/data-residency confirmation remain open.
+
+Typecheck, the production build, diff check and five focused static contracts
+pass. Actual Mapbox tiles, Arabic labels and Directions runtime are deliberately
+not claimed until the correct Inspection staging environment has the two token
+variables configured. Catalyst is not an Inspection target and was not used.
+Evidence: `evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md`.
+
 ## 2026-07-16 UPDATE 89 — governed iPad geofence override source delivered
 
 The sponsor-approved `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003` is source

@@ -68,6 +68,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-16"
     change_ref: "Sponsor response: 1a,2a,3a,4a"
+  - gate: "MAPBOX-CROSS-APPLICATION-PROVIDER"
+    decision: "APPROVED — sponsor supplied Mapbox credentials, directed use of the Mapbox MCP/server, and clarified that Mapbox must operate across web, Admin and iPad. Mapbox GL JS is the shared renderer and Mapbox Directions supplies in-app ETA; device-native navigation remains a neutral handoff. This records the sponsor revision of DEC-008."
+    approver: "Vikram Indla"
+    date: "2026-07-16"
+    change_ref: "Sponsor directions: use Mapbox MCP/server; Mapbox across app web, admin and iPad"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

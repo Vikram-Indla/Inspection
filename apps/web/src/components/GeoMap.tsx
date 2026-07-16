@@ -1,11 +1,11 @@
 "use client";
-// G-MAP — reusable geofencing map (SB20 · ENG-08 · STM-JRN-003).
-// react-leaflet v5 is browser-only: ALWAYS import this component via
-// next/dynamic with ssr:false from a client component.
-import { useEffect, useState } from "react";
-import L from "leaflet";
-import { MapContainer, TileLayer, Marker, Circle, Popup, useMap, useMapEvents } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+
+// G-MAP — Mapbox GL JS is the shared map renderer for web, Admin and iPad.
+// This component presents coordinates and governed geofence geometry only;
+// ENG-06/server-side validation remains the authority for every decision.
+import { useEffect, useRef, useState } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export type GeoTone = "high" | "medium" | "low" | "neutral";
 
@@ -21,119 +21,171 @@ export type GeoMarkerData = {
 
 export type GeoFocus = { lat: number; lng: number; zoom?: number };
 
-// Tone → ax design token (tokens.css). No bare colors in this file.
-const TONE_TOKEN: Record<GeoTone, string> = {
-  high: "--ax-color-critical",
-  medium: "--ax-color-warning",
-  low: "--ax-color-success",
-  neutral: "--ax-color-text-secondary",
+const MARKER_SOURCE = "inspection-markers";
+const FENCE_SOURCE = "inspection-geofences";
+const MARKER_LAYER = "inspection-markers-circle";
+const TONE: Record<GeoTone, { fill: string; stroke: string }> = {
+  high: { fill: "#b42318", stroke: "#7a271a" },
+  medium: { fill: "#b54708", stroke: "#7a2e0e" },
+  low: { fill: "#067647", stroke: "#054f31" },
+  neutral: { fill: "#175cd3", stroke: "#1849a9" },
 };
 
-// Leaflet's default image markers break under bundlers — use a divIcon dot
-// styled with ax tokens instead (primary dot on surface-colored border).
-function dotIcon(tone: GeoTone, selected: boolean) {
-  const size = selected ? 18 : 14;
-  const bg = tone === "neutral" ? "var(--ax-color-primary)" : `var(${TONE_TOKEN[tone]})`;
-  return L.divIcon({
-    className: "",
-    html: `<span style="display:block;inline-size:${size}px;block-size:${size}px;border-radius:var(--ax-radius-full);background:${bg};border:2px solid var(--ax-color-surface);box-shadow:var(--ax-shadow-raised);"></span>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-  });
-}
-
-function FlyTo({ focus }: { focus?: GeoFocus }) {
-  const map = useMap();
-  useEffect(() => {
-    if (focus) map.flyTo([focus.lat, focus.lng], focus.zoom ?? map.getZoom(), { duration: 0.6 });
-  }, [focus, map]);
-  return null;
-}
-
-// Smart fence editing: with a marker selected, clicking the map sets the fence
-// edge at that point (radius = geodesic distance official pin → click).
-function RadiusEditor({ markers, selectedId, onRadiusChange }: {
-  markers: GeoMarkerData[];
-  selectedId?: string | null;
-  onRadiusChange?: (id: string, radiusM: number) => void;
-}) {
-  const map = useMapEvents({
-    click(e) {
-      if (!onRadiusChange || !selectedId) return;
-      const m = markers.find(x => x.id === selectedId);
-      if (!m) return;
-      onRadiusChange(selectedId, Math.round(map.distance(e.latlng, L.latLng(m.lat, m.lng))));
-    },
-  });
-  return null;
-}
-
-export default function GeoMap({
-  center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true,
-}: {
+type Props = {
   center: [number, number];
   zoom: number;
   markers: GeoMarkerData[];
-  /** CSS block-size of the map (parent must size it when "100%"). */
   height?: string | number;
   selectedId?: string | null;
   focus?: GeoFocus;
   onMarkerClick?: (id: string) => void;
-  /** Fired when the user clicks the map with a marker selected — proposed new radius in metres. */
   onRadiusChange?: (id: string, radiusM: number) => void;
-  /** false for read-only placements (e.g. the public landing coverage map) — no pan/zoom/click. */
   interactive?: boolean;
-}) {
-  // Leaflet paths are SVG and need concrete stroke values, so ax tokens are
-  // resolved once via getComputedStyle — source stays token-only.
-  const [tones, setTones] = useState<Record<GeoTone, string> | null>(null);
-  useEffect(() => {
-    const cs = getComputedStyle(document.documentElement);
-    setTones({
-      high: cs.getPropertyValue(TONE_TOKEN.high).trim(),
-      medium: cs.getPropertyValue(TONE_TOKEN.medium).trim(),
-      low: cs.getPropertyValue(TONE_TOKEN.low).trim(),
-      neutral: cs.getPropertyValue(TONE_TOKEN.neutral).trim(),
-    });
-  }, []);
+};
 
-  return (
-    <div style={{ blockSize: height, inlineSize: "100%" }}>
-      <MapContainer center={center} zoom={zoom} scrollWheelZoom={interactive} dragging={interactive}
-        zoomControl={interactive} doubleClickZoom={interactive} touchZoom={interactive} boxZoom={interactive} keyboard={interactive}
-        style={{ blockSize: "100%", inlineSize: "100%" }}>
-        <TileLayer
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        {/* Geofence rings — dashed, tone-colored (STM-JRN-003) */}
-        {tones && markers.filter(m => (m.radiusM ?? 0) > 0).map(m => (
-          <Circle
-            key={`fence-${m.id}`}
-            center={[m.lat, m.lng]}
-            radius={m.radiusM as number}
-            pathOptions={{
-              color: tones[m.tone],
-              weight: m.id === selectedId ? 3 : 2,
-              dashArray: "6 6",
-              fillColor: tones[m.tone],
-              fillOpacity: 0.08,
-            }}
-          />
-        ))}
-        {markers.map(m => (
-          <Marker
-            key={m.id}
-            position={[m.lat, m.lng]}
-            icon={dotIcon(m.tone, m.id === selectedId)}
-            eventHandlers={onMarkerClick ? { click: () => onMarkerClick(m.id) } : undefined}
-          >
-            <Popup>{m.label}</Popup>
-          </Marker>
-        ))}
-        <FlyTo focus={focus} />
-        <RadiusEditor markers={markers} selectedId={selectedId} onRadiusChange={onRadiusChange} />
-      </MapContainer>
-    </div>
-  );
+type RenderData = Pick<Props, "center" | "zoom" | "markers" | "selectedId" | "focus">;
+
+function points(markers: GeoMarkerData[], selectedId?: string | null): GeoJSON.FeatureCollection<GeoJSON.Point> {
+  return {
+    type: "FeatureCollection",
+    features: markers.map(marker => ({
+      type: "Feature",
+      properties: { id: marker.id, label: marker.label, tone: marker.tone, selected: marker.id === selectedId },
+      geometry: { type: "Point", coordinates: [marker.lng, marker.lat] },
+    })),
+  };
+}
+
+// Mapbox circle layers are screen-sized. A governed radius is in metres, so a
+// geodesic polygon is required to keep the fence honest at every zoom level.
+function geodesicRing(lat: number, lng: number, radiusM: number): [number, number][] {
+  const earthRadiusM = 6_378_137;
+  const distance = radiusM / earthRadiusM;
+  const latRad = lat * Math.PI / 180;
+  const lngRad = lng * Math.PI / 180;
+  const ring: [number, number][] = [];
+  for (let bearing = 0; bearing <= 360; bearing += 8) {
+    const theta = bearing * Math.PI / 180;
+    const nextLat = Math.asin(Math.sin(latRad) * Math.cos(distance)
+      + Math.cos(latRad) * Math.sin(distance) * Math.cos(theta));
+    const nextLng = lngRad + Math.atan2(
+      Math.sin(theta) * Math.sin(distance) * Math.cos(latRad),
+      Math.cos(distance) - Math.sin(latRad) * Math.sin(nextLat),
+    );
+    ring.push([nextLng * 180 / Math.PI, nextLat * 180 / Math.PI]);
+  }
+  return ring;
+}
+
+function fences(markers: GeoMarkerData[]): GeoJSON.FeatureCollection<GeoJSON.Polygon> {
+  return {
+    type: "FeatureCollection",
+    features: markers.flatMap(marker => (!marker.radiusM || marker.radiusM <= 0 ? [] : [{
+      type: "Feature" as const,
+      properties: { id: marker.id, tone: marker.tone },
+      geometry: { type: "Polygon" as const, coordinates: [geodesicRing(marker.lat, marker.lng, marker.radiusM)] },
+    }])),
+  };
+}
+
+function sync(map: mapboxgl.Map, data: RenderData, initial = false) {
+  const markerData = points(data.markers, data.selectedId);
+  const fenceData = fences(data.markers);
+  const markerSource = map.getSource(MARKER_SOURCE) as mapboxgl.GeoJSONSource | undefined;
+  const fenceSource = map.getSource(FENCE_SOURCE) as mapboxgl.GeoJSONSource | undefined;
+  if (markerSource && fenceSource) {
+    markerSource.setData(markerData);
+    fenceSource.setData(fenceData);
+  } else {
+    map.addSource(FENCE_SOURCE, { type: "geojson", data: fenceData });
+    map.addLayer({ id: "inspection-fences-fill", type: "fill", source: FENCE_SOURCE, slot: "top", paint: {
+      "fill-color": ["match", ["get", "tone"], "high", TONE.high.fill, "medium", TONE.medium.fill, "low", TONE.low.fill, TONE.neutral.fill],
+      "fill-opacity": 0.1,
+    } });
+    map.addLayer({ id: "inspection-fences-line", type: "line", source: FENCE_SOURCE, slot: "top", paint: {
+      "line-color": ["match", ["get", "tone"], "high", TONE.high.stroke, "medium", TONE.medium.stroke, "low", TONE.low.stroke, TONE.neutral.stroke],
+      "line-width": 2, "line-dasharray": [2, 2],
+    } });
+    map.addSource(MARKER_SOURCE, { type: "geojson", data: markerData });
+    map.addLayer({ id: MARKER_LAYER, type: "circle", source: MARKER_SOURCE, slot: "top", paint: {
+      "circle-radius": ["case", ["get", "selected"], 10, 7],
+      "circle-color": ["match", ["get", "tone"], "high", TONE.high.fill, "medium", TONE.medium.fill, "low", TONE.low.fill, TONE.neutral.fill],
+      "circle-stroke-width": 2, "circle-stroke-color": "#ffffff",
+    } });
+  }
+  if (initial) map.jumpTo({ center: [data.center[1], data.center[0]], zoom: data.zoom });
+  else if (data.focus) map.flyTo({ center: [data.focus.lng, data.focus.lat], zoom: data.focus.zoom ?? map.getZoom(), duration: 600 });
+}
+
+function locale() { return document.documentElement.lang === "ar" ? "ar" : "en"; }
+
+export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true }: Props) {
+  const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const latest = useRef<RenderData>({ center, zoom, markers, selectedId, focus });
+  const selectedRef = useRef(selectedId);
+  const markerClickRef = useRef(onMarkerClick);
+  const radiusChangeRef = useRef(onRadiusChange);
+  const suppressRadiusRef = useRef(false);
+  const [mapLocale, setMapLocale] = useState<"en" | "ar">("en");
+  const [failed, setFailed] = useState(false);
+  latest.current = { center, zoom, markers, selectedId, focus };
+  selectedRef.current = selectedId;
+  markerClickRef.current = onMarkerClick;
+  radiusChangeRef.current = onRadiusChange;
+
+  useEffect(() => { setMapLocale(locale()); }, []);
+  useEffect(() => {
+    if (!token || !containerRef.current) return;
+    const map = new mapboxgl.Map({
+      accessToken: token, container: containerRef.current, style: "mapbox://styles/mapbox/standard",
+      center: [center[1], center[0]], zoom, language: mapLocale,
+      config: { basemap: { lightPreset: "day", show3dObjects: false } }, attributionControl: true,
+      interactive,
+    });
+    mapRef.current = map;
+    if (interactive) map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
+    const onLoad = () => {
+      sync(map, latest.current, true);
+      map.on("click", MARKER_LAYER, event => {
+        const feature = event.features?.[0];
+        const id = String(feature?.properties?.id ?? "");
+        if (!id || feature?.geometry.type !== "Point") return;
+        suppressRadiusRef.current = true;
+        markerClickRef.current?.(id);
+        new mapboxgl.Popup({ closeButton: true, closeOnClick: true })
+          .setLngLat(feature.geometry.coordinates as [number, number])
+          .setText(String(feature.properties?.label ?? ""))
+          .addTo(map);
+      });
+      map.on("click", event => {
+        if (suppressRadiusRef.current) { suppressRadiusRef.current = false; return; }
+        const id = selectedRef.current;
+        const marker = latest.current.markers.find(item => item.id === id);
+        if (!id || !marker || !radiusChangeRef.current) return;
+        const radiusM = Math.round(new mapboxgl.LngLat(marker.lng, marker.lat).distanceTo(event.lngLat));
+        radiusChangeRef.current(id, radiusM);
+      });
+      map.on("mouseenter", MARKER_LAYER, () => { map.getCanvas().style.cursor = "pointer"; });
+      map.on("mouseleave", MARKER_LAYER, () => { map.getCanvas().style.cursor = ""; });
+    };
+    const onError = (event: { error?: Error }) => {
+      if (/access token|authorization|unauthori[sz]ed|forbidden|failed to load.*style/i.test(event.error?.message ?? "")) setFailed(true);
+    };
+    map.on("load", onLoad); map.on("error", onError);
+    return () => { map.off("load", onLoad); map.off("error", onError); map.remove(); mapRef.current = null; };
+  }, [interactive, mapLocale, token]);
+
+  useEffect(() => { if (mapRef.current?.isStyleLoaded()) sync(mapRef.current, latest.current); }, [center, focus, markers, selectedId, zoom]);
+  useEffect(() => { mapRef.current?.setLanguage(mapLocale); }, [mapLocale]);
+
+  if (!token || failed) {
+    const ar = mapLocale === "ar";
+    return <div className="ax-state ax-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider="mapbox-unavailable">
+      <span className="ax-state__glyph">⌖</span><h4>{ar ? "خدمة الخريطة غير متاحة" : "Map service unavailable"}</h4>
+      <p className="ax-caption">{ar ? "لم يتم تكوين خدمة Mapbox لهذه البيئة." : "Mapbox is not configured for this environment."}</p>
+    </div>;
+  }
+  return <div ref={containerRef} aria-label="Mapbox map" data-map-provider="mapbox" style={{ blockSize: height, inlineSize: "100%" }} />;
 }

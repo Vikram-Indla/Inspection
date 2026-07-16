@@ -146,8 +146,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
       : t("field.start.logOpBlockedSafe", "The visit state could not be updated. Check readiness and the connection, then try again."),
     logGpsFallback: t("field.start.logGpsFallback", "GPS unavailable — check-in remains blocked. Restore location access and retry (M04-049)."),
     // F3 — navigation launch (M04-016)
-    mapsOpen: t("field.start.mapsOpen", "Open in Google Maps"),
-    mapsGeo: t("field.start.mapsGeo", "Open in navigation app"),
+    mapsGeo: t("field.start.mapsGeo", "Open in device navigation"),
     mapsCaption: dispatchSource === "official"
       ? t("field.start.mapsCaption", "Launches the device navigation app with the official factory coordinates (M04-016 · FND-007)")
       : t("field.start.mapsCaptionImmediate", "Launches navigation with the location confirmed on this Immediate Visit; official factory master coordinates remain unchanged (M01-046 · FND-007)"),

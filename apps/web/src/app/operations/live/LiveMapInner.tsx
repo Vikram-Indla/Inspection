@@ -1,192 +1,133 @@
 "use client";
-// SCR-WEB-500 (live prototype) — the FlightRadar-style national operations
-// view. Browser-only (react-leaflet v5), loaded via next/dynamic ssr:false
-// from LiveOps.tsx. Three layers over a theme-aware basemap:
-//   1. Region RAG zones — aggregate inspection posture per region.
-//   2. Factory pins — real names, toned + SHAPED by risk band (colourblind-safe).
-//   3. Inspectors — en-route visits animated along a PROJECTED route toward
-//      their target factory. This is a projection of the visit window, NOT
-//      live GPS telemetry (DEC-002 is open) — labelled as such in the legend.
-// All colours resolve from ax tokens (GLOBAL COLOR LAW); no bare values.
+
+// SCR-WEB-500 — Mapbox Operations Live renderer. Inspector positions remain
+// explicitly projected from visit windows; this view never presents them as
+// live GPS telemetry (DEC-002 / ENG-06 remain the authority).
 import { useEffect, useMemo, useRef, useState } from "react";
-import L from "leaflet";
-import { MapContainer, TileLayer, Marker, Circle, Polyline, Popup, Tooltip } from "react-leaflet";
-// (Tooltip used for factory/inspector hovers; Circle for RAG zones.)
-import "leaflet/dist/leaflet.css";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import type { LiveFactory, LiveRegion, LiveInspector, RagBand } from "./types";
 
 const KSA_CENTER: [number, number] = [24.2, 45.1];
 const KSA_ZOOM = 6;
+const FACTORY_SOURCE = "ops-factories";
+const REGION_SOURCE = "ops-regions";
+const REGION_LABEL_SOURCE = "ops-region-labels";
+const INSPECTOR_SOURCE = "ops-inspectors";
+const ROUTE_SOURCE = "ops-projected-routes";
+const FACTORY_LAYER = "ops-factories-symbol";
 
-const BAND_TOKEN: Record<RagBand, string> = {
-  high: "--ax-color-critical",
-  medium: "--ax-color-warning",
-  low: "--ax-color-success",
-};
-// Colourblind-safe: band is carried by SHAPE as well as hue.
-const BAND_GLYPH: Record<RagBand, string> = { high: "▲", medium: "◆", low: "●" };
-
-type Tokens = Record<RagBand, string> & { primary: string; surface: string; muted: string };
-
-function useTokens(): Tokens | null {
-  const [tok, setTok] = useState<Tokens | null>(null);
-  useEffect(() => {
-    const read = (): Tokens => {
-      const cs = getComputedStyle(document.documentElement);
-      const g = (v: string) => cs.getPropertyValue(v).trim();
-      return {
-        high: g(BAND_TOKEN.high), medium: g(BAND_TOKEN.medium), low: g(BAND_TOKEN.low),
-        primary: g("--ax-color-primary"), surface: g("--ax-color-surface"),
-        muted: g("--ax-color-text-secondary"),
-      };
-    };
-    setTok(read());
-    // Re-resolve when the theme toggles (data-theme flips on <html>).
-    const obs = new MutationObserver(() => setTok(read()));
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => obs.disconnect();
-  }, []);
-  return tok;
-}
-
-// Theme-aware CARTO basemap — dark matter under the dark theme, light under
-// light. Same external-tile posture already used by GeoMap (OSM).
-function useBasemap(): string {
-  const [dark, setDark] = useState(true);
-  useEffect(() => {
-    const resolve = () => {
-      const attr = document.documentElement.getAttribute("data-theme");
-      if (attr === "light") return false;
-      if (attr === "dark") return true;
-      return !window.matchMedia?.("(prefers-color-scheme: light)").matches;
-    };
-    setDark(resolve());
-    const obs = new MutationObserver(() => setDark(resolve()));
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => obs.disconnect();
-  }, []);
-  return dark
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png";
-}
-
-function factoryIcon(band: RagBand, color: string, surface: string, selected: boolean) {
-  const size = selected ? 30 : 24;
-  return L.divIcon({
-    className: "",
-    html: `<span style="display:grid;place-items:center;inline-size:${size}px;block-size:${size}px;border-radius:var(--ax-radius-full);background:${surface};border:2px solid ${color};box-shadow:var(--ax-shadow-raised);color:${color};font:700 ${size * 0.5}px/1 system-ui;">${BAND_GLYPH[band]}</span>`,
-    iconSize: [size, size], iconAnchor: [size / 2, size / 2],
-  });
-}
-
-function zoneIcon(region: LiveRegion, color: string) {
-  return L.divIcon({
-    className: "",
-    html: `<span style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;padding:2px 8px;border-radius:var(--ax-radius-full);background:${color};color:var(--ax-color-inverse-text);font:700 11px/1.4 var(--ax-font-mono);box-shadow:var(--ax-shadow-raised);">${BAND_GLYPH[region.posture]} ${region.name.toUpperCase()}</span>`,
-    iconSize: [10, 10], iconAnchor: [0, 0],
-  });
-}
-
-// A little swept-wing glyph, rotated to the travel heading, for a moving
-// inspector. currentColor = primary (violet) so it reads as "our asset".
-function inspectorIcon(headingDeg: number, color: string, surface: string) {
-  return L.divIcon({
-    className: "",
-    html: `<span style="display:grid;place-items:center;inline-size:26px;block-size:26px;border-radius:var(--ax-radius-full);background:${surface};border:1.5px solid ${color};box-shadow:var(--ax-shadow-raised);">
-      <svg width="14" height="14" viewBox="0 0 24 24" style="transform:rotate(${headingDeg}deg);color:${color}" fill="currentColor"><path d="M12 2 4 21l8-4 8 4z"/></svg></span>`,
-    iconSize: [26, 26], iconAnchor: [13, 13],
-  });
-}
+const COLOR: Record<RagBand, string> = { high: "#b42318", medium: "#b54708", low: "#067647" };
+const GLYPH: Record<RagBand, string> = { high: "▲", medium: "◆", low: "●" };
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
-function heading(from: [number, number], to: [number, number]) {
-  return (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI + 90;
+function heading(from: [number, number], to: [number, number]) { return (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI + 90; }
+
+function ring(lat: number, lng: number, radiusM: number): [number, number][] {
+  const earth = 6_378_137, d = radiusM / earth, latR = lat * Math.PI / 180, lngR = lng * Math.PI / 180;
+  const points: [number, number][] = [];
+  for (let bearing = 0; bearing <= 360; bearing += 8) {
+    const theta = bearing * Math.PI / 180;
+    const nextLat = Math.asin(Math.sin(latR) * Math.cos(d) + Math.cos(latR) * Math.sin(d) * Math.cos(theta));
+    const nextLng = lngR + Math.atan2(Math.sin(theta) * Math.sin(d) * Math.cos(latR), Math.cos(d) - Math.sin(latR) * Math.sin(nextLat));
+    points.push([nextLng * 180 / Math.PI, nextLat * 180 / Math.PI]);
+  }
+  return points;
 }
 
-export default function LiveMapInner({
-  factories, regions, inspectors, selectedId, onSelect,
-}: {
-  factories: LiveFactory[];
-  regions: LiveRegion[];
-  inspectors: LiveInspector[];
-  selectedId: string | null;
-  onSelect: (id: string | null) => void;
-}) {
-  const tok = useTokens();
-  const url = useBasemap();
+function projected(inspectors: LiveInspector[], tick: number, reduce: boolean) {
+  return inspectors.map(ins => {
+    const drift = reduce ? 0 : ((tick * 0.006 + ins.seed) % 1) * (1 - ins.baseFraction);
+    const fraction = ins.state === "on_the_way" ? Math.min(0.985, ins.baseFraction + drift) : 1;
+    const pos: [number, number] = [lerp(ins.originLat, ins.destLat, fraction), lerp(ins.originLng, ins.destLng, fraction)];
+    return { ins, fraction, pos, heading: heading([ins.originLat, ins.originLng], [ins.destLat, ins.destLng]) };
+  });
+}
 
-  // Animation clock — a 0..1 progress each inspector maps onto its route.
-  // Frozen for reduced-motion users; otherwise advances ~4%/tick (2.5s loop).
-  const reduce = typeof window !== "undefined"
-    && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+function updateSources(map: mapboxgl.Map, factories: LiveFactory[], regions: LiveRegion[], moving: ReturnType<typeof projected>) {
+  const factoryData: GeoJSON.FeatureCollection<GeoJSON.Point> = { type: "FeatureCollection", features: factories.map(factory => ({
+    type: "Feature", properties: { id: factory.id, rawId: factory.rawId, name: factory.name, context: factory.city ?? factory.region ?? "", band: factory.band, glyph: GLYPH[factory.band] },
+    geometry: { type: "Point", coordinates: [factory.lng, factory.lat] },
+  })) };
+  const regionData: GeoJSON.FeatureCollection<GeoJSON.Polygon> = { type: "FeatureCollection", features: regions.map(region => ({
+    type: "Feature", properties: { id: region.id, band: region.posture }, geometry: { type: "Polygon", coordinates: [ring(region.lat, region.lng, region.radiusM)] },
+  })) };
+  const regionLabels: GeoJSON.FeatureCollection<GeoJSON.Point> = { type: "FeatureCollection", features: regions.map(region => ({
+    type: "Feature", properties: { label: `${GLYPH[region.posture]} ${region.name.toUpperCase()}`, band: region.posture }, geometry: { type: "Point", coordinates: [region.lng, region.lat] },
+  })) };
+  const inspectorData: GeoJSON.FeatureCollection<GeoJSON.Point> = { type: "FeatureCollection", features: moving.map(({ ins, pos, heading: bearing, fraction }) => ({
+    type: "Feature", properties: { factoryId: ins.factoryId, inspector: ins.inspector, state: ins.stateLabel, factory: ins.factoryName, eta: Math.max(1, Math.round((1 - fraction) * ins.etaMin)), bearing },
+    geometry: { type: "Point", coordinates: [pos[1], pos[0]] },
+  })) };
+  const routeData: GeoJSON.FeatureCollection<GeoJSON.LineString> = { type: "FeatureCollection", features: moving.flatMap(({ ins, pos }) => ins.state !== "on_the_way" ? [] : [{
+    type: "Feature" as const, properties: {}, geometry: { type: "LineString" as const, coordinates: [[ins.originLng, ins.originLat], [pos[1], pos[0]]] },
+  }]) };
+  const set = (id: string, data: GeoJSON.FeatureCollection) => (map.getSource(id) as mapboxgl.GeoJSONSource | undefined)?.setData(data);
+  set(FACTORY_SOURCE, factoryData); set(REGION_SOURCE, regionData); set(REGION_LABEL_SOURCE, regionLabels); set(INSPECTOR_SOURCE, inspectorData); set(ROUTE_SOURCE, routeData);
+}
+
+function installLayers(map: mapboxgl.Map) {
+  for (const id of [FACTORY_SOURCE, REGION_SOURCE, REGION_LABEL_SOURCE, INSPECTOR_SOURCE, ROUTE_SOURCE]) map.addSource(id, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+  const color = ["match", ["get", "band"], "high", COLOR.high, "medium", COLOR.medium, COLOR.low] as mapboxgl.Expression;
+  map.addLayer({ id: "ops-regions-fill", type: "fill", source: REGION_SOURCE, slot: "top", paint: { "fill-color": color, "fill-opacity": 0.1 } });
+  map.addLayer({ id: "ops-regions-line", type: "line", source: REGION_SOURCE, slot: "top", paint: { "line-color": color, "line-width": 1.5 } });
+  map.addLayer({ id: "ops-projected-routes-line", type: "line", source: ROUTE_SOURCE, slot: "top", paint: { "line-color": "#6941c6", "line-width": 1.5, "line-opacity": 0.55, "line-dasharray": [2, 6] } });
+  map.addLayer({ id: FACTORY_LAYER, type: "symbol", source: FACTORY_SOURCE, slot: "top", layout: { "text-field": ["get", "glyph"], "text-size": 24, "text-allow-overlap": true }, paint: { "text-color": color, "text-halo-color": "#ffffff", "text-halo-width": 1.5 } });
+  map.addLayer({ id: "ops-inspectors-symbol", type: "symbol", source: INSPECTOR_SOURCE, slot: "top", layout: { "text-field": "➤", "text-size": 24, "text-rotate": ["get", "bearing"], "text-allow-overlap": true }, paint: { "text-color": "#6941c6", "text-halo-color": "#ffffff", "text-halo-width": 1.5 } });
+  map.addLayer({ id: "ops-region-labels", type: "symbol", source: REGION_LABEL_SOURCE, slot: "top", layout: { "text-field": ["get", "label"], "text-size": 11, "text-font": ["Open Sans Bold"], "text-allow-overlap": true }, paint: { "text-color": color, "text-halo-color": "#ffffff", "text-halo-width": 1 } });
+}
+
+export default function LiveMapInner({ factories, regions, inspectors, selectedId, onSelect }: {
+  factories: LiveFactory[]; regions: LiveRegion[]; inspectors: LiveInspector[]; selectedId: string | null; onSelect: (id: string | null) => void;
+}) {
+  const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const latest = useRef({ factories, regions, inspectors, selectedId, onSelect, tick: 0, reduce: false });
+  const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const [tick, setTick] = useState(0);
-  const raf = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [failed, setFailed] = useState(false);
+  latest.current = { factories, regions, inspectors, selectedId, onSelect, tick, reduce };
+
   useEffect(() => {
     if (reduce) return;
-    raf.current = setInterval(() => setTick(t => t + 1), 100);
-    return () => { if (raf.current) clearInterval(raf.current); };
+    const timer = window.setInterval(() => setTick(value => value + 1), 100);
+    return () => window.clearInterval(timer);
   }, [reduce]);
 
-  const moving = useMemo(() => inspectors.map(ins => {
-    // base fraction from the visit window; en-route pins creep forward from it.
-    const drift = reduce ? 0 : ((tick * 0.006 + ins.seed) % 1) * (1 - ins.baseFraction);
-    const f = ins.state === "on_the_way"
-      ? Math.min(0.985, ins.baseFraction + drift)
-      : 1; // arrived / executing sit on the factory
-    const pos: [number, number] = [lerp(ins.originLat, ins.destLat, f), lerp(ins.originLng, ins.destLng, f)];
-    const head = heading([ins.originLat, ins.originLng], [ins.destLat, ins.destLng]);
-    return { ins, pos, head, f };
-  }), [inspectors, tick, reduce]);
+  useEffect(() => {
+    if (!token || !containerRef.current) return;
+    const map = new mapboxgl.Map({ accessToken: token, container: containerRef.current, style: "mapbox://styles/mapbox/standard", center: [KSA_CENTER[1], KSA_CENTER[0]], zoom: KSA_ZOOM, minZoom: 5, maxZoom: 11, language: document.documentElement.lang === "ar" ? "ar" : "en", config: { basemap: { lightPreset: "day", show3dObjects: false } } });
+    mapRef.current = map;
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
+    const onLoad = () => {
+      installLayers(map);
+      const next = latest.current;
+      updateSources(map, next.factories, next.regions, projected(next.inspectors, next.tick, next.reduce));
+      map.on("click", FACTORY_LAYER, event => {
+        const feature = event.features?.[0];
+        const id = String(feature?.properties?.id ?? "");
+        if (!id || feature?.geometry.type !== "Point") return;
+        latest.current.onSelect(id);
+        new mapboxgl.Popup().setLngLat(feature.geometry.coordinates as [number, number])
+          .setText(`${String(feature.properties?.name ?? "")}\n${String(feature.properties?.context ?? "")}`).addTo(map);
+      });
+      map.on("click", "ops-inspectors-symbol", event => { const id = String(event.features?.[0]?.properties?.factoryId ?? ""); if (id) latest.current.onSelect(id); });
+      map.on("click", "ops-region-labels", () => latest.current.onSelect(null));
+      for (const layer of [FACTORY_LAYER, "ops-inspectors-symbol", "ops-region-labels"]) map.on("mouseenter", layer, () => { map.getCanvas().style.cursor = "pointer"; });
+      for (const layer of [FACTORY_LAYER, "ops-inspectors-symbol", "ops-region-labels"]) map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; });
+    };
+    const onError = (event: { error?: Error }) => { if (/access token|authorization|unauthori[sz]ed|forbidden|failed to load.*style/i.test(event.error?.message ?? "")) setFailed(true); };
+    map.on("load", onLoad); map.on("error", onError);
+    return () => { map.off("load", onLoad); map.off("error", onError); map.remove(); mapRef.current = null; };
+  }, [token]);
 
-  if (!tok) return null;
-  const bandColor = (b: RagBand) => tok[b];
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map?.isStyleLoaded()) return;
+    updateSources(map, factories, regions, projected(inspectors, tick, reduce));
+  }, [factories, inspectors, regions, reduce, tick]);
 
-  return (
-    <MapContainer center={KSA_CENTER} zoom={KSA_ZOOM} minZoom={5} maxZoom={11}
-      scrollWheelZoom style={{ blockSize: "100%", inlineSize: "100%", background: "var(--ax-color-canvas)" }}>
-      <TileLayer url={url} subdomains="abcd"
-        attribution='&copy; <a href="https://carto.com/">CARTO</a> · <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' />
-
-      {/* Layer 1 — region RAG zones */}
-      {regions.map(r => (
-        <Circle key={`z:${r.id}`} center={[r.lat, r.lng]} radius={r.radiusM}
-          pathOptions={{ color: bandColor(r.posture), weight: 1.5, fillColor: bandColor(r.posture), fillOpacity: 0.1 }} />
-      ))}
-      {regions.map(r => (
-        <Marker key={`zl:${r.id}`} position={[r.lat, r.lng]} icon={zoneIcon(r, bandColor(r.posture))}
-          eventHandlers={{ click: () => onSelect(null) }} />
-      ))}
-
-      {/* Layer 2 — factories (real names, shaped by band) */}
-      {factories.map(f => (
-        <Marker key={f.id} position={[f.lat, f.lng]}
-          icon={factoryIcon(f.band, bandColor(f.band), tok.surface, f.id === selectedId)}
-          eventHandlers={{ click: () => onSelect(f.id) }}>
-          <Popup>
-            <strong>{f.name}</strong><br />
-            <span style={{ color: "var(--ax-color-text-secondary)" }}>{f.city ?? f.region ?? ""}</span><br />
-            {f.riskScore != null && <>Risk {f.riskScore} · </>}<a href={`/factories/${f.rawId}`}>Open Factory 360 →</a>
-          </Popup>
-        </Marker>
-      ))}
-
-      {/* Layer 3 — inspectors on projected routes */}
-      {moving.map(({ ins, pos, head, f }) => (
-        <div key={ins.id}>
-          {ins.state === "on_the_way" && (
-            <Polyline positions={[[ins.originLat, ins.originLng], pos]}
-              pathOptions={{ color: tok.primary, weight: 1.5, dashArray: "2 6", opacity: 0.55 }} />
-          )}
-          <Marker position={pos} icon={inspectorIcon(head, tok.primary, tok.surface)}
-            eventHandlers={{ click: () => onSelect(ins.factoryId) }}>
-            <Tooltip direction="top" offset={[0, -12]}>
-              <strong>{ins.inspector}</strong> · {ins.stateLabel}
-              {ins.state === "on_the_way" && <> · ETA ~{Math.max(1, Math.round((1 - f) * ins.etaMin))}m</>}
-              <br /><span style={{ color: "var(--ax-color-text-secondary)" }}>{ins.factoryName}</span>
-            </Tooltip>
-          </Marker>
-        </div>
-      ))}
-    </MapContainer>
-  );
+  if (!token || failed) return <div className="ax-state" role="status" data-map-provider="mapbox-unavailable"><span className="ax-state__glyph">⌖</span><h4>Map service unavailable</h4><p className="ax-caption">Mapbox is not configured for this environment.</p></div>;
+  return <div ref={containerRef} aria-label="Mapbox operations map" data-map-provider="mapbox" style={{ blockSize: "100%", inlineSize: "100%", background: "var(--ax-color-canvas)" }} />;
 }

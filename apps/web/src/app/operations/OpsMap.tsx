@@ -1,7 +1,7 @@
 "use client";
 // M08-002 — KSA operations map. Active-visit pins toned by operational_state,
 // factory positions as neutral pins; clicking a pin surfaces a link to the
-// visit (or factory dossier). GeoMap is react-leaflet v5 (browser-only), so it
+// visit (or factory dossier). GeoMap is Mapbox GL JS (browser-only), so it
 // loads via next/dynamic ssr:false — the dynamic() call must live in a client
 // component (same canon as admin/gis/GisStudio.tsx and field/[visitId]).
 import { useMemo, useState } from "react";

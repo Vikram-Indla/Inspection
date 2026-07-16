@@ -157,12 +157,8 @@
 
 /* ---- the map itself ------------------------------------------------------ */
 .lg-map { position: absolute; inset: 0; background: var(--ax-color-canvas); }
-.lg-map .leaflet-container { background: transparent; font: inherit; }
 /* CARTO dark tiles are too dim behind the mask — brighten them (design 4a) */
 .lg-map .lg-map__tiles--bright { filter: brightness(2.3) saturate(1.2) contrast(1.02); }
-.lg-map .leaflet-control-attribution { background: transparent;
-  font: 400 9px var(--ax-font-sans); color: var(--ax-color-text-disabled); }
-.lg-map .leaflet-control-attribution a { color: var(--ax-color-text-secondary); }
 
 /* factory chip */
 .lg-map__site { transform: translate(-50%, -50%); display: grid; place-items: center;
@@ -222,7 +218,7 @@
 
 /* ============================================================================
    CD-001 V7 — PREMIUM 3D SAUDI INDUSTRIAL INSPECTION ATLAS
-   Five layers over the Leaflet stack. Tokens only (GLOBAL COLOR LAW): tone is
+   Five layers over the public-safe atlas. Tokens only (GLOBAL COLOR LAW): tone is
    carried per node via --tone; color-mix derives tints/shadows from tokens.
    ========================================================================== */
 

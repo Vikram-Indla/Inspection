@@ -363,7 +363,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   };
   const mapStrings: OpsMapStrings = {
     loadingTitle: t("ops.map.loading.title", "Loading KSA map"),
-    loadingBody: t("ops.map.loading.body", "Leaflet renders in the browser only."),
+    loadingBody: t("ops.map.loading.body", "Mapbox renders in the browser only."),
     open: t("ops.map.open", "Open"),
     selectHint: t("ops.map.selectHint", "Click a pin to open the visit or factory dossier."),
     legendExecuting: t("ops.map.legend.executing", "executing"),
