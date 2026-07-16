@@ -92,4 +92,4 @@ admin-only personas remain excluded.
 1. Live-DB GRANT confirmation on the now-RLS'd tables (need authenticated Supabase session).
 2. Guard-style inconsistency (redirect vs soft-block vs none) — cosmetic risk, auditor-facing.
 3. iPad (SCR-IPAD-600..650) and virtual (SCR-VIR-700..720) channels not re-verified in this pass.
-4. Pre-existing: `shell-navigation.spec.ts:18` admin-family href assertion is stale (expects 6, nav yields 9) — independent of this change.
+4. Fixed: `shell-navigation.spec.ts` admin-family href assertion (was stale — expected 6, nav yields 9). Updated to the real 9 (nav order) with explicit not-contains for workflows/gis. All role-matrix assertions verified green against the module.
