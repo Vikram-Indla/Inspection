@@ -59,7 +59,13 @@ export async function publishRegulation(_: RegResult, formData: FormData): Promi
   const { error } = await sb.from("regulations")
     .update({ status: "published", approved_by: userId, published_at: new Date().toISOString() })
     .eq("id", id).eq("status", "draft");
+  if (!id) return { error: "Missing regulation id." };
+  // CD006-WA-01 — record approval provenance; the gate user is the checker.
+  const { data, error } = await sb.from("regulations")
+    .update({ status: "published", approved_by: userId, published_at: new Date().toISOString() })
+    .eq("id", id).eq("status", "draft").select("id");
   if (error) { logProviderError("admin regulation status", error); return { error: NEUTRAL_WRITE_ERROR }; }
+  if (!data?.length) return { error: "This regulation could not be published — it is not in draft, or you are not authorized." };
   revalidatePath("/admin/regulations");
   return { ok: true };
 }
