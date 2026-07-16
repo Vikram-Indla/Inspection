@@ -75,16 +75,21 @@ packages, package_versions, violation_codes, penalty_mappings` (enabled via the
 - Contract probe `0029_...` executed live → **HTTP 201, no exception → PASS**.
 - Security advisor `rls_disabled_in_public` → **CLEARED**, neither table flagged.
 
-## Business-direction drift (Dashboard / Ops / Factory 360 to all non-admin)
+## Business-direction alignment (Dashboard / Ops / Factory 360 to all non-admin)
 
-- **Factory 360** — ✅ nav + RLS already grant all 5 non-admin roles.
-- **Dashboard** — ❌ nav + hard redirect limit to `ops`/`leadership`. Widening
-  is a **product decision**, not applied here.
-- **Operations Center** — ❌ nav limits to `ops`/`leadership`. Same decision pending.
+Resolved 2026-07-16 per business direction. Command destinations now share one
+`BUSINESS_ROLE_KEYS` set (`planner, inspector, reviewer, ops, leadership`);
+admin-only personas remain excluded.
+
+- **Factory 360** — ✅ all 5 non-admin roles (already the case).
+- **Dashboard** — ✅ widened: nav + hard route guard now admit all 5 non-admin roles (`shell-navigation.ts`, `dashboard/page.tsx`). Data stays RLS-scoped per persona.
+- **Operations Center** — ✅ widened: nav admits all 5 non-admin roles. Page has no role guard; data RLS-scoped.
+- Admin-no-leak verified: admin-family nav yields no `/dashboard` or `/operations`.
+- Menu visibility ≠ authorization: each destination keeps its guard + RLS.
 
 ## Open items (not closable from static analysis)
 
 1. Live-DB GRANT confirmation on the now-RLS'd tables (need authenticated Supabase session).
-2. Dashboard/Operations visibility widening — awaiting product decision.
-3. Guard-style inconsistency (redirect vs soft-block vs none) — cosmetic risk, auditor-facing.
-4. iPad (SCR-IPAD-600..650) and virtual (SCR-VIR-700..720) channels not re-verified in this pass.
+2. Guard-style inconsistency (redirect vs soft-block vs none) — cosmetic risk, auditor-facing.
+3. iPad (SCR-IPAD-600..650) and virtual (SCR-VIR-700..720) channels not re-verified in this pass.
+4. Pre-existing: `shell-navigation.spec.ts:18` admin-family href assertion is stale (expects 6, nav yields 9) — independent of this change.

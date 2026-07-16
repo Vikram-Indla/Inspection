@@ -12,6 +12,19 @@ export const ADMIN_ROLE_KEYS = [
   "risk_owner",
 ] as const;
 
+// Business (non-admin) personas. The shared Command destinations — Dashboard,
+// Operations Center and Factory 360 — are visible to every non-admin persona
+// (business direction 2026-07-16). Admin-only personas do not see them.
+// Menu visibility is not authorization: each destination keeps its own route
+// guard and RLS/data scoping (RBAC-001..014).
+export const BUSINESS_ROLE_KEYS = [
+  "planner",
+  "inspector",
+  "reviewer",
+  "ops",
+  "leadership",
+] as const;
+
 export type ShellIcon =
   | "dashboard" | "radar" | "factory" | "calendar" | "visits"
   | "inspect" | "virtual" | "review" | "admin" | "library"
@@ -37,6 +50,7 @@ export type ShellNavGroupDefinition = {
 };
 
 const adminRoles = ADMIN_ROLE_KEYS as readonly string[];
+const businessRoles = BUSINESS_ROLE_KEYS as readonly string[];
 
 export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
   {
@@ -45,8 +59,8 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelEn: "Command",
     labelAr: "القيادة",
     items: [
-      { id: "dashboard", labelKey: "shell.nav.dashboard", labelEn: "Dashboard", labelAr: "لوحة القيادة", href: "/dashboard", icon: "dashboard", roles: ["ops", "leadership"], businessTab: "Dashboard" },
-      { id: "operations-live", labelKey: "shell.nav.operationsLive", labelEn: "Operations Center", labelAr: "مركز العمليات", href: "/operations", icon: "radar", roles: ["ops", "leadership"], businessTab: "Operations Center" },
+      { id: "dashboard", labelKey: "shell.nav.dashboard", labelEn: "Dashboard", labelAr: "لوحة القيادة", href: "/dashboard", icon: "dashboard", roles: businessRoles, businessTab: "Dashboard" },
+      { id: "operations-live", labelKey: "shell.nav.operationsLive", labelEn: "Operations Center", labelAr: "مركز العمليات", href: "/operations", icon: "radar", roles: businessRoles, businessTab: "Operations Center" },
       { id: "factory-360", labelKey: "nav.factory360", labelEn: "Factory 360", labelAr: "المصنع 360", href: "/factories", icon: "factory", roles: ["planner", "inspector", "reviewer", "ops", "leadership"], businessTab: "Factory 360" },
     ],
   },

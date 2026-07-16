@@ -5,12 +5,14 @@ import { storageStatePath } from "./personas";
 const hrefsFor = (roles: string[]) => buildShellNavigation(roles).flatMap(group => group.items.map(item => item.href));
 
 test.describe("TASK-WEB-SHELL-001 role matrix", () => {
-  test("planner sees only governed planning/workspace destinations", () => {
-    expect(hrefsFor(["planner"])).toEqual(["/factories", "/planning", "/visits"]);
+  test("planner sees the shared Command destinations plus governed planning/workspace", () => {
+    // Dashboard + Operations Center are shared non-admin destinations (business
+    // direction 2026-07-16); Factory 360 was already shared.
+    expect(hrefsFor(["planner"])).toEqual(["/dashboard", "/operations", "/factories", "/planning", "/visits"]);
   });
 
-  test("inspector sees field destinations without admin or operations control planes", () => {
-    expect(hrefsFor(["inspector"])).toEqual(["/factories", "/field", "/virtual"]);
+  test("inspector sees the shared Command destinations plus field, never admin", () => {
+    expect(hrefsFor(["inspector"])).toEqual(["/dashboard", "/operations", "/factories", "/field", "/virtual"]);
   });
 
   test("admin-family grants compose without inventing unsupported tabs", () => {
