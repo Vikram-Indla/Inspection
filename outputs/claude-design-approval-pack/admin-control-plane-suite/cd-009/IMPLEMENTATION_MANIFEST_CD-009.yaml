@@ -1,0 +1,84 @@
+# IMPLEMENTATION_MANIFEST_CD-009.yaml
+prompt_id: CD-009
+screen_id: SCR-ADM-031
+route: /admin/packages (designer mode — draft version editing; no new URL)
+source_branch: unknown — no fresh repository read this session
+source_commit: unknown — same reason
+dirty_worktree: unknown — same reason
+design_frame_ids: [9e, 9f, 9g, 9h, 9i, 9j, 9t, 9s, 9o]
+pngs: [CD-009_SCR-ADM-031_primary.png, CD-009_SCR-ADM-031_outlier.png]
+status: READY_FOR_DESIGN_REVIEW
+implementation_authorized: false
+
+file_changes:
+  - path: apps/web/src/app/admin/packages/DraftEditor.tsx
+    before_responsibility: unknown — not inspected this session (draft editing exists in some form)
+    disposition: UPDATE (pending inspection)
+    after_responsibility: hosts the three-pane studio (structure tree, field canvas, rule inspector) for draft versions
+    design_node: 9e panes
+    code_target: HANDOFF_BLOCKED — section/rule/condition schema unconfirmed
+    protected_behavior: existing draft persistence, RLS, audit
+    dependencies: [actions.ts, PackagePreview.tsx]
+    rtl_theme_impact: full RTL studio per 9e/9f; focus-mode drawer at 1024
+    tests: HANDOFF_BLOCKED
+    rollback: revert file
+  - path: apps/web/src/app/admin/packages/PackagePreview.tsx
+    before_responsibility: unknown — preview exists as a file
+    disposition: UPDATE (pending inspection)
+    after_responsibility: bilingual (AR-default) device preview + simulation surface; preview-vs-field-runtime equivalence is an audit obligation
+    design_node: 9s-5/6
+    code_target: HANDOFF_BLOCKED — simulation engine unconfirmed (all test-path counts are (proposed))
+    protected_behavior: existing preview logic
+    dependencies: []
+    rtl_theme_impact: RTL preview is the default tab
+    tests: HANDOFF_BLOCKED
+    rollback: revert file
+  - path: apps/web/src/app/admin/packages/ImpactPanel.tsx
+    before_responsibility: unknown
+    disposition: PRESERVE (candidate consequence-chain data source)
+    after_responsibility: candidate feed for the Inspection Consequence Preview
+    design_node: 9t
+    code_target: HANDOFF_BLOCKED
+    protected_behavior: unknown
+    dependencies: []
+    rtl_theme_impact: none
+    tests: n/a
+    rollback: n/a
+  - path: apps/web/src/app/admin/packages/PublishControls.tsx
+    before_responsibility: unknown (distinct-approver enforcement proven in this flow)
+    disposition: UPDATE (pending inspection)
+    after_responsibility: publish additionally gated by zero validation-contract errors; approver rule untouched
+    design_node: 9e/9j publish button + validation contract
+    code_target: HANDOFF_BLOCKED — validation checks (circular/hidden-mandatory/offline-rule) are proposed validations, no engine confirmed
+    protected_behavior: distinct-approver enforcement + immutability (proven; protected)
+    dependencies: [DraftEditor.tsx]
+    rtl_theme_impact: localized copy
+    tests: author-cannot-approve negative path must still pass
+    rollback: revert file
+  - path: apps/web/src/app/admin/packages/actions.ts
+    before_responsibility: unknown
+    disposition: PRESERVE
+    after_responsibility: unchanged; any new validation runs client/service-side in front of existing actions
+    design_node: n/a
+    code_target: n/a
+    protected_behavior: all existing actions
+    dependencies: []
+    rtl_theme_impact: none
+    tests: existing tests unmodified
+    rollback: n/a
+  - path: apps/web/src/app/admin/packages/page.tsx
+    before_responsibility: unknown (library composition per CD-008)
+    disposition: UPDATE (entry point to designer mode for draft rows)
+    after_responsibility: "Open draft" routes into the studio without a new URL
+    design_node: CD-008 8e draft row link
+    code_target: HANDOFF_BLOCKED
+    protected_behavior: CD-008 library composition
+    dependencies: [CD-008 manifest]
+    rtl_theme_impact: none beyond CD-008
+    tests: n/a
+    rollback: revert file
+
+forbidden_do_not_touch:
+  - frozen shell files
+  - distinct-approver enforcement and published immutability
+  - inventing a simulation engine, circular-logic detector, offline-rule flags or violation-code mappings as existing behavior — all are proposed validations pending audit

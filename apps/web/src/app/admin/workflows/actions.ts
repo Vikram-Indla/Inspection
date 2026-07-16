@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { logProviderError, NEUTRAL_LOAD_ERROR, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
 export type WfResult = { error?: string; ok?: boolean };
@@ -12,7 +13,7 @@ export type WfResult = { error?: string; ok?: boolean };
 // Propose a new draft version cloning the base version's state machine.
 export async function proposeWorkflowDraft(_: WfResult, formData: FormData): Promise<WfResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const base_id = String(formData.get("base_version_id") ?? "");
@@ -36,7 +37,7 @@ export async function proposeWorkflowDraft(_: WfResult, formData: FormData): Pro
 // Draft payloads are editable; published versions are immutable config.
 export async function saveWorkflowDraft(_: WfResult, formData: FormData): Promise<WfResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const version_id = String(formData.get("version_id") ?? "");
@@ -60,7 +61,7 @@ export async function saveWorkflowDraft(_: WfResult, formData: FormData): Promis
 // self-approval (approved_by must differ from created_by).
 export async function approvePublishWorkflow(_: WfResult, formData: FormData): Promise<WfResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const version_id = String(formData.get("version_id") ?? "");

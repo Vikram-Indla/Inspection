@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { redirect } from "next/navigation";
 import {
   buildDashboardMetrics,
@@ -42,6 +43,28 @@ async function collect<T>(load: (from: number, to: number) => PromiseLike<RowPag
   }
 }
 
+// DASH-015 / AC-0444 — only the newest 12 scoped timeline rows are rendered.
+// Query each bounded object-id chunk for its newest 12, then take the newest 12
+// across chunks. This is mathematically equivalent to loading every matching
+// audit row, without an O(total audit history) navigation cost.
+async function collectLatestAudit(
+  objectIds: string[],
+  load: (ids: string[]) => PromiseLike<RowPage<AuditRow>>,
+) {
+  const ids = [...new Set(objectIds)];
+  if (!ids.length) return { rows: [] as AuditRow[], failed: false };
+  const chunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += 80) chunks.push(ids.slice(i, i + 80));
+  const results = await Promise.all(chunks.map(load));
+  if (results.some(result => result.error)) return { rows: [] as AuditRow[], failed: true };
+  return {
+    rows: results.flatMap(result => result.data ?? [])
+      .sort((a, b) => Date.parse(b.occurred_at) - Date.parse(a.occurred_at))
+      .slice(0, 12),
+    failed: false,
+  };
+}
+
 type SearchParams = {
   view?: string;
   group?: string;
@@ -68,7 +91,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
 
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
   const { data: dashboardRoles, error: roleError } = await sb
     .from("user_roles")
@@ -77,7 +100,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => row.role_key === "ops" || row.role_key === "leadership");
   if (!mayViewDashboard) redirect("/launch");
 
-  const [visitsResult, inspectionsResult, reviewsResult, responsesResult, violationsResult, geoResult, factoriesResult, auditResult, slaResult] = await Promise.all([
+  const [visitsResult, inspectionsResult, reviewsResult, responsesResult, violationsResult, geoResult, factoriesResult, slaResult] = await Promise.all([
     collect<VisitRow>((from, to) => sb.from("visits").select(`
       id, planning_status, operational_state, window_start, window_end, priority, cancellation_reason, created_at,
       factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary),
@@ -106,22 +129,22 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       visits(planner_lat, planner_lng, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
     `).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
     collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
-    // The UI renders only the 12 newest lifecycle events. Fetch a bounded,
-    // newest-first candidate set for the four lifecycle object types it can
-    // display, then metrics applies the exact visible-object/date filter. This
-    // avoids paging through the entire append-only audit history forever.
-    (async () => {
-      const result = await sb.from("audit_events")
-        .select("id, object_type, object_id, action, requirement_refs, occurred_at")
-        .in("object_type", ["visits", "inspections", "reviews", "violations"])
-        .gte("occurred_at", new Date(scope.fromMs).toISOString())
-        .lte("occurred_at", new Date(scope.toMs).toISOString())
-        .order("occurred_at", { ascending: false })
-        .limit(1000);
-      return { rows: (result.data ?? []) as AuditRow[], failed: !!result.error };
-    })(),
     sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
   ]);
+
+  const auditObjectIds = [
+    ...visitsResult.rows.map(row => row.id),
+    ...inspectionsResult.rows.map(row => row.id),
+    ...reviewsResult.rows.map(row => row.id),
+    ...violationsResult.rows.map(row => row.id),
+  ];
+  const auditResult = await collectLatestAudit(auditObjectIds, ids => sb.from("audit_events")
+    .select("id, object_type, object_id, action, requirement_refs, occurred_at")
+    .in("object_id", ids)
+    .gte("occurred_at", new Date(scope.fromMs).toISOString())
+    .lte("occurred_at", new Date(scope.toMs).toISOString())
+    .order("occurred_at", { ascending: false })
+    .limit(12) as unknown as PromiseLike<RowPage<AuditRow>>);
 
   const failedSources = [
     visitsResult.failed && text("visits", "الزيارات"),

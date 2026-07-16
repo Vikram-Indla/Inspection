@@ -1,0 +1,3 @@
+route,destination,compliance_admin,form_admin,workflow_admin,security_admin,gis_admin,risk_owner,authority,enforcement_note
+/admin/regulations,Regulation Library (this CD),linked/acts,read-only*,read-only*,read-only*,read-only*,read-only*,roles=[compliance_admin] per shell-navigation authority (frozen baseline),module guard reconciliation HANDOFF_BLOCKED
+/admin/regulations/:id,Regulation detail (CD-006),blocked — route not implemented,blocked,blocked,blocked,blocked,blocked,n/a,HANDOFF_BLOCKED — route absent

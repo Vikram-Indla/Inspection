@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import type { BulkFormStrings } from "./BulkForm";
 import type { CriteriaBuilderStrings } from "./CriteriaBuilder";
@@ -25,7 +26,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   // Planner-only capability. RLS already blocks the eventual publish write for
   // any other role, but the read-only targeting UI must not render for them
   // either (a non-planner authenticated user previously saw the full screen).
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };

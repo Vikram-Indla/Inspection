@@ -1,0 +1,12 @@
+element,value_or_type,source,exact_columns_or_rpc,disposition
+version row,text/enums,current,package_versions(version_label,status,published_at),current
+pinned impact,counts,current,package_version_impact(uuid) RPC,current (unavailable on denied/error)
+definition diff,diff,current,ImpactPanel vs current published,current
+shared-item fan-out,list,current,ImpactPanel,current
+create draft,action,current,createDraftVersion,current
+publish,action,current,approveAndPublish+validateDefinition,current
+distinct approver,constraint,current,approved_by required,current
+immutability,trigger,current,no edit on published/locked,current
+audit,trigger,current,package_versions audit,current
+effective dates/scheduled/supersede,none,NONE,none,HANDOFF_BLOCKED
+fingerprint sub-counts,none,NONE,none,HANDOFF_BLOCKED (fixture only)

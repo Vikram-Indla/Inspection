@@ -25,21 +25,64 @@ boundaries no longer make any of the 493 MVP1 requirement rows partial.
 
 ## 2026-07-15 UPDATE 87 — CD-006 through CD-011 backend source completion
 
-The sponsor-authorized Admin Control Plane backend completion is source-ready on
-`codex/cd006-011-backend-completion`. The six remaining M09 authoring/runtime
-partials are implemented: regulation effective-date/draft-edit/deactivation/
-attachment lifecycle (AC-0449), all four evidence types (AC-0453), required/
-optional/conditional and conditional-mandatory behavior (AC-0466/0469/0470),
-and explicit scoring enable/disable (AC-0472). Supporting usage aggregates,
-object-scoped audit history, violation deactivation, publish dependency guards,
-neutral failure paths, RLS, audit, and immutable regulation-child boundaries are
-included. Typecheck and production build pass; the focused suite is **7/7 PASS**.
-The forward migration `20260715200000_cd006_011_backend_completion.sql` is not
-live-applied because explicit approval for this exact shared-schema mutation is
-still required. Claude Code frontend work may proceed in a separate worktree,
-but live completion cannot be claimed until migration approval/application and
-revised authenticated browser verification. Evidence:
-`CD006_CD011_BACKEND_COMPLETION_2026-07-15.md`.
+`TASK-G11-G12-RELEASE-001` completed the sponsor-authorized subset without
+inventing a provider, policy or production target. The reconciled release branch
+`codex/g11-g12-integration` contains the full current application, the
+CD-006..011 integration and the verified remediation line. A first release
+iteration found a real 412 px Arabic/RTL Version Comparison overflow; the table
+now wraps within the field viewport while retaining table semantics. The rebuilt
+production candidate then passed **291/291** checks: four authenticated persona
+setups plus 287 application tests, with **0 failed, 0 skipped and 0 excluded**.
+Typecheck and production build also pass.
+
+Live object-state reconciliation found the arrival-evidence repair, CD-028
+one-open-review guard, integrated Admin objects/routines and OTP authorization
+already present, so no DDL was replayed. The rollback-only CD-028 SQL probe
+proved the exact duplicate-open-review rejection. The golden journey queued
+arrival evidence through the real offline outbox and read back the visit-linked
+row, exact note and null pre-inspection link, closing MVP1-M04-045 / AC-0158.
+The regenerated acceptance ledger is **493 rows = 15 verified_live / 460
+implemented / 18 partial / 0 missing**. The remote database has no migration
+history rows, so blind migration push was deliberately refused.
+
+The optimized bundle scan found no demo passwords, database URLs, PAT values,
+secret keys or non-public JWTs. Previously committed history still requires
+credential rotation once replacement values and every dependent target are
+available. The release record is
+`evidence/TASK-G11-G12-RELEASE-001.md`; promotion uses the immutable tag
+`g11-g12-release-2026-07-16` and the final handoff verifies remote-main equality.
+No configured production hosting/deployment target exists, so deployment was
+not attempted. **G10 is PASS; G11 and G12 remain OPEN** for the recorded
+credential, migration-history, provider, region, CD-031, asset/geographic,
+acceptance-partial, sponsor-runtime and production-target boundaries.
+
+## 2026-07-16 UPDATE 87 — G11 remediation slice verified 276/276
+
+`TASK-G11-REMEDIATION-001` has reached its local engineering exit. The
+sponsor-approved CD-005..011, CD-025, CD-028, CD-030 and dashboard remediation
+closed the 20-failure historical baseline without weakening accepted behavior
+or fabricating blocked policy/provider legs. The current enumerated inventory is
+**276/276 PASS**: three real-login persona setup tests plus 273 application tests
+executed in 12 fresh-browser shards, with **0 failed, 0 skipped and 0 excluded**.
+The final pass includes the full planner → inspector → reviewer return → scoped
+v2 correction → approval journey and a locale-neutral CD-030 fix that converted
+the formerly false Arabic skip into a live passing assertion.
+
+Typecheck and production build pass; no runtime `auth.getUser()` call remains in
+`apps/web/src` or middleware; dashboard audit reads are bounded to relevant
+object IDs; Start Review is continuous through the Next.js navigation bridge;
+admin maker-checker/audit/immutability assertions match current backend truth;
+and the audit-reconciliation verifier remains green at **493 rows = 14
+verified_live / 460 implemented / 19 partial**. The 19 independent partials were
+not upgraded. Evidence: `evidence/TASK-G11-REMEDIATION-001.md`.
+
+This is not a release or deployment claim. No live DDL, production deployment,
+`main` merge/modification or Codex push occurred. During the run the shared
+branch advanced externally from `c6187cb41a7b` to the user-authored/pushed
+`330398781042` (`commit every thing`); that concurrent commit and all dirty
+worktree evidence were preserved. Live migration, provider/policy, sponsor
+runtime-acceptance, clean-promotion, G11 residual and G12 boundaries remain
+separately open.
 
 ## 2026-07-15 UPDATE 86 — CD-043 / SCR-VIR-720 slice ACCEPTED
 

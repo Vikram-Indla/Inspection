@@ -4,4 +4,3 @@
 -- authority; no inspector write permission is widened here.
 alter type evidence_link add value if not exists 'arrival';
 alter table evidence add column if not exists evidence_note text;
-

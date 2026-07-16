@@ -1,0 +1,10 @@
+state_id,trigger,persona,source_query,visible_result,prohibited_false_result,disposition
+S01_POPULATED,draft opened,form_admin,package_versions(draft) definition,three-pane studio (proven controls),none,current
+S02_LOADING,fetch,any auth,pending,skeleton,counts,current
+S03_EMPTY,empty definition,form_admin,empty sections,add-section invite,complete,current
+S04_VALIDATION,publish via approveAndPublish,form_admin,validateDefinition,blocked publish + reasons,simulated pass,current
+S05_UNAUTHORIZED,non-writer,other,RLS write denied,read-only; save hidden,enabled edit,current(guard BLOCKED)
+S06_READ_ONLY,published version,any,immutability,studio opens read-only w/ reason,editable,current
+S07_STALE,data may have changed,any,no threshold,refresh hint,invented duration,current
+S08_DEGRADED,item-bank read fails,any,failed dependency,items unavailable; rest renders,zero,current
+S09_RECOVERY,retry,any,re-read,success after return,optimistic success,current

@@ -1,0 +1,7 @@
+research_id,primary_source,adopted_principle,rejected_treatment,saqeel_decision,affected_artifact
+R01,Saqeel product contract,catalogue is the reuse-risk surface; detail lives per item not per form,drawing full edit form as the primary view,semantic table + attached preview strip,7e layout
+R02,Saqeel DEC-011 + tokens,Arabic-first + 44x44 baseline,raw values,all frames reuse existing tokens,7e-7j
+R03,SafetyCulture inspection-form semantics,response-type and conditional-logic visibility as first-class item facts,generic question-title-only list,response type + conditional glyph shown per row,7e catalogue columns
+R07,Esri Field Maps form configuration,evidence requirements come from configuration, not ad hoc per-field toggles,inventing a free per-item evidence toggle,evidence policy rendered as "from engine settings",7e/7g preview strip
+R11,SAP Fiori object/list-report pattern,dense list with attached facet detail,turning the page into a form builder,catalogue + attached strip, not tabs,layout
+R12,IBM Carbon dense-table + status discipline,glyph+word status, dense semantic rows,color-only duplicate/conditional markers,◐/◇/✕ + word throughout,all frames

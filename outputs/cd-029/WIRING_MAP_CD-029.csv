@@ -1,9 +1,9 @@
 leg_id,ui_trigger_state,client_component,route_action,guard,canonical_transition,table_rpc_provider,rls_role,audit,notification,success,negative_partial,test,runtime_evidence,status
 1,Open workspace,ReviewWorkspacePage,/reviews/:id,RLS scope,none,inspections+joins,RLS L2,read,none,workspace renders,not-found distinct,cd-029 spec,reviews/[id]/page.tsx,PASS
 2,Submitted version select,ReviewWorkspacePage,/reviews/:id,none,none,submission_versions,RLS,read,none,latest immutable version,prior version for diff,cd-029 spec,subs sort,PASS
-3,Page-load review creation,ReviewWorkspacePage,/reviews/:id,submitted+no-open-review,review insert + inspection under_review,reviews.insert + inspections.update,RLS L2,audit,none,decision panel shows,write on open; RLS can silently no-op,cd-029 spec,page.tsx insert+update,HANDOFF_BLOCKED_PAGELOAD_MUTATION
+3,Explicit start review,StartReview + startReview action,/reviews/:id,submitted + latest version + no open review,review insert + inspection under_review,reviews.insert + inspections.update,RLS L2,audit,none,decision panel shows,opening the page is read-only; stale/tampered starts are rejected,cd-029 spec,StartReview.tsx + actions.ts explicit action,PASS
 4,Trace question->response,FindingTraceChain,/reviews/:id,none,none,package_versions.definition + snapshot.answers,RLS,none,none,bound inline,immutable,cd-029 spec,page.tsx,PASS
-5,Trace evidence link,FindingTraceChain,/reviews/:id,none,none,evidence(storage_path,content_sha256,linked_type,linked_id),RLS,none,none,integrity facts,no provider viewer; unavailable when unattached,cd-029 spec,evidence join,HANDOFF_BLOCKED_MEDIA
+5,Trace evidence link,FindingTraceChain,/reviews/:id,none,none,"evidence(storage_path,content_sha256,linked_type,linked_id)",RLS,none,none,integrity facts,no provider-backed viewer; unavailable when unattached,cd-029 spec,page.tsx + FindingTraceChain.tsx,HANDOFF_BLOCKED_MEDIA
 6,Trace clause->violation,FindingTraceChain,/reviews/:id,none,none,violations+violation_codes+mapping_version,RLS,none,none,clause+level shown,unavailable on linked-source failure,cd-029 spec,violations join,PASS
 7,Trace corrective action,FindingTraceChain,/reviews/:id,none,none,action_forms,RLS,none,none,owner/due/status,none,cd-029 spec,action_forms join,PASS
 8,Trace decision comment,FindingTraceChain,/reviews/:id,none,none,reviews.decision_reason/returned_sections,RLS,none,none,shown once decided,pending pre-decision,cd-029 spec,reviews join,PASS
@@ -11,8 +11,8 @@ leg_id,ui_trigger_state,client_component,route_action,guard,canonical_transition
 10,Factory verification read,FactoryVerification,/reviews/:id,none,none,fetchFactoryChecks (Senaei),RLS,audit,none,source vs observed,0020 pending -> verbatim error not 'no changes',cd-029 spec,factory-verification.ts,PASS
 11,Version comparison,ImmutableContent,/reviews/:id,none,none,submission_versions snapshots,RLS,none,none,diff from stored answers,both immutable,cd-029 spec,diffRows,PASS
 12,Audit timeline,ImmutableContent,/reviews/:id,none,none,audit_events,RLS,read,none,append-only newest-first,limit 25,cd-029 spec,trail query,PASS
-13,Return validation,DecisionRail,decide,server,none,none,reviews,RLS L2,none,none,scope+reason enforced,no-scope/no-reason rejected; focus invalid,cd-029 spec,actions.ts,PASS
-14,Reject validation,DecisionRail,decide,server,none,none,reviews,RLS L2,none,none,reason enforced,no-reason rejected,cd-029 spec,actions.ts,PASS
+13,Return validation,DecisionRail,decide,server,none,reviews,RLS L2,audit,none,scope+reason enforced,no-scope/no-reason rejected; focus invalid,cd-029 spec,actions.ts,PASS
+14,Reject validation,DecisionRail,decide,server,none,reviews,RLS L2,audit,none,reason enforced,no-reason rejected,cd-029 spec,actions.ts,PASS
 15,Decision write chain,DecisionRail,decide,immutability guard,review decided -> inspection status -> notification,reviews.update+inspections.update+notifications.insert,RLS L2,audit,queued,decision recorded,non-transactional; partial commit; queued-not-delivered,cd-029 spec,actions.ts sequential,HANDOFF_BLOCKED_ATOMIC
 16,Immutable decided / stale / RLS denial,ReviewWorkspacePage,/reviews/:id,trg_guard_review,decided locked,reviews,RLS,audit,none,decided read-only,stale flagged; unauthorized distinct,cd-029 spec,guard + design,PASS
 17,Claim / reassign,ClaimReassign,none,no action,none,none,n/a,none,none,shown unavailable,no path,cd-029 spec,none in actions.ts,HANDOFF_BLOCKED_CLAIM

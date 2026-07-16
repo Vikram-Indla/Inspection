@@ -1,0 +1,89 @@
+# IMPLEMENTATION_MANIFEST_CD-005_R1.yaml
+task: CD-005
+logical_screen: SCR-ADM-010
+route: /admin/regulations
+status: READY_FOR_MANDATORY_CD005_R1_REVIEW
+implementation_authorized: false
+gate_cycle_remaining: [independent_R1_review, sponsor_decision, independent_wiring_audit, explicit_authorization, clean_worktree_assignment]
+selected_hypothesis: A_lifecycle_led_legal_register
+signature_pattern: Impact Footprint Rail (single; deletion-tested frame 5r)
+
+file_changes:
+  - path: apps/web/src/app/admin/regulations/page.tsx
+    responsibility: server data loading, register composition, attached impact rail
+    disposition: modify
+    exact_change: >-
+      Replace raw nested-list rendering with the semantic register (table + caption + th
+      scopes), per-source result modelling for the existing nested read (verified-with-count
+      / verified-zero / unavailable per regulation's mapped-item read), and the inline
+      Impact Footprint Rail disclosure region attached to the active row. Add disabled
+      "Open detail" link naming its blocked reason. Search/filter chips are proposed client
+      state — see W02/W03, BLOCKED pending wiring-audit decision on client-vs-server filtering.
+    contract_ids: [SCR-ADM-010, MVP1-M09-001, MVP1-M09-010..015, MVP1-M09-028..030]
+    dependencies: [frozen shell, astryx grammar, localization rows]
+    localization_keys: all regulations.r1.* keys in LOCALIZATION_INVENTORY_CD-005_R1.csv
+    tests: >-
+      per-regulation impact-read failure renders unknown-not-zero; verified zero renders
+      distinctly; register renders with 1+ regulations failing independently; detail link
+      disabled with accessible reason; a11y semantics (h1/main/table caption/names/44px)
+    evidence: R1 PNG set per EVIDENCE_MANIFEST_CD-005_R1.csv
+    rollback: single-file revert of page.tsx
+    authorization_status: BLOCKED — sponsor approval + wiring audit + explicit authorization required
+  - path: apps/web/src/app/admin/regulations/actions.ts
+    responsibility: per-row impact retry action (candidate)
+    disposition: blocked
+    exact_change: >-
+      NONE now. Candidate: a new server action re-running the mapped-item count for one
+      regulation. Existing createDraftRegulation preserved untouched; addClause/publishRegulation
+      exports are ownership debt against CD-006 and are neither removed nor extended here.
+    contract_ids: [ADM-QG-11 equivalent]
+    dependencies: [wiring-audit decision]
+    localization_keys: regulations.r1.retry
+    tests: to be defined with the decision
+    evidence: wiring row W05
+    rollback: delete candidate action if created
+    authorization_status: HANDOFF_BLOCKED
+  - path: apps/web/src/app/admin/regulations/Controls.tsx
+    responsibility: create-draft entry (preserved); add-clause/publish controls (ownership debt)
+    disposition: modify (create-draft only)
+    exact_change: >-
+      Preserve the create-draft control as this page's only lifecycle-adjacent action.
+      Do not add clause-edit or publish controls here — that debt is reconciled by CD-006,
+      not fixed in this manifest.
+    contract_ids: [MVP1-M09-001]
+    dependencies: [actions.ts createDraftRegulation]
+    localization_keys: regulations.r1.create
+    tests: draft creation succeeds; neutral error on failure (catalogued errors HANDOFF_BLOCKED)
+    evidence: 5e command band
+    rollback: n/a — no change beyond preserving current export
+    authorization_status: BLOCKED
+  - path: apps/web/src/lib/i18n.ts
+    responsibility: no code change; ui_strings rows only
+    disposition: blocked
+    exact_change: NONE — localization vehicle is ui_strings data rows, not an i18n.ts code change
+    contract_ids: [DSG-SHELL-001]
+    dependencies: [governance decision on ui_strings change vehicle]
+    localization_keys: full inventory
+    tests: key presence + Arabic default rendering
+    evidence: LOCALIZATION_INVENTORY_CD-005_R1.csv
+    rollback: n/a
+    authorization_status: HANDOFF_BLOCKED
+  - path: apps/web/middleware.ts
+    responsibility: admin-family direct-route guard (candidate location)
+    disposition: blocked
+    exact_change: NONE — no authorized guard/policy decision exists
+    contract_ids: [RBAC, CD004-QG-04 equivalent]
+    dependencies: [governance decision]
+    localization_keys: regulations.r1.unauthorized.title
+    tests: n/a
+    evidence: 5s-7
+    rollback: n/a
+    authorization_status: HANDOFF_BLOCKED
+
+forbidden_do_not_touch:
+  - apps/web/src/components/Shell.tsx
+  - apps/web/src/components/ShellClient.tsx
+  - apps/web/src/lib/shell-navigation.ts
+  - apps/web/src/app/tokens.css
+  - any inline clause editor or publish action on this page (CD-006 ownership)
+  - any new destination or placeholder route

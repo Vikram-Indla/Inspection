@@ -1,6 +1,7 @@
 import "../../login/login.css";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import AccessState from "@/components/AccessState";
 
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
 // identity, a safe explanation, a way to check again, and sign-out.
 export default async function NoWorkspace() {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login"); // defensive: middleware already guards this route
 
   const { t, dir, locale } = await useT();

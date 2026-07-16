@@ -76,3 +76,20 @@
 ## Verdict
 Implementable scope closed and proven at the layers available here. All BLOCKED legs preserved as
 BLOCKED. No accepted behavior weakened; no policy/threshold/Arabic value invented.
+
+## Continuation verification — 2026-07-15
+
+The configured project does contain the authoritative `admin@mim.gov.sa` persona
+(documented by CD-003). The new focused runtime check in
+`apps/web/e2e/cd-004-admin-control-plane-home.spec.ts` logs in with that seeded
+account, verifies the populated act-scope band, and captures
+`product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png`.
+That focused run completed **4/4 PASS** including the three auth setup cases.
+CD004-EV-005 is therefore captured. The per-source failure/verified-zero frames
+remain intentionally blocked because forcing those backend states would require
+an authoritative fixture/data disposition; the code-layer proof remains valid.
+
+The current authoritative `outputs/cd-004/WIRING_MAP_CD-004_R2.csv` was also
+validated as a rectangular CSV (**21 rows × 20 columns**). Two rows with omitted
+blocker cells were repaired with explicit empty fields; archived received-design
+copies remain preserved as historical artifacts.

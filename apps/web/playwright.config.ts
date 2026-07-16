@@ -20,6 +20,10 @@ export default defineConfig({
   ],
   use: {
     baseURL: playwrightOrigin,
+    // The standalone macOS headless-shell binary intermittently exits with
+    // SIGSEGV while opening a fresh context. Full Chromium's new headless mode
+    // exercises the same engine and keeps the release suite reproducible.
+    channel: "chromium",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     ...devices["Desktop Chrome"],

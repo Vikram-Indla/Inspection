@@ -97,6 +97,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     logCheckinRejected: locale === "ar"
       ? "تعذر حفظ تسجيل الوصول. تحقق من الاتصال ثم أعد المحاولة."
       : t("field.start.logCheckinRejectedSafe", "Check-in could not be saved. Check the connection, then try again."),
+    logArrivalRejected: locale === "ar"
+      ? "تعذر حفظ الوصول. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.logArrivalRejectedSafe", "Arrival could not be saved. Check the connection, then try again."),
     logOutside: t("field.start.logOutside", "OUTSIDE geofence ({d}m > {fence}m) — check-in recorded as outside; governed override required (ERR-GEO-002)"),
     logInside: t("field.start.logInside", "Checked in INSIDE fence ({d}m, ±{acc}m) — start allowed (STM-JRN-003)"),
     logStartBlocked: t("field.start.logStartBlocked", "Start blocked: {error}"),
@@ -194,6 +197,11 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     arrivalSave: t("field.start.arrivalSave", "Save arrival evidence"),
     arrivalSaved: t("field.start.arrivalSaved", "Arrival evidence saved or queued for sync"),
     arrivalRequired: t("field.start.arrivalRequired", "arrival evidence is required by the active GIS configuration"),
+    arrivalEvidenceNote: t("field.start.arrivalEvidenceNote", "Arrival note"),
+    arrivalEvidenceFile: t("field.start.arrivalEvidenceFile", "Arrival photo (optional)"),
+    arrivalEvidenceSubmit: t("field.start.arrivalEvidenceSubmit", "Queue arrival evidence"),
+    arrivalEvidenceQueued: t("field.start.arrivalEvidenceQueued", "Arrival evidence queued — custody hash recorded; sync pending"),
+    arrivalEvidenceMissing: t("field.start.arrivalEvidenceMissing", "Add a photo or note before queueing arrival evidence."),
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (

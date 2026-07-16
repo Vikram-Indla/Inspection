@@ -3,6 +3,7 @@
 // IndexedDB: durable local drafts + outbox. Replay is idempotent; conflicts are
 // explicit records, never silent overwrites.
 import { supabaseBrowser } from "@/lib/supabase";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 const DB = "mim-field-v1";
 export type SyncState = "synced" | "offline" | "pending" | "syncing" | "conflict" | "failed";
@@ -11,7 +12,7 @@ export type OutboxOp =
   // Additive (slice F3 · M04-058): visit_id set = VISIT-linked evidence
   // (cancellation — no inspections row exists yet); inspection_id then only
   // namespaces the storage path. Ops without visit_id replay exactly as before.
-  | { kind: "evidence"; inspection_id: string; linked_type: string; linked_id: string; evidence_type?: "photo" | "video" | "document" | "comment"; evidence_note?: string; name: string; mime: string; data_b64: string; captured_at: string; sha256: string; queued_at: string; visit_id?: string }
+  | { kind: "evidence"; inspection_id: string | null; linked_type: string; linked_id: string; evidence_type?: "photo" | "video" | "document" | "comment"; evidence_note?: string; name: string; mime: string; data_b64: string; captured_at: string; sha256: string; queued_at: string; visit_id?: string }
   | { kind: "submit"; inspection_id: string; version_number: number; snapshot: unknown; idempotency_key: string; acknowledgement: unknown; queued_at: string }
   // Additive (slice F1 · M04-095..114): factory-field verification check.
   // Upsert on (inspection_id, field_key) → idempotent replay; never touches factories (FND-007/M04-112).
@@ -88,11 +89,11 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
           { onConflict: "inspection_id,item_id" });
         if (error) throw error;
       } else if (op.kind === "evidence") {
-        const path = `${op.inspection_id}/${op.name}`;
+        const path = `${op.visit_id ?? op.inspection_id}/${op.name}`;
         const bytes = Uint8Array.from(atob(op.data_b64), c => c.charCodeAt(0));
         const up = await sb.storage.from("evidence").upload(path, bytes, { contentType: op.mime, upsert: true }); // upsert = replay-safe
         if (up.error) throw up.error;
-        const { data: { user } } = await sb.auth.getUser();
+        const { data: { user } } = await getVerifiedUser(sb);
         const row: Record<string, unknown> = {
           inspection_id: op.inspection_id,
           evidence_type: op.evidence_type ?? (op.mime.startsWith("image") ? "photo" : op.mime.startsWith("video") ? "video" : "document"),
@@ -111,14 +112,14 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
         const { error } = await sb.from("submission_versions").insert({
           inspection_id: op.inspection_id, version_number: op.version_number, snapshot: op.snapshot,
           idempotency_key: op.idempotency_key, acknowledgement: op.acknowledgement,
-          submitted_by: (await sb.auth.getUser()).data.user?.id,
+          submitted_by: (await getVerifiedUser(sb)).data.user?.id,
         });
         if (error && !String(error.message).includes("duplicate")) throw error;  // 409 duplicate = already submitted (ERR-SUB-002)
         await sb.from("inspections").update({ status: "submitted" }).eq("id", op.inspection_id);
       } else if (op.kind === "factory_check") {
         // M04-103/104/105/113 — observed value + Verified/Updated status persisted
         // separately from Senaei data; audit trigger logs before/after server-side.
-        const { data: { user } } = await sb.auth.getUser();
+        const { data: { user } } = await getVerifiedUser(sb);
         const { error } = await sb.from("inspection_factory_checks").upsert({
           id: op.check.id, inspection_id: op.inspection_id, field_key: op.check.field_key,
           source_value: op.check.source_value, observed_value: op.check.observed_value,

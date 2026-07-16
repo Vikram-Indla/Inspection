@@ -1,0 +1,12 @@
+element,value_or_type,source,exact_columns,disposition
+code row,text/level,current,violation_codes(code,title,level,active_from,active_to,clause_id),current
+clause link,ref,current,violation_codes.clause_id -> regulation_clauses,current
+create,action,current,createViolationCode,current
+active/future/deactivated,derived,current,active_from/active_to + current date,current (derived not enum)
+legal basis on row,none,NONE,belongs to penalty mapping,HANDOFF_BLOCKED
+category,none,NONE,none,HANDOFF_BLOCKED
+applicability,none,NONE,none,HANDOFF_BLOCKED
+usage count,none,NONE,none,HANDOFF_BLOCKED
+deactivate action,none,NONE,none,HANDOFF_BLOCKED
+violation_codes audit trigger,none,NONE,none,HANDOFF_BLOCKED
+trigger-trace query,none,NONE,none,HANDOFF_BLOCKED

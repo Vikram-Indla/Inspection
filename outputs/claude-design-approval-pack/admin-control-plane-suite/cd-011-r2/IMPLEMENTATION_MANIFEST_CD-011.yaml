@@ -1,0 +1,61 @@
+# IMPLEMENTATION_MANIFEST_CD-011.yaml
+prompt_id: CD-011
+screen_id: SCR-ADM-041
+contract_route: /admin/penalties
+current_route: /admin/violations
+source_branch: setup/Inspection
+source_commit: 1b530afe06a620b3b85173d10cec1f12074e2c18
+dirty_worktree: true
+source_evidence: supplied Codex source-truth memo plus inspected attached source files
+design_frame_ids: [be, bf, bg, bh, bi, bj, bt, bs, bo]
+pngs: [CD-011_SCR-ADM-041_primary.png, CD-011_SCR-ADM-041_outlier.png, CD-011_SCR-ADM-041_ar_dark_1440.png, CD-011_SCR-ADM-041_ar_light_1440.png, CD-011_SCR-ADM-041_en_dark_1440.png, CD-011_SCR-ADM-041_en_light_1440.png, CD-011_SCR-ADM-041_constrained_1024x1366.png, CD-011_SCR-ADM-041_hard_states.png]
+status: SPONSOR_APPROVED_FOR_G11_REMEDIATION
+implementation_authorized: true
+authorization_ref: product-contract/governance/HUMAN_APPROVALS.yaml#G11-remediation-CD-005-011-CD-025-CD-028-CD-030-dashboard
+file_changes:
+  - path: apps/web/src/app/admin/violations/page.tsx
+    before_responsibility: reads violation rows with nested penalty mapping summary; hosts penalty logical mode
+    disposition: modify
+    after_responsibility: three-column penalty-mode workspace (violation | validation lens | mapping record)
+    exact_export_selector: default page component, penalty-mode branch
+    protected_behavior: existing reads, RLS, no invented lifecycle
+    dependencies: [Controls.tsx, actions.ts]
+    rtl_theme_impact: full RTL; stacks at 1024x1366
+    tests: T-CD11-01,02,06,07,08
+    rollback: single-file revert
+    status: current
+  - path: apps/web/src/app/admin/violations/Controls.tsx
+    before_responsibility: create controls incl penalty mapping create form
+    disposition: modify
+    after_responsibility: create form + Mapping Validation Lens (four proven checks); disabled contract-target annotations
+    exact_export_selector: Controls client component
+    protected_behavior: createPenaltyMapping contract; no monetary values
+    dependencies: [actions.ts]
+    rtl_theme_impact: localized copy
+    tests: T-CD11-03,04,09
+    rollback: revert file
+    status: current
+  - path: apps/web/src/app/admin/violations/actions.ts
+    before_responsibility: createPenaltyMapping(violation, penalty_ref, legal_basis, mapping_version, range preset, repeat preset)
+    disposition: reuse
+    after_responsibility: unchanged
+    exact_export_selector: createPenaltyMapping
+    protected_behavior: unique-constraint + legal-basis + preset validation
+    dependencies: []
+    rtl_theme_impact: none
+    tests: T-CD11-03
+    rollback: n/a
+    status: current
+forbidden_do_not_touch:
+  - frozen shell files, tokens.css
+  - inventing effective periods, lifecycle, maker-checker, immutability, or an audit-timeline read grant
+  - inventing monetary amounts or legal rules
+blocked_legs:
+  - {leg: effective_periods_overlap_gap, reason: no columns in schema, owner: product/backend}
+  - {leg: submit_approve_publish_lifecycle, reason: no status column, owner: product/backend}
+  - {leg: penalty_maker_checker, reason: not implemented, owner: product/backend}
+  - {leg: mapping_immutability, reason: no trigger; FLD-PEN-001 is a reference not a row lock, owner: backend}
+  - {leg: mapping_audit_timeline_read, reason: row-write audit exists but audit_events read is not granted, owner: backend}
+  - {leg: admin_family_route_guard, reason: not proven, owner: platform}
+runtime_reconciled_at: 2026-07-16
+closed_backend_legs: [penalty_mappings audit trigger]

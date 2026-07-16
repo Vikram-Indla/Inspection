@@ -6,6 +6,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 const SYSTEM_ERROR = "The session could not be updated. Try again or contact support.";
 import { insertNotification } from "@/lib/notify";
@@ -32,7 +33,7 @@ async function appendEvent(sb: Awaited<ReturnType<typeof supabaseServer>>, sessi
 // M05-002 — reschedule: appointment change is only legal before anyone joins.
 export async function rescheduleSession(_: RoomActionResult, fd: FormData): Promise<RoomActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const session_id = String(fd.get("session_id") ?? "");
   const appointment_at = String(fd.get("appointment_at") ?? "");
@@ -81,7 +82,7 @@ export async function rescheduleSession(_: RoomActionResult, fd: FormData): Prom
 // STM-VIR — waiting room opened (scheduled → waiting).
 export async function openWaitingRoom(_: RoomActionResult, fd: FormData): Promise<RoomActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const session_id = String(fd.get("session_id") ?? "");
   const { data: upd, error } = await sb.from("virtual_sessions")
@@ -96,7 +97,7 @@ export async function openWaitingRoom(_: RoomActionResult, fd: FormData): Promis
 // M05-009/010 — participant join: joined_at persisted + session advances.
 export async function joinParticipant(_: RoomActionResult, fd: FormData): Promise<RoomActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const session_id = String(fd.get("session_id") ?? "");
   const participant_id = String(fd.get("participant_id") ?? "");
@@ -118,7 +119,7 @@ export async function joinParticipant(_: RoomActionResult, fd: FormData): Promis
 // advances the canonical state and appends the timeline event atomically.
 export async function markSessionVerified(_: RoomActionResult, fd: FormData): Promise<RoomActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const session_id = String(fd.get("session_id") ?? "");
   const participant_id = String(fd.get("participant_id") ?? "");
@@ -137,7 +138,7 @@ export async function markSessionVerified(_: RoomActionResult, fd: FormData): Pr
 // physical. Creates the in_progress inspection against the frozen package.
 export async function beginRemote(_: RoomActionResult, fd: FormData): Promise<RoomActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const session_id = String(fd.get("session_id") ?? "");
   const clientRev = String(fd.get("rev") ?? "");
@@ -177,7 +178,7 @@ export async function beginRemote(_: RoomActionResult, fd: FormData): Promise<Ro
 // M05-005/006 — session-scoped close/cancel with mandatory reason + comments.
 export async function closeSession(_: RoomActionResult, fd: FormData): Promise<RoomActionResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
   const session_id = String(fd.get("session_id") ?? "");
   const reason = String(fd.get("reason") ?? "").trim();

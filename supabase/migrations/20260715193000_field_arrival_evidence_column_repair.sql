@@ -4,4 +4,3 @@
 -- idempotent so an approved deployment can safely run it whether the earlier
 -- migration was fully or partially applied.
 alter table evidence add column if not exists evidence_note text;
-

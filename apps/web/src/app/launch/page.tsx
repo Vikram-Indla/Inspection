@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +27,7 @@ const ROLE_HOME: [string, string][] = [
 
 export default async function Launch() {
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   // Throw into the route error boundary so an identity-provider outage is
   // never misrepresented as an unauthenticated or no-workspace outcome.
   if (authError?.name === "AuthSessionMissingError" || !user) redirect("/login");

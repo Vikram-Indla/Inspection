@@ -1,0 +1,84 @@
+# IMPLEMENTATION_MANIFEST_CD-008.yaml
+prompt_id: CD-008
+screen_id: SCR-ADM-030
+route: /admin/packages
+source_branch: unknown — no fresh repository read this session
+source_commit: unknown — same reason
+dirty_worktree: unknown — same reason
+design_frame_ids: [8e, 8f, 8g, 8h, 8i, 8j, 8t, 8s, 8o]
+pngs: [CD-008_SCR-ADM-030_primary.png, CD-008_SCR-ADM-030_outlier.png]
+status: READY_FOR_DESIGN_REVIEW
+implementation_authorized: false
+
+file_changes:
+  - path: apps/web/src/app/admin/packages/page.tsx
+    before_responsibility: unknown — not inspected this session
+    disposition: UPDATE (pending confirmation)
+    after_responsibility: version-led expandable library with coverage fingerprint per version row
+    design_node: frames 8e-8j
+    code_target: HANDOFF_BLOCKED — fingerprint/usage queries unconfirmed
+    protected_behavior: existing reads, RLS, maker-checker enforcement, immutability (all proven chain facts, preserved)
+    dependencies: [package_versions + packages.code (proven), visits' exact-version references (proven concept)]
+    rtl_theme_impact: per 8e-8h
+    tests: HANDOFF_BLOCKED pending query confirmation
+    rollback: single-file revert
+  - path: apps/web/src/app/admin/packages/PackagePreview.tsx
+    before_responsibility: unknown — not inspected this session
+    disposition: PRESERVE (default)
+    after_responsibility: unchanged; preview must match field runtime — verifying that equivalence is a wiring-audit task, not a design assertion
+    design_node: 8e preview links
+    code_target: n/a
+    protected_behavior: assumed preview logic
+    dependencies: []
+    rtl_theme_impact: none proposed
+    tests: preview-vs-runtime equivalence check at audit
+    rollback: n/a
+  - path: apps/web/src/app/admin/packages/PublishControls.tsx
+    before_responsibility: unknown — not inspected this session (distinct-approver enforcement proven to exist somewhere in this flow)
+    disposition: UPDATE (pending confirmation)
+    after_responsibility: publish gate additionally blocked by unresolved-item count; approver-gate copy per 8s-3
+    design_node: 8s-2/3/6
+    code_target: HANDOFF_BLOCKED
+    protected_behavior: distinct-approver enforcement MUST remain untouched
+    dependencies: [actions.ts]
+    rtl_theme_impact: localized copy
+    tests: author-cannot-approve negative path must still pass
+    rollback: revert file
+  - path: apps/web/src/app/admin/packages/DraftEditor.tsx
+    before_responsibility: unknown
+    disposition: PRESERVE (default until inspected)
+    after_responsibility: unchanged
+    design_node: n/a
+    code_target: n/a
+    protected_behavior: unknown
+    dependencies: []
+    rtl_theme_impact: none
+    tests: n/a
+    rollback: n/a
+  - path: apps/web/src/app/admin/packages/ImpactPanel.tsx
+    before_responsibility: unknown
+    disposition: PRESERVE (default; likely feeds fingerprint counts — confirm at audit)
+    after_responsibility: candidate data source for the coverage fingerprint
+    design_node: 8t
+    code_target: HANDOFF_BLOCKED
+    protected_behavior: unknown
+    dependencies: []
+    rtl_theme_impact: none
+    tests: n/a
+    rollback: n/a
+  - path: apps/web/src/app/admin/packages/actions.ts
+    before_responsibility: unknown
+    disposition: PRESERVE
+    after_responsibility: unchanged
+    design_node: n/a
+    code_target: n/a
+    protected_behavior: maker-checker + immutability enforcement
+    dependencies: []
+    rtl_theme_impact: none
+    tests: existing tests unmodified
+    rollback: n/a
+
+forbidden_do_not_touch:
+  - frozen shell files
+  - distinct-approver enforcement and published-version immutability (proven; protected)
+  - inventing effective-date overlap policy, migration tooling, or dependency-health verdicts

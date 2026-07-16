@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./DecisionPanel";
 
@@ -61,7 +62,7 @@ const fmt = (iso: string | null) => iso ? new Date(iso).toISOString().slice(0, 1
 export default async function Reviews() {
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
 
   // Distinguish unauthorized from queue-clear (WIRING leg 1). RLS is still the
   // real boundary; this only lets us render the correct empty/denied state

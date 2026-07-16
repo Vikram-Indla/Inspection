@@ -95,6 +95,12 @@ test.describe("CD-027 wiring proofs (code layer)", () => {
     expect(a).toContain("notification queued");           // queued-not-delivered (FND-004)
   });
 
+  test("republish queues the assigned-inspector notification and surfaces queue failure", () => {
+    const a = SRC(`${ID}/actions.ts`);
+    expect(a).toMatch(/republishVisit[\s\S]*notifyAssignedInspector\(sb, id, "visit_republished"/);
+    expect(a).toMatch(/republishVisit[\s\S]*notification could not be queued/);
+  });
+
   test("guards preserved — published/new + pre-start locks intact", () => {
     const a = SRC(`${ID}/actions.ts`);
     expect(a).toContain("guardPublishedNew");

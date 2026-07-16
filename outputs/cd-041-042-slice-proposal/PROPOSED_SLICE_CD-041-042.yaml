@@ -1,0 +1,91 @@
+schema_version: "1.2"
+
+# ============================================================================
+# DRAFT — UNSIGNED PROPOSAL. Not an active slice. Prepared by Claude for sponsor
+# review. It authorizes NOTHING until the sponsor sets status to APPROVED and the
+# prerequisites below are all TRUE. Claude did not and cannot self-approve this.
+# To activate: satisfy prerequisites, sign, then replace
+# product-contract/execution/CURRENT_SLICE.yaml with this file (or link it).
+# ============================================================================
+
+task_id: "TASK-CD-041-042-VIRTUAL-BUILD-001"          # proposed
+gate: "G11 hardening — virtual session screen build"
+title: "CD-041 SCR-VIR-700 + CD-042 SCR-VIR-710 — bind accepted design to the live virtual backend"
+status: "DRAFT_AWAITING_SPONSOR_SIGNOFF"
+enforce_stop_gate: true                                # blocked until signed + prerequisites met
+broad_implementation_allowed: false                    # flips true only on sponsor APPROVED
+
+sponsor_signoff:
+  approver: "Vikram Indla"
+  signed: false                                        # sponsor sets true
+  date: ""                                             # sponsor fills
+  statement: ""                                        # sponsor fills on signing
+
+# ---- Prerequisites: EVERY item must be TRUE before status -> APPROVED --------
+prerequisites:
+  - id: PRQ-01
+    text: "CD-041 r1 and CD-042 r2 design sources are present in the repo (design reachable, not only in the claude.ai project 20cb0dce)."
+    state: FALSE     # DesignSync get_file -> 404; files absent locally as of 2026-07-15
+  - id: PRQ-02
+    text: "CD-041 design review reaches PASS (currently REJECTED AT RECEIPT — no artifact submitted)."
+    state: FALSE
+  - id: PRQ-03
+    text: "CD-042 design review reaches PASS; R1 P0/P1 findings resolved (operator model, identity-mismatch + provider-unavailable states, audit-read seam, source-cited proof)."
+    state: FALSE
+  - id: PRQ-04
+    text: "DESIGN_ACCEPTANCE_MATRIX DSG-036 (SCR-VIR-700) and DSG-037 (SCR-VIR-710) set to accepted with sponsor reviewer (currently not_started)."
+    state: FALSE
+  - id: PRQ-05
+    text: "Live-video provider is either decided, OR the screen scope explicitly defers it as Phase-2 with NO invented connection/recording/consent/retention/bandwidth/access-token values."
+    state: OPEN
+
+# ---- Scope --------------------------------------------------------------------
+prompt_ids: ["CD-041", "CD-042"]
+process_ids: ["P06B"]
+screen_ids: ["SCR-VIR-700", "SCR-VIR-710"]
+engine_ids: ["OTP", "shared-inspection-engine", "ENG-11"]
+requirement_ids:
+  - "M05-002"   # scheduling
+  - "M05-003"   # timeline / audit
+  - "M05-005"   # close/cancel
+  - "M05-006"   # mandatory reason
+  - "M05-007"   # closed immutability
+  - "M05-009"   # participant join
+  - "M05-010"
+  - "M05-015..020"  # OTP identity -> verified -> begin
+  - "STM-VIR-002"
+  - "RBAC-014"
+  - "FND-003"
+  - "DEC-007"   # OTP provider (accepted policy v1-accepted-2026-07-11)
+acceptance_ids: ["DSG-036", "DSG-037"]
+
+# ---- Already delivered (do NOT re-open; cite as done) -------------------------
+already_delivered:
+  - "Verified-transition guard vs_mark_session_verified + Room/actions wiring + driven E2E — PR #17 (merged setup/Inspection, migration 20260715170000 applied live)."
+  - "vp_otp_status RBAC-014 authorization — PR #18 (merged, migration 20260715180000 applied live)."
+  - "Existing live backend: scheduling, join, OTP request/verify/status, forward-only + closed-immutable guards, append-only audit, notifications (SMS not_configured honestly)."
+
+# ---- Remaining screen work (only after prerequisites) ------------------------
+remaining_work:
+  - "Bind the ACCEPTED CD-041/042 design to the existing live backend — no new invented behavior."
+  - "CD42-R1-06: audit-read DISPLAY seam — render virtual audit_events under an approved query/RLS contract; keep event creation and event display separate."
+  - "CD42-R1-04: explicit identity-mismatch and OTP-provider-unavailable states, distinct from permission-denied and generic degraded."
+  - "DSG-036 low-bandwidth / fallback presentation — bounded, never claims a video connection."
+  - "Driven E2E for each design state (success + every verification-failure + degraded + fallback)."
+
+do_not_touch:
+  - "No fabricated video connection, recording, consent, retention, bandwidth, or access-token policy."
+  - "No invented policy values, thresholds, SLAs, monetary or legal values."
+  - "Do not weaken the forward-only guard, closed-immutability, RLS authority, or no-bypass verification."
+  - "Do not edit an immutable submitted version or the frozen product-contract artifacts without change control."
+
+definition_of_done:
+  - "All prerequisites TRUE; DSG-036/037 accepted + signed."
+  - "Each design state driven-tested green against the live project; negatives included."
+  - "Independent recorded wiring audit per DEC-012."
+  - "Evidence captured; CURRENT_STATE / SESSION_LEDGER / WORK_QUEUE / acceptance + evidence records updated."
+  - "No P0/P1 criterion failed or unevidenced."
+
+open_decisions:
+  - "Live-video provider — OPEN, no DEC id assigned; may not be invented."
+  - "DEC-003 SLA calendar remains open (no default duration / clock / escalation)."

@@ -218,9 +218,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
   const states = ["new", "prepared", "on_the_way", "arrived", "executing", "submitted"] as const;
   const counts = Object.fromEntries(states.map(s => [s, visits.filter(v => v.operational_state === s).length]));
+  // M08-010 — region/city scope for monitoring + map + SLA watch. An active
+  // operational journey remains observable even if its planning window has
+  // since lapsed: planning_status and operational_state are separate state
+  // machines (FND-002), and expiry must not make an inspector disappear from
+  // Operations while on_the_way/arrived/executing.
   const published = visits.filter(v => v.planning_status === "published");
-  // M08-010 — region/city scope for monitoring + map + SLA watch
-  const monitored = published.filter(v =>
+  const monitored = visits.filter(v =>
+    (v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)) &&
     (!region || v.factories?.region === region) && (!city || v.factories?.city === city));
 
   // Latest geofence result per visit (geo list already newest-first) — M08-014
@@ -395,7 +400,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
             <span className="ax-kpi__value ax-numeric">{counts[s]}</span></div>
         ))}
       </div>
-      <p className="ax-caption"><span className="ax-numeric">{published.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published and monitored live below.")}</p>
+      <p className="ax-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
 
       {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>

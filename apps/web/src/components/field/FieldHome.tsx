@@ -12,7 +12,7 @@ import { useMemo, useState } from "react";
 import { useActionState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
-import { markNotificationRead, type FieldActionResult } from "@/app/field/actions";
+import { markNotificationRead, requestVisitReschedule, type FieldActionResult } from "@/app/field/actions";
 
 // react-leaflet is browser-only — dynamic import with ssr:false (GeoMap canon).
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
@@ -68,6 +68,9 @@ export type FieldHomeStrings = {
   inboxEmpty: string;
   markRead: string;
   unreadBadge: string;
+  rescheduleHint: string;
+  rescheduleSent: string;
+  rescheduleFailed: string;
 };
 
 type ViewKey = "list" | "calendar" | "map";
@@ -93,12 +96,13 @@ function fmtWindow(iso: string): string {
   return new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 }
 
-function VisitCard({ v, s, strings }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings }) {
+function VisitCard({ v, s, strings, onDragStart }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings; onDragStart: (id: string) => void }) {
   const accent = s.tone === "critical" ? "var(--ax-color-critical)"
     : s.tone === "warning" ? "var(--ax-color-warning)"
     : "var(--ax-color-primary)";
   return (
-    <a href={visitHref(v)} className="ax-surface ax-panel"
+    <a href={visitHref(v)} className="ax-surface ax-panel" draggable={s.key !== "expired" && s.key !== "approved"}
+      onDragStart={() => onDragStart(v.id)}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", textDecoration: "none", color: "inherit", borderInlineStart: `4px solid ${accent}` }}>
       <div className="ax-row" style={{ justifyContent: "space-between" }}>
         <strong style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{v.factoryName}</strong>
@@ -114,6 +118,7 @@ function VisitCard({ v, s, strings }: { v: FieldVisit; s: DerivedStatus; strings
           {strings.windowEnds.replace("{date}", fmtWindow(v.windowEnd))}
         </span>
       )}
+      {s.key !== "expired" && s.key !== "approved" && <span className="ax-caption">{strings.rescheduleHint}</span>}
     </a>
   );
 }
@@ -157,6 +162,9 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
   const [type, setType] = useState("");
   const [mode, setMode] = useState("");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [rescheduleBusy, setRescheduleBusy] = useState<string | null>(null);
+  const [rescheduleMessage, setRescheduleMessage] = useState<string | null>(null);
 
   const derived = useMemo(
     () => visits.map(v => ({ v, s: deriveStatus(v, nowMs) })),
@@ -213,6 +221,30 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
   const unread = notifications.filter(n => n.unread).length;
 
+  async function dropOnDay(day: string) {
+    if (!draggedId) return;
+    const source = visits.find(v => v.id === draggedId);
+    setDraggedId(null);
+    if (!source) return;
+    const start = new Date(source.windowStart);
+    const end = new Date(source.windowEnd);
+    const duration = end.getTime() - start.getTime();
+    // Preserve the visit's existing time-of-day and duration; only the
+    // proposed calendar day changes. The server/RPC remains the authority.
+    const proposedStart = new Date(`${day}T${start.toISOString().slice(11, 19)}.000Z`);
+    const proposedEnd = new Date(proposedStart.getTime() + duration);
+    setRescheduleBusy(source.id);
+    setRescheduleMessage(null);
+    try {
+      const result = await requestVisitReschedule(source.id, proposedStart.toISOString(), proposedEnd.toISOString());
+      setRescheduleMessage(result.error ? `${strings.rescheduleFailed} ${result.error}` : strings.rescheduleSent);
+    } catch {
+      setRescheduleMessage(strings.rescheduleFailed);
+    } finally {
+      setRescheduleBusy(null);
+    }
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
       {/* M03-001 — inspector inbox */}
@@ -238,6 +270,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
             ))}
           </div>
         </div>
+        {rescheduleMessage && <div className="ax-banner" role="status">{rescheduleMessage}</div>}
 
         {/* M03-004 — search / filter / sort */}
         <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
@@ -276,7 +309,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
         {view === "list" && filtered.length > 0 && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)" }}>
-            {filtered.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} />)}
+            {filtered.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} onDragStart={setDraggedId} />)}
           </div>
         )}
 
@@ -284,12 +317,13 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
             {byDay.map(([day, group]) => (
               <div key={day} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-                <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+                <div className="ax-row" style={{ gap: "var(--ax-space-150)" }} onDragOver={e => e.preventDefault()} onDrop={() => void dropOnDay(day)}>
                   <span className="ax-overline">{dayLabel(day)}</span>
                   <span className="ax-badge">{group.length}</span>
+                  {draggedId && <span className="ax-caption">{rescheduleBusy ? "…" : strings.rescheduleHint}</span>}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
-                  {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} />)}
+                  {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} onDragStart={setDraggedId} />)}
                 </div>
               </div>
             ))}

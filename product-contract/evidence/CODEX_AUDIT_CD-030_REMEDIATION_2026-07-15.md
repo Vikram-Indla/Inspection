@@ -21,7 +21,7 @@ The current implementation now:
 |---|---|
 | `npm run typecheck` | PASS |
 | `npm run build` | PASS |
-| `cd-030-version-comparison.spec.ts` | **16 passed, 1 skipped** (3 auth setup + 13 product; the only skip is data-dependent Arabic/RTL workspace availability) |
+| `cd-030-version-comparison.spec.ts` | **17 passed, 1 skipped** (3 auth setup + 14 product; the only skip is data-dependent Arabic/RTL workspace availability) |
 | Source assertions | PASS for scope-RLS migration, DB-shape constraint, `maybeSingle()`/outside-scope copy, and localized stale strings |
 | Live migration preflight | **BLOCKED** — Management API returned HTTP 403 and the local keychain no longer contains the previously used PAT; no live DDL was attempted |
 
@@ -35,3 +35,33 @@ Historical R1–R3 reports retain the findings as originally observed; the curre
 worktree remediation and verification above supersede their pre-fix not-found,
 role-gating, stale-localization, and database-shape observations. They are preserved
 for audit traceability and are not current-state failure claims.
+
+## Follow-up verification — 2026-07-15
+
+The current dirty worktree was rerun after the CD-030 access-regression and scope-shape
+changes: `PLAYWRIGHT_PORT=3051 npx playwright test e2e/cd-030-version-comparison.spec.ts
+--workers=1` completed **17 passed / 1 data-dependent skip** (18 tests total, including
+three auth setup tests). This confirms the remediation remains green; it does not change
+the separately recorded live-migration, provider/media, package-semantic, metadata-diff,
+or sponsor-acceptance boundaries.
+
+## Current-state supersession check — 2026-07-15
+
+The older R1–R3 observations about the `.single()` not-found/degraded ambiguity and
+the missing read-only role path are superseded by the current checkout. The route
+now uses `maybeSingle()` for the inspection read and renders separate not-found,
+outside-scope, and provider/degraded copy. `authorized` admits the roles granted by
+the read policy (`reviewer`, `auditor`, `ops`, `planner`, `leadership`); `canDecide`
+remains reviewer/ops-only, and the workspace renders a visible read-only role badge
+and removes Start/Decision controls for the other admitted roles. The CD-030 source
+contract checks cover these exact branches, and the focused suite remains **17
+passed / 1 data-dependent skip**.
+
+The forward migration `20260715160000_cd030_review_scope_rbac.sql` contains the
+submission-version read policy and returned-scope array check. Its live application
+is still an external deployment prerequisite; this record does not claim that live
+DDL has been applied.
+
+The added current-state source-contract guard for the not-found/degraded/read-only
+branches was rerun independently: **5/5 passed** (three auth setup cases plus the
+two CD-030 source checks). This is a regression guard, not live DDL evidence.
