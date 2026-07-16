@@ -1,13 +1,21 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-G11-G12-RELEASE-001"
+    gate: "G11 hardening / G12 release"
+    priority: "P0"
+    status: "APPROVED_IN_PROGRESS"
+    owner: "Codex release implementation and QA + Sponsor decision owners"
+    blocked_by: []
+    blocks: ["G11 PASS", "G12 PASS", "production release claim"]
+    note: "Sponsor separately authorized live DDL, audited main promotion and production deployment on 2026-07-16. Start state: feat/admin-control-plane@330398781042 with 123 dirty entries; remote main absent; remediation inventory 276/276 PASS. Execute only versioned forward migrations and an actually configured deployment target. Eighteen non-migration provider/schema/policy/configuration partials, CD-024/CD-031 decisions, asset/geographic confirmation, region/provider configuration and credential-safe replacement remain explicit gates unless independently resolved."
   - task_id: "TASK-G11-REMEDIATION-001"
     gate: "G11 verification hardening"
     priority: "P0"
-    status: "APPROVED_IN_PROGRESS"
+    status: "REMEDIATION_VERIFIED_COMPLETE"
     owner: "Codex implementation and QA"
     blocked_by: []
-    blocks: ["G11/G12 release claim"]
-    note: "Sponsor approved and directed execution on 2026-07-16 for CD-005..011, CD-025, CD-028, CD-030 and TASK-WEB-DASHBOARD-002. Local feature-branch application/tests/evidence only; no main modification or merge, production deployment or live DDL. Baseline: 275 discovered, 252 passed, 20 failed, 1 skipped, 2 not run."
+    blocks: []
+    note: "Engineering remediation verified complete 2026-07-16. Current inventory: 276/276 PASS (3 persona setup + 273 application), 0 failed, 0 skipped, 0 excluded; typecheck/build/static/audit-reconciliation PASS. Historical baseline was 275 discovered, 252 passed, 20 failed, 1 skipped, 2 not run. Evidence: product-contract/evidence/TASK-G11-REMEDIATION-001.md. This closes only the approved local remediation slice; no main merge, production deployment or live DDL was performed, and external G11/G12 release blockers remain separately open."
   - task_id: "G4-INSTALL-VERIFY"
     gate: "G4"
     priority: "P0"

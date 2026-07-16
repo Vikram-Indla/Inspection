@@ -53,6 +53,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-16"
     change_ref: "product-contract/execution/CURRENT_SLICE.yaml"
+  - gate: "G11-G12-live-promotion-release"
+    decision: "APPROVED — sponsor replied 'approved' to the exact request for separate authority to continue through the remaining G11/G12 live-migration, branch/main-promotion and production-deployment boundaries. This authorizes: live application and verification of already-versioned, forward-only migrations whose contract and negative tests are present; creation of an audited release commit; promotion/push to main; and deployment through an actually configured production target followed by smoke and rollback-readiness checks. Credential rotation is authorized only when replacement values and every dependent configured target can be updated without exposing secret material. This approval does not resolve or invent provider selections, policy values, routes, thresholds, risk/scoring semantics, asset rights, geographic authority or any of the other upstream decisions recorded as partial; it does not authorize destructive data cleanup or editing an applied migration in place."
+    approver: "Vikram Indla"
+    date: "2026-07-16"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-G11-G12-RELEASE-001"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

@@ -16,6 +16,17 @@ G4 evidence: **CAPTURED** — 2026-07-11 (branch `setup/g4-memory-continuity`).
 Non-blocking post-check owner = human: `G4-EV-003-obsidian-vault.png` under
 `evidence/attachments/`.
 
+## TASK-G11-REMEDIATION-001 — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| G11-REMED-EV-001 | End-to-end remediation, defect and boundary record | `TASK-G11-REMEDIATION-001.md` | Captured — engineering exit PASS |
+| G11-REMED-EV-002 | Current complete automated inventory | `../../apps/web/e2e/`; `../../apps/web/playwright/.auth/` | Captured — **276/276 PASS**: 3 setup + 273 application; 0 failed/skipped/excluded |
+| G11-REMED-EV-003 | Compile and static safety | `../../apps/web/` | Captured — typecheck PASS; production build PASS; runtime `auth.getUser()` scan 0 matches |
+| G11-REMED-EV-004 | Golden cross-persona journey | `../../apps/web/e2e/golden-journey.spec.ts` | Captured — 6/6 PASS inside final shard; return/correct/resubmit/approve and v1 immutability verified |
+| G11-REMED-EV-005 | Acceptance-ledger non-inflation | `AC_LEDGER.csv`; `AC_LEDGER_SUMMARY.md`; `validate_audit_reconciliation.py` | Captured — 493 rows = 14 verified_live / 460 implemented / 19 partial; validator PASS |
+| G11-REMED-EV-006 | Runtime visual matrices refreshed by final Playwright run | `screens/` | Captured in dirty worktree; attribution required before staging |
+
 ## CD-001 V7 public-safe atlas — 2026-07-13
 
 | ID | Item | File | Status |
