@@ -3494,7 +3494,7 @@
       "evidence": ["product-contract/evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md", "product-contract/acceptance/ACCEPTANCE_STATUS.md", "product-contract/evidence/EVIDENCE_STATUS.md"],
       "decisions": ["Sponsor resolved DEC-008: Mapbox GL JS across web/Admin/iPad and Mapbox Directions for in-app ETA; device-native geo handoff remains neutral.", "Mapbox public/browser and server route credentials stay environment-only; no token is committed.", "Offline packs and licence/data-residency confirmation remain open and are not claimed."],
       "blockers": ["Correct Inspection staging target and credentialed NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN plus MAPBOX_ACCESS_TOKEN configuration are required for actual tile/Arabic-label/Directions runtime proof.", "Mapbox MCP is configured but was not exposed as a callable tool in this existing session."],
-      "commit_sha": "Source commit SHA recorded by follow-up evidence commit",
+      "commit_sha": "bfbb4122f527690695e3d70f79b749729226c3a8",
       "next_task": "Configure Mapbox variables only in the actual Inspection staging target, run credentialed web/Admin/iPad map and Directions verification, then seek explicit approval to merge the verified branch to main.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 90 and evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md. Do not use Catalyst. Do not claim credentialed Mapbox runtime until the actual Inspection staging target is identified and configured."
     }
