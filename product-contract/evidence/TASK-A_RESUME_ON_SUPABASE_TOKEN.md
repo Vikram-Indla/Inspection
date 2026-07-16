@@ -22,6 +22,6 @@ token (or interactive `supabase login` / DB password). Project linked = `iiozvqn
 6. Consolidate the validated commit graph to `main`, push, verify the remote main tip; then delete stale branches only after proving their unique work is represented.
 
 ## Parked companions
-- outputs/claude-design-approval-pack/admin-control-plane-suite/PARKED_ITEMS_ADMIN_VERTICAL.md
+- ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/admin-control-plane-suite/PARKED_ITEMS_ADMIN_VERTICAL.md
 - product-contract/evidence/CD-006_BRANCH_RECONCILIATION_DISPOSITION_2026-07-15.md
 - product-contract/evidence/CD-024_IMPLEMENTATION_EVIDENCE_2026-07-15.md

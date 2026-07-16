@@ -1,6 +1,6 @@
 acceptance_id,component,criterion,severity,evidence,status
 SPC-CMD-001,Command nav group,"Dashboard/Operations Center/Factory 360 render for planner/inspector/reviewer/ops/leadership/auditor and are absent for admin-only roles; visibility never implies data access",P0,"per-persona nav frames + admin-hidden frame",not_started
-SPC-CMD-002,Auditor nav entry,"Auditor entry stays a gated placeholder until the confirmed auditor role_key exists; never wired to a guessed key",P1,"gated-placeholder frame + SL-1 note",not_started
+SPC-CMD-002,Auditor nav entry,"SL-1 RESOLVED: role_key=auditor confirmed (0001_foundation.sql:360); Auditor entry wired normally into the Command nav group like other non-admin personas",P1,"auditor persona nav frame",not_started
 SPC-CMD-003,Regional performance map,"KSA choropleth has a synchronized list alternative, legend, tile attribution and keyboard-accessible region/factory selection; region->factory->Factory 360 drill preserved",P0,"map + list-equivalent + keyboard recording",not_started
 SPC-CMD-004,Regional map colour banding,"Default is greyscale/ranked; performance colour bands remain disabled while thresholds are ungoverned and are never invented",P0,"ranked default frame + SL-2 decision note",not_started
 SPC-CMD-005,Live operations map,"Projected inspector position is labelled as projection, distinct from live GPS; factory marker is the assigned factory; no route/navigation is drawn (Phase 1)",P0,"projected-label frame + no-route frame",not_started

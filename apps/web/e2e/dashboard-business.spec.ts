@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import {
   buildDashboardMetrics,
   complianceBreakdown,
@@ -16,7 +17,7 @@ import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 import { storageStatePath } from "./personas";
 
 const OPS = { email: "ops@mim.gov.sa", password: "MimOps!2026" };
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/dashboard-business-v1");
+const EVIDENCE_DIR = evidenceDirectory("dashboard-business-v1");
 
 async function loginOps(page: import("@playwright/test").Page) {
   await page.goto("/locale?set=en");

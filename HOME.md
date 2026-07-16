@@ -32,4 +32,9 @@
 - [[product-contract/execution/SESSION_HANDOFF_TEMPLATE]]
 - [[product-contract/sessions/SESSION_LEDGER.json]]
 
+## External documentation
+- [[docs/README]]
+- [[docs/DOCUMENTATION_STORAGE_POLICY]]
+- Human master documents and binary evidence: `/Users/vikramindla/Desktop/Inspection Documentation` or `INSPECTION_DOCS_ROOT`.
+
 > The repository root is the Obsidian vault. Do not copy these files into a separate vault.

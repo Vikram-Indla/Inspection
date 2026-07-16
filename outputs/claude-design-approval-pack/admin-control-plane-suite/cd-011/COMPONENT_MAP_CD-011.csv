@@ -1,7 +1,0 @@
-design_component_or_state,existing_or_proposed_code_component,css_selector_or_token,notes
-Three-column workspace,apps/web/src/app/admin/violations/page.tsx (penalty mode),labelled regions,violation / lens / penalty
-Conflict Lens (signature),page.tsx center region,timeline + labelled list,overlap/gap/cardinality/repeat with config-derived examples
-Violation selector,page.tsx,ax-surface,left = violation_codes (proven)
-Penalty record,page.tsx,ax-surface,all fields (proposed); amounts from configuration
-Legal-basis band,page.tsx,ax-lozenge,provenance above controls; missing blocks publish
-Validate/publish,Controls.tsx,disabled + reason,approver workflow HANDOFF_BLOCKED

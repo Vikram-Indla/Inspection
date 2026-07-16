@@ -1,8 +1,0 @@
-visual_element,label,value_type,source_status,exact_table,exact_columns,query_or_filter,rls_guard,error_null_rendering,fixture_or_runtime,evidence_ref
-Register row core,"code/title/authority/status/created_at",text/enum/date,current,regulations,"id, code, title, issuing_authority, status, created_at",list all,authenticated read (Compliance/Form Admin write) per current RLS,unavailable row state — never zero,fixture,5e/5g row
-Clause count + rows,"7 clauses; per-clause ref/title/applicability/legal_source",integer + text,current,regulation_clauses,"id, regulation_id, clause_ref, title, applicability, legal_source",where regulation_id=:id,same,unavailable — never zero,fixture,5e rail col2
-Mapped item count,"23 mapped items",integer,current,inspection_items,clause_id,count grouped by clause_id in (clause ids for regulation),same,read failed -> "impact unknown, not zero"; never zero on failure,fixture (incl. failure case row),5e rail col3 + row3 (REG-PWR-009)
-Beyond-items facts,"packages/active visits/violations impact",n/a,HANDOFF_BLOCKED — IMPLEMENTATION/AUTHORIZATION REQUIRED,none proven,none,none,none,always "Not evaluated — no verified source",proposed only,5e rail col4
-Create draft action,"Create draft regulation",action,current,regulations,insert (status=draft),n/a,Compliance/Form Admin write per RLS,failure -> neutral catalogued error (blocked: catalogued errors unproven),current (ownership: page-level entry only),5e command band
-Detail link,"Open detail — not available yet",disabled link,HANDOFF_BLOCKED,n/a,n/a,n/a,n/a,disabled with visible reason,n/a,5e row1
-Publish action,not drawn on this page,n/a,ownership debt (CD-006),package_versions/regulations current direct update exists in live code,n/a,n/a,n/a,n/a,n/a,critique #1

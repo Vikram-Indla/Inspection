@@ -1,8 +1,0 @@
-research_id,primary_source,adopted_principle,rejected_treatment,saqeel_decision,affected_artifact
-R01,Saqeel product contract,violations are generated outcomes with legal basis + version,inspector free-text violations,legal taxonomy with trace,ae/at
-R02,Saqeel DEC-011 + tokens,Arabic-first + severity never color-only,raw values; color-only severity,glyph+word+color,all frames
-R04,Enterprise issue-to-action continuity (ServiceNow-style catalogue discipline),trace from trigger to corrective action; catalogue governance over free entry,ticket-list aesthetics,Trace Ribbon binding response->clause->violation->action,ae/at
-R11,SAP Fiori list-report,dense auditable rows with drill-in,card gallery,catalogue rows + ribbon disclosure,ae
-R12,IBM Carbon dense-table + status discipline,glyph+word status,color-only cells,severity + orphan/duplicate lozenges,all frames
-R16,Saudi Digital Government Authority accessibility,operable Arabic AT + physical RTL,cosmetic mirroring,lang=ar dir=rtl primary + bdi isolation,ae/af/ai
-R18,W3C WCAG 2.2,focus order/status/target minimum (44 = Saqeel baseline),misattribution,linear traversal + singleton regions,ao

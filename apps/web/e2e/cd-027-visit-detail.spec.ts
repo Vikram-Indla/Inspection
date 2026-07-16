@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-027 / SCR-WEB-210 / P03 — Visit Detail (Track 1: approved UI slice —
@@ -14,7 +15,7 @@ import { storageStatePath } from "./personas";
 // pure client state and safe to exercise. Guards, honest copy and blocked legs
 // (ERRORMAP / ORPHAN / NOTIFY_PREV / ASSIGNMENT_RELEASE / MAP) are proven at the
 // code layer — matching the CD-025/026 read-only + wiring-proof convention.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-027-visit-detail-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-027-visit-detail-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 const ID = "src/app/visits/[id]";
 

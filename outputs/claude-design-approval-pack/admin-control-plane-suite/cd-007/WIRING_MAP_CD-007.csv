@@ -1,6 +1,0 @@
-wiring_id,ui_trigger,client_component,route_server_action,validation_guard,canonical_transition,table_rpc_provider,rls_role,audit_event,side_effect,success_result,negative_failure,automated_test,runtime_evidence,disposition
-W01,open catalogue,page.tsx,server read,authenticated,none,inspection_items (+ clause join proven),authenticated read (assumed),unknown,none,catalogue populated,unavailable -> never zero,T-CD7-01,HANDOFF_BLOCKED (schema not confirmed),HANDOFF_BLOCKED
-W02,select item row,page.tsx (client state),uses W01 payload,n/a,none,none,n/a,none,none,preview strip renders,n/a,T-CD7-02,current-after-modify,current
-W03,resolve duplicate code,Controls.tsx,candidate actions.ts update,Compliance/Form Admin RLS (assumed),unknown,items update,unknown,unknown,none,duplicate resolved,neutral error,T-CD7-03,HANDOFF_BLOCKED,HANDOFF_BLOCKED
-W04,deactivate item,Controls.tsx,candidate actions.ts,unknown,unknown (active->deactivated, unconfirmed),items update,unknown,unknown,none,item deactivated; existing package refs unaffected,neutral error,T-CD7-04,HANDOFF_BLOCKED,HANDOFF_BLOCKED
-W05,view published-use warning,page.tsx,proposed usage-count read,authenticated,none,package_versions join (proposed),unknown,none,none,warning renders with real count,read failure -> unavailable not zero,T-CD7-05,HANDOFF_BLOCKED,HANDOFF_BLOCKED

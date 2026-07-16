@@ -37,7 +37,7 @@ Evidence
   PASS (19) FAIL (0) — setup 3 personas + golden journey B10 NEG+P1-P5,
   offline drill, persona tours, negative-auth. Time 86s.
 - Production build: next build passes; tsc --noEmit clean.
-- Screens: product-contract/evidence/screens/login-v4/
+- Screens: ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/login-v4/
   SCR-PUB-010-v4-dark-ar.png            (design 4a parity)
   SCR-PUB-010-v4-light-en.png           (design 4b parity)
   SCR-PUB-010-v4-theme-toggle-light-ar.png (live theme flip re-inits map)

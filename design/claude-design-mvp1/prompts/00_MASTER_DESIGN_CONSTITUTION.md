@@ -2,7 +2,7 @@
 
 Paste this before every design run.
 
-Also apply `../../../outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md`. If this constitution and an older screen prompt reward checklist completion over visible decision quality, the V4 ratchet governs.
+Also apply `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md`. If this constitution and an older screen prompt reward checklist completion over visible decision quality, the V4 ratchet governs.
 
 ## Role
 

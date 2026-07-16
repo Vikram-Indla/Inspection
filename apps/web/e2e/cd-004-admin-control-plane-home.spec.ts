@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-004 / SCR-ADM-001 / /admin — Approval & Configuration home (Configuration
@@ -17,7 +18,7 @@ import { storageStatePath } from "./personas";
 // Per-source read FAILURE and VERIFIED-ZERO states are fixtures in the design pack
 // (DATA_TRUTH_LEDGER) and cannot be forced safely against the live backend, so they
 // are proven at the code layer below (DSG-CODE-001 / DEC-012), exactly as CD-025 did.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-004-admin-home-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-004-admin-home-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 test.use({ storageState: storageStatePath("inspector") });

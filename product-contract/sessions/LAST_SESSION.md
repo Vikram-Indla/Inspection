@@ -1,137 +1,16 @@
 # Last Session
-- Time: 2026-07-15T18:19:14.262272+00:00
-- Session ID: ab76673a-fe66-4f0a-b09e-031aece3de75
-- End reason: other
-- Branch: feat/admin-control-plane
-- Commit: 8ecbf1b
-- Working tree:
-```
-M .project-memory/audit/instructions_loaded.jsonl
- M .project-memory/audit/session_end.jsonl
- M .project-memory/audit/tool_events.jsonl
- M apps/web/e2e/cd-004-admin-control-plane-home.spec.ts
- M apps/web/e2e/cd-021-bulk-targeting.spec.ts
- M apps/web/e2e/cd-023-immediate-authority-bar.spec.ts
- M apps/web/e2e/cd-027-visit-detail.spec.ts
- M apps/web/e2e/cd-029-review-workspace.spec.ts
- M apps/web/e2e/cd-030-version-comparison.spec.ts
- M apps/web/e2e/dashboard-kpi-seed.spec.ts
- M apps/web/src/app/field/[visitId]/Startup.tsx
- M apps/web/src/app/field/[visitId]/page.tsx
- M apps/web/src/app/field/inspection/[id]/page.tsx
- M apps/web/src/app/field/page.tsx
- M apps/web/src/app/operations/actions.ts
- M apps/web/src/app/operations/page.tsx
- M apps/web/src/app/reviews/[id]/actions.ts
- M apps/web/src/app/reviews/[id]/page.tsx
- M apps/web/src/app/visits/[id]/actions.ts
- M apps/web/src/components/field/FieldHome.tsx
- M apps/web/src/lib/offline.ts
- M outputs/cd-004/CD-004_WIRING_AUDIT.md
- M outputs/cd-004/WIRING_MAP_CD-004_R2.csv
- M outputs/cd-021/WIRING_MAP_CD-021.csv
- M outputs/cd-024/WIRING_MAP_CD-024.csv
- M outputs/cd-029/WIRING_MAP_CD-029.csv
- M outputs/cd-030/WIRING_MAP_CD-030.csv
- M outputs/claude-design-approval-pack/CD-041_043_BACKEND_READINESS_AUDIT.md
- M product-contract/GATE_STATUS.md
- M product-contract/evidence/AC_LEDGER.csv
- M product-contract/evidence/AC_LEDGER_SUMMARY.md
- M product-contract/evidence/CODEX_AUDIT_CD-021_TO_CD-030_REMEDIATION_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_CD-022_TO_CD-029_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_CD-029_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_CD-030_REMEDIATION_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md
- M product-contract/evidence/CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md
- M product-contract/evidence/EVIDENCE_STATUS.md
- M product-contract/evidence/STORYBOARD_STATUS.md
- M product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md
- M product-contract/evidence/generate_ac_ledger.py
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-ar-rtl-1440.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-dark-1024.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-dark-1440.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-light-1024.png
- M product-contract/evidence/screens/cd-004-admin-home-v1/spine-en-light-1440.png
- M product-contract/evidence/screens/cd-021-bulk-v1/CODEX_AUDIT_CD-021_REMEDIATION_VERIFICATION.md
- M product-contract/evidence/screens/cd-021-bulk-v1/ar-rtl.png
- M product-contract/evidence/screens/cd-021-bulk-v1/narrow.png
- M product-contract/evidence/screens/cd-021-bulk-v1/primary.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-ar-rtl.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-narrow-412.png
- M product-contract/evidence/screens/cd-025-plan-review-v1/review-primary.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/ar-rtl.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/eligibility-preview.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/narrow-412.png
- M product-contract/evidence/screens/cd-026-visit-management-v1/primary.png
- M product-contract/evidence/screens/dashboard-business-v1/operational-en-dark-desktop.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-ar-mobile.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-en-dark-desktop.png
- M product-contract/evidence/screens/dashboard-business-v1/strategic-en-light-desktop.png
- M product-contract/evidence/screens/dashboard-kpi-seed/live-operations-en-light.png
- M product-contract/evidence/screens/dashboard-kpi-seed/operations-scoped-en-light.png
- M product-contract/evidence/screens/immediate-v2/ar-dark-desktop.png
- M product-contract/evidence/screens/immediate-v2/ar-dark-narrow.png
- M product-contract/evidence/screens/immediate-v2/ar-light-desktop.png
- M product-contract/evidence/screens/immediate-v2/ar-light-narrow.png
- M product-contract/evidence/screens/immediate-v2/en-dark-desktop.png
- M product-contract/evidence/screens/immediate-v2/en-dark-narrow.png
- M product-contract/evidence/screens/immediate-v2/en-light-desktop.png
- M product-contract/evidence/screens/immediate-v2/en-light-narrow.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-ar.png
- M product-contract/evidence/screens/login-v7-atlas/desktop-light-en.png
- M product-contract/evidence/screens/login-v7-atlas/laptop-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-ar.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-dark-en.png
- M product-contract/evidence/screens/login-v7-atlas/mobile-light-ar.png
- M product-contract/evidence/screens/shell-v1/planner-desktop-en-collapsed.png
- M product-contract/evidence/screens/shell-v1/planner-desktop-en-dark.png
- M product-contract/evidence/screens/shell-v1/planner-mobile-ar-light-drawer.png
- M product-contract/execution/CURRENT_SLICE.yaml
- M product-contract/execution/WORK_QUEUE.yaml
- M product-contract/sessions/LAST_SESSION.md
- M product-contract/sessions/SESSION_LEDGER.json
-?? apps/web/e2e/cd-042-otp-status-authz.spec.ts
-?? outputs/cd-006-cd-011/
-?? outputs/cd-041-042-slice-proposal/
-?? outputs/cd-042-r2/
-?? outputs/claude-design-approval-pack/CD-012_019_BACKEND_WIRING_READINESS_R1.md
-?? outputs/claude-design-approval-pack/CD-012_019_CONSOLIDATED_CORRECTION_PROMPT_R2.md
-?? outputs/claude-design-approval-pack/CD-012_019_CONSOLIDATED_DEEP_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/CD-012_CORRECTION_PROMPT_R2.md
-?? outputs/claude-design-approval-pack/CD-012_DESIGN_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/CD-042_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
-?? outputs/claude-design-approval-pack/CD-042_CORRECTION_PROMPT_R2.md
-?? outputs/claude-design-approval-pack/CD-042_DESIGN_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/CD-043_CLAUDE_DESIGN_END_TO_END_R1_FRESH_SESSION_PROMPT.md
-?? outputs/claude-design-approval-pack/CD-043_CORRECTION_PROMPT_R2.md
-?? outputs/claude-design-approval-pack/CD-043_DESIGN_REVIEW_R1.md
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/CLAUDE_CODE_MCP_PROMPT_CD-004_TO_CD-011_CONSOLIDATED.md
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-004-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-004-r2b/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-004/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-005-r1/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-006-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-006/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-007-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-007/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-008-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-008/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-009-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-009/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-010-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-010/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-011-r2/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/cd-011/
-?? outputs/claude-design-approval-pack/admin-control-plane-suite/implementation-prompts/
-?? product-contract/evidence/CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md
-?? product-contract/evidence/CODEX_AUDIT_FIELD_HANDOFF_REMEDIATION_2026-07-15.md
-?? product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md
-?? product-contract/evidence/screens/cd-004-admin-home-v1/scope-admin-en-light.png
-?? product-contract/evidence/validate_audit_reconciliation.py
-?? supabase/migrations/20260715180000_cd042_otp_status_authorization.sql
-?? supabase/migrations/20260715180000_field_arrival_evidence.sql
-?? supabase/migrations/20260715193000_field_arrival_evidence_column_repair.sql
-```
-- Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.
+
+- Session ID: `2026-07-16-repository-documentation-externalization`
+- Date/time: `2026-07-16T20:40:05+03:00`
+- Gate: Repository maintenance; no product-gate change
+- Task: `TASK-REPO-DOC-EXTERNALIZE-001`
+- Branch: `chore/externalize-documentation`
+- Base: `4db2c374998982bbca505976459978b6c9385bac`
+- Result: 1,004 D/E documentation files (427,729,308 bytes) verified externally and removed from the checked-out Git tree; 455 A/B/C/F candidates retained; product scope and behavior unchanged.
+- External root: `/Users/vikramindla/Desktop/Inspection Documentation`
+- Evidence: external `MANIFESTS/**`, verified pre-move ZIP in `10_REPOSITORY_EXPORTS`, and repository `repo-cleanup/documentation_inventory.csv`.
+- Validation: dependency install, typecheck, production build, 276-test inventory load, copy/hash/link/symlink, memory, audit reconciliation, JSON/JSONL/CSV, script syntax, secret, and diff checks pass. Full live-data E2E not run under the explicit no-production/shared-database-write rule.
+- Push status: withheld because two malformed historical YAML manifests, 12 i18n findings, and invalid shared-Git reflog entries reproduce independently of the cleanup; correction/repair or explicit waiver required.
+- Original checkout: dirty `codex/g11-g12-release-001` preserved untouched.
+- Next task: resolve or waive the recorded YAML/i18n/reflog exceptions, rerun safe validation, push `chore/externalize-documentation`, and open a PR; do not merge automatically.
+- Resume prompt: Read `AGENTS.md`, `product-contract/CURRENT_STATE.md` UPDATE 88, `product-contract/sessions/HANDOFF_2026-07-16_DOCUMENTATION_EXTERNALIZATION.md`, and external `MANIFESTS/validation_results.md`. Do not repeat the move. Preserve the original dirty checkout. Resolve or waive the YAML/i18n/reflog exceptions, backing up the shared Git directory before any reflog repair; rerun safe validation, then push and open a PR. Do not run live-data tests, touch production/database state, rewrite history, force-push, merge, or modify main without explicit authorization.

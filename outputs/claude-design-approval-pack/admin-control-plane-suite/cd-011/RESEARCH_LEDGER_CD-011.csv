@@ -1,8 +1,0 @@
-research_id,primary_source,adopted_principle,rejected_treatment,saqeel_decision,affected_artifact
-R01,Saqeel product contract,map violations to approved penalties; detect conflicts before publish,inventing penalty amounts/legal rules,config-derived values only; provenance outranks controls,be/bj
-R02,Saqeel DEC-011 + tokens,Arabic-first + conflict not color-only,raw values; color-only matrix,glyph+word conflicts + timeline,all frames
-R10,Camunda DMN decision-model transparency,make the decision relationship and its conflicts legible; test/validate before deploy,opaque rule tables,three-column workspace + Conflict Lens + validate-before-publish,be/bt
-R11,SAP Fiori relationship/object pairing,object-to-object relationship with validation between,flat second catalogue,violation | validation | penalty layout,be
-R12,IBM Carbon dense-data + status,glyph+word status; timelines over colored cells,unexplained colored matrix cells,overlap timeline with text equivalent,bt
-R16,Saudi Digital Government Authority accessibility,operable Arabic AT + physical RTL,cosmetic mirroring,lang=ar dir=rtl primary + bdi isolation; timeline text equivalent,be/bf/bi
-R18,W3C WCAG 2.2,focus order/status/non-text-contrast; 44 = Saqeel baseline,misattribution; bar-only meaning,timeline has text equivalent; singleton regions,bo

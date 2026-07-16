@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-005 Regulation Library (SCR-ADM-010) + CD-006 Regulation Detail & Version
@@ -10,7 +11,7 @@ import { storageStatePath } from "./personas";
 //
 // Per-source FAILURE / VERIFIED-ZERO cannot be forced safely against the live backend, so
 // they are proven at the code layer below (DSG-CODE-001 / DEC-012), exactly as CD-004 did.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-005-006-regulations-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-005-006-regulations-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 test.use({ storageState: storageStatePath("reviewer") });

@@ -62,7 +62,7 @@ The field/iPad and external virtual-participant channels retain their own constr
 - Next.js production build: PASS.
 - Targeted shell/dashboard suite: PASS 16/16.
 - Complete application regression: PASS 50/50 after dashboard integration.
-- Visual evidence: `product-contract/evidence/screens/shell-v1/`.
+- Visual evidence: `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/shell-v1/`.
 - Runtime defect corrected during review: persisted desktop collapse plus Arabic mobile initially left the RTL drawer off-canvas; corrected before documentation closure.
 
 Sponsor runtime review remains required before declaring the shell visually accepted for release.

@@ -32,7 +32,7 @@ current_program_state:
       build: "PASS — production Next.js build"
       targeted_suite: "PASS 9/9 — atlas, fallback, responsive, demo gate, negative auth"
       full_regression: "PASS 26/26 — setup, golden journey, offline drill, persona tours, negative paths"
-      visual_evidence: "product-contract/evidence/screens/login-v7-atlas/"
+      visual_evidence: "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/login-v7-atlas/"
       evidence_log: "product-contract/evidence/CD001-V7-EV-001-public-safe-atlas.txt"
       residual_p1:
         - "sponsor confirmation of source and derivative image rights"
@@ -107,7 +107,7 @@ current_program_state:
       targeted_playwright: "PASS 10/10"
       visual_playwright: "PASS 4/4 including persona setup"
       full_playwright_regression: "PASS 41/41 on isolated port 3107"
-      screenshots: "product-contract/evidence/screens/shell-v1/"
+      screenshots: "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/shell-v1/"
     tab_rule: "Every business input tab is dispositioned as wired, consolidated, renamed, or hidden/blocked in the shell contract; no placeholder destinations."
   dashboard:
     task_id: "TASK-WEB-DASHBOARD-002"
@@ -126,7 +126,7 @@ current_program_state:
       production_build: "PASS"
       targeted_shell_dashboard_playwright: "PASS 16/16"
       full_playwright_regression: "PASS 50/50"
-      screenshots: "product-contract/evidence/screens/dashboard-business-v1/"
+      screenshots: "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/dashboard-business-v1/"
     truth_rule: "Example values and AI text from saqeel.html are never runtime data; use RLS-scoped records or an explicit unavailable state."
   implementation: >-
     CD-001 V7 implemented on feat/cd-001-v7-atlas and ready for human runtime
@@ -163,8 +163,8 @@ entry_points:
   - 00_START_HERE.md
   - CURRENT_UI_BASELINE.md
   - prompts/00_MASTER_DESIGN_CONSTITUTION.md
-  - ../../outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md
-  - ../../outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md
+  - ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md
+  - ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md
 authority:
   - authority/SOURCE_AUTHORITY.md
   - authority/DESIGN_DECISIONS.md

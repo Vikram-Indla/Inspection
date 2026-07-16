@@ -44,14 +44,14 @@ png_paths:
 runtime_evidence_paths:
   - product-contract/evidence/screens/immediate-v2/CD023_LIVE_REMEDIATION_EVIDENCE.md
   - product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023_POST_LIVE.md
-  - product-contract/evidence/screens/immediate-v2/en-dark-desktop.png
-  - product-contract/evidence/screens/immediate-v2/en-dark-narrow.png
-  - product-contract/evidence/screens/immediate-v2/en-light-desktop.png
-  - product-contract/evidence/screens/immediate-v2/en-light-narrow.png
-  - product-contract/evidence/screens/immediate-v2/ar-dark-desktop.png
-  - product-contract/evidence/screens/immediate-v2/ar-dark-narrow.png
-  - product-contract/evidence/screens/immediate-v2/ar-light-desktop.png
-  - product-contract/evidence/screens/immediate-v2/ar-light-narrow.png
+  - ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/en-dark-desktop.png
+  - ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/en-dark-narrow.png
+  - ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/en-light-desktop.png
+  - ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/en-light-narrow.png
+  - ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/ar-dark-desktop.png
+  - ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/ar-dark-narrow.png
+  - ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/ar-light-desktop.png
+  - ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/ar-light-narrow.png
 
 post_audit_corrections:
   - "Planner and ordinary Inspector are both source-authorized; Inspector self-assigns and enters the standard field start flow."

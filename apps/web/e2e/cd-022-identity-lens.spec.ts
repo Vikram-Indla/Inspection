@@ -1,10 +1,11 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { PERSONAS, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
 
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/single-v2");
+const EVIDENCE_DIR = evidenceDirectory("single-v2");
 
 // CD-022 · SCR-WEB-120 · DSG-017/DSG-A11Y-001. Identity Confidence Lens for
 // /planning/single: server-side graded search (EXACT/SIMILAR NAME/DEGRADED),

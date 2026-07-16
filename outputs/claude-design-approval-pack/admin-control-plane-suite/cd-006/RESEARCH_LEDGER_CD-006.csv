@@ -1,9 +1,0 @@
-# RESEARCH_LEDGER_CD-006.csv
-research_id,primary_source,adopted_principle,rejected_treatment,saqeel_decision,affected_artifact
-R01,Saqeel product contract (internal authority),CD-005/CD-006 ownership split — detail lives downstream of the list,drawing the full lifecycle on the list screen,dossier is a panel within /admin/regulations, not a new route,truth reconciliation + component map
-R02,Saqeel DEC-011 + tokens.css,Arabic-first + 44x44 baseline,raw values,all frames reuse existing tokens,6e-6j
-R10,Camunda-style governed task console (enterprise BPM operational pattern),a persistent status/lifecycle rail beside the work object; irreversible actions gated by explicit validation before submission,a free-floating approval button with no visible precondition,publish gate is inline in the rail, always showing its blocking reason,6e rail + 6s-2
-R11,SAP Fiori object page,metadata header + tabbed/sectioned facets around one governed object; edit stays subordinate to object identity,turning the whole page into a form,dossier layout keeps title/status/code as the anchor, clause editing subordinate,6e header + layout
-R16,Saudi Digital Government Authority — accessibility guidance,operable Arabic AT experience; physical RTL order,cosmetic mirroring,full lang=ar dir=rtl primary frame + bdi isolation,6e/6f/6i
-R18,W3C WCAG 2.2,focus order + status messages + target size (24x24 minimum, not 44x44),citing 2.5.8 for the 44px rule,linear traversal; 44x44 kept as Saqeel's own R02 baseline,6o
-R19,WAI-ARIA Authoring Practices,ordered list for sequential trace steps; disclosure region for attached panels,role=grid/dialog misuse,trace as labelled ordered list; dossier as in-flow region not a modal,6o + 6e rail

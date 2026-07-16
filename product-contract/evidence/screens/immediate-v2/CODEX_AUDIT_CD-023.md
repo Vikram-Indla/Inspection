@@ -122,7 +122,7 @@ Because the canonical wiring rows are absent, their 13 columns cannot receive th
   - The claimed “availability race” is not exercised; `:150-180` creates a normal pre-existing overlap and checks the ordinary pre-write blocker.
   - No tests cover direct blank-coordinate submission, stale/unpublished package, retry binding/idempotency, read-query failure, each ledger boundary, or exact `audit_events` output.
   - Audit run `npx playwright test e2e/cd-023-immediate-authority-bar.spec.ts --project=e2e`: FAIL in shared authentication setup (planner/inspector/reviewer login returned HTTP 400 and timed out); 3 setup tests failed and 8 CD-023 tests did not run.
-  - `product-contract/evidence/screens/immediate-v2/`: no required dark/light × EN/AR × desktop/narrow evidence set was present at audit time.
+  - `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/`: no required dark/light × EN/AR × desktop/narrow evidence set was present at audit time.
 - required correction: repair/restore the authenticated fixture, add the missing negative paths, run the focused suite, then run the full regression and record all required frames.
 
 ## Checks that passed

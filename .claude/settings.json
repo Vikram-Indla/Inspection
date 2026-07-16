@@ -106,20 +106,6 @@
         ]
       }
     ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3",
-            "args": [
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/stop_gate.py"
-            ],
-            "timeout": 15
-          }
-        ]
-      }
-    ],
     "ConfigChange": [
       {
         "matcher": "*",

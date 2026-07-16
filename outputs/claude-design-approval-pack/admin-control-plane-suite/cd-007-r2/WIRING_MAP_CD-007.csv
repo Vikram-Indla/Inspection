@@ -1,6 +1,0 @@
-wiring_id,state_or_action_id,ui_trigger,route_server_action,validation_guard,table_rpc,rls_role,audit_event,success_result,negative_result,disposition,blocker_owner
-W01,S01,open catalogue,server read,authenticated,inspection_items,SELECT auth,none,rows,unavailable not zero,current,none
-W02,S04,create item,actions.createItem,governed presets+clause+required fields,inspection_items insert,writes compliance/form,trg_audit_inspection_items,item created,duplicate(unique)/invalid preset,current,none
-W03,active-toggle,toggle active,actions.toggleItemActive,writer,inspection_items update,writes compliance/form,trg_audit_inspection_items,active flipped; history preserved,neutral error,current,none
-W04,usage-count,open usage,none,none,none,none,none,unavailable,n/a,HANDOFF_BLOCKED,backend
-W05,S05,unauthorized,route guard,Admin-family guard,none,none,none,denial,n/a,HANDOFF_BLOCKED,platform

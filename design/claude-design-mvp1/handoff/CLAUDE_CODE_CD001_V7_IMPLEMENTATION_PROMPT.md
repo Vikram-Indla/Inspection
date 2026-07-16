@@ -36,7 +36,7 @@ Inspect the working tree before editing. Preserve all pre-existing user changes.
 - Protected behavior: `ERR-AUTH-001`, `FND-003`, `RBAC-001..014`, server-side `/launch` routing, Supabase credential authentication, anti-enumeration password reset
 - Engines referenced illustratively only: `ENG-02`, `ENG-04`, `ENG-08`, `ENG-12`
 - UX blind spot: `UX-BS-009` demo credentials must be non-production only
-- Baseline evidence: `G10-EV-002-login-v4-inspection-story.txt` and `product-contract/evidence/screens/login-v4/`
+- Baseline evidence: `G10-EV-002-login-v4-inspection-story.txt` and `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/login-v4/`
 
 ## Current-state warning — resolve first
 
@@ -139,7 +139,7 @@ Expected new files, subject to repository verification:
 - `apps/web/public/brand/saudi-atlas/*` only for original approved assets
 - `design/claude-design-mvp1/acceptance/SAUDI_ATLAS_REFERENCE_REGISTER_CD001.csv`
 - `design/claude-design-mvp1/acceptance/SAUDI_ATLAS_ASSET_REGISTER_CD001.csv`
-- `product-contract/evidence/screens/login-v7-atlas/*` for implementation evidence only; do not alter frozen requirements
+- `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/login-v7-atlas/*` for implementation evidence only; do not alter frozen requirements
 
 Do not silently choose different paths. If a proposed path is inappropriate, record the exact replacement and reason in the final file manifest.
 

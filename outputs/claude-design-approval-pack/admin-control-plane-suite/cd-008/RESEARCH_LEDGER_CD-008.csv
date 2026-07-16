@@ -1,7 +1,0 @@
-research_id,primary_source,adopted_principle,rejected_treatment,saqeel_decision,affected_artifact
-R01,Saqeel product contract,a version is the deployable unit; consumers pin exact versions,name-level library,version-led rows under package groups,8e layout
-R02,Saqeel DEC-011 + tokens,Arabic-first + 44x44 baseline + mono version identity,raw values,consistent with suite,all frames
-R11,SAP Fiori list/object pairing,list rows pair with an object preview rather than replacing the list,modal-only detail,preview link per version row,8e/8g
-R12,IBM Carbon expandable data rows,expandable rows keep group context while revealing versions,card gallery,package group -> version rows,8e
-R16,Saudi Digital Government Authority accessibility guidance,operable Arabic AT + physical RTL order,cosmetic mirroring,lang=ar dir=rtl primary + bdi isolation,8e/8f/8i
-R18,W3C WCAG 2.2,focus order + status messages + 24x24 target minimum (44 is Saqeel's own baseline),misattributing 44px to 2.5.8,linear traversal + singleton regions,8o

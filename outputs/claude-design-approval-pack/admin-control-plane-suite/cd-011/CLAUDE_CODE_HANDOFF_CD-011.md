@@ -1,3 +1,0 @@
-# CLAUDE_CODE_HANDOFF_CD-011.md
-Controlled application order: semantic tokens -> approved assets -> shared components -> route composition -> localization -> tests/evidence.
-Design handoff only. implementation_authorized: false. This is the most schema-blocked screen in the suite: a fresh read of apps/web/src/app/admin/violations/* AND confirmation of the penalty_mappings schema + a penalty-specific approver workflow are mandatory before any implementation. Never invent monetary values or legal rules; examples must be configuration-derived. Codex must audit WIRING_MAP_CD-011.csv (every row HANDOFF_BLOCKED except the violation_codes read) before implementation authorization.
