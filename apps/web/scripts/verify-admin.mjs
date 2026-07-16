@@ -36,8 +36,13 @@ async function localizationRoundTrip(page) {
     const inp = r.locator('input[name="ar"]');
     await inp.fill(value);
     await r.locator('form:has(input[name="ar"]) button').first().click();
-    // saveTranslation revalidates the path; give the action + re-render time.
-    await page.waitForTimeout(2500);
+    // Wait for the server action + revalidate to actually settle, not a fixed
+    // timeout: prefer the row's "saved" success lozenge, fall back to networkidle.
+    await Promise.race([
+      r.locator('.ax-lozenge--success').first().waitFor({ timeout: 9000 }).catch(() => {}),
+      page.waitForLoadState("networkidle").catch(() => {}),
+    ]);
+    await page.waitForTimeout(1200);
   };
 
   await goList();
@@ -69,6 +74,110 @@ async function localizationRoundTrip(page) {
     restoredOk: restored === original,
     original, testVal, persisted, restored,
   };
+}
+
+// Workflow maker-checker (RBAC-002) negative path: admin proposes a draft
+// (proposeWorkflowDraft write) then is BLOCKED from approving its own draft.
+// Publish is irreversible so this exercises the write + the CD-012 SoD guard
+// without publishing. NOTE: leaves one identifiable DRAFT row (no delete action).
+async function workflowSoDRoundTrip(page, label) {
+  const goWf = async () => {
+    await page.goto(`${BASE}/admin/workflows`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".ax-pagehead", { timeout: 20000 });
+    await page.waitForTimeout(600);
+  };
+  await goWf();
+
+  const proposeForm = page.locator('form:has(input[name="version_label"])').first();
+  if (await proposeForm.count() === 0) {
+    return { ran: false, reason: "no published workflow version with a propose-draft form" };
+  }
+  await proposeForm.locator('input[name="version_label"]').fill(label);
+  await proposeForm.locator("button").first().click();
+  await page.waitForTimeout(2500);
+  const proposeError = (await proposeForm.locator('[role="alert"]').first().innerText().catch(() => "")).trim();
+
+  await goWf();
+  const card = page.locator(`.ax-surface:has(.ax-version:text-is(${JSON.stringify(label)}))`).first();
+  const proposed = await card.count() > 0;
+  let statusText = "", sodGuardShown = false, approveButtonPresent = null;
+  if (proposed) {
+    statusText = (await card.locator(".ax-lozenge").first().innerText().catch(() => "")).trim();
+    const bodyText = await card.innerText().catch(() => "");
+    sodGuardShown = /distinct checker must approve/i.test(bodyText);
+    approveButtonPresent = await card.locator('button:has-text("Approve & publish")').count() > 0;
+  }
+  return {
+    ran: true, label, proposeError: proposeError || null,
+    proposed,
+    statusIsDraft: /draft/i.test(statusText),
+    sodGuardShown,
+    selfApproveBlocked: sodGuardShown && approveButtonPresent === false,
+  };
+}
+
+// Risk-weights save round-trip (reversible): perturb two factor weights keeping
+// Σ = 1.00 → saveRiskSettings → engine_settings write → reload confirms persisted
+// → restore the exact original weights. If RLS denies the write (the admin role
+// may lack risk_owner scope), that surfaced error is itself a valid outcome and
+// proves the CD-014 result-surfacing fix — reported as rlsDenied, no restore needed.
+async function riskWeightsRoundTrip(page) {
+  const APPROX = (a, b) => Math.abs(parseFloat(a) - parseFloat(b)) <= 0.001;
+  const go = async () => {
+    await page.goto(`${BASE}/admin/risk`, { waitUntil: "domcontentloaded" });
+    await page.waitForSelector(".rk-driver", { timeout: 20000 });
+    await page.waitForTimeout(600);
+  };
+  const readWeights = async () => {
+    const inputs = page.locator('.rk-driver input[type="number"]');
+    const n = await inputs.count();
+    const out = [];
+    for (let i = 0; i < n; i++) out.push(await inputs.nth(i).inputValue());
+    return out;
+  };
+  const saveAndSettle = async () => {
+    const btn = page.locator('button:has-text("Save configuration")').first();
+    await btn.click();
+    const res = await Promise.race([
+      page.locator(".ax-lozenge--success").first().waitFor({ timeout: 9000 }).then(() => "ok").catch(() => null),
+      page.locator('[role="alert"]').first().waitFor({ timeout: 9000 }).then(() => "err").catch(() => null),
+    ]);
+    await page.waitForLoadState("networkidle").catch(() => {});
+    await page.waitForTimeout(1000);
+    const errText = (await page.locator('p[role="alert"]').first().innerText().catch(() => "")).trim();
+    return { res, errText };
+  };
+
+  await go();
+  const inputs = page.locator('.rk-driver input[type="number"]');
+  const original = await readWeights();
+  if (original.length < 2) return { ran: false, reason: "fewer than 2 factors" };
+  const donor = original.findIndex(v => parseFloat(v) >= 0.05);
+  const recv = original.findIndex((_, i) => i !== donor);
+  if (donor < 0) return { ran: false, reason: "no factor >= 0.05 to move" };
+
+  const donorNew = (parseFloat(original[donor]) - 0.05).toFixed(2);
+  const recvNew = (parseFloat(original[recv]) + 0.05).toFixed(2);
+  await inputs.nth(donor).fill(donorNew);
+  await inputs.nth(recv).fill(recvNew);
+  const save1 = await saveAndSettle();
+
+  if (save1.res === "err" || /RLS|risk_owner|rejected/i.test(save1.errText)) {
+    return { ran: true, rlsDenied: true, errorSurfaced: save1.errText || "(error lozenge shown)", original };
+  }
+
+  // Confirm persistence, then restore originals.
+  await go();
+  const afterSave = await readWeights();
+  const savedOk = APPROX(afterSave[donor], donorNew) && APPROX(afterSave[recv], recvNew);
+
+  for (let i = 0; i < original.length; i++) await inputs.nth(i).fill(original[i]);
+  await saveAndSettle();
+  await go();
+  const afterRestore = await readWeights();
+  const restoredOk = original.every((v, i) => APPROX(afterRestore[i], v));
+
+  return { ran: true, rlsDenied: false, savedOk, restoredOk, original, afterSave, afterRestore };
 }
 
 const results = [];
@@ -109,7 +218,11 @@ try {
     results.push({ route: c.route, status, allMarkersPresent, markerHits, bodyErr, jsErrors: newErrors });
   }
   const roundTrip = process.env.VERIFY_ROUNDTRIP ? await localizationRoundTrip(page) : { ran: false, reason: "skipped (set VERIFY_ROUNDTRIP=1)" };
-  console.log(JSON.stringify({ landed, results, roundTrip }, null, 2));
+  const riskRoundTrip = process.env.VERIFY_ROUNDTRIP ? await riskWeightsRoundTrip(page) : { ran: false, reason: "skipped (set VERIFY_ROUNDTRIP=1)" };
+  const workflowSoD = process.env.VERIFY_WF_SOD
+    ? await workflowSoDRoundTrip(page, `RT-SOD-${new Date().toISOString().replace(/[:.]/g, "-")}`)
+    : { ran: false, reason: "skipped (set VERIFY_WF_SOD=1 — creates a draft row)" };
+  console.log(JSON.stringify({ landed, results, roundTrip, riskRoundTrip, workflowSoD }, null, 2));
 } finally {
   await browser.close();
 }
