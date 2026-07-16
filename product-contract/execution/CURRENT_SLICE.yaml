@@ -1,130 +1,167 @@
-schema_version: "1.2"
-task_id: "TASK-BASELINE-WIRING-AUDIT-001"
-gate: "G11 production-readiness wiring audit and sponsor-authorized baseline consolidation"
-title: "CD-001..003 and CD-020..024 design-to-live wiring, branch reconciliation, and main baseline"
-status: "BASELINE_PUSHED_REMOTE_VERIFIED_WITH_DEFAULT_BRANCH_BLOCKER"
-enforce_stop_gate: false
+schema_version: "1.0"
+task_id: "TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001"
+gate: "G11 production-readiness requirement closure"
+title: "Close all 19 recorded partial MVP1 requirements with production-grade vertical slices"
+status: "COMPLETE"
+enforce_stop_gate: true
 broad_implementation_allowed: true
+approval_ref: "HUMAN_APPROVALS.yaml#G11-remaining-requirements-closure"
 
 sponsor_direction:
   approver: "Vikram Indla"
-  date: "2026-07-14"
+  date: "2026-07-16"
   authorization:
-    - "Audit CD-001, CD-002, CD-003 and CD-020 through CD-024 from a complete wiring perspective."
-    - "Audit every delivered design and every D2L/design-to-live opportunity, including cross-screen dependencies."
-    - "Implement every contract-authorized wiring closure that can be safely proven."
-    - "Review every branch and stash, preserve concurrent Claude Code work, then commit, merge and push the verified baseline to main."
-    - "Delete stale branches only after proving their unique work is represented in the baseline."
-  change_control_effect:
-    - "This direction supersedes older no-commit/no-push/no-main restrictions for this baseline task only."
-    - "It does not authorize invented product policy, weakening accepted behavior, destructive cleanup before reconciliation, production deployment, or self-approval of unresolved business decisions."
+    - "Proceed through every recorded partial requirement one by one using the best production-grade recommendation."
+    - "Perform the backend, frontend, migration, integration, offline, security, audit, negative-path, evidence and regression work needed for genuine completion."
+    - "Use the sponsor-accepted DEC-001..DEC-010 recommendations as operative configurable MVP1 decisions."
+    - "Apply and verify forward-only live migrations through the already-authorized Supabase path."
+    - "Modify the frozen current-slice, approval, decision, acceptance, evidence and session records required to govern and certify this change-control task."
+  limits:
+    - "Do not weaken a requirement, replace an integration with a permanent mock, or mark completion without runtime proof."
+    - "Provider-specific code must remain behind an adapter; unavailable credentials must produce honest degraded behavior and must not be claimed provider-live."
+    - "Do not expose secrets, destructively rewrite live data, edit an applied migration, or discard concurrent/user-owned work."
 
-branch_at_start: "feat/cd-022-single-identity-lens"
-remote_at_start:
-  default_ref: "origin/setup/Inspection"
-  remote_main_exists: false
-  remote_heads: ["setup/Inspection"]
-concurrency_note: "Claude Code and Claude Design are running in parallel; all pre-existing and newly appearing changes must be attributed, preserved, audited, and reconciled before baseline creation."
+change_control:
+  id: "CC-G11-REMAINING-19-001"
+  status: "SPONSOR_APPROVED"
+  approval_text: "I approve the change"
+  approved_at: "2026-07-16"
 
-prompt_ids: ["CD-001", "CD-002", "CD-003", "CD-020", "CD-021", "CD-022", "CD-023", "CD-024"]
-process_ids: ["AUTH", "P01", "P02", "P03"]
+branch_at_start: "codex/remaining-requirements-closure"
+head_at_start: "9e7c669"
+baseline_ref: "codex/g11-g12-integration@9e7c669"
+worktree_at_start: "clean dedicated worktree /private/tmp/Inspection-requirements-closure"
+
+process_ids: ["P00", "P02", "P03", "P06A", "P07", "P08", "P09", "P12"]
 requirement_ids:
-  - "MVP1-M01-001..052"
-  - "MVP1-M02-012"
-  - "MVP1-FND-001"
-  - "MVP1-FND-002"
-  - "MVP1-FND-003"
-  - "MVP1-FND-004"
-  - "MVP1-FND-007"
-  - "MVP1-FND-010..013"
-  - "RBAC-001..014"
-  - "ERR-AUTH-001"
-screen_ids: ["AUTH-01", "AUTH-02", "AUTH-03", "SCR-WEB-100", "SCR-WEB-110", "SCR-WEB-120", "SCR-WEB-130", "SCR-WEB-140", "SCR-IPAD-610", "SCR-IPAD-620"]
-engine_ids: ["ENG-02", "ENG-03", "ENG-04", "ENG-05", "ENG-06", "ENG-11", "ENG-12"]
+  - "MVP1-M02-039"
+  - "MVP1-M04-012"
+  - "MVP1-M04-017"
+  - "MVP1-M04-024"
+  - "MVP1-M04-043"
+  - "MVP1-M04-045"
+  - "MVP1-M07-003"
+  - "MVP1-M07-004"
+  - "MVP1-M07-005"
+  - "MVP1-M07-014"
+  - "MVP1-M07-015"
+  - "MVP1-M07-017"
+  - "MVP1-M07-019"
+  - "MVP1-M09-001"
+  - "MVP1-M09-005"
+  - "MVP1-M09-018"
+  - "MVP1-M09-021"
+  - "MVP1-M09-022"
+  - "MVP1-M09-024"
+screen_ids:
+  - "SCR-ADM-010"
+  - "SCR-ADM-011"
+  - "SCR-ADM-020"
+  - "SCR-ADM-030"
+  - "SCR-ADM-031"
+  - "SCR-ADM-060"
+  - "SCR-ADM-070"
+  - "SCR-ADM-090"
+  - "SCR-WEB-200"
+  - "SCR-WEB-210"
+  - "SCR-WEB-400"
+  - "SCR-IPAD-620"
+  - "SCR-IPAD-630"
+  - "SCR-IPAD-640"
+engine_ids: ["ENG-01", "ENG-02", "ENG-03", "ENG-04", "ENG-06", "ENG-07", "ENG-10", "ENG-11", "ENG-12"]
 acceptance_ids:
-  - "CD-001 P0/P1 runtime gate"
-  - "UX-BS-009"
-  - "DSG-015..DSG-019"
-  - "DSG-SHELL-001"
-  - "DSG-A11Y-001"
-  - "DSG-CODE-001"
-  - "AC-0001..AC-0052"
-  - "AC-0064"
+  - "AC-0091"
+  - "AC-0125"
+  - "AC-0130"
+  - "AC-0137"
+  - "AC-0156"
+  - "AC-0158"
+  - "AC-0412"
+  - "AC-0413"
+  - "AC-0414"
+  - "AC-0423"
+  - "AC-0424"
+  - "AC-0426"
+  - "AC-0428"
+  - "AC-0449"
+  - "AC-0453"
+  - "AC-0466"
+  - "AC-0469"
+  - "AC-0470"
+  - "AC-0472"
 
 dependencies:
-  - "Accepted CD-001 public-safe login baseline, Supabase auth, neutral errors, FND-003 audit and /launch RBAC routing."
-  - "Sponsor-accepted shared authenticated shell and role-scoped navigation."
-  - "Published/locked package versions, Planner/Inspector roles, RLS and append-only audit."
-  - "Migrations 0026, 0027..0031 and 20260714060935 represented in source and verified against the configured project where live proof is claimed."
-  - "CD-021 targeting handoff, CD-022 single identity lens, and CD-023 immediate flow must preserve each other's shared planning contracts."
-  - "CD-024 route/screen ownership must be reconciled before implementation: governed /planning/:id/configure versus current /planning/bulk/review and read-only /planning/plans/:id."
+  - "G8 PASS and sponsor-approved G11 change control."
+  - "Sponsor-accepted DEC-001 risk, DEC-002 GIS/geofence, DEC-004 Arabic, DEC-006 evidence, DEC-008 maps and DEC-010 NFR/stack decisions."
+  - "Configured Supabase project iiozvqntawxfwbgffzqu and secret-safe Management API access."
+  - "Existing CD-006..CD-011 backend/frontend baseline and M09 authoritative completion migrations."
+  - "Existing field offline outbox, append-only audit, RLS, immutable versions and canonical transition guards."
 
-open_decisions:
-  - "DEC-003 SLA calendar remains open; no default duration, SLA clock, pause or escalation value may be invented."
-  - "DEC-012 requires an independent recorded wiring audit per implemented CD slice; implementation/self-review is not a substitute."
-  - "CD-024 SCR-WEB-120/140 route and ownership collision is unresolved and blocks code implementation of the dedicated workspace."
-  - "CD-001 production release still requires asset-rights and official geographic-anchor confirmation; Arabic-only raster remains a recorded P1 limitation."
-  - "G11 credential rotation, region, and provider adapters remain release-hardening items."
+approved_recommendations:
+  - "Provider architecture: Google Maps production adapter with MapLibre/offline adapter boundary; no feature code directly depends on provider SDKs."
+  - "Risk architecture: versioned weighted-sum 0-100 model using accepted DEC-001 factors/weights/bands, storing driver snapshots for reproducibility."
+  - "Registry architecture: source-owned, freshness-stamped license/CR snapshots with explicit unavailable/stale states and no silent master overwrite."
+  - "Device architecture: privacy-minimized app/device capability snapshot captured at journey start and replayed idempotently."
+  - "Configuration architecture: typed versioned rule schema, cycle detection, simulation, maker-checker publication and immutable runtime consumption."
+
+open_decisions: []
 
 do_not_touch:
-  - "Do not redesign or weaken sponsor-accepted CD-001 or the frozen shared shell absent a demonstrated P0/P1 regression."
-  - "Do not edit applied migrations in place; add forward migrations only when the contract requires one."
-  - "Do not directly mutate workflow status, immutable submitted versions, official factory master coordinates, or offline/server conflicts."
-  - "Do not claim notification delivery, provider success, SLA/risk/capacity/proximity/travel values, or policy that the runtime cannot prove."
-  - "Do not implement CD-024 or CD-025 blocked route/lifecycle legs until the upstream governance decision is recorded."
-  - "Do not discard, reset, overwrite, or silently absorb concurrent Claude changes, stashes, evidence, or build artefacts."
-  - "Do not deploy production as part of this baseline task."
+  - "Do not directly mutate workflow states or immutable submitted versions."
+  - "Do not overwrite official factory coordinates with inspector observations."
+  - "Do not silently resolve offline/server conflicts."
+  - "Do not weaken RLS, append-only audit, maker-checker or published-version immutability."
+  - "Do not hardcode provider credentials or expose PATs/database passwords in commands, logs, tests or evidence."
+  - "Do not reset, delete or absorb dirty worktrees, stashes, screenshots or concurrent changes."
 
 authorized_file_scope:
-  - "Read-only audit of the complete repository, every local/remote branch, worktree, stash, delivered design package and evidence record."
-  - "apps/web/src/app/login, reset, launch, planning, field startup handoff, and shared shell only for proven P0/P1 wiring defects."
-  - "apps/web/e2e and existing verification scripts for exact positive, negative, role, audit, RTL/theme/responsive and regression proof."
-  - "supabase/migrations/tests only for forward-only contract corrections; no live database mutation without existing authorization and reproducible evidence."
-  - "outputs/cd-001..024, product-contract acceptance/evidence/governance/execution/session records, and a branch/baseline audit report."
-  - "Git commits, merges, branch creation/deletion and push to main after the worktree is clean and the verified baseline is reproducible."
+  - "apps/web/src application, adapter, server-action, i18n and style files required by the 19 requirements."
+  - "apps/web/e2e and verification scripts for exact positive, negative, role, offline, provider-degraded, RTL, accessibility and concurrency proof."
+  - "supabase/migrations and tests using forward-only idempotent changes."
+  - "Product-contract governance, acceptance, evidence, execution and session records for this approved change-control task."
 
 task_specific_context:
-  - "product-contract/governance/CODEX_WIRING_AUDIT_CHECKLIST.md"
+  - "product-contract/evidence/CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md"
+  - "product-contract/evidence/AC_LEDGER.csv"
+  - "product-contract/governance/DECISIONS_ACCEPTED_2026-07-11.yaml"
+  - "product-contract/governance/decision_register.csv"
   - "product-contract/screens/screen_route_catalogue.csv"
+  - "product-contract/domain/atomic_scope.csv"
   - "product-contract/domain/field_dictionary.csv"
   - "product-contract/domain/rbac_matrix.csv"
   - "product-contract/domain/state_transitions.csv"
   - "product-contract/governance/error_catalogue.csv"
-  - "product-contract/governance/decision_register.csv"
-  - "product-contract/evidence/AC_LEDGER.csv"
-  - "outputs/claude-design-approval-pack/Saqeel_43_Screen_Claude_Design_Matrix.csv"
-  - "outputs/cd-021/*"
-  - "outputs/cd-022/*"
-  - "outputs/cd-023/*"
-  - "outputs/cd-024/*"
-  - "product-contract/evidence/screens/login-v7-atlas/*"
-  - "product-contract/evidence/screens/cd-021-bulk-v1/*"
-  - "product-contract/evidence/screens/single-v2/*"
-  - "product-contract/evidence/screens/immediate-v2/*"
+  - "product-contract/business/master_end_to_end_process.md"
+  - "design/claude-design-mvp1/00_START_HERE.md"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-006-r2/*"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-007-r2/*"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-008-r2/*"
+  - "outputs/claude-design-approval-pack/admin-control-plane-suite/cd-009-r2/*"
+  - "apps/web/src/app/admin/*"
+  - "apps/web/src/app/field/*"
+  - "apps/web/src/app/factories/*"
+  - "apps/web/src/app/visits/*"
+  - "apps/web/src/app/operations/*"
+  - "supabase/migrations/*"
 
 required_tests:
-  - "Branch/stash/worktree provenance and unique-commit audit; no unique validated work lost."
-  - "Per-row DEC-012 audit for every implemented wiring map with exact code/test/runtime evidence."
-  - "Authentication, anti-enumeration reset, /launch role/no-workspace/unauthorized routing and protected-route negatives."
-  - "CD-020 planning-home route/card/draft/degraded/role wiring."
-  - "CD-021 criteria/search/selection/review/atomic publish/RLS/audit/notification/idempotency/failure truth."
-  - "CD-022 identity search, ambiguity, duplicate/location/package/assignment/atomicity/retry/role/failure truth."
-  - "CD-023 dual-role, urgency, identity/location/package/window/assignment/atomicity/idempotency/audit/notification/field-handoff/error-sink truth."
-  - "CD-024 design-map blocked rows and current P02 subset checked against runtime without inventing the unresolved route."
-  - "Typecheck, production build, color-law/static safety scans, focused Playwright specs, then complete Playwright regression with no exclusions."
-  - "Git diff check, clean baseline checkout verification, remote main existence/tip verification after push."
+  - "Per-requirement positive, negative, unauthorized, stale, degraded, offline/conflict and audit checks where applicable."
+  - "Migration preflight, idempotency, RLS, function-grant and post-application live verification."
+  - "Provider adapter contract tests including unavailable, timeout, stale and invalid-response states."
+  - "EN/AR, RTL, responsive and keyboard/accessibility checks for changed screens."
+  - "Typecheck, production build, focused Playwright slices and complete no-exclusion regression."
+  - "Independent acceptance reconciliation proving zero partial rows before closure."
 
 required_evidence:
-  - "product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md"
-  - "Recorded per-slice audit companions for CD-001/002/003/020/021/022/023/024 as applicable."
-  - "Updated CURRENT_STATE.md, SESSION_LEDGER.json, WORK_QUEUE.yaml, ACCEPTANCE_STATUS.md, EVIDENCE_STATUS.md and AC ledger/summary where source status changes."
-  - "Final commit graph, branch disposition table, test transcript summary, baseline commit SHA and remote main SHA."
+  - "product-contract/evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md"
+  - "Per-slice source/runtime/negative/live evidence mapped to all 19 acceptance IDs."
+  - "Updated AC_LEDGER.csv and AC_LEDGER_SUMMARY.md with no unsupported upgrades."
+  - "Updated CURRENT_STATE.md, GATE_STATUS.md, WORK_QUEUE.yaml, ACCEPTANCE_STATUS.md, EVIDENCE_STATUS.md and SESSION_LEDGER.json."
 
 exit_condition: >-
-  Every implemented CD-001/002/003/020/021/022/023 wiring leg is either independently
-  verified PASS or fixed and then independently reverified; CD-024 and any later delivered
-  design rows are truthfully recorded PASS or BLOCKED_UPSTREAM without invented behavior;
-  all required focused and full tests pass without exclusions; concurrent work and stashes
-  are reconciled without loss; acceptance/evidence/session records are current; the validated
-  commit graph is consolidated to main and the exact main tip is pushed and verified before
-  any stale branch is deleted.
+  This task may complete only when all 19 named acceptance rows have working source,
+  migration/data, authorization, audit, negative-path, frontend/runtime and live evidence;
+  the full regression passes without exclusions; provider integrations either pass against
+  configured production credentials or pass a production adapter contract while rendering
+  an explicit non-delivery state that is not claimed as provider-live; and the acceptance
+  ledger independently reconciles to zero partial rows for these requirements.

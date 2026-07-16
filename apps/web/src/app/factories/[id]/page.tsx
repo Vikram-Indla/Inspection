@@ -7,6 +7,7 @@ import {
   type AddRepresentativeStrings, type ToggleRepStrings,
 } from "./Controls";
 import { logFactoryError, mapFactoryError } from "./neutral";
+import FactorySpatialMap, { type FactoryLocationEvent } from "./FactorySpatialMap";
 
 export const dynamic = "force-dynamic";
 
@@ -20,10 +21,9 @@ const DOC_TYPE_LABEL: Record<string, string> = {
 // keyboard-operable narrative linking registered location context, inspection
 // events, evidence/document availability, findings/actions, review decisions
 // and risk-version observations. Built only from facts this route reads; it
-// never draws a fabricated spatial path, boundary, risk event or causal link —
-// unavailable spatial/risk-driver/risk-history/evidence elements are explicit
-// unavailable rows (HANDOFF_BLOCKED_MAP/_BOUNDARY/_RISK_DRIVERS/_RISK_HISTORY/
-// _EVIDENCE_TIMELINE), never omitted or coerced into "none".
+// never draws a fabricated spatial path, boundary polygon, risk event or causal
+// link. Official/observed pins, risk snapshots and authorized evidence events
+// now come from their governed live tables; unavailable values stay explicit.
 // Document preview is metadata-only (HANDOFF_BLOCKED_DOCUMENT_VIEWER) — no
 // signed URL/viewer/custody retrieval. Representative contact fields are
 // masked for the leadership role only (HANDOFF_BLOCKED_ROLE — contact privacy
@@ -43,8 +43,10 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
   ] = await Promise.all([
     sb.from("factories")
       .select(`id, factory_code, name, cr_number, license_number, region, city, activity_class,
+        license_status, license_stage, license_issue_date, license_expiry_date, license_holder,
+        legal_name, cr_status, cr_owner_details,
         official_lat, official_lng, source, source_synced_at, geofence_radius_m,
-        risk_score, risk_band, risk_version,
+        risk_score, risk_band, risk_version, risk_drivers, risk_calculated_at,
         employees_total, employees_saudi, capital_invested, production_capacity_note,
         visits(id, visit_type, planning_status, operational_state, window_start,
           inspections(id, status, submission_versions(version_number),
@@ -94,6 +96,21 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
       reviews: { decision: string | null; status: string }[] } | null;
   }[];
   const sortedVisits = [...visits].sort((a, b) => b.window_start.localeCompare(a.window_start));
+  const visitIds = visits.map(v => v.id);
+  const inspectionIds = visits.flatMap(v => v.inspections ? [v.inspections.id] : []);
+  const canSeeSensitiveHistory = roles.some(r => ["reviewer", "ops", "auditor", "compliance_admin"].includes(r));
+  const canSeeDocuments = roles.some(r => ["planner", "inspector", "reviewer", "ops", "auditor", "compliance_admin", "gis_admin"].includes(r));
+  const canSeeContacts = !maskContacts && roles.some(r => ["planner", "inspector", "reviewer", "ops", "auditor", "compliance_admin"].includes(r));
+  const [{ data: riskHistory }, { data: geoRows }, { data: evidenceRows }, { data: penaltyRows }] = await Promise.all([
+    sb.from("factory_risk_snapshots").select("id, score, band, model_version, drivers, calculated_at").eq("factory_id", id).order("calculated_at", { ascending: false }).limit(20),
+    visitIds.length ? sb.from("geo_events").select("id, visit_id, kind, observed_lat, observed_lng, override_reason, occurred_at").in("visit_id", visitIds).order("occurred_at", { ascending: false }).limit(100) : Promise.resolve({ data: [] }),
+    inspectionIds.length && canSeeSensitiveHistory ? sb.from("evidence").select("id, inspection_id, evidence_type, linked_type, captured_at").in("inspection_id", inspectionIds).order("captured_at", { ascending: false }).limit(100) : Promise.resolve({ data: [] }),
+    canSeeSensitiveHistory ? sb.from("penalty_notices").select("id, inspection_id, notice_number, status, issued_at").eq("factory_id", id).order("issued_at", { ascending: false }).limit(50) : Promise.resolve({ data: [] }),
+  ]);
+  const locationEvents: FactoryLocationEvent[] = (geoRows ?? []).map(g => ({
+    id: g.id, visitId: g.visit_id, kind: g.kind, lat: Number(g.observed_lat), lng: Number(g.observed_lng),
+    occurredAt: g.occurred_at, overrideReason: g.override_reason,
+  }));
   const bandTone = f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success";
   const riskTone = f.risk_band === "high" ? "cd-risk-high" : f.risk_band === "medium" ? "cd-risk-medium" : "cd-risk-low";
   const today = new Date().toISOString().slice(0, 10);
@@ -111,6 +128,8 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
   const repsEmpty = (reps ?? []).length === 0;
   const productsEmpty = (products ?? []).length === 0;
   const materialsEmpty = (materials ?? []).length === 0;
+  const currentDrivers = (f.risk_drivers ?? {}) as Record<string, { value?: number; weight?: number; contribution?: number } | string>;
+  const driverEntries = Object.entries(currentDrivers).filter(([key]) => !key.startsWith("_"));
   // Saudization % derived from source-owned workforce numbers (M07-008).
   const saudization = f.employees_total && f.employees_saudi != null && f.employees_total > 0
     ? Math.round((f.employees_saudi / f.employees_total) * 1000) / 10 : null;
@@ -129,10 +148,12 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
   };
 
   const SECTIONS: { id: string; label: string }[] = [
+    { id: "location", label: t("f360.tab.location", "Location & map") },
+    { id: "risk", label: t("f360.tab.risk", "Health & risk") },
     { id: "timeline", label: t("f360.tab.timeline", "Case timeline") },
     { id: "history", label: t("f360.tab.history", "Inspection history") },
-    { id: "documents", label: t("f360.tab.documents", "Documents") },
-    { id: "representatives", label: t("f360.tab.representatives", "Representatives") },
+    ...(canSeeDocuments ? [{ id: "documents", label: t("f360.tab.documents", "Documents") }] : []),
+    ...(canSeeContacts ? [{ id: "representatives", label: t("f360.tab.representatives", "Representatives") }] : []),
     { id: "products", label: t("f360.tab.products", "Products") },
     { id: "materials", label: t("f360.tab.materials", "Materials") },
     { id: "workforce", label: t("f360.tab.workforce", "Workforce & Indicators") },
@@ -217,6 +238,11 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             <span className="cd-idcard__code"><bdi>{identity(f.factory_code)}</bdi></span>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.cr", "CR")}</span> <span className="cd-idv"><bdi>{identity(f.cr_number)}</bdi></span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.license", "license")}</span> <span className="cd-idv"><bdi>{identity(f.license_number)}</bdi></span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseStatus", "license status / stage")}</span> <span className="cd-idv">{identity(f.license_status)} · {identity(f.license_stage)}</span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseDates", "issued / expires")}</span> <span className="cd-idv ax-numeric">{identity(f.license_issue_date)} → {identity(f.license_expiry_date)}</span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseHolder", "license holder")}</span> <span className="cd-idv">{identity(f.license_holder)}</span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.legalName", "CR legal name")}</span> <span className="cd-idv">{identity(f.legal_name)}</span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.crStatus", "CR status / owner")}</span> <span className="cd-idv">{identity(f.cr_status)} · {identity(f.cr_owner_details)}</span></p>
             <p className="cd-idrow">{f.activity_class} · {f.region} · {f.city}</p>
           </div>
 
@@ -229,8 +255,12 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             <h4>{t("f360.risk.heading", "Risk — reproducible (EV-004)")}</h4>
             <span className={`cd-riskscore ${riskTone}`}>{f.risk_score}</span>
             <p>{t("f360.risk.band", "band")} <strong>{f.risk_band ? enumLabel(f.risk_band) : "—"}</strong> · <span className="ax-version">{f.risk_version}</span></p>
-            <p className="ax-caption">{t("f360.risk.desc", "Recomputable from stored inputs + this version; drivers per engine_settings.risk.")}</p>
-            <p className="ax-caption cd-warn">{t("f360.risk.driversUnavail", "Risk-driver breakdown and recalculation are unavailable from this route (HANDOFF_BLOCKED_RISK_DRIVERS).")}</p>
+            <p className="ax-caption">{t("f360.risk.desc", "Recomputable from stored normalized inputs + this version; every calculation is retained.")}</p>
+            <p className="ax-caption ax-numeric">{t("f360.risk.recalculated", "last recalculated")} {f.risk_calculated_at ? new Date(f.risk_calculated_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
+            {driverEntries.length ? <ul className="ax-caption">{driverEntries.map(([key, raw]) => {
+              const d = typeof raw === "object" ? raw : {};
+              return <li key={key}>{key.replace(/_/g, " ")}: {d.value ?? "—"} × {d.weight ?? "—"} = {d.contribution ?? "—"}</li>;
+            })}</ul> : <p className="ax-caption cd-warn">{t("f360.risk.driversUnavailable", "No driver snapshot exists for this legacy score; the absence is preserved, not reconstructed.")}</p>}
           </div>
 
           <div className="ax-surface cd-maplens">
@@ -239,7 +269,9 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             <p className="ax-caption">{t("f360.geo.label", "Geofence (G-MAP):")} {f.geofence_radius_m != null
               ? <><span className="ax-numeric">{f.geofence_radius_m} {t("f360.geo.unitM", "m")}</span> — {t("f360.geo.override", "per-factory override")}</>
               : t("f360.geo.engineDefault", "engine default (engine_settings gis.geofence_default_radius_m)")}</p>
-            <div className="cd-mapph"><span className="cd-mapph__t">{t("f360.geo.mapUnavail", "Map and boundary are unavailable — no map provider or authoritative boundary polygon is proven for this route (HANDOFF_BLOCKED_MAP / HANDOFF_BLOCKED_BOUNDARY).")}</span></div>
+            {f.official_lat != null && f.official_lng != null
+              ? <FactorySpatialMap officialLat={Number(f.official_lat)} officialLng={Number(f.official_lng)} geofenceRadius={f.geofence_radius_m} events={locationEvents} />
+              : <div className="cd-mapph"><span className="cd-mapph__t">{t("f360.geo.noOfficial", "Official coordinates are unavailable from the source.")}</span></div>}
           </div>
         </aside>
 
@@ -249,6 +281,45 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
           <nav className="cd-secstrip" aria-label={t("f360.nav.sections", "Factory 360 sections")}>
             {SECTIONS.map(s => <a key={s.id} className="cd-secitem" href={`#${s.id}`}>{s.label}</a>)}
           </nav>
+
+          <section id="location" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+            <h4>{t("f360.geo.historyHeading", "Official, planned and observed locations (M07-005)")}</h4>
+            <p className="ax-caption">{t("f360.geo.historyCaption", "Official coordinates remain source-owned. Arrival, check-in and override coordinates are immutable inspection observations and never overwrite the factory master.")}</p>
+            {locationEvents.length ? <div className="ax-tablewrap"><table className="ax-table">
+              <thead><tr><th>{t("common.when", "When")}</th><th>{t("common.kind", "Kind")}</th><th>{t("f360.geo.actual", "Observed coordinates")}</th><th>{t("f360.geo.mismatch", "Mismatch / reason")}</th><th>{t("common.visit", "Visit")}</th></tr></thead>
+              <tbody>{locationEvents.map(e => <tr key={e.id}>
+                <td className="ax-numeric">{new Date(e.occurredAt).toISOString().slice(0, 16).replace("T", " ")}</td>
+                <td><span className={`ax-lozenge ${e.kind === "override" ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>{enumLabel(e.kind)}</span></td>
+                <td className="ax-numeric"><bdi>{e.lat.toFixed(6)}, {e.lng.toFixed(6)}</bdi></td>
+                <td>{e.kind === "override" ? <strong>{e.overrideReason ?? t("f360.geo.overrideNoReason", "override reason unavailable")}</strong> : "—"}</td>
+                <td><a className="ax-link" href={`/visits/${e.visitId}`}>{e.visitId.slice(0, 8)}</a></td>
+              </tr>)}</tbody>
+            </table></div> : <p className="ax-caption">{t("f360.geo.noObserved", "No observed locations are visible in your authorized scope.")}</p>}
+          </section>
+
+          <section id="risk" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+            <h4>{t("f360.risk.historyHeading", "Factory health score and risk history (M07-014/015)")}</h4>
+            <p className="ax-caption">{t("f360.risk.historyCaption", "Each row freezes the DEC-001 model version, normalized driver values, weights and contributions used at recalculation time.")}</p>
+            {(riskHistory ?? []).length ? <div className="ax-tablewrap"><table className="ax-table">
+              <thead><tr><th>{t("common.when", "Calculated")}</th><th>{t("f360.risk.score", "Score")}</th><th>{t("f360.risk.band", "Band")}</th><th>{t("f360.risk.model", "Model")}</th><th>{t("f360.risk.drivers", "Drivers")}</th></tr></thead>
+              <tbody>{(riskHistory ?? []).map(s => {
+                const drivers = s.drivers as Record<string, { value?: number; contribution?: number } | string>;
+                const entries = Object.entries(drivers).filter(([key]) => !key.startsWith("_"));
+                return <tr key={s.id}>
+                  <td className="ax-numeric">{new Date(s.calculated_at).toISOString().slice(0, 16).replace("T", " ")}</td>
+                  <td className="ax-numeric"><strong>{s.score}</strong></td><td>{enumLabel(s.band)}</td><td><span className="ax-version">{s.model_version}</span></td>
+                  <td className="ax-caption">{entries.length ? entries.map(([key, raw]) => {
+                    const d = typeof raw === "object" ? raw : {};
+                    return `${key.replace(/_/g, " ")} ${d.value ?? "—"} (${d.contribution ?? "—"})`;
+                  }).join(" · ") : t("f360.risk.legacyDrivers", "Legacy score — driver snapshot unavailable")}</td>
+                </tr>;
+              })}</tbody>
+            </table></div> : <p className="ax-caption">{t("f360.risk.noHistory", "No risk calculation history is available.")}</p>}
+            <h5 style={{ marginBlockStart: "var(--ax-space-200)" }}>{t("f360.risk.relatedViolations", "Related violations")}</h5>
+            {canSeeSensitiveHistory && sortedVisits.some(v => (v.inspections?.violations.length ?? 0) > 0)
+              ? <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }}>{sortedVisits.flatMap(v => v.inspections?.violations ?? []).map((x, i) => <span key={`${x.violation_codes.code}-${i}`} className="ax-lozenge ax-lozenge--critical">{x.violation_codes.code} · {x.violation_codes.title}</span>)}</div>
+              : <p className="ax-caption">{canSeeSensitiveHistory ? t("f360.risk.noRelatedViolations", "No related violations are recorded.") : t("f360.risk.violationsRestricted", "Violation detail is restricted for this role.")}</p>}
+          </section>
 
           {/* Spatial Case Timeline — signature interaction. Built only from
               already-fetched route facts; risk-version history and the
@@ -277,13 +348,13 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
                               {ins.submission_versions.map(s => <span key={s.version_number} className="ax-version" style={{ marginInlineStart: 4 }}>v{s.version_number}</span>)}
                               {ins.submission_versions.length > 0 && <> · <a className="ax-link" href={`/reports/inspection/${ins.id}`}>{t("f360.hist.report", "report")}</a></>}
                             </p>
-                            {ins.violations.length > 0 && (
+                            {canSeeSensitiveHistory && ins.violations.length > 0 && (
                               <p className="cd-tl__src">{t("f360.tl.violations", "findings")} {ins.violations.map(x => <span key={x.violation_codes.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>)}</p>
                             )}
-                            {ins.action_forms.length > 0 && (
+                            {canSeeSensitiveHistory && ins.action_forms.length > 0 && (
                               <p className="cd-tl__src">{t("f360.hist.th.actions", "Actions")} {ins.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ")}</p>
                             )}
-                            {ins.reviews.filter(r => r.decision).length > 0 && (
+                            {canSeeSensitiveHistory && ins.reviews.filter(r => r.decision).length > 0 && (
                               <p className="cd-tl__src">{t("f360.hist.th.review", "Review")} {ins.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : "ax-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>{r.decision ? enumLabel(r.decision) : null}</span>)}</p>
                             )}
                           </>
@@ -295,16 +366,29 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
               </ol>
             )}
             <ol className="cd-timeline" style={{ marginBlockStart: sortedVisits.length === 0 ? 0 : "var(--ax-space-100)" }}>
-              <li className="cd-tl">
-                <span className="cd-tl__when ax-caption">—</span>
-                <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-risk">?</span></span>
-                <div className="cd-tl__card is-unavail" role="status"><span className="cd-tl__kind">{t("f360.tl.riskHistory.kind", "Risk-version history")}</span><span>{t("f360.tl.riskHistory.body", "Unavailable — only the current risk version is read on this route (HANDOFF_BLOCKED_RISK_HISTORY).")}</span></div>
-              </li>
-              <li className="cd-tl">
-                <span className="cd-tl__when ax-caption">—</span>
-                <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">?</span></span>
-                <div className="cd-tl__card is-unavail" role="status"><span className="cd-tl__kind">{t("f360.tl.evidence.kind", "Evidence timeline")}</span><span>{t("f360.tl.evidence.body", "Unavailable — no inspection-evidence query is proven on this route (HANDOFF_BLOCKED_EVIDENCE_TIMELINE).")}</span></div>
-              </li>
+              {f.source_synced_at && <li className="cd-tl" key="source-sync">
+                <span className="cd-tl__when ax-numeric">{new Date(f.source_synced_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">↻</span></span>
+                <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.sourceSync", "Source registry synced")}</span><span>{f.source}</span></div>
+              </li>}
+              {(riskHistory ?? []).map(s => <li className="cd-tl" key={`risk-${s.id}`}>
+                <span className="cd-tl__when ax-numeric">{new Date(s.calculated_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-risk">◆</span></span>
+                <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.riskUpdated", "Score updated")}</span>
+                  <span>{s.score} · {enumLabel(s.band)} · <span className="ax-version">{s.model_version}</span></span></div>
+              </li>)}
+              {(penaltyRows ?? []).map(p => <li className="cd-tl" key={`penalty-${p.id}`}>
+                <span className="cd-tl__when ax-numeric">{new Date(p.issued_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-risk">§</span></span>
+                <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.penaltyIssued", "Penalty issued")}</span>
+                  <span>{p.notice_number} · {enumLabel(p.status)}</span></div>
+              </li>)}
+              {(evidenceRows ?? []).map(e => <li className="cd-tl" key={`evidence-${e.id}`}>
+                <span className="cd-tl__when ax-numeric">{new Date(e.captured_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">●</span></span>
+                <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.evidenceCaptured", "Evidence captured")}</span>
+                  <span>{enumLabel(e.evidence_type)} · {enumLabel(e.linked_type)}</span></div>
+              </li>)}
             </ol>
           </section>
 
@@ -332,9 +416,9 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
                           {ins?.submission_versions.map(s => <span key={s.version_number} className="ax-version" style={{ marginInlineEnd: 4 }}>v{s.version_number}</span>)}
                           {ins && ins.submission_versions.length > 0 && <a className="ax-link" href={`/reports/inspection/${ins.id}`}>{t("f360.hist.report", "report")}</a>}
                         </td>
-                        <td>{ins?.violations.map(x => <span key={x.violation_codes.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>)}</td>
-                        <td className="ax-caption">{ins?.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ")}</td>
-                        <td>{ins?.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : "ax-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>{r.decision ? enumLabel(r.decision) : null}</span>)}</td>
+                        <td>{canSeeSensitiveHistory ? ins?.violations.map(x => <span key={x.violation_codes.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>) : <span className="ax-caption">restricted</span>}</td>
+                        <td className="ax-caption">{canSeeSensitiveHistory ? ins?.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ") : "restricted"}</td>
+                        <td>{canSeeSensitiveHistory ? ins?.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : "ax-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>{r.decision ? enumLabel(r.decision) : null}</span>) : <span className="ax-caption">restricted</span>}</td>
                       </tr>
                     );
                   })}
@@ -344,7 +428,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
           </section>
 
           {/* Documents — metadata registry; per-section failure isolation (SB11) */}
-          <section id="documents" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          {canSeeDocuments && <section id="documents" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.docs.heading", "Documents — metadata registry (SB11)")}</h4>
             {dErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.docs.err", "Couldn’t load documents.")}</strong> {mapFactoryError(dErr, "load")} — {retry}.</div></div>}
             {!dErr && docsEmpty && (
@@ -377,10 +461,10 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
               </>
             )}
             <AddDocumentForm factoryId={f.id} strings={docStrings} />
-          </section>
+          </section>}
 
           {/* Representatives — contact fields masked for leadership only (HANDOFF_BLOCKED_ROLE) */}
-          <section id="representatives" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          {canSeeContacts && <section id="representatives" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
             {rErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — {retry}.</div></div>}
             {!rErr && repsEmpty && (
@@ -409,7 +493,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
               </table></div>
             )}
             <AddRepresentativeForm factoryId={f.id} strings={repStrings} />
-          </section>
+          </section>}
 
           {/* Products & HS codes (maintainable, W3 / M07-006) */}
           <section id="products" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

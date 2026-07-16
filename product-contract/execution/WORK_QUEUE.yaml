@@ -105,19 +105,27 @@ items:
   - task_id: "TASK-CD006-011-BACKEND-COMPLETION"
     gate: "G11 admin control-plane backend completion"
     priority: "P0"
-    status: "SOURCE_COMPLETE_LOCAL_PASS_LIVE_MIGRATION_APPROVAL_PENDING"
-    owner: "Codex backend + Claude Code frontend + Sponsor live approval"
-    blocked_by: ["Explicit sponsor approval to apply 20260715200000_cd006_011_backend_completion.sql", "Governed migration application and live reconciliation", "Revised authenticated CD-006..011 frontend/browser verification"]
-    blocks: ["CD-006..011 live runtime completion claim", "CD-006..011 sponsor runtime acceptance"]
-    note: "Sponsor-authorized backend source is complete on codex/cd006-011-backend-completion: AC-0449/0453/0466/0469/0470/0472 plus usage, scoped audit, deactivation, validation, RLS/audit and immutability contracts. Typecheck/build PASS; focused suite 7/7 PASS. Claude Code frontend work may proceed in a separate worktree under the ownership boundary in CD006_CD011_BACKEND_COMPLETION_2026-07-15.md. Do not claim live completion until the exact forward migration is explicitly approved, applied, reconciled, and the revised authenticated suites pass."
+    status: "COMPLETE_SUPERSEDED_BY_G11_REMAINING_REQUIREMENTS_CLOSURE"
+    owner: "Codex backend + Claude Code frontend + Sponsor"
+    blocked_by: []
+    blocks: []
+    note: "Closed by TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001 on 2026-07-16. The authoritative M09 migrations are live, AC-0449/0453/0466/0469/0470/0472 pass, and authenticated CD-006..011 browser verification is complete."
+  - task_id: "TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001"
+    gate: "G11 production-readiness requirement closure"
+    priority: "P0"
+    status: "COMPLETE"
+    owner: "Codex + Sponsor"
+    blocked_by: []
+    blocks: []
+    note: "Sponsor-approved 19-row closure complete on codex/remaining-requirements-closure. Forward migrations applied and reconciled live; arrival and outside-fence override replays pass through ordinary RLS; typecheck/build pass; complete 286-test inventory reconciles 283 passed / 3 intentional skips / 0 product failures. AC ledger: 18 verified_live / 475 implemented / 0 partial / 0 missing. G11/G12 release hardening remains separate."
   - task_id: "TASK-BASELINE-WIRING-AUDIT-001"
     gate: "G10 verification / G11 hardening"
     priority: "P0"
-    status: "REMEDIATION_INCOMPLETE_EXTERNAL_BLOCKERS"
+    status: "REMEDIATION_COMPLETE_AWAITING_RELEASE_HARDENING"
     owner: "Codex"
-    blocked_by: ["Apply and replay-verify field arrival evidence migration 20260715180000", "Apply and replay-verify CD-041 verified-transition migration 20260715170000", "Resolve the 19 AC_LEDGER partial rows at their provider/schema/policy/configuration boundaries", "Sponsor runtime acceptance"]
+    blocked_by: ["G11 credential/provider/region hardening", "Sponsor runtime acceptance"]
     blocks: ["G11/G12 release claim", "CD-024 implementation authorization"]
-    note: "Cross-slice wiring audit and remediation evidence are recorded in product-contract/evidence/TASK-BASELINE-WIRING-AUDIT-001.md and the dated Codex audit records. Fail-closed UI/API wiring, neutral-error sinks, auth/offline guards, CD-021/CD-022/CD-029 wiring, republish notification handling, field return/reschedule/cancellation/arrival handoffs, fail-closed arrival persistence, downstream visit-linked evidence, and active Operations refresh wiring are implemented and source/runtime checked. The AC ledger generator now preserves dated Codex closures and regenerates 493 rows as 14 verified_live / 460 implemented / 19 partial / 0 missing. Focused slices remain green, and the latest complete no-exclusion run reached 197 passed / 3 failed / 1 skipped / 2 not run; the isolated CD-004 and KPI failures passed on rerun. CD-041 no longer has a fixture-window collision, but its focused live journey is blocked by missing public.vs_mark_session_verified in the shared schema (CODEX_AUDIT_CD041_LIVE_GATE_2026-07-15.md). The field-arrival migration/replay and the remaining provider/policy/schema/configuration boundaries remain open. CD-024 remains BLOCKED_UPSTREAM on route/design ownership. Baseline is not complete and has not been committed, pushed, merged, deployed, or applied to main."
+    note: "Cross-slice remediation is source- and runtime-complete. CD-041 verified transition, field arrival/evidence replay, the governed Visit map, risk/registry/Factory 360 wiring and all 19 historical partial rows are live-reconciled. The ledger is 493 rows = 18 verified_live / 475 implemented / 0 partial / 0 missing; typecheck/build and the complete 286-test inventory pass with 3 intentional skips. Remaining items are release hardening/sponsor acceptance, not requirement or wiring gaps. CD-024 retains its separate design/route-ownership governance boundary."
   - task_id: "TASK-DESIGN-CD025-R4"
     gate: "G11 controlled Web-first design"
     priority: "P0"
@@ -155,8 +163,8 @@ items:
   - task_id: "CD-031-FACTORY-360-DOSSIER"
     gate: "G11 production-readiness wiring"
     priority: "P1"
-    status: "IMPLEMENTED_PENDING_CODEX_WIRING_AUDIT"
+    status: "IMPLEMENTED_BACKEND_DELIVERED_PENDING_CODEX_WIRING_AUDIT"
     owner: "Claude Code implementation + Sponsor (task-slice + design-gate overridden 2026-07-15)"
     blocked_by: ["DEC-012 independent Codex wiring audit against WIRING_MAP_CD-031.csv (18 legs + 4b/4c)"]
     blocks: []
-    note: "SCR-WEB-400 /factories/:id. Design imported from claude_design project 20cb0dce (outputs/cd-031-r3/), which is marked implementation_authorized:false / DO-NOT-EXECUTE / BASELINE_REVERIFY_REQUIRED, and is outside TASK-BASELINE-WIRING-AUDIT-001's authorized slice — sponsor explicitly overrode both stops in-chat (DEC-014). Restructured the existing 7-tab dossier into a two-column provenance-led layout (aside: identity/freshness/risk/location facts; main: sticky section strip + Spatial Case Timeline signature + history/documents/representatives/products/materials/workforce sections), preserving every existing query, AddDocument/AddRepresentative/AddProduct/AddMaterial/ToggleRepActive control, and per-section error isolation. New: representative contact fields masked for the leadership role only (HANDOFF_BLOCKED_ROLE); explicit unavailable rows for risk-driver breakdown (HANDOFF_BLOCKED_RISK_DRIVERS), risk-version history (HANDOFF_BLOCKED_RISK_HISTORY), evidence timeline (HANDOFF_BLOCKED_EVIDENCE_TIMELINE), map/boundary (HANDOFF_BLOCKED_MAP/_BOUNDARY), document preview (HANDOFF_BLOCKED_DOCUMENT_VIEWER); no computed staleness threshold added (freshness is a plain fact per the state matrix's own 'no invented staleness threshold' note); no map provider, boundary polygon, coordinate-conflict resolution, or risk recalculation added — confirmed no such columns exist in migrations, so the design's HANDOFF_BLOCKED assumptions hold against this repo, not just its stale claimed baseline. Verified: typecheck clean, production build clean (0 errors), new apps/web/e2e/cd-031-factory-360.spec.ts 15/15 PASS (source-truth + live planner persona + RTL). Not closed: independent Codex wiring audit against WIRING_MAP_CD-031.csv has not run (DEC-012 applies same as CD-030/CD-029). No commit, push, merge, deploy, or main modification occurred."
+    note: "SCR-WEB-400 /factories/:id. The sponsor-authorized G11 closure delivered the formerly blocked governed risk-driver history, risk-version history, authorized evidence timeline, official/observed map points, registry source facts, penalties and score events. Live registered-factory verification passes and the complete regression is green. Document preview and unsupported boundary polygons remain honestly unavailable because no governed source/provider exists; leadership contact masking and per-section failure isolation remain intact. The broader DEC-012 audit against WIRING_MAP_CD-031.csv remains a separate acceptance task and is not claimed complete here."

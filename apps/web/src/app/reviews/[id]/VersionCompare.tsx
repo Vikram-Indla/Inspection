@@ -225,7 +225,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
           {changedRows.length === 0 ? (
             <div className="ax-banner" role="status"><div>{strings.emptyDiff}</div></div>
           ) : (
-            <div className="ax-tablewrap"><table className="ax-table">
+            <div className="ax-tablewrap"><table className="ax-table cd-compare-table">
               <thead><tr>
                 <th>{strings.colItem}</th>
                 <th>{strings.colSection}</th>

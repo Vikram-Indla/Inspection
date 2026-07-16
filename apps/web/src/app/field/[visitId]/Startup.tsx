@@ -27,6 +27,9 @@ export type StartupStrings = {
   logExceptionSent: string; logExceptionFailed: string; logDeviation: string;
   logOpState: string; logOpBlocked: string; logGpsFallback: string;
   mapsOpen: string; mapsGeo: string; mapsCaption: string; progressLabel: string; progressCaption: string; cardsFactoryTitle: string; cardsVisitTitle: string; lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string; lblCoords: string; lblFence: string; lblType: string; lblMode: string; lblWindow: string; lblPackage: string; lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string; cancelHeading: string; cancelCaption: string; cancelSelectReason: string; cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string; cancelRequestedChip: string; cancelReasonsMissing: string; logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string; returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string; returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
+  deviceInfo: string; etaLabel: string; etaAvailable: string; etaUnavailable: string;
+  overrideHeading: string; overrideBody: string; overrideReason: string; overrideConfirm: string; overrideCancel: string; logOverrideSaved: string; logOverrideFailed: string;
+  arrivalEvidenceHeading: string; arrivalEvidenceCaption: string; arrivalPhoto: string; arrivalComment: string; arrivalSave: string; arrivalSaved: string; arrivalRequired: string;
 };
 
 // Module-level label so the dynamic() loading component (defined outside the
@@ -57,6 +60,7 @@ type Reason = { key: string; label: string };
 type Flags = { cancellationRequested: boolean; returnRequested: boolean };
 type Gis = { gps_accuracy_checkin_max_m?: number; geofence_default_radius_m?: number;
   arrival_detection_radius_m?: number; telemetry_interval_s?: number;
+  arrival_evidence_required?: boolean;
   route_deviation?: { off_route_m?: number; sustain_s?: number } };
 
 type Fix = { lat: number; lng: number; acc: number; alt: number | null; speed: number | null; heading: number | null; d: number };
@@ -69,7 +73,7 @@ function distM(a: [number, number], b: [number, number]) {
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 
-export default function Startup({ visit, gis, strings, reasons, flags }: { visit: V; gis: Gis; strings: StartupStrings; reasons: { key: string; label: string }[]; flags: { cancellationRequested: boolean; returnRequested: boolean } }) {
+export default function Startup({ visit, gis, strings, reasons, flags, appVersion }: { visit: V; gis: Gis; strings: StartupStrings; reasons: { key: string; label: string }[]; flags: { cancellationRequested: boolean; returnRequested: boolean }; appVersion: string }) {
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
   const [log, setLog] = useState([] as string[]);
@@ -93,6 +97,15 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const [cancelRequested, setCancelRequested] = useState(flags.cancellationRequested);
   const [returnReason, setReturnReason] = useState("");
   const [returnRequested, setReturnRequested] = useState(flags.returnRequested);
+  const [deviceInfo, setDeviceInfo] = useState(null as { device_id: string; os_version: string; app_version: string } | null);
+  const [eta, setEta] = useState(null as { minutes: number; distance: number; updatedAt: string } | null);
+  const [etaUnavailable, setEtaUnavailable] = useState(false);
+  const [pendingOverride, setPendingOverride] = useState(null as { lat: number; lng: number; acc: number; d: number } | null);
+  const [overrideReason, setOverrideReason] = useState("");
+  const [arrivalEventId, setArrivalEventId] = useState(null as string | null);
+  const [arrivalFile, setArrivalFile] = useState(null as File | null);
+  const [arrivalComment, setArrivalComment] = useState("");
+  const [arrivalEvidenceSaved, setArrivalEvidenceSaved] = useState(false);
   const maxAcc = gis.gps_accuracy_checkin_max_m ?? 25;
   // SB20 — per-factory geofence override, else ENG-06 engine default.
   const fence = visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? 150;
@@ -104,10 +117,12 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
   const add = (m: string) => setLog(l => [...l, m]);
   // refs for the tracking loop (M04-021/022/031/037)
   const posRef = useRef(null as Fix | null);
+  const posObservedAtRef = useRef(0);
   const lastPostRef = useRef(0);
   const minDRef = useRef(Infinity);
   const devSinceRef = useRef(null as number | null);
   const devDoneRef = useRef(false);
+  const lastEtaRef = useRef(0);
   const stringsRef = useRef(strings); stringsRef.current = strings;
 
   // STM-OPS — guarded server-action transition (guard = set_operational_state RPC, 0015)
@@ -124,12 +139,47 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     await local.cachePackage(`visit:${visit.id}`, visit.package_versions);
     setCached(true); add(fmt(strings.logCached, { version: visit.package_versions.version_label }));
   }
+  function captureDeviceInfo() {
+    const key = "mim-field-device-id";
+    let id = localStorage.getItem(key);
+    if (!id) { id = crypto.randomUUID(); localStorage.setItem(key, id); }
+    const nav = navigator as Navigator & { userAgentData?: { platform?: string } };
+    const platform = nav.userAgentData?.platform || navigator.platform || "unknown-platform";
+    const uaVersion = navigator.userAgent.match(/(?:OS|Android|Windows NT|Mac OS X)\s([\d_\.]+)/i)?.[1]?.replace(/_/g, ".");
+    return { device_id: id, os_version: uaVersion ? `${platform} ${uaVersion}` : platform, app_version: appVersion };
+  }
+
+  async function refreshEta(fix: Fix, activeJourneyId: string) {
+    if (Date.now() - lastEtaRef.current < telemetryS * 1000 - 500) return;
+    lastEtaRef.current = Date.now();
+    try {
+      const response = await fetch("/api/routing/eta", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origin: { lat: fix.lat, lng: fix.lng }, destination: { lat: visit.dispatch_lat, lng: visit.dispatch_lng } }),
+      });
+      const result = await response.json() as { status: string; etaMinutes?: number; distanceMeters?: number; calculatedAt?: string; provider?: string };
+      if (!response.ok || result.status !== "ok" || result.etaMinutes == null || result.distanceMeters == null || !result.calculatedAt) {
+        setEtaUnavailable(true); return;
+      }
+      setEtaUnavailable(false);
+      setEta({ minutes: result.etaMinutes, distance: result.distanceMeters, updatedAt: result.calculatedAt });
+      const sb = supabaseBrowser();
+      await sb.from("journey_sessions").update({
+        eta_minutes: result.etaMinutes, remaining_distance_m: result.distanceMeters,
+        route_provider: result.provider ?? "google_routes", eta_updated_at: result.calculatedAt,
+      }).eq("id", activeJourneyId);
+    } catch {
+      setEtaUnavailable(true);
+    }
+  }
+
   async function startJourney() {
     setBusy(true);
     const sb = supabaseBrowser();
     const { data: { user } } = await sb.auth.getUser();
+    const capturedDevice = captureDeviceInfo();
     const { data, error } = await sb.from("journey_sessions")
-      .insert({ visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString() })  // M04-009 device clock
+      .insert({ visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString(), device_info: capturedDevice })  // M04-009/012
       .select().single();
     setBusy(false);
     if (error) {
@@ -140,7 +190,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       add(strings.logJourneyBlocked);
       return;
     }
-    setJourneyId(data.id); add(strings.logJourneyStarted);
+    setDeviceInfo(capturedDevice); setJourneyId(data.id); add(strings.logJourneyStarted);
     await opTransition("on_the_way");                                // M04-018 · STM-OPS leg 1
   }
 
@@ -157,7 +207,8 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       const d = distM([p.coords.latitude, p.coords.longitude], dispatchPoint);
       const fix: Fix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy,
         alt: p.coords.altitude, speed: p.coords.speed, heading: p.coords.heading, d };
-      posRef.current = fix; setLive(fix);
+      posRef.current = fix; posObservedAtRef.current = Date.now(); setLive(fix);
+      void refreshEta(fix, jId);                                  // M04-017/024 provider ETA, refreshed at telemetry cadence
       // M04-026 — first fix after journey start anchors the progress baseline
       setInitialD(prev => prev ?? d);
       if (d < minDRef.current) { minDRef.current = d; devSinceRef.current = null; }
@@ -199,25 +250,34 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
 
   async function checkIn() {
     setBusy(true);
-    const pos = await new Promise<GeolocationPosition | null>(res =>
-      navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => res(p), () => res(null), { timeout: 4000 }) : res(null));
-    // demo fallback: near the governed dispatch point, good accuracy — surfaced in the log (M04-049)
-    if (!pos) add(strings.logGpsFallback);
-    const lat = pos?.coords.latitude ?? visit.dispatch_lat + 0.0005;
-    const lng = pos?.coords.longitude ?? visit.dispatch_lng + 0.0002;
-    const acc = pos?.coords.accuracy ?? 4.2;
+    // A continuous journey fix is the best available device observation. Reuse
+    // it briefly instead of requiring a second radio acquisition at the gate;
+    // request a fresh one-shot fix only when tracking has not produced a recent
+    // position. This remains fail-closed: no synthetic coordinates are used.
+    let fix = Date.now() - posObservedAtRef.current <= 15_000 ? posRef.current : null;
+    if (!fix) {
+      const pos = await new Promise<GeolocationPosition | null>(res =>
+        navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => res(p), () => res(null), { enableHighAccuracy: true, timeout: 4000 }) : res(null));
+      if (pos) {
+        const d = distM([pos.coords.latitude, pos.coords.longitude], dispatchPoint);
+        fix = { lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy,
+          alt: pos.coords.altitude, speed: pos.coords.speed, heading: pos.coords.heading, d };
+      }
+    }
+    if (!fix) { add(strings.logGpsFallback); setBusy(false); return; }
+    const { lat, lng, acc } = fix;
     const d = distM([lat, lng], dispatchPoint);
     if (acc > maxAcc) { add(fmt(strings.logAccuracyBlocked, { acc: acc.toFixed(0), max: maxAcc })); setBusy(false); return; }
     const inside = d <= fence;
     setCheckin({ lat, lng, acc, d, inside }); // SB20 — plot observed position on the map card
     const sb = supabaseBrowser();
-    const { error } = await sb.from("geo_events").insert({
+    const { data: arrivalEvent, error } = await sb.from("geo_events").insert({
       journey_id: journeyId, visit_id: visit.id, kind: "checkin",
       observed_lat: lat, observed_lng: lng, accuracy_m: acc,
-      altitude_m: pos?.coords.altitude ?? null,                       // M04-040 altitude at arrival
+      altitude_m: fix.alt ?? null,                                    // M04-040 altitude at arrival
       device_occurred_at: new Date().toISOString(),                   // M04-039 device timestamp
       geofence_result: inside ? "inside" : "outside", gis_version: "v1-accepted-2026-07-11", device_id: "field-pwa",
-    });
+    }).select("id").single();
     setBusy(false);
     if (error) {
       // eslint-disable-next-line no-console
@@ -225,10 +285,70 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
       add(strings.logCheckinRejected);
       return;
     }
-    if (!inside) { add(fmt(strings.logOutside, { d: d.toFixed(0), fence })); return; }
+    if (!inside) {
+      setPendingOverride({ lat, lng, acc, d });
+      add(fmt(strings.logOutside, { d: d.toFixed(0), fence }));
+      return;
+    }
+    setArrivalEventId(arrivalEvent.id);
     setCheckedIn(true); add(fmt(strings.logInside, { d: d.toFixed(0), acc: acc.toFixed(1) }));
     await sb.from("journey_sessions").update({ status: "arrived" }).eq("id", journeyId!);
     await opTransition("arrived");                                    // M04-046 · STM-OPS leg 2
+  }
+
+  async function confirmGpsOverride() {
+    const reason = overrideReason.trim();
+    if (!pendingOverride || !reason || !journeyId) return;
+    setBusy(true);
+    const sb = supabaseBrowser();
+    const { data, error } = await sb.from("geo_events").insert({
+      journey_id: journeyId, visit_id: visit.id, kind: "override",
+      observed_lat: pendingOverride.lat, observed_lng: pendingOverride.lng,
+      accuracy_m: pendingOverride.acc, geofence_result: "override",
+      override_reason: reason, device_occurred_at: new Date().toISOString(),
+      gis_version: "v1-accepted-2026-07-11", device_id: deviceInfo?.device_id ?? "field-pwa",
+    }).select("id").single();
+    if (error) {
+      console.error("[field geofence override]", error);
+      add(strings.logOverrideFailed); setBusy(false); return;
+    }
+    await sb.from("journey_sessions").update({ status: "arrived" }).eq("id", journeyId);
+    const transitioned = await opTransition("arrived");
+    if (!transitioned) { setBusy(false); return; }
+    setArrivalEventId(data.id); setCheckedIn(true); setPendingOverride(null); setOverrideReason("");
+    setCheckin({ ...pendingOverride, inside: false });
+    add(strings.logOverrideSaved); setBusy(false);
+  }
+
+  async function saveArrivalEvidence() {
+    if (!arrivalEventId || (!arrivalFile && !arrivalComment.trim())) return;
+    setBusy(true);
+    try {
+      const capturedAt = new Date().toISOString();
+      if (arrivalFile) {
+        const b64 = btoa(String.fromCharCode(...new Uint8Array(await arrivalFile.arrayBuffer())));
+        const sha = await sha256b64(b64);
+        await local.enqueue({
+          kind: "evidence", inspection_id: visit.id, visit_id: visit.id,
+          linked_type: "arrival", linked_id: arrivalEventId, evidence_type: "photo",
+          evidence_note: arrivalComment.trim() || undefined,
+          name: `arrival-${arrivalEventId}-${arrivalFile.name}`, mime: arrivalFile.type || "image/jpeg",
+          data_b64: b64, captured_at: capturedAt, sha256: sha, queued_at: capturedAt,
+        });
+      } else {
+        const bytes = new TextEncoder().encode(arrivalComment.trim());
+        const b64 = btoa(String.fromCharCode(...bytes));
+        const sha = await sha256b64(b64);
+        await local.enqueue({
+          kind: "evidence", inspection_id: visit.id, visit_id: visit.id,
+          linked_type: "arrival", linked_id: arrivalEventId, evidence_type: "comment",
+          evidence_note: arrivalComment.trim(), name: `arrival-${arrivalEventId}-comment.txt`, mime: "text/plain",
+          data_b64: b64, captured_at: capturedAt, sha256: sha, queued_at: capturedAt,
+        });
+      }
+      await processOutbox(() => { /* failure remains queued and is retried by the field sync engine */ });
+      setArrivalEvidenceSaved(true); add(strings.arrivalSaved);
+    } finally { setBusy(false); }
   }
 
   // ENG-06 / FLD-GEO-005 — manual exception record (immutable geo_events row)
@@ -302,6 +422,7 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
     // M04-056 — a requested cancellation stops the transition to execution
     if (cancelRequested) { add(fmt(strings.logStartBlocked, { error: strings.cancelRequestedChip })); return; }
     if (returnRequested) { add(fmt(strings.logStartBlocked, { error: strings.returnRequestedChip })); return; }
+    if (gis.arrival_evidence_required && !arrivalEvidenceSaved) { add(fmt(strings.logStartBlocked, { error: strings.arrivalRequired })); return; }
     // M03-010 — mandatory pre-start confirmations (rep present + location confirmed)
     if (!repPresent || !locConfirmed) { add(strings.logPrestartBlocked); return; }
     setBusy(true);
@@ -361,7 +482,11 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {new Date(visit.window_start).toISOString().slice(0,16).replace("T"," ")} → {new Date(visit.window_end).toISOString().slice(11,16)}</div>
           <div style={{ display: "flex", gap: 8 }}>{cached ? "✓" : "○"} {strings.packageLine} {visit.package_versions.packages.code} · {visit.package_versions.version_label} {cached && strings.packageCached}</div>
           <div style={{ display: "flex", gap: 8 }}>{journeyId ? "✓" : "○"} {strings.journeySession}</div>
+          <div style={{ display: "flex", gap: 8 }}>{deviceInfo ? "✓" : "○"} {strings.deviceInfo}{deviceInfo ? ` · ${deviceInfo.os_version} · app ${deviceInfo.app_version}` : ""}</div>
           <div style={{ display: "flex", gap: 8 }}>{telemetryCount > 0 ? "✓" : "○"} {fmt(strings.telemetryRow, { s: telemetryS, n: telemetryCount })}</div>
+          <div style={{ display: "flex", gap: 8 }}>{eta ? "✓" : "○"} {strings.etaLabel} {eta
+            ? fmt(strings.etaAvailable, { minutes: eta.minutes, distance: eta.distance, at: new Date(eta.updatedAt).toISOString().slice(11, 16) })
+            : etaUnavailable ? strings.etaUnavailable : "—"}</div>
           <div style={{ display: "flex", gap: 8 }}>{checkedIn ? "✓" : "○"} {fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</div>
         </div>
         {/* F3 · M04-016 — real navigation handoff with this Visit's governed dispatch coordinates */}
@@ -419,6 +544,39 @@ export default function Startup({ visit, gis, strings, reasons, flags }: { visit
           {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}
         </p>
       </div>
+      {pendingOverride && !checkedIn && (
+        <div className="ax-surface" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
+          style={{ padding: "var(--ax-space-300)", borderColor: "var(--ax-color-critical)" }}>
+          <h4 id="gps-override-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.overrideHeading}</h4>
+          <p className="ax-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
+          <label className="ax-field"><span className="ax-field__label">{strings.overrideReason}</span>
+            <textarea className="ax-textarea" rows={2} value={overrideReason} onChange={e => setOverrideReason(e.target.value)} />
+          </label>
+          <div className="ax-row" style={{ justifyContent: "flex-end", gap: 8 }}>
+            <button className="ax-btn ax-btn--subtle" onClick={() => { setPendingOverride(null); setOverrideReason(""); }}>{strings.overrideCancel}</button>
+            <button className="ax-btn ax-btn--danger" onClick={confirmGpsOverride} disabled={busy || !overrideReason.trim()}>{strings.overrideConfirm}</button>
+          </div>
+        </div>
+      )}
+      {checkedIn && arrivalEventId && (
+        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.arrivalEvidenceHeading}</h4>
+          <p className="ax-caption">{strings.arrivalEvidenceCaption}</p>
+          {arrivalEvidenceSaved ? <span className="ax-lozenge ax-lozenge--success">{strings.arrivalSaved}</span> : (
+            <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+              <label className="ax-field"><span className="ax-field__label">{strings.arrivalPhoto}</span>
+                <input className="ax-input" type="file" accept="image/*" onChange={e => setArrivalFile(e.target.files?.[0] ?? null)} />
+              </label>
+              <label className="ax-field"><span className="ax-field__label">{strings.arrivalComment}</span>
+                <textarea className="ax-textarea" rows={2} value={arrivalComment} onChange={e => setArrivalComment(e.target.value)} />
+              </label>
+              <div className="ax-row" style={{ justifyContent: "flex-end" }}>
+                <button className="ax-btn" onClick={saveArrivalEvidence} disabled={busy || (!arrivalFile && !arrivalComment.trim())}>{strings.arrivalSave}</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       {/* M03-010 — mandatory pre-start confirmations, persisted to journey_sessions.prestart */}
       {checkedIn && !existing && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

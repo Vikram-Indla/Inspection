@@ -58,6 +58,11 @@ test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
 });
 
 test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
+  // The first evidence case intentionally performs login plus three full
+  // server-rendered dashboard reloads and writes three full-page screenshots.
+  // Keep assertion timeouts tight, but give the complete evidence sequence a
+  // realistic outer budget on a live shared project.
+  test.describe.configure({ timeout: 120_000 });
   test("operations persona lands on the two-view source-backed dashboard", async ({ page }) => {
     await loginOps(page);
     mkdirSync(EVIDENCE_DIR, { recursive: true });
