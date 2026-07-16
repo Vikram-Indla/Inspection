@@ -1,0 +1,31 @@
+# The initial repository owner is the required reviewer for every protected-path
+# pull request. Replace this with dedicated GitHub teams only after the teams and
+# their responsibilities have been explicitly approved.
+* @Vikram-Indla
+
+# Surface ownership is listed explicitly so future team assignments can be made
+# without redefining the repository topology.
+/apps/web/src/app/field/ @Vikram-Indla
+/apps/web/src/lib/field-*.ts @Vikram-Indla
+/apps/web/e2e/m04-*.spec.ts @Vikram-Indla
+
+/apps/web/src/app/admin/ @Vikram-Indla
+/apps/web/src/app/operations/ @Vikram-Indla
+/apps/web/e2e/cd-004-*.spec.ts @Vikram-Indla
+/apps/web/e2e/cd-005-*.spec.ts @Vikram-Indla
+/apps/web/e2e/cd-006-*.spec.ts @Vikram-Indla
+/apps/web/e2e/cd-007-*.spec.ts @Vikram-Indla
+/apps/web/e2e/cd-008-*.spec.ts @Vikram-Indla
+/apps/web/e2e/cd-009-*.spec.ts @Vikram-Indla
+/apps/web/e2e/cd-010-*.spec.ts @Vikram-Indla
+/apps/web/e2e/cd-011-*.spec.ts @Vikram-Indla
+
+/apps/web/src/app/dashboard/ @Vikram-Indla
+/apps/web/src/app/factories/ @Vikram-Indla
+/apps/web/src/app/planning/ @Vikram-Indla
+/apps/web/src/app/reviews/ @Vikram-Indla
+/apps/web/src/app/virtual/ @Vikram-Indla
+/apps/web/src/app/visits/ @Vikram-Indla
+
+/supabase/ @Vikram-Indla
+/product-contract/ @Vikram-Indla
