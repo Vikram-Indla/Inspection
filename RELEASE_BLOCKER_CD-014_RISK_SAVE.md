@@ -48,3 +48,23 @@ runs: `afterSave` == original `[0.3,0.2,0.2,0.15,0.15]` (expected
 **G12 should not PASS while this P1 is open** (per the release slice's own limit:
 "Do not mark G11/G12 PASS while a mandatory P0/P1 criterion is failed, skipped,
 unevidenced or blocked without approved change control").
+
+---
+
+## Update — re-test attempt on released `main` (ebbb1738), 2026-07-16
+
+- **Code guard STILL ABSENT.** `saveRiskSettings` on `main` gained input validation
+  (weight/band ranges) but **not** the affected-row guard. The false-success path is
+  unchanged — a 0-row RLS-filtered write still returns `{ ok: true }`.
+- **Runtime re-test could NOT be completed:** prod build fails on the Google Fonts
+  network timeout (same env issue as the release build); worked around with
+  `next dev`, but **admin login is now rejected** (`admin@mim.gov.sa` bounced back to
+  `/login`). Consistent with the release's authorized credential rotation
+  (`chore(security): untrack generated secrets`). Seed admin password appears stale.
+- **Status:** P1 code defect confirmed still present; runtime status on `ebbb1738`
+  unconfirmed pending **current (post-rotation) admin credentials**. Prior runtime
+  evidence (`5812c7fa`) reproduced the false-success twice with the same code path,
+  so it very likely persists.
+
+**To close:** apply the row-count guard (still the fix), then re-run
+`apps/web/scripts/verify-admin.mjs VERIFY_ROUNDTRIP=1` with current admin creds.
