@@ -79,7 +79,7 @@ Document-level RTL untouched; authority bar mirrors with bdi-isolated CRs/coordi
 - TypeScript typecheck PASS; production build PASS.
 - New Playwright coverage: authority-bar chip navigation (focus, Enter-jump, announcements); temporary path requires region+city; no coordinate prefill; exact-CR refusal; forced failure at EACH write (temp factory / visit / assignment / notification) yields the correct ledger state; retry idempotence (no second visit/temp factory); unassigned-visit cancel via canonical transition; work preservation on blocked create and transport failure; unauthorized state for non-planner roles; no raw provider text in DOM.
 - Full existing regression suite PASS.
-- Visual evidence: dark/light × EN/AR × desktop/narrow matching the six design PNGs, under product-contract/evidence/screens/immediate-v2/.
+- Visual evidence: dark/light × EN/AR × desktop/narrow matching the six design PNGs, under ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/.
 - Reconcile DSG-018 and DSG-A11Y-001 acceptance rows; update CURRENT_STATE.md, SESSION_LEDGER.json and the acceptance checklist with per-item results.
 
 ## COMPLETION

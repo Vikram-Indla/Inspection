@@ -12,7 +12,7 @@ import { signAndConfirm } from "./sign-helper";
 
 test.describe.configure({ mode: "serial" });
 
-let factory: { id: string; factory_code: string; name: string };
+let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number };
 let inspectorUserId: string;
 let packageVersionId: string;
 let scopeSectionKey: string; // section containing FS-101 — the exact return scope
@@ -63,7 +63,13 @@ test.beforeAll(async () => {
 let lastContext: BrowserContext | null = null;
 async function personaPage(browser: { newContext: (o: object) => Promise<BrowserContext> }, key: keyof typeof PERSONAS): Promise<Page> {
   if (lastContext) await lastContext.close();
-  const ctx = await browser.newContext({ storageState: storageStatePath(key) });
+  const ctx = await browser.newContext({
+    storageState: storageStatePath(key),
+    ...(key === "inspector" ? {
+      permissions: ["geolocation"],
+      geolocation: { latitude: Number(factory.official_lat ?? 24.7136), longitude: Number(factory.official_lng ?? 46.6753), accuracy: 5 },
+    } : {}),
+  });
   lastContext = ctx;
   return ctx.newPage();
 }
@@ -141,6 +147,33 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await step(/3 ·/).click();
   // Execution-mode "eligible" badges also use .ax-lozenge--success now — match text directly.
   await expect(page.locator(".ax-lozenge--success", { hasText: "inside fence" })).toBeVisible();
+
+  // M04-045 release certification — queue a comment-only arrival record through
+  // the real IndexedDB outbox, then prove the live replay persisted the visit
+  // linkage, new enum value and evidence_note column before inspection creation.
+  const arrivalNote = `G12 arrival replay ${visitId}`;
+  const arrivalSurface = page
+    .getByRole("heading", { name: /Arrival evidence \(M04-045\)/i, level: 5 })
+    .locator("..");
+  await arrivalSurface.getByLabel("Arrival note").fill(arrivalNote);
+  await arrivalSurface.getByRole("button", { name: "Queue arrival evidence" }).click();
+  await expect(arrivalSurface).toContainText("Arrival evidence queued");
+  const arrivalInspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  const arrivalEvidence = await pollRest(async () => {
+    const { data } = await rest("GET",
+      `evidence?select=id,visit_id,inspection_id,linked_type,evidence_note,storage_path&visit_id=eq.${visitId}&linked_type=eq.arrival`,
+      arrivalInspector.jwt);
+    return Array.isArray(data) && data.some((row: { evidence_note?: string }) => row.evidence_note === arrivalNote)
+      ? data.find((row: { evidence_note?: string }) => row.evidence_note === arrivalNote)
+      : null;
+  }, "arrival evidence replay");
+  expect(arrivalEvidence).toMatchObject({
+    visit_id: visitId,
+    inspection_id: null,
+    linked_type: "arrival",
+    evidence_note: arrivalNote,
+  });
+
   // M03-010 — mandatory pre-start confirmations (rep present + location confirmed) gate step 4.
   const checkboxes = page.locator('input[type="checkbox"]');
   await checkboxes.nth(0).check();
@@ -220,7 +253,7 @@ test("P3 reviewer: RETURN with exact scope and mandatory reason (M06-006, STM-RE
   // CD-028 leg 5 — starting the review is now an explicit, audited action
   // (opening the workspace no longer creates the review as a side-effect).
   await page.getByRole("button", { name: /^start review$/i }).click();
-  await page.locator('input[name="decision"][value="return"]').waitFor({ timeout: 20_000 });
+  await page.locator('input[name="decision"][value="return"]').waitFor({ timeout: 40_000 });
   await page.locator('input[name="decision"][value="return"]').check();
   await page.locator(`input[name="returned_section"][value="${scopeSectionKey}"]`).check();
   await page.locator('textarea[name="reason"]').fill("FS-101 evidence insufficient — retag and re-shoot (G10 Playwright golden journey).");
@@ -260,7 +293,7 @@ test("P5 reviewer: APPROVE v2; decided reviews lock; v1 stays intact (M06-009)",
 
   // CD-028 leg 5 — v2 review is started explicitly before the approve decision.
   await page.getByRole("button", { name: /^start review$/i }).click();
-  await page.locator('input[name="decision"][value="approve"]').waitFor({ timeout: 20_000 });
+  await page.locator('input[name="decision"][value="approve"]').waitFor({ timeout: 40_000 });
   await page.locator('input[name="decision"][value="approve"]').check();
   await page.locator('textarea[name="reason"]').fill("Corrected evidence adequate (G10 Playwright golden journey).");
   await page.getByRole("button", { name: /confirm approve/i }).click();

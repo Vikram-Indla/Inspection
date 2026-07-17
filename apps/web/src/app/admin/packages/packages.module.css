@@ -1,0 +1,226 @@
+.pageStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-300);
+}
+
+.hero,
+.packageGroup,
+.versionCard,
+.governance,
+.emptyState {
+  padding: var(--ax-space-300);
+}
+
+.heroRow,
+.packageHeading,
+.versionHeading,
+.actionRow,
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ax-space-150);
+  flex-wrap: wrap;
+}
+
+.packageGroup > summary,
+.versionCard > summary {
+  cursor: pointer;
+  min-block-size: 44px;
+  list-style-position: inside;
+}
+
+.packageBody,
+.versionBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-250);
+  padding-block-start: var(--ax-space-250);
+}
+
+.versionList {
+  display: grid;
+  gap: var(--ax-space-200);
+}
+
+.designerStudio {
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.75fr) minmax(22rem, 1.5fr) minmax(18rem, 1fr);
+  gap: var(--ax-space-200);
+  align-items: start;
+}
+
+.studioPane {
+  min-inline-size: 0;
+  padding: var(--ax-space-200);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface);
+}
+
+.structureList {
+  display: grid;
+  gap: var(--ax-space-100);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.structureButton {
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: var(--ax-space-100) var(--ax-space-150);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius-small);
+  background: var(--ax-color-surface);
+  color: var(--ax-color-text);
+  text-align: start;
+  cursor: pointer;
+}
+
+.structureButton[aria-current="true"] {
+  border-color: var(--ax-color-primary);
+  box-shadow: inset 3px 0 0 var(--ax-color-primary);
+  background: var(--ax-color-surface-sunken);
+}
+
+[dir="rtl"] .structureButton[aria-current="true"] {
+  box-shadow: inset -3px 0 0 var(--ax-color-primary);
+}
+
+.editorForm,
+.editorCanvas,
+.previewPane,
+.targetList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-150);
+}
+
+.itemChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-space-100);
+  min-block-size: 44px;
+}
+
+.chipRemove {
+  inline-size: 44px;
+  block-size: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.chipRemove:focus-visible,
+.structureButton:focus-visible {
+  outline: 3px solid var(--ax-color-focus, var(--ax-color-primary));
+  outline-offset: 2px;
+}
+
+.blockedTarget {
+  padding: var(--ax-space-150);
+  border: 1px dashed var(--ax-color-border);
+  border-radius: var(--ax-radius-standard);
+  background: var(--ax-color-surface-sunken);
+}
+
+.blockedTarget button {
+  inline-size: 100%;
+  min-block-size: 44px;
+  margin-block-end: var(--ax-space-100);
+}
+
+.versionTable {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+
+.versionTable th,
+.versionTable td {
+  padding: var(--ax-space-150);
+  border-block-end: 1px solid var(--ax-color-border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.versionTable th {
+  font: var(--ax-text-body-strong);
+}
+
+.notice {
+  margin: 0;
+}
+
+@media (max-width: 1100px) {
+  .designerStudio {
+    grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+  }
+
+  .previewPane {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero,
+  .packageGroup,
+  .versionCard,
+  .governance,
+  .emptyState {
+    padding: var(--ax-space-200);
+  }
+
+  .designerStudio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .previewPane {
+    grid-column: auto;
+  }
+
+  .versionTable,
+  .versionTable tbody,
+  .versionTable tr,
+  .versionTable td {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .versionTable thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .versionTable tr {
+    padding-block: var(--ax-space-100);
+    border-block-end: 1px solid var(--ax-color-border);
+  }
+
+  .versionTable td {
+    border: 0;
+    padding: var(--ax-space-100) 0;
+  }
+
+  .versionTable td::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--ax-color-text-subtle);
+    font: var(--ax-text-caption);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .packageGroup,
+  .versionCard,
+  .structureButton {
+    scroll-behavior: auto;
+    transition: none;
+  }
+}

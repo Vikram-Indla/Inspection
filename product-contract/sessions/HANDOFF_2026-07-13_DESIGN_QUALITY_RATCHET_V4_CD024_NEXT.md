@@ -14,17 +14,17 @@
 - Files changed: V4 quality-ratchet/master-prompt/SOP/revision/prompt documents; 43-screen CSV and 12-sheet workbook; design constitution/baseline/journey/route/acceptance records; current state/slice/work queue; verification/evidence/session records; workbook previews/renders.
 - Database/API changes: none.
 - Tests run: artifact-tool import/export PASS; 12-sheet render PASS; formula/error scan 0; visual inspection of every sheet PASS; repository validation recorded in `VERIFICATION_REPORT_V4.json`.
-- Evidence captured: `outputs/claude-design-approval-pack/VERIFICATION_REPORT_V4.json`; `product-contract/evidence/TASK-DESIGN-CD024-QUALITY-RATCHET-EV-001.txt`; 12 workbook renders; Desktop V4 pack copy.
+- Evidence captured: `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/VERIFICATION_REPORT_V4.json`; `product-contract/evidence/TASK-DESIGN-CD024-QUALITY-RATCHET-EV-001.txt`; 12 workbook renders; Desktop V4 pack copy.
 - Decisions made: V4 quality ratchet is mandatory from CD-024; one new signature pattern maximum; reviewer evidence replaces self-scoring; `/planning/plans/:id` remains read-only; Assignment Evidence Ledger uses no confidence score; unsupported optimization signals remain unavailable/blocked; CD-024 design may proceed but implementation may not.
 - Open blockers: sponsor route/screen-ID decision for SCR-WEB-120/140; automatic overlap protection; authoritative package/visit-type revalidation; virtual-mode support; attempted-conflict audit; delivery truth; stale-concurrency contract; CD-021 independent wiring/runtime acceptance; CD-020 external outcome; CD-002 implementation verification.
 - Regression result: documentation-only change; no application regression suite required or run. Existing active CD-021 test evidence remains unchanged.
-- Exact next task: run CD-024 in Claude Design using `outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md`; then perform a P0/P1 design review before any implementation authorization.
+- Exact next task: run CD-024 in Claude Design using `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md`; then perform a P0/P1 design review before any implementation authorization.
 - Ready-to-paste resume prompt:
 
 ```text
 Continue the Saqeel MVP1 UI/UX programme from /Users/vikramindla/Documents/GitHub/Inspection.
 
-Read AGENTS.md, product-contract/sessions/HANDOFF_2026-07-13_DESIGN_QUALITY_RATCHET_V4_CD024_NEXT.md, outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md and outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md.
+Read AGENTS.md, product-contract/sessions/HANDOFF_2026-07-13_DESIGN_QUALITY_RATCHET_V4_CD024_NEXT.md, ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md and ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md.
 
 Start TASK-DESIGN-CD024-QUALITY-RATCHET as DESIGN ONLY. Preserve the sponsor-accepted shell and CD-001 baseline. Do not treat /planning/plans/:id as editable. Reconcile the contract /planning/:id/configure, the implemented /planning/bulk/review P02 subset and the SCR-WEB-120/140 identity collision before accepting a route handoff. Do not present skills, capacity, proximity, travel time, automatic overlap avoidance, virtual readiness, attempted-conflict audit or delivery as implemented unless current code proves them. Use a score-free Assignment Evidence Ledger and apply every V4 quality gate.
 

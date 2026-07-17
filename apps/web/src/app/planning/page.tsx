@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +9,7 @@ export default async function PlanningHome() {
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
@@ -25,8 +26,10 @@ export default async function PlanningHome() {
       </Shell>
     );
   }
+  const today = new Date().toISOString().slice(0, 10);
   const [{ data: pkg, error: packageError }, { count: drafts, error: draftsError }] = await Promise.all([
-    sb.from("package_versions").select("id").in("status", ["published", "locked"]).limit(1),
+    sb.from("package_versions").select("id").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).limit(1),
     sb.from("visit_plans").select("id", { count: "exact", head: true }).eq("status", "draft"),
   ]);
   if (packageError || draftsError) {

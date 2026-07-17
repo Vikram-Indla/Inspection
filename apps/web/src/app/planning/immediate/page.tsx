@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import ImmediateForm, { type ImmediateStrings } from "./ImmediateForm";
 
@@ -15,7 +16,7 @@ export default async function Immediate() {
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
 
   // The governed route catalogue and MVP1-M01-043 authorize Planner and
   // Inspector. The two paths remain distinct: Planner reviews/windows/assigns;
@@ -39,9 +40,11 @@ export default async function Immediate() {
     );
   }
 
+  const today = new Date().toISOString().slice(0, 10);
   const [{ data: factories }, { data: pkgs }, { data: inspRows }, { data: myProfile }] = await Promise.all([
     sb.from("factories").select("id, name, factory_code, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, source_synced_at").eq("is_temporary", false).order("name"),
-    sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"]),
+    sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
     sb.from("profiles").select("full_name").eq("user_id", user!.id).single(),
   ]);

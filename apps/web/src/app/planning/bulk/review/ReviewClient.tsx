@@ -17,7 +17,9 @@ import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useT
 import {
   publishBulkPlan, loadBulkSelection, validateBulkPlan,
   type BulkResult, type ReviewData, type ValidateResult, type Blocker, type BlockerKind,
+  type OverlapEvidence, type SourceState,
 } from "../actions";
+import EvidenceLedger, { type LedgerFocus, type EvidenceLedgerStrings } from "./EvidenceLedger";
 
 const SEL_KEY = "cd021-bulk-selection";
 
@@ -25,6 +27,7 @@ export type ReviewStrings = {
   // phases
   loading: string; loadingNote: string; stagedBanner: string; stagedSub: string;
   unavailable: string; emptyTitle: string; emptyBody: string; backToTargeting: string;
+  scopeTitle: string; scopeBody: string; scopeReduced: string;
   // context
   method: string; freshnessPrefix: string; selected: string; retained: string; visits: string;
   assignments: string; manual: string; auto: string; packageLabel: string; visitType: string;
@@ -58,11 +61,16 @@ export type ReviewStrings = {
   successTitle: string; successBody: string; successSub: string;
   sPlan: string; sVisits: string; sAssign: string; sNotif: string;
   goVisits: string; openPlan: string;
+  // CD-024 — Assignment Evidence Ledger + per-row evidence cells
+  evTitle: string; evLead: string; evReview: string;
+  ecInPool: string; ecOverlaps: string; ecSkills: string; ecAuto: string;
+  ecBlockedN: string; ecFail: string; ecSetWindow: string;
+  ev: EvidenceLedgerStrings;
   // blocker copy (kind → title/detail); {targets} / {n} interpolated
   bl: Record<BlockerKind, { title: string; detail: string }>;
 };
 
-type Phase = "loading" | "unavailable" | "empty" | "review" | "publishing" | "success" | "failure";
+type Phase = "loading" | "unavailable" | "scope" | "empty" | "review" | "publishing" | "success" | "failure";
 
 const RISK_TONE: Record<string, string> = { high: "ax-lozenge--critical", medium: "ax-lozenge--warning", low: "ax-lozenge--success" };
 // per-kind presentation + which correction the Fix control performs
@@ -94,10 +102,18 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   const [freshness, setFreshness] = useState("");
   const [, startValidate] = useTransition();
   const validateSeq = useRef(0); // guards against stale preview responses resolving out of order
+  // CD-024 — selection-time overlap evidence + focused candidate for the ledger
+  const [evidence, setEvidence] = useState<{ overlaps: OverlapEvidence[]; overlapSource: SourceState } | null>(null);
+  const [focusedId, setFocusedId] = useState<string | null>(null);
+  const evSeq = useRef(0);
   const windowRef = useRef<HTMLInputElement>(null);
   const successHeadingRef = useRef<HTMLHeadingElement>(null);
   const failHeadingRef = useRef<HTMLHeadingElement>(null);
+  const readinessHeadingRef = useRef<HTMLHeadingElement>(null);
   const rowRefs = useRef<Record<string, HTMLTableRowElement | null>>({});
+  // CD-025 S10 — polite announcement + focus target for the scope-reduction (12→10)
+  // correction, whose Fix control unmounts on click (WIRING leg 2/4).
+  const [announce, setAnnounce] = useState("");
 
   // ---- load the staged selection (no persistence exists yet) ----
   useEffect(() => {
@@ -136,10 +152,37 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, workingIds.join(","), pkgId, windowStart, windowEnd, JSON.stringify(picks)]);
 
+  // ---- CD-024 selection-time overlap evidence (loadBulkSelection with window) ----
+  // Feeds the per-row evidence cells and the Assignment Evidence Ledger from the
+  // SAME overlap query publish uses. Requires a valid window; without one, overlap
+  // is honestly "not evaluated" rather than silently "no conflict".
+  useEffect(() => {
+    const startMs = Date.parse(windowStart);
+    const endMs = Date.parse(windowEnd);
+    const windowOk = !!windowStart && !!windowEnd && Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs;
+    if (!data || data.unavailable || !windowOk || workingIds.length === 0) { setEvidence(null); return; }
+    const handle = setTimeout(() => {
+      const seq = ++evSeq.current;
+      loadBulkSelection(workingIds, { start: windowStart, end: windowEnd })
+        .then(d => { if (seq === evSeq.current) setEvidence({ overlaps: d.overlaps ?? [], overlapSource: d.sources?.overlap ?? "not-evaluated" }); })
+        .catch(() => { if (seq === evSeq.current) setEvidence(null); });
+    }, 300);
+    return () => clearTimeout(handle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, workingIds.join(","), windowStart, windowEnd]);
+
   const removeExcluded = useCallback(() => {
+    const removed = dupIds.size;
     setRemovedDups(true);
     setPicks(p => { const next = { ...p }; for (const id of dupIds) delete next[id]; return next; });
-  }, [dupIds]);
+    // S10 — announce the named removal and new retained count politely; the Fix
+    // button that triggered this is about to unmount, so focus moves in the effect.
+    setAnnounce(s.scopeReduced.replace("{removed}", String(removed)).replace("{retained}", String(nonDupIds.length)));
+  }, [dupIds, nonDupIds.length, s.scopeReduced]);
+
+  // Restore focus after the scope-reduction Fix control unmounts: land on the
+  // readiness heading so the (now recomputed) state is where focus resumes.
+  useEffect(() => { if (removedDups) readinessHeadingRef.current?.focus(); }, [removedDups]);
 
   const focusWindow = useCallback(() => windowRef.current?.focus(), []);
   const focusRow = useCallback((code?: string) => {
@@ -156,6 +199,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   const phase: Phase =
     data === null ? "loading"
     : data.unavailable ? "unavailable"
+    : (data.missingFactoryIds?.length ?? 0) > 0 ? "scope"
     : (allIds.length === 0 || data.factories.length === 0) ? "empty"
     : pending ? "publishing"
     : state.ok ? "success"
@@ -178,6 +222,19 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   }
   if (phase === "unavailable") {
     return <div className="ax-banner ax-banner--critical" role="alert" id="cd-main">{s.unavailable}</div>;
+  }
+  if (phase === "scope") {
+    const missing = data?.missingFactoryIds?.length ?? 0;
+    return (
+      <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
+        <div className="ax-state">
+          <span className="ax-state__glyph" aria-hidden="true">◌</span>
+          <h3>{s.scopeTitle}</h3>
+          <p className="ax-caption">{s.scopeBody.replace("{n}", String(missing))}</p>
+          <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
+        </div>
+      </div>
+    );
   }
   if (phase === "empty") {
     return (
@@ -260,6 +317,53 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   const auto = v?.auto ?? Math.max(0, retained - manual);
   const reasonId = "cd-disabled-reason";
 
+  // ---- CD-024 evidence derivations ----
+  const windowSet = !!windowStart && !!windowEnd && Number.isFinite(Date.parse(windowStart)) && Number.isFinite(Date.parse(windowEnd)) && Date.parse(windowEnd) > Date.parse(windowStart);
+  const packagePublished = !!pkgId && (data?.packages ?? []).some(p => p.id === pkgId);
+  const overlapSource: SourceState = evidence?.overlapSource ?? "not-evaluated";
+  const fmtWin = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? iso : d.toLocaleString([], { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }); };
+  const overlapFor = (inspectorId: string) => (evidence?.overlaps ?? []).find(o => o.inspector_id === inspectorId);
+
+  // Focus derivation for the ledger — reflects the row currently focused in the
+  // candidate table (focusin) or opened via "Review evidence".
+  const focusedFactory = focusedId ? (data?.factories ?? []).find(f => f.id === focusedId) ?? null : null;
+  const ledgerFocus: LedgerFocus | null = (() => {
+    if (!focusedFactory) return null;
+    const excluded = dupIds.has(focusedFactory.id);
+    const pick = picks[focusedFactory.id] ?? "";
+    const mode: LedgerFocus["mode"] = excluded ? "excluded" : pick ? "manual" : "auto";
+    const ov = pick ? overlapFor(pick) : undefined;
+    return {
+      factoryName: focusedFactory.name,
+      factoryCode: focusedFactory.factory_code,
+      mode,
+      inspectorName: pick ? (data?.inspectors ?? []).find(i => i.user_id === pick)?.full_name : undefined,
+      inPool: pick ? (data?.inspectors ?? []).some(i => i.user_id === pick) : undefined,
+      packagePublished,
+      windowSet,
+      overlapEvaluated: overlapSource === "ok" && windowSet,
+      overlapFailed: overlapSource === "failed",
+      overlapCount: ov?.count ?? 0,
+      overlapSamples: (ov?.samples ?? []).map(sm => ({ label: sm.visit_id.slice(0, 8), window: `${fmtWin(sm.window_start)}→${fmtWin(sm.window_end)}` })),
+    };
+  })();
+
+  // Per-row evidence cell (glyph + text; never colour alone).
+  const rowEvidence = (fid: string) => {
+    const pick = picks[fid] ?? "";
+    if (!pick) return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>◐ {s.ecAuto}</span>;
+    const inPool = (data?.inspectors ?? []).some(i => i.user_id === pick);
+    if (!inPool) return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {s.ev.bNotPool}</span>;
+    if (overlapSource === "failed") return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {s.ecFail}</span>;
+    if (!windowSet || overlapSource === "not-evaluated") return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>○ {s.ecSetWindow}</span>;
+    const ov = overlapFor(pick);
+    if (ov && ov.count > 0) {
+      const sm = ov.samples[0];
+      return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · <bdi>{sm.visit_id.slice(0, 8)}</bdi> {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
+    }
+    return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
+  };
+
   const blockerCopy = (b: Blocker) => {
     const c = s.bl[b.kind];
     const targets = (b.targets ?? []).join(" · ");
@@ -285,6 +389,8 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-400)" }} id="cd-main">
       <a href="#cd-publish" className="ax-link cd-skip">{s.skipToPublish}</a>
+      {/* S10 — polite scope-reduction announcement (visually hidden, does not shift layout) */}
+      <p className="ax-sr-only" role="status" aria-live="polite">{announce}</p>
 
       {/* ---- context card ---- */}
       <section className="ax-surface ax-panel">
@@ -313,7 +419,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       {/* ---- readiness rail (error summary) ---- */}
       <section className={`ax-surface ax-panel cd-panelpad cd-ready ${validating ? "" : blockers.length ? "is-blocked" : "is-clear"}`}
         role={blockers.length ? "alert" : "status"} aria-label={s.readiness}>
-        <div className="cd-sectionhead"><h3>{s.readiness}</h3></div>
+        <div className="cd-sectionhead"><h3 tabIndex={-1} ref={readinessHeadingRef}>{s.readiness}</h3></div>
         {validating ? (
           <p className="ax-caption" role="status">{s.loadingNote}</p>
         ) : blockers.length ? (
@@ -368,7 +474,8 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
               const pick = picks[f.id] ?? "";
               return (
                 <tr key={f.id} className={`cd-obj ${excluded ? "is-removed" : ""}`} data-code={f.factory_code}
-                  ref={el => { rowRefs.current[f.id] = el; }} aria-selected={excluded ? true : undefined}>
+                  ref={el => { rowRefs.current[f.id] = el; }} aria-selected={excluded ? true : undefined}
+                  onFocus={() => setFocusedId(f.id)}>
                   <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div></td>
                   <td>{f.city ?? "—"}</td>
                   <td><span className={`ax-lozenge ${RISK_TONE[f.risk_band ?? ""] ?? ""}`}>{f.risk_band === "high" ? s.riskHigh : f.risk_band === "medium" ? s.riskMedium : f.risk_band === "low" ? s.riskLow : "—"}</span></td>
@@ -377,11 +484,16 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
                     {excluded ? (
                       <span className="ax-lozenge ax-lozenge--critical ax-lozenge--plan">{s.excludedLozenge}</span>
                     ) : (
-                      <select className="ax-select" name={`inspector_${f.id}`} value={pick} aria-label={s.chooseInspector}
-                        onChange={e => setPicks(p => ({ ...p, [f.id]: e.target.value }))} style={{ minInlineSize: 200 }}>
-                        <option value="">{s.autoLabel}</option>
-                        {data!.inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
-                      </select>
+                      <div className="cd-assignee">
+                        <select className="ax-select" name={`inspector_${f.id}`} value={pick} aria-label={s.chooseInspector}
+                          onChange={e => setPicks(p => ({ ...p, [f.id]: e.target.value }))} style={{ minInlineSize: 200 }}>
+                          <option value="">{s.autoLabel}</option>
+                          {data!.inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
+                        </select>
+                        {rowEvidence(f.id)}
+                        <button type="button" className="ax-link" style={{ marginBlockStart: "var(--ax-space-050)", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                          aria-controls="cd-evidence-ledger" onClick={() => setFocusedId(f.id)}>{s.evReview}</button>
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -389,6 +501,13 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
             })}
           </tbody>
         </table></div>
+      </section>
+
+      {/* ---- CD-024 assignment evidence ledger (signature pattern) ---- */}
+      <section id="cd-evidence-ledger">
+        <div className="cd-sectionhead"><h3>{s.evTitle}</h3></div>
+        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{s.evLead}</p>
+        <EvidenceLedger focus={ledgerFocus} strings={s.ev} />
       </section>
 
       {/* ---- assignment evidence ---- */}

@@ -33,11 +33,50 @@ __pycache__/
 
 # build artifacts
 apps/web/.next/
+apps/web/.next-stale-backup/
 *.tsbuildinfo
 node_modules/
 .env.local
+
+# Supabase CLI linked-project state (may contain connection credentials)
+supabase/.temp/
 
 # e2e artifacts (G10 Playwright suite)
 apps/web/test-results/
 apps/web/playwright-report/
 apps/web/playwright/.auth/
+
+# Repository-local documentation and evidence exports
+Documentation/
+documentation/
+docs/generated/
+docs/exports/
+docs/evidence/attachments/
+screenshots/
+test-results/
+playwright-report/
+artifacts/
+archives/
+
+# Binary evidence belongs in INSPECTION_DOCS_ROOT
+product-contract/evidence/screens/**/*.png
+product-contract/evidence/screens/**/*.jpg
+product-contract/evidence/screens/**/*.jpeg
+product-contract/evidence/screens/**/*.webp
+product-contract/evidence/screens/**/*.gif
+product-contract/evidence/screens/**/*.mov
+product-contract/evidence/screens/**/*.mp4
+product-contract/evidence/screens/**/*.webm
+outputs/**/*.png
+outputs/**/*.jpg
+outputs/**/*.jpeg
+outputs/**/*.webp
+outputs/**/*.dc.html
+
+# Packaged documentation and media archives
+*.zip
+*.7z
+*.rar
+*.mov
+*.mp4
+*.webm

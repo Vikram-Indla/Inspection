@@ -1,8 +1,9 @@
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import {
   NewItemForm,
+  EditItemForm,
   ToggleActive,
   ItemPreview,
   type ClauseOption,
@@ -11,16 +12,15 @@ import {
   type PreviewItem,
 } from "./Controls";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
+import { getItemUsage, type ItemUsage } from "./actions";
 
 // CD-007 / SCR-ADM-020 — Inspection Item Catalogue (semantic catalogue + read-only
 // runtime-preview strip). Truth-over-completion: SELECT is any authenticated (RLS);
-// writes require compliance_admin/form_admin (RLS is the authority — no Admin-family
-// route guard is proven, so the unauthorized/route-guard leg is HANDOFF_BLOCKED,
-// owner platform). inspection_items has NO audit trigger, so item changes are never
-// presented as audited. Item edit/version lifecycle, deactivation-reason capture,
-// per-item published-use count, and conditional-rule authoring are contract targets
-// with no runtime leg today — they render as disabled, annotated HANDOFF_BLOCKED
-// targets, never as working controls, and never as a fabricated count.
+// writes require compliance_admin/form_admin (RLS is the authority and the route layout
+// prevents unrelated roles from loading this module). inspection_items changes are audit-tracked and writers receive only the
+// object-scoped timeline. Usage aggregates, conditional authoring, all evidence types,
+// mandatory-when-visible and scoring enablement consume the completion backend.
+// Item edits create an archived configuration version before the current row advances.
 export const dynamic = "force-dynamic";
 
 const fill = (tmpl: string, vars: Record<string, string | number>) =>
@@ -30,19 +30,27 @@ type ResponseModel = {
   responses?: string[];
   mapping?: Record<string, { result?: string; violation?: string }>;
   score_excluded_on?: string[];
-  conditional?: unknown;
+  requirement?: "required" | "optional" | "conditional";
+  scoring_enabled?: boolean;
+  conditional?: { visible_when?: string; mandatory_when_visible?: boolean };
 };
 type EvidenceRule = { on?: string; type?: string; min?: number; mandatory?: boolean } | null;
 
-export default async function Items() {
+export default async function Items({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
+  const sp = await searchParams;
+  const auditItemId = typeof sp.audit === "string" ? sp.audit : Array.isArray(sp.audit) ? sp.audit[0] : undefined;
 
   // Two independent reads so a clause-list failure (S08 degraded) never hides the
   // catalogue: the catalogue renders and only the clause control degrades.
   const [{ data: items, error }, { data: clauses, error: clauseError }] = await Promise.all([
     sb.from("inspection_items")
-      .select("id, code, title, active, score_weight, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, regulations(code))")
+      .select("id, code, title, clause_id, active, configuration_version, deactivation_reason, score_weight, response_model, evidence_rule, score_excluded_on, guidance_en, guidance_ar, regulation_clauses(clause_ref, regulations(code))")
       .order("code"),
     sb.from("regulation_clauses")
       .select("id, clause_ref, title, regulations(code)")
@@ -59,6 +67,22 @@ export default async function Items() {
 
   const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
   const rows = items ?? [];
+  const { data: { user } } = await getServerUser();
+  const { data: roleRows, error: roleError } = user
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    : { data: [] as { role_key: string }[], error: null };
+  const roles = new Set((roleRows ?? []).map(r => r.role_key));
+  const isWriter = roles.has("compliance_admin") || roles.has("form_admin");
+
+  const usageEntries = isWriter ? await Promise.all(rows.map(async i => [i.id, await getItemUsage(i.code)] as const)) : [];
+  const usageById = new Map<string, ItemUsage | null>(usageEntries);
+  const auditItem = auditItemId ? rows.find(i => i.id === auditItemId) : undefined;
+  const auditResult = isWriter && auditItem
+    ? await sb.rpc("admin_configuration_audit", { p_object_type: "inspection_items", p_object_id: auditItem.id })
+    : { data: null, error: null };
+  const auditEvents = !auditResult.error && Array.isArray(auditResult.data)
+    ? auditResult.data as Array<{ id: number; action: string; actor: string | null; occurred_at: string }>
+    : [];
 
   // ---- localized string bundles (EN fallback in code, AR seeded in ui_strings) ----
   const responseLabels: Record<string, string> = {
@@ -84,7 +108,19 @@ export default async function Items() {
     evidenceRule: t("admin.items.r2.form.evidenceRule", "Evidence rule (M09-005)"),
     evidenceNone: t("admin.items.r2.form.evidenceNone", "No base evidence rule"),
     evidencePhotoNc: t("admin.items.r2.form.evidencePhotoNc", "Photo mandatory on non-compliant"),
+    evidenceVideoNc: t("admin.items.r2.form.evidenceVideoNc", "Video mandatory on non-compliant"),
+    evidenceDocumentNc: t("admin.items.r2.form.evidenceDocumentNc", "Document mandatory on non-compliant"),
+    evidenceCommentNc: t("admin.items.r2.form.evidenceCommentNc", "Comment mandatory on non-compliant"),
     evidenceSource: t("admin.items.r2.form.evidenceSource", "Configured policy — governed preset, not free text (M09-005/025)."),
+    requirementMode: t("admin.items.r2.form.requirementMode", "Requirement mode"),
+    requirementRequired: t("admin.items.r2.form.requirementRequired", "Required"),
+    requirementOptional: t("admin.items.r2.form.requirementOptional", "Optional"),
+    requirementConditional: t("admin.items.r2.form.requirementConditional", "Conditional"),
+    visibleWhen: t("admin.items.r2.form.visibleWhen", "Visible when"),
+    visibleWhenHint: t("admin.items.r2.form.visibleWhenHint", "Use the governed key=value grammar."),
+    mandatoryWhenVisible: t("admin.items.r2.form.mandatoryWhenVisible", "Mandatory when visible"),
+    scoringEnabled: t("admin.items.r2.form.scoringEnabled", "Scoring enabled"),
+    scoringDisabled: t("admin.items.r2.form.scoringDisabled", "Scoring disabled"),
     guidance: t("admin.items.r2.form.guidance", "Guidance (EN)"),
     guidancePlaceholder: t("admin.items.r2.form.guidancePlaceholder", "What the inspector verifies"),
     creating: t("admin.items.r2.form.creating", "Creating…"),
@@ -94,7 +130,10 @@ export default async function Items() {
     saving: t("admin.items.r2.toggle.saving", "Saving…"),
     deactivate: t("admin.items.r2.toggle.deactivate", "Deactivate"),
     reactivate: t("admin.items.r2.toggle.reactivate", "Reactivate"),
-    reasonNote: t("admin.items.r2.toggle.reasonNote", "History is preserved; no reason is captured and no item-row audit trigger exists."),
+    reasonNote: t("admin.items.r2.toggle.reasonNote", "History is preserved; the required reason and item-row change are recorded in audit history."),
+    deactivationReason: t("admin.items.r2.form.deactivationReason", "Deactivation reason"),
+    saveDraft: t("admin.items.r2.edit.save", "Save new version"),
+    draftSaved: t("admin.items.r2.edit.saved", "New item version saved"),
   };
 
   const previewStrings: PreviewStrings = {
@@ -103,7 +142,7 @@ export default async function Items() {
     responsesLabel: t("admin.items.r2.preview.responsesLabel", "Response the inspector records"),
     evidenceLabel: t("admin.items.r2.preview.evidenceLabel", "Evidence policy"),
     evidenceNone: t("admin.items.r2.preview.evidenceNone", "No base evidence required"),
-    evidencePhoto: t("admin.items.r2.preview.evidencePhoto", "Photo required when non-compliant (min {min})"),
+    evidenceRequired: t("admin.items.r2.preview.evidenceRequired", "{type} required when non-compliant (min {min})"),
     evidenceSource: t("admin.items.r2.preview.evidenceSource", "configured policy — source: engine settings"),
     guidanceLabel: t("admin.items.r2.preview.guidanceLabel", "Inspector guidance"),
     guidanceNone: t("admin.items.r2.preview.guidanceNone", "No guidance recorded"),
@@ -112,7 +151,11 @@ export default async function Items() {
     noWeight: t("admin.items.r2.preview.noWeight", "no score weight"),
     scoreExcluded: t("admin.items.r2.preview.scoreExcluded", "excluded from score on: {responses}"),
     ncMaps: t("admin.items.r2.preview.ncMaps", "Non-compliant maps to: {target}"),
-    conditional: t("admin.items.r2.preview.conditional", "Conditional logic present (display only — authoring not wired)"),
+    conditional: t("admin.items.r2.preview.conditional", "Conditional"),
+    required: t("admin.items.r2.preview.required", "Required"),
+    optional: t("admin.items.r2.preview.optional", "Optional"),
+    mandatoryVisible: t("admin.items.r2.preview.mandatoryVisible", "mandatory when visible"),
+    scoringOff: t("admin.items.r2.preview.scoringOff", "scoring disabled; all responses excluded"),
     readonly: t("admin.items.r2.preview.readonly", "Read-only projection of stored configuration — nothing here is editable."),
     deactivated: t("admin.items.r2.preview.deactivated", "This item is deactivated — hidden from new package versions; existing history is preserved."),
     active: t("admin.items.r2.status.active", "active"),
@@ -137,26 +180,19 @@ export default async function Items() {
       responses: rm.responses ?? [],
       ncTarget: nc?.violation ?? nc?.result ?? null,
       evidence: ev,
-      conditional: rm.conditional != null,
+      requirement: rm.requirement ?? "required",
+      conditionalRule: rm.conditional?.visible_when ?? null,
+      mandatoryWhenVisible: rm.conditional?.mandatory_when_visible === true,
+      scoringEnabled: rm.scoring_enabled !== false,
       guidance,
       scoreWeight: i.score_weight ?? null,
       scoreExcludedOn: colExcluded ?? rm.score_excluded_on ?? [],
     };
   });
 
-  // ---- blocked contract targets (rendered as disabled, annotated targets) ----
-  const blocked: { label: string; owner: string }[] = [
-    { label: t("admin.items.r2.blocked.edit", "Edit item / new version"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
-    { label: t("admin.items.r2.blocked.conditional", "Author conditional rule"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
-    { label: t("admin.items.r2.blocked.usage", "Published-use warning — unavailable"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
-    { label: t("admin.items.r2.blocked.reason", "Deactivation reason capture"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
-    { label: t("admin.items.r2.blocked.audit", "Item change audit trail"), owner: t("admin.items.r2.owner.backend", "owner: backend") },
-    { label: t("admin.items.r2.blocked.guard", "Route guard / unauthorized redirect"), owner: t("admin.items.r2.owner.platform", "owner: platform") },
-  ];
-
   return (
     <Shell
-      current="/admin"
+      current="/admin/items"
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={
         <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
@@ -190,16 +226,18 @@ export default async function Items() {
         </div>
       )}
 
-      {/* Permission + governance truth (S05/S06 + no-audit fact). Visibility is not
-          authorization; the write path is RLS-guarded and there is no audit trigger. */}
+      {roleError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="ax-banner" role="note"><strong><span aria-hidden="true">👁 </span>{t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can inspect item semantics, usage and runtime previews. Creating or changing active state requires Compliance or Form Admin and is enforced by the server guard and RLS.")}</div>}
+
+      {/* Permission + governance truth (S05/S06 + audit fact). Visibility is not
+          authorization; the write path is RLS-guarded and every row change is audited. */}
       <section className="ax-surface ax-permission ax-stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
         <p className="ax-caption" style={{ margin: 0 }}>
-          {t("admin.items.r2.gov.body", "Anyone signed in can read the catalogue; creating items and changing active state require compliance_admin or form_admin — RLS is the authority and navigation visibility grants nothing. Deactivation preserves history and stores no reason. inspection_items has no audit trigger, so item changes are not recorded as audit events.")}
+          {t("admin.items.r3.gov.body", "Anyone signed in can read the catalogue; writes require compliance_admin or form_admin. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
         </p>
       </section>
 
-      {!error && (
+      {!error && isWriter && (
         <section className="ax-surface ax-stack" aria-labelledby="cd007-create-h" style={{ padding: "var(--ax-space-300)" }}>
           <h3 id="cd007-create-h" style={{ margin: 0 }}>{t("admin.items.r2.create.heading", "Add an inspection item")}</h3>
           <NewItemForm clauses={clauseOptions} clauseUnavailable={clauseUnavailable} strings={strings} />
@@ -255,17 +293,20 @@ export default async function Items() {
                     <td className="ax-caption">
                       {(rm.responses ?? []).map(rLabel).join(" / ") || "—"}
                       {ncTarget && ` · ${t("admin.items.r2.sem.nc", "NC→")}${ncTarget}`}
-                      {ev?.mandatory && ` · ${t("admin.items.r2.sem.evidence", "photo on NC")}`}
+                      {ev?.mandatory && ` · ${ev.type ?? t("admin.items.r2.sem.evidence", "evidence")} ${t("admin.items.r2.sem.onNc", "on NC")}`}
                       {excluded.length > 0 && ` · ${t("admin.items.r2.sem.scoreExcluded", "score-excluded")}`}
-                      {rm.conditional != null && ` · ${t("admin.items.r2.sem.conditional", "conditional (display only)")}`}
+                      {rm.requirement && ` · ${rm.requirement}`}
+                      {rm.conditional?.visible_when && ` · ${rm.conditional.visible_when}`}
+                      {rm.scoring_enabled === false && ` · ${t("admin.items.r2.sem.scoringOff", "scoring off")}`}
                     </td>
                     <td className="ax-td-num ax-numeric">{i.score_weight ?? "—"}</td>
                     <td>
-                      {/* Per-item published-use count is NOT provided by this route.
-                          Render the warning target as unavailable — never a count. */}
-                      <span className="ax-lozenge ax-lozenge--warning" title={t("admin.items.r2.usage.note", "This route provides no published-use count (HANDOFF_BLOCKED · backend).")}>
-                        <span aria-hidden="true">? </span>{t("admin.items.r2.usage.unavailable", "unavailable")}
-                      </span>
+                      {(() => {
+                        const usage = usageById.get(i.id);
+                        if (!isWriter) return <span className="ax-caption">{t("admin.items.r2.usage.writerOnly", "Available to configuration writers")}</span>;
+                        if (!usage) return <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠ </span>{t("admin.items.r2.usage.unavailable", "unavailable — retry reload")}</span>;
+                        return <span className="ax-caption"><span aria-hidden="true">✓ </span>{fill(t("admin.items.r2.usage.counts", "{packages} package(s) · {versions} version(s)"), { packages: usage.package_count, versions: usage.version_count })}</span>;
+                      })()}
                     </td>
                     <td>
                       <span className={`ax-lozenge ${i.active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
@@ -275,11 +316,9 @@ export default async function Items() {
                     </td>
                     <td>
                       <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
-                        <ToggleActive itemId={i.id} active={i.active} strings={strings} />
-                        <button className="ax-btn ax-btn--subtle" disabled aria-disabled="true"
-                          title={t("admin.items.r2.blocked.editNote", "Item edit / new version is a contract target (HANDOFF_BLOCKED · backend).")}>
-                          <span aria-hidden="true">🔒 </span>{t("admin.items.r2.blocked.editShort", "Edit")}
-                        </button>
+                        {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="ax-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}
+                        {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/items?audit=${encodeURIComponent(i.id)}#cd007-audit-h`}>{t("admin.items.r2.audit.open", "Audit")}</a> : null}
+                        {isWriter ? <EditItemForm item={{ id: i.id, title: i.title, clauseId: i.clause_id, guidance: i.guidance_en, version: i.configuration_version ?? 1 }} clauses={clauseOptions} strings={strings} /> : null}
                       </div>
                     </td>
                   </tr>
@@ -290,26 +329,22 @@ export default async function Items() {
         </section>
       )}
 
-      {/* Contract targets — disabled, annotated, never presented as working. */}
-      <section className="ax-surface ax-stack" aria-labelledby="cd007-blocked-h" style={{ padding: "var(--ax-space-300)" }}>
-        <h3 id="cd007-blocked-h" style={{ margin: 0 }}>{t("admin.items.r2.blocked.heading", "Contract targets — not yet wired")}</h3>
-        <p className="ax-caption" style={{ margin: 0 }}>
-          {t("admin.items.r2.blocked.body", "These are contract capabilities with no proven runtime leg today. They render as disabled targets so the design never implies they work.")}
-        </p>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
-          {blocked.map(b => (
-            <span key={b.label} className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
-              <button className="ax-btn ax-btn--subtle" disabled aria-disabled="true">
-                <span aria-hidden="true">🔒 </span>{b.label}
-              </button>
-              <span className="ax-caption">{t("admin.items.r2.blocked.tag", "not yet wired")} · {b.owner}</span>
-            </span>
-          ))}
-        </div>
-      </section>
+      {!error && rows.length > 0 && isWriter && (
+        <section className="ax-surface ax-stack" aria-labelledby="cd007-audit-h" style={{ padding: "var(--ax-space-300)" }}>
+          <h3 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Scoped item audit")}</h3>
+          <p className="ax-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to inspect its object-scoped configuration history; broad audit-table access is not granted.")}</p>
+          {!auditItemId ? <p className="ax-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>
+            : !auditItem ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.items.r2.audit.notFound", "The selected item is no longer in the readable catalogue.")}</div>
+            : auditResult.error ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.items.r2.audit.unavailable", "Audit unavailable — reload to retry; history is not reported as empty.")}</div>
+            : <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="ax-numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
+              {auditEvents.length === 0 ? <p className="ax-caption" role="status">{t("admin.items.r2.audit.empty", "No scoped audit events returned — verified zero.")}</p>
+                : <ol>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
+            </div>}
+        </section>
+      )}
 
       <p className="ax-caption">
-        {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages (M09-002/007); deactivation preserves history (M09-014). Writes require compliance_admin/form_admin — RLS is the authority. inspection_items has no audit trigger.")}
+        {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages (M09-002/007); deactivation preserves history (M09-014). Writes require compliance_admin/form_admin — RLS is the authority. inspection_items row changes are audit-tracked (trg_audit_inspection_items).")}
       </p>
     </Shell>
   );

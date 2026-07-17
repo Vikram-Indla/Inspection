@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import {
   buildDashboardMetrics,
   complianceBreakdown,
@@ -16,7 +17,7 @@ import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 import { storageStatePath } from "./personas";
 
 const OPS = { email: "ops@mim.gov.sa", password: "MimOps!2026" };
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/dashboard-business-v1");
+const EVIDENCE_DIR = evidenceDirectory("dashboard-business-v1");
 
 async function loginOps(page: import("@playwright/test").Page) {
   await page.goto("/locale?set=en");
@@ -29,6 +30,15 @@ async function loginOps(page: import("@playwright/test").Page) {
 }
 
 test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
+  test("audit timeline query is bounded to scoped dashboard objects", () => {
+    const source = readFileSync(join(process.cwd(), "src/app/dashboard/page.tsx"), "utf8");
+    expect(source).toContain("collectLatestAudit");
+    expect(source).toContain('.in("object_id", ids)');
+    expect(source).toContain('.gte("occurred_at"');
+    expect(source).toContain(".limit(12)");
+    expect(source).not.toMatch(/collect<AuditRow>/);
+  });
+
   test("30-day default uses Riyadh boundaries and truthful denominators", () => {
     const now = Date.parse("2026-07-13T12:00:00Z");
     const scope = parseDateScope(undefined, undefined, now);
@@ -58,6 +68,11 @@ test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
 });
 
 test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
+  // The first evidence case intentionally performs login plus three full
+  // server-rendered dashboard reloads and writes three full-page screenshots.
+  // Keep assertion timeouts tight, but give the complete evidence sequence a
+  // realistic outer budget on a live shared project.
+  test.describe.configure({ timeout: 120_000 });
   test("operations persona lands on the two-view source-backed dashboard", async ({ page }) => {
     await loginOps(page);
     mkdirSync(EVIDENCE_DIR, { recursive: true });

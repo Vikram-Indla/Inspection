@@ -1,5 +1,6 @@
 "use server";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 // CD-025 (SCR-WEB-150 / P03): publish no longer hard-redirects. It returns the
 // authoritative result so the review workspace can render the success state
@@ -38,20 +39,89 @@ export type ReviewFactory = {
 };
 export type ReviewInspector = { user_id: string; full_name: string };
 export type ReviewPackage = { id: string; version_label: string; code: string };
-export type ReviewData = { factories: ReviewFactory[]; packages: ReviewPackage[]; inspectors: ReviewInspector[]; unavailable?: boolean };
 
-export async function loadBulkSelection(ids: string[]): Promise<ReviewData> {
+// CD-024 (SCR-WEB-140 / P02) — fail-closed structured read result. Every source
+// read reports success/failure/not-evaluated so the review UI + Assignment
+// Evidence Ledger can render "not evaluated" and "unavailable" as named absences
+// instead of silently collapsing a failed read into a false zero / "no conflict".
+export type SourceState = "ok" | "failed" | "not-evaluated";
+export type ReviewSources = { factories: SourceState; packages: SourceState; inspectors: SourceState; overlap: SourceState };
+// CD-024 — selection-time overlap evidence for one inspector, from the SAME
+// overlap query publishBulkPlan runs at submit (parity is a required test).
+export type OverlapEvidence = {
+  inspector_id: string;
+  count: number;
+  samples: { visit_id: string; window_start: string; window_end: string }[];
+};
+
+export type ReviewData = {
+  factories: ReviewFactory[];
+  packages: ReviewPackage[];
+  inspectors: ReviewInspector[];
+  unavailable?: boolean;
+  /** Client-held IDs that are no longer readable in the caller's current scope. */
+  missingFactoryIds?: string[];
+  /** CD-024 — per-source fail-closed read state (R1-2). */
+  sources?: ReviewSources;
+  /** CD-024 — per-inspector active-assignment overlaps within the supplied window. */
+  overlaps?: OverlapEvidence[];
+  /** CD-024 — the window the overlap evidence was evaluated against (echoed). */
+  window?: { start: string; end: string } | null;
+};
+
+type OverlapRow = { inspector_id: string; visits: { id: string; window_start: string; window_end: string; planning_status: string } };
+
+// CD-024 — ONE overlap query, TWO call sites (loadBulkSelection selection-time
+// evidence + publishBulkPlan pre-RPC submit check). Existing active assignments
+// whose visit window overlaps [window_start, window_end). Fail-closed: a query
+// error returns { ok:false } so BOTH callers block rather than render "no
+// conflict". This must stay byte-for-byte the same query in both places
+// (parity test). NOTE: this is the pre-write check only — it can go stale before
+// the assignment insert and the atomic RPC re-validates nothing (R1-1).
+async function readOverlappingAssignments(
+  sb: Awaited<ReturnType<typeof supabaseServer>>,
+  inspectorIds: string[], window_start: string, window_end: string,
+): Promise<{ ok: true; rows: OverlapRow[] } | { ok: false }> {
+  const ids = [...new Set(inspectorIds)].filter(Boolean);
+  if (!ids.length || !window_start || !window_end) return { ok: true, rows: [] };
+  const { data, error } = await sb.from("assignments")
+    .select("inspector_id, visits!inner(id, window_start, window_end, planning_status)")
+    .in("inspector_id", ids)
+    .in("visits.planning_status", ["draft", "published", "returned"])
+    .lt("visits.window_start", window_end)
+    .gt("visits.window_end", window_start);
+  if (error) {
+    console.error("[CD-024 overlap read]", error.message);
+    return { ok: false };
+  }
+  return { ok: true, rows: (data ?? []) as unknown as OverlapRow[] };
+}
+
+export async function loadBulkSelection(ids: string[], window?: { start: string; end: string }): Promise<ReviewData> {
   const sb = await supabaseServer();
+  const today = new Date().toISOString().slice(0, 10);
   const clean = [...new Set(ids)].filter(id => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 500);
   if (clean.length === 0) return { factories: [], packages: [], inspectors: [] };
   const [factoryRead, packageRead, inspectorRead] = await Promise.all([
     sb.from("factories").select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, visits(planning_status, visit_type)").in("id", clean),
-    sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"]),
+    sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
   ]);
   if (factoryRead.error || packageRead.error || inspectorRead.error) {
     console.error("[CD-021 loadBulkSelection]", factoryRead.error?.message ?? packageRead.error?.message ?? inspectorRead.error?.message);
-    return { factories: [], packages: [], inspectors: [], unavailable: true };
+    // CD-024 R1-2 — fail closed with per-source truth. A failed read is NEVER
+    // rendered as an empty catalog; the UI shows the specific source as
+    // unavailable and blocks readiness with the caller's input preserved.
+    return {
+      factories: [], packages: [], inspectors: [], unavailable: true,
+      sources: {
+        factories: factoryRead.error ? "failed" : "ok",
+        packages: packageRead.error ? "failed" : "ok",
+        inspectors: inspectorRead.error ? "failed" : "ok",
+        overlap: "not-evaluated",
+      },
+    };
   }
   const fac = factoryRead.data;
   const pkgs = packageRead.data;
@@ -61,9 +131,44 @@ export async function loadBulkSelection(ids: string[]): Promise<ReviewData> {
     const dup = visits.some(v => ["draft", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
     return { id: f.id, factory_code: f.factory_code, name: f.name, cr_number: f.cr_number, city: f.city, region: f.region, risk_band: f.risk_band, risk_score: f.risk_score, dup };
   });
+  // A successful RLS read can still return fewer rows than the client-held
+  // selection when a factory was removed or left the caller's scope between
+  // targeting and review. Preserve that fact explicitly; the review UI must
+  // not treat it as an empty selection or silently publish the remaining rows.
+  const foundFactoryIds = new Set(factories.map(f => f.id));
+  const missingFactoryIds = clean.filter(id => !foundFactoryIds.has(id));
   const packages: ReviewPackage[] = (pkgs ?? []).map(p => ({ id: p.id, version_label: p.version_label, code: (p.packages as unknown as { code: string }).code }));
   const inspectors: ReviewInspector[] = (inspRows ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
-  return { factories, packages, inspectors };
+
+  // CD-024 — selection-time overlap evidence. When the caller supplies the
+  // shared inspection window we run the SAME overlap query publish uses over the
+  // whole eligible pool, so each candidate row can show its inspector's known
+  // active-assignment overlaps (exact visit + window) BEFORE submit — the
+  // asymmetry vs. auto (never overlap-checked) is surfaced by the UI, not hidden.
+  const startMs = window ? Date.parse(window.start) : Number.NaN;
+  const endMs = window ? Date.parse(window.end) : Number.NaN;
+  const windowOk = !!window && !!window.start && !!window.end && Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs;
+  const sources: ReviewSources = { factories: "ok", packages: "ok", inspectors: "ok", overlap: "not-evaluated" };
+  let overlaps: OverlapEvidence[] = [];
+  let windowEcho: { start: string; end: string } | null = null;
+  if (windowOk) {
+    windowEcho = { start: window!.start, end: window!.end };
+    const ov = await readOverlappingAssignments(sb, inspectors.map(i => i.user_id), window!.start, window!.end);
+    if (!ov.ok) {
+      sources.overlap = "failed";
+    } else {
+      sources.overlap = "ok";
+      const byInsp = new Map<string, OverlapEvidence>();
+      for (const r of ov.rows) {
+        const e = byInsp.get(r.inspector_id) ?? { inspector_id: r.inspector_id, count: 0, samples: [] };
+        e.count += 1;
+        if (e.samples.length < 3) e.samples.push({ visit_id: r.visits.id, window_start: r.visits.window_start, window_end: r.visits.window_end });
+        byInsp.set(r.inspector_id, e);
+      }
+      overlaps = [...byInsp.values()];
+    }
+  }
+  return { factories, packages, inspectors, missingFactoryIds, sources, overlaps, window: windowEcho };
 }
 
 // CD-021: neutral, catalogued failure copy. Raw Supabase/provider error text
@@ -80,7 +185,7 @@ const NEUTRAL_READ_ERROR =
 
 export async function publishBulkPlan(_: BulkResult, formData: FormData): Promise<BulkResult> {
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
     console.error("[CD-021 publishBulkPlan] auth read failed:", authError.message);
     return { error: NEUTRAL_READ_ERROR };
@@ -118,8 +223,10 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const endMs = Date.parse(window_end);
   if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) blockers.push("Invalid window (FLD-PLAN-005)");
   if (package_version_id) {
+    const today = new Date().toISOString().slice(0, 10);
     const { data: packageVersion, error: packageError } = await sb.from("package_versions")
-      .select("id").eq("id", package_version_id).in("status", ["published", "locked"]).maybeSingle();
+      .select("id").eq("id", package_version_id).in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).maybeSingle();
     if (packageError) {
       console.error("[CD-021 publishBulkPlan] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
@@ -159,20 +266,17 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     if (!pool.has(insp)) blockers.push(`Selected inspector is not in the eligible inspector pool (M01-029): ${insp.slice(0, 8)}`);
   }
   if (chosen.length && window_start && window_end) {
-    // Existing active assignments whose visit window overlaps this plan's window (visits embed is TO-ONE).
-    const { data: conflicts, error: conflictError } = await sb.from("assignments")
-      .select("inspector_id, visits!inner(id, window_start, window_end, planning_status)")
-      .in("inspector_id", chosen)
-      .in("visits.planning_status", ["draft", "published", "returned"])
-      .lt("visits.window_start", window_end)
-      .gt("visits.window_end", window_start);
-    if (conflictError) {
-      console.error("[CD-021 publishBulkPlan] assignment conflict read failed:", conflictError.message);
+    // CD-024 — SAME overlap query as loadBulkSelection's selection-time evidence
+    // (readOverlappingAssignments: one query, two call sites; parity is tested).
+    // Fail closed: an unreadable check blocks publishing, never "no conflict".
+    const overlap = await readOverlappingAssignments(sb, chosen, window_start, window_end);
+    if (!overlap.ok) {
       return { error: NEUTRAL_READ_ERROR };
     }
-    if ((conflicts ?? []).length) {
+    const conflicts = overlap.rows;
+    if (conflicts.length) {
       const byInsp = new Map<string, number>();
-      for (const c of conflicts!) byInsp.set(c.inspector_id, (byInsp.get(c.inspector_id) ?? 0) + 1);
+      for (const c of conflicts) byInsp.set(c.inspector_id, (byInsp.get(c.inspector_id) ?? 0) + 1);
       const { data: names, error: namesError } = await sb.from("profiles").select("user_id, full_name").in("user_id", [...byInsp.keys()]);
       if (namesError) {
         console.error("[CD-021 publishBulkPlan] inspector name read failed:", namesError.message);
@@ -250,8 +354,10 @@ export async function validateBulkPlan(input: {
   if (!input.package_version_id) {
     blockers.push({ kind: "nopackage" });
   } else {
+    const today = new Date().toISOString().slice(0, 10);
     const { data: pv, error } = await sb.from("package_versions")
-      .select("id").eq("id", input.package_version_id).in("status", ["published", "locked"]).maybeSingle();
+      .select("id").eq("id", input.package_version_id).in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).maybeSingle();
     if (error) { console.error("[CD-025 validate] package:", error.message); blockers.push({ kind: "srcPackage" }); }
     else if (!pv) blockers.push({ kind: "packageInvalid" });
   }

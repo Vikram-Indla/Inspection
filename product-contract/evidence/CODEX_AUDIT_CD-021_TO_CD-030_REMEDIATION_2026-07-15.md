@@ -35,3 +35,17 @@ These remain explicit upstream or release boundaries, not hidden wiring defects:
 - CD-030 unavailable media/package/metadata diff sources and stale freshness policy.
 
 No provider, threshold, role, SLA, geofence, notification-delivery claim, or transaction contract was invented to make these rows green. No merge, push, deployment, or `main` modification was performed.
+
+## Follow-up hardening — 2026-07-15
+
+The current review workspace action paths were tightened after this rollup: provider/read
+errors now fail closed instead of being interpreted as missing review/version/assignment
+rows, notification lookup failures are explicit after a recorded decision, and the stored
+returned-scope authority is selected by an explicit `decided_at` sort. Typecheck/build pass.
+This is additive error handling and determinism; it does not close the separately governed
+provider, claim/reassign, migration-application, atomicity, authorization, or sponsor-runtime
+boundaries listed above.
+
+The subsequent isolated CD-029/CD-030 rerun completed **26 passed / 1 data-dependent skip**;
+all CD-029 cases passed and the only skip remained the data-dependent Arabic/RTL workspace
+availability case.

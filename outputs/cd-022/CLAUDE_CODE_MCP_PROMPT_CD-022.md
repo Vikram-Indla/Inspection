@@ -76,7 +76,7 @@ Document-level RTL untouched; Arabic-primary entity names with LTR secondary lin
 - TypeScript typecheck PASS; production build PASS.
 - New Playwright coverage: grading rules (exact/similar/degraded); name search; duplicate-at-selection parity with publish; keyboard-only end-to-end flow; focus transfer; work preservation on blocked publish; forced mid-step publish failure leaves a consistent draft; retry idempotence; no raw provider text in DOM.
 - Full existing regression suite PASS.
-- Visual evidence: dark/light × EN/AR × desktop/narrow screenshots matching the five design PNGs, stored under product-contract/evidence/screens/single-v2/.
+- Visual evidence: dark/light × EN/AR × desktop/narrow screenshots matching the five design PNGs, stored under ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/single-v2/.
 - Reconcile DSG-017 and DSG-A11Y-001 rows in the design acceptance matrix; update CURRENT_STATE.md, SESSION_LEDGER.json and the acceptance checklist with per-item results.
 
 ## COMPLETION

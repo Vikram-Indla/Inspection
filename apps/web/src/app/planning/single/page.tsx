@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import Wizard, { type WizardStrings, type GradedFactory } from "./Wizard";
 import { findDuplicateActiveVisits } from "./duplicate";
@@ -41,7 +42,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   // just hides the nav link) — this page-level check is the actual boundary
   // for the UI state shown; the write path is separately RLS-gated
   // (has_role('planner') on visit_plans/visits inserts) regardless.
-  const { data: { user }, error: userError } = await sb.auth.getUser();
+  const { data: { user }, error: userError } = await getVerifiedUser(sb);
   const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
@@ -68,8 +69,10 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     );
   }
 
+  const today = new Date().toISOString().slice(0, 10);
   const [packageRead, inspectorRead, otpRead] = await Promise.all([
-    sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"]).order("published_at", { ascending: false }),
+    sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).order("published_at", { ascending: false }),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
     sb.from("engine_settings").select("engine").eq("engine", "otp").maybeSingle(),
   ]);

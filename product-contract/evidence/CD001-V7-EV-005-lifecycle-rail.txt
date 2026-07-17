@@ -21,7 +21,7 @@ Verification
 - npm run build: PASS before a separate already-running Next.js dev watcher replaced the shared .next directory
 - Playwright e2e/cd-001-v7-atlas.spec.ts on http://127.0.0.1:3000: PASS 6/6
 - Playwright e2e/cd-001-v7-visual-evidence.spec.ts on http://127.0.0.1:3000: PASS 1/1
-- Runtime evidence refreshed under product-contract/evidence/screens/login-v7-atlas/
+- Runtime evidence refreshed under ${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/login-v7-atlas/
 
 Local review note
 - Multiple pre-existing local listeners occupy ports 3000 and 3210 across IPv4/IPv6.

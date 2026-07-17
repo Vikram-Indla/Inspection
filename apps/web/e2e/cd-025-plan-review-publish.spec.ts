@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
@@ -10,7 +11,7 @@ import { storageStatePath } from "./personas";
 // Tests are READ-ONLY — publish is never clicked (it mutates live data); atomic
 // all-or-nothing publication is proven at the DB layer + the guarded RPC. Runtime
 // evidence is supplementary to the functional assertions (.claude/rules/tests.md).
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-025-plan-review-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-025-plan-review-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 test.use({ storageState: storageStatePath("planner") });
@@ -37,7 +38,7 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
     await expect(page.getByText(/nothing is saved until you publish/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /^Readiness$/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Targets & proposed visits/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Assignment evidence/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Assignment evidence", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Publish consequence ledger/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Corrections & publish/i })).toBeVisible();
     // Complete the mandatory window so the readiness preview resolves (proves the
@@ -149,4 +150,22 @@ test("CD-025 wiring: truthful publisher result, live readiness preview, no inven
   const migration = SRC("../../supabase/migrations/20260714091727_planning_publish_guards.sql");
   expect(migration).toContain("returns uuid");
   expect(migration).toContain("return v_plan_id;");
+});
+
+// CD-025 R3 S10 — scope-reduction (12→10) must announce politely and restore
+// focus after the Fix control unmounts (DSG-A11Y-001, WIRING legs 2/4). Proven at
+// the code layer: the click-path needs a guaranteed duplicate in the planner's
+// scope, which the seed does not deterministically provide, so an e2e click would
+// be flaky. The behavior is data-independent and asserted here instead.
+test("CD-025 S10: scope reduction announces politely and restores focus (DSG-A11Y-001)", () => {
+  const client = SRC("src/app/planning/bulk/review/ReviewClient.tsx");
+  // a polite live region carries the named-removal + retained-count announcement
+  expect(client).toContain('aria-live="polite"');
+  expect(client).toContain("s.scopeReduced");
+  // focus is restored to the readiness heading once the unmounting Fix control fires
+  expect(client).toContain("readinessHeadingRef");
+  expect(client).toContain("readinessHeadingRef.current?.focus()");
+  // the announcement string is provided from the server component
+  const page = SRC("src/app/planning/bulk/review/page.tsx");
+  expect(page).toContain("plan.review.scopeReduced");
 });

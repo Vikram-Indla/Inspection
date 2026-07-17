@@ -63,11 +63,42 @@ export type Labels = {
   restore: string;
   restoring: string;
   restored: string;
+  riskLong: string;
+  orphanNote: string;
+  // {token} is substituted with the first placeholder missing from the Arabic.
+  placeholderErr: string;
 };
 
 type Filter = "all" | "draft" | "reviewed" | "missing-ar" | "orphaned";
 
 const missingAr = (r: UiString) => r.ar === null || r.ar.trim() === "";
+
+// Placeholder integrity is verifiable client-side from the strings themselves —
+// no backend signal needed. A {{token}} present in EN but absent from the Arabic
+// would break interpolation at runtime, so Save is disabled until they match.
+const PH_SPLIT = /(\{\{\w+\}\})/g;
+const PH_TOKEN = /^\{\{(\w+)\}\}$/;
+function phSet(s: string) {
+  const set = new Set<string>();
+  for (const m of s.matchAll(/\{\{(\w+)\}\}/g)) set.add(m[1]);
+  return set;
+}
+function missingPlaceholders(en: string, ar: string): string[] {
+  if (ar.trim() === "") return [];
+  const a = phSet(ar);
+  return [...phSet(en)].filter(tok => !a.has(tok));
+}
+function PhText({ text, errTokens }: { text: string; errTokens: Set<string> }) {
+  return (
+    <>
+      {text.split(PH_SPLIT).map((part, i) => {
+        const m = PH_TOKEN.exec(part);
+        if (!m) return <span key={i}>{part}</span>;
+        return <span key={i} className={"lz-ph" + (errTokens.has(m[1]) ? " lz-ph--err" : "")}>{part}</span>;
+      })}
+    </>
+  );
+}
 
 function StatusLozenge({ row, labels }: { row: UiString; labels: Labels }) {
   if (row.orphaned) return <span className="ax-lozenge">{labels.statusOrphaned}</span>;
@@ -143,32 +174,55 @@ function SyncButton({ labels }: { labels: Labels }) {
 function Row({ row, labels }: { row: UiString; labels: Labels }) {
   const [saveState, saveAction, savePending] = useActionState<L10nResult, FormData>(saveTranslation, {});
   const [revState, revAction, revPending] = useActionState<L10nResult, FormData>(markReviewed, {});
+  // Controlled Arabic value so placeholder integrity + length risk validate live.
+  const [ar, setAr] = useState(row.ar ?? "");
+
+  const missing = missingPlaceholders(row.en, ar);
+  const phErr = missing.length > 0;
+  const errTokens = new Set(missing);
+  const arLonger = ar.trim() !== "" && row.en.trim() !== "" && ar.length > row.en.length * 1.3;
+  const canReview = !row.orphaned && row.status !== "reviewed" && ar.trim() !== "" && !phErr;
+
   return (
-    <tr style={row.orphaned ? { opacity: .55 } : undefined}>
-      <td className="ax-numeric" style={{ whiteSpace: "nowrap" }}>{row.key}<HistoryPanel row={row} labels={labels} /></td>
-      <td>{row.en}</td>
-      <td style={{ minInlineSize: 240 }}>
-        <form action={saveAction} className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+    <div className={"lz-row" + (row.orphaned ? " lz-row--orphan" : "")}>
+      {/* Source (English) — the code owns this string; drift returns AR to draft server-side. */}
+      <div className="lz-cell" dir="ltr">
+        <span className="lz-key">{row.key}</span>
+        <span className="lz-src"><PhText text={row.en} errTokens={errTokens} /></span>
+        {row.context && <span className="lz-risk lz-risk--muted">{row.context}</span>}
+        {row.orphaned && <span className="lz-risk lz-risk--muted">◌ {labels.orphanNote}</span>}
+      </div>
+
+      {/* Arabic — inline edit + Save (returns to draft). */}
+      <div className="lz-cell" dir="rtl">
+        <span className="lz-key" dir="ltr">AR</span>
+        <form action={saveAction} className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", inlineSize: "100%" }}>
           <input type="hidden" name="key" value={row.key} />
-          <input className="ax-input" name="ar" dir="rtl" lang="ar" defaultValue={row.ar ?? ""}
-            placeholder="—" aria-label={`${labels.colAr}: ${row.key}`} style={{ flex: 1, minInlineSize: 180 }} />
-          <button className="ax-btn" disabled={savePending}>{savePending ? labels.saving : labels.save}</button>
+          <input className="ax-input lz-ar" name="ar" dir="rtl" lang="ar" value={ar} onChange={e => setAr(e.target.value)}
+            placeholder="—" aria-label={`${labels.colAr}: ${row.key}`} style={{ flex: 1, minInlineSize: 160 }} />
+          <button className="ax-btn" disabled={savePending || phErr} aria-disabled={phErr}>{savePending ? labels.saving : labels.save}</button>
           {saveState.ok && !savePending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
         </form>
-        {saveState.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical)", marginBlockStart: "var(--ax-space-050)" }}>{saveState.error}</p>}
-      </td>
-      <td><StatusLozenge row={row} labels={labels} /></td>
-      <td><span className="ax-caption">{row.context ?? ""}</span></td>
-      <td>
-        {row.status !== "reviewed" && !missingAr(row) && (
-          <form action={revAction}>
-            <input type="hidden" name="key" value={row.key} />
-            <button className="ax-btn" disabled={revPending}>{revPending ? labels.marking : labels.markReviewed}</button>
-          </form>
+        {arLonger && <span className="lz-risk">↔ {labels.riskLong}</span>}
+        {phErr && <span className="lz-risk lz-risk--critical" role="alert">✕ {labels.placeholderErr.replace("{token}", `{{${missing[0]}}}`)}</span>}
+        {saveState.error && <span className="lz-risk lz-risk--critical" role="alert">{saveState.error}</span>}
+      </div>
+
+      {/* Status + actions + history */}
+      <div className="lz-cell lz-cell--actions">
+        <StatusLozenge row={row} labels={labels} />
+        {canReview && (
+          <div className="lz-actions">
+            <form action={revAction}>
+              <input type="hidden" name="key" value={row.key} />
+              <button className="ax-btn ax-btn--secondary" disabled={revPending}>{revPending ? labels.marking : labels.markReviewed}</button>
+            </form>
+          </div>
         )}
-        {revState.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical)", marginBlockStart: "var(--ax-space-050)" }}>{revState.error}</p>}
-      </td>
-    </tr>
+        <HistoryPanel row={row} labels={labels} />
+        {revState.error && <span className="lz-risk lz-risk--critical" role="alert">{revState.error}</span>}
+      </div>
+    </div>
   );
 }
 
@@ -263,16 +317,8 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
           <p className="ax-caption">{labels.noMatchBody}</p>
         </div></div>
       ) : (
-        <div className="ax-surface" style={{ padding: 0 }}>
-          <div className="ax-tablewrap"><table className="ax-table">
-            <thead><tr>
-              <th>{labels.colKey}</th><th>{labels.colEn}</th><th>{labels.colAr}</th>
-              <th>{labels.colStatus}</th><th>{labels.colContext}</th><th>{labels.colActions}</th>
-            </tr></thead>
-            <tbody>
-              {filtered.map(r => <Row key={r.key} row={r} labels={labels} />)}
-            </tbody>
-          </table></div>
+        <div className="lz-list">
+          {filtered.map(r => <Row key={r.key} row={r} labels={labels} />)}
         </div>
       )}
 

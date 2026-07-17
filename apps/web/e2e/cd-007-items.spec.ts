@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-007 / SCR-ADM-020 / /admin/items — Inspection Item Catalogue (semantic
@@ -8,33 +9,33 @@ import { storageStatePath } from "./personas";
 // 019/020/025, RBAC-001..006, FND-*. Acceptance: AC-0454..0458, DSG-003..008,
 // DSG-A11Y-001, DSG-CODE-001.
 //
-// Shared runtime truth (0002_rbac_audit.sql): SELECT = any authenticated; writes =
-// compliance_admin/form_admin via RLS; NO Admin-family route guard is proven, so an
-// Inspector legitimately reaches /admin/items. These runtime specs use the Inspector
-// persona precisely to exercise that truth (visibility != authority) and to prove the
-// read-only spine renders for any authenticated user. inspection_items has NO audit
-// trigger — item changes are never presented as audited.
+// Current runtime truth: the route is server-role-gated; writes remain enforced by
+// compliance_admin/form_admin RLS and server-action guards. Configuration mutations
+// are covered by the scoped Admin audit reader and database audit trigger.
 //
 // States that cannot be safely forced against the live backend (S02 loading, S03
 // verified-empty, S04 duplicate rejection, S05 unauthorized, S08 clause-degraded) are
 // proven at the code layer below (DSG-CODE-001 / DEC-012), exactly as CD-004 did.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-007-items-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-007-items-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
-test.use({ storageState: storageStatePath("inspector") });
+test.use({ storageState: storageStatePath("admin") });
 
 test.beforeAll(() => { mkdirSync(EVIDENCE_DIR, { recursive: true }); });
-test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
+test.beforeEach(async ({ page }, testInfo) => {
+  if (testInfo.titlePath.some(part => part.startsWith("CD-007 wiring"))) return;
+  await page.goto("/locale?set=en");
+});
 
 test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
   test("renders the governed catalogue: title, governance note, blocked-targets panel", async ({ page }) => {
     await page.goto("/admin/items");
     await expect(page.getByRole("heading", { name: /Inspection Item Catalogue/i })).toBeVisible();
-    // Governance truth is stated, not implied: RLS is the authority; no audit trigger.
+    // Governance truth is stated, not implied: writes are role-gated; row changes are audited.
     const gov = page.getByRole("region", { name: /How this catalogue is governed/i });
     await expect(gov).toBeVisible();
-    await expect(gov).toContainText(/RLS is the authority/i);
-    await expect(gov).toContainText(/no audit trigger/i);
+    await expect(gov).toContainText(/writes require compliance_admin or form_admin/i);
+    await expect(gov).toContainText(/every row change is audited/i);
     await page.screenshot({ path: join(EVIDENCE_DIR, "catalogue-en-light-1440.png"), fullPage: true });
   });
 
@@ -65,39 +66,17 @@ test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
   });
 });
 
-test.describe("CD-007 blocked legs render as disabled, annotated targets (never working)", () => {
-  test("contract-target panel lists disabled targets with owners", async ({ page }) => {
+test.describe("CD-007 supported authoring and version lifecycle", () => {
+
+  test("writer sees scoped usage and governed mutation controls", async ({ page }) => {
     await page.goto("/admin/items");
-    const panel = page.getByRole("region", { name: /Contract targets — not yet wired/i });
-    await expect(panel).toBeVisible();
-    for (const label of [
-      "Edit item / new version",
-      "Author conditional rule",
-      "Published-use warning — unavailable",
-      "Deactivation reason capture",
-      "Item change audit trail",
-      "Route guard / unauthorized redirect",
-    ]) {
-      await expect(panel.getByRole("button", { name: new RegExp(label, "i") })).toBeDisabled();
-    }
-    await expect(panel.getByText(/owner: platform/i)).toBeVisible();
-    await expect(panel.getByText(/owner: backend/i).first()).toBeVisible();
+    await expect(page.getByText(/Read-only catalogue/i)).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Create item/i })).toBeVisible();
   });
 
-  test("per-item published-use is 'unavailable', never a fabricated count", async ({ page }) => {
+  test("item edit exposes a governed new-version form", async ({ page }) => {
     await page.goto("/admin/items");
-    const usageCell = page.locator("table.ax-table tbody tr td .ax-lozenge--warning", { hasText: /unavailable/i }).first();
-    await expect(usageCell).toBeVisible();
-    // No numeric usage count is invented anywhere in the Published-use column.
-    const usageColText = await page.locator("table.ax-table tbody tr td:nth-child(6)").allInnerTexts();
-    for (const cell of usageColText) expect(cell).not.toMatch(/\d/);
-  });
-
-  test("no approve/publish/edit mutation is presented as working; row Edit is disabled", async ({ page }) => {
-    await page.goto("/admin/items");
-    await expect(page.getByRole("button", { name: /approve|publish/i })).toHaveCount(0);
-    const rowEdit = page.locator("table.ax-table tbody").getByRole("button", { name: /^Edit$/ }).first();
-    await expect(rowEdit).toBeDisabled();
+    await expect(page.locator("table.ax-table tbody summary", { hasText: /Edit · v/i }).first()).toBeVisible();
   });
 });
 
@@ -108,10 +87,10 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
     await expect(page.getByRole("heading", { level: 3 }).first()).toBeVisible();
   });
 
-  test("primary action targets are at least 44px (spec §10)", async ({ page }) => {
+  test("edit controls are at least 44px (spec §10)", async ({ page }) => {
     await page.goto("/admin/items");
-    const create = page.getByRole("button", { name: /Create item/i });
-    const box = await create.boundingBox();
+    const target = page.locator("table.ax-table tbody summary", { hasText: /Edit · v/i }).first();
+    const box = await target.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.height).toBeGreaterThanOrEqual(44 - 0.5);
   });
@@ -120,6 +99,7 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
     await page.goto("/locale?set=ar");
     await page.goto("/admin/items");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.locator("table.ax-table")).toBeVisible();
     // Item codes / clause refs stay LTR-isolated inside RTL flow (spec §12). The
     // catalogue renders under RTL regardless of translation state; the CD-007 Arabic
     // copy becomes visible once 20260715101000_cd007_ar_strings.sql is applied (this
@@ -137,6 +117,7 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
       for (const theme of ["light", "dark"] as const) {
         await page.emulateMedia({ colorScheme: theme });
         await expect(page.getByRole("heading", { name: /Inspection Item Catalogue/i })).toBeVisible();
+        await expect(page.locator("table.ax-table")).toBeVisible();
         await page.screenshot({ path: join(EVIDENCE_DIR, `catalogue-en-${theme}-${w}.png`), fullPage: true });
       }
     }
@@ -148,7 +129,8 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
 // DSG-CODE-001 / DEC-012 — code-layer proof of the wiring closures that cannot be
 // forced against live data (duplicate rejection, verified-empty vs unavailable,
 // blocked legs, no invented audit/usage/guard).
-test.describe("CD-007 wiring (DEC-012): proven legs wired; unproven legs stay blocked", () => {
+test.describe("CD-007 wiring (DEC-012): completed authoring, usage and scoped audit", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
   const page = SRC("src/app/admin/items/page.tsx");
   const actions = SRC("src/app/admin/items/actions.ts");
   const controls = SRC("src/app/admin/items/Controls.tsx");
@@ -164,6 +146,10 @@ test.describe("CD-007 wiring (DEC-012): proven legs wired; unproven legs stay bl
   test("createItem uses governed presets only — no free-text response/evidence model", () => {
     expect(actions).toContain("RESPONSE_PRESETS[responseKey]");
     expect(actions).toContain("EVIDENCE_PRESETS[evidenceKey]");
+    for (const preset of ["photo_nc_mandatory", "video_nc_mandatory", "document_nc_mandatory", "comment_nc_mandatory"]) {
+      expect(actions).toContain(preset);
+      expect(controls).toContain(preset);
+    }
   });
 
   test("S03 verified-empty and S08 unavailable are DISTINCT — empty is never rendered on error", () => {
@@ -177,16 +163,24 @@ test.describe("CD-007 wiring (DEC-012): proven legs wired; unproven legs stay bl
     expect(controls).toContain("clauseUnavailable");
   });
 
-  test("blocked legs stay blocked — no invented audit event, usage count, or route guard", () => {
-    // No route-guard redirect invented on this route (guard is HANDOFF_BLOCKED).
-    expect(page).not.toContain("redirect(");
-    // Item changes are NOT presented as audited (no audit_events read/write here).
-    expect(page).not.toContain("audit_events");
-    // Published-use is surfaced as a target with an 'unavailable' state, never a count.
-    expect(page).toContain("admin.items.r2.usage.unavailable");
-    expect(page).toContain("HANDOFF_BLOCKED");
-    // Conditional logic is display-only; no authoring control is wired.
-    expect(page).toContain("display only");
+  test("base-item semantics, scoring, usage and scoped audit are wired", () => {
+    expect(controls).not.toContain('name="requirement_mode"');
+    expect(controls).toContain('name="scoring_enabled"');
+    expect(actions).toContain("scoring_enabled: scoringEnabled");
+    expect(page).toContain("getItemUsage");
+    expect(page).toContain("admin_configuration_audit");
+  });
+
+  test("backend item version update and frontend edit control are wired", () => {
+    expect(actions).toContain("export async function updateItem");
+    expect(actions).toContain("inspection_item_versions_are_frozen");
+    expect(actions).toContain("configuration_version");
+    expect(page).toContain("EditItemForm");
+    expect(page).not.toContain("admin.items.r2.blocked.reason");
+    expect(page).not.toContain("admin.items.r2.blocked.guard");
+    expect(page).not.toContain("admin.items.r2.blocked.conditional");
+    expect(page).not.toContain("admin.items.r2.blocked.usage");
+    expect(page).not.toContain("admin.items.r2.blocked.audit");
   });
 
   test("Arabic seed migration exists and is guarded (never clobbers a reviewed row)", () => {

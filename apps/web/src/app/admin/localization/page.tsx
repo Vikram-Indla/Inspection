@@ -69,10 +69,13 @@ export default async function Localization() {
     restore: t("l10n.restore", "Restore"),
     restoring: t("l10n.restoring", "Restoring…"),
     restored: t("l10n.restored", "restored (as draft)"),
+    riskLong: t("l10n.risk.long", "Arabic runs long — check narrow layouts"),
+    orphanNote: t("l10n.orphan.note", "No longer found in the last code scan — kept and restorable, not deleted."),
+    placeholderErr: t("l10n.placeholder.err", "Placeholder {token} is missing from the Arabic — Save is disabled until placeholders match."),
   };
 
   return (
-    <Shell current="/admin" title={t("l10n.title", "Localization")}
+    <Shell current="/admin/localization" title={t("l10n.title", "Localization")}
       context={
         <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
           <span className="ax-lozenge ax-lozenge--info">SCR-ADM-100 · SB19</span>

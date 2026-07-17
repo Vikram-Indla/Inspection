@@ -12,6 +12,19 @@ export const ADMIN_ROLE_KEYS = [
   "risk_owner",
 ] as const;
 
+// Business (non-admin) personas. The shared Command destinations — Dashboard,
+// Operations Center and Factory 360 — are visible to every non-admin persona
+// (business direction 2026-07-16). Admin-only personas do not see them.
+// Menu visibility is not authorization: each destination keeps its own route
+// guard and RLS/data scoping (RBAC-001..014).
+export const BUSINESS_ROLE_KEYS = [
+  "planner",
+  "inspector",
+  "reviewer",
+  "ops",
+  "leadership",
+] as const;
+
 export type ShellIcon =
   | "dashboard" | "radar" | "factory" | "calendar" | "visits"
   | "inspect" | "virtual" | "review" | "admin" | "library"
@@ -37,6 +50,7 @@ export type ShellNavGroupDefinition = {
 };
 
 const adminRoles = ADMIN_ROLE_KEYS as readonly string[];
+const businessRoles = BUSINESS_ROLE_KEYS as readonly string[];
 
 export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
   {
@@ -45,8 +59,8 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelEn: "Command",
     labelAr: "القيادة",
     items: [
-      { id: "dashboard", labelKey: "shell.nav.dashboard", labelEn: "Dashboard", labelAr: "لوحة القيادة", href: "/dashboard", icon: "dashboard", roles: ["ops", "leadership"], businessTab: "Dashboard" },
-      { id: "operations-live", labelKey: "shell.nav.operationsLive", labelEn: "Operations Center", labelAr: "مركز العمليات", href: "/operations", icon: "radar", roles: ["ops", "leadership"], businessTab: "Operations Center" },
+      { id: "dashboard", labelKey: "shell.nav.dashboard", labelEn: "Dashboard", labelAr: "لوحة القيادة", href: "/dashboard", icon: "dashboard", roles: businessRoles, businessTab: "Dashboard" },
+      { id: "operations-live", labelKey: "shell.nav.operationsLive", labelEn: "Operations Center", labelAr: "مركز العمليات", href: "/operations", icon: "radar", roles: businessRoles, businessTab: "Operations Center" },
       { id: "factory-360", labelKey: "nav.factory360", labelEn: "Factory 360", labelAr: "المصنع 360", href: "/factories", icon: "factory", roles: ["planner", "inspector", "reviewer", "ops", "leadership"], businessTab: "Factory 360" },
     ],
   },
@@ -73,10 +87,13 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
       { id: "regulations", labelKey: "shell.nav.regulations", labelEn: "Compliance Library", labelAr: "مكتبة الامتثال", href: "/admin/regulations", icon: "library", roles: ["compliance_admin"], businessTab: "Compliance Library" },
       { id: "packages", labelKey: "shell.nav.packages", labelEn: "Packages & Surveys", labelAr: "الحزم والاستبيانات", href: "/admin/packages", icon: "forms", roles: ["form_admin", "compliance_admin"], businessTab: "Survey Configuration" },
       { id: "violations", labelKey: "shell.nav.enforcement", labelEn: "Enforcement Library", labelAr: "مكتبة الإنفاذ", href: "/admin/violations", icon: "enforcement", roles: ["compliance_admin"], businessTab: "Enforcement" },
+      { id: "items", labelKey: "shell.nav.items", labelEn: "Inspection Items", labelAr: "بنود التفتيش", href: "/admin/items", icon: "forms", roles: ["compliance_admin", "form_admin"], businessTab: "Inspection Item Catalogue" },
       { id: "workflows", labelKey: "shell.nav.workflows", labelEn: "Workflow Configuration", labelAr: "تهيئة سير العمل", href: "/admin/workflows", icon: "workflow", roles: ["workflow_admin"], businessTab: "Administration" },
       { id: "risk", labelKey: "shell.nav.risk", labelEn: "Risk Configuration", labelAr: "تهيئة المخاطر", href: "/admin/risk", icon: "risk", roles: ["risk_owner"], businessTab: "Risk Configuration" },
       { id: "gis", labelKey: "shell.nav.gis", labelEn: "GIS Configuration", labelAr: "تهيئة نظم المعلومات الجغرافية", href: "/admin/gis", icon: "map", roles: ["gis_admin"], businessTab: "Administration" },
       { id: "access", labelKey: "shell.nav.access", labelEn: "Users & Roles", labelAr: "المستخدمون والأدوار", href: "/admin/access", icon: "access", roles: ["security_admin"], businessTab: "Users & Roles" },
+      { id: "localization", labelKey: "shell.nav.localization", labelEn: "Localization", labelAr: "الترجمة", href: "/admin/localization", icon: "library", roles: ["compliance_admin", "security_admin", "workflow_admin"], businessTab: "Localization" },
+      { id: "audit", labelKey: "shell.nav.audit", labelEn: "Audit Trail", labelAr: "سجل التدقيق", href: "/admin/audit", icon: "access", roles: adminRoles, businessTab: "Audit" },
     ],
   },
 ] as const;

@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
-const evidenceDir = "../../product-contract/evidence/screens/shell-v1";
+const evidenceDir = evidenceDirectory("shell-v1");
 
 test.describe("TASK-WEB-SHELL-001 visual evidence", () => {
   test.use({ storageState: storageStatePath("planner") });

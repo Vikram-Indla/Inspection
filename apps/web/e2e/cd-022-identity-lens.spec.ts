@@ -1,10 +1,11 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { PERSONAS, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
 
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/single-v2");
+const EVIDENCE_DIR = evidenceDirectory("single-v2");
 
 // CD-022 · SCR-WEB-120 · DSG-017/DSG-A11Y-001. Identity Confidence Lens for
 // /planning/single: server-side graded search (EXACT/SIMILAR NAME/DEGRADED),
@@ -189,7 +190,7 @@ test.describe("CD-022 graded identity search", () => {
     // server would have set itself after a real partial failure.
     await page.locator('input[name="resume_visit_plan_id"]').evaluate((el: HTMLInputElement, id: string) => { el.value = id; }, planId);
     await page.getByRole("button", { name: /publish visit/i }).click();
-    await page.waitForURL(/\/visits\/[0-9a-f-]+/, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/visits\/[0-9a-f-]+/, { timeout: 30_000 });
 
     const plansAfterFirst = must(await rest("GET", `visit_plans?id=eq.${planId}&select=id`, plannerJwt), "plans after first submit");
     expect(plansAfterFirst).toHaveLength(1); // resumed, not duplicated

@@ -1,8 +1,0 @@
-# RESEARCH_PROVENANCE_CD-004.md
-1. GOV.UK Task list — https://design-system.service.gov.uk/patterns/task-list/ — Adopted: per-family row with explicit status + one entry point (spine). Rejected: sequential numbering (families are parallel). Saqeel reason: governed families need status-per-object, not progress-through-a-form. Frames: 4a, 4e.
-2. GOV.UK Error summary / problem pages — https://design-system.service.gov.uk/components/error-summary/ — Adopted: failure as its own named state with recovery. Rejected: page-level error for one failed read. Frames: 4g-4/5.
-3. WCAG 2.2 Status Messages — https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html — Adopted: role=status vs role=alert split; single-announce. Rejected: assertive per card. Frame: 4o.
-4. WCAG 2.2 Focus Order — https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html — Adopted: linear spine traversal; hidden per-row link context. Rejected: ARIA grid. Frame: 4o.
-5. Saudi DGA accessibility — https://dga.gov.sa/en/digital-knowledge/web-accessibility-disabilities-and-elderly-people — Adopted: Arabic-first operable AT, 44px targets, bdi isolation (note: Arabic-first is Saqeel's binding decision). Rejected: cosmetic mirroring. Frames: 4a, 4l.
-6. NN/g dashboard guidance — https://www.nngroup.com/articles/dashboards-preattentive/ — Adopted: hierarchy follows the decision; equal-card walls fail scans. Rejected: traffic-light verdicts (CD004-QG-01). Frames: 4d, 4e.
-7. Astryx D2 admin home — design/astryx/d2/D2-01_admin-home.html (DESIGN_HISTORY_ONLY) — Adopted: engines/version/lifecycle vocabulary; per-family row concept. Rejected: draft-age thresholds, health verdicts, approval counts, provider failures, generalized maker-checker — unverified. Frames: 4a spine.

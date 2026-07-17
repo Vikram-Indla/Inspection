@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 export type OpsResult = { error?: string; ok?: boolean };
 
@@ -10,7 +11,7 @@ export type OpsResult = { error?: string; ok?: boolean };
 // bypass — any RLS rejection is mapped to stable recovery copy below.
 export async function updateActionFormStatus(_: OpsResult, formData: FormData): Promise<OpsResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const action_form_id = String(formData.get("action_form_id") ?? "");
@@ -47,6 +48,7 @@ export type MonitorFetch = { error?: string; rows?: MonitorRow[]; at?: string };
 
 type MonitorVisitRow = {
   id: string;
+  planning_status: string;
   operational_state: string;
   factory_id: string | null;
   factories: { id: string; name: string; region: string | null; city: string | null } | null;
@@ -55,17 +57,20 @@ type MonitorVisitRow = {
 
 export async function fetchMonitoringRows(region: string, city: string): Promise<MonitorFetch> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const { data, error } = await sb
     .from("visits")
-    .select("id, operational_state, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
-    .eq("planning_status", "published")
+    .select("id, planning_status, operational_state, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
     .order("window_start", { ascending: true });
   if (error) { console.error("[operations monitoring visits]", error); return { error: "Live monitoring is temporarily unavailable. Try again." }; }
 
   const visits = ((data ?? []) as unknown as MonitorVisitRow[]).filter(v =>
+    // Planning status and operational state are separate domains: a visit
+    // remains monitorable after its planning window expires once execution
+    // has begun. Keep the refresh leg aligned with the page's initial read.
+    (v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)) &&
     (!region || v.factories?.region === region) && (!city || v.factories?.city === city));
 
   // Latest geofence verdict per visit (append-only geo_events, newest first).
@@ -104,7 +109,7 @@ export async function fetchMonitoringRows(region: string, city: string): Promise
 // `notif_update_recipient` (0015). The database remains the authority.
 export async function markNotificationHandled(_: OpsResult, formData: FormData): Promise<OpsResult> {
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
 
   const notification_id = String(formData.get("notification_id") ?? "");
@@ -120,5 +125,40 @@ export async function markNotificationHandled(_: OpsResult, formData: FormData):
   if (!data || data.length === 0) return { error: "No row updated — outside your notification scope or already handled." };
 
   revalidatePath("/operations");
+  return { ok: true };
+}
+
+// TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — only the database RPC may
+// decide an outside-fence request. It performs RBAC-008, requester/approver
+// separation, evidence, expiry, immutable geo-event and STM-JRN-003 checks in
+// one transaction; this action never updates visits or requests directly.
+export async function decideGeoOverride(_: OpsResult, formData: FormData): Promise<OpsResult> {
+  const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { error: "Session expired — sign in again." };
+
+  const requestId = String(formData.get("request_id") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  const reason = String(formData.get("decision_reason") ?? "").trim();
+  if (!requestId || !["approved", "rejected"].includes(decision)) return { error: "Invalid override decision." };
+  if (decision === "rejected" && !reason) return { error: "A rejection reason is mandatory." };
+
+  const { data, error } = await sb.rpc("decide_geo_override", {
+    p_request: requestId,
+    p_decision: decision,
+    p_decision_reason: reason || null,
+  });
+  if (error) {
+    // Keep detailed RLS/RPC diagnostics server-side. The database has already
+    // refused the write, so the UI must not claim a decision occurred.
+    console.error("[operations decideGeoOverride]", error);
+    return { error: "The override could not be decided. It may be expired, outside your Operations scope, or no longer pending." };
+  }
+  const decided = (Array.isArray(data) ? data[0] : data) as { status?: string } | null;
+  if (decided?.status === "expired") {
+    return { error: "No decision was saved — the override expired before Operations could act." };
+  }
+  revalidatePath("/operations");
+  revalidatePath("/field");
   return { ok: true };
 }

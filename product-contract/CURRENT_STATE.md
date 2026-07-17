@@ -1,32 +1,408 @@
 # Current State
 
-## 2026-07-15 — CD-043 / SCR-VIR-720 slice ACCEPTED (cherry-picked to baseline)
+## 2026-07-16 UPDATE 89 — governed iPad geofence override source delivered
+
+The sponsor-approved `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003` is source
+verified on the dedicated branch `codex/ipad/m04-geofence-policy-promotion-002`
+at `62916ee`. It replaces inspector self-override with a durable, audited
+Operations approval workflow: a governed reason, narrative, immutable outside
+GPS/time and photo evidence (or narrowly declared safety/security exception)
+are required; only Operations may decide; self-decision is blocked; one
+attempt expires after 30 minutes or a visit close; and offline work queues the
+actual check-in/evidence/request without unlocking arrival. The Operations
+queue includes captured facts and a signed evidence link where storage policy
+permits it.
+
+Typecheck, production build, `git diff --check`, and 3/3 focused static
+Playwright policy contracts pass. Runtime DB/RLS and authenticated browser
+tests are deliberately **not claimed**: this clean worktree has no Supabase
+runtime credentials, local database configuration or Docker daemon, and the
+remote migration-history/access boundary is unreconciled. The two forward
+migrations have not been blindly applied. Exact evidence:
+`evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md`.
+
+## 2026-07-16 UPDATE 88 — all 19 remaining requirement rows closed
+
+The sponsor-approved `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001` is complete
+on `codex/remaining-requirements-closure`. All 19 rows previously recorded as
+partial now have production-grade source, authorization, audit, negative-path,
+runtime and evidence coverage. The live project received the forward-only
+remaining-requirements migration and passed schema, RLS/grant, arrival,
+outside-geofence override, private-evidence and audit reconciliation. CD-006
+through CD-011 authoring/runtime contracts are live-backed and browser-verified;
+the governed Visit map, routing adapter boundary, device facts, registry facts,
+risk snapshots, penalties and Factory 360 history are wired. The Google Routes
+credential is intentionally absent in this environment, so the provider adapter
+renders an honest unavailable state and provider delivery is not claimed.
+
+The machine-generated acceptance ledger now reconciles **493 rows = 18
+verified_live / 475 implemented / 0 partial / 0 missing**. Typecheck and the
+production build pass. The complete 286-test inventory passed in bounded
+browser-runner shards: **283 passed / 3 intentional skips / 0 product failures**;
+the opt-in destructive arrival/override replays were separately executed and
+reconciled live. G11 remains open only for release-hardening boundaries
+(credential rotation, region decision and provider credentials/adapters); those
+boundaries no longer make any of the 493 MVP1 requirement rows partial.
+
+## 2026-07-15 UPDATE 87 — CD-006 through CD-011 backend source completion
+
+`TASK-G11-G12-RELEASE-001` completed the sponsor-authorized subset without
+inventing a provider, policy or production target. The reconciled release branch
+`codex/g11-g12-integration` contains the full current application, the
+CD-006..011 integration and the verified remediation line. A first release
+iteration found a real 412 px Arabic/RTL Version Comparison overflow; the table
+now wraps within the field viewport while retaining table semantics. The rebuilt
+production candidate then passed **291/291** checks: four authenticated persona
+setups plus 287 application tests, with **0 failed, 0 skipped and 0 excluded**.
+Typecheck and production build also pass.
+
+Live object-state reconciliation found the arrival-evidence repair, CD-028
+one-open-review guard, integrated Admin objects/routines and OTP authorization
+already present, so no DDL was replayed. The rollback-only CD-028 SQL probe
+proved the exact duplicate-open-review rejection. The golden journey queued
+arrival evidence through the real offline outbox and read back the visit-linked
+row, exact note and null pre-inspection link, closing MVP1-M04-045 / AC-0158.
+The regenerated acceptance ledger is **493 rows = 15 verified_live / 460
+implemented / 18 partial / 0 missing**. The remote database has no migration
+history rows, so blind migration push was deliberately refused.
+
+The optimized bundle scan found no demo passwords, database URLs, PAT values,
+secret keys or non-public JWTs. Previously committed history still requires
+credential rotation once replacement values and every dependent target are
+available. The release record is
+`evidence/TASK-G11-G12-RELEASE-001.md`; promotion uses the immutable tag
+`g11-g12-release-2026-07-16` and the final handoff verifies remote-main equality.
+No configured production hosting/deployment target exists, so deployment was
+not attempted. **G10 is PASS; G11 and G12 remain OPEN** for the recorded
+credential, migration-history, provider, region, CD-031, asset/geographic,
+acceptance-partial, sponsor-runtime and production-target boundaries.
+
+## 2026-07-16 UPDATE 87 — G11 remediation slice verified 276/276
+
+`TASK-G11-REMEDIATION-001` has reached its local engineering exit. The
+sponsor-approved CD-005..011, CD-025, CD-028, CD-030 and dashboard remediation
+closed the 20-failure historical baseline without weakening accepted behavior
+or fabricating blocked policy/provider legs. The current enumerated inventory is
+**276/276 PASS**: three real-login persona setup tests plus 273 application tests
+executed in 12 fresh-browser shards, with **0 failed, 0 skipped and 0 excluded**.
+The final pass includes the full planner → inspector → reviewer return → scoped
+v2 correction → approval journey and a locale-neutral CD-030 fix that converted
+the formerly false Arabic skip into a live passing assertion.
+
+Typecheck and production build pass; no runtime `auth.getUser()` call remains in
+`apps/web/src` or middleware; dashboard audit reads are bounded to relevant
+object IDs; Start Review is continuous through the Next.js navigation bridge;
+admin maker-checker/audit/immutability assertions match current backend truth;
+and the audit-reconciliation verifier remains green at **493 rows = 14
+verified_live / 460 implemented / 19 partial**. The 19 independent partials were
+not upgraded. Evidence: `evidence/TASK-G11-REMEDIATION-001.md`.
+
+This is not a release or deployment claim. No live DDL, production deployment,
+`main` merge/modification or Codex push occurred. During the run the shared
+branch advanced externally from `c6187cb41a7b` to the user-authored/pushed
+`330398781042` (`commit every thing`); that concurrent commit and all dirty
+worktree evidence were preserved. Live migration, provider/policy, sponsor
+runtime-acceptance, clean-promotion, G11 residual and G12 boundaries remain
+separately open.
+
+## 2026-07-15 UPDATE 86 — CD-043 / SCR-VIR-720 slice ACCEPTED
 
 The provider-neutral virtual inspection session boundary (P06B) design-to-live
-slice is accepted and cherry-picked onto this baseline ahead of the full
-`feat/admin-control-plane` merge (that branch was mid-flight with an unrelated
-dirty tree, so only the four self-contained CD-043 commits were brought over).
-The proven boundary (`beginRemote`, `closeSession`, CD-042 verified gate,
-provider-pending bounded room) was already live on `/virtual/:id`; this slice
-wired the remaining honest states without inventing policy or shipping any
-blocked seam: **S12** closed/read-only immutable affordance, **S15** offline
-(begin/reschedule/close disabled, nothing queued), **S13** stale/concurrent
-optimistic-concurrency rev token (`state:timelineLength`, refused before any
-write in begin/close/reschedule), **S08** loading skeleton, and **S20** route
-reconciliation (catalogue `SCR-VIR-720` → canonical `/virtual/:id`, already on
-baseline).
+slice is accepted. The proven boundary (`beginRemote`, `closeSession`, CD-042
+verified gate, provider-pending bounded room) was already live on `/virtual/:id`;
+this slice wired the remaining honest states from the CD-043 R2 package without
+inventing policy or shipping any blocked seam: **S12** closed/read-only immutable
+affordance, **S15** offline (begin/reschedule/close disabled, nothing queued),
+**S13** stale/concurrent optimistic-concurrency rev token (`state:timelineLength`,
+refused before any write), **S08** loading skeleton, and **S20** route
+reconciliation (catalogue `SCR-VIR-720` → canonical `/virtual/:id`).
 
 Acceptance chain: independent DEC-012 wiring audit (adversarial, not the
-implementer) returned ACCEPT-WITH-FIXES; Finding 1 (a pre-existing
-`rescheduleSession` STM-VIR TOCTOU) fixed with an `.in("state",[…])`
-compare-and-swap; Finding 2 (e2e) closed —
-`cd-043-virtual-boundary-states.spec.ts` ran 6 passed (persona setup +
-S12/S13/S15) against the configured live project, S13 proving the
-concurrent-change close never lands. Blocked seams remain surfaced-only.
-Evidence: `evidence/CD-043_D2L_WIRING_CLOSURE_2026-07-15.md`,
-`evidence/CD-043_DEC-012_INDEPENDENT_WIRING_AUDIT_2026-07-15.md`. Baseline commits
-cherry-picked from `feat/admin-control-plane` (`81ba156`, `503a56c`, `b4061cc`,
-`b8ddc46`).
+implementer) returned **ACCEPT-WITH-FIXES**; its Finding 1 (a pre-existing
+`rescheduleSession` STM-VIR TOCTOU on the path this slice touched) was fixed with
+an `.in("state",[…])` compare-and-swap; Finding 2 (e2e execution) is closed —
+`cd-043-virtual-boundary-states.spec.ts` ran **6 passed** (persona setup +
+S12/S13/S15) against the configured live project over the production build, with
+S13 proving the concurrent-change close never lands (`state != closed` on
+re-read). Blocked seams (provider adapter, remote evidence capture, media
+custody, continuity preview, physical follow-up, close-notification contract)
+remain surfaced-only. Evidence: `CD-043_D2L_WIRING_CLOSURE_2026-07-15.md`,
+`CD-043_DEC-012_INDEPENDENT_WIRING_AUDIT_2026-07-15.md`. Commits on
+`feat/admin-control-plane`: `81ba156` → `503a56c` → `b4061cc`. The workspace-root
+lockfile warning noted in UPDATE 84 is also resolved (`outputFileTracingRoot`
+pinned, `b8ddc46`); no home-dir file was deleted.
+
+## 2026-07-15 UPDATE 85 — audit reconciliation verifier added
+
+A read-only verifier now checks the computed ledger against the dated 19-row
+partial disposition, validates every discovered wiring map is rectangular, and
+confirms the session ledger continuity marker. It passes with **493 rows, 19
+partials, and 8 wiring maps**. This prevents evidence drift while the remaining
+live migrations and governance decisions are external; it does not upgrade any
+acceptance row or mutate runtime state.
+
+## 2026-07-15 UPDATE 84 — current checkout build reverified
+
+Against the current dirty `setup/Inspection` checkout, `npm run typecheck` and
+`npm run build` both pass. The build emits only the existing workspace-root
+lockfile warning; no compile, route, or type failure appeared. This confirms the
+documentation/ledger corrections introduced no runtime regression. The
+207/1/0 full regression remains the latest browser result; external blockers
+remain unchanged.
+
+## 2026-07-15 UPDATE 83 — CD-006 scope authority checked
+
+The unique `feat/cd-006-regulation-detail-and-version` commit was checked
+against `HUMAN_APPROVALS.yaml` and the admin design lane. No CD-006 human
+approval is recorded, and the lane remains `implementation_authorized: false`.
+The commit is therefore preserved but must not be merged into the CD-001..024
+baseline or deleted as stale. This is a governance boundary, not a code defect.
+
+## 2026-07-15 UPDATE 82 — CD-041 audit record contradiction removed
+
+The CD-041/043 backend-readiness audit contained a contradictory middle section:
+it declared the verified-transition migration closed, then restated the earlier
+unapplied-404 finding as if it were current. The record now labels the 404 as
+historical, keeps the owner-approved application and 6/6 driven verification as
+the authoritative result, and separates the remaining CD-042/CD-043 design and
+arrival-evidence boundaries. No runtime behavior changed.
+
+## 2026-07-15 UPDATE 81 — M04-045 ledger note corrected
+
+The computed AC ledger had a stale historical note claiming that no
+arrival-evidence capture UI existed. The generator now preserves the row as
+`partial` while accurately recording that photo/comment capture and the
+visit-linked offline outbox are implemented; only the live `evidence_note`
+column and replay proof remain pending. Regeneration remains **493 rows = 14
+verified_live / 460 implemented / 19 partial / 0 missing**. No status was
+upgraded and no migration was applied.
+
+## 2026-07-15 UPDATE 80 — live blocker re-probe unchanged
+
+A fresh read-only probe against the configured Supabase project confirms the
+remaining schema boundary is still real: selecting `evidence.evidence_note`
+returns HTTP 400 (`column evidence.evidence_note does not exist`), while the
+`geo_events.kind=arrival` and `reviews.submission_version_id` read surfaces are
+reachable. No migration was applied by this continuation. The forward arrival
+repair and CD-028 unique-index migration therefore remain pending live
+application and verification; no shared DDL was executed.
+
+## 2026-07-15 UPDATE 79 — branch provenance re-audited
+
+The branch graph was re-read after the prior historical cleanup note proved
+stale. The active checkout is `setup/Inspection` at `4344225`, with a dirty
+worktree and a `+1/-1` divergence from `origin/setup/Inspection`; `origin/main`
+is absent. `feat/cd-025-plan-review-publish`, `fix/cd-041-verified-gate-live`,
+and `docs/cd-028-records` are represented or ancestral. One local branch,
+`feat/cd-006-regulation-detail-and-version` at `0c9c897`, contains one unique
+admin-configuration commit (code, test, approval record, and forward migration)
+not represented by the active tree. It is outside the authorized CD-001..024
+slice and is preserved rather than merged or deleted. Four stashes remain
+untouched. The baseline is therefore not cleanly consolidatable yet; branch
+provenance is now recorded in `TASK-BASELINE-WIRING-AUDIT-001.md`.
+
+## 2026-07-15 UPDATE 78 — complete no-exclusion regression reconciled
+
+The final no-exclusion Playwright run completed on the staged wiring-audit
+checkout with **207 passed / 1 skipped / 0 failed** across 208 discovered
+tests. The single skip is the expected data-dependent Arabic/RTL comparison
+case. Typecheck, production build, the focused CD-021 scope-loss subset (5/5),
+and the complete CD-021 suite (24/24) remain green. This removes the prior
+environmental Chromium failure from the current regression record, but does not
+close the baseline: the live arrival-evidence column repair and replay, the
+CD-028 unique-index migration, 19 upstream partials, CD-031 authority
+artifacts, sponsor runtime acceptance, and branch/main consolidation remain
+open. No commit, merge, push, deployment, or `main` modification was performed.
+
+## 2026-07-15 UPDATE 77 — staged review scope-loss guard
+
+The CD-024/CD-025 staged bulk-review handoff now preserves the difference between
+an empty selection, an unavailable source, and selected factory IDs that are no
+longer readable in the caller's current RLS scope. `loadBulkSelection()` returns
+`missingFactoryIds`, and `ReviewClient` renders an explicit scope-change card that
+blocks readiness and publication. A focused production rebuild plus CD-021
+selection subset completed **5/5 PASS** including auth setup and the new
+out-of-scope test. The canonical CD-024 route/ownership decision remains
+governance-blocked; no route was invented.
+
+## 2026-07-15 UPDATE 76 — final focused-suite reconciliation
+
+The complete CD-004 admin control-plane suite was rerun after the act-scope
+evidence addition: **18/18 PASS**. The acceptance ledger remains truthful at
+493 rows: 14 `verified_live`, 460 `implemented`, 19 `partial`, 0 `missing`.
+Authoritative wiring maps parse rectangularly, the session ledger and work
+queue validate, and no evidence rows remain marked OPEN. This closes the CD-004
+runtime evidence correction, but does not close the baseline: the arrival-column
+repair and replay, CD-028 unique-index migration, 19 upstream partials, missing
+CD-031 governance artifacts, sponsor acceptance, and baseline consolidation
+remain external blockers. No merge, push, deployment, or `main` modification
+occurred.
+
+## 2026-07-15 UPDATE 75 — CD-028 golden and race evidence reconciled
+
+The CD-028 follow-up discoverability/race path is now independently exercised:
+the focused rerun is **4/4 PASS** including auth setup, and the fresh golden
+journey is **9/9 PASS**. The one-open-review partial unique-index migration
+(`20260715130000_cd028_one_open_review_per_version.sql`) remains source-ready but
+not live-applied; it is now explicit in the baseline blocker list. No claim or
+reassign or atomic notification policy was invented.
+
+## 2026-07-15 UPDATE 74 — CD-004 act-scope evidence captured
+
+The configured project’s documented `admin@mim.gov.sa` persona was used for a
+fresh CD-004 runtime check. The `/admin` scope band contains the admin-family
+actions and the focused run completed **4/4 PASS** including auth setup. The
+populated act-scope evidence frame is now captured; only the intentionally
+unforced per-source failure/verified-zero fixtures remain blocked by data
+disposition. No new role or permission was invented.
+
+## 2026-07-15 UPDATE 73 — downstream golden journey recovered
+
+The previously open CD029 downstream evidence item was rerun on a fresh
+production server and completed **9/9 PASS**. The run covers the negative publish
+guard, CD-022 single publish, field startup/check-in/submit, exact-scope return,
+correction/resubmit, and final approval/immutability path. The earlier publish
+timeout did not reproduce, so `CD029-CODEX-EV-003` is now captured. Provider media,
+claim/reassign policy, atomic decision side effects, live arrival-column repair,
+and the remaining upstream partials remain open.
+
+## 2026-07-15 UPDATE 72 — gate truthfulness and current audit supersession
+
+The authoritative gate record now matches the current ledger and verification
+state: G5 is conditional on the additive field-arrival repair, G7 is
+14 `verified_live` / 460 `implemented` / 19 `partial` / 0 `missing`, G9 records
+build success without erasing acceptance partials, and G10 records the latest
+203-pass hardening rerun with its isolated Chromium environment failure. The
+CD-030 current-state source guard now independently covers distinct not-found,
+degraded, and read-only role states (5/5 focused tests including auth setup).
+The live re-probe still finds `evidence.evidence_note` absent; no DDL was
+applied. CD-031 remains independently audited but upstream-blocked by the
+missing authoritative wiring map and unresolved privacy/design-preflight
+artifacts. No commit, push, merge, deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 71 — CD-041 RPC live; arrival-column repair isolated
+
+The complete regression's driven CD-041 tests passed, including the verified
+transition, RBAC-negative and closed-session paths. A read-only live probe
+confirms the shared project now exposes `vs_mark_session_verified`; the earlier
+PGRST202 finding is closed. The deterministic inspector-window fixture remains
+in place.
+
+The same probe found a partial field-arrival migration state: `arrival` exists
+in `geo_events.kind`, but `evidence.evidence_note` is absent. A forward,
+idempotent repair migration (`20260715193000_field_arrival_evidence_column_repair.sql`)
+was added; live application and replay verification remain open. The baseline
+is not complete.
+
+## 2026-07-15 UPDATE 70 — ledger regeneration and partial-row truthfulness
+
+The AC ledger generator now preserves dated Codex remediation/live evidence
+instead of allowing the historical development-verdict file to resurrect closed
+rows. Regenerated outputs are consistent: **493 rows = 14 verified_live, 460
+implemented, 19 partial, 0 missing**. The 19 partial IDs exactly match
+`CODEX_AUDIT_REMAINING_PARTIALS_2026-07-15.md`'s provider/schema/policy/
+configuration or pending-migration boundaries. No row was upgraded by guessing
+at a provider, field, policy, route, threshold, or scoring model.
+
+Typecheck, production build, diff check, and session-ledger validation pass. The
+baseline still cannot be declared complete while CD-041's live RPC migration,
+field arrival-evidence replay, the remaining upstream partials, and sponsor
+runtime acceptance are open.
+
+## 2026-07-15 UPDATE 69 — active monitoring refresh and CD-041 live gate
+
+The Operations Center's interval refresh now preserves the same monitoring rule
+as the initial page read: published visits and visits already `on_the_way`,
+`arrived`, or `executing` remain visible even after planning expiry. Typecheck,
+build, KPI focused checks, and source checks pass.
+
+The CD-041 fixture-window collision is fixed by selecting a window strictly
+after the inspector's latest existing assignment. The focused live journey now
+reaches the intended authoritative verification call, but the shared Supabase
+project returns `PGRST202` because `public.vs_mark_session_verified` is missing
+from its schema cache. The versioned migration exists locally but was not
+applied by this audit; the approved deployment path and an exact rerun remain
+required. CD-041 is therefore partial, and the baseline is not complete. No
+commit, push, merge, deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 68 — TASK-BASELINE-WIRING-AUDIT-001 blocker reconciliation
+
+WORK_QUEUE.yaml's `blocked_by` list for the baseline-wiring-audit task was stale:
+it still listed "forward migration runtime certification" and "DEC-012 fresh
+independent CD-023 audit" as open, but both were already satisfied (UPDATE 38
+migrations live 99/99; UPDATE 60/61 DEC-012 PASS for CD-021/CD-022/CD-023).
+Two further complete no-exclusion Playwright runs were executed on this
+checkout to attempt the remaining "full no-exclusion regression" item: they
+produced disjoint 8-failure and 13-failure sets with zero test overlap between
+runs, and every failing test passed cleanly in isolation immediately after.
+This is the same environmental-latency signature already recorded in
+`CODEX_AUDIT_FULL_REGRESSION_RECONCILIATION_2026-07-15.md` (long single-worker
+sequential run under live Supabase latency), not a reproducible product defect
+— reconciled in `CODEX_AUDIT_FULL_REGRESSION_FLAKE_RECONCILIATION_2026-07-15B.md`
+rather than masked by inflating global test timeouts. `blocked_by` now reads
+only "Sponsor runtime acceptance"; status moved to
+`AUDIT_ENGINEERING_COMPLETE_AWAITING_SPONSOR_ACCEPTANCE`. CD-024 remains
+`BLOCKED_UPSTREAM` on route/design ownership (sponsor decision). No code was
+changed; typecheck/build PASS (unchanged). No commit, push, merge, deploy, or
+`main` modification occurred.
+
+## 2026-07-15 UPDATE 67 — arrival evidence downstream wiring
+
+Arrival completion now fails closed when the immutable `arrival` geo event
+cannot be persisted. The inspection workspace reads additive visit-linked
+evidence and merges it with inspection-linked evidence, keeping pre-inspection
+arrival/cancellation evidence visible after inspection creation while degrading
+honestly on an older schema. Typecheck/build PASS; focused CD-023 field-handoff
+checks are **7/7 PASS**. M04-045 remains partial pending live migration/replay;
+AC_LEDGER remains at 19 partial rows.
+
+## 2026-07-15 UPDATE 66 — field-handoff wiring remediation
+
+The current field slice closed stale dead-code findings for M03-005/M03-006,
+M04-050..054 and M04-056..058. Field calendar drag now submits a planner-owned
+reschedule request; Startup now renders arrival cards/summary, return and
+cancellation forms, and cancellation evidence queueing. M04-045 arrival
+photo/comment capture is implemented with a forward migration draft but remains
+partial pending live migration/replay verification. Typecheck/build PASS;
+focused CD-023 checks **6/6 PASS**. AC_LEDGER now has 19 partial rows.
+
+## 2026-07-15 UPDATE 65 — M02 republish notification closure
+
+The historical M02-009/M02-030 partial wiring finding is closed in the current
+working tree. `republishVisit` now uses the shared assigned-inspector notification
+path and reports queue failure neutrally after the state change; it does not claim
+delivery. Typecheck/build PASS and focused CD-027 notification checks are **5/5
+PASS**. The baseline is not fully complete: 29 unrelated acceptance rows remain
+partial and governed/provider/release blockers remain recorded below.
+
+## 2026-07-15 UPDATE 62 — CD-030 post-fix rerun
+
+The current worktree reran `cd-030-version-comparison.spec.ts` after the access-regression
+and scope-shape remediation: **17 passed / 1 data-dependent skip** (18 total, including
+three auth setup tests). Typecheck/build remain PASS. This confirms the code-path
+remediation; live forward-migration application, provider/media/package/metadata diff
+sources, and sponsor acceptance remain open release boundaries.
+
+## 2026-07-15 UPDATE 63 — review read-failure hardening and scope-order determinism
+
+`startReview()` and `decide()` now fail closed on provider/read errors instead of converting
+them into false no-row outcomes; post-decision inspection/assignment read failures explicitly
+report notification status rather than silently skipping the queue attempt. `/reviews/:id`
+auth/role-read errors render neutral degraded copy, and the Scope Rail sorts stored decided
+returns by `decided_at` before choosing the latest authority. Typecheck/build PASS. The
+follow-up Playwright server bind was rejected by the sandbox (`listen EPERM`), so no new live
+browser pass is claimed; prior isolated runtime evidence remains valid for unchanged paths.
+
+## 2026-07-15 UPDATE 64 — CD-029/CD-030 isolated regression after hardening
+
+The isolated review-workspace and version-comparison rerun completed **26 passed / 1
+data-dependent skip** (27 total, including three auth setup tests). All CD-029 tests passed;
+the only skip was the existing data-dependent Arabic/RTL workspace availability case. The
+new fail-closed read guards, deterministic stored-scope ordering, loading-boundary wait,
+focus navigation, and review-surface assertions passed. Typecheck/build remain PASS.
+
+After the final violation-to-action precedence hardening, the targeted CD-029 integrity plus
+CD-030 source-contract run completed **15/15 PASS** (three auth setup cases included).
 
 ## 2026-07-15 UPDATE 52 — CD-031 neutral-error remediation and CD-004 evidence closure
 
@@ -130,6 +506,17 @@ assertion. Fresh live verification: `cd-022-identity-lens.spec.ts` **13/13 PASS*
 typecheck and production build PASS. Provider, atomicity, discard-draft and
 sponsor-runtime-acceptance boundaries remain unchanged; no merge, push,
 deployment, or `main` modification occurred.
+
+## 2026-07-15 UPDATE 61 — CD-021 mixed-criteria URL fail-closed closure
+
+The narrow residual from the independent CD-021 remediation review is closed.
+`parseCt()` now rejects a known blank condition anywhere in an untrusted nested
+criteria payload, so a crafted URL with one valid and one blank leaf cannot silently
+narrow the planner's intent. The wiring map and remediation evidence now record the
+strict behavior and a live regression covers it. Fresh verification: CD-021
+bulk-targeting **24/24 PASS**; typecheck/build PASS. The monitoring-event and governed
+retry boundaries remain honestly separate and unchanged. No merge, push, deployment,
+or `main` modification occurred.
 
 ## 2026-07-15 UPDATE 51 — Independent Codex CD-031 wiring audit attempted
 

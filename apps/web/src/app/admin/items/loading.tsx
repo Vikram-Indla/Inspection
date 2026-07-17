@@ -7,7 +7,7 @@ export default async function Loading() {
   const { t } = await useT();
   return (
     <Shell
-      current="/admin"
+      current="/admin/items"
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-020 · ENG-01</span>}
     >

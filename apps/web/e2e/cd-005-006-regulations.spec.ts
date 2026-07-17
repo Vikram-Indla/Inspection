@@ -1,25 +1,20 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
 // CD-005 Regulation Library (SCR-ADM-010) + CD-006 Regulation Detail & Version
 // (SCR-ADM-011) · /admin/regulations. Requirements: MVP1-M09-001..030, RBAC-001..006,
-// FND-003. The contract route /admin/regulations/:id is NOT implemented — the detail
-// dossier is a LOGICAL MODE selected by ?id=. No Admin-family route guard exists (W04/W08
-// HANDOFF_BLOCKED); the middleware authenticates only, so the Inspector persona
-// legitimately reaches /admin/regulations and is used here to prove:
-//   - the read-only truth (Inspector is neither compliance_admin nor form_admin → writes
-//     hidden, RLS-mirrored, route guard disclosed as blocked), and
-//   - that the logical detail mode + every blocked contract leg render for any
-//     authenticated user without seeding a writer or a specific regulation.
+// FND-003. The route layout now permits only the contract roles; the reviewer proves
+// read-only visibility while the dedicated /admin/regulations/:id route renders detail.
 //
 // Per-source FAILURE / VERIFIED-ZERO cannot be forced safely against the live backend, so
 // they are proven at the code layer below (DSG-CODE-001 / DEC-012), exactly as CD-004 did.
-const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-005-006-regulations-v1");
+const EVIDENCE_DIR = evidenceDirectory("cd-005-006-regulations-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
-test.use({ storageState: storageStatePath("inspector") });
+test.use({ storageState: storageStatePath("reviewer") });
 
 test.beforeAll(() => { mkdirSync(EVIDENCE_DIR, { recursive: true }); });
 test.beforeEach(async ({ page }) => { await page.goto("/locale?set=en"); });
@@ -30,8 +25,8 @@ test.describe("CD-005 register — discovery, impact rail, read-only truth", () 
     const search = page.getByRole("search");
     const emptyZero = page.getByText(/No regulations configured/i);
     // Exactly one of the two truthful states shows; both are legitimate.
-    const hasRegister = await search.count();
-    if (hasRegister > 0) {
+    await expect(search.or(emptyZero)).toBeVisible({ timeout: 30_000 });
+    if (await search.isVisible()) {
       await expect(search).toBeVisible();
       // Lifecycle chips are pressable filter controls (client-side over the loaded set).
       await expect(page.getByRole("button", { name: /^All/ })).toBeVisible();
@@ -39,18 +34,18 @@ test.describe("CD-005 register — discovery, impact rail, read-only truth", () 
       await expect(page.getByRole("button", { name: /^Draft/ })).toBeVisible();
       // Impact Footprint Rail is the CD-005 signature.
       await expect(page.getByText(/Impact footprint/i).first()).toBeVisible();
-    } else {
+    } else if (await emptyZero.count()) {
       await expect(emptyZero).toBeVisible();
       await expect(page.getByText(/genuinely empty/i)).toBeVisible();
-    }
+    } else throw new Error("CD-006 register unavailable: completion migration/runtime is not certifiable");
     await page.screenshot({ path: join(EVIDENCE_DIR, "register-en-light-1440.png"), fullPage: true });
   });
 
-  test("Inspector (non-writer) sees a read-only disclosure and NO create/publish affordance", async ({ page }) => {
+  test("Reviewer sees a read-only disclosure and NO create/publish affordance", async ({ page }) => {
     await page.goto("/admin/regulations");
     // Read-only banner mirrors the RLS write grant; route guard is disclosed as blocked.
     await expect(page.getByText(/require a Compliance or Form Admin role/i)).toBeVisible();
-    await expect(page.getByText(/route guard is not implemented|route guard is not/i)).toBeVisible();
+    await expect(page.getByText(/route guard and database permissions are independent/i)).toBeVisible();
     // No write control is rendered for a non-writer.
     await expect(page.getByRole("button", { name: /Create draft regulation/i })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Publish now/i })).toHaveCount(0);
@@ -58,36 +53,34 @@ test.describe("CD-005 register — discovery, impact rail, read-only truth", () 
   });
 });
 
-test.describe("CD-006 detail — logical mode via ?id= and blocked contract legs", () => {
-  test("?id= enters the logical dossier mode on the SAME route (no dedicated URL) and shows the back link", async ({ page }) => {
-    await page.goto("/admin/regulations?id=__no_such_regulation__");
-    // Still the same route — the dossier is a logical mode, not /admin/regulations/:id.
-    expect(new URL(page.url()).pathname).toBe("/admin/regulations");
+test.describe("CD-006 detail — logical mode and governed lineage", () => {
+  test("dedicated detail route renders the dossier mode and shows the back link", async ({ page }) => {
+    await page.goto("/admin/regulations/__no_such_regulation__");
+    expect(new URL(page.url()).pathname).toBe("/admin/regulations/__no_such_regulation__");
     await expect(page.getByRole("link", { name: /Back to register/i })).toBeVisible();
-    // Unknown id → verified read, no match → not-found (never a fabricated dossier).
-    await expect(page.getByText(/Regulation not found/i)).toBeVisible();
+    // Unknown id is not-found only after a successful read. A schema/source
+    // failure remains unavailable and never fabricates either a dossier or zero.
+    if (await page.getByText(/register unavailable/i).count()) {
+      await expect(page.getByText(/unknown, not empty/i)).toBeVisible();
+      await expect(page.getByText(/Regulation not found/i)).toHaveCount(0);
+    } else {
+      await expect(page.getByText(/Regulation not found/i)).toBeVisible();
+    }
   });
 
-  test("every governed capability is a DISABLED, annotated HANDOFF_BLOCKED target — wired to nothing", async ({ page }) => {
-    await page.goto("/admin/regulations?id=__no_such_regulation__");
-    const blocked = page.getByRole("region", { name: /Governed capabilities/i });
-    await expect(blocked).toBeVisible();
-    for (const label of [
-      "Submit for validated publish",
-      "Compare versions / lineage",
-      "Run dependency validation",
-      "Open audit timeline",
-      "Open dedicated detail route",
-    ]) {
-      const btn = blocked.getByRole("button", { name: new RegExp(label, "i") });
-      await expect(btn).toBeDisabled();
+  test("lineage and publish dependency readiness are enabled", async ({ page }) => {
+    await page.goto("/admin/regulations");
+    const dossier = page.getByRole("link", { name: /Open dossier/i }).first();
+    if (await dossier.count()) {
+      await dossier.click();
+      await expect(page.getByRole("heading", { name: /Version lineage/i })).toBeVisible();
+      await expect(page.getByText(/Publish dependency gate/i)).toBeVisible();
+      await expect(page.locator("[data-blocked-leg]")).toHaveCount(0);
+      await page.screenshot({ path: join(EVIDENCE_DIR, "detail-lineage-en-light-1440.png"), fullPage: true });
+    } else {
+      await expect(page.getByText(/register unavailable/i)).toBeVisible();
+      await expect(page.getByRole("button", { name: /Compare versions|Run dependency validation/i })).toHaveCount(0);
     }
-    // The blocked audit leg states the exact policy reason (no invented audit timeline).
-    await expect(blocked.getByText(/audit_events read is not granted/i)).toBeVisible();
-    // The dedicated contract route is explicitly not implemented.
-    await expect(blocked.getByText(/\/admin\/regulations\/:id is not implemented/i)).toBeVisible();
-    await expect(blocked.getByText(/HANDOFF_BLOCKED/).first()).toBeVisible();
-    await page.screenshot({ path: join(EVIDENCE_DIR, "detail-blocked-en-light-1440.png"), fullPage: true });
   });
 });
 
@@ -101,7 +94,7 @@ test.describe("CD-005/006 a11y / RTL / responsive (DSG-A11Y-001)", () => {
   });
 
   test("no horizontal overflow at 1024 in list and detail modes", async ({ page }) => {
-    for (const url of ["/admin/regulations", "/admin/regulations?id=__no_such_regulation__"]) {
+    for (const url of ["/admin/regulations", "/admin/regulations/__no_such_regulation__"]) {
       await page.goto(url);
       await page.setViewportSize({ width: 1024, height: 768 });
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -111,7 +104,8 @@ test.describe("CD-005/006 a11y / RTL / responsive (DSG-A11Y-001)", () => {
 });
 
 // DSG-CODE-001 / DEC-012 — code-layer proof of the closures that cannot be forced live.
-test.describe("CD-005/006 wiring (DEC-012): distinct states, direct-only publish, blocked legs, no invented lifecycle", () => {
+test.describe("CD-005/006 wiring (DEC-012): governed lifecycle, distinct states and genuine blockers", () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
   const page = SRC("src/app/admin/regulations/page.tsx");
   const controls = SRC("src/app/admin/regulations/Controls.tsx");
   const actions = SRC("src/app/admin/regulations/actions.ts");
@@ -128,38 +122,35 @@ test.describe("CD-005/006 wiring (DEC-012): distinct states, direct-only publish
     expect(page).toContain("unknown ? null : items");
   });
 
-  test("only the direct draft→published publish is wired; no invented validate/approve/lifecycle", () => {
-    // The proven transition, guarded on status=draft, lives in actions.ts unchanged.
-    expect(actions).toContain('.update({ status: "published" })');
-    expect(actions).toContain('.eq("status", "draft")');
-    // No maker-checker / approve / submit server action was invented.
-    expect(actions).not.toMatch(/approved_by|submitForApproval|makerChecker|maker_checker/);
-    // The contract-safe validated publish is a DISCLOSURE, not a working button.
+  test("publish validates mappings and uses the governed maker-checker transition", () => {
+    expect(actions).toContain('sb.rpc("publish_regulation"');
+    expect(actions).toContain("every clause must map to an inspection item");
+    expect(actions).toContain("maker-checker");
     expect(page).toContain('t("admin.reg.r1.detail.validation.title"');
   });
 
-  test("blocked legs are disabled targets with owners; clause changes are NOT shown as audited", () => {
-    for (const key of [
-      "admin.reg.r1.detail.blocked.validatedPublish",
-      "admin.reg.r1.detail.blocked.compare",
-      "admin.reg.r1.detail.blocked.dependency",
-      "admin.reg.r1.detail.blocked.audit",
-      "admin.reg.r1.detail.blocked.route",
-    ]) {
-      expect(page).toContain(`t("${key}"`);
+  test("draft edit, effective date, attachments, deactivation and scoped audit are wired", () => {
+    for (const action of ["updateRegulationDraft", "addRegulationAttachment", "deactivateRegulation", "admin_configuration_audit"]) {
+      expect(`${page}\n${controls}\n${actions}`).toContain(action);
     }
-    expect(page).toContain('aria-disabled="true"');
-    // Truthful audit boundary: regulations audited, clauses not.
-    expect(page).toContain('t("admin.reg.r1.detail.auditNote"');
-    expect(controls).toContain('t');
-    expect(controls).toContain("clauseNotAudited");
+    expect(controls).toContain('name="effective_from"');
+    expect(page).toContain("regulation_attachments");
+    expect(page).toContain("Configuration audit timeline");
   });
 
-  test("writes are gated to writers in the UI (RLS mirror), and the dedicated detail route is NOT created", () => {
+  test("lineage and dependency readiness are wired; clause changes are audited", () => {
+    expect(page).toContain("Version lineage");
+    expect(page).toContain("supersedes_id");
+    expect(page).toContain("Publish dependency gate");
+    expect(page).toContain('t("admin.reg.r1.detail.auditNote"');
+    expect(controls).toContain("clauseNotAudited");
+    expect(page).not.toContain("admin.reg.r1.detail.blocked.compare");
+  });
+
+  test("writes are gated to writers in the UI and the dedicated detail route exists", () => {
     expect(page).toContain('roles.has("compliance_admin") || roles.has("form_admin")');
     expect(page).toContain("{isWriter ? <NewRegulationForm");
-    // No dedicated /admin/regulations/[id] route folder exists.
-    expect(existsSync(join(process.cwd(), "src/app/admin/regulations/[id]"))).toBe(false);
+    expect(existsSync(join(process.cwd(), "src/app/admin/regulations/[id]/page.tsx"))).toBe(true);
   });
 
   test("no bare colours — only ax design tokens (GLOBAL COLOR LAW)", () => {

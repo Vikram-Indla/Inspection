@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { NotYetBoundary } from "@/components/NotYetBoundary";
 
 export const dynamic = "force-dynamic";
 
@@ -66,7 +67,7 @@ export default async function AuditBrowser({ searchParams }: { searchParams: Pro
   const enumL = (x: string) => t(`enum.${x}`, x.replace(/_/g, " "));
 
   return (
-    <Shell current="/admin" title={t("admin.audit.title", "Audit trail browser")}
+    <Shell current="/admin/audit" title={t("admin.audit.title", "Audit trail browser")}
       context={<><span className="ax-lozenge ax-lozenge--info">ENG-12</span><span className="ax-lozenge ax-lozenge--success">{t("admin.audit.appendOnly", "append-only · immutable")}</span></>}>
       <div className="ax-banner"><div>
         <strong>{t("admin.audit.banner.title", "Immutable record.")}</strong> {t("admin.audit.banner.body", "Every write to audited tables lands here via database trigger (0002); UPDATE/DELETE on audit_events is rejected at trigger level (0005). Visibility is enforced by RLS — audit-reading roles only.")}
@@ -168,6 +169,39 @@ export default async function AuditBrowser({ searchParams }: { searchParams: Pro
               ))}
             </tbody>
           </table></div>
+          <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            {t("admin.audit.rlsNote", "You see events your role is allowed to read. Events outside your scope are absent, not redacted rows.")}
+          </p>
+        </div>
+      )}
+
+      {/* R2 evidence grammar — capabilities deliberately absent from this reader.
+          Shown as honest boundaries so their absence is legible, not a bug. */}
+      {!error && (
+        <div className="ax-grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "var(--ax-space-200)" }}>
+          <NotYetBoundary
+            title={t("admin.audit.corr.title", "Correlation / timeline view")}
+            consequence={t("admin.audit.corr.desc", "Events can't yet be grouped into a single cross-object story.")}
+            seam="NEEDS_APPROVED_CONTRACT — correlation read model"
+            prerequisites={[
+              t("admin.audit.corr.pre1", "A correlation identifier on audit_events to group by"),
+              t("admin.audit.corr.pre2", "An approved read model for cross-object timelines"),
+            ]}
+            notAvailableLabel={t("admin.audit.notYet", "Not available yet")}
+            detailLabel={t("common.whyPrereq", "Why / prerequisites")}
+          />
+          <NotYetBoundary
+            title={t("admin.audit.reveal.title", "Sensitive reveal & export")}
+            consequence={t("admin.audit.reveal.desc", "Masked fields can't be revealed and event sets can't be exported from this screen.")}
+            seam="BLOCKED_BY_DECISION — privacy / retention"
+            prerequisites={[
+              t("admin.audit.reveal.pre1", "A field-level privacy / masking policy"),
+              t("admin.audit.reveal.pre2", "A retention and export-audit contract"),
+              t("admin.audit.reveal.pre3", "An export authorization role"),
+            ]}
+            notAvailableLabel={t("admin.audit.notYet", "Not available yet")}
+            detailLabel={t("common.whyPrereq", "Why / prerequisites")}
+          />
         </div>
       )}
     </Shell>

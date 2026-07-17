@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import ReviewClient, { type ReviewStrings } from "./ReviewClient";
 import "./review.css";
@@ -19,7 +20,7 @@ export default async function BulkReview() {
   // RBAC-007 — independent Planner gate. Navigation visibility is never
   // authorization; RLS remains the data boundary and the guarded RPC re-checks.
   const sb = await supabaseServer();
-  const { data: { user }, error: authError } = await sb.auth.getUser();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
   const { data: myRoles, error: rolesError } = user
     ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
@@ -56,6 +57,9 @@ export default async function BulkReview() {
     emptyTitle: t("plan.review.emptyTitle", "No factories selected"),
     emptyBody: t("plan.review.emptyBody", "Select target factories on the targeting screen, then continue to review."),
     backToTargeting: t("plan.review.back", "Back to targeting"),
+    scopeTitle: t("plan.review.scopeTitle", "Selection is no longer fully in scope"),
+    scopeBody: t("plan.review.scopeBody", "{n} selected factory record(s) could not be read in your current scope. Nothing was silently removed or published; return to targeting and refresh the selection."),
+    scopeReduced: t("plan.review.scopeReduced", "Removed {removed} duplicate factory record(s). {retained} retained — readiness re-checked."),
 
     method: t("plan.review.method", "Bulk plan — periodic compliance campaign"),
     freshnessPrefix: t("plan.review.freshness", "Sources last checked"),
@@ -171,6 +175,38 @@ export default async function BulkReview() {
     sNotif: t("plan.review.sNotif", "Notifications queued"),
     goVisits: t("plan.review.goVisits", "Go to visits"),
     openPlan: t("plan.review.openPlan", "Open the published plan (read-only)"),
+
+    // CD-024 — Assignment Evidence Ledger + per-row evidence cells
+    evTitle: t("plan.review.ev.title", "Assignment evidence ledger"),
+    evLead: t("plan.review.ev.lead", "Focus a factory row (or choose “Review evidence”) to see exactly what is verified, what is not evaluated, what blocks the assignment, and what is checked again just before publishing — for that candidate only. No score, rank or confidence is shown."),
+    evReview: t("plan.review.ev.review", "Review evidence"),
+    ecInPool: t("plan.review.ec.inPool", "in pool"),
+    ecOverlaps: t("plan.review.ec.overlaps", "{n} overlaps in window"),
+    ecSkills: t("plan.review.ec.skills", "skills/capacity: not evaluated"),
+    ecAuto: t("plan.review.ec.auto", "automatic — overlap not re-checked for auto (known gap)"),
+    ecBlockedN: t("plan.review.ec.blockedN", "booked on {n} overlapping visit(s)"),
+    ecFail: t("plan.review.ec.fail", "overlap check unavailable — blocked, not “no conflict”"),
+    ecSetWindow: t("plan.review.ec.setWindow", "set an inspection window to check overlap"),
+    ev: {
+      noneTitle: t("plan.review.ev.noneTitle", "No candidate in focus"),
+      noneBody: t("plan.review.ev.noneBody", "Nothing for this candidate yet. Focus a factory row or choose “Review evidence” to reflect its facts here. Blocked picks are shown on their own ledger with the exact visit and time."),
+      cVerified: t("plan.review.ev.cVerified", "Verified now"),
+      cNotEval: t("plan.review.ev.cNotEval", "Not evaluated"),
+      cBlocks: t("plan.review.ev.cBlocks", "Blocks assignment"),
+      cChecked: t("plan.review.ev.cChecked", "Checked again before publish"),
+      vRole: t("plan.review.ev.vRole", "Holds the Inspector role (in the eligible pool)"),
+      vOverlap0: t("plan.review.ev.vOverlap0", "No overlapping active visit in the window (overlap query ran)"),
+      vPkg: t("plan.review.ev.vPkg", "Package is currently published or locked"),
+      neList: t("plan.review.ev.neList", "Skills · work hours · capacity · territory · proximity · travel time — no Saqeel source, not evaluated"),
+      neAuto: t("plan.review.ev.neAuto", "Automatic pick — the server’s Inspector is chosen at publish and its window overlap is NOT checked for auto (known gap)"),
+      neWindow: t("plan.review.ev.neWindow", "Overlap not evaluated — set a valid inspection window first"),
+      bOverlap: t("plan.review.ev.bOverlap", "Already booked on {n} overlapping visit(s) — e.g. {label}, {window}"),
+      bNotPool: t("plan.review.ev.bNotPool", "Not in the eligible Inspector pool"),
+      bFail: t("plan.review.ev.bFail", "Overlap check could not run — publishing is blocked (not “no conflict”)"),
+      bNone: t("plan.review.ev.bNone", "Nothing blocks this candidate right now"),
+      checked: t("plan.review.ev.checked", "Eligibility, double-booking and active visits are re-checked just before the plan is written. A change landing between that check and the write is not caught — the atomic publish itself re-validates nothing."),
+      focusedFor: t("plan.review.ev.focusedFor", "Assignment evidence for {name} ({code})"),
+    },
 
     bl: {
       duplicate: { title: t("plan.review.bl.dup.t", "Active periodic visit already exists — cannot create a duplicate"), detail: t("plan.review.bl.dup.d", "{targets}") },

@@ -6,6 +6,7 @@
 // blocker codes to neutral localized copy; raw database errors never reach UI.
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 export type BlockingField =
   | "identity" | "location" | "reason" | "package" | "inspector"
@@ -122,7 +123,7 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
   }
 
   const sb = await supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: copy.auth_required, errorCode: "auth_required" };
 
   const packageId = text(formData, "package_version_id");

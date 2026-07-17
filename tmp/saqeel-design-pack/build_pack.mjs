@@ -1,8 +1,14 @@
 import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { SpreadsheetFile, Workbook } from "@oai/artifact-tool";
 
-const ROOT = "/Users/vikramindla/Documents/GitHub/Inspection";
-const OUT = `${ROOT}/outputs/claude-design-approval-pack`;
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const DOCS_ROOT = process.env.INSPECTION_DOCS_ROOT?.trim()
+  ? path.resolve(process.env.INSPECTION_DOCS_ROOT)
+  : path.join(os.homedir(), "Desktop", "Inspection Documentation");
+const OUT = path.join(DOCS_ROOT, "05_UI_UX_AND_STORYBOARDS", "outputs", "claude-design-approval-pack");
 
 const refs = [
   ["R01", "MIM MVP1 product contract and 20 implementation storyboards", "Internal authority", "Requirements, journeys, states, handoffs, KSA inspection context, and no-regression constraints.", `${ROOT}/product-contract/00_START_HERE.md`, "Binding authority; not a visual style source."],

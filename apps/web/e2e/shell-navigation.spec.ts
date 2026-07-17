@@ -5,21 +5,39 @@ import { storageStatePath } from "./personas";
 const hrefsFor = (roles: string[]) => buildShellNavigation(roles).flatMap(group => group.items.map(item => item.href));
 
 test.describe("TASK-WEB-SHELL-001 role matrix", () => {
-  test("planner sees only governed planning/workspace destinations", () => {
-    expect(hrefsFor(["planner"])).toEqual(["/factories", "/planning", "/visits"]);
+  test("planner sees the shared Command destinations plus governed planning/workspace", () => {
+    // Dashboard + Operations Center are shared non-admin destinations (business
+    // direction 2026-07-16); Factory 360 was already shared.
+    expect(hrefsFor(["planner"])).toEqual(["/dashboard", "/operations", "/factories", "/planning", "/visits"]);
   });
 
-  test("inspector sees field destinations without admin or operations control planes", () => {
-    expect(hrefsFor(["inspector"])).toEqual(["/factories", "/field", "/virtual"]);
+  test("inspector sees the shared Command destinations plus field, never admin", () => {
+    expect(hrefsFor(["inspector"])).toEqual(["/dashboard", "/operations", "/factories", "/field", "/virtual"]);
   });
 
   test("admin-family grants compose without inventing unsupported tabs", () => {
+    // compliance_admin → regulations/packages/violations/items/localization/audit;
+    // security_admin → access/localization/audit; risk_owner → risk/audit.
+    // /admin (home) and /admin/audit are visible to every admin family.
     const hrefs = hrefsFor(["compliance_admin", "security_admin", "risk_owner"]);
-    expect(hrefs).toEqual(["/admin", "/admin/regulations", "/admin/packages", "/admin/violations", "/admin/risk", "/admin/access"]);
+    expect(hrefs).toEqual([
+      "/admin",
+      "/admin/regulations",
+      "/admin/packages",
+      "/admin/violations",
+      "/admin/items",
+      "/admin/risk",
+      "/admin/access",
+      "/admin/localization",
+      "/admin/audit",
+    ]);
     expect(hrefs).not.toContain("/analytics");
     expect(hrefs).not.toContain("/admin/lookups");
     expect(hrefs).not.toContain("/admin/integrations");
     expect(hrefs).not.toContain("/admin/notifications");
+    // workflows (workflow_admin) and gis (gis_admin) are outside this role set.
+    expect(hrefs).not.toContain("/admin/workflows");
+    expect(hrefs).not.toContain("/admin/gis");
   });
 
   test("dashboard and live operations have distinct active states", () => {

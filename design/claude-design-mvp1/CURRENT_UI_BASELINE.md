@@ -50,7 +50,7 @@ Saqeel is an implemented Next.js 15 and React 19 application backed by live Supa
 - Arabic-first full-document RTL, including a physical right-side mobile drawer.
 - Accessible drawer backdrop, close, focus entry/containment, Escape and focus restoration.
 - Real destinations only; unsupported business tabs are omitted and recorded in the shell contract.
-- Targeted Playwright 10/10 and visual evidence under `product-contract/evidence/screens/shell-v1/`.
+- Targeted Playwright 10/10 and visual evidence under `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/shell-v1/`.
 
 ## Implemented dashboard baseline — 2026-07-13
 
@@ -58,10 +58,10 @@ Saqeel is an implemented Next.js 15 and React 19 application backed by live Supa
 - URL-backed Strategic/Operational tabs, RLS-scoped entity search, last-30-days/default and custom date range, region scope, visible freshness and partial-source states.
 - Source-backed national performance, compliance explorer, operational scorecard, deterministic alerts, workload, cancellations, GPS override detail and planning-to-review audit timeline.
 - Truthful unavailable states for absent annual target, inspection-year boundary, presence/timeout, absolute capacity, stuck-duration policy and GPS confirmation field; no AI assistant or fabricated recommendation.
-- Arabic-first RTL, English, dark/light, desktop/narrow reflow, keyboard focus and status/alert semantics verified under `product-contract/evidence/screens/dashboard-business-v1/`.
+- Arabic-first RTL, English, dark/light, desktop/narrow reflow, keyboard focus and status/alert semantics verified under `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/dashboard-business-v1/`.
 
 ## Design approach
 
 Use controlled evolution: retain Saqeel identity and behavior, improve information hierarchy, component consistency, workflow comprehension, density, field ergonomics, accessibility, responsive behavior, and failure recovery. Every proposal must state the exact existing component or route affected and why the change is safe.
 
-For CD-024 and later, apply `outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md`: equal-fidelity decision-zone hypotheses, route truth before composition, one-pattern novelty limit, counterfactual proof, realistic Arabic data, hard-state evidence and a blocked handoff for every unsupported runtime leg.
+For CD-024 and later, apply `${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md`: equal-fidelity decision-zone hypotheses, route truth before composition, one-pattern novelty limit, counterfactual proof, realistic Arabic data, hard-state evidence and a blocked handoff for every unsupported runtime leg.

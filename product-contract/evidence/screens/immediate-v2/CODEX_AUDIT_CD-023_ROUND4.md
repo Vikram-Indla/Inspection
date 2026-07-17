@@ -128,7 +128,7 @@ by two different methods each:
   - `authority chips use localized labels and localized live announcements in Arabic RTL` — passed
   - `dark/light × EN/AR × desktop/narrow evidence has no horizontal overflow` — passed
 - Evidence PNG side effect (as warned): the visual-matrix test overwrote 8
-  tracked PNGs in `product-contract/evidence/screens/immediate-v2/` across
+  tracked PNGs in `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/` across
   this session's runs. Restored via `git checkout --` after each run;
   confirmed clean at the end of this audit (`git status --short` on that
   directory returned nothing). Note: mid-cleanup, one file
@@ -194,5 +194,5 @@ by two different methods each:
 No application code, migration, test, branch, commit, push, merge, or `main`
 state was changed by this audit beyond the transient evidence-PNG overwrite,
 which was reverted (confirmed clean via `git status --short` on
-`product-contract/evidence/screens/immediate-v2/` at the end of this
+`${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/immediate-v2/` at the end of this
 session). Only this evidence file was added.
