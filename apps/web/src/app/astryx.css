@@ -49,6 +49,7 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   border-radius: var(--ax-radius-small);
   border: 1px solid transparent;
   font: var(--ax-text-body-strong);
+  text-decoration: none; /* Cycle 2 completion pass — an <a class="ax-btn"> must never look like an underlined link */
   cursor: pointer; user-select: none;
   transition: background var(--ax-motion-fast), border-color var(--ax-motion-fast), box-shadow var(--ax-motion-fast);
   background: var(--ax-color-primary); color: var(--ax-color-inverse-text);
