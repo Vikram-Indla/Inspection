@@ -1,99 +1,112 @@
 schema_version: "1.2"
-task_id: "TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003"
+task_id: "TASK-QA-CYCLE2-RETEST-001"
 parent_task_id: "TASK-G11-G12-RELEASE-001"
-gate: "G11 hardening"
-title: "Governed Operations approval for out-of-geofence iPad check-in"
-status: "SOURCE_VERIFIED_AWAITING_CONTROLLED_DATABASE_RUNTIME"
+gate: "G11 hardening / G12 release — Cycle 2 QA retest"
+title: "ChatGPT Work read-only retest and production-readiness decision for fix/mvp1-cycle2-production-hardening"
+status: "AWAITING_CHATGPT_WORK_RETEST"
 enforce_stop_gate: true
-broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#IPAD-GEO-OVERRIDE-APPROVAL-WORKFLOW"
+broad_implementation_allowed: false
+approval_ref: "HUMAN_APPROVALS.yaml#CYCLE2-QA-RETEST-ROUTING"
 
 sponsor_direction:
   approver: "Vikram Indla"
-  date: "2026-07-16"
+  date: "2026-07-17"
   authorization:
-    - "Implement the Operations-approved override workflow selected as 1A, 2A, 3A and 4A."
-    - "Create a clean, separate iPad pull request with source, tests, evidence and contract records."
+    - "Reroute the active CURRENT_SLICE.yaml pointer from TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 to this task so ChatGPT Work's stop-gate check can authorize a retest."
+    - "Retest branch fix/mvp1-cycle2-production-hardening (HEAD 8759e81) end to end: highest-risk fixed defects, the critical transactional storyline, simulated external-dependency journeys, role/authorization/RLS behavior, and a UI/UX sweep, per the prompt already given to ChatGPT Work."
+    - "Update the audit workbook and Cycle 2 evidence records with retest results and produce a final MVP1 production-readiness decision."
   policy:
-    - "Only the existing RBAC Operations approver group may decide; the requester can never decide their own request."
-    - "A request requires a governed reason code, mandatory narrative, actual GPS/time and either photo evidence or a safety/security capture exception."
-    - "A request expires after 30 minutes for one inspector, visit and arrival attempt, or earlier when the visit closes."
-    - "Offline may queue real GPS/evidence, but never self-approves or unlocks check-in; Operations approval occurs online."
+    - "This slice is retest-only. No application source, migration, or test-fixture edits are authorized under this task — those already landed under the Cycle 2 wave/completion/closure commits (2396524..8759e81)."
+    - "Read-only database access only: SELECT/probe queries and live UI exercise through the app are permitted; no INSERT/UPDATE/DELETE/DDL against the shared project, no seeding, no cleanup, no destructive operation."
+    - "The 503 pre-existing implausible-date visits rows (see DEFECT_FIX_RESULTS.csv row DEF-DATA-005) are known, out of scope, and must not be mutated or deleted under this task."
+    - "No credential rotation, no Git history rewrite, no merge to main, no production deployment."
   limits:
-    - "This does not resolve DEC-002's formal numeric GIS governance record, the maps-provider decision, or the migration-history repair."
+    - "Does not resolve DEC-002 (GIS/geofence governance), DEC-008 (maps provider), or the live migration-history reconciliation — all remain separately owned."
+    - "Does not extend to or reauthorize any other task's scope (in particular TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003, whose prior slice is preserved verbatim at product-contract/execution/slice-history/CURRENT_SLICE_IPAD_M04_OVERRIDE_003_backup_2026-07-17.yaml pending sponsor direction to restore it)."
 
-branch_at_start: "codex/ipad/m04-geofence-policy-promotion-002"
-head_at_start: "9ba5a24"
-worktree_at_start: "Clean dedicated worktree; two in-slice uncommitted telemetry regression-test edits."
+branch_at_start: "fix/mvp1-cycle2-production-hardening"
+head_at_start: "8759e81"
+worktree_at_start: "Clean; only the self-appending .project-memory/audit/tool_events.jsonl is dirty (expected, harmless)."
 
-process_ids: ["P06A"]
-requirement_ids: ["MVP1-M04-039", "MVP1-M04-043", "MVP1-M04-045", "MVP1-M08-013"]
-screen_ids: ["SCR-IPAD-620", "SCR-WEB-500", "SCR-ADM-070"]
+process_ids: ["P00", "P01", "P02", "P03", "P04", "P05", "P06A", "P06B", "P07", "P08", "P09", "P10", "P11", "P12"]
+requirement_ids:
+  - "MVP1-M04-215"
+  - "MVP1-M06-018"
+  - "MVP1-FND-002"
+  - "MVP1-M01-001..052"
+  - "MVP1-M05-001..020"
+  - "MVP1-FND-004"
+  - "MVP1-FND-011"
+  - "CR-PRF-003"
+screen_ids:
+  - "SCR-ADM-080"
+  - "AUTH-01..03"
+  - "SCR-WEB-100..500"
 engine_ids: ["ENG-06", "ENG-08", "ENG-11"]
-acceptance_ids: ["AC-0152", "AC-0153", "AC-0154", "AC-0155", "AC-0156"]
+acceptance_ids:
+  - "DEF-WF-006"
+  - "DEF-DATA-005"
+  - "DEF-ADM-080"
+  - "DEF-UI-001"
+  - "DEF-UI-004"
+  - "DEF-UX-002"
+  - "DEF-PRF-003"
+  - "BLK-P2-008"
+  - "GOLDEN-JOURNEY-P2"
 
 dependencies:
-  - "RBAC-008 permits Operations to approve an override per policy."
-  - "STM-JRN-003 permits check-in only inside the fence or with an approved override."
-  - "Existing immutable geo events, canonical operational state transition, offline outbox and audit events remain authoritative."
+  - "Full regression suite (apps/web, npx playwright test --project=e2e) — last authoritative clean run: 324 passed / 1 failed / 2 skipped / 0 did not run, HEAD 8759e81. See FULL_REGRESSION_RESULTS.md."
+  - "All 7 Cycle 2 database migrations are applied live to iiozvqntawxfwbgffzqu — verified by object-existence probes (see PROFILE_UX_CORRECTION_REPORT.md / RBAC_RLS_TEST_REPORT.md)."
+  - "typecheck (npx tsc --noEmit) and production build (npm run build) both clean at HEAD."
+
+evidence_destination:
+  handoff_folder: "/Users/vikramindla/Documents/Inspection - MVP Delivery/01_MVP1/05_REVIEW_AND_EVIDENCE/CYCLE2_IMPLEMENTATION_2026-07-16/"
+  primary_handoff_doc: "CHATGPT_WORK_RETEST_HANDOFF.md"
+  workbook_note: "The task prompt's 'workbook sheets 31-43' (Cycle2 Fix Backlog, Scenario Plan, etc.) do not exist in any workbook found under the delivery root — see MANIFEST.json's documentation_grounding_note. Do not fabricate or assume those sheets exist; ground retest evidence in the files actually present in evidence_destination.handoff_folder and in-repo product-contract/evidence/CYCLE2-WAVE*.md instead."
+
+protected_regression_command: |
+  cd apps/web
+  npx tsc --noEmit
+  npm run build
+  PLAYWRIGHT_REUSE_SERVER=0 npx playwright test --project=e2e
+  # Do NOT run `npm run build` in a second terminal while this is running —
+  # that exact race invalidated an earlier regression run this task (see
+  # FULL_REGRESSION_RESULTS.md, "Run 1 (contaminated)").
 
 open_decisions:
-  - "DEC-002 formal numeric GPS/geofence governance remains recorded separately; existing configured values remain unchanged."
-  - "DEC-008 runtime maps/routing provider remains untouched."
-  - "Remote migration-history repair remains a release-hardening prerequisite, not a reason to apply DDL blindly."
+  - "DEC-002 formal numeric GPS/geofence governance remains recorded separately; unaffected by this branch."
+  - "DEC-008 runtime maps/routing provider remains open — Mapbox has a real HTTP client (RealMapboxProvider) but zero runtime verification, no token available (see MAPBOX_INTEGRATION_REPORT.md)."
+  - "Live migration-history reconciliation for the shared project remains open, tracked separately."
 
 do_not_touch:
-  - "Do not alter official factory coordinates, immutable submitted versions, prior geo/audit records or main."
-  - "Do not permit direct state mutation, inspector self-approval, offline approval, expired approval, or a permanent integration mock."
-  - "Do not apply this source migration to the shared remote while migration history is unreconciled."
+  - "Do not edit application source, migrations, or e2e test fixtures under this task — that work is closed (commits 2396524..8759e81)."
+  - "Do not mutate or delete the 503 pre-existing implausible-date visits rows."
+  - "Do not rotate credentials or rewrite Git history."
+  - "Do not merge to main or deploy."
+  - "Do not touch TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003's branch (codex/ipad/m04-geofence-policy-promotion-002) or its worktree."
 
 authorized_file_scope:
-  - "Forward-only Supabase migration, RLS/RPC authorization, iPad Startup, Operations Center approval queue, offline outbox, tests and required contract/evidence records."
-
-task_specific_context:
-  - "product-contract/business/master_end_to_end_process.md"
-  - "product-contract/screens/screen_route_catalogue.csv"
-  - "product-contract/domain/field_dictionary.csv"
-  - "product-contract/domain/rbac_matrix.csv"
-  - "product-contract/domain/state_transitions.csv"
-  - "product-contract/governance/error_catalogue.csv"
-  - "product-contract/governance/HUMAN_APPROVALS.yaml"
-  - "supabase/migrations/0001_foundation.sql"
-  - "supabase/migrations/0002_rbac_audit.sql"
-  - "supabase/migrations/0015_w1_journey_state.sql"
-  - "supabase/migrations/0020_fix_field_journey.sql"
-  - "apps/web/src/app/field/[visitId]/Startup.tsx"
-  - "apps/web/src/app/field/[visitId]/actions.ts"
-  - "apps/web/src/app/field/[visitId]/page.tsx"
-  - "apps/web/src/app/operations/page.tsx"
-  - "apps/web/src/app/operations/actions.ts"
-  - "apps/web/src/lib/offline.ts"
-
-required_tests:
-  - "Database/RLS source contracts for requester ownership, Operations-only decision, self-approval refusal, mandatory evidence or safety exception, expiry and visit-close refusal."
-  - "Field source contract for actual GPS/time capture, offline durable queue and no direct arrival/self-approval transition."
-  - "Operations queue and server-action contract for approve/reject through the guarded RPC."
-  - "Typecheck, production build and focused Playwright iPad policy tests."
+  - "Read-only: Playwright test runs, manual UI exercise via the app, read-only database probes/queries."
+  - "Write-only to: the audit workbook, this task's evidence/screenshot records, and product-contract/execution/CURRENT_SLICE.yaml status field (to reflect retest progress) — no other repository writes."
 
 required_evidence:
-  - "product-contract/evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md"
-  - "Updated CURRENT_STATE.md, WORK_QUEUE.yaml, acceptance/evidence records and session ledger."
+  - "Updated audit workbook (or its documented substitute, since sheets 31-43 do not exist — see workbook_note above)."
+  - "Retest results appended to CHATGPT_WORK_RETEST_HANDOFF.md or a new dated retest report in evidence_destination.handoff_folder."
+  - "A final MVP1 production-readiness decision (one of: PRODUCTION READY / APPLICATION READY - PROVIDER CERTIFICATION PENDING / CONDITIONAL GO / NO-GO), grounded in this slice's actual evidence, not invented."
 
-source_verification:
-  source_commit: "62916ee"
-  passed:
-    - "npm run typecheck"
-    - "npm run build"
-    - "Focused static Playwright policy contracts: 3/3"
-    - "git diff --check"
-  blocked_runtime:
-    - "Clean worktree has no Supabase URL/key, so authenticated browser setup cannot start."
-    - "No local Supabase configuration, PostgreSQL service or Docker daemon is available for migration/RLS execution."
-    - "Shared remote migration history/access remains unreconciled; the source migration was not applied blindly."
+task_specific_context:
+  - "product-contract/execution/slice-history/CURRENT_SLICE_IPAD_M04_OVERRIDE_003_backup_2026-07-17.yaml (the paused task, restore on sponsor direction)"
+  - "product-contract/governance/HUMAN_APPROVALS.yaml#CYCLE2-QA-RETEST-ROUTING"
+  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/01_MVP1/05_REVIEW_AND_EVIDENCE/CYCLE2_IMPLEMENTATION_2026-07-16/CHATGPT_WORK_RETEST_HANDOFF.md"
+  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/01_MVP1/05_REVIEW_AND_EVIDENCE/CYCLE2_IMPLEMENTATION_2026-07-16/FULL_REGRESSION_RESULTS.md"
+  - "product-contract/evidence/CYCLE2-WAVE0-CREDENTIAL-REMEDIATION-EVIDENCE-2026-07-16.md"
+  - "product-contract/evidence/CYCLE2-WAVE1-UI-UX-EVIDENCE-2026-07-16.md"
+  - "product-contract/evidence/CYCLE2-WAVE2-STUB-PROVIDERS-EVIDENCE-2026-07-16.md"
 
 exit_condition: >-
-  The slice is complete only when an outside-fence inspector can create a durable,
-  evidence-governed request with actual GPS/time, cannot self-approve or enter offline,
-  Operations can approve or reject through a guarded/audited online decision, expired or
-  closed requests cannot unlock the visit, and all stated source/runtime tests and evidence
-  are captured. This does not claim shared-remote migration application or release.
+  This slice is complete when ChatGPT Work (or an equivalent independent retester) has
+  exercised the critical transactional storyline and the highest-risk fixed defects against
+  fix/mvp1-cycle2-production-hardening, recorded which providers are real vs. stub-backed,
+  captured evidence per evidence_destination, and returned a final MVP1 production-readiness
+  decision. It does not itself authorize merge to main or deployment — those remain separate,
+  explicitly gated actions.

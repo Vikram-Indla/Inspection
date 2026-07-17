@@ -68,6 +68,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-16"
     change_ref: "Sponsor response: 1a,2a,3a,4a"
+  - gate: "CYCLE2-QA-RETEST-ROUTING"
+    decision: "APPROVED — sponsor authorized temporarily rerouting product-contract/execution/CURRENT_SLICE.yaml from TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 to a new TASK-QA-CYCLE2-RETEST-001 slice, so ChatGPT Work's stop-gate check can authorize a read-only retest of branch fix/mvp1-cycle2-production-hardening (HEAD 8759e81). The iPad task's prior CURRENT_SLICE content is preserved verbatim at product-contract/execution/slice-history/CURRENT_SLICE_IPAD_M04_OVERRIDE_003_backup_2026-07-17.yaml and its own git history/branch state is untouched — only the active-slice pointer moved. Sponsor must explicitly direct restoring the iPad slice before iPad work resumes. This approval authorizes read-only QA retest actions only (Playwright runs, read-only DB probes/queries, workbook/evidence updates) — no application source edits, no migrations, no merge to main, no deploy, no credential rotation, no Git history rewrite, and no mutation of the 503 known-implausible-date visits rows."
+    approver: "Vikram Indla"
+    date: "2026-07-17"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-QA-CYCLE2-RETEST-001"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

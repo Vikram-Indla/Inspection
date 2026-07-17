@@ -1,0 +1,99 @@
+schema_version: "1.2"
+task_id: "TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003"
+parent_task_id: "TASK-G11-G12-RELEASE-001"
+gate: "G11 hardening"
+title: "Governed Operations approval for out-of-geofence iPad check-in"
+status: "SOURCE_VERIFIED_AWAITING_CONTROLLED_DATABASE_RUNTIME"
+enforce_stop_gate: true
+broad_implementation_allowed: true
+approval_ref: "HUMAN_APPROVALS.yaml#IPAD-GEO-OVERRIDE-APPROVAL-WORKFLOW"
+
+sponsor_direction:
+  approver: "Vikram Indla"
+  date: "2026-07-16"
+  authorization:
+    - "Implement the Operations-approved override workflow selected as 1A, 2A, 3A and 4A."
+    - "Create a clean, separate iPad pull request with source, tests, evidence and contract records."
+  policy:
+    - "Only the existing RBAC Operations approver group may decide; the requester can never decide their own request."
+    - "A request requires a governed reason code, mandatory narrative, actual GPS/time and either photo evidence or a safety/security capture exception."
+    - "A request expires after 30 minutes for one inspector, visit and arrival attempt, or earlier when the visit closes."
+    - "Offline may queue real GPS/evidence, but never self-approves or unlocks check-in; Operations approval occurs online."
+  limits:
+    - "This does not resolve DEC-002's formal numeric GIS governance record, the maps-provider decision, or the migration-history repair."
+
+branch_at_start: "codex/ipad/m04-geofence-policy-promotion-002"
+head_at_start: "9ba5a24"
+worktree_at_start: "Clean dedicated worktree; two in-slice uncommitted telemetry regression-test edits."
+
+process_ids: ["P06A"]
+requirement_ids: ["MVP1-M04-039", "MVP1-M04-043", "MVP1-M04-045", "MVP1-M08-013"]
+screen_ids: ["SCR-IPAD-620", "SCR-WEB-500", "SCR-ADM-070"]
+engine_ids: ["ENG-06", "ENG-08", "ENG-11"]
+acceptance_ids: ["AC-0152", "AC-0153", "AC-0154", "AC-0155", "AC-0156"]
+
+dependencies:
+  - "RBAC-008 permits Operations to approve an override per policy."
+  - "STM-JRN-003 permits check-in only inside the fence or with an approved override."
+  - "Existing immutable geo events, canonical operational state transition, offline outbox and audit events remain authoritative."
+
+open_decisions:
+  - "DEC-002 formal numeric GPS/geofence governance remains recorded separately; existing configured values remain unchanged."
+  - "DEC-008 runtime maps/routing provider remains untouched."
+  - "Remote migration-history repair remains a release-hardening prerequisite, not a reason to apply DDL blindly."
+
+do_not_touch:
+  - "Do not alter official factory coordinates, immutable submitted versions, prior geo/audit records or main."
+  - "Do not permit direct state mutation, inspector self-approval, offline approval, expired approval, or a permanent integration mock."
+  - "Do not apply this source migration to the shared remote while migration history is unreconciled."
+
+authorized_file_scope:
+  - "Forward-only Supabase migration, RLS/RPC authorization, iPad Startup, Operations Center approval queue, offline outbox, tests and required contract/evidence records."
+
+task_specific_context:
+  - "product-contract/business/master_end_to_end_process.md"
+  - "product-contract/screens/screen_route_catalogue.csv"
+  - "product-contract/domain/field_dictionary.csv"
+  - "product-contract/domain/rbac_matrix.csv"
+  - "product-contract/domain/state_transitions.csv"
+  - "product-contract/governance/error_catalogue.csv"
+  - "product-contract/governance/HUMAN_APPROVALS.yaml"
+  - "supabase/migrations/0001_foundation.sql"
+  - "supabase/migrations/0002_rbac_audit.sql"
+  - "supabase/migrations/0015_w1_journey_state.sql"
+  - "supabase/migrations/0020_fix_field_journey.sql"
+  - "apps/web/src/app/field/[visitId]/Startup.tsx"
+  - "apps/web/src/app/field/[visitId]/actions.ts"
+  - "apps/web/src/app/field/[visitId]/page.tsx"
+  - "apps/web/src/app/operations/page.tsx"
+  - "apps/web/src/app/operations/actions.ts"
+  - "apps/web/src/lib/offline.ts"
+
+required_tests:
+  - "Database/RLS source contracts for requester ownership, Operations-only decision, self-approval refusal, mandatory evidence or safety exception, expiry and visit-close refusal."
+  - "Field source contract for actual GPS/time capture, offline durable queue and no direct arrival/self-approval transition."
+  - "Operations queue and server-action contract for approve/reject through the guarded RPC."
+  - "Typecheck, production build and focused Playwright iPad policy tests."
+
+required_evidence:
+  - "product-contract/evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md"
+  - "Updated CURRENT_STATE.md, WORK_QUEUE.yaml, acceptance/evidence records and session ledger."
+
+source_verification:
+  source_commit: "62916ee"
+  passed:
+    - "npm run typecheck"
+    - "npm run build"
+    - "Focused static Playwright policy contracts: 3/3"
+    - "git diff --check"
+  blocked_runtime:
+    - "Clean worktree has no Supabase URL/key, so authenticated browser setup cannot start."
+    - "No local Supabase configuration, PostgreSQL service or Docker daemon is available for migration/RLS execution."
+    - "Shared remote migration history/access remains unreconciled; the source migration was not applied blindly."
+
+exit_condition: >-
+  The slice is complete only when an outside-fence inspector can create a durable,
+  evidence-governed request with actual GPS/time, cannot self-approve or enter offline,
+  Operations can approve or reject through a guarded/audited online decision, expired or
+  closed requests cannot unlock the visit, and all stated source/runtime tests and evidence
+  are captured. This does not claim shared-remote migration application or release.
