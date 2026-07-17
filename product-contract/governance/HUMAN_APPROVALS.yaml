@@ -83,6 +83,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-17"
     change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-MVP2-M2-02-WORKFLOW-STUDIO-001 (module branch: workflow)"
+  - gate: "MVP2-M2-02-MERGE-TO-MAIN"
+    decision: "APPROVED (EXPLICIT SPONSOR RELEASE/CHANGE) — sponsor explicitly instructed 'commit the changes to main' after confirming the module is built and clean, and confirmed 'Yes — record approval + merge local' when told exactly what would land. Authorizes a single git merge of branch `workflow` (HEAD 21bce21) into LOCAL main. `workflow` carries the MVP1 cycle-2 hardening (already authorized via CYCLE2-MERGE-TO-MAIN-OVERRIDE) plus the full M2-02 Workflow/SLA/Notification Studio (build-authorized via MVP2-M2-02-WORKFLOW-STUDIO-BUILD-AUTHORIZATION). The sponsor accepts merge with these holds OPEN and NOT resolved: the 5 forward-only M2-02 migrations are NOT applied to any database; the live-DB Playwright regression + browser render were NOT executed (deferred — no Docker/isolated DB, sponsor declined arrangements); DEC-003, SMS/email/push providers, and the M2-05 shared semantic-event migration remain open. This override authorizes the git merge into LOCAL main ONLY — it does NOT authorize git push to origin, remote migration apply to iiozvqntawxfwbgffzqu, production deployment, credential rotation, or Git-history rewrite."
+    approver: "Vikram Indla"
+    date: "2026-07-17"
+    change_ref: "branch workflow @ 21bce21 -> local main (no push/deploy/remote-apply)"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."
