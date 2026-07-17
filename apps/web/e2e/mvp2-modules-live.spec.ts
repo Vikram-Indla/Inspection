@@ -51,3 +51,41 @@ test("M2-04 governed write: invalid weights refused, valid draft persists (live 
   await page.reload();
   await expect(page.getByText(label)).toBeVisible(); // persisted in staging DB
 });
+
+test("M2-06 governed write: create a GIS layer (live RLS gis_admin)", async ({ page }) => {
+  const key = `e2e-layer-${Date.now()}`;
+  await page.goto("/locale?set=en");
+  await page.goto("/admin/gis/spatial");
+  await page.locator('input[name="layer_key"]').fill(key);
+  await page.locator('input[name="label"]').fill(key);
+  await page.getByRole("button", { name: /Create layer/i }).click();
+  await expect(page.getByText(/layer created/i)).toBeVisible();
+  await page.reload();
+  await expect(page.getByText(key)).toBeVisible();
+});
+
+test("M2-10 governed write: open a case (live RLS compliance)", async ({ page }) => {
+  await page.goto("/locale?set=en");
+  await page.goto("/cases");
+  await page.getByRole("button", { name: /Open case/i }).click();
+  await expect(page.getByText(/case opened/i)).toBeVisible();
+});
+
+test("M2-12 governed write: record a signature act, verification unavailable (PKI held)", async ({ page }) => {
+  await page.goto("/locale?set=en");
+  await page.goto("/committee");
+  await page.getByRole("button", { name: /Record signature act/i }).click();
+  await expect(page.getByText(/recorded/i)).toBeVisible();
+  await page.reload();
+  // PKI/EBDA held → verification is 'unavailable', never fabricated 'verified'.
+  await expect(page.getByText("unavailable").first()).toBeVisible();
+});
+
+test("M2-08 governed write: create an external request (live RLS compliance)", async ({ page }) => {
+  const subject = `e2e-req-${Date.now()}`;
+  await page.goto("/locale?set=en");
+  await page.goto("/portal");
+  await page.locator('input[name="subject"]').fill(subject);
+  await page.getByRole("button", { name: /Create request/i }).click();
+  await expect(page.getByText(/request created/i)).toBeVisible();
+});

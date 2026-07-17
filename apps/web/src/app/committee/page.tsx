@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
+import { RecordSignature } from "./RecordSignature";
 
 // TASK-MVP2-M2-12-COMMITTEE-SIGNATURE-001 · MVP2-REQ-0128..0136 · CD-049 (decision_dossier_v1).
 export const dynamic = "force-dynamic";
@@ -28,6 +29,10 @@ export default async function CommitteePage() {
   return (
     <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="ax-lozenge ax-lozenge--info">CD-049 · REQ-0128..0136</span>}>
       <div className="ax-banner"><div><strong>{t("cmte.banner.title", "Signature & verification.")}</strong> {t("cmte.banner.body", "Signature and refusal are distinct facts; queued is not delivered. Verification is never “verified” without a provider — PKI/EBDA is held. Acknowledgement is not a signature.")}</div></div>
+      <RecordSignature strings={{
+        record: t("cmte.record", "Record signature act"), recording: t("cmte.recording", "Recording…"),
+        recorded: t("cmte.recorded", "recorded"), kind: t("cmte.kind", "Kind"), outcome: t("cmte.outcome", "Outcome"),
+      }} />
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("cmte.error", "Couldn’t load committee data. Nothing changed.")}</strong></div></div>}
       {!error && (acts ?? []).length === 0 && (vers ?? []).length === 0 && (
         <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">✒️</span>

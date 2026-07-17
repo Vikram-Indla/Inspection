@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
+import { CreateLayer } from "./CreateLayer";
 
 // TASK-MVP2-M2-06-SPATIAL-GIS-001 · MVP2-REQ-0087..0108 · CD-045 (spatial_canvas_v1).
 export const dynamic = "force-dynamic";
@@ -28,6 +29,10 @@ export default async function SpatialPage() {
   return (
     <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")} context={<span className="ax-lozenge ax-lozenge--info">CD-045 · REQ-0087..0108</span>}>
       <div className="ax-banner"><div><strong>{t("gis.sp.banner.title", "Layers & locations.")}</strong> {t("gis.sp.banner.body", "The authoritative factory pin stays GIS-admin-owned (FND-007); these are additive working layers. Geofence/accuracy use accepted engine_settings.gis values. Mapbox rendering is held.")}</div></div>
+      <CreateLayer strings={{
+        key: t("gis.sp.key", "Layer key"), label: t("gis.sp.label", "Label"), type: t("gis.sp.type", "Type"),
+        create: t("gis.sp.create", "Create layer"), creating: t("gis.sp.creating", "Creating…"), created: t("gis.sp.created", "layer created"),
+      }} />
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("gis.sp.error", "Couldn’t load spatial data. Nothing changed.")}</strong></div></div>}
       {!error && (layers ?? []).length === 0 && (locs ?? []).length === 0 && (
         <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">🗺️</span>
