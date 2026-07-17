@@ -107,15 +107,20 @@ Built and runtime-certified the 6 new module UI surfaces against staging:
   ext-identity held); `/operations/exceptions` (M2-09 projection); `/committee` (M2-12);
   `/admin/gis/spatial` (M2-06). All flag-gated (OFF → honest NotYetBoundary), consuming
   real RLS-scoped tables, with loading/empty/RLS-empty/error hard states, Astryx tokens.
-- **Live journeys `mvp2-modules-live.spec.ts` — 11/11 PASS** (real persona auth vs staging):
-  6 routes render live (flag on, RLS-scoped, hard state, no overflow) + **M2-04 governed
-  WRITE**: invalid weights refused by the live server rule; a valid draft persisted and
-  survived reload (proves live RLS admin=risk_owner + validation + persistence).
+- **Live journeys `mvp2-modules-live.spec.ts` — 15/15 PASS** (real persona auth vs staging):
+  6 routes render live (flag on, RLS-scoped, hard state, no overflow) + **5 governed WRITES**
+  persisted under live RLS — M2-04 risk draft (invalid weights refused, valid persisted),
+  M2-06 GIS layer, M2-10 case open (one-open index), M2-12 signature act (PKI held →
+  verification `unavailable`, never fabricated), M2-08 external request. M2-09 is a
+  read-only projection by design.
+- **M2-05 audit-replay suite — 8/8 PASS** on staging (recorder not-degraded, all 6 modes,
+  case-gated completeness, RTL/412 reflow, zero-disclosure). Stale specs updated to the
+  semantic-present truth.
 
-**Every module now has: applied migration + live RLS + pure-contract spec + a live UI
-journey.** Remaining to fully close Prompt-22: broaden write journeys per module
-(reassign/decide/objection/signature flows), update the 2 stale M2-05 browser specs to
-the semantic-present state, and the standing provider/policy holds.
+**Every module now has: applied migration + live RLS + pure-contract spec + live UI render
++ a governed-write journey** (M2-09 read-only by design). Remaining to fully close Prompt-22:
+per-module write EDGE cases (reassign/objection/appeal/committee-decision variants), and the
+standing provider/policy holds (never inventable).
 
 ## 6. The single unlock for the full Prompt-22 certificate
 Grant DB access — either re-auth the Supabase MCP to the org holding
