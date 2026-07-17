@@ -30,6 +30,8 @@ export default async function AiSuggestionsPage() {
     propose: t("ai.propose", "Propose"), proposing: t("ai.proposing", "Proposing…"), proposed: t("ai.proposed", "proposed"),
     dispose: t("ai.dispose", "Disposition"), disposing: t("ai.disposing", "Applying…"), disposed: t("ai.disposed", "disposed"),
     reason: t("ai.reason", "Reason"),
+    context: t("ai.context", "Context (advisory)"), generate: t("ai.generate", "Generate (AI)"),
+    generating: t("ai.generating", "Generating…"), generated: t("ai.generated", "generated"),
   };
   const mapped: AiRow[] = (rows ?? []).map((r) => ({
     id: r.id, surface: r.surface, text: String((r.suggestion as { text?: string })?.text ?? ""),

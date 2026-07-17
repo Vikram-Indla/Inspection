@@ -1,18 +1,29 @@
 "use client";
 import { useActionState } from "react";
-import { proposeSuggestion, disposeSuggestion, type AiResult } from "./actions";
+import { proposeSuggestion, disposeSuggestion, generateAiSuggestion, type AiResult } from "./actions";
 import { isDispositionAllowed, AI_DISPOSITIONS, type AiDisposition } from "@/lib/ai/suggestions";
 
 export type AiRow = { id: string; surface: string; text: string; disposition: AiDisposition; provider_status: string };
 export type AiStrings = {
   surface: string; text: string; propose: string; proposing: string; proposed: string;
   dispose: string; disposing: string; disposed: string; reason: string;
+  context: string; generate: string; generating: string; generated: string;
 };
 
 export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStrings }) {
   const [pState, pAction, proposing] = useActionState<AiResult, FormData>(proposeSuggestion, {});
+  const [gState, gAction, generating] = useActionState<AiResult, FormData>(generateAiSuggestion, {});
   return (
     <>
+      {/* Gemini-generated advisory suggestion — fail-closed, human still disposes */}
+      <form action={gAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+        <div className="ax-field"><label className="ax-field__label">{s.surface}</label>
+          <select className="ax-input" name="surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
+        <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label">{s.context}</label><input className="ax-input" name="context" /></div>
+        <button className="ax-btn" disabled={generating}>{generating ? s.generating : s.generate}</button>
+        {gState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{gState.error}</span>}
+        {gState.ok && <span className="ax-lozenge ax-lozenge--success">{s.generated}</span>}
+      </form>
       <form action={pAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <div className="ax-field"><label className="ax-field__label">{s.surface}</label>
           <select className="ax-input" name="surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>

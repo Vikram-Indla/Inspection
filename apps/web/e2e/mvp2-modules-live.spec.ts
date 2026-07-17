@@ -91,6 +91,18 @@ test("M2-08 governed write: create an external request (live RLS compliance)", a
   await expect(page.getByText(/request created/i)).toBeVisible();
 });
 
+test("M2-11 Gemini: generate an AI advisory suggestion, then human-dispose (live provider)", async ({ page }) => {
+  await page.goto("/locale?set=en");
+  await page.goto("/ai/suggestions");
+  await page.locator('input[name="context"]').fill(`ctx-${Date.now()} two overdue factories`);
+  await page.getByRole("button", { name: /Generate \(AI\)/i }).click();
+  // Gemini is live in the server env → a real advisory suggestion is created (proposed).
+  await expect(page.getByText(/generated/i).first()).toBeVisible({ timeout: 30000 });
+  await page.reload();
+  // The generated suggestion is 'proposed' and awaits a HUMAN disposition (AI never decides).
+  await expect(page.locator(".ax-lozenge", { hasText: "proposed" }).first()).toBeVisible();
+});
+
 test("M2-11 governed write: propose an advisory suggestion, then human-dispose it (live)", async ({ page }) => {
   const text = `e2e-ai-${Date.now()}`;
   await page.goto("/locale?set=en");
