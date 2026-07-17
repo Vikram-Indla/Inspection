@@ -73,6 +73,33 @@ domain logic + pure-contract specs; typecheck + build + static lane green).
 - **Policy values**: DEC-003 SLA calendar/timers, DEC-006/DEC2-009 retention/redaction/
   watermark/purge/legal, Arabic native terminology — held; never substituted.
 
+## 5b. RUNTIME CERTIFICATION — staging `iiozvqntawxfwbgffzqu` (2026-07-17)
+Sponsor supplied a Management-API token for the staging project (Seoul, ACTIVE_HEALTHY).
+Runtime evidence now obtained:
+- **All 12 MVP2 migrations applied** (6 landed Wave-1 + 6 new module foundations),
+  HTTP 201 each, dependency order (M2-08 before M2-10). Preflight confirmed additive
+  only (no DROP/TRUNCATE); zero collision (no MVP2 objects pre-existed).
+- **Post-apply schema verified**: 19 MVP2 tables live with `relrowsecurity=true`; RPCs
+  `append_semantic_audit_event`, `audit_replay_case`, `risk_model_transition` present;
+  `evidence.geo_accuracy_m/geo_source` columns added; new tables carry scoped policies
+  (3 each; append-only stores 2 = read+insert, no update/delete).
+- **Security advisors**: 87 lints; the only RLS findings (`rls_policy_always_true` on
+  `factories`/`virtual_sessions`, `rls_enabled_no_policy` on `audit_event_source_contracts`)
+  are ALL pre-existing MVP1 / landed-M2-05 — **my 6 modules introduce ZERO new P0/P1**.
+  Residual WARNs (function_search_path_mutable on 4 of my trigger fns) noted for hardening.
+- **Live browser E2E** (own build on :3100, real persona auth against staging):
+  - M2-05 zero-disclosure (inspector → denial, zero events): **PASS** — a security-critical
+    requirement now runtime-certified.
+  - M2-05 flight-recorder / mode-nav specs (2): stale-for-live-semantic-state — they assert
+    the DEGRADED (pre-migration) copy; the page now correctly renders the fuller semantic
+    experience. Behavior correct/improved; specs to be updated to the semantic-present state.
+  - **MVP1 non-regression**: negative-auth + shell-navigation **15/15 PASS** on staging —
+    additive migrations broke no MVP1 auth/nav behavior.
+
+**Runtime status:** Wave-1 M2-05 security path + MVP1 non-regression certified on staging.
+Full per-module browser journeys for the 6 new modules await their UI slices (foundations
+are DB-live and RLS-verified; UI beyond `/tasks` is the remaining build).
+
 ## 6. The single unlock for the full Prompt-22 certificate
 Grant DB access — either re-auth the Supabase MCP to the org holding
 `iiozvqntawxfwbgffzqu`, or confirm `apps/web/.env.local` (Supabase URL + anon key) plus
