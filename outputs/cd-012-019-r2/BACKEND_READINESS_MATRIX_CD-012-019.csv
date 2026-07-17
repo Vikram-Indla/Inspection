@@ -1,0 +1,19 @@
+screen,capability,readiness,exact_action_or_read,prerequisite
+CD-012,Library read + lineage render,BUILDABLE_NOW,config_versions+profiles read,cite symbols
+CD-012,Propose/save/approve-publish,BUILDABLE_NOW,proposeWorkflowDraft;saveWorkflowDraft;approvePublishWorkflow,cite symbols + SoD/immutability boundaries
+CD-012,Graph/test/case/stale/notify metrics,BLOCKED_BY_DECISION,none,define sources before any metric renders
+CD-013,Payload editor (load/save/validate),BUILDABLE_NOW,saveWorkflowDraft,cite validation behavior
+CD-013,Canvas/graph validation/replay,NEEDS_APPROVED_CONTRACT,none,canvas spec; named algorithm; sim engine/fixtures/persistence/audit
+CD-014,Read + direct save + weights-sum check,BUILDABLE_NOW,engine_settings read/write,cite action + RLS
+CD-014,Why-this-factory trace,BUILDABLE_NOW,client arithmetic over shown inputs,inputs cited per factory record
+CD-014,Approval step / freshness / registry / backtest,NEEDS_APPROVED_CONTRACT,none,separate governed change
+CD-015,Coordinates read + radius save,BUILDABLE_NOW,updateGeofenceRadius,cite action + range validation + RLS
+CD-015,Maps/geocoding/KSA boundary/evidence sync,NEEDS_APPROVED_CONTRACT,none,provider contracts
+CD-016,Everything,NEEDS_APPROVED_CONTRACT,none,route ownership + 8 prerequisites on-screen
+CD-017,Read-only holdings view,BUILDABLE_NOW,profiles+user roles read,cite reads + RLS scope
+CD-017,Change workflow / SoD / self-escalation / explainer conclusiveness,NEEDS_APPROVED_CONTRACT,none,workflow contract + RLS citations
+CD-017,Fallback authority,BLOCKED_BY_DECISION,none,separate decision
+CD-018,Full working set (load/save/review/add/sync/history/restore-as-draft),BUILDABLE_NOW,ui_strings actions,cite symbols — PRIORITY SLICE
+CD-019,Reader (filters/pagination/diff),BUILDABLE_NOW,audit_events read,cite reader + RLS
+CD-019,Correlation view,NEEDS_APPROVED_CONTRACT,none,correlation read model
+CD-019,Reveal/export/retention/hash-chain,BLOCKED_BY_DECISION,none,privacy + retention contracts

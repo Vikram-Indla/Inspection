@@ -1,0 +1,23 @@
+screen,design_component,code_target,selector,disposition,input_contract
+ALL,Frozen shell,Shell.tsx/ShellClient.tsx,.ax-shell,PRESERVE,—
+ALL,Truth-tier legend/tags,TruthTier (CREATE shared),.tt-legend/.tt-tag,CREATE,tier+label
+ALL,Not-available-yet boundary,NotYetBoundary (CREATE shared),.nya,CREATE,title+consequence+one seam id
+ALL,Fixture note,FixtureNote (CREATE shared),.fixnote,CREATE,lang
+CD-012,Version lineage,LifecycleSignature.tsx,.wf-lin,CREATE,config_versions rows
+CD-012,Maker/checker cell,workflows/page.tsx,.wf-mc,UPDATE,profiles resolution
+CD-013,Payload editor,workflows editor component,.jed,UPDATE,draft payload JSON
+CD-013,Transition structure panel,StructurePanel,.m-kv,CREATE,parsed payload (render only)
+CD-013,Quarantined designer lane,FutureContractLane,.qlane,CREATE-BLOCKED,non-executable; requirements list
+CD-014,Factors/weights editor,risk studio,.rk-driver,UPDATE,engine_settings factors
+CD-014,Bands strip,risk studio,.rk-band,UPDATE,engine_settings bands
+CD-014,Calculation trace,RiskTrace,.rk-trace,CREATE,factory inputs + weights
+CD-015,Coordinates provenance panel,GisStudio.tsx,.gx-conf,UPDATE,official + field observation
+CD-015,Radius editor,GisStudio.tsx,.rad,UPDATE,radius + range + updateGeofenceRadius
+CD-015,Map preview placeholder,GisStudio.tsx,.gx-map,UPDATE,no provider; facts-independent
+CD-016,Blocked boundary,(new surface — no route),.nya + boundary block,CREATE-BLOCKED,route contract first
+CD-017,Holdings table,access/page.tsx,.ax-table,UPDATE,profiles + roles (read-only)
+CD-017,Explainer proposal,AccessExplainer,.rp-why,CREATE-BLOCKED,holdings + RLS citations pending
+CD-018,String row,localization/Manager.tsx,.lz-row,UPDATE,ui_strings row
+CD-018,History + restore-as-draft,localization/Manager.tsx,.wf-prov,UPDATE,ui_strings revisions
+CD-019,Event stream + pagination,audit/page.tsx,.au-stream,UPDATE,audit_events page
+CD-019,Before/after diff,audit/page.tsx,.au-diff,UPDATE,stored JSON images
