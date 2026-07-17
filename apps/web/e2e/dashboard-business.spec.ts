@@ -143,11 +143,28 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
 });
 
 test.describe("TASK-WEB-DASHBOARD-002 route authorization", () => {
-  test.use({ storageState: storageStatePath("planner") });
+  // Obsolete-test fix (Cycle 2 completion pass): Dashboard and Operations
+  // Center were shared with every non-admin persona by business direction
+  // (2026-07-16, dashboard/page.tsx's BUSINESS_ROLE_KEYS guard + the
+  // shell-navigation.ts nav entry — already merged, commit 70c2bf7). Planner
+  // is a BUSINESS_ROLE_KEYS member and is therefore correctly granted access
+  // now, not redirected — this test previously asserted the pre-directive
+  // restricted model.
+  test.describe("business persona", () => {
+    test.use({ storageState: storageStatePath("planner") });
+    test("a shared-business persona (planner) can open the dashboard by URL", async ({ page }) => {
+      await page.goto("/dashboard");
+      await expect(page).toHaveURL(/\/dashboard/);
+      await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toBeVisible();
+    });
+  });
 
-  test("a non-dashboard persona cannot open the dashboard by URL", async ({ page }) => {
-    await page.goto("/dashboard");
-    await page.waitForURL(/\/planning/, { timeout: 20_000 });
-    await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toHaveCount(0);
+  test.describe("admin-only persona", () => {
+    test.use({ storageState: storageStatePath("admin") });
+    test("an admin-only persona cannot open the dashboard by URL", async ({ page }) => {
+      await page.goto("/dashboard");
+      await page.waitForURL(u => u.pathname !== "/dashboard", { timeout: 20_000 });
+      await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toHaveCount(0);
+    });
   });
 });

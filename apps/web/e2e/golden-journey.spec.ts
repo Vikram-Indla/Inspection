@@ -101,7 +101,7 @@ async function fillWizard(page: Page) {
   // collides often enough to flake. Spread across a ~270-year range instead —
   // the same fix applied in cd-023-immediate-authority-bar.spec.ts — so two
   // suites picking random offsets are de-facto never in the same window.
-  const dayOffset = 1000 + Math.floor(Math.random() * 99000);
+  const dayOffset = 1000 + Math.floor(Math.random() * 20000);
   const start = new Date(Date.now() + dayOffset * 864e5).toISOString().slice(0, 16);
   const end = new Date(Date.now() + dayOffset * 864e5 + 4 * 36e5).toISOString().slice(0, 16);
   await page.locator('input[name="window_start"]').fill(start);
@@ -155,9 +155,18 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   const arrivalSurface = page
     .getByRole("heading", { name: /Arrival evidence \(M04-045\)/i, level: 5 })
     .locator("..");
-  await arrivalSurface.getByLabel("Arrival note").fill(arrivalNote);
-  await arrivalSurface.getByRole("button", { name: "Queue arrival evidence" }).click();
-  await expect(arrivalSurface).toContainText("Arrival evidence queued");
+  // Obsolete-test fix (Cycle 2 completion pass): this UI's field/button copy
+  // was relabeled by the already-merged iPad geofence-override work
+  // (commit 62916ee) — "Arrival note"/"Queue arrival evidence" became
+  // "Arrival comment"/"Save arrival evidence". The underlying M04-045
+  // requirement (visit_id-linked evidence, inspection_id null before an
+  // inspection exists) is unchanged and verified below via a live read —
+  // only the stale selectors are fixed here, per field/[visitId]/page.tsx
+  // (strings.arrivalComment / strings.arrivalSave / strings.arrivalSaved)
+  // and src/lib/offline.ts's processOutbox evidence leg.
+  await arrivalSurface.getByLabel("Arrival comment").fill(arrivalNote);
+  await arrivalSurface.getByRole("button", { name: "Save arrival evidence" }).click();
+  await expect(arrivalSurface).toContainText("saved or queued for sync");
   const arrivalInspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
   const arrivalEvidence = await pollRest(async () => {
     const { data } = await rest("GET",

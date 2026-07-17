@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { insertNotification } from "@/lib/notify";
+import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
 
 const SYSTEM_ERROR = "The session could not be scheduled. Try again or contact support.";
 
@@ -23,6 +24,7 @@ export async function scheduleSession(_: VirtualActionResult, fd: FormData): Pro
   if (!visit_id) return { error: "Missing visit id." };
   if (!appointment_at || Number.isNaN(Date.parse(appointment_at)))
     return { error: "A valid appointment date/time is required (M05-002)." };
+  if (!isPlausibleDate(appointment_at)) return { error: PLAUSIBLE_DATE_ERROR };
   if (!rep_name) return { error: "Factory representative name is required (STM-VIR-002 — identity binds to the OTP)." };
 
   const { data: visit, error: vErr } = await sb.from("visits")

@@ -1,0 +1,45 @@
+-- SCR-ADM-080 Notification & SLA Rules — Arabic strings for the new admin
+-- screen (apps/web/src/app/admin/notifications/page.tsx). Guarded upsert never
+-- clobbers a human-reviewed translation (status='draft' only).
+insert into ui_strings (key, en, ar, status, context) values
+  ('admin.notif.title', 'Notification & SLA Rules', 'قواعد الإشعارات واتفاقية مستوى الخدمة', 'draft', 'SCR-ADM-080 title'),
+  ('admin.notif.form.eventKey', 'Event', 'الحدث', 'draft', 'SCR-ADM-080 form'),
+  ('admin.notif.form.channel', 'Channel', 'القناة', 'draft', 'SCR-ADM-080 form'),
+  ('admin.notif.form.recipientRole', 'Recipient role', 'دور المستلم', 'draft', 'SCR-ADM-080 form'),
+  ('admin.notif.form.template', 'Template', 'قالب الرسالة', 'draft', 'SCR-ADM-080 form'),
+  ('admin.notif.form.slaMinutes', 'SLA timer (minutes)', 'مؤقت اتفاقية مستوى الخدمة (بالدقائق)', 'draft', 'SCR-ADM-080 form'),
+  ('admin.notif.form.escalationRole', 'Escalation role', 'دور التصعيد', 'draft', 'SCR-ADM-080 form'),
+  ('admin.notif.form.deactivationReason', 'Deactivation reason', 'سبب الإيقاف', 'draft', 'SCR-ADM-080 form'),
+  ('admin.notif.create', 'Create draft rule', 'إنشاء مسودة قاعدة', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.creating', 'Creating…', 'جارٍ الإنشاء…', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.created', 'Draft created', 'تم إنشاء المسودة', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.publish', 'Validate and publish', 'التحقق والنشر', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.publishing', 'Publishing…', 'جارٍ النشر…', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.published', 'Published', 'منشورة', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.deactivate', 'Deactivate', 'إيقاف', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.deactivating', 'Deactivating…', 'جارٍ الإيقاف…', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.deactivated', 'Deactivated', 'موقَّفة', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.test', 'Send test', 'إرسال اختبار', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.testing', 'Sending…', 'جارٍ الإرسال…', 'draft', 'SCR-ADM-080 action'),
+  ('admin.notif.status.draft', 'Draft', 'مسودة', 'draft', 'SCR-ADM-080 status'),
+  ('admin.notif.status.published', 'Published', 'منشورة', 'draft', 'SCR-ADM-080 status'),
+  ('admin.notif.status.deactivated', 'Deactivated', 'موقَّفة', 'draft', 'SCR-ADM-080 status'),
+  ('admin.notif.empty.title', 'No notification rules configured', 'لا توجد قواعد إشعارات مهيّأة', 'draft', 'SCR-ADM-080 empty state'),
+  ('admin.notif.empty.body', 'The read succeeded — the register is genuinely empty. Create the first rule above.', 'نجحت القراءة — السجل فارغ فعليًا. أنشئ أول قاعدة أعلاه.', 'draft', 'SCR-ADM-080 empty state'),
+  ('admin.notif.col.event', 'Event', 'الحدث', 'draft', 'SCR-ADM-080 table'),
+  ('admin.notif.col.channel', 'Channel', 'القناة', 'draft', 'SCR-ADM-080 table'),
+  ('admin.notif.col.recipient', 'Recipient', 'المستلم', 'draft', 'SCR-ADM-080 table'),
+  ('admin.notif.col.sla', 'SLA → escalation', 'اتفاقية مستوى الخدمة ← التصعيد', 'draft', 'SCR-ADM-080 table'),
+  ('admin.notif.col.status', 'Status', 'الحالة', 'draft', 'SCR-ADM-080 table'),
+  ('admin.notif.col.version', 'Version', 'الإصدار', 'draft', 'SCR-ADM-080 table'),
+  ('admin.notif.col.actions', 'Actions', 'الإجراءات', 'draft', 'SCR-ADM-080 table'),
+  ('admin.notif.missingRecipient', 'Missing recipient', 'مستلم مفقود', 'draft', 'SCR-ADM-080 state (screen contract: Missing recipient)'),
+  ('admin.notif.degraded.chip', 'register unavailable', 'السجل غير متاح', 'draft', 'SCR-ADM-080 degraded'),
+  ('admin.notif.degraded.title', 'The notification rule register couldn''t be read.', 'تعذّرت قراءة سجل قواعد الإشعارات.', 'draft', 'SCR-ADM-080 degraded'),
+  ('admin.notif.degraded.body', 'Nothing is shown as zero — the count is unknown, not empty.', 'لا شيء يُعرض كصفر — العدد غير معروف، وليس فارغًا.', 'draft', 'SCR-ADM-080 degraded'),
+  ('admin.notif.readonly.title', 'Read-only for your role', 'للقراءة فقط بحسب دورك', 'draft', 'SCR-ADM-080 readonly'),
+  ('admin.notif.readonly.body', 'You can view configuration; creating, publishing and deactivating rules require an admin configuration role and are enforced by row-level security.', 'يمكنك عرض التهيئة؛ يتطلب إنشاء القواعد ونشرها وإيقافها دور تهيئة إداري وتُفرض عبر أمان الصف (RLS).', 'draft', 'SCR-ADM-080 readonly'),
+  ('admin.notif.escalationNote', 'SLA timers and escalation roles are stored as governed configuration. Automatic breach-firing (a scheduled process that escalates when a timer elapses) is separate runtime scope and is not built by this screen.', 'تُخزَّن مؤقتات اتفاقية مستوى الخدمة وأدوار التصعيد كتهيئة معتمدة. التفعيل التلقائي عند انتهاء المؤقت (عملية مجدولة) نطاق تشغيلي منفصل وغير مُنفَّذ في هذه الشاشة.', 'draft', 'SCR-ADM-080 escalation boundary note')
+on conflict (key) do update
+  set ar = excluded.ar, en = excluded.en, context = excluded.context
+  where ui_strings.status = 'draft';

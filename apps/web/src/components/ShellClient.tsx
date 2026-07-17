@@ -23,6 +23,7 @@ export type ShellClientStrings = {
   noSearchResults: string;
   account: string;
   roles: string;
+  profileSettings: string;
   signOut: string;
   themeLight: string;
   themeDark: string;
@@ -48,6 +49,7 @@ function Icon({ name }: { name: ShellIcon }) {
     risk: <><path d="M12 3l10 18H2z"/><path d="M12 9v5M12 18h.01"/></>,
     map: <><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/></>,
     access: <><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></>,
+    notify: <><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></>,
   };
   return <svg {...common}>{paths[name]}</svg>;
 }
@@ -227,6 +229,7 @@ export default function ShellClient({
                     <strong>{email}</strong>
                     <span className="ax-caption">{strings.roles}: {roles.join(", ")}</span>
                     <a href={languageHref} lang={languageLang}>{languageLabel}</a>
+                    <a href="/profile">{strings.profileSettings}</a>
                     <a href="/signout">{strings.signOut}</a>
                   </div>
                 )}

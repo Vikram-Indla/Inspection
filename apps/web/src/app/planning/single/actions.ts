@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { findDuplicateActiveVisits } from "./duplicate";
+import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
 
 export type StepStatus = "pending" | "done" | "failed";
 export type PublishSteps = { plan: StepStatus; visit: StepStatus; assignment: StepStatus; status: StepStatus; notification: StepStatus };
@@ -112,6 +113,8 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   const endMs = Date.parse(window_end);
   if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs)
     blockers.push("Visit window end must be after start (FLD-PLAN-005)");
+  else if (!isPlausibleDate(window_start) || !isPlausibleDate(window_end))
+    blockers.push(PLAUSIBLE_DATE_ERROR);
   // Duplicate active visit (M02-012) — same shared check the dossier surfaces
   // as a selection-time warning; here it remains the hard publish-time block.
   if (factory_id) {

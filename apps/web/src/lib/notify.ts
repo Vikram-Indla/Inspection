@@ -49,8 +49,25 @@ export type NotifyOutcome = { error?: string; delivery_state?: string };
  * Never throws; the caller decides whether a failed notification blocks its flow
  * (it usually must not — the primary write already succeeded).
  */
+const PREF_COLUMN: Partial<Record<NotifyChannel, string>> = { push: "push_enabled", sms: "sms_enabled", email: "email_enabled" };
+
 export async function insertNotification(sb: SupabaseClient, input: NotifyInput): Promise<NotifyOutcome> {
   const channel: NotifyChannel = input.channel ?? "inapp";
+  // DEF-PRF-003 — inapp is never opt-outable (it IS the bell/inbox); push/sms/
+  // email honor the recipient's own preference row. No row = default enabled.
+  const prefColumn = PREF_COLUMN[channel];
+  if (prefColumn && input.recipient) {
+    const { data: pref } = await sb.from("notification_preferences")
+      .select("push_enabled, sms_enabled, email_enabled").eq("user_id", input.recipient).maybeSingle();
+    if (pref && (pref as unknown as Record<string, boolean>)[prefColumn] === false) {
+      const { error } = await sb.from("notifications").insert({
+        event_key: input.event_key, recipient: input.recipient, payload: input.payload,
+        channel, delivery_state: "suppressed_by_preference", delivered_at: null,
+      });
+      if (error) { console.error("[notification insert]", error); return { error: NEUTRAL_WRITE_ERROR }; }
+      return { delivery_state: "suppressed_by_preference" };
+    }
+  }
   const adapter = registry.get(channel);
   let delivery_state = "not_configured";   // honest default — no adapter, no claim
   let delivered_at: string | null = null;
@@ -64,6 +81,12 @@ export async function insertNotification(sb: SupabaseClient, input: NotifyInput)
       delivery_state = "failed";
     }
   }
+  // SCR-ADM-080 / DEF-ADM-080 — when a governed rule is published for this
+  // event+channel, stamp the delivered row with which rule/version handled it
+  // (runtime consumption + audit proof; a rule-less send is unaffected).
+  const { data: rule } = await sb.from("notification_rules")
+    .select("id, version_label").eq("event_key", input.event_key).eq("channel", channel)
+    .eq("status", "published").maybeSingle();
   const { error } = await sb.from("notifications").insert({
     event_key: input.event_key,
     recipient: input.recipient,
@@ -71,6 +94,8 @@ export async function insertNotification(sb: SupabaseClient, input: NotifyInput)
     channel,
     delivery_state,
     delivered_at,
+    notification_rule_id: rule?.id ?? null,
+    rule_version_label: rule?.version_label ?? null,
   });
   if (error) {
     console.error("[notification insert]", error);

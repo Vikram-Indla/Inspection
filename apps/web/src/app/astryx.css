@@ -49,6 +49,7 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   border-radius: var(--ax-radius-small);
   border: 1px solid transparent;
   font: var(--ax-text-body-strong);
+  text-decoration: none; /* Cycle 2 completion pass — an <a class="ax-btn"> must never look like an underlined link */
   cursor: pointer; user-select: none;
   transition: background var(--ax-motion-fast), border-color var(--ax-motion-fast), box-shadow var(--ax-motion-fast);
   background: var(--ax-color-primary); color: var(--ax-color-inverse-text);
@@ -482,6 +483,17 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   .ax-shell-search { inline-size: min(320px, 48vw); }
   .ax-shell-account__identity { display: none; }
   .ax-content { padding: var(--ax-space-200); }
+}
+
+/* DEF-UX-002 — between the full desktop sidebar (>=900px, no drawer collapse
+   yet) and the drawer breakpoint, the topbar search + theme/bell icons +
+   account identity text could crowd/wrap on tablet landscape widths (e.g.
+   1024px iPad landscape). Shrink search and drop the identity text a little
+   earlier than the drawer/backdrop switch, matching the file's existing
+   1099px tablet boundary. */
+@media (max-width: 1099px) {
+  .ax-shell-search { inline-size: min(260px, 30vw); }
+  .ax-shell-account__identity { display: none; }
 }
 
 @media (max-width: 560px) {

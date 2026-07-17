@@ -47,22 +47,20 @@ async function stageVirtualSession(
 
   const now = Date.now();
   const DAY = 24 * 60 * 60_000;
-  // Far-future, non-overlapping window. Prior runs can leave orphan
-  // assignments that RLS will not let a planner delete, so clock jitter alone
-  // is not a proof of uniqueness (two runs inside the same jitter bucket can
-  // collide). Read the inspector's existing assignment windows and place this
-  // fixture strictly after the latest one; the database exclusion remains the
-  // final authority.
-  const existing = must(
-    await rest("GET", `assignments?select=visits(window_start,window_end)&inspector_id=eq.${inspectorId}`, plannerJwt),
-    "read inspector assignment windows",
-  ) as { visits: { window_end: string | null } | null }[];
-  const latestExistingEnd = existing.reduce((latest, row) => {
-    const end = row.visits?.window_end ? Date.parse(row.visits.window_end) : NaN;
-    return Number.isFinite(end) ? Math.max(latest, end) : latest;
-  }, 0);
-  const minimumBase = now + 400 * DAY;
-  const base = Math.max(minimumBase, latestExistingEnd + 2 * DAY) + stageCount * 2 * DAY;
+  // DEF-DATA-005 (Cycle 2 completion pass) — visits.window_start/end has a
+  // plausible-year CHECK constraint (2020-2100). Two earlier approaches both
+  // made collisions worse: chaining off a queried "latest existing
+  // assignment" with a fixed ceiling made every call from already-contaminated
+  // residue land on the exact same day (assignments/visits have no DELETE
+  // policy, so residue accumulates forever), and later narrowing to a small
+  // reserved band collided with the sole shared seeded inspector persona's
+  // OTHER fixtures from golden-journey.spec.ts / cd-022-identity-lens.spec.ts /
+  // offline-drill.spec.ts — all of which already use wide multi-thousand-day
+  // random ranges on this same persona (per golden-journey's own comment).
+  // Fix: use that same proven wide-random-range pattern (collision
+  // probability ~1/20000 per pair, which is what already keeps those other
+  // files collision-free) instead of querying/chaining or narrowing.
+  const base = now + (400 + Math.floor(Math.random() * 20000)) * DAY + stageCount * 2 * DAY;
   stageCount += 1;
   const windowStart = new Date(base).toISOString();
   const windowEnd = new Date(base + 90 * 60_000).toISOString();
