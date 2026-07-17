@@ -42,6 +42,12 @@ export function configuredChannels(): NotifyChannel[] {
 // In-app is always configured: persistence of the row is the delivery.
 registerAdapter({ channel: "inapp", deliver: async () => ({ delivered: true }) });
 
+// Release provider integration — register the Resend email adapter when
+// RESEND_API_KEY is configured (server-only). Fail-closed: no key → email stays
+// 'not_configured'. Import is side-effect-free on the client (no server env).
+import { maybeRegisterResendEmail } from "./providers/email-resend";
+maybeRegisterResendEmail(registerAdapter);
+
 export type NotifyOutcome = { error?: string; delivery_state?: string };
 
 /**
