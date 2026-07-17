@@ -29,10 +29,15 @@ test.describe("CD-041..043 virtual backend verification gate", () => {
     expect(room).not.toMatch(/fd\.set\("participant", p\.display_name\)/);
   });
 
-  test("the driven fixture chooses a window after existing inspector assignments", () => {
+  test("the driven fixture uses a wide-random plausible-year window to avoid inspector-window collisions", () => {
+    // Obsolete-test fix (Cycle 2 completion pass): the fixture no longer
+    // queries/chains off existing assignment windows — see the DEF-DATA-005
+    // comment in cd-041-virtual-verified-gate.spec.ts for why that approach
+    // (and a later narrow-band variant) both made collisions worse. It now
+    // uses the same wide-random-range pattern already proven collision-free
+    // in golden-journey.spec.ts / cd-022-identity-lens.spec.ts / offline-drill.spec.ts.
     const driven = SRC("e2e/cd-041-virtual-verified-gate.spec.ts");
-    expect(driven).toContain("read inspector assignment windows");
-    expect(driven).toContain("latestExistingEnd");
-    expect(driven).toContain("Math.max(minimumBase, boundedExistingEnd + 2 * DAY) + stageCount * 2 * DAY + jitter");
+    expect(driven).toContain("DEF-DATA-005 (Cycle 2 completion pass)");
+    expect(driven).toContain("now + (400 + Math.floor(Math.random() * 20000)) * DAY + stageCount * 2 * DAY");
   });
 });

@@ -14,15 +14,25 @@ const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 
 test.describe("CD-006 regulation publish — provenance + honest no-op", () => {
   test("publishRegulation records approval provenance and reports honestly on no-op (WA-01/WA-02)", () => {
+    // Obsolete-test fix (Cycle 2 completion pass): publishRegulation() moved
+    // from a direct client-side .update() to a maker-checker RPC
+    // (publish_regulation, supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql)
+    // — a strictly stronger implementation of the same WA-01/WA-02 contract
+    // (atomic, DB-enforced distinct-approver check, raises rather than
+    // silently no-opping). Assertions updated to the current layer instead
+    // of the superseded client-side pattern.
     const actions = SRC("src/app/admin/regulations/actions.ts");
-    // WA-01 — provenance columns are written on publish.
-    expect(actions).toMatch(/published_at:\s*new Date\(\)\.toISOString\(\)/);
-    expect(actions).toMatch(/approved_by:\s*user\.id/);
-    // WA-02 — the update is verified and a 0-row result becomes an error, not ok.
-    expect(actions).toMatch(/\.eq\("status",\s*"draft"\)\.select\("id"\)/);
-    expect(actions).toMatch(/if\s*\(!data\?\.length\)\s*return\s*\{\s*error:/);
-    // Regression guard: the old fire-and-forget "always ok" shape is gone.
-    expect(actions).not.toMatch(/update\(\{ status: "published" \}\)\.eq\("id", id\)\.eq\("status", "draft"\);/);
+    const rpc = SRC("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
+    // WA-01 — provenance columns are written on publish, now inside the RPC.
+    expect(rpc).toMatch(/approved_by\s*=\s*auth\.uid\(\)/);
+    expect(rpc).toMatch(/published_at\s*=\s*now\(\)/);
+    // Maker-checker: the creator cannot approve their own draft.
+    expect(rpc).toMatch(/created_by\s*=\s*auth\.uid\(\)\s*then\s*raise exception/);
+    // WA-02 — a non-draft/missing regulation raises, it does not silently no-op.
+    expect(rpc).toMatch(/not found or v_new\.status\s*<>\s*'draft'\s*then\s*raise exception/);
+    // The server action calls the RPC and surfaces its error, never a false ok.
+    expect(actions).toMatch(/sb\.rpc\("publish_regulation"/);
+    expect(actions).toMatch(/if\s*\(error\)\s*\{/);
   });
 
   test("a non-admin (planner) cannot publish a regulation — RLS is the write authority (WA-02 path is reachable)", async () => {

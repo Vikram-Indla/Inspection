@@ -39,25 +39,12 @@ async function stageSession(plannerJwt: string, inspectorId: string): Promise<Id
 
   const now = Date.now();
   const DAY = 24 * 60 * 60_000;
-  const existing = must(
-    await rest("GET", `assignments?select=visits(window_end)&inspector_id=eq.${inspectorId}`, plannerJwt),
-    "read inspector assignment windows",
-  ) as { visits: { window_end: string | null } | null }[];
-  // DEF-DATA-005 — see the matching comment in cd-041-virtual-verified-gate.spec.ts:
-  // cap the chained base so it never drifts past the plausible-year CHECK constraint.
-  const latestExistingEnd = existing.reduce((latest, row) => {
-    const end = row.visits?.window_end ? Date.parse(row.visits.window_end) : NaN;
-    return Number.isFinite(end) ? Math.max(latest, end) : latest;
-  }, 0);
-  // Clamping to a fixed ceiling alone collided across repeated/parallel runs
-  // (every clamped call lands on the exact same day) — add bounded random
-  // jitter to restore per-run uniqueness while staying well inside the
-  // plausible-year window (max ~2 years out). The DB unique/exclusion
-  // constraint on assignments remains the final collision authority either way.
-  const PLAUSIBLE_CEILING = Date.parse("2099-01-01T00:00:00Z");
-  const boundedExistingEnd = Math.min(latestExistingEnd, PLAUSIBLE_CEILING);
-  const jitter = Math.floor(Math.random() * 300) * DAY;
-  const base = Math.max(now + 400 * DAY, boundedExistingEnd + 2 * DAY) + stageCount * 2 * DAY + jitter;
+  // DEF-DATA-005 — see the matching fix + comment in
+  // cd-041-virtual-verified-gate.spec.ts: wide-random-range jitter (the same
+  // proven pattern golden-journey.spec.ts / cd-022-identity-lens.spec.ts /
+  // offline-drill.spec.ts already rely on for this same shared inspector
+  // persona), not a queried/chained or narrow-band value.
+  const base = now + (500 + Math.floor(Math.random() * 20000)) * DAY + stageCount * 2 * DAY;
   stageCount += 1;
   const windowStart = new Date(base).toISOString();
   const windowEnd = new Date(base + 90 * 60_000).toISOString();
