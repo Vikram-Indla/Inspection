@@ -116,6 +116,11 @@ Built and runtime-certified the 6 new module UI surfaces against staging:
 - **M2-05 audit-replay suite — 8/8 PASS** on staging (recorder not-degraded, all 6 modes,
   case-gated completeness, RTL/412 reflow, zero-disclosure). Stale specs updated to the
   semantic-present truth.
+- **Live RLS NEGATIVE certification (Prompt 19) — 8/8 PASS**: the inspector persona (only
+  the `inspector` role) is DENIED at the database on every role-restricted module write —
+  risk_models (risk_owner), gis_layers (gis_admin), cases + external_requests (compliance) —
+  surfaced as honest errors, never a silent success. RLS is fail-closed live, complementing
+  the positive writes (admin authorized) and the M2-05 zero-disclosure denial.
 
 **Every module now has: applied migration + live RLS + pure-contract spec + live UI render
 + a governed-write journey** (M2-09 read-only by design). Remaining to fully close Prompt-22:
