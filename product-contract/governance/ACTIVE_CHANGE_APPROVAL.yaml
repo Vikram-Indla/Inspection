@@ -1,43 +1,44 @@
 schema_version: "1.0"
-change_id: "CC-CD030-ROUTE-001"
-title: "SCR-WEB-320 route & action reconciliation — route-neutral compare mode; Accept changes deferred"
-requestor: "Claude Code (on behalf of the CD-030 slice)"
+change_id: "CC-BRANCH-CONSOLIDATION-001"
+title: "Local branch consolidation & worktree cleanup into setup/Inspection"
+requestor: "Claude Code (on behalf of Vikram Indla)"
 approver: "Vikram Indla"
-authorization: "Sponsor ruling recorded in session 2026-07-15 (decision owner): (1) approve route-neutral consolidation; (2) confirm accept/merge out of MVP1."
+authorization: >
+  Sponsor directed, session 2026-07-17: consolidate all active local branches
+  into the root branch setup/Inspection, bring the widest stash into the root,
+  resolve merge conflicts, then delete stale branches and worktrees leaving only
+  the root. Approver confirmed target = setup/Inspection, scope = consolidate
+  active / drop dead, and LOCAL-ONLY (no push/remote change).
 business_reason: >
-  CD-030 / SCR-WEB-320 Version Comparison shipped as a route-neutral compare mode
-  inside /reviews/:id (the review's own immutable submission versions + stored
-  returned scope), rather than a dedicated /reviews/:id/compare route. The
-  catalogue "Accept changes" action implies a merge/mutation of an immutable
-  submitted version for which no lawful transition, RLS policy or audit event
-  exists. This change reconciles the frozen catalogue with the shipped, verified
-  runtime and records the accept/merge deferral.
+  ~24 divergent local branches and 16 worktrees accumulated across MVP1/MVP2/MVP3,
+  admin, iPad, governance and docs workstreams. The sponsor requested a single
+  clean root to reduce branch sprawl and reconciliation risk. All branch heads are
+  tagged backup/20260717-cleanup/* first; uncommitted worktree work was preserved
+  as commits before any consolidation.
 decision:
-  sub_1_route: "APPROVED — /reviews/:id/compare consolidated into /reviews/:id (route-neutral compare mode). No dedicated compare route built."
-  sub_2_accept_merge: "CONFIRMED OUT OF MVP1 — Accept/merge on immutable submitted versions is out of scope. Remains HANDOFF_BLOCKED_ACCEPT until a future decision defines a lawful merge transition (RLS role, audit event, effect on version immutability). No merge code invented."
+  target_root: "setup/Inspection (local)"
+  scope: "Merge every non-setup local branch (contained branches no-op); apply stash@{3} 'wip-other-session'; drop stash@{0} audit noise."
+  remote: "LOCAL ONLY — no git push, no origin branch/tag deletion, no modification of origin/main or origin/setup/Inspection."
 scope_allowed:
-  - "product-contract/screens/screen_route_catalogue.csv — SCR-WEB-320 row only: route /reviews/:id/compare -> /reviews/:id; primary_actions drop 'Accept changes' (deferred), keep 'Navigate changed sections'."
-  - "product-contract/governance/decision_register.csv — append DEC-013 (this reconciliation)."
-  - "outputs/claude-design-approval-pack/CD-030_CHANGE_CONTROL_ROUTE_RECONCILIATION.md — mark CC-CD030-ROUTE-001 APPROVED."
+  - "git merge of local feature/codex/fix branches into local setup/Inspection."
+  - "Conflict resolution taking the union of accepted content; no accepted requirement, field, rule, permission, state, audit event, evidence or offline behavior weakened."
+  - "Temporary lifting of ONLY the 'git merge' block in .claude/hooks/pre_tool_guard.py for the duration of this change, restored verbatim on completion."
+  - "git worktree remove and git branch -D for stale local branches/worktrees after their commits are merged or confirmed contained."
 scope_forbidden:
-  - "Any other frozen contract row or screen; all other IDs/semantics preserved."
-  - "SCR-WEB-320 mandatory_regions — unchanged; 'evidence diff' remains a design region, shown unavailable at runtime (HANDOFF_BLOCKED_MEDIADIFF) pending its own decision."
-  - "Building any accept/merge action, a dedicated /reviews/:id/compare route, or any semantic/evidence/package/metadata diff derivation."
-  - "Resolving DEC-012 (the independent Codex wiring audit for CD-030 remains PENDING)."
-  - "Any push, merge or modification of main as part of recording this decision."
+  - "Any git push, force push, or deletion of remote branches/tags."
+  - "Any modification of origin/main, origin/setup/Inspection, or the immutable submitted versions."
+  - "Silent overwrite of conflicting product-contract content — conflicts resolved to preserve both sides' accepted content."
+  - "Removing or weakening any accepted requirement, rule, permission, state, audit event or evidence during conflict resolution."
 mvp1_mvp2_impact: >
-  None removed or weakened. MVP1 comparison capability (stored-answer diff +
-  Tamper-evident Scope Rail + explicit unavailable categories + navigate-to-section)
-  is fully delivered. Accept/merge was never a proven MVP1 capability; its deferral
-  removes no accepted behavior.
-regression_impact: "None. CD-028 queue and CD-029 decision workspace untouched; opening the review stays read-only; the prior inline version-diff is superseded by VersionCompare with equal-or-greater truth (same stored-answer union-of-keys diff)."
+  None removed or weakened. Consolidation is a union of existing committed work
+  plus preserved uncommitted work. No scope change.
+regression_impact: "Post-merge typecheck/build run as the exit check; result reported faithfully."
 decision_owner: "Vikram Indla"
-effective_version: "CD-030 / SCR-WEB-320 route-neutral compare mode"
-effective_date: "2026-07-15"
+effective_version: "Branch consolidation 2026-07-17"
+effective_date: "2026-07-17"
 notes: >
-  Supersedes the expired CC-G4-001 record in this single-active-record file.
-  This approval covers ONLY the route reconciliation and the accept/merge
-  deferral. It does not clear CD-030's other HANDOFF_BLOCKED legs
-  (MEDIADIFF/PKGSEMANTIC/METADIFF/LINKED/START_REVIEW_ATOMIC/ATOMIC) and does not
-  substitute for the independent Codex wiring audit required by DEC-012, which
-  remains PENDING for CD-030.
+  Supersedes CC-CD030-ROUTE-001 in this single-active-record file (prior record
+  preserved at product-contract/governance/_superseded_CC-CD030-ROUTE-001.yaml and
+  in git history; its DEC-013 decision_register entry remains authoritative). This
+  approval covers ONLY the local consolidation/cleanup and the temporary merge-guard
+  lift. It does not authorize any remote/main change.

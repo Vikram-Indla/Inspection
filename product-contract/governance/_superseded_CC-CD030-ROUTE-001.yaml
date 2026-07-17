@@ -1,0 +1,43 @@
+schema_version: "1.0"
+change_id: "CC-CD030-ROUTE-001"
+title: "SCR-WEB-320 route & action reconciliation — route-neutral compare mode; Accept changes deferred"
+requestor: "Claude Code (on behalf of the CD-030 slice)"
+approver: "Vikram Indla"
+authorization: "Sponsor ruling recorded in session 2026-07-15 (decision owner): (1) approve route-neutral consolidation; (2) confirm accept/merge out of MVP1."
+business_reason: >
+  CD-030 / SCR-WEB-320 Version Comparison shipped as a route-neutral compare mode
+  inside /reviews/:id (the review's own immutable submission versions + stored
+  returned scope), rather than a dedicated /reviews/:id/compare route. The
+  catalogue "Accept changes" action implies a merge/mutation of an immutable
+  submitted version for which no lawful transition, RLS policy or audit event
+  exists. This change reconciles the frozen catalogue with the shipped, verified
+  runtime and records the accept/merge deferral.
+decision:
+  sub_1_route: "APPROVED — /reviews/:id/compare consolidated into /reviews/:id (route-neutral compare mode). No dedicated compare route built."
+  sub_2_accept_merge: "CONFIRMED OUT OF MVP1 — Accept/merge on immutable submitted versions is out of scope. Remains HANDOFF_BLOCKED_ACCEPT until a future decision defines a lawful merge transition (RLS role, audit event, effect on version immutability). No merge code invented."
+scope_allowed:
+  - "product-contract/screens/screen_route_catalogue.csv — SCR-WEB-320 row only: route /reviews/:id/compare -> /reviews/:id; primary_actions drop 'Accept changes' (deferred), keep 'Navigate changed sections'."
+  - "product-contract/governance/decision_register.csv — append DEC-013 (this reconciliation)."
+  - "outputs/claude-design-approval-pack/CD-030_CHANGE_CONTROL_ROUTE_RECONCILIATION.md — mark CC-CD030-ROUTE-001 APPROVED."
+scope_forbidden:
+  - "Any other frozen contract row or screen; all other IDs/semantics preserved."
+  - "SCR-WEB-320 mandatory_regions — unchanged; 'evidence diff' remains a design region, shown unavailable at runtime (HANDOFF_BLOCKED_MEDIADIFF) pending its own decision."
+  - "Building any accept/merge action, a dedicated /reviews/:id/compare route, or any semantic/evidence/package/metadata diff derivation."
+  - "Resolving DEC-012 (the independent Codex wiring audit for CD-030 remains PENDING)."
+  - "Any push, merge or modification of main as part of recording this decision."
+mvp1_mvp2_impact: >
+  None removed or weakened. MVP1 comparison capability (stored-answer diff +
+  Tamper-evident Scope Rail + explicit unavailable categories + navigate-to-section)
+  is fully delivered. Accept/merge was never a proven MVP1 capability; its deferral
+  removes no accepted behavior.
+regression_impact: "None. CD-028 queue and CD-029 decision workspace untouched; opening the review stays read-only; the prior inline version-diff is superseded by VersionCompare with equal-or-greater truth (same stored-answer union-of-keys diff)."
+decision_owner: "Vikram Indla"
+effective_version: "CD-030 / SCR-WEB-320 route-neutral compare mode"
+effective_date: "2026-07-15"
+notes: >
+  Supersedes the expired CC-G4-001 record in this single-active-record file.
+  This approval covers ONLY the route reconciliation and the accept/merge
+  deferral. It does not clear CD-030's other HANDOFF_BLOCKED legs
+  (MEDIADIFF/PKGSEMANTIC/METADIFF/LINKED/START_REVIEW_ATOMIC/ATOMIC) and does not
+  substitute for the independent Codex wiring audit required by DEC-012, which
+  remains PENDING for CD-030.
