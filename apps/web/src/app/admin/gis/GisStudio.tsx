@@ -45,7 +45,7 @@ function bandTone(band: string | null): GeoTone {
 export default function GisStudio({ factories, gis, strings: s }: {
   factories: GisFactory[]; gis: GisSettings; strings: GisStrings;
 }) {
-  // react-leaflet v5 is client-only — must load with ssr:false, and the
+  // Mapbox GL JS is client-only — must load with ssr:false, and the
   // dynamic() call must live inside a client component, so it sits here where
   // the loading copy can use the localized strings prop.
   const GeoMap = useMemo(() => dynamic(() => import("@/components/GeoMap"), {

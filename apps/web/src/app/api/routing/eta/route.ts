@@ -22,46 +22,36 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "invalid_request" }, { status: 400 });
   }
 
-  const key = process.env.GOOGLE_MAPS_ROUTES_API_KEY;
+  // TASK-IPAD-MAPBOX-RUNTIME-004 — Mapbox Directions is server-side so the
+  // browser map key never becomes a route-service dependency. Deployments may
+  // use the same restricted public token only if Mapbox permits that scope.
+  const key = process.env.MAPBOX_ACCESS_TOKEN;
   if (!key) {
-    return NextResponse.json({ status: "provider_unavailable", provider: "google_routes" }, { status: 503 });
+    return NextResponse.json({ status: "provider_unavailable", provider: "mapbox_directions" }, { status: 503 });
   }
 
   try {
-    const response = await fetch("https://routes.googleapis.com/directions/v2:computeRoutes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Goog-Api-Key": key,
-        "X-Goog-FieldMask": "routes.duration,routes.distanceMeters",
-      },
-      body: JSON.stringify({
-        origin: { location: { latLng: { latitude: body.origin.lat, longitude: body.origin.lng } } },
-        destination: { location: { latLng: { latitude: body.destination.lat, longitude: body.destination.lng } } },
-        travelMode: "DRIVE",
-        routingPreference: "TRAFFIC_AWARE",
-      }),
+    const coordinates = `${body.origin.lng},${body.origin.lat};${body.destination.lng},${body.destination.lat}`;
+    const response = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${coordinates}?alternatives=false&overview=false&steps=false&access_token=${encodeURIComponent(key)}`, {
       cache: "no-store",
     });
     if (!response.ok) {
-      console.error(`[routing eta] google routes returned ${response.status}`);
-      return NextResponse.json({ status: "provider_unavailable", provider: "google_routes" }, { status: 503 });
+      console.error(`[routing eta] mapbox directions returned ${response.status}`);
+      return NextResponse.json({ status: "provider_unavailable", provider: "mapbox_directions" }, { status: 503 });
     }
-    const payload = await response.json() as { routes?: { duration?: string; distanceMeters?: number }[] };
+    const payload = await response.json() as { routes?: { duration?: number; distance?: number }[] };
     const route = payload.routes?.[0];
-    const seconds = Number.parseFloat(route?.duration?.replace(/s$/, "") ?? "");
-    if (!route || !Number.isFinite(seconds) || !Number.isFinite(route.distanceMeters)) {
-      return NextResponse.json({ status: "no_route", provider: "google_routes" }, { status: 422 });
+    if (!route || !Number.isFinite(route.duration) || !Number.isFinite(route.distance)) {
+      return NextResponse.json({ status: "no_route", provider: "mapbox_directions" }, { status: 422 });
     }
     return NextResponse.json({
-      status: "ok",
-      provider: "google_routes",
-      etaMinutes: Math.max(1, Math.ceil(seconds / 60)),
-      distanceMeters: Math.round(route.distanceMeters!),
+      status: "ok", provider: "mapbox_directions",
+      etaMinutes: Math.max(1, Math.ceil(route.duration! / 60)),
+      distanceMeters: Math.round(route.distance!),
       calculatedAt: new Date().toISOString(),
     });
   } catch (error) {
     console.error("[routing eta] provider request failed", error);
-    return NextResponse.json({ status: "provider_unavailable", provider: "google_routes" }, { status: 503 });
+    return NextResponse.json({ status: "provider_unavailable", provider: "mapbox_directions" }, { status: 503 });
   }
 }

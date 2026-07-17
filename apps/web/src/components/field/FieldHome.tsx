@@ -14,7 +14,7 @@ import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
 import { markNotificationRead, requestVisitReschedule, type FieldActionResult } from "@/app/field/actions";
 
-// react-leaflet is browser-only — dynamic import with ssr:false (GeoMap canon).
+// Mapbox is browser-only — dynamic import with ssr:false (GeoMap canon).
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
   loading: () => <div className="ax-skeleton" style={{ blockSize: "100%", minBlockSize: 320 }} />,

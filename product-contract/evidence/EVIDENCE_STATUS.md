@@ -1,5 +1,13 @@
 # Evidence Status
 
+## TASK-IPAD-MAPBOX-RUNTIME-004 — 2026-07-16
+
+| ID | Item | File | Status |
+|---|---|---|---|
+| MAPBOX-EV-001 | Sponsor provider decision and shared Mapbox source migration | `TASK-IPAD-MAPBOX-RUNTIME-004.md` | Captured — source commit `bfbb412` |
+| MAPBOX-EV-002 | Typecheck, production build, no-provider residue scan and focused contracts | `TASK-IPAD-MAPBOX-RUNTIME-004.md`; `../../apps/web/e2e/mapbox-provider.spec.ts` | Captured — PASS; 5/5 focused contracts |
+| MAPBOX-EV-003 | Credentialed Inspection-staging Mapbox map/ETA/Arabic runtime journey | `TASK-IPAD-MAPBOX-RUNTIME-004.md` | Pending staging application configuration — Inspection DB `iiozvqntawxfwbgffzqu` read-only preflight passed; no staging app target or token variables are configured |
+
 ## TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — 2026-07-16
 
 | ID | Item | File | Status |

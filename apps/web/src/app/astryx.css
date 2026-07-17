@@ -762,15 +762,6 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .lv-glyph--insp { color: var(--ax-color-primary); }
 .lv-legend__note { flex-basis: 100%; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); font-style: italic; }
 
-/* Leaflet popups/tooltips inherit the app surface + tokens in both themes */
-.leaflet-popup-content-wrapper, .leaflet-tooltip { background: var(--ax-color-surface); color: var(--ax-color-text);
-  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-small); box-shadow: var(--ax-shadow-overlay);
-  font: var(--ax-text-caption); }
-.leaflet-popup-tip { background: var(--ax-color-surface); }
-.leaflet-tooltip::before { display: none; }
-.leaflet-popup-content a { color: var(--ax-color-primary-hover); }
-.lv-zonelabel { background: none; border: none; box-shadow: none; }
-
 /* ==================================================== CD-027: DUAL-STATE RIBBON
    Five never-collapsed state domains as a keyboard tablist. Status carried by
    glyph + label (never color/animation alone; MVP1-FND-011). Reflows into an

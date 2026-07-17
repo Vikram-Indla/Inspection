@@ -1,5 +1,24 @@
 # Acceptance Status
 
+## TASK-IPAD-MAPBOX-RUNTIME-004 — 2026-07-16
+
+- Shared map migration across web, Admin and iPad: **SOURCE PASS** — Mapbox GL
+  JS replaces Leaflet/React Leaflet; Mapbox Directions replaces the in-app ETA
+  provider; no access token is committed.
+- Geofence presentation and field safety: **SOURCE PASS** — metre-based
+  geodesic fence geometry, server-authoritative decisioning, existing GPS
+  checks, audit and offline rules are preserved.
+- Compile and source-contract verification: **PASS** — typecheck, production
+  build, no-Leaflet/no-Google runtime scan, diff check and focused Playwright
+  5/5.
+- Runtime provider acceptance: **AWAITING INSPECTION STAGING APPLICATION
+  CONFIGURATION** — the sponsor-confirmed Inspection staging database
+  (`iiozvqntawxfwbgffzqu`) passed read-only migration/schema preflight, but no
+  staging application target or `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` /
+  `MAPBOX_ACCESS_TOKEN` values are configured. This is not a Catalyst target
+  and this status is not production acceptance.
+- Exact evidence: `../evidence/TASK-IPAD-MAPBOX-RUNTIME-004.md`.
+
 ## TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — 2026-07-16
 
 - Source acceptance for `AC-0152..AC-0156`: **PASS** — requester ownership,

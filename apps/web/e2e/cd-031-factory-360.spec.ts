@@ -128,7 +128,7 @@ test.describe("CD-031 planner — live dossier (legs 1,2,3,5-10,13,14,18)", () =
     test.skip(!opened, "no factories in this environment to open");
     await expect(page.getByRole("heading", { name: /Factory health score and risk history/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Official, planned and observed locations/i })).toBeVisible();
-    await expect(page.locator(".leaflet-container").first()).toBeVisible();
+    await expect(page.locator('[data-map-provider="mapbox"]').first()).toBeVisible();
   });
 
   test("leg 5-9 — the timeline renders as an ordered list (list-equivalent, not a decorative graph)", async ({ page }) => {

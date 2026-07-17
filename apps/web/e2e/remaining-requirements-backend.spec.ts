@@ -31,8 +31,8 @@ test.describe("TASK-G11 remaining-requirements backend contracts", () => {
     expect(startup).toContain('kind: "geo_override_request"');
     expect(startup).toContain('linked_type: "arrival"');
     expect(startup).not.toContain("demo coordinates substituted");
-    expect(route).toContain("GOOGLE_MAPS_ROUTES_API_KEY");
-    expect(route).toContain("TRAFFIC_AWARE");
+    expect(route).toContain("MAPBOX_ACCESS_TOKEN");
+    expect(route).toContain("api.mapbox.com/directions");
     expect(offline).toContain("row.evidence_note = op.evidence_note");
   });
 
@@ -114,7 +114,7 @@ test.describe("TASK-G11 remaining-requirements live read paths", () => {
       await page.goto("/visits/map");
       await expect(page.getByRole("heading", { name: /Visit management — map/i })).toBeVisible();
       await expect(page.getByLabel("Region")).toBeVisible();
-      await expect(page.locator(".leaflet-container")).toBeVisible();
+      await expect(page.locator('[data-map-provider="mapbox"]')).toBeVisible();
       await expect(page.locator("table.ax-table")).toBeVisible();
     });
   });
