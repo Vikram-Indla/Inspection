@@ -11,7 +11,7 @@ import { STORY_SCENE_ORDER } from "./saudi-atlas-locations";
 // Calm five-scene reveal: clean atlas → inspectors → dispatch → outcomes →
 // lifted zones. Each scene gets enough dwell time to be read without another
 // layer competing for attention.
-const STAGE_END_S = [3.2, 10.0, 61.5, 65.2, 71.7];
+const STAGE_END_S = [3.2, 22.0, 28.0, 35.0, 44.0];
 const LOOP_MS = STAGE_END_S[STAGE_END_S.length - 1] * 1000;
 
 export function prefersReducedMotion(): boolean {

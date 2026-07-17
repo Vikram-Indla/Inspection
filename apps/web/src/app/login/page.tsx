@@ -109,10 +109,10 @@ export default async function Login() {
       stagesLabel: ar ? "مشاهد قصة التفتيش" : "Inspection story scenes",
       stages: [
         { id: "plan", label: ar ? "الخريطة" : "Map", event: ar ? "خريطة المملكة والمنشآت الصناعية فقط" : "The Kingdom map and industrial sites establish context" },
-        { id: "arrive", label: ar ? "المفتشون" : "Inspectors", event: ar ? "ظهور فرق التفتيش تدريجيًا في المواقع" : "Inspection teams appear site by site" },
-        { id: "travel", label: ar ? "الانتقال" : "Dispatch", event: ar ? "ثلاث مركبات تنتقل ببطء بين المناطق، واحدة بعد الأخرى" : "Three vehicles move slowly between zones, one after another" },
-        { id: "inspect", label: ar ? "النتائج" : "Outcomes", event: ar ? "إظهار نتيجة ناجح أو لم يجتز بوضوح لكل موقع" : "Each illustrated site is explicitly marked Passed or Failed" },
-        { id: "decide", label: ar ? "تقارير المناطق" : "Zones", event: ar ? "تقرير توضيحي للمناطق مرتّب حسب قربها في مسار الجولة" : "Illustrative zone reporting, ordered by proximity along the tour" },
+        { id: "travel", label: ar ? "الإرسال" : "Dispatch", event: ar ? "مركبتان تنطلقان من الرياض، والثالثة من جازان، لكل منها وجهة تفتيش محددة" : "Two vehicles deploy from Riyadh and a third from Jazan, each on a defined inspection mission" },
+        { id: "arrive", label: ar ? "الوصول" : "Arrival", event: ar ? "وصول الفرق إلى المواقع وتأكيد الحضور في نطاق المنشأة" : "Teams arrive at their sites and confirm geofenced attendance" },
+        { id: "inspect", label: ar ? "التفتيش" : "Inspection", event: ar ? "توثيق الأدلة وإظهار نتيجة التفتيش والإجراءات المطلوبة" : "Evidence is captured and each inspection reaches an illustrated outcome" },
+        { id: "decide", label: ar ? "المناطق" : "Zones", event: ar ? "مرّر المؤشر على منطقة لرفعها ككتلة أرضية ثلاثية الأبعاد وعرض ذكاء التفتيش" : "Hover a zone to lift it from the landmass and reveal regional inspection intelligence" },
       ],
       dossier: {
         industry: ar ? "الصناعة" : "Industry",

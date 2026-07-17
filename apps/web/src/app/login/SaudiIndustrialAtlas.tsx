@@ -64,10 +64,12 @@ const INSPECTOR_SCENE_POSITIONS = [
   { x: 44, y: 74.5, asset: "inspector-character-v2-03.png" },
 ];
 
+// Three actual inspection journeys. Two deploy from the Riyadh command hub;
+// the third starts in Jazan. Every car has a distinct, readable destination.
 const DISPATCH_ROUTES = [
-  { id: "east-to-north", path: "M737 183 C678 124 558 84 415 87", start: [737, 183], end: [415, 87] },
-  { id: "north-to-west", path: "M415 87 C354 150 270 209 220 236", start: [415, 87], end: [220, 236] },
-  { id: "west-to-south", path: "M220 236 C281 314 361 390 440 442", start: [220, 236], end: [440, 442] },
+  { id: "riyadh-jubail", path: "M508 265 C573 249 663 211 737 183", start: [508, 265], end: [737, 183] },
+  { id: "riyadh-yanbu", path: "M508 265 C429 247 321 224 220 236", start: [508, 265], end: [220, 236] },
+  { id: "jazan-jeddah", path: "M440 442 C371 429 274 404 205 383", start: [440, 442], end: [205, 383] },
 ];
 
 const OUTCOME_POSITIONS = [
@@ -75,6 +77,16 @@ const OUTCOME_POSITIONS = [
   { x: 22, y: 42, result: "passed" },
   { x: 44, y: 78.5, result: "passed" },
 ] as const;
+
+const ZONE_INTELLIGENCE: Record<AtlasZoneId, {
+  x: number; y: number; en: string; ar: string; inspections: string; compliance: string; action: string;
+}> = {
+  north: { x: 42, y: 18, en: "Northern zone", ar: "المنطقة الشمالية", inspections: "264 inspections", compliance: "91% compliant", action: "18 follow-ups" },
+  west: { x: 23, y: 34, en: "Western zone", ar: "المنطقة الغربية", inspections: "247 inspections", compliance: "89% compliant", action: "12 follow-ups" },
+  central: { x: 49, y: 48, en: "Central zone", ar: "المنطقة الوسطى", inspections: "221 inspections", compliance: "92% compliant", action: "9 follow-ups" },
+  east: { x: 73, y: 36, en: "Eastern zone", ar: "المنطقة الشرقية", inspections: "318 inspections", compliance: "90% compliant", action: "21 follow-ups" },
+  south: { x: 52, y: 78, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198 inspections", compliance: "89% compliant", action: "14 follow-ups" },
+};
 
 function stageZone(stage: AtlasStageId): AtlasZoneId {
   return stage === "plan" || stage === "decide" ? "central" : "east";
@@ -110,8 +122,8 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
           <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
             href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-9" y="-18" width="18" height="36" opacity="0" transform="rotate(90)">
             <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.06;0.9;1"
-              dur="16s" begin={`${index * 17}s`} fill="remove" />
-            <animateMotion path={route.path} rotate="auto" dur="16s" begin={`${index * 17}s`} fill="remove"
+              dur="11s" begin={`${index * 5}s`} fill="remove" />
+            <animateMotion path={route.path} rotate="auto" dur="11s" begin={`${index * 5}s`} fill="remove"
               calcMode="spline" keyTimes="0;1" keySplines="0.32 0.05 0.2 1" />
           </image>
         ))}
@@ -136,6 +148,43 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
         ))}
       </div>
 
+    </div>
+  );
+}
+
+function ZoneLiftOverlay({
+  locale, activeZone, onHover, onLock,
+}: {
+  locale: "ar" | "en";
+  activeZone: AtlasZoneId | null;
+  onHover: (zone: AtlasZoneId | null) => void;
+  onLock: (zone: AtlasZoneId) => void;
+}) {
+  const stat = activeZone ? ZONE_INTELLIGENCE[activeZone] : null;
+  return (
+    <div className={`lg-zone-lift${activeZone ? " is-engaged" : ""}`} aria-label="Regional inspection intelligence">
+      <svg className="lg-zone-lift__svg" viewBox="0 0 1000 563" preserveAspectRatio="none" aria-hidden="true">
+        {ZONE_SURFACES.map(zone => {
+          const isActive = activeZone === zone.id;
+          return (
+            <g key={zone.id} data-zone={zone.id} data-lifted={isActive || undefined}
+              className={`lg-zone-lift__slab${isActive ? " is-lifted" : ""}`}>
+              <path className="lg-zone-lift__cavity" d={zone.path} />
+              <path className="lg-zone-lift__underside" d={zone.path} />
+              <path className="lg-zone-lift__top" d={zone.path} data-zone={zone.id}
+                onPointerEnter={() => onHover(zone.id)}
+                onPointerLeave={() => onHover(null)}
+                onClick={() => onLock(zone.id)} />
+            </g>
+          );
+        })}
+      </svg>
+      {stat && <section className="lg-zone-lift__readout" style={{ left: `${stat.x}%`, top: `${stat.y}%` }} dir={locale === "ar" ? "rtl" : "ltr"}>
+        <span className="lg-zone-lift__eyebrow">{locale === "ar" ? "ذكاء التفتيش الإقليمي" : "REGIONAL INSPECTION INTELLIGENCE"}</span>
+        <strong>{stat[locale]}</strong>
+        <div><b>{stat.inspections}</b><span>{stat.compliance}</span><em>{stat.action}</em></div>
+        <small>{locale === "ar" ? "انقر لتثبيت المنطقة" : "Click to lock this terrain view"}</small>
+      </section>}
     </div>
   );
 }
@@ -365,13 +414,16 @@ function PublicSafeImageAtlas({
 }) {
   const [hover, setHover] = useState<AtlasNode | null>(null);
   const [locked, setLocked] = useState<AtlasNode | null>(null);
+  const [hoveredZone, setHoveredZone] = useState<AtlasZoneId | null>(null);
+  const [lockedZone, setLockedZone] = useState<AtlasZoneId | null>(null);
   const [ready, setReady] = useState(false);
   const refs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const shown = locked ?? hover;
+  const activeZone = lockedZone ?? hoveredZone;
   const activeNode = stageNode(activeStage);
   const shownPosition = shown ? IMAGE_POSITIONS[shown.id] : undefined;
 
-  useEffect(() => { onInteractingChange(shown !== null); }, [shown, onInteractingChange]);
+  useEffect(() => { onInteractingChange(shown !== null || activeZone !== null); }, [shown, activeZone, onInteractingChange]);
 
   const closeLocked = useCallback(() => {
     const id = locked?.id;
@@ -380,7 +432,7 @@ function PublicSafeImageAtlas({
   }, [locked]);
 
   return (
-    <div className={`lg-atlas-image${ready ? " is-ready" : ""}`} data-atlas-mode="public-safe-image"
+    <div className={`lg-atlas-image${ready ? " is-ready" : ""}${activeZone ? " is-zone-engaged" : ""}`} data-atlas-mode="public-safe-image"
       data-active-stage={activeStage} data-active-zone={stageZone(activeStage)}>
       <div className="lg-atlas-image__plane">
         <picture>
@@ -390,6 +442,10 @@ function PublicSafeImageAtlas({
         </picture>
 
         <JourneyOverlay stage={activeStage} locale={locale} />
+
+        <ZoneLiftOverlay locale={locale} activeZone={activeZone}
+          onHover={zone => { if (!lockedZone) setHoveredZone(zone); }}
+          onLock={zone => { setLockedZone(current => current === zone ? null : zone); setHoveredZone(zone); }} />
 
         <div className="lg-atlas-image__hotspots" aria-label={dossierStrings.mapLabel}>
           {NODES.map(node => {
