@@ -127,9 +127,9 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
         {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
           <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
             href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-9" y="-18" width="18" height="36" opacity="0" transform="rotate(90)">
-            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.06;0.9;1"
-              dur="11s" begin={`${index * 5}s`} fill="remove" />
-            <animateMotion path={route.path} rotate="auto" dur="11s" begin={`${index * 5}s`} fill="remove"
+            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.88;1"
+              dur="6s" begin={`${index * 2.5}s`} fill="remove" />
+            <animateMotion path={route.path} rotate="auto" dur="6s" begin={`${index * 2.5}s`} fill="remove"
               calcMode="spline" keyTimes="0;1" keySplines="0.32 0.05 0.2 1" />
           </image>
         ))}
