@@ -71,8 +71,13 @@ domain logic + pure-contract specs; typecheck + build + static lane green).
 - **Mapbox** — **CONFIGURED + live-certified** (server Directions route + browser renderer;
   token in gitignored `.env.local`; deploy env must set `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` +
   `MAPBOX_ACCESS_TOKEN`).
-- **Providers still held**: SMS/email/push, OTP, AI, OCR, PKI/EBDA — fail-closed adapters
-  only; verification pending real config.
+- **Email (Resend)** — **CONFIGURED + live-certified** (adapter sends a real email to
+  Resend's `delivered@resend.dev` sink → delivered; fail-closed without the key). Token in
+  gitignored `.env.local`; deploy env sets `RESEND_API_KEY` (+ `RESEND_FROM`). NOTE: sending
+  to arbitrary real recipients needs a **verified sending domain** in Resend (otherwise the
+  `onboarding@resend.dev` sender only reaches the account owner) — a deploy-config step.
+- **Providers still held**: SMS, push, OTP, AI, OCR, PKI/EBDA — fail-closed adapters only;
+  verification pending real config.
 - **Policy values**: DEC-003 SLA calendar/timers, DEC-006/DEC2-009 retention/redaction/
   watermark/purge/legal, Arabic native terminology — held; never substituted.
 
