@@ -1,0 +1,37 @@
+requirement_id,acceptance_id,evidence_id,route,component,table_or_source,rpc_or_function,rls_or_guard,test,status
+MVP2-REQ-0137,MVP2-AC-0137,MVP2-EV-0137,/admin/audit,FlightSpine,visit_plans,emit_mvp2_m2_05_semantic_event,audit_semantic_read,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0138,MVP2-AC-0138,MVP2-EV-0138,/admin/audit,CompletenessLedger,audit_event_registry,append_semantic_audit_event,NEEDS_CONTRACT,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0139,MVP2-AC-0139,MVP2-EV-0139,/admin/audit,CompletenessLedger,MVP3 device source,append_semantic_audit_event,NEEDS_CONTRACT,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0140,MVP2-AC-0140,MVP2-EV-0140,/admin/audit,FlightSpine,geo_events,emit_mvp2_m2_05_semantic_event,geo_read + audit_semantic_read,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0141,MVP2-AC-0141,MVP2-EV-0141,/admin/audit,EventDrawer,checklist_responses,emit_mvp2_m2_05_semantic_event,audit_semantic_read,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0142,MVP2-AC-0142,MVP2-EV-0142,/admin/audit,CustodyView,evidence,emit_mvp2_m2_05_semantic_event,audit_semantic_read + reference-only payload,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0143,MVP2-AC-0143,MVP2-EV-0143,/admin/audit,EventDrawer,findings,emit_mvp2_m2_05_semantic_event,audit_semantic_read,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0144,MVP2-AC-0144,MVP2-EV-0144,/admin/audit,SignatureOutcome,submission_versions,emit_mvp2_m2_05_semantic_event,unverified only,mvp2-m2-05-contract,partial_local
+MVP2-REQ-0145,MVP2-AC-0145,MVP2-EV-0145,/admin/audit,CompletenessLedger,offline outbox,append_semantic_audit_event,NEEDS_CONTRACT,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0146,MVP2-AC-0146,MVP2-EV-0146,/admin/audit,FlightSpine,reviews,emit_mvp2_m2_05_semantic_event,guard_decided_review,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0147,MVP2-AC-0147,MVP2-EV-0147,/admin/audit,CompletenessLedger,violations/notice provider,append_semantic_audit_event,delivery proof held,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0148,MVP2-AC-0148,MVP2-EV-0148,/admin/audit,CompletenessLedger,correction/objection stores,append_semantic_audit_event,NEEDS_CONTRACT,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0149,MVP2-AC-0149,MVP2-EV-0149,/admin/audit,FlightSpine,regulations,emit_mvp2_m2_05_semantic_event,configuration RLS + audit read,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0150,MVP2-AC-0150,MVP2-EV-0150,/admin/audit,CompletenessLedger,form template lifecycle,append_semantic_audit_event,NEEDS_CONTRACT,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0151,MVP2-AC-0151,MVP2-EV-0151,/admin/audit,CompletenessLedger,M2-02 workflow source,append_semantic_audit_event,audit_semantic_read,mvp2-m2-05-contract,consumer_pending
+MVP2-REQ-0152,MVP2-AC-0152,MVP2-EV-0152,/admin/audit,CompletenessLedger,M2-04 risk source,append_semantic_audit_event,audit_semantic_read,mvp2-m2-05-contract,consumer_pending
+MVP2-REQ-0153,MVP2-AC-0153,MVP2-EV-0153,/admin/audit,CompletenessLedger,M2-04 risk score source,append_semantic_audit_event,audit_semantic_read,mvp2-m2-05-contract,consumer_pending
+MVP2-REQ-0154,MVP2-AC-0154,MVP2-EV-0154,/admin/audit,FlightSpine,visit_plans,emit_mvp2_m2_05_semantic_event,audit_semantic_read,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0155,MVP2-AC-0155,MVP2-EV-0155,/admin/audit,CompletenessLedger,assignments,append_semantic_audit_event,accepted transition absent,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0156,MVP2-AC-0156,MVP2-EV-0156,/admin/audit,FlightSpine,package_versions,emit_mvp2_m2_05_semantic_event,guard_published_package,mvp2-m2-05-contract,partial_local
+MVP2-REQ-0157,MVP2-AC-0157,MVP2-EV-0157,/admin/audit,CompletenessLedger,MVP3 device source,append_semantic_audit_event,NEEDS_CONTRACT,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0158,MVP2-AC-0158,MVP2-EV-0158,/admin/audit,FlightSpine,geo_events,emit_mvp2_m2_05_semantic_event,immutable geo source,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0159,MVP2-AC-0159,MVP2-EV-0159,/admin/audit,FlightSpine,inspections,emit_mvp2_m2_05_semantic_event,canonical status transition,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0160,MVP2-AC-0160,MVP2-EV-0160,/admin/audit,EventDrawer,checklist_responses,emit_mvp2_m2_05_semantic_event,guard_submitted_inspection,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0161,MVP2-AC-0161,MVP2-EV-0161,/admin/audit,CustodyView,evidence,emit_mvp2_m2_05_semantic_event,reference/hash only,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0162,MVP2-AC-0162,MVP2-EV-0162,/admin/audit,EventDrawer,findings,emit_mvp2_m2_05_semantic_event,guard_submitted_inspection,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0163,MVP2-AC-0163,MVP2-EV-0163,/admin/audit,SignatureOutcome,EBDA/PKI source,append_semantic_audit_event,provider unavailable,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0164,MVP2-AC-0164,MVP2-EV-0164,/admin/audit,SignatureOutcome,refusal store,append_semantic_audit_event,store absent,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0165,MVP2-AC-0165,MVP2-EV-0165,/admin/audit,FlightSpine,submission_versions,emit_mvp2_m2_05_semantic_event,immutable snapshot,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0166,MVP2-AC-0166,MVP2-EV-0166,/admin/audit,MomentCompare,sync conflict source,append_semantic_audit_event,resolution rule held,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0167,MVP2-AC-0167,MVP2-EV-0167,/admin/audit,FlightSpine,reviews,emit_mvp2_m2_05_semantic_event,guard_decided_review,mvp2-m2-05-contract,implemented_local
+MVP2-REQ-0168,MVP2-AC-0168,MVP2-EV-0168,/admin/audit,CompletenessLedger,committee dossier,append_semantic_audit_event,store absent,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0169,MVP2-AC-0169,MVP2-EV-0169,/admin/audit,CompletenessLedger,correction source,append_semantic_audit_event,store absent,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0170,MVP2-AC-0170,MVP2-EV-0170,/admin/audit,CompletenessLedger,objection source,append_semantic_audit_event,store absent,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0171,MVP2-AC-0171,MVP2-EV-0171,/admin/audit,CompletenessLedger,dashboard read source,append_semantic_audit_event,read audit not approved,mvp2-m2-05-contract,dependency_blocked
+MVP2-REQ-0172,MVP2-AC-0172,MVP2-EV-0172,/admin/audit,CompletenessLedger,admin guard boundary,append_semantic_audit_event,rejected-attempt append absent,mvp2-m2-05-contract,partial_local

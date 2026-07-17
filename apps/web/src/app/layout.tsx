@@ -4,6 +4,14 @@ import ThemeScript from "@/components/ThemeScript";
 import "./astryx.css";
 import { IBM_Plex_Sans_Arabic, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { getLocale } from "@/lib/i18n";
+import { registerAdapter } from "@/lib/notify";
+import { registerStagingNotificationAdapters } from "@/lib/providers/notification-stubs";
+
+// Cycle 2 Wave 2.E wiring — module-level (once per server process, not per
+// request). registerStagingNotificationAdapters() itself no-ops unless
+// FEATURE_NOTIFICATION_STUBS=staging is explicitly set, so this import is a
+// harmless no-op for every real deployment that doesn't set that flag.
+registerStagingNotificationAdapters(registerAdapter);
 
 // Saqeel theme v2: Space Grotesk carries EN (launch-film geometric sans),
 // IBM Plex Sans Arabic carries AR, JetBrains Mono carries data labels.

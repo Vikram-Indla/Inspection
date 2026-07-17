@@ -1,99 +1,96 @@
 schema_version: "1.2"
-task_id: "TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003"
-parent_task_id: "TASK-G11-G12-RELEASE-001"
-gate: "G11 hardening"
-title: "Governed Operations approval for out-of-geofence iPad check-in"
-status: "SOURCE_VERIFIED_AWAITING_CONTROLLED_DATABASE_RUNTIME"
+task_id: "TASK-MVP2-M2-05-AUDIT-REPLAY-001"
+gate: "MVP2 Wave 1 / G8 sponsor-authorized build"
+title: "MVP2-CD-031-M2-05 Audit Replay, History & Legal Traceability"
+status: "SOURCE_IMPLEMENTATION_PASS_RUNTIME_CERTIFICATION_PENDING — main now integrates MVP1 cycle-2 hardening + M2-05 Audit Replay + M2-02 Workflow/SLA/Notification Studio. Merge and push were sponsor-authorized; runtime certification (remote migration apply, live regression, deploy) remains PENDING for both M2-02 and M2-05."
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#IPAD-GEO-OVERRIDE-APPROVAL-WORKFLOW"
+approval_ref: "HUMAN_APPROVALS.yaml#MVP2-M2-05-AUDIT-REPLAY-BUILD"
+
+# Reflects the release-branch integration state (this record's own module is
+# M2-05; the block below records the M2-02 merge that also landed on main).
+main_integration:
+  integrated_on_main: ["MVP1-cycle2-hardening", "MVP2-CD-031-M2-05-audit-replay", "MVP2-CD-043-M2-02-workflow-studio"]
+  m2_02:
+    source_branch: "workflow"
+    source_head: "21bce21"
+    merge_commit: "2d78bb3"
+    approvals: ["HUMAN_APPROVALS.yaml#MVP2-M2-02-WORKFLOW-STUDIO-BUILD-AUTHORIZATION", "HUMAN_APPROVALS.yaml#MVP2-M2-02-MERGE-TO-MAIN", "HUMAN_APPROVALS.yaml#MVP2-M2-02-PUSH-TO-ORIGIN"]
+    design_gate: "95/100, zero P0/P1 (APPROVED/M2-02 R2 repaired package)"
+    verified: "typecheck clean; production build clean; 70/70 pure mvp2-m2-02 tests pass; full e2e suite compiles (397 tests)"
+  pushed_to_origin: "origin/main @ 13d6070 (includes the approval-gated hook change)"
+  open_holds:
+    - "5 M2-02 forward-only migrations NOT applied to any database (remote apply gated)."
+    - "Live-DB Playwright regression + browser render NOT executed (no isolated DB)."
+    - "DEC-003 (SLA calendar authority), SMS/email/push providers, M2-05 shared semantic-event migration remain OPEN."
+    - "No production deployment; no credential rotation; no Git-history rewrite."
 
 sponsor_direction:
   approver: "Vikram Indla"
-  date: "2026-07-16"
+  date: "2026-07-17"
   authorization:
-    - "Implement the Operations-approved override workflow selected as 1A, 2A, 3A and 4A."
-    - "Create a clean, separate iPad pull request with source, tests, evidence and contract records."
-  policy:
-    - "Only the existing RBAC Operations approver group may decide; the requester can never decide their own request."
-    - "A request requires a governed reason code, mandatory narrative, actual GPS/time and either photo evidence or a safety/security capture exception."
-    - "A request expires after 30 minutes for one inspector, visit and arrival attempt, or earlier when the visit closes."
-    - "Offline may queue real GPS/evidence, but never self-approves or unlocks check-in; Operations approval occurs online."
+    - "Sponsor explicitly directed Codex to move forward and finish all required M2-05 work, superseding the completed read-only Cycle 2 retest pointer for this module."
+    - "Authorize design reconciliation, forward-only source migrations, RLS, semantic event contracts, server reads/actions, frontend, automated tests, evidence and handover on a dedicated branch/worktree."
   limits:
-    - "This does not resolve DEC-002's formal numeric GIS governance record, the maps-provider decision, or the migration-history repair."
+    - "Do not modify or merge main, push, deploy, apply remote DDL, seed shared data, or rewrite history without separate explicit approval."
+    - "Do not invent DEC-006/DEC2-009 policy, provider status, PKI/EBDA truth, retention, redaction, watermark, purge, legal status, SLA, risk, geofence or Arabic terminology values."
 
-branch_at_start: "codex/ipad/m04-geofence-policy-promotion-002"
-head_at_start: "9ba5a24"
-worktree_at_start: "Clean dedicated worktree; two in-slice uncommitted telemetry regression-test edits."
+branch_at_start: "codex/mvp2-m2-05-audit-replay"
+head_at_start: "bf35872ded6b81c650d13cba9f6112574f9d709c"
+worktree: "/private/tmp/Inspection-mvp2-m2-05-audit-replay"
 
-process_ids: ["P06A"]
-requirement_ids: ["MVP1-M04-039", "MVP1-M04-043", "MVP1-M04-045", "MVP1-M08-013"]
-screen_ids: ["SCR-IPAD-620", "SCR-WEB-500", "SCR-ADM-070"]
-engine_ids: ["ENG-06", "ENG-08", "ENG-11"]
-acceptance_ids: ["AC-0152", "AC-0153", "AC-0154", "AC-0155", "AC-0156"]
+process_ids: ["M2-05", "MVP2-WAVE-1"]
+requirement_ids: ["MVP2-REQ-0137..MVP2-REQ-0172"]
+acceptance_ids: ["MVP2-AC-0137..MVP2-AC-0172"]
+evidence_ids: ["MVP2-EV-0137..MVP2-EV-0172"]
+screen_ids: ["AUD-REPLAY-01", "AUD-REPLAY-02", "AUD-REPLAY-03", "AUD-REPLAY-04", "AUD-REPLAY-04S", "AUD-REPLAY-05", "AUD-REPLAY-06", "AUD-REPLAY-07"]
+engine_ids: ["ENG-12"]
 
 dependencies:
-  - "RBAC-008 permits Operations to approve an override per policy."
-  - "STM-JRN-003 permits check-in only inside the fence or with an approved override."
-  - "Existing immutable geo events, canonical operational state transition, offline outbox and audit events remain authoritative."
+  - "MVP1 immutable audit_events and trigger/RLS foundation (0001/0002/0004/0005/0019)."
+  - "Existing /admin/audit route, shell, i18n and audit-adjacent visit/review/factory screens."
+  - "M2-02 consumers must emit through the shared semantic append boundary and may not mutate M2-05 state."
+  - "Workbook rows 0137..0172 and the R2 design correction prompt; design archive defects are reconciled into repository machine-readable contracts before UI claims."
 
 open_decisions:
-  - "DEC-002 formal numeric GPS/geofence governance remains recorded separately; existing configured values remain unchanged."
-  - "DEC-008 runtime maps/routing provider remains untouched."
-  - "Remote migration-history repair remains a release-hardening prerequisite, not a reason to apply DDL blindly."
+  - "DEC-006 evidence/legal retention and certification policy remains held."
+  - "DEC2-009 reveal/export/redaction/watermark/purge policy remains held."
+  - "EBDA/PKI provider and verification contract remains unavailable until separately approved."
+  - "MVP3 package authoring and trusted-device surfaces remain out of scope; historical facts replay only when present."
 
 do_not_touch:
-  - "Do not alter official factory coordinates, immutable submitted versions, prior geo/audit records or main."
-  - "Do not permit direct state mutation, inspector self-approval, offline approval, expired approval, or a permanent integration mock."
-  - "Do not apply this source migration to the shared remote while migration history is unreconciled."
+  - "main, remote DDL, production deployment, shared production-like records and unrelated worktrees."
+  - "Existing audit_events UPDATE/DELETE rejection and submitted-version immutability."
+  - "Existing canonical workflow transitions, RLS grants and MVP1 accepted behavior except additive compatible changes."
 
 authorized_file_scope:
-  - "Forward-only Supabase migration, RLS/RPC authorization, iPad Startup, Operations Center approval queue, offline outbox, tests and required contract/evidence records."
-
-task_specific_context:
-  - "product-contract/business/master_end_to_end_process.md"
-  - "product-contract/screens/screen_route_catalogue.csv"
-  - "product-contract/domain/field_dictionary.csv"
-  - "product-contract/domain/rbac_matrix.csv"
-  - "product-contract/domain/state_transitions.csv"
-  - "product-contract/governance/error_catalogue.csv"
-  - "product-contract/governance/HUMAN_APPROVALS.yaml"
-  - "supabase/migrations/0001_foundation.sql"
-  - "supabase/migrations/0002_rbac_audit.sql"
-  - "supabase/migrations/0015_w1_journey_state.sql"
-  - "supabase/migrations/0020_fix_field_journey.sql"
-  - "apps/web/src/app/field/[visitId]/Startup.tsx"
-  - "apps/web/src/app/field/[visitId]/actions.ts"
-  - "apps/web/src/app/field/[visitId]/page.tsx"
-  - "apps/web/src/app/operations/page.tsx"
-  - "apps/web/src/app/operations/actions.ts"
-  - "apps/web/src/lib/offline.ts"
-
-required_tests:
-  - "Database/RLS source contracts for requester ownership, Operations-only decision, self-approval refusal, mandatory evidence or safety exception, expiry and visit-close refusal."
-  - "Field source contract for actual GPS/time capture, offline durable queue and no direct arrival/self-approval transition."
-  - "Operations queue and server-action contract for approve/reject through the guarded RPC."
-  - "Typecheck, production build and focused Playwright iPad policy tests."
+  - "apps/web/src/app/admin/audit/**"
+  - "apps/web/src/lib/audit* and additive M2-05 libraries"
+  - "apps/web/e2e/mvp2-m2-05-*"
+  - "supabase/migrations/*mvp2_m2_05*"
+  - "product-contract/mvp2/m2-05/**"
+  - "product-contract acceptance/evidence/execution/governance/session records required for this slice"
 
 required_evidence:
-  - "product-contract/evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md"
-  - "Updated CURRENT_STATE.md, WORK_QUEUE.yaml, acceptance/evidence records and session ledger."
+  - "36-row requirement-to-code-to-test-to-evidence map"
+  - "Schema/RPC/RLS/immutability/idempotency/correlation contract results"
+  - "M2-05 UI/E2E positive, denied, partial, stale, conflict, degraded, RTL, responsive and print results"
+  - "Typecheck, production build, focused M2-05 suite, mapped MVP1 regression and full-suite disposition"
+  - "Remote database status explicitly stating no DDL applied without approval"
 
-source_verification:
-  source_commit: "62916ee"
-  passed:
-    - "npm run typecheck"
-    - "npm run build"
-    - "Focused static Playwright policy contracts: 3/3"
-    - "git diff --check"
-  blocked_runtime:
-    - "Clean worktree has no Supabase URL/key, so authenticated browser setup cannot start."
-    - "No local Supabase configuration, PostgreSQL service or Docker daemon is available for migration/RLS execution."
-    - "Shared remote migration history/access remains unreconciled; the source migration was not applied blindly."
+task_specific_context:
+  - "product-contract/00_START_HERE.md"
+  - "product-contract/CURRENT_STATE.md"
+  - "product-contract/GATE_STATUS.md"
+  - "product-contract/governance/OPEN_DECISIONS.yaml"
+  - "docs/README.md"
+  - "docs/DOCUMENTATION_STORAGE_POLICY.md"
+  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/02_MASTER_WORKBOOK/MIM_Inspection_MVP2_Breakdown_Acceptance_Evidence.xlsx"
+  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/04_EXECUTION/PROMPTS/M2-05_CLAUDE_DESIGN_PROMPT_R1.md"
+  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/04_EXECUTION/PROMPTS/M2-05_CLAUDE_DESIGN_FINAL_CORRECTION_R2.md"
+  - "/Users/vikramindla/Downloads/# Saqeel audit replay forensics.zip"
 
 exit_condition: >-
-  The slice is complete only when an outside-fence inspector can create a durable,
-  evidence-governed request with actual GPS/time, cannot self-approve or enter offline,
-  Operations can approve or reject through a guarded/audited online decision, expired or
-  closed requests cannot unlock the visit, and all stated source/runtime tests and evidence
-  are captured. This does not claim shared-remote migration application or release.
+  The slice exits only when the additive semantic-event/replay foundation, RLS and append-only guards,
+  approved route modes, honest missing/provider/policy states, all self-authored tests, mapped MVP1
+  regression, evidence maps and handover are complete with no unresolved implementation P0/P1.

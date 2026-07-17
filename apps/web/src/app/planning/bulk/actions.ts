@@ -1,6 +1,7 @@
 "use server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
+import { isPlausibleDate } from "@/lib/plausible-date";
 
 // CD-025 (SCR-WEB-150 / P03): publish no longer hard-redirects. It returns the
 // authoritative result so the review workspace can render the success state
@@ -18,7 +19,7 @@ export type BulkResult = { error?: string; ok?: boolean; planId?: string };
 export type BlockerKind =
   | "duplicate" | "overlap" | "coverage"
   | "nopackage" | "packageInvalid" | "nopool"
-  | "configMissing" | "srcFactory" | "srcPackage" | "srcInspector" | "srcDuplicate";
+  | "configMissing" | "windowImplausible" | "srcFactory" | "srcPackage" | "srcInspector" | "srcDuplicate";
 export type Blocker = { kind: BlockerKind; targets?: string[] };
 export type ValidateResult = {
   blockers: Blocker[];
@@ -222,6 +223,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const startMs = Date.parse(window_start);
   const endMs = Date.parse(window_end);
   if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) blockers.push("Invalid window (FLD-PLAN-005)");
+  else if (!isPlausibleDate(window_start) || !isPlausibleDate(window_end)) blockers.push("Window date is outside the plausible range (DEF-DATA-005)");
   if (package_version_id) {
     const today = new Date().toISOString().slice(0, 10);
     const { data: packageVersion, error: packageError } = await sb.from("package_versions")
@@ -349,6 +351,7 @@ export async function validateBulkPlan(input: {
   const windowOk = !!input.window_start && !!input.window_end
     && Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs;
   if (!windowOk || visit_type !== "periodic") blockers.push({ kind: "configMissing" });
+  else if (!isPlausibleDate(input.window_start) || !isPlausibleDate(input.window_end)) blockers.push({ kind: "windowImplausible" });
 
   // package
   if (!input.package_version_id) {

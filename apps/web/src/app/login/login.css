@@ -98,7 +98,9 @@
 .lg-foot__item svg { color: var(--ax-color-success); flex-shrink: 0; }
 .lg-foot__row { display: flex; align-items: center; justify-content: space-between;
   gap: var(--ax-space-150); }
-.lg-foot__copy { color: var(--ax-color-text-disabled); }
+/* DEF-UI-001 — this is a live copyright label, not a disabled control; the
+   disabled token mixes to ~2.3:1 against canvas in dark mode (fails AA). */
+.lg-foot__copy { color: var(--ax-color-text-secondary); }
 .lg-lang { font: 600 14px/20px var(--ax-font-sans); color: var(--ax-color-primary-hover);
   text-decoration: none; }
 .lg-lang:hover { text-decoration: underline; text-underline-offset: 3px; }
@@ -160,8 +162,9 @@
 .lg-map .leaflet-container { background: transparent; font: inherit; }
 /* CARTO dark tiles are too dim behind the mask — brighten them (design 4a) */
 .lg-map .lg-map__tiles--bright { filter: brightness(2.3) saturate(1.2) contrast(1.02); }
+/* DEF-UI-001 — not a disabled control; use the caption token for AA contrast. */
 .lg-map .leaflet-control-attribution { background: transparent;
-  font: 400 9px var(--ax-font-sans); color: var(--ax-color-text-disabled); }
+  font: 400 9px var(--ax-font-sans); color: var(--ax-color-text-secondary); }
 .lg-map .leaflet-control-attribution a { color: var(--ax-color-text-secondary); }
 
 /* factory chip */

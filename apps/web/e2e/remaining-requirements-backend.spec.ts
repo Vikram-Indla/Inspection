@@ -22,7 +22,13 @@ test.describe("TASK-G11 remaining-requirements backend contracts", () => {
     const offline = read("src/lib/offline.ts");
     expect(startup).toContain("device_info: capturedDevice");
     expect(startup).toContain('fetch("/api/routing/eta"');
-    expect(startup).toContain('kind: "override"');
+    // Obsolete-test fix (Cycle 2 completion pass): the override geo_events
+    // kind was already specialized to "geo_override_request" by the
+    // already-merged 62916ee ("feat(ipad): govern geofence overrides") —
+    // confirmed present and functioning via requestGpsOverride() in
+    // Startup.tsx. The bare "override" literal never existed as its own
+    // kind value; only this substring assertion was stale.
+    expect(startup).toContain('kind: "geo_override_request"');
     expect(startup).toContain('linked_type: "arrival"');
     expect(startup).not.toContain("demo coordinates substituted");
     expect(route).toContain("GOOGLE_MAPS_ROUTES_API_KEY");

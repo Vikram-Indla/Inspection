@@ -2,6 +2,15 @@
 
 ## Current reconciliation — 2026-07-16
 
+### MVP2 M2-05 addendum — 2026-07-17
+
+`TASK-MVP2-M2-05-AUDIT-REPLAY-001` is sponsor-authorized and locally implemented
+on its dedicated branch. This does not change MVP1 G11/G12. M2-05 local source
+checks and independent implementation audit pass with no remaining source P0/P1,
+while fresh-database/RLS and authenticated shared-backend UI/full
+regression evidence remain explicitly blocked and no remote migration was
+applied. M2-05 therefore has no release/runtime PASS yet.
+
 The historical G7–G10 approvals remain preserved below, but their old evidence
 counts do not describe the current release candidate. The acceptance ledger is
 **493 rows: 15 verified_live / 460 implemented / 18 partial / 0 missing**. The

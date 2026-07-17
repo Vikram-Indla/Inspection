@@ -1,209 +1,157 @@
 import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
+import { supabaseServer, getServerUser } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import { NotYetBoundary } from "@/components/NotYetBoundary";
+import { type ExpectedAuditEvent, type ReplayEvent, neutralAuditError } from "@/lib/audit-replay";
+import AuditReplayWorkspace from "./AuditReplayWorkspace";
 
 export const dynamic = "force-dynamic";
 
-// ENG-12 / FND-003 — audit trail browser over the append-only audit_events
-// table. Read access is pure RLS (audit_read in 0002 + compliance_admin in
-// 0019); a user without an audit-reading role sees zero rows, never an error.
-// Filters ride the URL (GET form), pagination is 50/page.
+const PAGE_SIZE = 250;
+const AUDIT_READ_ROLES = new Set(["auditor","ops","security_admin","leadership","reviewer","planner","compliance_admin"]);
 
-const PAGE_SIZE = 50;
-// Audited object types — the trigger list from migrations 0002 + 0009 (constants, not invented).
-const AUDITED_TABLES = [
-  "visit_plans", "visits", "assignments", "inspections", "submission_versions", "reviews",
-  "violations", "action_forms", "package_versions", "regulations", "engine_settings", "user_roles",
-  "virtual_participants",
-] as const;
-const ACTIONS = ["INSERT", "UPDATE", "DELETE", "OTP_SENT", "OTP_VERIFIED", "OTP_FAILED"] as const;
-
-type Row = {
+type GenericRow = {
   id: number; actor: string | null; object_type: string; object_id: string | null;
   action: string; before_state: unknown; after_state: unknown; occurred_at: string;
 };
 
-export default async function AuditBrowser({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const sp = await searchParams;
-  const one = (k: string) => (typeof sp[k] === "string" ? (sp[k] as string) : "");
-  const table = one("table"), action = one("action"), actor = one("actor"), from = one("from"), to = one("to");
-  const page = Math.max(1, parseInt(one("page") || "1", 10) || 1);
-  const { t } = await useT();
-  const sb = await supabaseServer();
+type SemanticRow = {
+  id: string; event_type: string; occurred_at: string; recorded_at: string;
+  actor_id: string | null; aggregate_type: string; aggregate_id: string | null;
+  correlation_id: string; causation_id: string | null; before_state: unknown;
+  after_state: unknown; semantic_payload: unknown; integrity_status: string;
+  chain_status: string; ingestion_status: string; case_ref: string;
+};
 
-  let q = sb.from("audit_events")
-    .select("id, actor, object_type, object_id, action, before_state, after_state, occurred_at", { count: "exact" })
-    .order("occurred_at", { ascending: false })
-    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
-  if (table) q = q.eq("object_type", table);
-  if (action) q = q.eq("action", action);
-  if (actor === "system") q = q.is("actor", null);
-  else if (actor) q = q.eq("actor", actor);
-  if (from) q = q.gte("occurred_at", `${from}T00:00:00Z`);
-  if (to) q = q.lte("occurred_at", `${to}T23:59:59.999Z`);
-  const [{ data: rows, error, count }, { data: profs }] = await Promise.all([
-    q,
-    // profiles visibility is itself RLS-scoped (profiles_self); unknown actors fall back to short ids
-    sb.from("profiles").select("user_id, full_name"),
-  ]);
-  if (error) console.error("[admin audit] load failed", error);
-  const nameOf = (id: string | null) =>
-    id === null ? t("admin.audit.systemActor", "system") : (profs ?? []).find(p => p.user_id === id)?.full_name ?? `${id.slice(0, 8)}…`;
-  const events = (rows ?? []) as Row[];
-  const total = count ?? 0;
-  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const qs = (p: number) => {
-    const u = new URLSearchParams();
-    if (table) u.set("table", table);
-    if (action) u.set("action", action);
-    if (actor) u.set("actor", actor);
-    if (from) u.set("from", from);
-    if (to) u.set("to", to);
-    u.set("page", String(p));
-    return `/admin/audit?${u.toString()}`;
-  };
-  const anyLabel = t("admin.audit.filter.any", "Any");
-  const enumL = (x: string) => t(`enum.${x}`, x.replace(/_/g, " "));
+const genericType = (row: GenericRow) => `GENERIC:${row.object_type}.${row.action}`;
+
+export default async function AuditReplayPage({ searchParams }: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const one = (key: string) => typeof sp[key] === "string" ? sp[key] as string : "";
+  const caseRef = one("case").trim();
+  const caseRefUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(caseRef) ? caseRef : null;
+  const query = one("q").trim().toLowerCase();
+  const mode = ["recorder","reconstruct","compare","ledger","custody","print"].includes(one("view")) ? one("view") : "recorder";
+  const at = one("at") || null;
+  const vs = one("vs") || null;
+
+  const { locale, t } = await useT();
+  const sb = await supabaseServer();
+  const { data: { user } } = await getServerUser();
+  const { data: roleRows } = user
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    : { data: [] as { role_key: string }[] };
+  const roles = (roleRows ?? []).map(row => row.role_key);
+  const authorized = roles.some(role => AUDIT_READ_ROLES.has(role));
+
+  let genericQuery = sb.from("audit_events")
+    .select("id,actor,object_type,object_id,action,before_state,after_state,occurred_at")
+    .order("occurred_at", { ascending: false }).order("id", { ascending: false }).limit(PAGE_SIZE);
+  if (caseRefUuid) genericQuery = genericQuery.eq("object_id", caseRefUuid);
+  else if (caseRef) genericQuery = genericQuery.eq("object_id", "00000000-0000-0000-0000-000000000000");
+
+  const genericResult = await genericQuery;
+  let semanticRows: SemanticRow[] = [];
+  let semanticError: { message: string } | null = null;
+  let historyTruncated = (genericResult.data?.length ?? 0) === PAGE_SIZE;
+  if (caseRef) {
+    let cursorAt: string | null = null;
+    let cursorId: string | null = null;
+    for (let page = 0; page < 20; page++) {
+      const result = await sb.rpc("audit_replay_case", { p_case_ref: caseRef, p_limit: PAGE_SIZE, p_before_occurred_at: cursorAt, p_before_id: cursorId });
+      if (result.error) { semanticError = result.error; break; }
+      const rows = (result.data ?? []) as unknown as SemanticRow[];
+      semanticRows.push(...rows);
+      if (rows.length < PAGE_SIZE) break;
+      const oldest = rows.at(-1)!;
+      cursorAt = oldest.occurred_at; cursorId = oldest.id;
+      if (page === 19) historyTruncated = true;
+    }
+  } else {
+    const result = await sb.from("audit_semantic_events")
+      .select("id,event_type,occurred_at,recorded_at,actor_id,aggregate_type,aggregate_id,correlation_id,causation_id,before_state,after_state,semantic_payload,integrity_status,chain_status,ingestion_status,case_ref")
+      .order("occurred_at", { ascending: false }).order("id", { ascending: false }).limit(PAGE_SIZE);
+    semanticRows = (result.data ?? []) as unknown as SemanticRow[];
+    semanticError = result.error;
+    historyTruncated = historyTruncated || semanticRows.length === PAGE_SIZE;
+  }
+  if (genericResult.error) console.error("[MVP2-M2-05 audit generic read]", genericResult.error);
+  if (semanticError) console.error("[MVP2-M2-05 semantic read]", semanticError);
+
+  const genericEvents: ReplayEvent[] = ((genericResult.data ?? []) as GenericRow[]).map(row => ({
+    id: `audit-${row.id}`, eventType: genericType(row), occurredAt: row.occurred_at,
+    actor: row.actor ?? "system", aggregateType: row.object_type, aggregateId: row.object_id,
+    correlationId: null, beforeState: row.before_state, afterState: row.after_state,
+    provenance: "generic", integrityStatus: "not_assessed", chainStatus: "incomplete",
+    ingestionStatus: "generic_only",
+  }));
+  const semanticEvents: ReplayEvent[] = semanticRows.map(row => ({
+    id: row.id, eventType: row.event_type, occurredAt: row.occurred_at, recordedAt: row.recorded_at,
+    actor: row.actor_id ?? "system", aggregateType: row.aggregate_type, aggregateId: row.aggregate_id,
+    correlationId: row.correlation_id, causationId: row.causation_id,
+    beforeState: row.before_state, afterState: row.after_state, payload: row.semantic_payload,
+    provenance: "semantic", integrityStatus: row.integrity_status, chainStatus: row.chain_status,
+    ingestionStatus: row.ingestion_status,
+  }));
+  const allEvents = [...semanticEvents, ...genericEvents]
+    .filter(event => !query || [event.eventType,event.aggregateType,event.aggregateId,event.actor,event.correlationId]
+      .some(value => value?.toLowerCase().includes(query)))
+    .sort((a,b) => new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime() || a.id.localeCompare(b.id));
+
+  const semanticUnavailable = Boolean(semanticError);
+  const sourceError = Boolean(genericResult.error);
+  const partialScope = authorized && roles.some(role => ["planner","reviewer","leadership"].includes(role));
+
+  const { data: versionRows, error: versionError } = authorized
+    ? await sb.from("audit_event_ontology_versions").select("id").eq("case_type", "inspection.standard").eq("status", "published").order("effective_from", { ascending: false }).limit(1)
+    : { data: [], error: null };
+  const versionId = versionRows?.[0]?.id as string | undefined;
+  const [{ data: entryRows, error: entryError }, { data: registryRows, error: registryError }, { data: constraintRows, error: constraintError }] = versionId
+    ? await Promise.all([
+      sb.from("audit_event_ontology_entries").select("event_type,ordinal,required,branch_group,branch_minimum,expected_status,requirement_ref,acceptance_ref").eq("ontology_version_id", versionId).order("ordinal"),
+      sb.from("audit_event_registry").select("event_type,title,aliases,requirement_refs,acceptance_refs,required_fields,source_mapping_status").eq("schema_version", 1).eq("active", true),
+      sb.from("audit_event_order_constraints").select("event_type,must_follow_event_type,predecessor_required").eq("ontology_version_id", versionId),
+    ])
+    : [{ data: [], error: null }, { data: [], error: null }, { data: [], error: null }];
+  const registry = new Map((registryRows ?? []).map(row => [row.event_type, row]));
+  const expected: ExpectedAuditEvent[] = (entryRows ?? []).flatMap(entry => {
+    const reg = registry.get(entry.event_type);
+    if (!reg) return [];
+    return [{
+      requirementId: entry.requirement_ref as ExpectedAuditEvent["requirementId"],
+      acceptanceId: entry.acceptance_ref as ExpectedAuditEvent["acceptanceId"],
+      eventType: entry.event_type, title: reg.title, chapter: "selected-ontology",
+      defaultStatus: entry.expected_status as ExpectedAuditEvent["defaultStatus"], aliases: reg.aliases as string[],
+      requiredFields: reg.required_fields as string[], ordinal: entry.ordinal, required: entry.required,
+      branchGroup: entry.branch_group, branchMinimum: entry.branch_minimum,
+      mustFollowEventTypes: (constraintRows ?? []).filter(row => row.event_type === entry.event_type && row.predecessor_required).map(row => row.must_follow_event_type),
+      optionalPredecessorEventTypes: (constraintRows ?? []).filter(row => row.event_type === entry.event_type && !row.predecessor_required).map(row => row.must_follow_event_type),
+    }];
+  });
+  const ontologyLoaded = Boolean(versionId) && !versionError && !entryError && !registryError && !constraintError && expected.length === 36;
 
   return (
-    <Shell current="/admin/audit" title={t("admin.audit.title", "Audit trail browser")}
-      context={<><span className="ax-lozenge ax-lozenge--info">ENG-12</span><span className="ax-lozenge ax-lozenge--success">{t("admin.audit.appendOnly", "append-only · immutable")}</span></>}>
-      <div className="ax-banner"><div>
-        <strong>{t("admin.audit.banner.title", "Immutable record.")}</strong> {t("admin.audit.banner.body", "Every write to audited tables lands here via database trigger (0002); UPDATE/DELETE on audit_events is rejected at trigger level (0005). Visibility is enforced by RLS — audit-reading roles only.")}
-      </div></div>
-
-      {/* Filters — GET form so the view is linkable and paginates statelessly */}
-      <form method="get" className="ax-surface ax-row" style={{ padding: "var(--ax-space-300)", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "flex-end" }}>
-        <label className="ax-field">
-          <span className="ax-field__label">{t("admin.audit.filter.table", "Table")}</span>
-          <select className="ax-input" name="table" defaultValue={table}>
-            <option value="">{anyLabel}</option>
-            {AUDITED_TABLES.map(x => <option key={x} value={x}>{x}</option>)}
-          </select>
-        </label>
-        <label className="ax-field">
-          <span className="ax-field__label">{t("admin.audit.filter.action", "Action")}</span>
-          <select className="ax-input" name="action" defaultValue={action}>
-            <option value="">{anyLabel}</option>
-            {ACTIONS.map(x => <option key={x} value={x}>{x}</option>)}
-          </select>
-        </label>
-        <label className="ax-field">
-          <span className="ax-field__label">{t("admin.audit.filter.actor", "Actor")}</span>
-          <select className="ax-input" name="actor" defaultValue={actor}>
-            <option value="">{anyLabel}</option>
-            <option value="system">{t("admin.audit.systemActor", "system")}</option>
-            {(profs ?? []).map(p => <option key={p.user_id} value={p.user_id}>{p.full_name}</option>)}
-          </select>
-        </label>
-        <label className="ax-field">
-          <span className="ax-field__label">{t("admin.audit.filter.from", "From (UTC)")}</span>
-          <input className="ax-input" type="date" name="from" defaultValue={from} />
-        </label>
-        <label className="ax-field">
-          <span className="ax-field__label">{t("admin.audit.filter.to", "To (UTC)")}</span>
-          <input className="ax-input" type="date" name="to" defaultValue={to} />
-        </label>
-        <button className="ax-btn ax-btn--prominent" type="submit">{t("admin.audit.filter.apply", "Apply filters")}</button>
-        <a className="ax-btn ax-btn--subtle" href="/admin/audit">{t("admin.audit.filter.reset", "Reset")}</a>
-      </form>
-
-      {error && (
-        <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("admin.audit.error", "Couldn’t load audit events. Nothing was changed. Try again.")}</strong>
-        </div></div>
-      )}
-
-      {!error && events.length === 0 && (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🛡</span>
-          <h4>{t("admin.audit.empty.title", "No audit events visible")}</h4>
-          <p className="ax-caption">{t("admin.audit.empty.desc", "Either nothing matches these filters, or your roles carry no audit read grant (auditor, ops, security_admin, leadership, reviewer, planner, compliance_admin — RLS).")}</p>
-        </div></div>
-      )}
-
-      {!error && events.length > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between", marginBlockEnd: "var(--ax-space-150)" }}>
-            <span className="ax-caption ax-numeric">{t("admin.audit.count", "{n} events · page {p}/{pp}").replace("{n}", String(total)).replace("{p}", String(page)).replace("{pp}", String(pages))}</span>
-            <div className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
-              {page > 1 && <a className="ax-btn ax-btn--secondary" href={qs(page - 1)}>← {t("admin.audit.prev", "Newer")}</a>}
-              {page < pages && <a className="ax-btn ax-btn--secondary" href={qs(page + 1)}>{t("admin.audit.next", "Older")} →</a>}
-            </div>
-          </div>
-          <div className="ax-tablewrap"><table className="ax-table">
-            <thead><tr>
-              <th className="ax-td-num">{t("admin.audit.th.when", "Occurred (UTC)")}</th>
-              <th>{t("admin.audit.th.actor", "Actor")}</th>
-              <th>{t("admin.audit.th.table", "Table")}</th>
-              <th>{t("admin.audit.th.action", "Action")}</th>
-              <th>{t("admin.audit.th.object", "Object")}</th>
-              <th>{t("admin.audit.th.detail", "Detail")}</th>
-            </tr></thead>
-            <tbody>
-              {events.map(e => (
-                <tr key={e.id}>
-                  <td className="ax-td-num ax-numeric">{new Date(e.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</td>
-                  <td>{nameOf(e.actor)}</td>
-                  <td><strong>{e.object_type}</strong></td>
-                  <td><span className={`ax-lozenge ${e.action === "DELETE" ? "ax-lozenge--critical" : e.action === "INSERT" ? "ax-lozenge--success" : "ax-lozenge--info"}`}>{enumL(e.action)}</span></td>
-                  <td className="ax-numeric">{e.object_id ? `${e.object_id.slice(0, 8)}…` : "—"}</td>
-                  <td>
-                    {/* Row detail expander — old/new state exactly as recorded */}
-                    <details>
-                      <summary className="ax-link" style={{ cursor: "pointer" }}>{t("admin.audit.expand", "old / new JSON")}</summary>
-                      <div className="ax-conflict__grid" style={{ marginBlockStart: "var(--ax-space-100)" }}>
-                        <div className="ax-conflict__side">
-                          <h5>{t("admin.audit.before", "Before")}</h5>
-                          <pre style={{ font: "var(--ax-text-micro)", whiteSpace: "pre-wrap", overflowWrap: "anywhere", maxBlockSize: 260, overflow: "auto" }}>{e.before_state ? JSON.stringify(e.before_state, null, 2) : "∅"}</pre>
-                        </div>
-                        <div className="ax-conflict__side">
-                          <h5>{t("admin.audit.after", "After")}</h5>
-                          <pre style={{ font: "var(--ax-text-micro)", whiteSpace: "pre-wrap", overflowWrap: "anywhere", maxBlockSize: 260, overflow: "auto" }}>{e.after_state ? JSON.stringify(e.after_state, null, 2) : "∅"}</pre>
-                        </div>
-                      </div>
-                    </details>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table></div>
-          <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
-            {t("admin.audit.rlsNote", "You see events your role is allowed to read. Events outside your scope are absent, not redacted rows.")}
-          </p>
-        </div>
-      )}
-
-      {/* R2 evidence grammar — capabilities deliberately absent from this reader.
-          Shown as honest boundaries so their absence is legible, not a bug. */}
-      {!error && (
-        <div className="ax-grid-2" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "var(--ax-space-200)" }}>
-          <NotYetBoundary
-            title={t("admin.audit.corr.title", "Correlation / timeline view")}
-            consequence={t("admin.audit.corr.desc", "Events can't yet be grouped into a single cross-object story.")}
-            seam="NEEDS_APPROVED_CONTRACT — correlation read model"
-            prerequisites={[
-              t("admin.audit.corr.pre1", "A correlation identifier on audit_events to group by"),
-              t("admin.audit.corr.pre2", "An approved read model for cross-object timelines"),
-            ]}
-            notAvailableLabel={t("admin.audit.notYet", "Not available yet")}
-            detailLabel={t("common.whyPrereq", "Why / prerequisites")}
-          />
-          <NotYetBoundary
-            title={t("admin.audit.reveal.title", "Sensitive reveal & export")}
-            consequence={t("admin.audit.reveal.desc", "Masked fields can't be revealed and event sets can't be exported from this screen.")}
-            seam="BLOCKED_BY_DECISION — privacy / retention"
-            prerequisites={[
-              t("admin.audit.reveal.pre1", "A field-level privacy / masking policy"),
-              t("admin.audit.reveal.pre2", "A retention and export-audit contract"),
-              t("admin.audit.reveal.pre3", "An export authorization role"),
-            ]}
-            notAvailableLabel={t("admin.audit.notYet", "Not available yet")}
-            detailLabel={t("common.whyPrereq", "Why / prerequisites")}
-          />
-        </div>
-      )}
+    <Shell current="/admin/audit" title={t("admin.audit.replay.title", "Inspection Flight Recorder")}
+      context={<><span className="ax-lozenge ax-lozenge--info">MVP2-M2-05</span><span className="ax-lozenge ax-lozenge--success">ENG-12 · append-only</span></>}>
+      <AuditReplayWorkspace
+        locale={locale}
+        mode={mode}
+        caseRef={caseRef}
+        query={one("q")}
+        at={at}
+        vs={vs}
+        roles={roles}
+        authorized={authorized}
+        partialScope={partialScope}
+        semanticUnavailable={semanticUnavailable || !ontologyLoaded}
+        sourceError={sourceError}
+        sourceErrorMessage={neutralAuditError()}
+        events={allEvents}
+        expected={expected}
+        ontologyLoaded={ontologyLoaded}
+        historyTruncated={historyTruncated}
+      />
     </Shell>
   );
 }

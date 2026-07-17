@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { ProposeDraftForm, DraftPayloadEditor, ApprovePublish, type WfStrings } from "./Controls";
+import { WfDeck, type WfDeckStrings } from "./WfDeck";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,22 @@ export default async function Workflows() {
     saved: t("admin.wf.editor.saved", "saved"),
     publishing: t("admin.wf.publish.publishing", "Publishing…"),
     approvePublish: t("admin.wf.publish.approve", "Approve & publish"),
+  };
+  const deckStrings: WfDeckStrings = {
+    ledgerTitle: t("admin.wf.deck.ledger", "Validation ledger (VAL-01..06)"),
+    graphTitle: t("admin.wf.deck.graph", "State graph"),
+    inspectorTitle: t("admin.wf.deck.inspector", "Transition inspector"),
+    passed: t("admin.wf.deck.passed", "valid"),
+    failed: t("admin.wf.deck.failed", "resolve before publishing"),
+    initial: t("admin.wf.deck.initial", "initial"),
+    terminal: t("admin.wf.deck.terminal", "terminal"),
+    actor: t("admin.wf.deck.actor", "Actor"),
+    guards: t("admin.wf.deck.guards", "Guards"),
+    sideEffects: t("admin.wf.deck.sideEffects", "Side effects"),
+    idempotent: t("admin.wf.deck.idempotent", "idempotent"),
+    noIdempotencyKey: t("admin.wf.deck.noKey", "no idempotency key"),
+    selectHint: t("admin.wf.deck.selectHint", "Select a state to filter its outgoing transitions; select a transition row to inspect it."),
+    none: t("admin.wf.deck.none", "—"),
   };
   return (
     <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow configuration")}
@@ -79,34 +96,24 @@ export default async function Workflows() {
                 ? <>{t("admin.wf.chain.approved", "approved by")} <strong>{nameOf(w.approved_by)}</strong> <span className="ax-lozenge ax-lozenge--success">{t("admin.wf.chain.distinct", "distinct approver")}</span></>
                 : <>{t("admin.wf.chain.pending", "awaiting a distinct approver (maker-checker, DB-enforced)")}</>}
             </p>
-            <div className="ax-tablewrap"><table className="ax-table">
-              <thead><tr><th>{t("admin.wf.table.transition", "Transition")}</th><th>{t("admin.wf.table.fromTo", "From → To")}</th><th>{t("admin.wf.table.actor", "Actor")}</th><th>{t("admin.wf.table.guard", "Guard")}</th><th>{t("admin.wf.table.sideEffects", "Side effects")}</th></tr></thead>
-              <tbody>
-                {(p.transitions ?? []).map(tr => (
-                  <tr key={tr.id}>
-                    <td className="ax-numeric"><strong>{tr.id}</strong></td>
-                    <td>{tr.from} → {tr.to}{tr.terminal && <span className="ax-lozenge ax-lozenge--critical" style={{ marginInlineStart: 6 }}>{t("admin.wf.terminal", "terminal")}</span>}</td>
-                    <td>{tr.actor}</td><td className="ax-caption">{tr.guard}</td>
-                    <td className="ax-caption">{(tr.side_effects ?? []).join(", ") || "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table></div>
+            {/* M2-02 Workflow Flight Deck — graph + outline, transition inspector,
+                and the live VAL-01..06 validation ledger (now a real check). */}
+            <WfDeck payload={w.payload} strings={deckStrings} />
             {w.status === "draft" && (
               <>
                 <DraftPayloadEditor versionId={w.id} payload={w.payload as object} strings={strings} />
-                {/* CD-013: the visual designer / graph-validation / replay lane is
-                    non-executable — no canvas spec, simulation engine, or persisted
-                    replay exists. The truthful editor is the payload above; this is
-                    an honest boundary, kept out of the working flow. */}
+                {/* M2-02: the graph and the VAL-01..06 validation ledger above are now
+                    real (WfDeck). The remaining honest boundary is the deterministic
+                    simulation engine with fixtures + persisted replay/audit — the pure
+                    evaluator exists (lib/workflow/transition), but the fixture store and
+                    replay persistence are not built, so no run-replay is claimed here. */}
                 <NotYetBoundary
-                  title={t("admin.wf.designer.title", "Visual designer, graph validation & replay")}
-                  consequence={t("admin.wf.designer.desc", "There’s no canvas, graph check, or run-replay yet — the state-machine payload above is the real editor.")}
-                  seam="NEEDS_APPROVED_CONTRACT — designer / simulation engine"
+                  title={t("admin.wf.sim.title", "Simulation fixtures & persisted replay")}
+                  consequence={t("admin.wf.sim.desc", "The graph and validation ledger above are live; a persisted simulation/replay run (fixtures + audit) is not built yet, so no run history is shown.")}
+                  seam="NEEDS_APPROVED_CONTRACT — simulation fixtures / replay persistence (GAP-02)"
                   prerequisites={[
-                    t("admin.wf.designer.pre1", "A canvas / graph editing spec"),
-                    t("admin.wf.designer.pre2", "A named graph-validation algorithm"),
-                    t("admin.wf.designer.pre3", "A simulation engine with fixtures, replay persistence and audit"),
+                    t("admin.wf.sim.pre1", "A fixture store (sim_fixtures) and seed context"),
+                    t("admin.wf.sim.pre2", "Persisted simulation runs (sim_runs) with audit"),
                   ]}
                   notAvailableLabel={t("admin.wf.notYet", "Not available yet")}
                   detailLabel={t("common.whyPrereq", "Why / prerequisites")}

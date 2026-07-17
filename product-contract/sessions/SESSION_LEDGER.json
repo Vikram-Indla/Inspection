@@ -3342,9 +3342,55 @@
       "commit_sha": "62916ee (source implementation; documentation record commit follows)",
       "next_task": "Apply the two forward migrations in a reconciled staging or approved shared environment and run the inspector, Operations, expiry and offline-reconnect acceptance journey.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 89, execution/CURRENT_SLICE.yaml and evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md. Source commit 62916ee is verified on codex/ipad/m04-geofence-policy-promotion-002. Do not apply migrations blindly; reconcile migration history/access first, then execute the controlled runtime suite."
+    },
+    {
+      "session_id": "2026-07-17-mvp2-m2-05-audit-replay",
+      "started_at": "2026-07-17",
+      "ended_at": "2026-07-17",
+      "branch": "codex/mvp2-m2-05-audit-replay",
+      "task_id": "TASK-MVP2-M2-05-AUDIT-REPLAY-001",
+      "gate": "MVP2 Wave 1 / sponsor-authorized build",
+      "requirements": ["MVP2-REQ-0137..MVP2-REQ-0172"],
+      "acceptance_ids": ["MVP2-AC-0137..MVP2-AC-0172"],
+      "screens": ["AUD-REPLAY-01", "AUD-REPLAY-02", "AUD-REPLAY-03", "AUD-REPLAY-04", "AUD-REPLAY-04S", "AUD-REPLAY-05", "AUD-REPLAY-06", "AUD-REPLAY-07"],
+      "engines": ["ENG-12"],
+      "files_changed": [
+        "supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql",
+        "apps/web/src/app/admin/audit/page.tsx",
+        "apps/web/src/app/admin/audit/AuditReplayWorkspace.tsx",
+        "apps/web/src/lib/audit-replay.ts",
+        "apps/web/e2e/mvp2-m2-05-contract.spec.ts",
+        "apps/web/e2e/mvp2-m2-05-audit-replay.spec.ts",
+        "product-contract/mvp2/m2-05/*",
+        "product-contract governance, execution, acceptance and evidence records"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "playwright.static.config.ts PASS (12/12)",
+        "git diff --check PASS",
+        "independent source audit PASS — no remaining implementation P0/P1"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-MVP2-M2-05-AUDIT-REPLAY-001.md",
+        "product-contract/mvp2/m2-05/EVENT_ONTOLOGY.csv",
+        "product-contract/mvp2/m2-05/REQUIREMENT_WIRING_MAP.csv"
+      ],
+      "decisions": [
+        "Generic audit rows are never promoted to canonical semantic facts.",
+        "Authenticated semantic append is source-derived and source-contract allowlisted; callers cannot assert integrity or substitute fact payloads.",
+        "DEC-006, DEC2-009, EBDA/PKI and MVP3/provider boundaries remain explicitly held."
+      ],
+      "blockers": [
+        "No local Docker/PostgreSQL daemon for fresh migration, RLS and RPC negative execution.",
+        "Authenticated shared-backend browser/full-regression execution requires separate informed approval after the safety gate rejection."
+      ],
+      "commit_sha": "HEAD (session-close source commit; exact SHA reported in handoff)",
+      "next_task": "In an approved isolated Supabase environment, apply the forward migration and execute the RLS/RPC forgery/idempotency/replay suite; then run the authenticated M2-05 browser and mapped regression inventory.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 90, execution/CURRENT_SLICE.yaml and evidence/TASK-MVP2-M2-05-AUDIT-REPLAY-001.md. Source implementation and independent audit pass on codex/mvp2-m2-05-audit-replay; runtime certification is still pending and remote DDL/shared-backend execution is not authorized by this record."
     }
   ],
-  "last_session": "2026-07-16-ipad-geofence-override-approval",
+  "last_session": "2026-07-17-mvp2-m2-05-audit-replay",
   "rules": {
     "append_only": true,
     "required_fields": [

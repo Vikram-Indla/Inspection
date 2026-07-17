@@ -49,6 +49,7 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   border-radius: var(--ax-radius-small);
   border: 1px solid transparent;
   font: var(--ax-text-body-strong);
+  text-decoration: none; /* Cycle 2 completion pass — an <a class="ax-btn"> must never look like an underlined link */
   cursor: pointer; user-select: none;
   transition: background var(--ax-motion-fast), border-color var(--ax-motion-fast), box-shadow var(--ax-motion-fast);
   background: var(--ax-color-primary); color: var(--ax-color-inverse-text);
@@ -482,6 +483,17 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   .ax-shell-search { inline-size: min(320px, 48vw); }
   .ax-shell-account__identity { display: none; }
   .ax-content { padding: var(--ax-space-200); }
+}
+
+/* DEF-UX-002 — between the full desktop sidebar (>=900px, no drawer collapse
+   yet) and the drawer breakpoint, the topbar search + theme/bell icons +
+   account identity text could crowd/wrap on tablet landscape widths (e.g.
+   1024px iPad landscape). Shrink search and drop the identity text a little
+   earlier than the drawer/backdrop switch, matching the file's existing
+   1099px tablet boundary. */
+@media (max-width: 1099px) {
+  .ax-shell-search { inline-size: min(260px, 30vw); }
+  .ax-shell-account__identity { display: none; }
 }
 
 @media (max-width: 560px) {
@@ -1104,3 +1116,31 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .rk-band { display: flex; gap: 8px; flex-wrap: wrap; }
 .rk-bandchip { display: flex; gap: 8px; align-items: center; font: var(--ax-text-caption); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); padding: 6px 10px; }
 .rk-bandchip__dot { inline-size: 10px; block-size: 10px; border-radius: 999px; flex: none; }
+
+/* MVP2-CD-031-M2-05 · Inspection Flight Recorder */
+.ar-workspace { display:flex; flex-direction:column; gap:var(--ax-space-200); min-inline-size:0; }
+.ar-casehead { padding:var(--ax-space-300); display:flex; justify-content:space-between; gap:var(--ax-space-300); align-items:flex-start; }
+.ar-casehead h2 { margin:4px 0; }
+.ar-status,.ar-modes { display:flex; gap:var(--ax-space-100); flex-wrap:wrap; }
+.ar-filter { padding:var(--ax-space-200); display:flex; gap:var(--ax-space-200); align-items:flex-end; flex-wrap:wrap; }
+.ar-recorder { display:grid; grid-template-columns:minmax(90px,.35fr) minmax(320px,1.5fr) minmax(260px,1fr); gap:var(--ax-space-200); align-items:start; }
+.ar-lanes,.ar-spine,.ar-dossier,.ar-modepanel { padding:var(--ax-space-200); }
+.ar-lanes { position:sticky; inset-block-start:90px; display:flex; flex-direction:column; gap:8px; }
+.ar-lane { border-inline-start:4px solid var(--ax-color-info); padding:8px; font:var(--ax-text-caption); }
+.ar-lane--workflow { border-color:var(--ax-color-warning); }.ar-lane--device{border-color:var(--ax-color-primary)}.ar-lane--evidence{border-color:var(--ax-color-critical)}
+.ar-spine { list-style:none; margin:0; display:flex; flex-direction:column; gap:var(--ax-space-100); }
+.ar-event { display:grid; grid-template-columns:minmax(135px,.6fr) minmax(0,1fr) auto; gap:var(--ax-space-150); padding:var(--ax-space-150); border:1px solid var(--ax-color-border); border-inline-start:4px solid var(--ax-color-success); border-radius:var(--ax-radius-standard); align-items:center; }
+.ar-event--generic { border-inline-start-style:dashed; border-inline-start-color:var(--ax-color-warning); }
+.ar-event time,.ar-event bdi,.ar-custody bdi { font-family:var(--ax-font-mono); font:var(--ax-text-micro); }
+.ar-event p { margin:4px 0; color:var(--ax-color-text-secondary); overflow-wrap:anywhere; }
+.ar-dossier { position:sticky; inset-block-start:90px; }.ar-dossier dt,.ar-dialog dt{font-weight:700;margin-block-start:12px}.ar-dossier dd,.ar-dialog dd{margin:2px 0;color:var(--ax-color-text-secondary)}
+.ar-modepanel form,.ar-compareform { display:flex; gap:var(--ax-space-150); align-items:flex-end; flex-wrap:wrap; }
+.ar-diff { display:grid; grid-template-columns:1fr 1fr; gap:var(--ax-space-150); }.ar-diff pre,.ar-modepanel>pre,.ar-dialog>pre{max-block-size:360px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--ax-color-surface-sunken);padding:var(--ax-space-150);border-radius:var(--ax-radius-standard)}
+.ar-ledger { display:flex; flex-direction:column; gap:6px; }.ar-ledgerrow { display:grid; grid-template-columns:140px minmax(0,1fr) auto; gap:12px; align-items:center; padding:10px; border-block-end:1px solid var(--ax-color-border); }
+.ar-custody { display:grid; grid-template-columns:minmax(150px,.8fr) minmax(180px,1fr) 1fr 1fr; gap:12px; padding:10px; border-block-end:1px solid var(--ax-color-border); }
+.ar-dialogbackdrop { position:fixed; inset:0; z-index:var(--ax-z-modal); background:rgba(0,0,0,.65); display:grid; place-items:center; padding:20px; }
+.ar-dialog { inline-size:min(900px,96vw); max-block-size:90vh; overflow:auto; padding:var(--ax-space-300); position:relative; }.ar-dialogclose{position:absolute;inset-block-start:12px;inset-inline-end:12px}.ar-empty,.ar-denied{padding:48px;text-align:center}.ar-empty>span,.ar-denied>span{font-size:30px}
+@media (max-width:1024px){.ar-recorder{grid-template-columns:minmax(0,1fr) minmax(250px,.7fr)}.ar-lanes{grid-column:1/-1;position:static;flex-direction:row;overflow-x:auto}.ar-spine{grid-column:1}.ar-dossier{grid-column:2}.ar-event{grid-template-columns:130px minmax(0,1fr)}.ar-event>button{grid-column:2}}
+@media (max-width:560px){.ar-casehead{flex-direction:column}.ar-recorder{display:flex;flex-direction:column}.ar-lanes{inline-size:100%}.ar-spine,.ar-dossier{inline-size:100%;position:static}.ar-event{grid-template-columns:1fr}.ar-event>button{grid-column:1}.ar-diff{grid-template-columns:1fr}.ar-ledgerrow,.ar-custody{grid-template-columns:1fr}.ar-filter .ax-field{inline-size:100%;max-inline-size:none}.ar-modes{overflow-x:auto;flex-wrap:nowrap;padding-block-end:4px}.ar-modes .ax-btn{white-space:nowrap}}
+@media print{.ax-shell__nav,.ax-shell__topbar,.ar-filter,.ar-modes,.ar-dialogbackdrop,.ar-event button{display:none!important}.ax-shell{display:block}.ax-content{max-inline-size:none;padding:0}.ar-workspace{color:#111;background:#fff}.ar-recorder{display:block}.ar-lanes{display:none}.ar-spine,.ar-dossier,.ar-modepanel{box-shadow:none;border:1px solid #555}.ar-event{break-inside:avoid;border-color:#555}.ar-print{display:block}.ar-print *{color:#111!important;background:#fff!important}}
+@media (prefers-reduced-motion:reduce){.ar-dialogbackdrop,.ar-dialog,.ar-event{animation:none!important;transition:none!important}}

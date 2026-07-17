@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-MVP2-M2-05-AUDIT-REPLAY-001"
+    gate: "MVP2 Wave 1 / G8 build"
+    priority: "P0"
+    status: "SOURCE_IMPLEMENTATION_PASS_RUNTIME_CERTIFICATION_PENDING"
+    owner: "Codex implementation and QA"
+    blocked_by: ["Fresh controlled PostgreSQL/Supabase migration and RLS/RPC negative execution", "Separate informed approval for authenticated shared-backend browser and full-regression execution"]
+    blocks: ["M2-05 runtime certification", "M2-02 shared semantic-event consumer integration"]
+    note: "Source implementation and independent audit pass with no remaining implementation P0/P1. Typecheck/build/static inventory pass. Runtime certification remains blocked; no main change, push, deployment or remote DDL is authorized."
   - task_id: "TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003"
     gate: "G11 hardening"
     priority: "P0"

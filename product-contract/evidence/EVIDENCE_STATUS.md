@@ -261,3 +261,13 @@ Owner: CD004-EV-003 and CD004-EV-005 are closed. CD004-EV-004 remains blocked be
 | ID | Scope | Evidence | Status |
 |---|---|---|---|
 | G11-R19-M09-EV-001 | M09-001/005/018/021/022/024 source, backend, runtime, RLS, audit, RTL and degraded-state reconciliation | `TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md`; focused M09 production-browser inventory | Captured — 49/49 PASS; six historical partial rows superseded to implemented |
+## MVP2 M2-05 Audit Replay — 2026-07-17
+
+| ID | Evidence | Status |
+|---|---|---|
+| MVP2-M2-05-EV-001 | Exact 36-row ontology and rectangular wiring map | Captured in `product-contract/mvp2/m2-05/` |
+| MVP2-M2-05-EV-002 | Semantic envelope, registry, ontology, append/RLS/immutability/keyset migration source | Captured; remote/fresh-DB execution blocked and not claimed |
+| MVP2-M2-05-EV-003 | `/admin/audit` Flight Recorder source, EN/AR/RTL/responsive/print contracts | Captured; authenticated browser execution blocked and not claimed |
+| MVP2-M2-05-EV-004 | Typecheck, production build, M2-05 9/9 and static regression 12/12 | PASS; see `TASK-MVP2-M2-05-AUDIT-REPLAY-001.md` |
+| MVP2-M2-05-EV-005 | Authenticated UI/RLS/full regression | BLOCKED — shared-backend informed approval and fresh DB runtime absent |
+| MVP2-M2-05-EV-006 | Independent non-implementer source audit and remediation | SOURCE IMPLEMENTATION PASS — no remaining implementation P0/P1; runtime certification pending |

@@ -125,6 +125,19 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
   if (decision === "return" && sections.length === 0)
     return { error: "Return requires exact sections identified (STM-REV-003 · ERR-REV-001)" };
   const status = decision === "approve" ? "approved" : decision === "return" ? "returned" : "rejected";
+  // DEF-WF-006 — defense in depth: the DB constraint trigger
+  // (guard_approved_requires_submission) is the authoritative guard, but fail
+  // closed here too so an approval attempt against a tampered/missing version
+  // never reaches the write.
+  if (decision === "approve") {
+    const { data: version, error: versionError } = await sb.from("submission_versions")
+      .select("id").eq("inspection_id", current.inspection_id).limit(1).maybeSingle();
+    if (versionError) {
+      console.error("[review decision version check]", versionError.message, versionError.code);
+      return { error: REVIEW_READ_ERROR };
+    }
+    if (!version) return { error: "Cannot approve — no immutable submitted version exists for this inspection (DEF-WF-006)." };
+  }
   const { data: rev, error } = await sb.from("reviews").update({
     status, decision, decision_reason: reason || null,
     returned_sections: decision === "return" ? sections : null,

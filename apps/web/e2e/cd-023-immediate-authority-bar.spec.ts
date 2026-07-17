@@ -42,7 +42,14 @@ function plannerPayload(factoryId: string, pkg: string, inspectorId: string, req
   // Derive a stable, remote-safe window from the idempotency key. Fixed dates
   // make repeated live certification runs collide with immutable assignments
   // left by earlier evidence runs and falsely report inspector_unavailable.
-  const windowDay = 10_000 + (Number.parseInt(requestId.slice(0, 8), 16) % 100_000);
+  // DEF-DATA-005 (Cycle 2 completion pass): the modulo used to go up to
+  // 110,000 days (~300 years), which now trips window_plausible_years
+  // (2020-2100) and surfaces as an unhandled system_error instead of the
+  // intended business-logic status — the same class of fixture bug already
+  // fixed in golden-journey.spec.ts, cd-022-identity-lens.spec.ts,
+  // offline-drill.spec.ts, cd-041/cd-043. Capped to stay safely inside the
+  // plausible-year window while preserving the same collision-avoidance intent.
+  const windowDay = 10_000 + (Number.parseInt(requestId.slice(0, 8), 16) % 15_000);
   const start = new Date(Date.now() + windowDay * 86400e3);
   const end = new Date(start.getTime() + 3600e3);
   return {
@@ -380,7 +387,12 @@ test.describe("CD-023 authorization and neutral errors", () => {
     expect(startup).toContain('linked_type: "arrival"');
     expect(startup).toContain("arrivalEvidenceQueued");
     expect(startup).toContain('kind: "arrival"');
-    expect(startup).toContain("const { error: arrivalError }");
+    // Obsolete-test fix (Cycle 2 completion pass): the destructure grew a
+    // `data: immutableArrival` sibling alongside `error: arrivalError` at
+    // some point (a harmless refactor — the arrival geo_events insert and
+    // its error handling are unchanged and still present) and this exact
+    // brittle substring never got updated.
+    expect(startup).toContain("error: arrivalError }");
     expect(startup).toContain("add(strings.logArrivalRejected)");
   });
 

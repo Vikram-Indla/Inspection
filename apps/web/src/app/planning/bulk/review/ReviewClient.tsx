@@ -82,6 +82,7 @@ const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" 
   packageInvalid:{ cls: "critical",    glyph: "⟳", fix: "review" },
   nopool:        { cls: "critical",    glyph: "●", fix: "none" },
   configMissing: { cls: "warning",     glyph: "▲", fix: "focusWindow" },
+  windowImplausible: { cls: "critical", glyph: "▲", fix: "focusWindow" },
   srcFactory:    { cls: "unavailable", glyph: "▣", fix: "review" },
   srcPackage:    { cls: "unavailable", glyph: "⟳", fix: "review" },
   srcInspector:  { cls: "unavailable", glyph: "●", fix: "review" },

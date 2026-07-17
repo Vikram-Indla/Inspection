@@ -41,6 +41,7 @@ export default async function Shell({ current, children, title, context, topbar 
     noSearchResults: t("shell.noSearchResults", locale === "ar" ? "لا توجد وجهة مطابقة" : "No matching destination"),
     account: t("shell.account", locale === "ar" ? "الحساب" : "Account"),
     roles: t("shell.roles", locale === "ar" ? "الأدوار" : "Roles"),
+    profileSettings: t("shell.profileSettings", locale === "ar" ? "إعدادات الملف الشخصي" : "Profile settings"),
     signOut: t("nav.signout", locale === "ar" ? "تسجيل الخروج" : "Sign out"),
     themeLight: t("theme.light", locale === "ar" ? "الوضع الفاتح" : "Light mode"),
     themeDark: t("theme.dark", locale === "ar" ? "الوضع الداكن" : "Dark mode"),
