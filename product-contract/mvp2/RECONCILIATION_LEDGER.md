@@ -48,3 +48,35 @@ their runtime SQL behavior is unproven until the Inspection Supabase project
   (`20260717180000_mvp2_m2_08_external_portal.sql`) and consumed by M2-10; the M2-10
   migration creates only `cases` and reuses `objections`. No duplicate table.
 - **Verification:** M2-10 migration contains no `objections` create. `DB_VALIDATION_PENDING`.
+
+---
+
+## R-003 — M2-05 emit trigger cross-table column refs (MVP1 regression, FIXED)
+- **Module:** M2-05 (CD-031) semantic emit trigger.
+- **Conflict:** emit_mvp2_m2_05_semantic_event is attached to 10 MVP1 tables but its
+  IF-chain CONDITIONS (and the trailing acknowledgement block) referenced
+  table-specific columns (new.kind, new.status, old.decided_at, new.acknowledgement).
+  plpgsql plans a branch condition as one SQL expression, so a column absent on the
+  FIRING table fails to plan → 42703, aborting the source transaction. Surfaced live on
+  staging: publishSingleVisit aborted with 42703 on new.kind while inserting
+  submission_versions. Never caught because M2-05 was only pure-tested (no DB).
+- **Authority:** Prompt 05 (MVP1 zero-regression) — an audit sidecar must never break a
+  source-of-truth transaction.
+- **Resolution (migration 20260717240000):** gate every outer branch on tg_table_name/
+  tg_op ONLY; move all column-dependent checks into the branch body (planned only when
+  the firing table matches). Identical event semantics. Applied to staging; direct
+  submission_versions insert probe passes; golden-journey P1 planner publish now green.
+
+## R-004 — staging drift below source migration level (pre-existing, partial reconcile)
+- Applying the MVP2 stack to staging surfaced that staging was BELOW the source
+  migration level (the 2026-07-15 reconciliation predates several 2026-07-16 migrations):
+  - submission_versions.acknowledgement (source 0001) was MISSING → fixed (R / migration
+    20260717230000).
+  - geo_override_requests table + expire_stale_geo_override_requests fn (migrations
+    20260716161604/161605) were MISSING → applied to staging.
+  - notification_rules (20260716222000) WAS present — drift is spotty, not a clean cutoff.
+- **Remaining:** golden-journey P2 (arrival-evidence offline-outbox replay) still times out
+  on staging — deep MVP1 field-sync tuned for local latency + possible further drift; NOT
+  caused by the MVP2 build or the trigger fix. A full staging↔source migration
+  reconciliation (align every source migration onto staging) is recommended as a scoped
+  follow-up before treating staging as a golden-journey certification environment.
