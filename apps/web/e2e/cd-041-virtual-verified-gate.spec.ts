@@ -57,12 +57,27 @@ async function stageVirtualSession(
     await rest("GET", `assignments?select=visits(window_start,window_end)&inspector_id=eq.${inspectorId}`, plannerJwt),
     "read inspector assignment windows",
   ) as { visits: { window_end: string | null } | null }[];
+  // DEF-DATA-005 — visits.window_start/end now has a plausible-year CHECK
+  // constraint (2020-2100). Chaining unboundedly off latestExistingEnd let
+  // this drift far past 2100 across many historical runs (that drift is
+  // exactly the corruption DEF-DATA-005 exists to catch — a live probe found
+  // 503 such rows already in this shared project). Cap the chained base so
+  // fresh fixtures always land inside the plausible window while still
+  // avoiding same-run collisions.
   const latestExistingEnd = existing.reduce((latest, row) => {
     const end = row.visits?.window_end ? Date.parse(row.visits.window_end) : NaN;
     return Number.isFinite(end) ? Math.max(latest, end) : latest;
   }, 0);
+  // Clamping to a fixed ceiling alone collided across repeated/parallel runs
+  // (every clamped call lands on the exact same day) — add bounded random
+  // jitter to restore per-run uniqueness while staying well inside the
+  // plausible-year window (max ~2 years out). The DB unique/exclusion
+  // constraint on assignments remains the final collision authority either way.
+  const PLAUSIBLE_CEILING = Date.parse("2099-01-01T00:00:00Z");
+  const boundedExistingEnd = Math.min(latestExistingEnd, PLAUSIBLE_CEILING);
+  const jitter = Math.floor(Math.random() * 300) * DAY;
   const minimumBase = now + 400 * DAY;
-  const base = Math.max(minimumBase, latestExistingEnd + 2 * DAY) + stageCount * 2 * DAY;
+  const base = Math.max(minimumBase, boundedExistingEnd + 2 * DAY) + stageCount * 2 * DAY + jitter;
   stageCount += 1;
   const windowStart = new Date(base).toISOString();
   const windowEnd = new Date(base + 90 * 60_000).toISOString();

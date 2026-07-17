@@ -28,13 +28,16 @@ test.describe("TASK-WEB-SHELL-001 role matrix", () => {
       "/admin/items",
       "/admin/risk",
       "/admin/access",
+      "/admin/notifications",
       "/admin/localization",
       "/admin/audit",
     ]);
+    // SCR-ADM-080 (Cycle 2) — Notification & SLA Rules is visible to every
+    // admin family (adminRoles), same as /admin and /admin/audit.
+    expect(hrefs).toContain("/admin/notifications");
     expect(hrefs).not.toContain("/analytics");
     expect(hrefs).not.toContain("/admin/lookups");
     expect(hrefs).not.toContain("/admin/integrations");
-    expect(hrefs).not.toContain("/admin/notifications");
     // workflows (workflow_admin) and gis (gis_admin) are outside this role set.
     expect(hrefs).not.toContain("/admin/workflows");
     expect(hrefs).not.toContain("/admin/gis");

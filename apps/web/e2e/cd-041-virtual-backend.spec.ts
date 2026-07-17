@@ -33,6 +33,6 @@ test.describe("CD-041..043 virtual backend verification gate", () => {
     const driven = SRC("e2e/cd-041-virtual-verified-gate.spec.ts");
     expect(driven).toContain("read inspector assignment windows");
     expect(driven).toContain("latestExistingEnd");
-    expect(driven).toContain("Math.max(minimumBase, latestExistingEnd + 2 * DAY)");
+    expect(driven).toContain("Math.max(minimumBase, boundedExistingEnd + 2 * DAY) + stageCount * 2 * DAY + jitter");
   });
 });
