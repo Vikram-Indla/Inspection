@@ -93,6 +93,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-17"
     change_ref: "branch workflow @ 21bce21 -> local main (no push/deploy/remote-apply)"
+  - gate: "MVP2-M2-02-PUSH-TO-ORIGIN"
+    decision: "APPROVED (EXPLICIT SPONSOR) — sponsor explicitly instructed 'push it to origin' after the local integration. Authorizes a single git push of local main (2d78bb3, clean fast-forward, 13 ahead / 0 behind origin/main) to origin https://github.com/Vikram-Indla/Inspection.git. This supersedes the no-push clause of MVP2-M2-02-MERGE-TO-MAIN for the push action only. It does NOT authorize production deployment, remote Supabase migration apply to iiozvqntawxfwbgffzqu, credential rotation, or Git-history rewrite. Open holds remain OPEN and unresolved: 5 M2-02 migrations unapplied, live-DB regression not executed, DEC-003, providers, M2-05 shared migration."
+    approver: "Vikram Indla"
+    date: "2026-07-17"
+    change_ref: "local main 2d78bb3 -> origin/main (push only; no deploy/remote-apply)"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."
