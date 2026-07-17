@@ -101,7 +101,7 @@ async function fillWizard(page: Page) {
   // collides often enough to flake. Spread across a ~270-year range instead —
   // the same fix applied in cd-023-immediate-authority-bar.spec.ts — so two
   // suites picking random offsets are de-facto never in the same window.
-  const dayOffset = 1000 + Math.floor(Math.random() * 99000);
+  const dayOffset = 1000 + Math.floor(Math.random() * 20000);
   const start = new Date(Date.now() + dayOffset * 864e5).toISOString().slice(0, 16);
   const end = new Date(Date.now() + dayOffset * 864e5 + 4 * 36e5).toISOString().slice(0, 16);
   await page.locator('input[name="window_start"]').fill(start);

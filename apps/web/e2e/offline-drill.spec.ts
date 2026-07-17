@@ -25,7 +25,7 @@ test.beforeAll(async () => {
   // bookings from every other suite sharing this live project (cd-023/cd-022/
   // golden-journey all hit this same 23505 unique-violation historically) —
   // spread across a ~270-year range instead, same fix applied everywhere else.
-  const dayOffset = 4000 + Math.floor(Math.random() * 90000);
+  const dayOffset = 4000 + Math.floor(Math.random() * 20000);
   const visit = must(await rest("POST", "visits", planner.jwt, {
     visit_plan_id: plan.id, factory_id: fac.id, visit_type: "periodic",
     execution_mode: "physical", planning_status: "draft",
