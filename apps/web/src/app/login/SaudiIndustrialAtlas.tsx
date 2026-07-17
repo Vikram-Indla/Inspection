@@ -51,12 +51,15 @@ type AtlasZoneId = "north" | "west" | "central" | "east" | "south";
 // Traced against the public-safe atlas raster (viewBox 1000×563) so each slab
 // lifts a real slice of terrain framing that region's facility cluster and
 // leaves its cavity on land, never over open sea.
+// Zones TILE the whole landmass with shared borders (a central hub plus four
+// surrounding regions) so hovering anywhere on land lifts the region it falls
+// in — no dead gaps between slabs. Traced against the public-safe raster.
 const ZONE_SURFACES: { id: AtlasZoneId; path: string; outcome: "complete" | "follow-up" }[] = [
-  { id: "north", outcome: "follow-up", path: "M300 76 L474 62 L548 118 L470 182 L320 178 L266 120 Z" },
-  { id: "west", outcome: "complete", path: "M126 150 L300 168 L330 300 L250 432 L138 330 Z" },
-  { id: "central", outcome: "complete", path: "M336 168 L560 170 L604 288 L470 352 L340 292 Z" },
-  { id: "east", outcome: "follow-up", path: "M560 190 L760 176 L858 286 L744 372 L582 320 Z" },
-  { id: "south", outcome: "complete", path: "M330 352 L558 352 L620 438 L480 520 L332 460 Z" },
+  { id: "north", outcome: "follow-up", path: "M180 150 L250 65 L480 55 L610 120 L600 220 L385 185 Z" },
+  { id: "east", outcome: "follow-up", path: "M610 120 L730 180 L870 300 L760 410 L590 370 L600 220 Z" },
+  { id: "central", outcome: "complete", path: "M385 185 L600 220 L590 370 L400 350 Z" },
+  { id: "south", outcome: "complete", path: "M400 350 L590 370 L760 410 L560 515 L350 500 Z" },
+  { id: "west", outcome: "complete", path: "M180 150 L385 185 L400 350 L350 500 L250 430 L140 290 Z" },
 ];
 
 const INSPECTOR_SCENE_POSITIONS = [
@@ -84,11 +87,11 @@ const OUTCOME_POSITIONS = [
 const ZONE_INTELLIGENCE: Record<AtlasZoneId, {
   x: number; y: number; en: string; ar: string; inspections: string; compliance: string; action: string;
 }> = {
-  north: { x: 40, y: 9, en: "Northern zone", ar: "المنطقة الشمالية", inspections: "264 inspections", compliance: "91% compliant", action: "18 follow-ups" },
-  west: { x: 19, y: 28, en: "Western zone", ar: "المنطقة الغربية", inspections: "247 inspections", compliance: "89% compliant", action: "12 follow-ups" },
-  central: { x: 53, y: 24, en: "Central zone", ar: "المنطقة الوسطى", inspections: "221 inspections", compliance: "92% compliant", action: "9 follow-ups" },
-  east: { x: 75, y: 24, en: "Eastern zone", ar: "المنطقة الشرقية", inspections: "318 inspections", compliance: "90% compliant", action: "21 follow-ups" },
-  south: { x: 55, y: 60, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198 inspections", compliance: "89% compliant", action: "14 follow-ups" },
+  north: { x: 42, y: 8, en: "Northern zone", ar: "المنطقة الشمالية", inspections: "264 inspections", compliance: "91% compliant", action: "18 follow-ups" },
+  west: { x: 17, y: 30, en: "Western zone", ar: "المنطقة الغربية", inspections: "247 inspections", compliance: "89% compliant", action: "12 follow-ups" },
+  central: { x: 52, y: 20, en: "Central zone", ar: "المنطقة الوسطى", inspections: "221 inspections", compliance: "92% compliant", action: "9 follow-ups" },
+  east: { x: 78, y: 24, en: "Eastern zone", ar: "المنطقة الشرقية", inspections: "318 inspections", compliance: "90% compliant", action: "21 follow-ups" },
+  south: { x: 56, y: 62, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198 inspections", compliance: "89% compliant", action: "14 follow-ups" },
 };
 
 function stageZone(stage: AtlasStageId): AtlasZoneId {
