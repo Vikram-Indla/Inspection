@@ -10,10 +10,20 @@ verified_live / 460 implemented / 18 partial / 0 missing**. G10 is PASS.
 
 This does **not** supersede the honest release-gap principle below. G11 and G12
 remain OPEN because credential rotation, migration-history governance,
-provider/region/CD-031/asset/geographic/sponsor-runtime boundaries and the 18
+provider/region/CD-031 privacy/provider/asset/geographic/sponsor-runtime boundaries and the 18
 upstream partials remain, and no production hosting/deployment/rollback target
 is configured. The original 2026-07-11 report is preserved below as historical
 build certification.
+
+CD-031 continuation on 2026-07-16 removed the stale missing-wiring-map and
+preflight blocker: the recovered R3 package is hash-verified, its independent
+DEC-012 wiring audit is **PASS**, focused runtime is 18/18, and rollback-only
+local/live database probes prove all four write paths, representative activation,
+five append-only audit events and Inspector denials with zero residual live rows.
+The rebuilt continuation candidate passes **293/293** checks: 4 authenticated
+setups + 289 application checks, with no failure, skip or exclusion. The
+unsupported privacy/provider rows remain explicit blockers, so this evidence
+does not change the G11/G12 OPEN disposition.
 
 **Date:** 2026-07-11 · **Branch:** `setup/g4-memory-continuity` · **Backend:** Supabase `iiozvqntawxfwbgffzqu` (live)
 **Status: FUNCTIONAL CORE COMPLETE — all 9 build slices delivered; certified against the evidence contract with the known-gaps register below. READY_FOR_REVIEW, not self-approved.**

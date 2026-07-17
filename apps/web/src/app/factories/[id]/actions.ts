@@ -142,8 +142,14 @@ export async function toggleRepresentativeActive(_: F360Result, formData: FormDa
   const next_active = String(formData.get("next_active") ?? "") === "true";
   if (!rep_id || !factory_id) return { error: "Missing representative id." };
 
-  const { error } = await sb.from("factory_representatives").update({ active: next_active }).eq("id", rep_id);
+  const { data: updated, error } = await sb.from("factory_representatives")
+    .update({ active: next_active })
+    .eq("id", rep_id)
+    .eq("factory_id", factory_id)
+    .select("id")
+    .maybeSingle();
   if (error) { logFactoryError("toggle-representative", error); return { error: mapFactoryError(error, "update") }; }
+  if (!updated) return { error: "This representative is no longer in this factory or is outside your scope. Nothing was changed." };
   revalidatePath(`/factories/${factory_id}`);
   return { ok: true };
 }

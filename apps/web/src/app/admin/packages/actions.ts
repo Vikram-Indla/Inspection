@@ -122,8 +122,12 @@ function evidenceRuleBlockers(code: string, rule: unknown): string[] {
   }
   const r = rule as Record<string, unknown>;
   if (typeof r.on !== "string" || r.on.length === 0) out.push(`Item ${code}: evidence rule is missing its trigger "on" (M09-029)`);
-  if (typeof r.type !== "string" || r.type.length === 0) out.push(`Item ${code}: evidence rule is missing its evidence "type" (M09-029)`);
-  if (r.min !== undefined && typeof r.min !== "number") out.push(`Item ${code}: evidence rule "min" must be a number (M09-029)`);
+  if (!(["photo", "video", "document", "comment"] as unknown[]).includes(r.type)) {
+    out.push(`Item ${code}: evidence type must be photo, video, document, or comment (M09-005/029)`);
+  }
+  if (r.min !== undefined && (typeof r.min !== "number" || !Number.isInteger(r.min) || r.min < 1)) {
+    out.push(`Item ${code}: evidence rule "min" must be a positive whole number (M09-005/029)`);
+  }
   if (r.mandatory !== undefined && typeof r.mandatory !== "boolean") out.push(`Item ${code}: evidence rule "mandatory" must be boolean (M09-029)`);
   return out;
 }
@@ -195,6 +199,21 @@ async function validateDefinition(
     const rule = definition.item_rules?.[code];
     if (!rule || !["required", "optional", "conditional"].includes(String(rule.requirement))) {
       blockers.push(`Item ${code}: package relationship must define required, optional, or conditional (M09-018)`);
+    }
+    const rawRule = rule as Record<string, unknown> | undefined;
+    const rawConditional = rawRule?.conditional;
+    if (rawConditional !== undefined && (typeof rawConditional !== "object" || rawConditional === null || Array.isArray(rawConditional))) {
+      blockers.push(`Item ${code}: conditional rule must be an object (M09-021/022)`);
+    } else if (rawConditional && "mandatory_when_visible" in rawConditional
+      && typeof (rawConditional as Record<string, unknown>).mandatory_when_visible !== "boolean") {
+      blockers.push(`Item ${code}: mandatory_when_visible must be boolean (M09-022)`);
+    }
+    if (rawRule && "scoring_enabled" in rawRule && typeof rawRule.scoring_enabled !== "boolean") {
+      blockers.push(`Item ${code}: scoring_enabled must be boolean (M09-024)`);
+    }
+    if (rawRule && "score_weight" in rawRule && rawRule.score_weight !== null
+      && (typeof rawRule.score_weight !== "number" || !Number.isFinite(rawRule.score_weight) || rawRule.score_weight < 0)) {
+      blockers.push(`Item ${code}: score_weight must be a non-negative number (M09-023/024)`);
     }
     const mapping = rule?.response_mapping ?? item.response_model?.mapping ?? {};
     const nc = mapping["non_compliant"];

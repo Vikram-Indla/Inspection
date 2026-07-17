@@ -11,6 +11,7 @@ import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExpor
 import OverrideQueue, { type GeoOverrideQueueRow, type OverrideQueueStrings } from "./OverrideQueue";
 import type { MonitorRow } from "./actions";
 import type { GeoTone } from "@/components/GeoMap";
+import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,7 @@ type VisitRow = {
   factories: FactoryEmbed;
   assignments: { profiles: { full_name: string } | null }[] | null;
 };
-type GeoRow = { visit_id: string; kind: string; geofence_result: string | null; accuracy_m: number; occurred_at: string };
+type GeoRow = { id: string; visit_id: string; kind: string; geofence_result: string | null; accuracy_m: number; occurred_at: string };
 type ActionRow = {
   id: string;
   form_type: string;
@@ -168,27 +169,37 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const [visitsRes, geoRes, actionsRes, notifsRes, factoriesRes, engineRes, riskRes, overrideRes, overrideEvidenceRes] = await Promise.all([
     // KPI counts by operational_state span ALL visits — operational state is its own
     // domain (FND-002); filtering by planning_status here previously zeroed the cards.
-    sb.from("visits")
+    collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
       .select("id, operational_state, planning_status, window_start, window_end, factory_id, factories(id, name, region, city), assignments(profiles(full_name))")
-      .order("window_start", { ascending: true }),
-    sb.from("geo_events")
-      .select("visit_id, kind, geofence_result, accuracy_m, occurred_at")
+      .order("window_start", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
+    // M08-014 location history must not silently disappear once the table
+    // exceeds an arbitrary recent-row limit. Page the immutable ledger using a
+    // stable order, then scope it to the monitored visits below.
+    collectPostgrestPages<GeoRow>((from, to) => sb.from("geo_events")
+      .select("id, visit_id, kind, geofence_result, accuracy_m, occurred_at")
       .order("occurred_at", { ascending: false })
-      .limit(200),
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<GeoRow>>),
     // Corrective actions queue (M09-027 blocking flag; DEC-003 due default 14d)
-    sb.from("action_forms")
+    collectPostgrestPages<ActionRow>((from, to) => sb.from("action_forms")
       .select("id, form_type, owner_name, owner_role, due_at, status, is_blocking, required_correction, inspections(visit_id, visits(factories(id, name)))")
       .neq("status", "closed")
-      .order("due_at", { ascending: true }),
+      .order("due_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<ActionRow>>),
     // ENG-11 notification outbox — latest 20
     sb.from("notifications")
       .select("id, event_key, channel, delivery_state, created_at")
       .order("created_at", { ascending: false })
       .limit(20),
     // Factory master for the KSA map + region/city options (M08-002/010)
-    sb.from("factories")
+    collectPostgrestPages<FactoryRow>((from, to) => sb.from("factories")
       .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class")
-      .order("name", { ascending: true }),
+      .order("name", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
     // ENG-06/ENG-09 configuration — geofence default + SLA thresholds
     sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "sla"]),
     // M08-006 — high-risk factory board (ENG-04 output, top scores)
@@ -273,10 +284,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const monitored = visits.filter(v =>
     (v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)) &&
     (!region || v.factories?.region === region) && (!city || v.factories?.city === city));
+  const monitoredVisitIds = new Set(monitored.map(v => v.id));
+  const scopedGeo = geo.filter(g => monitoredVisitIds.has(g.visit_id));
 
   // Latest geofence result per visit (geo list already newest-first) — M08-014
   const latestGeofence = new Map<string, string>();
-  for (const g of geo) {
+  for (const g of scopedGeo) {
     if (g.geofence_result && !latestGeofence.has(g.visit_id)) latestGeofence.set(g.visit_id, g.geofence_result);
   }
   const now = Date.now();
@@ -594,12 +607,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           {/* Location events — M08-014 immutable */}
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
-            {geo.length === 0 ? (
+            {scopedGeo.length === 0 ? (
               <div className="ax-state"><span className="ax-state__glyph">📍</span><h4>{t("ops.geo.empty.title", "No location events yet")}</h4>
                 <p className="ax-caption">{t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")}</p></div>
             ) : (
-              <ul className="ax-timeline">{geo.slice(0, 10).map((g, i) => (
-                <li key={i} className={g.kind === "checkin" ? "is-key" : undefined}>
+              <ul className="ax-timeline">{scopedGeo.slice(0, 10).map(g => (
+                <li key={g.id} className={g.kind === "checkin" ? "is-key" : undefined}>
                   <div><strong>{enumLabel(g.kind)}</strong> ±{g.accuracy_m}m{" "}
                     {g.geofence_result && <span className={`ax-lozenge ${g.geofence_result === "inside" ? "ax-lozenge--success" : g.geofence_result === "override" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{enumLabel(g.geofence_result)}</span>}{" "}
                     <a className="ax-link ax-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />

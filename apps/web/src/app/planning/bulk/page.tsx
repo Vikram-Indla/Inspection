@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 import type { BulkFormStrings } from "./BulkForm";
 import type { CriteriaBuilderStrings } from "./CriteriaBuilder";
 import type { LedgerStrings } from "./EligibilityLedger";
@@ -64,10 +65,12 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   // M01-004 — all factories fetched, then the tree evaluated server-side
   // (ALL = every child / ANY = some, nested). No DB-level .eq filters: is-not
   // and ANY combinations aren't simple equality, so evaluation is uniform here.
-  const { data: allFactories, error: factoriesError } = await sb
+  const { data: allFactories, error: factoriesError } = await collectPostgrestPages<FactoryForCriteria & Record<string, unknown>>((from, to) => sb
     .from("factories")
     .select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, activity_class, official_lat, official_lng, source_synced_at, visits(planning_status, visit_type)")
-    .order("risk_score", { ascending: false });
+    .order("risk_score", { ascending: false })
+    .order("id", { ascending: true })
+    .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryForCriteria & Record<string, unknown>>>);
   // ERR-OPS-001 — a failed read must never masquerade as a legitimate empty
   // catalog (0 in scope, 0 eligible). One shared query backs every panel on
   // this screen, so isolation here is page-level, not per-widget; the wiring

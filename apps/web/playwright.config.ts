@@ -38,6 +38,10 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run start -- -H 127.0.0.1 -p ${playwrightPort}`,
+    // Browser verification explicitly runs the replaceable field adapters.
+    // The application default remains disabled; individual tests opt down to
+    // production behavior with ?integrationMode=production to prove fail-closed.
+    env: { ...process.env, FIELD_TEST_STUBS_ENABLED: process.env.FIELD_TEST_STUBS_ENABLED ?? "true" },
     url: `${playwrightOrigin}/login`,
     reuseExistingServer: process.env.PLAYWRIGHT_REUSE_SERVER !== "0",
     timeout: 60_000,

@@ -25,6 +25,15 @@ export type OutboxOp =
   // server derives all GPS/time facts from checkin_event_id, not this payload.
   | { kind: "geo_override_request"; request_id: string; visit_id: string; journey_id: string; checkin_event_id: string; reason_key: string; explanation: string; safety_security_exception: boolean; queued_at: string };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
+export type CachedRouteEstimate = {
+  etaMinutes: number;
+  remainingDistanceM: number;
+  estimatedAt: string;
+  provider: string;
+  mode: "production" | "test_stub";
+  refreshAfterMs: number;
+  stale?: boolean;
+};
 
 function idb(): Promise<IDBDatabase> {
   return new Promise((res, rej) => {
@@ -58,6 +67,10 @@ export const local = {
   }),
   cachePackage: (inspection: string, def: unknown) => tx("packages", "readwrite", s => s.put(def, inspection)),
   getPackage: (inspection: string) => tx<unknown>("packages", "readonly", s => s.get(inspection)),
+  // FLD-JRN-003/004 — the last provider estimate is a display-only offline
+  // value. It never mutates workflow state and is always surfaced as stale.
+  cacheRouteEstimate: (visit: string, estimate: CachedRouteEstimate) => tx("packages", "readwrite", s => s.put(estimate, `route:${visit}`)),
+  getRouteEstimate: (visit: string) => tx<CachedRouteEstimate | undefined>("packages", "readonly", s => s.get(`route:${visit}`)),
   enqueue: (op: OutboxOp) => tx("outbox", "readwrite", s => s.add(op)),
   peekAll: () => tx<OutboxOp[]>("outbox", "readonly", s => s.getAll() as IDBRequest<OutboxOp[]>),
   keys: () => tx<IDBValidKey[]>("outbox", "readonly", s => s.getAllKeys()),

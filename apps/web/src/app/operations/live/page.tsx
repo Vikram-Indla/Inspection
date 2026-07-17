@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import LiveOps, { type LiveOpsStrings } from "./LiveOps";
 import type { LiveFactory, LiveRegion, LiveInspector, RagBand } from "./types";
+import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -46,13 +47,20 @@ export default async function LiveOperations() {
   const sb = await supabaseServer();
 
   const [factoriesRes, visitsRes] = await Promise.all([
-    sb.from("factories")
+    collectPostgrestPages<FactoryRow>((from, to) => sb.from("factories")
       .select("id, name, region, city, official_lat, official_lng, risk_score, risk_band")
-      .not("official_lat", "is", null),
-    sb.from("visits")
+      .not("official_lat", "is", null)
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
+    collectPostgrestPages<VisitRow>((from, to) => sb.from("visits")
       .select("id, operational_state, planning_status, window_start, window_end, factory_id, factories(id, name, region, city, official_lat, official_lng), assignments(profiles(full_name))")
-      .in("operational_state", ["on_the_way", "arrived", "executing"]),
+      .in("operational_state", ["on_the_way", "arrived", "executing"])
+      .order("id", { ascending: true })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<VisitRow>>),
   ]);
+
+  if (factoriesRes.error) console.error(`[operations live] factories read failed: ${factoriesRes.error.message}`);
+  if (visitsRes.error) console.error(`[operations live] visits read failed: ${visitsRes.error.message}`);
 
   const factoryRows = (factoriesRes.data ?? []) as unknown as FactoryRow[];
   const visitRows = (visitsRes.data ?? []) as unknown as VisitRow[];
