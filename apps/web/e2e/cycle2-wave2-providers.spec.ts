@@ -128,10 +128,12 @@ test.describe("notification stub sink — dedup + never-real-send", () => {
 });
 
 test.describe("fail-closed provider selection", () => {
-  test("FEATURE_MAP_PROVIDER=mapbox with a token but no real client throws, never silently claims real", () => {
+  test("FEATURE_MAP_PROVIDER=mapbox with a token selects the real client, but it is never reported certified", () => {
     process.env.FEATURE_MAP_PROVIDER = "mapbox";
     process.env.MAPBOX_ACCESS_TOKEN = "test-token-not-a-real-credential";
-    expect(() => selectMapProvider()).toThrow(/certification/);
+    const provider = selectMapProvider();
+    expect(provider?.name).toBe("mapbox");
+    expect(provider?.certified).toBe(false); // certified is hardcoded false — no sandbox test has ever run against a real token
     delete process.env.FEATURE_MAP_PROVIDER;
     delete process.env.MAPBOX_ACCESS_TOKEN;
   });

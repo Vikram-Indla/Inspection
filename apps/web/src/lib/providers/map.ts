@@ -67,6 +67,72 @@ export class StubMapProvider implements MapProvider {
   }
 }
 
+/**
+ * Real Mapbox HTTP API client (Geocoding v6 + Directions v5). Plain fetch —
+ * no mapbox-gl/SDK dependency needed for the server-side geocode/directions
+ * surface this adapter covers. `certified` stays false: this has NEVER been
+ * exercised against a live Mapbox account (no MAPBOX_ACCESS_TOKEN exists in
+ * any environment this task had access to — see MAPBOX_INTEGRATION_REPORT.md
+ * in the Cycle 2 handoff). Do not report this as production-certified until
+ * a real token is supplied and the sandbox contract tests in
+ * apps/web/e2e/cycle2-wave2-providers.spec.ts are re-run against it.
+ */
+export class RealMapboxProvider implements MapProvider {
+  readonly name = "mapbox" as const;
+  readonly certified = false;
+
+  constructor(private readonly token: string) {}
+
+  async geocode(query: string): Promise<GeocodeResult> {
+    const fixtureId = `mapbox-live-${Date.now()}`;
+    if (!query.trim()) return { query, match: null, provider: "mapbox", fixtureId };
+    try {
+      const url = `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(query)}&country=sa&limit=1&access_token=${encodeURIComponent(this.token)}`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) { console.error(`[mapbox geocode] HTTP ${res.status}`); return { query, match: null, provider: "mapbox", fixtureId }; }
+      const body = await res.json() as { features?: { geometry?: { coordinates?: [number, number] } }[] };
+      const coords = body.features?.[0]?.geometry?.coordinates;
+      return { query, match: coords ? { lng: coords[0], lat: coords[1] } : null, provider: "mapbox", fixtureId };
+    } catch (e) {
+      console.error("[mapbox geocode]", e);
+      return { query, match: null, provider: "mapbox", fixtureId };
+    }
+  }
+
+  async directions(from: LngLat, to: LngLat, requestId: string): Promise<DirectionsResult> {
+    const fixtureId = `mapbox-live-${requestId.slice(0, 8)}`;
+    try {
+      const coords = `${from.lng},${from.lat};${to.lng},${to.lat}`;
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coords}?geometries=geojson&access_token=${encodeURIComponent(this.token)}`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (res.status === 401 || res.status === 403) return { ok: false, reason: "token_failure", provider: "mapbox", fixtureId };
+      if (!res.ok) return { ok: false, reason: "tile_failure", provider: "mapbox", fixtureId };
+      const body = await res.json() as { routes?: { distance: number; duration: number; geometry?: { coordinates?: [number, number][] } }[] };
+      const route = body.routes?.[0];
+      if (!route) return { ok: false, reason: "no_route", provider: "mapbox", fixtureId };
+      return {
+        ok: true,
+        distanceMeters: Math.round(route.distance),
+        durationSeconds: Math.round(route.duration),
+        polyline: (route.geometry?.coordinates ?? []).map(([lng, lat]) => ({ lng, lat })),
+        provider: "mapbox", fixtureId,
+      };
+    } catch (e) {
+      console.error("[mapbox directions]", e);
+      return { ok: false, reason: "tile_failure", provider: "mapbox", fixtureId };
+    }
+  }
+
+  async health(): Promise<{ available: boolean; detail?: string }> {
+    try {
+      const res = await fetch(`https://api.mapbox.com/tokens/v2?access_token=${encodeURIComponent(this.token)}`, { signal: AbortSignal.timeout(5000) });
+      return { available: res.ok, detail: res.ok ? "token validated" : `HTTP ${res.status}` };
+    } catch (e) {
+      return { available: false, detail: e instanceof Error ? e.message : "network error" };
+    }
+  }
+}
+
 export const MAP_PROVIDER_MODES = ["mapbox", "stub", "off"] as const;
 export type MapProviderMode = (typeof MAP_PROVIDER_MODES)[number];
 
@@ -74,10 +140,9 @@ export function selectMapProvider(): MapProvider | null {
   const mode = resolveFeatureFlag(process.env.FEATURE_MAP_PROVIDER, MAP_PROVIDER_MODES, "stub");
   if (mode === "off") return null;
   if (mode === "mapbox") {
-    // Fail closed: no real Mapbox client exists in this codebase yet. Never
-    // silently fall through to an uncertified "real" claim.
+    // Fail closed: without a real token there is nothing to call.
     if (!process.env.MAPBOX_ACCESS_TOKEN) return new StubMapProvider();
-    throw new Error("FEATURE_MAP_PROVIDER=mapbox has a token configured but no real Mapbox client is implemented in this codebase — do not mark real-provider certification complete.");
+    return new RealMapboxProvider(process.env.MAPBOX_ACCESS_TOKEN);
   }
   return new StubMapProvider();
 }
