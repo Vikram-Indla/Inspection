@@ -38,10 +38,10 @@ test("fresh login defaults to Arabic with document-level RTL semantics", async (
   const story = await page.locator(".lg-story").boundingBox();
   expect(panel && story && panel.x > story.x, "credential panel should occupy the physical right side in RTL").toBeTruthy();
 
-  const plan = page.getByRole("tab", { name: /التخطيط/ });
+  const plan = page.getByRole("tab", { name: /الخريطة/ });
   await expect(plan).toHaveAttribute("aria-selected", "true");
   await plan.press("ArrowLeft");
-  await expect(page.getByRole("tab", { name: /التنقّل/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tab", { name: /المفتشون/ })).toHaveAttribute("aria-selected", "true");
 
   const easternNode = page.locator(".lg-atlas-image__hotspot").first();
   await easternNode.click();
@@ -64,7 +64,7 @@ test("atlas mounts without landing-page disclaimers or a location list", async (
   // The approved public-safe image is the visible foundation; its interaction
   // layer remains native DOM and therefore keyboard/touch accessible.
   await expect(page.locator('.lg-atlas-image.is-ready[data-atlas-mode="public-safe-image"]')).toBeVisible();
-  await expect(page.locator('.lg-atlas-image__media[src$="inspection-atlas-public-safe-v1.webp"]')).toBeVisible();
+  await expect(page.locator('.lg-atlas-image__media[src$="inspection-atlas-scene-base-v2.png"]')).toBeVisible();
   await expect(page.locator(".lg-atlas-image__hotspot")).toHaveCount(9);
   await expect(page.locator(".lg-story__step")).toHaveCount(0);
   await expect(page.locator('link[rel="icon"][href="/saqeel-prism.svg"]')).toHaveCount(1);
@@ -76,24 +76,82 @@ test("atlas mounts without landing-page disclaimers or a location list", async (
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
-test("lifecycle tablist drives the public-safe hotspot state", async ({ page }) => {
+test("five-scene tablist drives the calm public-safe story", async ({ page }) => {
   await page.goto("/login");
   const tabs = page.getByRole("tab");
-  await expect(tabs).toHaveCount(6);
+  await expect(tabs).toHaveCount(5);
   await expect(tabs.first()).toHaveAttribute("aria-controls", "saqeel-industrial-atlas");
 
-  // Selecting INSPECT (manual → stops the auto loop) highlights Jubail.
-  await page.getByRole("tab", { name: /Inspect/i }).click();
-  await expect(page.getByRole("tab", { name: /Inspect/i })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: /Outcomes/i }).click();
+  await expect(page.getByRole("tab", { name: /Outcomes/i })).toHaveAttribute("aria-selected", "true");
   await expect(page.locator(".lg-atlas-image__hotspot.is-active")).toHaveAttribute("aria-label", /JUBAIL/i);
-  await expect(page.locator(".lg-atlas3d__event")).toContainText(/Checklist, evidence and findings/i);
-  await expect(page.locator(".lg-atlas-image__stage-signal--inspect")).toBeVisible();
+  await expect(page.locator(".lg-atlas3d__event")).toContainText(/Passed or Failed/i);
 
-  // DECIDE returns the sample story to the Riyadh decision hub.
-  await page.getByRole("tab", { name: /Decide/i }).click();
+  await page.getByRole("tab", { name: /Zones/i }).click();
   await expect(page.locator(".lg-atlas-image__hotspot.is-active")).toHaveAttribute("aria-label", /RIYADH/i);
-  await expect(page.locator(".lg-atlas3d__event")).toContainText(/Decision is sealed/i);
-  await expect(page.locator(".lg-atlas-image__stage-signal--decide")).toBeVisible();
+  await expect(page.locator(".lg-atlas3d__event")).toContainText(/Zones lift subtly/i);
+});
+
+test("five scenes reveal map, inspectors, dispatch, outcomes and lifted zones sequentially", async ({ page }) => {
+  await page.goto("/login");
+
+  await page.getByRole("tab", { name: /Map/i }).click();
+  await expect(page.locator(".lg-atlas-motion__inspector").first()).toHaveCSS("opacity", "0");
+  await expect(page.locator(".lg-atlas-motion__vehicle").first()).toHaveCSS("opacity", "0");
+  await expect(page.locator(".lg-atlas-motion__outcome").first()).toHaveCSS("opacity", "0");
+  await expect(page.locator(".lg-atlas-image__zones span").first()).toHaveCSS("opacity", "1");
+
+  await page.getByRole("tab", { name: /Inspectors/i }).click();
+  await expect(page.locator(".lg-atlas-motion__inspector")).toHaveCount(3);
+  await expect(page.locator(".lg-atlas-motion__inspector").first()).toHaveCSS("opacity", "1");
+  await expect(page.locator('.lg-atlas-motion__inspector img[src*="inspector-character-v2-"]')).toHaveCount(3);
+
+  await page.getByRole("tab", { name: /Dispatch/i }).click();
+  await expect(page.locator('.lg-atlas-motion[data-stage="travel"]')).toBeVisible();
+  await expect(page.locator(".lg-atlas-motion__vehicle")).toHaveCount(3);
+  await expect(page.locator(".lg-atlas-motion__route-line")).toHaveCount(3);
+  await expect(page.locator(".lg-atlas-motion__geofence")).toHaveCount(3);
+  await expect(page.locator(".lg-atlas-motion__vehicle").nth(0)).toHaveCSS("animation-delay", "0s");
+  await expect(page.locator(".lg-atlas-motion__vehicle").nth(1)).toHaveCSS("animation-delay", "2.7s");
+  await expect(page.locator(".lg-atlas-motion__vehicle").nth(2)).toHaveCSS("animation-delay", "5.4s");
+
+  await page.getByRole("tab", { name: /Outcomes/i }).click();
+  await expect(page.locator(".lg-atlas-motion__outcome--passed")).toHaveCount(2);
+  await expect(page.locator(".lg-atlas-motion__outcome--failed")).toHaveCount(1);
+  await expect(page.locator(".lg-atlas-motion__outcome").first()).toContainText("Failed");
+  await expect(page.locator(".lg-atlas-motion__outcome").first()).toHaveCSS("opacity", "1");
+
+  await page.getByRole("tab", { name: /Zones/i }).click();
+  await expect(page.locator('.lg-atlas-motion__zones path[data-outcome="complete"]').first()).toHaveCSS("opacity", "0.92");
+  await expect(page.locator(".lg-atlas-image__zones span").first()).toHaveCSS("opacity", "1");
+  await expect(page.locator(".lg-atlas-motion__stats")).toContainText("Illustrative sample · not live data");
+  await expect(page.locator(".lg-atlas-motion__stats")).toContainText("1,248");
+  await expect(page.locator(".lg-atlas-motion__stats")).toHaveCSS("opacity", "1");
+});
+
+test("credential focus pauses decorative motion without changing the active Arabic story", async ({ page, context }) => {
+  await context.clearCookies();
+  await page.goto("/login");
+
+  const initialStage = await page.locator(".lg-atlas-image").getAttribute("data-active-stage");
+  await page.locator("#email").focus();
+  await expect(page.locator(".lg-story")).toHaveClass(/is-motion-paused/);
+  await page.waitForTimeout(2800);
+  await expect(page.locator(".lg-atlas-image")).toHaveAttribute("data-active-stage", initialStage ?? "plan");
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await expect(page.getByRole("heading", { name: "تسجيل الدخول" })).toBeVisible();
+});
+
+test("reduced motion keeps the atlas understandable without route or zone animation", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/login");
+  await page.getByRole("tab", { name: /Dispatch/i }).click();
+
+  await expect(page.locator(".lg-atlas-motion__vehicle").first()).toHaveCSS("animation-name", "none");
+  await expect(page.locator('.lg-atlas-motion__zones path[data-zone="east"]')).toHaveCSS("animation-name", "none");
+  await expect(page.locator(".lg-atlas-motion__route-line").first()).toHaveCSS("opacity", "0.52");
+  await expect(page.locator(".lg-atlas-motion__geofence").first()).toHaveCSS("opacity", "0.72");
+  await expect(page.locator("#email")).toBeEnabled();
 });
 
 test("dossier: hover/focus opens, click locks (role=dialog), Esc closes", async ({ page }) => {
@@ -115,7 +173,7 @@ test("dossier: hover/focus opens, click locks (role=dialog), Esc closes", async 
 });
 
 test("public-safe image failure activates the generated atlas fallback", async ({ page }) => {
-  await page.route("**/brand/saudi-atlas/inspection-atlas-public-safe-v1.*", route => route.abort());
+  await page.route("**/brand/saudi-atlas/inspection-atlas-scene-base-v2.*", route => route.abort());
   await page.goto("/login");
   await expect(page.locator(".lg-map")).toBeVisible({ timeout: 15000 });
   await expect(page.locator(".lg-atlas3d__node")).toHaveCount(9);

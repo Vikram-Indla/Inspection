@@ -10,7 +10,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import ThemeToggle from "@/components/ThemeToggle";
 import SaqeelHero from "./SaqeelHero";
-import { STAGE_ORDER, type AtlasStageId } from "./saudi-atlas-locations";
+import { STORY_SCENE_ORDER, type AtlasStageId } from "./saudi-atlas-locations";
 import { createAtlasTimeline, type AtlasTimeline } from "./saudi-atlas-motion";
 import type { DossierStrings } from "./SaudiAtlasDossier";
 
@@ -19,12 +19,14 @@ const Atlas = dynamic(() => import("./SaudiIndustrialAtlas"), { ssr: false });
 export type StoryStrings = {
   title: string;
   overline: string;
+  illustrativeSummary: string;
+  zoneStats: { zone: string; inspections: string; detail: string }[];
   stagesLabel: string;                            // tablist aria-label
   stages: { id: AtlasStageId; label: string; event: string }[];
   dossier: DossierStrings;
 };
 
-export default function StoryPanel({ strings: s, locale, themeLabels, subdued = false }: {
+export default function StoryPanel({ strings: s, locale, themeLabels, subdued = false, paused = false }: {
   strings: StoryStrings;
   locale: "ar" | "en";
   themeLabels: { toLight: string; toDark: string };
@@ -33,6 +35,10 @@ export default function StoryPanel({ strings: s, locale, themeLabels, subdued = 
   // markers or photo rail. Default false = byte-identical accepted CD-001
   // rendering. Reuses the existing SaqeelHero fallback motif; no new asset.
   subdued?: boolean;
+  // Credential interaction always wins over decorative storytelling. This is
+  // driven by the sibling login panel so typing, reset and submit states do
+  // not compete with motion.
+  paused?: boolean;
 }) {
   const [mapFailed, setMapFailed] = useState(false);
   const [stage, setStage] = useState<AtlasStageId>("plan");
@@ -41,20 +47,32 @@ export default function StoryPanel({ strings: s, locale, themeLabels, subdued = 
 
   const tlRef = useRef<AtlasTimeline | null>(null);
   const manualRef = useRef(false);   // user took control via the tablist
+  const pausedRef = useRef(false);
+  const atlasInteractingRef = useRef(false);
+  const [atlasInteracting, setAtlasInteracting] = useState(false);
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([]);
+
+  pausedRef.current = paused;
 
   // Motion loop runs only while the live interactive atlas is on screen.
   useEffect(() => {
     if (mapFailed || subdued) return;
-    const tl = createAtlasTimeline(i => { if (!manualRef.current) setStage(STAGE_ORDER[i]); });
+    const tl = createAtlasTimeline(i => { if (!manualRef.current) setStage(STORY_SCENE_ORDER[i]); });
     tlRef.current = tl;
     tl.start();
     return () => { tl.stop(); tlRef.current = null; };
   }, [mapFailed, subdued]);
 
+  useEffect(() => {
+    if (paused) tlRef.current?.pause();
+    else if (!manualRef.current && !atlasInteractingRef.current) tlRef.current?.resume();
+  }, [paused]);
+
   const onInteracting = useCallback((on: boolean) => {
+    atlasInteractingRef.current = on;
+    setAtlasInteracting(on);
     if (on) tlRef.current?.pause();
-    else if (!manualRef.current) tlRef.current?.resume();
+    else if (!manualRef.current && !pausedRef.current) tlRef.current?.resume();
   }, []);
 
   const pickStage = useCallback((id: AtlasStageId) => {
@@ -79,7 +97,7 @@ export default function StoryPanel({ strings: s, locale, themeLabels, subdued = 
   };
 
   return (
-    <aside className={`lg-story${subdued ? " lg-story--subdued" : ""}`}>
+    <aside className={`lg-story${subdued ? " lg-story--subdued" : ""}${paused || atlasInteracting ? " is-motion-paused" : ""}`}>
       <header className="lg-story__head">
         <div className="lg-story__heading">
           <span className="lg-story__title">{s.title}</span>
@@ -125,6 +143,14 @@ export default function StoryPanel({ strings: s, locale, themeLabels, subdued = 
           </div>
         )}
       </div>
+      {!subdued && !mapFailed && stage === "decide" && (
+        <section className="lg-story__summary" aria-label={s.illustrativeSummary} dir={locale === "ar" ? "rtl" : "ltr"}>
+          <small>{s.illustrativeSummary}</small>
+          {s.zoneStats.map(stat => <div key={stat.zone}>
+            <strong>{stat.inspections}</strong><span>{stat.zone}</span><em>{stat.detail}</em>
+          </div>)}
+        </section>
+      )}
     </aside>
   );
 }
