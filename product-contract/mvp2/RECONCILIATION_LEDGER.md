@@ -80,3 +80,17 @@ their runtime SQL behavior is unproven until the Inspection Supabase project
   caused by the MVP2 build or the trigger fix. A full staging↔source migration
   reconciliation (align every source migration onto staging) is recommended as a scoped
   follow-up before treating staging as a golden-journey certification environment.
+
+---
+
+## R-005 — M2-05 emit trigger NULL case_ref on visit-anchored evidence (MVP1 regression, FIXED)
+- **Module:** M2-05 emit trigger, evidence branch.
+- **Conflict:** arrival/cancellation evidence is visit-anchored (inspection_id NULL,
+  visit_id set — offline.ts outbox). The evidence branch derived the case only via
+  `inspections where id=new.inspection_id`, so v_root_case was NULL → case_ref NULL →
+  violated audit_semantic_events.case_ref NOT NULL (23502) → the evidence INSERT aborted.
+  Storage upload succeeded but the table row never landed, so arrival evidence stayed
+  queued in the field outbox and golden-journey P2 replay timed out.
+- **Resolution (migration 20260717250000):** evidence branch uses new.visit_id when
+  inspection_id is NULL; plus a NOT-NULL safety net (case_ref/correlation_id fall back to
+  the aggregate id) so no branch can emit a NULL key. Probe passes; golden journey 10/10.
