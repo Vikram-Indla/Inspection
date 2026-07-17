@@ -39,7 +39,8 @@ test.describe("MVP2-CD-031-M2-05 zero disclosure", () => {
   test.use({ storageState: storageStatePath("inspector") });
   test("inspector receives an unauthorized state with no event disclosure", async ({ page }) => {
     await page.goto("/locale?set=en"); await page.goto("/admin/audit");
-    await expect(page.getByRole("alert")).toContainText("not authorized");
+    // Scope to the denial surface (Next's route-announcer is also role=alert).
+    await expect(page.locator("section[role=alert].ar-denied")).toContainText("not authorized");
     await expect(page.locator(".ar-event")).toHaveCount(0);
   });
 });
