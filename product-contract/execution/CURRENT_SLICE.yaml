@@ -2,10 +2,28 @@ schema_version: "1.2"
 task_id: "TASK-MVP2-M2-05-AUDIT-REPLAY-001"
 gate: "MVP2 Wave 1 / G8 sponsor-authorized build"
 title: "MVP2-CD-031-M2-05 Audit Replay, History & Legal Traceability"
-status: "SOURCE_IMPLEMENTATION_PASS_RUNTIME_CERTIFICATION_PENDING"
+status: "SOURCE_IMPLEMENTATION_PASS_RUNTIME_CERTIFICATION_PENDING — main now integrates MVP1 cycle-2 hardening + M2-05 Audit Replay + M2-02 Workflow/SLA/Notification Studio. Merge and push were sponsor-authorized; runtime certification (remote migration apply, live regression, deploy) remains PENDING for both M2-02 and M2-05."
 enforce_stop_gate: true
 broad_implementation_allowed: true
 approval_ref: "HUMAN_APPROVALS.yaml#MVP2-M2-05-AUDIT-REPLAY-BUILD"
+
+# Reflects the release-branch integration state (this record's own module is
+# M2-05; the block below records the M2-02 merge that also landed on main).
+main_integration:
+  integrated_on_main: ["MVP1-cycle2-hardening", "MVP2-CD-031-M2-05-audit-replay", "MVP2-CD-043-M2-02-workflow-studio"]
+  m2_02:
+    source_branch: "workflow"
+    source_head: "21bce21"
+    merge_commit: "2d78bb3"
+    approvals: ["HUMAN_APPROVALS.yaml#MVP2-M2-02-WORKFLOW-STUDIO-BUILD-AUTHORIZATION", "HUMAN_APPROVALS.yaml#MVP2-M2-02-MERGE-TO-MAIN", "HUMAN_APPROVALS.yaml#MVP2-M2-02-PUSH-TO-ORIGIN"]
+    design_gate: "95/100, zero P0/P1 (APPROVED/M2-02 R2 repaired package)"
+    verified: "typecheck clean; production build clean; 70/70 pure mvp2-m2-02 tests pass; full e2e suite compiles (397 tests)"
+  pushed_to_origin: "origin/main @ 13d6070 (includes the approval-gated hook change)"
+  open_holds:
+    - "5 M2-02 forward-only migrations NOT applied to any database (remote apply gated)."
+    - "Live-DB Playwright regression + browser render NOT executed (no isolated DB)."
+    - "DEC-003 (SLA calendar authority), SMS/email/push providers, M2-05 shared semantic-event migration remain OPEN."
+    - "No production deployment; no credential rotation; no Git-history rewrite."
 
 sponsor_direction:
   approver: "Vikram Indla"
