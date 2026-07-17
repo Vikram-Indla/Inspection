@@ -3,7 +3,7 @@ task_id: "TASK-MVP2-M2-02-WORKFLOW-STUDIO-001"
 parent_task_id: "MVP2-CD-043-M2-02"
 gate: "MVP2 build — M2-02 Workflow, SLA & Notification Studio"
 title: "Workflow, SLA & Notification Studio — full frontend+backend vertical slice on module branch `workflow`"
-status: "ACTIVE (module branch only) — design-independent build in progress; frontend gated on APPROVED/M2-02 design package + 95/100 review."
+status: "COMPLETE_WITH_EXTERNAL_HOLDS (module branch only) — design gate 95/100 zero-P0/P1; all 19 rows (0025-0043) built + validated; Flight Deck shipped; 70/70 pure tests pass; full e2e suite compiles (397 tests). External holds: remote migration apply, live-DB regression EXECUTION + browser render, DEC-003, providers, M2-05 shared migration — all gated/deferred (no Docker, no approval). See 04_EXECUTION/MODULES/M2-02/MODULE_CLOSURE_M2-02.md."
 enforce_stop_gate: true
 broad_implementation_allowed: true
 approval_ref: "HUMAN_APPROVALS.yaml#MVP2-M2-02-WORKFLOW-STUDIO-BUILD-AUTHORIZATION"
