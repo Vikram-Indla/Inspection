@@ -73,6 +73,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-17"
     change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-QA-CYCLE2-RETEST-001"
+  - gate: "CYCLE2-MERGE-TO-MAIN-OVERRIDE"
+    decision: "APPROVED (EXPLICIT OVERRIDE) — sponsor explicitly instructed 'yes, override and merge — record it', overriding the TASK-QA-CYCLE2-RETEST-001 slice's standing 'no merge to main' policy. This authorizes a single merge of branch fix/mvp1-cycle2-production-hardening (at 31e1178, 10 commits ahead of main, 0 behind — clean fast-forward) into main. The sponsor accepts merge despite the retest verdict being APPLICATION READY — PROVIDER CERTIFICATION PENDING: DEC-008 (Mapbox runtime unverified, no token), BLK-P2-008 (existing secret exposure + credential rotation), DEC-002 and the live migration-history reconciliation remain OPEN and separately owned, and are NOT resolved by this merge. This override authorizes the git merge only — it does NOT authorize production deployment, credential rotation, Git-history rewrite, or mutation of the 503 known-implausible-date visits rows."
+    approver: "Vikram Indla"
+    date: "2026-07-17"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-QA-CYCLE2-RETEST-001 (override)"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

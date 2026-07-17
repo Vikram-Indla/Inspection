@@ -3,7 +3,7 @@ task_id: "TASK-QA-CYCLE2-RETEST-001"
 parent_task_id: "TASK-G11-G12-RELEASE-001"
 gate: "G11 hardening / G12 release — Cycle 2 QA retest"
 title: "ChatGPT Work read-only retest and production-readiness decision for fix/mvp1-cycle2-production-hardening"
-status: "RETEST_TIMEBOXED_EVIDENCE_REVIEW_COMPLETE — decision APPLICATION READY / PROVIDER CERTIFICATION PENDING (evidence/CYCLE2-RETEST-DECISION-2026-07-17.md); no open P0/P1 actionable under this read-only slice"
+status: "RETEST_COMPLETE + SPONSOR-OVERRIDE MERGE-TO-MAIN AUTHORIZED — decision APPLICATION READY / PROVIDER CERTIFICATION PENDING (evidence/CYCLE2-RETEST-DECISION-2026-07-17.md). Sponsor explicitly overrode this slice's 'no merge to main' policy on 2026-07-17 (HUMAN_APPROVALS.yaml#CYCLE2-MERGE-TO-MAIN-OVERRIDE); merge authorized, deploy/rotation/history-rewrite still NOT authorized."
 enforce_stop_gate: true
 broad_implementation_allowed: false
 approval_ref: "HUMAN_APPROVALS.yaml#CYCLE2-QA-RETEST-ROUTING"
