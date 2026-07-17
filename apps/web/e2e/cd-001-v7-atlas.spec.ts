@@ -40,8 +40,9 @@ test("fresh login defaults to Arabic with document-level RTL semantics", async (
 
   const plan = page.getByRole("tab", { name: /الخريطة/ });
   await expect(plan).toHaveAttribute("aria-selected", "true");
+  // RTL: ArrowLeft advances forward (Map → Dispatch).
   await plan.press("ArrowLeft");
-  await expect(page.getByRole("tab", { name: /المفتشون/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tab", { name: /الإرسال/ })).toHaveAttribute("aria-selected", "true");
 
   const easternNode = page.locator(".lg-atlas-image__hotspot").first();
   await easternNode.click();
@@ -82,51 +83,59 @@ test("five-scene tablist drives the calm public-safe story", async ({ page }) =>
   await expect(tabs).toHaveCount(5);
   await expect(tabs.first()).toHaveAttribute("aria-controls", "saqeel-industrial-atlas");
 
-  await page.getByRole("tab", { name: /Outcomes/i }).click();
-  await expect(page.getByRole("tab", { name: /Outcomes/i })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: /Inspection/i }).click();
+  await expect(page.getByRole("tab", { name: /Inspection/i })).toHaveAttribute("aria-selected", "true");
   await expect(page.locator(".lg-atlas-image__hotspot.is-active")).toHaveAttribute("aria-label", /JUBAIL/i);
-  await expect(page.locator(".lg-atlas3d__event")).toContainText(/Passed or Failed/i);
+  await expect(page.locator(".lg-atlas3d__event")).toContainText(/reaches an illustrated outcome/i);
 
   await page.getByRole("tab", { name: /Zones/i }).click();
   await expect(page.locator(".lg-atlas-image__hotspot.is-active")).toHaveAttribute("aria-label", /RIYADH/i);
-  await expect(page.locator(".lg-atlas3d__event")).toContainText(/Zones lift subtly/i);
+  await expect(page.locator(".lg-atlas3d__event")).toContainText(/lift it from the landmass/i);
 });
 
-test("five scenes reveal map, inspectors, dispatch, outcomes and lifted zones sequentially", async ({ page }) => {
+test("five scenes reveal map, dispatch, arrival, inspection and zones sequentially", async ({ page }) => {
   await page.goto("/login");
 
+  // 01 Map — resting: no vehicles, actors hidden, zone labels present.
   await page.getByRole("tab", { name: /Map/i }).click();
+  await expect(page.locator('.lg-atlas-image[data-active-stage="plan"]')).toBeVisible();
   await expect(page.locator(".lg-atlas-motion__inspector").first()).toHaveCSS("opacity", "0");
-  await expect(page.locator(".lg-atlas-motion__vehicle").first()).toHaveCSS("opacity", "0");
-  await expect(page.locator(".lg-atlas-motion__outcome").first()).toHaveCSS("opacity", "0");
-  await expect(page.locator(".lg-atlas-image__zones span").first()).toHaveCSS("opacity", "1");
+  await expect(page.locator(".lg-atlas-motion__route-vehicle")).toHaveCount(0);
+  await expect(page.locator(".lg-atlas-image__zones span")).toHaveCount(5);
 
-  await page.getByRole("tab", { name: /Inspectors/i }).click();
-  await expect(page.locator(".lg-atlas-motion__inspector")).toHaveCount(3);
-  await expect(page.locator(".lg-atlas-motion__inspector").first()).toHaveCSS("opacity", "1");
-  await expect(page.locator('.lg-atlas-motion__inspector img[src*="inspector-character-v2-"]')).toHaveCount(3);
-
+  // 02 Dispatch — three real vehicles on three routes, staggered SMIL starts.
   await page.getByRole("tab", { name: /Dispatch/i }).click();
   await expect(page.locator('.lg-atlas-motion[data-stage="travel"]')).toBeVisible();
-  await expect(page.locator(".lg-atlas-motion__vehicle")).toHaveCount(3);
+  await expect(page.locator(".lg-atlas-motion__route-vehicle")).toHaveCount(3);
   await expect(page.locator(".lg-atlas-motion__route-line")).toHaveCount(3);
-  await expect(page.locator(".lg-atlas-motion__geofence")).toHaveCount(3);
-  await expect(page.locator(".lg-atlas-motion__vehicle").nth(0)).toHaveCSS("animation-delay", "0s");
-  await expect(page.locator(".lg-atlas-motion__vehicle").nth(1)).toHaveCSS("animation-delay", "2.7s");
-  await expect(page.locator(".lg-atlas-motion__vehicle").nth(2)).toHaveCSS("animation-delay", "5.4s");
+  await expect(page.locator(".lg-atlas-motion__route-stops")).toHaveCount(3);
+  // Two vehicles depart Riyadh, the third departs Jazan (staggered begins).
+  const begins = await page.locator(".lg-atlas-motion__route-vehicle animateMotion").evaluateAll(
+    els => els.map(e => e.getAttribute("begin")));
+  expect(begins).toEqual(["0s", "5s", "10s"]);
 
-  await page.getByRole("tab", { name: /Outcomes/i }).click();
+  // 03 Arrival — inspectors resolve on site (geofenced attendance).
+  await page.getByRole("tab", { name: /Arrival/i }).click();
+  await expect(page.locator('.lg-atlas-motion[data-stage="arrive"]')).toBeVisible();
+  await expect(page.locator(".lg-atlas-motion__inspector")).toHaveCount(5);
+  await expect(page.locator('.lg-atlas-motion__inspector img[src*="inspector-character-v2-"]')).toHaveCount(5);
+  await expect.poll(async () =>
+    Number(await page.locator(".lg-atlas-motion__inspector").first().evaluate(e => getComputedStyle(e).opacity))
+  ).toBeGreaterThan(0.5);
+
+  // 04 Inspection — two compliant outcomes, one follow-up (illustrative).
+  await page.getByRole("tab", { name: /Inspection/i }).click();
+  await expect(page.locator('.lg-atlas-motion[data-stage="inspect"]')).toBeVisible();
   await expect(page.locator(".lg-atlas-motion__outcome--passed")).toHaveCount(2);
   await expect(page.locator(".lg-atlas-motion__outcome--failed")).toHaveCount(1);
   await expect(page.locator(".lg-atlas-motion__outcome").first()).toContainText("Failed");
-  await expect(page.locator(".lg-atlas-motion__outcome").first()).toHaveCSS("opacity", "1");
 
+  // 05 Zones — illustrative-sample summary appears with the disclosure.
   await page.getByRole("tab", { name: /Zones/i }).click();
-  await expect(page.locator('.lg-atlas-motion__zones path[data-outcome="complete"]').first()).toHaveCSS("opacity", "0.92");
+  await expect(page.locator('.lg-atlas-motion[data-stage="decide"]')).toBeVisible();
   await expect(page.locator(".lg-atlas-image__zones span").first()).toHaveCSS("opacity", "1");
-  await expect(page.locator(".lg-atlas-motion__stats")).toContainText("Illustrative sample · not live data");
-  await expect(page.locator(".lg-atlas-motion__stats")).toContainText("1,248");
-  await expect(page.locator(".lg-atlas-motion__stats")).toHaveCSS("opacity", "1");
+  await expect(page.locator(".lg-story__summary")).toContainText("Illustrative sample · not live data");
+  await expect(page.locator(".lg-story__summary")).toContainText("318");
 });
 
 test("credential focus pauses decorative motion without changing the active Arabic story", async ({ page, context }) => {
@@ -147,10 +156,14 @@ test("reduced motion keeps the atlas understandable without route or zone animat
   await page.goto("/login");
   await page.getByRole("tab", { name: /Dispatch/i }).click();
 
-  await expect(page.locator(".lg-atlas-motion__vehicle").first()).toHaveCSS("animation-name", "none");
+  // Motion layer holds its dispatch state without animating.
+  await expect(page.locator(".lg-atlas-motion__route-vehicle").first()).toHaveCSS("animation-name", "none");
   await expect(page.locator('.lg-atlas-motion__zones path[data-zone="east"]')).toHaveCSS("animation-name", "none");
   await expect(page.locator(".lg-atlas-motion__route-line").first()).toHaveCSS("opacity", "0.52");
-  await expect(page.locator(".lg-atlas-motion__geofence").first()).toHaveCSS("opacity", "0.72");
+
+  // Terrain lift retains its full extracted state but snaps rather than animates.
+  await expect(page.locator('.lg-zone-lift__slab[data-zone="east"] .lg-zone-lift__terrain'))
+    .toHaveCSS("transition-duration", "0s");
   await expect(page.locator("#email")).toBeEnabled();
 });
 
@@ -184,6 +197,61 @@ test("production mode does not expose demo identities", async ({ page }) => {
   await page.goto("/login");
   await expect(page.getByRole("button", { name: /Demo access/i })).toHaveCount(0);
   await expect(page.locator("text=admin@mim.gov.sa")).toHaveCount(0);
+});
+
+// The defining interaction: hovering a zone must physically extract a slab of
+// real terrain and leave a recessed cavity, pause the passive story, and tether
+// the regional readout; click locks, Escape restores.
+test("zone lift: hover extracts a terrain slab with cavity, click locks, Escape restores", async ({ page }) => {
+  await page.goto("/login");
+  const east = page.locator('.lg-zone-lift__edge[data-zone="east"]');
+  const slab = page.locator('.lg-zone-lift__slab[data-zone="east"]');
+  const image = page.locator(".lg-atlas-image");
+
+  // Hover interrupts the passive story and lifts the whole-map camera + slab.
+  await east.hover({ force: true });
+  await expect(slab).toHaveClass(/is-lifted/);
+  await expect(image).toHaveClass(/is-zone-engaged/);
+  await expect(page.locator(".lg-story")).toHaveClass(/is-motion-paused/);
+  // Lifted terrain, exposed earth sidewall and the recessed cavity all render.
+  await expect(slab.locator(".lg-zone-lift__terrain")).toHaveCSS("opacity", "1");
+  await expect(slab.locator(".lg-zone-lift__wall")).toHaveCSS("opacity", "1");
+  await expect(slab.locator(".lg-zone-lift__cavity")).toHaveCSS("opacity", "1");
+  // Readout is tethered with that zone's illustrative intelligence.
+  const readout = page.locator(".lg-zone-lift__readout");
+  await expect(readout).toContainText("Eastern zone");
+  await expect(readout).toContainText("318 inspections");
+
+  // Leaving without locking lowers the slab and restores the resting camera.
+  await page.mouse.move(4, 4);
+  await expect(slab).not.toHaveClass(/is-lifted/);
+  await expect(image).not.toHaveClass(/is-zone-engaged/);
+
+  // Click locks the terrain open; it stays lifted after the pointer leaves.
+  await east.click({ force: true });
+  await expect(east).toHaveAttribute("aria-pressed", "true");
+  await page.mouse.move(4, 4);
+  await expect(slab).toHaveClass(/is-lifted/);
+
+  // Escape restores the resting map.
+  await east.press("Escape");
+  await expect(slab).not.toHaveClass(/is-lifted/);
+  await expect(image).not.toHaveClass(/is-zone-engaged/);
+});
+
+test("zone lift is keyboard reachable and carries the same information", async ({ page }) => {
+  await page.goto("/login");
+  const east = page.locator('.lg-zone-lift__edge[data-zone="east"]');
+  await expect(east).toHaveAttribute("role", "button");
+  await expect(east).toHaveAttribute("aria-label", /Eastern zone.*318.*90%.*21 follow-ups/i);
+
+  // Focus lifts the slab (same state as hover); Enter locks; Escape restores.
+  await east.focus();
+  await expect(page.locator('.lg-zone-lift__slab[data-zone="east"]')).toHaveClass(/is-lifted/);
+  await east.press("Enter");
+  await expect(east).toHaveAttribute("aria-pressed", "true");
+  await east.press("Escape");
+  await expect(page.locator('.lg-zone-lift__slab[data-zone="east"]')).not.toHaveClass(/is-lifted/);
 });
 
 test("login and atlas do not overflow representative viewports", async ({ page }) => {
