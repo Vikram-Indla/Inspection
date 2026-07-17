@@ -48,12 +48,15 @@ type AtlasZoneId = "north" | "west" | "central" | "east" | "south";
 // are deliberately not exported as GIS geometry and never carry operational
 // counts or compliance meaning. The real geographic/data views remain behind
 // authentication.
+// Traced against the public-safe atlas raster (viewBox 1000×563) so each slab
+// lifts a real slice of terrain framing that region's facility cluster and
+// leaves its cavity on land, never over open sea.
 const ZONE_SURFACES: { id: AtlasZoneId; path: string; outcome: "complete" | "follow-up" }[] = [
-  { id: "north", outcome: "follow-up", path: "M255 101 C325 55 475 43 585 111 L548 190 L420 220 L270 181 Z" },
-  { id: "west", outcome: "complete", path: "M157 172 L302 145 L388 245 L354 392 L253 469 L132 352 Z" },
-  { id: "central", outcome: "complete", path: "M344 194 L548 166 L646 267 L590 382 L410 401 L333 306 Z" },
-  { id: "east", outcome: "follow-up", path: "M558 150 L758 141 L894 264 L861 405 L658 377 L590 272 Z" },
-  { id: "south", outcome: "complete", path: "M302 354 L592 344 L735 421 L662 514 L451 543 L252 453 Z" },
+  { id: "north", outcome: "follow-up", path: "M300 76 L474 62 L548 118 L470 182 L320 178 L266 120 Z" },
+  { id: "west", outcome: "complete", path: "M126 150 L300 168 L330 300 L250 432 L138 330 Z" },
+  { id: "central", outcome: "complete", path: "M336 168 L560 170 L604 288 L470 352 L340 292 Z" },
+  { id: "east", outcome: "follow-up", path: "M560 190 L760 176 L858 286 L744 372 L582 320 Z" },
+  { id: "south", outcome: "complete", path: "M330 352 L558 352 L620 438 L480 520 L332 460 Z" },
 ];
 
 const INSPECTOR_SCENE_POSITIONS = [
@@ -81,11 +84,11 @@ const OUTCOME_POSITIONS = [
 const ZONE_INTELLIGENCE: Record<AtlasZoneId, {
   x: number; y: number; en: string; ar: string; inspections: string; compliance: string; action: string;
 }> = {
-  north: { x: 42, y: 18, en: "Northern zone", ar: "المنطقة الشمالية", inspections: "264 inspections", compliance: "91% compliant", action: "18 follow-ups" },
-  west: { x: 23, y: 34, en: "Western zone", ar: "المنطقة الغربية", inspections: "247 inspections", compliance: "89% compliant", action: "12 follow-ups" },
-  central: { x: 49, y: 48, en: "Central zone", ar: "المنطقة الوسطى", inspections: "221 inspections", compliance: "92% compliant", action: "9 follow-ups" },
-  east: { x: 73, y: 36, en: "Eastern zone", ar: "المنطقة الشرقية", inspections: "318 inspections", compliance: "90% compliant", action: "21 follow-ups" },
-  south: { x: 52, y: 78, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198 inspections", compliance: "89% compliant", action: "14 follow-ups" },
+  north: { x: 40, y: 9, en: "Northern zone", ar: "المنطقة الشمالية", inspections: "264 inspections", compliance: "91% compliant", action: "18 follow-ups" },
+  west: { x: 19, y: 28, en: "Western zone", ar: "المنطقة الغربية", inspections: "247 inspections", compliance: "89% compliant", action: "12 follow-ups" },
+  central: { x: 53, y: 24, en: "Central zone", ar: "المنطقة الوسطى", inspections: "221 inspections", compliance: "92% compliant", action: "9 follow-ups" },
+  east: { x: 75, y: 24, en: "Eastern zone", ar: "المنطقة الشرقية", inspections: "318 inspections", compliance: "90% compliant", action: "21 follow-ups" },
+  south: { x: 55, y: 60, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198 inspections", compliance: "89% compliant", action: "14 follow-ups" },
 };
 
 function stageZone(stage: AtlasStageId): AtlasZoneId {
@@ -153,28 +156,63 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
 }
 
 function ZoneLiftOverlay({
-  locale, activeZone, onHover, onLock,
+  locale, activeZone, lockedZone, onHover, onLock, onClose,
 }: {
   locale: "ar" | "en";
   activeZone: AtlasZoneId | null;
+  lockedZone: AtlasZoneId | null;
   onHover: (zone: AtlasZoneId | null) => void;
   onLock: (zone: AtlasZoneId) => void;
+  onClose: () => void;
 }) {
   const stat = activeZone ? ZONE_INTELLIGENCE[activeZone] : null;
+  const zoneLabel = (zone: AtlasZoneId) => {
+    const z = ZONE_INTELLIGENCE[zone];
+    return locale === "ar"
+      ? `${z.ar}: ${z.inspections}، ${z.compliance}، ${z.action}. اضغط لتثبيت عرض التضاريس.`
+      : `${z.en}: ${z.inspections}, ${z.compliance}, ${z.action}. Press to lock this terrain view.`;
+  };
   return (
-    <div className={`lg-zone-lift${activeZone ? " is-engaged" : ""}`} aria-label="Regional inspection intelligence">
-      <svg className="lg-zone-lift__svg" viewBox="0 0 1000 563" preserveAspectRatio="none" aria-hidden="true">
+    <div className={`lg-zone-lift${activeZone ? " is-engaged" : ""}`} role="group"
+      aria-label={locale === "ar" ? "ذكاء التفتيش الإقليمي" : "Regional inspection intelligence"}>
+      <svg className="lg-zone-lift__svg" viewBox="0 0 1000 563" preserveAspectRatio="none">
+        <defs>
+          {ZONE_SURFACES.map(zone => (
+            <clipPath key={zone.id} id={`lg-zclip-${zone.id}`} clipPathUnits="userSpaceOnUse">
+              <path d={zone.path} />
+            </clipPath>
+          ))}
+        </defs>
         {ZONE_SURFACES.map(zone => {
           const isActive = activeZone === zone.id;
+          // The lifted slab is a REAL clip of the public-safe atlas raster, so
+          // the terrain, factories and lights inside the zone physically rise
+          // together. The opaque cavity underneath is what the removed slab
+          // leaves behind; the darkened wall copy is the exposed earth sidewall.
           return (
             <g key={zone.id} data-zone={zone.id} data-lifted={isActive || undefined}
               className={`lg-zone-lift__slab${isActive ? " is-lifted" : ""}`}>
-              <path className="lg-zone-lift__cavity" d={zone.path} />
-              <path className="lg-zone-lift__underside" d={zone.path} />
-              <path className="lg-zone-lift__top" d={zone.path} data-zone={zone.id}
+              <path className="lg-zone-lift__cavity" d={zone.path} aria-hidden="true" />
+              <g className="lg-zone-lift__wall" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
+                <image href={`${PUBLIC_SAFE_ATLAS_BASE}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+              </g>
+              <g className="lg-zone-lift__terrain" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
+                <image href={`${PUBLIC_SAFE_ATLAS_BASE}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+              </g>
+              {/* Keyboard + pointer target. Focus lifts the slab (same info as
+                  hover); Enter/Space locks it; Escape restores the resting map. */}
+              <path className="lg-zone-lift__edge" d={zone.path} data-zone={zone.id}
+                tabIndex={0} role="button" aria-pressed={lockedZone === zone.id}
+                aria-label={zoneLabel(zone.id)}
                 onPointerEnter={() => onHover(zone.id)}
                 onPointerLeave={() => onHover(null)}
-                onClick={() => onLock(zone.id)} />
+                onFocus={() => onHover(zone.id)}
+                onBlur={() => onHover(null)}
+                onClick={() => onLock(zone.id)}
+                onKeyDown={e => {
+                  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onLock(zone.id); }
+                  else if (e.key === "Escape") { e.preventDefault(); onClose(); (e.currentTarget as SVGPathElement).blur(); }
+                }} />
             </g>
           );
         })}
@@ -443,9 +481,10 @@ function PublicSafeImageAtlas({
 
         <JourneyOverlay stage={activeStage} locale={locale} />
 
-        <ZoneLiftOverlay locale={locale} activeZone={activeZone}
+        <ZoneLiftOverlay locale={locale} activeZone={activeZone} lockedZone={lockedZone}
           onHover={zone => { if (!lockedZone) setHoveredZone(zone); }}
-          onLock={zone => { setLockedZone(current => current === zone ? null : zone); setHoveredZone(zone); }} />
+          onLock={zone => { setLockedZone(current => current === zone ? null : zone); setHoveredZone(zone); }}
+          onClose={() => { setLockedZone(null); setHoveredZone(null); }} />
 
         <div className="lg-atlas-image__hotspots" aria-label={dossierStrings.mapLabel}>
           {NODES.map(node => {
