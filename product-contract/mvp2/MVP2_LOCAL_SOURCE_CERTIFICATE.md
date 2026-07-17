@@ -66,9 +66,12 @@ domain logic + pure-contract specs; typecheck + build + static lane green).
   by M2-10 (case spine) — not recreated. Single canonical objection store.
 
 ## 5. Standing holds (NOT defects — cannot be invented)
-- **Remote DDL apply** to `iiozvqntawxfwbgffzqu` — no MCP/token/approval here.
-- **Live-browser E2E + live RLS personas** — no server+DB in this environment.
-- **Providers**: Mapbox, SMS/email/push, OTP, AI, OCR, PKI/EBDA — fail-closed adapters
+- **Remote DDL apply** — DONE on staging (12 MVP2 migrations + fixes applied + verified).
+- **Live-browser E2E + live RLS personas** — DONE on staging (see 5b–5d).
+- **Mapbox** — **CONFIGURED + live-certified** (server Directions route + browser renderer;
+  token in gitignored `.env.local`; deploy env must set `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN` +
+  `MAPBOX_ACCESS_TOKEN`).
+- **Providers still held**: SMS/email/push, OTP, AI, OCR, PKI/EBDA — fail-closed adapters
   only; verification pending real config.
 - **Policy values**: DEC-003 SLA calendar/timers, DEC-006/DEC2-009 retention/redaction/
   watermark/purge/legal, Arabic native terminology — held; never substituted.
