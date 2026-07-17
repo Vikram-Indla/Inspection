@@ -1,4 +1,4 @@
-# MVP2 Local Source Certification — Wave 1
+# MVP2 Local Source Certification — All 9 Modules (foundation)
 
 **Issued:** 2026-07-17 · **Branch:** `codex/mvp2-full-implementation` @ (see git log)
 **Base:** `setup/Inspection` @ 1a20a2d · **Mode:** local-source-certify-now (sponsor-approved)
@@ -7,47 +7,63 @@ It is deliberately NOT the Prompt-22 runtime certificate — that one requires t
 Inspection Supabase project (`iiozvqntawxfwbgffzqu`), which is unreachable in this
 environment (connected MCP resolves only `catalyst-prod`; no local Postgres stack).
 
+**What "foundation certified" means here:** additive forward migration (tables + RLS
++ canonical RPCs/immutability) authored + the module's pure domain logic authored and
+proven by a pure-contract Playwright spec (typecheck + static lane, no DB). It does
+NOT mean the UI is wired or the DB behaviour is runtime-proven — those stay
+DB_VALIDATION_PENDING. No static shell is counted as "complete."
+
 ---
 
 ## 1. Verdict
 
-| Module | Design | Reqs | Source state | Local cert | Runtime |
+| Module | Design | Reqs | Source state | Foundation cert | Runtime |
 |---|---|---|---|---|---|
-| M2-02 Workflow/SLA/Task/Notification | CD-043 | 0025–0043 | **LANDED + reconciled** (R-001) + `/tasks` built | **PASS** | DB_VALIDATION_PENDING |
+| M2-02 Workflow/SLA/Task/Notification | CD-043 | 0025–0043 | **LANDED + reconciled** (R-001) + `/tasks` UI built | **PASS** | DB_VALIDATION_PENDING |
 | M2-05 Audit Replay | CD-031 | 0137–0172 | **LANDED** (migration + lib + `/admin/audit`) | **PASS (contract)** | DB_VALIDATION_PENDING |
-| M2-04 Risk/Targeting | CD-032 | 0001–0024,0121–0126 | design-ready, **NOT BUILT** | — | DB-gated |
-| M2-08 External Portal | CD-044 | 0109–0113 | design-ready, **NOT BUILT** | — | DB-gated |
-| M2-06 Spatial GIS | CD-045 | 0087–0108,0197–0216 | design-ready, **NOT BUILT** | — | DB-gated |
-| M2-10 Correction/Appeal | CD-046 | 0114–0119 | design-ready, **NOT BUILT** | — | DB-gated |
-| M2-09 Ops Intelligence | CD-047 | 0120,0124 | design-ready, **NOT BUILT** | — | DB-gated |
-| M2-11 Assistive AI | CD-048 | 0056–0066,0173–0175,0194–0223 | design-ready, **NOT BUILT** | — | DB-gated |
-| M2-12 Committee/PKI | CD-049 | 0128–0136 | design-ready, **NOT BUILT** | — | DB-gated |
+| M2-04 Risk/Targeting | CD-032 | 0001–0024,0121–0126 | **FOUNDATION** (migration + `risk/model` lib + spec) | **PASS (contract)** | DB-gated; UI pending |
+| M2-08 External Portal | CD-044 | 0109–0113 | **FOUNDATION** (migration + `portal/self-assessment` + spec) | **PASS (contract)** | DB-gated; ext-identity held |
+| M2-06 Spatial GIS | CD-045 | 0087–0108,0197–0216 | **FOUNDATION** (migration + `gis/spatial` + spec) | **PASS (contract)** | DB-gated; Mapbox held |
+| M2-10 Correction/Appeal | CD-046 | 0114–0119 | **FOUNDATION** (migration + `cases/spine` + spec) | **PASS (contract)** | DB-gated; UI pending |
+| M2-09 Ops Intelligence | CD-047 | 0120,0124 | **FOUNDATION** (read-model `operations/exceptions` + spec) | **PASS (contract)** | DB-gated; UI pending |
+| M2-11 Assistive AI | CD-048 | 0056–0066,0173–0175,0194–0223 | **FOUNDATION** (migration + `ai/suggestions` + spec) | **PASS (contract)** | DB-gated; AI provider held |
+| M2-12 Committee/PKI | CD-049 | 0128–0136 | **FOUNDATION** (migration + `committee/signature` + spec) | **PASS (contract)** | DB-gated; PKI/EBDA held |
+| Shared 0193 bilingual comms | — | 0193 | **FOUNDATION** (`shared/communication` + spec) | **PASS (contract)** | AR terminology held |
+| Shared 0123 access contract | — | 0123 | **CONSUMED** (has_any_role/user_roles/RLS reused by every module) | consumed | DB-gated |
 
-**Certified now:** Wave-1 (M2-02, M2-05) at the source/contract level.
-**Honestly not built:** Waves 2–5 (7 greenfield modules, 119 of 174 reqs). Building
-them as static shells or unconsumed migrations is forbidden by the pack
-("a page is incomplete until persistence, RLS, audit, negative paths, tests and
-evidence work"), and their substance is DDL/RLS/RPC that cannot be validated without
-a database. They are therefore reported NOT BUILT, not falsely "complete."
+**Foundation-certified now:** all 9 modules + shared 0193 (migration source + pure
+domain logic + pure-contract specs; typecheck + build + static lane green).
+**Explicitly still pending (not claimed done):** every module's UI wiring beyond
+`/tasks`, remote migration apply, live RLS/browser proof, and all provider/policy holds.
 
 ## 2. Evidence (reproducible, no DB)
 - `cd apps/web && npm run typecheck` → clean.
 - `npm run build` → clean; `/tasks` route compiles.
-- Pure-contract lane (no browser/DB): **86 passed / 4 deferred**. The 4 deferred are
-  the `mvp2-m2-05-audit-replay` BROWSER journeys requiring live auth storage state +
-  server + DB (`playwright/.auth/inspector.json` absent by design) — environment-gated,
-  not logic failures. Every pure spec (all `mvp2-m2-02-*`, `mvp2-m2-05-contract`,
-  `mvp2-m2-02-events`, `ipad-gps-policy`) passes.
+- Full pure-contract lane (`playwright.static.config.ts`, no browser/DB): **42 passed / 0 failed**
+  across `mvp2-m2-02-events`, `mvp2-m2-04-risk-model`, `mvp2-m2-06-spatial`,
+  `mvp2-m2-08-portal`, `mvp2-m2-09-exceptions`, `mvp2-m2-10-cases`, `mvp2-m2-11-ai`,
+  `mvp2-m2-12-signature`, `mvp2-m2-05-contract`, `mvp2-shared-0193`, `ipad-gps-policy`.
+- Landed Wave-1 pure specs (main config, DB-free subset): all `mvp2-m2-02-*` +
+  `mvp2-m2-05-contract` pass; the 4 `mvp2-m2-05-audit-replay` BROWSER journeys are
+  environment-gated (need live auth/server/DB), not logic failures.
+- 6 new additive forward migrations (M2-04/06/08/10/11/12) + 9 new pure domain libs.
 
 ## 3. Commits this run
 - `8c2e136` R-001 semantic-event adapter → landed M2-05 RPC (+ pure spec, ledger).
 - `1c8c9be` `/tasks` governed workspace (CD-043, REQ-0032).
 - `2b83339` loop resume state.
+- `cc126c2` Wave-1 certificate (this doc, since expanded).
+- `6eac14c` M2-04 risk workbench foundation.
+- `8216bea` M2-08 external portal + M2-09 ops-exception foundations.
+- `73d399b` M2-10 case spine + M2-11 assistive AI + M2-12 committee/signature foundations.
+- `cc69fe4` M2-06 spatial GIS foundation + shared 0193 bilingual contract.
 
-## 4. Reconciliations
-- **R-001** (`RECONCILIATION_LEDGER.md`): M2-02 adapter repointed off a phantom
-  `semantic_events` table onto the canonical `append_semantic_audit_event` RPC;
-  generic transitions stay generic; honest-off default. No competing architecture.
+## 4. Reconciliations (`RECONCILIATION_LEDGER.md`)
+- **R-001**: M2-02 adapter repointed off a phantom `semantic_events` table onto the
+  canonical `append_semantic_audit_event` RPC; generic transitions stay generic;
+  honest-off default. No competing architecture.
+- **R-002**: `objections` is owned by the M2-08 migration (20260717180000) and reused
+  by M2-10 (case spine) — not recreated. Single canonical objection store.
 
 ## 5. Standing holds (NOT defects — cannot be invented)
 - **Remote DDL apply** to `iiozvqntawxfwbgffzqu` — no MCP/token/approval here.

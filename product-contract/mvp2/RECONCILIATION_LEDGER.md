@@ -37,3 +37,14 @@ their runtime SQL behavior is unproven until the Inspection Supabase project
 - **Verification:** typecheck clean; pure-contract spec
   `apps/web/e2e/mvp2-m2-02-events.spec.ts` (static lane) proves arg mapping + honest
   skip. `DB_VALIDATION_PENDING`: RPC acceptance/rejection unproven until remote DB access.
+
+---
+
+## R-002 — single `objections` store across M2-08 and M2-10
+- **Modules:** M2-08 (CD-044 external portal) ↔ M2-10 (CD-046 case spine).
+- **Conflict:** both design packages list an additive `objections` entity.
+- **Authority:** Prompt 18 (one canonical object per concept).
+- **Resolution:** `objections` is created ONCE in the M2-08 migration
+  (`20260717180000_mvp2_m2_08_external_portal.sql`) and consumed by M2-10; the M2-10
+  migration creates only `cases` and reuses `objections`. No duplicate table.
+- **Verification:** M2-10 migration contains no `objections` create. `DB_VALIDATION_PENDING`.
