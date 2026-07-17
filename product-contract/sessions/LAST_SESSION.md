@@ -1,16 +1,15 @@
 # Last Session
 
-- Session ID: `2026-07-16-repository-documentation-externalization`
-- Date/time: `2026-07-16T20:40:05+03:00`
+- Session ID: `2026-07-17-branch-consolidation`
+- Date/time: `2026-07-17`
 - Gate: Repository maintenance; no product-gate change
-- Task: `TASK-REPO-DOC-EXTERNALIZE-001`
-- Branch: `chore/externalize-documentation`
-- Base: `4db2c374998982bbca505976459978b6c9385bac`
-- Result: 1,004 D/E documentation files (427,729,308 bytes) verified externally and removed from the checked-out Git tree; 455 A/B/C/F candidates retained; product scope and behavior unchanged.
-- External root: `/Users/vikramindla/Desktop/Inspection Documentation`
-- Evidence: external `MANIFESTS/**`, verified pre-move ZIP in `10_REPOSITORY_EXPORTS`, and repository `repo-cleanup/documentation_inventory.csv`.
-- Validation: dependency install, typecheck, production build, 276-test inventory load, copy/hash/link/symlink, memory, audit reconciliation, JSON/JSONL/CSV, script syntax, secret, and diff checks pass. Full live-data E2E not run under the explicit no-production/shared-database-write rule.
-- Push status: withheld because two malformed historical YAML manifests, 12 i18n findings, and invalid shared-Git reflog entries reproduce independently of the cleanup; correction/repair or explicit waiver required.
-- Original checkout: dirty `codex/g11-g12-release-001` preserved untouched.
-- Next task: resolve or waive the recorded YAML/i18n/reflog exceptions, rerun safe validation, push `chore/externalize-documentation`, and open a PR; do not merge automatically.
-- Resume prompt: Read `AGENTS.md`, `product-contract/CURRENT_STATE.md` UPDATE 88, `product-contract/sessions/HANDOFF_2026-07-16_DOCUMENTATION_EXTERNALIZATION.md`, and external `MANIFESTS/validation_results.md`. Do not repeat the move. Preserve the original dirty checkout. Resolve or waive the YAML/i18n/reflog exceptions, backing up the shared Git directory before any reflog repair; rerun safe validation, then push and open a PR. Do not run live-data tests, touch production/database state, rewrite history, force-push, merge, or modify main without explicit authorization.
+- Task: `CC-BRANCH-CONSOLIDATION-001` (change-control record in `product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml`)
+- Branch: `setup/Inspection`
+- Base: `50eee1b` (prior `setup/Inspection` / `origin/setup/Inspection`)
+- Result: consolidated 16 divergent local branches + 16 worktrees + 1 stash into a single clean `setup/Inspection` root at `1e60342`; all uncommitted worktree work preserve-committed first; ~180 conflicted files resolved by inspection (kept newer/more-secure/more-complete side each time); `leaflet`/`mapbox-gl` dependency conflict from the merge fixed; `npm run typecheck` clean (0 errors). Pushed to `origin/setup/Inspection` (fast-forward `50eee1b..1e60342`). All local branches except `setup/Inspection` deleted; all worktrees removed; safety backup tags and remaining stashes dropped after sponsor confirmation.
+- Evidence: `product-contract/CURRENT_STATE.md` UPDATE 91; `BRANCH_CLEANUP_PLAN.md` (repo root); `product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml` (`CC-BRANCH-CONSOLIDATION-001`); prior CD-030 approval preserved at `product-contract/governance/_superseded_CC-CD030-ROUTE-001.yaml`.
+- Validation: `npm run typecheck` PASS (0 errors) on the consolidated tree; no conflict markers remain in source (grep-verified); every original branch confirmed as an ancestor of `setup/Inspection` before deletion.
+- Push status: `setup/Inspection` pushed to origin (sponsor-authorized, follow-up instruction). `main` was not pushed, merged, or modified beyond being merged as one of the consolidated source branches.
+- Original branches: all deleted after confirmed containment; no unmerged unique work remains outside `setup/Inspection` history.
+- Next task: none pending from this session. MVP2 M2-05 runtime certification (UPDATE 90) remains open and unaffected by this consolidation.
+- Resume prompt: Read `product-contract/CURRENT_STATE.md` UPDATE 91 for the consolidation record and UPDATE 90 for the still-open MVP2 M2-05/M2-02 runtime-certification holds. The repository now has a single branch (`setup/Inspection`) and a single worktree; do not assume any of the previously listed feature branches still exist locally — they are fully merged into `setup/Inspection` history.

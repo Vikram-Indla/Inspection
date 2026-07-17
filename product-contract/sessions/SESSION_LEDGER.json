@@ -120,7 +120,7 @@
         "P1 source-image rights confirmation before production",
         "P1 official-source geographic anchor confirmation before production"
       ],
-      "commit_sha": "UNCOMMITTED — human-controlled branch; no commit/push/merge authorized",
+      "commit_sha": "UNCOMMITTED \u2014 human-controlled branch; no commit/push/merge authorized",
       "next_task": "Human runtime review of CD-001 V7, then explicit disposition before F1 access-family continuation",
       "resume_prompt": "Read AGENTS.md, product-contract current state/gates, design/claude-design-mvp1/MANIFEST.yaml, CD001_V7_PUBLIC_SAFE_PNG_AMENDMENT.md and CD001-V7-EV-001-public-safe-atlas.txt. CD-001 V7 is implemented on feat/cd-001-v7-atlas with typecheck/build and full Playwright 26/26 PASS. Review the actual /login runtime. Do not commit, merge, deploy, or start CD-002/CD-003 without explicit human direction."
     },
@@ -177,7 +177,7 @@
         "P1 official-source geographic anchor confirmation before production",
         "Multiple local Next.js watchers share .next; use 127.0.0.1:3000 for current human review and do not trust stale localhost:3210"
       ],
-      "commit_sha": "UNCOMMITTED — human-controlled branch; no commit/push/merge authorized",
+      "commit_sha": "UNCOMMITTED \u2014 human-controlled branch; no commit/push/merge authorized",
       "next_task": "Human runtime review of the corrected CD-001 V7 login atlas, then explicit disposition before F1 continuation",
       "resume_prompt": "Review SCR-PUB-010 at http://127.0.0.1:3000/login. Confirm the one attached six-stage rail and compact Locations list control. Do not use localhost:3210 while older local listeners remain. Do not commit, merge, deploy, or start CD-002/CD-003 without explicit human direction."
     },
@@ -239,7 +239,7 @@
         "P1 official-source geographic anchor confirmation before production",
         "P1 communications/legal confirmation that atlas title and animated lifecycle are not mistaken for live national coverage"
       ],
-      "commit_sha": "UNCOMMITTED — human-controlled branch; no commit/push/merge authorized",
+      "commit_sha": "UNCOMMITTED \u2014 human-controlled branch; no commit/push/merge authorized",
       "next_task": "Human runtime review of CD-001 V7 UX-003 at http://localhost:3000/login",
       "resume_prompt": "Review SCR-PUB-010 UX-003 at http://localhost:3000/login in light/dark mode and select all six stages. Confirm map event/glyph changes and magenta prism favicon. Do not weaken operational map list alternatives. Do not commit, merge, deploy, or start CD-002/CD-003 without explicit direction."
     },
@@ -299,7 +299,7 @@
         "P1 official-source geographic anchor confirmation before production",
         "P1 Arabic-only raster required if bilingual baked English labels are unacceptable"
       ],
-      "commit_sha": "UNCOMMITTED — human-controlled branch; no commit/push/merge authorized",
+      "commit_sha": "UNCOMMITTED \u2014 human-controlled branch; no commit/push/merge authorized",
       "next_task": "Human runtime review of Arabic-first SCR-PUB-010 at http://localhost:3000/login",
       "resume_prompt": "Review fresh SCR-PUB-010 at http://localhost:3000/login with cookies cleared. Confirm Arabic default, credentials on the physical right, RTL lifecycle controls and mobile layout. The approved raster still contains baked English labels; commission an Arabic-only raster if bilingual presentation is rejected. Do not commit, merge, deploy or start another design family without explicit direction."
     },
@@ -366,8 +366,8 @@
         "P1 Arabic-only raster decision",
         "P1 public-coverage communication review"
       ],
-      "commit_sha": "130cc6b67712acc182fb98d14e0b03c64849e309 — UNCOMMITTED worktree; no commit/push/merge authorized",
-      "next_task": "TASK-DESIGN-CD002-REVIEW — review existing CD-002 Reset design output; no implementation",
+      "commit_sha": "130cc6b67712acc182fb98d14e0b03c64849e309 \u2014 UNCOMMITTED worktree; no commit/push/merge authorized",
+      "next_task": "TASK-DESIGN-CD002-REVIEW \u2014 review existing CD-002 Reset design output; no implementation",
       "resume_prompt": "Read AGENTS.md and product-contract/sessions/HANDOFF_2026-07-13_CD001_CLOSED_CD002_NEXT.md. CD-001 login is accepted and done for now; preserve it and do not reopen P2 work. Start TASK-DESIGN-CD002-REVIEW using the CD-002 Reset design, manifest, component map, handoff and checklist inside /Users/vikramindla/Downloads/# Saqeel MVP1 UIUX Revamp (1).zip. Compare every recovery/reset state to the current repository and contract. Return a P0/P1-only critique, Pass/Correct/Block matrix, mandatory correction prompt only if needed, and sponsor recommendation. Do not implement, commit, push, merge or deploy."
     },
     {
@@ -433,7 +433,7 @@
         "CD-002 Claude Code implementation outcome verification pending",
         "G11 credential/region/provider hardening and G12 release remain open"
       ],
-      "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
+      "commit_sha": "8b0e0fa \u2014 UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Sponsor runtime review of TASK-WEB-SHELL-001, then resume Web-first CD-020..CD-031 design/vertical-slice programme",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml and design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md. TASK-WEB-SHELL-001 is implemented and verified but not yet sponsor-runtime-accepted. Review the actual authenticated shell in English/Arabic, dark/light, desktop collapsed and mobile drawer. The V3 approval pack is in the Desktop documentation folder and repository outputs. Do not redesign CD-001, weaken reset/auth/RLS/audit behavior, expose unsupported tabs, commit, push, merge, deploy or modify main. After sponsor runtime acceptance, resume CD-020..CD-031 Web-first work using the frozen shell."
     },
@@ -494,7 +494,7 @@
         "CD-002 Claude Code implementation outcome verification pending",
         "G11 credential/region/provider hardening and G12 release remain open"
       ],
-      "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
+      "commit_sha": "8b0e0fa \u2014 UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Resume Web-first CD-020..CD-031 design programme on the frozen shared shell",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml, design/claude-design-mvp1/MANIFEST.yaml and authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md. TASK-WEB-SHELL-001 is sponsor-accepted, complete and frozen. Preserve the exact role-scoped shell and business-tab dispositions. Verify the pending CD-002 Claude Code outcome separately. Resume Web-first CD-020..CD-031 design and post-approval vertical-slice work; do not redesign CD-001, weaken reset/auth/RLS/audit behavior, expose unsupported tabs, commit, push, merge, deploy or modify main."
     },
@@ -563,7 +563,7 @@
         "CD-002 Claude Code implementation outcome verification remains pending",
         "G11 credential/region/provider hardening and G12 release remain open"
       ],
-      "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
+      "commit_sha": "8b0e0fa \u2014 UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Resume sponsor-directed Web-first CD-020..CD-031 programme when the dashboard pause ends",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml and product-contract/evidence/TASK-DASH-KPI-SEED-001-EV-001.txt. TASK-DASH-KPI-SEED-001 is complete in the configured verification project. Run npm run seed:kpi from apps/web to prove or restore only missing fixed-ID fixtures; it must insert zero on an intact environment. Preserve the sponsor-accepted shared shell and CD-001 baseline. Do not production-seed, delete fixture/user data, change RLS/schema/engine settings/KPI formulas, commit, push, merge, deploy or modify main. Resume Web-first CD-020..CD-031 only on sponsor direction."
     },
@@ -631,7 +631,7 @@
         "Unsupported Analytics/Lookup/Notification Configuration/Integration products require future approved contracts",
         "G11 credential/region/provider hardening and G12 release remain open"
       ],
-      "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
+      "commit_sha": "8b0e0fa \u2014 UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Sponsor runtime review of /dashboard, then resume or verify the separately running CD-020 work",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml, design/claude-design-mvp1/authority/DASHBOARD_BUSINESS_REQUIREMENT_CONTRACT_V1.md and product-contract/evidence/TASK-WEB-DASHBOARD-002-REQUIREMENT-MATRIX.md. TASK-WEB-DASHBOARD-002 is implemented and verified; sponsor runtime acceptance is pending. Review /dashboard as Operations/Leadership in Strategic and Operational views, English/Arabic, dark/light and narrow layout. Preserve truthful unavailable states, RLS, route guard and the frozen shared shell. CD-020 remains external/concurrent; do not claim it, commit, push, merge, deploy or modify main."
     },
@@ -711,7 +711,7 @@
         "CD-020 external outcome",
         "CD-002 implementation verification"
       ],
-      "commit_sha": "8b0e0fa — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
+      "commit_sha": "8b0e0fa \u2014 UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "Run CD-024 in Claude Design with CD-024_DESIGN_PROMPT_V4.md, then perform P0/P1 design review before implementation authorization",
       "resume_prompt": "Read AGENTS.md, product-contract/sessions/HANDOFF_2026-07-13_DESIGN_QUALITY_RATCHET_V4_CD024_NEXT.md, ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md and ${INSPECTION_DOCS_ROOT}/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/CD-024_DESIGN_PROMPT_V4.md. Start TASK-DESIGN-CD024-QUALITY-RATCHET as DESIGN ONLY. Preserve the frozen shell and CD-001 baseline. Keep /planning/plans/:id read-only; reconcile /planning/:id/configure, /planning/bulk/review and the SCR-WEB-120/140 identity collision. Do not present unsupported optimization, virtual, audit or delivery capability as implemented. Return a P0/P1 review after Claude Design output. Do not implement, commit, push, merge, deploy, modify main or discard the dirty worktree."
     },
@@ -789,7 +789,7 @@
         "outputs/cd-023 wiring package missing",
         "Fresh independent Codex re-audit and sponsor runtime acceptance pending"
       ],
-      "commit_sha": "ea22b20 — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
+      "commit_sha": "ea22b20 \u2014 UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "After explicit approval, apply migration 0027 live and execute the exact verification/re-audit sequence in CLAUDE_CODE_CONTINUATION_CD-023.md",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml, product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md, CD023_LOCAL_REMEDIATION_EVIDENCE.md and sessions/CLAUDE_CODE_CONTINUATION_CD-023.md. All nine findings are remediated locally. Do not redesign or weaken them. Obtain explicit approval before transmitting/applying migration SQL to linked Supabase. Then apply only migration 0027, run focused and full Playwright, capture 8 frames, import actual outputs/cd-023 if supplied, and hand to a distinct independent Codex reviewer. Do not self-close, start CD-024+ implementation, commit, push, merge, deploy, modify main or discard unrelated dirty work."
     },
@@ -864,7 +864,7 @@
         "outputs/cd-023 wiring package missing",
         "Fresh independent Codex re-audit and sponsor runtime acceptance pending"
       ],
-      "commit_sha": "ea22b20 — UNCOMMITTED dirty worktree; no commit/push/merge authorized",
+      "commit_sha": "ea22b20 \u2014 UNCOMMITTED dirty worktree; no commit/push/merge authorized",
       "next_task": "After explicit approval, apply only migration 0027 live and run the focused/full verification and independent re-audit sequence",
       "resume_prompt": "Read AGENTS.md, product-contract/execution/CURRENT_SLICE.yaml, product-contract/evidence/screens/immediate-v2/CODEX_AUDIT_CD-023.md, CD023_LOCAL_REMEDIATION_EVIDENCE.md and sessions/CLAUDE_CODE_CONTINUATION_CD-023.md. The hardened fresh-database contract passes. Do not redesign or weaken it. Obtain explicit informed approval before transmitting/applying migration SQL to linked Supabase. Then apply only migration 0027, run focused and full Playwright, capture eight frames, import actual outputs/cd-023 if supplied, and hand to a distinct independent Codex reviewer. Do not self-close, start CD-024+ implementation, commit, push, merge, deploy, modify main or discard unrelated dirty work."
     },
@@ -1300,7 +1300,7 @@
       ],
       "commit_sha": "committed on branch feat/cd-026-visit-management; no push/merge/deploy/main modification; no migration",
       "next_task": "Independent Codex re-audit of the CD-027 closures; then sponsor runtime acceptance; draft change-control for MAP/ASSIGNMENT_RELEASE/ATOMIC",
-      "resume_prompt": "CD-027 / SCR-WEB-210 Visit Detail Track 1 + safe Track 2 are implemented and green (cd-027-visit-detail spec 16/16 on local prod build), recorded in CD-027_WIRING_AUDIT_R1.md. Do NOT close the three held-blocked legs (MAP/ASSIGNMENT_RELEASE/ATOMIC) without recorded change-control — each would breach a hard rule. Next: obtain a fresh independent DEC-012 wiring audit of the closures and sponsor runtime acceptance. Preserve the dirty worktree; no push/merge/main without explicit approval."
+      "resume_prompt": "CD-027 / SCR-WEB-210 Visit Detail Track 1 + safe Track 2 are implemented and green (cd-027-visit-detail spec 16/16 on local prod build), recorded in CD-027_WIRING_AUDIT_R1.md. Do NOT close the three held-blocked legs (MAP/ASSIGNMENT_RELEASE/ATOMIC) without recorded change-control \u2014 each would breach a hard rule. Next: obtain a fresh independent DEC-012 wiring audit of the closures and sponsor runtime acceptance. Preserve the dirty worktree; no push/merge/main without explicit approval."
     },
     {
       "session_id": "2026-07-15-cd027-closure-waiver",
@@ -1335,7 +1335,7 @@
         "product-contract/sessions/SESSION_LEDGER.json"
       ],
       "tests": [
-        "none this session — ledger/governance records only; prior cd-027-visit-detail spec 16/16 PASS stands"
+        "none this session \u2014 ledger/governance records only; prior cd-027-visit-detail spec 16/16 PASS stands"
       ],
       "evidence": [
         "governance/HUMAN_APPROVALS.yaml gate CD-027-closure-waiver",
@@ -1344,8 +1344,8 @@
       ],
       "decisions": [
         "CD-027 marked CLOSED (SPONSOR-WAIVED) 2026-07-15 (Vikram Indla): runtime acceptance granted",
-        "DEC-012 independent (non-implementer) audit WAIVED for CD-027 — not satisfied; the recorded audit is Claude Code's own",
-        "MAP/ASSIGNMENT_RELEASE/ATOMIC DEFERRED to change-control — not implemented",
+        "DEC-012 independent (non-implementer) audit WAIVED for CD-027 \u2014 not satisfied; the recorded audit is Claude Code's own",
+        "MAP/ASSIGNMENT_RELEASE/ATOMIC DEFERRED to change-control \u2014 not implemented",
         "Declined a no-caveat all-conditions-met close because it would fabricate DEC-012 + blocked-leg state; recorded honest waiver instead"
       ],
       "blockers": [
@@ -1354,7 +1354,7 @@
       ],
       "commit_sha": "closure records staged on feat/cd-026-visit-management; implementation commits c6c2195 + e6c444c already pushed to origin/feat/cd-026-visit-management; no push/merge/main in this step",
       "next_task": "Optional: obtain the independent Codex re-audit to convert the waiver into a satisfied DEC-012; otherwise progress CD-027 change-control decisions",
-      "resume_prompt": "CD-027 is CLOSED (SPONSOR-WAIVED) — runtime acceptance granted, DEC-012 independent audit waived (NOT satisfied), MAP/ASSIGNMENT_RELEASE/ATOMIC deferred to change-control. Do not represent CD-027 as a clean DEC-012 pass. Reopen only on P0/P1 regression, a later independent-audit finding, or a blocked-leg decision. Preserve concurrent work; no main modification without explicit approval."
+      "resume_prompt": "CD-027 is CLOSED (SPONSOR-WAIVED) \u2014 runtime acceptance granted, DEC-012 independent audit waived (NOT satisfied), MAP/ASSIGNMENT_RELEASE/ATOMIC deferred to change-control. Do not represent CD-027 as a clean DEC-012 pass. Reopen only on P0/P1 regression, a later independent-audit finding, or a blocked-leg decision. Preserve concurrent work; no main modification without explicit approval."
     },
     {
       "session_id": "2026-07-15-independent-codex-wiring-audit-cd022-cd029",
@@ -1560,7 +1560,7 @@
         "Implementation authorization false",
         "Provider-backed media and governed linked-source decisions",
         "Claim/reassign policy",
-        "Atomic decision→inspection→notification contract",
+        "Atomic decision\u2192inspection\u2192notification contract",
         "Upstream CD-022 golden-journey publish timeout",
         "Live application of the one-open-review partial unique index"
       ],
@@ -1702,7 +1702,7 @@
       ],
       "decisions": [
         "DEC-014: sponsor overrode task-slice scope (CD-031 outside TASK-BASELINE-WIRING-AUDIT-001) and the design package own implementation_authorized:false/DO-NOT-EXECUTE gate, in-chat 2026-07-15",
-        "Confirmed no risk-driver/coordinate-conflict/boundary-polygon columns exist in migrations before implementing — HANDOFF_BLOCKED premises hold against this repo",
+        "Confirmed no risk-driver/coordinate-conflict/boundary-polygon columns exist in migrations before implementing \u2014 HANDOFF_BLOCKED premises hold against this repo",
         "Representative contact fields masked for leadership role only (HANDOFF_BLOCKED_ROLE), not a page-level gate",
         "No computed staleness threshold added; no map provider/boundary/risk-driver/document-viewer invented",
         "No commit, push, merge, deployment, or main modification",
@@ -3350,10 +3350,25 @@
       "branch": "codex/mvp2-m2-05-audit-replay",
       "task_id": "TASK-MVP2-M2-05-AUDIT-REPLAY-001",
       "gate": "MVP2 Wave 1 / sponsor-authorized build",
-      "requirements": ["MVP2-REQ-0137..MVP2-REQ-0172"],
-      "acceptance_ids": ["MVP2-AC-0137..MVP2-AC-0172"],
-      "screens": ["AUD-REPLAY-01", "AUD-REPLAY-02", "AUD-REPLAY-03", "AUD-REPLAY-04", "AUD-REPLAY-04S", "AUD-REPLAY-05", "AUD-REPLAY-06", "AUD-REPLAY-07"],
-      "engines": ["ENG-12"],
+      "requirements": [
+        "MVP2-REQ-0137..MVP2-REQ-0172"
+      ],
+      "acceptance_ids": [
+        "MVP2-AC-0137..MVP2-AC-0172"
+      ],
+      "screens": [
+        "AUD-REPLAY-01",
+        "AUD-REPLAY-02",
+        "AUD-REPLAY-03",
+        "AUD-REPLAY-04",
+        "AUD-REPLAY-04S",
+        "AUD-REPLAY-05",
+        "AUD-REPLAY-06",
+        "AUD-REPLAY-07"
+      ],
+      "engines": [
+        "ENG-12"
+      ],
       "files_changed": [
         "supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql",
         "apps/web/src/app/admin/audit/page.tsx",
@@ -3369,7 +3384,7 @@
         "npm run build PASS",
         "playwright.static.config.ts PASS (12/12)",
         "git diff --check PASS",
-        "independent source audit PASS — no remaining implementation P0/P1"
+        "independent source audit PASS \u2014 no remaining implementation P0/P1"
       ],
       "evidence": [
         "product-contract/evidence/TASK-MVP2-M2-05-AUDIT-REPLAY-001.md",
@@ -3388,6 +3403,59 @@
       "commit_sha": "HEAD (session-close source commit; exact SHA reported in handoff)",
       "next_task": "In an approved isolated Supabase environment, apply the forward migration and execute the RLS/RPC forgery/idempotency/replay suite; then run the authenticated M2-05 browser and mapped regression inventory.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 90, execution/CURRENT_SLICE.yaml and evidence/TASK-MVP2-M2-05-AUDIT-REPLAY-001.md. Source implementation and independent audit pass on codex/mvp2-m2-05-audit-replay; runtime certification is still pending and remote DDL/shared-backend execution is not authorized by this record."
+    },
+    {
+      "session_id": "2026-07-17-branch-consolidation",
+      "started_at": "2026-07-17",
+      "ended_at": "2026-07-17",
+      "branch": "setup/Inspection",
+      "task_id": "CC-BRANCH-CONSOLIDATION-001",
+      "gate": "Repository maintenance; no product-gate change",
+      "requirements": [
+        "none (repository hygiene only; no requirement added/removed/weakened)"
+      ],
+      "acceptance_ids": [
+        "none"
+      ],
+      "screens": [
+        "none"
+      ],
+      "engines": [
+        "none"
+      ],
+      "files_changed": [
+        "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml (CC-BRANCH-CONSOLIDATION-001)",
+        "product-contract/governance/_superseded_CC-CD030-ROUTE-001.yaml (new, prior record preserved)",
+        ".claude/hooks/pre_tool_guard.py (approval-gated merge guard, from main)",
+        "apps/web/package.json / package-lock.json (leaflet + mapbox-gl reconciled)",
+        "BRANCH_CLEANUP_PLAN.md (new, repo root)",
+        "product-contract/CURRENT_STATE.md (UPDATE 91)",
+        "product-contract/sessions/LAST_SESSION.md",
+        "product-contract/sessions/SESSION_LEDGER.json",
+        "~180 files across 7 conflicted merges (admin frontend, login/atlas, Factory 360, governance ledgers, evidence screenshots)"
+      ],
+      "tests": [
+        "npm run typecheck PASS (0 errors) on consolidated tree",
+        "grep verification: no conflict markers remain in source",
+        "git merge-base --is-ancestor verification for every deleted branch before deletion"
+      ],
+      "evidence": [
+        "product-contract/CURRENT_STATE.md UPDATE 91",
+        "BRANCH_CLEANUP_PLAN.md",
+        "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml"
+      ],
+      "decisions": [
+        "Target root = setup/Inspection; scope = consolidate active branches, drop dead ones; local-only merge, push authorized separately (sponsor decisions, this session).",
+        "Merge-guard hook temporarily lifted then superseded by main's approval-gated version (permits merge only when ACTIVE_CHANGE_APPROVAL.yaml is present) \u2014 restored, not left disabled.",
+        "All conflicts resolved by inspecting which side was newer/more complete/more secure, never blind union; e.g. kept getVerifiedUser() auth gate over raw sb.auth.getUser().",
+        "CURRENT_SLICE.yaml conflict resolved to the newest active slice (M2-05); superseded slices remain recoverable via git history and slice-history backups.",
+        "Uncommitted worktree work was preserve-committed before any worktree removal; nothing was discarded silently.",
+        "Sponsor confirmed acceptance of the consolidated state before backup tags and remaining stashes were dropped."
+      ],
+      "blockers": [],
+      "commit_sha": "1e60342",
+      "next_task": "None from this session. MVP2 M2-05 (UPDATE 90) runtime certification remains the open work item.",
+      "resume_prompt": "Read CURRENT_STATE.md UPDATE 91 for the consolidation record. Repository now has a single branch (setup/Inspection, pushed to origin) and a single worktree; all prior feature branches are merged into its history, not separately checkable out."
     }
   ],
   "last_session": "2026-07-17-mvp2-m2-05-audit-replay",
