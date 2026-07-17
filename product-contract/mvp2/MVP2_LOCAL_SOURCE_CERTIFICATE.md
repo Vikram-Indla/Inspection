@@ -100,6 +100,23 @@ Runtime evidence now obtained:
 Full per-module browser journeys for the 6 new modules await their UI slices (foundations
 are DB-live and RLS-verified; UI beyond `/tasks` is the remaining build).
 
+## 5c. MODULE UI + LIVE JOURNEYS — staging (2026-07-17)
+Built and runtime-certified the 6 new module UI surfaces against staging:
+- `/admin/risk/models` (M2-04) governed draft workbench — create-draft + maker-checker
+  `risk_model_transition` RPC; `/cases` (M2-10); `/portal` (M2-08, internal view,
+  ext-identity held); `/operations/exceptions` (M2-09 projection); `/committee` (M2-12);
+  `/admin/gis/spatial` (M2-06). All flag-gated (OFF → honest NotYetBoundary), consuming
+  real RLS-scoped tables, with loading/empty/RLS-empty/error hard states, Astryx tokens.
+- **Live journeys `mvp2-modules-live.spec.ts` — 11/11 PASS** (real persona auth vs staging):
+  6 routes render live (flag on, RLS-scoped, hard state, no overflow) + **M2-04 governed
+  WRITE**: invalid weights refused by the live server rule; a valid draft persisted and
+  survived reload (proves live RLS admin=risk_owner + validation + persistence).
+
+**Every module now has: applied migration + live RLS + pure-contract spec + a live UI
+journey.** Remaining to fully close Prompt-22: broaden write journeys per module
+(reassign/decide/objection/signature flows), update the 2 stale M2-05 browser specs to
+the semantic-present state, and the standing provider/policy holds.
+
 ## 6. The single unlock for the full Prompt-22 certificate
 Grant DB access — either re-auth the Supabase MCP to the org holding
 `iiozvqntawxfwbgffzqu`, or confirm `apps/web/.env.local` (Supabase URL + anon key) plus
