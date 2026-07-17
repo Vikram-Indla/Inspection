@@ -31,14 +31,15 @@ generated-column `stored` keyword, enum values — verified against source + sta
 Direct insert probes (submission_versions, evidence/arrival) now pass the trigger with
 no 42703. `schema_migrations` tracks all 93 versions.
 
-## Live regression after reconciliation
-- Golden journey: **6/7 pass**. P1 planner publish (was the 42703 regression) now GREEN.
-- The one remaining failure — **P2 arrival-evidence offline-outbox replay** — is NOT
-  schema drift and NOT the trigger (evidence insert probe passes; 21 historical arrival
-  rows exist). It is the MVP1 field IndexedDB outbox not flushing within the test's poll
-  window on **remote** staging (the spec was tuned for local latency). Isolated to that
-  step; an MVP1 field-sync/test-tuning item, out of reconciliation scope.
-- All MVP2 suites, MVP1 auth/shell/dashboard/persona, and RLS both-ways remain green.
+## Live regression after reconciliation — FULLY GREEN
+- **Golden journey: 10/10 pass.** MVP1 broader regression (persona-tours, dashboard,
+  shell, negative-auth, offline-drill): **29/29**.
+- The arrival-evidence step (initially suspected offline-sync timing) was a SECOND real
+  trigger regression (R-005): visit-anchored evidence (inspection_id NULL) made the emit
+  branch derive a NULL case_ref → 23502 → evidence insert aborted (storage upload
+  succeeded, table row never landed). Fixed by migration 20260717250000 (use visit_id when
+  inspection_id NULL + NOT-NULL safety net). Golden journey then went 10/10.
+- All MVP2 suites, MVP1 auth/shell/dashboard/persona/offline, and RLS both-ways green.
 
 ## Residual risk (noted, not blocking)
 Function-BODY drift (a function present but with an older body than source) is not caught

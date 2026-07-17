@@ -127,6 +127,17 @@ Built and runtime-certified the 6 new module UI surfaces against staging:
 per-module write EDGE cases (reassign/objection/appeal/committee-decision variants), and the
 standing provider/policy holds (never inventable).
 
+## 5d. FULL MVP1 + MVP2 LIVE REGRESSION — staging (green)
+After staging↔source reconciliation (0 schema drift; 93 migrations tracked) and fixing
+two real M2-05 trigger regressions surfaced only by live runs (R-003 cross-table colrefs,
+R-005 visit-anchored evidence NULL case_ref):
+- **Golden journey 10/10** · MVP1 broader (persona-tours, dashboard, shell, negative-auth,
+  offline-drill) **29/29** · module-live **17/17** · M2-05 audit-replay **8/8** ·
+  RLS-negative **8/8** · static contract lane **42/42** · typecheck + build clean.
+- Security advisors: zero new P0/P1 from the 6 new modules.
+The two trigger regressions were latent in the landed M2-05 (pure-tested only, never
+DB-run); the live staging pass caught and fixed them — a concrete value of runtime cert.
+
 ## 6. The single unlock for the full Prompt-22 certificate
 Grant DB access — either re-auth the Supabase MCP to the org holding
 `iiozvqntawxfwbgffzqu`, or confirm `apps/web/.env.local` (Supabase URL + anon key) plus
