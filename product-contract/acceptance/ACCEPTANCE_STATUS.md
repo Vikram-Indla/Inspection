@@ -243,3 +243,16 @@ complete governed authoring/runtime paths and a focused production-browser
 inventory of **49/49 PASS**. The previous THIN findings predated the
 CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
 `evidence/TASK-G11-REMAINING-REQUIREMENTS-CLOSURE-001.md`.
+## MVP2 M2-05 Audit Replay — 2026-07-17
+
+- Scope: `MVP2-AC-0137..0172` (36 rows), task `TASK-MVP2-M2-05-AUDIT-REPLAY-001`.
+- Local implementation contract: **36/36 mapped**, with source-available rows
+  implemented and provider/policy/MVP3 rows retained as `MISSING`, `PARTIAL` or
+  `NEEDS_CONTRACT` in `product-contract/mvp2/m2-05/REQUIREMENT_WIRING_MAP.csv`.
+- Local verification: typecheck PASS; production build PASS; M2-05 contract
+  suite 9/9 PASS; static regression inventory 12/12 PASS.
+- Runtime acceptance: **0/36 upgraded to PASS in the MVP2 workbook**. Fresh DB,
+  RLS, authenticated UI, responsive/RTL browser and full regression execution
+  remain unrun/blocked; no row is upgraded by source inspection alone.
+- Independent source audit: **PASS after remediation**, with no remaining
+  implementation P0/P1; this is not substituted for any runtime acceptance row.

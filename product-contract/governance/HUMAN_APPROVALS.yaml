@@ -78,6 +78,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-17"
     change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-QA-CYCLE2-RETEST-001 (override)"
+  - gate: "MVP2-M2-05-AUDIT-REPLAY-BUILD"
+    decision: "APPROVED — sponsor explicitly stated 'u have the approval just moves forward and finishes off all we have to.' This supersedes the completed read-only Cycle 2 retest pointer for TASK-MVP2-M2-05-AUDIT-REPLAY-001 and authorizes the complete local M2-05 vertical slice: design-contract reconciliation, additive forward-only migrations, RLS, semantic append/read contracts, frontend, tests, evidence and handover. It does not authorize modifying/merging main, pushing, deployment, remote DDL, shared-data mutation, history rewrite, or invention of policy/provider/legal values."
+    approver: "Vikram Indla"
+    date: "2026-07-17"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-MVP2-M2-05-AUDIT-REPLAY-001"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

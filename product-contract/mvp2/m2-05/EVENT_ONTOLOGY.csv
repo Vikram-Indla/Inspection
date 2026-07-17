@@ -1,0 +1,37 @@
+requirement_id,acceptance_id,evidence_id,event_type,aliases,chapter,expected_status,source_contract,negative_guard
+MVP2-REQ-0137,MVP2-AC-0137,MVP2-EV-0137,VisitPlanCreated,,planning,recorded,visit_plans INSERT,Must precede field facts
+MVP2-REQ-0138,MVP2-AC-0138,MVP2-EV-0138,PackageCompiled,,package,needs_contract,No authoritative hash event,Do not conflate with OfflinePackageLocked
+MVP2-REQ-0139,MVP2-AC-0139,MVP2-EV-0139,PackageDownloaded,,package,missing,MVP3 trusted device dependency,Do not fabricate download
+MVP2-REQ-0140,MVP2-AC-0140,MVP2-EV-0140,GeofenceCheckIn,GeoCheckIn,field,partial,geo_events checkin/arrival/override,Coordinates remain source-scoped
+MVP2-REQ-0141,MVP2-AC-0141,MVP2-EV-0141,AnswerSaved,,field,recorded,checklist_responses INSERT or non-change UPDATE,Distinct from material change
+MVP2-REQ-0142,MVP2-AC-0142,MVP2-EV-0142,EvidenceCaptured,,field,recorded,evidence INSERT,No media payload disclosure
+MVP2-REQ-0143,MVP2-AC-0143,MVP2-EV-0143,FindingCreated,,field,recorded,findings INSERT,Clause remains item-linked
+MVP2-REQ-0144,MVP2-AC-0144,MVP2-EV-0144,SignatureRecorded,DigitalSignatureCaptured|SignatureRefused,closure,partial,submission acknowledgement only,Unverified acknowledgement is not PKI
+MVP2-REQ-0145,MVP2-AC-0145,MVP2-EV-0145,SyncCompleted,,sync,missing,No authoritative server emitter,Distinct from submit/conflict
+MVP2-REQ-0146,MVP2-AC-0146,MVP2-EV-0146,ReviewDecisionRecorded,,review,recorded,reviews first decided_at UPDATE,Reason and decision preserved
+MVP2-REQ-0147,MVP2-AC-0147,MVP2-EV-0147,NoticeIssued,EnforcementIssued,enforcement,partial,Violation rows are not delivery proof,Do not claim delivery
+MVP2-REQ-0148,MVP2-AC-0148,MVP2-EV-0148,CorrectionOrObjectionEvent,,closure,needs_contract,No closure read model,Do not infer closure
+MVP2-REQ-0149,MVP2-AC-0149,MVP2-EV-0149,RegulationVersionPublished,,configuration,recorded,regulations transition to published,Effective/legal fields may be unavailable
+MVP2-REQ-0150,MVP2-AC-0150,MVP2-EV-0150,TemplatePublished,,configuration,needs_contract,No form-template lifecycle source,Do not map package publication
+MVP2-REQ-0151,MVP2-AC-0151,MVP2-EV-0151,WorkflowActivated,,configuration,needs_contract,M2-02 consumer contract,Maker-checker required
+MVP2-REQ-0152,MVP2-AC-0152,MVP2-EV-0152,RiskModelActivated,,risk,needs_contract,M2-04 consumer contract,No invented weights/thresholds
+MVP2-REQ-0153,MVP2-AC-0153,MVP2-EV-0153,RiskScoreCalculated,,risk,missing,M2-04 consumer contract,No reconstructed score
+MVP2-REQ-0154,MVP2-AC-0154,MVP2-EV-0154,VisitPlanCreated,,planning,recorded,visit_plans INSERT,Idempotent per source row
+MVP2-REQ-0155,MVP2-AC-0155,MVP2-EV-0155,AssignmentAccepted,,planning,needs_contract,No accepted transition in current schema,Do not map assigned/ready
+MVP2-REQ-0156,MVP2-AC-0156,MVP2-EV-0156,OfflinePackageLocked,,package,partial,package_versions transition to locked,Hash explicitly NEEDS_CONTRACT
+MVP2-REQ-0157,MVP2-AC-0157,MVP2-EV-0157,PackageDownloaded,,package,missing,MVP3 trusted device dependency,No device trust claim
+MVP2-REQ-0158,MVP2-AC-0158,MVP2-EV-0158,GeofenceCheckIn,GeoCheckIn,field,recorded,geo_events insert,Immutable source event
+MVP2-REQ-0159,MVP2-AC-0159,MVP2-EV-0159,InspectionStarted,,field,recorded,inspections status transition to executing,No insert-as-start inference
+MVP2-REQ-0160,MVP2-AC-0160,MVP2-EV-0160,FormAnswerChanged,,field,recorded,checklist_responses response UPDATE,Previous/new states retained
+MVP2-REQ-0161,MVP2-AC-0161,MVP2-EV-0161,EvidenceCaptured,,field,recorded,evidence INSERT,Reference/hash only
+MVP2-REQ-0162,MVP2-AC-0162,MVP2-EV-0162,FindingCreated,,field,recorded,findings INSERT,Mandatory source relation preserved
+MVP2-REQ-0163,MVP2-AC-0163,MVP2-EV-0163,DigitalSignatureCaptured,,closure,needs_contract,EBDA/PKI store unavailable,Unverified acknowledgement never promoted
+MVP2-REQ-0164,MVP2-AC-0164,MVP2-EV-0164,SignatureRefused,,closure,needs_contract,No refusal store,Mutually exclusive branch
+MVP2-REQ-0165,MVP2-AC-0165,MVP2-EV-0165,InspectionSubmitted,,submission,recorded,submission_versions INSERT,Snapshot content not copied to semantic payload
+MVP2-REQ-0166,MVP2-AC-0166,MVP2-EV-0166,SyncConflictResolved,,sync,missing,No governed resolution emitter,Show both values when supplied
+MVP2-REQ-0167,MVP2-AC-0167,MVP2-EV-0167,ReviewDecisionRecorded,,review,recorded,reviews decided_at transition,Immutable decision guard retained
+MVP2-REQ-0168,MVP2-AC-0168,MVP2-EV-0168,CommitteeDecisionRecorded,,committee,needs_contract,No committee dossier store,Do not invent votes/quorum
+MVP2-REQ-0169,MVP2-AC-0169,MVP2-EV-0169,CorrectionSubmitted,,correction,needs_contract,No authoritative correction submission source,Do not map action form creation
+MVP2-REQ-0170,MVP2-AC-0170,MVP2-EV-0170,ObjectionFiled,,objection,needs_contract,No objection store,Preserve original facts
+MVP2-REQ-0171,MVP2-AC-0171,MVP2-EV-0171,DashboardViewed,,access,missing,Read-audit emission not approved,No synthetic view log
+MVP2-REQ-0172,MVP2-AC-0172,MVP2-EV-0172,AdminOverrideAttempted,,override,partial,Successful writes remain generic; rejected attempts need guard-side append,Rejected attempt must remain visible once contract exists

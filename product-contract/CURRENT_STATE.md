@@ -1,5 +1,29 @@
 # Current State
 
+## 2026-07-17 UPDATE 90 — MVP2 M2-05 source implementation PASS; runtime gates held
+
+Sponsor authorized `TASK-MVP2-M2-05-AUDIT-REPLAY-001` and superseded the
+completed read-only Cycle 2 retest pointer for this module. The dedicated branch
+`codex/mvp2-m2-05-audit-replay` starts at `bf35872`. The local source slice adds
+the versioned semantic-event registry and expected-event ontology, immutable
+semantic envelope, server-authorized idempotent append RPC, correlation and
+keyset replay read, proven-source emitters, and the `/admin/audit` Inspection
+Flight Recorder with reconstruction, comparison, completeness, custody,
+permission, degraded and print-safe modes. Generic trigger rows remain
+`GENERIC ONLY`; acknowledgement remains unverified and is never labelled PKI.
+
+The exact 36-row ontology and rectangular requirement-to-code-to-test map are
+under `product-contract/mvp2/m2-05/`. Typecheck, production build and the focused
+M2-05 source/contract suite pass (9/9); the static regression inventory passes
+12/12. No remote DDL was applied. Fresh-database/RLS execution is blocked by the
+absent local Docker/Postgres runtime. The authenticated browser suite is authored
+but unrun because execution against the shared verification backend requires a
+separate informed approval; the safety gate rejected the attempted run. These
+blocked checks are not recorded as passes and the module is not runtime-certified.
+An independent non-implementer audit initially found four P0 defects. After
+three remediation/re-audit cycles, its final verdict is **SOURCE IMPLEMENTATION
+PASS — runtime certification pending**, with no remaining implementation P0/P1.
+
 ## 2026-07-16 UPDATE 89 — governed iPad geofence override source delivered
 
 The sponsor-approved `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003` is source

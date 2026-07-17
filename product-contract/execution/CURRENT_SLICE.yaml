@@ -1,112 +1,78 @@
 schema_version: "1.2"
-task_id: "TASK-QA-CYCLE2-RETEST-001"
-parent_task_id: "TASK-G11-G12-RELEASE-001"
-gate: "G11 hardening / G12 release — Cycle 2 QA retest"
-title: "ChatGPT Work read-only retest and production-readiness decision for fix/mvp1-cycle2-production-hardening"
-status: "RETEST_COMPLETE + SPONSOR-OVERRIDE MERGE-TO-MAIN AUTHORIZED — decision APPLICATION READY / PROVIDER CERTIFICATION PENDING (evidence/CYCLE2-RETEST-DECISION-2026-07-17.md). Sponsor explicitly overrode this slice's 'no merge to main' policy on 2026-07-17 (HUMAN_APPROVALS.yaml#CYCLE2-MERGE-TO-MAIN-OVERRIDE); merge authorized, deploy/rotation/history-rewrite still NOT authorized."
+task_id: "TASK-MVP2-M2-05-AUDIT-REPLAY-001"
+gate: "MVP2 Wave 1 / G8 sponsor-authorized build"
+title: "MVP2-CD-031-M2-05 Audit Replay, History & Legal Traceability"
+status: "SOURCE_IMPLEMENTATION_PASS_RUNTIME_CERTIFICATION_PENDING"
 enforce_stop_gate: true
-broad_implementation_allowed: false
-approval_ref: "HUMAN_APPROVALS.yaml#CYCLE2-QA-RETEST-ROUTING"
+broad_implementation_allowed: true
+approval_ref: "HUMAN_APPROVALS.yaml#MVP2-M2-05-AUDIT-REPLAY-BUILD"
 
 sponsor_direction:
   approver: "Vikram Indla"
   date: "2026-07-17"
   authorization:
-    - "Reroute the active CURRENT_SLICE.yaml pointer from TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 to this task so ChatGPT Work's stop-gate check can authorize a retest."
-    - "Retest branch fix/mvp1-cycle2-production-hardening (HEAD 8759e81) end to end: highest-risk fixed defects, the critical transactional storyline, simulated external-dependency journeys, role/authorization/RLS behavior, and a UI/UX sweep, per the prompt already given to ChatGPT Work."
-    - "Update the audit workbook and Cycle 2 evidence records with retest results and produce a final MVP1 production-readiness decision."
-  policy:
-    - "This slice is retest-only. No application source, migration, or test-fixture edits are authorized under this task — those already landed under the Cycle 2 wave/completion/closure commits (2396524..8759e81)."
-    - "Read-only database access only: SELECT/probe queries and live UI exercise through the app are permitted; no INSERT/UPDATE/DELETE/DDL against the shared project, no seeding, no cleanup, no destructive operation."
-    - "The 503 pre-existing implausible-date visits rows (see DEFECT_FIX_RESULTS.csv row DEF-DATA-005) are known, out of scope, and must not be mutated or deleted under this task."
-    - "No credential rotation, no Git history rewrite, no merge to main, no production deployment."
+    - "Sponsor explicitly directed Codex to move forward and finish all required M2-05 work, superseding the completed read-only Cycle 2 retest pointer for this module."
+    - "Authorize design reconciliation, forward-only source migrations, RLS, semantic event contracts, server reads/actions, frontend, automated tests, evidence and handover on a dedicated branch/worktree."
   limits:
-    - "Does not resolve DEC-002 (GIS/geofence governance), DEC-008 (maps provider), or the live migration-history reconciliation — all remain separately owned."
-    - "Does not extend to or reauthorize any other task's scope (in particular TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003, whose prior slice is preserved verbatim at product-contract/execution/slice-history/CURRENT_SLICE_IPAD_M04_OVERRIDE_003_backup_2026-07-17.yaml pending sponsor direction to restore it)."
+    - "Do not modify or merge main, push, deploy, apply remote DDL, seed shared data, or rewrite history without separate explicit approval."
+    - "Do not invent DEC-006/DEC2-009 policy, provider status, PKI/EBDA truth, retention, redaction, watermark, purge, legal status, SLA, risk, geofence or Arabic terminology values."
 
-branch_at_start: "fix/mvp1-cycle2-production-hardening"
-head_at_start: "8759e81"
-worktree_at_start: "Clean; only the self-appending .project-memory/audit/tool_events.jsonl is dirty (expected, harmless)."
+branch_at_start: "codex/mvp2-m2-05-audit-replay"
+head_at_start: "bf35872ded6b81c650d13cba9f6112574f9d709c"
+worktree: "/private/tmp/Inspection-mvp2-m2-05-audit-replay"
 
-process_ids: ["P00", "P01", "P02", "P03", "P04", "P05", "P06A", "P06B", "P07", "P08", "P09", "P10", "P11", "P12"]
-requirement_ids:
-  - "MVP1-M04-215"
-  - "MVP1-M06-018"
-  - "MVP1-FND-002"
-  - "MVP1-M01-001..052"
-  - "MVP1-M05-001..020"
-  - "MVP1-FND-004"
-  - "MVP1-FND-011"
-  - "CR-PRF-003"
-screen_ids:
-  - "SCR-ADM-080"
-  - "AUTH-01..03"
-  - "SCR-WEB-100..500"
-engine_ids: ["ENG-06", "ENG-08", "ENG-11"]
-acceptance_ids:
-  - "DEF-WF-006"
-  - "DEF-DATA-005"
-  - "DEF-ADM-080"
-  - "DEF-UI-001"
-  - "DEF-UI-004"
-  - "DEF-UX-002"
-  - "DEF-PRF-003"
-  - "BLK-P2-008"
-  - "GOLDEN-JOURNEY-P2"
+process_ids: ["M2-05", "MVP2-WAVE-1"]
+requirement_ids: ["MVP2-REQ-0137..MVP2-REQ-0172"]
+acceptance_ids: ["MVP2-AC-0137..MVP2-AC-0172"]
+evidence_ids: ["MVP2-EV-0137..MVP2-EV-0172"]
+screen_ids: ["AUD-REPLAY-01", "AUD-REPLAY-02", "AUD-REPLAY-03", "AUD-REPLAY-04", "AUD-REPLAY-04S", "AUD-REPLAY-05", "AUD-REPLAY-06", "AUD-REPLAY-07"]
+engine_ids: ["ENG-12"]
 
 dependencies:
-  - "Full regression suite (apps/web, npx playwright test --project=e2e) — last authoritative clean run: 324 passed / 1 failed / 2 skipped / 0 did not run, HEAD 8759e81. See FULL_REGRESSION_RESULTS.md."
-  - "All 7 Cycle 2 database migrations are applied live to iiozvqntawxfwbgffzqu — verified by object-existence probes (see PROFILE_UX_CORRECTION_REPORT.md / RBAC_RLS_TEST_REPORT.md)."
-  - "typecheck (npx tsc --noEmit) and production build (npm run build) both clean at HEAD."
-
-evidence_destination:
-  handoff_folder: "/Users/vikramindla/Documents/Inspection - MVP Delivery/01_MVP1/05_REVIEW_AND_EVIDENCE/CYCLE2_IMPLEMENTATION_2026-07-16/"
-  primary_handoff_doc: "CHATGPT_WORK_RETEST_HANDOFF.md"
-  workbook_note: "The task prompt's 'workbook sheets 31-43' (Cycle2 Fix Backlog, Scenario Plan, etc.) do not exist in any workbook found under the delivery root — see MANIFEST.json's documentation_grounding_note. Do not fabricate or assume those sheets exist; ground retest evidence in the files actually present in evidence_destination.handoff_folder and in-repo product-contract/evidence/CYCLE2-WAVE*.md instead."
-
-protected_regression_command: |
-  cd apps/web
-  npx tsc --noEmit
-  npm run build
-  PLAYWRIGHT_REUSE_SERVER=0 npx playwright test --project=e2e
-  # Do NOT run `npm run build` in a second terminal while this is running —
-  # that exact race invalidated an earlier regression run this task (see
-  # FULL_REGRESSION_RESULTS.md, "Run 1 (contaminated)").
+  - "MVP1 immutable audit_events and trigger/RLS foundation (0001/0002/0004/0005/0019)."
+  - "Existing /admin/audit route, shell, i18n and audit-adjacent visit/review/factory screens."
+  - "M2-02 consumers must emit through the shared semantic append boundary and may not mutate M2-05 state."
+  - "Workbook rows 0137..0172 and the R2 design correction prompt; design archive defects are reconciled into repository machine-readable contracts before UI claims."
 
 open_decisions:
-  - "DEC-002 formal numeric GPS/geofence governance remains recorded separately; unaffected by this branch."
-  - "DEC-008 runtime maps/routing provider remains open — Mapbox has a real HTTP client (RealMapboxProvider) but zero runtime verification, no token available (see MAPBOX_INTEGRATION_REPORT.md)."
-  - "Live migration-history reconciliation for the shared project remains open, tracked separately."
+  - "DEC-006 evidence/legal retention and certification policy remains held."
+  - "DEC2-009 reveal/export/redaction/watermark/purge policy remains held."
+  - "EBDA/PKI provider and verification contract remains unavailable until separately approved."
+  - "MVP3 package authoring and trusted-device surfaces remain out of scope; historical facts replay only when present."
 
 do_not_touch:
-  - "Do not edit application source, migrations, or e2e test fixtures under this task — that work is closed (commits 2396524..8759e81)."
-  - "Do not mutate or delete the 503 pre-existing implausible-date visits rows."
-  - "Do not rotate credentials or rewrite Git history."
-  - "Do not merge to main or deploy."
-  - "Do not touch TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003's branch (codex/ipad/m04-geofence-policy-promotion-002) or its worktree."
+  - "main, remote DDL, production deployment, shared production-like records and unrelated worktrees."
+  - "Existing audit_events UPDATE/DELETE rejection and submitted-version immutability."
+  - "Existing canonical workflow transitions, RLS grants and MVP1 accepted behavior except additive compatible changes."
 
 authorized_file_scope:
-  - "Read-only: Playwright test runs, manual UI exercise via the app, read-only database probes/queries."
-  - "Write-only to: the audit workbook, this task's evidence/screenshot records, and product-contract/execution/CURRENT_SLICE.yaml status field (to reflect retest progress) — no other repository writes."
+  - "apps/web/src/app/admin/audit/**"
+  - "apps/web/src/lib/audit* and additive M2-05 libraries"
+  - "apps/web/e2e/mvp2-m2-05-*"
+  - "supabase/migrations/*mvp2_m2_05*"
+  - "product-contract/mvp2/m2-05/**"
+  - "product-contract acceptance/evidence/execution/governance/session records required for this slice"
 
 required_evidence:
-  - "Updated audit workbook (or its documented substitute, since sheets 31-43 do not exist — see workbook_note above)."
-  - "Retest results appended to CHATGPT_WORK_RETEST_HANDOFF.md or a new dated retest report in evidence_destination.handoff_folder."
-  - "A final MVP1 production-readiness decision (one of: PRODUCTION READY / APPLICATION READY - PROVIDER CERTIFICATION PENDING / CONDITIONAL GO / NO-GO), grounded in this slice's actual evidence, not invented."
+  - "36-row requirement-to-code-to-test-to-evidence map"
+  - "Schema/RPC/RLS/immutability/idempotency/correlation contract results"
+  - "M2-05 UI/E2E positive, denied, partial, stale, conflict, degraded, RTL, responsive and print results"
+  - "Typecheck, production build, focused M2-05 suite, mapped MVP1 regression and full-suite disposition"
+  - "Remote database status explicitly stating no DDL applied without approval"
 
 task_specific_context:
-  - "product-contract/execution/slice-history/CURRENT_SLICE_IPAD_M04_OVERRIDE_003_backup_2026-07-17.yaml (the paused task, restore on sponsor direction)"
-  - "product-contract/governance/HUMAN_APPROVALS.yaml#CYCLE2-QA-RETEST-ROUTING"
-  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/01_MVP1/05_REVIEW_AND_EVIDENCE/CYCLE2_IMPLEMENTATION_2026-07-16/CHATGPT_WORK_RETEST_HANDOFF.md"
-  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/01_MVP1/05_REVIEW_AND_EVIDENCE/CYCLE2_IMPLEMENTATION_2026-07-16/FULL_REGRESSION_RESULTS.md"
-  - "product-contract/evidence/CYCLE2-WAVE0-CREDENTIAL-REMEDIATION-EVIDENCE-2026-07-16.md"
-  - "product-contract/evidence/CYCLE2-WAVE1-UI-UX-EVIDENCE-2026-07-16.md"
-  - "product-contract/evidence/CYCLE2-WAVE2-STUB-PROVIDERS-EVIDENCE-2026-07-16.md"
+  - "product-contract/00_START_HERE.md"
+  - "product-contract/CURRENT_STATE.md"
+  - "product-contract/GATE_STATUS.md"
+  - "product-contract/governance/OPEN_DECISIONS.yaml"
+  - "docs/README.md"
+  - "docs/DOCUMENTATION_STORAGE_POLICY.md"
+  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/02_MASTER_WORKBOOK/MIM_Inspection_MVP2_Breakdown_Acceptance_Evidence.xlsx"
+  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/04_EXECUTION/PROMPTS/M2-05_CLAUDE_DESIGN_PROMPT_R1.md"
+  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/04_EXECUTION/PROMPTS/M2-05_CLAUDE_DESIGN_FINAL_CORRECTION_R2.md"
+  - "/Users/vikramindla/Downloads/# Saqeel audit replay forensics.zip"
 
 exit_condition: >-
-  This slice is complete when ChatGPT Work (or an equivalent independent retester) has
-  exercised the critical transactional storyline and the highest-risk fixed defects against
-  fix/mvp1-cycle2-production-hardening, recorded which providers are real vs. stub-backed,
-  captured evidence per evidence_destination, and returned a final MVP1 production-readiness
-  decision. It does not itself authorize merge to main or deployment — those remain separate,
-  explicitly gated actions.
+  The slice exits only when the additive semantic-event/replay foundation, RLS and append-only guards,
+  approved route modes, honest missing/provider/policy states, all self-authored tests, mapped MVP1
+  regression, evidence maps and handover are complete with no unresolved implementation P0/P1.
