@@ -13,6 +13,7 @@ const ROUTES: Array<{ path: string; heading: RegExp }> = [
   { path: "/operations/exceptions", heading: /Exception board/i },
   { path: "/committee",             heading: /Committee & signatures/i },
   { path: "/admin/gis/spatial",     heading: /Spatial canvas/i },
+  { path: "/ai/suggestions",        heading: /Assistive AI dockets/i },
 ];
 
 for (const r of ROUTES) {
@@ -88,4 +89,23 @@ test("M2-08 governed write: create an external request (live RLS compliance)", a
   await page.locator('input[name="subject"]').fill(subject);
   await page.getByRole("button", { name: /Create request/i }).click();
   await expect(page.getByText(/request created/i)).toBeVisible();
+});
+
+test("M2-11 governed write: propose an advisory suggestion, then human-dispose it (live)", async ({ page }) => {
+  const text = `e2e-ai-${Date.now()}`;
+  await page.goto("/locale?set=en");
+  await page.goto("/ai/suggestions");
+  // provider is fail-closed → any suggestion carries 'unavailable', human proposes advisory
+  await page.locator('input[name="text"]').fill(text);
+  await page.getByRole("button", { name: /^Propose$/i }).click();
+  await expect(page.getByText(/proposed/i).first()).toBeVisible();
+  await page.reload();
+  await expect(page.getByText(text)).toBeVisible();
+  await expect(page.getByText("unavailable").first()).toBeVisible(); // provider held, never auto-actioned
+  // human disposition (reject) — mandatory reason
+  const row = page.locator(".ax-surface").filter({ hasText: text });
+  await row.locator('select[name="to"]').selectOption("rejected");
+  await row.locator('input[name="reason"]').fill("not applicable");
+  await row.getByRole("button", { name: /Disposition|Applying/i }).click();
+  await expect(page.getByText(/disposed/i).first()).toBeVisible();
 });
