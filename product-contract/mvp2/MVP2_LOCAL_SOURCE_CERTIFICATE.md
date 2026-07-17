@@ -76,7 +76,12 @@ domain logic + pure-contract specs; typecheck + build + static lane green).
   gitignored `.env.local`; deploy env sets `RESEND_API_KEY` (+ `RESEND_FROM`). NOTE: sending
   to arbitrary real recipients needs a **verified sending domain** in Resend (otherwise the
   `onboarding@resend.dev` sender only reaches the account owner) — a deploy-config step.
-- **Providers still held**: SMS, push, OTP, AI, OCR, PKI/EBDA — fail-closed adapters only;
+- **AI (Google Gemini)** — **CONFIGURED + live-certified** (M2-11 `generateAiSuggestion` via
+  `gemini-flash-latest`: real advisory generation, legal-source surfaces refused, fail-closed
+  without key; AI output lands as `proposed` for mandatory human disposition — AI never
+  decides). Live app journey on staging (generate→proposed→dispose). Key in gitignored
+  `.env.local` (`GEMINI_API_KEY`, project 797512122476); deploy env sets it.
+- **Providers still held**: SMS, push, OTP, OCR, PKI/EBDA — fail-closed adapters only;
   verification pending real config.
 - **Policy values**: DEC-003 SLA calendar/timers, DEC-006/DEC2-009 retention/redaction/
   watermark/purge/legal, Arabic native terminology — held; never substituted.
