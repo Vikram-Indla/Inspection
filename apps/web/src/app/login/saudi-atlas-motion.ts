@@ -6,11 +6,12 @@
 // No whole-map pulsing, particles or flashing — the visual restraint lives in
 // the components; this file only owns time.
 
-import { STAGE_ORDER } from "./saudi-atlas-locations";
+import { STORY_SCENE_ORDER } from "./saudi-atlas-locations";
 
-// Cumulative stage end times (seconds) from the storyboard.
-//   plan 0–2.5 · travel 2.5–5 · arrive 5–7 · inspect 7–9.5 · review 9.5–12 · decide 12–14
-const STAGE_END_S = [2.5, 5.0, 7.0, 9.5, 12.0, 14.0];
+// Calm five-scene reveal: clean atlas → inspectors → dispatch → outcomes →
+// lifted zones. Each scene gets enough dwell time to be read without another
+// layer competing for attention.
+const STAGE_END_S = [3.2, 10.0, 61.5, 65.2, 71.7];
 const LOOP_MS = STAGE_END_S[STAGE_END_S.length - 1] * 1000;
 
 export function prefersReducedMotion(): boolean {
@@ -22,7 +23,7 @@ export function prefersReducedMotion(): boolean {
 function stageIndexAt(ms: number): number {
   const t = (ms % LOOP_MS) / 1000;
   for (let i = 0; i < STAGE_END_S.length; i++) if (t < STAGE_END_S[i]) return i;
-  return STAGE_ORDER.length - 1;
+  return STORY_SCENE_ORDER.length - 1;
 }
 
 export type AtlasTimeline = {

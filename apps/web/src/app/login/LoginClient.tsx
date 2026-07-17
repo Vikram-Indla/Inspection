@@ -79,6 +79,7 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
   const [error, setError] = useState<string | null>(null);
   const [emailFormatError, setEmailFormatError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [credentialFocus, setCredentialFocus] = useState(false);
 
   const forgotHeadingRef = useRef<HTMLHeadingElement | null>(null);
   const backLinkRef = useRef<HTMLButtonElement | null>(null);
@@ -128,7 +129,11 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
 
   return (
     <div className="lg-page lg-page--split" dir={s.dir} lang={s.lang}>
-      <main className="lg-panel">
+      <main className="lg-panel"
+        onFocusCapture={() => setCredentialFocus(true)}
+        onBlurCapture={event => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setCredentialFocus(false);
+        }}>
         <header className="lg-lockup">
           <SaqeelMark className="lg-lockup__mark" />
           <span className="lg-lockup__wordmark" lang="ar">{s.wordmarkFull}</span>
@@ -224,7 +229,8 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
         </footer>
       </main>
 
-      <StoryPanel strings={s.story} locale={s.lang} themeLabels={themeLabels} subdued={view !== "signin"} />
+      <StoryPanel strings={s.story} locale={s.lang} themeLabels={themeLabels}
+        subdued={view !== "signin"} paused={credentialFocus || busy} />
     </div>
   );
 }

@@ -123,6 +123,11 @@ export const JOURNEY = {
 export const STAGE_ORDER = ["plan", "travel", "arrive", "inspect", "review", "decide"] as const;
 export type AtlasStageId = (typeof STAGE_ORDER)[number];
 
+// Public login choreography. This five-scene order is intentionally simpler
+// than the authenticated six-step workflow: it reveals one visual concept at
+// a time and never implies that the illustrative markers are live data.
+export const STORY_SCENE_ORDER = ["plan", "arrive", "travel", "inspect", "decide"] as const;
+
 export function haloToken(t: HaloTone): string {
   switch (t) {
     case "arrival": return "--ax-color-success";

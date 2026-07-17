@@ -25,7 +25,7 @@ import SaudiAtlasDossier, { type DossierStrings } from "./SaudiAtlasDossier";
 // Uniform factory footprint — small enough to shrink-to-fit the dense Eastern
 // cluster without clipping; matches the 140×112 structure viewBox aspect.
 const FACTORY_W = 58, FACTORY_H = 46;
-const PUBLIC_SAFE_ATLAS_BASE = "/brand/saudi-atlas/inspection-atlas-public-safe-v1";
+const PUBLIC_SAFE_ATLAS_BASE = "/brand/saudi-atlas/inspection-atlas-scene-base-v2";
 
 // Normalized positions over the approved 1672×941 public-safe composition.
 // They are interaction anchors only; the visible geography remains in the
@@ -42,14 +42,103 @@ const IMAGE_POSITIONS: Record<string, { x: number; y: number }> = {
   jazan: { x: 44.0, y: 78.5 },
 };
 
-const STAGE_POSITIONS: Record<AtlasStageId, { x: number; y: number }> = {
-  plan: IMAGE_POSITIONS.riyadh,
-  travel: { x: 59.0, y: 39.5 },
-  arrive: IMAGE_POSITIONS.jubail,
-  inspect: IMAGE_POSITIONS.jubail,
-  review: IMAGE_POSITIONS["ras-al-khair"],
-  decide: IMAGE_POSITIONS.riyadh,
-};
+type AtlasZoneId = "north" | "west" | "central" | "east" | "south";
+
+// Decorative lift surfaces follow the visible atlas composition only. They
+// are deliberately not exported as GIS geometry and never carry operational
+// counts or compliance meaning. The real geographic/data views remain behind
+// authentication.
+const ZONE_SURFACES: { id: AtlasZoneId; path: string; outcome: "complete" | "follow-up" }[] = [
+  { id: "north", outcome: "follow-up", path: "M255 101 C325 55 475 43 585 111 L548 190 L420 220 L270 181 Z" },
+  { id: "west", outcome: "complete", path: "M157 172 L302 145 L388 245 L354 392 L253 469 L132 352 Z" },
+  { id: "central", outcome: "complete", path: "M344 194 L548 166 L646 267 L590 382 L410 401 L333 306 Z" },
+  { id: "east", outcome: "follow-up", path: "M558 150 L758 141 L894 264 L861 405 L658 377 L590 272 Z" },
+  { id: "south", outcome: "complete", path: "M302 354 L592 344 L735 421 L662 514 L451 543 L252 453 Z" },
+];
+
+const INSPECTOR_SCENE_POSITIONS = [
+  { x: 41.5, y: 15.5, asset: "inspector-character-v2-03.png" },
+  { x: 22, y: 38.5, asset: "inspector-character-v2-02.png" },
+  { x: 50.8, y: 42.5, asset: "inspector-character-v2-01.png" },
+  { x: 73.7, y: 28.5, asset: "inspector-character-v2-01.png" },
+  { x: 44, y: 74.5, asset: "inspector-character-v2-03.png" },
+];
+
+const DISPATCH_ROUTES = [
+  { id: "east-to-north", path: "M737 183 C678 124 558 84 415 87", start: [737, 183], end: [415, 87] },
+  { id: "north-to-west", path: "M415 87 C354 150 270 209 220 236", start: [415, 87], end: [220, 236] },
+  { id: "west-to-south", path: "M220 236 C281 314 361 390 440 442", start: [220, 236], end: [440, 442] },
+];
+
+const OUTCOME_POSITIONS = [
+  { x: 73.7, y: 32.5, result: "failed" },
+  { x: 22, y: 42, result: "passed" },
+  { x: 44, y: 78.5, result: "passed" },
+] as const;
+
+function stageZone(stage: AtlasStageId): AtlasZoneId {
+  return stage === "plan" || stage === "decide" ? "central" : "east";
+}
+
+function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" | "en" }) {
+  const copy = locale === "ar" ? {
+    passed: "ناجح", failed: "لم يجتز",
+  } : {
+    passed: "Passed", failed: "Failed",
+  };
+  return (
+    <div className="lg-atlas-motion" data-stage={stage} aria-hidden="true">
+      <svg className="lg-atlas-motion__zones" viewBox="0 0 1000 563" preserveAspectRatio="none">
+        {ZONE_SURFACES.map((zone, index) => (
+          <path key={zone.id} d={zone.path} data-zone={zone.id} data-outcome={zone.outcome}
+            style={{ "--zone-order": index } as CSSProperties} />
+        ))}
+      </svg>
+
+      <svg key={stage} className="lg-atlas-motion__route" viewBox="0 0 1000 563" preserveAspectRatio="none">
+        {DISPATCH_ROUTES.map((route, index) => (
+          <path key={route.id} className="lg-atlas-motion__route-line" data-route={route.id}
+            d={route.path} />
+        ))}
+        {stage === "travel" && DISPATCH_ROUTES.map(route => (
+          <g key={`stops-${route.id}`} className="lg-atlas-motion__route-stops">
+            <circle cx={route.start[0]} cy={route.start[1]} r="4" />
+            <circle cx={route.end[0]} cy={route.end[1]} r="4" />
+          </g>
+        ))}
+        {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
+          <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
+            href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-9" y="-18" width="18" height="36" opacity="0" transform="rotate(90)">
+            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.06;0.9;1"
+              dur="16s" begin={`${index * 17}s`} fill="remove" />
+            <animateMotion path={route.path} rotate="auto" dur="16s" begin={`${index * 17}s`} fill="remove"
+              calcMode="spline" keyTimes="0;1" keySplines="0.32 0.05 0.2 1" />
+          </image>
+        ))}
+      </svg>
+
+      <div className="lg-atlas-motion__inspectors">
+        {INSPECTOR_SCENE_POSITIONS.map((position, index) => (
+          <span key={index} className="lg-atlas-motion__inspector"
+            style={{ left: `${position.x}%`, top: `${position.y}%`, "--actor-delay": `${index * .65}s` } as CSSProperties}>
+            <img src={`/brand/saudi-atlas/${position.asset}`} alt="" draggable={false} />
+          </span>
+        ))}
+      </div>
+
+      <div className="lg-atlas-motion__outcomes">
+        {OUTCOME_POSITIONS.map((outcome, index) => (
+          <span key={index} className={`lg-atlas-motion__outcome lg-atlas-motion__outcome--${outcome.result}`}
+            style={{ left: `${outcome.x}%`, top: `${outcome.y}%`, "--actor-delay": `${index * .65}s` } as CSSProperties}>
+            <b aria-hidden="true">{outcome.result === "passed" ? "✓" : "×"}</b>
+            <span>{copy[outcome.result]}</span>
+          </span>
+        ))}
+      </div>
+
+    </div>
+  );
+}
 
 // Zone labels rendered in the active locale over a LABEL-FREE base render.
 // EN + AR both live in the DOM so no map text is ever baked into the raster.
@@ -60,15 +149,6 @@ const ZONES: { en: string; ar: string; x: number; y: number }[] = [
   { en: "EASTERN ZONE", ar: "المنطقة الشرقية", x: 72, y: 51 },
   { en: "SOUTHERN ZONE", ar: "المنطقة الجنوبية", x: 51, y: 74 },
 ];
-
-function StageGlyph({ stage }: { stage: AtlasStageId }) {
-  if (stage === "plan") return <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>;
-  if (stage === "travel") return <svg viewBox="0 0 24 24"><path d="M3 16V9l4-3h9l3 4h2v6Z"/><circle cx="8" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>;
-  if (stage === "arrive") return <svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>;
-  if (stage === "inspect") return <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2M8 12l2 2 5-5M8 18h8"/></svg>;
-  if (stage === "review") return <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4Z"/><path d="M8 9h8M8 13h5M15 16l1.5 1.5L20 14"/></svg>;
-  return <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 6-7"/></svg>;
-}
 
 const INSPECTOR_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="6" r="3.2"/><path d="M6 22v-5a6 6 0 0 1 12 0v5Z"/></svg>';
 const VEHICLE_SVG = '<svg viewBox="0 0 24 24" width="18" height="12" fill="currentColor"><path d="M2 14V9l4-4h10l3 4h3v5Z"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/></svg>';
@@ -289,7 +369,6 @@ function PublicSafeImageAtlas({
   const refs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const shown = locked ?? hover;
   const activeNode = stageNode(activeStage);
-  const stagePosition = STAGE_POSITIONS[activeStage];
   const shownPosition = shown ? IMAGE_POSITIONS[shown.id] : undefined;
 
   useEffect(() => { onInteractingChange(shown !== null); }, [shown, onInteractingChange]);
@@ -301,14 +380,16 @@ function PublicSafeImageAtlas({
   }, [locked]);
 
   return (
-    <div className={`lg-atlas-image${ready ? " is-ready" : ""}`} data-atlas-mode="public-safe-image">
+    <div className={`lg-atlas-image${ready ? " is-ready" : ""}`} data-atlas-mode="public-safe-image"
+      data-active-stage={activeStage} data-active-zone={stageZone(activeStage)}>
       <div className="lg-atlas-image__plane">
         <picture>
-          <source srcSet={`${PUBLIC_SAFE_ATLAS_BASE}.avif`} type="image/avif" />
-          <img className="lg-atlas-image__media" src={`${PUBLIC_SAFE_ATLAS_BASE}.webp`}
+          <img className="lg-atlas-image__media" src={`${PUBLIC_SAFE_ATLAS_BASE}.png`}
             width="1672" height="941" alt="" decoding="async" draggable={false}
             onLoad={() => setReady(true)} onError={onImageError} />
         </picture>
+
+        <JourneyOverlay stage={activeStage} locale={locale} />
 
         <div className="lg-atlas-image__hotspots" aria-label={dossierStrings.mapLabel}>
           {NODES.map(node => {
@@ -336,14 +417,10 @@ function PublicSafeImageAtlas({
         </div>
 
         <div className={`lg-atlas-image__zones lg-atlas-image__zones--${locale}`} aria-hidden="true">
-          {ZONES.map(zone => <span key={zone.en}
-            style={{ left: `${zone.x}%`, top: `${zone.y}%` }}>{zone[locale]}</span>)}
+          {ZONES.map((zone, index) => <span key={zone.en}
+            style={{ left: `${zone.x}%`, top: `${zone.y}%`, "--zone-label-order": index } as CSSProperties}>{zone[locale]}</span>)}
         </div>
 
-        <div key={activeStage} className={`lg-atlas-image__stage-signal lg-atlas-image__stage-signal--${activeStage}`}
-          style={{ left: `${stagePosition.x}%`, top: `${stagePosition.y}%` }} aria-hidden="true">
-          <StageGlyph stage={activeStage} />
-        </div>
       </div>
 
       <SaudiAtlasDossier node={shown} locked={locked !== null} locale={locale}
