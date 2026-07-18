@@ -82,3 +82,4 @@ outputs/**/*.dc.html
 *.webm
 apps/web/.next.stale*/
 apps/web/.next.stale*
+tmp/node_modules
