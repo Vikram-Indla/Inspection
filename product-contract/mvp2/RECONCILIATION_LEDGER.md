@@ -94,3 +94,32 @@ their runtime SQL behavior is unproven until the Inspection Supabase project
 - **Resolution (migration 20260717250000):** evidence branch uses new.visit_id when
   inspection_id is NULL; plus a NOT-NULL safety net (case_ref/correlation_id fall back to
   the aggregate id) so no branch can emit a NULL key. Probe passes; golden journey 10/10.
+
+---
+
+## R-006 — Twilio long-code cannot reach Saudi Arabia (fallback-role constraint, permanent)
+- **Module:** M2-02 notification delivery, sms channel, Twilio fallback adapter.
+- **Finding:** Twilio's own SMS guidelines for Saudi Arabia mark both "Long code domestic"
+  and "Long code international" as **Not Supported**. A plain Twilio phone number (the
+  From used by TwilioSmsAdapter) can never deliver SMS to a KSA number — confirmed live
+  (error 21612) and via Twilio's official guidelines page, independent of trial-vs-paid
+  account status, geo-permissions, or verified-caller-ID config.
+- **Root cause match:** identical to the finding in the original SMS provider research
+  (see product-contract's SMS research notes) — Twilio cannot register a domestic KSA
+  Alphanumeric Sender ID ("regulation prohibits re-selling domestic traffic"). Saudi
+  carriers only accept a pre-registered Alphanumeric Sender ID (2-week Twilio
+  international registration), not a raw long code.
+- **Consequence for the accepted design** (`engine_settings.otp`: provider_primary=unifonic,
+  provider_fallback=twilio): Twilio-as-fallback is only real for non-KSA destinations
+  (e.g. an international guest inspector). **For Saudi mobile numbers specifically — the
+  platform's primary audience — there is currently no working SMS fallback if Unifonic is
+  down**, unless/until a Twilio Alphanumeric Sender ID is registered for KSA. This is an
+  honest architectural gap, not a defect in the adapter code.
+- **Resolution shipped now:** `TwilioSmsAdapter` (src/lib/providers/sms-twilio.ts) is
+  correct, fail-closed, and live-certified end-to-end to a NON-KSA destination (India,
+  +91) — proving the adapter/pipe genuinely works. KSA delivery via Twilio remains
+  honestly blocked pending Alphanumeric Sender ID registration (owner: MIM, since they
+  will own/rotate all provider accounts at PROD per sponsor direction).
+- **Verification:** live send SID `SM6f543b8d7c6a98cb0823005244704de8` to +91 (queued,
+  no error). Live send to +966534947632 fails 21612 (confirmed twice, unrelated to
+  geo-permissions or caller-ID verification — both were correctly configured).

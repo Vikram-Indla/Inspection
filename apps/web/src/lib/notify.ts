@@ -48,6 +48,12 @@ registerAdapter({ channel: "inapp", deliver: async () => ({ delivered: true }) }
 import { maybeRegisterResendEmail } from "./providers/email-resend";
 maybeRegisterResendEmail(registerAdapter);
 
+// Register the Twilio SMS adapter (fallback role per engine_settings.otp) when
+// TWILIO_ACCOUNT_SID/AUTH_TOKEN/FROM_NUMBER are configured. Fail-closed: any
+// missing credential → sms stays 'not_configured'.
+import { maybeRegisterTwilioSms } from "./providers/sms-twilio";
+maybeRegisterTwilioSms(registerAdapter);
+
 export type NotifyOutcome = { error?: string; delivery_state?: string };
 
 /**
