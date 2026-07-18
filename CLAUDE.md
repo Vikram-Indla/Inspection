@@ -26,6 +26,7 @@ Read these files in order at every session start:
 - Never remove or weaken an accepted requirement, field, rule, permission, state, audit event, offline behavior, or usability outcome.
 - Do not push, merge, or modify `main` without explicit human approval.
 - Do not edit frozen product-contract artifacts without an approved change-control task.
+- `setup/Inspection` is the single canonical branch — GitHub's configured default branch and the only branch normal work targets. `main` is a fast-forward-only mirror: it is updated by fast-forwarding to a commit already on `setup/Inspection` after explicit human approval, never developed on independently and never diverged from `setup/Inspection`. If the two are ever not identical, treat that as a bug to reconcile immediately, not a normal state.
 
 ## Work protocol
 Before work:
