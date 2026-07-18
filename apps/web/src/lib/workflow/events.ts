@@ -1,17 +1,29 @@
 // M2-02 → M2-05 semantic-event adapter.
-// TASK-MVP2-M2-02-WORKFLOW-STUDIO-001 · shared contract with MVP2-CD-031-M2-05.
+// TASK-MVP2-M2-02-WORKFLOW-STUDIO-002 · shared contract with MVP2-CD-031-M2-05.
+// Reconciliation decision R-001 (product-contract/mvp2/RECONCILIATION_LEDGER.md):
 //
-// M2-05 owns the semantic event registry / replay. M2-02 emits through the
-// shared audited append boundary via this typed adapter. Until the M2-05 shared
-// migration is merged (no `semantic_events` table exists on this branch yet),
-// the adapter is OFF by default and reports honestly — it NEVER silently
-// pretends an event was recorded. No competing event table is created here and
-// nothing is written into replay projections.
+// The LANDED M2-05 migration (20260717150000) exposes the canonical append
+// boundary as the SECURITY DEFINER RPC `append_semantic_audit_event`, which:
+//   - accepts only event types registered in `audit_event_registry`;
+//   - requires a proven `source_audit_event_id` (a real `audit_events` row whose
+//     actor/object_type/action match the append) and `source_system='audit_events'`;
+//   - requires a contracted (source_object_type, source_action) pair.
+// There is NO general `semantic_events` table — the earlier adapter targeted a
+// phantom table and would have errored at runtime if ever enabled.
+//
+// Per Prompt 07, generic workflow transitions stay GENERIC in `audit_events` and
+// are NEVER promoted to canonical facts. So this adapter emits through the RPC
+// ONLY for genuine registered milestones that carry a proven source audit id;
+// for everything else it returns an honest `{emitted:false}` and writes nothing.
+// No competing event table is created here.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 
 // Versioned semantic event envelope (fields per the M2-02/M2-05 shared contract).
+// The `milestone` block is present only when the event is a genuine registered
+// M2-05 milestone with a proven source audit row — its absence keeps the event
+// generic and unemitted through the canonical RPC.
 export type SemanticEvent = {
   eventType: string;
   eventVersion: number;
@@ -27,6 +39,17 @@ export type SemanticEvent = {
   idempotencyKey: string;
   payload: Record<string, unknown>;   // semantic payload or before/after
   sourceAction: string;
+  // Canonical-milestone binding to the landed M2-05 RPC. Optional: only set for
+  // registry-backed milestone facts (e.g. WorkflowActivated, AssignmentAccepted,
+  // NoticeIssued), never for generic transitions.
+  milestone?: {
+    caseType: string;
+    caseRef: string;
+    sourceAuditEventId: number;   // proven audit_events.id (bigint)
+    aggregateRef?: string;
+    beforeState?: Record<string, unknown> | null;
+    afterState?: Record<string, unknown> | null;
+  };
 };
 
 export type EmitResult = { emitted: boolean; reason?: string; id?: string };
@@ -75,32 +98,52 @@ export const disabledEventEmitter: EventEmitter = {
 
 const EVENT_ADAPTER_MODES = ["off", "shared"] as const;
 
+// Maps a milestone SemanticEvent to the landed `append_semantic_audit_event`
+// RPC argument shape. Returns null when the event is not a registered milestone
+// (no `milestone` block) — the honest signal to NOT emit through the RPC.
+export function toAppendRpcArgs(event: SemanticEvent): Record<string, unknown> | null {
+  const m = event.milestone;
+  if (!m) return null;
+  return {
+    p_event_type: event.eventType,
+    p_schema_version: event.eventVersion,
+    p_occurred_at: event.occurredAt,
+    p_aggregate_type: event.aggregateType,
+    p_aggregate_id: event.aggregateId,
+    p_aggregate_ref: m.aggregateRef ?? event.aggregateId,
+    p_aggregate_version: String(event.aggregateVersion),
+    p_case_type: m.caseType,
+    p_case_ref: m.caseRef,
+    p_correlation_id: event.correlationId,
+    p_causation_id: event.causationId,
+    p_source_system: "audit_events",
+    p_source_action: event.sourceAction,
+    p_idempotency_key: event.idempotencyKey,
+    p_before_state: m.beforeState ?? null,
+    p_after_state: m.afterState ?? null,
+    p_semantic_payload: event.payload,
+    p_source_audit_event_id: m.sourceAuditEventId,
+  };
+}
+
 /**
  * Supabase-backed emitter. Off by default. When FEATURE_M2_05_EVENT_ADAPTER=shared
- * AND the M2-05 shared table exists, it appends the envelope; if the table is
- * absent (shared migration not yet merged), it reports `shared_migration_absent`
- * rather than fabricating success. It never writes a competing local event table.
+ * it emits genuine registered milestones through the canonical M2-05 RPC
+ * `append_semantic_audit_event` (source-proven, immutable, idempotent). Generic
+ * transitions (no `milestone` block) are never promoted — they return an honest
+ * `{emitted:false, reason:"not_a_registered_milestone"}` and write nothing.
+ * RPC/RLS rejection surfaces as honest failure, never a silent success.
  */
 export function supabaseEventEmitter(sb: SupabaseClient): EventEmitter {
   const mode = resolveFeatureFlag(process.env.FEATURE_M2_05_EVENT_ADAPTER, EVENT_ADAPTER_MODES, "off");
   if (mode !== "shared") return disabledEventEmitter;
   return {
     async emit(event: SemanticEvent): Promise<EmitResult> {
-      const row = {
-        event_type: event.eventType, event_version: event.eventVersion,
-        aggregate_type: event.aggregateType, aggregate_id: event.aggregateId,
-        aggregate_version: event.aggregateVersion, actor: event.actor,
-        scope: event.scope, occurred_at: event.occurredAt, recorded_at: event.recordedAt,
-        correlation_id: event.correlationId, causation_id: event.causationId,
-        idempotency_key: event.idempotencyKey, payload: event.payload, source_action: event.sourceAction,
-      };
-      // Target the M2-05-owned shared append boundary. Missing table / RLS →
-      // honest failure, never a silent success.
-      const { data, error } = await sb.from("semantic_events")
-        .upsert(row, { onConflict: "idempotency_key", ignoreDuplicates: true })
-        .select("id").maybeSingle();
-      if (error) return { emitted: false, reason: `shared_boundary_error:${error.code ?? "unknown"}` };
-      return { emitted: true, id: data?.id ? String(data.id) : undefined };
+      const args = toAppendRpcArgs(event);
+      if (!args) return { emitted: false, reason: "not_a_registered_milestone" };
+      const { data, error } = await sb.rpc("append_semantic_audit_event", args);
+      if (error) return { emitted: false, reason: `append_boundary_error:${error.code ?? "unknown"}` };
+      return { emitted: true, id: data ? String(data) : undefined };
     },
   };
 }

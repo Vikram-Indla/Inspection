@@ -1,0 +1,96 @@
+# MVP2 Cross-Module Reconciliation Ledger
+
+Records cross-module contract conflicts surfaced during the MVP2 full-implementation
+loop and the canonical resolution taken. Every entry cites the authority relied on.
+Entries marked `DB_VALIDATION_PENDING` are correct at the source/contract level but
+their runtime SQL behavior is unproven until the Inspection Supabase project
+(`iiozvqntawxfwbgffzqu`) is reachable (local-source-certify-now decision).
+
+---
+
+## R-001 — M2-02 semantic-event boundary vs landed M2-05 RPC
+- **Modules:** M2-02 (CD-043) producer ↔ M2-05 (CD-031) append boundary.
+- **Conflict:** `apps/web/src/lib/workflow/events.ts` targeted a `semantic_events`
+  table that does NOT exist. The landed M2-05 migration `20260717150000` exposes the
+  canonical boundary as SECURITY DEFINER RPC `append_semantic_audit_event`, which
+  accepts only event types registered in `audit_event_registry`, requires a proven
+  `source_audit_event_id` (matching actor/object_type/action) with
+  `source_system='audit_events'`, and a contracted `(source_object_type, source_action)`
+  pair. CD-043's EVENT_CATALOG assumes a general `workflow.*/task.*/sla.*/notification.*`
+  envelope with no per-event registry backing.
+- **Authority:** Prompt 07 ("generic legacy events remain GENERIC ONLY; never promote
+  them to canonical facts without an approved mapping"); CD-043 IMPLEMENTATION note
+  ("M2-02 owns no storage/replay; emits through shared M2-05 envelope"); Master
+  Controller authority precedence (live repo + landed migration > design catalog).
+- **Resolution:** The landed `append_semantic_audit_event` RPC is THE single canonical
+  append boundary. Generic workflow transitions stay in the append-only `audit_events`
+  stream (already written by the governed-transition audit closure) and are NOT emitted
+  as semantic milestones. The adapter now (a) removes the phantom `semantic_events`
+  write, (b) emits through the RPC ONLY for events carrying a `milestone` block (a
+  registered type + proven `sourceAuditEventId`), (c) returns honest
+  `{emitted:false, reason:"not_a_registered_milestone"}` otherwise. No competing event
+  architecture is created.
+- **Follow-up (separate slices):** wire the genuine M2-02 milestones that ARE in the
+  registry — `WorkflowActivated` (REQ-0151), `AssignmentAccepted` (REQ-0155),
+  `NoticeIssued` (REQ-0147) — through the RPC at their specific actions, and add the
+  matching `audit_event_source_contracts` rows in a forward M2-02 migration.
+- **Verification:** typecheck clean; pure-contract spec
+  `apps/web/e2e/mvp2-m2-02-events.spec.ts` (static lane) proves arg mapping + honest
+  skip. `DB_VALIDATION_PENDING`: RPC acceptance/rejection unproven until remote DB access.
+
+---
+
+## R-002 — single `objections` store across M2-08 and M2-10
+- **Modules:** M2-08 (CD-044 external portal) ↔ M2-10 (CD-046 case spine).
+- **Conflict:** both design packages list an additive `objections` entity.
+- **Authority:** Prompt 18 (one canonical object per concept).
+- **Resolution:** `objections` is created ONCE in the M2-08 migration
+  (`20260717180000_mvp2_m2_08_external_portal.sql`) and consumed by M2-10; the M2-10
+  migration creates only `cases` and reuses `objections`. No duplicate table.
+- **Verification:** M2-10 migration contains no `objections` create. `DB_VALIDATION_PENDING`.
+
+---
+
+## R-003 — M2-05 emit trigger cross-table column refs (MVP1 regression, FIXED)
+- **Module:** M2-05 (CD-031) semantic emit trigger.
+- **Conflict:** emit_mvp2_m2_05_semantic_event is attached to 10 MVP1 tables but its
+  IF-chain CONDITIONS (and the trailing acknowledgement block) referenced
+  table-specific columns (new.kind, new.status, old.decided_at, new.acknowledgement).
+  plpgsql plans a branch condition as one SQL expression, so a column absent on the
+  FIRING table fails to plan → 42703, aborting the source transaction. Surfaced live on
+  staging: publishSingleVisit aborted with 42703 on new.kind while inserting
+  submission_versions. Never caught because M2-05 was only pure-tested (no DB).
+- **Authority:** Prompt 05 (MVP1 zero-regression) — an audit sidecar must never break a
+  source-of-truth transaction.
+- **Resolution (migration 20260717240000):** gate every outer branch on tg_table_name/
+  tg_op ONLY; move all column-dependent checks into the branch body (planned only when
+  the firing table matches). Identical event semantics. Applied to staging; direct
+  submission_versions insert probe passes; golden-journey P1 planner publish now green.
+
+## R-004 — staging drift below source migration level (pre-existing, partial reconcile)
+- Applying the MVP2 stack to staging surfaced that staging was BELOW the source
+  migration level (the 2026-07-15 reconciliation predates several 2026-07-16 migrations):
+  - submission_versions.acknowledgement (source 0001) was MISSING → fixed (R / migration
+    20260717230000).
+  - geo_override_requests table + expire_stale_geo_override_requests fn (migrations
+    20260716161604/161605) were MISSING → applied to staging.
+  - notification_rules (20260716222000) WAS present — drift is spotty, not a clean cutoff.
+- **Remaining:** golden-journey P2 (arrival-evidence offline-outbox replay) still times out
+  on staging — deep MVP1 field-sync tuned for local latency + possible further drift; NOT
+  caused by the MVP2 build or the trigger fix. A full staging↔source migration
+  reconciliation (align every source migration onto staging) is recommended as a scoped
+  follow-up before treating staging as a golden-journey certification environment.
+
+---
+
+## R-005 — M2-05 emit trigger NULL case_ref on visit-anchored evidence (MVP1 regression, FIXED)
+- **Module:** M2-05 emit trigger, evidence branch.
+- **Conflict:** arrival/cancellation evidence is visit-anchored (inspection_id NULL,
+  visit_id set — offline.ts outbox). The evidence branch derived the case only via
+  `inspections where id=new.inspection_id`, so v_root_case was NULL → case_ref NULL →
+  violated audit_semantic_events.case_ref NOT NULL (23502) → the evidence INSERT aborted.
+  Storage upload succeeded but the table row never landed, so arrival evidence stayed
+  queued in the field outbox and golden-journey P2 replay timed out.
+- **Resolution (migration 20260717250000):** evidence branch uses new.visit_id when
+  inspection_id is NULL; plus a NOT-NULL safety net (case_ref/correlation_id fall back to
+  the aggregate id) so no branch can emit a NULL key. Probe passes; golden journey 10/10.

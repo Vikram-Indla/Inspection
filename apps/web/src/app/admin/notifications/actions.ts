@@ -95,7 +95,9 @@ export async function testNotificationRule(_: NotifRuleResult, formData: FormDat
   if (!rule) return { error: "Rule not found, or outside your scope (RLS)." };
   const outcome = await insertNotification(sb, {
     event_key: rule.event_key, recipient: user.id, channel: rule.channel as "inapp" | "push" | "sms" | "email",
-    payload: { test: true, template: rule.template, triggered_by: user.id },
+    // Address the email channel to the tester so a configured provider (Resend)
+    // can actually deliver; inapp/push/sms ignore to_email.
+    payload: { test: true, template: rule.template, triggered_by: user.id, to_email: user.email, subject: `MIM test — ${rule.event_key}` },
   });
   if (outcome.error) return { error: outcome.error };
   revalidatePath("/admin/notifications");
