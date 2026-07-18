@@ -157,7 +157,8 @@ create index if not exists mvp3_package_manifests_package_idx on public.mvp3_ins
 create table if not exists public.mvp3_package_access_events (
   id uuid primary key default gen_random_uuid(),
   manifest_id uuid not null references public.mvp3_inspection_package_manifests(id),
-  device_id uuid not null references public.mvp3_devices(id),
+  device_id uuid references public.mvp3_devices(id),
+  requested_device_identifier text not null,
   actor_id uuid not null default auth.uid() references public.profiles(user_id),
   outcome text not null check (outcome in ('opened','denied_missing','denied_untrusted','denied_unassigned','denied_expired','denied_app_version')),
   reason text,
@@ -219,9 +220,6 @@ end $$;
 drop trigger if exists trg_mvp3_api_events_append_only on public.mvp3_api_events;
 create trigger trg_mvp3_api_events_append_only before update or delete on public.mvp3_api_events
 for each row execute function public.mvp3_block_append_only_mutation();
-drop trigger if exists trg_mvp3_device_commands_append_only on public.mvp3_device_commands;
-create trigger trg_mvp3_device_commands_append_only before update or delete on public.mvp3_device_commands
-for each row execute function public.mvp3_block_append_only_mutation();
 drop trigger if exists trg_mvp3_package_manifests_append_only on public.mvp3_inspection_package_manifests;
 create trigger trg_mvp3_package_manifests_append_only before update or delete on public.mvp3_inspection_package_manifests
 for each row execute function public.mvp3_block_append_only_mutation();
@@ -276,11 +274,14 @@ end $$;
 
 create or replace function public.mvp3_issue_device_command(p_device_id uuid, p_command text, p_reason text) returns public.mvp3_device_commands
 language plpgsql security definer set search_path = public, pg_temp as $$
-declare v public.mvp3_device_commands;
+declare v public.mvp3_device_commands; v_device public.mvp3_devices;
 begin
   if auth.uid() is null or not (has_role('ops') or has_role('security_admin')) then raise exception 'not authorized' using errcode='42501'; end if;
   if p_command not in ('suspend','resume','remote_wipe','expire_packages') or length(btrim(p_reason)) < 8 then raise exception 'invalid command or reason' using errcode='22023'; end if;
-  insert into public.mvp3_device_commands(device_id,command,reason) values(p_device_id,p_command,p_reason) returning * into v;
+  select * into v_device from public.mvp3_devices where id=p_device_id for update;
+  if not found then raise exception 'device not found' using errcode='22023'; end if;
+  insert into public.mvp3_device_commands(device_id,requested_device_identifier,command,reason)
+  values(p_device_id,v_device.device_identifier,p_command,p_reason) returning * into v;
   if p_command='suspend' then update public.mvp3_devices set trust_status='suspended',updated_at=now() where id=p_device_id;
   elsif p_command='resume' then update public.mvp3_devices set trust_status='trusted',updated_at=now() where id=p_device_id;
   elsif p_command='remote_wipe' then update public.mvp3_devices set trust_status='wipe_pending',updated_at=now() where id=p_device_id;
@@ -388,10 +389,13 @@ revoke all on function public.mvp3_publish_feature_flag(uuid), public.mvp3_reque
   public.mvp3_decide_access_review(uuid,text,text), public.mvp3_issue_device_command(uuid,text,text) from public, anon;
 revoke all on function public.mvp3_compile_inspection_package(uuid,uuid,uuid,jsonb,timestamptz),
   public.mvp3_open_inspection_package(uuid,text), public.mvp3_record_signature_refusal(text,text,text,jsonb,jsonb,text) from public, anon;
+revoke all on function public.mvp3_block_append_only_mutation(), public.mvp3_enforce_maker_checker() from public, anon, authenticated;
 
 create policy mvp3_integrations_read on public.mvp3_integration_endpoints for select to authenticated
   using ((select has_role('security_admin')) or (select has_role('workflow_admin')));
-create policy mvp3_integrations_write on public.mvp3_integration_endpoints for all to authenticated
+create policy mvp3_integrations_insert on public.mvp3_integration_endpoints for insert to authenticated
+  with check ((select has_role('security_admin')));
+create policy mvp3_integrations_update on public.mvp3_integration_endpoints for update to authenticated
   using ((select has_role('security_admin'))) with check ((select has_role('security_admin')));
 create policy mvp3_api_events_read on public.mvp3_api_events for select to authenticated
   using ((select has_role('security_admin')) or (select has_role('ops')) or (select has_role('auditor')));
@@ -414,7 +418,9 @@ create policy mvp3_access_reviews_insert on public.mvp3_access_reviews for inser
   with check ((select has_role('security_admin')) and opened_by=(select auth.uid()) and status='open' and reviewed_by is null);
 create policy mvp3_evidence_grants_read on public.mvp3_evidence_access_grants for select to authenticated
   using (grantee_user_id=(select auth.uid()) or (select has_role('security_admin')) or (select has_role('auditor')));
-create policy mvp3_evidence_grants_write on public.mvp3_evidence_access_grants for all to authenticated
+create policy mvp3_evidence_grants_insert on public.mvp3_evidence_access_grants for insert to authenticated
+  with check ((select has_role('security_admin')) and granted_by=(select auth.uid()));
+create policy mvp3_evidence_grants_update on public.mvp3_evidence_access_grants for update to authenticated
   using ((select has_role('security_admin'))) with check ((select has_role('security_admin')) and granted_by=(select auth.uid()));
 create policy mvp3_devices_read on public.mvp3_devices for select to authenticated
   using (assigned_user_id=(select auth.uid()) or (select has_role('ops')) or (select has_role('security_admin')) or (select has_role('auditor')));
