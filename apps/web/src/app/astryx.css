@@ -539,6 +539,42 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-kpi__delta.is-down { color: var(--ax-color-critical-strong); }
 .ax-kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--ax-space-200); }
 
+/* UIU-ISP-AC-008..017 — inspector-first task chrome. The field bar remains
+   persistent without the legacy floating circular FAB. The page reserves
+   space below it so keyboard focus and content are never hidden. */
+.ax-field-page { display: flex; flex-direction: column; gap: var(--ax-space-300); padding-block-end: 104px; }
+.ax-field-taskbar {
+  position: fixed; inset-block-end: 0; inset-inline: 0; z-index: var(--ax-z-sticky);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(180px, auto);
+  align-items: stretch; gap: var(--ax-space-050); padding: var(--ax-space-100) max(var(--ax-space-200), env(safe-area-inset-right)) max(var(--ax-space-100), env(safe-area-inset-bottom)) max(var(--ax-space-200), env(safe-area-inset-left));
+  border-block-start: 1px solid var(--ax-color-border); background: var(--ax-color-surface);
+}
+.ax-field-taskbar__item, .ax-field-taskbar__primary {
+  min-inline-size: 0; min-block-size: var(--ax-control-height-field); display: flex; align-items: center; justify-content: center; gap: var(--ax-space-100);
+  padding-inline: var(--ax-space-150); border: 1px solid transparent; border-radius: var(--ax-radius-standard);
+  font: var(--ax-text-caption); font-weight: 500; text-decoration: none; text-align: center;
+}
+.ax-field-taskbar__item { color: var(--ax-color-text-secondary); background: transparent; }
+.ax-field-taskbar__item:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
+.ax-field-taskbar__item[aria-current="page"] { color: var(--ax-color-primary-strong); background: var(--ax-color-primary-tint); border-color: color-mix(in srgb, var(--ax-color-primary) 24%, var(--ax-color-border)); }
+.ax-field-taskbar__primary { color: var(--ax-color-inverse-text); background: var(--ax-color-primary); border-color: var(--ax-color-primary); }
+.ax-field-taskbar__primary:hover { background: var(--ax-color-primary-hover); border-color: var(--ax-color-primary-hover); }
+.ax-field-taskbar__item:focus-visible, .ax-field-taskbar__primary:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.ax-field-taskbar svg { flex: 0 0 auto; }
+
+.ax-field-performance { border-block-start: 1px solid var(--ax-color-border); padding-block-start: var(--ax-space-200); }
+.ax-field-performance > summary { min-block-size: var(--ax-control-height-field); display: flex; align-items: center; cursor: pointer; color: var(--ax-color-text); font: var(--ax-text-subheading); }
+.ax-field-performance > summary:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); border-radius: var(--ax-radius-small); }
+.ax-field-performance__body { display: flex; flex-direction: column; gap: var(--ax-space-300); padding-block-start: var(--ax-space-200); }
+.ax-field-performance__charts { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: var(--ax-space-200); }
+
+@media (max-width: 560px) {
+  .ax-field-page { padding-block-end: 112px; }
+  .ax-field-taskbar { grid-template-columns: repeat(4, minmax(0, 1fr)); padding-inline: var(--ax-space-100); }
+  .ax-field-taskbar__item, .ax-field-taskbar__primary { flex-direction: column; gap: 2px; padding-inline: var(--ax-space-050); }
+  .ax-field-taskbar__primary span { overflow-wrap: anywhere; }
+}
+
 /* ==================================================== ENTERPRISE: DATA TABLE
    Canonical density, sticky header, bulk selection, row actions, per-row
    bulk outcomes (P03 failure control), empty/error/loading states.          */

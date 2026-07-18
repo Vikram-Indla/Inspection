@@ -1,62 +1,52 @@
 schema_version: "1.2"
-task_id: "TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
-gate: "MVP3 sponsor-authorized complete implementation"
-title: "MVP3 complete vertical-slice implementation over the integrated MVP1/MVP2 baseline"
-status: "INTEGRATED_PREPRODUCTION_SOURCE_CERTIFIED_PUSH_READY"
+task_id: "TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
+gate: "G11 source integration / G12 release gates remain open"
+title: "Promote the governed design system across the complete Inspection platform"
+status: "SOURCE_VERIFIED_SPONSOR_AUTHORIZED_FOR_MAIN_PUSH"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#MVP3-INTEGRATED-PREPRODUCTION-MAIN-PUSH-001"
-change_control_ref: "CC-MVP3-COMPLETE-IMPLEMENTATION-001"
+approval_ref: "HUMAN_APPROVALS.yaml#DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
+change_control_ref: "CC-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
 
-branch_at_start: "codex/mvp3-complete-implementation"
-head_at_start: "45d4420"
-process_ids: ["P00", "P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "P11", "P12", "P13"]
-requirement_ids: ["84 exact MVP3 requirement rows recorded in product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv"]
-acceptance_ids: ["Exact row-level acceptance identifiers from the MVP3 master register"]
-evidence_ids: ["Exact row-level evidence identifiers from the MVP3 master register"]
-screen_ids: ["CD-050", "CD-051", "CD-052", "CD-053", "CD-054", "CD-055", "CD-056", "CD-057", "CD-058", "CD-059", "CD-060", "CD-061"]
-engine_ids: ["Existing MVP1/MVP2 engines plus additive MVP3 services only"]
+branch_at_start: "codex/inspector-shell-uplift-002"
+head_at_start: "1bd6086"
+process_ids: ["P01", "P02", "P03", "P04", "P05", "P06A", "P06B", "P07", "P08", "P09", "P10", "P11", "P12"]
+requirement_ids: ["SPONSOR-DSF-001..030", "SPONSOR-UIU-001..024", "SPONSOR-PDS-001..025"]
+acceptance_ids: ["DSF-AC-001..030", "UIU-ISP-AC-001..024", "PDS-AC-001..025"]
+evidence_ids: ["PDS-EV-001..007"]
+screen_ids: ["SCR-SHARED-SHELL-001", "all authenticated web working pages", "SCR-IPAD-600..670", "approved auth/print/redirect exceptions"]
+engine_ids: ["visual foundation only; ENG-01..ENG-20 behavior preserved"]
 
 dependencies:
-  - "Integrated MVP1/MVP2 baseline at 45d4420."
-  - "Government foundation and authenticated shell already merged locally."
-  - "Corrected MVP3 R2 design packages and exact 84-row reconciliation supplied by the sponsor."
-  - "External providers and unresolved policy values remain fail-closed until configured or approved."
+  - "Government Foundation and Shell Reset V1 already present in the integrated baseline."
+  - "Sponsor-approved inspector-first Shell A uplift is source/component verified."
+  - "Origin main 8b457bd is the integrated MVP1/MVP2/MVP3 preproduction source baseline."
 
 open_decisions:
-  - "Existing provider, policy, retention, geography, credential and production-release holds remain open unless separately recorded as resolved."
+  - "Production compliance claims remain blocked until WCAG 2.2 AA, DGA/Platforms Code, native Arabic/RTL and observed inspector-endurance gates are evidenced."
 
 do_not_touch:
-  - "Do not rewrite, replace, or regress accepted MVP1/MVP2 behavior."
-  - "Do not invent provider selections, policy thresholds, retention periods, legal values, production secrets, or business decisions."
-  - "Do not apply remote DDL, deploy, push, merge, mutate production data, or rewrite Git history without separate authority."
-  - "Do not use permanent mocks or claim runtime certification without executed evidence."
+  - "Do not change input, textarea, select or search geometry or behavior."
+  - "Do not change workflow, RLS, database, provider, audit, offline or immutable-version behavior."
+  - "Keep Cinematic Atlas v0.8 isolated to the approved login experience."
+  - "Do not deploy or apply remote DDL/data changes as part of this source promotion."
+  - "Do not claim production compliance while the four release gates remain open."
 
 authorized_file_scope:
-  - "MVP3 application routes, components, services, tests and evidence under apps/web."
-  - "Additive forward-only Supabase migrations and local database tests."
-  - "Shared code only where compatibility is preserved and regression-proven."
-  - "product-contract/mvp3 and governance/execution/session/evidence records for this task."
-
-required_context:
-  - "product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv"
-  - "product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv"
-  - "product-contract/GATE_STATUS.md"
-  - "product-contract/CURRENT_STATE.md"
-  - "product-contract/governance/HUMAN_APPROVALS.yaml"
-  - "product-contract/governance/OPEN_DECISIONS.yaml"
-  - "Existing application routes, schema, migrations, RLS, event contracts and tests."
-  - "Corrected MVP3 R2 design packages in the approved external evidence pack."
+  - "Shared design foundation, shell, role-priority navigation, inspector composition and renderer palette."
+  - "Platform-wide source contracts, build/regression evidence and governance/session records."
+  - "Commit, integrate into main and push origin/main under explicit sponsor instruction."
 
 required_evidence:
-  - "Exact 84/84 requirement-to-acceptance-to-code-to-test-to-evidence reconciliation."
-  - "Migration, grants, RLS, negative-permission and audit-immutability proof."
-  - "English/Arabic, LTR/RTL, light/dark, desktop/tablet/mobile and keyboard/accessibility proof for applicable screens."
-  - "Focused module tests plus complete MVP1+MVP2+MVP3 regression."
-  - "No invented policy/provider value and explicit blocked-leg register."
+  - "All working pages inherit root tokens and use the governed Shell or a named exception."
+  - "No authenticated cinematic typography, raw CSS colors, italic or uppercase styling."
+  - "Shared maps use the governed semantic renderer palette."
+  - "Frozen text-entry and Cinematic Atlas boundaries remain unchanged."
+  - "Typecheck, production build, full static regression and clean integration verification."
 
 exit_condition: >-
-  All 84 MVP3 rows are either implemented and evidenced or explicitly held by a genuine external
-  dependency; all twelve design modules are integrated without MVP1/MVP2 regression; database,
-  RLS, frontend, accessibility and full regression evidence is recorded; and no completion claim
-  exceeds the executed proof.
+  The complete Inspection source tree consumes the governed foundation by construction;
+  inspector Shell A changes are integrated without narrowing other roles; map renderers no
+  longer carry legacy purple styling; protected behavior is unchanged; tests pass on the
+  integrated main commit; origin/main is pushed; and production compliance remains explicitly
+  conditional on the four external and observed release gates.

@@ -1,5 +1,24 @@
 # Evidence Status
 
+## 2026-07-18 — Platform foundation promotion 003
+
+Source inheritance and integration evidence is complete: typecheck/build PASS, focused 16/16,
+full static inventory 75 pass / 4 intentional provider skips / 0 failures. Production
+compliance evidence remains incomplete at the four named release gates. See
+`evidence/TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003.md`.
+
+## TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002 — 2026-07-18
+
+| ID | Evidence | Status |
+|---|---|---|
+| UIU-ISP-EV-001..005 | Shell default/preference, inspector navigation, field task bar and task-first composition | Captured — PASS_LOCAL |
+| UIU-ISP-EV-006 | Four component frames, target-size, focus, theme, RTL and no-overflow harness | Captured — 1/1 PASS; component evidence only |
+| UIU-ISP-EV-007 | Frozen input and Cinematic Atlas diff; typecheck/build/foundation regression | Captured — PASS |
+| UIU-ISP-EV-008 | WCAG, DGA/Platforms Code, native Arabic/RTL and endurance register | OPEN_RELEASE_GATE |
+| UIU-ISP-EV-009 | Authenticated `/field` and complete browser regression | Pending controlled environment; shared-data mutation not authorized |
+
+Exact record: `TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002.md`.
+
 ## TASK-DESIGN-FOUNDATION-SHELL-RESET-001 — 2026-07-18
 
 | ID | Evidence | Status |

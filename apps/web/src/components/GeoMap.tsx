@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { MAP_PALETTE } from "@/lib/map-palette";
 
 export type GeoTone = "high" | "medium" | "low" | "neutral";
 
@@ -24,12 +25,7 @@ export type GeoFocus = { lat: number; lng: number; zoom?: number };
 const MARKER_SOURCE = "inspection-markers";
 const FENCE_SOURCE = "inspection-geofences";
 const MARKER_LAYER = "inspection-markers-circle";
-const TONE: Record<GeoTone, { fill: string; stroke: string }> = {
-  high: { fill: "#b42318", stroke: "#7a271a" },
-  medium: { fill: "#b54708", stroke: "#7a2e0e" },
-  low: { fill: "#067647", stroke: "#054f31" },
-  neutral: { fill: "#175cd3", stroke: "#1849a9" },
-};
+const TONE: Record<GeoTone, { fill: string; stroke: string }> = MAP_PALETTE;
 
 type Props = {
   center: [number, number];
@@ -110,7 +106,7 @@ function sync(map: mapboxgl.Map, data: RenderData, initial = false) {
     map.addLayer({ id: MARKER_LAYER, type: "circle", source: MARKER_SOURCE, slot: "top", paint: {
       "circle-radius": ["case", ["get", "selected"], 10, 7],
       "circle-color": ["match", ["get", "tone"], "high", TONE.high.fill, "medium", TONE.medium.fill, "low", TONE.low.fill, TONE.neutral.fill],
-      "circle-stroke-width": 2, "circle-stroke-color": "#ffffff",
+      "circle-stroke-width": 2, "circle-stroke-color": MAP_PALETTE.halo,
     } });
   }
   if (initial) map.jumpTo({ center: [data.center[1], data.center[0]], zoom: data.zoom });

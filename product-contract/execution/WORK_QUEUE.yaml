@@ -1,5 +1,21 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
+    gate: "G11 source integration / G12 release gates remain open"
+    priority: "P0"
+    status: "SOURCE_VERIFIED_SPONSOR_AUTHORIZED_FOR_MAIN_PUSH"
+    owner: "Codex integration and QA + compliance owners for release gates"
+    blocked_by: []
+    blocks: ["Production UI compliance claim"]
+    note: "All working pages inherit the governed root foundation and shared shell or are one of seven named exceptions. Cross-role maps use one semantic renderer palette. Typecheck/build pass; focused 16/16; full static 75 pass/4 intentional provider skips. Sponsor authorized commit/main merge/push. WCAG, DGA/Platforms Code, native Arabic/RTL and observed inspector endurance remain open production gates."
+  - task_id: "TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002"
+    gate: "G11 sponsor-approved controlled inspector UI uplift"
+    priority: "P0"
+    status: "SOURCE_AND_COMPONENT_VERIFIED_AUTH_RUNTIME_AND_RELEASE_GATES_PENDING"
+    owner: "Codex implementation and QA + Sponsor/compliance owners for release gates"
+    blocked_by: ["Controlled authenticated environment that does not mutate shared visit state", "WCAG full-page audit", "DGA/Platforms Code mapping", "Native Arabic/RTL review", "Observed inspector morning/night endurance sessions"]
+    blocks: ["Inspector shell merge readiness", "Production UI compliance claim"]
+    note: "Shell A default and optional Shell B are source-implemented. Inspector field work is first, the legacy circular FAB is replaced by a labelled 52px task bar, assignments precede notifications and secondary analytics, and frozen inputs/Atlas remain unchanged. Typecheck/build PASS; focused 11/11; static 70 pass/4 intentional provider skips; component visual 1/1 with four frames. Authenticated field/full regression and four external/observed compliance gates remain pending and are not claimed."
   - task_id: "TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
     gate: "MVP3 sponsor-authorized complete implementation"
     priority: "P0"

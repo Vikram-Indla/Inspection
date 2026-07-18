@@ -1,37 +1,35 @@
 schema_version: "1.0"
-change_id: "CC-DESIGN-FOUNDATION-SHELL-RESET-001"
-title: "Government visual foundation and authenticated shell reset"
+change_id: "CC-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
+title: "Platform-wide government design-system promotion"
 requestor: "Codex on behalf of Vikram Indla"
 approver: "Vikram Indla"
 authorization: >
-  Sponsor approved the visual direction and then explicitly replied "approved"
-  to the recommendation to commit and merge branch
-  codex/design-foundation-shell-reset-001 into local setup/Inspection.
+  Sponsor instructed Codex to confirm that the full design system is applied
+  across the Inspection platform, not only the inspector role, then merge the
+  verified changes into main and push.
 business_reason: >
-  Establish a durable government-grade typography, surface and shell foundation
-  for MVP1 and future MVPs while isolating Cinematic Atlas v0.8 and preserving
-  the existing text-box contract.
+  Make the professional government foundation the inherited platform default
+  for all present and future roles while retaining explicit approved exceptions.
 decision:
-  source_branch: "codex/design-foundation-shell-reset-001"
-  target_branch: "setup/Inspection (local)"
+  source_branch: "codex/inspector-shell-uplift-002"
+  target_branch: "main"
   commit: "Authorized"
   merge: "Authorized"
-  push: "Not authorized"
+  push: "Authorized"
 scope_allowed:
-  - "Commit the approved foundation, shell, assets, tests, design authority and contract evidence."
-  - "Merge the committed branch into local setup/Inspection and resolve conflicts without weakening either accepted side."
-  - "Record the resulting local merge status and exact verification evidence."
+  - "Audit every working page and shared renderer for foundation adoption."
+  - "Complete the inspector Shell A uplift and centralize remaining map colours."
+  - "Add permanent platform-wide source contracts and release evidence."
+  - "Commit, merge into main, rerun verification and push origin/main."
 scope_forbidden:
-  - "Any push, deployment, remote DDL, production-data change or modification of main."
-  - "Any workflow, RLS, provider, policy or text-box behavior change."
-  - "Any expansion into the separate page-by-page redesign sweep."
+  - "Production deployment, remote DDL or shared/production data mutation."
+  - "Workflow, RLS, provider, audit, offline or immutable-version changes."
+  - "Text-entry changes or expansion of Cinematic Atlas beyond its approved exception."
+  - "Unsupported WCAG, DGA, native Arabic/RTL or endurance compliance claims."
 regression_impact: >
-  Production build PASS; foundation contract 6/6; authenticated shell 9/9;
-  visual capture 2/2; complete static inventory 54 pass / 3 intentional
-  provider skips / 0 failures.
+  Typecheck and production build pass; platform/foundation/inspector focused
+  contract 16/16; complete static inventory 75 pass / 4 intentional provider
+  skips / 0 failures before integration.
 decision_owner: "Vikram Indla"
-effective_version: "Government Foundation Shell Reset V1"
+effective_version: "Government Foundation V1 + Inspector Shell Uplift 002 + Platform Guard 003"
 effective_date: "2026-07-18"
-notes: >
-  Local integration only. Cinematic Atlas v0.8 remains isolated and input,
-  textarea, select and search geometry/behavior remain frozen.
