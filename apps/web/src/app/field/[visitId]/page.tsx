@@ -227,6 +227,12 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     arrivalEvidenceSubmit: t("field.start.arrivalEvidenceSubmit", "Queue arrival evidence"),
     arrivalEvidenceQueued: t("field.start.arrivalEvidenceQueued", "Arrival evidence queued — custody hash recorded; sync pending"),
     arrivalEvidenceMissing: t("field.start.arrivalEvidenceMissing", "Add a photo or note before queueing arrival evidence."),
+    aiTitle: t("field.start.aiTitle", "AI preparation assistant"),
+    aiDescription: t("field.start.aiDescription", "Daily, risk and preparation guidance from this visit's recorded facts. It never gates the journey or inspection start."),
+    aiGenerate: t("field.start.aiGenerate", "Generate preparation brief"),
+    aiUnavailable: t("field.start.aiUnavailable", "AI provider unavailable or offline — nothing was generated or changed."),
+    aiEvidence: t("field.start.aiEvidence", "Source evidence"),
+    aiAdvisory: t("field.start.aiAdvisory", "Advisory only · human decides"),
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (

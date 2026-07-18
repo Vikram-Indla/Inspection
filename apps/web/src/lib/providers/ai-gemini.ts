@@ -42,6 +42,39 @@ export class GeminiSuggestionProvider {
       return { ok: false, reason: "gemini_network_error" };
     }
   }
+
+  /**
+   * Generate a business-context advisory. This is deliberately separate from
+   * the M2-11 docket prompt so contextual surfaces can require source facts,
+   * evidence references and a bounded response without changing docket UX.
+   */
+  async generateContextual(surface: "planning_summary" | "preparation_assistant", context: string): Promise<AiGenResult> {
+    const prompt = [
+      "You are an advisory assistant for a government factory-inspection platform.",
+      `Produce a concise ${surface === "planning_summary" ? "planning summary" : "inspector preparation brief"}.`,
+      "Use only the supplied source facts. Never invent a threshold, score, legal clause, penalty, severity, license decision, route, assignment, or policy value.",
+      "Return at most 5 short bullets, each labelled Risk, Workload, Hotspot, Route, or Recommendation as applicable.",
+      "State when a fact is unavailable. This is advisory text only; a human remains the decision maker.",
+      `Source facts: ${String(context ?? "").slice(0, 6000)}`,
+    ].join(" ");
+    try {
+      const res = await fetch(`${GEMINI_BASE}/${this.model}:generateContent`, {
+        method: "POST",
+        headers: { "x-goog-api-key": this.apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 512, temperature: 0.2 },
+        }),
+      });
+      if (!res.ok) return { ok: false, reason: `gemini_${res.status}` };
+      const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+      const text = (data.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? "").join("").trim();
+      if (!text) return { ok: false, reason: "empty_response" };
+      return { ok: true, text };
+    } catch {
+      return { ok: false, reason: "gemini_network_error" };
+    }
+  }
 }
 
 export function geminiProviderState(): "configured" | "unavailable" {

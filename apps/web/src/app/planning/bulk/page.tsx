@@ -8,6 +8,7 @@ import type { CriteriaBuilderStrings } from "./CriteriaBuilder";
 import type { LedgerStrings } from "./EligibilityLedger";
 import type { Bucket, Distribution, DistributionStrings } from "./DistributionPanels";
 import TargetingLensClient from "./TargetingLensClient";
+import ContextualAiPanel from "@/components/ContextualAiPanel";
 import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey } from "./criteria";
 
 export const dynamic = "force-dynamic";
@@ -119,12 +120,30 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     buildDistribution("risk_band", t("plan.bulk.dist.risk", "By risk band (recorded)")),
     buildDistribution("activity_class", t("plan.bulk.dist.activity", "By activity class")),
   ];
+  const riskCounts = everyFactory.reduce<Record<string, number>>((acc, f) => {
+    const band = typeof f.risk_band === "string" && f.risk_band.trim() ? f.risk_band : "unknown";
+    acc[band] = (acc[band] ?? 0) + 1;
+    return acc;
+  }, {});
+  const regionCounts = everyFactory.reduce<Record<string, number>>((acc, f) => {
+    const region = typeof f.region === "string" && f.region.trim() ? f.region : "unknown";
+    acc[region] = (acc[region] ?? 0) + 1;
+    return acc;
+  }, {});
   // Freshness — real FND-013 factories.source_synced_at over the matched set.
   // We report the oldest sync time and how many rows lack it; we do NOT label
   // "stale" (no governed staleness threshold exists — inventing one is barred).
   const syncTimes = factories.map(f => (f as Record<string, unknown>).source_synced_at).filter((v): v is string => typeof v === "string");
   const oldestSyncedAt = syncTimes.length ? syncTimes.reduce((a, b) => (a < b ? a : b)) : null;
   const missingSync = factories.length - syncTimes.length;
+  const aiPlanningContext = JSON.stringify({
+    scope: { factories: denominator, eligible: factories.length, criteria_applied: hasCriteria(tree) },
+    risk_band_counts: riskCounts,
+    region_counts: regionCounts,
+    oldest_source_sync: oldestSyncedAt,
+    missing_source_sync: missingSync,
+    rule: "Use only these recorded aggregates. Do not select factories, alter risk values, invent thresholds, or publish a plan.",
+  });
 
   // "Focus condition" (design frame 1a) — each leaf's population contribution,
   // computed alone against the whole scope (independent of its siblings), so
@@ -239,6 +258,18 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
           <p>{t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-PLN-001) and could not be applied. Showing unfiltered results — please rebuild your criteria below.")}</p>
         </div>
       )}
+      {/* MVP1-M01-016 / MVP1-M01-026 · AC-0016 / AC-0026 — contextual planning summary. */}
+      <ContextualAiPanel
+        surface="planning_summary"
+        title={t("plan.bulk.ai.title", "AI planning summary")}
+        description={t("plan.bulk.ai.description", "Evidence-linked advisory summary of the current factory scope. It never selects, ranks or publishes anything.")}
+        context={aiPlanningContext}
+        evidenceRefs={["AC-0016", "AC-0026", "M01-016", "M01-026", "SCR-WEB-110"]}
+        generateLabel={t("plan.bulk.ai.generate", "Generate planning summary")}
+        unavailableLabel={t("plan.bulk.ai.unavailable", "AI provider unavailable — nothing was generated or changed.")}
+        evidenceLabel={t("plan.bulk.ai.evidence", "Source evidence")}
+        advisoryLabel={t("plan.bulk.ai.advisory", "Advisory only · human decides")}
+      />
       <TargetingLensClient
         initialTree={tree} fieldOptions={fieldOptions} matchCount={factories.length} criteriaStrings={criteriaStrings}
         contributions={contributions} leafInfo={leafInfo}
