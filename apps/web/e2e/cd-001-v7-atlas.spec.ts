@@ -112,7 +112,7 @@ test("five scenes reveal map, dispatch, arrival, inspection and zones sequential
   // Two vehicles depart Riyadh, the third departs Jazan (staggered begins).
   const begins = await page.locator(".lg-atlas-motion__route-vehicle animateMotion").evaluateAll(
     els => els.map(e => e.getAttribute("begin")));
-  expect(begins).toEqual(["0s", "5s", "10s"]);
+  expect(begins).toEqual(["0s", "2.5s", "5s"]);
 
   // 03 Arrival — inspectors resolve on site (geofenced attendance).
   await page.getByRole("tab", { name: /Arrival/i }).click();

@@ -1,12 +1,20 @@
 /* MIM Field — app-shell service worker (FND-005: field app survives offline).
    Static assets: cache-first. Navigations: network-first, fallback to cached shell.
    Data writes are NOT handled here — the IndexedDB outbox owns them (idempotent replay). */
-const SHELL = "saqeel-shell-v3";
+const SHELL = "saqeel-shell-v4";
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(SHELL).then((c) => c.addAll(["/field", "/manifest.json", "/saqeel-prism.svg"])));
   self.skipWaiting();
 });
-self.addEventListener("activate", (e) => { e.waitUntil(self.clients.claim()); });
+self.addEventListener("activate", (e) => {
+  // Purge every cache from a previous shell version so cache-first can never
+  // resurrect stale /_next/static chunks after a deploy.
+  e.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== SHELL).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim()),
+  );
+});
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET") return;

@@ -80,3 +80,5 @@ outputs/**/*.dc.html
 *.mov
 *.mp4
 *.webm
+apps/web/.next.stale*/
+apps/web/.next.stale*
