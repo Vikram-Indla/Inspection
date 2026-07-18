@@ -2,7 +2,7 @@ schema_version: "1.2"
 task_id: "TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
 gate: "MVP3 sponsor-authorized complete implementation"
 title: "MVP3 complete vertical-slice implementation over the integrated MVP1/MVP2 baseline"
-status: "PREPRODUCTION_INTEGRATION_AND_MAIN_PUSH_AUTHORIZED"
+status: "INTEGRATED_PREPRODUCTION_SOURCE_CERTIFIED_PUSH_READY"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 approval_ref: "HUMAN_APPROVALS.yaml#MVP3-INTEGRATED-PREPRODUCTION-MAIN-PUSH-001"
