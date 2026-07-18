@@ -143,6 +143,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-18"
     change_ref: "Sponsor instruction: commit to main"
+  - gate: "QA-UI-COMPLIANCE-CERT-004-MAIN-PUSH"
+    decision: "APPROVED (EXPLICIT MAIN PUSH) — sponsor clarified that port 3000 is the local application and explicitly directed Codex to merge the verified code wherever the repository lives and push it. Local main already contains the certification commits; this authorizes pushing that exact fast-forward line to origin/main and confirming the local port 3000 runtime. It does not authorize production hosting deployment, remote DDL, shared-data mutation, or self-approval of the remaining native-Arabic and inspector-endurance gates."
+    approver: "Vikram Indla"
+    date: "2026-07-18"
+    change_ref: "Sponsor instruction: wherever we have the code merge it and push"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

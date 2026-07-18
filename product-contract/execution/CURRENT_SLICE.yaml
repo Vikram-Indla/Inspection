@@ -2,7 +2,7 @@ schema_version: "1.2"
 task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
 gate: "G11/G12 UI release certification"
 title: "Close technical WCAG 2.2, DGA Platform Code and Arabic/RTL evidence; prepare human endurance gates"
-status: "TECHNICAL_PASS_MAIN_INTEGRATION_AUTHORIZED_HUMAN_GATES_PENDING"
+status: "TECHNICAL_PASS_MAIN_PUSH_AUTHORIZED_HUMAN_GATES_PENDING"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 approval_ref: "HUMAN_APPROVALS.yaml#QA-UI-COMPLIANCE-CERT-004"
@@ -32,7 +32,7 @@ do_not_touch:
   - "Keep Cinematic Atlas v0.8 isolated."
   - "Do not mutate shared visit state merely to produce UI evidence."
   - "Do not claim human or organizational signoff from automated checks."
-  - "Local main fast-forward is sponsor-authorized; do not push without a separate release decision."
+  - "Local main fast-forward and origin/main push are sponsor-authorized; do not deploy to production hosting."
 
 authorized_file_scope:
   - "Accessibility test tooling and release-contract tests."

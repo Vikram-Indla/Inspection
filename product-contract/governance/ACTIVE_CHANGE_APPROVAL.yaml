@@ -7,16 +7,17 @@ authorization: >
   After being told that a perfect release PASS requires executed WCAG, DGA,
   native Arabic/RTL and inspector-endurance evidence, the sponsor instructed
   Codex to proceed, then explicitly instructed Codex to commit the verified
-  certification branch to main.
+  certification branch to main and clarified that it must be pushed.
 scope_allowed:
   - "Execute technical accessibility, RTL and DGA evidence checks."
   - "Remediate UI-only P0/P1 defects found by those checks."
   - "Prepare and run controlled authenticated read-only journeys."
   - "Prepare the native-review and inspector-endurance protocols and evidence registers."
   - "Create the local certification commit and fast-forward local main to it."
+  - "Push the verified local main fast-forward to origin/main and confirm port 3000."
 scope_forbidden:
   - "Self-approval of native linguistic quality or representative human endurance."
-  - "Shared-data mutation solely for evidence, remote DDL, deployment or push."
+  - "Shared-data mutation solely for evidence, remote DDL or production hosting deployment."
   - "Workflow, RLS, provider, audit, offline, immutable-version, input or Atlas changes."
 decision_owner: "Vikram Indla"
 effective_date: "2026-07-18"
