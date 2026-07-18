@@ -81,6 +81,13 @@ const MVP3_AR_FALLBACK: Dict = {
   "mvp3.devices.empty": "لا توجد أجهزة مسجلة مرئية وفق سياسات الوصول.",
   "mvp3.devices.commands": "دليل الأوامر",
   "mvp3.devices.noCommands": "لا توجد أوامر مرئية وفق سياسات الوصول.",
+  // Added by TASK-I18N-RTL-AUDIT-001 — DRAFT, not yet reviewed like the
+  // entries above. See product-contract/evidence/TASK-I18N-RTL-AUDIT-001.md.
+  "mvp3.devices.badge": "14 صفًا محكومًا",
+  "mvp3.integrations.badge": "14 صفًا محكومًا",
+  "mvp3.operations.badge": "عمليات مغلقة عند الفشل",
+  "mvp3.security.badge": "وصول للأدلة مقيّد بالغرض",
+  "mvp3.enforcement.badge": "حالات مرتبطة بالمصدر",
 };
 
 export async function getLocale(): Promise<Locale> {

@@ -49,6 +49,17 @@ use the codebase's local-dict pattern, where Arabic is authored directly in
 source (existing precedent in these exact files) — those translations are
 already committed as code, not pending DB sync.
 
+**Update (post-merge with the concurrent MVP3 branch):** `apps/web/src/lib/i18n.ts`
+carries a curated `MVP3_AR_FALLBACK` dict for `mvp3.*` keys specifically — a
+`ui_strings`-DB-override-if-present, code-fallback-otherwise mechanism, enforced
+by `mvp3-enterprise-contract.spec.ts`'s "ships reviewed Arabic fallbacks" test.
+The 5 new `mvp3.*` badge keys from this audit (`mvp3.devices.badge`,
+`mvp3.integrations.badge`, `mvp3.operations.badge`, `mvp3.security.badge`,
+`mvp3.enforcement.badge`) were added there, each explicitly commented as
+**draft, not yet reviewed** like that file's pre-existing entries — required
+so the test suite and the live app both show correct Arabic immediately,
+without falsely presenting these 5 as officially reviewed.
+
 ## Genuinely-new strings — DRAFT Arabic, pending human/authorized review
 These use the global `t(key, "English")` pattern; the English fallback is live
 immediately (already correct behavior), but the Arabic value lives in the
