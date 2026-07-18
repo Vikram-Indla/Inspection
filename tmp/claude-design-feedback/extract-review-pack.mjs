@@ -3,7 +3,7 @@ import { gunzipSync } from "node:zlib";
 
 const input = process.argv[2] || "/Users/vikramindla/Downloads/Saqeel_CD-001_Review_Pack.html";
 const outputName = process.argv[3] || "CD001";
-const baseDir = "/Users/vikramindla/Documents/GitHub/Inspection/tmp/claude-design-feedback";
+const baseDir = "/Users/vikramindla/Developer/Inspection/tmp/claude-design-feedback";
 const source = await fs.readFile(input, "utf8");
 const match = source.match(/<script type="__bundler\/template">([\s\S]*?)<\/script>/);
 if (!match) throw new Error("Bundled template not found");
