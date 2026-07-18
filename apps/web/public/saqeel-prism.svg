@@ -10,7 +10,6 @@
       <stop offset="1" stop-color="#E9D5FF" stop-opacity="0.28"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="15" fill="#090714"/>
   <path d="M32 9 53 25 32 56 11 25Z" fill="url(#prism)"/>
   <path d="M11 25h42M32 9 23 25l9 31M32 9l9 16-9 31" fill="none" stroke="url(#facet)" stroke-width="2.3" stroke-linejoin="round"/>
   <path d="m23 25 9-16 9 16-9 31Z" fill="#FFFFFF" fill-opacity="0.1"/>

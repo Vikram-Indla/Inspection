@@ -2,7 +2,9 @@
 
 ## Preserve
 
-- Saqeel name, Arabic wordmark, ministry attribution, and DEC-011 color/type identity.
+- Saqeel name, Arabic wordmark, and ministry attribution. The former DEC-011
+  launch-film color/type identity is superseded for authenticated product UI by
+  sponsor-approved `CC-DESIGN-FOUNDATION-SHELL-RESET-001` (2026-07-18).
 - Dark and light modes with persistent preference and no-flash initialization.
 - English/Arabic switching and true RTL layouts.
 - Existing URLs, server actions, Supabase data contracts, RLS, RBAC, audit, state guards, offline engine, and immutable submission semantics.
@@ -18,6 +20,17 @@
 - Review density, returned-scope comprehension, and version comparison.
 - Empty, loading, unauthorized, partial-service, offline, stale, conflict, and retry states.
 - Accessibility and Arabic layout quality.
+
+## 2026-07-18 foundation reset
+
+- Authenticated product UI is institutional, productive and light-first.
+- Cinematic Atlas v0.8 is the only expressive visual exception and owns its own
+  local tokens; it may not influence shell, workflow, admin, field or evidence UI.
+- Input, textarea, select and search geometry/behavior are frozen for this change.
+- New MVP2/MVP3 UI must consume the shared semantic tokens and shell components;
+  raw visual values or local expressive themes fail design acceptance.
+- WCAG 2.2 AA is the release floor; normal text targets AAA where compatible with
+  semantic status and control requirements.
 
 ## Research policy
 

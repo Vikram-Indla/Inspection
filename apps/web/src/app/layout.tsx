@@ -13,8 +13,9 @@ import { registerStagingNotificationAdapters } from "@/lib/providers/notificatio
 // harmless no-op for every real deployment that doesn't set that flag.
 registerStagingNotificationAdapters(registerAdapter);
 
-// Saqeel theme v2: Space Grotesk carries EN (launch-film geometric sans),
-// IBM Plex Sans Arabic carries AR, JetBrains Mono carries data labels.
+// Government Foundation V1: IBM Plex Sans Arabic provides the shared bilingual
+// product voice. Space Grotesk remains loaded only for the frozen input contract;
+// JetBrains Mono is restricted to identifiers and machine telemetry.
 const grotesk = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
@@ -34,7 +35,12 @@ const jbMono = JetBrains_Mono({
   display: "swap",
 });
 
-export const viewport = { themeColor: "#0A0A14" };
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F5F7F8" },
+    { media: "(prefers-color-scheme: dark)", color: "#101317" },
+  ],
+};
 export const metadata = {
   manifest: "/manifest.json",
   icons: {

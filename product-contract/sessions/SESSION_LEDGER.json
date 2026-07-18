@@ -3456,9 +3456,168 @@
       "commit_sha": "1e60342",
       "next_task": "None from this session. MVP2 M2-05 (UPDATE 90) runtime certification remains the open work item.",
       "resume_prompt": "Read CURRENT_STATE.md UPDATE 91 for the consolidation record. Repository now has a single branch (setup/Inspection, pushed to origin) and a single worktree; all prior feature branches are merged into its history, not separately checkable out."
+    },
+    {
+      "session_id": "2026-07-18-design-foundation-shell-reset-001",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "codex/design-foundation-shell-reset-001",
+      "task_id": "TASK-DESIGN-FOUNDATION-SHELL-RESET-001",
+      "gate": "G11 sponsor-approved controlled UI foundation reset",
+      "requirements": [
+        "SPONSOR-DSF-001..030",
+        "MVP1-FND-010..012"
+      ],
+      "acceptance_ids": [
+        "DSF-AC-001..030"
+      ],
+      "screens": [
+        "SCR-SHARED-SHELL-001",
+        "ALL-AUTHENTICATED-GOVERNED-SCREENS foundation only"
+      ],
+      "engines": [
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/src/app/tokens.css and astryx.css",
+        "apps/web/src/components/ShellClient.tsx and NotificationBell.tsx",
+        "apps/web/public/saqeel-prism assets",
+        "apps/web/e2e/design-foundation-contract.spec.ts and shell contracts",
+        "design/claude-design-mvp1/authority/GOVERNMENT_FOUNDATION_SHELL_RESET_V1.md",
+        "product-contract governance, execution, acceptance and evidence records"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "foundation contract 6/6 PASS",
+        "shell runtime 9/9 PASS",
+        "static inventory 54 PASS / 3 intentional provider skips / 0 failures",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/acceptance/DSF_FOUNDATION_SHELL_RESET_001.csv",
+        "product-contract/evidence/TASK-DESIGN-FOUNDATION-SHELL-RESET-001.md",
+        "four implemented-shell visual frames in the Codex visualization workspace"
+      ],
+      "decisions": [
+        "Codex implements the approved reset directly; Claude Design remains design-review authority",
+        "Cinematic Atlas v0.8 is an isolated exception",
+        "MVP3+ must inherit the shared foundation tokens",
+        "Text input geometry and behavior remain frozen"
+      ],
+      "blockers": [
+        "No foundation/shell blocker",
+        "Page-by-page visual critique and complete authenticated application regression are follow-on work"
+      ],
+      "commit_sha": "uncommitted working tree; no commit authorized or requested",
+      "next_task": "Run the controlled page-by-page UI quality sweep against the approved foundation, then complete authenticated regression and sponsor runtime acceptance.",
+      "resume_prompt": "Read the project authority and TASK-DESIGN-FOUNDATION-SHELL-RESET-001 evidence. Preserve tokens, frozen inputs and the Atlas v0.8 exception. Continue with the page-by-page visual critique/redesign; do not change workflows, data, RLS or providers without separate change control."
+    },
+    {
+      "session_id": "2026-07-18-design-foundation-shell-merge-ready",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "codex/design-foundation-shell-reset-001",
+      "task_id": "TASK-DESIGN-FOUNDATION-SHELL-RESET-001",
+      "gate": "G11 sponsor-approved controlled UI foundation reset",
+      "requirements": [
+        "SPONSOR-DSF-022..027"
+      ],
+      "acceptance_ids": [
+        "DSF-AC-019",
+        "DSF-AC-022",
+        "DSF-AC-024",
+        "DSF-AC-026",
+        "DSF-AC-027"
+      ],
+      "screens": [
+        "SCR-SHARED-SHELL-001"
+      ],
+      "engines": [
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "apps/web/e2e/shell-visual-evidence.spec.ts",
+        "product-contract/CURRENT_STATE.md",
+        "product-contract/execution/CURRENT_SLICE.yaml and WORK_QUEUE.yaml",
+        "product-contract/evidence foundation-shell records"
+      ],
+      "tests": [
+        "fresh production build PASS",
+        "implicated shell interactions 3/3 PASS on port 3118",
+        "complete shell suite 9/9 PASS on port 3118",
+        "final visual evidence 2/2 PASS"
+      ],
+      "evidence": [
+        "matching light/dark desktop shell frames",
+        "collapsed desktop shell frame",
+        "Arabic RTL mobile drawer frame",
+        "trace proof that provisional failures used stale port 3000 assets"
+      ],
+      "decisions": [
+        "Visual direction sponsor-approved",
+        "No product repair required; provisional failures were a wrong-server test-target issue",
+        "Foundation/shell is merge-ready but commit and merge still require explicit approval"
+      ],
+      "blockers": [
+        "Explicit sponsor commit/merge approval"
+      ],
+      "commit_sha": "uncommitted working tree; approval pending",
+      "next_task": "After explicit approval, commit the ring-fenced foundation/shell change and merge through the governed repository path; then open the separate page-by-page UI sweep.",
+      "resume_prompt": "The government foundation and shell are merge-ready on codex/design-foundation-shell-reset-001. Read UPDATE 93 and the DSF evidence. Do not merge until the sponsor explicitly approves commit/merge. Preserve inputs and Cinematic Atlas v0.8."
+    },
+    {
+      "session_id": "2026-07-18-design-foundation-shell-local-merge",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "setup/Inspection",
+      "task_id": "TASK-DESIGN-FOUNDATION-SHELL-RESET-001",
+      "gate": "G11 sponsor-approved controlled UI foundation reset",
+      "requirements": [
+        "SPONSOR-DSF-001..030"
+      ],
+      "acceptance_ids": [
+        "DSF-AC-001..030"
+      ],
+      "screens": [
+        "SCR-SHARED-SHELL-001"
+      ],
+      "engines": [
+        "ENG-11",
+        "ENG-12"
+      ],
+      "files_changed": [
+        "local merge of codex/design-foundation-shell-reset-001 into setup/Inspection",
+        "playwright.static.config.ts union resolution preserving OCR and foundation contracts",
+        "CURRENT_STATE, CURRENT_SLICE, WORK_QUEUE and session records"
+      ],
+      "tests": [
+        "integrated npm run typecheck PASS",
+        "integrated npm run build PASS",
+        "integrated static inventory 54 PASS / 3 intentional provider skips / 0 failures",
+        "foundation contract 6/6 PASS",
+        "authenticated shell 9/9 PASS",
+        "visual capture 2/2 PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-DESIGN-FOUNDATION-SHELL-RESET-001.md",
+        "product-contract/acceptance/DSF_FOUNDATION_SHELL_RESET_001.csv",
+        "final light/dark/collapsed/mobile frames in the visualization workspace"
+      ],
+      "decisions": [
+        "Sponsor explicitly approved local commit and merge",
+        "OCR and foundation static-test entries both preserved",
+        "No push, deployment, main or remote DDL authorized"
+      ],
+      "blockers": [],
+      "commit_sha": "feature commit a462c1c; local merge commit recorded by git",
+      "next_task": "Open a separate controlled page-by-page UI critique and redesign slice using the merged foundation.",
+      "resume_prompt": "The government foundation and shared shell are merged locally into setup/Inspection. Read CURRENT_STATE UPDATE 94 and the DSF evidence. Preserve inputs and Cinematic Atlas v0.8. Begin page-level work only under a separate approved slice."
     }
   ],
-  "last_session": "2026-07-17-mvp2-m2-05-audit-replay",
+  "last_session": "2026-07-18-design-foundation-shell-local-merge",
   "rules": {
     "append_only": true,
     "required_fields": [

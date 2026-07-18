@@ -283,7 +283,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
                 ? fill(s.evidenceRequired, { type: item.evidence.type ?? "evidence", min: item.evidence.min ?? 1 })
                 : s.evidenceNone}
             </p>
-            <p className="ax-caption"><em>{s.evidenceSource}</em></p>
+            <p className="ax-caption"><span>{s.evidenceSource}</span></p>
           </div>
 
           <div>

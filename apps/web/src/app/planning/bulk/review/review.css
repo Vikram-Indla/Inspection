@@ -24,7 +24,7 @@
   gap: var(--ax-space-200) var(--ax-space-300); margin: 0;
 }
 .cd-ctx { padding: var(--ax-space-300); padding-block-start: var(--ax-space-200); }
-.cd-context dt { font: var(--ax-text-micro); letter-spacing: .06em; text-transform: uppercase; color: var(--ax-color-text-secondary); margin-block-end: var(--ax-space-050); }
+.cd-context dt { font: var(--ax-text-micro); letter-spacing: .01em; color: var(--ax-color-text-secondary); margin-block-end: var(--ax-space-050); }
 .cd-context dd { margin: 0; font: var(--ax-text-body); }
 .cd-count { font: var(--ax-text-title); font-feature-settings: var(--ax-numeric-features); line-height: 1.1; }
 .cd-count small { font: var(--ax-text-body); color: var(--ax-color-text-secondary); }
@@ -66,7 +66,7 @@
   display: flex; flex-direction: column; gap: var(--ax-space-150);
 }
 .cd-lgroup--not { background: var(--ax-color-surface-sunken); }
-.cd-lgroup__head { font: var(--ax-text-micro); letter-spacing: .06em; text-transform: uppercase; color: var(--ax-color-text-secondary); }
+.cd-lgroup__head { font: var(--ax-text-micro); letter-spacing: .01em; color: var(--ax-color-text-secondary); }
 .cd-lrow { display: flex; gap: var(--ax-space-150); align-items: flex-start; }
 .cd-lrow__mark { flex: none; inline-size: 20px; text-align: center; font-weight: 700; line-height: 1.4; }
 .cd-lrow__mark.ok { color: var(--ax-color-success-strong); }
@@ -106,7 +106,7 @@
 .cd-resultgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--ax-space-200); }
 
 /* handoff-status tag (annotation of an unresolved governance leg) */
-.cd-tag { font: var(--ax-text-micro); letter-spacing: .06em; text-transform: uppercase; padding: 2px var(--ax-space-100); border-radius: var(--ax-radius-small); }
+.cd-tag { font: var(--ax-text-micro); letter-spacing: .01em; padding: 2px var(--ax-space-100); border-radius: var(--ax-radius-small); }
 .cd-tag--blocked { background: var(--ax-color-warning-tint); color: var(--ax-color-warning-strong); }
 .cd-tag--ok { background: var(--ax-color-success-tint); color: var(--ax-color-success-strong); }
 

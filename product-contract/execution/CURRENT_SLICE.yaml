@@ -1,96 +1,71 @@
 schema_version: "1.2"
-task_id: "TASK-MVP2-M2-05-AUDIT-REPLAY-001"
-gate: "MVP2 Wave 1 / G8 sponsor-authorized build"
-title: "MVP2-CD-031-M2-05 Audit Replay, History & Legal Traceability"
-status: "SOURCE_IMPLEMENTATION_PASS_RUNTIME_CERTIFICATION_PENDING — main now integrates MVP1 cycle-2 hardening + M2-05 Audit Replay + M2-02 Workflow/SLA/Notification Studio. Merge and push were sponsor-authorized; runtime certification (remote migration apply, live regression, deploy) remains PENDING for both M2-02 and M2-05."
+task_id: "TASK-DESIGN-FOUNDATION-SHELL-RESET-001"
+gate: "G11 sponsor-approved controlled UI foundation reset"
+title: "Government-grade visual foundation and authenticated shell reset"
+status: "FOUNDATION_AND_SHELL_MERGED_LOCAL"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#MVP2-M2-05-AUDIT-REPLAY-BUILD"
+approval_ref: "HUMAN_APPROVALS.yaml#DESIGN-FOUNDATION-SHELL-RESET-001"
+change_control_ref: "CC-DESIGN-FOUNDATION-SHELL-RESET-001"
 
-# Reflects the release-branch integration state (this record's own module is
-# M2-05; the block below records the M2-02 merge that also landed on main).
-main_integration:
-  integrated_on_main: ["MVP1-cycle2-hardening", "MVP2-CD-031-M2-05-audit-replay", "MVP2-CD-043-M2-02-workflow-studio"]
-  m2_02:
-    source_branch: "workflow"
-    source_head: "21bce21"
-    merge_commit: "2d78bb3"
-    approvals: ["HUMAN_APPROVALS.yaml#MVP2-M2-02-WORKFLOW-STUDIO-BUILD-AUTHORIZATION", "HUMAN_APPROVALS.yaml#MVP2-M2-02-MERGE-TO-MAIN", "HUMAN_APPROVALS.yaml#MVP2-M2-02-PUSH-TO-ORIGIN"]
-    design_gate: "95/100, zero P0/P1 (APPROVED/M2-02 R2 repaired package)"
-    verified: "typecheck clean; production build clean; 70/70 pure mvp2-m2-02 tests pass; full e2e suite compiles (397 tests)"
-  pushed_to_origin: "origin/main @ 13d6070 (includes the approval-gated hook change)"
-  open_holds:
-    - "5 M2-02 forward-only migrations NOT applied to any database (remote apply gated)."
-    - "Live-DB Playwright regression + browser render NOT executed (no isolated DB)."
-    - "DEC-003 (SLA calendar authority), SMS/email/push providers, M2-05 shared semantic-event migration remain OPEN."
-    - "No production deployment; no credential rotation; no Git-history rewrite."
-
-sponsor_direction:
-  approver: "Vikram Indla"
-  date: "2026-07-17"
-  authorization:
-    - "Sponsor explicitly directed Codex to move forward and finish all required M2-05 work, superseding the completed read-only Cycle 2 retest pointer for this module."
-    - "Authorize design reconciliation, forward-only source migrations, RLS, semantic event contracts, server reads/actions, frontend, automated tests, evidence and handover on a dedicated branch/worktree."
-  limits:
-    - "Do not modify or merge main, push, deploy, apply remote DDL, seed shared data, or rewrite history without separate explicit approval."
-    - "Do not invent DEC-006/DEC2-009 policy, provider status, PKI/EBDA truth, retention, redaction, watermark, purge, legal status, SLA, risk, geofence or Arabic terminology values."
-
-branch_at_start: "codex/mvp2-m2-05-audit-replay"
-head_at_start: "bf35872ded6b81c650d13cba9f6112574f9d709c"
-worktree: "/private/tmp/Inspection-mvp2-m2-05-audit-replay"
-
-process_ids: ["M2-05", "MVP2-WAVE-1"]
-requirement_ids: ["MVP2-REQ-0137..MVP2-REQ-0172"]
-acceptance_ids: ["MVP2-AC-0137..MVP2-AC-0172"]
-evidence_ids: ["MVP2-EV-0137..MVP2-EV-0172"]
-screen_ids: ["AUD-REPLAY-01", "AUD-REPLAY-02", "AUD-REPLAY-03", "AUD-REPLAY-04", "AUD-REPLAY-04S", "AUD-REPLAY-05", "AUD-REPLAY-06", "AUD-REPLAY-07"]
-engine_ids: ["ENG-12"]
+branch_at_start: "codex/design-foundation-shell-reset-001"
+head_at_start: "95f7036"
+process_ids: ["CROSS-CUTTING-FOUNDATION", "P00..P12"]
+requirement_ids: ["SPONSOR-DSF-001..030", "MVP1-FND-010", "MVP1-FND-011", "MVP1-FND-012"]
+acceptance_ids: ["DSF-AC-001..030"]
+evidence_ids: ["DSF-EV-001..030"]
+screen_ids: ["SCR-SHARED-SHELL-001", "ALL-AUTHENTICATED-GOVERNED-SCREENS"]
+engine_ids: ["ENG-11", "ENG-12"]
 
 dependencies:
-  - "MVP1 immutable audit_events and trigger/RLS foundation (0001/0002/0004/0005/0019)."
-  - "Existing /admin/audit route, shell, i18n and audit-adjacent visit/review/factory screens."
-  - "M2-02 consumers must emit through the shared semantic append boundary and may not mutate M2-05 state."
-  - "Workbook rows 0137..0172 and the R2 design correction prompt; design archive defects are reconciled into repository machine-readable contracts before UI claims."
+  - "Sponsor approval CC-DESIGN-FOUNDATION-SHELL-RESET-001."
+  - "Existing TASK-WEB-SHELL-001 role navigation, focus trap, responsive drawer and route truth."
+  - "Existing bilingual and RTL foundation."
+  - "Existing shared design tokens and component library."
 
-open_decisions:
-  - "DEC-006 evidence/legal retention and certification policy remains held."
-  - "DEC2-009 reveal/export/redaction/watermark/purge policy remains held."
-  - "EBDA/PKI provider and verification contract remains unavailable until separately approved."
-  - "MVP3 package authoring and trusted-device surfaces remain out of scope; historical facts replay only when present."
+open_decisions: []
 
 do_not_touch:
-  - "main, remote DDL, production deployment, shared production-like records and unrelated worktrees."
-  - "Existing audit_events UPDATE/DELETE rejection and submitted-version immutability."
-  - "Existing canonical workflow transitions, RLS grants and MVP1 accepted behavior except additive compatible changes."
+  - "Workflow transitions, business behavior, Supabase schema, RLS, audit immutability, providers and production data."
+  - "Input, textarea, select and search geometry or behavior."
+  - "Cinematic Atlas v0.8 expressive scene except removal of prism black backing and strict token isolation."
+  - "main, remote DDL, deployment, push and merge."
 
 authorized_file_scope:
-  - "apps/web/src/app/admin/audit/**"
-  - "apps/web/src/lib/audit* and additive M2-05 libraries"
-  - "apps/web/e2e/mvp2-m2-05-*"
-  - "supabase/migrations/*mvp2_m2_05*"
-  - "product-contract/mvp2/m2-05/**"
-  - "product-contract acceptance/evidence/execution/governance/session records required for this slice"
+  - "apps/web/src/app/tokens.css"
+  - "apps/web/src/app/astryx.css"
+  - "apps/web/src/app/layout.tsx"
+  - "apps/web/src/app/dashboard/dashboard.module.css"
+  - "apps/web/src/app/login/login.css"
+  - "apps/web/src/app/**/*.css and typography-only semantic markup needed for the approved sweep"
+  - "apps/web/src/components/ShellClient.tsx"
+  - "apps/web/src/components/NotificationBell.tsx"
+  - "apps/web/public/saqeel-prism.svg"
+  - "apps/web/e2e/*foundation* and shell tests/evidence"
+  - "apps/web/playwright.static.config.ts"
+  - "design/claude-design-mvp1/authority/**"
+  - "product-contract governance/execution/acceptance/evidence/session records for this task"
+
+required_context:
+  - "AGENTS.md"
+  - "product-contract/GATE_STATUS.md"
+  - "product-contract/CURRENT_STATE.md"
+  - "product-contract/governance/HUMAN_APPROVALS.yaml"
+  - "design/claude-design-mvp1/00_START_HERE.md"
+  - "design/claude-design-mvp1/CURRENT_UI_BASELINE.md"
+  - "design/claude-design-mvp1/authority/DESIGN_DECISIONS.md"
+  - "design/claude-design-mvp1/authority/GOVERNMENT_FOUNDATION_SHELL_RESET_V1.md"
+  - "design/claude-design-mvp1/authority/SHARED_SHELL_BUSINESS_TAB_CONTRACT_V1.md"
+  - "design/claude-design-mvp1/prompts/systems/ARABIC_RTL_ACCESSIBILITY_AND_RESPONSIVE.md"
 
 required_evidence:
-  - "36-row requirement-to-code-to-test-to-evidence map"
-  - "Schema/RPC/RLS/immutability/idempotency/correlation contract results"
-  - "M2-05 UI/E2E positive, denied, partial, stale, conflict, degraded, RTL, responsive and print results"
-  - "Typecheck, production build, focused M2-05 suite, mapped MVP1 regression and full-suite disposition"
-  - "Remote database status explicitly stating no DDL applied without approval"
-
-task_specific_context:
-  - "product-contract/00_START_HERE.md"
-  - "product-contract/CURRENT_STATE.md"
-  - "product-contract/GATE_STATUS.md"
-  - "product-contract/governance/OPEN_DECISIONS.yaml"
-  - "docs/README.md"
-  - "docs/DOCUMENTATION_STORAGE_POLICY.md"
-  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/02_MASTER_WORKBOOK/MIM_Inspection_MVP2_Breakdown_Acceptance_Evidence.xlsx"
-  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/04_EXECUTION/PROMPTS/M2-05_CLAUDE_DESIGN_PROMPT_R1.md"
-  - "/Users/vikramindla/Documents/Inspection - MVP Delivery/02_MVP2/04_EXECUTION/PROMPTS/M2-05_CLAUDE_DESIGN_FINAL_CORRECTION_R2.md"
-  - "/Users/vikramindla/Downloads/# Saqeel audit replay forensics.zip"
+  - "30-row sponsor requirement-to-code-to-test map."
+  - "Light/dark WCAG contrast and focus verification."
+  - "English/Arabic expanded/collapsed/tablet/mobile shell screenshots."
+  - "Prism, notification, account responsiveness and frozen text-box evidence."
+  - "Typecheck, production build, focused tests and regression disposition."
 
 exit_condition: >-
-  The slice exits only when the additive semantic-event/replay foundation, RLS and append-only guards,
-  approved route modes, honest missing/provider/policy states, all self-authored tests, mapped MVP1
-  regression, evidence maps and handover are complete with no unresolved implementation P0/P1.
+  The government foundation and redesigned shell are implemented across authenticated UI,
+  Cinematic Atlas v0.8 remains isolated, text-box behavior/geometry is unchanged, all
+  DSF-AC-001..030 rows are evidenced, and no required WCAG or regression criterion fails.

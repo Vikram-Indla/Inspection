@@ -159,7 +159,7 @@ export default function ShellClient({
             <span className="ax-shell__brand-sub" lang="ar">صناعي</span>
           </span>
           <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
-            <span aria-hidden="true">×</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
           </button>
         </div>
 
@@ -171,7 +171,7 @@ export default function ShellClient({
                 <button className="ax-nav-group__trigger" type="button" aria-label={group.label} aria-expanded={groupOpen}
                   aria-controls={`nav-group-${group.id}`}
                   onClick={() => setOpenGroups(value => ({ ...value, [group.id]: !groupOpen }))}>
-                  <span className="ax-nav-label">{group.label}</span><span className="ax-nav-group__chevron" aria-hidden="true">⌄</span>
+                  <span className="ax-nav-label">{group.label}</span><svg className="ax-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
                   {group.items.map(item => (
@@ -188,7 +188,7 @@ export default function ShellClient({
         </div>
 
         <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
-          <span aria-hidden="true">‹</span><span className="ax-nav-label">{collapsed ? strings.expand : strings.collapse}</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18 3 12l6-6M21 19V5" /></svg><span className="ax-nav-label">{collapsed ? strings.expand : strings.collapse}</span>
         </button>
       </nav>
 
@@ -197,11 +197,15 @@ export default function ShellClient({
           <div className="ax-pagehead__topbar">
             <button ref={menuRef} className="ax-topbar-icon ax-shell__menu" type="button" aria-label={strings.openMenu}
               aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
-              <span aria-hidden="true">☰</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
             </button>
             {topbar ?? (
               <div className="ax-shell-search">
-                <span className="ax-shell-search__icon" aria-hidden="true">⌕</span>
+                <span className="ax-shell-search__icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
+                  </svg>
+                </span>
                 <input value={query} aria-label={strings.navigationSearch} placeholder={strings.navigationSearch}
                   onFocus={() => setSearchOpen(true)} onChange={event => { setQuery(event.target.value); setSearchOpen(true); }}
                   onKeyDown={event => { if (event.key === "Escape") { setSearchOpen(false); setQuery(""); } }} />
@@ -222,7 +226,7 @@ export default function ShellClient({
                   onClick={() => setAccountOpen(value => !value)}>
                   <span className="ax-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
                   <span className="ax-shell-account__identity"><strong>{email.split("@")[0]}</strong><small>{roles.join(" · ")}</small></span>
-                  <span aria-hidden="true">⌄</span>
+                  <svg className="ax-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && (
                   <div className="ax-shell-account__menu" role="dialog" aria-label={strings.account}>

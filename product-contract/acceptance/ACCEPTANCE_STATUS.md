@@ -1,5 +1,14 @@
 # Acceptance Status
 
+## TASK-DESIGN-FOUNDATION-SHELL-RESET-001 — 2026-07-18
+
+- DSF-AC-001..030: **PASS** for the shared foundation and authenticated shell.
+- WCAG token contrast, focus visibility, bilingual type, responsive shell, transparent
+  prism, notification and account contracts are verified.
+- Inputs are frozen and Cinematic Atlas v0.8 is isolated.
+- Page-specific redesign and complete authenticated regression are separate follow-on
+  work. Exact map: `DSF_FOUNDATION_SHELL_RESET_001.csv`.
+
 ## TASK-IPAD-MAPBOX-RUNTIME-004 — 2026-07-16
 
 - Shared map migration across web, Admin and iPad: **SOURCE PASS** — Mapbox GL

@@ -78,7 +78,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
                   {strings.evidence}: {row.evidence_count}{" "}
                   {row.evidence_url
                     ? <a href={row.evidence_url} target="_blank" rel="noreferrer">{strings.viewEvidence}</a>
-                    : row.evidence_count > 0 ? <em>({strings.evidenceUnavailable})</em> : null}
+                    : row.evidence_count > 0 ? <span>({strings.evidenceUnavailable})</span> : null}
                 </span>}
               </div>
               <div className="ax-row" style={{ gap: 8, alignItems: "end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-150)" }}>
