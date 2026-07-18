@@ -32,10 +32,15 @@ export default async function AiSuggestionsPage() {
     reason: t("ai.reason", "Reason"),
     context: t("ai.context", "Context (advisory)"), generate: t("ai.generate", "Generate (AI)"),
     generating: t("ai.generating", "Generating…"), generated: t("ai.generated", "generated"),
+    evidenceRefs: t("ai.evidenceRefs", "Evidence references"), clauseRefs: t("ai.clauseRefs", "Clause references"),
+    confidence: t("ai.confidence", "Provider confidence"), confidenceUnavailable: t("ai.confidenceUnavailable", "Not supplied — do not infer"),
   };
   const mapped: AiRow[] = (rows ?? []).map((r) => ({
     id: r.id, surface: r.surface, text: String((r.suggestion as { text?: string })?.text ?? ""),
     disposition: r.disposition as AiDisposition, provider_status: r.provider_status,
+    evidenceRefs: Array.isArray((r.suggestion as { evidence_refs?: unknown })?.evidence_refs) ? (r.suggestion as { evidence_refs: string[] }).evidence_refs : [],
+    clauseRefs: Array.isArray((r.suggestion as { clause_refs?: unknown })?.clause_refs) ? (r.suggestion as { clause_refs: string[] }).clause_refs : [],
+    confidence: typeof (r.suggestion as { confidence?: unknown })?.confidence === "number" ? (r.suggestion as { confidence: number }).confidence : null,
   }));
   return (
     <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")} context={<span className="ax-lozenge ax-lozenge--info">CD-048 · REQ-0056..0066</span>}>

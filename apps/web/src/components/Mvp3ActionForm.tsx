@@ -1,0 +1,21 @@
+"use client";
+
+import { useActionState, type ReactNode } from "react";
+import type { Mvp3ActionState } from "@/app/admin/mvp3-actions";
+
+export default function Mvp3ActionForm({ action, children, submitLabel }: {
+  action: (state: Mvp3ActionState, data: FormData) => Promise<Mvp3ActionState>;
+  children: ReactNode;
+  submitLabel: string;
+}) {
+  const [state, formAction, pending] = useActionState(action, { ok: false, message: "" });
+  return (
+    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+      {children}
+      <button className="ax-btn ax-btn--secondary" type="submit" disabled={pending}>
+        {pending ? "Working…" : submitLabel}
+      </button>
+      {state.message ? <p role="status" className={state.ok ? "ax-caption" : "ax-banner ax-banner--critical"}>{state.message}</p> : null}
+    </form>
+  );
+}

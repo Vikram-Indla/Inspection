@@ -14,6 +14,7 @@ import { getGeminiProvider } from "@/lib/providers/ai-gemini";
 export type AiResult = { error?: string; ok?: boolean };
 const MODES = ["off", "on"] as const;
 const enabled = () => resolveFeatureFlag(process.env.FEATURE_AI_DOCKETS, MODES, "off") === "on";
+const refs = (value: FormDataEntryValue | null) => String(value ?? "").split(",").map(x => x.trim()).filter(Boolean).slice(0, 20);
 
 export async function proposeSuggestion(_: AiResult, formData: FormData): Promise<AiResult> {
   if (!enabled()) return { error: "AI dockets are feature-flagged off (FEATURE_AI_DOCKETS)." };
@@ -22,11 +23,14 @@ export async function proposeSuggestion(_: AiResult, formData: FormData): Promis
   if (!user) return { error: "Session expired — sign in again." };
   const surface = String(formData.get("surface") ?? "").trim();
   const text = String(formData.get("text") ?? "").trim();
+  const evidence_refs = refs(formData.get("evidence_refs"));
+  const clause_refs = refs(formData.get("clause_refs"));
   if (!surface) return { error: "A surface is required." };
   if (!isSuggestionSurfaceAllowed(surface)) return { error: "AI must never generate legal source text on this surface." };
   if (!text) return { error: "Suggestion content is required." };
+  if (!evidence_refs.length) return { error: "At least one evidence reference is required." };
   const { data, error } = await sb.from("ai_suggestions").insert({
-    surface, suggestion: { text }, disposition: "proposed", provider_status: "unavailable",
+    surface, suggestion: { text, evidence_refs, clause_refs, confidence: null, confidence_status: "not_supplied" }, disposition: "proposed", provider_status: "unavailable",
   }).select("id").maybeSingle();
   if (error) { logProviderError("ai propose", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (data?.id) await sb.from("ai_events").insert({ suggestion_id: data.id, event_type: "proposed", actor: user.id, payload: { surface } });
@@ -44,14 +48,17 @@ export async function generateAiSuggestion(_: AiResult, formData: FormData): Pro
   if (!user) return { error: "Session expired — sign in again." };
   const surface = String(formData.get("surface") ?? "").trim();
   const context = String(formData.get("context") ?? "").trim();
+  const evidence_refs = refs(formData.get("evidence_refs"));
+  const clause_refs = refs(formData.get("clause_refs"));
   if (!surface) return { error: "A surface is required." };
   if (!isSuggestionSurfaceAllowed(surface)) return { error: "AI must never generate legal source text on this surface." };
+  if (!evidence_refs.length) return { error: "At least one evidence reference is required before generation." };
   const provider = getGeminiProvider();
   if (!provider) return { error: "AI provider is unavailable (fail-closed — GEMINI_API_KEY not configured)." };
   const gen = await provider.generate(surface, context);
   if (!gen.ok || !gen.text) return { error: `AI provider did not return a usable suggestion (${gen.reason ?? "unknown"}).` };
   const { data, error } = await sb.from("ai_suggestions").insert({
-    surface, suggestion: { text: gen.text, source: "gemini" }, disposition: "proposed", provider_status: "configured",
+    surface, suggestion: { text: gen.text, source: "gemini", evidence_refs, clause_refs, confidence: null, confidence_status: "provider_not_supplied" }, disposition: "proposed", provider_status: "configured",
   }).select("id").maybeSingle();
   if (error) { logProviderError("ai generate", error); return { error: NEUTRAL_WRITE_ERROR }; }
   if (data?.id) await sb.from("ai_events").insert({ suggestion_id: data.id, event_type: "proposed", actor: user.id, payload: { surface, source: "gemini" } });

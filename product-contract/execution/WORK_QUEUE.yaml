@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
+    gate: "MVP3 sponsor-authorized complete implementation"
+    priority: "P0"
+    status: "SOURCE_IMPLEMENTED_RUNTIME_CERTIFICATION_PENDING"
+    owner: "Codex implementation and QA + Sponsor for held external decisions"
+    blocked_by: ["Controlled application of the forward-only MVP3 migration", "Authenticated persona and negative-RLS runtime", "Held external provider/policy decisions recorded in product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv"]
+    blocks: ["MVP3 engineering closure", "MVP1+MVP2+MVP3 integrated certification"]
+    note: "Complete MVP3 source slice is implemented on codex/mvp3-complete-implementation from integrated baseline 45d4420. Exact 84-row controls and 13-module reuse map are recorded; missing trust/operations/security/device/enforcement routes, enterprise migration, package manifest/hash, device access, refusal context and evidence-cited AI closure are present. Typecheck/build pass; 65 source/static tests pass with 4 intentional provider skips. Runtime DB/RLS/persona certification and held providers remain pending; no remote DDL, push, merge or deploy performed."
   - task_id: "TASK-DESIGN-FOUNDATION-SHELL-RESET-001"
     gate: "G11 sponsor-approved controlled UI foundation reset"
     priority: "P0"

@@ -1,0 +1,14 @@
+Module,Design,Primary Existing MVP1/MVP2 Contracts,Additive MVP3 Contracts,Decision
+M3-00,CD-050,"roles; user_roles; audit_events; audit_semantic_events; config_versions; notification outbox","mvp3_integration_endpoints; mvp3_api_events; mvp3_export_jobs; mvp3_error_queue; mvp3_feature_flags; mvp3_access_reviews; mvp3_evidence_access_grants",REUSE_AND_EXTEND
+M3-01,CD-051,"workflow_definitions; workflow_versions; workflow transitions; task assignments; SLA timers",None,REUSE
+M3-02,CD-052,"regulations; regulation_clauses; inspection_items; packages; package_versions; config_versions; audit semantic package events",None,REUSE
+M3-03,CD-053,"risk_variables; risk_models; risk_simulations; risk_runs; risk_exceptions; risk_overrides; factory_risk_snapshots",None,REUSE
+M3-04,CD-054,"audit_events; audit_semantic_events; audit_event_ontology; correlation and replay RPCs",None,REUSE
+M3-05,CD-055,"factories; geo_events; gis settings; spatial evidence contracts; Mapbox adapter",None,REUSE
+M3-06,CD-056,"inspections; inspection_operations; sync/outbox; geo evidence; package versions","mvp3_devices; mvp3_device_commands",REUSE_AND_EXTEND
+M3-07,CD-057,"external_requests; self_assessments; correction_evidence; objections; factory representatives",None,REUSE
+M3-08,CD-058,"visits; inspections; reviews; violations; geo_events; audit_events; dashboard metric functions","mvp3_kpi_definitions",REUSE_AND_EXTEND
+M3-09,CD-059,"violations; action_forms; cases; objections; audit semantic events",None,REUSE
+M3-10,CD-060,"ai_suggestions; ai_events; provider adapters; human disposition lifecycle",None,REUSE
+M3-11,CD-061,"committee decisions; decision dossiers; signature_acts; report_verifications; DocuSign adapter",None,REUSE
+M3-12,N/A,"Playwright source contracts; browser regression; evidence and governance ledgers",None,REUSE_AND_CERTIFY

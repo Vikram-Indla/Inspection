@@ -84,6 +84,10 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelAr: "منظومة التحكم",
     items: [
       { id: "admin-home", labelKey: "shell.nav.adminHome", labelEn: "Approval & Configuration", labelAr: "الاعتماد والتهيئة", href: "/admin", icon: "admin", roles: adminRoles, businessTab: "Approval Queue / Administration" },
+      { id: "integrations", labelKey: "shell.nav.integrations", labelEn: "Integration Trust", labelAr: "حوكمة التكامل", href: "/admin/integrations", icon: "workflow", roles: ["security_admin", "workflow_admin"], businessTab: "Integration Trust Console" },
+      { id: "platform-operations", labelKey: "shell.nav.platformOperations", labelEn: "Platform Operations", labelAr: "عمليات المنصة", href: "/admin/operations", icon: "radar", roles: ["security_admin", "workflow_admin"], businessTab: "Platform Operations" },
+      { id: "security-access", labelKey: "shell.nav.securityAccess", labelEn: "Security & Access Review", labelAr: "مراجعة الأمن والوصول", href: "/admin/security-access", icon: "access", roles: ["security_admin"], businessTab: "Security and Access Review" },
+      { id: "devices", labelKey: "shell.nav.devices", labelEn: "Trusted Devices", labelAr: "الأجهزة الموثوقة", href: "/admin/devices", icon: "inspect", roles: ["security_admin"], businessTab: "Device and Offline Administration" },
       { id: "regulations", labelKey: "shell.nav.regulations", labelEn: "Compliance Library", labelAr: "مكتبة الامتثال", href: "/admin/regulations", icon: "library", roles: ["compliance_admin"], businessTab: "Compliance Library" },
       { id: "packages", labelKey: "shell.nav.packages", labelEn: "Packages & Surveys", labelAr: "الحزم والاستبيانات", href: "/admin/packages", icon: "forms", roles: ["form_admin", "compliance_admin"], businessTab: "Survey Configuration" },
       { id: "violations", labelKey: "shell.nav.enforcement", labelEn: "Enforcement Library", labelAr: "مكتبة الإنفاذ", href: "/admin/violations", icon: "enforcement", roles: ["compliance_admin"], businessTab: "Enforcement" },
@@ -95,6 +99,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
       { id: "notifications", labelKey: "shell.nav.notifications", labelEn: "Notification & SLA Rules", labelAr: "قواعد الإشعارات واتفاقية مستوى الخدمة", href: "/admin/notifications", icon: "notify", roles: adminRoles, businessTab: "Administration" },
       { id: "localization", labelKey: "shell.nav.localization", labelEn: "Localization", labelAr: "الترجمة", href: "/admin/localization", icon: "library", roles: ["compliance_admin", "security_admin", "workflow_admin"], businessTab: "Localization" },
       { id: "audit", labelKey: "shell.nav.audit", labelEn: "Audit Trail", labelAr: "سجل التدقيق", href: "/admin/audit", icon: "access", roles: adminRoles, businessTab: "Audit" },
+      { id: "enforcement-cases", labelKey: "shell.nav.enforcementCases", labelEn: "Enforcement Cases", labelAr: "قضايا الإنفاذ", href: "/enforcement", icon: "enforcement", roles: ["compliance_admin"], businessTab: "Enforcement and Corrections" },
     ],
   },
 ] as const;

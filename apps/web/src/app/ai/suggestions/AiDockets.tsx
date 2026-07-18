@@ -3,11 +3,12 @@ import { useActionState } from "react";
 import { proposeSuggestion, disposeSuggestion, generateAiSuggestion, type AiResult } from "./actions";
 import { isDispositionAllowed, AI_DISPOSITIONS, type AiDisposition } from "@/lib/ai/suggestions";
 
-export type AiRow = { id: string; surface: string; text: string; disposition: AiDisposition; provider_status: string };
+export type AiRow = { id: string; surface: string; text: string; disposition: AiDisposition; provider_status: string; evidenceRefs: string[]; clauseRefs: string[]; confidence: number | null };
 export type AiStrings = {
   surface: string; text: string; propose: string; proposing: string; proposed: string;
   dispose: string; disposing: string; disposed: string; reason: string;
   context: string; generate: string; generating: string; generated: string;
+  evidenceRefs: string; clauseRefs: string; confidence: string; confidenceUnavailable: string;
 };
 
 export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStrings }) {
@@ -20,6 +21,8 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
         <div className="ax-field"><label className="ax-field__label">{s.surface}</label>
           <select className="ax-input" name="surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
         <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label">{s.context}</label><input className="ax-input" name="context" /></div>
+        <div className="ax-field"><label className="ax-field__label">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" required /></div>
+        <div className="ax-field"><label className="ax-field__label">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" /></div>
         <button className="ax-btn" disabled={generating}>{generating ? s.generating : s.generate}</button>
         {gState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{gState.error}</span>}
         {gState.ok && <span className="ax-lozenge ax-lozenge--success">{s.generated}</span>}
@@ -28,6 +31,8 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
         <div className="ax-field"><label className="ax-field__label">{s.surface}</label>
           <select className="ax-input" name="surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
         <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label">{s.text}</label><input className="ax-input" name="text" required /></div>
+        <div className="ax-field"><label className="ax-field__label">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" required /></div>
+        <div className="ax-field"><label className="ax-field__label">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" /></div>
         <button className="ax-btn" disabled={proposing}>{proposing ? s.proposing : s.propose}</button>
         {pState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{pState.error}</span>}
         {pState.ok && <span className="ax-lozenge ax-lozenge--success">{s.proposed}</span>}
@@ -49,6 +54,11 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
           <span className="ax-lozenge ax-lozenge--warning">{r.provider_status}</span>
         </div>
       </div>
+      <dl className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+        <div><dt className="ax-caption">{s.evidenceRefs}</dt><dd>{r.evidenceRefs.length ? r.evidenceRefs.join(" · ") : "—"}</dd></div>
+        <div><dt className="ax-caption">{s.clauseRefs}</dt><dd>{r.clauseRefs.length ? r.clauseRefs.join(" · ") : "—"}</dd></div>
+        <div><dt className="ax-caption">{s.confidence}</dt><dd>{r.confidence == null ? s.confidenceUnavailable : `${Math.round(r.confidence * 100)}%`}</dd></div>
+      </dl>
       {targets.length > 0 && (
         <form action={dAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
           <input type="hidden" name="suggestion_id" value={r.id} />
