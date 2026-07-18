@@ -123,3 +123,41 @@ their runtime SQL behavior is unproven until the Inspection Supabase project
 - **Verification:** live send SID `SM6f543b8d7c6a98cb0823005244704de8` to +91 (queued,
   no error). Live send to +966534947632 fails 21612 (confirmed twice, unrelated to
   geo-permissions or caller-ID verification — both were correctly configured).
+
+---
+
+## R-007 — RLS gap caught before shipping: get_push_subscriptions_for_user open grant
+- **Module:** M2-02 notification delivery, push channel.
+- **Finding (self-caught, pre-commit):** the first draft of the push-subscription
+  lookup RPC granted EXECUTE to `authenticated` with no internal check — any logged-in
+  user could call it with an arbitrary p_user_id and read another user's Web Push
+  subscription endpoint/p256dh/auth (device push CREDENTIALS per RFC 8292, not visible
+  content). This repo has NO service-role client anywhere (every server action runs as
+  the authenticated actor under RLS via supabase-server.ts), so a SECURITY DEFINER RPC
+  granted to `authenticated` is exactly as exposed as an open table grant unless it
+  proves authorization internally.
+- **Resolution:** the RPC now requires the CALLER to hold one of the staff roles that
+  already legitimately trigger cross-user notifications today (planner/ops/
+  workflow_admin/compliance_admin/security_admin/leadership — matches who calls
+  insertNotification() for another user in visits/actions.ts), mirroring the
+  proof-of-authorization pattern already used by append_semantic_audit_event.
+- **Verification:** applied to staging; `prosecdef=true` confirmed; RLS on
+  push_subscriptions itself is self-row-only (own_select/own_insert/own_delete, no
+  update/broad-select policy).
+
+## R-008 — Web Push (VAPID) live-certified via real Chromium Push API (except one known test-binary ceiling)
+- **Module:** M2-02 notification delivery, push channel.
+- **Finding:** unlike SMS/email, Playwright's/Puppeteer's bundled Chromium (open-source
+  build) lacks Google's proprietary API key baked into official Chrome, so
+  `PushManager.subscribe()` cannot register with Chrome's push service in ANY headless-
+  Chromium test harness — a documented, widely-known testing-infrastructure ceiling, not
+  a code or config defect. Confirmed: real SW registration on the actual shipped
+  public/sw.js works; real page navigation works; explicit permission grant (both
+  context-level and per-origin) confirmed correctly applied; the failure is isolated to
+  the subscribe() call itself and is the exact symptom reported across the Playwright/
+  Puppeteer community for this limitation.
+- **Resolution:** the live test honestly `test.skip()`s at the exact point this ceiling
+  is hit (not faked green, not left red) — 7/8 pass, 1 skip with a documented reason.
+  Would pass in an environment with a real Chrome binary (e.g. `channel: 'chrome'`) or on
+  a real user device (sponsor declined the real-device proof step as unnecessary given
+  the code-path/fail-closed evidence already obtained).

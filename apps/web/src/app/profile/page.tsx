@@ -4,6 +4,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import NotificationPrefsForm from "./NotificationPrefsForm";
+import { PushOptIn } from "@/app/push/PushOptIn";
 
 // DEF-PRF-003 — Profile Settings, approved extent only (Cycle 2 Wave 1):
 // personal details display, language, light/dark preference, notification
@@ -92,6 +93,14 @@ export default async function ProfileSettings() {
               saved: t("profile.notif.saved", "Saved"),
             }}
           />
+          <p className="ax-caption" style={{ margin: 0 }}>{t("profile.notif.pushOptInNote", "Push notifications require enabling on this device (browser permission + subscription). Toggling the preference above only controls whether push is SENT to devices you've enabled.")}</p>
+          <PushOptIn strings={{
+            enable: t("profile.notif.pushEnable", "Enable push on this device"),
+            enabling: t("profile.notif.pushEnabling", "Requesting permission…"),
+            enabled: t("profile.notif.pushEnabled", "Push enabled on this device"),
+            unsupported: t("profile.notif.pushUnsupported", "Push notifications are not supported in this browser/environment."),
+            denied: t("profile.notif.pushDenied", "Permission denied — enable notifications for this site in your browser settings."),
+          }} />
         </section>
 
         <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-session-h">

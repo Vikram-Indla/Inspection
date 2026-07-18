@@ -119,8 +119,9 @@ test.describe("notification stub sink — dedup + never-real-send", () => {
     expect(adapters.length).toBe(3); // push, sms, email
     const pushAdapter = adapters.find(a => a.channel === "push")!;
     const input = { event_key: "review_decision", recipient: "user-1", payload: {} };
-    const first = await pushAdapter.deliver(input);
-    const second = await pushAdapter.deliver(input);
+    const noopSb = {} as never; // staging stub adapters are stateless; DeliveryAdapter.deliver's 2nd param is unused here
+    const first = await pushAdapter.deliver(input, noopSb);
+    const second = await pushAdapter.deliver(input, noopSb);
     expect(second.detail).toBe("duplicate_suppressed");
     expect(readSink().length).toBe(2);
     expect(first).not.toEqual(second);

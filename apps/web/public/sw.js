@@ -15,6 +15,30 @@ self.addEventListener("activate", (e) => {
       .then(() => self.clients.claim()),
   );
 });
+// TASK-MVP2-M2-02 notification delivery, push channel. The push payload is
+// plain JSON {title, body, event_key} — the adapter (push-webpush.ts) never
+// sends anything requiring decryption beyond what pushManager already
+// handles. Tapping the notification focuses an existing client or opens one.
+self.addEventListener("push", (e) => {
+  let data = { title: "MIM Inspection", body: "You have a new notification." };
+  try { if (e.data) data = { ...data, ...e.data.json() }; } catch { /* non-JSON payload: use default */ }
+  e.waitUntil(self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: "/saqeel-prism-192.png",
+    badge: "/saqeel-prism-192.png",
+    data: { event_key: data.event_key ?? null },
+  }));
+});
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  e.waitUntil(
+    self.clients.matchAll({ type: "window" }).then((clients) => {
+      const existing = clients.find((c) => "focus" in c);
+      if (existing) return existing.focus();
+      return self.clients.openWindow("/field");
+    }),
+  );
+});
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET") return;

@@ -25,7 +25,12 @@ export type DeliveryResult = { delivered: boolean; detail?: string };
 
 export interface DeliveryAdapter {
   channel: NotifyChannel;
-  deliver(input: NotifyInput): Promise<DeliveryResult>;
+  // sb is the per-request authenticated client (RLS-scoped to the caller).
+  // Stateless adapters (email/sms/inapp) accept it and ignore it — TS allows
+  // an implementation with fewer params to satisfy a longer signature. The
+  // push adapter needs it to resolve a recipient's subscriptions via a
+  // SECURITY DEFINER RPC that checks the caller's own role/authorization.
+  deliver(input: NotifyInput, sb: SupabaseClient): Promise<DeliveryResult>;
 }
 
 const registry = new Map<NotifyChannel, DeliveryAdapter>();
@@ -53,6 +58,12 @@ maybeRegisterResendEmail(registerAdapter);
 // missing credential → sms stays 'not_configured'.
 import { maybeRegisterTwilioSms } from "./providers/sms-twilio";
 maybeRegisterTwilioSms(registerAdapter);
+
+// Register the Web Push (VAPID) adapter when VAPID_PUBLIC_KEY/PRIVATE_KEY/
+// SUBJECT are configured. Free — no vendor account; keys are self-issued.
+// Fail-closed: missing key(s) -> push stays 'not_configured'.
+import { maybeRegisterWebPush } from "./providers/push-webpush";
+maybeRegisterWebPush(registerAdapter);
 
 export type NotifyOutcome = { error?: string; delivery_state?: string };
 
@@ -85,7 +96,7 @@ export async function insertNotification(sb: SupabaseClient, input: NotifyInput)
   let delivered_at: string | null = null;
   if (adapter) {
     try {
-      const r = await adapter.deliver(input);
+      const r = await adapter.deliver(input, sb);
       if (r.delivered) { delivery_state = "delivered"; delivered_at = new Date().toISOString(); }
       else delivery_state = `failed:${(r.detail ?? "unknown").slice(0, 60)}`;
     } catch (e) {
