@@ -10,10 +10,11 @@ Branch: `codex/ai-delta-implementation`
 | Planner | Sign in → Bulk planning → AI planning summary | PASS: panel and guarded generation action visible in the planning workflow |
 | Inspector | Sign in → My assignments → My daily inspection briefing | PASS: RLS-scoped briefing panel and guarded generation action visible beside assigned visits |
 | Planner / Factory user | Sign in → Factories → Factory 360 → Health & risk | PASS: persisted risk/health explanation action visible beside the source score history |
+| Planner | Sign in → Visit Management → operational summary | PASS: scoped operational-summary action visible beside the visit-management views |
 
 Runtime command: `PLAYWRIGHT_PORT=4314 npx playwright test ai-user-journey.spec.ts --project=e2e --no-deps`
 
-Result: **3 passed**.
+Result: **4 passed**.
 
 The browser journeys deliberately stop before the Generate action. Generation
 creates an append-only `ai_suggestions` record in the shared authenticated

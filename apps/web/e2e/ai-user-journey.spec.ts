@@ -38,4 +38,15 @@ test.describe("contextual AI user journeys", () => {
       await expect(page.getByRole("button", { name: /explain recorded drivers/i })).toBeVisible();
     });
   });
+
+  test.describe("planner: operational view to governed visit summary", () => {
+    test.use({ storageState: storageStatePath("planner") });
+    test("opens the summary inside Visit Management", async ({ page }) => {
+      await page.goto("/visits");
+      await expect(page.getByTestId("visit_management_summary-panel")).toBeVisible();
+      await expect(page.getByRole("button", { name: /generate operational summary/i })).toBeVisible();
+      await expect(page.getByText(/cannot change a visit, assignment, state or campaign/i)).toBeVisible();
+      await expect(page.getByRole("group", { name: /visit management views/i })).toBeVisible();
+    });
+  });
 });
