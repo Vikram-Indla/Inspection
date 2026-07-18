@@ -118,6 +118,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-18"
     change_ref: "setup/Inspection + feat(mvp3) -> origin/main (integrated pre-production source; no deploy/remote DDL)"
+  - gate: "MVP3-REMOTE-SUPABASE-MIGRATION-001"
+    decision: "APPROVED AND EXECUTED — sponsor explicitly instructed Codex to perform the Supabase migration as the highest-priority action for project iiozvqntawxfwbgffzqu. This authorizes the single forward-only MVP3 enterprise control-plane migration and its read-only certification. The existing non-standard full-filename migration ledger convention is preserved; no MVP1/MVP2 migration was replayed or repaired. Provider activation, production data mutation, credential rotation and application deployment remain outside this approval."
+    approver: "Vikram Indla"
+    date: "2026-07-18"
+    change_ref: "product-contract/evidence/TASK-MVP3-REMOTE-SUPABASE-MIGRATION-001.md"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

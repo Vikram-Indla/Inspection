@@ -2,10 +2,10 @@ schema_version: "1.2"
 task_id: "TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
 gate: "MVP3 sponsor-authorized complete implementation"
 title: "MVP3 complete vertical-slice implementation over the integrated MVP1/MVP2 baseline"
-status: "INTEGRATED_PREPRODUCTION_SOURCE_CERTIFIED_PUSH_READY"
+status: "INTEGRATED_PREPRODUCTION_SOURCE_AND_REMOTE_SCHEMA_CERTIFIED"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#MVP3-INTEGRATED-PREPRODUCTION-MAIN-PUSH-001"
+approval_ref: "HUMAN_APPROVALS.yaml#MVP3-REMOTE-SUPABASE-MIGRATION-001"
 change_control_ref: "CC-MVP3-COMPLETE-IMPLEMENTATION-001"
 
 branch_at_start: "codex/mvp3-complete-implementation"
@@ -29,7 +29,7 @@ open_decisions:
 do_not_touch:
   - "Do not rewrite, replace, or regress accepted MVP1/MVP2 behavior."
   - "Do not invent provider selections, policy thresholds, retention periods, legal values, production secrets, or business decisions."
-  - "Do not apply remote DDL, deploy, push, merge, mutate production data, or rewrite Git history without separate authority."
+  - "Remote DDL authority was consumed only for migration 20260718150000_mvp3_enterprise_control_plane; do not apply additional remote DDL, deploy, mutate production data, or rewrite Git history without separate authority."
   - "Do not use permanent mocks or claim runtime certification without executed evidence."
 
 authorized_file_scope:
