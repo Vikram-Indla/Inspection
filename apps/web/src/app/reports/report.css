@@ -23,11 +23,11 @@
 .rp-section > h3 { font: var(--ax-text-subheading); color: var(--ax-color-primary-strong); border-block-end: 1px solid var(--ax-color-border); padding-block-end: var(--ax-space-050); }
 
 .rp-kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--ax-space-150) var(--ax-space-300); }
-.rp-kv dt { font: var(--ax-text-micro); color: var(--ax-color-text-secondary); text-transform: uppercase; letter-spacing: .04em; }
+.rp-kv dt { font: var(--ax-text-micro); color: var(--ax-color-text-secondary); letter-spacing: .01em; }
 .rp-kv dd { font: var(--ax-text-body-strong); }
 
 .rp-table { inline-size: 100%; border-collapse: collapse; font: var(--ax-text-caption); }
-.rp-table th { text-align: start; font: var(--ax-text-micro); color: var(--ax-color-text-secondary); text-transform: uppercase; letter-spacing: .04em; border-block-end: 1.5px solid var(--ax-color-border-strong); padding: var(--ax-space-100); }
+.rp-table th { text-align: start; font: var(--ax-text-micro); color: var(--ax-color-text-secondary); letter-spacing: .01em; border-block-end: 1.5px solid var(--ax-color-border-strong); padding: var(--ax-space-100); }
 .rp-table td { border-block-end: 1px solid var(--ax-color-border); padding: var(--ax-space-100); vertical-align: top; }
 .rp-table tr { break-inside: avoid; }
 

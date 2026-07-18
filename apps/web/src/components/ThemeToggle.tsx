@@ -8,17 +8,17 @@ import { useEffect, useState } from "react";
 type Mode = "light" | "dark";
 
 function resolved(): Mode {
-  if (typeof document === "undefined") return "dark";
+  if (typeof document === "undefined") return "light";
   const attr = document.documentElement.getAttribute("data-theme");
   if (attr === "light" || attr === "dark") return attr;
-  return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  return "light";
 }
 
 export default function ThemeToggle({ className, labels }: {
   className?: string;
   labels?: { toLight: string; toDark: string };
 }) {
-  const [mode, setMode] = useState<Mode>("dark");
+  const [mode, setMode] = useState<Mode>("light");
   useEffect(() => {
     // The blocking head script handles first paint. Re-apply the persisted
     // value after hydration as well: client navigation/hydration must never

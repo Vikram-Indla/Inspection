@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-DESIGN-FOUNDATION-SHELL-RESET-001"
+    gate: "G11 sponsor-approved controlled UI foundation reset"
+    priority: "P0"
+    status: "FOUNDATION_AND_SHELL_LOCAL_MERGE_AUTHORIZED"
+    owner: "Codex implementation + Claude Design review authority + Sponsor"
+    blocked_by: []
+    blocks: ["Page-by-page visual quality sweep", "MVP3+ visual governance adoption"]
+    note: "Shared typography, neutral light/dark surfaces and authenticated shell reset implemented on codex/design-foundation-shell-reset-001. Prism black patch removed, notification control replaced, account responsive, inputs frozen, Atlas v0.8 isolated. Typecheck/build PASS; foundation 6/6; shell 9/9; visual capture 2/2; static inventory 54 pass/3 intentional provider skips/0 failures. Sponsor approved the visual direction. Earlier apparent failures were proven to target a stale server on port 3000; correct production target 3118 passes. Page-specific redesign remains follow-on work. Awaiting explicit commit/merge approval; no commit/push/merge/deploy/main or remote DDL."
   - task_id: "TASK-MVP2-M2-05-AUDIT-REPLAY-001"
     gate: "MVP2 Wave 1 / G8 build"
     priority: "P0"

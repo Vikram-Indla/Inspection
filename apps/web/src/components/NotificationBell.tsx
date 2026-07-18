@@ -28,6 +28,16 @@ type Row = {
 const POLL_MS = 30_000;
 const isUnread = (r: Row) => !r.read_at && r.delivery_state !== "read" && r.delivery_state !== "handled";
 
+function BellIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+      <path d="M10 21h4" />
+    </svg>
+  );
+}
+
 export default function NotificationBell({ strings }: { strings: BellStrings }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [unreadTotal, setUnreadTotal] = useState(0);
@@ -100,11 +110,11 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
     return (cand as string | undefined) ?? "";
   };
   return (
-    <div ref={wrapRef} style={{ position: "relative" }}>
-      <button className="ax-btn ax-btn--subtle" aria-label={strings.label} aria-expanded={open}
+    <div ref={wrapRef} className="ax-notification">
+      <button className="ax-notification__trigger" aria-label={strings.label} aria-expanded={open}
         onClick={() => { setOpen(o => !o); if (!open) load(); }}>
-        <span aria-hidden="true">🔔</span>
-        {unread > 0 && <span className="ax-badge ax-badge--critical">{unread}</span>}
+        <BellIcon />
+        {unread > 0 && <span className="ax-notification__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
       </button>
       {open && (
         <div className="ax-popover" role="dialog" aria-label={strings.heading}

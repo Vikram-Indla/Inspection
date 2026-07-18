@@ -1,0 +1,31 @@
+acceptance_id,requirement,evidence_id,implementation,verification,status
+DSF-AC-001,"Government-neutral product typography",DSF-EV-001,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-002,"No italic product copy",DSF-EV-002,"apps/web/src/app/astryx.css; semantic markup sweep","design-foundation-contract.spec.ts",PASS
+DSF-AC-003,"Moderate heading weights",DSF-EV-003,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-004,"Readable body size and leading",DSF-EV-004,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-005,"Sentence-case labels",DSF-EV-005,"apps/web/src/app/astryx.css; page CSS sweep","design-foundation-contract.spec.ts",PASS
+DSF-AC-006,"Monospace limited to identifiers",DSF-EV-006,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-007,"Arabic-capable bilingual font stack",DSF-EV-007,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-008,"Text input visual contract frozen",DSF-EV-008,"apps/web/src/app/tokens.css; apps/web/src/app/astryx.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-009,"Neutral light canvas and surfaces",DSF-EV-009,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-010,"Neutral non-cinematic dark mode",DSF-EV-010,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-011,"WCAG text contrast",DSF-EV-011,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts contrast calculations",PASS
+DSF-AC-012,"WCAG focus visibility",DSF-EV-012,"apps/web/src/app/astryx.css","shell-navigation.spec.ts",PASS
+DSF-AC-013,"Restrained borders",DSF-EV-013,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-014,"Restrained radii",DSF-EV-014,"apps/web/src/app/tokens.css; apps/web/src/app/astryx.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-015,"No decorative product gradients",DSF-EV-015,"apps/web/src/app/astryx.css; dashboard.module.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-016,"No ordinary-surface shadow dependence",DSF-EV-016,"apps/web/src/app/tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-017,"Compact professional header",DSF-EV-017,"apps/web/src/app/astryx.css; ShellClient.tsx","shell-navigation.spec.ts",PASS
+DSF-AC-018,"Modern expanded rail",DSF-EV-018,"apps/web/src/app/astryx.css; ShellClient.tsx","shell-navigation.spec.ts; visual evidence",PASS
+DSF-AC-019,"Coherent collapsed rail",DSF-EV-019,"apps/web/src/app/astryx.css","shell-navigation.spec.ts; visual evidence",PASS
+DSF-AC-020,"Transparent prism without black patch",DSF-EV-020,"apps/web/public/saqeel-prism.svg and generated PNGs","design-foundation-contract.spec.ts; visual evidence",PASS
+DSF-AC-021,"Prism works on light and dark backgrounds",DSF-EV-021,"transparent prism asset; shell surfaces","design-foundation-contract.spec.ts; visual evidence",PASS
+DSF-AC-022,"Professional notification icon",DSF-EV-022,"apps/web/src/components/NotificationBell.tsx","design-foundation-contract.spec.ts; shell-navigation.spec.ts",PASS
+DSF-AC-023,"Bounded notification badge",DSF-EV-023,"NotificationBell.tsx; apps/web/src/app/astryx.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-024,"Responsive account identity",DSF-EV-024,"ShellClient.tsx; apps/web/src/app/astryx.css","shell-navigation.spec.ts",PASS
+DSF-AC-025,"SVG shell controls replace archaic glyphs",DSF-EV-025,"apps/web/src/components/ShellClient.tsx","design-foundation-contract.spec.ts",PASS
+DSF-AC-026,"Mobile and RTL shell continuity",DSF-EV-026,"apps/web/src/app/astryx.css","shell-navigation.spec.ts; visual evidence",PASS
+DSF-AC-027,"Light-first default with persisted theme",DSF-EV-027,"ThemeScript.tsx; ThemeToggle.tsx","design-foundation-contract.spec.ts",PASS
+DSF-AC-028,"Cinematic Atlas v0.8 isolated exception",DSF-EV-028,"GOVERNMENT_FOUNDATION_SHELL_RESET_V1.md; login scope unchanged","design-foundation-contract.spec.ts",PASS
+DSF-AC-029,"Future MVPs inherit foundation tokens",DSF-EV-029,"GOVERNMENT_FOUNDATION_SHELL_RESET_V1.md; tokens.css","design-foundation-contract.spec.ts",PASS
+DSF-AC-030,"No workflow, data, RLS or provider change",DSF-EV-030,"ring-fenced diff and CURRENT_SLICE scope","git diff review; static inventory",PASS

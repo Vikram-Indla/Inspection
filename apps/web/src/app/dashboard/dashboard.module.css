@@ -37,13 +37,13 @@
 .scopeLine { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--ax-space-100); color: var(--ax-color-text-secondary); font: var(--ax-text-caption); }
 .tabs { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 5px; align-self: flex-start; border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large); background: var(--ax-color-surface-raised); }
 .tab { min-inline-size: 180px; padding: 10px 20px; border-radius: var(--ax-radius-standard); color: var(--ax-color-text-secondary); text-align: center; text-decoration: none; font: var(--ax-text-body-strong); }
-.tab[aria-selected="true"] { background: linear-gradient(135deg, var(--ax-color-prism-magenta), var(--ax-color-primary)); color: var(--ax-color-inverse-text); box-shadow: var(--ax-shadow-card); }
+.tab[aria-selected="true"] { background: var(--ax-color-primary); color: var(--ax-color-inverse-text); box-shadow: none; }
 .tab:focus-visible, .dimension:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 
 .section { display: grid; gap: var(--ax-space-150); }
 .sectionHead { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--ax-space-150); flex-wrap: wrap; }
 .sectionHead h3 { margin: 0; }
-.eyebrow { color: var(--ax-color-text-secondary); font: var(--ax-text-micro); letter-spacing: .12em; text-transform: uppercase; }
+.eyebrow { color: var(--ax-color-text-secondary); font: var(--ax-text-micro); letter-spacing: .01em; }
 .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ax-space-200); }
 .cards2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ax-space-200); }
 .card { min-block-size: 230px; padding: var(--ax-space-300); display: flex; flex-direction: column; gap: var(--ax-space-100); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large); background: var(--ax-color-surface); box-shadow: var(--ax-shadow-card); }
@@ -67,7 +67,7 @@
 .barRow { display: grid; grid-template-columns: minmax(130px, .8fr) minmax(160px, 3fr) auto; gap: 12px; align-items: center; }
 .barLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .track { block-size: 11px; overflow: hidden; border-radius: var(--ax-radius-full); background: var(--ax-color-neutral-tint); }
-.fill { block-size: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--ax-color-prism-magenta), var(--ax-color-primary)); }
+.fill { block-size: 100%; border-radius: inherit; background: var(--ax-color-primary); }
 .barValue { min-inline-size: 42px; text-align: end; font-variant-numeric: tabular-nums; }
 .empty { padding: var(--ax-space-400); text-align: center; color: var(--ax-color-text-secondary); }
 

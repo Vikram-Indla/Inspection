@@ -75,6 +75,24 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await expect(page.locator(".ax-shell")).not.toHaveClass(/is-collapsed/);
   });
 
+  test("government shell keeps notification and account controls responsive", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/locale?set=en");
+    await page.goto("/planning");
+    const account = page.locator(".ax-shell-account__trigger");
+    const identity = page.locator(".ax-shell-account__identity");
+    await expect(account).toBeVisible();
+    await expect(identity).toBeVisible();
+    await expect(page.locator(".ax-notification__trigger")).toBeVisible();
+
+    await page.setViewportSize({ width: 930, height: 900 });
+    await expect(account).toBeVisible();
+    await expect(identity).toBeHidden();
+    const box = await account.boundingBox();
+    expect(box).not.toBeNull();
+    expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(930);
+  });
+
   test("mobile drawer opens, traps the shell interaction and closes on Escape", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/locale?set=en");
@@ -94,7 +112,7 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "ar");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.locator("nav.ax-shell__nav")).toHaveAttribute("aria-label", /[\u0600-\u06FF]/);
-    const theme = page.locator("button.ax-topbar-icon").filter({ has: page.locator("svg") }).first();
+    const theme = page.locator(".ax-pagehead__actions > button.ax-topbar-icon");
     const firstOfferedMode = await theme.getAttribute("aria-label");
     await theme.click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", firstOfferedMode?.includes("الفاتح") ? "light" : "dark");

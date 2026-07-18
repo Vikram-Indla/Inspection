@@ -1,5 +1,43 @@
 # Current State
 
+## 2026-07-18 UPDATE 93 — foundation and shell merge-ready after visual approval
+
+The sponsor approved the government-foundation visual direction. A provisional
+assessment reported collapse, notification and theme failures, but trace review proved
+that run had targeted an unrelated stale server on port 3000 while the fresh production
+build was on 3118; obsolete chunk requests returned 400 and left the shell unhydrated.
+No product defect or product-code repair was required.
+
+Against the correct production target, the implicated interactions pass 3/3 and the
+complete shell suite passes 9/9. The evidence harness now captures matching English
+light/dark desktop frames, the collapsed desktop rail and Arabic RTL mobile drawer in
+independent tests; visual capture passes 2/2. Production build remains PASS. The shared
+foundation and shell slice is **merge-ready awaiting explicit commit/merge approval**.
+Page-by-page redesign remains a separate follow-on slice. No commit, push, merge,
+deployment, remote DDL or `main` modification occurred.
+
+## 2026-07-18 UPDATE 92 — government foundation and shared shell reset implemented
+
+Sponsor approved all recommendations under `CC-DESIGN-FOUNDATION-SHELL-RESET-001`.
+On branch `codex/design-foundation-shell-reset-001`, the authenticated product now uses
+a light-first, neutral government visual foundation: bilingual IBM Plex Sans Arabic,
+moderate type weights, non-italic product copy, restrained radii/borders/shadows and
+WCAG-tested light/dark tokens. The shared rail/header were rebuilt; the prism black
+backing was removed from SVG and PNG assets; notifications now use a bounded SVG bell;
+and the account identity progressively compacts at narrower widths. Existing input,
+textarea, select and search geometry/behavior are frozen. Cinematic Atlas v0.8 remains
+an isolated exception, not a product-theme source, and MVP3+ work must consume the
+foundation tokens.
+
+Verification is clean: typecheck and production build PASS; foundation contracts 6/6;
+authenticated shell runtime 9/9; complete static inventory 54 PASS / 3 intentional
+provider opt-in skips / 0 failures; diff check PASS. The 30-row map and visual evidence
+are recorded in `acceptance/DSF_FOUNDATION_SHELL_RESET_001.csv` and
+`evidence/TASK-DESIGN-FOUNDATION-SHELL-RESET-001.md`. This closes the shared foundation
+and shell implementation, not the forthcoming page-by-page critique/redesign or a full
+authenticated application regression. No schema/RLS/workflow/provider change, remote
+DDL, commit, push, merge, deployment or `main` modification occurred.
+
 ## 2026-07-17 UPDATE 91 — repository branch consolidation onto setup/Inspection
 
 Sponsor directed local branch consolidation and worktree cleanup (change control

@@ -1,5 +1,15 @@
 # Evidence Status
 
+## TASK-DESIGN-FOUNDATION-SHELL-RESET-001 — 2026-07-18
+
+| ID | Evidence | Status |
+|---|---|---|
+| DSF-EV-001..030 | 30-row foundation/shell requirement-code-test map | Captured — PASS |
+| DSF-VIS-001..004 | Matching light/dark desktop, collapsed and Arabic mobile shell frames | Captured and visually reviewed; harness 2/2 PASS |
+| DSF-TEST-001 | Typecheck, build, foundation 6/6, shell 9/9, static 54 pass/3 intentional skips | PASS; correct production target 3118 |
+
+Exact record: `TASK-DESIGN-FOUNDATION-SHELL-RESET-001.md`.
+
 ## TASK-IPAD-MAPBOX-RUNTIME-004 — 2026-07-16
 
 | ID | Item | File | Status |
