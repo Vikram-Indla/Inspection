@@ -23,6 +23,35 @@ The wider recommendation/summary delta register is also tracked here so it
 cannot disappear between slices. These rows remain queued after the mandatory
 two-slice delivery: M01 `002,003,004,005,006,008,009,010,012,016,022,023,024,025,027,029,030,031,032,035,036,037,038,039,041,042,044,046,047,049,050`; M02 `001,002,003,004,005,006,007,008,009,012,013,015,016,017,018,027,035,036,042`; M03 `001,003,004,009,010,013,014`; M04 `114,138,218`; M07 `007,014,015`; M08 `016`.
 
+## Complete source-backed delivery register
+
+This is the complete non-generic AI delta found in `atomic_scope.csv`. It is a
+charter, not a claim that every item below is implemented. “Delivered” means a
+real user insertion point, server re-read and a persisted advisory result;
+“queued” means it must not be silently represented by the generic docket.
+
+| Delivery group | Source requirements | Source-requested AI behavior | Current treatment |
+|---|---|---|---|
+| Planning review and target selection | M01-002/003/004/005/006/008/009/010/012/016/022/023/024/025/027/029/030/031/032/035/036/037/038/039/041/042/044/046/047/049/050 | Factory, criteria, assignment, timing and publication recommendations; risk/overdue/conflict/location/duplicate highlights and outcomes | **Partially delivered:** M01-016/026 planning summary. **Queued:** every suggestion that could select a factory, assign a person, set a date, publish, or infer a location until its source data and human-disposition workflow are explicitly wired. |
+| Visit management and campaign operations | M02-001/002/003/004/005/006/007/008/009/012/013/015/016/017/018/027/035/036/042 | Attention/trend/risk/campaign summaries; filters, assignment/time recommendations, duplicate/transition checks, attachment classification and completion prediction | **Queued:** summaries can be delivered once each page has RLS-scoped source facts. Recommendation, prediction and classification require an approved confidence/disposition contract; no automatic reschedule, assignment or transition. |
+| Inspector preparation | M03-001/003/004/009/010/013/014 | Daily/workload/risk/route/preparation brief; saved-filter, notification and appointment-time suggestions | **Partially delivered:** M03-009 preparation assistant. **Queued:** daily dashboard, route, notification and appointment slices; Mapbox remains source of route geometry and unavailable is stated honestly. |
+| Field inspection and review | M04-114/138/218 | Corrective-action suggestion, requirement explanation, reviewer recommendation | **Partially delivered:** M04-138 item explanation. **Queued:** corrective action and reviewer suggestions, because they require explicit workflow/RBAC and human disposition before any action can be presented. |
+| Factory 360 and Operations Center | M07-007/014/015; M08-016 | Material-change, health/risk-driver and KPI-change explanations | **Partially delivered:** M07-014/015 persisted score/risk explanation. **Queued:** materials-change and KPI-change explanations until the authoritative comparison period and KPI definition are bound. |
+
+### Ordered implementation queue
+
+1. M08-016 Operations KPI change explanation — low mutation risk once the
+   KPI comparison window and metric definitions are read from the operations
+   source rather than calculated by the model.
+2. M07-007 materials change explanation — compare recorded material versions
+   only; never label a change suspicious or take enforcement action.
+3. M03-001/003/010 daily inspector briefing and preparation depth — use the
+   existing visit/Mapbox facts, no route or start-state mutation.
+4. M02 summary-only surfaces — campaign/visit status summaries with explicit
+   data freshness and no prediction, assignment or transition.
+5. Recommendation and prediction surfaces — only after M3-10’s edit/reject,
+   confidence evidence and human-disposition lifecycle is implemented.
+
 The supporting source is `product-contract/domain/atomic_scope.csv` and the
 MVP2 local certificate. The repository does not contain the original workbook's
 full prose for every M2-11 row, so no missing acceptance text is invented here.
