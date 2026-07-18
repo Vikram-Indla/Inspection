@@ -9,6 +9,7 @@ import {
 } from "./Controls";
 import { logFactoryError, mapFactoryError } from "./neutral";
 import FactorySpatialMap, { type FactoryLocationEvent } from "./FactorySpatialMap";
+import ContextualAiPanel from "@/components/ContextualAiPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -301,6 +302,19 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
           <section id="risk" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4>{t("f360.risk.historyHeading", "Factory health score and risk history (M07-014/015)")}</h4>
             <p className="ax-caption">{t("f360.risk.historyCaption", "Each row freezes the DEC-001 model version, normalized driver values, weights and contributions used at recalculation time.")}</p>
+            <ContextualAiPanel
+              surface="factory_risk_explanation"
+              title={t("f360.risk.ai.title", "Explain health score and risk drivers")}
+              description={t("f360.risk.ai.description", "Advisory only. Explains the saved score, band, model version and driver snapshot; it cannot recalculate or change risk.")}
+              context={JSON.stringify({ factory_id: f.id })}
+              evidenceRefs={["MVP1-M07-014", "MVP1-M07-015", "DEC-001", f.risk_version ?? "risk_version_unavailable"]}
+              targetRef={f.id}
+              locale={locale === "ar" ? "ar" : "en"}
+              generateLabel={t("f360.risk.ai.generate", "Explain recorded drivers")}
+              unavailableLabel={t("f360.risk.ai.unavailable", "AI explanation unavailable")}
+              evidenceLabel={t("f360.risk.ai.evidence", "Source references")}
+              advisoryLabel={t("f360.risk.ai.advisory", "Human decision required")}
+            />
             {(riskHistory ?? []).length ? <div className="ax-tablewrap"><table className="ax-table">
               <thead><tr><th>{t("common.when", "Calculated")}</th><th>{t("f360.risk.score", "Score")}</th><th>{t("f360.risk.band", "Band")}</th><th>{t("f360.risk.model", "Model")}</th><th>{t("f360.risk.drivers", "Drivers")}</th></tr></thead>
               <tbody>{(riskHistory ?? []).map(s => {

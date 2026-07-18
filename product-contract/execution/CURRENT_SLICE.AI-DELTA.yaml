@@ -1,10 +1,10 @@
 schema_version: "1.0"
 task_id: "TASK-AI-DELTA-CONTEXTUAL-001"
 gate: "MVP1/MVP2 AI delta implementation"
-title: "Deliver planning, preparation and item-context advisory assistance on the integrated baseline"
+title: "Deliver planning, preparation, item-context and Factory 360 advisory assistance on the integrated baseline"
 status: "IMPLEMENTATION_STARTED"
 baseline: "main@4c22d8f"
-requirement_ids: ["MVP1-M01-016", "MVP1-M01-026", "MVP1-M03-009", "MVP1-M04-138", "M3-10/MVP2-REQ-0255"]
+requirement_ids: ["MVP1-M01-016", "MVP1-M01-026", "MVP1-M03-009", "MVP1-M04-138", "MVP1-M07-014", "MVP1-M07-015", "M3-10/MVP2-REQ-0255"]
 acceptance_ids: ["AC-0016", "AC-0026", "AC-0107"]
 do_not_touch:
   - "Existing /ai/suggestions docket UI and lifecycle"

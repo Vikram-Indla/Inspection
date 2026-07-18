@@ -16,6 +16,7 @@ is not being redesigned or removed.
 | MVP1-M01-026 / AC-0026 | Summarize coverage, hotspots, overloaded regions, workload, high-risk factories and priorities | Bulk planning review | Not delivered |
 | MVP1-M03-009 / AC-0107 | Daily summary, risk summary, route optimization and preparation recommendations | Inspector pre-start | Not delivered |
 | MVP1-M04-138 | Explain an inspection requirement (future-AI contract) | Inspection item detail | Delivered in this slice: server-re-read, locked-package item explanation; advisory only |
+| MVP1-M07-014 / MVP1-M07-015 | Explain the stored Factory 360 health score and risk drivers | Factory 360 risk history | Delivered in this slice: server-re-read persisted scores, model versions and driver snapshots; no recalculation or decision mutation |
 | MVP3 M3-10 / MVP2-REQ-0255 | Evidence-cited AI suggestions with confidence, edit/reject and separate human decision; never write penalty/severity/license decisions | Governed advisory surface | Generic docket only; contextual wiring not delivered |
 
 The wider recommendation/summary delta register is also tracked here so it
@@ -48,6 +49,9 @@ full prose for every M2-11 row, so no missing acceptance text is invented here.
    item title, recorded guidance, clause reference and evidence rule; it does
    not interpret law or recommend an answer. The full M3-10 edit/reject
    experience remains a separately governed lifecycle enhancement.
+4. Factory 360 score/risk explanation: server-re-read persisted score, band,
+   model version and driver snapshots; it cannot calculate or change risk, or
+   recommend an enforcement, licence or inspection outcome.
 
 ## Acceptance evidence required
 

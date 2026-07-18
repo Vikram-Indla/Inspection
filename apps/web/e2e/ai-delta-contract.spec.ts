@@ -53,6 +53,19 @@ test.describe("contextual AI delta contract", () => {
     expect(action).toContain('from("inspection_items")');
     expect(action).toContain("packageItemCodes.includes(item.code)");
     expect(action).toContain("Do not recommend an inspection answer");
-    expect(action).toContain('target_type: surface === "planning_summary" ? "bulk_plan_review" : surface === "preparation_assistant" ? "visit_prestart" : "inspection_item"');
+    expect(action).toContain('surface === "inspection_item_explanation" ? "inspection_item" : "factory_risk_profile"');
+  });
+
+  test("factory health and risk explanation uses persisted records only", () => {
+    const factory = SRC("src/app/factories/[id]/page.tsx");
+    expect(factory).toContain('surface="factory_risk_explanation"');
+    expect(factory).toContain("MVP1-M07-014");
+    expect(factory).toContain("MVP1-M07-015");
+    const action = SRC("src/lib/ai/contextual-actions.ts");
+    expect(action).toContain('from("factory_risk_snapshots")');
+    expect(action).toContain("factory_risk_profile");
+    expect(action).toContain("Do not calculate, change or recommend a risk");
+    const provider = SRC("src/lib/providers/ai-gemini.ts");
+    expect(provider).toContain("Do not recalculate risk");
   });
 });
