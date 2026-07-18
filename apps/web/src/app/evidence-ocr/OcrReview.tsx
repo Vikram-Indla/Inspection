@@ -9,6 +9,7 @@ export type OcrRow = {
 };
 export type OcrStrings = {
   extract: string; extracting: string; extracted: string; noText: string; unavailable: string;
+  openInspection: string;
 };
 
 function extractAction(_: OcrActionResult, formData: FormData) {
@@ -23,7 +24,7 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
       <div className="ax-row" style={{ justifyContent: "space-between" }}>
         <div>
           <h3>{row.evidenceType} <span className="ax-caption ax-numeric">{row.capturedAt}</span></h3>
-          {row.inspectionId && <a className="ax-link ax-caption" href={`/field/inspection/${row.inspectionId}`}>Open the inspection item that owns this evidence →</a>}
+          {row.inspectionId && <a className="ax-link ax-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}
         </div>
         <form action={action}>
           <input type="hidden" name="evidence_id" value={row.id} />

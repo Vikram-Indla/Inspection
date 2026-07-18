@@ -46,6 +46,7 @@ export default async function EvidenceOcrPage() {
     extracted: t("ocr.extracted", "Extracted text (advisory — verify against the source image)"),
     noText: t("ocr.noText", "No text detected in this image."),
     unavailable: t("ocr.unavailable", "OCR provider unavailable — recorded as a request only; no extraction was attempted."),
+    openInspection: t("ocr.openInspection", "Open the inspection item that owns this evidence →"),
   };
   return (
     <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="ax-lozenge ax-lozenge--info">REQ-OCR</span>}>

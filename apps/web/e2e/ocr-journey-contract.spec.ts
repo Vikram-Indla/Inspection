@@ -11,6 +11,9 @@ test("OCR journey begins at accountable evidence capture, not a detached upload"
   expect(page).toContain("How to use evidence text extraction");
   expect(page).toContain('href="/field"');
   expect(page).toContain("Only stored photos and documents appear here");
-  expect(review).toContain("Open the inspection item that owns this evidence");
+  // i18n audit (TASK-I18N-RTL-AUDIT-001) threaded this string through t() so it
+  // has a real Arabic path — the English fallback now lives in page.tsx, the
+  // href template literal is unaffected and stays in OcrReview.tsx.
+  expect(page).toContain("Open the inspection item that owns this evidence");
   expect(review).toContain("/field/inspection/${row.inspectionId}");
 });
