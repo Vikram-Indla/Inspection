@@ -28,6 +28,19 @@ current remote MVP1/MVP2/MVP3 preproduction baseline. Main's remotely certified 
 was preserved unchanged. The source gate remains CONDITIONAL PASS pending the four explicit
 production compliance evidence gates.
 
+## 2026-07-18 UPDATE 99 — MVP3 retrofit integration certified
+
+MVP3 is certified as an additive retrofit over the canonical MVP1/MVP2 platform. The live Supabase
+project records the required MVP2/MVP3 migration versions; all 13 MVP3 tables have RLS, 25 policies
+apply, anonymous table grants are zero, and the seven-RPC rollback probe passes with no residual
+rows. A live P0 in `request_geo_override` was repaired by forward migration 20260718140105 and the
+inspector-request/Operations-approval journey now passes with real Mapbox ETA, offline stale-cache
+and device provenance. Typecheck/build pass. The complete protected Playwright inventory finished
+510 passed / 9 intentional provider or destructive-replay skips / 0 failed (98.27%). Exact
+certificate: `evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md`; coexistence map:
+`mvp3/MVP3_RETROFIT_INTEGRATION_MAP.csv`. External providers and production deployment remain
+explicit fail-closed holds and are not claimed as live.
+
 ## 2026-07-18 UPDATE 95 — repository relocated to canonical path
 
 The Inspection repository permanently moved. New canonical path:

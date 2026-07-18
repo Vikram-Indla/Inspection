@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { local, processOutbox, sha256b64, type SyncState } from "@/lib/offline";
+import { getFieldDeviceMetadata } from "@/lib/field-device";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
 
@@ -28,7 +29,7 @@ export type StartupStrings = {
   logExceptionSent: string; logExceptionFailed: string; logDeviation: string;
   logOpState: string; logOpBlocked: string; logGpsFallback: string;
   mapsGeo: string; mapsCaption: string; progressLabel: string; progressCaption: string; cardsFactoryTitle: string; cardsVisitTitle: string; lblCode: string; lblCity: string; lblRegion: string; lblCr: string; lblLicense: string; lblCoords: string; lblFence: string; lblType: string; lblMode: string; lblWindow: string; lblPackage: string; lblPriority: string; lblPlanningStatus: string; lblPlannerNotes: string; cancelHeading: string; cancelCaption: string; cancelSelectReason: string; cancelCommentPlaceholder: string; cancelEvidenceLabel: string; cancelSubmit: string; cancelRequestedChip: string; cancelReasonsMissing: string; logCancelEvidenceQueued: string; logCancelSent: string; logCancelFailed: string; returnHeading: string; returnCaption: string; returnPlaceholder: string; returnSubmit: string; returnRequestedChip: string; logReturnSent: string; logReturnFailed: string;
-  deviceInfo: string; etaLabel: string; etaAvailable: string; etaUnavailable: string;
+  deviceInfo: string; etaLabel: string; etaAvailable: string; etaUnavailable: string; etaStale: string;
   overrideHeading: string; overrideBody: string; overrideReason: string; overrideReasonCode: string; overrideEvidence: string; overrideSafetyException: string; overrideConfirm: string; overrideCancel: string; overridePending: string; overrideQueued: string; overrideApproved: string; overrideClosed: string; logOverrideQueued: string; logOverrideOfflineQueued: string; logOverrideEvidenceRequired: string; logOverrideFailed: string;
   arrivalEvidenceHeading: string; arrivalEvidenceCaption: string; arrivalPhoto: string; arrivalComment: string; arrivalSave: string; arrivalSaved: string; arrivalRequired: string;
   arrivalEvidenceNote: string; arrivalEvidenceFile: string; arrivalEvidenceSubmit: string; arrivalEvidenceQueued: string; arrivalEvidenceMissing: string;
@@ -104,7 +105,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const [returnReason, setReturnReason] = useState("");
   const [returnRequested, setReturnRequested] = useState(flags.returnRequested);
   const [deviceInfo, setDeviceInfo] = useState(null as { device_id: string; os_version: string; app_version: string } | null);
-  const [eta, setEta] = useState(null as { minutes: number; distance: number; updatedAt: string } | null);
+  const [eta, setEta] = useState(null as { minutes: number; distance: number; updatedAt: string; provider: string; stale?: boolean } | null);
   const [etaUnavailable, setEtaUnavailable] = useState(false);
   const [pendingOverride, setPendingOverride] = useState(null as { lat: number; lng: number; acc: number; d: number; checkinEventId: string } | null);
   const [overrideReasonKey, setOverrideReasonKey] = useState("");
@@ -206,18 +207,27 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     setCached(true); add(fmt(strings.logCached, { version: visit.package_versions.version_label }));
   }
   function captureDeviceInfo() {
-    const key = "mim-field-device-id";
-    let id = localStorage.getItem(key);
-    if (!id) { id = crypto.randomUUID(); localStorage.setItem(key, id); }
-    const nav = navigator as Navigator & { userAgentData?: { platform?: string } };
-    const platform = nav.userAgentData?.platform || navigator.platform || "unknown-platform";
-    const uaVersion = navigator.userAgent.match(/(?:OS|Android|Windows NT|Mac OS X)\s([\d_\.]+)/i)?.[1]?.replace(/_/g, ".");
-    return { device_id: id, os_version: uaVersion ? `${platform} ${uaVersion}` : platform, app_version: appVersion };
+    const captured = getFieldDeviceMetadata(appVersion);
+    return { device_id: captured.deviceId, os_version: captured.osVersion, app_version: captured.applicationVersion };
   }
 
   async function refreshEta(fix: Fix, activeJourneyId: string) {
     if (Date.now() - lastEtaRef.current < telemetryS * 1000 - 500) return;
     lastEtaRef.current = Date.now();
+    if (!navigator.onLine) {
+      const cachedEstimate = await local.getRouteEstimate(visit.id);
+      if (cachedEstimate) {
+        setEta({
+          minutes: cachedEstimate.etaMinutes,
+          distance: cachedEstimate.remainingDistanceM,
+          updatedAt: cachedEstimate.estimatedAt,
+          provider: cachedEstimate.provider,
+          stale: true,
+        });
+      }
+      setEtaUnavailable(!cachedEstimate);
+      return;
+    }
     try {
       const response = await fetch("/api/routing/eta", {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -225,17 +235,37 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       });
       const result = await response.json() as { status: string; etaMinutes?: number; distanceMeters?: number; calculatedAt?: string; provider?: string };
       if (!response.ok || result.status !== "ok" || result.etaMinutes == null || result.distanceMeters == null || !result.calculatedAt) {
-        setEtaUnavailable(true); return;
+        throw new Error("routing provider unavailable");
       }
       setEtaUnavailable(false);
-      setEta({ minutes: result.etaMinutes, distance: result.distanceMeters, updatedAt: result.calculatedAt });
+      const provider = result.provider ?? "mapbox_directions";
+      setEta({ minutes: result.etaMinutes, distance: result.distanceMeters, updatedAt: result.calculatedAt, provider });
+      await local.cacheRouteEstimate(visit.id, {
+        etaMinutes: result.etaMinutes,
+        remainingDistanceM: result.distanceMeters,
+        estimatedAt: result.calculatedAt,
+        provider,
+        mode: "production",
+        refreshAfterMs: telemetryS * 1000,
+      });
       const sb = supabaseBrowser();
       await sb.from("journey_sessions").update({
         eta_minutes: result.etaMinutes, remaining_distance_m: result.distanceMeters,
-        route_provider: result.provider ?? "google_routes", eta_updated_at: result.calculatedAt,
+        route_provider: provider, eta_updated_at: result.calculatedAt,
+        routing_provider: provider, route_estimate_mode: "production", route_estimated_at: result.calculatedAt,
       }).eq("id", activeJourneyId);
     } catch {
-      setEtaUnavailable(true);
+      const cachedEstimate = await local.getRouteEstimate(visit.id);
+      if (cachedEstimate) {
+        setEta({
+          minutes: cachedEstimate.etaMinutes,
+          distance: cachedEstimate.remainingDistanceM,
+          updatedAt: cachedEstimate.estimatedAt,
+          provider: cachedEstimate.provider,
+          stale: true,
+        });
+      }
+      setEtaUnavailable(!cachedEstimate);
     }
   }
 
@@ -245,7 +275,11 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     const { data: { user } } = await getVerifiedUser(sb);
     const capturedDevice = captureDeviceInfo();
     const { data, error } = await sb.from("journey_sessions")
-      .insert({ visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString(), device_info: capturedDevice })  // M04-009/012
+      .insert({
+        visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString(),
+        device_info: capturedDevice, device_id: capturedDevice.device_id,
+        device_os_version: capturedDevice.os_version, application_version: capturedDevice.app_version,
+      })  // M04-009/012
       .select().single();
     setBusy(false);
     if (error || !data) {
@@ -319,6 +353,39 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     return () => { navigator.geolocation.clearWatch(watch); clearInterval(timer); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [journeyId, checkedIn]);
+
+  // M04-024 — the last provider result remains visible but explicitly stale
+  // while offline; reconnect triggers an immediate provider refresh. It never
+  // mutates workflow state or pretends a straight-line estimate is a road ETA.
+  useEffect(() => {
+    if (!journeyId) return;
+    const markOffline = async () => {
+      const cachedEstimate = await local.getRouteEstimate(visit.id);
+      if (!cachedEstimate) { setEtaUnavailable(true); return; }
+      setEta({
+        minutes: cachedEstimate.etaMinutes,
+        distance: cachedEstimate.remainingDistanceM,
+        updatedAt: cachedEstimate.estimatedAt,
+        provider: cachedEstimate.provider,
+        stale: true,
+      });
+    };
+    const refreshOnline = () => {
+      const fix = posRef.current;
+      if (!fix) return;
+      lastEtaRef.current = 0;
+      void refreshEta(fix, journeyId);
+    };
+    window.addEventListener("offline", markOffline);
+    window.addEventListener("online", refreshOnline);
+    return () => {
+      window.removeEventListener("offline", markOffline);
+      window.removeEventListener("online", refreshOnline);
+    };
+    // refreshEta reads current visit/config values and is intentionally bound
+    // to this mounted journey lifecycle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [journeyId, visit.id]);
 
   async function checkIn() {
     if (overrideState !== "none") return;
@@ -613,7 +680,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     : null;
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="field-device-readiness">
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.readiness}</h4>
         <div className="ax-stack" style={{ gap: 8 }}>
           <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {new Date(visit.window_start).toISOString().slice(0,16).replace("T"," ")} → {new Date(visit.window_end).toISOString().slice(11,16)}</div>
@@ -621,8 +688,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           <div style={{ display: "flex", gap: 8 }}>{journeyId ? "✓" : "○"} {strings.journeySession}</div>
           <div style={{ display: "flex", gap: 8 }}>{deviceInfo ? "✓" : "○"} {strings.deviceInfo}{deviceInfo ? ` · ${deviceInfo.os_version} · app ${deviceInfo.app_version}` : ""}</div>
           <div style={{ display: "flex", gap: 8 }}>{telemetryCount > 0 ? "✓" : "○"} {fmt(strings.telemetryRow, { s: telemetryS, n: telemetryCount })}</div>
-          <div style={{ display: "flex", gap: 8 }}>{eta ? "✓" : "○"} {strings.etaLabel} {eta
-            ? fmt(strings.etaAvailable, { minutes: eta.minutes, distance: eta.distance, at: new Date(eta.updatedAt).toISOString().slice(11, 16) })
+          <div style={{ display: "flex", gap: 8 }} data-testid="route-estimate">{eta ? "✓" : "○"} {strings.etaLabel} {eta
+            ? <span>{fmt(strings.etaAvailable, { minutes: eta.minutes, distance: eta.distance, at: new Date(eta.updatedAt).toISOString().slice(11, 16) })} · {eta.provider}{eta.stale ? ` · ${strings.etaStale}` : ""}</span>
             : etaUnavailable ? strings.etaUnavailable : "—"}</div>
           <div style={{ display: "flex", gap: 8 }}>{checkedIn ? "✓" : "○"} {fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</div>
         </div>

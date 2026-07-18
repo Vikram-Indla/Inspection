@@ -20,6 +20,17 @@
 - Exact map: `UIU_INSPECTOR_SHELL_UPLIFT_002.csv`; evidence:
   `../evidence/TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002.md`.
 
+## TASK-MVP3-RETROFIT-REGRESSION-001 — 2026-07-18
+
+- MVP3 engineering retrofit over MVP1/MVP2: **PASS**.
+- Exact MVP3 scope: **84/84 rows dispositioned** across twelve design modules plus assurance.
+- Database/RLS: **PASS** — live additive migration, 13/13 RLS tables, 25 policies, zero anonymous
+  grants and rollback-only governed RPC probe with zero residuals.
+- Application regression: **PASS** — typecheck/build pass; 510 browser tests pass, nine explicit
+  provider/destructive-replay tests skip, zero tests fail (98.27% passing inventory).
+- External providers and production release: **HELD FAIL-CLOSED** and not counted as delivered.
+- Exact evidence: `../evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md`.
+
 ## TASK-DESIGN-FOUNDATION-SHELL-RESET-001 — 2026-07-18
 
 - DSF-AC-001..030: **PASS** for the shared foundation and authenticated shell.

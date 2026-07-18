@@ -67,6 +67,9 @@ test.describe("MVP3 exact control and enterprise foundation", () => {
     expect(migration).toContain("trg_mvp3_package_manifests_append_only");
     expect(migration).toContain("trust_status <> 'trusted' or (nullif(mdm_reference,'') is not null and app_version_compliant)");
     expect(migration).toContain("jsonb_build_object('status','denied','reason',v_outcome)");
+    expect(migration).toContain("requested_device_identifier text not null");
+    expect(migration).toContain("device_id uuid references public.mvp3_devices(id)");
+    expect(migration).not.toContain("trg_mvp3_device_commands_append_only");
   });
 
   test("records refusal as a distinct append-only fact with required context", () => {
@@ -105,5 +108,15 @@ test.describe("MVP3 exact control and enterprise foundation", () => {
       "apps/web/src/app/committee/page.tsx",
     ];
     for (const route of routes) expect(fs.existsSync(path.join(root, route)), route).toBe(true);
+  });
+
+  test("ships reviewed Arabic fallbacks for every additive MVP3 control-plane key", () => {
+    const pages = ["integrations", "operations", "security-access", "devices"]
+      .map(name => fs.readFileSync(path.join(root, `apps/web/src/app/admin/${name}/page.tsx`), "utf8"))
+      .join("\n");
+    const i18n = fs.readFileSync(path.join(root, "apps/web/src/lib/i18n.ts"), "utf8");
+    const keys = [...pages.matchAll(/t\("(mvp3\.[^"]+)"/g)].map(match => match[1]);
+    expect(keys.length).toBeGreaterThan(50);
+    for (const key of new Set(keys)) expect(i18n, key).toContain(`"${key}":`);
   });
 });

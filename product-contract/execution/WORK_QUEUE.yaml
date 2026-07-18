@@ -27,11 +27,11 @@ items:
   - task_id: "TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
     gate: "MVP3 sponsor-authorized complete implementation"
     priority: "P0"
-    status: "SOURCE_IMPLEMENTED_RUNTIME_CERTIFICATION_PENDING"
+    status: "RETROFIT_INTEGRATION_CERTIFIED_PASS"
     owner: "Codex implementation and QA + Sponsor for held external decisions"
-    blocked_by: ["Controlled application of the forward-only MVP3 migration", "Authenticated persona and negative-RLS runtime", "Held external provider/policy decisions recorded in product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv"]
-    blocks: ["MVP3 engineering closure", "MVP1+MVP2+MVP3 integrated certification"]
-    note: "Complete MVP3 source slice is implemented on codex/mvp3-complete-implementation from integrated baseline 45d4420. Exact 84-row controls and 13-module reuse map are recorded; missing trust/operations/security/device/enforcement routes, enterprise migration, package manifest/hash, device access, refusal context and evidence-cited AI closure are present. Typecheck/build pass; 65 source/static tests pass with 4 intentional provider skips. Runtime DB/RLS/persona certification and held providers remain pending; no remote DDL, push, merge or deploy performed."
+    blocked_by: []
+    blocks: []
+    note: "Engineering retrofit PASS on 2026-07-18. 84/84 rows dispositioned across CD-050..061 plus assurance; live Supabase has 13/13 MVP3 tables under RLS, 25 policies, zero anon grants and rollback probe PASS. OCR and geo-override migrations are live and ledgered. Typecheck/build PASS; protected browser inventory 510 passed / 9 intentional provider or destructive-replay skips / 0 failed (98.27%). External provider/policy and production-deployment holds remain fail-closed and are not claimed as delivered. Evidence: product-contract/evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md."
   - task_id: "TASK-DESIGN-FOUNDATION-SHELL-RESET-001"
     gate: "G11 sponsor-approved controlled UI foundation reset"
     priority: "P0"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { decideGeoOverride } from "./actions";
 
 export type GeoOverrideQueueRow = {
@@ -34,6 +35,7 @@ export type OverrideQueueStrings = {
 const stamp = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 
 export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueueRow[]; strings: OverrideQueueStrings }) {
+  const router = useRouter();
   const [rejection, setRejection] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
@@ -48,6 +50,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
     startTransition(async () => {
       const result = await decideGeoOverride({}, fd);
       setMessage(m => ({ ...m, [row.id]: result.ok ? strings.decided : (result.error ?? strings.failure) }));
+      if (result.ok) window.setTimeout(() => router.refresh(), 1_200);
     });
   }
 

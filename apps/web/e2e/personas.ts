@@ -7,6 +7,7 @@ export const PERSONAS = {
   inspector: { email: "inspector@mim.gov.sa", password: "MimField!2026", home: "/field" },
   reviewer: { email: "reviewer@mim.gov.sa", password: "MimRev!2026", home: "/reviews" },
   admin: { email: "admin@mim.gov.sa", password: "MimAdmin!2026", home: "/admin" },
+  ops: { email: "ops@mim.gov.sa", password: "MimOps!2026", home: "/dashboard" },
 } as const;
 
 export type PersonaKey = keyof typeof PERSONAS;

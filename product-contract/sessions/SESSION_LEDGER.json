@@ -3712,9 +3712,65 @@
       "commit_sha": "local feature branch HEAD created at closure from d09ed97",
       "next_task": "Execute and sign the three human evidence gates, then request an explicit release-gate decision; separately disposition the existing moderate Next.js/PostCSS advisory under G11 hardening.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 98 and TASK-QA-UI-COMPLIANCE-CERT-004 evidence. Technical UI certification passes. Do not claim production PASS or self-approve UIC-AC-023/038/039/040. Obtain qualified native-Arabic and representative morning/night endurance records. Do not merge or push without a separate release decision."
+    },
+    {
+      "session_id": "2026-07-18-mvp3-retrofit-regression-certification",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "codex/integrated-preprod-20260718",
+      "task_id": "TASK-MVP3-RETROFIT-REGRESSION-001",
+      "gate": "MVP3 retrofit integration over MVP1/MVP2",
+      "requirements": [
+        "84 exact MVP3 rows",
+        "12 Claude Design modules plus M3-12 assurance",
+        "MVP1+MVP2+MVP3 coexistence and protected regression"
+      ],
+      "acceptance_ids": [
+        "Exact MVP3 master-register acceptance IDs",
+        "No open P0/P1 integration regression",
+        "At least 98% one-iteration protected pass rate"
+      ],
+      "screens": [
+        "CD-050..CD-061",
+        "MVP1/MVP2 protected route inventory"
+      ],
+      "engines": [
+        "Canonical identity/RLS/workflow/audit/evidence/GIS/field/case/decision engines",
+        "Additive MVP3 enterprise control-plane services"
+      ],
+      "files_changed": [
+        "field device/Mapbox ETA and governed override integration",
+        "Operations decision refresh and verified-user retry",
+        "MVP2 AI, dashboard, Mapbox and MVP3 regression contracts",
+        "forward migration 20260718140105",
+        "retrofit integration map, status and certificate records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "static inventory 66 pass / 4 intentional provider skips / 0 failed",
+        "focused M04 8/8 PASS",
+        "live seven-RPC rollback probe PASS with zero residual rows",
+        "complete protected browser inventory 510 pass / 9 intentional skips / 0 failed"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md",
+        "product-contract/mvp3/MVP3_RETROFIT_INTEGRATION_MAP.csv",
+        "live Supabase 13/13 RLS tables, 25 policies and zero anon grants"
+      ],
+      "decisions": [
+        "MVP3 remains additive over MVP1/MVP2 canonical sources of truth",
+        "Mapbox remains the selected map provider",
+        "Unconfigured external providers and policy values remain fail-closed and are not claimed as delivered",
+        "Five verified live migrations repaired into the Supabase migration ledger"
+      ],
+      "blockers": [],
+      "commit_sha": "pending integrated certification commit",
+      "next_task": "Promote the certified integrated candidate to main and configure held providers only under separate authority.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 96 and TASK-MVP3-RETROFIT-REGRESSION-001. The engineering retrofit is PASS at 510/519 protected tests with zero failures. Preserve the coexistence map and fail-closed provider holds."
     }
   ],
-  "last_session": "2026-07-18-ui-compliance-certification-004",
+  "last_session": "2026-07-18-mvp3-retrofit-regression-certification",
   "rules": {
     "append_only": true,
     "required_fields": [

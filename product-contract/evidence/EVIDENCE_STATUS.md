@@ -19,6 +19,18 @@ compliance evidence remains incomplete at the four named release gates. See
 
 Exact record: `TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002.md`.
 
+## TASK-MVP3-RETROFIT-REGRESSION-001 — 2026-07-18
+
+| ID | Item | Status |
+|---|---|---|
+| MVP3-RETRO-EV-001 | 84-row/module coexistence map | Captured — PASS |
+| MVP3-RETRO-EV-002 | Live migration, 13/13 RLS tables, 25 policies, zero anon grants | Captured — PASS |
+| MVP3-RETRO-EV-003 | Seven-RPC rollback probe with zero residual rows | Captured — PASS |
+| MVP3-RETRO-EV-004 | M04 Mapbox/device/governed override runtime | Captured — 8/8 PASS |
+| MVP3-RETRO-EV-005 | Complete MVP1+MVP2+MVP3 browser regression | Captured — 510 passed / 9 intentional skips / 0 failed |
+
+Exact certificate: `TASK-MVP3-RETROFIT-REGRESSION-001.md`.
+
 ## TASK-DESIGN-FOUNDATION-SHELL-RESET-001 — 2026-07-18
 
 | ID | Evidence | Status |
