@@ -161,3 +161,30 @@ their runtime SQL behavior is unproven until the Inspection Supabase project
   Would pass in an environment with a real Chrome binary (e.g. `channel: 'chrome'`) or on
   a real user device (sponsor declined the real-device proof step as unnecessary given
   the code-path/fail-closed evidence already obtained).
+
+## R-009 — DocuSign digital-signature provider live-certified (short-term PKI/EBDA stand-in)
+- **Module:** M2-12 committee decision dossier, signature/PKI verification.
+- **Context:** real Saudi PKI trust-service-provider (e.g. "emdha") is enterprise-only
+  onboarding, not obtainable for a short staging/dev cycle. DocuSign's free developer
+  sandbox (`demo.docusign.net`, Authorization Code Grant + Secret) is the cheapest genuine
+  signature API available for this window — explicitly a SHORT-TERM stand-in, never the
+  production signer. Production MUST rotate to the real KSA PKI/EBDA authority before
+  go-live.
+- **Built:** `DocuSignSignatureAdapter` (lib/providers/signature-docusign.ts) — real OAuth
+  refresh-token grant, envelope create/status/void against the live DocuSign REST API.
+  `mapEnvelopeStatusToVerification` only ever returns `'verified'` on a genuine
+  `completed` envelope status — `sent`/`delivered` map to `'pending'`, never fabricated as
+  verified. Wired into `committee/actions.ts::recordSignatureAct`: a `signature` +
+  `captured` act with DocuSign configured creates a real envelope and records the result
+  in `report_verifications` (provider `docusign`, envelope id in `detail`); DEC-009
+  acknowledgement-vs-signature and outcome-consistency guards untouched.
+- **Verification:** LIVE test (`mvp2-signature-docusign.spec.ts`) created a real envelope
+  on the DocuSign sandbox, confirmed genuine `sent`/`delivered` status via a second live
+  API read, then voided it via a third live API write (proves the write AND cleanup paths
+  both genuinely work) — 4/4 pass. Fail-closed unit tests confirm the adapter isn't built
+  without all six `DOCUSIGN_*` env vars, and that bad credentials produce an honest
+  `docusign_auth_failed`, never a fabricated envelope. Full static suite: 59 passed / 2
+  skipped (pre-existing env-gated skips), unaffected. `next build`: 0 errors, 0 warnings.
+- **Not done in this pass:** interactive signer completion (clicking through DocuSign's
+  actual signing ceremony) — out of scope for provider-adapter certification; the
+  envelope-creation → status-read → void path is what's certified.
