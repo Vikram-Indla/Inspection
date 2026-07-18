@@ -1,0 +1,9 @@
+Hold ID,Area,Required Before Enablement,Fail-Closed Behavior,Owner,Status
+MVP3-HOLD-001,Digital signature,"Approved KSA trust-service provider; API contract; signer identity; timestamp; seal validation; legal acceptance","Signature execution disabled; unsigned dossier remains reviewable and auditable",Sponsor/Legal/Security,OPEN
+MVP3-HOLD-002,Mapbox and maps,"Runtime token; approved map style; geographic authority; offline-pack policy","Non-map evidence and coordinate records remain available; map actions report dependency unavailable",Sponsor/Operations/Security,OPEN
+MVP3-HOLD-003,External identity and SSO,"Approved identity provider; tenant/app registration; claims and MFA policy","Local supported authentication remains; external SSO controls disabled",Sponsor/Security,OPEN
+MVP3-HOLD-004,EBDA and data exchange,"Approved endpoint; credentials; schema; transport; retry and receipt contract","Export job may be prepared but cannot transmit; explicit dependency-blocked receipt",Sponsor/Integration,OPEN
+MVP3-HOLD-005,Notification channels,"Approved email/SMS/push providers and templates","In-app/audit event persists; unavailable external delivery is explicit and retry-safe",Sponsor/Operations,OPEN
+MVP3-HOLD-006,Retention and backup,"Approved retention periods; legal hold; backup target; restore objectives","No destructive purge; configuration shown as unresolved",Sponsor/Legal/Operations,OPEN
+MVP3-HOLD-007,AI provider and policy,"Approved model/provider; data boundary; prompt policy; evaluation threshold","AI action disabled; deterministic inspection workflow remains fully usable",Sponsor/Security/Product,OPEN
+MVP3-HOLD-008,Production release,"Migration history reconciliation; credentials; runtime actors; release approval","Local implementation and isolated test evidence only; no remote DDL or deployment",Sponsor/Release owner,OPEN
