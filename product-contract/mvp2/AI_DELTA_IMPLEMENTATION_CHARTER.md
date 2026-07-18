@@ -15,7 +15,7 @@ is not being redesigned or removed.
 | MVP1-M01-016 / AC-0016 | Explain planning risks, workload, hotspots and recommendations | Bulk planning review | Not delivered |
 | MVP1-M01-026 / AC-0026 | Summarize coverage, hotspots, overloaded regions, workload, high-risk factories and priorities | Bulk planning review | Not delivered |
 | MVP1-M03-009 / AC-0107 | Daily summary, risk summary, route optimization and preparation recommendations | Inspector pre-start | Not delivered |
-| MVP1-M04-138 | Explain an inspection requirement (future-AI contract) | Inspection item detail | Not delivered; queued after the two mandatory slices |
+| MVP1-M04-138 | Explain an inspection requirement (future-AI contract) | Inspection item detail | Delivered in this slice: server-re-read, locked-package item explanation; advisory only |
 | MVP3 M3-10 / MVP2-REQ-0255 | Evidence-cited AI suggestions with confidence, edit/reject and separate human decision; never write penalty/severity/license decisions | Governed advisory surface | Generic docket only; contextual wiring not delivered |
 
 The wider recommendation/summary delta register is also tracked here so it
@@ -44,9 +44,10 @@ full prose for every M2-11 row, so no missing acceptance text is invented here.
    append-only contextual insight record, evidence refs, no-selection mutation.
 2. Preparation Assistant: server-re-read visit/factory/package/route facts,
    pre-start advisory panel, no workflow gating, offline fail-closed.
-3. Item-context explanation: only after the authoritative M04-138/M3-10 source
-   rows and inspection-item evidence contract are imported; no invented clause
-   semantics.
+3. Item-context explanation: a server-re-read, locked-package explanation of the
+   item title, recorded guidance, clause reference and evidence rule; it does
+   not interpret law or recommend an answer. The full M3-10 edit/reject
+   experience remains a separately governed lifecycle enhancement.
 
 ## Acceptance evidence required
 

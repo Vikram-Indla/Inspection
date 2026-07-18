@@ -37,4 +37,22 @@ test.describe("contextual AI delta contract", () => {
     expect(action).toContain("evidence_refs");
     expect(action).toContain("disposition: \"proposed\"");
   });
+
+  test("item explanation is bound to the locked package and cannot decide an answer", () => {
+    const workspace = SRC("src/app/field/inspection/[id]/Workspace.tsx");
+    expect(workspace).toContain("MVP1-M04-138");
+    expect(workspace).toContain('surface="inspection_item_explanation"');
+    expect(SRC("src/app/field/inspection/[id]/page.tsx")).toContain("Human decision required");
+    const explanationIndex = workspace.indexOf('surface="inspection_item_explanation"');
+    const responseControlsIndex = workspace.indexOf("{isDate ? (");
+    expect(explanationIndex).toBeGreaterThan(-1);
+    expect(explanationIndex).toBeLessThan(responseControlsIndex);
+
+    const action = SRC("src/lib/ai/contextual-actions.ts");
+    expect(action).toContain("inspection_item_explanation");
+    expect(action).toContain('from("inspection_items")');
+    expect(action).toContain("packageItemCodes.includes(item.code)");
+    expect(action).toContain("Do not recommend an inspection answer");
+    expect(action).toContain('target_type: surface === "planning_summary" ? "bulk_plan_review" : surface === "preparation_assistant" ? "visit_prestart" : "inspection_item"');
+  });
 });

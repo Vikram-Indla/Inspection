@@ -3,9 +3,9 @@
 import { useActionState, useEffect, useState } from "react";
 import { generateContextualInsight, type ContextualResult, type ContextualSurface } from "@/lib/ai/contextual-actions";
 
-type Props = { surface: ContextualSurface; title: string; description: string; context: string; evidenceRefs: string[]; targetRef?: string; generateLabel: string; unavailableLabel: string; evidenceLabel: string; advisoryLabel: string };
+type Props = { surface: ContextualSurface; title: string; description: string; context: string; evidenceRefs: string[]; targetRef?: string; itemId?: string; locale?: "en" | "ar"; generateLabel: string; unavailableLabel: string; evidenceLabel: string; advisoryLabel: string };
 
-export default function ContextualAiPanel({ surface, title, description, context, evidenceRefs, targetRef, generateLabel, unavailableLabel, evidenceLabel, advisoryLabel }: Props) {
+export default function ContextualAiPanel({ surface, title, description, context, evidenceRefs, targetRef, itemId, locale, generateLabel, unavailableLabel, evidenceLabel, advisoryLabel }: Props) {
   const [state, action, pending] = useActionState<ContextualResult, FormData>(generateContextualInsight, {});
   const [offline, setOffline] = useState(false);
   useEffect(() => {
@@ -27,6 +27,8 @@ export default function ContextualAiPanel({ surface, title, description, context
         <input type="hidden" name="context" value={context} />
         <input type="hidden" name="evidence_refs" value={evidenceRefs.join(",")} />
         {targetRef && <input type="hidden" name="target_ref" value={targetRef} />}
+        {itemId && <input type="hidden" name="item_id" value={itemId} />}
+        {locale && <input type="hidden" name="locale" value={locale} />}
         <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <span className="ax-caption">{evidenceLabel}: {evidenceRefs.join(" · ")}</span>
           <button className="ax-btn" disabled={pending || offline}>{offline ? unavailableLabel : pending ? `${generateLabel}…` : generateLabel}</button>
