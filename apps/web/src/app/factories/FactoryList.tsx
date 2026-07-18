@@ -35,8 +35,8 @@ export default function FactoryList({ factories, strings }: { factories: Factory
   return (
     <>
       <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
-        <div className="ax-field"><label className="ax-field__label">{strings.regionLabel}</label>
-          <select className="ax-select" value={region} onChange={e => setRegion(e.target.value)} style={{ maxInlineSize: 220 }}>
+        <div className="ax-field"><label className="ax-field__label" htmlFor="factory-region-filter">{strings.regionLabel}</label>
+          <select id="factory-region-filter" className="ax-select" value={region} onChange={e => setRegion(e.target.value)} style={{ maxInlineSize: 220 }}>
             <option value="">{strings.allRegions}</option>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select></div>

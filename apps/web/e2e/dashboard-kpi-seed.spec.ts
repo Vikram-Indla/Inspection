@@ -142,12 +142,24 @@ test.describe("TASK-DASH-KPI-SEED-001", () => {
     await submitCredentials(page);
     await page.waitForURL(/\/dashboard/);
     await page.goto("/operations/live");
-    await expect(page.getByText(/Verification Fixtures/i).first()).toBeVisible({ timeout: 20_000 });
 
     const enRoute = page.locator(".lv-counter").filter({ hasText: "Inspectors en route" });
     const onSite = page.locator(".lv-counter").filter({ hasText: "On site now" });
-    expect(Number.parseInt(await enRoute.locator("strong").innerText(), 10)).toBeGreaterThanOrEqual(1);
-    expect(Number.parseInt(await onSite.locator("strong").innerText(), 10)).toBeGreaterThanOrEqual(2);
+    await expect(enRoute).toBeVisible({ timeout: 20_000 });
+    await expect(onSite).toBeVisible({ timeout: 20_000 });
+
+    const ops = await login(OPS.email, OPS.password);
+    const fixtures = must(await rest(
+      "GET",
+      `visits?select=operational_state&id=in.(${VISIT_IDS.join(",")})`,
+      ops.jwt,
+    ), "live KPI fixture visits");
+    const expectedEnRoute = fixtures.filter((row: { operational_state: string }) => row.operational_state === "on_the_way").length;
+    const expectedOnSite = fixtures.filter((row: { operational_state: string }) => ["arrived", "executing"].includes(row.operational_state)).length;
+    expect(expectedEnRoute).toBeGreaterThanOrEqual(1);
+    expect(expectedOnSite).toBeGreaterThanOrEqual(2);
+    expect(Number.parseInt(await enRoute.locator("strong").innerText(), 10)).toBeGreaterThanOrEqual(expectedEnRoute);
+    expect(Number.parseInt(await onSite.locator("strong").innerText(), 10)).toBeGreaterThanOrEqual(expectedOnSite);
 
     mkdirSync(EVIDENCE_DIR, { recursive: true });
     await page.screenshot({ path: join(EVIDENCE_DIR, "live-operations-en-light.png"), fullPage: true });

@@ -92,30 +92,44 @@ test("M2-08 governed write: create an external request (live RLS compliance)", a
 });
 
 test("M2-11 Gemini: generate an AI advisory suggestion, then human-dispose (live provider)", async ({ page }) => {
+  const evidenceRef = `EV-AI-${Date.now()}`;
   await page.goto("/locale?set=en");
   await page.goto("/ai/suggestions");
-  await page.locator('input[name="context"]').fill(`ctx-${Date.now()} two overdue factories`);
-  await page.getByRole("button", { name: /Generate \(AI\)/i }).click();
+  const generateForm = page.locator("form").filter({ has: page.locator('input[name="context"]') });
+  await generateForm.locator('input[name="context"]').fill(`ctx-${Date.now()} two overdue factories`);
+  await generateForm.locator('input[name="evidence_refs"]').fill(evidenceRef);
+  await generateForm.getByRole("button", { name: /Generate \(AI\)/i }).click();
   // Gemini is live in the server env → a real advisory suggestion is created (proposed).
-  await expect(page.getByText(/generated/i).first()).toBeVisible({ timeout: 30000 });
+  await expect(generateForm.getByText(/^generated$/i)).toBeVisible({ timeout: 30_000 });
   await page.reload();
-  // The generated suggestion is 'proposed' and awaits a HUMAN disposition (AI never decides).
-  await expect(page.locator(".ax-lozenge", { hasText: "proposed" }).first()).toBeVisible();
+  // The exact evidence-cited row is proposed/configured and only a human may
+  // dispose it; AI never mutates the decision state itself.
+  const row = page.locator(".ax-surface").filter({ hasText: evidenceRef }).first();
+  await expect(row).toBeVisible();
+  await expect(row.locator(".ax-lozenge", { hasText: "proposed" })).toBeVisible();
+  await expect(row.locator(".ax-lozenge", { hasText: "configured" })).toBeVisible();
+  await row.locator('select[name="to"]').selectOption("rejected");
+  await row.locator('input[name="reason"]').fill("Regression evidence item completed");
+  await row.getByRole("button", { name: /Disposition|Applying/i }).click();
+  await expect(row.getByText(/^disposed$/i)).toBeVisible();
 });
 
 test("M2-11 governed write: propose an advisory suggestion, then human-dispose it (live)", async ({ page }) => {
   const text = `e2e-ai-${Date.now()}`;
+  const evidenceRef = `EV-MANUAL-${Date.now()}`;
   await page.goto("/locale?set=en");
   await page.goto("/ai/suggestions");
   // provider is fail-closed → any suggestion carries 'unavailable', human proposes advisory
-  await page.locator('input[name="text"]').fill(text);
-  await page.getByRole("button", { name: /^Propose$/i }).click();
-  await expect(page.getByText(/proposed/i).first()).toBeVisible();
+  const proposeForm = page.locator("form").filter({ has: page.locator('input[name="text"]') });
+  await proposeForm.locator('input[name="text"]').fill(text);
+  await proposeForm.locator('input[name="evidence_refs"]').fill(evidenceRef);
+  await proposeForm.getByRole("button", { name: /^Propose$/i }).click();
+  await expect(proposeForm.getByText(/^proposed$/i)).toBeVisible();
   await page.reload();
   await expect(page.getByText(text)).toBeVisible();
-  await expect(page.getByText("unavailable").first()).toBeVisible(); // provider held, never auto-actioned
-  // human disposition (reject) — mandatory reason
   const row = page.locator(".ax-surface").filter({ hasText: text });
+  await expect(row.getByText("unavailable")).toBeVisible(); // provider held, never auto-actioned
+  // human disposition (reject) — mandatory reason
   await row.locator('select[name="to"]').selectOption("rejected");
   await row.locator('input[name="reason"]').fill("not applicable");
   await row.getByRole("button", { name: /Disposition|Applying/i }).click();

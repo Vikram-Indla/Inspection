@@ -198,6 +198,7 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
     etaLabel: t("field.start.etaLabel", "Road-network ETA (M04-017/024)"),
     etaAvailable: t("field.start.etaAvailable", "{minutes} min · {distance} m · updated {at}"),
     etaUnavailable: t("field.start.etaUnavailable", "routing provider unavailable — navigation remains available"),
+    etaStale: t("field.start.etaStale", "Offline — showing the last known route estimate as stale; it is not refreshed."),
     overrideHeading: t("field.start.overrideHeading", "Outside the planned location"),
     overrideBody: t("field.start.overrideBody", "You are {d} m from the planned point (fence {fence} m). Request Operations approval using the captured actual coordinates {lat}, {lng}. Check-in remains blocked until approval."),
     overrideReason: t("field.start.overrideReason", "Explanation — mandatory"),

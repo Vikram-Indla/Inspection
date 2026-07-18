@@ -1,0 +1,10 @@
+schema_version: "1.2"
+task_id: "TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
+gate: "G11 source integration / G12 release gates remain open"
+title: "Promote the governed design system across the complete Inspection platform"
+status: "MAIN_INTEGRATED_VERIFIED_PUSH_AUTHORIZED"
+branch_at_start: "codex/inspector-shell-uplift-002"
+head_at_start: "1bd6086"
+requirement_ids: ["SPONSOR-DSF-001..030", "SPONSOR-UIU-001..024", "SPONSOR-PDS-001..025"]
+acceptance_ids: ["DSF-AC-001..030", "UIU-ISP-AC-001..024", "PDS-AC-001..025"]
+note: "Full predecessor is preserved in git at main d09ed97; this pointer records supersession by the certification task."

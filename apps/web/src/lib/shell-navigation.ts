@@ -72,7 +72,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     items: [
       { id: "planning", labelKey: "nav.planning", labelEn: "Planning", labelAr: "التخطيط", href: "/planning", icon: "calendar", roles: ["planner"], businessTab: "Planning" },
       { id: "visits", labelKey: "nav.visits", labelEn: "Visit Management", labelAr: "إدارة الزيارات", href: "/visits", icon: "visits", roles: ["planner", "ops"], businessTab: "Inspection / Visit Management" },
-      { id: "field", labelKey: "shell.nav.execution", labelEn: "Inspection Execution", labelAr: "تنفيذ التفتيش", href: "/field", icon: "inspect", roles: ["inspector"], businessTab: "Inspection Execution" },
+      { id: "field", labelKey: "shell.nav.myAssignments", labelEn: "My assignments", labelAr: "مهامي", href: "/field", icon: "inspect", roles: ["inspector"], businessTab: "Inspection Execution" },
       { id: "virtual", labelKey: "nav.virtual", labelEn: "Virtual Inspections", labelAr: "التفتيش الافتراضي", href: "/virtual", icon: "virtual", roles: ["inspector"], businessTab: "Inspection Execution" },
       { id: "reviews", labelKey: "nav.reviews", labelEn: "Review & Approval", labelAr: "المراجعة والاعتماد", href: "/reviews", icon: "review", roles: ["reviewer"], businessTab: "Review & Approval" },
     ],
@@ -106,9 +106,27 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
 
 export function buildShellNavigation(roleKeys: readonly string[]) {
   const roles = new Set(roleKeys);
-  return SHELL_NAVIGATION
-    .map(group => ({ ...group, items: group.items.filter(item => item.roles.some(role => roles.has(role))) }))
+  const visible = SHELL_NAVIGATION
+    .map(group => {
+      const inspectorFieldGroup = roles.has("inspector") && group.id === "inspection";
+      return {
+        ...group,
+        ...(inspectorFieldGroup ? {
+          labelKey: "shell.group.fieldWork",
+          labelEn: "Field work",
+          labelAr: "العمل الميداني",
+        } : {}),
+        items: group.items.filter(item => item.roles.some(role => roles.has(role))),
+      };
+    })
     .filter(group => group.items.length > 0);
+
+  // UIU-ISP-AC-004: field work is the inspector's primary context. Command
+  // destinations remain available below it; this changes presentation order,
+  // never route authorization or RLS scope.
+  return roles.has("inspector")
+    ? [...visible].sort((a, b) => Number(b.id === "inspection") - Number(a.id === "inspection"))
+    : visible;
 }
 
 export function isShellRouteCurrent(current: string, href: string) {

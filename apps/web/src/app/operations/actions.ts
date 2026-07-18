@@ -160,7 +160,10 @@ export async function decideGeoOverride(_: OpsResult, formData: FormData): Promi
   if (decided?.status === "expired") {
     return { error: "No decision was saved — the override expired before Operations could act." };
   }
-  revalidatePath("/operations");
-  revalidatePath("/field");
+  // The Operations page composes several large live ledgers. Revalidating it
+  // synchronously inside the action can leave the client transition displaying
+  // "Saving decision…" even after the atomic RPC committed. The client owns a
+  // short post-acknowledgement refresh; field pages are dynamic and read the
+  // approved state on their next refresh/navigation.
   return { ok: true };
 }

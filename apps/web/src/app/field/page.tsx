@@ -199,53 +199,57 @@ export default async function Field() {
   };
 
   return (
-    <Shell current="/field" title={t("field.dashboard.title", "Field dashboard")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("field.dashboard.context", "SCR-IPAD-600 · assigned-only (RBAC-009, RLS-enforced)")}</span>}>
+    <Shell current="/field" title={t("field.assignments.title", "My assignments")}
+      context={<span className="ax-lozenge ax-lozenge--info">{t("field.assignments.context", "Assigned to you")}</span>}>
       {/* padding-block-end keeps content clear of the fixed bottom tab bar */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", paddingBlockEnd: "96px" }}>
-        <div className="ax-kpi-row">
-          {kpis.map(([label, value]) => (
-            <div key={label} className="ax-surface ax-kpi">
-              <span className="ax-caption">{label}</span>
-              <span className="ax-kpi__value ax-numeric">{value}</span>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "var(--ax-space-200)" }}>
-          <section className="ax-surface ax-panel" style={panelStyle}>
-            <h3 style={headingStyle}>{t("field.dashboard.visitsByMonth", "Visits by month")}</h3>
-            <BarChart data={visitsByMonth} title={t("field.dashboard.visitsByMonth", "Visits by month")} emptyLabel={noData} />
-          </section>
-          <section className="ax-surface ax-panel" style={panelStyle}>
-            <h3 style={headingStyle}>{t("field.dashboard.reviewOutcomes", "Review outcomes")}</h3>
-            <DonutChart
-              data={[
-                { label: t("field.dashboard.approved", "Approved"), value: approvedReviews, tone: "success" },
-                { label: t("field.dashboard.returned", "Returned"), value: returnedReviews, tone: "warning" },
-                { label: t("field.dashboard.rejected", "Rejected"), value: rejectedReviews, tone: "critical" },
-              ]}
-              title={t("field.dashboard.reviewOutcomes", "Review outcomes")}
-              centerLabel={t("field.dashboard.decided", "decided")}
-              emptyLabel={noData}
-            />
-          </section>
-          <section className="ax-surface ax-panel" style={panelStyle}>
-            <h3 style={headingStyle}>{t("field.dashboard.submissionsTrend", "Submissions trend")}</h3>
-            <LineChart data={submissionsByMonth} title={t("field.dashboard.submissionsTrend", "Submissions trend")} emptyLabel={noData} />
-          </section>
-        </div>
-
+      <div className="ax-field-page">
         {/* M03-001/003/004/015 — inbox + Calendar/List/Map + search/filter/sort + expiry display */}
         <FieldHome visits={visits} notifications={notifications} strings={homeStrings}
           nowIso={new Date().toISOString()} locale={locale} />
+
+        <details className="ax-field-performance">
+          <summary>{t("field.dashboard.performanceOverview", "Performance overview")}</summary>
+          <div className="ax-field-performance__body">
+            <div className="ax-kpi-row">
+              {kpis.map(([label, value]) => (
+                <div key={label} className="ax-surface ax-kpi">
+                  <span className="ax-caption">{label}</span>
+                  <span className="ax-kpi__value ax-numeric">{value}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="ax-field-performance__charts">
+              <section className="ax-surface ax-panel" style={panelStyle}>
+                <h3 style={headingStyle}>{t("field.dashboard.visitsByMonth", "Visits by month")}</h3>
+                <BarChart data={visitsByMonth} title={t("field.dashboard.visitsByMonth", "Visits by month")} emptyLabel={noData} />
+              </section>
+              <section className="ax-surface ax-panel" style={panelStyle}>
+                <h3 style={headingStyle}>{t("field.dashboard.reviewOutcomes", "Review outcomes")}</h3>
+                <DonutChart
+                  data={[
+                    { label: t("field.dashboard.approved", "Approved"), value: approvedReviews, tone: "success" },
+                    { label: t("field.dashboard.returned", "Returned"), value: returnedReviews, tone: "warning" },
+                    { label: t("field.dashboard.rejected", "Rejected"), value: rejectedReviews, tone: "critical" },
+                  ]}
+                  title={t("field.dashboard.reviewOutcomes", "Review outcomes")}
+                  centerLabel={t("field.dashboard.decided", "decided")}
+                  emptyLabel={noData}
+                />
+              </section>
+              <section className="ax-surface ax-panel" style={panelStyle}>
+                <h3 style={headingStyle}>{t("field.dashboard.submissionsTrend", "Submissions trend")}</h3>
+                <LineChart data={submissionsByMonth} title={t("field.dashboard.submissionsTrend", "Submissions trend")} emptyLabel={noData} />
+              </section>
+            </div>
+          </div>
+        </details>
       </div>
 
       <FieldTabs active="dashboard" fabHref={fabHref} labels={{
         dashboard: t("field.tabs.dashboard", "Dashboard"),
         visits: t("field.tabs.visits", "Visits"),
         virtual: t("field.tabs.virtual", "Virtual"),
-        signout: t("field.tabs.signout", "Sign out"),
         fab: t("field.tabs.startNext", "Start next visit"),
       }} />
     </Shell>

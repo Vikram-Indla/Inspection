@@ -1,62 +1,55 @@
 schema_version: "1.2"
-task_id: "TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
-gate: "MVP3 sponsor-authorized complete implementation"
-title: "MVP3 complete vertical-slice implementation over the integrated MVP1/MVP2 baseline"
-status: "INTEGRATED_PREPRODUCTION_SOURCE_AND_REMOTE_SCHEMA_CERTIFIED"
+task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
+gate: "G11/G12 UI release certification"
+title: "Close technical WCAG 2.2, DGA Platform Code and Arabic/RTL evidence; prepare human endurance gates"
+status: "TECHNICAL_PASS_MAIN_PUSH_AUTHORIZED_HUMAN_GATES_PENDING"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#MVP3-REMOTE-SUPABASE-MIGRATION-001"
-change_control_ref: "CC-MVP3-COMPLETE-IMPLEMENTATION-001"
+approval_ref: "HUMAN_APPROVALS.yaml#QA-UI-COMPLIANCE-CERT-004"
+change_control_ref: "CC-QA-UI-COMPLIANCE-CERT-004"
 
-branch_at_start: "codex/mvp3-complete-implementation"
-head_at_start: "45d4420"
-process_ids: ["P00", "P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10", "P11", "P12", "P13"]
-requirement_ids: ["84 exact MVP3 requirement rows recorded in product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv"]
-acceptance_ids: ["Exact row-level acceptance identifiers from the MVP3 master register"]
-evidence_ids: ["Exact row-level evidence identifiers from the MVP3 master register"]
-screen_ids: ["CD-050", "CD-051", "CD-052", "CD-053", "CD-054", "CD-055", "CD-056", "CD-057", "CD-058", "CD-059", "CD-060", "CD-061"]
-engine_ids: ["Existing MVP1/MVP2 engines plus additive MVP3 services only"]
+branch_at_start: "codex/ui-compliance-certification-004"
+head_at_start: "d09ed97"
+process_ids: ["P01", "P02", "P03", "P04", "P05", "P06A", "P06B", "P07", "P08", "P09", "P10", "P11", "P12"]
+requirement_ids: ["WCAG-2.2-A-AA", "DGA-PLATFORM-CODE", "DGA-5.13.8", "AR-RTL-RELEASE", "INSPECTOR-ENDURANCE"]
+acceptance_ids: ["UIC-AC-001..040"]
+evidence_ids: ["UIC-EV-001..010"]
+screen_ids: ["SCR-SHARED-SHELL-001", "SCR-ADM-001/010/020/030/050/060/070/080/090", "SCR-WEB-100/200/300/310/400/500", "SCR-IPAD-600..670", "SCR-VIR-700..720"]
+engine_ids: ["visual and interaction verification only; ENG-01..ENG-20 behavior preserved"]
 
 dependencies:
-  - "Integrated MVP1/MVP2 baseline at 45d4420."
-  - "Government foundation and authenticated shell already merged locally."
-  - "Corrected MVP3 R2 design packages and exact 84-row reconciliation supplied by the sponsor."
-  - "External providers and unresolved policy values remain fail-closed until configured or approved."
+  - "Pushed main d09ed97 with platform-wide Government Foundation V1."
+  - "Official DGA WCAG 2.2 accessibility guidance and Digital Transformation Basic Standards V4.0."
+  - "W3C WCAG 2.2 Recommendation and controlled authenticated personas."
 
 open_decisions:
-  - "Existing provider, policy, retention, geography, credential and production-release holds remain open unless separately recorded as resolved."
+  - "Native Arabic linguistic approval requires a qualified human reviewer."
+  - "Inspector endurance approval requires observed representative morning and night sessions."
 
 do_not_touch:
-  - "Do not rewrite, replace, or regress accepted MVP1/MVP2 behavior."
-  - "Do not invent provider selections, policy thresholds, retention periods, legal values, production secrets, or business decisions."
-  - "Remote DDL authority was consumed only for migration 20260718150000_mvp3_enterprise_control_plane; do not apply additional remote DDL, deploy, mutate production data, or rewrite Git history without separate authority."
-  - "Do not use permanent mocks or claim runtime certification without executed evidence."
+  - "Do not alter input, textarea, select or search geometry/behavior."
+  - "Do not alter workflow, RLS, data, provider, audit, offline or immutable-version semantics."
+  - "Keep Cinematic Atlas v0.8 isolated."
+  - "Do not mutate shared visit state merely to produce UI evidence."
+  - "Do not claim human or organizational signoff from automated checks."
+  - "Local main fast-forward and origin/main push are sponsor-authorized; do not deploy to production hosting."
 
 authorized_file_scope:
-  - "MVP3 application routes, components, services, tests and evidence under apps/web."
-  - "Additive forward-only Supabase migrations and local database tests."
-  - "Shared code only where compatibility is preserved and regression-proven."
-  - "product-contract/mvp3 and governance/execution/session/evidence records for this task."
-
-required_context:
-  - "product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv"
-  - "product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv"
-  - "product-contract/GATE_STATUS.md"
-  - "product-contract/CURRENT_STATE.md"
-  - "product-contract/governance/HUMAN_APPROVALS.yaml"
-  - "product-contract/governance/OPEN_DECISIONS.yaml"
-  - "Existing application routes, schema, migrations, RLS, event contracts and tests."
-  - "Corrected MVP3 R2 design packages in the approved external evidence pack."
+  - "Accessibility test tooling and release-contract tests."
+  - "UI-only remediations found by executed WCAG/RTL checks."
+  - "DGA/Platform Code mapping, Arabic/RTL evidence and endurance protocol."
+  - "Acceptance, evidence, current-state, queue and session records."
 
 required_evidence:
-  - "Exact 84/84 requirement-to-acceptance-to-code-to-test-to-evidence reconciliation."
-  - "Migration, grants, RLS, negative-permission and audit-immutability proof."
-  - "English/Arabic, LTR/RTL, light/dark, desktop/tablet/mobile and keyboard/accessibility proof for applicable screens."
-  - "Focused module tests plus complete MVP1+MVP2+MVP3 regression."
-  - "No invented policy/provider value and explicit blocked-leg register."
+  - "Automated WCAG scan plus manual keyboard/focus/reflow/zoom/target/status checks on critical authenticated routes."
+  - "English/Arabic LTR/RTL light/dark parity on critical role journeys."
+  - "DGA Platform Code executive adoption plan and requirement-to-evidence map."
+  - "Assistive-technology and native Arabic review register."
+  - "Observed inspector morning/night endurance protocol and completed session records."
+  - "Typecheck, production build and protected regression."
 
 exit_condition: >-
-  All 84 MVP3 rows are either implemented and evidenced or explicitly held by a genuine external
-  dependency; all twelve design modules are integrated without MVP1/MVP2 regression; database,
-  RLS, frontend, accessibility and full regression evidence is recorded; and no completion claim
-  exceeds the executed proof.
+  All technical WCAG 2.2 A/AA, DGA Platform Code and Arabic/RTL P0/P1 findings are
+  remediated and evidenced; protected regression passes; qualified Arabic review and
+  representative inspector morning/night sessions are completed without open P0/P1;
+  and the gate is explicitly changed to PASS by evidence rather than assertion.

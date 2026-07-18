@@ -1,5 +1,36 @@
 # Acceptance Status
 
+## 2026-07-18 — Platform foundation promotion 003
+
+- PDS-AC-001..024: PASS_SOURCE.
+- PDS-AC-025: CONDITIONAL_RELEASE — WCAG, DGA/Platforms Code, native Arabic/RTL and observed inspector endurance remain open.
+- Exact ledger: `acceptance/PDS_PLATFORM_FOUNDATION_PROMOTION_003.csv`.
+
+## TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002 — 2026-07-18
+
+- UIU-ISP-AC-001..020: **PASS_LOCAL** — source, compile, static contracts and component
+  visual/geometry evidence cover Shell A default, optional Shell B, inspector-first order,
+  modern field task bar, task-first composition, theme/RTL/focus/target size, frozen inputs,
+  Atlas isolation and the no-behavior-change boundary.
+- UIU-ISP-AC-021..024: **OPEN_RELEASE_GATE** — product-wide WCAG, DGA/Platforms Code,
+  native Arabic/RTL and observed inspector endurance are not certified or claimed.
+- Authenticated `/field` and full browser regression remain pending a controlled environment;
+  the current route performs a state-changing expiry transition and no shared-data mutation
+  was authorized.
+- Exact map: `UIU_INSPECTOR_SHELL_UPLIFT_002.csv`; evidence:
+  `../evidence/TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002.md`.
+
+## TASK-MVP3-RETROFIT-REGRESSION-001 — 2026-07-18
+
+- MVP3 engineering retrofit over MVP1/MVP2: **PASS**.
+- Exact MVP3 scope: **84/84 rows dispositioned** across twelve design modules plus assurance.
+- Database/RLS: **PASS** — live additive migration, 13/13 RLS tables, 25 policies, zero anonymous
+  grants and rollback-only governed RPC probe with zero residuals.
+- Application regression: **PASS** — typecheck/build pass; 510 browser tests pass, nine explicit
+  provider/destructive-replay tests skip, zero tests fail (98.27% passing inventory).
+- External providers and production release: **HELD FAIL-CLOSED** and not counted as delivered.
+- Exact evidence: `../evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md`.
+
 ## TASK-DESIGN-FOUNDATION-SHELL-RESET-001 — 2026-07-18
 
 - DSF-AC-001..030: **PASS** for the shared foundation and authenticated shell.

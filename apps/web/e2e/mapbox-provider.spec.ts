@@ -5,11 +5,12 @@ import { join } from "node:path";
 const app = (...parts: string[]) => join(process.cwd(), ...parts);
 
 test.describe("TASK-IPAD-MAPBOX-RUNTIME-004", () => {
-  test("uses Mapbox as the only application map renderer across web, Admin and iPad", () => {
+  test("uses Mapbox as the only authenticated application map renderer across web, Admin and iPad", () => {
     const genericMap = readFileSync(app("src/components/GeoMap.tsx"), "utf8");
     const liveMap = readFileSync(app("src/app/operations/live/LiveMapInner.tsx"), "utf8");
     const field = readFileSync(app("src/app/field/[visitId]/Startup.tsx"), "utf8");
     const admin = readFileSync(app("src/app/admin/gis/GisStudio.tsx"), "utf8");
+    const publicAtlas = readFileSync(app("src/app/login/StoryMapInner.tsx"), "utf8");
     const packages = readFileSync(app("package.json"), "utf8");
 
     expect(genericMap).toContain('process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN');
@@ -20,8 +21,13 @@ test.describe("TASK-IPAD-MAPBOX-RUNTIME-004", () => {
     expect(field).toContain('import("@/components/GeoMap")');
     expect(admin).toContain('import("@/components/GeoMap")');
     expect(packages).toContain('"mapbox-gl"');
-    expect(packages).not.toContain('"leaflet"');
-    expect(packages).not.toContain('"react-leaflet"');
+    // Leaflet remains ring-fenced to the accepted public login Atlas. It is
+    // not an authenticated inspection/GIS renderer and must not be removed.
+    expect(publicAtlas).toContain('from "leaflet"');
+    expect(genericMap).not.toContain("leaflet");
+    expect(liveMap).not.toContain("leaflet");
+    expect(field).not.toContain("leaflet");
+    expect(admin).not.toContain("leaflet");
   });
 
   test("uses Mapbox Directions for road-network ETA without committing a token", () => {

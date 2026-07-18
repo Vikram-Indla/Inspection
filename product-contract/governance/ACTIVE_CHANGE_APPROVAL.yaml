@@ -1,37 +1,23 @@
 schema_version: "1.0"
-change_id: "CC-DESIGN-FOUNDATION-SHELL-RESET-001"
-title: "Government visual foundation and authenticated shell reset"
+change_id: "CC-QA-UI-COMPLIANCE-CERT-004"
+title: "UI production compliance certification"
 requestor: "Codex on behalf of Vikram Indla"
 approver: "Vikram Indla"
 authorization: >
-  Sponsor approved the visual direction and then explicitly replied "approved"
-  to the recommendation to commit and merge branch
-  codex/design-foundation-shell-reset-001 into local setup/Inspection.
-business_reason: >
-  Establish a durable government-grade typography, surface and shell foundation
-  for MVP1 and future MVPs while isolating Cinematic Atlas v0.8 and preserving
-  the existing text-box contract.
-decision:
-  source_branch: "codex/design-foundation-shell-reset-001"
-  target_branch: "setup/Inspection (local)"
-  commit: "Authorized"
-  merge: "Authorized"
-  push: "Not authorized"
+  After being told that a perfect release PASS requires executed WCAG, DGA,
+  native Arabic/RTL and inspector-endurance evidence, the sponsor instructed
+  Codex to proceed, then explicitly instructed Codex to commit the verified
+  certification branch to main and clarified that it must be pushed.
 scope_allowed:
-  - "Commit the approved foundation, shell, assets, tests, design authority and contract evidence."
-  - "Merge the committed branch into local setup/Inspection and resolve conflicts without weakening either accepted side."
-  - "Record the resulting local merge status and exact verification evidence."
+  - "Execute technical accessibility, RTL and DGA evidence checks."
+  - "Remediate UI-only P0/P1 defects found by those checks."
+  - "Prepare and run controlled authenticated read-only journeys."
+  - "Prepare the native-review and inspector-endurance protocols and evidence registers."
+  - "Create the local certification commit and fast-forward local main to it."
+  - "Push the verified local main fast-forward to origin/main and confirm port 3000."
 scope_forbidden:
-  - "Any push, deployment, remote DDL, production-data change or modification of main."
-  - "Any workflow, RLS, provider, policy or text-box behavior change."
-  - "Any expansion into the separate page-by-page redesign sweep."
-regression_impact: >
-  Production build PASS; foundation contract 6/6; authenticated shell 9/9;
-  visual capture 2/2; complete static inventory 54 pass / 3 intentional
-  provider skips / 0 failures.
+  - "Self-approval of native linguistic quality or representative human endurance."
+  - "Shared-data mutation solely for evidence, remote DDL or production hosting deployment."
+  - "Workflow, RLS, provider, audit, offline, immutable-version, input or Atlas changes."
 decision_owner: "Vikram Indla"
-effective_version: "Government Foundation Shell Reset V1"
 effective_date: "2026-07-18"
-notes: >
-  Local integration only. Cinematic Atlas v0.8 remains isolated and input,
-  textarea, select and search geometry/behavior remain frozen.

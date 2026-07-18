@@ -15,7 +15,8 @@ test.describe("CD-006..011 admin backend foundation", () => {
       const content = src(path);
       expect(content).toContain('from "@/lib/admin-configuration"');
       expect(content).toContain("requireConfigurationWriter()");
-      expect(content).toContain("configurationFailure(");
+      expect(content).toContain("NEUTRAL_WRITE_ERROR");
+      expect(content).toContain("logProviderError(");
       expect(content).not.toMatch(/return \{ error: error\.message \}/);
     }
   });
@@ -37,11 +38,13 @@ test.describe("CD-006..011 admin backend foundation", () => {
 
   test("regulation publishing validates clause consumers and the database protects published records", () => {
     const actions = src("src/app/admin/regulations/actions.ts");
-    const migration = src("../../supabase/migrations/20260715173000_admin_configuration_audit.sql");
-    expect(actions).toContain('select("id, clause_ref, inspection_items(id)")');
-    expect(actions).toContain("Publish blocked: ${unmapped.length} clause(s) have no inspection-item mapping.");
-    expect(actions).toContain("approved_by: access.userId");
-    expect(migration).toContain("regulations_maker_checker");
-    expect(migration).toContain("trg_guard_published_regulation");
+    const auditMigration = src("../../supabase/migrations/20260715173000_admin_configuration_audit.sql");
+    const authorityMigration = src("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
+    expect(actions).toContain('sb.rpc("publish_regulation"');
+    expect(actions).toContain("Publish blocked: every clause must map to an inspection item.");
+    expect(authorityMigration).toContain("not exists(select 1 from public.inspection_items i where i.clause_id=c.id)");
+    expect(authorityMigration).toContain("approved_by=auth.uid()");
+    expect(auditMigration).toContain("regulations_maker_checker");
+    expect(auditMigration).toContain("trg_guard_published_regulation");
   });
 });

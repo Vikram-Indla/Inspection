@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import type { LiveFactory, LiveRegion, LiveInspector, RagBand } from "./types";
+import { MAP_PALETTE } from "@/lib/map-palette";
 
 const KSA_CENTER: [number, number] = [24.2, 45.1];
 const KSA_ZOOM = 6;
@@ -17,7 +18,7 @@ const INSPECTOR_SOURCE = "ops-inspectors";
 const ROUTE_SOURCE = "ops-projected-routes";
 const FACTORY_LAYER = "ops-factories-symbol";
 
-const COLOR: Record<RagBand, string> = { high: "#b42318", medium: "#b54708", low: "#067647" };
+const COLOR: Record<RagBand, string> = { high: MAP_PALETTE.high.fill, medium: MAP_PALETTE.medium.fill, low: MAP_PALETTE.low.fill };
 const GLYPH: Record<RagBand, string> = { high: "▲", medium: "◆", low: "●" };
 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
@@ -71,10 +72,10 @@ function installLayers(map: mapboxgl.Map) {
   const color = ["match", ["get", "band"], "high", COLOR.high, "medium", COLOR.medium, COLOR.low] as mapboxgl.Expression;
   map.addLayer({ id: "ops-regions-fill", type: "fill", source: REGION_SOURCE, slot: "top", paint: { "fill-color": color, "fill-opacity": 0.1 } });
   map.addLayer({ id: "ops-regions-line", type: "line", source: REGION_SOURCE, slot: "top", paint: { "line-color": color, "line-width": 1.5 } });
-  map.addLayer({ id: "ops-projected-routes-line", type: "line", source: ROUTE_SOURCE, slot: "top", paint: { "line-color": "#6941c6", "line-width": 1.5, "line-opacity": 0.55, "line-dasharray": [2, 6] } });
-  map.addLayer({ id: FACTORY_LAYER, type: "symbol", source: FACTORY_SOURCE, slot: "top", layout: { "text-field": ["get", "glyph"], "text-size": 24, "text-allow-overlap": true }, paint: { "text-color": color, "text-halo-color": "#ffffff", "text-halo-width": 1.5 } });
-  map.addLayer({ id: "ops-inspectors-symbol", type: "symbol", source: INSPECTOR_SOURCE, slot: "top", layout: { "text-field": "➤", "text-size": 24, "text-rotate": ["get", "bearing"], "text-allow-overlap": true }, paint: { "text-color": "#6941c6", "text-halo-color": "#ffffff", "text-halo-width": 1.5 } });
-  map.addLayer({ id: "ops-region-labels", type: "symbol", source: REGION_LABEL_SOURCE, slot: "top", layout: { "text-field": ["get", "label"], "text-size": 11, "text-font": ["Open Sans Bold"], "text-allow-overlap": true }, paint: { "text-color": color, "text-halo-color": "#ffffff", "text-halo-width": 1 } });
+  map.addLayer({ id: "ops-projected-routes-line", type: "line", source: ROUTE_SOURCE, slot: "top", paint: { "line-color": MAP_PALETTE.info, "line-width": 1.5, "line-opacity": 0.55, "line-dasharray": [2, 6] } });
+  map.addLayer({ id: FACTORY_LAYER, type: "symbol", source: FACTORY_SOURCE, slot: "top", layout: { "text-field": ["get", "glyph"], "text-size": 24, "text-allow-overlap": true }, paint: { "text-color": color, "text-halo-color": MAP_PALETTE.halo, "text-halo-width": 1.5 } });
+  map.addLayer({ id: "ops-inspectors-symbol", type: "symbol", source: INSPECTOR_SOURCE, slot: "top", layout: { "text-field": "➤", "text-size": 24, "text-rotate": ["get", "bearing"], "text-allow-overlap": true }, paint: { "text-color": MAP_PALETTE.primary, "text-halo-color": MAP_PALETTE.halo, "text-halo-width": 1.5 } });
+  map.addLayer({ id: "ops-region-labels", type: "symbol", source: REGION_LABEL_SOURCE, slot: "top", layout: { "text-field": ["get", "label"], "text-size": 11, "text-font": ["Open Sans Bold"], "text-allow-overlap": true }, paint: { "text-color": color, "text-halo-color": MAP_PALETTE.halo, "text-halo-width": 1 } });
 }
 
 export type LiveMapStrings = { unavailable: string; notConfigured: string; ariaLabel: string };

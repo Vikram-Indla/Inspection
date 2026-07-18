@@ -12,7 +12,9 @@ test.describe("TASK-WEB-SHELL-001 role matrix", () => {
   });
 
   test("inspector sees the shared Command destinations plus field, never admin", () => {
-    expect(hrefsFor(["inspector"])).toEqual(["/dashboard", "/operations", "/factories", "/field", "/virtual"]);
+    // UIU-ISP-AC-004: inspector field work is ordered first; accepted shared
+    // destinations remain present below it and authorization is unchanged.
+    expect(hrefsFor(["inspector"])).toEqual(["/field", "/virtual", "/dashboard", "/operations", "/factories"]);
   });
 
   test("admin-family grants compose without inventing unsupported tabs", () => {
@@ -22,6 +24,10 @@ test.describe("TASK-WEB-SHELL-001 role matrix", () => {
     const hrefs = hrefsFor(["compliance_admin", "security_admin", "risk_owner"]);
     expect(hrefs).toEqual([
       "/admin",
+      "/admin/integrations",
+      "/admin/operations",
+      "/admin/security-access",
+      "/admin/devices",
       "/admin/regulations",
       "/admin/packages",
       "/admin/violations",
@@ -31,13 +37,13 @@ test.describe("TASK-WEB-SHELL-001 role matrix", () => {
       "/admin/notifications",
       "/admin/localization",
       "/admin/audit",
+      "/enforcement",
     ]);
     // SCR-ADM-080 (Cycle 2) — Notification & SLA Rules is visible to every
     // admin family (adminRoles), same as /admin and /admin/audit.
     expect(hrefs).toContain("/admin/notifications");
     expect(hrefs).not.toContain("/analytics");
     expect(hrefs).not.toContain("/admin/lookups");
-    expect(hrefs).not.toContain("/admin/integrations");
     // workflows (workflow_admin) and gis (gis_admin) are outside this role set.
     expect(hrefs).not.toContain("/admin/workflows");
     expect(hrefs).not.toContain("/admin/gis");

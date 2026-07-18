@@ -2,24 +2,26 @@ import { test, expect, type Page } from "@playwright/test";
 import { PERSONAS, storageStatePath } from "./personas";
 import { assertOk, login, must, rest } from "./live-rest";
 
-// TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001
-// AC-0125/0130/0137/0156: complete field flow in explicit test-stub mode,
-// plus browser-driven production fail-closed and no-GPS negative paths.
+// TASK-IPAD-M04-DEVICE-ETA-OVERRIDE-001 +
+// TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003
+// AC-0125/0130/0137/0152..0156: production device and Mapbox ETA wiring,
+// explicit offline-stale behavior, governed Inspector -> Operations approval,
+// and fail-closed GPS negative paths. No simulated self-approval remains.
 test.describe.configure({ mode: "serial" });
 test.use({
   storageState: storageStatePath("inspector"),
   permissions: ["geolocation"],
-  geolocation: { latitude: 24.735, longitude: 46.705 },
+  geolocation: { latitude: 24.735, longitude: 46.705, accuracy: 5 },
 });
 
 let inspectorJwt: string;
 let inspectorUserId: string;
-let stubVisitId: string;
-let productionVisitId: string;
+let governedVisitId: string;
 let noGpsVisitId: string;
 let weakGpsVisitId: string;
+let factoryName: string;
 
-async function poll<T>(read: () => Promise<T | null>, label: string, attempts = 15): Promise<T> {
+async function poll<T>(read: () => Promise<T | null>, label: string, attempts = 20): Promise<T> {
   for (let i = 0; i < attempts; i++) {
     const value = await read();
     if (value) return value;
@@ -28,7 +30,13 @@ async function poll<T>(read: () => Promise<T | null>, label: string, attempts = 
   throw new Error(`timed out waiting for ${label}`);
 }
 
-async function createVisit(planner: { jwt: string; userId: string }, factoryId: string, packageVersionId: string, suffix: string, dayOffset: number) {
+async function createVisit(
+  planner: { jwt: string; userId: string },
+  factoryId: string,
+  packageVersionId: string,
+  suffix: string,
+  dayOffset: number,
+) {
   const plan = must(await rest("POST", "visit_plans", planner.jwt, {
     method: "single", status: "draft", created_by: planner.userId,
   }), `create ${suffix} plan`)[0];
@@ -40,7 +48,7 @@ async function createVisit(planner: { jwt: string; userId: string }, factoryId: 
     execution_mode: "physical",
     planning_status: "published",
     window_start: new Date(windowStart).toISOString(),
-    window_end: new Date(windowStart + 60_000).toISOString(),
+    window_end: new Date(windowStart + 60 * 60_000).toISOString(),
     package_version_id: packageVersionId,
   }), `create ${suffix} visit`)[0];
   assertOk(await rest("POST", "assignments", planner.jwt, {
@@ -56,9 +64,10 @@ test.beforeAll(async () => {
   inspectorUserId = inspector.userId;
 
   const code = `M04-E2E-${Date.now()}`;
+  factoryName = `M04 Governed Integration ${code}`;
   const factory = must(await rest("POST", "factories", planner.jwt, {
     factory_code: code,
-    name: `M04 Integration ${code}`,
+    name: factoryName,
     region: "Riyadh",
     city: "Riyadh",
     official_lat: 24.7136,
@@ -70,136 +79,122 @@ test.beforeAll(async () => {
     "package_versions?select=id&status=eq.published&order=published_at.desc&limit=1",
     planner.jwt), "published package")[0];
 
-  // Keep the three fixtures far apart in the same broad collision-resistant
-  // range used by the established golden/offline suites. Their one-minute
-  // execution windows also exercise the ETA-duration warning deterministically.
-  const baseDay = 100_000 + Math.floor(Math.random() * 40_000);
-  stubVisitId = await createVisit(planner, factory.id, pkg.id, "stub", baseDay);
-  productionVisitId = await createVisit(planner, factory.id, pkg.id, "production", baseDay + 2);
-  noGpsVisitId = await createVisit(planner, factory.id, pkg.id, "no-GPS", baseDay + 4);
-  weakGpsVisitId = await createVisit(planner, factory.id, pkg.id, "weak-GPS", baseDay + 6);
+  // Three non-overlapping fixtures inside the live 2020..2100 sanity bound.
+  const dayMs = 86_400_000;
+  const maxOffsetDays = Math.floor((Date.UTC(2099, 11, 1) - Date.now()) / dayMs);
+  const baseDay = 30 + Math.random() * (maxOffsetDays - 38);
+  governedVisitId = await createVisit(planner, factory.id, pkg.id, "governed", baseDay);
+  noGpsVisitId = await createVisit(planner, factory.id, pkg.id, "no-GPS", baseDay + 2);
+  weakGpsVisitId = await createVisit(planner, factory.id, pkg.id, "weak-GPS", baseDay + 4);
 });
 
 const step = (page: Page, n: number) => page.getByRole("button", { name: new RegExp(`^${n} ·`) });
 
-test("test adapters complete device capture, initial/refreshed/offline ETA, warning and actual-coordinate override", async ({ page, context }) => {
+test("production device/Mapbox ETA survives offline as stale and outside arrival requires independent Operations approval", async ({ page, context, browser }) => {
   const pageErrors: Error[] = [];
   page.on("pageerror", error => pageErrors.push(error));
-  await page.goto(`/field/${stubVisitId}`);
-  await expect(page.getByTestId("field-test-stub-banner")).toContainText("not production");
+  await page.goto(`/field/${governedVisitId}`);
   await step(page, 1).click();
   await step(page, 2).click();
 
-  const device = page.getByTestId("field-device-readiness");
-  await expect(device).toContainText("Device ID");
-  await expect(device).toContainText("browser-reported");
-  await expect(device).toContainText("App version");
+  const readiness = page.getByTestId("field-device-readiness");
+  await expect(readiness).toContainText("Device information");
+  await expect(readiness).toContainText("browser-reported");
+  await expect(readiness).toContainText("app 0.1.0");
 
   const route = page.getByTestId("route-estimate");
-  await expect(route).toContainText("deterministic-test-routing", { timeout: 15_000 });
-  await expect(route).toContainText(/ETA \d+ min/);
-  await expect(route.getByRole("alert")).toContainText("exceeds the planned execution window");
+  await expect(route).toContainText("mapbox_directions", { timeout: 30_000 });
+  await expect(route).toContainText(/\d+ min · \d+ m/);
 
   const initialJourney = await poll(async () => {
     const { data } = await rest("GET",
-      `journey_sessions?select=id,device_id,device_os_version,application_version,eta_minutes,remaining_distance_m,routing_provider,route_estimate_mode,route_estimated_at&visit_id=eq.${stubVisitId}&order=started_at.desc&limit=1`,
+      `journey_sessions?select=id,device_id,device_os_version,application_version,eta_minutes,remaining_distance_m,route_provider,routing_provider,route_estimate_mode,route_estimated_at&visit_id=eq.${governedVisitId}&order=started_at.desc&limit=1`,
       inspectorJwt);
     const row = Array.isArray(data) ? data[0] : null;
     return row?.eta_minutes != null ? row : null;
-  }, "initial route estimate");
+  }, "persisted production route estimate");
   expect(initialJourney.device_id).toMatch(/^field-/);
   expect(initialJourney.device_os_version).toContain("browser-reported");
   expect(initialJourney.application_version).toMatch(/^0\.1\.0/);
-  expect(initialJourney.routing_provider).toBe("deterministic-test-routing");
-  expect(initialJourney.route_estimate_mode).toBe("test_stub");
+  expect(initialJourney.route_provider).toBe("mapbox_directions");
+  expect(initialJourney.routing_provider).toBe("mapbox_directions");
+  expect(initialJourney.route_estimate_mode).toBe("production");
   expect(initialJourney.eta_minutes).toBeGreaterThan(0);
   expect(initialJourney.remaining_distance_m).toBeGreaterThan(0);
-
-  const firstEstimateAt = initialJourney.route_estimated_at;
-  await poll(async () => {
-    const { data } = await rest("GET",
-      `journey_sessions?select=route_estimated_at&visit_id=eq.${stubVisitId}&order=started_at.desc&limit=1`,
-      inspectorJwt);
-    const row = Array.isArray(data) ? data[0] : null;
-    return row?.route_estimated_at && row.route_estimated_at !== firstEstimateAt ? row.route_estimated_at : null;
-  }, "periodic route refresh", 12);
 
   await context.setOffline(true);
   await page.evaluate(() => window.dispatchEvent(new Event("offline")));
   await expect(route).toContainText("showing the last known route estimate as stale", { timeout: 10_000 });
   await context.setOffline(false);
   await page.evaluate(() => window.dispatchEvent(new Event("online")));
-  await expect(route.getByRole("alert")).toContainText("exceeds the planned execution window", { timeout: 10_000 });
-  expect(pageErrors).toEqual([]);
+  await expect(route).toContainText("mapbox_directions", { timeout: 30_000 });
 
   await step(page, 3).click();
-  const dialog = page.getByRole("alertdialog", { name: /Outside planned location/i });
-  await expect(dialog).toBeVisible();
-  await expect(dialog).toContainText("Actual position");
-  await expect(dialog).toContainText("TEST STUB");
-  await dialog.getByRole("button", { name: "Cancel" }).click();
-  await expect(dialog).toBeHidden();
-
-  await step(page, 3).click();
-  await dialog.getByLabel("Override reason — mandatory").fill("Factory gate is at the observed coordinates");
-  await dialog.getByRole("button", { name: "Confirm governed override" }).click();
-  await expect(dialog).toBeHidden();
-  await expect(page.getByText(/Override approved · actual coordinates recorded/).first()).toBeVisible();
-
-  const overrideRows = await poll(async () => {
-    const { data } = await rest("GET",
-      `geo_events?select=kind,observed_lat,observed_lng,device_id,device_os_version,application_version,geofence_result,override_reason,integration_mode,approval_provider&visit_id=eq.${stubVisitId}&kind=in.(override,arrival)&order=occurred_at.desc`,
-      inspectorJwt);
-    return Array.isArray(data) && data.some(row => row.kind === "override") ? data : null;
-  }, "override geo events");
-  const override = overrideRows.find((row: { kind: string }) => row.kind === "override");
-  expect(override).toMatchObject({
-    geofence_result: "override",
-    integration_mode: "test_stub",
-    approval_provider: "simulated-operations-approval",
-    override_reason: "Factory gate is at the observed coordinates",
-  });
-  expect(Number(override.observed_lat)).toBeCloseTo(24.735, 5);
-  expect(Number(override.observed_lng)).toBeCloseTo(46.705, 5);
-  expect(override.device_id).toBe(initialJourney.device_id);
-
-  await page.getByLabel("Factory representative is present").check();
-  await page.getByLabel("Location confirmed — this is the correct factory").check();
-  await step(page, 4).click();
-  await page.waitForURL(/\/field\/inspection\/[0-9a-f-]+/, { timeout: 20_000 });
-});
-
-test("production mode exposes unavailable integrations and never self-approves outside-fence check-in", async ({ page }) => {
-  await page.goto(`/field/${productionVisitId}?integrationMode=production`);
-  await expect(page.getByTestId("field-test-stub-banner")).toHaveCount(0);
-  await step(page, 1).click();
-  await step(page, 2).click();
-  await expect(page.getByTestId("route-estimate")).toContainText("Routing provider unavailable", { timeout: 15_000 });
-  await step(page, 3).click();
-
-  const dialog = page.getByRole("alertdialog", { name: /Outside planned location/i });
-  await dialog.getByLabel("Override reason — mandatory").fill("Production provider must decide");
-  await dialog.getByRole("button", { name: "Confirm governed override" }).click();
-  await expect(dialog.getByRole("alert")).toContainText("approval integration is unavailable");
+  const requestPanel = page.getByRole("dialog", { name: /Outside the planned location/i });
+  await expect(requestPanel).toBeVisible();
+  await requestPanel.locator("select").selectOption("safety_security");
+  await requestPanel.getByLabel("Explanation — mandatory").fill("Factory gate is reachable only from the captured safety access point");
+  await requestPanel.getByRole("checkbox").check();
+  await requestPanel.getByRole("button", { name: "Request Operations override" }).click();
+  await expect(page.getByText(/Operations override pending/i)).toBeVisible({ timeout: 20_000 });
   await expect(step(page, 4)).toBeDisabled();
 
-  const { data: journeys } = await rest("GET",
-    `journey_sessions?select=eta_minutes,routing_provider,route_estimate_mode&visit_id=eq.${productionVisitId}`,
+  const request = await poll(async () => {
+    const { data } = await rest("GET",
+      `geo_override_requests?select=id,status,requested_by,observed_lat,observed_lng,accuracy_m&visit_id=eq.${governedVisitId}&order=requested_at.desc&limit=1`,
+      inspectorJwt);
+    const row = Array.isArray(data) ? data[0] : null;
+    return row?.status === "pending" ? row : null;
+  }, "pending governed override");
+  expect(request.requested_by).toBe(inspectorUserId);
+  expect(Number(request.observed_lat)).toBeCloseTo(24.735, 5);
+  expect(Number(request.observed_lng)).toBeCloseTo(46.705, 5);
+  expect(Number(request.accuracy_m)).toBe(5);
+
+  const opsContext = await browser.newContext({ storageState: storageStatePath("ops") });
+  const opsPage = await opsContext.newPage();
+  await opsPage.goto("/locale?set=en");
+  await opsPage.goto("/operations");
+  const queue = opsPage.getByRole("heading", { name: /Geofence override approvals/i }).locator("xpath=..");
+  const requestCard = queue.locator(".ax-surface").filter({ hasText: factoryName }).first();
+  await expect(requestCard).toBeVisible({ timeout: 30_000 });
+  await expect(requestCard).toContainText("Safety/security photo exception declared");
+  await requestCard.getByRole("button", { name: "Approve override" }).click();
+  await expect(requestCard.getByRole("status")).toContainText("Decision saved", { timeout: 20_000 });
+  await opsContext.close();
+
+  await page.reload();
+  await expect(page.getByText(/Operations override approved/i)).toBeVisible({ timeout: 20_000 });
+  await page.getByLabel("Factory representative is present").check();
+  await page.getByLabel("Location confirmed — this is the correct factory").check();
+  await expect(step(page, 4)).toBeEnabled();
+
+  const { data: events } = await rest("GET",
+    `geo_events?select=kind,observed_lat,observed_lng,geofence_result,override_reason&visit_id=eq.${governedVisitId}&kind=in.(override,arrival)&order=occurred_at.desc`,
     inspectorJwt);
-  expect(journeys?.[0]).toMatchObject({ eta_minutes: null, routing_provider: null, route_estimate_mode: null });
-  const { data: overrides } = await rest("GET",
-    `geo_events?select=id&visit_id=eq.${productionVisitId}&kind=eq.override`, inspectorJwt);
-  expect(overrides).toEqual([]);
+  expect(events).toEqual(expect.arrayContaining([
+    expect.objectContaining({ kind: "override", geofence_result: "override" }),
+  ]));
+  const decided = must(await rest("GET",
+    `geo_override_requests?select=status,decision_event_id&visit_id=eq.${governedVisitId}&order=requested_at.desc&limit=1`,
+    inspectorJwt), "read decided override")[0];
+  expect(decided.status).toBe("approved");
+  expect(decided.decision_event_id).toBeTruthy();
+  const visit = must(await rest("GET",
+    `visits?select=operational_state&id=eq.${governedVisitId}`,
+    inspectorJwt), "read arrived visit")[0];
+  expect(visit.operational_state).toBe("arrived");
+  expect(pageErrors).toEqual([]);
 });
 
-test("production mode with unavailable GPS remains blocked and records no synthetic check-in", async ({ page, context }) => {
+test("unavailable GPS remains blocked and records no synthetic check-in", async ({ page, context }) => {
   await context.clearPermissions();
-  await page.goto(`/field/${noGpsVisitId}?integrationMode=production`);
+  await page.goto(`/field/${noGpsVisitId}`);
   await step(page, 1).click();
   await step(page, 2).click();
   await step(page, 3).click();
   await expect(page.getByText(/GPS unavailable — check-in remains blocked/)).toBeVisible({ timeout: 10_000 });
-  await expect(page.getByRole("alertdialog")).toHaveCount(0);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(step(page, 4)).toBeDisabled();
   const { data: checkins } = await rest("GET",
     `geo_events?select=id&visit_id=eq.${noGpsVisitId}&kind=eq.checkin`, inspectorJwt);
@@ -208,7 +203,7 @@ test("production mode with unavailable GPS remains blocked and records no synthe
 
 test("weak GPS accuracy blocks check-in before any location event is written", async ({ page, context }) => {
   await context.setGeolocation({ latitude: 24.735, longitude: 46.705, accuracy: 100 });
-  await page.goto(`/field/${weakGpsVisitId}?integrationMode=production`);
+  await page.goto(`/field/${weakGpsVisitId}`);
   await step(page, 1).click();
   await step(page, 2).click();
   await step(page, 3).click();

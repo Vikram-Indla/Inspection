@@ -424,12 +424,12 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           {cityOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
         <div className="ax-field" style={{ maxInlineSize: 170 }}>
-          <label className="ax-field__label">{strings.fromDate}</label>
-          <input className="ax-input ax-numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
+          <label className="ax-field__label" htmlFor="visit-filter-from">{strings.fromDate}</label>
+          <input id="visit-filter-from" className="ax-input ax-numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
         </div>
         <div className="ax-field" style={{ maxInlineSize: 170 }}>
-          <label className="ax-field__label">{strings.toDate}</label>
-          <input className="ax-input ax-numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
+          <label className="ax-field__label" htmlFor="visit-filter-to">{strings.toDate}</label>
+          <input id="visit-filter-to" className="ax-input ax-numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
         </div>
         <select className="ax-select" value={sort} onChange={e => setSort(e.target.value as SortKey)} aria-label={strings.sortAria}>
           <option value="window_asc">{strings.sortWindowAsc}</option>
@@ -463,34 +463,34 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           <div className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
             <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
-              <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label">{strings.bulkWindowStart}</label>
-                <input className="ax-input ax-numeric" type="datetime-local" name="window_start" /></div>
-              <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label">{strings.bulkWindowEnd}</label>
-                <input className="ax-input ax-numeric" type="datetime-local" name="window_end" /></div>
+              <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
+                <input id="bulk-window-start" className="ax-input ax-numeric" type="datetime-local" name="window_start" /></div>
+              <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-end">{strings.bulkWindowEnd}</label>
+                <input id="bulk-window-end" className="ax-input ax-numeric" type="datetime-local" name="window_end" /></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkRescheduleBtn}</button>
             </form>
             <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="ax-row" style={{ alignItems: "flex-end" }}>
               {hidden}
-              <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label">{strings.bulkReassignTo}</label>
-                <select className="ax-select" name="inspector_id"><option value="">{strings.selectOption}</option>
+              <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
+                <select id="bulk-inspector" className="ax-select" name="inspector_id"><option value="">{strings.selectOption}</option>
                   {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkReassignBtn}</button>
             </form>
             <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="ax-row" style={{ alignItems: "flex-end" }}>
               {hidden}
-              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label">{strings.bulkCancelReason}</label>
-                <input className="ax-input" name="reason" placeholder={strings.bulkCancelPlaceholder} /></div>
+              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
+                <input id="bulk-cancel-reason" className="ax-input" name="reason" placeholder={strings.bulkCancelPlaceholder} /></div>
               <button className="ax-btn ax-btn--danger" disabled={busy}>{strings.bulkCancelBtn}</button>
             </form>
             <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
-              <div className="ax-field" style={{ maxInlineSize: 180 }}><label className="ax-field__label">{strings.bulkEditType}</label>
-                <select className="ax-select" name="visit_type"><option value="">{strings.selectOption}</option>
+              <div className="ax-field" style={{ maxInlineSize: 180 }}><label className="ax-field__label" htmlFor="bulk-visit-type">{strings.bulkEditType}</label>
+                <select id="bulk-visit-type" className="ax-select" name="visit_type"><option value="">{strings.selectOption}</option>
                   <option value="periodic">{strings.typePeriodic}</option>
                   <option value="follow_up">{strings.typeFollowUp}</option>
                   <option value="complaint">{strings.typeComplaint}</option></select></div>
-              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label">{strings.bulkEditNotes}</label>
-                <input className="ax-input" name="notes" placeholder={strings.bulkEditNotesPlaceholder} /></div>
+              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-edit-notes">{strings.bulkEditNotes}</label>
+                <input id="bulk-edit-notes" className="ax-input" name="notes" placeholder={strings.bulkEditNotesPlaceholder} /></div>
               <label className="ax-choice" style={{ display: "flex" }}>
                 <input type="checkbox" name="set_notes" value="1" />
                 <span>{strings.bulkEditSetNotes}</span>
@@ -583,11 +583,11 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                   <td className="ax-numeric">
                     {/* Button drives the continuity spine (keyboard-accessible);
                         the adjacent link preserves direct navigation to detail. */}
-                    <button type="button" className="ax-link" onClick={() => setActiveId(v.id)} aria-pressed={isActive}
+                    <button type="button" className="ax-link ax-inline-target" onClick={() => setActiveId(v.id)} aria-pressed={isActive}
                       aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
                       <strong>{v.id.slice(0, 8)}</strong>
                     </button>
-                    {" "}<a className="ax-link ax-caption" href={`/visits/${v.id}`}
+                    {" "}<a className="ax-link ax-caption ax-inline-target" href={`/visits/${v.id}`}
                       aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</a>
                     {v.planId && (
                       <><br /><span className="ax-caption ax-numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>

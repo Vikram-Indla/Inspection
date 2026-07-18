@@ -3615,9 +3615,162 @@
       "commit_sha": "feature commit a462c1c; local merge commit recorded by git",
       "next_task": "Open a separate controlled page-by-page UI critique and redesign slice using the merged foundation.",
       "resume_prompt": "The government foundation and shared shell are merged locally into setup/Inspection. Read CURRENT_STATE UPDATE 94 and the DSF evidence. Preserve inputs and Cinematic Atlas v0.8. Begin page-level work only under a separate approved slice."
+    },
+    {
+      "session_id": "2026-07-18-inspector-shell-uplift-002-source-component",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "codex/inspector-shell-uplift-002",
+      "task_id": "TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002",
+      "gate": "G11 sponsor-approved controlled inspector UI uplift",
+      "requirements": [
+        "SPONSOR-UIU-001..024",
+        "SPONSOR-DSF-001..030 preserved"
+      ],
+      "acceptance_ids": [
+        "UIU-ISP-AC-001..024"
+      ],
+      "screens": [
+        "SCR-SHARED-SHELL-001",
+        "SCR-IPAD-600..670"
+      ],
+      "engines": [
+        "ENG-06",
+        "ENG-10",
+        "ENG-11",
+        "ENG-12 visual representation only"
+      ],
+      "files_changed": [
+        "inspector-priority shared navigation",
+        "field task bar and field dashboard composition",
+        "focused source and component visual tests",
+        "UI revamp master, acceptance, evidence, execution and approval records"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "focused foundation/uplift 11/11 PASS",
+        "complete static inventory 70 PASS / 4 intentional provider skips / 0 failures",
+        "component visual/geometry harness 1/1 PASS across four frames",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002.md",
+        "product-contract/acceptance/UIU_INSPECTOR_SHELL_UPLIFT_002.csv",
+        "four EN/AR light/dark landscape/portrait/narrow frames in the visualization workspace"
+      ],
+      "decisions": [
+        "Sponsor approved Shell A default and Shell B optional preference",
+        "Text-entry contract and Cinematic Atlas v0.8 remain unchanged",
+        "WCAG, DGA/Platforms Code, native Arabic/RTL and inspector endurance remain production release gates",
+        "No shared-backend field run because the route invokes a state-changing expiry RPC"
+      ],
+      "blockers": [
+        "Controlled authenticated environment without unauthorized shared-data mutation",
+        "Four production compliance release gates"
+      ],
+      "commit_sha": "uncommitted isolated working tree",
+      "next_task": "Run authenticated field and complete browser regression in a controlled environment, then complete external/observed compliance gates before requesting merge approval.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 95 and TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002 evidence. The source/component slice is verified on codex/inspector-shell-uplift-002. Do not claim production compliance or merge. Preserve text-entry behavior and Cinematic Atlas. Next obtain a controlled authenticated environment for field/full regression and the four release gates."
+    },
+    {
+      "session_id": "2026-07-18-platform-foundation-promotion-003",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "codex/inspector-shell-uplift-002",
+      "task_id": "TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003",
+      "gate": "G11 source integration / G12 release gates remain open",
+      "requirements": ["SPONSOR-DSF-001..030", "SPONSOR-UIU-001..024", "SPONSOR-PDS-001..025"],
+      "acceptance_ids": ["DSF-AC-001..030", "UIU-ISP-AC-001..024", "PDS-AC-001..025"],
+      "screens": ["all authenticated web working pages", "SCR-SHARED-SHELL-001", "SCR-IPAD-600..670", "named auth/print/redirect exceptions"],
+      "engines": ["visual foundation only; ENG-01..ENG-20 behavior preserved"],
+      "files_changed": ["platform design inheritance contract", "shared Mapbox renderer palette", "inspector shell uplift", "acceptance/evidence/change-control/session records"],
+      "tests": ["npm run typecheck PASS", "npm run build PASS", "focused foundation/platform/inspector 16/16 PASS", "complete static inventory 75 PASS / 4 intentional provider skips / 0 failures"],
+      "evidence": ["product-contract/evidence/TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003.md", "product-contract/acceptance/PDS_PLATFORM_FOUNDATION_PROMOTION_003.csv", "design/claude-design-mvp1/ui-revamp-uplift/UI_REVAMP_UPLIFT_MASTER.md"],
+      "decisions": ["Sponsor expanded scope to every platform role and authorized main merge/push", "All working pages inherit the root foundation and shared shell or are named exceptions", "Maps use one governed palette", "Text entry and Cinematic Atlas remain protected", "Four production compliance gates remain open"],
+      "blockers": ["Production WCAG 2.2 AA full-page verification", "DGA/Platforms Code mapping", "Native Arabic/RTL review", "Observed inspector morning/night endurance sessions"],
+      "commit_sha": "feature ad025ac; verified main merge commit pending",
+      "next_task": "Complete and push the verified main merge; then execute the four production release gates separately.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 96 and platform promotion evidence. Source is platform-wide and sponsor-authorized for main push. Do not claim production compliance until WCAG, DGA, native Arabic/RTL and endurance gates close."
+    },
+    {
+      "session_id": "2026-07-18-ui-compliance-certification-004",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "codex/ui-compliance-certification-004",
+      "task_id": "TASK-QA-UI-COMPLIANCE-CERT-004",
+      "gate": "G11/G12 UI release certification",
+      "requirements": ["WCAG-2.2-A-AA", "DGA-PLATFORM-CODE", "DGA-5.13.8", "AR-RTL-RELEASE", "INSPECTOR-ENDURANCE"],
+      "acceptance_ids": ["UIC-AC-001..040"],
+      "screens": ["SCR-SHARED-SHELL-001", "planner, visits, reviews, admin, regulations and factory critical routes", "field component harness without shared-data mutation"],
+      "engines": ["visual and interaction verification only; ENG-01..ENG-20 preserved"],
+      "files_changed": ["accessibility-only CSS and label associations", "WCAG authenticated runtime and source guards", "acceptance/evidence/execution/session records"],
+      "tests": ["npm run typecheck PASS", "npm run build PASS", "compliance source guard 4/4 PASS", "eight authenticated runtime checks PASS in controlled shard executions", "git diff --check PASS"],
+      "evidence": ["product-contract/evidence/TASK-QA-UI-COMPLIANCE-CERT-004.md", "product-contract/acceptance/UIC_UI_COMPLIANCE_CERT_004.csv"],
+      "decisions": ["Technical UI certification is PASS with no open P0/P1 in scope", "Overall production verdict remains CONDITIONAL PASS", "Native Arabic and morning/night inspector endurance require independent human evidence", "Consolidated Auth 429 persists with pacing and exact checks remain shardable", "Inputs and Cinematic Atlas remain protected"],
+      "blockers": ["Qualified native Arabic review", "Observed representative 4–5 hour morning inspector session", "Observed representative 4–5 hour night inspector session"],
+      "commit_sha": "local feature branch HEAD created at closure from d09ed97",
+      "next_task": "Execute and sign the three human evidence gates, then request an explicit release-gate decision; separately disposition the existing moderate Next.js/PostCSS advisory under G11 hardening.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 98 and TASK-QA-UI-COMPLIANCE-CERT-004 evidence. Technical UI certification passes. Do not claim production PASS or self-approve UIC-AC-023/038/039/040. Obtain qualified native-Arabic and representative morning/night endurance records. Do not merge or push without a separate release decision."
+    },
+    {
+      "session_id": "2026-07-18-mvp3-retrofit-regression-certification",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "codex/integrated-preprod-20260718",
+      "task_id": "TASK-MVP3-RETROFIT-REGRESSION-001",
+      "gate": "MVP3 retrofit integration over MVP1/MVP2",
+      "requirements": [
+        "84 exact MVP3 rows",
+        "12 Claude Design modules plus M3-12 assurance",
+        "MVP1+MVP2+MVP3 coexistence and protected regression"
+      ],
+      "acceptance_ids": [
+        "Exact MVP3 master-register acceptance IDs",
+        "No open P0/P1 integration regression",
+        "At least 98% one-iteration protected pass rate"
+      ],
+      "screens": [
+        "CD-050..CD-061",
+        "MVP1/MVP2 protected route inventory"
+      ],
+      "engines": [
+        "Canonical identity/RLS/workflow/audit/evidence/GIS/field/case/decision engines",
+        "Additive MVP3 enterprise control-plane services"
+      ],
+      "files_changed": [
+        "field device/Mapbox ETA and governed override integration",
+        "Operations decision refresh and verified-user retry",
+        "MVP2 AI, dashboard, Mapbox and MVP3 regression contracts",
+        "forward migration 20260718140105",
+        "retrofit integration map, status and certificate records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "static inventory 66 pass / 4 intentional provider skips / 0 failed",
+        "focused M04 8/8 PASS",
+        "live seven-RPC rollback probe PASS with zero residual rows",
+        "complete protected browser inventory 510 pass / 9 intentional skips / 0 failed"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md",
+        "product-contract/mvp3/MVP3_RETROFIT_INTEGRATION_MAP.csv",
+        "live Supabase 13/13 RLS tables, 25 policies and zero anon grants"
+      ],
+      "decisions": [
+        "MVP3 remains additive over MVP1/MVP2 canonical sources of truth",
+        "Mapbox remains the selected map provider",
+        "Unconfigured external providers and policy values remain fail-closed and are not claimed as delivered",
+        "Five verified live migrations repaired into the Supabase migration ledger"
+      ],
+      "blockers": [],
+      "commit_sha": "pending integrated certification commit",
+      "next_task": "Promote the certified integrated candidate to main and configure held providers only under separate authority.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 96 and TASK-MVP3-RETROFIT-REGRESSION-001. The engineering retrofit is PASS at 510/519 protected tests with zero failures. Preserve the coexistence map and fail-closed provider holds."
     }
   ],
-  "last_session": "2026-07-18-design-foundation-shell-local-merge",
+  "last_session": "2026-07-18-mvp3-retrofit-regression-certification",
   "rules": {
     "append_only": true,
     "required_fields": [

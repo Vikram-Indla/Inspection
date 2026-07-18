@@ -1,5 +1,17 @@
 # Gate Status
 
+## MVP3 retrofit integration certificate — 2026-07-18
+
+`TASK-MVP3-RETROFIT-REGRESSION-001` is **PASS** for engineering integration over the canonical
+MVP1/MVP2 platform. All 84 MVP3 rows have an implementation or explicit external-hold disposition;
+CD-050..CD-061 and M3-12 share the existing identity, RLS, workflow, audit, evidence, field, case
+and decision engines rather than introducing parallel truth. Live Supabase proof is 13/13 MVP3
+tables under RLS, 25 policies, zero anonymous grants and a seven-RPC rollback probe with zero
+residuals. Typecheck/build pass and the complete protected browser inventory is **510 passed / 9
+intentional skips / 0 failed (98.27%)**. External signature, SSO, EBDA, notification, AI, MDM,
+retention and production-release dependencies remain fail-closed and are not misreported as live.
+Exact certificate: `evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md`.
+
 ## Current reconciliation — 2026-07-16
 
 ### MVP2 M2-05 addendum — 2026-07-17

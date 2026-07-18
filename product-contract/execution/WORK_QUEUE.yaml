@@ -1,13 +1,37 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
+    gate: "G11/G12 UI release certification"
+    priority: "P0"
+    status: "TECHNICAL_PASS_HUMAN_GATES_PENDING"
+    owner: "Codex technical QA + qualified Arabic reviewer + representative inspector/observer"
+    blocked_by: ["Native Arabic linguistic review", "Observed 4–5 hour morning inspector session", "Observed 4–5 hour night inspector session"]
+    blocks: ["Unqualified production UI compliance claim"]
+    note: "Typecheck/build and source guard 4/4 PASS. Eight authenticated read-only runtime checks PASS in controlled shards across roles, EN/AR, light/dark, Axe WCAG A/AA, 320px reflow, targets, focus, RTL and reduced motion. Four discovered UI defects were remediated with regression guards. Consolidated execution still hits the shared Auth HTTP 429 ceiling even with pacing, so exact checks remain shardable. Technical UI verdict PASS; overall CONDITIONAL PASS until UIC-AC-023/038/039/040 receive independent human evidence. No merge/push/deploy/data mutation."
+  - task_id: "TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
+    gate: "G11 source integration / G12 release gates remain open"
+    priority: "P0"
+    status: "MAIN_INTEGRATED_VERIFIED_PUSH_AUTHORIZED"
+    owner: "Codex integration and QA + compliance owners for release gates"
+    blocked_by: []
+    blocks: ["Production UI compliance claim"]
+    note: "All working pages inherit the governed root foundation and shared shell or are one of seven named exceptions. Cross-role maps use one semantic renderer palette. Main integration preserves the remotely certified MVP3 migration unchanged. Integrated typecheck/build pass; full static 75 pass/4 intentional provider skips. Sponsor authorized push. WCAG, DGA/Platforms Code, native Arabic/RTL and observed inspector endurance remain open production gates."
+  - task_id: "TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002"
+    gate: "G11 sponsor-approved controlled inspector UI uplift"
+    priority: "P0"
+    status: "SOURCE_AND_COMPONENT_VERIFIED_AUTH_RUNTIME_AND_RELEASE_GATES_PENDING"
+    owner: "Codex implementation and QA + Sponsor/compliance owners for release gates"
+    blocked_by: ["Controlled authenticated environment that does not mutate shared visit state", "WCAG full-page audit", "DGA/Platforms Code mapping", "Native Arabic/RTL review", "Observed inspector morning/night endurance sessions"]
+    blocks: ["Inspector shell merge readiness", "Production UI compliance claim"]
+    note: "Shell A default and optional Shell B are source-implemented. Inspector field work is first, the legacy circular FAB is replaced by a labelled 52px task bar, assignments precede notifications and secondary analytics, and frozen inputs/Atlas remain unchanged. Typecheck/build PASS; focused 11/11; static 70 pass/4 intentional provider skips; component visual 1/1 with four frames. Authenticated field/full regression and four external/observed compliance gates remain pending and are not claimed."
   - task_id: "TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
     gate: "MVP3 sponsor-authorized complete implementation"
     priority: "P0"
-    status: "SOURCE_IMPLEMENTED_RUNTIME_CERTIFICATION_PENDING"
+    status: "RETROFIT_INTEGRATION_CERTIFIED_PASS"
     owner: "Codex implementation and QA + Sponsor for held external decisions"
-    blocked_by: ["Controlled application of the forward-only MVP3 migration", "Authenticated persona and negative-RLS runtime", "Held external provider/policy decisions recorded in product-contract/mvp3/MVP3_PROVIDER_POLICY_HOLDS.csv"]
-    blocks: ["MVP3 engineering closure", "MVP1+MVP2+MVP3 integrated certification"]
-    note: "Complete MVP3 source slice is implemented on codex/mvp3-complete-implementation from integrated baseline 45d4420. Exact 84-row controls and 13-module reuse map are recorded; missing trust/operations/security/device/enforcement routes, enterprise migration, package manifest/hash, device access, refusal context and evidence-cited AI closure are present. Typecheck/build pass; 65 source/static tests pass with 4 intentional provider skips. Runtime DB/RLS/persona certification and held providers remain pending; no remote DDL, push, merge or deploy performed."
+    blocked_by: []
+    blocks: []
+    note: "Engineering retrofit PASS on 2026-07-18. 84/84 rows dispositioned across CD-050..061 plus assurance; live Supabase has 13/13 MVP3 tables under RLS, 25 policies, zero anon grants and rollback probe PASS. OCR and geo-override migrations are live and ledgered. Typecheck/build PASS; protected browser inventory 510 passed / 9 intentional provider or destructive-replay skips / 0 failed (98.27%). External provider/policy and production-deployment holds remain fail-closed and are not claimed as delivered. Evidence: product-contract/evidence/TASK-MVP3-RETROFIT-REGRESSION-001.md."
   - task_id: "TASK-DESIGN-FOUNDATION-SHELL-RESET-001"
     gate: "G11 sponsor-approved controlled UI foundation reset"
     priority: "P0"
