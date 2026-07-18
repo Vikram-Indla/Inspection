@@ -113,6 +113,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-18"
     change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-MVP3-COMPLETE-IMPLEMENTATION-001"
+  - gate: "MVP3-INTEGRATED-PREPRODUCTION-MAIN-PUSH-001"
+    decision: "APPROVED (EXPLICIT SPONSOR INTEGRATION AND PUSH) — sponsor instructed Codex to push MVP3 to main and consolidate it with the current integrated MVP1/MVP2 development baseline as an integrated pre-production build, while the separate UI design-uplift session continues. This authorizes: preserving the other session's uncommitted files; integrating the verified MVP3 source commit into the latest setup/Inspection baseline; running integrated typecheck, production build and protected source/browser regression; updating local main to the certified integration commit; and pushing that main commit to origin. It does not authorize stealing or committing the other session's uncommitted design work, applying remote Supabase migrations, mutating production/shared data, deploying an application target, resolving held provider/policy decisions, exposing secrets, or rewriting Git history."
+    approver: "Vikram Indla"
+    date: "2026-07-18"
+    change_ref: "setup/Inspection + feat(mvp3) -> origin/main (integrated pre-production source; no deploy/remote DDL)"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."
