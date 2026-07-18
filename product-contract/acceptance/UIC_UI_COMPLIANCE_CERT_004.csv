@@ -1,0 +1,41 @@
+acceptance_id,criterion,status,evidence
+UIC-AC-001,WCAG automated scan English light,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-002,WCAG automated scan English dark,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-003,WCAG automated scan Arabic light,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-004,WCAG automated scan Arabic dark,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-005,planner critical route coverage,PASS_RUNTIME,planning and visits
+UIC-AC-006,reviewer critical route coverage,PASS_RUNTIME,reviews
+UIC-AC-007,admin critical route coverage,PASS_RUNTIME,admin and regulations
+UIC-AC-008,inspector read-only context coverage,PASS_RUNTIME,factories
+UIC-AC-009,field component accessibility coverage,PASS_EXISTING,inspector-shell-visual
+UIC-AC-010,320 CSS pixel reflow,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-011,200 percent zoom layout proxy,PASS_RUNTIME,320 CSS pixel stronger reflow proxy
+UIC-AC-012,minimum target size,PASS_RUNTIME,axe wcag22aa plus geometry assertion
+UIC-AC-013,keyboard traversal,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-014,focus visible,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-015,focus not obscured,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-016,landmarks and accessible names,PASS_RUNTIME,axe and runtime assertions
+UIC-AC-017,status not colour only,PASS_SOURCE,foundation and semantic status contracts
+UIC-AC-018,reduced motion,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-019,light contrast,PASS_SOURCE,design-foundation-contract
+UIC-AC-020,dark contrast,PASS_SOURCE,design-foundation-contract
+UIC-AC-021,Arabic document language and direction,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-022,RTL shell physical mirror,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-023,mixed direction identifiers,HUMAN_PENDING,native reviewer matrix
+UIC-AC-024,theme parity,PASS_RUNTIME,ui-compliance-runtime
+UIC-AC-025,root design inheritance,PASS_SOURCE,platform-design-system-contract
+UIC-AC-026,authenticated shell governance,PASS_SOURCE,platform-design-system-contract
+UIC-AC-027,Platform Code executive plan,PASS_DOCUMENTED,TASK-QA-UI-COMPLIANCE-CERT-004
+UIC-AC-028,DGA accessibility guidance mapping,PASS_DOCUMENTED,TASK-QA-UI-COMPLIANCE-CERT-004
+UIC-AC-029,DGA standard 5.13.8 mapping,PASS_DOCUMENTED,TASK-QA-UI-COMPLIANCE-CERT-004
+UIC-AC-030,component reuse and token guard,PASS_SOURCE,platform-design-system-contract
+UIC-AC-031,WCAG scope reference,PASS_DOCUMENTED,TASK-QA-UI-COMPLIANCE-CERT-004
+UIC-AC-032,DGA DGA-1-2-4-203 reference,PASS_DOCUMENTED,TASK-QA-UI-COMPLIANCE-CERT-004
+UIC-AC-033,DGA 5.13.8 reference,PASS_DOCUMENTED,TASK-QA-UI-COMPLIANCE-CERT-004
+UIC-AC-034,Platform Code reference,PASS_DOCUMENTED,TASK-QA-UI-COMPLIANCE-CERT-004
+UIC-AC-035,input contract unchanged,PASS_SOURCE,ui-compliance-contract
+UIC-AC-036,Atlas isolated,PASS_SOURCE,ui-compliance-contract
+UIC-AC-037,shared data not mutated for audit,PASS_PROCESS,read-only journey selection
+UIC-AC-038,native Arabic review,HUMAN_PENDING,qualified reviewer signoff required
+UIC-AC-039,morning inspector endurance,HUMAN_PENDING,representative observed session required
+UIC-AC-040,night inspector endurance,HUMAN_PENDING,representative observed session required

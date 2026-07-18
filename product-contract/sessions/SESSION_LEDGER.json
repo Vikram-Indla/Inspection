@@ -3692,9 +3692,29 @@
       "commit_sha": "feature ad025ac; verified main merge commit pending",
       "next_task": "Complete and push the verified main merge; then execute the four production release gates separately.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 96 and platform promotion evidence. Source is platform-wide and sponsor-authorized for main push. Do not claim production compliance until WCAG, DGA, native Arabic/RTL and endurance gates close."
+    },
+    {
+      "session_id": "2026-07-18-ui-compliance-certification-004",
+      "started_at": "2026-07-18",
+      "ended_at": "2026-07-18",
+      "branch": "codex/ui-compliance-certification-004",
+      "task_id": "TASK-QA-UI-COMPLIANCE-CERT-004",
+      "gate": "G11/G12 UI release certification",
+      "requirements": ["WCAG-2.2-A-AA", "DGA-PLATFORM-CODE", "DGA-5.13.8", "AR-RTL-RELEASE", "INSPECTOR-ENDURANCE"],
+      "acceptance_ids": ["UIC-AC-001..040"],
+      "screens": ["SCR-SHARED-SHELL-001", "planner, visits, reviews, admin, regulations and factory critical routes", "field component harness without shared-data mutation"],
+      "engines": ["visual and interaction verification only; ENG-01..ENG-20 preserved"],
+      "files_changed": ["accessibility-only CSS and label associations", "WCAG authenticated runtime and source guards", "acceptance/evidence/execution/session records"],
+      "tests": ["npm run typecheck PASS", "npm run build PASS", "compliance source guard 4/4 PASS", "eight authenticated runtime checks PASS in controlled shard executions", "git diff --check PASS"],
+      "evidence": ["product-contract/evidence/TASK-QA-UI-COMPLIANCE-CERT-004.md", "product-contract/acceptance/UIC_UI_COMPLIANCE_CERT_004.csv"],
+      "decisions": ["Technical UI certification is PASS with no open P0/P1 in scope", "Overall production verdict remains CONDITIONAL PASS", "Native Arabic and morning/night inspector endurance require independent human evidence", "Consolidated Auth 429 persists with pacing and exact checks remain shardable", "Inputs and Cinematic Atlas remain protected"],
+      "blockers": ["Qualified native Arabic review", "Observed representative 4–5 hour morning inspector session", "Observed representative 4–5 hour night inspector session"],
+      "commit_sha": "local feature branch HEAD created at closure from d09ed97",
+      "next_task": "Execute and sign the three human evidence gates, then request an explicit release-gate decision; separately disposition the existing moderate Next.js/PostCSS advisory under G11 hardening.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 98 and TASK-QA-UI-COMPLIANCE-CERT-004 evidence. Technical UI certification passes. Do not claim production PASS or self-approve UIC-AC-023/038/039/040. Obtain qualified native-Arabic and representative morning/night endurance records. Do not merge or push without a separate release decision."
     }
   ],
-  "last_session": "2026-07-18-platform-foundation-promotion-003",
+  "last_session": "2026-07-18-ui-compliance-certification-004",
   "rules": {
     "append_only": true,
     "required_fields": [

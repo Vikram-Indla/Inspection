@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
+    gate: "G11/G12 UI release certification"
+    priority: "P0"
+    status: "TECHNICAL_PASS_HUMAN_GATES_PENDING"
+    owner: "Codex technical QA + qualified Arabic reviewer + representative inspector/observer"
+    blocked_by: ["Native Arabic linguistic review", "Observed 4–5 hour morning inspector session", "Observed 4–5 hour night inspector session"]
+    blocks: ["Unqualified production UI compliance claim"]
+    note: "Typecheck/build and source guard 4/4 PASS. Eight authenticated read-only runtime checks PASS in controlled shards across roles, EN/AR, light/dark, Axe WCAG A/AA, 320px reflow, targets, focus, RTL and reduced motion. Four discovered UI defects were remediated with regression guards. Consolidated execution still hits the shared Auth HTTP 429 ceiling even with pacing, so exact checks remain shardable. Technical UI verdict PASS; overall CONDITIONAL PASS until UIC-AC-023/038/039/040 receive independent human evidence. No merge/push/deploy/data mutation."
   - task_id: "TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
     gate: "G11 source integration / G12 release gates remain open"
     priority: "P0"

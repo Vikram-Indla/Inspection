@@ -1,52 +1,55 @@
 schema_version: "1.2"
-task_id: "TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
-gate: "G11 source integration / G12 release gates remain open"
-title: "Promote the governed design system across the complete Inspection platform"
-status: "MAIN_INTEGRATED_VERIFIED_PUSH_AUTHORIZED"
+task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
+gate: "G11/G12 UI release certification"
+title: "Close technical WCAG 2.2, DGA Platform Code and Arabic/RTL evidence; prepare human endurance gates"
+status: "TECHNICAL_PASS_HUMAN_GATES_PENDING"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
-change_control_ref: "CC-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
+approval_ref: "HUMAN_APPROVALS.yaml#QA-UI-COMPLIANCE-CERT-004"
+change_control_ref: "CC-QA-UI-COMPLIANCE-CERT-004"
 
-branch_at_start: "codex/inspector-shell-uplift-002"
-head_at_start: "1bd6086"
+branch_at_start: "codex/ui-compliance-certification-004"
+head_at_start: "d09ed97"
 process_ids: ["P01", "P02", "P03", "P04", "P05", "P06A", "P06B", "P07", "P08", "P09", "P10", "P11", "P12"]
-requirement_ids: ["SPONSOR-DSF-001..030", "SPONSOR-UIU-001..024", "SPONSOR-PDS-001..025"]
-acceptance_ids: ["DSF-AC-001..030", "UIU-ISP-AC-001..024", "PDS-AC-001..025"]
-evidence_ids: ["PDS-EV-001..007"]
-screen_ids: ["SCR-SHARED-SHELL-001", "all authenticated web working pages", "SCR-IPAD-600..670", "approved auth/print/redirect exceptions"]
-engine_ids: ["visual foundation only; ENG-01..ENG-20 behavior preserved"]
+requirement_ids: ["WCAG-2.2-A-AA", "DGA-PLATFORM-CODE", "DGA-5.13.8", "AR-RTL-RELEASE", "INSPECTOR-ENDURANCE"]
+acceptance_ids: ["UIC-AC-001..040"]
+evidence_ids: ["UIC-EV-001..010"]
+screen_ids: ["SCR-SHARED-SHELL-001", "SCR-ADM-001/010/020/030/050/060/070/080/090", "SCR-WEB-100/200/300/310/400/500", "SCR-IPAD-600..670", "SCR-VIR-700..720"]
+engine_ids: ["visual and interaction verification only; ENG-01..ENG-20 behavior preserved"]
 
 dependencies:
-  - "Government Foundation and Shell Reset V1 already present in the integrated baseline."
-  - "Sponsor-approved inspector-first Shell A uplift is source/component verified."
-  - "Origin main 8b457bd is the integrated MVP1/MVP2/MVP3 preproduction source baseline."
+  - "Pushed main d09ed97 with platform-wide Government Foundation V1."
+  - "Official DGA WCAG 2.2 accessibility guidance and Digital Transformation Basic Standards V4.0."
+  - "W3C WCAG 2.2 Recommendation and controlled authenticated personas."
 
 open_decisions:
-  - "Production compliance claims remain blocked until WCAG 2.2 AA, DGA/Platforms Code, native Arabic/RTL and observed inspector-endurance gates are evidenced."
+  - "Native Arabic linguistic approval requires a qualified human reviewer."
+  - "Inspector endurance approval requires observed representative morning and night sessions."
 
 do_not_touch:
-  - "Do not change input, textarea, select or search geometry or behavior."
-  - "Do not change workflow, RLS, database, provider, audit, offline or immutable-version behavior."
-  - "Keep Cinematic Atlas v0.8 isolated to the approved login experience."
-  - "Do not deploy or apply remote DDL/data changes as part of this source promotion."
-  - "Do not claim production compliance while the four release gates remain open."
+  - "Do not alter input, textarea, select or search geometry/behavior."
+  - "Do not alter workflow, RLS, data, provider, audit, offline or immutable-version semantics."
+  - "Keep Cinematic Atlas v0.8 isolated."
+  - "Do not mutate shared visit state merely to produce UI evidence."
+  - "Do not claim human or organizational signoff from automated checks."
+  - "Do not merge or push without a separate release decision."
 
 authorized_file_scope:
-  - "Shared design foundation, shell, role-priority navigation, inspector composition and renderer palette."
-  - "Platform-wide source contracts, build/regression evidence and governance/session records."
-  - "Commit, integrate into main and push origin/main under explicit sponsor instruction."
+  - "Accessibility test tooling and release-contract tests."
+  - "UI-only remediations found by executed WCAG/RTL checks."
+  - "DGA/Platform Code mapping, Arabic/RTL evidence and endurance protocol."
+  - "Acceptance, evidence, current-state, queue and session records."
 
 required_evidence:
-  - "All working pages inherit root tokens and use the governed Shell or a named exception."
-  - "No authenticated cinematic typography, raw CSS colors, italic or uppercase styling."
-  - "Shared maps use the governed semantic renderer palette."
-  - "Frozen text-entry and Cinematic Atlas boundaries remain unchanged."
-  - "Typecheck, production build, full static regression and clean integration verification."
+  - "Automated WCAG scan plus manual keyboard/focus/reflow/zoom/target/status checks on critical authenticated routes."
+  - "English/Arabic LTR/RTL light/dark parity on critical role journeys."
+  - "DGA Platform Code executive adoption plan and requirement-to-evidence map."
+  - "Assistive-technology and native Arabic review register."
+  - "Observed inspector morning/night endurance protocol and completed session records."
+  - "Typecheck, production build and protected regression."
 
 exit_condition: >-
-  The complete Inspection source tree consumes the governed foundation by construction;
-  inspector Shell A changes are integrated without narrowing other roles; map renderers no
-  longer carry legacy purple styling; protected behavior is unchanged; tests pass on the
-  integrated main commit; origin/main is pushed; and production compliance remains explicitly
-  conditional on the four external and observed release gates.
+  All technical WCAG 2.2 A/AA, DGA Platform Code and Arabic/RTL P0/P1 findings are
+  remediated and evidenced; protected regression passes; qualified Arabic review and
+  representative inspector morning/night sessions are completed without open P0/P1;
+  and the gate is explicitly changed to PASS by evidence rather than assertion.

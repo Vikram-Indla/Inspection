@@ -1,35 +1,20 @@
 schema_version: "1.0"
-change_id: "CC-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
-title: "Platform-wide government design-system promotion"
+change_id: "CC-QA-UI-COMPLIANCE-CERT-004"
+title: "UI production compliance certification"
 requestor: "Codex on behalf of Vikram Indla"
 approver: "Vikram Indla"
 authorization: >
-  Sponsor instructed Codex to confirm that the full design system is applied
-  across the Inspection platform, not only the inspector role, then merge the
-  verified changes into main and push.
-business_reason: >
-  Make the professional government foundation the inherited platform default
-  for all present and future roles while retaining explicit approved exceptions.
-decision:
-  source_branch: "codex/inspector-shell-uplift-002"
-  target_branch: "main"
-  commit: "Authorized"
-  merge: "Authorized"
-  push: "Authorized"
+  After being told that a perfect release PASS requires executed WCAG, DGA,
+  native Arabic/RTL and inspector-endurance evidence, the sponsor instructed
+  Codex to proceed.
 scope_allowed:
-  - "Audit every working page and shared renderer for foundation adoption."
-  - "Complete the inspector Shell A uplift and centralize remaining map colours."
-  - "Add permanent platform-wide source contracts and release evidence."
-  - "Commit, merge into main, rerun verification and push origin/main."
+  - "Execute technical accessibility, RTL and DGA evidence checks."
+  - "Remediate UI-only P0/P1 defects found by those checks."
+  - "Prepare and run controlled authenticated read-only journeys."
+  - "Prepare the native-review and inspector-endurance protocols and evidence registers."
 scope_forbidden:
-  - "Production deployment, remote DDL or shared/production data mutation."
-  - "Workflow, RLS, provider, audit, offline or immutable-version changes."
-  - "Text-entry changes or expansion of Cinematic Atlas beyond its approved exception."
-  - "Unsupported WCAG, DGA, native Arabic/RTL or endurance compliance claims."
-regression_impact: >
-  Typecheck and production build pass; platform/foundation/inspector focused
-  contract 16/16; complete static inventory 75 pass / 4 intentional provider
-  skips / 0 failures before integration.
+  - "Self-approval of native linguistic quality or representative human endurance."
+  - "Shared-data mutation solely for evidence, remote DDL, deployment, merge or push."
+  - "Workflow, RLS, provider, audit, offline, immutable-version, input or Atlas changes."
 decision_owner: "Vikram Indla"
-effective_version: "Government Foundation V1 + Inspector Shell Uplift 002 + Platform Guard 003"
 effective_date: "2026-07-18"

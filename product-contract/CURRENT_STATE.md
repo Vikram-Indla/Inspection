@@ -1,5 +1,26 @@
 # Current State
 
+## 2026-07-18 UPDATE 98 — UI compliance technical gate passed; human gates remain
+
+Sponsor authorized the dedicated `TASK-QA-UI-COMPLIANCE-CERT-004` release-certification
+slice from pushed main baseline `d09ed97`. Production build, typecheck and the four-test
+compliance source guard pass. Eight authenticated read-only runtime checks pass in
+controlled shard executions across planner, reviewer, admin and inspector contexts,
+English/Arabic, light/dark, Axe WCAG A/AA, 320px reflow, target sizing, keyboard/focus,
+landmarks, RTL physical mirroring and reduced motion. The shared identity service returned
+HTTP 429 during consolidated execution even with pacing, so every exact check is retained
+as an independently executable read-only shard; no product result was inferred from that
+infrastructure response.
+
+Certification found and closed four real accessibility defects: colour-only inline-link
+affordance, unassociated visit and bulk-action labels, undersized compact visit actions,
+and an unnamed Factory 360 region selector. Inputs retain their approved geometry and
+behavior, and Cinematic Atlas remains isolated. Technical verdict is PASS with no open
+P0/P1 in this UI scope. Overall production verdict remains **CONDITIONAL PASS** because a
+qualified native-Arabic review and observed four-to-five-hour morning and night inspector
+sessions are still human evidence gates. Those cannot be self-approved or replaced by
+automation. No merge, push, deployment, remote DDL or shared-data mutation occurred.
+
 ## 2026-07-18 UPDATE 97 — Platform design system integrated on current remote baseline
 
 The platform-wide government design-system promotion was integrated as a union with the

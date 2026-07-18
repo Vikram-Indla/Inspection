@@ -133,6 +133,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-18"
     change_ref: "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml#CC-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003"
+  - gate: "QA-UI-COMPLIANCE-CERT-004"
+    decision: "APPROVED — after Codex explained that release PASS requires executed WCAG, DGA/Platform Code, native Arabic/RTL and inspector-endurance evidence rather than a code-only assertion, the sponsor instructed 'proceed'. This authorizes the technical certification sweep and UI-only remediation on an isolated branch. It does not authorize self-approval of human evidence, shared-data mutation solely for testing, remote DDL, deployment, merge or push."
+    approver: "Vikram Indla"
+    date: "2026-07-18"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-QA-UI-COMPLIANCE-CERT-004"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."
