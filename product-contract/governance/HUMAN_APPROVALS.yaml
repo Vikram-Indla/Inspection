@@ -138,6 +138,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-18"
     change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-QA-UI-COMPLIANCE-CERT-004"
+  - gate: "QA-UI-COMPLIANCE-CERT-004-MAIN-INTEGRATION"
+    decision: "APPROVED (EXPLICIT MAIN COMMIT) — after technical UI certification completed on isolated branch codex/ui-compliance-certification-004 at 9c78813, the sponsor explicitly instructed 'commit to main'. This authorizes recording this approval and fast-forwarding local main to the resulting certification branch HEAD. It does not authorize push, deployment, remote DDL, shared-data mutation, self-approval of native-Arabic or inspector-endurance evidence, or a production PASS claim while those human gates remain pending."
+    approver: "Vikram Indla"
+    date: "2026-07-18"
+    change_ref: "Sponsor instruction: commit to main"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."
