@@ -53,7 +53,8 @@ test.describe("contextual AI delta contract", () => {
     expect(action).toContain('from("inspection_items")');
     expect(action).toContain("packageItemCodes.includes(item.code)");
     expect(action).toContain("Do not recommend an inspection answer");
-    expect(action).toContain('surface === "inspection_item_explanation" ? "inspection_item" : "factory_risk_profile"');
+    expect(action).toContain('surface === "inspection_item_explanation" ? "inspection_item"');
+    expect(action).toContain('surface === "factory_risk_explanation" ? "factory_risk_profile"');
   });
 
   test("factory health and risk explanation uses persisted records only", () => {
@@ -67,5 +68,20 @@ test.describe("contextual AI delta contract", () => {
     expect(action).toContain("Do not calculate, change or recommend a risk");
     const provider = SRC("src/lib/providers/ai-gemini.ts");
     expect(provider).toContain("Do not recalculate risk");
+  });
+
+  test("inspector daily briefing starts in My assignments and has a human review path", () => {
+    const field = SRC("src/app/field/page.tsx");
+    expect(field).toContain('surface="inspector_daily_briefing"');
+    expect(field).toContain("MVP1-M03-001");
+    expect(field).toContain("MVP1-M03-003");
+    const action = SRC("src/lib/ai/contextual-actions.ts");
+    expect(action).toContain('from("assignments")');
+    expect(action).toContain('eq("inspector_id", user.id)');
+    expect(action).toContain("Do not invent a route or travel order");
+    const panel = SRC("src/components/ContextualAiPanel.tsx");
+    expect(panel).toContain("/ai/suggestions#ai-suggestion-");
+    const docket = SRC("src/app/ai/suggestions/AiDockets.tsx");
+    expect(docket).toContain("id={`ai-suggestion-${r.id}`}");
   });
 });

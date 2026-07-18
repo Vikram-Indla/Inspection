@@ -5,14 +5,14 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getGeminiProvider } from "@/lib/providers/ai-gemini";
 import { logProviderError, NEUTRAL_WRITE_ERROR } from "@/lib/neutral-error";
 
-export type ContextualSurface = "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation";
+export type ContextualSurface = "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing";
 export type ContextualResult = { ok?: boolean; error?: string; text?: string; insightId?: string; providerStatus?: string };
 
 const parseRefs = (value: FormDataEntryValue | null) => String(value ?? "").split(",").map(x => x.trim()).filter(Boolean).slice(0, 30);
 
 export async function generateContextualInsight(_: ContextualResult, formData: FormData): Promise<ContextualResult> {
   const surface = String(formData.get("surface") ?? "") as ContextualSurface;
-  if (surface !== "planning_summary" && surface !== "preparation_assistant" && surface !== "inspection_item_explanation" && surface !== "factory_risk_explanation") return { error: "Unsupported advisory surface." };
+  if (surface !== "planning_summary" && surface !== "preparation_assistant" && surface !== "inspection_item_explanation" && surface !== "factory_risk_explanation" && surface !== "inspector_daily_briefing") return { error: "Unsupported advisory surface." };
   const clientContext = String(formData.get("context") ?? "").trim();
   const evidenceRefs = parseRefs(formData.get("evidence_refs"));
   const targetRef = String(formData.get("target_ref") ?? "").trim() || null;
@@ -73,7 +73,7 @@ export async function generateContextualInsight(_: ContextualResult, formData: F
       captured_evidence: (evidence ?? []).map(row => row.evidence_type),
       rule: "Explain recorded configuration only. Do not recommend an inspection answer, legal conclusion, penalty, severity or licensing action.",
     });
-  } else {
+  } else if (surface === "factory_risk_explanation") {
     // M07-014/015: the explanation is constrained to a persisted calculation
     // and its recorded drivers. It cannot recalculate or alter factory risk.
     if (!targetRef) return { error: "A factory reference is required for this risk explanation." };
@@ -92,13 +92,26 @@ export async function generateContextualInsight(_: ContextualResult, formData: F
       recent_recorded_snapshots: snapshots ?? [],
       rule: "Explain persisted score inputs only. Do not calculate, change or recommend a risk, enforcement, licensing or inspection outcome.",
     });
+  } else {
+    // M03-001/003: the brief uses only the signed-in inspector's own RLS
+    // assignments. It has no route engine and cannot alter visit/assignment truth.
+    const { data: assignments, error } = await sb.from("assignments")
+      .select("visit_id, status, visits(id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, priority, factories(name, factory_code, city, region, risk_band, risk_score))")
+      .eq("inspector_id", user.id).order("created_at", { ascending: false }).limit(100);
+    if (error) return { error: "Assignment source unavailable — no advisory was generated or stored." };
+    serverContext = JSON.stringify({
+      generated_for: new Date().toISOString().slice(0, 10),
+      assigned_visits: assignments ?? [],
+      route: "No routing geometry was supplied. Do not invent a route or travel order.",
+      rule: "Summarize only. Do not alter assignment, priority, timing, visit state, geofence, inspection or risk truth.",
+    });
   }
   const generated = await provider.generateContextual(surface, serverContext);
   if (!generated.ok || !generated.text) return { error: `AI provider did not return a usable advisory (${generated.reason ?? "unknown"}).` };
   const { data, error } = await sb.from("ai_suggestions").insert({
     surface,
-    target_type: surface === "planning_summary" ? "bulk_plan_review" : surface === "preparation_assistant" ? "visit_prestart" : surface === "inspection_item_explanation" ? "inspection_item" : "factory_risk_profile",
-    target_ref: targetRef,
+    target_type: surface === "planning_summary" ? "bulk_plan_review" : surface === "preparation_assistant" ? "visit_prestart" : surface === "inspection_item_explanation" ? "inspection_item" : surface === "factory_risk_explanation" ? "factory_risk_profile" : "inspector_daily_briefing",
+    target_ref: surface === "inspector_daily_briefing" ? user.id : targetRef,
     suggestion: {
       text: generated.text,
       source: "gemini",

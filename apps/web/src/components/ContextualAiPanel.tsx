@@ -3,9 +3,9 @@
 import { useActionState, useEffect, useState } from "react";
 import { generateContextualInsight, type ContextualResult, type ContextualSurface } from "@/lib/ai/contextual-actions";
 
-type Props = { surface: ContextualSurface; title: string; description: string; context: string; evidenceRefs: string[]; targetRef?: string; itemId?: string; locale?: "en" | "ar"; generateLabel: string; unavailableLabel: string; evidenceLabel: string; advisoryLabel: string };
+type Props = { surface: ContextualSurface; title: string; description: string; context: string; evidenceRefs: string[]; targetRef?: string; itemId?: string; locale?: "en" | "ar"; generateLabel: string; unavailableLabel: string; evidenceLabel: string; advisoryLabel: string; reviewLabel?: string };
 
-export default function ContextualAiPanel({ surface, title, description, context, evidenceRefs, targetRef, itemId, locale, generateLabel, unavailableLabel, evidenceLabel, advisoryLabel }: Props) {
+export default function ContextualAiPanel({ surface, title, description, context, evidenceRefs, targetRef, itemId, locale, generateLabel, unavailableLabel, evidenceLabel, advisoryLabel, reviewLabel }: Props) {
   const [state, action, pending] = useActionState<ContextualResult, FormData>(generateContextualInsight, {});
   const [offline, setOffline] = useState(false);
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function ContextualAiPanel({ surface, title, description, context
         </div>
       </form>
       {state.error && <p role="alert" className="ax-caption" style={{ color: "var(--ax-color-critical)", marginBlockStart: "var(--ax-space-150)" }}>{state.error.includes("unavailable") ? unavailableLabel : state.error}</p>}
-      {state.ok && state.text && <div className="ax-banner ax-banner--immutable" role="status" style={{ marginBlockStart: "var(--ax-space-200)", whiteSpace: "pre-wrap" }}><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{evidenceLabel}: {evidenceRefs.join(" · ")}</div></div>}
+      {state.ok && state.text && <div className="ax-banner ax-banner--immutable" role="status" style={{ marginBlockStart: "var(--ax-space-200)", whiteSpace: "pre-wrap" }}><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{evidenceLabel}: {evidenceRefs.join(" · ")}</div>{state.insightId && reviewLabel && <a className="ax-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel} →</a>}</div>}
     </section>
   );
 }

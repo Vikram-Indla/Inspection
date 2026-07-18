@@ -8,6 +8,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import FieldHome, { type FieldHomeStrings, type FieldNotification, type FieldVisit } from "@/components/field/FieldHome";
+import ContextualAiPanel from "@/components/ContextualAiPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -203,6 +204,18 @@ export default async function Field() {
       context={<span className="ax-lozenge ax-lozenge--info">{t("field.assignments.context", "Assigned to you")}</span>}>
       {/* padding-block-end keeps content clear of the fixed bottom tab bar */}
       <div className="ax-field-page">
+        <ContextualAiPanel
+          surface="inspector_daily_briefing"
+          title={t("field.dashboard.ai.title", "My daily inspection briefing")}
+          description={t("field.dashboard.ai.description", "A short advisory summary of your recorded assignments. It does not create a route, alter a visit, or change your priorities.")}
+          context={JSON.stringify({ inspector_id: user.id })}
+          evidenceRefs={["MVP1-M03-001", "MVP1-M03-003", "MVP1-M03-009", "SCR-IPAD-600"]}
+          generateLabel={t("field.dashboard.ai.generate", "Generate my briefing")}
+          unavailableLabel={t("field.dashboard.ai.unavailable", "AI briefing unavailable — nothing was generated or changed.")}
+          evidenceLabel={t("field.dashboard.ai.evidence", "Source references")}
+          advisoryLabel={t("field.dashboard.ai.advisory", "Advisory only · human decides")}
+          reviewLabel={t("field.dashboard.ai.review", "Review or reject this advisory")}
+        />
         {/* M03-001/003/004/015 — inbox + Calendar/List/Map + search/filter/sort + expiry display */}
         <FieldHome visits={visits} notifications={notifications} strings={homeStrings}
           nowIso={new Date().toISOString()} locale={locale} />
