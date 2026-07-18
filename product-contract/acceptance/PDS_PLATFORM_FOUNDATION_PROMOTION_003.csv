@@ -1,0 +1,26 @@
+acceptance_id,area,criterion,status,evidence
+PDS-AC-001,root,Root layout imports governed tokens,PASS_SOURCE,platform-design-system-contract
+PDS-AC-002,root,Root layout imports authenticated component CSS,PASS_SOURCE,platform-design-system-contract
+PDS-AC-003,typography,IBM Plex Sans Arabic governs bilingual product typography,PASS_SOURCE,platform-design-system-contract
+PDS-AC-004,theme,Light and neutral dark themes initialize globally,PASS_SOURCE,platform-design-system-contract
+PDS-AC-005,rtl,Document direction follows governed locale,PASS_SOURCE,platform-design-system-contract
+PDS-AC-006,shell,All authenticated working pages use shared Shell,PASS_SOURCE,platform-design-system-contract
+PDS-AC-007,shell,Inspector role does not narrow other role destinations,PASS_SOURCE,shell-navigation and inspector-shell-uplift
+PDS-AC-008,exception,Root and launch redirects are explicit,PASS_SOURCE,platform-design-system-contract
+PDS-AC-009,exception,Login and reset remain explicit access surfaces,PASS_SOURCE,platform-design-system-contract
+PDS-AC-010,exception,Print report remains a print-specific surface,PASS_SOURCE,platform-design-system-contract
+PDS-AC-011,exception,Delegated and bridge routes are explicit,PASS_SOURCE,platform-design-system-contract
+PDS-AC-012,palette,Authenticated CSS uses semantic colour tokens,PASS_SOURCE,platform-design-system-contract
+PDS-AC-013,palette,Field and admin maps use shared renderer palette,PASS_SOURCE,GeoMap and map-palette
+PDS-AC-014,palette,Operations map uses shared renderer palette,PASS_SOURCE,LiveMapInner and map-palette
+PDS-AC-015,palette,Legacy purple operations-map styling is absent,PASS_SOURCE,platform-design-system-contract
+PDS-AC-016,palette,Raw TSX colour exceptions are governed,PASS_SOURCE,platform-design-system-contract
+PDS-AC-017,input,Frozen input radius remains unchanged,PASS_SOURCE,platform-design-system-contract
+PDS-AC-018,input,Frozen input typography remains unchanged,PASS_SOURCE,platform-design-system-contract
+PDS-AC-019,input,Frozen text-entry component behavior remains unchanged,PASS_SOURCE,design-foundation-contract
+PDS-AC-020,atlas,Cinematic Atlas remains confined to login,PASS_SOURCE,platform-design-system-contract
+PDS-AC-021,brand,Prism black patch remains absent,PASS_SOURCE,design-foundation-contract
+PDS-AC-022,style,Authenticated italic styling is absent,PASS_SOURCE,platform-design-system-contract
+PDS-AC-023,style,Authenticated uppercase transformation is absent,PASS_SOURCE,platform-design-system-contract
+PDS-AC-024,style,Authenticated prism-magenta leakage is absent,PASS_SOURCE,platform-design-system-contract
+PDS-AC-025,release,Production compliance remains gated,CONDITIONAL_RELEASE,WCAG DGA Arabic-RTL endurance gates open

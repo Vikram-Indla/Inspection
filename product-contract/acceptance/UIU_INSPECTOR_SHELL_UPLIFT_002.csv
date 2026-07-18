@@ -1,0 +1,25 @@
+acceptance_id,requirement,evidence_id,implementation,verification,status
+UIU-ISP-AC-001,Shell A is the first-use default,UIU-ISP-EV-001,apps/web/src/components/ShellClient.tsx,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-002,Shell B remains a reversible persisted preference,UIU-ISP-EV-001,apps/web/src/components/ShellClient.tsx,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-003,Mobile drawer restores labels regardless of compact preference,UIU-ISP-EV-001,apps/web/src/app/astryx.css,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-004,Inspector field-work group appears before secondary command destinations,UIU-ISP-EV-002,apps/web/src/lib/shell-navigation.ts,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-005,Accepted inspector destinations remain available,UIU-ISP-EV-002,apps/web/src/lib/shell-navigation.ts,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-006,Inspector destination uses My assignments task language,UIU-ISP-EV-002,apps/web/src/lib/shell-navigation.ts,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-007,Navigation has no horizontal overflow,UIU-ISP-EV-003,apps/web/src/app/astryx.css,component responsive evidence,PASS_LOCAL
+UIU-ISP-AC-008,Legacy raised circular field FAB is removed,UIU-ISP-EV-004,apps/web/src/components/FieldTabs.tsx,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-009,Start next visit remains a visible labelled primary action,UIU-ISP-EV-004,apps/web/src/components/FieldTabs.tsx,source and component visual test,PASS_LOCAL
+UIU-ISP-AC-010,Field task targets use field control height,UIU-ISP-EV-004,apps/web/src/app/astryx.css,component geometry test,PASS_LOCAL
+UIU-ISP-AC-011,Redundant field sign-out destination is removed while account sign-out remains,UIU-ISP-EV-004,apps/web/src/components/FieldTabs.tsx;ShellClient.tsx,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-012,Assignments precede secondary inspector analytics,UIU-ISP-EV-005,apps/web/src/app/field/page.tsx,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-013,Notifications remain present but secondary to assignments,UIU-ISP-EV-005,apps/web/src/components/field/FieldHome.tsx,inspector-shell-uplift.spec.ts,PASS_LOCAL
+UIU-ISP-AC-014,Light and dark retain identical information hierarchy,UIU-ISP-EV-006,semantic tokens and shared markup,paired component visual evidence,PASS_LOCAL
+UIU-ISP-AC-015,English LTR and Arabic RTL remain equivalent,UIU-ISP-EV-006,logical CSS and translated labels,paired component visual evidence,PASS_LOCAL
+UIU-ISP-AC-016,State does not rely on color alone,UIU-ISP-EV-006,FieldHome.tsx;FieldTabs.tsx,focused and visual review,PASS_LOCAL
+UIU-ISP-AC-017,Keyboard focus remains visible and unobscured,UIU-ISP-EV-006,apps/web/src/app/astryx.css,component focus and reserved-space test,PASS_LOCAL
+UIU-ISP-AC-018,Text entry computed contract is unchanged,UIU-ISP-EV-007,tokens.css and astryx.css unchanged input rules,foundation contract,PASS_LOCAL
+UIU-ISP-AC-019,Cinematic Atlas v0.8 remains isolated,UIU-ISP-EV-007,login scope unchanged,git diff and foundation contract,PASS_LOCAL
+UIU-ISP-AC-020,No workflow data RLS provider or route behavior changes,UIU-ISP-EV-007,ring-fenced diff,git diff review,PASS_LOCAL
+UIU-ISP-AC-021,WCAG production claim remains gated,UIU-ISP-EV-008,UI_REVAMP_UPLIFT_MASTER.md,evidence review,OPEN_RELEASE_GATE
+UIU-ISP-AC-022,DGA Platforms Code claim remains gated,UIU-ISP-EV-008,UI_REVAMP_UPLIFT_MASTER.md,evidence review,OPEN_RELEASE_GATE
+UIU-ISP-AC-023,Native Arabic RTL certification remains gated,UIU-ISP-EV-008,UI_REVAMP_UPLIFT_MASTER.md,evidence review,OPEN_RELEASE_GATE
+UIU-ISP-AC-024,Inspector endurance certification remains gated,UIU-ISP-EV-008,UI_REVAMP_UPLIFT_MASTER.md,evidence review,OPEN_RELEASE_GATE

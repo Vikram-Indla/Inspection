@@ -247,19 +247,6 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
-      {/* M03-001 — inspector inbox */}
-      <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between" }}>
-          <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.inboxTitle}</h3>
-          {unread > 0 && <span className="ax-badge">{unread}</span>}
-        </div>
-        {notifications.length === 0
-          ? <span className="ax-caption">{strings.inboxEmpty}</span>
-          : <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-              {notifications.map(n => <InboxRow key={n.id} n={n} strings={strings} />)}
-            </ul>}
-      </section>
-
       <section id="visits" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-300)" }}>
         <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
           <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.heading}</h3>
@@ -341,6 +328,20 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
                   }} />
               </div>
         )}
+      </section>
+
+      {/* M03-001 — inspector inbox remains available after the active work
+          queue so alerts do not displace the next assignment. */}
+      <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="ax-row" style={{ justifyContent: "space-between" }}>
+          <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.inboxTitle}</h3>
+          {unread > 0 && <span className="ax-badge">{unread}</span>}
+        </div>
+        {notifications.length === 0
+          ? <span className="ax-caption">{strings.inboxEmpty}</span>
+          : <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {notifications.map(n => <InboxRow key={n.id} n={n} strings={strings} />)}
+            </ul>}
       </section>
     </div>
   );

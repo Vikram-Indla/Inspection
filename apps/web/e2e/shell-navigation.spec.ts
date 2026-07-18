@@ -12,7 +12,9 @@ test.describe("TASK-WEB-SHELL-001 role matrix", () => {
   });
 
   test("inspector sees the shared Command destinations plus field, never admin", () => {
-    expect(hrefsFor(["inspector"])).toEqual(["/dashboard", "/operations", "/factories", "/field", "/virtual"]);
+    // UIU-ISP-AC-004: inspector field work is ordered first; accepted shared
+    // destinations remain present below it and authorization is unchanged.
+    expect(hrefsFor(["inspector"])).toEqual(["/field", "/virtual", "/dashboard", "/operations", "/factories"]);
   });
 
   test("admin-family grants compose without inventing unsupported tabs", () => {

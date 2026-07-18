@@ -1,5 +1,12 @@
 # Current State
 
+## 2026-07-18 UPDATE 97 — Platform design system integrated on current remote baseline
+
+The platform-wide government design-system promotion was integrated as a union with the
+current remote MVP1/MVP2/MVP3 preproduction baseline. Main's remotely certified MVP3 migration
+was preserved unchanged. The source gate remains CONDITIONAL PASS pending the four explicit
+production compliance evidence gates.
+
 ## 2026-07-18 UPDATE 95 — repository relocated to canonical path
 
 The Inspection repository permanently moved. New canonical path:
@@ -14,6 +21,43 @@ audits, HUMAN_APPROVALS.yaml entries) that still reference the old path are
 untouched immutable narrative and were intentionally not rewritten. No commit,
 push, merge, deploy, branch switch or unrelated cleanup occurred as part of
 this relocation check.
+
+## 2026-07-18 UPDATE 96 — Full-platform design-system promotion verified for integration
+
+Sponsor expanded the inspector shell slice to the complete Inspection platform and explicitly
+authorized main integration and push. All page entries were audited: every working authenticated
+page uses the governed shared Shell, with only seven named redirect/auth/print/delegation
+exceptions. The root layout globally owns bilingual typography, neutral light/dark themes,
+semantic surfaces and RTL direction. Legacy raw map colours—including the purple Operations
+route/inspector treatment—were consolidated into one government semantic renderer palette used
+by field, admin GIS and Operations. Inputs remain frozen and Cinematic Atlas v0.8 remains isolated.
+Verification before integration: typecheck/build PASS; focused foundation/platform/inspector
+16/16; complete static inventory 75 pass / 4 intentional live-provider skips / 0 failures.
+Gate verdict is CONDITIONAL PASS: source integration is ready, but no production WCAG, DGA,
+native Arabic/RTL or endurance claim is made until those four release gates are evidenced.
+
+## 2026-07-18 UPDATE 95 — inspector-first Shell A source and component evidence
+
+The sponsor approved Shell A as the governed default, Shell B as an optional persisted
+preference, preservation of text-entry behavior, continued Cinematic Atlas isolation and
+four explicit production-compliance gates. The controlled follow-on task
+`TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002` is active on isolated branch
+`codex/inspector-shell-uplift-002` from integrated preproduction baseline `1bd6086`.
+
+The inspector now sees Field work and My assignments before secondary Command destinations;
+all accepted destinations remain. The legacy raised circular field FAB is replaced by a
+restrained labelled 52px task bar, assignments precede notifications, and secondary KPI/
+chart analytics move under Performance overview. Inputs, routes, RLS, workflow, offline,
+audit, providers, immutable versions and login/Atlas sources are unchanged.
+
+Typecheck and production build pass. Focused foundation/uplift contracts pass 11/11; the
+complete static inventory passes 70 with 4 intentional provider skips and no failures; the
+four-frame component visual/geometry harness passes 1/1 for light/dark, EN/AR, LTR/RTL,
+landscape/portrait/narrow, 52px targets, focus and no overflow. Authenticated `/field` and
+full browser regression remain pending a controlled environment because that route calls a
+state-changing expiry RPC and this approval does not authorize shared-data mutation. WCAG,
+DGA/Platforms Code, native Arabic/RTL and observed inspector-endurance production claims
+remain OPEN release gates. No remote DDL, deployment, push, merge or main modification occurred in that pre-integration slice.
 
 ## 2026-07-18 UPDATE 94 — government foundation and shell merged locally
 

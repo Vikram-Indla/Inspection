@@ -1,0 +1,74 @@
+import { test, expect } from "@playwright/test";
+import fs from "node:fs";
+import path from "node:path";
+import { buildShellNavigation } from "../src/lib/shell-navigation";
+
+// TASK-DESIGN-INSPECTOR-SHELL-UPLIFT-002
+// SPONSOR-UIU-001..024 · UIU-ISP-AC-001..024
+const root = path.resolve(__dirname, "..");
+const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
+
+test.describe("Inspector-first Shell A contract", () => {
+  test("UIU-ISP-AC-001..006 A is default, B is optional and field work is first", () => {
+    const shell = read("src/components/ShellClient.tsx");
+    const nav = buildShellNavigation(["inspector"]);
+    expect(shell).toContain("useState(false)");
+    expect(shell).toContain('localStorage.getItem("saqeel-shell-collapsed") === "1"');
+    expect(shell).toContain('localStorage.setItem("saqeel-shell-collapsed", next ? "1" : "0")');
+    expect(nav[0].id).toBe("inspection");
+    expect(nav[0].labelEn).toBe("Field work");
+    expect(nav[0].labelAr).toBe("العمل الميداني");
+    expect(nav[0].items[0]).toMatchObject({ href: "/field", labelEn: "My assignments", labelAr: "مهامي" });
+    expect(nav.flatMap(group => group.items.map(item => item.href))).toEqual([
+      "/field", "/virtual", "/dashboard", "/operations", "/factories",
+    ]);
+  });
+
+  test("UIU-ISP-AC-007..011 field task bar is labelled, restrained and touch sized", () => {
+    const tabs = read("src/components/FieldTabs.tsx");
+    const css = read("src/app/astryx.css");
+    expect(tabs).toContain('className="ax-field-taskbar__primary"');
+    expect(tabs).toContain("{labels.fab}");
+    expect(tabs).not.toContain("Raised center FAB");
+    expect(tabs).not.toContain('href="/signout"');
+    expect(tabs).not.toContain("ax-radius-full");
+    expect(css).toContain("min-block-size: var(--ax-control-height-field)");
+    expect(css).toContain("border-block-start: 1px solid var(--ax-color-border)");
+    expect(css).toContain("padding-block-end: 104px");
+    expect(css).not.toContain(".ax-field-taskbar__primary { border-radius: var(--ax-radius-full)");
+  });
+
+  test("UIU-ISP-AC-012..013 active assignments precede notifications and analytics", () => {
+    const page = read("src/app/field/page.tsx");
+    const home = read("src/components/field/FieldHome.tsx");
+    expect(page.indexOf("<FieldHome")).toBeGreaterThan(-1);
+    expect(page.indexOf("<FieldHome")).toBeLessThan(page.indexOf('<details className="ax-field-performance">'));
+    expect(page).toContain('title={t("field.assignments.title", "My assignments")}');
+    expect(page).not.toContain("SCR-IPAD-600 · assigned-only");
+    expect(home.indexOf('<section id="visits"')).toBeLessThan(home.indexOf("M03-001 — inspector inbox remains available"));
+  });
+
+  test("UIU-ISP-AC-014..020 preserves theme, RTL, status, input and Atlas boundaries", () => {
+    const tabs = read("src/components/FieldTabs.tsx");
+    const css = read("src/app/astryx.css");
+    const tokens = read("src/app/tokens.css");
+    const login = read("src/app/login/login.css");
+    expect(tabs).toContain('aria-current={active === "dashboard" ? "page" : undefined}');
+    expect(tabs).toContain("<Icon d={GLYPHS.next} />");
+    expect(css).toContain("inset-inline: 0");
+    expect(css).toContain("var(--ax-focus-ring)");
+    expect(tokens).toContain("--ax-radius-input: 12px");
+    expect(tokens).toContain("--ax-text-input:   400 16px/24px var(--ax-font-input)");
+    expect(login).toContain("lg-atlas");
+  });
+
+  test("UIU-ISP-AC-021..024 production compliance claims remain explicit release gates", () => {
+    const master = read("../../design/claude-design-mvp1/ui-revamp-uplift/UI_REVAMP_UPLIFT_MASTER.md");
+    expect(master).toContain("Mandatory release gates");
+    expect(master).toContain("WCAG 2.2 AA verification");
+    expect(master).toContain("DGA/Platforms Code");
+    expect(master).toContain("native linguistic review");
+    expect(master).toContain("observed morning and night sessions");
+    expect(master).toContain("production compliance certification pending");
+  });
+});
