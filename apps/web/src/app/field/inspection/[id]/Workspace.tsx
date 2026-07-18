@@ -9,6 +9,7 @@ import {
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
+import ContextualAiPanel from "@/components/ContextualAiPanel";
 
 type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
@@ -48,6 +49,7 @@ export type WorkspaceStrings = {
   summaryTitle: string; sumAnswered: string; sumPending: string; sumCompliant: string; sumNonCompliant: string; sumViolations: string; sumEvidence: string;
   ctxTitle: string; ctxHint: string; ctxYes: string; ctxNo: string; ctxLabels: { [k: string]: string };
   guidanceLabel: string; conditionalBadge: string;
+  aiExplainTitle: string; aiExplainDescription: string; aiExplain: string; aiUnavailable: string; aiEvidence: string; aiAdvisory: string;
   noteLabel: string; notePlaceholder: string;
   naExcluded: string; dateLabel: string;
   evAdd: string; evAddDoc: string; evCount: string; evRequired: string; evQueuedAlt: string; evTooLarge: string; evBadFormat: string;
@@ -71,10 +73,10 @@ export type WorkspaceStrings = {
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 const acceptFor = (type: string) => type === "document" ? ".pdf,application/pdf" : type === "video" ? "video/*" : "image/*";
 
-export default function Workspace({ inspection, items, serverResponses, serverEvidence, serverForms, serverViolations, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo }: {
+export default function Workspace({ inspection, items, serverResponses, serverEvidence, serverForms, serverViolations, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale }: {
   inspection: Ins; items: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverViolations: SVio[];
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
-  evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null;
+  evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null; locale: "en" | "ar";
 }) {
   const [sync, setSync] = useState("synced" as SyncState);
   const [detail, setDetail] = useState(undefined as string | undefined);
@@ -558,6 +560,21 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                   {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
                 </div>
                 {it.guidance && <p className="ax-caption">💡 {strings.guidanceLabel}: {it.guidance}</p>}
+                {/* MVP1-M04-138: separate advisory explanation; it cannot alter the answer/evidence/violation controls below. */}
+                <ContextualAiPanel
+                  surface="inspection_item_explanation"
+                  title={strings.aiExplainTitle}
+                  description={strings.aiExplainDescription}
+                  context={JSON.stringify({ inspection_id: inspection.id, item_id: it.id, item_code: it.code })}
+                  evidenceRefs={["MVP1-M04-138", "SCR-IPAD-640", it.code, ...(it.clause?.clause_ref ? [it.clause.clause_ref] : [])]}
+                  targetRef={inspection.id}
+                  itemId={it.id}
+                  locale={locale}
+                  generateLabel={strings.aiExplain}
+                  unavailableLabel={strings.aiUnavailable}
+                  evidenceLabel={strings.aiEvidence}
+                  advisoryLabel={strings.aiAdvisory}
+                />
                 {/* M04-136/137 — same item's answer + evidence count from the factory's latest prior approved inspection */}
                 {prev && (
                   <p className="ax-caption">

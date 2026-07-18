@@ -1,0 +1,18 @@
+schema_version: "1.0"
+task_id: "TASK-AI-DELTA-CONTEXTUAL-001"
+gate: "MVP1/MVP2 AI delta implementation"
+title: "Deliver planning, inspector briefing/preparation, item-context and Factory 360 advisory assistance on the integrated baseline"
+status: "IMPLEMENTATION_STARTED"
+baseline: "main@4c22d8f"
+requirement_ids: ["MVP1-M01-016", "MVP1-M01-026", "MVP1-M03-001", "MVP1-M03-003", "MVP1-M03-009", "MVP1-M04-138", "MVP1-M07-014", "MVP1-M07-015", "M3-10/MVP2-REQ-0255"]
+acceptance_ids: ["AC-0016", "AC-0026", "AC-0107"]
+do_not_touch:
+  - "Existing /ai/suggestions docket UI and lifecycle"
+  - "Factory selection, publish RPCs, risk values, visit state, geofence/start gates, inspection answers"
+  - "Legal, penalty, severity or license decisions"
+required_evidence:
+  - "Server re-read of authoritative planning/visit facts"
+  - "Evidence references on every generated insight"
+  - "Provider unavailable and offline fail-closed states"
+  - "EN/AR, RTL, 412px and keyboard behavior"
+  - "Focused tests plus MVP1/MVP2 regression"

@@ -302,6 +302,12 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     ctxLabels,
     guidanceLabel: t("field.ws.guidance", "Guidance"),
     conditionalBadge: t("field.ws.conditional", "Conditional"),
+    aiExplainTitle: t("field.ws.aiExplain.title", "Explain this requirement"),
+    aiExplainDescription: t("field.ws.aiExplain.description", "Advisory only. Uses this locked item, its guidance and evidence rule; it never changes your answer or decision."),
+    aiExplain: t("field.ws.aiExplain.generate", "Explain requirement"),
+    aiUnavailable: t("field.ws.aiExplain.unavailable", "AI explanation unavailable"),
+    aiEvidence: t("field.ws.aiExplain.evidence", "Source references"),
+    aiAdvisory: t("field.ws.aiExplain.advisory", "Human decision required"),
     noteLabel: t("field.ws.note.label", "Inspector note"),
     notePlaceholder: t("field.ws.note.placeholder", "Add an observation note (saved with the answer)…"),
     naExcluded: t("field.ws.naExcluded", "N/A — excluded from scoring for this item"),
@@ -419,6 +425,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         prev={prev}
         panel={panel}
         inspectionNo={inspectionNo}
+        locale={locale === "ar" ? "ar" : "en"}
       />
     </Shell>
   );

@@ -8,6 +8,7 @@ import { local, processOutbox, sha256b64, type SyncState } from "@/lib/offline";
 import { getFieldDeviceMetadata } from "@/lib/field-device";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
+import ContextualAiPanel from "@/components/ContextualAiPanel";
 
 // SB19 — strings built server-side with t() and passed as props.
 export type StartupStrings = {
@@ -33,6 +34,7 @@ export type StartupStrings = {
   overrideHeading: string; overrideBody: string; overrideReason: string; overrideReasonCode: string; overrideEvidence: string; overrideSafetyException: string; overrideConfirm: string; overrideCancel: string; overridePending: string; overrideQueued: string; overrideApproved: string; overrideClosed: string; logOverrideQueued: string; logOverrideOfflineQueued: string; logOverrideEvidenceRequired: string; logOverrideFailed: string;
   arrivalEvidenceHeading: string; arrivalEvidenceCaption: string; arrivalPhoto: string; arrivalComment: string; arrivalSave: string; arrivalSaved: string; arrivalRequired: string;
   arrivalEvidenceNote: string; arrivalEvidenceFile: string; arrivalEvidenceSubmit: string; arrivalEvidenceQueued: string; arrivalEvidenceMissing: string;
+  aiTitle: string; aiDescription: string; aiGenerate: string; aiUnavailable: string; aiEvidence: string; aiAdvisory: string;
 };
 
 // Module-level label so the dynamic() loading component (defined outside the
@@ -719,6 +721,18 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           </div>
         )}
       </div>
+      <ContextualAiPanel
+        surface="preparation_assistant"
+        title={strings.aiTitle}
+        description={strings.aiDescription}
+        context={JSON.stringify({ visit_id: visit.id, factory: visit.factories.factory_code, package: visit.package_versions.version_label })}
+        targetRef={visit.id}
+        evidenceRefs={["AC-0107", "M03-009", "SCR-IPAD-610", `VISIT-${visit.id}`]}
+        generateLabel={strings.aiGenerate}
+        unavailableLabel={strings.aiUnavailable}
+        evidenceLabel={strings.aiEvidence}
+        advisoryLabel={strings.aiAdvisory}
+      />
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-150)" }}>

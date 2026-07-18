@@ -42,6 +42,48 @@ export class GeminiSuggestionProvider {
       return { ok: false, reason: "gemini_network_error" };
     }
   }
+
+  /**
+   * Generate a business-context advisory. This is deliberately separate from
+   * the M2-11 docket prompt so contextual surfaces can require source facts,
+   * evidence references and a bounded response without changing docket UX.
+   */
+  async generateContextual(surface: "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing" | "visit_management_summary", context: string): Promise<AiGenResult> {
+    const itemExplanation = surface === "inspection_item_explanation";
+    const riskExplanation = surface === "factory_risk_explanation";
+    const dailyBriefing = surface === "inspector_daily_briefing";
+    const prompt = [
+      "You are an advisory assistant for a government factory-inspection platform.",
+      `Produce a concise ${surface === "planning_summary" ? "planning summary" : surface === "preparation_assistant" ? "inspector preparation brief" : itemExplanation ? "inspection-item explanation" : riskExplanation ? "factory risk and health-score explanation" : surface === "inspector_daily_briefing" ? "daily inspector briefing" : "visit-management operational summary"}.`,
+      "Use only the supplied source facts. Never invent a threshold, score, legal clause, penalty, severity, license decision, route, assignment, or policy value.",
+      itemExplanation
+        ? "Explain only the recorded item title, official guidance, clause reference and evidence rule in at most 4 short bullets. Do not recommend an answer or interpret law; tell the inspector to verify the actual observation and source evidence."
+        : riskExplanation
+          ? "Explain only the recorded risk score, band, model version and stored driver values in at most 4 short bullets. Do not recalculate risk, infer a cause, assign a priority, or recommend an enforcement, licensing or inspection action."
+          : dailyBriefing
+            ? "Summarize only the inspector's recorded assigned visits, windows, states and factory details in at most 5 short bullets. Do not invent a route, timing, priority, assignment, risk score or visit-state change; state unavailable where facts do not support it."
+        : "Return at most 5 short bullets, each labelled Risk, Workload, Hotspot, Route, or Recommendation as applicable.",
+      "State when a fact is unavailable. This is advisory text only; a human remains the decision maker.",
+      `Source facts: ${String(context ?? "").slice(0, 6000)}`,
+    ].join(" ");
+    try {
+      const res = await fetch(`${GEMINI_BASE}/${this.model}:generateContent`, {
+        method: "POST",
+        headers: { "x-goog-api-key": this.apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 512, temperature: 0.2 },
+        }),
+      });
+      if (!res.ok) return { ok: false, reason: `gemini_${res.status}` };
+      const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+      const text = (data.candidates?.[0]?.content?.parts ?? []).map((p) => p.text ?? "").join("").trim();
+      if (!text) return { ok: false, reason: "empty_response" };
+      return { ok: true, text };
+    } catch {
+      return { ok: false, reason: "gemini_network_error" };
+    }
+  }
 }
 
 export function geminiProviderState(): "configured" | "unavailable" {

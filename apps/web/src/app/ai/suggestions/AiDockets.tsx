@@ -46,7 +46,7 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
   const [dState, dAction, disposing] = useActionState<AiResult, FormData>(disposeSuggestion, {});
   const targets = AI_DISPOSITIONS.filter((x) => isDispositionAllowed(r.disposition, x));
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+    <div id={`ai-suggestion-${r.id}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="ax-row" style={{ justifyContent: "space-between" }}>
         <h3>{r.surface} <span className="ax-caption">{r.text}</span></h3>
         <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>

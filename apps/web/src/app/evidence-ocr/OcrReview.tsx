@@ -4,6 +4,7 @@ import { requestOcrExtraction, type OcrActionResult } from "./actions";
 
 export type OcrRow = {
   id: string; evidenceType: string; capturedAt: string;
+  inspectionId: string | null; linkedType: string; linkedId: string;
   lastExtraction: { status: string; text: string | null } | null;
 };
 export type OcrStrings = {
@@ -20,7 +21,10 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
   return (
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="ax-row" style={{ justifyContent: "space-between" }}>
-        <h3>{row.evidenceType} <span className="ax-caption ax-numeric">{row.capturedAt}</span></h3>
+        <div>
+          <h3>{row.evidenceType} <span className="ax-caption ax-numeric">{row.capturedAt}</span></h3>
+          {row.inspectionId && <a className="ax-link ax-caption" href={`/field/inspection/${row.inspectionId}`}>Open the inspection item that owns this evidence →</a>}
+        </div>
         <form action={action}>
           <input type="hidden" name="evidence_id" value={row.id} />
           <button className="ax-btn" disabled={pending}>{pending ? s.extracting : s.extract}</button>
