@@ -48,13 +48,13 @@ export class GeminiSuggestionProvider {
    * the M2-11 docket prompt so contextual surfaces can require source facts,
    * evidence references and a bounded response without changing docket UX.
    */
-  async generateContextual(surface: "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing", context: string): Promise<AiGenResult> {
+  async generateContextual(surface: "planning_summary" | "preparation_assistant" | "inspection_item_explanation" | "factory_risk_explanation" | "inspector_daily_briefing" | "visit_management_summary", context: string): Promise<AiGenResult> {
     const itemExplanation = surface === "inspection_item_explanation";
     const riskExplanation = surface === "factory_risk_explanation";
     const dailyBriefing = surface === "inspector_daily_briefing";
     const prompt = [
       "You are an advisory assistant for a government factory-inspection platform.",
-      `Produce a concise ${surface === "planning_summary" ? "planning summary" : surface === "preparation_assistant" ? "inspector preparation brief" : itemExplanation ? "inspection-item explanation" : riskExplanation ? "factory risk and health-score explanation" : "daily inspector briefing"}.`,
+      `Produce a concise ${surface === "planning_summary" ? "planning summary" : surface === "preparation_assistant" ? "inspector preparation brief" : itemExplanation ? "inspection-item explanation" : riskExplanation ? "factory risk and health-score explanation" : surface === "inspector_daily_briefing" ? "daily inspector briefing" : "visit-management operational summary"}.`,
       "Use only the supplied source facts. Never invent a threshold, score, legal clause, penalty, severity, license decision, route, assignment, or policy value.",
       itemExplanation
         ? "Explain only the recorded item title, official guidance, clause reference and evidence rule in at most 4 short bullets. Do not recommend an answer or interpret law; tell the inspector to verify the actual observation and source evidence."
