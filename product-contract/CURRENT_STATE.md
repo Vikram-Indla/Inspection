@@ -1,5 +1,20 @@
 # Current State
 
+## 2026-07-18 UPDATE 95 — repository relocated to canonical path
+
+The Inspection repository permanently moved. New canonical path:
+`/Users/vikramindla/Developer/Inspection`. Retired path (do not use):
+`/Users/vikramindla/Documents/GitHub/Inspection`. All future Claude Code and
+Codex sessions must resolve the repository at the new path. Claude Code's
+project-scoped memory store (keyed by working-directory path) was copied
+forward from the old path's namespace into the new one so accumulated project
+memory is not lost; see the new namespace's `repo-relocation-2026-07-18`
+memory entry. Historical documents (dated HANDOFF_*.md files, provenance
+audits, HUMAN_APPROVALS.yaml entries) that still reference the old path are
+untouched immutable narrative and were intentionally not rewritten. No commit,
+push, merge, deploy, branch switch or unrelated cleanup occurred as part of
+this relocation check.
+
 ## 2026-07-18 UPDATE 94 — government foundation and shell merged locally
 
 After reviewing the final matching light/dark frames, the sponsor explicitly approved
