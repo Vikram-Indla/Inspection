@@ -77,8 +77,11 @@ function installLayers(map: mapboxgl.Map) {
   map.addLayer({ id: "ops-region-labels", type: "symbol", source: REGION_LABEL_SOURCE, slot: "top", layout: { "text-field": ["get", "label"], "text-size": 11, "text-font": ["Open Sans Bold"], "text-allow-overlap": true }, paint: { "text-color": color, "text-halo-color": "#ffffff", "text-halo-width": 1 } });
 }
 
-export default function LiveMapInner({ factories, regions, inspectors, selectedId, onSelect }: {
+export type LiveMapStrings = { unavailable: string; notConfigured: string; ariaLabel: string };
+
+export default function LiveMapInner({ factories, regions, inspectors, selectedId, onSelect, strings: s }: {
   factories: LiveFactory[]; regions: LiveRegion[]; inspectors: LiveInspector[]; selectedId: string | null; onSelect: (id: string | null) => void;
+  strings: LiveMapStrings;
 }) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -128,6 +131,6 @@ export default function LiveMapInner({ factories, regions, inspectors, selectedI
     updateSources(map, factories, regions, projected(inspectors, tick, reduce));
   }, [factories, inspectors, regions, reduce, tick]);
 
-  if (!token || failed) return <div className="ax-state" role="status" data-map-provider="mapbox-unavailable"><span className="ax-state__glyph">⌖</span><h4>Map service unavailable</h4><p className="ax-caption">Mapbox is not configured for this environment.</p></div>;
-  return <div ref={containerRef} aria-label="Mapbox operations map" data-map-provider="mapbox" style={{ blockSize: "100%", inlineSize: "100%", background: "var(--ax-color-canvas)" }} />;
+  if (!token || failed) return <div className="ax-state" role="status" data-map-provider="mapbox-unavailable"><span className="ax-state__glyph">⌖</span><h4>{s.unavailable}</h4><p className="ax-caption">{s.notConfigured}</p></div>;
+  return <div ref={containerRef} aria-label={s.ariaLabel} data-map-provider="mapbox" style={{ blockSize: "100%", inlineSize: "100%", background: "var(--ax-color-canvas)" }} />;
 }

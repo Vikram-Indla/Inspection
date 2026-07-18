@@ -24,6 +24,7 @@ export type StoryStrings = {
   stagesLabel: string;                            // tablist aria-label
   stages: { id: AtlasStageId; label: string; event: string }[];
   dossier: DossierStrings;
+  riyadhLabel: string;                            // SaqeelHero fallback SVG city-chip
 };
 
 export default function StoryPanel({ strings: s, locale, themeLabels, subdued = false, paused = false }: {
@@ -108,9 +109,9 @@ export default function StoryPanel({ strings: s, locale, themeLabels, subdued = 
 
       <div className="lg-story__frame" id="saqeel-industrial-atlas">
         {subdued ? (
-          <div className="lg-story__fallback"><SaqeelHero /></div>
+          <div className="lg-story__fallback"><SaqeelHero riyadhLabel={s.riyadhLabel} /></div>
         ) : mapFailed ? (
-          <div className="lg-story__fallback"><SaqeelHero /></div>
+          <div className="lg-story__fallback"><SaqeelHero riyadhLabel={s.riyadhLabel} /></div>
         ) : (
           <Atlas locale={locale} activeStage={stage} dossierStrings={s.dossier}
             onInteractingChange={onInteracting} onFail={() => setMapFailed(true)} />

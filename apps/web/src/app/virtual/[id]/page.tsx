@@ -27,6 +27,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     adapterBody: t("virtual.room.adapterBody", "Live-video provider adapter — provider selection is a contract decision (DEC); everything around it (identity verification, state machine, timeline, audit) runs live."),
     adapterPending: t("virtual.room.adapterPending", "video provider pending"),
     videoPlaceholder: t("virtual.room.videoPlaceholder", "secure session room — video provider adapter (release integration); capture controls overlay here"),
+    simulatedSession: t("virtual.room.simulatedSession", "SIMULATED VIDEO SESSION"),
     roles: {
       factory_rep: t("enum.factory_rep", "factory rep"),
       inspector: t("enum.inspector", "inspector"),

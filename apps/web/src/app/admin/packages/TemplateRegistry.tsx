@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { createTemplateVersion, deactivateTemplateVersion, publishTemplateVersion, updateTemplateDraft, type TemplateResult } from "../templates/actions";
 
 export type TemplateRow = { id: string; template_key: string; template_type: string; version_label: string; title_en: string; title_ar: string; schema: unknown; status: string; effective_from: string | null };
-export type TemplateStrings = { heading: string; intro: string; key: string; type: string; version: string; effectiveFrom: string; titleEn: string; titleAr: string; schema: string; create: string; creating: string; save: string; saving: string; publish: string; publishing: string; effectiveTo: string; reason: string; deactivate: string; deactivating: string; historical: string; saved: string };
+export type TemplateStrings = { heading: string; intro: string; key: string; type: string; version: string; effectiveFrom: string; titleEn: string; titleAr: string; schema: string; create: string; creating: string; save: string; saving: string; publish: string; publishing: string; effectiveTo: string; reason: string; deactivate: string; deactivating: string; historical: string; saved: string; typeForm: string; typeReport: string; typeActionForm: string; typePenalty: string };
 
 function Feedback({ state, saved }: { state: TemplateResult; saved: string }) {
   return state.error ? <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span> : state.ok ? <span className="ax-lozenge ax-lozenge--success" role="status">✓ {saved}</span> : null;
@@ -17,7 +17,7 @@ export default function TemplateRegistry({ templates, strings: s }: { templates:
     <p className="ax-caption">{s.intro}</p>
     <form action={createAction} className="ax-grid-2">
       <label className="ax-field"><span className="ax-field__label">{s.key}</span><input className="ax-input ax-numeric" name="template_key" required /></label>
-      <label className="ax-field"><span className="ax-field__label">{s.type}</span><select className="ax-select" name="template_type" required defaultValue="action_form"><option value="form">Form</option><option value="report">Report</option><option value="action_form">Action form</option><option value="penalty">Penalty</option></select></label>
+      <label className="ax-field"><span className="ax-field__label">{s.type}</span><select className="ax-select" name="template_type" required defaultValue="action_form"><option value="form">{s.typeForm}</option><option value="report">{s.typeReport}</option><option value="action_form">{s.typeActionForm}</option><option value="penalty">{s.typePenalty}</option></select></label>
       <label className="ax-field"><span className="ax-field__label">{s.version}</span><input className="ax-input ax-numeric" name="version_label" placeholder="v1" required /></label>
       <label className="ax-field"><span className="ax-field__label">{s.effectiveFrom}</span><input className="ax-input" type="date" name="effective_from" required /></label>
       <label className="ax-field"><span className="ax-field__label">{s.titleEn}</span><input className="ax-input" name="title_en" required /></label>

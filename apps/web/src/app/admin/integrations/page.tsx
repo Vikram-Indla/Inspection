@@ -13,7 +13,7 @@ export default async function IntegrationsPage() {
   ]);
   return (
     <Shell current="/admin/integrations" title={t("mvp3.integrations.title", "Integration trust console")}
-      context={<span className="ax-lozenge ax-lozenge--info">M3-00 · CD-050 · 14 controlled rows</span>}>
+      context={<span className="ax-lozenge ax-lozenge--info">{"M3-00 · CD-050 · "}{t("mvp3.integrations.badge", "14 controlled rows")}</span>}>
       <div className="ax-banner"><div><strong>{t("mvp3.integrations.truth", "Configuration is not connectivity.")}</strong> {t("mvp3.integrations.truthBody", "An endpoint becomes configured only with an approved contract and runtime address. Secrets are never displayed here.")}</div></div>
       {error ? <div className="ax-banner ax-banner--warning" role="alert">{t("mvp3.schema.pending", "MVP3 database contract is not applied in this environment. No data is inferred.")}</div> : null}
       <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="integration-registry">

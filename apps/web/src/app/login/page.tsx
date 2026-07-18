@@ -92,6 +92,7 @@ export default async function Login() {
         ? "أطلس التفتيش الصناعي في صقيل"
         : "The Saqeel industrial inspection atlas",
       overline: ar ? "رحلة تفتيش واحدة · من البداية إلى النهاية" : "ONE VISIT · END TO END",
+      riyadhLabel: ar ? "الرياض · مسيّجة جغرافيًا" : "RIYADH · GEOFENCED",
       illustrativeSummary: ar ? "بيانات توضيحية · غير حية · الأقرب في مسار الجولة أولًا" : "Illustrative sample · not live data · nearest on the illustrated route first",
       zoneStats: ar ? [
         { zone: "المنطقة الشرقية", inspections: "318", detail: "90% · 62 كم" },

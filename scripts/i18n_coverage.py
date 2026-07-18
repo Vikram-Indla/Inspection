@@ -19,14 +19,19 @@ SWEPT_ALL = True
 SWEPT: list[str] = []
 
 CONTRACT_ID = re.compile(
-    r"\b(RBAC|SCR|STM|FLD|ERR|ENG|REF|FND|DEC|EV|SB|M0\d|MVP\d|B\d+-EV|P\d+|AC)-?[\w./-]*\b")
+    r"\b(RBAC|SCR|STM|FLD|ERR|ENG|REF|FND|DEC|EV|SB|CD|REQ|DASH|M\d+|MVP\d|B\d+-EV|P\d+|AC)-?[\w./,-]*\b")
 ALLOW = re.compile(
     r"^[\s\d\W]*$"                      # punctuation/digits only
     r"|^[a-z_./:?=&-]+$"                # slugs, urls, params
     r"|@|\bhttp|\.example\b|\bpx\b|\bvar\(|—$"
-    r"|^(English|العربية|OpenStreetMap|Leaflet|نفاذ · Nafath|Twitter / X|LinkedIn|YouTube)$"  # proper nouns / brands — never translated
+    r"|^(English|العربية|OpenStreetMap|Leaflet|نفاذ · Nafath|Twitter / X|LinkedIn|YouTube|Saqeel|CARTO|OSM)$"  # proper nouns / brands / required map-tile attribution — never translated
     r"|^[\w./-]+\.(py|ts|tsx|css|json)$"  # file paths shown as code
-    r"|[;{}=&\[\]]|\n|as Record|=>")    # code fragments caught by the JSX regex
+    r"|[;{}=&\[\]]|\n|as Record|=>"     # code fragments caught by the JSX regex
+    r"|^\)?\s*:\s*!?[\w.]+(\s*\?\.)?\s*\?\s*\(?$"  # ternary-chain continuation, e.g. ") : canWrite ? ("
+    r"|^,?\s*patch:\s*Record$"          # TS generic type annotation fragment
+    r"|^Promise(Like)?$"                # TS built-in type name (Promise<T> / PromiseLike<T>)
+    r"|\|\||&&|\?\.|\.select\(|\.from\("   # boolean/optional-chain/query-builder code fragments
+    r"|copy\(locale")                   # already-localized copy(locale, key, ar) helper call, caught via a `>`/`<` comparison operator pair on the same line
 TEXT_IN_JSX = re.compile(r">([^<>{}]+)<")
 ATTR_TEXT = re.compile(r'(?:placeholder|title|aria-label|alt)="([^"{]+)"')
 
@@ -51,7 +56,7 @@ def main() -> int:
     print(f"SWEPT: {'ALL' if SWEPT_ALL else len(SWEPT)} · failing: {len(swept_fail)}")
     for rel, hits in swept_fail.items():
         print(f"  FAIL {rel} ({len(hits)}):")
-        for h in hits[:8]: print(f"     · {h}")
+        for h in hits: print(f"     · {h}")  # no cap — a silently truncated report would hide real findings
     total_backlog = sum(len(v) for v in backlog.values())
     print(f"BACKLOG (not yet swept): {len(backlog)} files · {total_backlog} strings")
     for rel, hits in sorted(backlog.items(), key=lambda kv: -len(kv[1]))[:12]:

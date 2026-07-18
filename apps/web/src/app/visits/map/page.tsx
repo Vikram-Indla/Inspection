@@ -1,10 +1,12 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { useT } from "@/lib/i18n";
 import VisitMap, { type MappedVisit } from "./VisitMap";
 
 export const dynamic = "force-dynamic";
 
 export default async function VisitsMapPage() {
+  const { t } = await useT();
   const sb = await supabaseServer();
   const [{ data: visits, error }, { data: geo }] = await Promise.all([
     sb.from("visits").select(`id, factory_id, operational_state,
@@ -34,15 +36,23 @@ export default async function VisitsMapPage() {
     }];
   });
   return (
-    <Shell current="/visits" title="Visit management — map" context={<span className="ax-lozenge ax-lozenge--info">MVP1-M02-039 · RLS-scoped</span>}>
-      <div className="ax-row" role="group" aria-label="Visit management views">
-        <a className="ax-btn ax-btn--subtle" href="/visits">List</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/calendar">Calendar</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/workload">Workload</a>
-        <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/map">Map</a>
+    <Shell current="/visits" title={t("visit.map.title", "Visit management — map")} context={<span className="ax-lozenge ax-lozenge--info">{t("visit.map.context", "MVP1-M02-039 · RLS-scoped")}</span>}>
+      <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+        <a className="ax-btn ax-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
+        <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
+        <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
+        <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/map">{t("visit.views.map", "Map")}</a>
       </div>
-      {error ? <div className="ax-banner ax-banner--critical" role="alert"><div>Map data is temporarily unavailable. Please try again.</div></div>
-        : <VisitMap visits={rows} />}
+      {error ? <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.map.error", "Map data is temporarily unavailable. Please try again.")}</div></div>
+        : <VisitMap visits={rows} strings={{
+            region: t("visit.map.region", "Region"), allRegions: t("visit.map.allRegions", "All regions"),
+            factoryVisitLegend: t("visit.map.legendFactory", "factory / visit"), inspectorLegend: t("visit.map.legendInspector", "latest inspector position"),
+            noneInRegion: t("visit.map.empty", "No located visits in this region"), visit: t("visit.map.visit", "Visit"),
+            factory: t("visit.map.factory", "Factory"), regionCity: t("visit.map.regionCity", "Region / city"),
+            inspectorLocation: t("visit.map.inspectorLocation", "Inspector location"), state: t("visit.map.state", "State"),
+            assignedInspector: t("visit.map.assignedInspector", "Assigned inspector"), inspectorFallback: t("visit.map.inspectorFallback", "Inspector"),
+            unavailableScope: t("visit.map.unavailableScope", "Unavailable under current scope"), latestLocation: t("visit.map.latestLocation", "latest location"),
+          }} />}
     </Shell>
   );
 }

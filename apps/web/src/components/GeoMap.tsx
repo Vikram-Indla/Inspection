@@ -41,6 +41,7 @@ type Props = {
   onMarkerClick?: (id: string) => void;
   onRadiusChange?: (id: string, radiusM: number) => void;
   interactive?: boolean;
+  ariaLabel?: string;
 };
 
 type RenderData = Pick<Props, "center" | "zoom" | "markers" | "selectedId" | "focus">;
@@ -119,7 +120,7 @@ function sync(map: mapboxgl.Map, data: RenderData, initial = false) {
 
 function locale() { return document.documentElement.lang === "ar" ? "ar" : "en"; }
 
-export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true }: Props) {
+export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map" }: Props) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -187,5 +188,5 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
       <p className="ax-caption">{ar ? "لم يتم تكوين خدمة Mapbox لهذه البيئة." : "Mapbox is not configured for this environment."}</p>
     </div>;
   }
-  return <div ref={containerRef} aria-label="Mapbox map" data-map-provider="mapbox" style={{ blockSize: height, inlineSize: "100%" }} />;
+  return <div ref={containerRef} aria-label={ariaLabel} data-map-provider="mapbox" style={{ blockSize: height, inlineSize: "100%" }} />;
 }

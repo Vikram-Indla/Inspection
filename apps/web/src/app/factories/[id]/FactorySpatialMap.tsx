@@ -9,8 +9,13 @@ export type FactoryLocationEvent = {
   overrideReason: string | null; visitId: string;
 };
 
-export default function FactorySpatialMap({ officialLat, officialLng, geofenceRadius, events }: {
+export type FactorySpatialMapStrings = {
+  officialPin: string; observedArrival: string; gpsOverride: string; noLocations: string;
+};
+
+export default function FactorySpatialMap({ officialLat, officialLng, geofenceRadius, events, strings: s }: {
   officialLat: number; officialLng: number; geofenceRadius: number | null; events: FactoryLocationEvent[];
+  strings: FactorySpatialMapStrings;
 }) {
   const markers: GeoMarkerData[] = [
     { id: "official", lat: officialLat, lng: officialLng, label: "Industrial-license official location", tone: "neutral", radiusM: geofenceRadius ?? undefined },
@@ -26,11 +31,11 @@ export default function FactorySpatialMap({ officialLat, officialLng, geofenceRa
         <GeoMap center={[officialLat, officialLng]} zoom={14} markers={markers} height="100%" />
       </div>
       <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }}>
-        <span className="ax-lozenge ax-lozenge--info">official / planned pin</span>
-        <span className="ax-lozenge ax-lozenge--success">observed arrival</span>
-        <span className="ax-lozenge ax-lozenge--critical">GPS override</span>
+        <span className="ax-lozenge ax-lozenge--info">{s.officialPin}</span>
+        <span className="ax-lozenge ax-lozenge--success">{s.observedArrival}</span>
+        <span className="ax-lozenge ax-lozenge--critical">{s.gpsOverride}</span>
       </div>
-      {events.length === 0 && <p className="ax-caption">No observed inspection locations are recorded in your authorized scope.</p>}
+      {events.length === 0 && <p className="ax-caption">{s.noLocations}</p>}
     </div>
   );
 }

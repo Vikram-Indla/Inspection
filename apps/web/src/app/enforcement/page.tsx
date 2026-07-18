@@ -13,7 +13,7 @@ export default async function EnforcementPage() {
   ]);
   return (
     <Shell current="/enforcement" title={t("mvp3.enforcement.title", "Enforcement and correction lifecycle")}
-      context={<span className="ax-lozenge ax-lozenge--info">M3-09 · CD-059 · source-linked cases</span>}>
+      context={<span className="ax-lozenge ax-lozenge--info">{"M3-09 · CD-059 · "}{t("mvp3.enforcement.badge", "source-linked cases")}</span>}>
       <div className="ax-banner"><div><strong>{t("mvp3.enforcement.rule", "Every outcome remains linked to its source inspection, clause and human decision.")}</strong> {t("mvp3.enforcement.ruleBody", "Missing links are shown as incomplete—not silently repaired.")}</div></div>
       {error ? <div className="ax-banner ax-banner--warning" role="alert">{t("mvp3.enforcement.unavailable", "The enforcement case contract is unavailable in this environment. No case count is claimed.")}</div> : null}
       <div className="ax-grid" style={{ marginBlock: "var(--ax-space-200)" }}><section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("mvp3.enforcement.openCases", "Open cases")}</p><strong className="ax-display">{(cases ?? []).filter(x => !["resolved","closed"].includes(x.status)).length}</strong></section><section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("mvp3.enforcement.violations", "RLS-visible violations")}</p><strong className="ax-display">{(violations ?? []).length}</strong></section><section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("mvp3.enforcement.objections", "Objections")}</p><strong className="ax-display">{(objections ?? []).length}</strong></section></div>

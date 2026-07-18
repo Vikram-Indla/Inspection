@@ -17,6 +17,9 @@ export type LiveOpsStrings = {
   low: string;
   inspector: string;
   projected: string;
+  mapUnavailable: string;
+  mapboxNotConfigured: string;
+  mapAriaLabel: string;
 };
 
 export default function LiveOps({ factories, regions, inspectors, strings: s }: {
@@ -54,7 +57,9 @@ export default function LiveOps({ factories, regions, inspectors, strings: s }: 
 
       <div className="lv-map">
         <Map factories={factories} regions={regions} inspectors={inspectors}
-          selectedId={selectedId} onSelect={setSelectedId} />
+          selectedId={selectedId} onSelect={setSelectedId} strings={{
+            unavailable: s.mapUnavailable, notConfigured: s.mapboxNotConfigured, ariaLabel: s.mapAriaLabel,
+          }} />
       </div>
 
       <div className="lv-legend" role="note">

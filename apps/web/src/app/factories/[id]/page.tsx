@@ -271,7 +271,12 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
               ? <><span className="ax-numeric">{f.geofence_radius_m} {t("f360.geo.unitM", "m")}</span> — {t("f360.geo.override", "per-factory override")}</>
               : t("f360.geo.engineDefault", "engine default (engine_settings gis.geofence_default_radius_m)")}</p>
             {f.official_lat != null && f.official_lng != null
-              ? <FactorySpatialMap officialLat={Number(f.official_lat)} officialLng={Number(f.official_lng)} geofenceRadius={f.geofence_radius_m} events={locationEvents} />
+              ? <FactorySpatialMap officialLat={Number(f.official_lat)} officialLng={Number(f.official_lng)} geofenceRadius={f.geofence_radius_m} events={locationEvents} strings={{
+                  officialPin: t("f360.geo.legend.official", "official / planned pin"),
+                  observedArrival: t("f360.geo.legend.arrival", "observed arrival"),
+                  gpsOverride: t("f360.geo.legend.override", "GPS override"),
+                  noLocations: t("f360.geo.legend.empty", "No observed inspection locations are recorded in your authorized scope."),
+                }} />
               : <div className="cd-mapph"><span className="cd-mapph__t">{t("f360.geo.noOfficial", "Official coordinates are unavailable from the source.")}</span></div>}
           </div>
         </aside>

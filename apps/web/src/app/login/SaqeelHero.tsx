@@ -72,7 +72,7 @@ function Inspector({ from, to }: { from: [number, number]; to: [number, number] 
   );
 }
 
-export default function SaqeelHero() {
+export default function SaqeelHero({ riyadhLabel = "RIYADH · GEOFENCED" }: { riyadhLabel?: string } = {}) {
   return (
     <svg className="lg-hero" viewBox="0 0 800 640" aria-hidden="true" focusable="false"
       preserveAspectRatio="xMidYMid meet">
@@ -122,7 +122,7 @@ export default function SaqeelHero() {
           fill="var(--ax-color-surface)" stroke="var(--ax-color-border)" />
         <circle cx="-48" cy="0" r="3.5" fill="var(--ax-color-primary)" />
         <text x="-38" y="4" fill="var(--ax-color-text)"
-          style={{ font: "600 12px var(--ax-font-mono)" }}>RIYADH · GEOFENCED</text>
+          style={{ font: "600 12px var(--ax-font-mono)" }}>{riyadhLabel}</text>
       </g>
     </svg>
   );

@@ -142,6 +142,9 @@ export default async function LiveOperations() {
     low: t("ops.live.low", "In control"),
     inspector: t("ops.live.inspectorLegend", "Inspector (projected route)"),
     projected: t("ops.live.projectedNote", "Inspector positions are projected from the visit window, not live GPS (pending telemetry integration)."),
+    mapUnavailable: t("ops.live.map.unavailable", "Map service unavailable"),
+    mapboxNotConfigured: t("ops.live.map.notConfigured", "Mapbox is not configured for this environment."),
+    mapAriaLabel: t("ops.live.map.ariaLabel", "Mapbox operations map"),
   };
 
   const title = t("ops.live.title", "Live Operations — Saudi Arabia");

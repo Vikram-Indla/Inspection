@@ -16,7 +16,7 @@ export default async function SecurityAccessPage() {
   const now = Date.now();
   return (
     <Shell current="/admin/security-access" title={t("mvp3.security.title", "Security posture and access review")}
-      context={<span className="ax-lozenge ax-lozenge--info">M3-00 · CD-050 · purpose-bound evidence access</span>}>
+      context={<span className="ax-lozenge ax-lozenge--info">{"M3-00 · CD-050 · "}{t("mvp3.security.badge", "purpose-bound evidence access")}</span>}>
       <div className="ax-banner"><div><strong>{t("mvp3.security.boundary", "Navigation is not authorization.")}</strong> {t("mvp3.security.boundaryBody", "Database grants and RLS enforce every read and action. This screen exposes only the signed-in actor's readable scope.")}</div></div>
       {error ? <div className="ax-banner ax-banner--warning" role="alert">{t("mvp3.schema.pending", "MVP3 database contract is not applied in this environment. No data is inferred.")}</div> : null}
       <div className="ax-grid" style={{ marginBlock: "var(--ax-space-200)" }}>

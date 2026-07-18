@@ -133,7 +133,7 @@ export default async function AuditReplayPage({ searchParams }: {
 
   return (
     <Shell current="/admin/audit" title={t("admin.audit.replay.title", "Inspection Flight Recorder")}
-      context={<><span className="ax-lozenge ax-lozenge--info">MVP2-M2-05</span><span className="ax-lozenge ax-lozenge--success">ENG-12 · append-only</span></>}>
+      context={<><span className="ax-lozenge ax-lozenge--info">MVP2-M2-05</span><span className="ax-lozenge ax-lozenge--success">{"ENG-12 · "}{t("admin.audit.badge.appendonly", "append-only")}</span></>}>
       <AuditReplayWorkspace
         locale={locale}
         mode={mode}

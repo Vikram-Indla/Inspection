@@ -16,7 +16,7 @@ export default async function PlatformOperationsPage() {
   const endpointRows = endpoints ?? [];
   return (
     <Shell current="/admin/operations" title={t("mvp3.operations.title", "Platform operations and resilience")}
-      context={<span className="ax-lozenge ax-lozenge--info">M3-00 · CD-050 · fail-closed operations</span>}>
+      context={<span className="ax-lozenge ax-lozenge--info">{"M3-00 · CD-050 · "}{t("mvp3.operations.badge", "fail-closed operations")}</span>}>
       {error ? <div className="ax-banner ax-banner--warning" role="alert">{t("mvp3.schema.pending", "MVP3 database contract is not applied in this environment. No data is inferred.")}</div> : null}
       <div className="ax-grid">
         <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("mvp3.operations.endpoints", "Endpoint contracts")}</p><strong className="ax-display">{endpointRows.length}</strong><p>{endpointRows.filter(x => x.status === "configured").length} {t("mvp3.operations.configured", "configured")}</p></section>
