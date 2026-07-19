@@ -5,10 +5,12 @@
 type SkeletonBlockProps = {
   blockSize?: number | string;
   inlineSize?: number | string;
+  style?: React.CSSProperties;
+  ariaHidden?: boolean;
 };
 
-export function SkeletonBlock({ blockSize = 14, inlineSize }: SkeletonBlockProps) {
-  return <div className="ax-skeleton" style={{ blockSize, inlineSize }} />;
+export function SkeletonBlock({ blockSize = 14, inlineSize, style, ariaHidden }: SkeletonBlockProps) {
+  return <div className="ax-skeleton" style={{ blockSize, inlineSize, ...style }} aria-hidden={ariaHidden} />;
 }
 
 type SkeletonRowsProps = {

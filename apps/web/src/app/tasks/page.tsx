@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
+import EmptyState from "@/components/EmptyState";
 import { canManageTask, type TaskStatus } from "@/lib/workflow/tasks";
 import { TaskRow, type TaskBoardStrings, type TaskRowData } from "./TaskBoard";
 
@@ -85,10 +86,8 @@ export default async function TasksPage() {
         </div></div>
       )}
       {!error && tasks.length === 0 && (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🗂️</span><h4>{t("tasks.empty.title", "No tasks in your scope")}</h4>
-          <p className="ax-caption">{t("tasks.empty.body", "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your scope (RLS).")}</p>
-        </div></div>
+        <EmptyState glyph="🗂️" title={t("tasks.empty.title", "No tasks in your scope")}
+          body={t("tasks.empty.body", "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your scope (RLS).")} />
       )}
       {tasks.map((task) => <TaskRow key={task.id} task={task} strings={strings} />)}
     </Shell>
