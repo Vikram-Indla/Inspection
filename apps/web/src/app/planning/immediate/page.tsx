@@ -12,7 +12,8 @@ export const dynamic = "force-dynamic";
 const distinct = (rows: { [k: string]: unknown }[], key: string) =>
   [...new Set(rows.map(r => r[key]).filter((v): v is string => typeof v === "string" && v.length > 0))].sort();
 
-export default async function Immediate() {
+export default async function Immediate({ searchParams }: { searchParams: Promise<{ factory?: string }> }) {
+  const { factory: initialFactoryId } = await searchParams;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
@@ -180,6 +181,7 @@ export default async function Immediate() {
         actorName={myProfile?.full_name ?? ""}
         actorMode={actorMode}
         locale={locale}
+        initialFactoryId={initialFactoryId}
         strings={strings}
       />
     </Shell>

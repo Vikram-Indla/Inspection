@@ -64,15 +64,15 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ),
 });
 
-export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, hasInspectorPool, actorName, actorMode, locale, strings }: {
+export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, hasInspectorPool, actorName, actorMode, locale, strings, initialFactoryId }: {
   factories: F[]; packages: P[]; inspectors: I[]; regionOptions: string[]; cityOptions: string[]; hasInspectorPool: boolean;
-  actorName: string; actorMode: "planner" | "inspector"; locale: "en" | "ar"; strings: ImmediateStrings;
+  actorName: string; actorMode: "planner" | "inspector"; locale: "en" | "ar"; strings: ImmediateStrings; initialFactoryId?: string;
 }) {
   const [state, formAction, pending] = useActionState<ImmResult, FormData>(createImmediateVisit, {});
 
   const [mode, setMode] = useState<"registered" | "unregistered">("registered");
   const [query, setQuery] = useState("");
-  const [factory, setFactory] = useState<F | null>(null);
+  const [factory, setFactory] = useState<F | null>(() => (initialFactoryId ? factories.find(f => f.id === initialFactoryId) ?? null : null));
   const [manualName, setManualName] = useState("");
   const [manualCr, setManualCr] = useState("");
   const [manualLicense, setManualLicense] = useState("");
