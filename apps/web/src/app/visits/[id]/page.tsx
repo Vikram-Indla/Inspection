@@ -6,12 +6,14 @@ import Attachments, { type AttachmentRow, type AttachmentsStrings } from "./Atta
 import NotesEditor, { type NotesStrings } from "./NotesEditor";
 import DualStateRibbon, { type RibbonTrack, type RibbonStrings } from "./DualStateRibbon";
 import { mapError } from "./neutral";
+import CreatedToast from "@/components/CreatedToast";
 
 export const dynamic = "force-dynamic";
 
 const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical" };
 
-export default async function VisitDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
+  const { created } = await searchParams;
   const { id } = await params;
   const { t } = await useT();
   const sb = await supabaseServer();
@@ -191,6 +193,9 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
         <span className="ax-lozenge ax-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span>
         {pkg && <span className="ax-version">{pkg.packages.code} · {pkg.version_label}</span>}
       </>}>
+      <CreatedToast created={created}
+        registeredMessage={t("visit.detail.createdToast", "Visit created and dispatched.")}
+        unregisteredMessage={t("visit.detail.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
       {/* CD-027 — signature interaction: Dual-State Ribbon (one per screen) */}
       <DualStateRibbon tracks={ribbonTracks} strings={ribbonStrings} />
       <div className="ax-grid-2">

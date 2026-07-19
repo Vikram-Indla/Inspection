@@ -187,6 +187,7 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
     }
   }
 
-  if (result.actor_mode === "inspector") redirect(`/field/${result.visit_id}`);
-  redirect(`/visits/${result.visit_id}`);
+  const createdParam = isUnregistered ? "unregistered" : "1";
+  if (result.actor_mode === "inspector") redirect(`/field/${result.visit_id}?created=${createdParam}`);
+  redirect(`/visits/${result.visit_id}?created=${createdParam}`);
 }

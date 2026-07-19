@@ -2,12 +2,14 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Startup, { type StartupStrings } from "./Startup";
+import CreatedToast from "@/components/CreatedToast";
 import packageInfo from "../../../../package.json";
 
 export const dynamic = "force-dynamic";
 
-export default async function FieldVisit({ params }: { params: Promise<{ visitId: string }> }) {
+export default async function FieldVisit({ params, searchParams }: { params: Promise<{ visitId: string }>; searchParams: Promise<{ created?: string }> }) {
   const { visitId } = await params;
+  const { created } = await searchParams;
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data: v } = await sb.from("visits")
@@ -238,6 +240,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
   return (
     <Shell current="/field" title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-IPAD-610/620</span>}>
+      <CreatedToast created={created}
+        registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
+        unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
       <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
