@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { local, processOutbox, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
@@ -43,6 +44,7 @@ export type WorkspaceStrings = {
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
   evidenceQueued: string; blockers: string; submitting: string; queuedOffline: string; retryNow: string;
+  exitBtn: string; exitTitle: string; exitSavedSynced: string; exitSavedLocal: string; exitConfirm: string; exitCancel: string;
   enumLabels: { [k: string]: string };
   // — Slice E2 runtime depth —
   progress: string;
@@ -78,8 +80,10 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
   evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null; locale: "en" | "ar";
 }) {
+  const router = useRouter();
   const [sync, setSync] = useState("synced" as SyncState);
   const [detail, setDetail] = useState(undefined as string | undefined);
+  const [exiting, setExiting] = useState(false);
   const [answers, setAnswers] = useState(() =>
     Object.fromEntries(serverResponses.filter(r => { return !!r.response; }).map(r => [r.item_id, r.response!])) as { [k: string]: Answer });
   const [ctx, setCtx] = useState(serverContext);
@@ -443,7 +447,10 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
             <button type="button" className="ax-btn ax-btn--subtle" onClick={() => processOutbox(onState)}>{strings.retryNow}</button>
           )}
         </span>
-        <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+          <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+          {!submitted && <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
+        </span>
       </div>
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
 
@@ -754,6 +761,24 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       {shot && !submitted && (
         <ImageAnnotator srcB64={shot.b64} mime={shot.mime} strings={strings.annot}
           onCancel={() => setPendingShots(q => q.slice(1))} onConfirm={confirmShot} />
+      )}
+      {/* J-13 exit/draft: every answer already autosaves to the durable IndexedDB draft
+          store the instant it's entered (FND-005) — there is no separate "unsaved buffer"
+          to discard, so this shows the REAL sync state honestly rather than fabricating
+          a "leave without saving" option the engine doesn't actually implement. */}
+      {exiting && !submitted && (
+        <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.exitTitle}>
+          <div className="ax-modal" style={{ inlineSize: "min(420px, 100%)" }}>
+            <div className="ax-modal__header"><h3>{strings.exitTitle}</h3></div>
+            <div className="ax-modal__body">
+              <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
+            </div>
+            <div className="ax-modal__footer">
+              <button className="ax-btn ax-btn--secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
+              <button className="ax-btn ax-btn--prominent" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
+            </div>
+          </div>
+        </div>
       )}
       {/* M04-164 — soft delete requires a reason; the update is captured by the evidence audit trigger */}
       {deleting && !submitted && (
