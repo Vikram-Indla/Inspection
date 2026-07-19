@@ -18,9 +18,10 @@ type PackageTypeSelectorProps = {
   defaultValue?: string;
   onChange?: (id: string) => void;
   id?: string;
+  labelledBy?: string;
 };
 
-export default function PackageTypeSelector({ name, options, value, defaultValue, onChange, id }: PackageTypeSelectorProps) {
+export default function PackageTypeSelector({ name, options, value, defaultValue, onChange, id, labelledBy }: PackageTypeSelectorProps) {
   const [internal, setInternal] = useState(defaultValue ?? options[0]?.id ?? "");
   const selected = value ?? internal;
   function select(next: string) {
@@ -28,7 +29,7 @@ export default function PackageTypeSelector({ name, options, value, defaultValue
     onChange?.(next);
   }
   return (
-    <div className="ax-typecards" role="radiogroup" id={id}>
+    <div className="ax-typecards" role="radiogroup" id={id} aria-labelledby={labelledBy}>
       {options.map(opt => (
         <label key={opt.id} className={selected === opt.id ? "ax-typecard is-selected" : "ax-typecard"}>
           <input

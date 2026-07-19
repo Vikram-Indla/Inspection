@@ -325,6 +325,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             <PackageTypeSelector
               key={`pk-${resetKey}`}
               id="imm-package"
+              labelledBy="imm-package-label"
               name="package_version_id"
               value={packageId}
               onChange={setPackageId}

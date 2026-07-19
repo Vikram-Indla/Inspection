@@ -5,10 +5,13 @@ import path from "node:path";
 // WCAG 2.2 — 1.3.1 Info & Relationships + 4.1.2 Name, Role, Value.
 // Static release guard for the design-system form-field pattern:
 //   <div className="ax-field"><label className="ax-field__label">…</label><CONTROL/></div>
-// Every ax-field__label MUST be programmatically associated with its control via
-// htmlFor (matching an id on the input/select/textarea it describes). A sibling
-// <label> with no htmlFor is invisible to screen readers. This test reads source
-// only (no browser) and fails listing any file that regresses.
+// Every ax-field__label MUST be programmatically associated with its control:
+//   - the common case: htmlFor matching an id on the input/select/textarea; OR
+//   - the group case: the label carries an id that a role="radiogroup"/group
+//     references via aria-labelledby (a radiogroup is not a labelable element,
+//     so htmlFor does not apply — e.g. PackageTypeSelector's imm-package-label).
+// A sibling <label> with neither is invisible to screen readers. This test reads
+// source only (no browser) and fails listing any file that regresses.
 const srcRoot = path.resolve(__dirname, "..", "src");
 
 // Matches an opening `<label className="ax-field__label" …>` tag (up to its `>`).
@@ -40,7 +43,15 @@ test.describe("A11y form-label association release guard", () => {
       let unassociated = 0;
       for (const tag of tags) {
         totalLabels += 1;
-        if (!tag.includes("htmlFor")) unassociated += 1;
+        if (tag.includes("htmlFor")) continue;
+        // Group-labeling fallback: the label carries an id that is consumed as a
+        // labelling reference in the same file — either directly via
+        // aria-labelledby="id" on a role="group"/"radiogroup", or forwarded to a
+        // component through a labelledBy="id" prop that sets aria-labelledby
+        // internally (e.g. PackageTypeSelector's imm-package-label radiogroup).
+        const idMatch = tag.match(/\bid="([^"]+)"/);
+        if (idMatch && (source.includes(`aria-labelledby="${idMatch[1]}"`) || source.includes(`labelledBy="${idMatch[1]}"`))) continue;
+        unassociated += 1;
       }
       if (unassociated > 0) {
         offenders.push(`${path.relative(srcRoot, file)} (${unassociated} unassociated)`);
