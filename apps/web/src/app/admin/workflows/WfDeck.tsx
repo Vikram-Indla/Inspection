@@ -103,7 +103,7 @@ export function WfDeck({ payload, strings }: Props) {
         <p className="ax-caption">{strings.selectHint}</p>
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
-            <th>{strings.graphTitle}</th><th>{strings.actor}</th><th>{strings.guards}</th><th>{strings.sideEffects}</th>
+            <th scope="col">{strings.graphTitle}</th><th scope="col">{strings.actor}</th><th scope="col">{strings.guards}</th><th scope="col">{strings.sideEffects}</th>
           </tr></thead>
           <tbody>
             {shown.map(({ t, i }) => (

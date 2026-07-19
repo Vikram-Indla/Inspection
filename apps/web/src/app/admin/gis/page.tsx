@@ -94,7 +94,7 @@ export default async function GisStudioPage() {
 
         {!err && (
           <div className="ax-tablewrap"><table className="ax-table">
-            <thead><tr><th>{t("gis.settings.setting", "Setting")}</th><th>{t("gis.settings.value", "Value")}</th><th>{t("gis.settings.contract", "Contract")}</th></tr></thead>
+            <thead><tr><th scope="col">{t("gis.settings.setting", "Setting")}</th><th scope="col">{t("gis.settings.value", "Value")}</th><th scope="col">{t("gis.settings.contract", "Contract")}</th></tr></thead>
             <tbody>{settingsRows.map(([k, v, c]) => <tr key={k}><td><strong>{k}</strong></td><td className="ax-numeric" dir="ltr">{v}</td><td className="ax-caption">{c}</td></tr>)}</tbody>
           </table></div>
         )}

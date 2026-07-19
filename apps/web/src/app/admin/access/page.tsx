@@ -19,7 +19,7 @@ export default async function Access() {
       <div className="ax-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load roster. Nothing was changed. Try again.")}</strong></div></div>}
       <div className="ax-tablewrap"><table className="ax-table">
-        <thead><tr><th>{t("admin.access.table.user", "User")}</th><th>{t("admin.access.table.email", "Email")}</th><th>{t("admin.access.table.region", "Region")}</th><th>{t("admin.access.table.roles", "Roles")}</th></tr></thead>
+        <thead><tr><th scope="col">{t("admin.access.table.user", "User")}</th><th scope="col">{t("admin.access.table.email", "Email")}</th><th scope="col">{t("admin.access.table.region", "Region")}</th><th scope="col">{t("admin.access.table.roles", "Roles")}</th></tr></thead>
         <tbody>
           {(profiles ?? []).map(p => (
             <tr key={p.user_id}>
