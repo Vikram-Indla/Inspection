@@ -42,7 +42,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
   const {
     cr, crError, licenses, licenseError, selected, factory, factoryId, licenseId,
-    address, lines, government, docs, officialMedia, linkedEvidence, reports, riskHistory, penalties,
+    address, lines, government, docs, media, officialMedia, linkedEvidence, reports, riskHistory, penalties,
     latestApprovedFactorySnapshot, snapshotOrigin, approvedTrend, currentCompliance,
     approvedEnforcement, portfolioCounts, highestRiskLicense, downloadUrls, mediaUrls,
     addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult,
@@ -76,7 +76,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
   return (
     <Shell current="/factories" title={locale === "ar" ? cr.legal_name_ar ?? cr.legal_name ?? cr.legal_name_en ?? cr.cr_number : cr.legal_name_en ?? cr.legal_name ?? cr.legal_name_ar ?? cr.cr_number}
       context={<><span className="ax-lozenge ax-lozenge--info">SCR-WEB-400 · Factory 360</span><span className="ax-freshness">{t("f360.meta.source", "source")} {text(selected?.source_system ?? cr.source_system)} · {t("f360.meta.synced", "recorded")} {dt(selected?.source_synced_at ?? cr.source_synced_at)}</span></>}>
-      {licenseError && <div className="ax-banner ax-banner--warning" role="status"><div>{t("f360.licenses.degraded", "Industrial-license data is temporarily degraded; CR identity remains available.")}</div></div>}
+      {licenseError ? <div className="ax-banner ax-banner--warning" role="status"><div>{t("f360.licenses.degraded", "Industrial-license data is temporarily degraded; CR identity remains available.")}</div></div> : null}
       <div className={styles.workspace} data-factory360-layout="cr-license-dossier">
         <aside className={styles.left} aria-label={t("f360.licenses.heading", "Industrial licenses and plants")}>
           <section className={`ax-surface ${styles.panel}`}>

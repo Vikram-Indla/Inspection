@@ -11,7 +11,7 @@ web_base:
 ipad:
   branch: "codex/factory-360-ipad-011"
   base_sha: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
-  head_sha: "db52854 (no commits yet)"
+  head_sha: "dc56a35 + field surface commit (this session)"
 
 surface_facts:
   app_kind: "Next.js web app; iPad = responsive /field surface (not native)"
@@ -24,21 +24,32 @@ surface_facts:
   search: "app/api/shell/search/route.ts already resolves CR/unified/license/plant/factory"
   handoff: "planning/immediate?factory=&cr=&license=&returnTo="
 
-completed_modules: []
-active_module: "F360IPAD-EXTRACT-016 — lift web dossier projection into shared lib/factory360/dossier.ts"
+completed_modules:
+  - "F360IPAD-EXTRACT-016 — shared lib/factory360/dossier.ts loader; web CR page refactored to consume it (CODE_COMPLETE, typecheck+build PASS)"
+  - "F360IPAD-NATIVE-003 — /field/factory-360/[id] field-native server page (header, license strip, readiness tiles, profile, compliance+reports, violations+penalties, risk+AI, industrial+observed, government, docs+media, honest states, RTL logical props)"
+  - "F360IPAD-SWITCH-004 — ?license= selection strip refreshes all sections (CODE_COMPLETE)"
+  - "F360IPAD-COMPLIANCE-006 / RISK-007 / INDUSTRIAL-008 / GOV-009 / DOCS-010 — rendered from shared loader (CODE_COMPLETE)"
+  - "F360IPAD-RBAC-013 — 6 permission gates applied via resolveFactory360Permissions (CODE_COMPLETE)"
+  - "F360IPAD-ACTIONS-011 / PDF-012 — sticky action bar: open map (geo:), create inspection (planning/immediate handoff w/ returnTo), export (reused Factory360ExportButton), return-to-visit (CODE_COMPLETE)"
+  - "F360IPAD-PARITY-014 — structural: both surfaces render one loader (IN_IMPLEMENTATION; E2E proof pending)"
+
+active_module: "F360IPAD-OFFLINE-005 — read-only versioned snapshot store (new IndexedDB mim-field-f360-v1)"
 
 ledger_totals:
   master_rows: 16
-  not_started: 12
-  in_progress: 2
+  code_complete: 9
+  in_implementation: 1
+  not_started: 3  # OFFLINE-005, ENTRY-001 broader wiring, PARITY E2E
   no_change: 2
 
-migrations: "none yet; iPad reuses web factory360 v2 schema (20260720010000). Snapshot store is client IndexedDB, no server DDL expected."
+migrations: "none; iPad reuses web factory360 v2 schema (20260720010000). Snapshot store is client IndexedDB — no server DDL."
 
-functionality_proven: "none yet (setup + discovery + ledgers only)"
+functionality_proven: "typecheck 0 errors; production build PASS; both /factories/cr/[id] and /field/factory-360/[id] compile as dynamic routes. Runtime journeys against staging data NOT yet executed (needs seeded CR)."
+
+build_note: "worktree has no node_modules (git worktrees don't copy it). Symlinked apps/web/node_modules -> canonical checkout (deps byte-identical db52854 vs 83043b1). Symlink is node_modules (gitignored) — never committed."
 
 external_blockers:
   - "New combined Web+iPad pack zip (SAQEEL_..._(1).zip) is TCC-blocked in ~/Downloads; the two iPad .md files (IPAD_RUNTIME_SPEC, WEB_IPAD_SHARED_CONTRACT) unread. Mitigation: PROMPT_10 itself contains the full iPad spec (13 chunks/journeys/parity), and web source-authority pack is already extracted in the web worktree. Not a hard blocker."
   - "Supabase staging (iiozvqntawxfwbgffzqu) credentials not verified this session — not needed for functional build; only for later live closure."
 
-next_exact_action: "Write apps/web/src/lib/factory360/dossier.ts (extract page.tsx 46-174 load+derive into loadFactory360Dossier); refactor web CR page.tsx to consume it with rendering unchanged; typecheck."
+next_exact_action: "CHUNK 4 offline: add lib/factory360/offline-snapshot.ts (client, new IndexedDB mim-field-f360-v1 'snapshots' store — SEPARATE from mim-field-v1 outbox), a server route/action that projects a permission-filtered snapshot from loadFactory360Dossier({withSignedUrls:false}), and a client island on /field/factory-360/[id] that caches + shows honest Offline/Stale and retains prior snapshot on failed refresh. Then wire entry points from field visit/notification (ENTRY-001) and add the parity + non-regression E2E."
