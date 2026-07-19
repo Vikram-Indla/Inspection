@@ -165,11 +165,11 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                 <strong>{s.title}</strong>
                 <table className="rp-table">
                   <thead><tr>
-                    <th>{t("report.items.th.item", "Item")}</th>
-                    <th>{t("report.items.th.response", "Response")}</th>
-                    <th>{t("report.items.th.note", "Inspector note")}</th>
-                    <th>{t("report.items.th.violation", "Violation")}</th>
-                    <th className="ax-td-num">{t("report.items.th.evidence", "Evidence")}</th>
+                    <th scope="col">{t("report.items.th.item", "Item")}</th>
+                    <th scope="col">{t("report.items.th.response", "Response")}</th>
+                    <th scope="col">{t("report.items.th.note", "Inspector note")}</th>
+                    <th scope="col">{t("report.items.th.violation", "Violation")}</th>
+                    <th scope="col" className="ax-td-num">{t("report.items.th.evidence", "Evidence")}</th>
                   </tr></thead>
                   <tbody>
                     {(s.items ?? []).map(code => {
@@ -197,7 +197,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           <h3>{t("report.vio.heading", "Violations and penalty references")}</h3>
           {(snap.violations?.length ?? vios.length) === 0 ? <p className="ax-caption">{t("report.vio.none", "No violations recorded for this inspection.")}</p> : (
             <table className="rp-table">
-              <thead><tr><th>{t("report.vio.th.code", "Code")}</th><th>{t("report.vio.th.title", "Title")}</th><th>{t("report.vio.th.level", "Severity")}</th><th>{t("report.vio.th.penalty", "Penalty ref · legal basis")}</th><th>{t("report.vio.th.mapping", "Mapping version")}</th></tr></thead>
+              <thead><tr><th scope="col">{t("report.vio.th.code", "Code")}</th><th scope="col">{t("report.vio.th.title", "Title")}</th><th scope="col">{t("report.vio.th.level", "Severity")}</th><th scope="col">{t("report.vio.th.penalty", "Penalty ref · legal basis")}</th><th scope="col">{t("report.vio.th.mapping", "Mapping version")}</th></tr></thead>
               <tbody>
                 {(snap.violations ?? vios.map(x => {
                   const pm = Array.isArray(x.violation_codes.penalty_mappings) ? x.violation_codes.penalty_mappings[0] : x.violation_codes.penalty_mappings;
@@ -224,7 +224,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           <h3>{t("report.af.heading", "Corrective action forms")}</h3>
           {forms.length === 0 ? <p className="ax-caption">{t("report.af.none", "No action forms required.")}</p> : (
             <table className="rp-table">
-              <thead><tr><th>{t("report.af.th.type", "Form")}</th><th>{t("report.af.th.correction", "Required correction")}</th><th>{t("report.af.th.owner", "Owner")}</th><th className="ax-td-num">{t("report.af.th.due", "Due")}</th><th>{t("report.af.th.status", "Status")}</th></tr></thead>
+              <thead><tr><th scope="col">{t("report.af.th.type", "Form")}</th><th scope="col">{t("report.af.th.correction", "Required correction")}</th><th scope="col">{t("report.af.th.owner", "Owner")}</th><th scope="col" className="ax-td-num">{t("report.af.th.due", "Due")}</th><th scope="col">{t("report.af.th.status", "Status")}</th></tr></thead>
               <tbody>
                 {forms.map((a, i) => (
                   <tr key={i}>
@@ -245,7 +245,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           <h3>{t("report.ev.heading", "Evidence manifest")}</h3>
           {evd.length === 0 ? <p className="ax-caption">{t("report.ev.none", "No evidence attached.")}</p> : (
             <table className="rp-table">
-              <thead><tr><th>{t("report.ev.th.file", "Stored file")}</th><th>{t("report.ev.th.type", "Type")}</th><th className="ax-td-num">{t("report.ev.th.captured", "Captured")}</th><th>{t("report.ev.th.sha", "Integrity (sha256)")}</th></tr></thead>
+              <thead><tr><th scope="col">{t("report.ev.th.file", "Stored file")}</th><th scope="col">{t("report.ev.th.type", "Type")}</th><th scope="col" className="ax-td-num">{t("report.ev.th.captured", "Captured")}</th><th scope="col">{t("report.ev.th.sha", "Integrity (sha256)")}</th></tr></thead>
               <tbody>
                 {evd.map((e, i) => (
                   <tr key={i}>
@@ -264,7 +264,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
         <section className="rp-section">
           <h3>{t("report.hist.heading", "Submission versions and review decisions")}</h3>
           <table className="rp-table">
-            <thead><tr><th>{t("report.hist.th.version", "Version")}</th><th className="ax-td-num">{t("report.hist.th.submitted", "Submitted")}</th><th>{t("report.hist.th.by", "By")}</th><th>{t("report.hist.th.ack", "Acknowledgement")}</th></tr></thead>
+            <thead><tr><th scope="col">{t("report.hist.th.version", "Version")}</th><th scope="col" className="ax-td-num">{t("report.hist.th.submitted", "Submitted")}</th><th scope="col">{t("report.hist.th.by", "By")}</th><th scope="col">{t("report.hist.th.ack", "Acknowledgement")}</th></tr></thead>
             <tbody>
               {subs.length === 0 && <tr><td colSpan={4} className="ax-caption">{t("report.hist.none", "No submitted versions yet.")}</td></tr>}
               {subs.map(s => (

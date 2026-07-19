@@ -38,7 +38,7 @@ export default async function VirtualList() {
         <EmptyState glyph="📹" title={t("virtual.list.empty", "No virtual sessions in scope")} />
       )}
       <div className="ax-tablewrap"><table className="ax-table">
-        <thead><tr><th>{t("virtual.list.colSession", "Session")}</th><th>{t("virtual.list.colFactory", "Factory")}</th><th className="ax-td-num">{t("virtual.list.colAppointment", "Appointment")}</th><th>{t("virtual.list.colState", "State")}</th><th></th></tr></thead>
+        <thead><tr><th scope="col">{t("virtual.list.colSession", "Session")}</th><th scope="col">{t("virtual.list.colFactory", "Factory")}</th><th scope="col" className="ax-td-num">{t("virtual.list.colAppointment", "Appointment")}</th><th scope="col">{t("virtual.list.colState", "State")}</th><th scope="col"></th></tr></thead>
         <tbody>
           {rows.map(({ s, v }) => (
               <tr key={s.id}>

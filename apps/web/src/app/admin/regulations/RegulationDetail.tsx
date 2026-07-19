@@ -113,7 +113,7 @@ export default async function RegulationDetail({
         <h4>{s.clauseNav}</h4>
         <div className="ax-tablewrap" style={{ marginBlockStart: "var(--ax-space-150)" }}><table className="ax-table">
           <thead><tr>
-            <th>{s.clauseRef}</th><th>{s.title}</th><th>{s.legalSource}</th><th>{s.dependencyRail}</th>
+            <th scope="col">{s.clauseRef}</th><th scope="col">{s.title}</th><th scope="col">{s.legalSource}</th><th scope="col">{s.dependencyRail}</th>
           </tr></thead>
           <tbody>
             {clauses.map(c => {

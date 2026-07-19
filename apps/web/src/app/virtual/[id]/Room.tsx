@@ -346,8 +346,8 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                   <form action={reschedAction} className="cd-secact">
                     <input type="hidden" name="session_id" value={session.id} />
                     <input type="hidden" name="rev" value={rev} />
-                    <div className="ax-field"><label className="ax-field__label">{t.rescheduleLabel}</label>
-                      <input className="ax-input ax-numeric" type="datetime-local" name="appointment_at" defaultValue={session.appointment_at.slice(0, 16)} required /></div>
+                    <div className="ax-field"><label className="ax-field__label" htmlFor="virtual-reschedule-appt">{t.rescheduleLabel}</label>
+                      <input className="ax-input ax-numeric" type="datetime-local" name="appointment_at" id="virtual-reschedule-appt" defaultValue={session.appointment_at.slice(0, 16)} required /></div>
                     <button className="ax-btn ax-btn--secondary" disabled={reschedPending || offline}>{reschedPending ? t.working : t.rescheduleSubmit}</button>
                   </form>
                 ) : (
@@ -360,10 +360,10 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                 <h4>{t.closeTitle}</h4>
                 <input type="hidden" name="session_id" value={session.id} />
                 <input type="hidden" name="rev" value={rev} />
-                <label className="ax-field__label">{t.closeReason} <span className="ax-req">*</span></label>
-                <input className="ax-input" name="reason" placeholder={t.reasonPh} required />
-                <label className="ax-field__label">{t.closeComments}</label>
-                <textarea className="ax-textarea" name="comments" rows={2} />
+                <label className="ax-field__label" htmlFor="virtual-close-reason">{t.closeReason} <span className="ax-req">*</span></label>
+                <input className="ax-input" name="reason" id="virtual-close-reason" placeholder={t.reasonPh} required />
+                <label className="ax-field__label" htmlFor="virtual-close-comments">{t.closeComments}</label>
+                <textarea className="ax-textarea" name="comments" id="virtual-close-comments" rows={2} />
                 <div className="ax-row" style={{ justifyContent: "flex-end" }}>
                   <button className="ax-btn ax-btn--danger" disabled={closePending || offline}>{closePending ? t.closeWorking : t.closeSubmit}</button>
                 </div>
@@ -418,8 +418,8 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                               {st?.has_active_code || (st?.resends_used ?? 0) > 0 ? t.resendOtp : t.sendOtp}
                             </button>
                             {otpInfo[p.id]?.dev_code && <span className="ax-lozenge ax-lozenge--warning">{t.devCode} {otpInfo[p.id].dev_code}</span>}
-                            <div className="ax-field cd-otpfield" style={{ maxInlineSize: 160 }}><label className="ax-field__label">{t.codeLabel}</label>
-                              <input className="ax-input ax-numeric" value={codes[p.id] ?? ""} onChange={e => setCodes(c => ({ ...c, [p.id]: e.target.value }))} maxLength={6} /></div>
+                            <div className="ax-field cd-otpfield" style={{ maxInlineSize: 160 }}><label className="ax-field__label" htmlFor={`virtual-otp-code-${p.id}`}>{t.codeLabel}</label>
+                              <input className="ax-input ax-numeric" id={`virtual-otp-code-${p.id}`} value={codes[p.id] ?? ""} onChange={e => setCodes(c => ({ ...c, [p.id]: e.target.value }))} maxLength={6} /></div>
                             <button className="ax-btn" onClick={() => verify(p)} disabled={busy || !!st?.locked}>{t.verify}</button>
                           </div>
                           {st?.status === "ok" && (

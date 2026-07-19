@@ -257,7 +257,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       {/* M04-102/103/106 — Source vs Observed side-by-side, per field */}
       <div className="ax-tablewrap"><table className="ax-table">
         <thead><tr>
-          <th>{strings.colField}</th><th>{strings.colSource}</th><th>{strings.colObserved}</th><th>{strings.colStatus}</th><th>{strings.colEvidence}</th>
+          <th scope="col">{strings.colField}</th><th scope="col">{strings.colSource}</th><th scope="col">{strings.colObserved}</th><th scope="col">{strings.colStatus}</th><th scope="col">{strings.colEvidence}</th>
         </tr></thead>
         <tbody>
           {fields.map(f => {
@@ -341,7 +341,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.productsTitle}</h4>
         {products.length === 0 ? <p className="ax-caption">{strings.productsEmpty}</p> : (
           <div className="ax-tablewrap"><table className="ax-table">
-            <thead><tr><th>{strings.colProduct}</th><th>{strings.colHs}</th><th>{strings.colCapacity}</th></tr></thead>
+            <thead><tr><th scope="col">{strings.colProduct}</th><th scope="col">{strings.colHs}</th><th scope="col">{strings.colCapacity}</th></tr></thead>
             <tbody>{products.map((p, i) => (
               <tr key={i}>
                 <td>{p.name}{p.is_primary && <> <span className="ax-lozenge ax-lozenge--info">{strings.primaryTag}</span></>}</td>
@@ -358,7 +358,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.materialsTitle}</h4>
         {materials.length === 0 ? <p className="ax-caption">{strings.materialsEmpty}</p> : (
           <div className="ax-tablewrap"><table className="ax-table">
-            <thead><tr><th>{strings.colMaterial}</th><th>{strings.colMatSource}</th><th>{strings.colHs}</th></tr></thead>
+            <thead><tr><th scope="col">{strings.colMaterial}</th><th scope="col">{strings.colMatSource}</th><th scope="col">{strings.colHs}</th></tr></thead>
             <tbody>{materials.map((m, i) => (
               <tr key={i}>
                 <td>{m.name}</td>

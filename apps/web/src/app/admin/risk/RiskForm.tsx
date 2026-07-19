@@ -99,8 +99,8 @@ export default function RiskForm({
         <div className="ax-field"><label className="ax-field__label" htmlFor="med_max">{labels.mediumEnds}</label>
           <input className="ax-input ax-numeric" id="med_max" name="med_max" type="number" value={medMax}
             onChange={e => setMedMax(parseInt(e.target.value, 10))} /></div>
-        <div className="ax-field"><label className="ax-field__label">{labels.high}</label>
-          <input className="ax-input" value={`${(Number.isFinite(medMax) ? medMax : 0) + 1}–100`} readOnly /></div>
+        <div className="ax-field"><label className="ax-field__label" htmlFor="risk-high-band">{labels.high}</label>
+          <input className="ax-input" id="risk-high-band" value={`${(Number.isFinite(medMax) ? medMax : 0) + 1}–100`} readOnly /></div>
       </div>
       <div className="rk-band">
         <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--ax-color-success)" }} />{labels.bandLow} 0–{lowMax}</span>

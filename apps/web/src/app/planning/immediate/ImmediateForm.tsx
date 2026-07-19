@@ -269,7 +269,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
           )}
 
           <div className="ax-field" style={{ maxInlineSize: "none" }} id="imm-reason" tabIndex={-1}>
-            <label className="ax-field__label">{strings.urgencyReason}</label>
+            <label className="ax-field__label" htmlFor="imm-reason">{strings.urgencyReason}</label>
             <div className="ax-segmented" role="group" aria-label={strings.urgencyReason} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
               {[["Complaint received", strings.reasonComplaint], ["Incident / accident report", strings.reasonIncident], ["Referral from authority", strings.reasonReferral], ["Other", strings.reasonOther]].map(([v, label]) => (
                 <button key={v} type="button" aria-pressed={reason === v} onClick={() => setReason(v)}>{label}</button>

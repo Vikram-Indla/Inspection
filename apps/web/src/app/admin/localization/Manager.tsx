@@ -232,14 +232,14 @@ function AddKeyForm({ labels }: { labels: Labels }) {
   return (
     <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div style={{ inlineSize: "100%" }}><strong>{labels.addTitle}</strong></div>
-      <div className="ax-field"><label className="ax-field__label">{labels.addKeyField}</label>
-        <input className="ax-input ax-numeric" name="key" placeholder="nav.planning" required /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label">{labels.addEnField}</label>
-        <input className="ax-input" name="en" required /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label">{labels.addArField}</label>
-        <input className="ax-input" name="ar" dir="rtl" lang="ar" /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label">{labels.addContextField}</label>
-        <input className="ax-input" name="context" placeholder="SCR-ADM-100" /></div>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="l10n-add-key">{labels.addKeyField}</label>
+        <input className="ax-input ax-numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
+      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="l10n-add-en">{labels.addEnField}</label>
+        <input className="ax-input" name="en" id="l10n-add-en" required /></div>
+      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="l10n-add-ar">{labels.addArField}</label>
+        <input className="ax-input" name="ar" id="l10n-add-ar" dir="rtl" lang="ar" /></div>
+      <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor="l10n-add-context">{labels.addContextField}</label>
+        <input className="ax-input" name="context" id="l10n-add-context" placeholder="SCR-ADM-100" /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.adding : labels.addBtn}</button>
       {state.error && <span className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
       {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.added}</span>}

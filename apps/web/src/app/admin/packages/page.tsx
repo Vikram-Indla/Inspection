@@ -354,7 +354,7 @@ export default async function Packages() {
                   <div className="ax-tablewrap">
                     <table className={styles.versionTable}>
                       <caption className="ax-sr-only">{pkg.code} {t("admin.pkg.versions", "versions")}</caption>
-                      <thead><tr><th>{t("admin.pkg.col.version", "Version")}</th><th>{t("admin.pkg.col.state", "State")}</th><th>{t("admin.pkg.col.published", "Published")}</th><th>{t("admin.pkg.col.definition", "Definition")}</th></tr></thead>
+                      <thead><tr><th scope="col">{t("admin.pkg.col.version", "Version")}</th><th scope="col">{t("admin.pkg.col.state", "State")}</th><th scope="col">{t("admin.pkg.col.published", "Published")}</th><th scope="col">{t("admin.pkg.col.definition", "Definition")}</th></tr></thead>
                       <tbody>{versions.map(version => {
                         const derivedSuperseded = (version.status === "published" || version.status === "locked") && !!latestPublished && latestPublished.id !== version.id;
                         const itemCount = (version.definition.sections ?? []).reduce((sum, section) => sum + (section.items?.length ?? 0), 0);

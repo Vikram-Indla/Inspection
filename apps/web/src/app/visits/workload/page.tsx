@@ -84,13 +84,13 @@ export default async function Workload() {
           <h4 style={{ margin: 0 }}>{t("visit.load.heading", "Active visits per inspector per week (M02-018)")}</h4>
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr>
-              <th>{t("visit.load.colInspector", "Inspector")}</th>
+              <th scope="col">{t("visit.load.colInspector", "Inspector")}</th>
               {weekStarts.map((ms, i) => (
-                <th key={ms} className="ax-td-num"><span className="ax-numeric">{weekLabel(ms)}</span>{i === 0 && <> · {t("visit.load.thisWeek", "this week")}</>}</th>
+                <th scope="col" key={ms} className="ax-td-num"><span className="ax-numeric">{weekLabel(ms)}</span>{i === 0 && <> · {t("visit.load.thisWeek", "this week")}</>}</th>
               ))}
-              <th className="ax-td-num">{t("visit.load.colLater", "Later")}</th>
-              <th className="ax-td-num">{t("visit.load.colTotal", "Active total")}</th>
-              <th style={{ inlineSize: 180 }}>{t("visit.load.colUtilization", "Relative utilization (M02-037)")}</th>
+              <th scope="col" className="ax-td-num">{t("visit.load.colLater", "Later")}</th>
+              <th scope="col" className="ax-td-num">{t("visit.load.colTotal", "Active total")}</th>
+              <th scope="col" style={{ inlineSize: 180 }}>{t("visit.load.colUtilization", "Relative utilization (M02-037)")}</th>
             </tr></thead>
             <tbody>
               {inspectors.map(a => (

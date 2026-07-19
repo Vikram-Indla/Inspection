@@ -272,7 +272,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h4>
             <div className="ax-tablewrap"><table className="ax-table">
-              <thead><tr><th>{t("review.ws.colItem", "Item")}</th><th>{t("review.ws.colResponse", "Response")}</th></tr></thead>
+              <thead><tr><th scope="col">{t("review.ws.colItem", "Item")}</th><th scope="col">{t("review.ws.colResponse", "Response")}</th></tr></thead>
               <tbody>{Object.entries(latest?.snapshot?.answers ?? {}).map(([k, v]) => (
                 <tr key={k}><td><strong>{k}</strong></td><td><span className={`ax-lozenge ${v === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{t(`enum.${v}`, String(v).replace(/_/g, " "))}</span></td></tr>
               ))}</tbody>
@@ -307,11 +307,11 @@ const panelStrings: WorkspaceDecisionStrings = {
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
                 <thead><tr>
-                  <th>{t("review.ws.fvColField", "Field")}</th>
-                  <th>{t("review.ws.fvColBefore", "Before — source (Senaei)")}</th>
-                  <th>{t("review.ws.fvColAfter", "After — observed")}</th>
-                  <th>{t("review.ws.fvColStatus", "Status")}</th>
-                  <th>{t("review.ws.fvColEvidence", "Evidence")}</th>
+                  <th scope="col">{t("review.ws.fvColField", "Field")}</th>
+                  <th scope="col">{t("review.ws.fvColBefore", "Before — source (Senaei)")}</th>
+                  <th scope="col">{t("review.ws.fvColAfter", "After — observed")}</th>
+                  <th scope="col">{t("review.ws.fvColStatus", "Status")}</th>
+                  <th scope="col">{t("review.ws.fvColEvidence", "Evidence")}</th>
                 </tr></thead>
                 <tbody>{fv.checks.map(c => (
                   <tr key={c.id} style={c.status === "updated" ? { background: "var(--ax-color-surface-sunken)" } : undefined}>

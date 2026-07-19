@@ -300,7 +300,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             <h4>{t("f360.geo.historyHeading", "Official, planned and observed locations (M07-005)")}</h4>
             <p className="ax-caption">{t("f360.geo.historyCaption", "Official coordinates remain source-owned. Arrival, check-in and override coordinates are immutable inspection observations and never overwrite the factory master.")}</p>
             {locationEvents.length ? <div className="ax-tablewrap"><table className="ax-table">
-              <thead><tr><th>{t("common.when", "When")}</th><th>{t("common.kind", "Kind")}</th><th>{t("f360.geo.actual", "Observed coordinates")}</th><th>{t("f360.geo.mismatch", "Mismatch / reason")}</th><th>{t("common.visit", "Visit")}</th></tr></thead>
+              <thead><tr><th scope="col">{t("common.when", "When")}</th><th scope="col">{t("common.kind", "Kind")}</th><th scope="col">{t("f360.geo.actual", "Observed coordinates")}</th><th scope="col">{t("f360.geo.mismatch", "Mismatch / reason")}</th><th scope="col">{t("common.visit", "Visit")}</th></tr></thead>
               <tbody>{locationEvents.map(e => <tr key={e.id}>
                 <td className="ax-numeric">{new Date(e.occurredAt).toISOString().slice(0, 16).replace("T", " ")}</td>
                 <td><span className={`ax-lozenge ${e.kind === "override" ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>{enumLabel(e.kind)}</span></td>
@@ -328,7 +328,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
               advisoryLabel={t("f360.risk.ai.advisory", "Human decision required")}
             />
             {(riskHistory ?? []).length ? <div className="ax-tablewrap"><table className="ax-table">
-              <thead><tr><th>{t("common.when", "Calculated")}</th><th>{t("f360.risk.score", "Score")}</th><th>{t("f360.risk.band", "Band")}</th><th>{t("f360.risk.model", "Model")}</th><th>{t("f360.risk.drivers", "Drivers")}</th></tr></thead>
+              <thead><tr><th scope="col">{t("common.when", "Calculated")}</th><th scope="col">{t("f360.risk.score", "Score")}</th><th scope="col">{t("f360.risk.band", "Band")}</th><th scope="col">{t("f360.risk.model", "Model")}</th><th scope="col">{t("f360.risk.drivers", "Drivers")}</th></tr></thead>
               <tbody>{(riskHistory ?? []).map(s => {
                 const drivers = s.drivers as Record<string, { value?: number; contribution?: number } | string>;
                 const entries = Object.entries(drivers).filter(([key]) => !key.startsWith("_"));
@@ -428,7 +428,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
                 <p className="ax-caption">{t("f360.hist.empty.desc", "History appears once visits are planned and executed.")}</p></div>
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th>{t("f360.hist.th.visit", "Visit")}</th><th className="ax-td-num">{t("f360.hist.th.window", "Window")}</th><th>{t("f360.hist.th.planning", "Planning")}</th><th>{t("f360.hist.th.operational", "Operational")}</th><th>{t("f360.hist.th.inspection", "Inspection")}</th><th>{t("f360.hist.th.versions", "Versions")}</th><th>{t("f360.hist.th.violations", "Violations")}</th><th>{t("f360.hist.th.actions", "Actions")}</th><th>{t("f360.hist.th.review", "Review")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("f360.hist.th.visit", "Visit")}</th><th scope="col" className="ax-td-num">{t("f360.hist.th.window", "Window")}</th><th scope="col">{t("f360.hist.th.planning", "Planning")}</th><th scope="col">{t("f360.hist.th.operational", "Operational")}</th><th scope="col">{t("f360.hist.th.inspection", "Inspection")}</th><th scope="col">{t("f360.hist.th.versions", "Versions")}</th><th scope="col">{t("f360.hist.th.violations", "Violations")}</th><th scope="col">{t("f360.hist.th.actions", "Actions")}</th><th scope="col">{t("f360.hist.th.review", "Review")}</th></tr></thead>
                 <tbody>
                   {sortedVisits.map(v => {
                     const ins = v.inspections;
@@ -466,7 +466,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             {!dErr && !docsEmpty && (
               <>
                 <div className="ax-tablewrap"><table className="ax-table">
-                  <thead><tr><th>{t("f360.docs.th.type", "Type")}</th><th>{t("f360.docs.th.title", "Title")}</th><th>{t("f360.docs.th.ref", "Reference")}</th><th className="ax-td-num">{t("f360.docs.th.validFrom", "Valid from")}</th><th className="ax-td-num">{t("f360.docs.th.validTo", "Valid to")}</th><th>{t("f360.docs.th.status", "Status")}</th></tr></thead>
+                  <thead><tr><th scope="col">{t("f360.docs.th.type", "Type")}</th><th scope="col">{t("f360.docs.th.title", "Title")}</th><th scope="col">{t("f360.docs.th.ref", "Reference")}</th><th scope="col" className="ax-td-num">{t("f360.docs.th.validFrom", "Valid from")}</th><th scope="col" className="ax-td-num">{t("f360.docs.th.validTo", "Valid to")}</th><th scope="col">{t("f360.docs.th.status", "Status")}</th></tr></thead>
                   <tbody>{(docs ?? []).map(d => {
                     const badge = VALIDITY_BADGE[docValidity(d.valid_to)];
                     return (
@@ -504,7 +504,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             )}
             {!rErr && !repsEmpty && (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th>{t("f360.reps.th.name", "Name")}</th><th>{t("f360.reps.th.role", "Role")}</th>{!maskContacts && <><th>{t("f360.reps.th.phone", "Phone")}</th><th>{t("f360.reps.th.email", "Email")}</th></>}<th>{t("f360.reps.th.flags", "Flags")}</th><th></th></tr></thead>
+                <thead><tr><th scope="col">{t("f360.reps.th.name", "Name")}</th><th scope="col">{t("f360.reps.th.role", "Role")}</th>{!maskContacts && <><th scope="col">{t("f360.reps.th.phone", "Phone")}</th><th scope="col">{t("f360.reps.th.email", "Email")}</th></>}<th scope="col">{t("f360.reps.th.flags", "Flags")}</th><th scope="col"></th></tr></thead>
                 <tbody>{(reps ?? []).map(r => (
                   <tr key={r.id}>
                     <td><strong>{r.full_name}</strong></td>
@@ -533,7 +533,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             )}
             {!pErr && !productsEmpty && (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th>{t("f360.prod.th.name", "Product")}</th><th className="ax-td-num">{t("f360.hsCode", "HS code")}</th><th>{t("f360.prod.th.unit", "Unit")}</th><th className="ax-td-num">{t("f360.prod.th.capacity", "Annual capacity")}</th><th>{t("f360.prod.th.flags", "Flags")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("f360.prod.th.name", "Product")}</th><th scope="col" className="ax-td-num">{t("f360.hsCode", "HS code")}</th><th scope="col">{t("f360.prod.th.unit", "Unit")}</th><th scope="col" className="ax-td-num">{t("f360.prod.th.capacity", "Annual capacity")}</th><th scope="col">{t("f360.prod.th.flags", "Flags")}</th></tr></thead>
                 <tbody>{(products ?? []).map(p => (
                   <tr key={p.id}>
                     <td><strong>{p.name}</strong></td>
@@ -559,7 +559,7 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
             )}
             {!mErr && !materialsEmpty && (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th>{t("f360.mat.th.name", "Material")}</th><th>{t("f360.mat.th.source", "Source")}</th><th className="ax-td-num">{t("f360.hsCode", "HS code")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("f360.mat.th.name", "Material")}</th><th scope="col">{t("f360.mat.th.source", "Source")}</th><th scope="col" className="ax-td-num">{t("f360.hsCode", "HS code")}</th></tr></thead>
                 <tbody>{(materials ?? []).map(m => (
                   <tr key={m.id}>
                     <td><strong>{m.name}</strong></td>

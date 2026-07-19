@@ -131,8 +131,8 @@ export default function NotificationRulesManager({ rows, roles, l }: { rows: Not
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
-            <th>{l.colEvent}</th><th>{l.colChannel}</th><th>{l.colRecipient}</th>
-            <th>{l.colSla}</th><th>{l.colStatus}</th><th>{l.colVersion}</th><th>{l.colActions}</th>
+            <th scope="col">{l.colEvent}</th><th scope="col">{l.colChannel}</th><th scope="col">{l.colRecipient}</th>
+            <th scope="col">{l.colSla}</th><th scope="col">{l.colStatus}</th><th scope="col">{l.colVersion}</th><th scope="col">{l.colActions}</th>
           </tr></thead>
           <tbody>
             {rows.map(r => (

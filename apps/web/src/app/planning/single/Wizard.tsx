@@ -220,10 +220,10 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
             <div className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-150)" }}><div>{strings.noOfficialPin}</div></div>
           )}
           <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
-            <div className="ax-field"><label className="ax-field__label">{strings.plannerLat}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="planner_lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
-            <div className="ax-field"><label className="ax-field__label">{strings.plannerLng}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="planner_lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lat">{strings.plannerLat}</label>
+              <input key={resetKey} className="ax-input ax-numeric" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lng">{strings.plannerLng}</label>
+              <input key={resetKey} className="ax-input ax-numeric" name="planner_lng" id="wizard-planner-lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
           </div>
           <label className="ax-choice" style={{ display: "flex", marginBlockStart: "var(--ax-space-150)" }}>
             <input key={resetKey} type="checkbox" name="location_confirmed" value="1" required
@@ -236,25 +236,25 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.configStep}</h4>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: "var(--ax-space-200)" }}>
-            <div className="ax-field"><label className="ax-field__label">{strings.visitType}</label>
-              <select className="ax-select" name="visit_type"><option value="periodic">{strings.typePeriodic}</option><option value="follow_up">{strings.typeFollowUp}</option><option value="complaint">{strings.typeComplaint}</option></select></div>
-            <div className="ax-field"><label className="ax-field__label">{strings.packageLabel}</label>
-              <select className="ax-select" name="package_version_id">{packages.map(p => <option key={p.id} value={p.id}>{p.packages.code} · {p.version_label}</option>)}</select></div>
-            <div className="ax-field"><label className="ax-field__label">{strings.mode}</label>
-              <select key={resetKey} className="ax-select" name="execution_mode" value={executionMode} onChange={e => setExecutionMode(e.target.value as "physical" | "virtual")}>
+            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-visit-type">{strings.visitType}</label>
+              <select className="ax-select" name="visit_type" id="wizard-visit-type"><option value="periodic">{strings.typePeriodic}</option><option value="follow_up">{strings.typeFollowUp}</option><option value="complaint">{strings.typeComplaint}</option></select></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-package">{strings.packageLabel}</label>
+              <select className="ax-select" name="package_version_id" id="wizard-package">{packages.map(p => <option key={p.id} value={p.id}>{p.packages.code} · {p.version_label}</option>)}</select></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-mode">{strings.mode}</label>
+              <select key={resetKey} className="ax-select" name="execution_mode" id="wizard-mode" value={executionMode} onChange={e => setExecutionMode(e.target.value as "physical" | "virtual")}>
                 <option value="physical" disabled={!physicalEligible}>{strings.modePhysical}{!physicalEligible ? ` — ${strings.modeIneligible}` : ""}</option>
                 <option value="virtual" disabled={!virtualEligible}>{strings.modeVirtual}{!virtualEligible ? ` — ${strings.modeIneligible}` : ""}</option>
               </select></div>
-            <div className="ax-field"><label className="ax-field__label">{strings.windowStart}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="window_start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
-            <div className="ax-field"><label className="ax-field__label">{strings.windowEnd}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="window_end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-window-start">{strings.windowStart}</label>
+              <input key={resetKey} className="ax-input ax-numeric" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-window-end">{strings.windowEnd}</label>
+              <input key={resetKey} className="ax-input ax-numeric" name="window_end" id="wizard-window-end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
             {/* M01-040 — auto-assign option (availability-checked) beside the manual pick */}
-            <div className="ax-field"><label className="ax-field__label">{strings.inspector}</label>
-              <select key={resetKey} className="ax-select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-inspector">{strings.inspector}</label>
+              <select key={resetKey} className="ax-select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
           </div>
-          <div className="ax-field" style={{ marginBlockStart: "var(--ax-space-200)" }}><label className="ax-field__label">{strings.notes}</label>
-            <textarea key={resetKey} className="ax-textarea" name="notes" rows={2} placeholder={strings.notesPlaceholder}
+          <div className="ax-field" style={{ marginBlockStart: "var(--ax-space-200)" }}><label className="ax-field__label" htmlFor="wizard-notes">{strings.notes}</label>
+            <textarea key={resetKey} className="ax-textarea" name="notes" id="wizard-notes" rows={2} placeholder={strings.notesPlaceholder}
               value={notes} onChange={e => setNotes(e.target.value)} /></div>
         </div>
       )}
