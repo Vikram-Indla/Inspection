@@ -1,5 +1,5 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import {
   reassignTask, setTaskStatus, setTaskActive, type TaskResult,
 } from "@/app/admin/workflows/task-actions";
@@ -32,6 +32,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
   const [reassignState, reassignAction, reassigning] = useActionState<TaskResult, FormData>(reassignTask, {});
   const [statusState, statusAction, applying] = useActionState<TaskResult, FormData>(setTaskStatus, {});
   const [activeState, activeAction, activating] = useActionState<TaskResult, FormData>(setTaskActive, {});
+  const fieldId = useId();
   const targets = allowedTargets(task.status);
   const isTerminal = targets.length === 0;
 
@@ -59,10 +60,10 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
           {/* Reassign — reason mandatory, terminal tasks blocked (task machine) */}
           <form action={reassignAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
             <input type="hidden" name="task_id" value={task.id} />
-            <div className="ax-field"><label className="ax-field__label">{s.reassignTo}</label>
-              <input className="ax-input" name="to_assignee" required disabled={isTerminal} /></div>
-            <div className="ax-field"><label className="ax-field__label">{s.reason}</label>
-              <input className="ax-input" name="reason" required disabled={isTerminal} /></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reassign-to`}>{s.reassignTo}</label>
+              <input className="ax-input" name="to_assignee" id={`${fieldId}-reassign-to`} required disabled={isTerminal} /></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reassign-reason`}>{s.reason}</label>
+              <input className="ax-input" name="reason" id={`${fieldId}-reassign-reason`} required disabled={isTerminal} /></div>
             <button className="ax-btn" disabled={reassigning || isTerminal}>{reassigning ? s.reassigning : s.reassign}</button>
             {reassignState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{reassignState.error}</span>}
             {reassignState.ok && <span className="ax-lozenge ax-lozenge--success">{s.reassigned}</span>}
@@ -71,12 +72,12 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
           {/* Status transition — only machine-legal targets are offered */}
           <form action={statusAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
             <input type="hidden" name="task_id" value={task.id} />
-            <div className="ax-field"><label className="ax-field__label">{s.changeStatus}</label>
-              <select className="ax-input" name="to_status" required disabled={isTerminal}>
+            <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-status`}>{s.changeStatus}</label>
+              <select className="ax-input" name="to_status" id={`${fieldId}-status`} required disabled={isTerminal}>
                 {targets.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}
               </select></div>
-            <div className="ax-field"><label className="ax-field__label">{s.reason}</label>
-              <input className="ax-input" name="reason" /></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-status-reason`}>{s.reason}</label>
+              <input className="ax-input" name="reason" id={`${fieldId}-status-reason`} /></div>
             <button className="ax-btn" disabled={applying || isTerminal}>{applying ? s.applying : s.apply}</button>
             {statusState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{statusState.error}</span>}
             {statusState.ok && <span className="ax-lozenge ax-lozenge--success">{s.statusChanged}</span>}
@@ -86,8 +87,8 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
           <form action={activeAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
             <input type="hidden" name="task_id" value={task.id} />
             <input type="hidden" name="active" value={task.active ? "false" : "true"} />
-            <div className="ax-field"><label className="ax-field__label">{s.reason}</label>
-              <input className="ax-input" name="reason" required /></div>
+            <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-active-reason`}>{s.reason}</label>
+              <input className="ax-input" name="reason" id={`${fieldId}-active-reason`} required /></div>
             <button className="ax-btn" disabled={activating}>{activating ? s.activating : (task.active ? s.deactivate : s.reactivate)}</button>
             {activeState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{activeState.error}</span>}
             {activeState.ok && <span className="ax-lozenge ax-lozenge--success">✓</span>}

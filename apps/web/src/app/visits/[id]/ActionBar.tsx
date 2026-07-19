@@ -55,8 +55,8 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
           {status === "published" && (
             <form action={retAct} className="ax-row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
-              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label">{strings.returnReason}</label>
-                <input className="ax-input" name="reason" placeholder={strings.returnPlaceholder} /></div>
+              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="visit-return-reason">{strings.returnReason}</label>
+                <input className="ax-input" name="reason" id="visit-return-reason" placeholder={strings.returnPlaceholder} /></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.returnBtn}</button>
             </form>
           )}
@@ -67,8 +67,8 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
           {canReassign && (
             <form action={reaAct} className="ax-row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
-              <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label">{strings.reassignTo}</label>
-                <select className="ax-select" name="inspector_id"><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+              <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reassign-inspector">{strings.reassignTo}</label>
+                <select className="ax-select" name="inspector_id" id="visit-reassign-inspector"><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.reassignBtn}</button>
             </form>
           )}
@@ -76,8 +76,8 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
             <>
               <form action={vtAct} className="ax-row" style={{ alignItems: "flex-end" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
-                <div className="ax-field" style={{ maxInlineSize: 200 }}><label className="ax-field__label">{strings.visitTypeLabel}</label>
-                  <select className="ax-select" name="visit_type" defaultValue={visitType}>
+                <div className="ax-field" style={{ maxInlineSize: 200 }}><label className="ax-field__label" htmlFor="visit-type-select">{strings.visitTypeLabel}</label>
+                  <select className="ax-select" name="visit_type" id="visit-type-select" defaultValue={visitType}>
                     <option value="periodic">{strings.typePeriodic}</option>
                     <option value="follow_up">{strings.typeFollowUp}</option>
                     <option value="complaint">{strings.typeComplaint}</option>
@@ -86,16 +86,16 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
               </form>
               <form action={rscAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
-                <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label">{strings.newWindowStart}</label>
-                  <input className="ax-input ax-numeric" type="datetime-local" name="window_start" defaultValue={toLocal(windowStart)} /></div>
-                <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label">{strings.newWindowEnd}</label>
-                  <input className="ax-input ax-numeric" type="datetime-local" name="window_end" defaultValue={toLocal(windowEnd)} /></div>
+                <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
+                  <input className="ax-input ax-numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
+                <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
+                  <input className="ax-input ax-numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
                 <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.rescheduleBtn}</button>
               </form>
               <form action={canAct} className="ax-row" style={{ alignItems: "flex-end" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
-                <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label">{strings.cancelReason}</label>
-                  <input className="ax-input" name="reason" placeholder={strings.cancelPlaceholder} /></div>
+                <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="visit-cancel-reason">{strings.cancelReason}</label>
+                  <input className="ax-input" name="reason" id="visit-cancel-reason" placeholder={strings.cancelPlaceholder} /></div>
                 <button className="ax-btn ax-btn--danger" disabled={busy}>{strings.cancelBtn}</button>
               </form>
             </>

@@ -1,5 +1,5 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import { proposeSuggestion, disposeSuggestion, generateAiSuggestion, type AiResult } from "./actions";
 import { isDispositionAllowed, AI_DISPOSITIONS, type AiDisposition } from "@/lib/ai/suggestions";
 
@@ -18,21 +18,21 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
     <>
       {/* Gemini-generated advisory suggestion — fail-closed, human still disposes */}
       <form action={gAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
-        <div className="ax-field"><label className="ax-field__label">{s.surface}</label>
-          <select className="ax-input" name="surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
-        <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label">{s.context}</label><input className="ax-input" name="context" /></div>
-        <div className="ax-field"><label className="ax-field__label">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" required /></div>
-        <div className="ax-field"><label className="ax-field__label">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" /></div>
+        <div className="ax-field"><label className="ax-field__label" htmlFor="ai-generate-surface">{s.surface}</label>
+          <select className="ax-input" name="surface" id="ai-generate-surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
+        <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label" htmlFor="ai-generate-context">{s.context}</label><input className="ax-input" name="context" id="ai-generate-context" /></div>
+        <div className="ax-field"><label className="ax-field__label" htmlFor="ai-generate-evidence">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" id="ai-generate-evidence" required /></div>
+        <div className="ax-field"><label className="ax-field__label" htmlFor="ai-generate-clause">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" id="ai-generate-clause" /></div>
         <button className="ax-btn" disabled={generating}>{generating ? s.generating : s.generate}</button>
         {gState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{gState.error}</span>}
         {gState.ok && <span className="ax-lozenge ax-lozenge--success">{s.generated}</span>}
       </form>
       <form action={pAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
-        <div className="ax-field"><label className="ax-field__label">{s.surface}</label>
-          <select className="ax-input" name="surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
-        <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label">{s.text}</label><input className="ax-input" name="text" required /></div>
-        <div className="ax-field"><label className="ax-field__label">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" required /></div>
-        <div className="ax-field"><label className="ax-field__label">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" /></div>
+        <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-surface">{s.surface}</label>
+          <select className="ax-input" name="surface" id="ai-propose-surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
+        <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label" htmlFor="ai-propose-text">{s.text}</label><input className="ax-input" name="text" id="ai-propose-text" required /></div>
+        <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-evidence">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" id="ai-propose-evidence" required /></div>
+        <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-clause">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" id="ai-propose-clause" /></div>
         <button className="ax-btn" disabled={proposing}>{proposing ? s.proposing : s.propose}</button>
         {pState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{pState.error}</span>}
         {pState.ok && <span className="ax-lozenge ax-lozenge--success">{s.proposed}</span>}
@@ -44,6 +44,7 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
 
 function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
   const [dState, dAction, disposing] = useActionState<AiResult, FormData>(disposeSuggestion, {});
+  const fieldId = useId();
   const targets = AI_DISPOSITIONS.filter((x) => isDispositionAllowed(r.disposition, x));
   return (
     <div id={`ai-suggestion-${r.id}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
@@ -63,9 +64,9 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
         <form action={dAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
           <input type="hidden" name="suggestion_id" value={r.id} />
           <input type="hidden" name="from" value={r.disposition} />
-          <div className="ax-field"><label className="ax-field__label">{s.dispose}</label>
-            <select className="ax-input" name="to">{targets.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
-          <div className="ax-field"><label className="ax-field__label">{s.reason}</label><input className="ax-input" name="reason" /></div>
+          <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-dispose`}>{s.dispose}</label>
+            <select className="ax-input" name="to" id={`${fieldId}-dispose`}>{targets.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
+          <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reason`}>{s.reason}</label><input className="ax-input" name="reason" id={`${fieldId}-reason`} /></div>
           <button className="ax-btn" disabled={disposing}>{disposing ? s.disposing : s.dispose}</button>
           {dState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{dState.error}</span>}
           {dState.ok && <span className="ax-lozenge ax-lozenge--success">{s.disposed}</span>}
