@@ -10,6 +10,7 @@
 // client components cannot call useT()). Colors: ax tokens only; logical props.
 import { useMemo, useState } from "react";
 import { useActionState } from "react";
+import EmptyState from "@/components/EmptyState";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
 import { markNotificationRead, requestVisitReschedule, type FieldActionResult } from "@/app/field/actions";
@@ -285,13 +286,10 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         </div>
 
         {visits.length === 0 && (
-          <div className="ax-surface"><div className="ax-state">
-            <span className="ax-state__glyph" aria-hidden="true">🗓</span><h4>{strings.emptyTitle}</h4>
-            <p className="ax-caption">{strings.emptyBody}</p>
-          </div></div>
+          <EmptyState glyph="🗓" title={strings.emptyTitle} body={strings.emptyBody} />
         )}
         {visits.length > 0 && filtered.length === 0 && (
-          <div className="ax-surface"><div className="ax-state ax-state--inline"><p className="ax-caption">{strings.noMatch}</p></div></div>
+          <EmptyState glyph="🔍" title={strings.noMatch} inline />
         )}
 
         {view === "list" && filtered.length > 0 && (
