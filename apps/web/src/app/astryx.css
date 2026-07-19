@@ -223,6 +223,20 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 [dir="rtl"] .ax-accordion__trigger[aria-expanded="false"] .ax-accordion__chevron { transform: rotate(90deg); }
 .ax-accordion__body { padding: 0 var(--ax-space-300) var(--ax-space-300); }
 
+/* Package/report-type single-select cards (Figma "report type" selector —
+   e.g. تقرير زيارة / فسح كيميائي — is the existing package_version_id field,
+   presented as cards instead of a plain <select>; same value, same name,
+   no new data or behavior). */
+.ax-typecards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--ax-space-150); }
+.ax-typecard {
+  display: block; cursor: pointer; border: 1.5px solid var(--ax-color-border); border-radius: var(--ax-radius-large);
+  background: var(--ax-color-surface); padding: var(--ax-space-200) var(--ax-space-300);
+}
+.ax-typecard.is-selected, .ax-typecard:has(input:checked) { border-color: var(--ax-color-primary); background: var(--ax-color-primary-tint); }
+.ax-typecard:has(input:focus-visible) { box-shadow: var(--ax-focus-ring); }
+.ax-typecard__title { font: var(--ax-text-body-strong); color: var(--ax-color-text); }
+.ax-typecard__meta { display: block; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); margin-block-start: 2px; }
+
 /* ==================================================== CORE: STATUS SYSTEM
    FIVE SEPARATE STATE DOMAINS — never conflated (BRD §9; MVP1-FND-002).
    Domain is carried by a glyph + bordered class, never by color alone

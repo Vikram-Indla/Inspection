@@ -8,6 +8,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import PackageTypeSelector from "@/components/PackageTypeSelector";
 import { createImmediateVisit, type ImmResult } from "./actions";
 import AuthorityBar, { type Chip } from "./AuthorityBar";
 
@@ -16,7 +17,7 @@ type F = {
   region: string | null; city: string | null; risk_band: string | null; risk_score: number | null;
   official_lat: number | null; official_lng: number | null; source_synced_at: string | null;
 };
-type P = { id: string; version_label: string; packages: { code: string } };
+type P = { id: string; version_label: string; packages: { code: string; title: string } };
 type I = { user_id: string; full_name: string };
 
 export type ImmediateStrings = {
@@ -296,11 +297,17 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
           <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-priority">{strings.priority}</label>
             <input id="imm-priority" key={`pr-${resetKey}`} className="ax-input" name="priority" value={priority} onChange={e => setPriority(e.target.value)} placeholder={strings.priorityPlaceholder} /></div>
 
-          <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-package">{strings.packageLabel}</label>
-            <select id="imm-package" key={`pk-${resetKey}`} className="ax-select" name="package_version_id" value={packageId} onChange={e => setPackageId(e.target.value)}>
-              <option value="">{strings.selectOption}</option>
-              {packages.map(p => <option key={p.id} value={p.id}>{p.packages.code} · {p.version_label}</option>)}
-            </select></div>
+          <div className="ax-field" style={{ maxInlineSize: "none" }}>
+            <label className="ax-field__label" id="imm-package-label">{strings.packageLabel}</label>
+            <PackageTypeSelector
+              key={`pk-${resetKey}`}
+              id="imm-package"
+              name="package_version_id"
+              value={packageId}
+              onChange={setPackageId}
+              options={packages.map(p => ({ id: p.id, code: `${p.packages.code} · ${p.version_label}`, title: p.packages.title }))}
+            />
+          </div>
 
           {actorMode === "planner" && <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-inspector">{strings.inspector}</label>
             <select id="imm-inspector" key={`in-${resetKey}`} className="ax-select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}>
