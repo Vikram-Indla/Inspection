@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -76,10 +77,8 @@ export default async function Workload() {
         <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
       </div>
       {inspectors.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">◫</span><h4>{t("visit.load.empty", "No active assigned load")}</h4>
-          <p className="ax-caption">{t("visit.load.emptyDesc", "Published, not-yet-submitted visits with an assignment appear here grouped by inspector and week (M02-018).")}</p>
-        </div></div>
+        <EmptyState glyph="◫" title={t("visit.load.empty", "No active assigned load")}
+          body={t("visit.load.emptyDesc", "Published, not-yet-submitted visits with an assignment appear here grouped by inspector and week (M02-018).")} />
       ) : (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4 style={{ margin: 0 }}>{t("visit.load.heading", "Active visits per inspector per week (M02-018)")}</h4>

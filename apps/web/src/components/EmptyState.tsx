@@ -9,16 +9,18 @@ type EmptyStateProps = {
   title: string;
   body?: string;
   inline?: boolean;
+  bare?: boolean;               // skip the outer ax-surface wrapper — caller already provides one
+  children?: React.ReactNode;   // extra content after the body (e.g. a CTA link)
 };
 
-export default function EmptyState({ glyph, title, body, inline }: EmptyStateProps) {
-  return (
-    <div className="ax-surface">
-      <div className={inline ? "ax-state ax-state--inline" : "ax-state"}>
-        <span className="ax-state__glyph" aria-hidden="true">{glyph}</span>
-        <h4>{title}</h4>
-        {body ? <p className="ax-caption">{body}</p> : null}
-      </div>
+export default function EmptyState({ glyph, title, body, inline, bare, children }: EmptyStateProps) {
+  const inner = (
+    <div className={inline ? "ax-state ax-state--inline" : "ax-state"}>
+      <span className="ax-state__glyph" aria-hidden="true">{glyph}</span>
+      <h4>{title}</h4>
+      {body ? <p className="ax-caption">{body}</p> : null}
+      {children}
     </div>
   );
+  return bare ? inner : <div className="ax-surface">{inner}</div>;
 }

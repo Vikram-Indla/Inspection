@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
+import EmptyState from "@/components/EmptyState";
 import { OpenCase } from "./OpenCase";
 
 // TASK-MVP2-M2-10-CASE-SPINE-001 · MVP2-REQ-0114..0119 · CD-046 (case_spine_v1).
@@ -35,9 +36,8 @@ export default async function CasesPage() {
       }} />
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("cases.error", "Couldn’t load cases. Nothing changed.")}</strong></div></div>}
       {!error && (rows ?? []).length === 0 && (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">🗂️</span>
-          <h4>{t("cases.empty.title", "No cases in your scope")}</h4>
-          <p className="ax-caption">{t("cases.empty.body", "Cases open from a review, violation or inspection. Empty may also mean none are in your scope (RLS).")}</p></div></div>
+        <EmptyState glyph="🗂️" title={t("cases.empty.title", "No cases in your scope")}
+          body={t("cases.empty.body", "Cases open from a review, violation or inspection. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(rows ?? []).map((c) => (
         <div key={c.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

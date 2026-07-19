@@ -7,6 +7,7 @@ import {
 } from "./Controls";
 import { MonitoringTable, RegionCityFilter, type MonitoringStrings } from "./Monitoring";
 import OpsMap, { type OpsPin, type OpsMapStrings } from "./OpsMap";
+import EmptyState from "@/components/EmptyState";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
 import OverrideQueue, { type GeoOverrideQueueRow, type OverrideQueueStrings } from "./OverrideQueue";
 import type { MonitorRow } from "./actions";
@@ -495,8 +496,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
         </div>
         {pins.length === 0 ? (
-          <div className="ax-state"><span className="ax-state__glyph">🗺</span><h4>{t("ops.map.empty.title", "No mappable factories in scope")}</h4>
-            <p className="ax-caption">{t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006).")}</p></div>
+          <EmptyState bare glyph="🗺" title={t("ops.map.empty.title", "No mappable factories in scope")}
+            body={t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006).")} />
         ) : (
           <OpsMap pins={pins} strings={mapStrings} />
         )}
@@ -515,8 +516,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.sla.heading", "SLA watch (ENG-09)")}</h4>
             {slaFlags.length === 0 ? (
-              <div className="ax-state"><span className="ax-state__glyph">✓</span><h4>{t("ops.sla.empty.title", "No SLA breaches in scope")}</h4>
-                <p className="ax-caption">{t("ops.sla.empty.desc", "Published visits are inside their planned windows; breaches surface here the moment a window lapses.")}</p></div>
+              <EmptyState bare glyph="✓" title={t("ops.sla.empty.title", "No SLA breaches in scope")}
+                body={t("ops.sla.empty.desc", "Published visits are inside their planned windows; breaches surface here the moment a window lapses.")} />
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
                 <thead><tr><th>{t("ops.sla.th.visit", "Visit")}</th><th>{t("ops.sla.th.factory", "Factory")}</th><th>{t("ops.sla.th.operational", "Operational")}</th><th>{t("ops.sla.th.deadline", "Deadline")}</th><th>{t("ops.sla.th.sla", "SLA")}</th><th>{t("ops.sla.th.escalation", "Escalation")}</th></tr></thead>
@@ -550,8 +551,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.actions.heading", "Corrective actions queue (M09-027 · ENG-11)")}</h4>
             {actions.length === 0 ? (
-              <div className="ax-state"><span className="ax-state__glyph">✓</span><h4>{t("ops.actions.empty.title", "No open corrective actions")}</h4>
-                <p className="ax-caption">{t("ops.actions.empty.desc", "Action forms raised from violations land here until closed (FLD-ACT-001).")}</p></div>
+              <EmptyState bare glyph="✓" title={t("ops.actions.empty.title", "No open corrective actions")}
+                body={t("ops.actions.empty.desc", "Action forms raised from violations land here until closed (FLD-ACT-001).")} />
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
                 <thead><tr><th>{t("ops.actions.th.factory", "Factory")}</th><th>{t("ops.actions.th.owner", "Owner")}</th><th>{t("ops.actions.th.due", "Due")}</th><th>{t("ops.actions.th.blocking", "Blocking")}</th><th>{t("ops.actions.th.status", "Status")}</th><th>{t("ops.actions.th.resolve", "Resolve")}</th></tr></thead>
@@ -584,8 +585,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.risk.heading", "High-risk factories (M08-006 · ENG-04)")}</h4>
             {highRisk.length === 0 ? (
-              <div className="ax-state"><span className="ax-state__glyph">◎</span><h4>{t("ops.risk.empty.title", "No scored factories yet")}</h4>
-                <p className="ax-caption">{t("ops.risk.empty.desc", "Factories appear here once the risk engine records a score (FLD-FACT-007/008).")}</p></div>
+              <EmptyState bare glyph="◎" title={t("ops.risk.empty.title", "No scored factories yet")}
+                body={t("ops.risk.empty.desc", "Factories appear here once the risk engine records a score (FLD-FACT-007/008).")} />
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
                 <thead><tr><th>{t("ops.risk.th.factory", "Factory")}</th><th>{t("ops.risk.th.location", "Location")}</th><th>{t("ops.risk.th.score", "Score")}</th><th>{t("ops.risk.th.band", "Band")}</th></tr></thead>
@@ -608,8 +609,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
             {scopedGeo.length === 0 ? (
-              <div className="ax-state"><span className="ax-state__glyph">📍</span><h4>{t("ops.geo.empty.title", "No location events yet")}</h4>
-                <p className="ax-caption">{t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")}</p></div>
+              <EmptyState bare glyph="📍" title={t("ops.geo.empty.title", "No location events yet")}
+                body={t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")} />
             ) : (
               <ul className="ax-timeline">{scopedGeo.slice(0, 10).map(g => (
                 <li key={g.id} className={g.kind === "checkin" ? "is-key" : undefined}>
@@ -626,8 +627,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
             {notifs.length === 0 ? (
-              <div className="ax-state"><span className="ax-state__glyph">🔔</span><h4>{t("ops.notifs.empty.title", "No notifications")}</h4>
-                <p className="ax-caption">{t("ops.notifs.empty.desc", "Event-keyed messages queue here as workflow events fire (REF-014).")}</p></div>
+              <EmptyState bare glyph="🔔" title={t("ops.notifs.empty.title", "No notifications")}
+                body={t("ops.notifs.empty.desc", "Event-keyed messages queue here as workflow events fire (REF-014).")} />
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
                 <thead><tr><th>{t("ops.notifs.th.event", "Event")}</th><th>{t("ops.notifs.th.channel", "Channel")}</th><th>{t("ops.notifs.th.state", "State")}</th><th>{t("ops.notifs.th.at", "At")}</th><th></th></tr></thead>
