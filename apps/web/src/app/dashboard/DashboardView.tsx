@@ -189,14 +189,14 @@ export function OperationalView({ locale, metrics }: { locale: Locale; metrics: 
         <h4 id="alerts-heading">{copy(locale, "Deterministic alert board", "لوحة التنبيهات الحتمية")}</h4>
         <p className={styles.detail}>{copy(locale, "Conditions are computed from records and accepted SLA configuration; use Operations Center notifications for persisted acknowledgement.", "يتم احتساب الشروط من السجلات وتهيئة اتفاقية الخدمة المعتمدة؛ استخدم إشعارات مركز العمليات للإقرار المحفوظ.")}</p>
         {alerts.length ? <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th>{copy(locale, "Severity", "الشدة")}</th><th>{copy(locale, "Condition", "الشرط")}</th><th>{copy(locale, "Object", "العنصر")}</th><th></th></tr></thead>
+          <thead><tr><th scope="col">{copy(locale, "Severity", "الشدة")}</th><th scope="col">{copy(locale, "Condition", "الشرط")}</th><th scope="col">{copy(locale, "Object", "العنصر")}</th><th scope="col"></th></tr></thead>
           <tbody>{alerts.slice(0, 12).map(alert => <tr key={alert.key}><td><strong>{alert.tone}</strong></td><td>{alert.label}</td><td>{alert.detail}</td><td><a className={styles.action} href={alert.href}>{action}</a></td></tr>)}</tbody>
         </table></div> : <div className={styles.empty} role="status">{copy(locale, "No governed alert condition is active in this scope.", "لا يوجد شرط تنبيه معتمد نشط ضمن هذا النطاق.")}</div>}
       </section>
       <section className={styles.panel} aria-labelledby="coverage-heading">
         <h4 id="coverage-heading">{copy(locale, "Alert source coverage", "تغطية مصادر التنبيه")}</h4>
         <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th>{copy(locale, "Condition", "الشرط")}</th><th>{copy(locale, "Runtime state", "حالة التشغيل")}</th></tr></thead>
+          <thead><tr><th scope="col">{copy(locale, "Condition", "الشرط")}</th><th scope="col">{copy(locale, "Runtime state", "حالة التشغيل")}</th></tr></thead>
           <tbody>
             <tr><td>{copy(locale, "Missed / overdue visit", "زيارة فائتة / متأخرة")}</td><td>{o.overdueRows.length}</td></tr>
             <tr><td>{copy(locale, "Cancelled visit", "زيارة ملغاة")}</td><td>{o.cancelledRows.length}</td></tr>
@@ -213,7 +213,7 @@ export function OperationalView({ locale, metrics }: { locale: Locale; metrics: 
       <section className={styles.panel} aria-labelledby="override-heading">
         <h4 id="override-heading">{copy(locale, "GPS override records — planned versus observed", "سجلات تجاوز GPS — المخطط مقابل المرصود")}</h4>
         {o.overrides.length ? <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th>{copy(locale, "Visit / factory", "الزيارة / المصنع")}</th><th>{copy(locale, "Planned", "المخطط")}</th><th>{copy(locale, "Observed", "المرصود")}</th><th>{copy(locale, "Reason", "السبب")}</th><th>{copy(locale, "Inspector confirmation", "تأكيد المفتش")}</th><th>{copy(locale, "At", "الوقت")}</th></tr></thead>
+          <thead><tr><th scope="col">{copy(locale, "Visit / factory", "الزيارة / المصنع")}</th><th scope="col">{copy(locale, "Planned", "المخطط")}</th><th scope="col">{copy(locale, "Observed", "المرصود")}</th><th scope="col">{copy(locale, "Reason", "السبب")}</th><th scope="col">{copy(locale, "Inspector confirmation", "تأكيد المفتش")}</th><th scope="col">{copy(locale, "At", "الوقت")}</th></tr></thead>
           <tbody>{o.overrides.slice(0, 10).map((row: GeoRow) => <tr key={row.id}>
             <td><a className={styles.action} href={`/visits/${row.visit_id}`}>{row.visits?.factories?.name ?? row.visit_id.slice(0, 8)}</a></td>
             <td className={styles.numeric}>{row.visits?.planner_lat != null && row.visits?.planner_lng != null ? `${row.visits.planner_lat}, ${row.visits.planner_lng}` : "—"}</td>
@@ -227,7 +227,7 @@ export function OperationalView({ locale, metrics }: { locale: Locale; metrics: 
       <section className={styles.panel} aria-labelledby="timeline-heading">
         <h4 id="timeline-heading">{copy(locale, "Planning-to-review operational timeline", "الخط الزمني التشغيلي من التخطيط إلى المراجعة")}</h4>
         {o.timeline.length ? <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th>{copy(locale, "Event", "الحدث")}</th><th>{copy(locale, "Object", "العنصر")}</th><th>{copy(locale, "At", "الوقت")}</th></tr></thead>
+          <thead><tr><th scope="col">{copy(locale, "Event", "الحدث")}</th><th scope="col">{copy(locale, "Object", "العنصر")}</th><th scope="col">{copy(locale, "At", "الوقت")}</th></tr></thead>
           <tbody>{o.timeline.slice(0, 12).map(row => <tr key={row.id}><td><strong>{row.action}</strong>{row.requirement_refs?.length ? <><br /><span className={styles.detail}>{row.requirement_refs.join(" · ")}</span></> : null}</td><td>{row.object_type} · {row.object_id?.slice(0, 8)}</td><td className={styles.numeric}>{new Date(row.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</td></tr>)}</tbody>
         </table></div> : <div className={styles.empty} role="status">{copy(locale, "No scoped audit events in the selected window.", "لا توجد أحداث تدقيق ضمن النطاق والفترة المحددين.")}</div>}
       </section>
@@ -238,7 +238,7 @@ export function OperationalView({ locale, metrics }: { locale: Locale; metrics: 
         <h4 id="workload-heading">{copy(locale, "Inspector workload — relative, not absolute capacity", "عبء عمل المفتشين — نسبي وليس سعة مطلقة")}</h4>
         <p className={styles.detail}>{copy(locale, "No capacity threshold or online/offline timeout is configured. Bars compare active assigned visits only.", "لا توجد عتبة سعة أو مهلة اتصال/عدم اتصال مهيأة. تقارن الأشرطة الزيارات النشطة المسندة فقط.")}</p>
         {o.workload.length ? <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th>{copy(locale, "Inspector", "المفتش")}</th><th>{copy(locale, "Assigned", "المسند")}</th><th>{copy(locale, "Active", "النشط")}</th><th>{copy(locale, "Completed", "المكتمل")}</th><th>{copy(locale, "Overdue", "المتأخر")}</th><th>{copy(locale, "Relative active load", "العبء النشط النسبي")}</th></tr></thead>
+          <thead><tr><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col">{copy(locale, "Assigned", "المسند")}</th><th scope="col">{copy(locale, "Active", "النشط")}</th><th scope="col">{copy(locale, "Completed", "المكتمل")}</th><th scope="col">{copy(locale, "Overdue", "المتأخر")}</th><th scope="col">{copy(locale, "Relative active load", "العبء النشط النسبي")}</th></tr></thead>
           <tbody>{o.workload.slice(0, 10).map(row => <tr key={row.id}><td><strong>{row.name}</strong></td><td className={styles.numeric}>{row.assigned}</td><td className={styles.numeric}>{row.active}</td><td className={styles.numeric}>{row.completed}</td><td className={styles.numeric}>{row.overdue}</td><td><span className={styles.track} aria-label={copy(locale, `${row.active} active visits`, `${row.active} زيارات نشطة`)}><span className={styles.fill} style={{ inlineSize: `${(row.active / workloadMax) * 100}%` }} /></span></td></tr>)}</tbody>
         </table></div> : <div className={styles.empty} role="status">{copy(locale, "No assignments are visible in this scope.", "لا توجد إسنادات ظاهرة ضمن هذا النطاق.")}</div>}
       </section>

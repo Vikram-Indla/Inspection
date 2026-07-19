@@ -533,10 +533,10 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           </div>
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr>
-              <th>{strings.ledgerColVisit}</th>
-              <th>{strings.ledgerColOutcome}</th>
-              <th>{strings.ledgerColReason}</th>
-              <th />
+              <th scope="col">{strings.ledgerColVisit}</th>
+              <th scope="col">{strings.ledgerColOutcome}</th>
+              <th scope="col">{strings.ledgerColReason}</th>
+              <th scope="col" />
             </tr></thead>
             <tbody>
               {ledger.map(item => (
@@ -566,10 +566,10 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
-            <th style={{ inlineSize: 32 }}><input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label={strings.selectAllAria} /></th>
-            <th>{strings.colVisit}</th><th>{strings.colFactory}</th><th>{strings.colTypeMode}</th>
-            <th>{strings.colPlanning}</th><th>{strings.colOperational}</th><th>{strings.colInspector}</th>
-            <th className="ax-td-num">{strings.colWindow}</th>
+            <th scope="col" style={{ inlineSize: 32 }}><input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label={strings.selectAllAria} /></th>
+            <th scope="col">{strings.colVisit}</th><th scope="col">{strings.colFactory}</th><th scope="col">{strings.colTypeMode}</th>
+            <th scope="col">{strings.colPlanning}</th><th scope="col">{strings.colOperational}</th><th scope="col">{strings.colInspector}</th>
+            <th scope="col" className="ax-td-num">{strings.colWindow}</th>
           </tr></thead>
           <tbody>
             {filtered.map(v => {

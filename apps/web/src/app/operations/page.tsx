@@ -519,7 +519,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 <p className="ax-caption">{t("ops.sla.empty.desc", "Published visits are inside their planned windows; breaches surface here the moment a window lapses.")}</p></div>
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th>{t("ops.sla.th.visit", "Visit")}</th><th>{t("ops.sla.th.factory", "Factory")}</th><th>{t("ops.sla.th.operational", "Operational")}</th><th>{t("ops.sla.th.deadline", "Deadline")}</th><th>{t("ops.sla.th.sla", "SLA")}</th><th>{t("ops.sla.th.escalation", "Escalation")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("ops.sla.th.visit", "Visit")}</th><th scope="col">{t("ops.sla.th.factory", "Factory")}</th><th scope="col">{t("ops.sla.th.operational", "Operational")}</th><th scope="col">{t("ops.sla.th.deadline", "Deadline")}</th><th scope="col">{t("ops.sla.th.sla", "SLA")}</th><th scope="col">{t("ops.sla.th.escalation", "Escalation")}</th></tr></thead>
                 <tbody>{slaFlags.map(f => (
                   <tr key={f.visit.id}>
                     <td><a className="ax-link" href={`/visits/${f.visit.id}`}>{f.visit.id.slice(0, 8)}</a></td>
@@ -554,7 +554,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 <p className="ax-caption">{t("ops.actions.empty.desc", "Action forms raised from violations land here until closed (FLD-ACT-001).")}</p></div>
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th>{t("ops.actions.th.factory", "Factory")}</th><th>{t("ops.actions.th.owner", "Owner")}</th><th>{t("ops.actions.th.due", "Due")}</th><th>{t("ops.actions.th.blocking", "Blocking")}</th><th>{t("ops.actions.th.status", "Status")}</th><th>{t("ops.actions.th.resolve", "Resolve")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("ops.actions.th.factory", "Factory")}</th><th scope="col">{t("ops.actions.th.owner", "Owner")}</th><th scope="col">{t("ops.actions.th.due", "Due")}</th><th scope="col">{t("ops.actions.th.blocking", "Blocking")}</th><th scope="col">{t("ops.actions.th.status", "Status")}</th><th scope="col">{t("ops.actions.th.resolve", "Resolve")}</th></tr></thead>
                 <tbody>{actions.map(a => {
                   const overdue = a.due_at ? new Date(a.due_at).getTime() < now : false;
                   const factory = a.inspections?.visits?.factories ?? null;
@@ -588,7 +588,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 <p className="ax-caption">{t("ops.risk.empty.desc", "Factories appear here once the risk engine records a score (FLD-FACT-007/008).")}</p></div>
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th>{t("ops.risk.th.factory", "Factory")}</th><th>{t("ops.risk.th.location", "Location")}</th><th>{t("ops.risk.th.score", "Score")}</th><th>{t("ops.risk.th.band", "Band")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("ops.risk.th.factory", "Factory")}</th><th scope="col">{t("ops.risk.th.location", "Location")}</th><th scope="col">{t("ops.risk.th.score", "Score")}</th><th scope="col">{t("ops.risk.th.band", "Band")}</th></tr></thead>
                 <tbody>{highRisk.map(f => (
                   <tr key={f.id}>
                     <td><a className="ax-link" href={`/factories/${f.id}`}>{f.name}</a>
@@ -630,7 +630,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 <p className="ax-caption">{t("ops.notifs.empty.desc", "Event-keyed messages queue here as workflow events fire (REF-014).")}</p></div>
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th>{t("ops.notifs.th.event", "Event")}</th><th>{t("ops.notifs.th.channel", "Channel")}</th><th>{t("ops.notifs.th.state", "State")}</th><th>{t("ops.notifs.th.at", "At")}</th><th></th></tr></thead>
+                <thead><tr><th scope="col">{t("ops.notifs.th.event", "Event")}</th><th scope="col">{t("ops.notifs.th.channel", "Channel")}</th><th scope="col">{t("ops.notifs.th.state", "State")}</th><th scope="col">{t("ops.notifs.th.at", "At")}</th><th scope="col"></th></tr></thead>
                 <tbody>{notifs.map(n => (
                   <tr key={n.id}>
                     <td><span className="ax-lozenge ax-lozenge--info">{n.event_key}</span></td>
