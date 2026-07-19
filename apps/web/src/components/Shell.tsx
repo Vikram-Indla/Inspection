@@ -16,8 +16,16 @@ export default async function Shell({ current, children, title, context, topbar 
   // Server-side role-scoped navigation. RLS remains the authorization boundary;
   // this query only prevents irrelevant or unauthorized destinations appearing
   // in the shared chrome (RBAC-001..014, TASK-WEB-SHELL-001).
-  const { data: roleRows } = await sb.from("user_roles").select("role_key").eq("user_id", user.id);
+  const [{ data: roleRows }, regionRead] = await Promise.all([
+    sb.from("user_roles").select("role_key").eq("user_id", user.id),
+    // CMP-REQ-SHELL-002: values are RLS-scoped and source-backed. A failed or
+    // empty read disables the shared region control; it never invents regions.
+    sb.from("factories").select("region").not("region", "is", null).limit(1000),
+  ]);
   const roles = Array.from(new Set((roleRows ?? []).map(row => row.role_key))).sort();
+  const regions = regionRead.error
+    ? []
+    : Array.from(new Set((regionRead.data ?? []).map(row => row.region).filter((value): value is string => !!value))).sort();
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,
     label: t(group.labelKey, locale === "ar" ? group.labelAr : group.labelEn),
@@ -27,6 +35,14 @@ export default async function Shell({ current, children, title, context, topbar 
       href: item.href,
       icon: item.icon,
       businessTab: item.businessTab,
+      enabled: item.enabled,
+      disabledReason: item.disabledReasonKey
+        ? t(item.disabledReasonKey, locale === "ar" ? item.disabledReasonAr! : item.disabledReasonEn!)
+        : undefined,
+      parentId: item.parentId,
+      parentLabel: item.parentLabelKey
+        ? t(item.parentLabelKey, locale === "ar" ? item.parentLabelAr! : item.parentLabelEn!)
+        : undefined,
     })),
   }));
 
@@ -36,9 +52,21 @@ export default async function Shell({ current, children, title, context, topbar 
     closeMenu: t("shell.closeMenu", locale === "ar" ? "إغلاق قائمة التنقل" : "Close navigation"),
     collapse: t("shell.collapse", locale === "ar" ? "طي القائمة" : "Collapse navigation"),
     expand: t("shell.expand", locale === "ar" ? "توسيع القائمة" : "Expand navigation"),
-    navigationSearch: t("shell.search", locale === "ar" ? "البحث في التنقل" : "Search navigation"),
-    searchResults: t("shell.searchResults", locale === "ar" ? "نتائج التنقل" : "Navigation results"),
-    noSearchResults: t("shell.noSearchResults", locale === "ar" ? "لا توجد وجهة مطابقة" : "No matching destination"),
+    navigationSearch: t("shell.search", locale === "ar" ? "ابحث في المصانع والزيارات والتفتيشات…" : "Search factories, visits, inspections…"),
+    searchResults: t("shell.searchResults", locale === "ar" ? "نتائج البحث العام" : "Global search results"),
+    noSearchResults: t("shell.noSearchResults", locale === "ar" ? "لا توجد نتائج مرئية ضمن صلاحياتك" : "No RLS-visible results"),
+    searchLoading: t("shell.searchLoading", locale === "ar" ? "جارٍ البحث…" : "Searching…"),
+    searchUnavailable: t("shell.searchUnavailable", locale === "ar" ? "البحث غير متاح مؤقتاً" : "Search temporarily unavailable"),
+    dateScope: t("shell.dateScope", locale === "ar" ? "نطاق التاريخ" : "Date scope"),
+    last30Days: t("shell.last30Days", locale === "ar" ? "آخر 30 يوماً" : "Last 30 days"),
+    from: t("shell.from", locale === "ar" ? "من" : "From"),
+    to: t("shell.to", locale === "ar" ? "إلى" : "To"),
+    apply: t("shell.apply", locale === "ar" ? "تطبيق" : "Apply"),
+    regionScope: t("shell.regionScope", locale === "ar" ? "نطاق المنطقة" : "Region scope"),
+    allRegions: t("shell.allRegions", locale === "ar" ? "جميع المناطق" : "All Regions"),
+    notApplicable: t("shell.notApplicable", locale === "ar" ? "غير منطبق على هذه الصفحة" : "Not applicable on this page"),
+    aiEntry: t("shell.aiEntry", locale === "ar" ? "فتح رؤى الذكاء الاصطناعي" : "Open AI Insights"),
+    navigation: t("shell.navigation", locale === "ar" ? "وجهة" : "Navigation"),
     account: t("shell.account", locale === "ar" ? "الحساب" : "Account"),
     roles: t("shell.roles", locale === "ar" ? "الأدوار" : "Roles"),
     profileSettings: t("shell.profileSettings", locale === "ar" ? "إعدادات الملف الشخصي" : "Profile settings"),
@@ -91,6 +119,7 @@ export default async function Shell({ current, children, title, context, topbar 
       languageLang={locale === "ar" ? "en" : "ar"}
       email={user.email ?? user.id}
       roles={roles}
+      regions={regions}
     >
       {children}
     </ShellClient>

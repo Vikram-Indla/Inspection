@@ -4,12 +4,15 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
-import { isShellRouteCurrent, type ShellIcon } from "@/lib/shell-navigation";
+import { isShellRouteCurrent, shellScopeForRoute, type ShellIcon } from "@/lib/shell-navigation";
 
 export type ShellClientNavGroup = {
   id: string;
   label: string;
-  items: { id: string; label: string; href: string; icon: ShellIcon; businessTab: string }[];
+  items: {
+    id: string; label: string; href: string; icon: ShellIcon; businessTab: string;
+    enabled: boolean; disabledReason?: string; parentId?: string; parentLabel?: string;
+  }[];
 };
 
 export type ShellClientStrings = {
@@ -21,6 +24,18 @@ export type ShellClientStrings = {
   navigationSearch: string;
   searchResults: string;
   noSearchResults: string;
+  searchLoading: string;
+  searchUnavailable: string;
+  dateScope: string;
+  last30Days: string;
+  from: string;
+  to: string;
+  apply: string;
+  regionScope: string;
+  allRegions: string;
+  notApplicable: string;
+  aiEntry: string;
+  navigation: string;
   account: string;
   roles: string;
   profileSettings: string;
@@ -50,6 +65,7 @@ function Icon({ name }: { name: ShellIcon }) {
     map: <><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/></>,
     access: <><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></>,
     notify: <><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></>,
+    insights: <><path d="M4 19V9M10 19V5M16 19v-7M22 19V3"/><path d="m3 6 6-3 6 5 7-6"/></>,
   };
   return <svg {...common}>{paths[name]}</svg>;
 }
@@ -59,9 +75,19 @@ function initials(email: string) {
   return local.split(/[._-]+/).slice(0, 2).map(part => part[0]?.toUpperCase()).join("") || "S";
 }
 
+type GlobalSearchResult = { id: string; type: "factory" | "visit" | "inspection"; label: string; detail: string; href: string };
+
+function defaultDateRange() {
+  const to = new Date();
+  const from = new Date(to);
+  from.setDate(from.getDate() - 29);
+  const format = (value: Date) => value.toISOString().slice(0, 10);
+  return { from: format(from), to: format(to) };
+}
+
 export default function ShellClient({
   current, title, context, topbar, children, groups, strings, bellStrings,
-  locale, languageHref, languageLabel, languageLang, email, roles,
+  locale, languageHref, languageLabel, languageLang, email, roles, regions,
 }: {
   current: string;
   title: string;
@@ -77,12 +103,19 @@ export default function ShellClient({
   languageLang: string;
   email: string;
   roles: string[];
+  regions: string[];
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [globalResults, setGlobalResults] = useState<GlobalSearchResult[]>([]);
+  const [searchState, setSearchState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const initialDates = useMemo(defaultDateRange, []);
+  const [dateFrom, setDateFrom] = useState(initialDates.from);
+  const [dateTo, setDateTo] = useState(initialDates.to);
+  const [regionScope, setRegionScope] = useState("");
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(groups.map(group => [group.id, true])),
   );
@@ -92,7 +125,39 @@ export default function ShellClient({
 
   useEffect(() => {
     try { setCollapsed(localStorage.getItem("saqeel-shell-collapsed") === "1"); } catch { /* private mode */ }
+    const params = new URLSearchParams(window.location.search);
+    setDateFrom(params.get("from") ?? initialDates.from);
+    setDateTo(params.get("to") ?? initialDates.to);
+    setRegionScope(params.get("region") ?? "");
   }, []);
+
+  useEffect(() => {
+    const normalized = query.trim();
+    if (normalized.length < 2) {
+      setGlobalResults([]);
+      setSearchState("idle");
+      return;
+    }
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      setSearchState("loading");
+      try {
+        const response = await fetch(`/api/shell/search?q=${encodeURIComponent(normalized)}`, {
+          signal: controller.signal,
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error("search_unavailable");
+        const payload = await response.json() as { results?: GlobalSearchResult[] };
+        setGlobalResults(payload.results ?? []);
+        setSearchState("ready");
+      } catch (error) {
+        if ((error as Error).name === "AbortError") return;
+        setGlobalResults([]);
+        setSearchState("error");
+      }
+    }, 250);
+    return () => { controller.abort(); window.clearTimeout(timer); };
+  }, [query]);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -129,11 +194,22 @@ export default function ShellClient({
     return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
   }, [accountOpen]);
 
-  const results = useMemo(() => {
+  const navigationResults = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase(locale);
     if (!normalized) return [];
-    return groups.flatMap(group => group.items).filter(item => item.label.toLocaleLowerCase(locale).includes(normalized));
+    return groups.flatMap(group => group.items).filter(item => item.enabled && item.label.toLocaleLowerCase(locale).includes(normalized));
   }, [groups, locale, query]);
+
+  const routeScope = shellScopeForRoute(current);
+
+  function replaceScope(updates: Record<string, string>) {
+    const url = new URL(window.location.href);
+    for (const [key, value] of Object.entries(updates)) {
+      if (value) url.searchParams.set(key, value);
+      else url.searchParams.delete(key);
+    }
+    window.location.assign(`${url.pathname}${url.search}${url.hash}`);
+  }
 
   function toggleCollapsed() {
     const next = !collapsed;
@@ -145,6 +221,32 @@ export default function ShellClient({
     setDrawerOpen(false);
     setSearchOpen(false);
     setQuery("");
+  }
+
+  function renderNavItem(item: ShellClientNavGroup["items"][number], child = false) {
+    const className = `ax-nav-item${child ? " ax-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
+    if (!item.enabled) {
+      const accessibleLabel = `${item.label}. ${item.disabledReason ?? ""}`.trim();
+      return (
+        <span key={item.id} className={className} role="link" aria-disabled="true" aria-label={accessibleLabel}
+          title={`${item.label} — ${item.disabledReason ?? ""}`.trim()} tabIndex={0} data-nav-state="disabled">
+          <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+          <span className="ax-nav-label">{item.label}</span>
+          <span className="ax-nav-lock" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          </span>
+          <span className="ax-sr-only">{item.disabledReason}</span>
+        </span>
+      );
+    }
+    return (
+      <Link key={item.id} className={className} aria-label={collapsed ? item.label : undefined}
+        aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
+        href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled">
+        <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+        <span className="ax-nav-label">{item.label}</span>
+      </Link>
+    );
   }
 
   return (
@@ -174,13 +276,20 @@ export default function ShellClient({
                   <span className="ax-nav-label">{group.label}</span><svg className="ax-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
-                  {group.items.map(item => (
-                    <Link key={item.href} className="ax-nav-item" aria-label={collapsed ? item.label : undefined} aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
-                      href={item.href} title={collapsed ? item.label : undefined} onClick={closeAfterNavigate}>
-                      <span className="ax-nav-icon"><Icon name={item.icon} /></span>
-                      <span className="ax-nav-label">{item.label}</span>
-                    </Link>
-                  ))}
+                  {group.items.map((item, index) => {
+                    if (!item.parentId) return renderNavItem(item);
+                    if (group.items.findIndex(candidate => candidate.parentId === item.parentId) !== index) return null;
+                    const children = group.items.filter(candidate => candidate.parentId === item.parentId);
+                    return (
+                      <div className="ax-nav-subgroup" role="group" aria-labelledby={`nav-parent-${group.id}-${item.parentId}`} key={item.parentId}>
+                        <div className="ax-nav-subgroup__label" id={`nav-parent-${group.id}-${item.parentId}`}>
+                          <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+                          <span className="ax-nav-label">{item.parentLabel}</span>
+                        </div>
+                        {children.map(child => renderNavItem(child, true))}
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             );
@@ -200,27 +309,71 @@ export default function ShellClient({
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
             </button>
             {topbar ?? (
-              <div className="ax-shell-search">
-                <span className="ax-shell-search__icon" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                    <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
-                  </svg>
-                </span>
-                <input value={query} aria-label={strings.navigationSearch} placeholder={strings.navigationSearch}
-                  onFocus={() => setSearchOpen(true)} onChange={event => { setQuery(event.target.value); setSearchOpen(true); }}
-                  onKeyDown={event => { if (event.key === "Escape") { setSearchOpen(false); setQuery(""); } }} />
-                {searchOpen && query && (
-                  <div className="ax-shell-search__results" role="region" aria-label={strings.searchResults}>
-                    {results.length ? results.map(item => (
-                      <Link key={item.href} href={item.href} onClick={closeAfterNavigate}><Icon name={item.icon} /><span>{item.label}</span></Link>
-                    )) : <p role="status">{strings.noSearchResults}</p>}
-                  </div>
+              <div className="ax-shell-controls">
+                <div className="ax-shell-search">
+                  <span className="ax-shell-search__icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                      <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
+                    </svg>
+                  </span>
+                  <input value={query} type="search" role="combobox" aria-autocomplete="list" aria-expanded={searchOpen && query.length >= 2}
+                    aria-controls="shell-global-search-results" aria-label={strings.navigationSearch} placeholder={strings.navigationSearch}
+                    onFocus={() => setSearchOpen(true)} onChange={event => { setQuery(event.target.value); setSearchOpen(true); }}
+                    onKeyDown={event => { if (event.key === "Escape") { setSearchOpen(false); setQuery(""); } }} />
+                  {searchOpen && query.trim().length >= 2 && (
+                    <div id="shell-global-search-results" className="ax-shell-search__results" role="listbox" aria-label={strings.searchResults}>
+                      {navigationResults.map(item => (
+                        <Link role="option" key={`nav-${item.id}`} href={item.href} onClick={closeAfterNavigate}>
+                          <Icon name={item.icon} /><span><strong>{item.label}</strong><small>{strings.navigation}</small></span>
+                        </Link>
+                      ))}
+                      {globalResults.map(item => (
+                        <Link role="option" key={`${item.type}-${item.id}`} href={item.href} onClick={closeAfterNavigate}>
+                          <Icon name={item.type === "factory" ? "factory" : item.type === "visit" ? "visits" : "inspect"} />
+                          <span><strong>{item.label}</strong><small>{item.detail}</small></span>
+                        </Link>
+                      ))}
+                      {searchState === "loading" ? <p role="status">{strings.searchLoading}</p> : null}
+                      {searchState === "error" ? <p role="alert">{strings.searchUnavailable}</p> : null}
+                      {searchState === "ready" && !navigationResults.length && !globalResults.length ? <p role="status">{strings.noSearchResults}</p> : null}
+                    </div>
+                  )}
+                </div>
+                {routeScope.date ? (
+                  <details className="ax-shell-scope ax-shell-scope--date">
+                    <summary aria-label={strings.dateScope} title={strings.dateScope}>
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+                      <span>{strings.last30Days}</span>
+                    </summary>
+                    <div className="ax-shell-scope__panel">
+                      <label>{strings.from}<input type="date" value={dateFrom} onChange={event => setDateFrom(event.target.value)} /></label>
+                      <label>{strings.to}<input type="date" value={dateTo} onChange={event => setDateTo(event.target.value)} /></label>
+                      <button type="button" className="ax-btn ax-btn--secondary" onClick={() => replaceScope({ from: dateFrom, to: dateTo })}>{strings.apply}</button>
+                    </div>
+                  </details>
+                ) : (
+                  <button className="ax-shell-scope is-disabled" type="button" disabled title={strings.notApplicable} aria-label={`${strings.dateScope}: ${strings.notApplicable}`}>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+                    <span>{strings.last30Days}</span>
+                  </button>
                 )}
+                <label className={`ax-shell-scope ax-shell-scope--region${routeScope.region && regions.length ? "" : " is-disabled"}`} title={!routeScope.region ? strings.notApplicable : regions.length ? undefined : strings.searchUnavailable}>
+                  <span className="ax-sr-only">{strings.regionScope}</span>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg>
+                  <select aria-label={strings.regionScope} value={regionScope} disabled={!routeScope.region || !regions.length}
+                    onChange={event => { setRegionScope(event.target.value); replaceScope({ region: event.target.value }); }}>
+                    <option value="">{strings.allRegions}</option>
+                    {regions.map(region => <option value={region} key={region}>{region}</option>)}
+                  </select>
+                </label>
               </div>
             )}
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               <NotificationBell strings={bellStrings} />
+              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry}>
+                <Icon name="insights" />
+              </Link>
               <div ref={accountRef} className="ax-shell-account">
                 <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
                   onClick={() => setAccountOpen(value => !value)}>

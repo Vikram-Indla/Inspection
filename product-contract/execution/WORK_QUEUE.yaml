@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-COMPLIANCE-SHARED-SHELL-001"
+    gate: "G11 sponsor-authorized Compliance shared shell"
+    priority: "P0"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
+    owner: "Codex implementation and QA + Sponsor acceptance authority"
+    blocked_by: ["Sponsor shared-shell runtime acceptance"]
+    blocks: ["Prompt 02 and later Compliance implementation slices"]
+    note: "Prompt 01 implements the five-group Web/Admin shell, unified business navigation, seven accessible locked Administration entries for non-admins, role-composed admin enablement, and unified search/scope/theme/notification/AI/account topbar. No schema, Inspector runtime, DDL or shared-data mutation. Typecheck/build, focused static/runtime, live RLS denial and bilingual visual evidence pass. One unrelated pre-existing static font-import-name assertion remains open."
   - task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
     gate: "G11/G12 UI release certification"
     priority: "P0"

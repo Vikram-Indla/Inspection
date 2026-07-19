@@ -1,55 +1,52 @@
 schema_version: "1.2"
-task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
-gate: "G11/G12 UI release certification"
-title: "Close technical WCAG 2.2, DGA Platform Code and Arabic/RTL evidence; prepare human endurance gates"
-status: "TECHNICAL_PASS_MAIN_PUSH_AUTHORIZED_HUMAN_GATES_PENDING"
+task_id: "TASK-WEB-COMPLIANCE-SHARED-SHELL-001"
+gate: "G11 sponsor-authorized Compliance shared shell"
+title: "Prompt 01 — Shared Shell, Topbar and Visibility"
+status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#QA-UI-COMPLIANCE-CERT-004"
-change_control_ref: "CC-QA-UI-COMPLIANCE-CERT-004"
+approval_ref: "Sponsor acknowledgement and Prompt 01 authorization — 2026-07-19"
+change_control_ref: "SPONSOR-COMPLIANCE-SCOPE-CORRECTION-2026-07-19"
 
-branch_at_start: "codex/ui-compliance-certification-004"
-head_at_start: "d09ed97"
-process_ids: ["P01", "P02", "P03", "P04", "P05", "P06A", "P06B", "P07", "P08", "P09", "P10", "P11", "P12"]
-requirement_ids: ["WCAG-2.2-A-AA", "DGA-PLATFORM-CODE", "DGA-5.13.8", "AR-RTL-RELEASE", "INSPECTOR-ENDURANCE"]
-acceptance_ids: ["UIC-AC-001..040"]
-evidence_ids: ["UIC-EV-001..010"]
-screen_ids: ["SCR-SHARED-SHELL-001", "SCR-ADM-001/010/020/030/050/060/070/080/090", "SCR-WEB-100/200/300/310/400/500", "SCR-IPAD-600..670", "SCR-VIR-700..720"]
-engine_ids: ["visual and interaction verification only; ENG-01..ENG-20 behavior preserved"]
+branch_at_start: "codex/compliance-shared-shell-001"
+head_at_start: "c285d528cac55c071ced3099a146798f55e4e1c6"
+process_ids: ["Compliance Management control plane", "Web/Admin shared shell"]
+requirement_ids: ["CMP-REQ-SHELL-001", "CMP-REQ-SHELL-002", "CMP-REQ-SHELL-003"]
+acceptance_ids: ["CMP-ACC-013", "CMP-ACC-016..019", "CMP-ACC-024", "CMP-ACC-030..038"]
+evidence_ids: ["CMP-SHELL-EV-001..008"]
+screen_ids: ["SCR-SHARED-SHELL-001"]
+engine_ids: ["existing authentication", "existing route guards", "existing RLS", "existing notification and localization behavior"]
 
 dependencies:
-  - "Pushed main d09ed97 with platform-wide Government Foundation V1."
-  - "Official DGA WCAG 2.2 accessibility guidance and Digital Transformation Basic Standards V4.0."
-  - "W3C WCAG 2.2 Recommendation and controlled authenticated personas."
+  - "Corrected Compliance Prompt 00 decision pack durably transferred and SHA-256 verified."
+  - "saqeel.html, supplied Web/Admin screenshots and accepted SAQEEL design tokens."
+  - "Existing authorization model remains authoritative for route and action permission."
 
 open_decisions:
-  - "Native Arabic linguistic approval requires a qualified human reviewer."
-  - "Inspector endurance approval requires observed representative morning and night sessions."
+  - "Sponsor shared-shell runtime acceptance."
+  - "Pre-existing stale platform-design-system-contract font import-name assertion requires separate maintenance disposition."
 
 do_not_touch:
-  - "Do not alter input, textarea, select or search geometry/behavior."
-  - "Do not alter workflow, RLS, data, provider, audit, offline or immutable-version semantics."
-  - "Keep Cinematic Atlas v0.8 isolated."
-  - "Do not mutate shared visit state merely to produce UI evidence."
-  - "Do not claim human or organizational signoff from automated checks."
-  - "Local main fast-forward and origin/main push are sponsor-authorized; do not deploy to production hosting."
+  - "No Inspector/iPad redesign, navigation, routes, components, journeys or field workflow changes."
+  - "No Compliance Configuration Request, Regulation, Inspection Item, Violation or Penalty schema changes."
+  - "No route-guard, RLS, action-permission, audit, versioning, provider, offline or historical-record weakening."
+  - "No dashboard or Operations business-data redesign beyond shell integration."
+  - "No runtime-data mutation, DDL, push, merge, deployment or main modification."
 
 authorized_file_scope:
-  - "Accessibility test tooling and release-contract tests."
-  - "UI-only remediations found by executed WCAG/RTL checks."
-  - "DGA/Platform Code mapping, Arabic/RTL evidence and endurance protocol."
-  - "Acceptance, evidence, current-state, queue and session records."
+  - "Web/Admin shared sidebar and top navigation."
+  - "Authenticated RLS-scoped global search endpoint."
+  - "Dashboard removal of the superseded page-local toolbar only."
+  - "Shared-shell tests, acceptance, evidence, execution and session records."
 
 required_evidence:
-  - "Automated WCAG scan plus manual keyboard/focus/reflow/zoom/target/status checks on critical authenticated routes."
-  - "English/Arabic LTR/RTL light/dark parity on critical role journeys."
-  - "DGA Platform Code executive adoption plan and requirement-to-evidence map."
-  - "Assistive-technology and native Arabic review register."
-  - "Observed inspector morning/night endurance protocol and completed session records."
-  - "Typecheck, production build and protected regression."
+  - "Durable decision-pack path, inventory, branch/commit/timestamp and verified checksum."
+  - "Persona navigation matrix and enabled/disabled/hidden rules."
+  - "Route-guard and live RLS negative evidence."
+  - "English/Arabic, light/dark, expanded/collapsed and responsive screenshots."
+  - "Typecheck, production build, focused shell runtime, visual and protected non-mutating regression results."
 
 exit_condition: >-
-  All technical WCAG 2.2 A/AA, DGA Platform Code and Arabic/RTL P0/P1 findings are
-  remediated and evidenced; protected regression passes; qualified Arabic review and
-  representative inspector morning/night sessions are completed without open P0/P1;
-  and the gate is explicitly changed to PASS by evidence rather than assertion.
+  Sponsor accepts the corrected shared shell after reviewing the durable decision pack,
+  navigation/permission matrix, regression evidence and bilingual visual proof. Until then,
+  stop at AWAITING_SPONSOR_SHARED_SHELL_ACCEPTANCE.

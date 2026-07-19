@@ -1,5 +1,28 @@
 # Current State
 
+## 2026-07-19 UPDATE 100 — Compliance Prompt 01 shared shell implemented and verified
+
+Sponsor acknowledged the corrected Compliance-only programme boundary and authorized
+Prompt 01. The corrected Prompt 00 decision pack is durably stored under the approved
+external documentation root; its required ZIP SHA-256
+`8964ae5580b9962802fae8762f229e8a521bffe8e8b037009e23e0bd81fe569a` and all 19
+manifest entries verify. The Web/Admin shell now has the exact Overview, Operations,
+Compliance, Insights and Administration groups; every non-admin persona has the ten
+authorized business destinations; and all seven primary Administration options remain
+visible but accessibly locked unless the existing role model permits them. The topbar
+unifies authenticated RLS-scoped search, date/region scope, theme, notifications, AI and
+account behavior while retaining language, profile and sign-out.
+
+Typecheck and production build pass. Prompt 01/protected source checks pass 10/10,
+shared-shell browser checks pass 8/8, visual evidence passes 2/2 with four reviewed
+English/Arabic light/dark expanded/collapsed/responsive frames, and the live regulation
+publish RLS negative passes 2/2 without mutation. The complete non-mutating static
+inventory reports 91 pass, 4 intentional provider skips and one unrelated pre-existing
+font import-name assertion failure. No schema, DDL, Inspector runtime, shared runtime data,
+route guard, RLS policy, provider, offline or historical-record source changed. Sponsor
+shared-shell acceptance remains pending. Exact evidence:
+`evidence/TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md`.
+
 ## 2026-07-18 UPDATE 98 — UI compliance technical gate passed; human gates remain
 
 Sponsor authorized the dedicated `TASK-QA-UI-COMPLIANCE-CERT-004` release-certification

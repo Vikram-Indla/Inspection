@@ -3768,9 +3768,70 @@
       "commit_sha": "pending integrated certification commit",
       "next_task": "Promote the certified integrated candidate to main and configure held providers only under separate authority.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 96 and TASK-MVP3-RETROFIT-REGRESSION-001. The engineering retrofit is PASS at 510/519 protected tests with zero failures. Preserve the coexistence map and fail-closed provider holds."
+    },
+    {
+      "session_id": "2026-07-19-compliance-shared-shell-001",
+      "started_at": "2026-07-19",
+      "ended_at": "2026-07-19",
+      "branch": "codex/compliance-shared-shell-001",
+      "task_id": "TASK-WEB-COMPLIANCE-SHARED-SHELL-001",
+      "gate": "G11 sponsor-authorized Compliance shared shell",
+      "requirements": [
+        "CMP-REQ-SHELL-001",
+        "CMP-REQ-SHELL-002",
+        "CMP-REQ-SHELL-003"
+      ],
+      "acceptance_ids": [
+        "CMP-ACC-013",
+        "CMP-ACC-016..019",
+        "CMP-ACC-024",
+        "CMP-ACC-030..038"
+      ],
+      "screens": [
+        "SCR-SHARED-SHELL-001"
+      ],
+      "engines": [
+        "existing authentication, route guards, RLS, notifications and localization preserved",
+        "authenticated RLS-scoped shell search"
+      ],
+      "files_changed": [
+        "shared shell navigation, client and styles",
+        "authenticated shell search endpoint",
+        "dashboard shell-toolbar integration",
+        "shell source/runtime/visual tests",
+        "acceptance, evidence, execution and session records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Prompt 01 and Inspector-boundary source checks 10/10 PASS",
+        "shared-shell browser checks 8/8 PASS",
+        "visual evidence 2/2 PASS with four frames",
+        "live RLS-denied regulation publish 2/2 PASS",
+        "non-mutating static inventory 91 pass / 4 intentional skips / 1 pre-existing unrelated failure",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md",
+        "product-contract/acceptance/CMP_SHARED_SHELL_001.csv",
+        "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/TASK-WEB-COMPLIANCE-SHARED-SHELL-001"
+      ],
+      "decisions": [
+        "Compliance Management remains the exclusive programme",
+        "Inspector involvement remains downstream consumption only and no Inspector source changed",
+        "Administration visibility is presentational while route guards and RLS remain authoritative",
+        "Full state-mutating protected browser inventory was not rerun under the no-runtime-data-mutation boundary"
+      ],
+      "blockers": [
+        "Sponsor shared-shell acceptance",
+        "Separate maintenance disposition for the pre-existing stale IBM Plex Sans Arabic import-name assertion"
+      ],
+      "commit_sha": "committed on codex/compliance-shared-shell-001 at closure; use branch HEAD",
+      "next_task": "Await sponsor shared-shell acceptance before any later Compliance prompt or implementation slice.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 100 and TASK-WEB-COMPLIANCE-SHARED-SHELL-001 evidence. Preserve the Compliance-only scope and do not execute later prompts until sponsor accepts Prompt 01."
     }
   ],
-  "last_session": "2026-07-18-mvp3-retrofit-regression-certification",
+  "last_session": "2026-07-19-compliance-shared-shell-001",
   "rules": {
     "append_only": true,
     "required_fields": [

@@ -1,5 +1,20 @@
 # Evidence Status
 
+## TASK-WEB-COMPLIANCE-SHARED-SHELL-001 — 2026-07-19
+
+| ID | Evidence | Status |
+|---|---|---|
+| CMP-SHELL-EV-001 | Durable Prompt 00 pack, transfer record, inventory and SHA-256 | Captured — PASS |
+| CMP-SHELL-EV-002 | Five-group IA and unified persona matrix | Captured — PASS |
+| CMP-SHELL-EV-003 | Accessible locked Administration and role-composed enabled/hidden rules | Captured — PASS |
+| CMP-SHELL-EV-004 | Shared topbar and authenticated RLS-scoped search | Captured — PASS |
+| CMP-SHELL-EV-005 | Route-guard source contract and live RLS-denied publish | Captured — 2/2 PASS |
+| CMP-SHELL-EV-006 | EN/AR, light/dark, expanded/collapsed/responsive screenshots | Captured — 2/2 harness, four reviewed frames |
+| CMP-SHELL-EV-007 | Typecheck, build and shell tests | Captured — PASS; focused 10/10 and runtime 8/8 |
+| CMP-SHELL-EV-008 | Non-mutating protected regression | Captured — 91 pass / 4 intentional skips / 1 pre-existing unrelated failure |
+
+Exact record: `TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md`.
+
 ## 2026-07-18 — Platform foundation promotion 003
 
 Source inheritance and integration evidence is complete: typecheck/build PASS, focused 16/16,

@@ -1,5 +1,15 @@
 # Acceptance Status
 
+## TASK-WEB-COMPLIANCE-SHARED-SHELL-001 — 2026-07-19
+
+- CMP-ACC-013, 016..019, 024 and 030..038: **PASS_IMPLEMENTED_VERIFIED**.
+- Five exact shell groups, ten unified business destinations, accessible locked
+  Administration visibility, role-composed admin enablement and the full shared topbar are verified.
+- Route guards and RLS remain authoritative; the live non-admin regulation publish negative passes.
+- Sponsor runtime/visual acceptance: **PENDING**.
+- Exact map: `CMP_SHARED_SHELL_001.csv`; evidence:
+  `../evidence/TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md`.
+
 ## 2026-07-18 — Platform foundation promotion 003
 
 - PDS-AC-001..024: PASS_SOURCE.
