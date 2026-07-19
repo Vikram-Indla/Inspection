@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -50,10 +51,8 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   }
   if (!plan) {
     return <Shell current="/planning" title={t("plan.drill.notFoundTitle", "Plan not found")}>
-      <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">∅</span>
-        <h4>{t("plan.drill.notFound", "Not in your scope or does not exist")}</h4>
-        <p className="ax-caption">{t("plan.drill.notFoundDesc", "Plan visibility is RLS-enforced (plans_read — planner/ops/reviewer/auditor/leadership).")}</p>
-      </div></div>
+      <EmptyState glyph="∅" title={t("plan.drill.notFound", "Not in your scope or does not exist")}
+        body={t("plan.drill.notFoundDesc", "Plan visibility is RLS-enforced (plans_read — planner/ops/reviewer/auditor/leadership).")} />
     </Shell>;
   }
   const creator = (plan.profiles as unknown as { full_name: string } | null)?.full_name ?? "—";
@@ -120,10 +119,8 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
 
       {/* M02-017 — child visits with assignments */}
       {visits.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🗓</span><h4>{t("plan.drill.noChildren", "No child visits under this plan")}</h4>
-          <p className="ax-caption">{t("plan.drill.noChildrenDesc", "Visits are attached at plan creation; immediate visits never carry a plan (M01-050).")}</p>
-        </div></div>
+        <EmptyState glyph="🗓" title={t("plan.drill.noChildren", "No child visits under this plan")}
+          body={t("plan.drill.noChildrenDesc", "Visits are attached at plan creation; immediate visits never carry a plan (M01-050).")} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>

@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
+import EmptyState from "@/components/EmptyState";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { AiDockets, type AiRow, type AiStrings } from "./AiDockets";
 import type { AiDisposition } from "@/lib/ai/suggestions";
@@ -47,9 +48,8 @@ export default async function AiSuggestionsPage() {
       <div className="ax-banner"><div><strong>{t("ai.banner.title", "Advisory only — human decides.")}</strong> {t("ai.banner.body", "AI never writes a decision or legal text. Every suggestion needs a human disposition. The provider is fail-closed (unavailable) until configured; nothing is auto-actioned.")}</div></div>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("ai.error", "Couldn’t load suggestions. Nothing changed.")}</strong></div></div>}
       {!error && mapped.length === 0 && (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">🤖</span>
-          <h4>{t("ai.empty.title", "No suggestions")}</h4>
-          <p className="ax-caption">{t("ai.empty.body", "With no configured provider, none are generated. A human may propose an advisory item for disposition. Empty may also mean none are in your scope (RLS).")}</p></div></div>
+        <EmptyState glyph="🤖" title={t("ai.empty.title", "No suggestions")}
+          body={t("ai.empty.body", "With no configured provider, none are generated. A human may propose an advisory item for disposition. Empty may also mean none are in your scope (RLS).")} />
       )}
       <AiDockets rows={mapped} strings={strings} />
     </Shell>

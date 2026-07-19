@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import EmptyState from "@/components/EmptyState";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 import type { BulkFormStrings } from "./BulkForm";
 import type { CriteriaBuilderStrings } from "./CriteriaBuilder";
@@ -44,11 +45,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (!isPlanner) {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">⛔</span>
-          <h4>{t("plan.bulk.unauthorized.title", "Authorized role required")}</h4>
-          <p className="ax-caption">{t("plan.bulk.unauthorized.body", "Bulk targeting (SCR-WEB-110) is available to the Planner role only.")}</p>
-        </div></div>
+        <EmptyState glyph="⛔" title={t("plan.bulk.unauthorized.title", "Authorized role required")}
+          body={t("plan.bulk.unauthorized.body", "Bulk targeting (SCR-WEB-110) is available to the Planner role only.")} />
       </Shell>
     );
   }
@@ -80,11 +78,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[CD-021] factories read failed:", factoriesError.message, factoriesError.code);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">⚠</span>
-          <h4>{t("plan.bulk.serviceUnavailable.title", "Factory registry unavailable")}</h4>
-          <p className="ax-caption">{t("plan.bulk.serviceUnavailable.body", "The factory registry could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")}</p>
-        </div></div>
+        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory registry unavailable")}
+          body={t("plan.bulk.serviceUnavailable.body", "The factory registry could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
       </Shell>
     );
   }

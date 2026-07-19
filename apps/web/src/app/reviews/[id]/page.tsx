@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import EmptyState from "@/components/EmptyState";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
 import StartReview, { type StartReviewStrings } from "./StartReview";
 import VersionCompare, { type VersionCompareStrings, type ItemSection } from "./VersionCompare";
@@ -77,15 +78,10 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     // genuinely missing id — a failed fetch is never labeled "not found".
     return (
       <Shell current="/reviews" title={insErr ? t("review.ws.loadError", "Could not load") : t("review.ws.notFound", "Not found")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph" aria-hidden="true">…</span>
-          <h4>{insErr ? t("review.ws.loadError", "Could not load") : t("review.ws.notFound", "Not found")}</h4>
-          <p className="ax-caption">
-            {insErr
-              ? t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")
-              : t("review.ws.notFoundDesc", "No record matches this ID or it is outside your permitted scope.")}
-          </p>
-        </div></div>
+        <EmptyState glyph="…" title={insErr ? t("review.ws.loadError", "Could not load") : t("review.ws.notFound", "Not found")}
+          body={insErr
+            ? t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")
+            : t("review.ws.notFoundDesc", "No record matches this ID or it is outside your permitted scope.")} />
       </Shell>
     );
   }
