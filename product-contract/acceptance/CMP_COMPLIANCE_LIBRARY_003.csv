@@ -1,0 +1,21 @@
+acceptance_id,requirement_id,assertion,evidence,status
+CMP-ACC-LIB-001,CMP-REQ-LIB-001,"Compliance Library links Regulations and Inspection Items as one control-plane capability","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-002,CMP-REQ-LIB-001,"Regulation register/detail preserve existing source data and behavior","production build; boundary diff",PASS
+CMP-ACC-LIB-003,CMP-REQ-LIB-001,"Inspection Item catalogue preserves existing source data and behavior","production build; authenticated runtime",PASS
+CMP-ACC-LIB-004,CMP-REQ-LIB-002,"Direct authoring is explicitly labelled legacy compatibility","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-005,CMP-REQ-LIB-002,"New and modified work has a governed CCR handoff","focused contract; create-form prefill",PASS
+CMP-ACC-LIB-006,CMP-REQ-LIB-002,"Reviewer has authorized read-only item and preview access","layout guard; focused contract",PASS
+CMP-ACC-LIB-007,CMP-REQ-LIB-003,"Preview identifies Regulation version clause and Inspection Section","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-008,CMP-REQ-LIB-003,"Preview identifies item title description and inspector guidance","runtime screenshot",PASS
+CMP-ACC-LIB-009,CMP-REQ-LIB-003,"Preview shows Response Type values and evaluation mapping","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-010,CMP-REQ-LIB-003,"Preview shows mandatory and evidence requirements and acceptable types","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-011,CMP-REQ-LIB-003,"Preview shows Self-Assessment visibility and package/report placement honestly","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-012,CMP-REQ-LIB-003,"Preview selects an immutable published package-version snapshot","package_version_item_snapshots read; authenticated runtime",PASS
+CMP-ACC-LIB-013,CMP-REQ-LIB-003,"Preview shows exact effective package and item configuration versions","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-014,CMP-REQ-LIB-004,"Non-Compliant trigger resolves to existing Violation configuration","authenticated runtime screenshot",PASS
+CMP-ACC-LIB-015,CMP-REQ-LIB-004,"Penalty is rendered read-only and final application timing remains Review/Enforcement","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-016,CMP-REQ-LIB-004,"Legacy and governed immutable version lineage is readable without mutation","focused contract; build",PASS
+CMP-ACC-LIB-017,CMP-REQ-LIB-005,"Missing runtime fields emit explicit INSPECTOR_RUNTIME_INTEGRATION_GAP records","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-018,CMP-REQ-LIB-005,"Each gap records requirement route change risk and separate-slice disposition","focused contract; runtime screenshot",PASS
+CMP-ACC-LIB-019,CMP-REQ-LIB-005,"Preview performs no insert update delete RPC or Inspector source change","source contract; boundary diff",PASS
+CMP-ACC-LIB-020,CMP-REQ-LIB-005,"Empty loading error unavailable and permission states remain honest","loading/error routes; typecheck; build",PASS

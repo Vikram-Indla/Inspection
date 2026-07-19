@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-COMPLIANCE-LIBRARY-003"
+    gate: "G11 sponsor-directed Compliance Library"
+    priority: "P0"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
+    owner: "Codex implementation and QA + Sponsor acceptance authority"
+    blocked_by: []
+    blocks: ["Prompt 04 Compliance Approval Queue"]
+    note: "Unified Regulations/Inspection Items library, CCR handoff and read-only Inspector Runtime Preview are implemented from immutable published package snapshots. Typecheck/build, focused 5/5, protected static 105 pass/4 intentional provider skips and authenticated read-only runtime evidence pass. Inspector source and runtime behavior remain untouched."
   - task_id: "TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002"
     gate: "G11 sponsor-authorized Compliance request engine"
     priority: "P0"

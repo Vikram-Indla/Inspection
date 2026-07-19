@@ -189,6 +189,13 @@ export default async function Regulations({
       ) : null}
     </span>
   );
+  const libraryTabs = (
+    <nav className="cmp-library-tabs" aria-label="Compliance Library">
+      <a className="ax-btn ax-btn--prominent" href="/admin/regulations" aria-current="page">Regulations</a>
+      <a className="ax-btn ax-btn--secondary ax-link" href="/admin/items">Inspection Items</a>
+      {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href="/admin/compliance-requests/new">Create governed request</a> : null}
+    </nav>
+  );
 
   // ---- S05/S06 read-only disclosure inside the module route guard ----
   const readOnlyBanner = roleError ? (
@@ -240,6 +247,7 @@ export default async function Regulations({
       <Shell current="/admin/regulations" title={title} context={context}>
         {degradedBanner}
         {readOnlyBanner}
+        {libraryTabs}
 
         <p className="ax-caption" style={{ margin: 0 }}>
           <a className="ax-link" href="/admin/regulations">← {t("admin.reg.r1.backToRegister", "Back to register")}</a>
@@ -431,6 +439,9 @@ export default async function Regulations({
     <Shell current="/admin/regulations" title={title} context={context}>
       {degradedBanner}
       {readOnlyBanner}
+      {libraryTabs}
+
+      {isWriter ? <div className="ax-banner ax-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct regulation controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this library remains the published source of truth.</div> : null}
 
       {isWriter ? <NewRegulationForm strings={strings} /> : null}
 

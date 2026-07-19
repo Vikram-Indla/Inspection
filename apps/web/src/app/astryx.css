@@ -1260,5 +1260,10 @@ button.ax-shell-scope { cursor: pointer; }
 .ccr-tree li{padding:10px;border-inline-start:3px solid var(--ax-color-info);background:var(--ax-color-surface-sunken);overflow-wrap:anywhere}
 .ccr-error{color:var(--ax-color-critical-strong)}
 .ccr-success{color:var(--ax-color-success-strong)}
+.cmp-library-tabs{display:flex;gap:var(--ax-space-100);align-items:center;flex-wrap:wrap;margin-block-end:var(--ax-space-150)}
+.cmp-runtime-head,.cmp-runtime-card,.cmp-runtime-selector{padding:var(--ax-space-250);margin-block-end:var(--ax-space-200)}
+.cmp-runtime-head{display:flex;justify-content:space-between;gap:var(--ax-space-250);align-items:flex-start}.cmp-runtime-head h2,.cmp-runtime-head p{margin-block:0 var(--ax-space-100)}
+.cmp-runtime-selector{display:flex;gap:var(--ax-space-150);align-items:flex-end;flex-wrap:wrap}.cmp-runtime-selector .ax-field{min-inline-size:min(100%,30rem)}
+.cmp-runtime-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ax-space-150);margin:0}.cmp-runtime-facts>div{padding:var(--ax-space-150);background:var(--ax-color-surface-sunken);border-radius:var(--ax-radius-standard);min-inline-size:0}.cmp-runtime-facts dt{font:var(--ax-text-micro);color:var(--ax-color-text-secondary);letter-spacing:.04em}.cmp-runtime-facts dd{margin:4px 0 0;overflow-wrap:anywhere}.cmp-runtime-values{display:flex;gap:6px;flex-wrap:wrap}.cmp-runtime-gaps{border-inline-start:4px solid var(--ax-color-warning)}.cmp-runtime-gaps li{margin-block:var(--ax-space-100)}
 @media(max-width:900px){.ccr-grid{grid-template-columns:1fr}.ccr-card--wide{grid-column:auto}.ccr-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.ccr-facts,.ccr-compare,.ccr-form{grid-template-columns:1fr}.ccr-span{grid-column:auto}.ccr-register-head .ax-btn,.ccr-actions .ax-btn{inline-size:100%}.ccr-inline-form{align-items:stretch}.ccr-inline-form .ax-field{inline-size:100%;max-inline-size:none}}
+@media(max-width:560px){.ccr-facts,.ccr-compare,.ccr-form,.cmp-runtime-facts{grid-template-columns:1fr}.ccr-span{grid-column:auto}.ccr-register-head .ax-btn,.ccr-actions .ax-btn,.cmp-library-tabs .ax-btn{inline-size:100%}.ccr-inline-form{align-items:stretch}.ccr-inline-form .ax-field{inline-size:100%;max-inline-size:none}.cmp-runtime-head,.cmp-runtime-selector{align-items:stretch;flex-direction:column}}

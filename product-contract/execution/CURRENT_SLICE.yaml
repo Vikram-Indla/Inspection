@@ -1,49 +1,48 @@
 schema_version: "1.2"
-task_id: "TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002"
-gate: "G11 sponsor-authorized Compliance request engine"
-title: "Prompt 02 — Compliance Configuration Request Engine"
+task_id: "TASK-WEB-COMPLIANCE-LIBRARY-003"
+gate: "G11 sponsor-directed Compliance Library"
+title: "Prompt 03 — Compliance Library and Inspector Runtime Preview"
 status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "Explicit sponsor approval — push Prompt 01 and move forward with Prompt 02 — 2026-07-19"
+approval_ref: "Sponsor: Prompt 01 accepted; proceed without idling — 2026-07-19"
 change_control_ref: "SPONSOR-COMPLIANCE-SCOPE-CORRECTION-2026-07-19"
 
-branch_at_start: "codex/compliance-request-engine-002"
-head_at_start: "26a8b4363fab9b8d66811aae949b604e2e9b14b9"
-process_ids: ["Compliance Configuration Request lifecycle", "component review", "transactional publication"]
-requirement_ids: ["CMP-REQ-CCR-001..010"]
-acceptance_ids: ["CMP-ACC-CCR-001..030"]
-evidence_ids: ["CMP-CCR-EV-001..009"]
-screen_ids: ["SCR-COMPLIANCE-REQUEST-REGISTER", "SCR-COMPLIANCE-REQUEST-CREATE", "SCR-COMPLIANCE-REQUEST-WORKSPACE"]
-engine_ids: ["CCR revision engine", "maker-checker review", "dependency evaluator", "transactional publication", "existing audit and notification engines"]
+branch_at_start: "codex/compliance-library-003"
+head_at_start: "9237e62f42fc3a3524b44ef57b54fb570eb8b930"
+process_ids: ["P00 Compliance configuration", "Compliance Library", "Inspector downstream configuration verification"]
+requirement_ids: ["CMP-REQ-LIB-001..005"]
+acceptance_ids: ["CMP-ACC-LIB-001..020"]
+evidence_ids: ["CMP-LIB-EV-001..006"]
+screen_ids: ["SCR-ADM-010", "SCR-ADM-011", "SCR-ADM-020", "SCR-INSPECTOR-RUNTIME-PREVIEW"]
+engine_ids: ["Published package-version snapshots", "Compliance entity version lineage", "existing violation and penalty configuration"]
 
 dependencies:
-  - "Accepted Prompt 01 commit 26a8b4363fab9b8d66811aae949b604e2e9b14b9."
-  - "Existing roles, RLS, audit_events, notifications and legacy Compliance configuration tables."
+  - "Prompt 01 accepted and Prompt 02 remote commit 9237e62f42fc3a3524b44ef57b54fb570eb8b930."
+  - "Existing Regulations, Inspection Items, package snapshots, Violations, Penalties and CCR contracts."
 
 open_decisions:
-  - "Sponsor Prompt 02 runtime/source acceptance."
-  - "Remote migration application and legacy cutover remain separately controlled; this slice creates the forward migration but does not apply shared DDL."
+  - "Sponsor Prompt 03 runtime/source acceptance."
+  - "Explicit Inspector runtime integration gaps remain separate controlled implementation work."
 
 do_not_touch:
-  - "No Inspector/iPad redesign or Compliance-to-Inspector runtime change."
-  - "No Mapbox, digital-signature, offline-execution or unrelated Administration change."
-  - "No destructive legacy table rewrite, historical inspection/report mutation, remote DDL or production-data mutation."
+  - "No Inspector/iPad route, component, navigation, layout, styling or workflow changes."
+  - "No Approval Queue visual implementation (Prompt 04), Compliance schema, Mapbox, signature, offline or unrelated Administration change."
+  - "No remote DDL, runtime-data mutation, historical inspection/report mutation or frozen product-contract edit."
 
 authorized_file_scope:
-  - "Additive CCR migration, RPCs, RLS, immutable versions and compatibility view."
-  - "Request register, create and detail workspace with guarded server actions."
-  - "Existing notification event display and provider dispatch integration."
-  - "Focused/static tests, SQL probe, acceptance, evidence, execution and session records."
+  - "Compliance Library navigation and legacy-authoring disclosure."
+  - "Governed request handoff with safe create-form prefilling."
+  - "Authorized read-only Inspector Runtime Preview using published immutable configuration."
+  - "Focused/static tests, acceptance, evidence, execution and session records."
 
 required_evidence:
-  - "Lifecycle and immutable revision execution."
-  - "Maker-checker, RLS and required-comment negatives."
-  - "Deterministic dependency cascade and partial approval."
-  - "Transactional publication/orphan rollback and compatibility proof."
+  - "Unified Regulations and Inspection Items library navigation."
+  - "Read-only runtime preview fields, exact-version selection and immutable lineage."
+  - "Violation/Penalty downstream context and explicit integration gaps."
   - "Typecheck, production build, focused and protected static regression."
 
 exit_condition: >-
-  Sponsor accepts Prompt 02 after reviewing the migration, database contracts,
-  request UI and execution evidence. Until then, stop at
-  AWAITING_SPONSOR_REQUEST_ENGINE_ACCEPTANCE.
+  Sponsor accepts Prompt 03 after reviewing the Compliance Library, governed-request
+  handoff, read-only Inspector Runtime Preview and verification evidence. Until then,
+  stop at AWAITING_SPONSOR_COMPLIANCE_LIBRARY_ACCEPTANCE.

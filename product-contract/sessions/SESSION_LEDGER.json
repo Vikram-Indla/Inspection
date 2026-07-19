@@ -3894,9 +3894,61 @@
       "commit_sha": "Prompt 02 closure commit on codex/compliance-request-engine-002; resolve branch HEAD",
       "next_task": "Await sponsor request-engine acceptance before beginning a later Compliance prompt.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 101 and TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002 evidence. Preserve the Compliance-only boundary and do not apply remote DDL or begin the next slice without sponsor authority."
+    },
+    {
+      "session_id": "2026-07-19-compliance-library-003",
+      "started_at": "2026-07-19",
+      "ended_at": "2026-07-19",
+      "branch": "codex/compliance-library-003",
+      "task_id": "TASK-WEB-COMPLIANCE-LIBRARY-003",
+      "gate": "G11 sponsor-directed Compliance Library",
+      "requirements": ["CMP-REQ-LIB-001..005"],
+      "acceptance_ids": ["CMP-ACC-LIB-001..020"],
+      "screens": ["SCR-ADM-010", "SCR-ADM-011", "SCR-ADM-020", "SCR-INSPECTOR-RUNTIME-PREVIEW"],
+      "engines": [
+        "published package-version item snapshots",
+        "legacy and governed immutable version lineage",
+        "existing Violation and Penalty configuration"
+      ],
+      "files_changed": [
+        "Compliance Library Regulation/Inspection Item navigation and legacy-authoring disclosure",
+        "governed request prefill handoff",
+        "read-only Inspector Runtime Preview with honest integration gaps",
+        "runtime loading/error states, focused/static and authenticated evidence tests",
+        "acceptance, evidence, execution, governance and session records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Prompt 03 source contracts 5/5 PASS",
+        "protected static inventory 105 PASS / 4 intentional provider skips / 0 failed",
+        "authenticated read-only runtime and evidence 6/6 PASS",
+        "active-tab contrast correction runtime recheck 1/1 PASS",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-WEB-COMPLIANCE-LIBRARY-003.md",
+        "product-contract/acceptance/CMP_COMPLIANCE_LIBRARY_003.csv",
+        "apps/web/e2e/compliance-library.spec.ts",
+        "external approved evidence/screens/task-web-compliance-library-003"
+      ],
+      "decisions": [
+        "Compliance Library is the Web/Admin control plane; direct authoring remains visibly legacy during cutover",
+        "Runtime Preview selects immutable published package snapshots and performs no writes",
+        "Missing consumption fields are explicit INSPECTOR_RUNTIME_INTEGRATION_GAP records",
+        "Penalty is downstream read-only context and is not finally applied at response selection",
+        "No Inspector/iPad source, schema, runtime data or unrelated platform code changed"
+      ],
+      "blockers": [
+        "Sponsor Prompt 03 acceptance",
+        "Any listed Inspector runtime integration gap requires a separate controlled implementation slice"
+      ],
+      "commit_sha": "Prompt 03 closure commit on codex/compliance-library-003; resolve branch HEAD",
+      "next_task": "Prompt 04 Compliance Approval Queue after Prompt 03 acceptance or sponsor-directed continuation.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 102 and TASK-WEB-COMPLIANCE-LIBRARY-003 evidence. Preserve the Compliance-only boundary; do not modify Inspector source when resolving runtime-consumption gaps."
     }
   ],
-  "last_session": "2026-07-19-compliance-request-engine-002",
+  "last_session": "2026-07-19-compliance-library-003",
   "rules": {
     "append_only": true,
     "required_fields": [
