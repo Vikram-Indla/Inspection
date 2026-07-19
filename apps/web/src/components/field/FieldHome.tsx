@@ -63,6 +63,10 @@ export type FieldHomeStrings = {
   emptyBody: string;
   noMatch: string;
   mapEmpty: string;
+  // FNS-010 — persistent selected-task highlight (mirrors VisitsBoard select spine).
+  selectAria: string;            // "{name}" — a11y label for the select control (no register match — draft)
+  openDetails: string;           // register: VR-088 "Establishment Details" — "Details" term (تفاصيل)
+  openDetailsAria: string;       // "{name}" — a11y label for the navigation link (no register match — draft)
   windowEnds: string;            // "window ends {date}"
   statusLabels: Record<string, string>; // prepared/not_started/…/expired/overdue
   inboxTitle: string;
@@ -97,16 +101,29 @@ function fmtWindow(iso: string): string {
   return new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 }
 
-function VisitCard({ v, s, strings, onDragStart }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings; onDragStart: (id: string) => void }) {
+// FNS-010 — the card carries a persistent, keyboard-operable selected state
+// (mirrors the VisitsBoard continuity spine: a button drives the highlight via
+// aria-pressed, an adjacent link preserves direct navigation). Selecting never
+// navigates; the Details link is the navigation affordance, so tap-to-open is
+// preserved for keyboard and pointer users alike.
+function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings; selected: boolean; onSelect: (id: string) => void; onDragStart: (id: string) => void }) {
   const accent = s.tone === "critical" ? "var(--ax-color-critical)"
     : s.tone === "warning" ? "var(--ax-color-warning)"
     : "var(--ax-color-primary)";
   return (
-    <a href={visitHref(v)} className="ax-surface ax-panel" draggable={s.key !== "expired" && s.key !== "approved"}
+    <div className="ax-surface ax-panel" aria-selected={selected} draggable={s.key !== "expired" && s.key !== "approved"}
       onDragStart={() => onDragStart(v.id)}
-      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", textDecoration: "none", color: "inherit", borderInlineStart: `4px solid ${accent}` }}>
-      <div className="ax-row" style={{ justifyContent: "space-between" }}>
-        <strong style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{v.factoryName}</strong>
+      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", color: "inherit", borderInlineStart: `4px solid ${accent}`,
+        outline: selected ? "var(--ax-focus-ring)" : undefined, outlineOffset: selected ? "-2px" : undefined }}>
+      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)" }}>
+        {/* Select-on-click/focus drives the persistent highlight (real state in
+            the parent); the button is natively keyboard-operable. */}
+        <button type="button" className="ax-link ax-inline-target" aria-pressed={selected}
+          onClick={() => onSelect(v.id)} onFocus={() => onSelect(v.id)}
+          aria-label={strings.selectAria.replace("{name}", v.factoryName)}
+          style={{ font: "var(--ax-text-field)", fontWeight: 600, textAlign: "start", background: "none", border: "none", padding: 0, cursor: "pointer", color: "inherit" }}>
+          {v.factoryName}
+        </button>
         <span className={`ax-lozenge ax-lozenge--${s.tone === "ops" ? "ops" : s.tone}`}>
           {strings.statusLabels[s.key] ?? s.key.replace(/_/g, " ")}
         </span>
@@ -119,8 +136,12 @@ function VisitCard({ v, s, strings, onDragStart }: { v: FieldVisit; s: DerivedSt
           {strings.windowEnds.replace("{date}", fmtWindow(v.windowEnd))}
         </span>
       )}
-      {s.key !== "expired" && s.key !== "approved" && <span className="ax-caption">{strings.rescheduleHint}</span>}
-    </a>
+      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+        {s.key !== "expired" && s.key !== "approved" ? <span className="ax-caption">{strings.rescheduleHint}</span> : <span />}
+        <a href={visitHref(v)} className="ax-link ax-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
+          aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)}>{strings.openDetails} →</a>
+      </div>
+    </div>
   );
 }
 
@@ -163,6 +184,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
   const [type, setType] = useState("");
   const [mode, setMode] = useState("");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [selectedId, setSelectedId] = useState<string | null>(null); // FNS-010 selected-task highlight
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [rescheduleBusy, setRescheduleBusy] = useState<string | null>(null);
   const [rescheduleMessage, setRescheduleMessage] = useState<string | null>(null);
@@ -294,7 +316,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
         {view === "list" && filtered.length > 0 && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)" }}>
-            {filtered.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} onDragStart={setDraggedId} />)}
+            {filtered.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
           </div>
         )}
 
@@ -308,7 +330,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
                   {draggedId && <span className="ax-caption">{rescheduleBusy ? "…" : strings.rescheduleHint}</span>}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
-                  {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} onDragStart={setDraggedId} />)}
+                  {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
                 </div>
               </div>
             ))}
