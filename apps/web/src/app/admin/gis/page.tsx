@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import GisStudio, { type GisFactory, type GisSettings, type GisStrings } from "./GisStudio";
+import EmptyState from "@/components/EmptyState";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
 export const dynamic = "force-dynamic";
@@ -82,10 +83,8 @@ export default async function GisStudioPage() {
         )}
 
         {!err && factories.length === 0 && (
-          <div className="ax-surface"><div className="ax-state">
-            <span className="ax-state__glyph">◎</span><h4>{t("gis.empty.title", "No factories registered")}</h4>
-            <p className="ax-caption">{t("gis.empty.body", "The factory registry is empty — geofences appear here once factories are synced (FND-007).")}</p>
-          </div></div>
+          <EmptyState glyph="◎" title={t("gis.empty.title", "No factories registered")}
+            body={t("gis.empty.body", "The factory registry is empty — geofences appear here once factories are synced (FND-007).")} />
         )}
 
         {!err && factories.length > 0 && (
