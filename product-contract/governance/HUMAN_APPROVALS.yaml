@@ -158,6 +158,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-19"
     change_ref: "Sponsor instructions: authorizations for everything / push whatever it is / What's next? Don't sit idle."
+  - gate: "FACTORY-360-MASTER-EXECUTION-010"
+    decision: "APPROVED — sponsor uploaded the complete Factory 360 Codex execution pack and instructed Codex to start execution. The mandate explicitly authorizes parallel agents, additive native implementation of every Word/API/HTML positive delta, permanent master/API/acceptance/preservation/journey ledgers, controlled unavailable stubs for undocumented Senaei APIs, preservation of all valuable current functionality, functional verification, commit and push of the isolated Factory 360 branch. It does not authorize production deployment, main modification/merge, remote DDL under Prompt 00, fabricated provider data, secrets in Git or destructive historical rewrites."
+    approver: "Vikram Indla"
+    date: "2026-07-20"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-FACTORY-360-COMPLETE-010"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

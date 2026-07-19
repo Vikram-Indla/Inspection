@@ -86,3 +86,6 @@ tmp/node_modules
 
 # Sponsor-supplied source packs and secret-bearing local inputs
 .local-inputs/
+
+# Sanitized Postman collection still contains business examples; keep it local.
+product-contract/factory-360/source/Inspection_API_documentation.sanitized.json

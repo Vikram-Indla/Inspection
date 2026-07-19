@@ -1,5 +1,34 @@
 # Current State
 
+## 2026-07-20 UPDATE 104 — Factory 360 v2 Prompt 00 implemented and source-verified
+
+The sponsor-directed Factory 360 master slice is implemented on the isolated
+`codex/factory-360-complete-010` branch. The CR-centred read-only dossier now preserves the
+existing factory identity and route while adding governed CR → Industrial License → plant
+selection, CR portfolio facts, selected-license industrial data, approved inspection reports,
+approved-snapshot compliance, existing Risk Engine explanation/history, government records,
+documents/OCR, separated official/profile and inspection media, violation/action lineage,
+source provenance, permission-bound planning/export, and controlled unavailable states.
+Global search covers CR/unified/legal-name/license/plant identifiers. Existing Factory 360
+write capabilities are retained under the guarded Administration integration control plane;
+strict CSV ingestion records SHA-256 custody and reconciliation rows without directly changing
+source truth.
+
+The additive PostgreSQL foundation supplies normalized hierarchy, immutable provider and
+submission-linked snapshots, versioned production-line rows, government/media/reconciliation
+records, RLS, audit, immutable identifier guards, and six exact Factory 360 permissions. The
+server-only Senaei boundary types every documented endpoint and fails closed for conflicting or
+absent contracts. PostgreSQL 16 compile, replay, negative date/immutability, and SQL contract
+tests pass. Typecheck and production build pass; focused contracts pass 20/20; protected static
+regression passes 131 with four intentional live-provider skips and zero failures.
+
+No remote DDL, production deployment, main merge, live Senaei equivalence claim, CR-level
+risk/compliance calculation, or source binary/JSON commit occurred. Fourteen provider/contract
+gaps remain `BLOCKED_EXTERNAL`; `F360-AC-012` and `F360-AC-013` require approved contract values,
+credentials/connectivity, and controlled staging evidence. Authenticated sponsor acceptance,
+native-Arabic review, and Prompt 02 staging remain open. Exact evidence:
+`evidence/TASK-FACTORY-360-COMPLETE-010.md`.
+
 ## 2026-07-19 UPDATE 103 — Compliance Prompt 04 Approval Queue implemented
 
 Prompt 04 adds a dedicated `/admin/compliance-approvals` route and points the shared

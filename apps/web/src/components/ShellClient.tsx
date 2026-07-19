@@ -75,7 +75,7 @@ function initials(email: string) {
   return local.split(/[._-]+/).slice(0, 2).map(part => part[0]?.toUpperCase()).join("") || "S";
 }
 
-type GlobalSearchResult = { id: string; type: "factory" | "visit" | "inspection"; label: string; detail: string; href: string };
+type GlobalSearchResult = { id: string; type: "commercial_registration" | "industrial_license" | "plant" | "factory" | "visit" | "inspection"; label: string; detail: string; href: string };
 
 function defaultDateRange() {
   const to = new Date();

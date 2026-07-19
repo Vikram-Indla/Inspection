@@ -1,0 +1,38 @@
+schema_version: "1.2"
+task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
+gate: "G11 sponsor-directed Compliance Approval Queue"
+title: "Prompt 04 — Compliance Approval Queue"
+status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
+enforce_stop_gate: true
+broad_implementation_allowed: true
+approval_ref: "Sponsor continuous forward implementation direction — 2026-07-19"
+change_control_ref: "SPONSOR-COMPLIANCE-SCOPE-CORRECTION-2026-07-19"
+branch_at_start: "codex/compliance-approval-queue-004"
+head_at_start: "7d52b69f5105a1afb183797db8b81425822f98d6"
+process_ids: ["CCR maker-checker review", "component approval", "transactional publication readiness"]
+requirement_ids: ["CMP-REQ-APQ-001..006"]
+acceptance_ids: ["CMP-ACC-APQ-001..020"]
+evidence_ids: ["CMP-APQ-EV-001..006"]
+screen_ids: ["CMP-SCR-004", "SCR-COMPLIANCE-REQUEST-WORKSPACE"]
+engine_ids: ["CCR RLS", "maker-checker RPCs", "dependency evaluator", "transactional publication"]
+dependencies:
+  - "Prompt 02 CCR contracts and Prompt 03 remote commit 7d52b69f5105a1afb183797db8b81425822f98d6."
+open_decisions:
+  - "Sponsor Prompt 04 acceptance."
+  - "Shared remote application of the Prompt 02 migration remains separately controlled."
+do_not_touch:
+  - "No Inspector/iPad source, inspection Review & Approval queue, Compliance schema, Mapbox, signature, offline or unrelated Administration change."
+  - "No remote DDL, runtime-data mutation or historical inspection/report mutation."
+authorized_file_scope:
+  - "Dedicated Compliance Approval Queue route, factual filters and maker-checker workload."
+  - "Existing CCR review workspace handoff and queue revalidation."
+  - "Focused/static tests, acceptance, evidence, execution and session records."
+required_evidence:
+  - "Distinct queue route and terminology."
+  - "Reviewer guard, own-request exclusion and database maker-checker proof."
+  - "Component/dependency progress, review workspace and honest states."
+  - "Typecheck, production build, focused and protected static regression."
+exit_condition: >-
+  Sponsor accepts Prompt 04 after reviewing the queue, existing RPC-enforced workspace
+  integration and verification evidence. Until then, stop at
+  AWAITING_SPONSOR_COMPLIANCE_APPROVAL_QUEUE_ACCEPTANCE.

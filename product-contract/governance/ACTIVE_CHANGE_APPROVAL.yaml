@@ -1,23 +1,24 @@
 schema_version: "1.0"
-change_id: "CC-QA-UI-COMPLIANCE-CERT-004"
-title: "UI production compliance certification"
-requestor: "Codex on behalf of Vikram Indla"
+change_id: "CC-FACTORY-360-MASTER-EXECUTION-010"
+title: "Factory 360 v2 complete implementation"
+requestor: "Vikram Indla"
 approver: "Vikram Indla"
 authorization: >
-  After being told that a perfect release PASS requires executed WCAG, DGA,
-  native Arabic/RTL and inspector-endurance evidence, the sponsor instructed
-  Codex to proceed, then explicitly instructed Codex to commit the verified
-  certification branch to main and clarified that it must be pushed.
+  The sponsor supplied the complete Factory 360 execution pack, instructed Codex to
+  start execution, explicitly authorized multi-agent implementation, required every
+  Word/API/HTML requirement to be maintained in permanent ledgers, and authorized the
+  finished isolated Factory 360 branch to be pushed. Missing external API contracts must
+  use honest unavailable stubs. Existing valuable functionality must be preserved.
 scope_allowed:
-  - "Execute technical accessibility, RTL and DGA evidence checks."
-  - "Remediate UI-only P0/P1 defects found by those checks."
-  - "Prepare and run controlled authenticated read-only journeys."
-  - "Prepare the native-review and inspector-endurance protocols and evidence registers."
-  - "Create the local certification commit and fast-forward local main to it."
-  - "Push the verified local main fast-forward to origin/main and confirm port 3000."
+  - "Create and use codex/factory-360-complete-010 in an isolated canonical worktree."
+  - "Merge the accepted Compliance implementation line into the newer setup/Inspection baseline without discarding either history."
+  - "Implement the complete local Factory 360 v2 positive delta with additive migrations, RLS, tests and evidence."
+  - "Update active task, change-control, ledgers, queue, state, evidence and session controls for this approved slice."
+  - "Commit and push only the isolated Factory 360 branch to the private Inspection repository."
 scope_forbidden:
-  - "Self-approval of native linguistic quality or representative human endurance."
-  - "Shared-data mutation solely for evidence, remote DDL or production hosting deployment."
-  - "Workflow, RLS, provider, audit, offline, immutable-version, input or Atlas changes."
+  - "Production deployment, main merge or main modification."
+  - "Remote DDL or shared-data mutation under Prompt 00."
+  - "Secrets, raw API collections, environment files, prototype data or external binary source documents in Git."
+  - "Destructive rewrite of current factory, inspection, evidence or historical data."
 decision_owner: "Vikram Indla"
-effective_date: "2026-07-18"
+effective_date: "2026-07-20"

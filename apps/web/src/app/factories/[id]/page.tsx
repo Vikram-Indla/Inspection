@@ -11,6 +11,7 @@ import { logFactoryError, mapFactoryError } from "./neutral";
 import FactorySpatialMap, { type FactoryLocationEvent } from "./FactorySpatialMap";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import EmptyState from "@/components/EmptyState";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -31,10 +32,20 @@ const DOC_TYPE_LABEL: Record<string, string> = {
 // signed URL/viewer/custody retrieval. Representative contact fields are
 // masked for the leadership role only (HANDOFF_BLOCKED_ROLE — contact privacy
 // unproven for that persona); every other role sees them as before.
-export default async function Factory360({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function Factory360({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ compat?: string }> }) {
+  const [{ id }, { compat }] = await Promise.all([params, searchParams]);
   const { t, locale } = await useT();
   const sb = await supabaseServer();
+  // Keep every existing factory link valid while preferring the governed
+  // CR-centred dossier whenever this legacy factory identity has a normalized
+  // Industrial License mapping.
+  const { data: normalizedLicense } = await sb.from("industrial_licenses")
+    .select("id, commercial_registration_id")
+    .eq("factory_id", id)
+    .maybeSingle();
+  if (compat !== "legacy" && normalizedLicense?.commercial_registration_id) {
+    redirect(`/factories/cr/${normalizedLicense.commercial_registration_id}?license=${normalizedLicense.id}`);
+  }
   const { data: { user } } = await getVerifiedUser(sb);
   const [
     { data: f, error: fErr },

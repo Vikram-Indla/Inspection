@@ -1,38 +1,119 @@
 schema_version: "1.2"
-task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
-gate: "G11 sponsor-directed Compliance Approval Queue"
-title: "Prompt 04 — Compliance Approval Queue"
-status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
+task_id: "TASK-FACTORY-360-COMPLETE-010"
+gate: "G11 Factory 360 v2 controlled implementation"
+title: "Factory 360 v2 — CR-centred industrial intelligence and Senaei integration"
+status: "SOURCE_VERIFIED_AWAITING_SPONSOR_FUNCTIONAL_ACCEPTANCE"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "Sponsor continuous forward implementation direction — 2026-07-19"
-change_control_ref: "SPONSOR-COMPLIANCE-SCOPE-CORRECTION-2026-07-19"
-branch_at_start: "codex/compliance-approval-queue-004"
-head_at_start: "7d52b69f5105a1afb183797db8b81425822f98d6"
-process_ids: ["CCR maker-checker review", "component approval", "transactional publication readiness"]
-requirement_ids: ["CMP-REQ-APQ-001..006"]
-acceptance_ids: ["CMP-ACC-APQ-001..020"]
-evidence_ids: ["CMP-APQ-EV-001..006"]
-screen_ids: ["CMP-SCR-004", "SCR-COMPLIANCE-REQUEST-WORKSPACE"]
-engine_ids: ["CCR RLS", "maker-checker RPCs", "dependency evaluator", "transactional publication"]
+approval_ref: "HUMAN_APPROVALS.yaml#FACTORY-360-MASTER-EXECUTION-010"
+change_control_ref: "CC-FACTORY-360-MASTER-EXECUTION-010"
+
+branch_at_start: "codex/factory-360-complete-010"
+head_at_start: "7f8cd1a"
+process_ids: ["P12"]
+consumer_process_ids: ["P01", "P03", "P04", "P08", "P10", "P11"]
+requirement_ids:
+  - "MVP1-M07-001..020"
+  - "F360-BR-001..012"
+  - "F360-LO-001..006"
+  - "F360-CR-001..008"
+  - "F360-II-001..004"
+  - "F360-GI-001..003"
+  - "F360-DOC-001..005"
+  - "F360-ARCH-001"
+  - "F360-SRCH-001..003"
+  - "F360-PERM-001..006"
+  - "F360-CALC-001"
+  - "F360-IMG-001"
+  - "F360-ACT-001..004"
+acceptance_ids:
+  - "AC-0410..0429"
+  - "F360-AC-001..016"
+  - "Every documented API endpoint, request field and response field in the Factory 360 API ledgers"
+evidence_ids: ["F360-EV-001..012"]
+screen_ids:
+  - "SCR-WEB-400"
+  - "SCR-WEB-100"
+  - "SCR-WEB-120"
+  - "SCR-WEB-210"
+  - "SCR-WEB-300"
+  - "SCR-WEB-310"
+  - "SCR-WEB-500"
+  - "SCR-IPAD-610"
+  - "SCR-ADM-001"
+engine_ids:
+  - "ENG-04"
+  - "ENG-06"
+  - "ENG-07"
+  - "ENG-08"
+  - "ENG-09"
+  - "ENG-11"
+  - "ENG-12"
+  - "Typed Senaei provider and synchronization adapter"
+  - "Permission-filtered PDF export service"
+
 dependencies:
-  - "Prompt 02 CCR contracts and Prompt 03 remote commit 7d52b69f5105a1afb183797db8b81425822f98d6."
+  - "G8 PASS and broad implementation authorized."
+  - "Canonical setup/Inspection baseline 83043b1 merged with accepted Compliance line 8a8f26e in integration commit 7f8cd1a."
+  - "Checksum-verified Factory 360 execution pack dated 2026-07-20."
+  - "Factory_360_Specification_v2.0.docx, sanitized Inspection API JSON, sponsor direction and HTML interaction reference."
+  - "Existing CD-031 Factory 360 implementation and DEC-014 / DEC-012 evidence."
+
+context_files:
+  - "product-contract/factory-360/FACTORY_360_MASTER_LEDGER.csv"
+  - "product-contract/factory-360/FACTORY_360_API_ENDPOINT_INVENTORY.csv"
+  - "product-contract/factory-360/FACTORY_360_API_FIELD_INVENTORY.csv"
+  - "product-contract/factory-360/FACTORY_360_DATA_DICTIONARY.csv"
+  - "product-contract/factory-360/FACTORY_360_ACCEPTANCE_LEDGER.csv"
+  - "product-contract/factory-360/FACTORY_360_INTEGRATION_GAPS.csv"
+  - "product-contract/factory-360/FACTORY_360_PRESERVATION_LEDGER.csv"
+  - "product-contract/factory-360/FACTORY_360_FUNCTIONAL_JOURNEYS.csv"
+  - "product-contract/factory-360/FACTORY_360_EXECUTION_STATE.yaml"
+  - "product-contract/factory-360/source/README.md"
+  - "product-contract/factory-360/source/SANITIZATION_AUDIT.md"
+  - "product-contract/factory-360/source/FACTORY_360_SPONSOR_DIRECTION.txt"
+  - "product-contract/screens/screen_route_catalogue.csv"
+  - "product-contract/domain/field_dictionary.csv"
+  - "product-contract/domain/rbac_matrix.csv"
+  - "product-contract/domain/state_transitions.csv"
+  - "product-contract/governance/decision_register.csv"
+  - "product-contract/evidence/BUSINESS-UIUX-RECONCILIATION-2026-07-16.md"
+  - "product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md"
+
 open_decisions:
-  - "Sponsor Prompt 04 acceptance."
-  - "Shared remote application of the Prompt 02 migration remains separately controlled."
+  - "Undocumented Senaei domains remain BLOCKED_EXTERNAL with SENAEI_API_CONTRACT_NOT_SUPPLIED; no endpoints or values may be invented."
+  - "Provider credentials and live connectivity are separately controlled and must remain fail-closed."
+  - "Hijri dates display only when supplied or when a governed conversion authority is approved."
+  - "Qualified native-Arabic review remains a human release gate."
+
 do_not_touch:
-  - "No Inspector/iPad source, inspection Review & Approval queue, Compliance schema, Mapbox, signature, offline or unrelated Administration change."
-  - "No remote DDL, runtime-data mutation or historical inspection/report mutation."
+  - "Do not remove existing factory IDs/routes; preserve them through compatibility mappings or redirects."
+  - "Do not replace or duplicate Mapbox, Risk Engine, OCR, evidence custody, notification, audit, RLS or offline engines."
+  - "Do not mutate immutable inspection submissions or historical reports."
+  - "Do not show prototype/demo values as live data or fabricate unavailable Senaei responses."
+  - "Do not calculate CR-level risk or compliance."
+  - "Do not merge inspection evidence into the official factory gallery."
+  - "Do not deploy to production or apply remote DDL under Prompt 00."
+
 authorized_file_scope:
-  - "Dedicated Compliance Approval Queue route, factual filters and maker-checker workload."
-  - "Existing CCR review workspace handoff and queue revalidation."
-  - "Focused/static tests, acceptance, evidence, execution and session records."
+  - "Additive Factory 360 schema, migrations, RLS, audit, typed adapters, controlled stubs and compatibility projections."
+  - "Factory 360, global search, Administration/Integration Management and permission-bound action source."
+  - "Relocation of existing Factory 360 write controls without deleting their capability."
+  - "Focused tests, machine-readable ledgers, evidence indexes and session records."
+  - "Commit and push of the isolated Factory 360 branch only; no main merge."
+
 required_evidence:
-  - "Distinct queue route and terminology."
-  - "Reviewer guard, own-request exclusion and database maker-checker proof."
-  - "Component/dependency progress, review workspace and honest states."
-  - "Typecheck, production build, focused and protected static regression."
+  - "Source manifest and sanitization proof."
+  - "Complete requirement/API-field ledger disposition."
+  - "Schema, RLS, grants, audit and compatibility inventory."
+  - "Functional journeys for CR/license/plant search, selection, read-only behavior and partial provider failure."
+  - "Approved-snapshot compliance calculation and report/violation/penalty lineage."
+  - "Industrial/government/document/image/OCR/export and permission evidence."
+  - "Typecheck, production build, focused tests and protected regression."
+
 exit_condition: >-
-  Sponsor accepts Prompt 04 after reviewing the queue, existing RPC-enforced workspace
-  integration and verification evidence. Until then, stop at
-  AWAITING_SPONSOR_COMPLIANCE_APPROVAL_QUEUE_ACCEPTANCE.
+  Every mandatory Factory 360 ledger row is FUNCTIONALLY_VERIFIED or has a precise
+  BLOCKED_EXTERNAL disposition tied only to an absent external contract or credential;
+  protected engines and historical behavior regress cleanly; evidence and execution state
+  are current; the isolated branch is committed and pushed; and the task stops at
+  AWAITING_SPONSOR_FACTORY_360_FUNCTIONAL_ACCEPTANCE.

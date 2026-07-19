@@ -1,0 +1,92 @@
+programme: FACTORY_360_V2
+status: SOURCE_VERIFIED_AWAITING_SPONSOR_FUNCTIONAL_ACCEPTANCE
+stop_state: AWAITING_SPONSOR_FACTORY_360_FUNCTIONAL_ACCEPTANCE
+canonical_repository_path: /Users/vikramindla/Developer/Inspection
+authorized_worktree_path: /Users/vikramindla/Developer/Inspection/.claude/worktrees/codex-factory-360-complete-010
+current_branch: codex/factory-360-complete-010
+current_commit: IMPLEMENTATION_COMMIT_PENDING
+base_branch: setup/Inspection
+base_commit: 83043b1
+accepted_compliance_commit: 8a8f26e
+integration_commit: 7f8cd1a
+active_chunk: null
+active_agents: []
+ledger:
+  authoritative: product-contract/factory-360/FACTORY_360_MASTER_LEDGER.csv
+  total: 90
+  code_complete: 90
+  acceptance_rows: 36
+  acceptance_functionally_verified: 34
+  acceptance_blocked_external: 2
+  journey_rows: 20
+  journey_code_complete: 20
+  preservation_rows: 11
+  preservation_functionally_verified: 11
+  integration_gap_rows: 14
+  integration_gap_blocked_external: 14
+  data_dictionary_rows: 87
+  data_dictionary_data_complete: 79
+  data_dictionary_blocked_external: 8
+  api_endpoint_rows: 11
+  api_field_rows: 438
+migrations:
+  - path: supabase/migrations/20260720010000_factory360_v2_foundation.sql
+    disposition: LOCAL_POSTGRESQL_16_COMPILE_AND_REPLAY_PASS_REMOTE_NOT_APPLIED
+  - path: supabase/tests/0032_factory360_v2_foundation_contract.sql
+    disposition: FACTORY360_V2_FOUNDATION_CONTRACT_PASS
+functionality_completed:
+  - "CR-centred read-only dossier with selected Industrial License and plant context."
+  - "CR portfolio facts without CR-level risk or compliance aggregation."
+  - "Approved inspection reports and approved frozen-snapshot compliance formula."
+  - "Existing Risk Engine history/explanation and violation/action/penalty lineage preserved."
+  - "Industrial, government, document/OCR and five-category media views with truthful unavailable states."
+  - "CR, unified/legal-name, license and plant global search with legacy factory compatibility."
+  - "Permission-bound planning context and print/PDF export path."
+  - "Guarded Administration import/reconciliation control plane with strict CSV and SHA-256 custody."
+  - "Typed server-only Senaei adapters for all eleven documented endpoints plus controlled stubs."
+  - "Additive normalized schema, immutable snapshots, RLS, audit and identifier guards."
+  - "Six exact Factory 360 permission keys and compatible role grants."
+verification:
+  typecheck: PASS
+  production_build: PASS
+  focused_static: "20/20 PASS"
+  protected_static: "131 PASS / 4 intentional live-provider skips / 0 failed"
+  postgresql_16: "compile PASS; replay PASS; negative guards PASS; contract PASS; fixture rollback"
+  diff_check: PASS
+  ledger_shape: PASS
+preserved_existing_capabilities:
+  - "Existing factory IDs, registry and legacy dossier route"
+  - "Mapbox and spatial history"
+  - "Risk score, model, factors and history"
+  - "Immutable inspection/report versions"
+  - "Violation, action, review and penalty lineage"
+  - "Evidence custody, advisory OCR, audit, notifications, RLS and offline behavior"
+external_api_contract_gaps:
+  - government_incentives
+  - government_services
+  - chemical_permits
+  - customs_exemptions
+  - land_provider_history
+  - document_retrieval
+  - image_retrieval
+  - risk_history_provider
+  - factory_portfolio_search_provider
+  - authentication_contract
+  - base_url_contract
+  - production_line_method
+  - external_field_names
+  - nullability
+open_acceptance:
+  - acceptance_id: F360-AC-012
+    reason: "Live industrial equivalence requires approved Senaei configuration, credentials and connectivity."
+  - acceptance_id: F360-AC-013
+    reason: "Services/incentives endpoint contract was not supplied."
+  - gate: SPONSOR_FACTORY_360_FUNCTIONAL_ACCEPTANCE
+  - gate: QUALIFIED_NATIVE_ARABIC_REVIEW
+remote_actions:
+  ddl_applied: false
+  deployed: false
+  main_merged: false
+next_exact_action: "Prompt 02: reconcile migration history, apply the additive migration in controlled staging, configure only approved Senaei contract values, and execute authenticated functional/negative/partial-provider journeys before sponsor acceptance."
+evidence: product-contract/evidence/TASK-FACTORY-360-COMPLETE-010.md
+last_updated_at: "2026-07-20T04:00:00+03:00"
