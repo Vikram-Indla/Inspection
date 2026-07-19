@@ -169,6 +169,16 @@ export default async function Field() {
     emptyBody: t("field.dashboard.empty.body", "Only your own assignments appear here (RBAC-009). New assignments arrive with a notification."),
     noMatch: t("field.home.noMatch", "No visits match the current search and filters."),
     mapEmpty: t("field.home.mapEmpty", "No official coordinates on these factories yet (GIS Admin owns the pins)."),
+    // FNS-010 — selected-task highlight. "Details" term: register VR-088 (تفاصيل).
+    // selectAria / openDetailsAria are a11y labels with no register row — draft keys.
+    selectAria: t("field.home.selectAria", "Select visit: {name}"),
+    openDetails: t("field.home.openDetails", "Details"),
+    openDetailsAria: t("field.home.openDetailsAria", "Open details for {name}"),
+    // FNS-011 — pagination. prev/next terms: register VR-002 / VR-001 (السابق / التالي).
+    // paginationPageAria is a nav a11y label with no register row — draft key.
+    paginationPrev: t("field.home.pagination.prev", "Previous"),
+    paginationNext: t("field.home.pagination.next", "Next"),
+    paginationPageAria: t("field.home.pagination.pageAria", "Visit list, page {page} of {count}"),
     windowEnds: t("field.home.windowEnds", "Window ended {date}"),
     statusLabels: {
       prepared: t("field.home.status.prepared", "prepared"),

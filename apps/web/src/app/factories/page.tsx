@@ -11,12 +11,21 @@ export default async function Factories() {
   const { t } = await useT();
   const sb = await supabaseServer();
   const { data: fs, error } = await sb.from("factories")
-    .select("id, factory_code, name, cr_number, region, city, risk_band, risk_score")
+    .select("id, factory_code, name, cr_number, region, city, risk_band, risk_score, is_temporary")
     .order("risk_score", { ascending: false });
   if (error) console.error("[factory registry] load failed", error);
   const listStrings: FactoryListStrings = {
     regionLabel: t("f360.list.region", "Region"),
     allRegions: t("f360.list.allRegions", "All regions"),
+    // FNS-107 — city filter. "City" term: register HT-025 (المدينة). allCities generic (draft).
+    cityLabel: t("f360.list.city", "City"),
+    allCities: t("f360.list.allCities", "All cities"),
+    // FNS-103/104 — licensed/unlicensed. "Unlicensed": register EM-002 (غير مرخصة);
+    // "Licensed": register EM-103 term (مرخصة). Group aria + "All" have no register row (draft).
+    licenseGroupAria: t("f360.list.license.groupAria", "Filter by license status"),
+    licenseAll: t("f360.list.license.all", "All"),
+    licensed: t("f360.list.license.licensed", "Licensed"),
+    unlicensed: t("f360.list.license.unlicensed", "Unlicensed"),
     of: t("f360.list.of", "of"),
     factoriesWord: t("f360.list.factoriesWord", "factories"),
     emptyRegionTitle: t("f360.list.emptyRegion.title", "No factories in this region"),

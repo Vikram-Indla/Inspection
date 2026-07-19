@@ -8,9 +8,10 @@
 // M03-001: inspector notification inbox card with mark-read (delivery_state).
 // All strings arrive pre-translated from the server page (strings-prop canon —
 // client components cannot call useT()). Colors: ax tokens only; logical props.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useActionState } from "react";
 import EmptyState from "@/components/EmptyState";
+import Pagination from "@/components/Pagination"; // FNS-011 shared client-side pager
 import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
 import { markNotificationRead, requestVisitReschedule, type FieldActionResult } from "@/app/field/actions";
@@ -63,6 +64,14 @@ export type FieldHomeStrings = {
   emptyBody: string;
   noMatch: string;
   mapEmpty: string;
+  // FNS-010 — persistent selected-task highlight (mirrors VisitsBoard select spine).
+  selectAria: string;            // "{name}" — a11y label for the select control (no register match — draft)
+  openDetails: string;           // register: VR-088 "Establishment Details" — "Details" term (تفاصيل)
+  openDetailsAria: string;       // "{name}" — a11y label for the navigation link (no register match — draft)
+  // FNS-011 — task-list pagination (shared Pagination.tsx over the filtered list).
+  paginationPrev: string;        // register: VR-002 "Previous" (السابق)
+  paginationNext: string;        // register: VR-001 "Next" (التالي)
+  paginationPageAria: string;    // "{page}"/"{count}" — nav a11y label (no register match — draft)
   windowEnds: string;            // "window ends {date}"
   statusLabels: Record<string, string>; // prepared/not_started/…/expired/overdue
   inboxTitle: string;
@@ -97,16 +106,29 @@ function fmtWindow(iso: string): string {
   return new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 }
 
-function VisitCard({ v, s, strings, onDragStart }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings; onDragStart: (id: string) => void }) {
+// FNS-010 — the card carries a persistent, keyboard-operable selected state
+// (mirrors the VisitsBoard continuity spine: a button drives the highlight via
+// aria-pressed, an adjacent link preserves direct navigation). Selecting never
+// navigates; the Details link is the navigation affordance, so tap-to-open is
+// preserved for keyboard and pointer users alike.
+function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings; selected: boolean; onSelect: (id: string) => void; onDragStart: (id: string) => void }) {
   const accent = s.tone === "critical" ? "var(--ax-color-critical)"
     : s.tone === "warning" ? "var(--ax-color-warning)"
     : "var(--ax-color-primary)";
   return (
-    <a href={visitHref(v)} className="ax-surface ax-panel" draggable={s.key !== "expired" && s.key !== "approved"}
+    <div className="ax-surface ax-panel" aria-selected={selected} draggable={s.key !== "expired" && s.key !== "approved"}
       onDragStart={() => onDragStart(v.id)}
-      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", textDecoration: "none", color: "inherit", borderInlineStart: `4px solid ${accent}` }}>
-      <div className="ax-row" style={{ justifyContent: "space-between" }}>
-        <strong style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{v.factoryName}</strong>
+      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", color: "inherit", borderInlineStart: `4px solid ${accent}`,
+        outline: selected ? "var(--ax-focus-ring)" : undefined, outlineOffset: selected ? "-2px" : undefined }}>
+      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)" }}>
+        {/* Select-on-click/focus drives the persistent highlight (real state in
+            the parent); the button is natively keyboard-operable. */}
+        <button type="button" className="ax-link ax-inline-target" aria-pressed={selected}
+          onClick={() => onSelect(v.id)} onFocus={() => onSelect(v.id)}
+          aria-label={strings.selectAria.replace("{name}", v.factoryName)}
+          style={{ font: "var(--ax-text-field)", fontWeight: 600, textAlign: "start", background: "none", border: "none", padding: 0, cursor: "pointer", color: "inherit" }}>
+          {v.factoryName}
+        </button>
         <span className={`ax-lozenge ax-lozenge--${s.tone === "ops" ? "ops" : s.tone}`}>
           {strings.statusLabels[s.key] ?? s.key.replace(/_/g, " ")}
         </span>
@@ -119,8 +141,12 @@ function VisitCard({ v, s, strings, onDragStart }: { v: FieldVisit; s: DerivedSt
           {strings.windowEnds.replace("{date}", fmtWindow(v.windowEnd))}
         </span>
       )}
-      {s.key !== "expired" && s.key !== "approved" && <span className="ax-caption">{strings.rescheduleHint}</span>}
-    </a>
+      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+        {s.key !== "expired" && s.key !== "approved" ? <span className="ax-caption">{strings.rescheduleHint}</span> : <span />}
+        <a href={visitHref(v)} className="ax-link ax-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
+          aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)}>{strings.openDetails} →</a>
+      </div>
+    </div>
   );
 }
 
@@ -163,6 +189,8 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
   const [type, setType] = useState("");
   const [mode, setMode] = useState("");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [selectedId, setSelectedId] = useState<string | null>(null); // FNS-010 selected-task highlight
+  const [page, setPage] = useState(1); // FNS-011 list pagination (1-based, list view only)
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [rescheduleBusy, setRescheduleBusy] = useState<string | null>(null);
   const [rescheduleMessage, setRescheduleMessage] = useState<string | null>(null);
@@ -188,6 +216,17 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         return sortDir === "asc" ? d : -d;
       });
   }, [derived, q, status, type, mode, sortDir]);
+
+  // FNS-011 — client-side pagination over the filtered list (list view only;
+  // Calendar groups by day and Map plots all markers, so neither is paged).
+  const PAGE_SIZE = 12;
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  // Reset to page 1 whenever the filtered set changes shape (search/filter/sort).
+  useEffect(() => { setPage(1); }, [q, status, type, mode, sortDir]);
+  const clampedPage = Math.min(page, pageCount);
+  const pageSlice = useMemo(
+    () => filtered.slice((clampedPage - 1) * PAGE_SIZE, (clampedPage - 1) * PAGE_SIZE + PAGE_SIZE),
+    [filtered, clampedPage]);
 
   // Calendar: group by UTC day of window_start (M03-003).
   const byDay = useMemo(() => {
@@ -271,6 +310,15 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
             <option value="">{strings.allStatuses}</option>
             {statusOptions.map(sKey => <option key={sKey} value={sKey}>{strings.statusLabels[sKey] ?? sKey.replace(/_/g, " ")}</option>)}
           </select>
+          {/* FNS-013 (تخصصي/عام specialist/general segmented control) — BLOCKED, NOT
+              built. The visit_type / nature domain has no specialist|general option
+              values: `visits.visit_type` is free-text reference data (0001_foundation
+              L154; seeded values physical/periodic/follow_up/complaint) with no such
+              enum, and the register only captures HT-021 "Visit Nature" (label, no
+              options) and VR-033 "Is a specialized visit needed?" (a Yes/No conditional
+              field inside a visit report, not a task-type domain). The عام/تخصصي option
+              set is uncaptured, so per the no-invention rule the generic type filter is
+              retained here rather than fabricating a segmented control. */}
           <select className="ax-select" value={type} onChange={e => setType(e.target.value)} aria-label={strings.allTypes}>
             <option value="">{strings.allTypes}</option>
             {typeOptions.map(v => <option key={v} value={v}>{v}</option>)}
@@ -293,9 +341,14 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         )}
 
         {view === "list" && filtered.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)" }}>
-            {filtered.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} onDragStart={setDraggedId} />)}
-          </div>
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)" }}>
+              {pageSlice.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
+            </div>
+            <Pagination page={clampedPage} pageCount={pageCount} onChange={setPage}
+              prevLabel={strings.paginationPrev} nextLabel={strings.paginationNext}
+              pageLabel={(p) => strings.paginationPageAria.replace("{page}", String(p)).replace("{count}", String(pageCount))} />
+          </>
         )}
 
         {view === "calendar" && filtered.length > 0 && (
@@ -308,7 +361,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
                   {draggedId && <span className="ax-caption">{rescheduleBusy ? "…" : strings.rescheduleHint}</span>}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
-                  {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} onDragStart={setDraggedId} />)}
+                  {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
                 </div>
               </div>
             ))}
