@@ -6,7 +6,7 @@
 - Task ID: `TASK-FACTORY-360-COMPLETE-010`
 - Branch: `codex/factory-360-complete-010`
 - Starting integration commit: `7f8cd1a`
-- Ending source commit: resolve pushed branch HEAD; implementation evidence uses `IMPLEMENTATION_COMMIT_PENDING` until commit
+- Ending source commit: `a92dd9f49e7df50af606ed16881c09954161c528`; resolve the pushed branch HEAD for the documentation closure commit
 - Requirements: `MVP1-M07-001..020`; `F360-BR-001..012`; `F360-LO-001..006`; `F360-CR-001..008`; `F360-II-001..004`; `F360-GI-001..003`; `F360-DOC-001..005`; `F360-ARCH-001`; `F360-SRCH-001..003`; `F360-PERM-001..006`; `F360-CALC-001`; `F360-IMG-001`; `F360-ACT-001..004`
 - Acceptance IDs: `AC-0410..0429`; `F360-AC-001..016`; complete API endpoint/field inventory
 - Screens: `SCR-WEB-400`, `SCR-WEB-100`, `SCR-WEB-120`, `SCR-WEB-210`, `SCR-WEB-300`, `SCR-WEB-310`, `SCR-WEB-500`, `SCR-IPAD-610`, `SCR-ADM-001`
