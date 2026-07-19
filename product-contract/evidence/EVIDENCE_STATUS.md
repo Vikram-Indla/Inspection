@@ -1,5 +1,21 @@
 # Evidence Status
 
+## TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002 — 2026-07-19
+
+| ID | Evidence | Status |
+|---|---|---|
+| CMP-CCR-EV-001 | Additive migration compilation and second idempotent execution | Captured — PASS |
+| CMP-CCR-EV-002 | Lifecycle and immutable revision contracts | Captured — PASS |
+| CMP-CCR-EV-003 | Maker-checker and direct-DML/RLS negatives | Captured — PASS |
+| CMP-CCR-EV-004 | Parent rejection cascade and partial approval | Captured — PASS |
+| CMP-CCR-EV-005 | Transactional publication and orphan rollback | Captured — PASS |
+| CMP-CCR-EV-006 | Legacy compatibility/no destructive rewrite | Captured — PASS |
+| CMP-CCR-EV-007 | Existing notification and audit engine integration | Captured — PASS |
+| CMP-CCR-EV-008 | Register/create/workspace and honest states | Captured — PASS |
+| CMP-CCR-EV-009 | Typecheck, build, focused and protected static regression | Captured — PASS |
+
+Exact record: `TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md`.
+
 ## TASK-WEB-COMPLIANCE-SHARED-SHELL-001 — 2026-07-19
 
 | ID | Evidence | Status |

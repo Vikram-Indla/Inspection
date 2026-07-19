@@ -1,0 +1,31 @@
+acceptance_id,requirement_id,assertion,evidence,status
+CMP-ACC-CCR-001,CMP-REQ-CCR-001,"Request stores number, title, description, type, owner, dates, revision, status, comments, correlation and audit references","migration compile; source contract",PASS
+CMP-ACC-CCR-002,CMP-REQ-CCR-002,"Seven canonical request statuses are constrained","migration compile; source contract",PASS
+CMP-ACC-CCR-003,CMP-REQ-CCR-003,"Four component kinds store current/proposed immutable snapshots and decisions","migration compile; focused 8/8",PASS
+CMP-ACC-CCR-004,CMP-REQ-CCR-003,"Parent-child graph rejects self, mismatch and cycles","add dependency RPC; migration compile",PASS
+CMP-ACC-CCR-005,CMP-REQ-CCR-004,"Returned request creates a new revision and copies content/graph","revise RPC; focused contract",PASS
+CMP-ACC-CCR-006,CMP-REQ-CCR-004,"Submitted revisions and their configuration content cannot be edited","immutable triggers; migration execution",PASS
+CMP-ACC-CCR-007,CMP-REQ-CCR-005,"Creator cannot review or publish own request","isolated maker-checker negative PASS",PASS
+CMP-ACC-CCR-008,CMP-REQ-CCR-005,"Review and publication require existing reviewer/compliance roles","RPC role guards; RLS probe",PASS
+CMP-ACC-CCR-009,CMP-REQ-CCR-005,"Direct authenticated DML is revoked and UI hiding is not authority","catalog privilege probe PASS",PASS
+CMP-ACC-CCR-010,CMP-REQ-CCR-005,"Return and Reject require comments","database constraints/RPC negatives; focused contract",PASS
+CMP-ACC-CCR-011,CMP-REQ-CCR-005,"Decisions and transitions append durable correlated audit events","audit rows and immutable decision trigger; lifecycle PASS",PASS
+CMP-ACC-CCR-012,CMP-REQ-CCR-006,"Parent rejection recursively auto-rejects dependent children","isolated lifecycle execution PASS",PASS
+CMP-ACC-CCR-013,CMP-REQ-CCR-006,"Independent branch supports partial approval","isolated lifecycle execution PASS",PASS
+CMP-ACC-CCR-014,CMP-REQ-CCR-006,"Evaluation order is deterministic","fixed kind/created/id order; focused contract",PASS
+CMP-ACC-CCR-015,CMP-REQ-CCR-007,"Orphan children cannot publish","isolated orphan negative PASS",PASS
+CMP-ACC-CCR-016,CMP-REQ-CCR-007,"Approved branches publish immutable versions and atomically switch heads","isolated publication PASS; immutable guards",PASS
+CMP-ACC-CCR-017,CMP-REQ-CCR-007,"Failed publication leaves versions and heads unchanged","isolated rollback count assertion PASS",PASS
+CMP-ACC-CCR-018,CMP-REQ-CCR-007,"Existing active configuration remains until successful head switch","publication preflight/order source contract",PASS
+CMP-ACC-CCR-019,CMP-REQ-CCR-008,"Migration is additive, forward-only and idempotent","isolated migration executed twice PASS",PASS
+CMP-ACC-CCR-020,CMP-REQ-CCR-008,"Legacy Compliance tables and historical inspection/report tables are not altered","boundary scan PASS",PASS
+CMP-ACC-CCR-021,CMP-REQ-CCR-008,"Compatibility view links CCR heads to legacy stable IDs","security-invoker compatibility view; probe PASS",PASS
+CMP-ACC-CCR-022,CMP-REQ-CCR-009,"Submitted, returned, approved, partial, rejected and published notifications use existing stores/events","migration + Shell event labels",PASS
+CMP-ACC-CCR-023,CMP-REQ-CCR-009,"Published external-channel rules use the existing preference/provider delivery service","actions insertNotification integration; typecheck",PASS
+CMP-ACC-CCR-024,CMP-REQ-CCR-010,"RLS-scoped register has populated, empty and error states","route source contract",PASS
+CMP-ACC-CCR-025,CMP-REQ-CCR-010,"Create Request supports Create/Modify metadata and draft creation","route/action source contract; build",PASS
+CMP-ACC-CCR-026,CMP-REQ-CCR-010,"Workspace adds four component kinds and dependencies","route/action source contract; build",PASS
+CMP-ACC-CCR-027,CMP-REQ-CCR-010,"Workspace shows status, revision history and dependency tree","focused 8/8; build",PASS
+CMP-ACC-CCR-028,CMP-REQ-CCR-010,"Workspace compares current and proposed values","focused 8/8; build",PASS
+CMP-ACC-CCR-029,CMP-REQ-CCR-010,"Owner/reviewer/read-only actions are honestly permission-scoped","route UI + database enforcement",PASS
+CMP-ACC-CCR-030,CMP-REQ-CCR-010,"Loading, error, missing and permission states fail honestly","loading/error/detail source contract; build",PASS

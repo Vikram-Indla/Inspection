@@ -93,6 +93,12 @@ export default async function Shell({ current, children, title, context, topbar 
       virtual_scheduled: t("bell.ev.virtualScheduled", locale === "ar" ? "تمت جدولة جلسة افتراضية" : "Virtual session scheduled"),
       virtual_rescheduled: t("bell.ev.virtualRescheduled", locale === "ar" ? "تمت إعادة جدولة الجلسة الافتراضية" : "Virtual session rescheduled"),
       virtual_closed: t("bell.ev.virtualClosed", locale === "ar" ? "أغلقت الجلسة الافتراضية" : "Virtual session closed"),
+      compliance_request_submitted: t("bell.ev.ccrSubmitted", locale === "ar" ? "تم إرسال طلب إعداد امتثال للمراجعة" : "Compliance request submitted for review"),
+      compliance_request_returned: t("bell.ev.ccrReturned", locale === "ar" ? "أُعيد طلب إعداد الامتثال للتعديل" : "Compliance request returned for revision"),
+      compliance_request_approved: t("bell.ev.ccrApproved", locale === "ar" ? "تمت الموافقة على طلب إعداد الامتثال" : "Compliance request approved"),
+      compliance_request_partially_approved: t("bell.ev.ccrPartiallyApproved", locale === "ar" ? "تمت الموافقة جزئياً على طلب إعداد الامتثال" : "Compliance request partially approved"),
+      compliance_request_rejected: t("bell.ev.ccrRejected", locale === "ar" ? "تم رفض طلب إعداد الامتثال" : "Compliance request rejected"),
+      compliance_request_published: t("bell.ev.ccrPublished", locale === "ar" ? "تم نشر إعداد الامتثال المعتمد" : "Approved compliance configuration published"),
     },
     channels: {
       inapp: t("bell.ch.inapp", locale === "ar" ? "داخل التطبيق" : "in-app"),

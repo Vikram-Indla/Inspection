@@ -1,5 +1,24 @@
 # Current State
 
+## 2026-07-19 UPDATE 101 — Compliance Prompt 02 request engine implemented and verified
+
+Sponsor accepted Prompt 01, explicitly authorized its exact push, and authorized Prompt 02
+from accepted commit `26a8b4363fab9b8d66811aae949b604e2e9b14b9`. The Prompt 01 remote branch resolves
+to that exact commit. Prompt 02 adds an additive governed Compliance Configuration Request
+engine for Regulations, Inspection Items, Violations and Penalties: immutable revisions and
+snapshots, maker-checker RPCs, RLS-scoped reads, deterministic dependency rejection, partial
+approval, transactional immutable publication heads, compatibility mapping, correlated audit
+events, existing notification-provider integration, and a working register/create/detail UI.
+
+An isolated PostgreSQL 16 execution proved migration compilation and a second idempotent run;
+maker self-approval denial; recursive child auto-rejection; independent partial approval;
+single-branch publication; orphan rejection with unchanged version/head counts; and rollback of
+all fixture data. The catalog/RLS probe passes. Typecheck, focused Prompt 02 8/8 and production
+build pass. No remote DDL, shared runtime data, legacy Compliance table, historical inspection/
+report, Inspector/iPad, Mapbox, digital-signature, offline-execution or unrelated Administration
+source changed. Exact evidence: `evidence/TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md`.
+Sponsor Prompt 02 acceptance remains pending.
+
 ## 2026-07-19 UPDATE 100 — Compliance Prompt 01 shared shell implemented and verified
 
 Sponsor acknowledged the corrected Compliance-only programme boundary and authorized

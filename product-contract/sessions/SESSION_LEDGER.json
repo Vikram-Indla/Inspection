@@ -3829,9 +3829,74 @@
       "commit_sha": "committed on codex/compliance-shared-shell-001 at closure; use branch HEAD",
       "next_task": "Await sponsor shared-shell acceptance before any later Compliance prompt or implementation slice.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 100 and TASK-WEB-COMPLIANCE-SHARED-SHELL-001 evidence. Preserve the Compliance-only scope and do not execute later prompts until sponsor accepts Prompt 01."
+    },
+    {
+      "session_id": "2026-07-19-compliance-request-engine-002",
+      "started_at": "2026-07-19",
+      "ended_at": "2026-07-19",
+      "branch": "codex/compliance-request-engine-002",
+      "task_id": "TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002",
+      "gate": "G11 sponsor-authorized Compliance request engine",
+      "requirements": [
+        "CMP-REQ-CCR-001..010"
+      ],
+      "acceptance_ids": [
+        "CMP-ACC-CCR-001..030"
+      ],
+      "screens": [
+        "SCR-COMPLIANCE-REQUEST-REGISTER",
+        "SCR-COMPLIANCE-REQUEST-CREATE",
+        "SCR-COMPLIANCE-REQUEST-WORKSPACE"
+      ],
+      "engines": [
+        "CCR immutable revision and snapshot engine",
+        "RLS/RPC maker-checker review",
+        "deterministic dependency and partial-approval evaluator",
+        "transactional immutable publication and compatibility heads",
+        "existing audit and notification provider engines"
+      ],
+      "files_changed": [
+        "additive Compliance Configuration Request migration and SQL probe",
+        "request register, create and detail routes with guarded server actions",
+        "Compliance Library request entry and shared notification labels",
+        "request workspace styles and static source contract",
+        "acceptance, evidence, execution, governance and session records",
+        "stale platform font source assertion aligned with accepted self-hosted implementation"
+      ],
+      "tests": [
+        "isolated PostgreSQL migration compile PASS",
+        "second idempotent migration execution PASS",
+        "rollback-only maker-checker/cascade/partial/publication/orphan lifecycle PASS",
+        "read-only catalog/RLS privilege probe PASS",
+        "Prompt 02 source contracts 8/8 PASS",
+        "typecheck PASS",
+        "production build PASS",
+        "complete static inventory final result recorded in slice evidence",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md",
+        "product-contract/acceptance/CMP_COMPLIANCE_REQUEST_ENGINE_002.csv",
+        "supabase/tests/compliance_request_engine_probe.sql",
+        "apps/web/e2e/compliance-request-engine.spec.ts"
+      ],
+      "decisions": [
+        "CCR is additive over legacy configuration during controlled cutover and is not a competing legacy authoring store",
+        "Submitted revision content and published versions are immutable",
+        "Approval/publication authority is enforced in role-checked SECURITY DEFINER RPCs with direct authenticated DML revoked",
+        "External channel delivery reuses published notification rules and the existing provider/preference engine",
+        "No remote DDL or excluded Inspector/runtime source change occurred"
+      ],
+      "blockers": [
+        "Sponsor Prompt 02 acceptance",
+        "Shared/remote migration application and production cutover require separate controlled authority"
+      ],
+      "commit_sha": "Prompt 02 closure commit on codex/compliance-request-engine-002; resolve branch HEAD",
+      "next_task": "Await sponsor request-engine acceptance before beginning a later Compliance prompt.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 101 and TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002 evidence. Preserve the Compliance-only boundary and do not apply remote DDL or begin the next slice without sponsor authority."
     }
   ],
-  "last_session": "2026-07-19-compliance-shared-shell-001",
+  "last_session": "2026-07-19-compliance-request-engine-002",
   "rules": {
     "append_only": true,
     "required_fields": [

@@ -1,13 +1,21 @@
 schema_version: "1.0"
 items:
-  - task_id: "TASK-WEB-COMPLIANCE-SHARED-SHELL-001"
-    gate: "G11 sponsor-authorized Compliance shared shell"
+  - task_id: "TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002"
+    gate: "G11 sponsor-authorized Compliance request engine"
     priority: "P0"
     status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
     owner: "Codex implementation and QA + Sponsor acceptance authority"
-    blocked_by: ["Sponsor shared-shell runtime acceptance"]
-    blocks: ["Prompt 02 and later Compliance implementation slices"]
-    note: "Prompt 01 implements the five-group Web/Admin shell, unified business navigation, seven accessible locked Administration entries for non-admins, role-composed admin enablement, and unified search/scope/theme/notification/AI/account topbar. No schema, Inspector runtime, DDL or shared-data mutation. Typecheck/build, focused static/runtime, live RLS denial and bilingual visual evidence pass. One unrelated pre-existing static font-import-name assertion remains open."
+    blocked_by: ["Sponsor Prompt 02 acceptance"]
+    blocks: ["Prompt 03 and later Compliance implementation slices"]
+    note: "Additive CCR engine implements immutable revisions/snapshots, role- and RLS-enforced maker-checker RPCs, deterministic dependency cascade, partial approval, transactional immutable publication, legacy compatibility, existing audit/notification integration and working register/create/detail routes. Isolated migration ran twice; maker-checker, cascade, partial publish, orphan rollback and catalog/RLS probes pass. No remote DDL or excluded runtime source changed."
+  - task_id: "TASK-WEB-COMPLIANCE-SHARED-SHELL-001"
+    gate: "G11 sponsor-authorized Compliance shared shell"
+    priority: "P0"
+    status: "SPONSOR_ACCEPTED_REMOTE_VERIFIED"
+    owner: "Sponsor acceptance authority"
+    blocked_by: []
+    blocks: []
+    note: "Prompt 01 accepted. Remote branch codex/compliance-shared-shell-001 resolves exactly to 26a8b4363fab9b8d66811aae949b604e2e9b14b9."
   - task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
     gate: "G11/G12 UI release certification"
     priority: "P0"

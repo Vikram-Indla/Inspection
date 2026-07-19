@@ -180,6 +180,9 @@ export default async function Regulations({
   const context = (
     <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
       <span className="ax-lozenge ax-lozenge--info">SCR-ADM-010/011</span>
+      <a className="ax-link" href="/admin/compliance-requests">
+        {t("admin.reg.requests", "Configuration Requests")}
+      </a>
       <span role="status" aria-live="polite" className="ax-caption">{readAtNode}</span>
       {regsError ? (
         <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {t("admin.reg.r1.degraded.chip", "register unavailable")}</span>

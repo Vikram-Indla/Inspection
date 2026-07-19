@@ -1,0 +1,5 @@
+"use client";
+
+export default function ErrorBoundary({ reset }: { error: Error; reset: () => void }) {
+  return <div className="ax-surface"><div className="ax-state" role="alert"><span className="ax-state__glyph" aria-hidden="true">⚠</span><h4>Configuration requests are temporarily unavailable</h4><p className="ax-caption">No empty or success state has been inferred. Retry the governed read.</p><button className="ax-btn ax-btn--secondary" onClick={reset}>Retry</button></div></div>;
+}
