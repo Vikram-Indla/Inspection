@@ -447,6 +447,17 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       </div>
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
 
+      {/* DEC-A — Figma wizard-shell parity as a guided presentation over the existing
+          config-driven engine: pure anchor navigation over the unchanged section list
+          below, no new state, no altered validation/submit/RLS/offline behaviour. */}
+      {!submitted && sections.length > 1 && (
+        <nav className="ax-tabs" role="tablist" aria-label={strings.panelTitle} style={{ overflowX: "auto", flexWrap: "nowrap" }}>
+          {sections.map(s => (
+            <a key={s.key} role="tab" aria-selected="false" href={`#ax-section-${s.key}`} style={{ whiteSpace: "nowrap", textDecoration: "none" }}>{s.title}</a>
+          ))}
+        </nav>
+      )}
+
       {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
       <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
@@ -536,7 +547,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         }
         const sp = progress.find(p => p.key === s.key)!;
         return (
-        <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div key={s.key} id={`ax-section-${s.key}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-600)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
             <span className="ax-caption ax-numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
