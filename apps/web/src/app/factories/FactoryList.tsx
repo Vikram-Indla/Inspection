@@ -5,12 +5,26 @@ import EmptyState from "@/components/EmptyState";
 export type FactoryRow = {
   id: string; factory_code: string; name: string; cr_number: string;
   region: string | null; city: string | null; risk_band: string | null; risk_score: number | null;
+  // FNS-103/104 — real registration flag. is_temporary = unregistered/unlicensed
+  // establishment created for an immediate visit (0001_foundation L135, M01-045);
+  // a licensed/registered factory synced from the national source is is_temporary=false.
+  is_temporary: boolean;
 };
+
+type LicenseKey = "" | "licensed" | "unlicensed";
 
 // Server-built strings (strings-prop pattern — client components cannot call useT()).
 export type FactoryListStrings = {
   regionLabel: string;
   allRegions: string;
+  // FNS-107 — city filter alongside region.
+  cityLabel: string;         // register: HT-025 "City" (المدينة)
+  allCities: string;         // generic connective (mirrors allRegions) — draft
+  // FNS-103/104 — licensed/unlicensed segmentation.
+  licenseGroupAria: string;  // group a11y label — no register row (draft)
+  licenseAll: string;        // generic "All" — draft
+  licensed: string;          // register: EM-103 "Licensed"/مرخصة (term); segment-label draft pending review
+  unlicensed: string;        // register: EM-002 "Unlicensed Establishments"/غير مرخصة
   of: string;
   factoriesWord: string;
   emptyRegionTitle: string;
@@ -27,19 +41,39 @@ export type FactoryListStrings = {
 // SCR-WEB-400 / M07-001 — factory registry list with client-side region filter.
 export default function FactoryList({ factories, strings }: { factories: FactoryRow[]; strings: FactoryListStrings }) {
   const [region, setRegion] = useState("");
+  const [city, setCity] = useState("");                       // FNS-107
+  const [license, setLicense] = useState<LicenseKey>("");     // FNS-103/104
   const regions = useMemo(
     () => Array.from(new Set(factories.map(f => f.region).filter((r): r is string => !!r))).sort(),
     [factories]);
-  const rows = useMemo(() => {
-    return region ? factories.filter(f => f.region === region) : factories;
-  }, [factories, region]);
+  const cities = useMemo(
+    () => Array.from(new Set(factories.map(f => f.city).filter((c): c is string => !!c))).sort(),
+    [factories]);
+  const rows = useMemo(() =>
+    factories.filter(f =>
+      (!region || f.region === region) &&
+      (!city || f.city === city) &&
+      (license === "" || (license === "unlicensed" ? f.is_temporary : !f.is_temporary))),
+    [factories, region, city, license]);
   return (
     <>
       <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
+        {/* FNS-103/104 — licensed/unlicensed segmentation over the real is_temporary flag */}
+        <div className="ax-segmented" role="group" aria-label={strings.licenseGroupAria}>
+          {([["", strings.licenseAll], ["licensed", strings.licensed], ["unlicensed", strings.unlicensed]] as [LicenseKey, string][]).map(([k, label]) => (
+            <button key={k || "all"} type="button" aria-pressed={license === k} onClick={() => setLicense(k)}>{label}</button>
+          ))}
+        </div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="factory-region-filter">{strings.regionLabel}</label>
           <select id="factory-region-filter" className="ax-select" value={region} onChange={e => setRegion(e.target.value)} style={{ maxInlineSize: 220 }}>
             <option value="">{strings.allRegions}</option>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
+          </select></div>
+        {/* FNS-107 — city filter (city data already loaded) */}
+        <div className="ax-field"><label className="ax-field__label" htmlFor="factory-city-filter">{strings.cityLabel}</label>
+          <select id="factory-city-filter" className="ax-select" value={city} onChange={e => setCity(e.target.value)} style={{ maxInlineSize: 220 }}>
+            <option value="">{strings.allCities}</option>
+            {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select></div>
         <span className="ax-caption"><span className="ax-numeric">{rows.length}</span> {strings.of} <span className="ax-numeric">{factories.length}</span> {strings.factoriesWord}</span>
       </div>
