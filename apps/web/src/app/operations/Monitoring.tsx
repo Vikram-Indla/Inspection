@@ -46,15 +46,15 @@ export function RegionCityFilter({ region, city, regions, cities, strings: s }: 
   };
   return (
     <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
-      <div className="ax-field"><label className="ax-field__label">{s.regionLabel}</label>
+      <div className="ax-field"><label className="ax-field__label" htmlFor="monitoring-region">{s.regionLabel}</label>
         {/* changing region resets city — the city list is region-scoped server-side */}
-        <select className="ax-select" style={{ maxInlineSize: 220 }} value={region}
+        <select className="ax-select" id="monitoring-region" style={{ maxInlineSize: 220 }} value={region}
           onChange={e => apply(e.target.value, "")} aria-label={s.regionLabel}>
           <option value="">{s.allRegions}</option>
           {regions.map(r => <option key={r} value={r}>{r}</option>)}
         </select></div>
-      <div className="ax-field"><label className="ax-field__label">{s.cityLabel}</label>
-        <select className="ax-select" style={{ maxInlineSize: 220 }} value={city}
+      <div className="ax-field"><label className="ax-field__label" htmlFor="monitoring-city">{s.cityLabel}</label>
+        <select className="ax-select" id="monitoring-city" style={{ maxInlineSize: 220 }} value={city}
           onChange={e => apply(region, e.target.value)} aria-label={s.cityLabel}>
           <option value="">{s.allCities}</option>
           {cities.map(c => <option key={c} value={c}>{c}</option>)}

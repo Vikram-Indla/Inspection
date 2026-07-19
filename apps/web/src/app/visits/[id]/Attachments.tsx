@@ -84,8 +84,8 @@ export default function Attachments({ visitId, rows, strings }: {
       <form action={upAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <input type="hidden" name="visit_id" value={visitId} />
         <div className="ax-field" style={{ maxInlineSize: 340 }}>
-          <label className="ax-field__label">{strings.fileLabel}</label>
-          <input className="ax-input" type="file" name="file" required />
+          <label className="ax-field__label" htmlFor="visit-attachment-file">{strings.fileLabel}</label>
+          <input className="ax-input" type="file" name="file" id="visit-attachment-file" required />
         </div>
         <button className="ax-btn ax-btn--secondary" disabled={upPending}>{upPending ? strings.uploading : strings.uploadBtn}</button>
       </form>

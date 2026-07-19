@@ -26,8 +26,8 @@ export default function NotesEditor({ visitId, initialNotes, strings }: {
       <form action={act} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <input type="hidden" name="visit_id" value={visitId} />
         <div className="ax-field">
-          <label className="ax-field__label">{strings.label}</label>
-          <textarea className="ax-textarea" name="notes" rows={3} defaultValue={initialNotes} placeholder={strings.placeholder} />
+          <label className="ax-field__label" htmlFor="visit-notes">{strings.label}</label>
+          <textarea className="ax-textarea" name="notes" id="visit-notes" rows={3} defaultValue={initialNotes} placeholder={strings.placeholder} />
         </div>
         <div className="ax-row" style={{ alignItems: "center", gap: "var(--ax-space-150)" }}>
           <button className="ax-btn ax-btn--secondary" disabled={pending}>{pending ? strings.saving : strings.saveBtn}</button>
