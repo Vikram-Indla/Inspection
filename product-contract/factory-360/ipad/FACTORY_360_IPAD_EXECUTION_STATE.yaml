@@ -1,0 +1,44 @@
+schema_version: "1.0"
+program: "Factory 360 — Inspector iPad (field-native)"
+prompt: "PROMPT_10_IPAD_MASTER_EXECUTION"
+executor: "Claude Code (sponsor-authorized override of active UI-cert slice)"
+
+web_base:
+  branch: "codex/factory-360-complete-010"
+  remote_head: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
+  status: "AWAITING_SPONSOR_FACTORY_360_FUNCTIONAL_ACCEPTANCE (web)"
+
+ipad:
+  branch: "codex/factory-360-ipad-011"
+  base_sha: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
+  head_sha: "db52854 (no commits yet)"
+
+surface_facts:
+  app_kind: "Next.js web app; iPad = responsive /field surface (not native)"
+  web_dossier_route: "apps/web/src/app/factories/cr/[id]/page.tsx (?license= selection)"
+  shared_lib: "apps/web/src/lib/factory360/{compliance,permissions}.ts (dossier.ts to be added)"
+  field_surface: "apps/web/src/app/field/**, apps/web/src/components/field/**"
+  tokens: "bespoke ax-* system (app/tokens.css) — NOT tailwind/atlaskit"
+  i18n: "strings-prop canon; client never calls useT(); Arabic default; RTL via CSS logical props"
+  offline_engine: "lib/offline.ts IndexedDB mim-field-v1 (drafts/packages/outbox/conflicts) — DO NOT touch"
+  search: "app/api/shell/search/route.ts already resolves CR/unified/license/plant/factory"
+  handoff: "planning/immediate?factory=&cr=&license=&returnTo="
+
+completed_modules: []
+active_module: "F360IPAD-EXTRACT-016 — lift web dossier projection into shared lib/factory360/dossier.ts"
+
+ledger_totals:
+  master_rows: 16
+  not_started: 12
+  in_progress: 2
+  no_change: 2
+
+migrations: "none yet; iPad reuses web factory360 v2 schema (20260720010000). Snapshot store is client IndexedDB, no server DDL expected."
+
+functionality_proven: "none yet (setup + discovery + ledgers only)"
+
+external_blockers:
+  - "New combined Web+iPad pack zip (SAQEEL_..._(1).zip) is TCC-blocked in ~/Downloads; the two iPad .md files (IPAD_RUNTIME_SPEC, WEB_IPAD_SHARED_CONTRACT) unread. Mitigation: PROMPT_10 itself contains the full iPad spec (13 chunks/journeys/parity), and web source-authority pack is already extracted in the web worktree. Not a hard blocker."
+  - "Supabase staging (iiozvqntawxfwbgffzqu) credentials not verified this session — not needed for functional build; only for later live closure."
+
+next_exact_action: "Write apps/web/src/lib/factory360/dossier.ts (extract page.tsx 46-174 load+derive into loadFactory360Dossier); refactor web CR page.tsx to consume it with rendering unchanged; typecheck."
