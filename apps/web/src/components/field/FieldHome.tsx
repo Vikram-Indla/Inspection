@@ -310,6 +310,15 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
             <option value="">{strings.allStatuses}</option>
             {statusOptions.map(sKey => <option key={sKey} value={sKey}>{strings.statusLabels[sKey] ?? sKey.replace(/_/g, " ")}</option>)}
           </select>
+          {/* FNS-013 (تخصصي/عام specialist/general segmented control) — BLOCKED, NOT
+              built. The visit_type / nature domain has no specialist|general option
+              values: `visits.visit_type` is free-text reference data (0001_foundation
+              L154; seeded values physical/periodic/follow_up/complaint) with no such
+              enum, and the register only captures HT-021 "Visit Nature" (label, no
+              options) and VR-033 "Is a specialized visit needed?" (a Yes/No conditional
+              field inside a visit report, not a task-type domain). The عام/تخصصي option
+              set is uncaptured, so per the no-invention rule the generic type filter is
+              retained here rather than fabricating a segmented control. */}
           <select className="ax-select" value={type} onChange={e => setType(e.target.value)} aria-label={strings.allTypes}>
             <option value="">{strings.allTypes}</option>
             {typeOptions.map(v => <option key={v} value={v}>{v}</option>)}
