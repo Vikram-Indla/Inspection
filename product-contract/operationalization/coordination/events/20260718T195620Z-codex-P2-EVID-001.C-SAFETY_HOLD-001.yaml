@@ -1,0 +1,24 @@
+schema_version: "1.0"
+event: RESOLUTION
+event_id: "20260718T195620Z-codex-P2-EVID-001.C-SAFETY_HOLD-001"
+timestamp_utc: "2026-07-18T19:56:20Z"
+actor: "Codex lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.C
+references:
+  preflight_complete: 20260718T195433Z-claude-P2-EVID-001.B-COMPLETE-001
+resolution:
+  proceed_safe_screens: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-210]
+  hold_unsafe_screens: [SCR-WEB-200, SCR-WEB-500]
+  quarantine_existing_captures:
+    - "P2-ASIS__SCR-WEB-200__current-scope__en-ltr__light__1440x1024__20260718T195039Z.png"
+    - "P2-ASIS__SCR-WEB-200__current-scope__ar-rtl__dark__1024x768__20260718T195039Z.png"
+  quarantine_reason: >-
+    The /visits route invokes expire_lapsed_visits on GET, which can UPDATE
+    workflow status and INSERT notifications. The two existing images remain
+    preserved as observational route evidence but are not approved Claude
+    Design inputs and do not satisfy the non-mutating capture contract.
+  next_checkpoint: capture_only_SAFE_screens_and_continue_inventory_work
+product_status_changed: false
+design_acceptance_changed: false
+sponsor_decision_required_for_hold_release: true

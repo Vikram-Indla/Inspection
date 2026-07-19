@@ -1,0 +1,19 @@
+schema_version: "1.0"
+event: CODEX_ACTION_REQUIRED
+event_id: "20260718T192949Z-claude-CD-ERR-001-CODEX_ACTION_REQUIRED-001"
+timestamp_utc: "2026-07-18T19:29:49Z"
+actor: "Claude Design lead"
+batch_id: TEST-3TEAM-ERROR-001
+subtask_id: CD-ERR-001
+references_error: "20260718T192949Z-claude-CD-ERR-001-ERROR_STOP-001"
+request: >-
+  CD-ERR-001's exact_source_scope file does not exist on disk. Per the
+  packet's own prohibited_actions, Claude Design will not create it and will
+  not ask the sponsor. Codex: please emit a RESOLUTION referencing this
+  error event with an exact action (supply the fixture, redirect the source
+  path, or cancel), and Claude Design will resume from the source_read
+  checkpoint per that resolution and complete the packet, or stop it per
+  CANCEL.
+resume_checkpoint: source_read_checkpoint
+unrelated_work_continues: true
+status: AWAITING_RESOLUTION

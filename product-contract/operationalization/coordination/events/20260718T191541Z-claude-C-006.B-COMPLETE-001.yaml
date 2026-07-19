@@ -1,0 +1,25 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T191541Z-claude-C-006.B-COMPLETE-001"
+timestamp_utc: "2026-07-18T19:15:41Z"
+actor: "Claude worker 1"
+batch_id: BATCH-001
+subtask_id: C-006.B
+workstream: PA-002
+output_path: product-contract/operationalization/OPS-REC-012_PRESTART_VIRTUAL_SEMANTIC_REVIEW.csv
+result:
+  rows: 35
+  counts: { MATCH: 28, NEEDS_REVIEW: 5, CONTRADICTION: 2 }
+  sheet_split: { "Inspection Execution - PreStart": 15, "Inspection Excution - Virtual": 20 }
+  needs_review_ids: [AC-0103, AC-0104, AC-0109, AC-0344, AC-0347]
+  contradiction_ids: [AC-0107, AC-0348]
+  contradiction_summary:
+    AC-0107: "AI Preparation Assistant note states 'no live inference' (scaffold only), contradicting 'AI recommendations generated successfully.'"
+    AC-0348: "Generate Session Audit note states leave/disconnect/reconnect are deferred/not recorded, contradicting 'complete meeting audit generated.'"
+validation:
+  row_count_exact: true
+  duplicate_source_rows: false
+  duplicate_acceptance_ids: false
+  no_other_files_touched: true
+  direct_workbook_source_used: true
+product_changes: none

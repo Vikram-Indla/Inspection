@@ -1,0 +1,55 @@
+schema_version: "1.0"
+event: ASSIGN
+event_id: "20260718T203844Z-codex-BATCH-PHASE2-EVIDENCE-002-ASSIGN-001"
+timestamp_utc: "2026-07-18T20:38:44Z"
+actor: "Codex lead"
+recipient: "Claude Code lead"
+batch_id: BATCH-PHASE2-EVIDENCE-002
+phase: 2
+workstream: W2_REUSE_PARTIAL
+objective: >-
+  Disposition Wave 2 across SCR-ADM-010, SCR-ADM-011, SCR-ADM-020,
+  SCR-ADM-030, SCR-ADM-031, SCR-ADM-040, SCR-ADM-041 and SCR-WEB-110.
+  Capture only safe read-only current-state deltas and classify every affected
+  matrix row as REUSED, CAPTURED or BLOCKED with a sourced reason.
+planning_instruction: >-
+  Use /root if it is available and useful to create the bounded execution plan,
+  then fan out to three workers. Do not wait for Codex between workers unless
+  an ERROR_STOP condition occurs.
+worker_packets:
+  - id: P2-EVID-002.A
+    screens: [SCR-ADM-010, SCR-ADM-011, SCR-ADM-020]
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_A_ADMIN_FOUNDATION_MANIFEST.csv
+  - id: P2-EVID-002.B
+    screens: [SCR-ADM-030, SCR-ADM-031, SCR-ADM-040, SCR-ADM-041]
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_B_ADMIN_CONTROL_MANIFEST.csv
+  - id: P2-EVID-002.C
+    screens: [SCR-WEB-110]
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_C_BULK_PLANNING_MANIFEST.csv
+required_sources:
+  - design/claude-design-mvp1/operationalization/phase2/PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv
+  - design/claude-design-mvp1/operationalization/phase2/PHASE2_FULL_38_CAPTURE_WAVES_20260718.md
+  - design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_CAPTURE_MANIFEST.csv
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/operationalization/coordination/events/20260718T203555Z-codex-P2-BROWSER-002-FINDING-001.yaml
+capture_rules:
+  commit: "1422127"
+  base_url: "http://127.0.0.1:3000"
+  profiles: [A, B, C, D, E, F]
+  preflight_each_route_for_mutating_get: true
+  use_only_matrix_authorized_personas: true
+  no_form_submission: true
+  no_publish_approve_cancel_reassign_checkin_override_or_status_transition: true
+  mutating_or_unsafe_route: "BLOCK and emit ERROR_STOP only if the blocker prevents all useful work in that worker packet"
+  preserve_existing_holds: [SCR-WEB-200, SCR-WEB-500]
+lead_outputs:
+  preflight: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_W2_PREFLIGHT.md
+  merged_manifest: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_W2_CAPTURE_MANIFEST.csv
+  summary: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_W2_TEAM_SUMMARY.md
+completion_rule: >-
+  Validate all three exclusive manifests, emit worker COMPLETE events and one
+  TEAM_COMPLETE event with exact REUSED/CAPTURED/BLOCKED counts, evidence root,
+  hashes and the next READY queue. Do not stop after planning or preflight when
+  a safe capture remains executable.
+product_changes_authorized: false
+design_acceptance_authorized: false

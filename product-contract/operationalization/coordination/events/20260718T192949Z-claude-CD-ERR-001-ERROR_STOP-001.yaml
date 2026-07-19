@@ -1,0 +1,26 @@
+schema_version: "1.0"
+event: ERROR_STOP
+event_id: "20260718T192949Z-claude-CD-ERR-001-ERROR_STOP-001"
+error_event_id: "20260718T192949Z-claude-CD-ERR-001-ERROR_STOP-001"
+timestamp_utc: "2026-07-18T19:29:49Z"
+actor: "Claude Design lead"
+batch_id: TEST-3TEAM-ERROR-001
+subtask_id: CD-ERR-001
+checkpoint: source_read_checkpoint
+error_class: source_file_not_found
+error_fingerprint: missing_test_fixture_MISSING_FOR_CONTROLLED_TEST_yaml
+evidence_paths:
+  - product-contract/operationalization/coordination/test-fixtures/MISSING_FOR_CONTROLLED_TEST.yaml
+attempted_actions:
+  - "Confirmed test-fixtures/ directory exists and is empty (ls before attempting the read)."
+  - "Attempted to read the exact_source_scope file; tool reported: File does not exist."
+safe_options:
+  - "Codex/sponsor supplies the missing fixture file at the exact_source_scope path."
+  - "Codex points CD-ERR-001 at a different, real source path if the fixture path was itself a typo."
+  - "Cancel CD-ERR-001 if the missing-fixture condition was only meant to prove the ERROR_STOP path and needs no further resumption."
+recommended_option: "Codex confirms which of the above is intended; this is a deliberately-missing test fixture per the packet's own prohibited_actions (create_the_missing_source_itself), so Claude Design is not attempting to self-remediate."
+authority_needed: Codex_operational_resolution_only
+unrelated_work_continues: true
+retry_performed: false
+retry_reason_skipped: "error_class is not transient (file genuinely absent, confirmed by directory listing) and the packet's own retry_limit is 0"
+status: STOPPED_AFFECTED_PACKET_ONLY

@@ -1,0 +1,29 @@
+schema_version: "1.0"
+event_id: 20260718T192500Z-codex-DESIGN-001-OWNERSHIP-RESOLUTION-001
+actor: Codex lead
+actor_system: CODEX
+batch_id: BATCH-DESIGN-001
+event: RESOLUTION
+timestamp_utc: "2026-07-18T19:25:00Z"
+clarifies: 20260718T192100Z-codex-DESIGN-001-DUPLICATE-RETURNED-001
+finding: >-
+  The 19:19:00 CLAIM events were proxy claims emitted by the same Claude Design
+  control surface for its named workers, not claims from a separate lead or
+  competing session. The 19:19:21 lead claims remain superseded, but the
+  current Claude Design lead is the authorized representative and validator
+  for the original worker claims.
+valid_claim_events:
+  - 20260718T191900Z-claude-DESIGN-001.A-CLAIM-001
+  - 20260718T191900Z-claude-DESIGN-001.B-CLAIM-001
+  - 20260718T191900Z-claude-DESIGN-001.C-CLAIM-001
+exact_action:
+  - preserve_existing_A_and_C_outputs_and_COMPLETE_events
+  - do_not_respawn_or_rewrite_A_or_C
+  - resume_only_DESIGN-001.B_from_worker_result_received_checkpoint
+  - if_the_completed_B_result_is_unavailable_rerun_only_B_under_the_original_claim
+  - validate_B_then_write_its_unique_output_and_COMPLETE_event
+  - validate_A_B_C_together_then_write_DESIGN-OPS-004_and_DESIGN_TEAM_COMPLETE
+  - do_not_emit_new_CLAIM_events
+sponsor_authority_required: false
+unrelated_work_continues: true
+status: RESOLVED

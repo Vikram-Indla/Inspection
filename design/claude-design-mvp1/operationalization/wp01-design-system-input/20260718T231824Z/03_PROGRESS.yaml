@@ -1,0 +1,20 @@
+schema_version: "1.0"
+run_id: "20260718T231824Z"
+updated_at_utc: "2026-07-18T23:18:24Z"
+routes_planned: 59
+routes_captured: 0
+logical_modes_planned: 59
+logical_modes_captured: 0
+images_captured: 0
+images_reviewed: 0
+ui_findings: 0
+ux_findings: 0
+platform_recommendations: 0
+blocked_captures: 0
+safety_holds: 8
+route_families_completed: []
+current_active_route: "/login"
+current_active_agent: "parent-codex"
+last_successful_checkpoint: "authority, source-baseline and runtime preflight"
+next_action: "capture and immediately review public/login baseline"
+

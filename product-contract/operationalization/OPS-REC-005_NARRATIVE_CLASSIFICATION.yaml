@@ -1,0 +1,69 @@
+schema_version: "1.0"
+reconciliation_id: "OPS-REC-005"
+title: "Narrative count and gate classification"
+date: "2026-07-18"
+owner: "Codex"
+status: "COMPLETE"
+purpose: >
+  Classify conflicting count and gate narratives without rewriting their source
+  files or changing any product, acceptance, evidence or release claim.
+current_authority:
+  acceptance_counts:
+    source: "product-contract/evidence/AC_LEDGER.csv; product-contract/evidence/AC_LEDGER_SUMMARY.md"
+    value: "493 governed rows: 18 verified_live, 475 implemented, 0 partial, 0 missing."
+  requirement_baseline:
+    source: "Inspection_Project_Customer_Auditor_Baseline.xlsx; OPS-REC-002"
+    value: "478 customer/auditor source requirements across nine sheets."
+  gate_position:
+    source: "product-contract/GATE_STATUS.md"
+    value: "G10 PASS; G11 and G12 OPEN."
+classifications:
+  - id: "NAR-001"
+    source: "product-contract/evidence/AC_LEDGER_SUMMARY.md lines 1-8"
+    reading: "493 rows: 18 verified_live, 475 implemented, 0 partial, 0 missing."
+    class: "CURRENT"
+    handling: "Use as the current acceptance-count reading."
+  - id: "NAR-002"
+    source: "product-contract/evidence/EVIDENCE_STATUS.md lines 64-65"
+    reading: "TASK-G11-REMAINING-REQUIREMENTS-CLOSURE evidence: 493 rows, 0 partial, 0 missing; 18 verified_live / 475 implemented."
+    class: "CURRENT_SUPPORTING_EVIDENCE"
+    handling: "Supports NAR-001; it is evidence, not an independent status override."
+  - id: "NAR-003"
+    source: "product-contract/GATE_STATUS.md lines 23-37"
+    reading: "493 rows: 15 verified_live, 460 implemented, 18 partial, 0 missing; 291/291."
+    class: "HISTORICAL"
+    handling: "Retain as dated reconciliation history. Do not use for the current acceptance count."
+  - id: "NAR-004"
+    source: "product-contract/CURRENT_STATE.md 2026-07-15 UPDATE 87"
+    reading: "493 rows: 15 verified_live, 460 implemented, 18 partial, 0 missing; 291/291."
+    class: "HISTORICAL"
+    handling: "Retain as an update dated 2026-07-15. It is not superseded by editing it."
+  - id: "NAR-005"
+    source: "product-contract/CURRENT_STATE.md 2026-07-16 UPDATE 87; EVIDENCE_STATUS G11-REMED-EV-002 and EV-005"
+    reading: "276/276 pass; 493 rows: 14 verified_live, 460 implemented, 19 partial."
+    class: "HISTORICAL"
+    handling: "Retain as remediation-slice evidence. It is not the current platform acceptance reading."
+  - id: "NAR-006"
+    source: "docs/README.md line 7"
+    reading: "G10 conditional with 276/276 current automated checks passing."
+    class: "STALE_NARRATIVE"
+    handling: "Do not use for current gate position. GATE_STATUS.md is authoritative and records G10 PASS."
+  - id: "NAR-007"
+    source: "docs/README.md line 6"
+    reading: "478 mandatory MVP1 source requirements."
+    class: "CURRENT"
+    handling: "Consistent with the customer/auditor source workbook."
+  - id: "NAR-008"
+    source: "product-contract/GATE_STATUS.md gate table, G7 row"
+    reading: "493 governed rows: 18 verified_live, 475 implemented, 0 partial, 0 missing."
+    class: "CURRENT"
+    handling: "Consistent with the machine-generated acceptance ledger."
+result:
+  current: 3
+  current_supporting_evidence: 1
+  historical: 3
+  stale_narrative: 1
+next_action: "Keep historical records unchanged; cite current authority explicitly in future operationalization material."
+do_not_touch:
+  - "Historical source documents."
+  - "Product, acceptance, evidence and release classifications."

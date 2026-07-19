@@ -1,0 +1,41 @@
+schema_version: "1.0"
+event: DESIGN_TEAM_COMPLETE
+event_id: "20260718T192829Z-claude-BATCH-DESIGN-001-DESIGN_TEAM_COMPLETE-001"
+timestamp_utc: "2026-07-18T19:28:29Z"
+actor: "Claude Design lead"
+batch_id: BATCH-DESIGN-001
+packets_completed: [DESIGN-001.A, DESIGN-001.B, DESIGN-001.C, DESIGN-001.LEAD]
+outputs:
+  DESIGN-001.A: design/claude-design-mvp1/operationalization/DESIGN-OPS-001_CODE_RUNTIME_DISCOVERY.md
+  DESIGN-001.B: design/claude-design-mvp1/operationalization/DESIGN-OPS-002_EXISTING_EVIDENCE_INVENTORY.csv
+  DESIGN-001.C: design/claude-design-mvp1/operationalization/DESIGN-OPS-003_SCREEN_STATE_GAP_QUEUE.csv
+  DESIGN-001.LEAD: design/claude-design-mvp1/operationalization/DESIGN-OPS-004_PRIORITY_SEQUENCE.md
+headline_finding: >-
+  All 8 formal design-acceptance evidence bundles (EV-DESIGN-001..008,
+  covering all 38 governed screens) are pending/uncaptured, but 47
+  present-and-located and 39 present-but-unregistered runtime/build
+  screenshots already exist in git for several of those exact screens
+  (CD-004, CD-021, CD-023, CD-026, CD-027, dashboard/KPI-seed). Recommended
+  sequence audits and fills the delta for evidence-rich unblocked screens
+  first (Tier 1: SCR-ADM-001, SCR-WEB-130, SCR-WEB-200, SCR-WEB-210,
+  SCR-WEB-500) rather than treating this as a blank-slate 38-screen capture
+  campaign.
+findings_for_codex_or_sponsor:
+  - "Documentation-storage-policy gap: 86 PNGs sit in-git under product-contract/evidence/screens/ though README.md there says binaries belong only under INSPECTION_DOCS_ROOT; 77 already flagged MOVE in repo-cleanup/documentation_inventory.csv, 9 postdate that snapshot."
+  - "3 EV-SHELL-00x rows have a register path (INSPECTION_DOCS_ROOT) that doesn't match where the file actually lives (in-git); same files are double-registered under SHELL-EV-00x in EVIDENCE_STATUS.md."
+  - "Code-comment-vs-code discrepancy: apps/web/src/lib/providers/map.ts comment claims Leaflet+CARTO; LiveMapInner.tsx actually renders with mapbox-gl. Not disputed: inspector positions are projected, not live GPS."
+  - "3 confirmed Tier-4 blockers already known to the programme (SCR-WEB-140 correction_required per CD-024 R1; SCR-WEB-400 composed rows blocked on Senaei/SL-3/SL-8/BR-010; SCR-WEB-500 composed rows blocked on SL-2) -- unchanged by this batch, just consolidated into one queue."
+validation:
+  no_fresh_screenshot_capture: true
+  no_design_change: true
+  no_code_change: true
+  no_design_acceptance_self_approval: true
+  consolidation_ran_only_after_ABC_validated: true
+product_changes: none
+next_ready_queue: >-
+  No further fully-specified packet exists in BATCH-001 or BATCH-DESIGN-001.
+  Awaiting Codex/sponsor: (a) disposition of the 3 findings above, (b)
+  authorization/specification for Tier 1 evidence-delta capture work, and (c)
+  full specification (exclusive_output_path, validation_rule, stop_boundary)
+  for BATCH-001's PA-009..012 if that wave is still wanted.
+stop_reason: no_further_fully_specified_READY_packet_exists

@@ -1,0 +1,27 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T200236Z-claude-P2-EVID-001.C-COMPLETE-001"
+timestamp_utc: "2026-07-18T20:02:36Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.C
+output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_CAPTURE_MANIFEST.csv
+result:
+  frames_captured: 0
+  screens_attempted: [SCR-WEB-130]
+  personas_attempted: [planner, inspector]
+  attempt_outcome: "Both persisted storage states (playwright/.auth/planner.json, playwright/.auth/inspector.json) redirected to /login on navigation -- refresh_token itself is dead, not just the access_token. No HTTP 429 observed on either attempt (distinct from the other actor's rate-limit finding)."
+  screens_not_attempted: [SCR-ADM-001, SCR-WEB-210]
+  not_attempted_reason: "Stopped after 2 consecutive persona failures rather than trying every remaining persona blind, to avoid unnecessary additional identity-service load; no working session exists for any persona right now regardless of which screen is targeted."
+validation:
+  screenshot_hash_and_path_recorded: "n/a -- zero frames captured"
+  persona_route_state_profile_and_commit_recorded: true
+  no_secrets_or_PII: true
+  no_data_or_status_mutation: true
+  missing_or_unsafe_combination_labelled_BLOCKED_not_simulated: true
+product_changes: none
+recommendation: >-
+  A fresh, manually-authorized login (outside this automated loop) is needed
+  for at least one persona to produce a valid playwright/.auth/*.json before
+  any Tier-1 capture can proceed. Claude lead will not fabricate credentials
+  or attempt password guessing/brute-force to acquire one.

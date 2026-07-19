@@ -1,0 +1,29 @@
+schema_version: "1.0"
+change_id: "CC-OPS-CONTROL-SYSTEM-001"
+title: "Operationalization control system and sponsor execution ledger"
+requestor: "Codex on behalf of Vikram Indla"
+approver: "Vikram Indla"
+approval_source: "Sponsor response: approved, 2026-07-18"
+authorization: >
+  Sponsor approval of the Operationalization Charter authorizes creation and
+  reconciliation of the programme control system. It authorizes no product
+  behavior, provider, policy, production, database, or release change.
+business_reason: >
+  Preserve one durable, evidence-backed execution path so new sessions resume
+  from an exact work row rather than recreating programme understanding.
+scope_allowed:
+  - "Create lightweight, machine-readable operationalization controls in Git."
+  - "Create and update human-readable charter material in the approved external documentation store."
+  - "Reconcile existing product-contract requirements, acceptance, evidence, route, screen, design and session records by reference."
+  - "Operate as a sidecar control programme and preserve the active product slice unchanged."
+scope_forbidden:
+  - "Application, workflow, schema, RLS, provider, production-data or deployment change."
+  - "Invented policy values, providers, thresholds, legal positions, retention, Arabic scope or business decisions."
+  - "Reclassification of any requirement, acceptance, runtime result or release claim without its own approved evidence."
+  - "Push, merge, remote DDL, deployment, main modification or Git-history rewrite."
+decision_owner: "Vikram Indla"
+effective_date: "2026-07-18"
+completion_rule: >
+  A validated control index, execution ledger, decision/change ledger, artifact
+  manifest and session cursor exist; all rows cite their authority; the next
+  slice is explicit; and no product-completion claim has been changed.

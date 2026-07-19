@@ -1,0 +1,214 @@
+schema_version: "1.0"
+protocol_id: INSPECTION-MULTI-AGENT-OS-001
+status: PROPOSED_FOR_LIVE_TEST
+effective_date: "2026-07-18"
+purpose: >-
+  Keep Codex and Claude Code working continuously on disjoint ready work while
+  preventing concurrent agents from overwriting shared programme records.
+
+authority:
+  product_contract_remains_authoritative: true
+  execution_workbook: /Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/00_PROGRAM_CONTROL/Inspection_Operationalization_Execution_Ledger_v1.0.xlsx
+  canonical_repository: /Users/vikramindla/Developer/Inspection
+  source_archive: /Users/vikramindla/InspectionOps/MIM_Inspection_MVP1_Historical_Archives_v3
+
+roles:
+  sponsor:
+    responsibilities: [approve_gates, decide_change_control_items, receive_exception_status]
+  codex_lead:
+    responsibilities: [compute_ready_queue, run_codex_workers, peer_validate_claude_outputs, control_writer]
+  claude_lead:
+    responsibilities: [run_claude_workers, validate_child_outputs, emit_team_complete]
+  claude_design_lead:
+    responsibilities:
+      - run_design_discovery_and_specification_workers
+      - preserve_product_and_runtime_truth
+      - validate_design_outputs_against_acceptance_and_evidence_contracts
+      - emit_DESIGN_TEAM_COMPLETE
+    prohibited_actions:
+      - edit_application_code
+      - capture_fresh_runtime_evidence_before_the_authorized_phase
+      - approve_its_own_design_acceptance
+      - alter_requirements_workflow_RBAC_data_provider_or_release_status
+  worker:
+    responsibilities: [execute_one_bounded_packet, write_unique_output, emit_immutable_events]
+    prohibited_writes:
+      - AGENT_COORDINATION_LEDGER.csv
+      - 00_AGENT_HANDOFF_LOG.md
+      - 00_SESSION_CURSOR_OPERATIONALIZATION.md
+      - Inspection_Operationalization_Execution_Ledger_v1.0.xlsx
+
+scheduler:
+  rule: >-
+    Recompute READY work after every claim, completion, blocker, decision and
+    peer acknowledgement. Park only work directly affected by an unresolved
+    dependency. Fill available agent slots from other READY packages.
+  orchestration_loop:
+    enabled: true
+    owner: each_team_lead
+    cycle:
+      - read_latest_batch_claim_and_event_files
+      - validate_in_flight_worker_state
+      - collect_and_validate_completed_outputs
+      - emit_TEAM_COMPLETE_ACK_or_RETURNED_when_due
+      - recompute_READY_queue_from_dependencies
+      - fill_every_available_agent_slot_with_disjoint_READY_work
+      - continue_independent_lead_work_while_workers_run
+      - repeat_after_each_worker_or_peer_event
+    idle_behavior: >-
+      If work is in flight, wait for worker/event completion and re-read the
+      event directory. Do not ask the sponsor for another assignment. Avoid a
+      tight shell polling loop; use bounded waits or filesystem events.
+    stop_only_when:
+      - programme_or_batch_goal_is_complete
+      - no_READY_work_exists_and_every_remaining_item_has_a_sourced_hard_blocker
+      - sponsor_or_change_control_authority_is_required_for_every_remaining_item
+      - tool_permission_or_safety_boundary_requires_human_action
+      - session_context_or_token_budget_cannot_safely_continue
+  packet_required_fields:
+    - batch_id
+    - task_id
+    - subtask_id
+    - exact_source_scope
+    - exclusive_output_path
+    - allowed_write_set
+    - validation_rule
+    - dependencies
+    - decision_refs
+    - stop_boundary
+
+coordination_storage:
+  root: product-contract/operationalization/coordination
+  batches: batches
+  claims: claims
+  events: events
+  locks: locks
+  event_filename: "<UTC>-<actor>-<task>-<event>-<uuid>.yaml"
+  immutable_events:
+    - BATCH_PUBLISHED
+    - CLAIM
+    - PROGRESS
+    - COMPLETE
+    - BLOCKED
+    - TEAM_COMPLETE
+    - ACK
+    - RETURNED
+    - DECISION
+    - TAKEOVER
+    - SYNC_COMPLETE
+    - ERROR_STOP
+    - CODEX_ACTION_REQUIRED
+    - RESOLUTION
+    - RESUME
+    - SPONSOR_ESCALATION
+    - CANCEL
+    - CHECKPOINT
+    - SESSION_YIELD
+    - DESIGN_TEAM_COMPLETE
+  correction_rule: append_SUPERSEDE_event_never_rewrite_history
+
+ownership:
+  claim_mutex: atomic_create_claim_directory
+  duplicate_claim: reject
+  output_path_collision: reject
+  long_task_control: lease_and_heartbeat
+  takeover: coordinator_emits_TAKEOVER_after_expiry
+
+single_writer:
+  default_control_writer: Codex lead
+  lock: product-contract/operationalization/coordination/locks/consolidate.lock
+  derived_views:
+    - product-contract/operationalization/AGENT_COORDINATION_LEDGER.csv
+    - /Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/00_PROGRAM_CONTROL/00_AGENT_HANDOFF_LOG.md
+    - /Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/00_PROGRAM_CONTROL/00_SESSION_CURSOR_OPERATIONALIZATION.md
+    - /Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/00_PROGRAM_CONTROL/Inspection_Operationalization_Execution_Ledger_v1.0.xlsx
+  checkpoint_steps:
+    - acquire_lock
+    - verify_base_digest
+    - validate_event_transitions
+    - validate_source_and_output_hashes
+    - validate_unique_ids_and_output_paths
+    - regenerate_derived_views
+    - scan_workbook_formulas
+    - render_modified_workbook_sheets
+    - emit_SYNC_COMPLETE
+    - release_lock
+
+sync_points:
+  - BATCH_PUBLISHED_AND_CLAIMED
+  - TEAM_COMPLETE
+  - PEER_ACK_OR_RETURNED
+  - SPONSOR_DECISION
+  - PHASE_GATE
+  - DESIGN_TEAM_COMPLETE_AND_CODEX_ACK
+
+completion_rule: >-
+  Worker COMPLETE is not programme acceptance. A team lead must validate and
+  emit TEAM_COMPLETE; the peer lead must then emit ACK or RETURNED. Product,
+  gate and release status still require their existing evidence and authority.
+
+error_loopback:
+  rule: >-
+    Claude never asks the sponsor to resolve an execution error. It stops only
+    the affected packet, records ERROR_STOP and CODEX_ACTION_REQUIRED, then
+    continues unrelated READY work. Codex resolves within existing authority
+    or presents one concise sponsor decision and records the answer.
+  error_stop_required_fields:
+    - error_event_id
+    - batch_id
+    - subtask_id
+    - checkpoint
+    - error_class
+    - error_fingerprint
+    - evidence_paths
+    - attempted_actions
+    - safe_options
+    - recommended_option
+    - authority_needed
+    - unrelated_work_continues
+  codex_resolution:
+    operational_issue: emit_RESOLUTION_with_exact_action_and_resume_checkpoint
+    product_gate_or_scope_authority: emit_SPONSOR_ESCALATION_and_ask_sponsor
+    invalid_or_unsafe_work: emit_CANCEL_or_RETURNED
+  resume_rule: >-
+    Claude resumes only when a RESOLUTION or DECISION references the open error
+    event. Resume the exact packet from its last checkpoint; never replay the
+    whole batch.
+  retry_rule: >-
+    One automatic retry is allowed only for a clearly transient tool error. A
+    second identical error must route to Codex. No silent retry loop.
+  kill_switches:
+    global: product-contract/operationalization/coordination/STOP_ALL
+    batch: product-contract/operationalization/coordination/batches/<batch_id>.STOP
+
+phase_boundaries:
+  phase_1_allowed:
+    - source_and_acceptance_reconciliation
+    - existing_visual_evidence_inventory
+    - draft_capture_matrix_marked_HOLD_UNTIL_PHASE_2
+    - five_screen_candidate_input_inventory_without_new_design
+  phase_1_prohibited:
+    - fresh_runtime_screenshot_capture
+    - browser_audit_execution
+    - new_design_frames
+    - design_acceptance_upgrade
+    - product_or_release_status_mutation
+
+live_test:
+  batch_id: BATCH-001
+  success_checks:
+    - four_concurrent_unique_events_survive
+    - exactly_one_of_two_competing_claims_succeeds
+    - duplicate_replay_is_idempotent
+    - overlapping_output_paths_are_rejected
+    - interrupted_temporary_event_is_ignored
+    - stale_claim_requires_TAKEOVER
+    - pending_decision_parks_only_linked_work
+    - claude_TEAM_COMPLETE_is_visible_to_codex_without_sponsor_relay
+    - codex_ACK_or_RETURNED_is_visible_to_claude_without_sponsor_relay
+    - derived_views_reconcile_and_workbook_formula_render_checks_pass
+
+promotion_rule: >-
+  After BATCH-001 passes, add the invariant rules to AGENTS.md and CLAUDE.md,
+  then create matching Codex and Claude operationalization-orchestrator skills.
+  Until then this protocol is the live-test authority for coordination only.

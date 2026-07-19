@@ -1,0 +1,2 @@
+finding_id,screenshot_id,route_id,screen_id,persona,logical_mode,category,subcategory,severity,observation,user_impact,requirement_or_design_authority,evidence_region,recommended_change,component_affected,design_system_implication,proposed_disposition,dependency,acceptance_criterion,suggested_verification,duplicate_or_master_finding,status
+

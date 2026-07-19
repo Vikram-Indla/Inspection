@@ -1,0 +1,60 @@
+schema_version: "1.0"
+event: ASSIGN
+event_id: "20260718T205859Z-codex-BATCH-PHASE2-EVIDENCE-003-ASSIGN-001"
+timestamp_utc: "2026-07-18T20:58:59Z"
+actor: "Codex lead"
+recipient: "Claude Code lead"
+batch_id: BATCH-PHASE2-EVIDENCE-003
+phase: 2
+workstream: W3_ADMIN_BLANK_SLATE
+objective: >-
+  Disposition Wave 3 across SCR-ADM-050, SCR-ADM-051, SCR-ADM-060,
+  SCR-ADM-070, SCR-ADM-080 and SCR-ADM-090. Capture safe read-only
+  current-state evidence and classify each attempted profile as CAPTURED or
+  BLOCKED with sourced route/runtime truth. Do not infer screen completion
+  from screenshot existence.
+planning_instruction: >-
+  Use /root if useful for a bounded plan, then fan out to three workers. Keep
+  all three workers moving independently and merge only at TEAM_COMPLETE.
+worker_packets:
+  - id: P2-EVID-003.A
+    screens: [SCR-ADM-050, SCR-ADM-051]
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-003_A_WORKFLOW_MANIFEST.csv
+  - id: P2-EVID-003.B
+    screens: [SCR-ADM-060, SCR-ADM-070]
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-003_B_RISK_GIS_MANIFEST.csv
+  - id: P2-EVID-003.C
+    screens: [SCR-ADM-080, SCR-ADM-090]
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-003_C_NOTIFY_USER_MANIFEST.csv
+required_sources:
+  - design/claude-design-mvp1/operationalization/phase2/PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv
+  - design/claude-design-mvp1/operationalization/phase2/PHASE2_FULL_38_CAPTURE_WAVES_20260718.md
+  - product-contract/screens/screen_route_catalogue.csv
+  - product-contract/operationalization/coordination/events/20260718T204831Z-claude-BATCH-PHASE2-EVIDENCE-002-TEAM_COMPLETE-001.yaml
+capture_rules:
+  commit: "1422127"
+  base_url: "http://127.0.0.1:3000"
+  profiles: [A, B, C, D, E, F]
+  preflight_each_route_for_mutating_get: true
+  use_only_matrix_authorized_personas: true
+  no_form_submission: true
+  no_publish_approve_cancel_reassign_checkin_override_or_status_transition: true
+  screen_specific_holds:
+    SCR-ADM-080: >-
+      Stop where the consolidated /admin surface lacks verified notification
+      or SLA route truth; capture only the verified logical surface.
+  mutating_or_unsafe_route: >-
+    BLOCK the affected screen/profile and continue the other worker packets;
+    emit ERROR_STOP only for a blocker that prevents all useful work.
+  preserve_existing_holds: [SCR-WEB-200, SCR-WEB-500, SCR-ADM-031]
+lead_outputs:
+  preflight: design/claude-design-mvp1/operationalization/phase2/P2-EVID-003_W3_PREFLIGHT.md
+  merged_manifest: design/claude-design-mvp1/operationalization/phase2/P2-EVID-003_W3_CAPTURE_MANIFEST.csv
+  summary: design/claude-design-mvp1/operationalization/phase2/P2-EVID-003_W3_TEAM_SUMMARY.md
+completion_rule: >-
+  Validate the three exclusive manifests, emit worker COMPLETE events and one
+  TEAM_COMPLETE event with exact CAPTURED/BLOCKED counts, evidence root,
+  hashes, findings and next READY queue. Continue through safe work without
+  waiting for Codex.
+product_changes_authorized: false
+design_acceptance_authorized: false

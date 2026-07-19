@@ -1,0 +1,16 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T191921Z-claude-DESIGN-001.C-CLAIM-001"
+timestamp_utc: "2026-07-18T19:19:21Z"
+actor: "Claude Design lead"
+batch_id: BATCH-DESIGN-001
+subtask_id: DESIGN-001.C
+title: Screen_state_design_gap_queue
+claim_dir: product-contract/operationalization/coordination/claims/DESIGN-001.C
+output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-003_SCREEN_STATE_GAP_QUEUE.csv
+worker_scope: read_only_analysis
+notes: >-
+  Claiming DESIGN-001.C per BATCH-DESIGN-001.yaml. Screen-state design gap
+  queue derived from screen_route_catalogue.csv, JOURNEY_SCREEN_MAP.csv,
+  DESIGN_ACCEPTANCE_MATRIX.csv and SCREEN_STATE_MATRIX.csv. No design
+  acceptance self-approval.

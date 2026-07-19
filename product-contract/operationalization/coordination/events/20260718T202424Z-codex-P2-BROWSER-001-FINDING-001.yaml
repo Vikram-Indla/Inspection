@@ -1,0 +1,48 @@
+schema_version: "1.0"
+event: FINDING
+event_id: "20260718T202424Z-codex-P2-BROWSER-001-FINDING-001"
+timestamp_utc: "2026-07-18T20:24:24Z"
+actor: "Codex lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-BROWSER-001
+method: "Codex in-app browser against local runtime"
+tested_persona: planner
+tested_viewport: "1024x768"
+tested_routes:
+  - /planning/immediate
+  - /admin
+  - /admin/regulations
+findings:
+  - id: UX-RESP-001
+    severity: high
+    route: /planning/immediate
+    observation: >-
+      English at 1024x768 is materially clipped by the persistent sidebar;
+      the page heading and right-side work area extend beyond the visible
+      capture. Arabic remains within the document width but is excessively
+      tall and mixes Arabic and English copy.
+    design_action: "Claude Design to address responsive work-area priority, sidebar behavior, and bilingual consistency."
+  - id: SAFE-IRREV-001
+    severity: pass
+    route: /planning/immediate
+    observation: >-
+      Create and dispatch remains disabled before mandatory reason, identity,
+      location, window, and acknowledgement inputs are satisfied.
+  - id: RBAC-DISC-001
+    severity: medium
+    route: /admin
+    observation: >-
+      Planner can read the Admin overview and see links to configuration
+      families even though the page states the planner can act in none.
+  - id: RBAC-GUARD-001
+    severity: pass
+    route: /admin/regulations
+    observation: >-
+      Direct Planner navigation reaches an explicit "Authorized configuration
+      role required" state; configuration data and actions are not rendered.
+conclusion: >-
+  No proven admin-action authorization bypass. The remaining concern is
+  confusing discovery/read exposure on the Admin overview plus a high-priority
+  responsive and bilingual usability defect on urgent dispatch.
+product_status_changed: false
+design_acceptance_changed: false

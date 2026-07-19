@@ -1,0 +1,91 @@
+schema_version: "1.0"
+batch_id: BATCH-001
+status: READY_FOR_CLAUDE_CLAIM
+created_utc: "2026-07-18T19:10:00Z"
+phase: 1
+purpose: close_remaining_MVP1_semantic_review_without_serial_waiting
+team_lead: Claude Code
+control_writer: Codex
+
+continuous_execution:
+  enabled: true
+  instruction: >-
+    Claude lead must keep an internal execution loop running for the active
+    session: read latest events, collect workers, validate outputs, claim the
+    next disjoint READY work, refill available agent slots and repeat. Do not
+    wait for Codex or the sponsor while any unrelated READY work exists.
+  next_queue_after_first_wave: [PA-009, PA-010, PA-011, PA-012, PA-006]
+  stop_only_for: [goal_complete, all_remaining_work_hard_blocked, authority_required, permission_or_safety_boundary, session_budget_exhausted]
+  error_instruction: >-
+    On error, stop only that packet and write ERROR_STOP plus
+    CODEX_ACTION_REQUIRED events. Do not ask Vikram. Continue unrelated READY
+    work. Poll for a Codex RESOLUTION at bounded intervals and resume only the
+    referenced packet/checkpoint.
+
+shared_write_rule: >-
+  Workers and Claude lead do not edit the shared workbook, coordination CSV,
+  handoff log or cursor. They create only the unique outputs and immutable
+  events named here. Codex consolidates after TEAM_COMPLETE.
+
+packets:
+  - subtask_id: C-006.A
+    workstream: PA-001
+    assignee: Claude lead
+    source_scope: correct_C004_Level2_row_references_only
+    expected_rows: 53
+    expected_counts: { MATCH: 49, NEEDS_REVIEW: 4, CONTRADICTION: 0 }
+    required_exception_ids: [AC-0363, AC-0374, AC-0384, AC-0408]
+    output_path: product-contract/operationalization/OPS-REC-009_LEVEL2_SEMANTIC_REVIEW_CORRECTED.csv
+    stop_boundary: no_classification_or_count_change
+
+  - subtask_id: C-006.B
+    workstream: PA-002
+    assignee: Claude worker 1
+    source_scope:
+      - { sheet: "Inspection Execution - PreStart", rows: 15 }
+      - { sheet: "Inspection Excution - Virtual", rows: 20 }
+    expected_rows: 35
+    output_path: product-contract/operationalization/OPS-REC-012_PRESTART_VIRTUAL_SEMANTIC_REVIEW.csv
+    stop_boundary: flag_discrepancies_without_resolving_or_mutating_status
+
+  - subtask_id: C-006.C
+    workstream: PA-003
+    assignee: Claude worker 2
+    source_scope:
+      - { sheet: "Factory 360", rows: 20 }
+      - { sheet: "Ops center", rows: 19 }
+    expected_rows: 39
+    output_path: product-contract/operationalization/OPS-REC-013_FACTORY360_OPSCENTER_SEMANTIC_REVIEW.csv
+    stop_boundary: flag_discrepancies_without_resolving_or_mutating_status
+
+  - subtask_id: C-006.D
+    workstream: PA-004
+    assignee: Claude worker 3
+    source_scope:
+      - { sheet: "Complince", rows: 30 }
+    expected_rows: 30
+    output_path: product-contract/operationalization/OPS-REC-014_COMPLIANCE_SEMANTIC_REVIEW.csv
+    stop_boundary: flag_discrepancies_without_resolving_or_mutating_status
+
+lead_validation:
+  required_total_new_source_rows: 104
+  checks:
+    - exact_row_counts_35_39_30
+    - no_duplicate_source_rows
+    - no_duplicate_acceptance_ids
+    - every_row_has_classification_and_sourced_note
+    - direct_workbook_source_used
+    - product_acceptance_policy_provider_database_and_release_status_unchanged
+  completion_event: TEAM_COMPLETE
+  next_without_waiting:
+    - PA-009
+    - PA-010
+    - PA-011
+
+visual_second_wave:
+  allowed_after_semantic_workers_return: true
+  packets:
+    - { workstream: PA-009, scope: "index 86 existing runtime screenshots", prohibition: "no browser capture" }
+    - { workstream: PA-010, scope: "index 72 final frames and 34 HTML prototypes", prohibition: "no design change" }
+    - { workstream: PA-011, scope: "draft 38-screen matrix", prohibition: "mark HOLD_UNTIL_PHASE_2; no execution" }
+    - { workstream: PA-012, scope: "five-screen candidate input pack", prohibition: "no new frames or design acceptance" }

@@ -1,0 +1,39 @@
+schema_version: "1.0"
+reconciliation_id: "OPS-REC-004"
+title: "Claude Code semantic-exception review — Visit Planning-Planning"
+status: "VALIDATED_WITH_OPEN_ITEMS"
+assignment_id: "C-001"
+owner: "Claude Code"
+reviewer: "Codex"
+scope:
+  source_sheet: "Visit Planning-Planning"
+  source_rows: "2-53"
+  source_count: 52
+  map_rows: "OPS-REC-003 rows for Visit Planning-Planning"
+sources:
+  - "/Users/vikramindla/Desktop/Inspection Documentation/01_SOURCE_REQUIREMENTS/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx"
+  - "product-contract/operationalization/OPS-REC-003_SOURCE_TO_ACCEPTANCE_MAP.csv"
+  - "product-contract/evidence/AC_LEDGER.csv"
+method:
+  - "For each of the 52 rows, compare source capability and acceptance criterion with its mapped acceptance ID and AC ledger note."
+  - "Classify MATCH, NEEDS_REVIEW or CONTRADICTION; use NEEDS_REVIEW when wording is insufficient to establish a semantic relationship."
+  - "Do not change source requirements, acceptance status, product code, policy, providers, database state or release state."
+output:
+  path: "product-contract/operationalization/OPS-REC-004_VP_PLANNING_SEMANTIC_REVIEW.csv"
+  columns: ["Source sheet", "Source row", "Capability", "Requirement ID", "Acceptance ID", "AC ledger note", "Outcome", "Reason"]
+  completion_rule: "Exactly 52 review rows, with no unclassified row."
+validation:
+  validated_by: "Codex"
+  timestamp_utc: "2026-07-18T17:58:12Z"
+  result: "52 rows; 47 MATCH, 4 NEEDS_REVIEW, 1 CONTRADICTION."
+  open_items:
+    - "AC-0001: ledger note does not evidence role-based planning-method restriction."
+    - "AC-0007: ledger note does not evidence a publish-time assigned-inspector gate."
+    - "AC-0016 and AC-0026: AI elements are deferred to MVP2; deterministic summaries are evidenced."
+    - "AC-0052: source notification wording conflicts with the ledger's inspector no-notification wording unless it refers only to self-assignment."
+  handling: "Open items are evidence/interpretation gaps, not acceptance-status changes."
+handoff:
+  shared_log: "/Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/00_PROGRAM_CONTROL/00_AGENT_HANDOFF_LOG.md"
+  coordination_ledger: "product-contract/operationalization/AGENT_COORDINATION_LEDGER.csv"
+  summary_template: "CLAUDE→CODEX HANDOFF | assignment C-001 | result | output path | counts MATCH/NEEDS_REVIEW/CONTRADICTION | blockers | no-product-change confirmation | exact next action"
+stop_condition: "Stop after this one source sheet and hand off; do not review another sheet."

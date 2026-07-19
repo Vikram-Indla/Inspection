@@ -1,0 +1,47 @@
+schema_version: "1.0"
+run_id: "20260718T231824Z"
+work_package: "WP-01"
+title: "Complete Platform Screenshot Baseline, Per-Image UI/UX Findings and Design-System Upgrade Recommendation"
+created_at_utc: "2026-07-18T23:18:24Z"
+canonical_repository: "/Users/vikramindla/Developer/Inspection"
+retired_repository_prohibited: "/Users/vikramindla/Documents/GitHub/Inspection"
+branch: "setup/Inspection"
+commit: "e19b388ef788d61e9bbb20053434c37fa5dfae0a"
+dirty_state: true
+runtime_url: "http://127.0.0.1:3000"
+browser: "Codex in-app browser"
+scope:
+  routes: 59
+  governed_logical_screens: 38
+  governed_design_personas: 13
+  deterministic_runtime_personas: 5
+  processes: [P00, P01, P02, P03, P04, P05, P06A, P06B, P07, P08, P09, P10, P11, P12]
+  requirements: "478 mandatory MVP1 rows plus accepted MVP2/MVP3 behavior"
+  acceptance: "493 governed records plus current MVP2/MVP3 acceptance contracts"
+current_gate: "G11/G12 UI release certification; technical automation PASS; human Arabic and inspector-endurance gates pending"
+current_slice: "TASK-QA-UI-COMPLIANCE-CERT-004"
+assignment_authority: "Sponsor-provided WP-01 execution prompt dated 2026-07-19"
+write_scope:
+  - "This immutable run folder only"
+prohibited_changes:
+  - "Product code"
+  - "Product-contract requirements, gates, acceptance or evidence status"
+  - "Database, workflow, provider, permission or release state"
+  - "Programme Excel ledger"
+  - "Shared production-like data"
+source_exceptions:
+  - id: "SRC-EX-001"
+    source: "/Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/outputs/claude-design-approval-pack/DESIGN_QUALITY_RATCHET_V4.md"
+    status: "SOURCE_ACCESS_REQUIRED"
+    reason: "macOS file privacy returned Operation not permitted after approved read attempt"
+  - id: "SRC-EX-002"
+    source: "@oai/artifact-tool"
+    status: "TOOLING_BLOCKED_FALLBACK_USED"
+    reason: "macOS native-module Team ID mismatch; read-only OOXML parser used without workbook mutation"
+capture_policy:
+  mutate_shared_data: false
+  unsafe_route_disposition: "CAPTURE_BLOCKED unless an approved isolated deterministic fixture is available"
+  credentials_in_output: false
+  provider_truth_required: true
+  review_each_image_immediately: true
+

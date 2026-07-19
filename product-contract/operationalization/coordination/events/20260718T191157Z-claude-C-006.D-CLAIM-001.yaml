@@ -1,0 +1,13 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T191157Z-claude-C-006.D-CLAIM-001"
+timestamp_utc: "2026-07-18T19:11:57Z"
+actor: "Claude worker 3"
+batch_id: BATCH-001
+subtask_id: C-006.D
+workstream: PA-004
+claim_dir: product-contract/operationalization/coordination/claims/C-006.D
+source_scope:
+  - { sheet: "Complince", rows: 30, requirement_ids: "MVP1-M09-001..030", acceptance_ids: "AC-0449..AC-0478" }
+output_path: product-contract/operationalization/OPS-REC-014_COMPLIANCE_SEMANTIC_REVIEW.csv
+notes: "Dispatched to a subagent; Claude lead validates the output before COMPLETE."

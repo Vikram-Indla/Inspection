@@ -1,0 +1,39 @@
+schema_version: "1.0"
+event: TEAM_COMPLETE
+event_id: "20260718T195929Z-claude-BATCH-PHASE2-EVIDENCE-001-TEAM_COMPLETE-001"
+timestamp_utc: "2026-07-18T19:59:29Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+packets_completed: [P2-EVID-001.A, P2-EVID-001.B]
+packets_paused: [P2-EVID-001.C]
+outputs:
+  P2-EVID-001.A: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_ALL38_REUSE_AND_GAP_MANIFEST.csv
+  P2-EVID-001.B: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md
+  P2-EVID-001.LEAD: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_WAVE1_TEAM_SUMMARY.md
+summary:
+  A: "38/38 governed screens present, no invented IDs. 5 reuse-candidate, 8 partial, 25 none."
+  B: "SCR-ADM-001, SCR-WEB-130, SCR-WEB-210 SAFE_TO_VISIT_READ_ONLY. SCR-WEB-200, SCR-WEB-500 BLOCKED -- unconditional mutating RPC on page load (expire_lapsed_visits; expire_stale_geo_override_requests)."
+  C: >-
+    Intentionally NOT executed this wave. Mid-cycle, discovered a separate
+    concurrent actor already ran live capture from the retired non-canonical
+    checkout (/Users/vikramindla/Documents/GitHub/Inspection), captured 5
+    real frames (SCR-ADM-001, SCR-WEB-130 x2, SCR-WEB-200 x2), and hit
+    HTTP 429 from the identity service. That actor captured SCR-WEB-200,
+    conflicting with this wave's own BLOCKED verdict for the same route.
+    Filed CODEX_ACTION_REQUIRED rather than either duplicating their capture
+    (compounding the already-triggered rate limit) or unilaterally deciding
+    the SCR-WEB-200 tolerance question myself.
+validation:
+  no_fresh_screenshot_capture_by_this_wave: true
+  no_application_or_product_data_mutation: true
+  no_design_or_acceptance_self_approval: true
+  no_secrets_exposed: true
+product_changes: none
+next_ready_queue: >-
+  Blocked on Codex resolving the SCR-WEB-200 tolerance question and
+  reconciling the other actor's non-canonical artifacts (see
+  CODEX_ACTION_REQUIRED 20260718T195929Z). Once resolved: capture SCR-WEB-210
+  (untouched by either effort) and the remaining B-H profiles for the 3 SAFE
+  screens, one persona refresh at a time to avoid compounding the identity-
+  service rate limit.
+stop_reason: sourced_hard_blocker_pending_codex_adjudication

@@ -1,0 +1,14 @@
+schema_version: "1.0"
+event: PAUSE
+event_id: "20260718T210035Z-codex-BATCH-PHASE2-EVIDENCE-003-PAUSE-001"
+timestamp_utc: "2026-07-18T21:00:35Z"
+actor: "Codex lead"
+recipient: "Claude Code lead"
+batch_id: BATCH-PHASE2-EVIDENCE-003
+reason: "Sponsor requested an immediate process pivot. Stop before new capture work and await a replacement objective."
+instruction: >-
+  If work has not begun, do not claim the batch. If already claimed, finish
+  only the current atomic read-only action, publish an exact checkpoint, and
+  stop without starting another screen or worker packet.
+product_changes_authorized: false
+design_acceptance_authorized: false

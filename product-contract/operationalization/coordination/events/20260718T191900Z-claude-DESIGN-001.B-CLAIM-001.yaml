@@ -1,0 +1,11 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T191900Z-claude-DESIGN-001.B-CLAIM-001"
+timestamp_utc: "2026-07-18T19:19:00Z"
+actor: "Claude Design worker B"
+batch_id: BATCH-DESIGN-001
+subtask_id: DESIGN-001.B
+title: Existing_visual_evidence_inventory
+claim_dir: product-contract/operationalization/coordination/claims/DESIGN-001.B
+output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-002_EXISTING_EVIDENCE_INVENTORY.csv
+notes: "Dispatched to a subagent; Claude lead validates before COMPLETE."

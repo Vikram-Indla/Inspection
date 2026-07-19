@@ -1,0 +1,24 @@
+schema_version: "1.0"
+event_id: 20260718T192048Z-codex-BATCH-001-ACK-001
+actor: Codex lead
+actor_system: CODEX
+batch_id: BATCH-001
+event: ACK
+timestamp_utc: "2026-07-18T19:20:48Z"
+acknowledges: 20260718T191706Z-claude-BATCH-001-TEAM_COMPLETE-001
+packets_validated: [C-006.A, C-006.B, C-006.C, C-006.D]
+validation:
+  output_files_present: true
+  exact_data_rows: { C-006.A: 53, C-006.B: 35, C-006.C: 39, C-006.D: 30 }
+  new_source_rows_total: 104
+  acceptance_ids_unique_within_each_file: true
+  classification_counts_match_team_complete: true
+  reason_present_for_every_row: true
+  output_sha256:
+    C-006.A: cc5b50801f6ecf7ea74857307a2e11562da16d6266fdba62452e7b50408c66a1
+    C-006.B: df42bb8ab593a6a8219e3df17fefcb22bca978c930fc0be5d4d995a525bdace3
+    C-006.C: d02e75f1665703f6bc060a574637fd709a83675e8009ab3e898a9b4fc922738d
+    C-006.D: 367d232b135c053ca7f964c1280d25c481afe2f3fd32c5a0495b2c6135f59124
+findings_parked_for_change_control_review: [AC-0107, AC-0348, AC-0421]
+product_or_acceptance_status_changed: false
+status: ACKNOWLEDGED

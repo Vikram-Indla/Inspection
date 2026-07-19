@@ -1,0 +1,110 @@
+schema_version: "1.0"
+status_model:
+  - "PROPOSED"
+  - "APPROVED"
+  - "READY"
+  - "IN_PROGRESS"
+  - "IMPLEMENTED"
+  - "VERIFIED"
+  - "ACCEPTED"
+  - "BLOCKED"
+  - "SUPERSEDED"
+  - "WAIVED"
+reading_rule: >
+  Only VERIFIED or ACCEPTED work may support a completion claim. IMPLEMENTED
+  means the work exists but does not imply runtime, negative-path, sponsor or
+  audit acceptance.
+items:
+  - work_id: "OPS-000"
+    title: "Establish programme control system"
+    type: "control"
+    status: "VERIFIED"
+    authority: "CC-OPS-CONTROL-SYSTEM-001"
+    scope: "Control index, execution ledger, decision/change ledger, artifact manifest and session cursor."
+    dependencies: ["Sponsor charter approval"]
+    outputs:
+      - "product-contract/operationalization/CONTROL_INDEX.yaml"
+      - "product-contract/operationalization/EXECUTION_LEDGER.yaml"
+      - "product-contract/operationalization/DECISION_CHANGE_LEDGER.yaml"
+      - "product-contract/operationalization/ARTIFACT_MANIFEST.yaml"
+      - "product-contract/operationalization/SESSION_CURSOR.yaml"
+    evidence: ["CC-OPS-CONTROL-SYSTEM-001", "Sponsor approval 2026-07-18"]
+    next_action: "Maintain this control set as the active programme memory while the product task remains unchanged."
+  - work_id: "OPS-010"
+    title: "Reconcile authoritative requirements, delivery, verification and evidence"
+    type: "reconciliation"
+    status: "IN_PROGRESS"
+    authority: "CC-OPS-CONTROL-SYSTEM-001"
+    requirement_scope: ["478 MVP1 source requirements", "84 MVP3 rows — mapping only"]
+    acceptance_scope: ["493 governed acceptance rows", "Exact MVP3 acceptance identifiers"]
+    screen_scope: ["Canonical screen and route catalogue", "CD-050..CD-061 — mapping only"]
+    dependencies:
+      - "OPS-000 complete"
+      - "Read access to approved external documentation root for a fresh source-document enumeration"
+    outputs:
+      - "Source-to-requirement-to-screen-to-test-to-evidence mapping"
+      - "Controlled discrepancy register"
+      - "Exact verified / implemented / partial / missing / blocked view"
+    evidence:
+      - "product-contract/evidence/AC_LEDGER.csv"
+      - "product-contract/evidence/EVIDENCE_STATUS.md"
+      - "product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv"
+      - "product-contract/operationalization/OPS-REC-001_SOURCE_RECONCILIATION.yaml"
+      - "product-contract/operationalization/OPS-REC-002_SOURCE_WORKBOOK_BASELINE.yaml"
+      - "product-contract/operationalization/OPS-REC-003_SOURCE_TO_ACCEPTANCE_MAP.csv"
+      - "product-contract/operationalization/OPS-REC-005_NARRATIVE_CLASSIFICATION.yaml"
+      - "product-contract/operationalization/OPS-REC-006_C001_OPEN_ITEM_DISPOSITION.yaml"
+      - "product-contract/operationalization/OPS-REC-008_EXECUTION_JOURNEY_SEMANTIC_REVIEW.csv"
+      - "product-contract/operationalization/OPS-REC-010_VISIT_MANAGEMENT_SEMANTIC_REVIEW.csv"
+      - "product-contract/operationalization/OPS-REC-011_SOURCE_MAP_COLUMN_DRIFT.csv"
+    do_not_touch: ["No requirement status reclassification without source evidence"]
+    next_action: "Receive the C-004 row-reference correction, repair the 28 provisional source-criterion cells logged in OPS-REC-011, then continue independent semantic review modules without changing acceptance status."
+  - work_id: "OPS-020"
+    title: "Define controlled runtime audit waves"
+    type: "audit-planning"
+    status: "PROPOSED"
+    dependencies: ["OPS-010"]
+    outputs: ["Route × persona × state × locale × viewport evidence matrix"]
+    next_action: "Prioritize high-risk evidence gaps after reconciliation."
+  - work_id: "OPS-030"
+    title: "Audit running platform and log P0/P1 findings"
+    type: "runtime-audit"
+    status: "PROPOSED"
+    dependencies: ["OPS-020", "Controlled runtime environment"]
+    outputs: ["Evidence-backed finding register", "Reproducible screenshot and test references"]
+    next_action: "Await OPS-020."
+  - work_id: "OPS-040"
+    title: "Sponsor five-screen design gate"
+    type: "design-gate"
+    status: "PROPOSED"
+    dependencies: ["OPS-030", "Approved design authority"]
+    outputs: ["Five sponsor review screens", "Design-system acceptance record"]
+    next_action: "Await evidence-backed findings."
+  - work_id: "OPS-050"
+    title: "Execute approved page and shared-experience improvements"
+    type: "implementation"
+    status: "PROPOSED"
+    dependencies: ["OPS-040", "Per-slice sponsor authorization"]
+    outputs: ["Verified approved implementation slices"]
+    next_action: "Await design gate and individual slice approval."
+  - work_id: "OPS-060"
+    title: "Inspector guidance and onboarding"
+    type: "enablement"
+    status: "PROPOSED"
+    dependencies: ["OPS-050"]
+    outputs: ["Visual guide", "Governed onboarding experience"]
+    next_action: "Await final approved inspector journeys."
+  - work_id: "OPS-070"
+    title: "Minister View governance, design and verification"
+    type: "new-module"
+    status: "PROPOSED"
+    dependencies: ["Approved persona, requirements, data-lineage and authorization decisions"]
+    outputs: ["Persona", "Requirements", "Design", "Verified implementation"]
+    next_action: "Await separate sponsor requirements approval."
+  - work_id: "OPS-080"
+    title: "Audit, hardening and release readiness"
+    type: "assurance"
+    status: "PROPOSED"
+    dependencies: ["OPS-030", "OPS-050", "OPS-060", "OPS-070 as approved"]
+    outputs: ["Internal audit pack", "External audit pack", "G10/G11/G12 readiness record"]
+    next_action: "Await controlled implementation and evidence waves."

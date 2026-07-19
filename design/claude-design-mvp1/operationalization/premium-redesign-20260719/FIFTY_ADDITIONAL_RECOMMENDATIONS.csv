@@ -1,0 +1,51 @@
+recommendation_id,area,recommendation,why_it_matters,acceptance_test,proposed_package,status
+REC-001,Navigation,Organize navigation by user job and journey stage rather than technical module,Reduces users getting lost,A persona can locate its top five tasks without opening unrelated groups,CD-PREM-01,PROPOSED
+REC-002,Navigation,Show the current persona name role and governed scope persistently,Clarifies what the user can do,Every authenticated page exposes accurate role and scope without implying role switching,CD-PREM-01,PROPOSED
+REC-003,Navigation,Add a journey-aware breadcrumb with lifecycle state,Explains location and progression,Breadcrumb and state remain accurate across consolidated routes,CD-PREM-01,PROPOSED
+REC-004,Top navigation,Separate global navigation search from page entity search,Prevents ambiguous controls,Users can distinguish destination search from factory visit or case search,CD-PREM-01,PROPOSED
+REC-005,Top navigation,Expose freshness and active filters beside decision content,Builds trust in operational data,All dashboards and maps show timestamp scope and partial-source state,CD-PREM-01,PROPOSED
+REC-006,Page hierarchy,Introduce one reusable decision header per page,Creates consistent orientation,Every redesigned page states job state blocker scope and one primary action,CD-PREM-01,PROPOSED
+REC-007,Actions,Separate irreversible actions visually and spatially,Reduces accidental regulatory changes,Submit publish reject cancel and override require clear consequence and confirmation,CD-PREM-01,PROPOSED
+REC-008,Context,Use a governed Context Evidence Audit Help panel,Adds depth without crowding,Panel explains existing data and never introduces an unauthorized transition,CD-PREM-01,PROPOSED
+REC-009,Terminology,Replace heavy imported terms with plain Saudi operational English and Arabic,Improves comfort and comprehension,Native Arabic and business users approve the glossary,CD-PREM-01,PROPOSED
+REC-010,Status,Create one cross-platform state language and visual grammar,Reduces inconsistent badges and meanings,The same state has the same label semantics and non-color cue everywhere,CD-PREM-01,PROPOSED
+REC-011,Density,Define comfortable standard and dense operational table modes,Supports control rooms without fatigue,Dense mode remains readable keyboard accessible and responsive,CD-PREM-01,PROPOSED
+REC-012,Errors,Use sectional error boundaries for aggregated pages,Prevents one service failure collapsing the page,Factory 360 and Operations retain unaffected sections with explicit stale and retry states,CD-PREM-01,PROPOSED
+REC-013,Empty states,Explain why a view is empty and the valid next action,Prevents dead-end pages,Every empty state distinguishes no data no permission filter exclusion and service failure,CD-PREM-01,PROPOSED
+REC-014,Loading,Use structural loading states that preserve page orientation,Reduces layout shift and uncertainty,Loading frames retain title state scope and expected regions,CD-PREM-01,PROPOSED
+REC-015,Accessibility,Add skip links landmarks focus restoration and status announcements,Makes complex workflows operable,Keyboard and screen-reader checks pass critical journeys,CD-PREM-01,PROPOSED
+REC-016,Arabic,Review terminology and truncation with native Arabic specialists,Prevents literal or clipped Arabic,No P0 or P1 linguistic or RTL issue remains in representative journeys,CD-PREM-01,PROPOSED
+REC-017,Onboarding,Create a Persona Academy entry in the side panel,Makes training discoverable without impersonation,Selecting a persona opens learning content but never changes authorization,CD-PREM-02,PROPOSED
+REC-018,Onboarding,Show a day-in-the-life journey for every persona,Explains handoffs and purpose,Each governed persona has start tasks dependencies handoffs and success outcome,CD-PREM-02,PROPOSED
+REC-019,Onboarding,Use real Saudi industrial characters and correct PPE,Builds authenticity and trust,All media passes rights cultural and safety review,CD-PREM-02,PROPOSED
+REC-020,Onboarding,Provide captions transcript poster and reduced-motion alternatives,Makes media inclusive,Every video has accessible equivalents and no audible autoplay,CD-PREM-02,PROPOSED
+REC-021,Onboarding,Embed contextual micro-guides at first-use decision points,Reduces training burden,Guides appear only when relevant and can be revisited without blocking work,CD-PREM-02,PROPOSED
+REC-022,Onboarding,Link tutorials to the exact live route and state,Avoids generic training,Every chapter states its source route persona and product version,CD-PREM-02,PROPOSED
+REC-023,Onboarding,Add a four-hour demonstration storyline with chapter navigation,Supports sales training and audit walkthrough,The complete platform can be demonstrated sequentially without skipping governed journeys,CD-PREM-02,PROPOSED
+REC-024,Minister view,Use the existing Leadership boundary until a Minister role is approved,Protects RBAC integrity,No design or implementation creates an unapproved role,CD-PREM-03,PROPOSED
+REC-025,Minister view,Synchronize national map ranked list KPIs and context panel,Enables visual decision-making,Selecting any item updates all views with the same governed scope,CD-PREM-03,PROPOSED
+REC-026,Minister view,Expose metric definition numerator denominator and lineage,Prevents black-box dashboards,Every displayed number drills to authorized source records,CD-PREM-03,PROPOSED
+REC-027,Minister view,Add preset executive questions beside the composer,Improves discoverability,Questions are limited to governed query templates and active access scope,CD-PREM-03,PROPOSED
+REC-028,Minister view,Require citations freshness and uncertainty in AI answers,Makes AI defensible,Unsupported questions return cannot answer instead of fabricated output,CD-PREM-03,PROPOSED
+REC-029,Minister view,Separate factual briefing from human action,Preserves accountability,AI never creates a regulatory action without a governed human step,CD-PREM-03,PROPOSED
+REC-030,Minister view,Provide yearly zonal sector risk compliance and remediation comparisons,Matches executive needs,Every comparison has a governed definition period and drilldown,CD-PREM-03,PROPOSED
+REC-031,Maps,Pair every operational map with a synchronized accessible list,Improves comprehension and accessibility,Map selection and list selection remain equivalent and keyboard operable,CD-PREM-03,PROPOSED
+REC-032,Maps,Distinguish official verified inspection and projected locations,Prevents false geographic precision,Every location carries source confidence and time label,CD-PREM-04,PROPOSED
+REC-033,Maps,Label projected routes persistently until real telemetry is live,Prevents stakeholder misunderstanding,No projected position is visually or textually presented as live GPS,CD-PREM-04,PROPOSED
+REC-034,Planning,Show why each factory was selected with criteria and model version,Supports auditor explainability,Every target traces to rule data and manual override reason,CD-PREM-04,PROPOSED
+REC-035,Planning,Combine calendar map workload and conflict resolution without hiding blockers,Improves assignment quality,Planner can see timing geography capacity truth and unresolved conflicts together,CD-PREM-04,PROPOSED
+REC-036,Factory 360,Turn Factory 360 into a decision-grade spatial timeline,Connects fragmented history,Users can move from identity to visits findings actions documents and source evidence,CD-PREM-04,PROPOSED
+REC-037,Operations,Prioritize exceptions by consequence and required next action,Reduces dashboard noise,Every alert identifies owner evidence urgency and allowed resolution,CD-PREM-04,PROPOSED
+REC-038,Operations,Show service freshness and degradation per widget,Protects trust during partial outages,One stale feed does not contaminate other live or current sections,CD-PREM-04,PROPOSED
+REC-039,Inspector,Design iPad as a field application rather than responsive desktop,Improves field usability,Portrait and landscape journeys meet touch readability and interruption requirements,CD-PREM-05,PROPOSED
+REC-040,Inspector,Keep the valid next action and blockers persistent,Reduces field uncertainty,Inspector always knows what is complete blocked and safe to do next,CD-PREM-05,PROPOSED
+REC-041,Inspector,Expose saved locally queued syncing synced failed and conflict states,Prevents silent data loss,Every draft and evidence item has truthful actionable sync status,CD-PREM-05,PROPOSED
+REC-042,Evidence,Show chain of custody and quality at capture time,Reduces review returns,Evidence displays source time device link hash status and recoverable quality issues,CD-PREM-05,PROPOSED
+REC-043,Evidence,Use finding-centred capture rather than a generic attachment list,Improves traceability,Every evidence item is linked to question finding clause or approved exception,CD-PREM-05,PROPOSED
+REC-044,Submission,Use a pre-submit proof summary with fix links,Prevents incomplete immutable submission,Every blocker navigates directly to the exact unresolved section,CD-PREM-05,PROPOSED
+REC-045,Returned work,Highlight only editable returned scope and immutable prior content,Protects version integrity,Locked content cannot appear editable and changes compare clearly,CD-PREM-05,PROPOSED
+REC-046,Virtual inspection,Use readiness and participant verification as the room spine,Improves governed remote execution,Appointment identity devices network state and next transition are always visible,CD-PREM-06,PROPOSED
+REC-047,Virtual inspection,Design provider-pending and low-bandwidth work modes honestly,Allows useful work without fake video,Checklist evidence notes and fallback work while video remains explicitly unavailable,CD-PREM-06,PROPOSED
+REC-048,Review,Create a change-focused review and version comparison mode,Reduces reviewer cognitive load,Reviewer navigates changed sections evidence and immutable comments efficiently,CD-PREM-06,PROPOSED
+REC-049,Committee,Generate a business-readable decision dossier with source drilldown,Supports defensible decisions,Summary risk evidence history objections and recommendation each trace to governed records,CD-PREM-06,PROPOSED
+REC-050,Audit,Provide a replayable inspection timeline across planning field evidence review and outcome,Supports internal and external audit,Auditor reconstructs who what when where why version source and correlation without chat history,CD-PREM-06,PROPOSED

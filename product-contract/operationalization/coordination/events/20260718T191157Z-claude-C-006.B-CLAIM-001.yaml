@@ -1,0 +1,14 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T191157Z-claude-C-006.B-CLAIM-001"
+timestamp_utc: "2026-07-18T19:11:57Z"
+actor: "Claude worker 1"
+batch_id: BATCH-001
+subtask_id: C-006.B
+workstream: PA-002
+claim_dir: product-contract/operationalization/coordination/claims/C-006.B
+source_scope:
+  - { sheet: "Inspection Execution - PreStart", rows: 15, requirement_ids: "MVP1-M03-001..015", acceptance_ids: "AC-0099..AC-0113" }
+  - { sheet: "Inspection Excution - Virtual", rows: 20, requirement_ids: "MVP1-M05-001..020", acceptance_ids: "AC-0337..AC-0356" }
+output_path: product-contract/operationalization/OPS-REC-012_PRESTART_VIRTUAL_SEMANTIC_REVIEW.csv
+notes: "Dispatched to a subagent; Claude lead validates the output before COMPLETE."

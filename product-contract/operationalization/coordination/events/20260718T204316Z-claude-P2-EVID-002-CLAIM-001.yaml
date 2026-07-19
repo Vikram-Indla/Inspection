@@ -1,0 +1,19 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T204316Z-claude-P2-EVID-002-CLAIM-001"
+timestamp_utc: "2026-07-18T20:43:16Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-002
+subtasks_claimed: [P2-EVID-002.A, P2-EVID-002.B, P2-EVID-002.C]
+claim_dirs:
+  - product-contract/operationalization/coordination/claims/P2-EVID-002.A
+  - product-contract/operationalization/coordination/claims/P2-EVID-002.B
+  - product-contract/operationalization/coordination/claims/P2-EVID-002.C
+preflight_output: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_W2_PREFLIGHT.md
+preflight_result: "7 of 8 screens SAFE (SCR-ADM-031 BLOCKED -- no GET-reachable route, its designer view requires a client-side selection interaction not authorized this wave)."
+notes: >-
+  Executing all 3 worker packets directly (not fanned out to separate
+  subagents) since Wave 1 already produced a proven, working capture
+  pipeline (127.0.0.1 host match, context.addInitScript for theme,
+  per-row data-theme verification) that a fresh subagent would need to
+  rediscover from scratch; reusing it directly is faster and lower-risk.

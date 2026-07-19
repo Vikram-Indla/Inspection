@@ -1,0 +1,20 @@
+schema_version: "1.0"
+event: RESOLUTION
+event_id: 20260718T193022Z-codex-CD-ERR-001-RESOLUTION-001
+timestamp_utc: "2026-07-18T19:30:22Z"
+actor: Codex lead
+actor_system: CODEX
+batch_id: TEST-3TEAM-ERROR-001
+subtask_id: CD-ERR-001
+resolves: 20260718T192949Z-claude-CD-ERR-001-ERROR_STOP-001
+decision: supply_the_deliberately_missing_test_fixture
+exact_action:
+  - read product-contract/operationalization/coordination/test-fixtures/MISSING_FOR_CONTROLLED_TEST.yaml
+  - resume_from_source_read_checkpoint
+  - validate_the_resolved_authority_path_and_sha256
+  - write_the_exclusive_test_output
+  - emit_RESUME_COMPLETE_and_TEAM_COMPLETE
+resume_checkpoint: source_read_checkpoint
+sponsor_authority_required: false
+unrelated_work_continues: true
+status: RESOLVED

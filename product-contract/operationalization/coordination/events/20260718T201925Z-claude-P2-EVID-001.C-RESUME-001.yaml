@@ -1,0 +1,18 @@
+schema_version: "1.0"
+event: RESUME
+event_id: "20260718T201925Z-claude-P2-EVID-001.C-RESUME-001"
+timestamp_utc: "2026-07-18T20:19:25Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.C
+resumes_resolution: "20260718T201500Z-codex-P2-EVID-001.C-AUTH_RESOLUTION-001"
+resume_checkpoint: safe_capture_after_authentication
+verification_before_resuming: >-
+  Independently re-verified all 4 storage states (playwright/.auth/{planner,inspector,
+  reviewer,admin}.json) have a JWT expires_at in the future (checked against
+  current unix time) before attempting any navigation.
+permitted_screens: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-210]
+held_screens_preserved: [SCR-WEB-200, SCR-WEB-500]
+no_new_claim_emitted: true
+unrelated_work_continues: true
+status: RESUMED

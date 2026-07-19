@@ -1,0 +1,75 @@
+schema_version: "1.0"
+change_id: "CC-AC-0016-0026-AI-PLANNING-SUMMARY-DEFERRAL-001"
+title: "AI Planning Summary / AI recommendation is MVP1 Mandatory in the requirements register but undocumented as deferred, while acceptance is marked implemented"
+requestor: "Claude Code on behalf of Vikram Indla (sponsor-directed disposition of OPS-REC-004 flagged rows AC-0016 and AC-0026)"
+approver: "Vikram Indla"
+approval_source: "PENDING — filed for sponsor decision, not yet approved"
+status: "OPEN"
+decision_id: "DEC-026"
+requirement_ids: ["MVP1-M01-016", "MVP1-M01-026"]
+acceptance_ids: ["AC-0016", "AC-0026"]
+source_capability: "AI Planning Summary"
+source_criterion: >
+  "Summary generated successfully" (MVP1-M01-016) / "AI summary is generated
+  successfully before publishing" (MVP1-M01-026, naming AI recommendations of
+  inspection priorities).
+authorization: >
+  Filed under Phase 1 operationalization semantic-exception review
+  (OPS-REC-004 / OPS-REC-006). This ticket documents a confirmed,
+  undocumented gap and requests a decision; it does not itself authorize any
+  reclassification or code change.
+business_reason: >
+  product-contract/domain/atomic_scope.csv classifies both MVP1-M01-016
+  (line 17) and MVP1-M01-026 (line 27) as "MVP1 Mandatory" — row 27
+  explicitly names "recommend inspection priorities" as in-scope for MVP1.
+  AC_LEDGER.csv marks AC-0016/AC-0026 "implemented" with the note
+  "Deterministic campaign summary present; AI summary/recommendations MVP2 by
+  contract" — but no MVP2 scope document actually names Visit Planning's AI
+  summary as deferred: product-contract/domain/scope_boundary.yaml (lines
+  25-27) documents an MVP2 AI deferral only for the unrelated Risk
+  Engine/Risk Studio; product-contract/mvp2/* (LOOP_STATE.md,
+  MVP2_LOCAL_SOURCE_CERTIFICATE.md, RECONCILIATION_LEDGER.md,
+  STAGING_SOURCE_RECONCILIATION.md) contain zero references to Visit
+  Planning, M01-016, M01-026, or AI Planning Summary; and the contract's only
+  documented "Phase-2 AI note" concept (BUSINESS-UIUX-RECONCILIATION-2026-07-16.md
+  lines 21, 167) governs M06/M07/M08 only, never M01. Per CLAUDE.md's own
+  rule that a Phase 2 AI note may defer only the AI sub-capability and never
+  its parent requirement, and given no such note exists for this module,
+  marking these rows "implemented" is not supported by an approved deferral
+  record.
+evidence:
+  - "product-contract/domain/atomic_scope.csv lines 17, 27."
+  - "product-contract/domain/scope_boundary.yaml lines 25-27."
+  - "product-contract/evidence/BUSINESS-UIUX-RECONCILIATION-2026-07-16.md lines 21, 167."
+  - "product-contract/evidence/AC_LEDGER.csv rows for AC-0016 and AC-0026."
+  - "product-contract/evidence/DEV_AUDIT_VERDICTS.json entries [15], [25]."
+  - "product-contract/operationalization/OPS-REC-004_VP_PLANNING_SEMANTIC_REVIEW.csv rows 17, 27."
+  - "product-contract/operationalization/OPS-REC-006_C001_OPEN_ITEM_DISPOSITION.yaml (AC-0016/AC-0026 entries)."
+options:
+  - option_id: "A"
+    description: >
+      Author and sponsor-approve a Phase-2-AI-note change record explicitly
+      naming MVP1-M01-016/026 as deferred to MVP2 (AI portion only), and
+      correct AC_LEDGER.csv / acceptance status wording to state clearly that
+      MVP1 delivers the deterministic summary only, with the AI element
+      tracked as an MVP2 backlog item.
+    impact: "Documentation/acceptance-note correction only; no code change; closes the register gap without building AI in MVP1."
+  - option_id: "B"
+    description: >
+      Treat as a genuine open MVP1 gap: the AI Planning Summary/recommendation
+      capability must be implemented before MVP1-M01-016/026 can be truthfully
+      marked implemented; reclassify AC-0016/AC-0026 to reflect partial/blocked
+      status until built.
+    impact: "Requires a new implementation task (AI summary/recommendation engine) under its own change control; downgrades current acceptance status for these two rows in the interim."
+scope_allowed:
+  - "Read this ticket, review the evidence, and record a decision (Option A, Option B, or an alternative)."
+scope_forbidden:
+  - "No acceptance-status, AC_LEDGER.csv, or code change is authorized by this ticket alone."
+  - "No invented policy value, provider, or business decision about AI scope."
+decision_owner: "Vikram Indla"
+effective_date: "2026-07-18"
+completion_rule: >
+  This ticket closes when the sponsor records a decision (Option A, B, or
+  alternative) in decision_register.csv (DEC-026) and, whichever option is
+  chosen, the corresponding acceptance-note or implementation task is
+  separately authorized and executed with its own evidence.

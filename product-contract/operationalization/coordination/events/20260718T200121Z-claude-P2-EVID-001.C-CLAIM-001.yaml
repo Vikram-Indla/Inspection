@@ -1,0 +1,19 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T200121Z-claude-P2-EVID-001.C-CLAIM-001"
+timestamp_utc: "2026-07-18T20:01:21Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.C
+claim_dir: product-contract/operationalization/coordination/claims/P2-EVID-001.C
+references_resolution: "20260718T195620Z-codex-P2-EVID-001.C-SAFETY_HOLD-001"
+scope: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-210]
+exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_CAPTURE_MANIFEST.csv
+notes: >-
+  Proceeding per Codex's explicit resolution (proceed_safe_screens). Given
+  the identity-service 429 the other actor triggered ~10 minutes ago,
+  refreshing personas one at a time and stopping immediately on any further
+  429 rather than retrying. SCR-ADM-001 does not require the (already-dead)
+  Admin persona -- code allows any authenticated role, so using
+  Planner/Inspector for all 3 screens avoids the confirmed-dead Admin session
+  entirely.

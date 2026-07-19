@@ -1,0 +1,42 @@
+schema_version: "1.0"
+event: FINDING
+event_id: "20260718T204529Z-codex-P2-BROWSER-002-FINDING-002"
+timestamp_utc: "2026-07-18T20:45:29Z"
+actor: "Codex lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-BROWSER-002
+method: "Codex in-app browser against local runtime"
+tested_persona: inspector
+tested_viewport: "1024x768"
+tested_route: /field
+screen_id: SCR-IPAD-600
+findings:
+  - id: UX-FIELD-SEARCH-SCALE-001
+    severity: high
+    observation: >-
+      Searching the Inspector worklist for the specific fixture term CD-023
+      still leaves 262 main-content links, so the available search does not
+      turn the 1,000-assignment workload into a bounded work queue.
+    impact: >-
+      Search alone cannot compensate for the unbounded dashboard and does not
+      establish a clear next inspection for the field user.
+    design_action: >-
+      The five-screen Inspector design must include meaningful prioritization,
+      bounded loading and a next-safe-action work queue rather than relying on
+      free-text search over the entire assignment population.
+  - id: DATA-FIELD-DATE-001
+    severity: high
+    observation: >-
+      Visible filtered cards contain visit dates in years 2319, 2322, 2323 and
+      2325 without an unavailable-data warning or anomaly treatment.
+    impact: >-
+      Implausible operational dates can distort sorting and prevent a field
+      user from identifying current work, regardless of visual redesign.
+    disposition: >-
+      Route to runtime/data-quality investigation; do not conceal it as a
+      design-only problem.
+conclusion: >-
+  SCR-IPAD-600 needs both design remediation and a separate data-quality check.
+  This test did not mutate product state.
+product_status_changed: false
+design_acceptance_changed: false

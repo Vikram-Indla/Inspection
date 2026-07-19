@@ -1,0 +1,15 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T191921Z-claude-DESIGN-001.A-CLAIM-001"
+timestamp_utc: "2026-07-18T19:19:21Z"
+actor: "Claude Design lead"
+batch_id: BATCH-DESIGN-001
+subtask_id: DESIGN-001.A
+title: Code_and_runtime_truth_inventory
+claim_dir: product-contract/operationalization/coordination/claims/DESIGN-001.A
+output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-001_CODE_RUNTIME_DISCOVERY.md
+worker_scope: read_only
+notes: >-
+  Claiming DESIGN-001.A per BATCH-DESIGN-001.yaml. Read-only code/runtime
+  truth inventory against apps/web source, tokens, migrations and route
+  catalogue. No code changes, no fresh screenshots.

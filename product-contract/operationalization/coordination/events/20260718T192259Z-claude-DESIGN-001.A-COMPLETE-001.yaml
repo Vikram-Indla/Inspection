@@ -1,0 +1,30 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T192259Z-claude-DESIGN-001.A-COMPLETE-001"
+timestamp_utc: "2026-07-18T19:22:59Z"
+actor: "Claude Design worker A"
+batch_id: BATCH-DESIGN-001
+subtask_id: DESIGN-001.A
+output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-001_CODE_RUNTIME_DISCOVERY.md
+result:
+  branch: setup/Inspection
+  commit: 1422127c2e113105b67a297f95398e3e91674e38
+  worktree_dirty: true
+  routes_inventoried: true
+  provider_truth_table: true
+  authority_conflict_flagged:
+    location: apps/web/src/lib/providers/map.ts (comment) vs apps/web/src/lib/providers/LiveMapInner.tsx (implementation)
+    description: >-
+      Code comment in map.ts claims live map rendering is Leaflet + CARTO
+      tiles; LiveMapInner.tsx actually imports and renders with mapbox-gl
+      directly (gated on NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN). Undisputed: both
+      sources agree inspector positions are projected, not live GPS. This is
+      a stale code comment, not a functional discrepancy -- recording as a
+      finding, not escalating as a stop condition.
+validation:
+  exact_route_and_component_paths: true
+  branch_commit_dirty_state_recorded: true
+  provider_labels_truthful: true
+  no_code_changes: true
+  apps_or_supabase_touched: false
+product_changes: none

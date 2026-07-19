@@ -1,0 +1,15 @@
+schema_version: "1.0"
+programme_id: "INSPECTION-OPERATIONALIZATION-001"
+current_work_id: "OPS-010"
+previous_work_id: "OPS-000"
+current_task_id: "TASK-OPS-CONTROL-SYSTEM-001"
+resume_instruction: >
+  Read AGENTS.md, product-contract/00_START_HERE.md, CURRENT_STATE.md,
+  GATE_STATUS.md, execution/CURRENT_SLICE.yaml, TASK_ROUTER.yaml,
+  governance/OPEN_DECISIONS.yaml, and all operationalization control files.
+  Then reconcile existing authoritative inventories; do not re-inventory or
+  reclassify product completion without source evidence.
+next_action: "Validate Claude Code C-004 (53 Level 2 rows) when received. Continue independent semantic reviews by source module; keep confirmed gaps and external-delivery evidence items tracked without changing acceptance status."
+blockers: []
+active_product_slice: "TASK-QA-UI-COMPLIANCE-CERT-004 remains unchanged and owns product implementation/release certification."
+do_not_touch: ["Active UI-certification task, application behavior, production/shared data, release controls and frozen source claims."]

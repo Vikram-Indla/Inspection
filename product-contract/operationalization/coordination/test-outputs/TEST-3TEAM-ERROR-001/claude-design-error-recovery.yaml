@@ -1,0 +1,32 @@
+schema_version: "1.0"
+output_id: TEST-3TEAM-ERROR-001-CD-ERR-001-RECOVERY
+batch_id: TEST-3TEAM-ERROR-001
+subtask_id: CD-ERR-001
+purpose: controlled_Claude_Design_error_loopback_proof
+sequence_observed:
+  - claim: "20260718T192931Z-claude-CD-ERR-001-CLAIM-001"
+  - error_stop: "20260718T192949Z-claude-CD-ERR-001-ERROR_STOP-001"
+  - codex_action_required: "20260718T192949Z-claude-CD-ERR-001-CODEX_ACTION_REQUIRED-001"
+  - codex_resolution: "20260718T193022Z-codex-CD-ERR-001-RESOLUTION-001"
+  - resume: "20260718T193120Z-claude-CD-ERR-001-RESUME-001"
+fixture:
+  path: product-contract/operationalization/coordination/test-fixtures/MISSING_FOR_CONTROLLED_TEST.yaml
+  sha256: 8ad844e7ee2571350539b207ecd4fdfec816c797066906b0ea1c763ec9be953d
+resolved_authority:
+  path: design/claude-design-mvp1/authority/SOURCE_AUTHORITY.md
+  fixture_declared_sha256: efc72a8ad4d9de902108e9a0c2d0ceb19d41481636f7c1c7b08754a0ff7ab530
+  computed_sha256: efc72a8ad4d9de902108e9a0c2d0ceb19d41481636f7c1c7b08754a0ff7ab530
+  hash_match: true
+validation_rule_results:
+  first_attempt_emits_ERROR_STOP_and_CODEX_ACTION_REQUIRED: true
+  no_sponsor_message_from_Claude_Design: true
+  RESOLUTION_references_the_open_error: true
+  RESUME_references_the_resolution: true
+  output_records_the_resolved_source_hash: true
+prohibited_actions_honored:
+  create_the_missing_source_itself: false
+  ask_Vikram_for_the_source: false
+  stop_or_modify_other_batches: false
+  edit_application_design_acceptance_or_shared_derived_ledgers: false
+product_or_design_change: none
+status: PROVEN

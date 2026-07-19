@@ -1,0 +1,42 @@
+schema_version: "1.0"
+event: FINDING
+event_id: "20260718T203555Z-codex-P2-BROWSER-002-FINDING-001"
+timestamp_utc: "2026-07-18T20:35:55Z"
+actor: "Codex lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-BROWSER-002
+method: "Codex in-app browser against local runtime"
+tested_persona: inspector
+tested_viewport: "1024x768"
+tested_route: /field
+screen_id: SCR-IPAD-600
+findings:
+  - id: UX-FIELD-SCALE-001
+    severity: high
+    observation: >-
+      The Inspector dashboard renders 1,001 visit links in one document. The
+      document height is 106,291 pixels with no proven pagination or bounded
+      virtualization in the visible experience.
+    impact: >-
+      The primary field-work surface is operationally unscannable at realistic
+      assignment volume and creates avoidable rendering and navigation cost.
+    design_action: >-
+      Claude Design Tier-1 Inspector work area must define prioritized work,
+      bounded result loading, clear escalation/overdue grouping and a field-first
+      route to the next safe action.
+  - id: UX-FIELD-NOTIFY-001
+    severity: medium
+    observation: >-
+      The global notification control is saturated at 99+ while the dashboard
+      also presents notification content, weakening prioritization.
+  - id: RBAC-FIELD-001
+    severity: pass
+    observation: >-
+      The visible route identifies itself as assigned-only and the authenticated
+      persona is Inspector. No cross-persona mutation was attempted.
+conclusion: >-
+  SCR-IPAD-600 is confirmed as a five-screen-gate priority. The issue is not a
+  missing dashboard; it is the inability to turn a large assigned workload into
+  a bounded, prioritized Inspector workday.
+product_status_changed: false
+design_acceptance_changed: false

@@ -1,0 +1,136 @@
+schema_version: "1.0"
+reconciliation_id: "OPS-REC-006"
+title: "Disposition of the 5 items flagged by OPS-REC-004 (C-001, Visit Planning-Planning semantic review)"
+status: "DISPOSED_BY_CODE_EVIDENCE"
+directed_by: "Sponsor (direct instruction, not a Codex-issued assignment)"
+owner: "Claude Code"
+date: "2026-07-18"
+method: >
+  For each of the 5 items flagged NEEDS_REVIEW/CONTRADICTION in
+  OPS-REC-004_VP_PLANNING_SEMANTIC_REVIEW.csv, independently read the actual
+  implementing code, migrations and tests (read-only) to determine whether the
+  AC_LEDGER.csv note's claim holds up, and whether any AI-deferral is a
+  documented/approved contract exception or an undocumented gap. No product
+  code, requirements, acceptance status, providers, policies, database state or
+  release state was changed as part of this disposition.
+items:
+  - acceptance_id: "AC-0001"
+    requirement_id: "MVP1-M01-001"
+    capability: "Visit Creation"
+    prior_outcome: "NEEDS_REVIEW"
+    disposition: "CONFIRMED_GAP"
+    evidence:
+      - "apps/web/src/app/planning/page.tsx lines 13-28, 48-68: single gate is isPlanner-only; all three methods (Bulk/Single/Immediate) render unconditionally once past that gate; no per-method role branching in page.tsx."
+      - "apps/web/src/app/planning/immediate/page.tsx lines 24-41: allows isPlanner OR isInspector directly."
+    finding: >
+      An Inspector is authorized to use the Immediate workflow (confirmed by
+      immediate/page.tsx allowing isInspector), but is blocked from ever
+      reaching the /planning selector page that is supposed to route to it,
+      because page.tsx's single gate is planner-only. This is a real,
+      confirmed inconsistency, not a wording ambiguity: the source criterion
+      ("access only the planning methods permitted by role") is not met for
+      the Inspector role via the normal selector route.
+    recommended_action: >
+      Raise as a product defect for change-control triage (fix page.tsx's
+      gate to admit Inspector and show only the Immediate card for that role,
+      or document an accepted limitation that Inspectors must deep-link to
+      /planning/immediate). Not resolved here; no product code was touched
+      under this operationalization task's scope.
+    acceptance_status_recommendation: "Do not change AC-0001's acceptance status without a change-control decision on the fix."
+
+  - acceptance_id: "AC-0007"
+    requirement_id: "MVP1-M01-007"
+    capability: "Automatic Inspector Assignment"
+    prior_outcome: "NEEDS_REVIEW"
+    disposition: "CRITERION_MET_NOTE_STALE"
+    evidence:
+      - "supabase/migrations/20260714091727_planning_publish_guards.sql lines 88-104: publish_bulk_plan raises exception ('bulk publish no inspector available', P0001) inside the atomic transaction if no eligible/available inspector is found for a visit; the whole publish rolls back."
+      - "Same file line ~18: p_auto_pool parameter is commented 'retained for API compatibility; deliberately ignored'; selection is 'order by ur.user_id limit 1' (deterministic first-fit), not round-robin."
+    finding: >
+      The source criterion ("every Visit has an assigned inspector before
+      publishing") is genuinely enforced by a hard, transaction-rolling-back
+      gate — confirmed met. The AC_LEDGER.csv note's characterization as
+      "round-robin" is stale/inaccurate for the current, superseding
+      migration, which uses deterministic availability-based first-fit.
+    recommended_action: >
+      Correct the AC_LEDGER.csv note text from "round-robin" to
+      "availability-based first-fit with a hard publish-time coverage gate";
+      this is a documentation-accuracy fix, not a behavior change, and still
+      requires the normal change-control path for editing a frozen evidence
+      artifact.
+    acceptance_status_recommendation: "No change to acceptance status; status 'implemented' is supported by evidence."
+
+  - acceptance_id: "AC-0016"
+    requirement_id: "MVP1-M01-016"
+    capability: "AI Planning Summary"
+    prior_outcome: "NEEDS_REVIEW"
+    disposition: "CONFIRMED_GAP"
+    evidence:
+      - "product-contract/domain/atomic_scope.csv line 17: MVP1-M01-016 classified 'MVP1 Mandatory'."
+      - "product-contract/domain/scope_boundary.yaml lines 25-27: the only MVP2 AI deferral documented is for the Risk Engine/Risk Studio (simulation, backtesting, AI recommendations) — a different module, not Visit Planning."
+      - "product-contract/mvp2/* (LOOP_STATE.md, MVP2_LOCAL_SOURCE_CERTIFICATE.md, RECONCILIATION_LEDGER.md, STAGING_SOURCE_RECONCILIATION.md): zero references to Visit Planning, M01-016, or AI Planning Summary."
+      - "product-contract/evidence/BUSINESS-UIUX-RECONCILIATION-2026-07-16.md lines 21, 167: the only documented 'Phase-2 AI note' concept in the contract, but its governed scope is M06/M07/M08 (Dashboard, Operations Center, Factory 360), never M01."
+    finding: >
+      This requirement is classified MVP1 Mandatory in the requirements
+      register. No approved MVP2 scope document names Visit Planning's AI
+      Planning Summary as deferred. Acceptance status is nonetheless marked
+      "implemented" for a requirement whose AI element the ledger's own note
+      admits is not built. Per CLAUDE.md's rule that a Phase 2 AI note may
+      defer only the AI sub-capability and never its parent requirement, and
+      given no such note exists for this module, this is an undocumented,
+      unauthorized gap — not an approved deferral.
+    recommended_action: >
+      Escalate to sponsor/change-control: either (a) author and approve a
+      Phase-2-AI-note change record explicitly naming MVP1-M01-016/026 as
+      deferred (and reclassify acceptance to reflect deterministic-summary-only
+      for MVP1), or (b) treat as an open MVP1 gap requiring implementation
+      before this requirement can be truthfully marked implemented. Not
+      resolved here; acceptance status left untouched pending that decision.
+    acceptance_status_recommendation: "Flag AC-0016 as contract-disputed pending sponsor/change-control decision; do not change status unilaterally."
+
+  - acceptance_id: "AC-0026"
+    requirement_id: "MVP1-M01-026"
+    capability: "AI Planning Summary"
+    prior_outcome: "NEEDS_REVIEW"
+    disposition: "CONFIRMED_GAP"
+    evidence:
+      - "product-contract/domain/atomic_scope.csv line 27: MVP1-M01-026 classified 'MVP1 Mandatory', explicitly naming 'recommend inspection priorities' as in-scope for MVP1."
+      - "Same absence of MVP2 documentation as AC-0016 (see above)."
+    finding: "Same undocumented-gap finding as AC-0016; row 27 additionally names the specific in-scope AI recommendation capability that is not built."
+    recommended_action: "Same as AC-0016 — escalate as a single combined change-control item covering both rows since they are the same underlying gap."
+    acceptance_status_recommendation: "Flag AC-0026 as contract-disputed pending sponsor/change-control decision; do not change status unilaterally."
+
+  - acceptance_id: "AC-0052"
+    requirement_id: "MVP1-M01-052"
+    capability: "Notify Assigned Inspector"
+    prior_outcome: "CONTRADICTION"
+    disposition: "RESOLVED_NO_GAP"
+    evidence:
+      - "supabase/migrations/0027_cd023_immediate_visit_atomic.sql create_immediate_visit lines 465-474: a notifications row is inserted only when p_actor_mode = 'planner' (planner assigns a different inspector); no row is inserted when p_actor_mode = 'inspector' (self-assignment)."
+      - "apps/web/e2e/cd-023-immediate-authority-bar.spec.ts lines 324-343: live test 'Inspector is authorized, self-assigns, starts now, receives no assignment notification and enters standard start flow' confirms 0 notifications for the self-assignment path; lines 153-157 confirm a notification row IS created when a Planner assigns a different inspector."
+    finding: >
+      "Inspector no-notification" in the AC_LEDGER.csv note refers narrowly to
+      the self-assignment case (an Inspector does not need a redundant push
+      notification for a visit they just created and assigned to themselves).
+      When a Planner assigns a different inspector, that inspector does
+      receive a queued notification row. The source criterion ("assigned
+      inspector receives the Immediate Visit in their work queue") is
+      satisfied in both paths via the assignments table, independent of the
+      push-notification record. The apparent contradiction was a wording
+      ambiguity, not an actual functional gap.
+    recommended_action: "None required. Reclassify from CONTRADICTION to MATCH in a future revision of OPS-REC-004 if that file is reopened under change control."
+    acceptance_status_recommendation: "No change to acceptance status; status 'implemented'/'verified_live' is supported by evidence."
+
+summary:
+  confirmed_gap: 3
+  criterion_met_note_stale: 1
+  resolved_no_gap: 1
+  net_position: >
+    3 of 5 flagged items are genuine, evidence-confirmed gaps requiring a
+    sponsor/change-control decision (AC-0001 role-routing defect; AC-0016 and
+    AC-0026 undocumented AI-deferral, same underlying issue). 1 item
+    (AC-0007) has a functionally sound implementation but a stale ledger note.
+    1 item (AC-0052) is fully resolved with no gap. No product code,
+    requirements, acceptance status, providers, policies, database state or
+    release state was changed by this disposition; all recommended actions
+    require separate approved change control.

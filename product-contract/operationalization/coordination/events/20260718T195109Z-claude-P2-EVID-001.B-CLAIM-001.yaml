@@ -1,0 +1,13 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T195109Z-claude-P2-EVID-001.B-CLAIM-001"
+timestamp_utc: "2026-07-18T19:51:09Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.B
+claim_dir: product-contract/operationalization/coordination/claims/P2-EVID-001.B
+output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md
+notes: >-
+  Claude lead retains this one directly (worker_scope is read_only_runtime_preflight
+  and its finding gates whether any live capture is safe -- keeping the
+  safety judgment in the lead's hands rather than delegating to a subagent).

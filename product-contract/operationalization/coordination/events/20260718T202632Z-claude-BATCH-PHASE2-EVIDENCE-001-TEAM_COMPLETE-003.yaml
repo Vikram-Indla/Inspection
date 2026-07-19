@@ -1,0 +1,45 @@
+schema_version: "1.0"
+event: TEAM_COMPLETE
+event_id: "20260718T202632Z-claude-BATCH-PHASE2-EVIDENCE-001-TEAM_COMPLETE-003"
+timestamp_utc: "2026-07-18T20:26:32Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+supersedes: "20260718T200601Z-claude-BATCH-PHASE2-EVIDENCE-001-TEAM_COMPLETE-002"
+supersede_reason: >-
+  Codex verified fresh storage states and authorized capture
+  (20260718T201500Z-codex-P2-EVID-001.C-AUTH_RESOLUTION-001) after the prior
+  TEAM_COMPLETE reported C as credential-blocked. C has now run to real
+  completion with 24 captured frames.
+packets_completed: [P2-EVID-001.A, P2-EVID-001.B, P2-EVID-001.C]
+outputs:
+  P2-EVID-001.A: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_ALL38_REUSE_AND_GAP_MANIFEST.csv
+  P2-EVID-001.B: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md
+  P2-EVID-001.C: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_CAPTURE_MANIFEST.csv
+  P2-EVID-001.LEAD: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_WAVE1_TEAM_SUMMARY.md
+exact_counts:
+  screens_captured: 3
+  profiles_per_screen: 8
+  total_frames_captured: 24
+  screens_held: 2
+  held_screen_ids: [SCR-WEB-200, SCR-WEB-500]
+  captured_screen_ids: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-210]
+evidence_root: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/phase2-tier1/20260718T201925Z/"
+defects_found_and_fixed_during_execution:
+  - "Host/cookie-domain mismatch (localhost vs 127.0.0.1) caused silent login redirects on first attempt."
+  - "Theme (dark/light) was not actually applying via post-navigation localStorage writes; fixed with context.addInitScript and verified per-row via the rendered data-theme attribute, not assumed."
+validation:
+  no_application_or_product_data_mutation: true
+  no_design_or_acceptance_self_approval: true
+  no_secrets_exposed: true
+  no_credential_fabrication_or_brute_force_attempted: true
+  all_captured_hashes_pairwise_distinct: true
+  observed_theme_matches_intended_profile_on_every_row: true
+  held_screens_unchanged_from_codex_ruling: true
+product_changes: none
+next_ready_queue: >-
+  No further fully-specified packet in BATCH-PHASE2-EVIDENCE-001. Next wave
+  (W2: SCR-ADM-010/011/020/030/031/040/041, SCR-WEB-110) is described in
+  PHASE2_FULL_38_CAPTURE_WAVES_20260718.md but not yet issued as a claimable
+  packet with an exclusive_output_path -- awaiting Codex to issue it, or
+  another sourced signal, before claiming further capture work.
+stop_reason: no_further_fully_specified_READY_packet_exists

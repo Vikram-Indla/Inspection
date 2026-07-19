@@ -1,0 +1,24 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T191604Z-claude-C-006.C-COMPLETE-001"
+timestamp_utc: "2026-07-18T19:16:04Z"
+actor: "Claude worker 2"
+batch_id: BATCH-001
+subtask_id: C-006.C
+workstream: PA-003
+output_path: product-contract/operationalization/OPS-REC-013_FACTORY360_OPSCENTER_SEMANTIC_REVIEW.csv
+result:
+  rows: 39
+  counts: { MATCH: 26, NEEDS_REVIEW: 12, CONTRADICTION: 1 }
+  sheet_split: { "Factory 360": 20, "Ops center": 19 }
+  needs_review_ids: [AC-0410, AC-0411, AC-0420, AC-0425, AC-0432, AC-0433, AC-0434, AC-0435, AC-0436, AC-0439, AC-0440, AC-0447]
+  contradiction_ids: [AC-0421]
+  contradiction_summary:
+    AC-0421: "Violations & Penalties criterion requires penalties to display correctly; ledger note explicitly states issued-penalty notices are not surfaced."
+validation:
+  row_count_exact: true
+  duplicate_source_rows: false
+  duplicate_acceptance_ids: false
+  no_other_files_touched: true
+  direct_workbook_source_used: true
+product_changes: none

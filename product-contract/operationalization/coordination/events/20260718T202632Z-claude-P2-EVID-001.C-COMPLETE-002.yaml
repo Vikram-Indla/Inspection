@@ -1,0 +1,42 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T202632Z-claude-P2-EVID-001.C-COMPLETE-002"
+timestamp_utc: "2026-07-18T20:26:32Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.C
+supersedes: "20260718T200236Z-claude-P2-EVID-001.C-COMPLETE-001"
+resumes_resolution: "20260718T201500Z-codex-P2-EVID-001.C-AUTH_RESOLUTION-001"
+output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_CAPTURE_MANIFEST.csv
+result:
+  frames_captured: 24
+  screens_captured: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-210]
+  profiles_per_screen: 8
+  screens_held_unchanged: [SCR-WEB-200, SCR-WEB-500]
+  personas_used: { SCR-ADM-001: admin, SCR-WEB-130: planner, SCR-WEB-210: planner }
+  visit_id_used: "6b78d98c-6766-484b-af42-b2811d8d2bd4 (sourced via a direct read-only PostgREST GET, bypassing the held /visits list page entirely)"
+  evidence_root: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/phase2-tier1/20260718T201925Z/"
+self_caught_defect: >-
+  First capture attempt used hostname "localhost" while the dev server's
+  cookies were scoped to "127.0.0.1" -- all requests silently landed on
+  /login. Fixed by matching the storage state's actual cookie domain. Second
+  attempt (all 8 profiles) then revealed light/dark screenshot pairs were
+  byte-identical -- the app's theme-init script (ThemeScript.tsx) reads
+  localStorage synchronously on page load, and setting it via page.evaluate()
+  after a prior navigation did not reliably apply before the next navigation's
+  init script ran. Fixed by using context.addInitScript() to set
+  "saqeel-theme" before any page load in that context, then verified via
+  page.evaluate(() => document.documentElement.getAttribute("data-theme"))
+  on every single capture that the observed theme matched the intended
+  profile -- this check is recorded per-row in the manifest
+  (data_theme_observed column). Removed 3 stray duplicate-content files left
+  over from the first (pre-fix) successful single-profile test.
+validation:
+  screenshot_hash_and_path_recorded: true
+  persona_route_state_profile_and_commit_recorded: true
+  no_secrets_or_PII: true
+  no_data_or_status_mutation: true
+  missing_or_unsafe_combination_labelled_BLOCKED_not_simulated: true
+  all_24_sha256_pairwise_distinct: true
+  data_theme_attribute_verified_per_row: true
+product_changes: none

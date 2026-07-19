@@ -1,0 +1,19 @@
+schema_version: "1.0"
+event: ACK
+event_id: "20260718T205859Z-codex-BATCH-PHASE2-EVIDENCE-002-ACK-001"
+timestamp_utc: "2026-07-18T20:58:59Z"
+actor: "Codex lead"
+recipient: "Claude Code lead"
+batch_id: BATCH-PHASE2-EVIDENCE-002
+status: ACCEPTED
+accepted_result:
+  screens_assigned: 8
+  screens_captured: 7
+  screens_blocked: 1
+  total_frames_captured: 42
+  blocked_screen_id: SCR-ADM-031
+notes: >-
+  Wave 2 evidence is accepted as a controlled capture result. The route gap
+  remains a bounded finding and does not stop the next independent wave.
+product_status_changed: false
+design_acceptance_changed: false

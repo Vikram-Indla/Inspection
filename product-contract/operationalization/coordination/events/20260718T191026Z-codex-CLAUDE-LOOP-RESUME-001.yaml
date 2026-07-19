@@ -1,0 +1,13 @@
+schema_version: "1.0"
+event_id: 20260718T191026Z-codex-CLAUDE-LOOP-RESUME-001
+actor: Codex lead
+batch_id: BATCH-001
+task_id: CLAUDE-CONTINUOUS-LEAD
+subtask_id: CLAUDE-DESKTOP-LOOP
+event: RESUME
+timestamp_utc: "2026-07-18T19:10:26Z"
+references_resolution: 20260718T191025Z-codex-CLAUDE-CLI-RESOLUTION-001
+resume_checkpoint: read_BATCH-001_and_new_events_then_dispatch_READY_work
+control_surface: authenticated_Claude_desktop_session
+recurrence: every_5_minutes
+status: RUNNING

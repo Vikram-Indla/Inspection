@@ -1,0 +1,19 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T193120Z-claude-CD-ERR-001-COMPLETE-001"
+timestamp_utc: "2026-07-18T19:31:20Z"
+actor: "Claude Design lead"
+batch_id: TEST-3TEAM-ERROR-001
+subtask_id: CD-ERR-001
+output_path: product-contract/operationalization/coordination/test-outputs/TEST-3TEAM-ERROR-001/claude-design-error-recovery.yaml
+result:
+  hash_match: true
+  resolved_authority_path: design/claude-design-mvp1/authority/SOURCE_AUTHORITY.md
+  resolved_authority_sha256: efc72a8ad4d9de902108e9a0c2d0ceb19d41481636f7c1c7b08754a0ff7ab530
+validation:
+  first_attempt_emits_ERROR_STOP_and_CODEX_ACTION_REQUIRED: true
+  no_sponsor_message_from_Claude_Design: true
+  RESOLUTION_references_the_open_error: true
+  RESUME_references_the_resolution: true
+  output_records_the_resolved_source_hash: true
+product_changes: none

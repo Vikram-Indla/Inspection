@@ -1,0 +1,22 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T204831Z-claude-P2-EVID-002.B-COMPLETE-001"
+timestamp_utc: "2026-07-18T20:48:31Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-002
+subtask_id: P2-EVID-002.B
+output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_B_ADMIN_CONTROL_MANIFEST.csv
+result:
+  screens: [SCR-ADM-030, SCR-ADM-031, SCR-ADM-040, SCR-ADM-041]
+  frames_captured: 18
+  frames_blocked: 1
+  blocked_screen: SCR-ADM-031
+  blocked_reason: "No GET-reachable route exists; the package designer is a client-side view reached by selecting a package inside /admin/packages, not a distinct URL. Not attempted -- this wave's capture rule authorizes navigation/locale/theme only, no interaction."
+  persona: admin
+  route_catalogue_discrepancy_noted: "screen_route_catalogue.csv lists /admin/packages/:id/designer and /admin/penalties as routes; neither exists literally. SCR-ADM-041 was still captured via its real route (/admin/violations?mode=penalty), found in the route file's own code comment."
+validation:
+  all_hashes_distinct: true
+  data_theme_verified_per_row: true
+  no_form_submission: true
+  no_mutating_action: true
+product_changes: none

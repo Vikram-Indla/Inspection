@@ -1,0 +1,24 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T192650Z-claude-DESIGN-001.B-COMPLETE-001"
+timestamp_utc: "2026-07-18T19:26:50Z"
+actor: "Claude Design worker B"
+batch_id: BATCH-DESIGN-001
+subtask_id: DESIGN-001.B
+output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-002_EXISTING_EVIDENCE_INVENTORY.csv
+result:
+  rows: 99
+  truth_status_breakdown:
+    present-and-located: 47
+    present-but-unregistered: 39
+    referenced-but-file-missing: 10
+    present-but-registry-path-mismatch: 3
+findings_for_lead:
+  - "3 EV-SHELL rows cite an INSPECTION_DOCS_ROOT path unreachable from this sandbox; identical files are physically present in-git under product-contract/evidence/screens/shell-v1/, also tracked as SHELL-EV-002/003/004 in EVIDENCE_STATUS.md."
+  - "39 real on-disk evidence files (cd-005-006, cd-007, cd-008-009 v1/v2, cd-010-011, cd-025-plan-review-v1, single-v2) are unregistered in either VISUAL_EVIDENCE_REGISTER.csv or EVIDENCE_STATUS.md."
+  - "Documentation-storage-policy gap: product-contract/evidence/screens/README.md says binaries belong only under INSPECTION_DOCS_ROOT, not git, but 86 PNGs currently sit in-git there; repo-cleanup/documentation_inventory.csv already has a MOVE disposition for 77 of them, 9 postdate that inventory snapshot. Not remediated (read-only task) -- flagging for a separate housekeeping task."
+validation:
+  no_fresh_screenshot_capture: true
+  every_entry_has_source_and_truth_status: true
+  missing_evidence_labelled_missing_not_failed: true
+product_changes: none

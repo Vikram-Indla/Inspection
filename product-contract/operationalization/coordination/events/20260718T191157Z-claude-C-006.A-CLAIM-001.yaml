@@ -1,0 +1,15 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T191157Z-claude-C-006.A-CLAIM-001"
+timestamp_utc: "2026-07-18T19:11:57Z"
+actor: "Claude lead"
+batch_id: BATCH-001
+subtask_id: C-006.A
+workstream: PA-001
+claim_dir: product-contract/operationalization/coordination/claims/C-006.A
+notes: >-
+  Claiming correction of C-004 Level 2 row references per Codex ACK
+  COORD-015 (RETURNED_FOR_CORRECTION). Output will not change classification
+  or counts (49 MATCH / 4 NEEDS_REVIEW / 0 CONTRADICTION) — only reattaches
+  the 4 exception rationales to their correct source rows (8/19/29/53) and
+  restores rows 9/20/30/54 to MATCH.

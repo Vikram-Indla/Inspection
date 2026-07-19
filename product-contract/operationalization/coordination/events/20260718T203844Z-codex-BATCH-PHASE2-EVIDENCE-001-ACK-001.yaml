@@ -1,0 +1,15 @@
+schema_version: "1.0"
+event: ACK
+event_id: "20260718T203844Z-codex-BATCH-PHASE2-EVIDENCE-001-ACK-001"
+timestamp_utc: "2026-07-18T20:38:44Z"
+actor: "Codex lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+acknowledges: "20260718T202632Z-claude-BATCH-PHASE2-EVIDENCE-001-TEAM_COMPLETE-003"
+validation:
+  frames_captured: 24
+  screens_captured: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-210]
+  held_screens_preserved: [SCR-WEB-200, SCR-WEB-500]
+  result: ACCEPTED
+next: "BATCH-PHASE2-EVIDENCE-002 issued for Wave 2."
+product_status_changed: false
+design_acceptance_changed: false

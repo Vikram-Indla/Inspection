@@ -1,0 +1,77 @@
+schema_version: "1.0"
+batch_id: BATCH-DESIGN-001
+title: Claude Design baseline and evidence readiness
+status: READY
+phase: Phase_1_Scope_and_Baseline_Reconciliation
+owner: Claude Design lead
+supervisor: Codex lead
+objective: >-
+  Produce a verified, code-ready design baseline and prioritized screen-state
+  queue from existing authority, source, code and evidence without changing the
+  application or creating unapproved visual evidence.
+authority_read_order:
+  - /Users/vikramindla/Developer/Inspection/AGENTS.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/00_START_HERE.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/CURRENT_STATE.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/GATE_STATUS.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/execution/CURRENT_SLICE.yaml
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/00_START_HERE.md
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/CURRENT_UI_BASELINE.md
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/authority/SOURCE_AUTHORITY.md
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/authority/DESIGN_DECISIONS.md
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/prompts/00_MASTER_DESIGN_CONSTITUTION.md
+work_packets:
+  - subtask_id: DESIGN-001.A
+    title: Code_and_runtime_truth_inventory
+    worker_scope: read_only
+    source_prompt: design/claude-design-mvp1/prompts/01_CODE_AND_RUNTIME_DISCOVERY.md
+    output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-001_CODE_RUNTIME_DISCOVERY.md
+    validation:
+      - exact_route_and_component_paths
+      - branch_commit_and_dirty_worktree_recorded
+      - provider_and_projection_limits_truthfully_labelled
+      - no_code_changes
+  - subtask_id: DESIGN-001.B
+    title: Existing_visual_evidence_inventory
+    worker_scope: read_only_existing_evidence_only
+    sources:
+      - design/claude-design-mvp1/acceptance/VISUAL_EVIDENCE_REGISTER.csv
+      - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+      - product-contract/evidence
+    output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-002_EXISTING_EVIDENCE_INVENTORY.csv
+    validation:
+      - no_fresh_screenshot_capture
+      - every_entry_has_source_path_and_truth_status
+      - missing_evidence_is_labelled_missing_not_failed
+  - subtask_id: DESIGN-001.C
+    title: Screen_state_design_gap_queue
+    worker_scope: read_only_analysis
+    sources:
+      - product-contract/screens/screen_route_catalogue.csv
+      - design/claude-design-mvp1/authority/JOURNEY_SCREEN_MAP.csv
+      - design/claude-design-mvp1/acceptance/DESIGN_ACCEPTANCE_MATRIX.csv
+      - design/claude-design-mvp1/acceptance/SCREEN_STATE_MATRIX.csv
+    output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-003_SCREEN_STATE_GAP_QUEUE.csv
+    validation:
+      - governed_screen_and_journey_ids_present
+      - dependencies_and_hold_reasons_present
+      - no_design_acceptance_self_approval
+lead_output:
+  subtask_id: DESIGN-001.LEAD
+  output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-004_PRIORITY_SEQUENCE.md
+  rule: consolidate_only_after_validating_A_B_and_C
+allowed_writes:
+  - design/claude-design-mvp1/operationalization/
+  - product-contract/operationalization/coordination/claims/
+  - product-contract/operationalization/coordination/events/
+prohibited_writes:
+  - apps/
+  - supabase/
+  - product-contract/operationalization/AGENT_COORDINATION_LEDGER.csv
+  - /Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/00_PROGRAM_CONTROL
+stop_conditions:
+  - route_or_runtime_truth_missing_for_a_claimed_conclusion
+  - product_or_design_authority_conflict_not_resolved_by_source_hierarchy
+  - proposed_work_requires_fresh_screenshot_or_new_design_phase_authorization
+error_route: AGENT_OPERATING_PROTOCOL.yaml#error_loopback
+completion_event: DESIGN_TEAM_COMPLETE

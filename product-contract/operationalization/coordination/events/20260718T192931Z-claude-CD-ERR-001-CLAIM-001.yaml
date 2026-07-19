@@ -1,0 +1,11 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T192931Z-claude-CD-ERR-001-CLAIM-001"
+timestamp_utc: "2026-07-18T19:29:31Z"
+actor: "Claude Design lead"
+batch_id: TEST-3TEAM-ERROR-001
+subtask_id: CD-ERR-001
+claim_dir: product-contract/operationalization/coordination/claims/CD-ERR-001
+exact_source_scope: product-contract/operationalization/coordination/test-fixtures/MISSING_FOR_CONTROLLED_TEST.yaml
+output_path: product-contract/operationalization/coordination/test-outputs/TEST-3TEAM-ERROR-001/claude-design-error-recovery.yaml
+notes: "Attempting to read the exact_source_scope file next; test-fixtures/ directory confirmed empty before attempt."

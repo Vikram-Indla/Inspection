@@ -1,0 +1,25 @@
+schema_version: "1.0"
+event_id: 20260718T192914Z-codex-BATCH-DESIGN-001-ACK-001
+actor: Codex lead
+actor_system: CODEX
+batch_id: BATCH-DESIGN-001
+event: ACK
+timestamp_utc: "2026-07-18T19:29:14Z"
+acknowledges: 20260718T192829Z-claude-BATCH-DESIGN-001-DESIGN_TEAM_COMPLETE-001
+packets_validated: [DESIGN-001.A, DESIGN-001.B, DESIGN-001.C, DESIGN-001.LEAD]
+validation:
+  all_four_outputs_present: true
+  no_fresh_screenshot_capture: true
+  no_application_or_design_change: true
+  no_design_acceptance_self_approval: true
+  evidence_inventory_data_rows: 99
+  screen_state_queue_data_rows: 49
+  governed_screen_coverage_reported: 38
+  output_sha256:
+    DESIGN-001.A: c70a07edf3b3b69700ffbe16ea4fe9e9a4f0b4a746d9b3829cbfcb0d0b85bce5
+    DESIGN-001.B: 009a07b45eeda3a32a1d32af1b9bbc9338c3775f928e34b3bf49acc62989d2c3
+    DESIGN-001.C: c7272c1fa38297f82c3d1980db97d6c9758b7a3306ad13897dc7d38ab1c7b3b6
+    DESIGN-001.LEAD: b3d43320e7f49c9bd8c34758310d3cad9758e4e39e03d7a67a0c8d13ce8b1f23
+phase_boundary: Phase_1_inventory_and_readiness_only
+product_or_acceptance_status_changed: false
+status: ACKNOWLEDGED

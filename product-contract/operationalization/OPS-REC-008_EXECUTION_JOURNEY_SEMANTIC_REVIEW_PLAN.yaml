@@ -1,0 +1,35 @@
+schema_version: "1.0"
+reconciliation_id: "OPS-REC-008"
+assignment_id: "C-003"
+owner: "Codex"
+date: "2026-07-18"
+authority:
+  - "/Users/vikramindla/InspectionOps/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx"
+  - "product-contract/operationalization/OPS-REC-003_SOURCE_TO_ACCEPTANCE_MAP.csv"
+  - "product-contract/evidence/AC_LEDGER.csv"
+status: "COMPLETE"
+scope:
+  source_sheet: "Inspection excution-Start jou"
+  source_rows: "2-224"
+  source_row_count: 223
+  acceptance_module: "Physical Inspection Execution"
+  output: "product-contract/operationalization/OPS-REC-008_EXECUTION_JOURNEY_SEMANTIC_REVIEW.csv"
+method:
+  - "Read the relocated source workbook directly."
+  - "For each mapped row, compare source capability and source criterion with the paired acceptance ID and AC ledger note."
+  - "Record exactly one row per source row using MATCH, NEEDS_REVIEW, or CONTRADICTION."
+boundaries:
+  - "Do not alter source wording, product, acceptance, evidence, policy, provider, database, or release status."
+  - "A flagged row is a reconciliation finding, not an implementation defect claim."
+evidence_expected:
+  - "223-row semantic review CSV"
+  - "Counts by outcome and an exact list of flagged acceptance IDs"
+  - "Coordination claim/completion and workbook mirror entries"
+result:
+  source_to_map_text_match: "223 of 223 rows"
+  outcome_counts:
+    match: 219
+    needs_review: 4
+    contradiction: 0
+  flagged_acceptance_ids: ["AC-0130", "AC-0137", "AC-0332", "AC-0333"]
+  finding: "The four items are external provider/delivery evidence boundaries, not product-status changes."

@@ -1,0 +1,21 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T191706Z-claude-C-006.D-COMPLETE-001"
+timestamp_utc: "2026-07-18T19:17:06Z"
+actor: "Claude worker 3"
+batch_id: BATCH-001
+subtask_id: C-006.D
+workstream: PA-004
+output_path: product-contract/operationalization/OPS-REC-014_COMPLIANCE_SEMANTIC_REVIEW.csv
+result:
+  rows: 30
+  counts: { MATCH: 25, NEEDS_REVIEW: 5, CONTRADICTION: 0 }
+  needs_review_ids: [AC-0451, AC-0452, AC-0454, AC-0455, AC-0458]
+  contradiction_ids: []
+validation:
+  row_count_exact: true
+  duplicate_source_rows: false
+  duplicate_acceptance_ids: false
+  no_other_files_touched: true
+  direct_workbook_source_used: true
+product_changes: none

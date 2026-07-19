@@ -1,0 +1,11 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T191900Z-claude-DESIGN-001.A-CLAIM-001"
+timestamp_utc: "2026-07-18T19:19:00Z"
+actor: "Claude Design worker A"
+batch_id: BATCH-DESIGN-001
+subtask_id: DESIGN-001.A
+title: Code_and_runtime_truth_inventory
+claim_dir: product-contract/operationalization/coordination/claims/DESIGN-001.A
+output_path: design/claude-design-mvp1/operationalization/DESIGN-OPS-001_CODE_RUNTIME_DISCOVERY.md
+notes: "Dispatched to a subagent; Claude lead validates before COMPLETE."

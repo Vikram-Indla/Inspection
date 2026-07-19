@@ -1,0 +1,21 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T195433Z-claude-P2-EVID-001.B-COMPLETE-001"
+timestamp_utc: "2026-07-18T19:54:33Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.B
+output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md
+result:
+  safe: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-210]
+  blocked: [SCR-WEB-200, SCR-WEB-500]
+  blocked_reason:
+    SCR-WEB-200: "apps/web/src/app/visits/page.tsx line 28 calls sb.rpc('expire_lapsed_visits') unconditionally before render -- real UPDATE visits + INSERT notifications (supabase/migrations/0024_fix2_ops_planning_visits.sql, 0025_scheduled_visit_expiry.sql)."
+    SCR-WEB-500: "apps/web/src/app/operations/page.tsx ~line 167 calls sb.rpc('expire_stale_geo_override_requests') unconditionally before render -- real UPDATE geo_override_requests (supabase/migrations/20260716161605_ipad_geo_override_approval_workflow.sql)."
+validation:
+  tested_commit_and_environment_recorded: true
+  routes_and_authorized_personas_verified: true
+  data_preconditions_and_mutation_risk_recorded: true
+  capture_readiness_per_state_recorded: true
+product_changes: none
+recommendation: "Proceed to P2-EVID-001.C for the 3 SAFE screens only; hold the 2 BLOCKED screens for a Codex/sponsor decision on the e2e-precedent-vs-batch-rule tension documented in the preflight doc."

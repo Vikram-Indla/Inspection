@@ -1,0 +1,17 @@
+schema_version: "1.0"
+event: RESUME
+event_id: "20260718T193120Z-claude-CD-ERR-001-RESUME-001"
+timestamp_utc: "2026-07-18T19:31:20Z"
+actor: "Claude Design lead"
+batch_id: TEST-3TEAM-ERROR-001
+subtask_id: CD-ERR-001
+resumes_resolution: "20260718T193022Z-codex-CD-ERR-001-RESOLUTION-001"
+resumes_error: "20260718T192949Z-claude-CD-ERR-001-ERROR_STOP-001"
+resume_checkpoint: source_read_checkpoint
+action_taken:
+  - "Read product-contract/operationalization/coordination/test-fixtures/MISSING_FOR_CONTROLLED_TEST.yaml (now present)."
+  - "Read resolved_authority_path design/claude-design-mvp1/authority/SOURCE_AUTHORITY.md and computed its sha256."
+  - "Compared computed hash against fixture's resolved_authority_sha256: MATCH."
+no_new_claim_emitted: true
+unrelated_work_continues: true
+status: RESUMED

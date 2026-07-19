@@ -1,0 +1,259 @@
+schema_version: "1.0"
+packet_id: "CD-PH2-W1-EVIDENCE-INTAKE-001"
+created_utc: "2026-07-18T19:56:40Z"
+status: "LOCAL_INTAKE_READY_CANONICAL_RECONCILIATION_REQUIRED"
+purpose: >-
+  Intake the first five Phase 2 as-is runtime captures into the existing Claude
+  Design Tier-1 work areas without treating screenshots as behavioral evidence,
+  design approval, or authority to change the product.
+
+authority:
+  canonical_repository: "/Users/vikramindla/Developer/Inspection"
+  tested_branch: "setup/Inspection"
+  tested_commit: "1422127c2e113105b67a297f95398e3e91674e38"
+  design_workspace_start: "design/claude-design-mvp1/00_START_HERE.md"
+  source_report: "design/claude-design-mvp1/operationalization/phase2/PHASE2-WAVE1-PREFLIGHT-20260718T195039Z.md"
+  source_results: "design/claude-design-mvp1/operationalization/phase2/PHASE2-WAVE1-PREFLIGHT-20260718T195039Z.csv"
+  capture_matrix: "design/claude-design-mvp1/operationalization/phase2/PHASE2_FULL_38_CAPTURE_MATRIX_20260718.csv"
+  canonical_route_safety_preflight: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md"
+  evidence_root: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/phase2-tier1/20260718T195039Z"
+  reconciliation_required: true
+  reconciliation_note: >-
+    This packet is authored in the retired Documents checkout because that is
+    the assigned writable location. It is not canonical until reconciled into
+    /Users/vikramindla/Developer/Inspection by the control agent.
+
+truth_boundaries:
+  - "Appearance evidence only; no behavior, RBAC, audit, data-integrity, provider, offline, or recovery proof."
+  - "Do not redesign from an absent persona/state. Keep the corresponding work area BLOCKED / SCREENSHOT REQUIRED."
+  - "Do not alter routes, roles, workflow, data, requirements, product status, or implementation."
+  - "Do not upload operationally sensitive images until the named privacy hold is resolved."
+  - "SCR-WEB-200 and SCR-WEB-500 are route-level unsafe for this batch because GET invokes a mutating RPC; existing test precedent is not authorization."
+  - "The PNGs are full-page captures. capture_viewport is the browser viewport; png_dimensions is the actual image canvas."
+
+captured_artifacts:
+  - evidence_id: "P2W1-001"
+    screen_id: "SCR-ADM-001"
+    screen_name: "Admin Home"
+    route: "/admin"
+    persona: "Inspector"
+    authorization_polarity: "negative-route-truth"
+    state: "authenticated-non-admin-route-truth"
+    locale: "EN"
+    direction: "LTR"
+    theme: "light"
+    capture_viewport: "1440x1024"
+    png_dimensions: "1440x1260"
+    capture_mode: "full-page"
+    tested_commit: "1422127c2e113105b67a297f95398e3e91674e38"
+    path: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/phase2-tier1/20260718T195039Z/P2-ASIS__SCR-ADM-001__authenticated-non-admin-route-truth__en-ltr__light__1440x1024__20260718T195039Z.png"
+    sha256: "80fed49f8f41ab8ea7ec1a88729e76f487d6fc5bd2ae14eded44e4ee2cad1861"
+    upload_readiness: "READY_NO_OBVIOUS_PERSONAL_DATA"
+    claude_design_work_area: "Tier-1 / SCR-ADM-001 / Admin Home / RBAC route-truth evidence"
+    finding_questions:
+      - "How should an authenticated but non-admin user be stopped or informed before any Admin control-plane content is exposed?"
+      - "Does the visible 'scope — inspector / can act in none' message provide adequate unauthorized-state comprehension, or is it merely documenting a missing guard?"
+      - "Which hierarchy and progressive-disclosure changes improve the evidence spine without making the Admin engine look like generic CRUD?"
+    guard: "Do not depict this frame as an approved unauthorized design or as an Admin-persona view."
+
+  - evidence_id: "P2W1-004"
+    screen_id: "SCR-WEB-130"
+    screen_name: "Immediate Visit Planning"
+    route: "/planning/immediate"
+    persona: "Planner"
+    authorization_polarity: "positive"
+    state: "registered-initial"
+    locale: "EN"
+    direction: "LTR"
+    theme: "light"
+    capture_viewport: "1440x1024"
+    png_dimensions: "1440x1719"
+    capture_mode: "full-page"
+    tested_commit: "1422127c2e113105b67a297f95398e3e91674e38"
+    path: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/phase2-tier1/20260718T195039Z/P2-ASIS__SCR-WEB-130__registered-initial__en-ltr__light__1440x1024__20260718T195039Z.png"
+    sha256: "a51daf8bc90999bc038f510619d357a62b4bb2fe87f569a735613f30044ba960"
+    upload_readiness: "READY_NO_SELECTED_FACTORY_OR_ENTERED_COORDINATES"
+    claude_design_work_area: "Tier-1 / SCR-WEB-130 / Immediate Visit / Planner registered-initial"
+    finding_questions:
+      - "Is the top readiness strip the clearest decision sequence for urgent dispatch, and how should it relate to field-level validation?"
+      - "Can identity, location, window, package, inspector, audit, and notification truth be scanned before the irreversible create-and-dispatch action?"
+      - "How should the disabled ungoverned priority field remain truthful without competing with required inputs?"
+    guard: "Do not change dispatch rules, auto-assignment, mandatory fields, provider truth, or create a visit."
+
+  - evidence_id: "P2W1-005"
+    screen_id: "SCR-WEB-130"
+    screen_name: "Immediate Visit Planning"
+    route: "/planning/immediate"
+    persona: "Authorized Inspector"
+    authorization_polarity: "positive"
+    state: "registered-initial"
+    locale: "EN"
+    direction: "LTR"
+    theme: "light"
+    capture_viewport: "1024x768"
+    png_dimensions: "1024x1733"
+    capture_mode: "full-page"
+    tested_commit: "1422127c2e113105b67a297f95398e3e91674e38"
+    path: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/phase2-tier1/20260718T195039Z/P2-ASIS__SCR-WEB-130__registered-initial__en-ltr__light__1024x768__20260718T195039Z.png"
+    sha256: "9517616a1f9199497a05d48da8d402c92417543b821f4089597e45a023b3292f"
+    upload_readiness: "READY_NO_SELECTED_FACTORY_OR_ENTERED_COORDINATES"
+    claude_design_work_area: "Tier-1 / SCR-WEB-130 / Immediate Visit / Inspector registered-initial"
+    finding_questions:
+      - "Does the Inspector variant clearly explain self-assignment, no planning window, and the transition into the standard inspection lifecycle?"
+      - "At 1024 px, is the form hierarchy touch-safe and interruption-safe without hiding audit and notification consequences?"
+      - "Which elements should be shared with the Planner variant and which must remain role-specific?"
+    guard: "Do not submit Create & start inspection or imply that notification delivery occurs for the self-created flow."
+
+  - evidence_id: "P2W1-007"
+    screen_id: "SCR-WEB-200"
+    screen_name: "Visit Management Workspace"
+    route: "/visits"
+    persona: "Planner"
+    authorization_polarity: "positive"
+    state: "current-scope"
+    locale: "EN"
+    direction: "LTR"
+    theme: "light"
+    capture_viewport: "1440x1024"
+    png_dimensions: "1440x8873"
+    capture_mode: "full-page"
+    tested_commit: "1422127c2e113105b67a297f95398e3e91674e38"
+    path: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/phase2-tier1/20260718T195039Z/P2-ASIS__SCR-WEB-200__current-scope__en-ltr__light__1440x1024__20260718T195039Z.png"
+    sha256: "b3e792139dc4e701f153567717a4012fe591cbd037740d0848e0265aec81ac47"
+    upload_readiness: "QUARANTINED_UNSAFE_ROUTE_CAPTURE_NOT_A_DESIGN_INPUT"
+    safety_conflict: >-
+      The canonical preflight proves /visits unconditionally invokes
+      expire_lapsed_visits on GET, which can UPDATE visits and INSERT
+      notifications. The screenshot therefore has unsafe-route provenance in
+      addition to exposing operational rows. Existing e2e precedent is not an
+      approved exception for this batch.
+    claude_design_work_area: "Tier-1 / SCR-WEB-200 / Visit Management / Planner density and navigation"
+    finding_questions:
+      - "How should the workspace reduce extreme vertical scanning while preserving filters, exact scope, row truth, bulk guards, and open/edit distinctions?"
+      - "What is the strongest list/table information hierarchy for a Planner without implying Operations or Branch Manager permissions?"
+      - "Which current-scope cues, freshness indicators, and row-state distinctions remain visible during pagination or virtualization?"
+    guard: "Quarantine. Do not upload, reproduce, or use as an approved design input without explicit change-control authorization and privacy clearance."
+
+  - evidence_id: "P2W1-008"
+    screen_id: "SCR-WEB-200"
+    screen_name: "Visit Management Workspace"
+    route: "/visits"
+    persona: "Planner"
+    authorization_polarity: "positive"
+    state: "current-scope"
+    locale: "AR"
+    direction: "RTL"
+    theme: "dark"
+    capture_viewport: "1024x768"
+    png_dimensions: "1024x13579"
+    capture_mode: "full-page"
+    tested_commit: "1422127c2e113105b67a297f95398e3e91674e38"
+    path: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/phase2-tier1/20260718T195039Z/P2-ASIS__SCR-WEB-200__current-scope__ar-rtl__dark__1024x768__20260718T195039Z.png"
+    sha256: "8717451dd9e56ea7d1c658f725b2b4ff4e2dfa26e1d1a08e212e9d216767efe3"
+    upload_readiness: "QUARANTINED_UNSAFE_ROUTE_CAPTURE_NOT_A_DESIGN_INPUT"
+    safety_conflict: >-
+      The canonical preflight proves /visits unconditionally invokes
+      expire_lapsed_visits on GET, which can UPDATE visits and INSERT
+      notifications. The screenshot therefore has unsafe-route provenance in
+      addition to exposing operational rows. Existing e2e precedent is not an
+      approved exception for this batch.
+    claude_design_work_area: "Tier-1 / SCR-WEB-200 / Visit Management / Planner Arabic RTL density"
+    finding_questions:
+      - "At 1024 px RTL, which columns and actions are hard to parse, and what responsive hierarchy preserves exact status and identifiers?"
+      - "Does dark-mode contrast remain legible across dense badges, controls, table borders, and long Arabic rows?"
+      - "How should EN/LTR and AR/RTL remain structurally equivalent without forcing an excessively long full-page table?"
+    guard: "Quarantine. Do not upload, reproduce, or use as an approved design input without explicit change-control authorization and privacy clearance."
+
+blocked_combinations:
+  - block_id: "P2SAFE-001"
+    screen_id: "SCR-WEB-200"
+    personas: ["Planner", "Operations User", "Branch Manager"]
+    state: "ALL_STATES"
+    profile: "ALL_PROFILES_A_TO_H"
+    claude_design_work_area: "Tier-1 / SCR-WEB-200 / Visit Management / route-safety hold"
+    status: "BLOCKED_ROUTE_MUTATES_ON_GET"
+    reason: >-
+      /visits invokes expire_lapsed_visits unconditionally on GET; the RPC can
+      UPDATE visits and INSERT notifications. Exact proof:
+      /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md
+  - block_id: "P2SAFE-002"
+    screen_id: "SCR-WEB-500"
+    personas: ["Operations User", "Supervisor", "Leadership"]
+    state: "ALL_STATES"
+    profile: "ALL_PROFILES_A_TO_H"
+    claude_design_work_area: "Tier-1 / SCR-WEB-500 / Operations Center / route-safety hold"
+    status: "BLOCKED_ROUTE_MUTATES_ON_GET"
+    reason: >-
+      /operations invokes expire_stale_geo_override_requests unconditionally on
+      GET; the RPC can UPDATE geo_override_requests. Exact proof:
+      /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md
+  - block_id: "P2W1-002"
+    screen_id: "SCR-ADM-001"
+    personas: ["Compliance Admin", "Business Admin", "Technical Admin"]
+    state: "populated"
+    profile: "EN/LTR light 1440x1024"
+    claude_design_work_area: "Tier-1 / SCR-ADM-001 / Admin Home / Admin populated"
+    status: "BLOCKED_SCREENSHOT_REQUIRED"
+    reason: "Persisted Admin session expired: refresh_token_not_found."
+  - block_id: "P2W1-003"
+    screen_id: "SCR-ADM-001"
+    personas: ["Compliance Admin", "Business Admin", "Technical Admin"]
+    state: "populated"
+    profile: "AR/RTL dark 1440x1024"
+    claude_design_work_area: "Tier-1 / SCR-ADM-001 / Admin Home / Admin populated RTL"
+    status: "BLOCKED_SCREENSHOT_REQUIRED"
+    reason: "Persisted Admin session expired: refresh_token_not_found."
+  - block_id: "P2W1-006"
+    screen_id: "SCR-WEB-130"
+    personas: ["Planner"]
+    state: "unregistered-form"
+    profile: "AR/RTL dark 1024x768"
+    claude_design_work_area: "Tier-1 / SCR-WEB-130 / Immediate Visit / Planner unregistered RTL"
+    status: "BLOCKED_SCREENSHOT_REQUIRED"
+    reason: "Identity service returned HTTP 429 during navigation."
+  - block_id: "P2W1-009"
+    screen_id: "SCR-WEB-200"
+    personas: ["Operations User", "Branch Manager"]
+    state: "current-scope"
+    profile: "EN/LTR and AR/RTL; light and dark; 1440x1024 and 1024x768"
+    claude_design_work_area: "Tier-1 / SCR-WEB-200 / Visit Management / role-specific scopes"
+    status: "BLOCKED_SCREENSHOT_REQUIRED"
+    reason: "No persisted Operations User or Branch Manager browser state; the route is also blocked because GET can mutate visits and notifications."
+  - block_id: "P2W1-010"
+    screen_id: "SCR-WEB-210"
+    personas: ["Planner"]
+    state: "existing-visit-read-only-observation"
+    profile: "EN/LTR light 1440x1024"
+    claude_design_work_area: "Tier-1 / SCR-WEB-210 / Visit Detail / Planner read-only"
+    status: "BLOCKED_SCREENSHOT_REQUIRED"
+    reason: "Identity-service HTTP 429 interrupted navigation before a stable frame."
+  - block_id: "P2W1-011"
+    screen_id: "SCR-WEB-210"
+    personas: ["Operations", "Inspector read context"]
+    state: "existing-visit-read-only-observation"
+    profile: "EN/LTR and AR/RTL; light and dark; 1440x1024 and 1024x768"
+    claude_design_work_area: "Tier-1 / SCR-WEB-210 / Visit Detail / role-specific read contexts"
+    status: "BLOCKED_SCREENSHOT_REQUIRED"
+    reason: "Operations state absent; Inspector target was not safely established before throttling."
+  - block_id: "P2W1-012"
+    screen_id: "SCR-WEB-500"
+    personas: ["Operations User", "Supervisor", "Leadership"]
+    state: "source-backed-current-scope"
+    profile: "EN/LTR and AR/RTL; light and dark; 1440x1024 and 1920x1080"
+    claude_design_work_area: "Tier-1 / SCR-WEB-500 / Operations Center / dashboard and wallboard"
+    status: "BLOCKED_SCREENSHOT_REQUIRED"
+    reason: "No persisted Operations User, Supervisor, or Leadership browser state; the route is also blocked because GET can expire stale geo override requests."
+
+readiness_summary:
+  verified_files: 5
+  hash_matches: 5
+  clean_current_state_inputs: 3
+  clean_input_screens: ["SCR-ADM-001", "SCR-WEB-130"]
+  quarantined_unsafe_route_captures: 2
+  blocked_result_rows: 7
+  additional_route_safety_blocks: 2
+  screens_with_clean_captured_evidence: ["SCR-ADM-001", "SCR-WEB-130"]
+  screens_with_quarantined_observational_evidence: ["SCR-WEB-200"]
+  screens_still_without_capture: ["SCR-WEB-210", "SCR-WEB-500"]
+  design_review_ready: false
+  implementation_handoff_ready: false

@@ -13,6 +13,14 @@ Read these files in order at every session start:
 6. `product-contract/governance/OPEN_DECISIONS.yaml`
 7. The task-specific files listed in the current slice.
 
+## Repository location — fail fast
+- The only authoritative repository is `/Users/vikramindla/Developer/Inspection`.
+- `/Users/vikramindla/Documents/GitHub/Inspection` is retired and prohibited: never read it, write it, cite it, use it as a command working directory, load skills or instructions from it, or use artifacts discovered there.
+- Before the first project-related tool call, resolve and report the current working directory and repository top level. Both must be `/Users/vikramindla/Developer/Inspection` (or a specifically authorized worktree whose Git common directory belongs to that repository).
+- If the session starts in, exposes, or supplies instructions from the retired path, stop before project work. Do not compensate by passing canonical absolute paths while leaving tool calls rooted in the retired checkout. Relaunch or re-root the session at the canonical repository.
+- Browser work does not relax this rule. Runtime inspection, evidence capture, source reads, skills, scripts, and output creation must all be attributable to the canonical repository.
+- Never claim the retired checkout was excluded unless no tool, skill, source, working directory, or artifact from it was accessed during the session.
+
 ## Hard rules
 - Broad implementation is blocked until G8 is PASS.
 - The 478 source requirements remain mandatory MVP1.

@@ -1,0 +1,58 @@
+schema_version: "1.0"
+change_id: "CC-AC-0001-PLANNING-METHOD-ROLE-ROUTING-001"
+title: "Inspector cannot reach the /planning selector to use an Inspector-authorized workflow"
+requestor: "Claude Code on behalf of Vikram Indla (sponsor-directed disposition of OPS-REC-004 flagged row AC-0001)"
+approver: "Vikram Indla"
+approval_source: "PENDING — filed for sponsor decision, not yet approved"
+status: "OPEN"
+decision_id: "DEC-025"
+requirement_id: "MVP1-M01-001"
+acceptance_id: "AC-0001"
+source_capability: "Visit Creation"
+source_criterion: "User can access only the planning methods permitted by their role."
+authorization: >
+  Filed under Phase 1 operationalization semantic-exception review
+  (OPS-REC-004 / OPS-REC-006). This ticket documents a confirmed defect and
+  requests a decision; it does not itself authorize any code change.
+business_reason: >
+  apps/web/src/app/planning/page.tsx (lines 13-28, 48-68) gates the entire
+  planning-method selector to Planner only, then renders all three methods
+  (Bulk/Single/Immediate) unconditionally to any Planner. Separately,
+  apps/web/src/app/planning/immediate/page.tsx (lines 24-41) allows Inspector
+  as well as Planner. Net effect: an Inspector who is authorized to use the
+  Immediate workflow cannot reach it through the normal /planning selector,
+  because that selector page rejects Inspector outright. This contradicts the
+  source criterion that a user can access only (and all of) the planning
+  methods permitted by their role — Inspector's permitted method (Immediate)
+  is unreachable via the documented entry point.
+evidence:
+  - "apps/web/src/app/planning/page.tsx lines 13-28: single isPlanner-only gate for the whole page."
+  - "apps/web/src/app/planning/page.tsx lines 48-68: methods array and cards render all three methods unconditionally once past the gate; no per-method role branching."
+  - "apps/web/src/app/planning/immediate/page.tsx lines 24-41: allows isPlanner OR isInspector."
+  - "product-contract/operationalization/OPS-REC-004_VP_PLANNING_SEMANTIC_REVIEW.csv row 2 (AC-0001)."
+  - "product-contract/operationalization/OPS-REC-006_C001_OPEN_ITEM_DISPOSITION.yaml (AC-0001 entry)."
+options:
+  - option_id: "A"
+    description: >
+      Fix apps/web/src/app/planning/page.tsx so Inspector can pass the page
+      gate and sees only the Immediate card (Planner continues to see all
+      three); Planner-only methods stay hidden from Inspector.
+    impact: "Code change to one route file; closes the gap; needs regression test coverage for both roles."
+  - option_id: "B"
+    description: >
+      Keep current behavior and record it as an accepted limitation:
+      Inspectors must deep-link directly to /planning/immediate rather than
+      going through the /planning selector.
+    impact: "No code change; requires a documented, sponsor-approved exception to the source criterion as currently worded, plus a note in user-facing guidance/training if Inspectors are expected to use this path."
+scope_allowed:
+  - "Read this ticket, review the evidence, and record a decision (Option A, Option B, or an alternative)."
+scope_forbidden:
+  - "No code, route, RLS, policy, or acceptance-status change is authorized by this ticket alone."
+  - "No production deployment or data change."
+decision_owner: "Vikram Indla"
+effective_date: "2026-07-18"
+completion_rule: >
+  This ticket closes when the sponsor records a decision (Option A, B, or
+  alternative) in decision_register.csv (DEC-025) and, if Option A is chosen,
+  a separate implementation task is authorized and executed with its own
+  regression evidence.

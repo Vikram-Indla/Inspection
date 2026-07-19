@@ -1,0 +1,35 @@
+schema_version: "1.0"
+batch_id: TEST-3TEAM-ERROR-001
+title: Controlled Claude Design error-loopback proof
+status: READY_AFTER_BATCH_DESIGN_001
+owner: Claude Design lead
+supervisor: Codex lead
+purpose: >-
+  Prove that Claude Design stops only one affected packet, reports the error to
+  Codex, continues safely, then resumes from the checkpoint after resolution
+  without asking the sponsor.
+packet:
+  subtask_id: CD-ERR-001
+  exact_source_scope:
+    - product-contract/operationalization/coordination/test-fixtures/MISSING_FOR_CONTROLLED_TEST.yaml
+  exclusive_output_path: product-contract/operationalization/coordination/test-outputs/TEST-3TEAM-ERROR-001/claude-design-error-recovery.yaml
+  allowed_write_set:
+    - product-contract/operationalization/coordination/claims/CD-ERR-001
+    - product-contract/operationalization/coordination/events
+    - product-contract/operationalization/coordination/test-outputs/TEST-3TEAM-ERROR-001
+  validation_rule:
+    - first_attempt_emits_ERROR_STOP_and_CODEX_ACTION_REQUIRED
+    - no_sponsor_message_from_Claude_Design
+    - RESOLUTION_references_the_open_error
+    - RESUME_references_the_resolution
+    - output_records_the_resolved_source_hash
+  dependencies: [BATCH-DESIGN-001_DESIGN_TEAM_COMPLETE]
+  decision_refs: []
+  stop_boundary: stop_only_CD-ERR-001_at_source_read_checkpoint
+  retry_limit: 0
+prohibited_actions:
+  - create_the_missing_source_itself
+  - ask_Vikram_for_the_source
+  - stop_or_modify_other_batches
+  - edit_application_design_acceptance_or_shared_derived_ledgers
+completion_event: TEAM_COMPLETE

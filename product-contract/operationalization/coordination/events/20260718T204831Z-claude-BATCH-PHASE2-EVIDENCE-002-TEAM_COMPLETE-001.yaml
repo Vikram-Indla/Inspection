@@ -1,0 +1,39 @@
+schema_version: "1.0"
+event: TEAM_COMPLETE
+event_id: "20260718T204831Z-claude-BATCH-PHASE2-EVIDENCE-002-TEAM_COMPLETE-001"
+timestamp_utc: "2026-07-18T20:48:31Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-002
+packets_completed: [P2-EVID-002.A, P2-EVID-002.B, P2-EVID-002.C]
+outputs:
+  preflight: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_W2_PREFLIGHT.md
+  P2-EVID-002.A: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_A_ADMIN_FOUNDATION_MANIFEST.csv
+  P2-EVID-002.B: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_B_ADMIN_CONTROL_MANIFEST.csv
+  P2-EVID-002.C: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_C_BULK_PLANNING_MANIFEST.csv
+  merged_manifest: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_W2_CAPTURE_MANIFEST.csv
+  summary: design/claude-design-mvp1/operationalization/phase2/P2-EVID-002_W2_TEAM_SUMMARY.md
+exact_counts:
+  screens_assigned: 8
+  screens_captured: 7
+  screens_blocked: 1
+  blocked_screen_id: SCR-ADM-031
+  blocked_reason: "No literal URL for the package/form designer -- client-side view inside /admin/packages, unreachable via navigation-only capture rule."
+  profiles_per_screen: 6
+  total_frames_captured: 42
+evidence_root: "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/phase2-tier1/20260718T204316Z/"
+findings_for_codex:
+  - "screen_route_catalogue.csv lists 2 routes (/admin/packages/:id/designer, /admin/penalties) that don't exist literally in the app. One (penalties) has a working alternate URL (?mode=penalty) found in code comments and used successfully; the other (designer) has no URL fallback at all."
+validation:
+  route_truth_verified_before_capture: true
+  rpc_mutation_semantics_checked_against_actual_sql_not_just_name: true
+  all_42_hashes_pairwise_distinct: true
+  data_theme_verified_per_frame: true
+  no_form_submission_or_mutating_action: true
+  held_screens_unchanged: [SCR-WEB-200, SCR-WEB-500]
+product_changes: none
+next_ready_queue: >-
+  Awaiting Codex to either (a) issue Wave 3 (SCR-ADM-050/051/060/070/080/090
+  per PHASE2_FULL_38_CAPTURE_WAVES_20260718.md) as a fully-specified packet,
+  or (b) resolve the SCR-ADM-031 route-catalogue gap. No further
+  fully-specified packet exists right now in any open batch.
+stop_reason: no_further_fully_specified_READY_packet_exists

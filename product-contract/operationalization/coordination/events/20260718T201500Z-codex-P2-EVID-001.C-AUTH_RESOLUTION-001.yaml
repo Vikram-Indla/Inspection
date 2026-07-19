@@ -1,0 +1,26 @@
+schema_version: "1.0"
+event: RESOLUTION
+event_id: "20260718T201500Z-codex-P2-EVID-001.C-AUTH_RESOLUTION-001"
+timestamp_utc: "2026-07-18T20:15:00Z"
+actor: "Codex lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.C
+references:
+  blocked_team_complete: 20260718T200601Z-claude-BATCH-PHASE2-EVIDENCE-001-TEAM_COMPLETE-002
+resolution:
+  fresh_storage_states_verified:
+    - playwright/.auth/planner.json
+    - playwright/.auth/inspector.json
+    - playwright/.auth/reviewer.json
+    - playwright/.auth/admin.json
+  verification: "Playwright auth.setup passed for all four personas on 2026-07-18"
+  resume_checkpoint: safe_capture_after_authentication
+  permitted_screens: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-210]
+  held_screens: [SCR-WEB-200, SCR-WEB-500]
+  instruction: >-
+    Resume only safe non-mutating screenshot capture using the refreshed
+    storage states. Preserve the existing holds on /visits and /operations.
+    Emit RESUME, then COMPLETE and a superseding TEAM_COMPLETE with exact
+    captured and blocked counts. Continue the all-38 evidence inventory.
+product_status_changed: false
+design_acceptance_changed: false

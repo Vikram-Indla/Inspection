@@ -1,0 +1,83 @@
+schema_version: "1.0"
+reconciliation_id: "OPS-REC-002"
+date: "2026-07-18"
+authority: "Inspection_Project_Customer_Auditor_Baseline.xlsx"
+status: "PROVISIONAL_SEQUENCE_MAP_COMPLETE"
+source_workbook:
+  filename: "Inspection_Project_Customer_Auditor_Baseline.xlsx"
+  path: "/Users/vikramindla/Desktop/Inspection Documentation/01_SOURCE_REQUIREMENTS/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx"
+  sheets: 9
+  source_requirement_rows: 478
+sheet_map:
+  - source_sheet: "Visit Planning-Planning"
+    source_rows: 52
+    current_acceptance_module: "Visit Planning - Planning"
+    current_acceptance_rows: 52
+    mapping_result: "COUNT_MATCH"
+  - source_sheet: "Visit Planning- Mangment"
+    source_rows: 46
+    current_acceptance_module: "Visit Planning - Management"
+    current_acceptance_rows: 46
+    mapping_result: "COUNT_MATCH"
+  - source_sheet: "Inspection Execution - PreStart"
+    source_rows: 15
+    current_acceptance_module: "Inspection Execution - Pre-Start"
+    current_acceptance_rows: 15
+    mapping_result: "COUNT_MATCH"
+  - source_sheet: "Inspection excution-Start jou"
+    source_rows: 223
+    current_acceptance_module: "Physical Inspection Execution"
+    current_acceptance_rows: 223
+    mapping_result: "COUNT_MATCH"
+  - source_sheet: "Inspection Excution - Virtual"
+    source_rows: 20
+    current_acceptance_module: "Virtual Inspection Execution"
+    current_acceptance_rows: 20
+    mapping_result: "COUNT_MATCH"
+  - source_sheet: "Inspection Excution-Level2Flow"
+    source_rows: 53
+    current_acceptance_module: "Level 2 Review & Resubmission"
+    current_acceptance_rows: 53
+    mapping_result: "COUNT_MATCH"
+  - source_sheet: "Factory 360"
+    source_rows: 20
+    current_acceptance_module: "Factory 360"
+    current_acceptance_rows: 20
+    mapping_result: "COUNT_MATCH"
+  - source_sheet: "Ops center"
+    source_rows: 19
+    current_acceptance_module: "Operations Center"
+    current_acceptance_rows: 19
+    mapping_result: "COUNT_MATCH"
+  - source_sheet: "Complince"
+    source_rows: 30
+    current_acceptance_module: "Compliance Configuration"
+    current_acceptance_rows: 30
+    mapping_result: "COUNT_MATCH"
+reconciliation_result:
+  source_total: 478
+  mapped_acceptance_total: 478
+  result: "All nine source-sheet totals match their current acceptance-module totals."
+  additional_acceptance_rows:
+    count: 15
+    module: "FND (foundation)"
+    interpretation: >
+      The current 493-row acceptance ledger contains the 478 customer/auditor
+      source rows plus 15 governed foundation rows. These are additive control
+      rows, not evidence that the source workbook contains 493 requirements.
+  provisional_sequence_map:
+    location: "product-contract/operationalization/OPS-REC-003_SOURCE_TO_ACCEPTANCE_MAP.csv"
+    result: "478 source rows linked to 478 acceptance rows by module and preserved row sequence."
+    limit: >
+      The customer/auditor workbook has no stable source row identifiers. This
+      is a structural map, not semantic proof that every capability wording has
+      been independently reviewed.
+  follow_up: >
+    Review the map for semantic exceptions before treating it as a completed
+    row-level reconciliation. Do not change any product or acceptance status.
+evidence:
+  - "Workbook sheet ranges: A1:M53; A1:N47; A1:M16; A1:M224; A1:M21; A1:M54; A1:M21; A1:M20; A1:M31."
+  - "product-contract/evidence/AC_LEDGER.csv"
+do_not_touch:
+  - "Requirement wording in the source workbook."
+  - "Acceptance, product, release and evidence classifications."

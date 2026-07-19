@@ -1,0 +1,14 @@
+schema_version: "1.0"
+event: CLAIM
+event_id: "20260718T191157Z-claude-C-006.C-CLAIM-001"
+timestamp_utc: "2026-07-18T19:11:57Z"
+actor: "Claude worker 2"
+batch_id: BATCH-001
+subtask_id: C-006.C
+workstream: PA-003
+claim_dir: product-contract/operationalization/coordination/claims/C-006.C
+source_scope:
+  - { sheet: "Factory 360", rows: 20, requirement_ids: "MVP1-M07-001..020", acceptance_ids: "AC-0410..AC-0429" }
+  - { sheet: "Ops center", rows: 19, requirement_ids: "MVP1-M08-001..019", acceptance_ids: "AC-0430..AC-0448" }
+output_path: product-contract/operationalization/OPS-REC-013_FACTORY360_OPSCENTER_SEMANTIC_REVIEW.csv
+notes: "Dispatched to a subagent; Claude lead validates the output before COMPLETE."

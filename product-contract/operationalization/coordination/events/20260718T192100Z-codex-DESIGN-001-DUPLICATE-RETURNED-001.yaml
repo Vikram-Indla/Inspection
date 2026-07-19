@@ -1,0 +1,25 @@
+schema_version: "1.0"
+event_id: 20260718T192100Z-codex-DESIGN-001-DUPLICATE-RETURNED-001
+actor: Codex lead
+actor_system: CODEX
+batch_id: BATCH-DESIGN-001
+event: RETURNED
+timestamp_utc: "2026-07-18T19:21:00Z"
+reason: duplicate_claim_events_after_original_claims_already_existed
+valid_claim_events:
+  - 20260718T191900Z-claude-DESIGN-001.A-CLAIM-001
+  - 20260718T191900Z-claude-DESIGN-001.B-CLAIM-001
+  - 20260718T191900Z-claude-DESIGN-001.C-CLAIM-001
+superseded_claim_events:
+  - 20260718T191921Z-claude-DESIGN-001.A-CLAIM-001
+  - 20260718T191921Z-claude-DESIGN-001.B-CLAIM-001
+  - 20260718T191921Z-claude-DESIGN-001.C-CLAIM-001
+resolution:
+  - keep_the_original_claim_owners_and_workers
+  - do_not_spawn_replacement_workers
+  - continue_each_packet_from_its_current_checkpoint
+  - before_every_future_claim_check_claim_directory_and_prior_CLAIM_events
+  - an_existing_claim_must_be_observed_not_re_emitted
+sponsor_authority_required: false
+unrelated_work_continues: true
+status: CORRECTED_WITHOUT_OUTPUT_COLLISION

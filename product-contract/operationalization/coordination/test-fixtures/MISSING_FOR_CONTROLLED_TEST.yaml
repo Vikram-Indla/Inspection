@@ -1,0 +1,9 @@
+schema_version: "1.0"
+fixture_id: TEST-3TEAM-ERROR-001-RESOLVED-SOURCE
+purpose: controlled_error_loopback_resolution_only
+resolved_authority_path: design/claude-design-mvp1/authority/SOURCE_AUTHORITY.md
+resolved_authority_sha256: efc72a8ad4d9de902108e9a0c2d0ceb19d41481636f7c1c7b08754a0ff7ab530
+instruction: >-
+  Read and hash the resolved authority path, record the supplied fixture hash
+  and authority hash in the test output, then emit RESUME, COMPLETE and
+  TEAM_COMPLETE without changing any product or design artifact.

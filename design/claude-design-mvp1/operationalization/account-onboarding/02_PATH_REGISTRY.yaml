@@ -1,0 +1,48 @@
+schema_version: "1.0"
+purpose: "Stable path registry for same-Mac, different-account onboarding"
+
+repository:
+  authoritative: "/Users/vikramindla/Developer/Inspection"
+  retired_prohibited: "/Users/vikramindla/Documents/GitHub/Inspection"
+  agents: "/Users/vikramindla/Developer/Inspection/AGENTS.md"
+  product_contract_start: "/Users/vikramindla/Developer/Inspection/product-contract/00_START_HERE.md"
+  current_state: "/Users/vikramindla/Developer/Inspection/product-contract/CURRENT_STATE.md"
+  gate_status: "/Users/vikramindla/Developer/Inspection/product-contract/GATE_STATUS.md"
+  current_slice: "/Users/vikramindla/Developer/Inspection/product-contract/execution/CURRENT_SLICE.yaml"
+  task_router: "/Users/vikramindla/Developer/Inspection/product-contract/execution/TASK_ROUTER.yaml"
+  open_decisions: "/Users/vikramindla/Developer/Inspection/product-contract/governance/OPEN_DECISIONS.yaml"
+  design_start: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/00_START_HERE.md"
+  coordination_protocol: "/Users/vikramindla/Developer/Inspection/product-contract/operationalization/coordination/AGENT_OPERATING_PROTOCOL.yaml"
+
+onboarding:
+  universal_prompt: "/Users/vikramindla/Developer/Inspection/00_ONBOARD_ANY_ACCOUNT.md"
+  folder: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding"
+  context: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/01_PROGRAMME_CONTEXT.md"
+  assignment_router: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/03_ASSIGNMENT_ROUTER.yaml"
+
+programme:
+  command_centre: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719"
+  sequence: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/00_WORK_PACKAGE_SEQUENCE.md"
+  compiled_plan: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/premium-redesign-20260719"
+  master_plan: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/premium-redesign-20260719/MASTER_UIUX_OPERATIONALIZATION_PLAN.md"
+  route_scope: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/premium-redesign-20260719/FULL_59_ROUTE_SCREENSHOT_SCOPE.csv"
+  recommendations: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/premium-redesign-20260719/FIFTY_ADDITIONAL_RECOMMENDATIONS.csv"
+  design_prompts: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/premium-redesign-20260719/CLAUDE_DESIGN_SIX_PACKAGE_PROMPTS.md"
+
+source_baseline:
+  folder: "/Users/vikramindla/InspectionOps/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE"
+  strategic_workbook: "/Users/vikramindla/InspectionOps/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/Inspection_Platform_Strategic_Baseline_61_Sheets.xlsx"
+  requirements_workbook: "/Users/vikramindla/InspectionOps/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx"
+  storyboard: "/Users/vikramindla/InspectionOps/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/KSA_Inspection_Storyboard_Reference_20_Pages.pdf"
+  strategic_brd: "/Users/vikramindla/InspectionOps/MIM_Inspection_MVP1_Historical_Archives_v3/MIM_Inspection_MVP1_COMPLETE_DOCUMENTATION_DUMP_v2/01_SOURCE_BASELINE/MIM_Inspection_Strategic_BRD_Source.pdf"
+
+control:
+  programme_ledger: "/Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/00_PROGRAM_CONTROL/Inspection_Operationalization_Execution_Ledger_v1.0.xlsx"
+  external_command_centre_mirror: "/Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/04_COMMAND_CENTER_PACKAGES/20260719"
+  external_plan_mirror: "/Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/03_PREMIUM_UIUX_PLAN/20260719"
+
+rules:
+  - "Repository copies of prompts and plans are authoritative; external command-centre and plan folders are mirrors."
+  - "BRDs, workbooks, PDFs, screenshots and other binary evidence remain external and must not be recommitted."
+  - "Master-controller Codex is the only programme-ledger writer."
+  - "Browser-only agents require attachments or a connected source; a path alone is not access."

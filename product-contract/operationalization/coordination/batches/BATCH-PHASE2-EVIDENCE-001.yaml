@@ -1,0 +1,107 @@
+schema_version: "1.0"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+title: Phase 2 governed screen and persona evidence wave 1
+status: READY
+phase: Phase_2_Runtime_and_UX_Audit
+owner: Claude Code lead
+supervisor: Codex lead
+objective: >-
+  Start the verified as-is evidence programme without redesign: reconcile reusable
+  evidence for all 38 governed screens, preflight the five Tier-1 screens, and
+  capture only safe non-mutating persona/state combinations whose runtime and
+  evidence prerequisites are proven.
+sponsor_authorization:
+  date: "2026-07-18"
+  scope: all_38_governed_screens_x_authorized_personas_x_required_states
+authority_read_order:
+  - /Users/vikramindla/Developer/Inspection/AGENTS.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/00_START_HERE.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/CURRENT_STATE.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/GATE_STATUS.md
+  - /Users/vikramindla/Developer/Inspection/product-contract/execution/CURRENT_SLICE.yaml
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/00_START_HERE.md
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/DESIGN-OPS-002_EXISTING_EVIDENCE_INVENTORY.csv
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/DESIGN-OPS-003_SCREEN_STATE_GAP_QUEUE.csv
+  - /Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/DESIGN-OPS-004_PRIORITY_SEQUENCE.md
+capture_profiles:
+  A: {locale: en, direction: LTR, theme: light, viewport: 1440x1024}
+  B: {locale: en, direction: LTR, theme: dark, viewport: 1440x1024}
+  C: {locale: ar, direction: RTL, theme: light, viewport: 1440x1024}
+  D: {locale: ar, direction: RTL, theme: dark, viewport: 1440x1024}
+  E: {locale: en, direction: LTR, theme: light, viewport: 1024x768}
+  F: {locale: ar, direction: RTL, theme: dark, viewport: 1024x768}
+  G: {locale: en, direction: LTR, theme: dark, viewport: 1920x1080}
+  H: {locale: ar, direction: RTL, theme: light, viewport: 1920x1080}
+tier_1_screens:
+  - SCR-ADM-001
+  - SCR-WEB-130
+  - SCR-WEB-200
+  - SCR-WEB-210
+  - SCR-WEB-500
+work_packets:
+  - subtask_id: P2-EVID-001.A
+    title: Reconcile existing evidence against all 38 governed screens
+    worker_scope: read_only_inventory
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_ALL38_REUSE_AND_GAP_MANIFEST.csv
+    validation_rule:
+      - every_governed_screen_present
+      - exact_existing_evidence_path_or_MISSING
+      - persona_state_locale_theme_viewport_truth_recorded
+      - no_fresh_capture_in_this_packet
+    dependencies: []
+    decision_refs: []
+    stop_boundary: continue_on_individual_missing_evidence
+  - subtask_id: P2-EVID-001.B
+    title: Tier-1 runtime persona and data-safety preflight
+    worker_scope: read_only_runtime_preflight
+    exact_source_scope: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-200, SCR-WEB-210, SCR-WEB-500]
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md
+    validation_rule:
+      - tested_commit_and_environment_recorded
+      - routes_and_authorized_personas_verified
+      - data_preconditions_and_mutation_risk_recorded
+      - capture_readiness_per_state_recorded
+    dependencies: []
+    decision_refs: []
+    stop_boundary: mark_only_affected_screen_BLOCKED_and_continue
+  - subtask_id: P2-EVID-001.C
+    title: Safe Tier-1 as-is screenshot capture
+    worker_scope: non_mutating_capture_only
+    exact_source_scope: [SCR-ADM-001, SCR-WEB-130, SCR-WEB-200, SCR-WEB-210, SCR-WEB-500]
+    binary_output_root: "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/phase2-tier1"
+    exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_CAPTURE_MANIFEST.csv
+    filename_rule: "P2-ASIS__<screen>__<state>__<locale>-<direction>__<theme>__<width>x<height>__<UTC>.png"
+    validation_rule:
+      - screenshot_hash_and_path_recorded
+      - persona_route_state_profile_and_commit_recorded
+      - no_secrets_or_PII
+      - no_data_or_status_mutation
+      - missing_or_unsafe_combination_labelled_BLOCKED_not_simulated
+    dependencies: [P2-EVID-001.B]
+    decision_refs: []
+    stop_boundary: ERROR_STOP_only_the_affected_capture_packet
+lead_output:
+  subtask_id: P2-EVID-001.LEAD
+  exclusive_output_path: design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_WAVE1_TEAM_SUMMARY.md
+  rule: validate_A_B_C_then_emit_TEAM_COMPLETE_even_when_some_rows_are_safely_BLOCKED
+allowed_writes:
+  - design/claude-design-mvp1/operationalization/phase2/
+  - product-contract/operationalization/coordination/claims/
+  - product-contract/operationalization/coordination/events/
+  - "${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/phase2-tier1/"
+prohibited_writes:
+  - apps/
+  - supabase/
+  - product-contract/requirements/
+  - product-contract/acceptance/
+  - product-contract/GATE_STATUS.md
+  - product-contract/CURRENT_STATE.md
+  - /Users/vikramindla/InspectionOps/11_OPERATIONALIZATION/00_PROGRAM_CONTROL
+prohibited_actions:
+  - redesign_or_create_new_design_frames
+  - mutate_product_data_or_workflow_status
+  - fabricate_personas_states_or_screens
+  - self_approve_design_or_product_acceptance
+  - expose_secrets_or_personal_data
+error_route: AGENT_OPERATING_PROTOCOL.yaml#error_loopback
+completion_event: TEAM_COMPLETE

@@ -1,0 +1,38 @@
+schema_version: "1.0"
+event: CODEX_ACTION_REQUIRED
+event_id: "20260718T195929Z-claude-P2-EVID-001-CODEX_ACTION_REQUIRED-001"
+timestamp_utc: "2026-07-18T19:59:29Z"
+actor: "Claude lead"
+batch_id: BATCH-PHASE2-EVIDENCE-001
+subtask_id: P2-EVID-001.C
+not_an_error_stop: true
+finding_class: concurrent_conflicting_effort_discovered_midcycle
+request: >-
+  A separate actor already ran live Phase 2 capture from
+  /Users/vikramindla/Documents/GitHub/Inspection (the retired,
+  non-canonical checkout per CURRENT_STATE.md's relocation note), captured
+  5 real frames including 2 for SCR-WEB-200, and hit HTTP 429 from the
+  identity service. This wave's own preflight (P2-EVID-001_TIER1_PREFLIGHT.md)
+  independently marked SCR-WEB-200 BLOCKED for a real, unconditional
+  mutating RPC (expire_lapsed_visits) on page load -- the two preflights
+  disagree on the same route. Requesting Codex: (1) adjudicate whether
+  SCR-WEB-200's mutation is in-tolerance (matching the existing e2e suite's
+  own accepted practice) or not, applying that ruling to both this wave and
+  the other actor's already-captured frames; (2) reconcile the other
+  actor's artifacts from the non-canonical checkout into this canonical
+  repository; (3) confirm the identity-service rate-limit window has
+  cleared before any further persona-refresh attempts.
+evidence_paths:
+  - design/claude-design-mvp1/operationalization/phase2/P2-EVID-001_TIER1_PREFLIGHT.md
+  - design/claude-design-mvp1/operationalization/phase2/PHASE2-WAVE1-PREFLIGHT-20260718T195039Z.md
+  - design/claude-design-mvp1/operationalization/phase2/PHASE2-WAVE1-PREFLIGHT-20260718T195039Z.csv
+  - design/claude-design-mvp1/operationalization/phase2/PHASE2_FULL_38_CAPTURE_WAVES_20260718.md
+safe_options:
+  - "Rule SCR-WEB-200's mutation in-tolerance; keep both actors' future captures for it, correct this wave's B verdict to match."
+  - "Rule it not in-tolerance; quarantine/flag the other actor's 2 SCR-WEB-200 frames as taken under a rule this batch doesn't accept, and keep this wave's BLOCKED verdict."
+recommended_option: >-
+  No recommendation from Claude lead -- this is a scope/tolerance decision,
+  not an operational fix, and Claude lead's own prohibited_actions forbid
+  self-approving a mutation as acceptable.
+unrelated_work_continues: true
+status: AWAITING_RESOLUTION

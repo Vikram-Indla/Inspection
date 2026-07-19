@@ -1,0 +1,35 @@
+schema_version: "1.0"
+event_id: 20260718T185410Z-codex-PA007-TEAM_COMPLETE-001
+actor: Codex lead
+team_lead: Codex
+batch_id: CODEX-PHASE1-PA007
+task_id: PA-007
+event: TEAM_COMPLETE
+timestamp_utc: "2026-07-18T18:54:10Z"
+source_scope: MVP3_84_ROW_MASTER_REGISTER_rows_1_to_84
+output_path: product-contract/operationalization/OPS-REC-015_MVP3_84_ROW_RECONCILIATION.csv
+output_sha256: d695e98c0768e6f1c3d3b6a0869efade0fbfd29880d10255dec2efa3159e97ba
+result_counts:
+  total: 84
+  unique_requirement_ids: 84
+  MATCH: 44
+  NEEDS_REVIEW: 34
+  CONTRADICTION: 6
+worker_outputs:
+  - product-contract/operationalization/coordination/worker-outputs/CODEX-PA007-A-MVP3-ROWS-001-028.csv
+  - product-contract/operationalization/coordination/worker-outputs/CODEX-PA007-B-MVP3-ROWS-029-056.csv
+  - product-contract/operationalization/coordination/worker-outputs/CODEX-PA007-C-MVP3-ROWS-057-084.csv
+validation:
+  - exact_84_rows
+  - exact_master_row_sequence_1_to_84
+  - 84_unique_requirement_ids
+  - allowed_classifications_only
+  - source_paths_present
+  - six_contradictions_sampled_against_active_source
+dependencies: []
+decision_refs: []
+acknowledges: null
+next_action: Claude_Code_peer_ACK_or_RETURNED_on_the_84_row_output
+write_set:
+  - product-contract/operationalization/OPS-REC-015_MVP3_84_ROW_RECONCILIATION.csv
+status_boundary: TEAM_COMPLETE_is_not_product_or_gate_acceptance

@@ -1,0 +1,25 @@
+schema_version: "1.0"
+reconciliation_id: "OPS-REC-003"
+date: "2026-07-18"
+authority:
+  - "Inspection_Project_Customer_Auditor_Baseline.xlsx"
+  - "product-contract/evidence/AC_LEDGER.csv"
+status: "PROVISIONAL_SEQUENCE_MAP_COMPLETE"
+output: "product-contract/operationalization/OPS-REC-003_SOURCE_TO_ACCEPTANCE_MAP.csv"
+result:
+  source_rows: 478
+  acceptance_rows_linked: 478
+  section_result: "All nine source sections have matching acceptance-module totals."
+mapping_method: >
+  Each source row is paired with the acceptance row in the matching module at
+  the same preserved sequence position. The map carries source sheet, source
+  row, capability, source acceptance criterion, requirement ID, acceptance ID
+  and current acceptance status.
+limit: >
+  The source workbook has no immutable source-row identifier. This structural
+  map makes the relationship inspectable, but it is not semantic confirmation
+  of every source-to-acceptance pairing.
+next_action: "Review semantic exceptions only; do not change product, acceptance or release status during this review."
+do_not_touch:
+  - "The source workbook."
+  - "Acceptance, evidence, product and release classifications."

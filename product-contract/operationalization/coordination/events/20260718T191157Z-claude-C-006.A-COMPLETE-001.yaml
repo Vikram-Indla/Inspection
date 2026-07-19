@@ -1,0 +1,25 @@
+schema_version: "1.0"
+event: COMPLETE
+event_id: "20260718T191157Z-claude-C-006.A-COMPLETE-001"
+timestamp_utc: "2026-07-18T19:11:57Z"
+actor: "Claude lead"
+batch_id: BATCH-001
+subtask_id: C-006.A
+workstream: PA-001
+output_path: product-contract/operationalization/OPS-REC-009_LEVEL2_SEMANTIC_REVIEW_CORRECTED.csv
+result:
+  rows: 53
+  counts: { MATCH: 49, NEEDS_REVIEW: 4, CONTRADICTION: 0 }
+  exception_rows: { AC-0363: 8, AC-0374: 19, AC-0384: 29, AC-0408: 53 }
+  root_cause: >-
+    Original OPS-REC-009_LEVEL2_SEMANTIC_REVIEW.csv attached the 4 exception
+    rationales one source row late (9/20/30/54 instead of 8/19/29/53) due to
+    an off-by-one indexing error in the generating script. Fixed by
+    re-deriving from the same cached source/ledger data with corrected
+    0-indexed offsets; no classification content or count changed, only row
+    attachment.
+validation:
+  no_classification_or_count_change: true
+  duplicate_source_rows: false
+  duplicate_acceptance_ids: false
+product_changes: none
