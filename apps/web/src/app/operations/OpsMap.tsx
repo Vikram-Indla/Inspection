@@ -4,7 +4,7 @@
 // visit (or factory dossier). GeoMap is Mapbox GL JS (browser-only), so it
 // loads via next/dynamic ssr:false — the dynamic() call must live in a client
 // component (same canon as admin/gis/GisStudio.tsx and field/[visitId]).
-import { useMemo, useState } from "react";
+import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
 
@@ -34,17 +34,15 @@ export type OpsMapStrings = {
 const KSA_CENTER: [number, number] = [23.8859, 45.0792];
 const KSA_ZOOM = 5;
 
-export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: OpsMapStrings }) {
-  const GeoMap = useMemo(() => dynamic(() => import("@/components/GeoMap"), {
-    ssr: false,
-    loading: () => (
-      <div className="ax-state">
-        <span className="ax-state__glyph">…</span><h4>{s.loadingTitle}</h4>
-        <p className="ax-caption">{s.loadingBody}</p>
-      </div>
-    ),
-  }), [s.loadingTitle, s.loadingBody]);
+// Module scope, not inside the component: next/dynamic must be called once
+// at module load. Calling it inside a component/hook (even memoized)
+// re-registers the same chunk on every remount — React Strict Mode's dev
+// double-mount, Fast Refresh, any HMR churn — which desyncs the loadable's
+// internal chunk-id tracking from what the compiled bundle expects
+// (ChunkLoadError that survives a full dev-server restart).
+const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
+export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: OpsMapStrings }) {
   const [selectedId, setSelectedId] = useState(null as string | null);
   const selected = pins.find(p => p.id === selectedId) ?? null;
   const markers: GeoMarkerData[] = pins.map(p => ({
@@ -54,8 +52,15 @@ export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: 
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
       <div style={{ blockSize: 380, borderRadius: "var(--ax-radius-200)", overflow: "hidden" }}>
-        <GeoMap center={KSA_CENTER} zoom={KSA_ZOOM} markers={markers}
-          selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" />
+        <Suspense fallback={
+          <div className="ax-state">
+            <span className="ax-state__glyph">…</span><h4>{s.loadingTitle}</h4>
+            <p className="ax-caption">{s.loadingBody}</p>
+          </div>
+        }>
+          <GeoMap center={KSA_CENTER} zoom={KSA_ZOOM} markers={markers}
+            selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" />
+        </Suspense>
       </div>
       <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
         <span className="ax-caption">

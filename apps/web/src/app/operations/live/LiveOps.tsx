@@ -2,7 +2,7 @@
 // Live Operations shell — real KPI counters (behind auth, so a genuine "LIVE"
 // claim), a colourblind-safe legend, and the animated national map. The map
 // itself is browser-only and loads via next/dynamic ssr:false.
-import { useMemo, useState } from "react";
+import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
 
@@ -22,21 +22,19 @@ export type LiveOpsStrings = {
   mapAriaLabel: string;
 };
 
+// Module scope, not inside the component: next/dynamic must be called once
+// at module load — calling it inside a component/hook (even memoized)
+// re-registers the same chunk on every remount (Strict Mode dev double-mount,
+// Fast Refresh) and desyncs the loadable's chunk-id tracking from the
+// compiled bundle (ChunkLoadError that survives a full dev-server restart).
+const Map = dynamic(() => import("./LiveMapInner"), { ssr: false });
+
 export default function LiveOps({ factories, regions, inspectors, strings: s }: {
   factories: LiveFactory[];
   regions: LiveRegion[];
   inspectors: LiveInspector[];
   strings: LiveOpsStrings;
 }) {
-  const Map = useMemo(() => dynamic(() => import("./LiveMapInner"), {
-    ssr: false,
-    loading: () => (
-      <div className="ax-state" style={{ blockSize: "100%", display: "grid", placeItems: "center" }}>
-        <span className="ax-state__glyph">…</span><p className="ax-caption">{s.loading}</p>
-      </div>
-    ),
-  }), [s.loading]);
-
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const enRoute = inspectors.filter(i => i.state === "on_the_way").length;
   const executing = inspectors.filter(i => i.state === "executing" || i.state === "arrived").length;
@@ -56,10 +54,16 @@ export default function LiveOps({ factories, regions, inspectors, strings: s }: 
       </div>
 
       <div className="lv-map">
-        <Map factories={factories} regions={regions} inspectors={inspectors}
-          selectedId={selectedId} onSelect={setSelectedId} strings={{
-            unavailable: s.mapUnavailable, notConfigured: s.mapboxNotConfigured, ariaLabel: s.mapAriaLabel,
-          }} />
+        <Suspense fallback={
+          <div className="ax-state" style={{ blockSize: "100%", display: "grid", placeItems: "center" }}>
+            <span className="ax-state__glyph">…</span><p className="ax-caption">{s.loading}</p>
+          </div>
+        }>
+          <Map factories={factories} regions={regions} inspectors={inspectors}
+            selectedId={selectedId} onSelect={setSelectedId} strings={{
+              unavailable: s.mapUnavailable, notConfigured: s.mapboxNotConfigured, ariaLabel: s.mapAriaLabel,
+            }} />
+        </Suspense>
       </div>
 
       <div className="lv-legend" role="note">

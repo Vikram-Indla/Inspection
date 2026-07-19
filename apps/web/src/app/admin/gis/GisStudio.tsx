@@ -4,7 +4,7 @@
 // linked map↔table selection, factories-without-coordinates surfaced.
 // All user-facing copy arrives via the `strings` prop (SB19) so this client
 // component stays i18n-agnostic — see page.tsx for the useT() build.
-import { useEffect, useMemo, useState, useActionState } from "react";
+import { Suspense, useEffect, useMemo, useState, useActionState } from "react";
 import dynamic from "next/dynamic";
 import { updateGeofenceRadius, type GisResult } from "./actions";
 import type { GeoFocus, GeoMarkerData, GeoTone } from "@/components/GeoMap";
@@ -42,22 +42,16 @@ function bandTone(band: string | null): GeoTone {
   return band === "high" ? "high" : band === "medium" ? "medium" : band === "low" ? "low" : "neutral";
 }
 
+// Module scope, not inside the component: next/dynamic must be called once
+// at module load — calling it inside a component/hook (even memoized)
+// re-registers the same chunk on every remount (Strict Mode dev double-mount,
+// Fast Refresh) and desyncs the loadable's chunk-id tracking from the
+// compiled bundle (ChunkLoadError that survives a full dev-server restart).
+const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
+
 export default function GisStudio({ factories, gis, strings: s }: {
   factories: GisFactory[]; gis: GisSettings; strings: GisStrings;
 }) {
-  // Mapbox GL JS is client-only — must load with ssr:false, and the
-  // dynamic() call must live inside a client component, so it sits here where
-  // the loading copy can use the localized strings prop.
-  const GeoMap = useMemo(() => dynamic(() => import("@/components/GeoMap"), {
-    ssr: false,
-    loading: () => (
-      <div className="ax-state">
-        <span className="ax-state__glyph">…</span><h4>{s.loadingTitle}</h4>
-        <p className="ax-caption">{s.loadingBody}</p>
-      </div>
-    ),
-  }), [s.loadingTitle, s.loadingBody]);
-
   const defaultFence = gis.geofence_default_radius_m ?? 150; // ENG-06 engine default
   const [selectedId, setSelectedId] = useState(null as string | null);
   const [draftRadius, setDraftRadius] = useState("");
@@ -155,15 +149,22 @@ export default function GisStudio({ factories, gis, strings: s }: {
 
       <div style={{ display: "flex", gap: "var(--ax-space-300)", alignItems: "stretch", flexWrap: "wrap" }}>
         <div className="ax-panel" style={{ flex: 1, minInlineSize: 420, padding: 0, overflow: "hidden" }}>
-          <GeoMap
-            center={[24.0, 44.5]} zoom={5}  // KSA-wide initial view
-            markers={markers}
-            height={560}
-            selectedId={selectedId}
-            focus={focus}
-            onMarkerClick={select}
-            onRadiusChange={(id, r) => { if (id === selectedId) setDraftRadius(String(r)); }}
-          />
+          <Suspense fallback={
+            <div className="ax-state">
+              <span className="ax-state__glyph">…</span><h4>{s.loadingTitle}</h4>
+              <p className="ax-caption">{s.loadingBody}</p>
+            </div>
+          }>
+            <GeoMap
+              center={[24.0, 44.5]} zoom={5}  // KSA-wide initial view
+              markers={markers}
+              height={560}
+              selectedId={selectedId}
+              focus={focus}
+              onMarkerClick={select}
+              onRadiusChange={(id, r) => { if (id === selectedId) setDraftRadius(String(r)); }}
+            />
+          </Suspense>
         </div>
 
         <aside className="ax-panel" style={{ inlineSize: "var(--ax-shell-panel-width)", padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>

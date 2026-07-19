@@ -8,9 +8,19 @@ export default function PwaRegister() {
     // hard refresh — Service Worker interception is orthogonal to HTTP cache
     // busting). Registration is production-only; the offline field-app
     // contract (FND-005) only needs to hold in production.
-    if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
+    if (!("serviceWorker" in navigator)) return;
+
+    if (process.env.NODE_ENV === "production") {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
+      return;
     }
+
+    // A worker previously installed from a production build can still control
+    // localhost during development. Remove it before it serves an obsolete
+    // stable-named Next.js chunk after a restart.
+    navigator.serviceWorker.getRegistrations()
+      .then(registrations => Promise.all(registrations.map(registration => registration.unregister())))
+      .catch(() => {});
   }, []);
   return null;
 }
