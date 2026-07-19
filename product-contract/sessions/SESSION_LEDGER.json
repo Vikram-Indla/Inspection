@@ -3946,9 +3946,53 @@
       "commit_sha": "Prompt 03 closure commit on codex/compliance-library-003; resolve branch HEAD",
       "next_task": "Prompt 04 Compliance Approval Queue after Prompt 03 acceptance or sponsor-directed continuation.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 102 and TASK-WEB-COMPLIANCE-LIBRARY-003 evidence. Preserve the Compliance-only boundary; do not modify Inspector source when resolving runtime-consumption gaps."
+    },
+    {
+      "session_id": "2026-07-19-compliance-approval-queue-004",
+      "started_at": "2026-07-19",
+      "ended_at": "2026-07-19",
+      "branch": "codex/compliance-approval-queue-004",
+      "task_id": "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004",
+      "gate": "G11 sponsor-directed Compliance Approval Queue",
+      "requirements": ["CMP-REQ-APQ-001..006"],
+      "acceptance_ids": ["CMP-ACC-APQ-001..020"],
+      "screens": ["CMP-SCR-004", "SCR-COMPLIANCE-REQUEST-WORKSPACE"],
+      "engines": ["CCR RLS", "maker-checker RPCs", "dependency evaluator", "transactional publication"],
+      "files_changed": [
+        "shared navigation real Approval Queue destination",
+        "dedicated guarded Compliance Approval Queue route and states",
+        "existing CCR review-workspace queue context and revalidation",
+        "focused/static tests, acceptance, evidence, execution and session records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Prompt 04 source contracts 6/6 PASS",
+        "protected static inventory 111 PASS / 4 intentional provider skips / 0 failed",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004.md",
+        "product-contract/acceptance/CMP_COMPLIANCE_APPROVAL_QUEUE_004.csv",
+        "apps/web/e2e/compliance-approval-queue.spec.ts"
+      ],
+      "decisions": [
+        "Compliance Approval Queue is distinct from Inspection Review & Approval",
+        "Only compliance_admin/reviewer roles enter and maker-owned requests are excluded",
+        "Submitted age is factual and no unapproved SLA or priority is inferred",
+        "All decisions and publication continue through Prompt 02 guarded RPCs",
+        "No remote DDL or excluded Inspector/platform source changed"
+      ],
+      "blockers": [
+        "Sponsor Prompt 04 acceptance",
+        "Populated shared-runtime evidence requires separately controlled Prompt 02 migration application"
+      ],
+      "commit_sha": "Prompt 04 closure commit on codex/compliance-approval-queue-004; resolve branch HEAD",
+      "next_task": "Enforcement Library slice after Prompt 04 acceptance or sponsor-directed continuation.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 103 and TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004 evidence. Preserve the distinct Compliance/inspection queue boundary and use only CCR guarded RPCs for decisions."
     }
   ],
-  "last_session": "2026-07-19-compliance-library-003",
+  "last_session": "2026-07-19-compliance-approval-queue-004",
   "rules": {
     "append_only": true,
     "required_fields": [

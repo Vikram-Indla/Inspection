@@ -101,7 +101,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelAr: "الامتثال",
     items: [
       { id: "compliance-library", labelKey: "shell.nav.regulations", labelEn: "Compliance Library", labelAr: "مكتبة الامتثال", href: "/admin/regulations", icon: "library", roles: businessRoles, businessTab: "Compliance Library", visibility: "business" },
-      { id: "approval-queue", labelKey: "shell.nav.approvalQueue", labelEn: "Approval Queue", labelAr: "قائمة انتظار الموافقات", href: "/admin", icon: "review", roles: businessRoles, businessTab: "Approval Queue", visibility: "business" },
+      { id: "approval-queue", labelKey: "shell.nav.approvalQueue", labelEn: "Approval Queue", labelAr: "قائمة انتظار الموافقات", href: "/admin/compliance-approvals", icon: "review", roles: businessRoles, businessTab: "Approval Queue", visibility: "business" },
       { id: "enforcement-library", labelKey: "shell.nav.enforcement", labelEn: "Enforcement Library", labelAr: "مكتبة الإنفاذ", href: "/admin/violations", icon: "enforcement", roles: businessRoles, businessTab: "Enforcement Library", visibility: "business" },
     ],
   },

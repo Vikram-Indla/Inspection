@@ -91,6 +91,7 @@ async function rpc(name: string, args: Record<string, unknown>, requestId?: stri
   }
   revalidatePath(pathFor(requestId));
   revalidatePath("/admin/compliance-requests");
+  revalidatePath("/admin/compliance-approvals");
   if (requestId) {
     if (name === "submit_compliance_request") await notifyReviewers(sb, requestId);
     if (name === "return_compliance_request") await notifyOwner(sb, requestId, "compliance_request_returned");

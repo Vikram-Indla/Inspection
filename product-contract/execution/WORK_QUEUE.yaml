@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
+    gate: "G11 sponsor-directed Compliance Approval Queue"
+    priority: "P0"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
+    owner: "Codex implementation and QA + Sponsor acceptance authority"
+    blocked_by: ["Remote Prompt 02 migration application for populated shared-runtime evidence"]
+    blocks: []
+    note: "Dedicated CCR approval route, existing reviewer guard, maker-owned request exclusion, factual status filters, component/dependency progress and RPC-enforced workspace handoff implemented. Typecheck/build, focused 6/6 and protected static 111 pass/4 intentional provider skips."
   - task_id: "TASK-WEB-COMPLIANCE-LIBRARY-003"
     gate: "G11 sponsor-directed Compliance Library"
     priority: "P0"

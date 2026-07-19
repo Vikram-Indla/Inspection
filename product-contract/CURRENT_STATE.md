@@ -1,5 +1,25 @@
 # Current State
 
+## 2026-07-19 UPDATE 103 — Compliance Prompt 04 Approval Queue implemented
+
+Prompt 04 adds a dedicated `/admin/compliance-approvals` route and points the shared
+Compliance navigation to it. The page is explicitly distinct from Inspection Review &
+Approval, uses the existing compliance_admin/reviewer route guard and CCR RLS, excludes
+maker-owned requests in the UI while retaining database maker-checker enforcement, orders
+eligible work by submitted time, and shows factual Pending Review, Partially Approved and
+Ready to Publish views with component/dependency progress. It introduces no invented SLA,
+priority or assignment semantics.
+
+Review opens the Prompt 02 workspace with Current/Proposed comparison, component decisions,
+required Return/Reject comments, dependency tree, immutable decision history and transactional
+publication. Queue mutations still pass exclusively through the existing guarded RPC actions.
+Typecheck and production build pass; focused Prompt 04 contracts pass 6/6; the protected static
+inventory passes 111 with four intentional live-provider skips. No Inspector/iPad, inspection
+review queue, DDL, runtime data, Mapbox, signature, offline, provider or historical source changed.
+Populated shared-runtime evidence remains dependent on applying the Prompt 02 migration under
+separate controlled remote-DDL authority. Exact evidence:
+`evidence/TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004.md`.
+
 ## 2026-07-19 UPDATE 102 — Compliance Prompt 03 library and runtime preview implemented
 
 After Prompt 02 was pushed and remotely verified, the sponsor directed continuous forward

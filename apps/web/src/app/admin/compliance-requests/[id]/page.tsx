@@ -30,8 +30,11 @@ type Publication = { id: string; revision_number: number; component_id: string; 
 const label = (value: string) => value.split("_").map(part => part[0]?.toUpperCase() + part.slice(1)).join(" ");
 const json = (value: unknown) => JSON.stringify(value ?? {}, null, 2);
 
-export default async function ComplianceRequestWorkspace({ params }: { params: Promise<{ id: string }> }) {
+export default async function ComplianceRequestWorkspace({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
+  const sp = await searchParams;
+  const fromQueue = sp.from === "approval-queue";
+  const shellCurrent = fromQueue ? "/admin/compliance-approvals" : "/admin/compliance-requests";
   const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
   const [requestRead, revisionRead, componentRead, dependencyRead, decisionRead, publicationRead, roleRead] = await Promise.all([
@@ -56,12 +59,12 @@ export default async function ComplianceRequestWorkspace({ params }: { params: P
   const publications = (publicationRead.data ?? []) as Publication[];
 
   if (readFailed) return (
-    <Shell current="/admin/compliance-requests" title="Compliance Configuration Request">
+    <Shell current={shellCurrent} title="Compliance Configuration Request">
       <div className="ax-surface"><div className="ax-state" role="alert"><span className="ax-state__glyph" aria-hidden="true">⚠</span><h4>Request workspace unavailable</h4><p className="ax-caption">One or more governed reads failed. No status, revision, component, or decision has been inferred.</p><a className="ax-link" href={`/admin/compliance-requests/${id}`}>Retry</a></div></div>
     </Shell>
   );
   if (!request) return (
-    <Shell current="/admin/compliance-requests" title="Compliance Configuration Request">
+    <Shell current={shellCurrent} title="Compliance Configuration Request">
       <div className="ax-surface"><div className="ax-state" role="status"><span className="ax-state__glyph" aria-hidden="true">🔎</span><h4>Request not found or outside your scope</h4><p className="ax-caption">The RLS-scoped read returned no request. No configuration content was loaded.</p><Link className="ax-link" href="/admin/compliance-requests">Return to register</Link></div></div>
     </Shell>
   );
@@ -74,9 +77,9 @@ export default async function ComplianceRequestWorkspace({ params }: { params: P
   const publishable = canReview && ["approved", "partially_approved"].includes(request.status);
 
   return (
-    <Shell current="/admin/compliance-requests" title={`${request.request_number} — ${request.title}`}
+    <Shell current={shellCurrent} title={`${request.request_number} — ${request.title}`}
       context={<><span className={`ax-lozenge ccr-status ccr-status--${request.status}`}>{label(request.status)}</span><span className="ax-caption">Revision {request.current_revision} · Correlation <bdi>{request.correlation_id}</bdi></span></>}>
-      <p className="ax-caption"><Link className="ax-link" href="/admin/compliance-requests">← Request register</Link></p>
+      <p className="ax-caption"><Link className="ax-link" href={fromQueue ? "/admin/compliance-approvals" : "/admin/compliance-requests"}>← {fromQueue ? "Compliance Approval Queue" : "Request register"}</Link></p>
 
       {request.return_reason ? <div className="ax-banner ax-banner--warning" role="alert"><strong>Return or rejection reason:</strong> {request.return_reason}</div> : null}
       {!isOwner && !canReview ? <div className="ax-banner" role="note"><strong>Read-only.</strong> Your role can inspect this governed request but cannot change or decide it.</div> : null}
