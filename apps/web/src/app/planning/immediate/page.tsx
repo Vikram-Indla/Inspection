@@ -157,6 +157,15 @@ export default async function Immediate() {
     chipWindowBlocked: tr("plan.imm.chipWindowBlocked", "both-or-neither, end after start", "الحقلان معًا أو كلاهما فارغ، والنهاية بعد البداية"),
     chipAuditDetail: tr("plan.imm.chipAuditDetail", "every step recorded, append-only", "تُسجّل كل خطوة في سجل إلحاق فقط"),
     chipNotifyDetail: tr("plan.imm.chipNotifyDetail", "queued with provider status — delivery not claimed", "في قائمة الانتظار مع حالة المزود — دون ادعاء التسليم"),
+    enforcementLabel: tr("plan.imm.enforcementLabel", "Recommended enforcement action (optional)", "الإجراء الموصى به (اختياري)"),
+    enforcementHint: tr("plan.imm.enforcementHint", "This is a recommendation only — an authorized Operations or Compliance reviewer makes the final decision; you cannot execute it yourself.", "هذه توصية فقط — يتخذ القرار النهائي مراجع مصرح له من العمليات أو الامتثال؛ لا يمكنك تنفيذه بنفسك."),
+    enforcementNone: tr("plan.imm.enforcementNone", "No recommendation", "بدون توصية"),
+    enforcementFine: tr("plan.imm.enforcementFine", "Financial fine", "غرامة مالية"),
+    enforcementCommittee: tr("plan.imm.enforcementCommittee", "Refer to committee", "تحويل للجنة"),
+    enforcementWarning: tr("plan.imm.enforcementWarning", "Final warning", "إنذار نهائي"),
+    enforcementClosure: tr("plan.imm.enforcementClosure", "Immediate closure", "إغلاق فوري"),
+    enforcementNotes: tr("plan.imm.enforcementNotes", "Notes for the reviewer", "ملاحظات للمراجع"),
+    enforcementNotesPlaceholder: tr("plan.imm.enforcementNotesPlaceholder", "What you observed — helps the reviewer decide", "ما لاحظته — يساعد المراجع على اتخاذ القرار"),
   };
   return (
     <Shell current="/planning" title={t("plan.imm.title", "Immediate visit — urgent dispatch")}

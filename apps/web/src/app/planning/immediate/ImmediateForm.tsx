@@ -49,6 +49,9 @@ export type ImmediateStrings = {
   chipPackageBlocked: string; chipInspectorAuto: string; chipInspectorManual: string; chipInspectorBlocked: string;
   chipWindowImmediate: string; chipWindowSet: string; chipWindowBlocked: string;
   chipAuditDetail: string; chipNotifyDetail: string;
+  enforcementLabel: string; enforcementHint: string;
+  enforcementFine: string; enforcementCommittee: string; enforcementWarning: string; enforcementClosure: string;
+  enforcementNone: string; enforcementNotes: string; enforcementNotesPlaceholder: string;
 };
 
 let mapLoadingLabel = "Loading location map";
@@ -77,6 +80,8 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const [manualRegion, setManualRegion] = useState("");
   const [manualCity, setManualCity] = useState("");
   const [reason, setReason] = useState("");
+  const [enforcementAction, setEnforcementAction] = useState("");
+  const [enforcementNotes, setEnforcementNotes] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [locationSource, setLocationSource] = useState<"official" | "manual" | null>(null);
@@ -242,6 +247,27 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
               <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-activity">{strings.manualActivity}</label>
                 <input id="imm-manual-activity" key={`mac-${resetKey}`} className="ax-input" name="manual_activity" value={manualActivity} onChange={e => setManualActivity(e.target.value)} placeholder={strings.manualActivityPlaceholder} /></div>
               <p className="ax-caption">{strings.temporaryNote}</p>
+
+              {/* DEC-F — recommendation only. This inspector never executes the
+                  decision: enforcement_recommendations RLS grants inspector
+                  insert-only; ops/compliance_admin hold the sole update policy. */}
+              <div className="ax-field" style={{ maxInlineSize: "none" }}>
+                <label className="ax-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
+                <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.enforcementHint}</p>
+                <div id="imm-enforcement" className="ax-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
+                  {[["", strings.enforcementNone], ["fine", strings.enforcementFine], ["committee", strings.enforcementCommittee], ["warning", strings.enforcementWarning], ["closure", strings.enforcementClosure]].map(([v, label]) => (
+                    <button key={v} type="button" aria-pressed={enforcementAction === v} onClick={() => setEnforcementAction(v)}>{label}</button>
+                  ))}
+                </div>
+              </div>
+              <input type="hidden" name="enforcement_action" value={enforcementAction} key={`ea-${resetKey}`} />
+              {enforcementAction !== "" && (
+                <label className="ax-field" style={{ maxInlineSize: "none" }}>
+                  <span className="ax-field__label">{strings.enforcementNotes}</span>
+                  <textarea className="ax-textarea" name="enforcement_notes" rows={2} value={enforcementNotes}
+                    onChange={e => setEnforcementNotes(e.target.value)} placeholder={strings.enforcementNotesPlaceholder} />
+                </label>
+              )}
             </>
           )}
 
