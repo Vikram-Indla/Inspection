@@ -1,0 +1,21 @@
+-- ============================================================================
+-- DEC-L (option 1) — bulk violation issuance reframed as bulk *administrative*
+-- inspection creation, so every issued violation still goes through the real,
+-- unmodified auto-generation path (M09-026: violations remain config-driven,
+-- non-overridable, never manually authored as a bare row with no inspection).
+--
+-- execution_mode is a closed enum ('physical','virtual' only) — there is no
+-- third "this wasn't a real field/virtual encounter" value, so an administrative
+-- desk-issued record cannot honestly claim either. Adding a third value here
+-- (rather than mislabeling it 'physical') follows the repo's own established
+-- pattern for extending closed enums additively — see evidence_link
+-- ('cancellation', 'factory_field', 'geo_override', 'arrival' all added the
+-- same way) and config_status ('review','retired','rolled_back').
+--
+-- Split into its own migration file (not combined with the RPC that uses the
+-- new value) because this repo's own precedent never uses a freshly-added enum
+-- value in the same migration file it was added in (see
+-- 20260717010000_mvp2_m2_02_workflow_version_model.sql for the same pattern).
+-- ============================================================================
+
+alter type execution_mode add value if not exists 'administrative';
