@@ -8,9 +8,10 @@
 // M03-001: inspector notification inbox card with mark-read (delivery_state).
 // All strings arrive pre-translated from the server page (strings-prop canon —
 // client components cannot call useT()). Colors: ax tokens only; logical props.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useActionState } from "react";
 import EmptyState from "@/components/EmptyState";
+import Pagination from "@/components/Pagination"; // FNS-011 shared client-side pager
 import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
 import { markNotificationRead, requestVisitReschedule, type FieldActionResult } from "@/app/field/actions";
@@ -67,6 +68,10 @@ export type FieldHomeStrings = {
   selectAria: string;            // "{name}" — a11y label for the select control (no register match — draft)
   openDetails: string;           // register: VR-088 "Establishment Details" — "Details" term (تفاصيل)
   openDetailsAria: string;       // "{name}" — a11y label for the navigation link (no register match — draft)
+  // FNS-011 — task-list pagination (shared Pagination.tsx over the filtered list).
+  paginationPrev: string;        // register: VR-002 "Previous" (السابق)
+  paginationNext: string;        // register: VR-001 "Next" (التالي)
+  paginationPageAria: string;    // "{page}"/"{count}" — nav a11y label (no register match — draft)
   windowEnds: string;            // "window ends {date}"
   statusLabels: Record<string, string>; // prepared/not_started/…/expired/overdue
   inboxTitle: string;
@@ -185,6 +190,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
   const [mode, setMode] = useState("");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [selectedId, setSelectedId] = useState<string | null>(null); // FNS-010 selected-task highlight
+  const [page, setPage] = useState(1); // FNS-011 list pagination (1-based, list view only)
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [rescheduleBusy, setRescheduleBusy] = useState<string | null>(null);
   const [rescheduleMessage, setRescheduleMessage] = useState<string | null>(null);
@@ -210,6 +216,17 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         return sortDir === "asc" ? d : -d;
       });
   }, [derived, q, status, type, mode, sortDir]);
+
+  // FNS-011 — client-side pagination over the filtered list (list view only;
+  // Calendar groups by day and Map plots all markers, so neither is paged).
+  const PAGE_SIZE = 12;
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  // Reset to page 1 whenever the filtered set changes shape (search/filter/sort).
+  useEffect(() => { setPage(1); }, [q, status, type, mode, sortDir]);
+  const clampedPage = Math.min(page, pageCount);
+  const pageSlice = useMemo(
+    () => filtered.slice((clampedPage - 1) * PAGE_SIZE, (clampedPage - 1) * PAGE_SIZE + PAGE_SIZE),
+    [filtered, clampedPage]);
 
   // Calendar: group by UTC day of window_start (M03-003).
   const byDay = useMemo(() => {
@@ -315,9 +332,14 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         )}
 
         {view === "list" && filtered.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)" }}>
-            {filtered.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
-          </div>
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)" }}>
+              {pageSlice.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
+            </div>
+            <Pagination page={clampedPage} pageCount={pageCount} onChange={setPage}
+              prevLabel={strings.paginationPrev} nextLabel={strings.paginationNext}
+              pageLabel={(p) => strings.paginationPageAria.replace("{page}", String(p)).replace("{count}", String(pageCount))} />
+          </>
         )}
 
         {view === "calendar" && filtered.length > 0 && (

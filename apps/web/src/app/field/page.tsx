@@ -174,6 +174,11 @@ export default async function Field() {
     selectAria: t("field.home.selectAria", "Select visit: {name}"),
     openDetails: t("field.home.openDetails", "Details"),
     openDetailsAria: t("field.home.openDetailsAria", "Open details for {name}"),
+    // FNS-011 — pagination. prev/next terms: register VR-002 / VR-001 (السابق / التالي).
+    // paginationPageAria is a nav a11y label with no register row — draft key.
+    paginationPrev: t("field.home.pagination.prev", "Previous"),
+    paginationNext: t("field.home.pagination.next", "Next"),
+    paginationPageAria: t("field.home.pagination.pageAria", "Visit list, page {page} of {count}"),
     windowEnds: t("field.home.windowEnds", "Window ended {date}"),
     statusLabels: {
       prepared: t("field.home.status.prepared", "prepared"),
