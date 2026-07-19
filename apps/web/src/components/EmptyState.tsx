@@ -11,11 +11,12 @@ type EmptyStateProps = {
   inline?: boolean;
   bare?: boolean;               // skip the outer ax-surface wrapper — caller already provides one
   children?: React.ReactNode;   // extra content after the body (e.g. a CTA link)
+  role?: string;                // e.g. "status" for a live-region announcement (WCAG)
 };
 
-export default function EmptyState({ glyph, title, body, inline, bare, children }: EmptyStateProps) {
+export default function EmptyState({ glyph, title, body, inline, bare, children, role }: EmptyStateProps) {
   const inner = (
-    <div className={inline ? "ax-state ax-state--inline" : "ax-state"}>
+    <div className={inline ? "ax-state ax-state--inline" : "ax-state"} role={role}>
       <span className="ax-state__glyph" aria-hidden="true">{glyph}</span>
       <h4>{title}</h4>
       {body ? <p className="ax-caption">{body}</p> : null}
