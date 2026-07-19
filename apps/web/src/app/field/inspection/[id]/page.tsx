@@ -285,6 +285,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     blockers: t("field.ws.blockers", "Blockers: {items} unanswered (ERR-SUB-001 — state stays in progress)"),
     submitting: t("field.ws.submitting", "Submitting immutable v{v} (idempotency-protected)…"),
     queuedOffline: t("field.ws.queuedOffline", "Queued — will submit exactly once on reconnect (never claims submitted while unsynced)"),
+    retryNow: t("field.ws.retryNow", "Retry now"),
     enumLabels,
     // — Slice E2 runtime depth —
     progress: t("field.ws.progress", "{pct}% complete"),

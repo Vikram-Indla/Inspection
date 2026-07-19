@@ -42,7 +42,7 @@ export type WorkspaceStrings = {
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
-  evidenceQueued: string; blockers: string; submitting: string; queuedOffline: string;
+  evidenceQueued: string; blockers: string; submitting: string; queuedOffline: string; retryNow: string;
   enumLabels: { [k: string]: string };
   // — Slice E2 runtime depth —
   progress: string;
@@ -437,7 +437,12 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
       <div className="ax-row" style={{ justifyContent: "space-between", position: "sticky", insetBlockStart: 0, zIndex: 10, background: "var(--ax-color-canvas)", paddingBlock: "var(--ax-space-100)" }}>
-        <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
+        <span className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+          <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
+          {sync === "failed" && (
+            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => processOutbox(onState)}>{strings.retryNow}</button>
+          )}
+        </span>
         <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
       </div>
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
