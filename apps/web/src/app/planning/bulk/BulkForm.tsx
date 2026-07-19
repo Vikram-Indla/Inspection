@@ -137,10 +137,10 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
 
       <div className="ax-tablewrap"><table className="ax-table">
         <thead><tr>
-          <th style={{ inlineSize: 36 }}></th>
-          <th>{strings.colFactory}</th><th>{strings.colCr}</th><th>{strings.colCity}</th>
-          <th className="ax-td-num">{strings.colRisk}</th><th>{strings.colEligibility}</th>
-          <th>{strings.colProvenance}</th><th>{strings.colDataQuality}</th>
+          <th scope="col" style={{ inlineSize: 36 }}></th>
+          <th scope="col">{strings.colFactory}</th><th scope="col">{strings.colCr}</th><th scope="col">{strings.colCity}</th>
+          <th scope="col" className="ax-td-num">{strings.colRisk}</th><th scope="col">{strings.colEligibility}</th>
+          <th scope="col">{strings.colProvenance}</th><th scope="col">{strings.colDataQuality}</th>
         </tr></thead>
         <tbody>
           {pageRows.map(f => {

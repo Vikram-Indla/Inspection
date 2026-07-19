@@ -57,13 +57,13 @@ export default async function PlanRegister() {
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
-            <th>{t("plan.register.colPlan", "Plan")}</th>
-            <th>{t("plan.register.colMethod", "Method")}</th>
-            <th>{t("plan.register.colStatus", "Status")}</th>
-            <th>{t("plan.register.colCreatedBy", "Created by")}</th>
-            <th className="ax-td-num">{t("plan.register.colCreated", "Created")}</th>
-            <th className="ax-td-num">{t("plan.register.colPublished", "Published")}</th>
-            <th className="ax-td-num">{t("plan.register.colVisits", "Child visits")}</th>
+            <th scope="col">{t("plan.register.colPlan", "Plan")}</th>
+            <th scope="col">{t("plan.register.colMethod", "Method")}</th>
+            <th scope="col">{t("plan.register.colStatus", "Status")}</th>
+            <th scope="col">{t("plan.register.colCreatedBy", "Created by")}</th>
+            <th scope="col" className="ax-td-num">{t("plan.register.colCreated", "Created")}</th>
+            <th scope="col" className="ax-td-num">{t("plan.register.colPublished", "Published")}</th>
+            <th scope="col" className="ax-td-num">{t("plan.register.colVisits", "Child visits")}</th>
           </tr></thead>
           <tbody>
             {plans.map(p => (

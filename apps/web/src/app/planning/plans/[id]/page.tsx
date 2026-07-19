@@ -127,13 +127,13 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
-            <th>{t("plan.drill.colVisit", "Visit")}</th>
-            <th>{t("plan.drill.colFactory", "Factory")}</th>
-            <th>{t("plan.drill.colTypeMode", "Type · mode")}</th>
-            <th>{t("plan.drill.colPlanning", "Planning status")}</th>
-            <th>{t("plan.drill.colOperational", "Operational")}</th>
-            <th>{t("plan.drill.colInspector", "Inspector")}</th>
-            <th className="ax-td-num">{t("plan.drill.colWindow", "Window")}</th>
+            <th scope="col">{t("plan.drill.colVisit", "Visit")}</th>
+            <th scope="col">{t("plan.drill.colFactory", "Factory")}</th>
+            <th scope="col">{t("plan.drill.colTypeMode", "Type · mode")}</th>
+            <th scope="col">{t("plan.drill.colPlanning", "Planning status")}</th>
+            <th scope="col">{t("plan.drill.colOperational", "Operational")}</th>
+            <th scope="col">{t("plan.drill.colInspector", "Inspector")}</th>
+            <th scope="col" className="ax-td-num">{t("plan.drill.colWindow", "Window")}</th>
           </tr></thead>
           <tbody>
             {visits.map(v => (

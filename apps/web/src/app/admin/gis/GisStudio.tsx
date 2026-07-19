@@ -243,8 +243,8 @@ export default function GisStudio({ factories, gis, strings: s }: {
         <table className="ax-table">
           <thead>
             <tr>
-              <th>{s.thCode}</th><th>{s.thName}</th><th>{s.thRegion}</th><th>{s.thCity}</th>
-              <th>{s.thBand}</th><th>{s.thRadius}</th><th>{s.thCoords}</th>
+              <th scope="col">{s.thCode}</th><th scope="col">{s.thName}</th><th scope="col">{s.thRegion}</th><th scope="col">{s.thCity}</th>
+              <th scope="col">{s.thBand}</th><th scope="col">{s.thRadius}</th><th scope="col">{s.thCoords}</th>
             </tr>
           </thead>
           <tbody>
