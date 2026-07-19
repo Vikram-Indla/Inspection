@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Startup, { type StartupStrings } from "./Startup";
 import CreatedToast from "@/components/CreatedToast";
+import EmptyState from "@/components/EmptyState";
 import packageInfo from "../../../../package.json";
 
 export const dynamic = "force-dynamic";
@@ -53,10 +54,8 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   if (!v) {
     return (
       <Shell current="/field" title={t("field.start.notFoundTitle", "Not found")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">∅</span><h4>{t("field.start.notFound", "Visit not found")}</h4>
-          <p className="ax-caption">{t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")}</p>
-        </div></div>
+        <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
+          body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
       </Shell>
     );
   }

@@ -10,6 +10,7 @@ import {
 import { logFactoryError, mapFactoryError } from "./neutral";
 import FactorySpatialMap, { type FactoryLocationEvent } from "./FactorySpatialMap";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -79,10 +80,8 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
   logFactoryError("materials-read", mErr);
   if (!f) return (
     <Shell current="/factories" title={t("f360.notFound.title", "Factory not found")}>
-      <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">∅</span>
-        <h4>{t("f360.notFound.desc", "Not in your scope or does not exist")}</h4>
-        {fErr && <p className="ax-caption">{mapFactoryError(fErr, "load")}</p>}
-      </div></div>
+      <EmptyState glyph="∅" title={t("f360.notFound.desc", "Not in your scope or does not exist")}
+        body={fErr ? mapFactoryError(fErr, "load") : undefined} />
     </Shell>
   );
   const roles = (roleRows ?? []).map(r => r.role_key);

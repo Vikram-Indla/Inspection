@@ -7,6 +7,7 @@ import NotesEditor, { type NotesStrings } from "./NotesEditor";
 import DualStateRibbon, { type RibbonTrack, type RibbonStrings } from "./DualStateRibbon";
 import { mapError } from "./neutral";
 import CreatedToast from "@/components/CreatedToast";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +44,10 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     return <Shell current="/visits" title={t("visit.detail.errorTitle", "Visit — error")}><div className="ax-banner ax-banner--critical" role="alert"><div>{mapError(vErr, "load")}</div></div></Shell>;
   }
   if (!v) {
-    return <Shell current="/visits" title={t("visit.detail.notFoundTitle", "Visit not found")}><div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">∅</span><h4>{t("visit.detail.notFound", "Not in your scope or does not exist")}</h4><p className="ax-caption">{t("visit.detail.notFoundDesc", "IDs are immutable, never reused (FLD-VIS-001).")}</p></div></div></Shell>;
+    return <Shell current="/visits" title={t("visit.detail.notFoundTitle", "Visit not found")}>
+      <EmptyState glyph="∅" title={t("visit.detail.notFound", "Not in your scope or does not exist")}
+        body={t("visit.detail.notFoundDesc", "IDs are immutable, never reused (FLD-VIS-001).")} />
+    </Shell>;
   }
   const f = v.factories as unknown as { id: string; factory_code: string; name: string; cr_number: string; risk_band: string };
   // visits->visit_plans is TO-ONE (FK on visits): object or null (null = immediate, M01-050)

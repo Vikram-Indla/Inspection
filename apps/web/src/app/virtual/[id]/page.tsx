@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Room, { type RoomStrings } from "./Room";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +21,10 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     .select("id, state, appointment_at, timeline, visit_id, visits(factories(name, factory_code, cr_number), package_versions(id, version_label, packages(code)), inspections(id, status)), virtual_participants(id, display_name, role, joined_at, verified_at)")
     .eq("id", id).single();
   if (!s) {
-    return <Shell current="/virtual" title={t("virtual.room.notFoundTitle", "Session not found")}><div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">🛡</span><h4>{t("virtual.room.notFound", "Wrong appointment or out of scope")}</h4><p className="ax-caption">{t("virtual.room.notFoundDesc", "Access denied safely; attempt audited (SCR-VIR-700 failure state).")}</p></div></div></Shell>;
+    return <Shell current="/virtual" title={t("virtual.room.notFoundTitle", "Session not found")}>
+      <EmptyState glyph="🛡" title={t("virtual.room.notFound", "Wrong appointment or out of scope")}
+        body={t("virtual.room.notFoundDesc", "Access denied safely; attempt audited (SCR-VIR-700 failure state).")} />
+    </Shell>;
   }
   const strings: RoomStrings = {
     adapterTitle: t("virtual.room.adapterTitle", "Secure session room"),

@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import ImmediateForm, { type ImmediateStrings } from "./ImmediateForm";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -32,11 +33,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   if (!isPlanner && !isInspector) {
     return (
       <Shell current="/planning" title={t("plan.imm.title", "Immediate visit — urgent dispatch")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">⛔</span>
-          <h4>{tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}</h4>
-          <p className="ax-caption">{tr("plan.imm.unauthorized.body", "Immediate Visit Planning (SCR-WEB-130) is available to Planner and Inspector roles only.", "تخطيط الزيارة الفورية (SCR-WEB-130) متاح لدوري المخطط والمفتش فقط.")}</p>
-        </div></div>
+        <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+          body={tr("plan.imm.unauthorized.body", "Immediate Visit Planning (SCR-WEB-130) is available to Planner and Inspector roles only.", "تخطيط الزيارة الفورية (SCR-WEB-130) متاح لدوري المخطط والمفتش فقط.")} />
       </Shell>
     );
   }
