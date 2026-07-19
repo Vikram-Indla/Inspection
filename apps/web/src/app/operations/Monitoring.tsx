@@ -6,6 +6,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { fetchMonitoringRows, type MonitorRow } from "./actions";
+import EmptyState from "@/components/EmptyState";
 
 export type MonitoringStrings = {
   regionLabel: string;
@@ -99,8 +100,7 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
     <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
       {err && <div className="ax-banner ax-banner--critical" role="alert"><div>{err}</div></div>}
       {rows.length === 0 ? (
-        <div className="ax-state"><span className="ax-state__glyph">🛰</span><h4>{s.emptyTitle}</h4>
-          <p className="ax-caption">{s.emptyDesc}</p></div>
+        <EmptyState glyph="🛰" title={s.emptyTitle} body={s.emptyDesc} bare />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr><th>{s.thVisit}</th><th>{s.thFactory}</th><th>{s.thOperational}</th><th>{s.thGeofence}</th><th>{s.thInspector}</th></tr></thead>

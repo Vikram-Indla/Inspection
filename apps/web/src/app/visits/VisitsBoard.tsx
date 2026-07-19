@@ -1,4 +1,5 @@
 "use client";
+import EmptyState from "@/components/EmptyState";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).
 // M02-003/021: search by Visit ID / Factory / CR / Industrial License / Inspector
 //              — client filter over the loaded server page (RLS-scoped rows).
@@ -559,10 +560,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       )}
 
       {filtered.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🔍</span>
-          <p className="ax-caption">{strings.noMatch}</p>
-        </div></div>
+        <EmptyState glyph="🔍" title={strings.noMatch} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
