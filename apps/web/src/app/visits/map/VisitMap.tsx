@@ -67,7 +67,7 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS }: { vis
         )}
       </div>
       <div className="ax-tablewrap"><table className="ax-table">
-        <thead><tr><th>{s.visit}</th><th>{s.factory}</th><th>{s.regionCity}</th><th>{s.inspectorLocation}</th><th>{s.state}</th></tr></thead>
+        <thead><tr><th scope="col">{s.visit}</th><th scope="col">{s.factory}</th><th scope="col">{s.regionCity}</th><th scope="col">{s.inspectorLocation}</th><th scope="col">{s.state}</th></tr></thead>
         <tbody>{filtered.map(v => <tr key={v.id} className={v.id === selectedVisitId ? "is-selected" : undefined}>
           <td><a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></td>
           <td><a className="ax-link" href={`/factories/${v.factoryId}`}>{v.factoryName}</a></td>

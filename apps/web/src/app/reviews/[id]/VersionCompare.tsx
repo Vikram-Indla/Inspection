@@ -227,11 +227,11 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
           ) : (
             <div className="ax-tablewrap"><table className="ax-table cd-compare-table">
               <thead><tr>
-                <th>{strings.colItem}</th>
-                <th>{strings.colSection}</th>
-                <th>v{fromN}</th>
-                <th>v{toN}</th>
-                <th>{strings.colClass}</th>
+                <th scope="col">{strings.colItem}</th>
+                <th scope="col">{strings.colSection}</th>
+                <th scope="col">v{fromN}</th>
+                <th scope="col">v{toN}</th>
+                <th scope="col">{strings.colClass}</th>
               </tr></thead>
               <tbody>{rows.map(r => (
                 <tr key={r.key} id={`cmp-${r.key}`} data-changed={r.changed ? "true" : "false"} tabIndex={-1}

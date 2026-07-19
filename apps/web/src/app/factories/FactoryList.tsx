@@ -48,7 +48,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
           <p className="ax-caption">{strings.emptyRegionDesc}</p></div></div>
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
-          <thead><tr><th>{strings.thFactory}</th><th>{strings.thCr}</th><th>{strings.thRegion}</th><th>{strings.thCity}</th><th className="ax-td-num">{strings.thRisk}</th><th></th></tr></thead>
+          <thead><tr><th scope="col">{strings.thFactory}</th><th scope="col">{strings.thCr}</th><th scope="col">{strings.thRegion}</th><th scope="col">{strings.thCity}</th><th scope="col" className="ax-td-num">{strings.thRisk}</th><th scope="col"></th></tr></thead>
           <tbody>{rows.map(f => (
             <tr key={f.id}>
               <td><strong>{f.name}</strong> <span className="ax-caption">{f.factory_code}</span></td>

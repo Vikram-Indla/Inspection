@@ -103,7 +103,7 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
           <p className="ax-caption">{s.emptyDesc}</p></div>
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
-          <thead><tr><th>{s.thVisit}</th><th>{s.thFactory}</th><th>{s.thOperational}</th><th>{s.thGeofence}</th><th>{s.thInspector}</th></tr></thead>
+          <thead><tr><th scope="col">{s.thVisit}</th><th scope="col">{s.thFactory}</th><th scope="col">{s.thOperational}</th><th scope="col">{s.thGeofence}</th><th scope="col">{s.thInspector}</th></tr></thead>
           <tbody>{rows.map(v => (
             <tr key={v.id}>
               <td><a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></td>

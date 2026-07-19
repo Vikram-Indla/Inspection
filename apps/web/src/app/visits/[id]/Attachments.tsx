@@ -58,8 +58,8 @@ export default function Attachments({ visitId, rows, strings }: {
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
-            <th>{strings.colFile}</th><th>{strings.colType}</th>
-            <th className="ax-td-num">{strings.colUploaded}</th><th>{strings.colBy}</th><th>{strings.colActions}</th>
+            <th scope="col">{strings.colFile}</th><th scope="col">{strings.colType}</th>
+            <th scope="col" className="ax-td-num">{strings.colUploaded}</th><th scope="col">{strings.colBy}</th><th scope="col">{strings.colActions}</th>
           </tr></thead>
           <tbody>
             {rows.map(a => (

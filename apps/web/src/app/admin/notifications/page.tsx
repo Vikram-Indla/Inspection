@@ -104,7 +104,7 @@ export default async function AdminNotifications() {
         <NotificationRulesManager rows={rulesError ? [] : rows} roles={roleOptions} l={l} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
-          <thead><tr><th>{l.colEvent}</th><th>{l.colChannel}</th><th>{l.colRecipient}</th><th>{l.colSla}</th><th>{l.colStatus}</th><th>{l.colVersion}</th></tr></thead>
+          <thead><tr><th scope="col">{l.colEvent}</th><th scope="col">{l.colChannel}</th><th scope="col">{l.colRecipient}</th><th scope="col">{l.colSla}</th><th scope="col">{l.colStatus}</th><th scope="col">{l.colVersion}</th></tr></thead>
           <tbody>
             {rulesError ? null : rows.map(r => (
               <tr key={r.id}>
