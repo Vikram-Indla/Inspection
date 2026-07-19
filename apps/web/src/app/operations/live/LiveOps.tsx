@@ -5,6 +5,7 @@
 import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import type { LiveFactory, LiveRegion, LiveInspector } from "./types";
+import EmptyState from "@/components/EmptyState";
 
 export type LiveOpsStrings = {
   loading: string;
@@ -55,8 +56,8 @@ export default function LiveOps({ factories, regions, inspectors, strings: s }: 
 
       <div className="lv-map">
         <Suspense fallback={
-          <div className="ax-state" style={{ blockSize: "100%", display: "grid", placeItems: "center" }}>
-            <span className="ax-state__glyph">…</span><p className="ax-caption">{s.loading}</p>
+          <div style={{ blockSize: "100%", display: "grid", placeItems: "center" }}>
+            <EmptyState glyph="…" title={s.loading} bare role="status" ariaBusy />
           </div>
         }>
           <Map factories={factories} regions={regions} inspectors={inspectors}

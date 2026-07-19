@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { decideGeoOverride } from "./actions";
+import EmptyState from "@/components/EmptyState";
 
 export type GeoOverrideQueueRow = {
   id: string;
@@ -59,7 +60,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
       <h4 id="geo-override-queue-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.heading}</h4>
       <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-200)" }}>{strings.caption}</p>
       {rows.length === 0 ? (
-        <div className="ax-state ax-state--inline"><span className="ax-state__glyph">✓</span><h4>{strings.emptyTitle}</h4><p className="ax-caption">{strings.emptyDesc}</p></div>
+        <EmptyState glyph="✓" title={strings.emptyTitle} body={strings.emptyDesc} inline bare />
       ) : (
         <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
           {rows.map(row => (
