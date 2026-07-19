@@ -1,5 +1,26 @@
 # Acceptance Status
 
+## TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002 — 2026-07-19
+
+- CMP-ACC-CCR-001..030: **PASS_IMPLEMENTED_VERIFIED**.
+- Additive migration, RLS/RPC maker-checker, immutable revisions, deterministic
+  dependency/partial approval, transactional publication and compatibility pass
+  isolated PostgreSQL execution and catalog probes.
+- Register, Create Request and detail workspace compile with honest state handling.
+- Sponsor Prompt 02 acceptance: **PENDING**.
+- Exact map: `CMP_COMPLIANCE_REQUEST_ENGINE_002.csv`; evidence:
+  `../evidence/TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md`.
+
+## TASK-WEB-COMPLIANCE-SHARED-SHELL-001 — 2026-07-19
+
+- CMP-ACC-013, 016..019, 024 and 030..038: **PASS_IMPLEMENTED_VERIFIED**.
+- Five exact shell groups, ten unified business destinations, accessible locked
+  Administration visibility, role-composed admin enablement and the full shared topbar are verified.
+- Route guards and RLS remain authoritative; the live non-admin regulation publish negative passes.
+- Sponsor runtime/visual acceptance: **ACCEPTED**; remote exact commit verified.
+- Exact map: `CMP_SHARED_SHELL_001.csv`; evidence:
+  `../evidence/TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md`.
+
 ## 2026-07-18 — Platform foundation promotion 003
 
 - PDS-AC-001..024: PASS_SOURCE.

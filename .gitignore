@@ -83,3 +83,6 @@ outputs/**/*.dc.html
 apps/web/.next.stale*/
 apps/web/.next.stale*
 tmp/node_modules
+
+# Sponsor-supplied source packs and secret-bearing local inputs
+.local-inputs/

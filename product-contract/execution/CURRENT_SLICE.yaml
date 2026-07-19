@@ -1,55 +1,38 @@
 schema_version: "1.2"
-task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
-gate: "G11/G12 UI release certification"
-title: "Close technical WCAG 2.2, DGA Platform Code and Arabic/RTL evidence; prepare human endurance gates"
-status: "TECHNICAL_PASS_MAIN_PUSH_AUTHORIZED_HUMAN_GATES_PENDING"
+task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
+gate: "G11 sponsor-directed Compliance Approval Queue"
+title: "Prompt 04 — Compliance Approval Queue"
+status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#QA-UI-COMPLIANCE-CERT-004"
-change_control_ref: "CC-QA-UI-COMPLIANCE-CERT-004"
-
-branch_at_start: "codex/ui-compliance-certification-004"
-head_at_start: "d09ed97"
-process_ids: ["P01", "P02", "P03", "P04", "P05", "P06A", "P06B", "P07", "P08", "P09", "P10", "P11", "P12"]
-requirement_ids: ["WCAG-2.2-A-AA", "DGA-PLATFORM-CODE", "DGA-5.13.8", "AR-RTL-RELEASE", "INSPECTOR-ENDURANCE"]
-acceptance_ids: ["UIC-AC-001..040"]
-evidence_ids: ["UIC-EV-001..010"]
-screen_ids: ["SCR-SHARED-SHELL-001", "SCR-ADM-001/010/020/030/050/060/070/080/090", "SCR-WEB-100/200/300/310/400/500", "SCR-IPAD-600..670", "SCR-VIR-700..720"]
-engine_ids: ["visual and interaction verification only; ENG-01..ENG-20 behavior preserved"]
-
+approval_ref: "Sponsor continuous forward implementation direction — 2026-07-19"
+change_control_ref: "SPONSOR-COMPLIANCE-SCOPE-CORRECTION-2026-07-19"
+branch_at_start: "codex/compliance-approval-queue-004"
+head_at_start: "7d52b69f5105a1afb183797db8b81425822f98d6"
+process_ids: ["CCR maker-checker review", "component approval", "transactional publication readiness"]
+requirement_ids: ["CMP-REQ-APQ-001..006"]
+acceptance_ids: ["CMP-ACC-APQ-001..020"]
+evidence_ids: ["CMP-APQ-EV-001..006"]
+screen_ids: ["CMP-SCR-004", "SCR-COMPLIANCE-REQUEST-WORKSPACE"]
+engine_ids: ["CCR RLS", "maker-checker RPCs", "dependency evaluator", "transactional publication"]
 dependencies:
-  - "Pushed main d09ed97 with platform-wide Government Foundation V1."
-  - "Official DGA WCAG 2.2 accessibility guidance and Digital Transformation Basic Standards V4.0."
-  - "W3C WCAG 2.2 Recommendation and controlled authenticated personas."
-
+  - "Prompt 02 CCR contracts and Prompt 03 remote commit 7d52b69f5105a1afb183797db8b81425822f98d6."
 open_decisions:
-  - "Native Arabic linguistic approval requires a qualified human reviewer."
-  - "Inspector endurance approval requires observed representative morning and night sessions."
-
+  - "Sponsor Prompt 04 acceptance."
+  - "Shared remote application of the Prompt 02 migration remains separately controlled."
 do_not_touch:
-  - "Do not alter input, textarea, select or search geometry/behavior."
-  - "Do not alter workflow, RLS, data, provider, audit, offline or immutable-version semantics."
-  - "Keep Cinematic Atlas v0.8 isolated."
-  - "Do not mutate shared visit state merely to produce UI evidence."
-  - "Do not claim human or organizational signoff from automated checks."
-  - "Local main fast-forward and origin/main push are sponsor-authorized; do not deploy to production hosting."
-
+  - "No Inspector/iPad source, inspection Review & Approval queue, Compliance schema, Mapbox, signature, offline or unrelated Administration change."
+  - "No remote DDL, runtime-data mutation or historical inspection/report mutation."
 authorized_file_scope:
-  - "Accessibility test tooling and release-contract tests."
-  - "UI-only remediations found by executed WCAG/RTL checks."
-  - "DGA/Platform Code mapping, Arabic/RTL evidence and endurance protocol."
-  - "Acceptance, evidence, current-state, queue and session records."
-
+  - "Dedicated Compliance Approval Queue route, factual filters and maker-checker workload."
+  - "Existing CCR review workspace handoff and queue revalidation."
+  - "Focused/static tests, acceptance, evidence, execution and session records."
 required_evidence:
-  - "Automated WCAG scan plus manual keyboard/focus/reflow/zoom/target/status checks on critical authenticated routes."
-  - "English/Arabic LTR/RTL light/dark parity on critical role journeys."
-  - "DGA Platform Code executive adoption plan and requirement-to-evidence map."
-  - "Assistive-technology and native Arabic review register."
-  - "Observed inspector morning/night endurance protocol and completed session records."
-  - "Typecheck, production build and protected regression."
-
+  - "Distinct queue route and terminology."
+  - "Reviewer guard, own-request exclusion and database maker-checker proof."
+  - "Component/dependency progress, review workspace and honest states."
+  - "Typecheck, production build, focused and protected static regression."
 exit_condition: >-
-  All technical WCAG 2.2 A/AA, DGA Platform Code and Arabic/RTL P0/P1 findings are
-  remediated and evidenced; protected regression passes; qualified Arabic review and
-  representative inspector morning/night sessions are completed without open P0/P1;
-  and the gate is explicitly changed to PASS by evidence rather than assertion.
+  Sponsor accepts Prompt 04 after reviewing the queue, existing RPC-enforced workspace
+  integration and verification evidence. Until then, stop at
+  AWAITING_SPONSOR_COMPLIANCE_APPROVAL_QUEUE_ACCEPTANCE.

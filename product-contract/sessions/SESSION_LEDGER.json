@@ -3768,9 +3768,231 @@
       "commit_sha": "pending integrated certification commit",
       "next_task": "Promote the certified integrated candidate to main and configure held providers only under separate authority.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 96 and TASK-MVP3-RETROFIT-REGRESSION-001. The engineering retrofit is PASS at 510/519 protected tests with zero failures. Preserve the coexistence map and fail-closed provider holds."
+    },
+    {
+      "session_id": "2026-07-19-compliance-shared-shell-001",
+      "started_at": "2026-07-19",
+      "ended_at": "2026-07-19",
+      "branch": "codex/compliance-shared-shell-001",
+      "task_id": "TASK-WEB-COMPLIANCE-SHARED-SHELL-001",
+      "gate": "G11 sponsor-authorized Compliance shared shell",
+      "requirements": [
+        "CMP-REQ-SHELL-001",
+        "CMP-REQ-SHELL-002",
+        "CMP-REQ-SHELL-003"
+      ],
+      "acceptance_ids": [
+        "CMP-ACC-013",
+        "CMP-ACC-016..019",
+        "CMP-ACC-024",
+        "CMP-ACC-030..038"
+      ],
+      "screens": [
+        "SCR-SHARED-SHELL-001"
+      ],
+      "engines": [
+        "existing authentication, route guards, RLS, notifications and localization preserved",
+        "authenticated RLS-scoped shell search"
+      ],
+      "files_changed": [
+        "shared shell navigation, client and styles",
+        "authenticated shell search endpoint",
+        "dashboard shell-toolbar integration",
+        "shell source/runtime/visual tests",
+        "acceptance, evidence, execution and session records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Prompt 01 and Inspector-boundary source checks 10/10 PASS",
+        "shared-shell browser checks 8/8 PASS",
+        "visual evidence 2/2 PASS with four frames",
+        "live RLS-denied regulation publish 2/2 PASS",
+        "non-mutating static inventory 91 pass / 4 intentional skips / 1 pre-existing unrelated failure",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md",
+        "product-contract/acceptance/CMP_SHARED_SHELL_001.csv",
+        "/Users/vikramindla/Desktop/Inspection Documentation/07_TEST_EVIDENCE_AND_SCREENSHOTS/TASK-WEB-COMPLIANCE-SHARED-SHELL-001"
+      ],
+      "decisions": [
+        "Compliance Management remains the exclusive programme",
+        "Inspector involvement remains downstream consumption only and no Inspector source changed",
+        "Administration visibility is presentational while route guards and RLS remain authoritative",
+        "Full state-mutating protected browser inventory was not rerun under the no-runtime-data-mutation boundary"
+      ],
+      "blockers": [
+        "Sponsor shared-shell acceptance",
+        "Separate maintenance disposition for the pre-existing stale IBM Plex Sans Arabic import-name assertion"
+      ],
+      "commit_sha": "committed on codex/compliance-shared-shell-001 at closure; use branch HEAD",
+      "next_task": "Await sponsor shared-shell acceptance before any later Compliance prompt or implementation slice.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 100 and TASK-WEB-COMPLIANCE-SHARED-SHELL-001 evidence. Preserve the Compliance-only scope and do not execute later prompts until sponsor accepts Prompt 01."
+    },
+    {
+      "session_id": "2026-07-19-compliance-request-engine-002",
+      "started_at": "2026-07-19",
+      "ended_at": "2026-07-19",
+      "branch": "codex/compliance-request-engine-002",
+      "task_id": "TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002",
+      "gate": "G11 sponsor-authorized Compliance request engine",
+      "requirements": [
+        "CMP-REQ-CCR-001..010"
+      ],
+      "acceptance_ids": [
+        "CMP-ACC-CCR-001..030"
+      ],
+      "screens": [
+        "SCR-COMPLIANCE-REQUEST-REGISTER",
+        "SCR-COMPLIANCE-REQUEST-CREATE",
+        "SCR-COMPLIANCE-REQUEST-WORKSPACE"
+      ],
+      "engines": [
+        "CCR immutable revision and snapshot engine",
+        "RLS/RPC maker-checker review",
+        "deterministic dependency and partial-approval evaluator",
+        "transactional immutable publication and compatibility heads",
+        "existing audit and notification provider engines"
+      ],
+      "files_changed": [
+        "additive Compliance Configuration Request migration and SQL probe",
+        "request register, create and detail routes with guarded server actions",
+        "Compliance Library request entry and shared notification labels",
+        "request workspace styles and static source contract",
+        "acceptance, evidence, execution, governance and session records",
+        "stale platform font source assertion aligned with accepted self-hosted implementation"
+      ],
+      "tests": [
+        "isolated PostgreSQL migration compile PASS",
+        "second idempotent migration execution PASS",
+        "rollback-only maker-checker/cascade/partial/publication/orphan lifecycle PASS",
+        "read-only catalog/RLS privilege probe PASS",
+        "Prompt 02 source contracts 8/8 PASS",
+        "typecheck PASS",
+        "production build PASS",
+        "complete static inventory final result recorded in slice evidence",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md",
+        "product-contract/acceptance/CMP_COMPLIANCE_REQUEST_ENGINE_002.csv",
+        "supabase/tests/compliance_request_engine_probe.sql",
+        "apps/web/e2e/compliance-request-engine.spec.ts"
+      ],
+      "decisions": [
+        "CCR is additive over legacy configuration during controlled cutover and is not a competing legacy authoring store",
+        "Submitted revision content and published versions are immutable",
+        "Approval/publication authority is enforced in role-checked SECURITY DEFINER RPCs with direct authenticated DML revoked",
+        "External channel delivery reuses published notification rules and the existing provider/preference engine",
+        "No remote DDL or excluded Inspector/runtime source change occurred"
+      ],
+      "blockers": [
+        "Sponsor Prompt 02 acceptance",
+        "Shared/remote migration application and production cutover require separate controlled authority"
+      ],
+      "commit_sha": "Prompt 02 closure commit on codex/compliance-request-engine-002; resolve branch HEAD",
+      "next_task": "Await sponsor request-engine acceptance before beginning a later Compliance prompt.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 101 and TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002 evidence. Preserve the Compliance-only boundary and do not apply remote DDL or begin the next slice without sponsor authority."
+    },
+    {
+      "session_id": "2026-07-19-compliance-library-003",
+      "started_at": "2026-07-19",
+      "ended_at": "2026-07-19",
+      "branch": "codex/compliance-library-003",
+      "task_id": "TASK-WEB-COMPLIANCE-LIBRARY-003",
+      "gate": "G11 sponsor-directed Compliance Library",
+      "requirements": ["CMP-REQ-LIB-001..005"],
+      "acceptance_ids": ["CMP-ACC-LIB-001..020"],
+      "screens": ["SCR-ADM-010", "SCR-ADM-011", "SCR-ADM-020", "SCR-INSPECTOR-RUNTIME-PREVIEW"],
+      "engines": [
+        "published package-version item snapshots",
+        "legacy and governed immutable version lineage",
+        "existing Violation and Penalty configuration"
+      ],
+      "files_changed": [
+        "Compliance Library Regulation/Inspection Item navigation and legacy-authoring disclosure",
+        "governed request prefill handoff",
+        "read-only Inspector Runtime Preview with honest integration gaps",
+        "runtime loading/error states, focused/static and authenticated evidence tests",
+        "acceptance, evidence, execution, governance and session records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Prompt 03 source contracts 5/5 PASS",
+        "protected static inventory 105 PASS / 4 intentional provider skips / 0 failed",
+        "authenticated read-only runtime and evidence 6/6 PASS",
+        "active-tab contrast correction runtime recheck 1/1 PASS",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-WEB-COMPLIANCE-LIBRARY-003.md",
+        "product-contract/acceptance/CMP_COMPLIANCE_LIBRARY_003.csv",
+        "apps/web/e2e/compliance-library.spec.ts",
+        "external approved evidence/screens/task-web-compliance-library-003"
+      ],
+      "decisions": [
+        "Compliance Library is the Web/Admin control plane; direct authoring remains visibly legacy during cutover",
+        "Runtime Preview selects immutable published package snapshots and performs no writes",
+        "Missing consumption fields are explicit INSPECTOR_RUNTIME_INTEGRATION_GAP records",
+        "Penalty is downstream read-only context and is not finally applied at response selection",
+        "No Inspector/iPad source, schema, runtime data or unrelated platform code changed"
+      ],
+      "blockers": [
+        "Sponsor Prompt 03 acceptance",
+        "Any listed Inspector runtime integration gap requires a separate controlled implementation slice"
+      ],
+      "commit_sha": "Prompt 03 closure commit on codex/compliance-library-003; resolve branch HEAD",
+      "next_task": "Prompt 04 Compliance Approval Queue after Prompt 03 acceptance or sponsor-directed continuation.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 102 and TASK-WEB-COMPLIANCE-LIBRARY-003 evidence. Preserve the Compliance-only boundary; do not modify Inspector source when resolving runtime-consumption gaps."
+    },
+    {
+      "session_id": "2026-07-19-compliance-approval-queue-004",
+      "started_at": "2026-07-19",
+      "ended_at": "2026-07-19",
+      "branch": "codex/compliance-approval-queue-004",
+      "task_id": "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004",
+      "gate": "G11 sponsor-directed Compliance Approval Queue",
+      "requirements": ["CMP-REQ-APQ-001..006"],
+      "acceptance_ids": ["CMP-ACC-APQ-001..020"],
+      "screens": ["CMP-SCR-004", "SCR-COMPLIANCE-REQUEST-WORKSPACE"],
+      "engines": ["CCR RLS", "maker-checker RPCs", "dependency evaluator", "transactional publication"],
+      "files_changed": [
+        "shared navigation real Approval Queue destination",
+        "dedicated guarded Compliance Approval Queue route and states",
+        "existing CCR review-workspace queue context and revalidation",
+        "focused/static tests, acceptance, evidence, execution and session records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Prompt 04 source contracts 6/6 PASS",
+        "protected static inventory 111 PASS / 4 intentional provider skips / 0 failed",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004.md",
+        "product-contract/acceptance/CMP_COMPLIANCE_APPROVAL_QUEUE_004.csv",
+        "apps/web/e2e/compliance-approval-queue.spec.ts"
+      ],
+      "decisions": [
+        "Compliance Approval Queue is distinct from Inspection Review & Approval",
+        "Only compliance_admin/reviewer roles enter and maker-owned requests are excluded",
+        "Submitted age is factual and no unapproved SLA or priority is inferred",
+        "All decisions and publication continue through Prompt 02 guarded RPCs",
+        "No remote DDL or excluded Inspector/platform source changed"
+      ],
+      "blockers": [
+        "Sponsor Prompt 04 acceptance",
+        "Populated shared-runtime evidence requires separately controlled Prompt 02 migration application"
+      ],
+      "commit_sha": "Prompt 04 closure commit on codex/compliance-approval-queue-004; resolve branch HEAD",
+      "next_task": "Enforcement Library slice after Prompt 04 acceptance or sponsor-directed continuation.",
+      "resume_prompt": "Read CURRENT_STATE UPDATE 103 and TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004 evidence. Preserve the distinct Compliance/inspection queue boundary and use only CCR guarded RPCs for decisions."
     }
   ],
-  "last_session": "2026-07-18-mvp3-retrofit-regression-certification",
+  "last_session": "2026-07-19-compliance-approval-queue-004",
   "rules": {
     "append_only": true,
     "required_fields": [

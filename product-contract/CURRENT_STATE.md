@@ -1,5 +1,89 @@
 # Current State
 
+## 2026-07-19 UPDATE 103 — Compliance Prompt 04 Approval Queue implemented
+
+Prompt 04 adds a dedicated `/admin/compliance-approvals` route and points the shared
+Compliance navigation to it. The page is explicitly distinct from Inspection Review &
+Approval, uses the existing compliance_admin/reviewer route guard and CCR RLS, excludes
+maker-owned requests in the UI while retaining database maker-checker enforcement, orders
+eligible work by submitted time, and shows factual Pending Review, Partially Approved and
+Ready to Publish views with component/dependency progress. It introduces no invented SLA,
+priority or assignment semantics.
+
+Review opens the Prompt 02 workspace with Current/Proposed comparison, component decisions,
+required Return/Reject comments, dependency tree, immutable decision history and transactional
+publication. Queue mutations still pass exclusively through the existing guarded RPC actions.
+Typecheck and production build pass; focused Prompt 04 contracts pass 6/6; the protected static
+inventory passes 111 with four intentional live-provider skips. No Inspector/iPad, inspection
+review queue, DDL, runtime data, Mapbox, signature, offline, provider or historical source changed.
+Populated shared-runtime evidence remains dependent on applying the Prompt 02 migration under
+separate controlled remote-DDL authority. Exact evidence:
+`evidence/TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004.md`.
+
+## 2026-07-19 UPDATE 102 — Compliance Prompt 03 library and runtime preview implemented
+
+After Prompt 02 was pushed and remotely verified, the sponsor directed continuous forward
+implementation without another analysis or approval pause. Prompt 03 unifies the existing
+Regulation and Inspection Item surfaces as the Compliance Library, explicitly marks direct
+configuration controls as temporary legacy compatibility authoring, and hands new/modified
+work to the governed Compliance Configuration Request create route with safe prefilling.
+
+The authorized read-only Inspector Runtime Preview now renders the selected immutable
+published package-version snapshot, Regulation/clause/section, item/guidance, response
+semantics and mappings, mandatory/evidence rules, Self-Assessment visibility, package/report
+placement, exact effective version, linked Violation and Penalty context, and immutable legacy/
+CCR lineage. Missing published fields are recorded as `INSPECTOR_RUNTIME_INTEGRATION_GAP`
+with route, change, risk and separate-slice disposition. No Inspector/iPad source, route,
+navigation, workflow, database schema, runtime data or provider integration was changed.
+
+Typecheck and production build pass; focused Prompt 03 contracts pass 5/5; the protected
+static inventory passes 105 with four intentional live-provider skips; authenticated read-only
+runtime evidence passes 6/6 initially and 1/1 after the active-tab contrast correction. Exact
+evidence: `evidence/TASK-WEB-COMPLIANCE-LIBRARY-003.md`. Sponsor Prompt 03 acceptance remains
+pending.
+
+## 2026-07-19 UPDATE 101 — Compliance Prompt 02 request engine implemented and verified
+
+Sponsor accepted Prompt 01, explicitly authorized its exact push, and authorized Prompt 02
+from accepted commit `26a8b4363fab9b8d66811aae949b604e2e9b14b9`. The Prompt 01 remote branch resolves
+to that exact commit. Prompt 02 adds an additive governed Compliance Configuration Request
+engine for Regulations, Inspection Items, Violations and Penalties: immutable revisions and
+snapshots, maker-checker RPCs, RLS-scoped reads, deterministic dependency rejection, partial
+approval, transactional immutable publication heads, compatibility mapping, correlated audit
+events, existing notification-provider integration, and a working register/create/detail UI.
+
+An isolated PostgreSQL 16 execution proved migration compilation and a second idempotent run;
+maker self-approval denial; recursive child auto-rejection; independent partial approval;
+single-branch publication; orphan rejection with unchanged version/head counts; and rollback of
+all fixture data. The catalog/RLS probe passes. Typecheck, focused Prompt 02 8/8 and production
+build pass. No remote DDL, shared runtime data, legacy Compliance table, historical inspection/
+report, Inspector/iPad, Mapbox, digital-signature, offline-execution or unrelated Administration
+source changed. Exact evidence: `evidence/TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md`.
+Sponsor Prompt 02 acceptance remains pending.
+
+## 2026-07-19 UPDATE 100 — Compliance Prompt 01 shared shell implemented and verified
+
+Sponsor acknowledged the corrected Compliance-only programme boundary and authorized
+Prompt 01. The corrected Prompt 00 decision pack is durably stored under the approved
+external documentation root; its required ZIP SHA-256
+`8964ae5580b9962802fae8762f229e8a521bffe8e8b037009e23e0bd81fe569a` and all 19
+manifest entries verify. The Web/Admin shell now has the exact Overview, Operations,
+Compliance, Insights and Administration groups; every non-admin persona has the ten
+authorized business destinations; and all seven primary Administration options remain
+visible but accessibly locked unless the existing role model permits them. The topbar
+unifies authenticated RLS-scoped search, date/region scope, theme, notifications, AI and
+account behavior while retaining language, profile and sign-out.
+
+Typecheck and production build pass. Prompt 01/protected source checks pass 10/10,
+shared-shell browser checks pass 8/8, visual evidence passes 2/2 with four reviewed
+English/Arabic light/dark expanded/collapsed/responsive frames, and the live regulation
+publish RLS negative passes 2/2 without mutation. The complete non-mutating static
+inventory reports 91 pass, 4 intentional provider skips and one unrelated pre-existing
+font import-name assertion failure. No schema, DDL, Inspector runtime, shared runtime data,
+route guard, RLS policy, provider, offline or historical-record source changed. Sponsor
+shared-shell acceptance remains pending. Exact evidence:
+`evidence/TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md`.
+
 ## 2026-07-18 UPDATE 98 — UI compliance technical gate passed; human gates remain
 
 Sponsor authorized the dedicated `TASK-QA-UI-COMPLIANCE-CERT-004` release-certification
