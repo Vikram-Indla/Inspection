@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { SkeletonBlock } from "@/components/Skeleton";
 import { useT } from "@/lib/i18n";
 
 export default async function ViolationsLoading() {
@@ -9,9 +10,9 @@ export default async function ViolationsLoading() {
         <span className="ax-caption">{t("admin.viol.loading", "Loading violation catalogue and penalty mappings…")}</span>
         {[0, 1, 2].map(index => (
           <div key={index} className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
-            <div className="ax-skeleton" style={{ inlineSize: "35%", blockSize: 24 }} />
-            <div className="ax-skeleton" style={{ inlineSize: "70%", blockSize: 16 }} />
-            <div className="ax-skeleton" style={{ inlineSize: "55%", blockSize: 16 }} />
+            <SkeletonBlock inlineSize="35%" blockSize={24} />
+            <SkeletonBlock inlineSize="70%" blockSize={16} />
+            <SkeletonBlock inlineSize="55%" blockSize={16} />
           </div>
         ))}
       </section>

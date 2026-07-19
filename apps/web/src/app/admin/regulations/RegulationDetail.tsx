@@ -1,6 +1,7 @@
 import { supabaseServer } from "@/lib/supabase-server";
 import { logConfigurationReadFailure } from "@/lib/admin-configuration";
 import { PublishRegulation, type RegStrings } from "./Controls";
+import EmptyState from "@/components/EmptyState";
 
 // SCR-ADM-011 — regulation detail dossier: a logical mode of /admin/regulations
 // (?regulation=<id>), not a dedicated route (no route guard is proven — CD-006
@@ -58,11 +59,9 @@ export default async function RegulationDetail({
   }
   if (!reg) {
     return (
-      <div className="ax-surface"><div className="ax-state">
-        <span className="ax-state__glyph">📜</span><h4>{s.notFoundTitle}</h4>
-        <p className="ax-caption">{s.notFoundBody}</p>
+      <EmptyState glyph="📜" title={s.notFoundTitle} body={s.notFoundBody}>
         <a className="ax-btn ax-btn--subtle" href="/admin/regulations">{s.backToList}</a>
-      </div></div>
+      </EmptyState>
     );
   }
 

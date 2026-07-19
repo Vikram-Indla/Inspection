@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
+import EmptyState from "@/components/EmptyState";
 
 export type FactoryRow = {
   id: string; factory_code: string; name: string; cr_number: string;
@@ -43,9 +44,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
         <span className="ax-caption"><span className="ax-numeric">{rows.length}</span> {strings.of} <span className="ax-numeric">{factories.length}</span> {strings.factoriesWord}</span>
       </div>
       {rows.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🏭</span><h4>{strings.emptyRegionTitle}</h4>
-          <p className="ax-caption">{strings.emptyRegionDesc}</p></div></div>
+        <EmptyState glyph="🏭" title={strings.emptyRegionTitle} body={strings.emptyRegionDesc} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr><th>{strings.thFactory}</th><th>{strings.thCr}</th><th>{strings.thRegion}</th><th>{strings.thCity}</th><th className="ax-td-num">{strings.thRisk}</th><th></th></tr></thead>

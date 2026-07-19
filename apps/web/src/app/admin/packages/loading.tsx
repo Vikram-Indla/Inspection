@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { SkeletonBlock } from "@/components/Skeleton";
 import { useT } from "@/lib/i18n";
 
 export default async function LoadingPackages() {
@@ -9,12 +10,12 @@ export default async function LoadingPackages() {
       <div className="ax-stack" role="status" aria-live="polite" aria-busy="true" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
         <span className="ax-sr-only">{t("admin.pkg.loading", "Loading package versions and their governed dependencies…")}</span>
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-skeleton" style={{ inlineSize: "45%", blockSize: 24 }} />
-          <div className="ax-skeleton" style={{ inlineSize: "75%", blockSize: 16, marginBlockStart: 12 }} />
+          <SkeletonBlock inlineSize="45%" blockSize={24} />
+          <SkeletonBlock inlineSize="75%" blockSize={16} style={{ marginBlockStart: 12 }} />
         </div>
         {[1, 2].map(row => <div key={row} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-skeleton" style={{ inlineSize: "35%", blockSize: 22 }} />
-          <div className="ax-skeleton" style={{ inlineSize: "100%", blockSize: 100, marginBlockStart: 16 }} />
+          <SkeletonBlock inlineSize="35%" blockSize={22} />
+          <SkeletonBlock inlineSize="100%" blockSize={100} style={{ marginBlockStart: 16 }} />
         </div>)}
       </div>
     </Shell>

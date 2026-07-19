@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
+import EmptyState from "@/components/EmptyState";
 import RiskForm, { type RiskLabels } from "./RiskForm";
 
 export const dynamic = "force-dynamic";
@@ -41,11 +42,8 @@ export default async function RiskStudio() {
       <div className="ax-banner"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 foundation scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live configuration in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be reproducible from stored inputs + this version (EV-004). Writes require the risk_owner role; RLS rejects everyone else. Every save lands in the immutable audit trail.")}</div></div>
 
       {!data && (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">⚖</span>
-          <h4>{t("admin.risk.empty.title", "No risk model stored")}</h4>
-          <p className="ax-caption">{t("admin.risk.empty.desc", "The engine_settings row for the risk engine is empty or not readable under your role.")}</p>
-        </div></div>
+        <EmptyState glyph="⚖" title={t("admin.risk.empty.title", "No risk model stored")}
+          body={t("admin.risk.empty.desc", "The engine_settings row for the risk engine is empty or not readable under your role.")} />
       )}
 
       {data && s && (

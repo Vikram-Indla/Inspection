@@ -9,6 +9,7 @@ import {
   updateRegulationDraft,
   type RegResult,
 } from "./actions";
+import EmptyState from "@/components/EmptyState";
 
 // SCR-ADM-010 (CD-005) + SCR-ADM-011 (CD-006) — client controls consume
 // server-built strings only (SB19). Colour comes exclusively from ax tokens/classes;
@@ -317,11 +318,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
       </div>
 
       {filtered.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state ax-state--inline" role="status">
-          <span className="ax-state__glyph" aria-hidden="true">🔍</span>
-          <h4>{s.filteredEmptyTitle}</h4>
-          <p className="ax-caption">{s.filteredEmptyBody}</p>
-        </div></div>
+        <EmptyState glyph="🔍" title={s.filteredEmptyTitle} body={s.filteredEmptyBody} inline role="status" />
       ) : (
         <ul className="ax-stack" style={{ gap: "var(--ax-space-200)", listStyle: "none", margin: 0, padding: 0 }}>
           {filtered.map(r => (

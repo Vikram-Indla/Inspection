@@ -1,6 +1,7 @@
 "use client";
 import { useActionState, useId, useState } from "react";
 import { createItem, toggleItemActive, updateItem, type ItemResult } from "./actions";
+import EmptyState from "@/components/EmptyState";
 
 export type ClauseOption = { id: string; label: string };
 
@@ -231,10 +232,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
   const [selected, setSelected] = useState(items[0]?.id ?? "");
   if (items.length === 0) {
     return (
-      <div className="ax-surface"><div className="ax-state ax-state--inline">
-        <span className="ax-state__glyph" aria-hidden="true">👁</span>
-        <p className="ax-caption">{s.empty}</p>
-      </div></div>
+      <EmptyState glyph="👁" title={s.empty} inline />
     );
   }
   const item = items.find(i => i.id === selected) ?? items[0];

@@ -9,6 +9,7 @@ import { getFieldDeviceMetadata } from "@/lib/field-device";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import EmptyState from "@/components/EmptyState";
 
 // SB19 — strings built server-side with t() and passed as props.
 export type StartupStrings = {
@@ -44,11 +45,7 @@ let mapLoadingLabel = "Loading geofence map";
 // SB20 / ENG-08 — Mapbox geofence card is client-only (ssr:false).
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
-  loading: () => (
-    <div className="ax-state ax-state--inline">
-      <span className="ax-state__glyph">…</span><h4>{mapLoadingLabel}</h4>
-    </div>
-  ),
+  loading: () => <EmptyState glyph="…" title={mapLoadingLabel} inline bare role="status" ariaBusy />,
 });
 
 type Insp = { id: string; status: string };

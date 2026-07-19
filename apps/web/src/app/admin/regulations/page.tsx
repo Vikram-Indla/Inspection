@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import EmptyState from "@/components/EmptyState";
 import {
   NewRegulationForm,
   PublishRegulation,
@@ -243,11 +244,8 @@ export default async function Regulations({
         </p>
 
         {regsError ? null : !reg ? (
-          <div className="ax-surface"><div className="ax-state" role="status">
-            <span className="ax-state__glyph" aria-hidden="true">🔎</span>
-            <h4>{t("admin.reg.r1.detail.notFound.title", "Regulation not found")}</h4>
-            <p className="ax-caption">{t("admin.reg.r1.detail.notFound.body", "The read succeeded but no regulation has this identifier. It may have been removed.")}</p>
-          </div></div>
+          <EmptyState role="status" glyph="🔎" title={t("admin.reg.r1.detail.notFound.title", "Regulation not found")}
+            body={t("admin.reg.r1.detail.notFound.body", "The read succeeded but no regulation has this identifier. It may have been removed.")} />
         ) : (
           <>
             {/* Dossier header */}
@@ -433,15 +431,10 @@ export default async function Regulations({
 
       {regsError ? null : rows.length === 0 ? (
         // S03 EMPTY — verified zero (read succeeded, genuinely no regulations)
-        <div className="ax-surface"><div className="ax-state" role="status">
-          <span className="ax-state__glyph" aria-hidden="true">📜</span>
-          <h4>{t("admin.reg.r1.empty.title", "No regulations configured")}</h4>
-          <p className="ax-caption">
-            {isWriter
-              ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the library is genuinely empty. Create the first regulation above (MVP1-M09-001: regulations are the parents of inspection items).")
-              : t("admin.reg.r1.empty.body", "The read succeeded — the library is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")}
-          </p>
-        </div></div>
+        <EmptyState role="status" glyph="📜" title={t("admin.reg.r1.empty.title", "No regulations configured")}
+          body={isWriter
+            ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the library is genuinely empty. Create the first regulation above (MVP1-M09-001: regulations are the parents of inspection items).")
+            : t("admin.reg.r1.empty.body", "The read succeeded — the library is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
       ) : (
         <RegulationRegister rows={lite} strings={strings} />
       )}

@@ -7,6 +7,7 @@
 import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
+import EmptyState from "@/components/EmptyState";
 
 export type OpsPin = {
   id: string;                 // "v:<visitId>" | "f:<factoryId>"
@@ -53,10 +54,7 @@ export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: 
     <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
       <div style={{ blockSize: 380, borderRadius: "var(--ax-radius-200)", overflow: "hidden" }}>
         <Suspense fallback={
-          <div className="ax-state">
-            <span className="ax-state__glyph">…</span><h4>{s.loadingTitle}</h4>
-            <p className="ax-caption">{s.loadingBody}</p>
-          </div>
+          <EmptyState glyph="…" title={s.loadingTitle} body={s.loadingBody} bare role="status" ariaBusy />
         }>
           <GeoMap center={KSA_CENTER} zoom={KSA_ZOOM} markers={markers}
             selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" />

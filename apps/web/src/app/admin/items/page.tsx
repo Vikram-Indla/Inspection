@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import EmptyState from "@/components/EmptyState";
 import {
   NewItemForm,
   EditItemForm,
@@ -254,11 +255,8 @@ export default async function Items({
       {/* S03 empty — read succeeded and the catalogue is genuinely empty (never
           confused with unavailable, which is the error banner above). */}
       {!error && rows.length === 0 && (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph" aria-hidden="true">🧾</span>
-          <h4>{t("admin.items.r2.empty.title", "No inspection items configured")}</h4>
-          <p className="ax-caption">{t("admin.items.r2.empty.body", "Items belong to regulation clauses and are reused across packages (M09-002). Add the first item above.")}</p>
-        </div></div>
+        <EmptyState glyph="🧾" title={t("admin.items.r2.empty.title", "No inspection items configured")}
+          body={t("admin.items.r2.empty.body", "Items belong to regulation clauses and are reused across packages (M09-002). Add the first item above.")} />
       )}
 
       {!error && rows.length > 0 && (

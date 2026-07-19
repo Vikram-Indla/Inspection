@@ -165,6 +165,29 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
     return { error: copy[code], errorCode: code, blockingField: result.field };
   }
 
-  if (result.actor_mode === "inspector") redirect(`/field/${result.visit_id}`);
-  redirect(`/visits/${result.visit_id}`);
+  // DEC-F — inspector recommendation only, best-effort and non-blocking: the
+  // visit/factory are already created and real above; a failure recording the
+  // recommendation must never undo or block that success (create_immediate_visit
+  // already committed). Ops/compliance_admin makes the actual decision later
+  // (enforcement_recommendations RLS — inspector has no update policy on it).
+  const recommendedAction = text(formData, "enforcement_action");
+  const isUnregistered = !UUID.test(existingFactoryId);
+  if (isUnregistered && ["fine", "committee", "warning", "closure"].includes(recommendedAction)) {
+    const { data: visitRow } = await sb.from("visits").select("factory_id").eq("id", result.visit_id).maybeSingle();
+    if (visitRow?.factory_id) {
+      const { error: recError } = await sb.from("enforcement_recommendations").insert({
+        factory_id: visitRow.factory_id,
+        visit_id: result.visit_id,
+        recommended_action: recommendedAction,
+        recommendation_notes: nullable(text(formData, "enforcement_notes")),
+        recommended_by: user.id,
+      });
+      // eslint-disable-next-line no-console
+      if (recError) console.error("[DEC-F enforcement recommendation]", recError.message);
+    }
+  }
+
+  const createdParam = isUnregistered ? "unregistered" : "1";
+  if (result.actor_mode === "inspector") redirect(`/field/${result.visit_id}?created=${createdParam}`);
+  redirect(`/visits/${result.visit_id}?created=${createdParam}`);
 }

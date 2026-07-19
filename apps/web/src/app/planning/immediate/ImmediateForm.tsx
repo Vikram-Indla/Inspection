@@ -8,15 +8,17 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import PackageTypeSelector from "@/components/PackageTypeSelector";
 import { createImmediateVisit, type ImmResult } from "./actions";
 import AuthorityBar, { type Chip } from "./AuthorityBar";
+import EmptyState from "@/components/EmptyState";
 
 type F = {
   id: string; name: string; factory_code: string; cr_number: string; license_number: string | null;
   region: string | null; city: string | null; risk_band: string | null; risk_score: number | null;
   official_lat: number | null; official_lng: number | null; source_synced_at: string | null;
 };
-type P = { id: string; version_label: string; packages: { code: string } };
+type P = { id: string; version_label: string; packages: { code: string; title: string } };
 type I = { user_id: string; full_name: string };
 
 export type ImmediateStrings = {
@@ -48,27 +50,26 @@ export type ImmediateStrings = {
   chipPackageBlocked: string; chipInspectorAuto: string; chipInspectorManual: string; chipInspectorBlocked: string;
   chipWindowImmediate: string; chipWindowSet: string; chipWindowBlocked: string;
   chipAuditDetail: string; chipNotifyDetail: string;
+  enforcementLabel: string; enforcementHint: string;
+  enforcementFine: string; enforcementCommittee: string; enforcementWarning: string; enforcementClosure: string;
+  enforcementNone: string; enforcementNotes: string; enforcementNotesPlaceholder: string;
 };
 
 let mapLoadingLabel = "Loading location map";
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
-  loading: () => (
-    <div className="ax-state ax-state--inline">
-      <span className="ax-state__glyph">…</span><h4>{mapLoadingLabel}</h4>
-    </div>
-  ),
+  loading: () => <EmptyState glyph="…" title={mapLoadingLabel} inline bare role="status" ariaBusy />,
 });
 
-export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, hasInspectorPool, actorName, actorMode, locale, strings }: {
+export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, hasInspectorPool, actorName, actorMode, locale, strings, initialFactoryId }: {
   factories: F[]; packages: P[]; inspectors: I[]; regionOptions: string[]; cityOptions: string[]; hasInspectorPool: boolean;
-  actorName: string; actorMode: "planner" | "inspector"; locale: "en" | "ar"; strings: ImmediateStrings;
+  actorName: string; actorMode: "planner" | "inspector"; locale: "en" | "ar"; strings: ImmediateStrings; initialFactoryId?: string;
 }) {
   const [state, formAction, pending] = useActionState<ImmResult, FormData>(createImmediateVisit, {});
 
   const [mode, setMode] = useState<"registered" | "unregistered">("registered");
   const [query, setQuery] = useState("");
-  const [factory, setFactory] = useState<F | null>(null);
+  const [factory, setFactory] = useState<F | null>(() => (initialFactoryId ? factories.find(f => f.id === initialFactoryId) ?? null : null));
   const [manualName, setManualName] = useState("");
   const [manualCr, setManualCr] = useState("");
   const [manualLicense, setManualLicense] = useState("");
@@ -76,6 +77,8 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const [manualRegion, setManualRegion] = useState("");
   const [manualCity, setManualCity] = useState("");
   const [reason, setReason] = useState("");
+  const [enforcementAction, setEnforcementAction] = useState("");
+  const [enforcementNotes, setEnforcementNotes] = useState("");
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [locationSource, setLocationSource] = useState<"official" | "manual" | null>(null);
@@ -241,6 +244,27 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
               <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-activity">{strings.manualActivity}</label>
                 <input id="imm-manual-activity" key={`mac-${resetKey}`} className="ax-input" name="manual_activity" value={manualActivity} onChange={e => setManualActivity(e.target.value)} placeholder={strings.manualActivityPlaceholder} /></div>
               <p className="ax-caption">{strings.temporaryNote}</p>
+
+              {/* DEC-F — recommendation only. This inspector never executes the
+                  decision: enforcement_recommendations RLS grants inspector
+                  insert-only; ops/compliance_admin hold the sole update policy. */}
+              <div className="ax-field" style={{ maxInlineSize: "none" }}>
+                <label className="ax-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
+                <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.enforcementHint}</p>
+                <div id="imm-enforcement" className="ax-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
+                  {[["", strings.enforcementNone], ["fine", strings.enforcementFine], ["committee", strings.enforcementCommittee], ["warning", strings.enforcementWarning], ["closure", strings.enforcementClosure]].map(([v, label]) => (
+                    <button key={v} type="button" aria-pressed={enforcementAction === v} onClick={() => setEnforcementAction(v)}>{label}</button>
+                  ))}
+                </div>
+              </div>
+              <input type="hidden" name="enforcement_action" value={enforcementAction} key={`ea-${resetKey}`} />
+              {enforcementAction !== "" && (
+                <label className="ax-field" style={{ maxInlineSize: "none" }}>
+                  <span className="ax-field__label">{strings.enforcementNotes}</span>
+                  <textarea className="ax-textarea" name="enforcement_notes" rows={2} value={enforcementNotes}
+                    onChange={e => setEnforcementNotes(e.target.value)} placeholder={strings.enforcementNotesPlaceholder} />
+                </label>
+              )}
             </>
           )}
 
@@ -296,11 +320,17 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
           <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-priority">{strings.priority}</label>
             <input id="imm-priority" key={`pr-${resetKey}`} className="ax-input" name="priority" value={priority} onChange={e => setPriority(e.target.value)} placeholder={strings.priorityPlaceholder} /></div>
 
-          <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-package">{strings.packageLabel}</label>
-            <select id="imm-package" key={`pk-${resetKey}`} className="ax-select" name="package_version_id" value={packageId} onChange={e => setPackageId(e.target.value)}>
-              <option value="">{strings.selectOption}</option>
-              {packages.map(p => <option key={p.id} value={p.id}>{p.packages.code} · {p.version_label}</option>)}
-            </select></div>
+          <div className="ax-field" style={{ maxInlineSize: "none" }}>
+            <label className="ax-field__label" id="imm-package-label">{strings.packageLabel}</label>
+            <PackageTypeSelector
+              key={`pk-${resetKey}`}
+              id="imm-package"
+              name="package_version_id"
+              value={packageId}
+              onChange={setPackageId}
+              options={packages.map(p => ({ id: p.id, code: `${p.packages.code} · ${p.version_label}`, title: p.packages.title }))}
+            />
+          </div>
 
           {actorMode === "planner" && <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-inspector">{strings.inspector}</label>
             <select id="imm-inspector" key={`in-${resetKey}`} className="ax-select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}>

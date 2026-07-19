@@ -3,6 +3,7 @@ import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NewViolationForm, AddMappingForm, PublishMappingForm, PublishViolationForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
 import { getViolationUsage, type ViolationUsage } from "./actions";
+import EmptyState from "@/components/EmptyState";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
 // CD-010 (SCR-ADM-040 · Violation Catalogue) + CD-011 (SCR-ADM-041 · Penalty
@@ -330,11 +331,8 @@ export default async function Violations({
 
           {/* S03 EMPTY — no violation codes exist, so nothing can be mapped. */}
           {!error && codes.length === 0 && (
-            <div className="ax-surface"><div className="ax-state">
-              <span className="ax-state__glyph" aria-hidden="true">⚖️</span>
-              <h4>{t("admin.viol.penalty.empty.title", "No violation codes to map")}</h4>
-              <p className="ax-caption">{t("admin.viol.penalty.empty.body", "Create a violation code in the catalogue first; a penalty maps one-to-one onto it.")}</p>
-            </div></div>
+            <EmptyState glyph="⚖️" title={t("admin.viol.penalty.empty.title", "No violation codes to map")}
+              body={t("admin.viol.penalty.empty.body", "Create a violation code in the catalogue first; a penalty maps one-to-one onto it.")} />
           )}
 
           {/* S01 POPULATED — per violation: violation | lens status | mapping record/create. */}
@@ -412,11 +410,8 @@ export default async function Violations({
 
           {/* S03 EMPTY — a genuine empty read, not a fabricated zero. */}
           {!error && codes.length === 0 && (
-            <div className="ax-surface"><div className="ax-state">
-              <span className="ax-state__glyph" aria-hidden="true">⚖️</span>
-              <h4>{t("admin.viol.empty.title", "No violation codes configured")}</h4>
-              <p className="ax-caption">{t("admin.viol.empty.body", "Violations generate automatically from configured responses (M09-003). Add the first catalogue code above.")}</p>
-            </div></div>
+            <EmptyState glyph="⚖️" title={t("admin.viol.empty.title", "No violation codes configured")}
+              body={t("admin.viol.empty.body", "Violations generate automatically from configured responses (M09-003). Add the first catalogue code above.")} />
           )}
 
           {/* S01 POPULATED — legal-taxonomy rows with clause-link trace only. */}

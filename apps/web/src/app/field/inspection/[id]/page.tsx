@@ -285,6 +285,13 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     blockers: t("field.ws.blockers", "Blockers: {items} unanswered (ERR-SUB-001 — state stays in progress)"),
     submitting: t("field.ws.submitting", "Submitting immutable v{v} (idempotency-protected)…"),
     queuedOffline: t("field.ws.queuedOffline", "Queued — will submit exactly once on reconnect (never claims submitted while unsynced)"),
+    retryNow: t("field.ws.retryNow", "Retry now"),
+    exitBtn: t("field.ws.exitBtn", "Save & exit"),
+    exitTitle: t("field.ws.exitTitle", "Exit this inspection?"),
+    exitSavedSynced: t("field.ws.exitSavedSynced", "All your answers are saved on this device and synced to the server. You can safely continue later from My Tasks."),
+    exitSavedLocal: t("field.ws.exitSavedLocal", "All your answers are saved on this device and will sync automatically once you're back online. You can safely continue later from My Tasks."),
+    exitConfirm: t("field.ws.exitConfirm", "Exit to My Tasks"),
+    exitCancel: t("field.ws.exitCancel", "Stay"),
     enumLabels,
     // — Slice E2 runtime depth —
     progress: t("field.ws.progress", "{pct}% complete"),

@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +19,8 @@ export default async function PlanningHome() {
     if (rolesError) console.error("[CD-020] role lookup failed:", rolesError);
     return (
       <Shell current="/planning" title={t("plan.home.title", "Visit planning")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">⛔</span>
-          <h4>{tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}</h4>
-          <p className="ax-caption">{tr("plan.home.unauthorized.body", "Visit Planning (SCR-WEB-100) is available to the Planner role only.", "تخطيط الزيارات (SCR-WEB-100) متاح لدور المخطط فقط.")}</p>
-        </div></div>
+        <EmptyState glyph="⛔" title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+          body={tr("plan.home.unauthorized.body", "Visit Planning (SCR-WEB-100) is available to the Planner role only.", "تخطيط الزيارات (SCR-WEB-100) متاح لدور المخطط فقط.")} />
       </Shell>
     );
   }
@@ -36,11 +34,8 @@ export default async function PlanningHome() {
     console.error("[CD-020] planning-home read failed:", packageError ?? draftsError);
     return (
       <Shell current="/planning" title={t("plan.home.title", "Visit planning")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">⚠</span>
-          <h4>{tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}</h4>
-          <p className="ax-caption">{tr("plan.home.unavailable.body", "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.", "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة.")}</p>
-        </div></div>
+        <EmptyState glyph="⚠" title={tr("plan.home.unavailable.title", "Planning data unavailable", "بيانات التخطيط غير متاحة")}
+          body={tr("plan.home.unavailable.body", "The planning workspace could not be loaded (ERR-OPS-001). Nothing was created or changed. Try again.", "تعذر تحميل مساحة التخطيط (ERR-OPS-001). لم يتم إنشاء أو تغيير أي بيانات. أعد المحاولة.")} />
       </Shell>
     );
   }

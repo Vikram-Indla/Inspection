@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
+import EmptyState from "@/components/EmptyState";
 import { RecordSignature } from "./RecordSignature";
 
 // TASK-MVP2-M2-12-COMMITTEE-SIGNATURE-001 · MVP2-REQ-0128..0136 · CD-049 (decision_dossier_v1).
@@ -35,9 +36,8 @@ export default async function CommitteePage() {
       }} />
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("cmte.error", "Couldn’t load committee data. Nothing changed.")}</strong></div></div>}
       {!error && (acts ?? []).length === 0 && (vers ?? []).length === 0 && (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">✒️</span>
-          <h4>{t("cmte.empty.title", "No signature or verification records in scope")}</h4>
-          <p className="ax-caption">{t("cmte.empty.body", "Records appear here as reports are signed and verifications requested. Empty may also mean none are in your scope (RLS).")}</p></div></div>
+        <EmptyState glyph="✒️" title={t("cmte.empty.title", "No signature or verification records in scope")}
+          body={t("cmte.empty.body", "Records appear here as reports are signed and verifications requested. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(acts ?? []).map((a) => (
         <div key={a.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

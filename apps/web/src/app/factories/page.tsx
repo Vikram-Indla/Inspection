@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import FactoryList, { type FactoryRow, type FactoryListStrings } from "./FactoryList";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -37,9 +38,8 @@ export default async function Factories() {
     <Shell current="/factories" title={t("f360.title", "Factory 360")} context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-400</span>}>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The factory registry is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
       {!error && isEmpty && (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🏭</span><h4>{t("f360.empty.title", "No factories in the registry")}</h4>
-          <p className="ax-caption">{t("f360.empty.desc", "Factory identity records sync from the national source (M07-002).")}</p></div></div>
+        <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the registry")}
+          body={t("f360.empty.desc", "Factory identity records sync from the national source (M07-002).")} />
       )}
       {!error && !isEmpty && <FactoryList factories={(fs ?? []) as FactoryRow[]} strings={listStrings} />}
     </Shell>

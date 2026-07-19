@@ -4,6 +4,7 @@ import {
   createNotificationRule, publishNotificationRule, deactivateNotificationRule, testNotificationRule,
   type NotifRuleResult,
 } from "./actions";
+import EmptyState from "@/components/EmptyState";
 
 export type NotificationRuleRow = {
   id: string;
@@ -126,11 +127,7 @@ export default function NotificationRulesManager({ rows, roles, l }: { rows: Not
       </section>
 
       {rows.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state" role="status">
-          <span className="ax-state__glyph" aria-hidden="true">🔔</span>
-          <h4>{l.emptyTitle}</h4>
-          <p className="ax-caption">{l.emptyBody}</p>
-        </div></div>
+        <EmptyState glyph="🔔" title={l.emptyTitle} body={l.emptyBody} role="status" />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>

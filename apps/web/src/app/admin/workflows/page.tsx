@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
+import EmptyState from "@/components/EmptyState";
 import { ProposeDraftForm, DraftPayloadEditor, ApprovePublish, type WfStrings } from "./Controls";
 import { WfDeck, type WfDeckStrings } from "./WfDeck";
 
@@ -61,10 +62,8 @@ export default async function Workflows() {
         </div></div>
       )}
       {!error && (wfs ?? []).length === 0 && (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🔀</span><h4>{t("admin.wf.empty.title", "No workflow configuration published")}</h4>
-          <p className="ax-caption">{t("admin.wf.empty.body", "Workflow state machines are versioned config (ENG-03).")}</p>
-        </div></div>
+        <EmptyState glyph="🔀" title={t("admin.wf.empty.title", "No workflow configuration published")}
+          body={t("admin.wf.empty.body", "Workflow state machines are versioned config (ENG-03).")} />
       )}
       {(wfs ?? []).map(w => {
         const p = w.payload as { object?: string; states?: string[]; transitions?: Transition[] };

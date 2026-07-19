@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import ImmediateForm, { type ImmediateStrings } from "./ImmediateForm";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,8 @@ export const dynamic = "force-dynamic";
 const distinct = (rows: { [k: string]: unknown }[], key: string) =>
   [...new Set(rows.map(r => r[key]).filter((v): v is string => typeof v === "string" && v.length > 0))].sort();
 
-export default async function Immediate() {
+export default async function Immediate({ searchParams }: { searchParams: Promise<{ factory?: string }> }) {
+  const { factory: initialFactoryId } = await searchParams;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
@@ -31,11 +33,8 @@ export default async function Immediate() {
   if (!isPlanner && !isInspector) {
     return (
       <Shell current="/planning" title={t("plan.imm.title", "Immediate visit — urgent dispatch")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">⛔</span>
-          <h4>{tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}</h4>
-          <p className="ax-caption">{tr("plan.imm.unauthorized.body", "Immediate Visit Planning (SCR-WEB-130) is available to Planner and Inspector roles only.", "تخطيط الزيارة الفورية (SCR-WEB-130) متاح لدوري المخطط والمفتش فقط.")}</p>
-        </div></div>
+        <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+          body={tr("plan.imm.unauthorized.body", "Immediate Visit Planning (SCR-WEB-130) is available to Planner and Inspector roles only.", "تخطيط الزيارة الفورية (SCR-WEB-130) متاح لدوري المخطط والمفتش فقط.")} />
       </Shell>
     );
   }
@@ -43,7 +42,7 @@ export default async function Immediate() {
   const today = new Date().toISOString().slice(0, 10);
   const [{ data: factories }, { data: pkgs }, { data: inspRows }, { data: myProfile }] = await Promise.all([
     sb.from("factories").select("id, name, factory_code, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, source_synced_at").eq("is_temporary", false).order("name"),
-    sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"])
+    sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
     sb.from("profiles").select("full_name").eq("user_id", user!.id).single(),
@@ -157,6 +156,15 @@ export default async function Immediate() {
     chipWindowBlocked: tr("plan.imm.chipWindowBlocked", "both-or-neither, end after start", "الحقلان معًا أو كلاهما فارغ، والنهاية بعد البداية"),
     chipAuditDetail: tr("plan.imm.chipAuditDetail", "every step recorded, append-only", "تُسجّل كل خطوة في سجل إلحاق فقط"),
     chipNotifyDetail: tr("plan.imm.chipNotifyDetail", "queued with provider status — delivery not claimed", "في قائمة الانتظار مع حالة المزود — دون ادعاء التسليم"),
+    enforcementLabel: tr("plan.imm.enforcementLabel", "Recommended enforcement action (optional)", "الإجراء الموصى به (اختياري)"),
+    enforcementHint: tr("plan.imm.enforcementHint", "This is a recommendation only — an authorized Operations or Compliance reviewer makes the final decision; you cannot execute it yourself.", "هذه توصية فقط — يتخذ القرار النهائي مراجع مصرح له من العمليات أو الامتثال؛ لا يمكنك تنفيذه بنفسك."),
+    enforcementNone: tr("plan.imm.enforcementNone", "No recommendation", "بدون توصية"),
+    enforcementFine: tr("plan.imm.enforcementFine", "Financial fine", "غرامة مالية"),
+    enforcementCommittee: tr("plan.imm.enforcementCommittee", "Refer to committee", "تحويل للجنة"),
+    enforcementWarning: tr("plan.imm.enforcementWarning", "Final warning", "إنذار نهائي"),
+    enforcementClosure: tr("plan.imm.enforcementClosure", "Immediate closure", "إغلاق فوري"),
+    enforcementNotes: tr("plan.imm.enforcementNotes", "Notes for the reviewer", "ملاحظات للمراجع"),
+    enforcementNotesPlaceholder: tr("plan.imm.enforcementNotesPlaceholder", "What you observed — helps the reviewer decide", "ما لاحظته — يساعد المراجع على اتخاذ القرار"),
   };
   return (
     <Shell current="/planning" title={t("plan.imm.title", "Immediate visit — urgent dispatch")}
@@ -171,6 +179,7 @@ export default async function Immediate() {
         actorName={myProfile?.full_name ?? ""}
         actorMode={actorMode}
         locale={locale}
+        initialFactoryId={initialFactoryId}
         strings={strings}
       />
     </Shell>

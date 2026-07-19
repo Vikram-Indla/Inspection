@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
+import EmptyState from "@/components/EmptyState";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { OcrRowView, type OcrRow, type OcrStrings } from "./OcrReview";
 
@@ -62,9 +63,8 @@ export default async function EvidenceOcrPage() {
       </section>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("ocr.error", "Couldn’t load evidence. Nothing changed.")}</strong></div></div>}
       {!error && rows.length === 0 && (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">🔎</span>
-          <h4>{t("ocr.empty.title", "No evidence in scope")}</h4>
-          <p className="ax-caption">{t("ocr.empty.body", "Only stored photos and documents appear here. First attach evidence to a checklist item in a field inspection; empty may also mean none are in your scope (RLS).")}</p></div></div>
+        <EmptyState glyph="🔎" title={t("ocr.empty.title", "No evidence in scope")}
+          body={t("ocr.empty.body", "Only stored photos and documents appear here. First attach evidence to a checklist item in a field inspection; empty may also mean none are in your scope (RLS).")} />
       )}
       {rows.map((row) => <OcrRowView key={row.id} row={row} strings={strings} />)}
     </Shell>

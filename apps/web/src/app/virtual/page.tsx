@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import ScheduleForm, { type ScheduleFormStrings } from "./ScheduleForm";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -34,9 +35,7 @@ export default async function VirtualList() {
       context={<span className="ax-lozenge ax-lozenge--info">{t("virtual.list.context", "SCR-VIR-700 · confirmed sessions only")}</span>}>
       {error && <div className="ax-banner ax-banner--critical"><div>{t("virtual.list.loadError", "Couldn’t load sessions. Try again or contact support.")}</div></div>}
       {!error && rows.length === 0 && (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">📹</span><h4>{t("virtual.list.empty", "No virtual sessions in scope")}</h4>
-        </div></div>
+        <EmptyState glyph="📹" title={t("virtual.list.empty", "No virtual sessions in scope")} />
       )}
       <div className="ax-tablewrap"><table className="ax-table">
         <thead><tr><th>{t("virtual.list.colSession", "Session")}</th><th>{t("virtual.list.colFactory", "Factory")}</th><th className="ax-td-num">{t("virtual.list.colAppointment", "Appointment")}</th><th>{t("virtual.list.colState", "State")}</th><th></th></tr></thead>

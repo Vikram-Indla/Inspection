@@ -4,6 +4,7 @@ import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { groupExceptions, groupCountEqualsSource, type ExceptionSource } from "@/lib/operations/exceptions";
+import EmptyState from "@/components/EmptyState";
 
 // TASK-MVP2-M2-09-OPS-INTEL-001 · MVP2-REQ-0120,0124 · CD-047 (exception_board_v1).
 // Projection over EXISTING objects — no synthetic rows (group-count == source-count).
@@ -35,9 +36,8 @@ export default async function ExceptionsPage() {
     <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="ax-lozenge ax-lozenge--info">CD-047 · REQ-0120,0124</span>}>
       <div className="ax-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows).")} {invariantOk ? "✓" : "⚠"}</div></div>
       {sources.length === 0 && (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">✅</span>
-          <h4>{t("exc.empty.title", "No open exceptions in scope")}</h4>
-          <p className="ax-caption">{t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope (RLS).")}</p></div></div>
+        <EmptyState glyph="✅" title={t("exc.empty.title", "No open exceptions in scope")}
+          body={t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope (RLS).")} />
       )}
       {groups.map((g) => (
         <div key={g.category} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

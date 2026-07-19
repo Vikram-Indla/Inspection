@@ -8,6 +8,7 @@ import { Suspense, useEffect, useMemo, useState, useActionState } from "react";
 import dynamic from "next/dynamic";
 import { updateGeofenceRadius, type GisResult } from "./actions";
 import type { GeoFocus, GeoMarkerData, GeoTone } from "@/components/GeoMap";
+import EmptyState from "@/components/EmptyState";
 
 export type GisStrings = {
   loadingTitle: string; loadingBody: string;
@@ -150,10 +151,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
       <div style={{ display: "flex", gap: "var(--ax-space-300)", alignItems: "stretch", flexWrap: "wrap" }}>
         <div className="ax-panel" style={{ flex: 1, minInlineSize: 420, padding: 0, overflow: "hidden" }}>
           <Suspense fallback={
-            <div className="ax-state">
-              <span className="ax-state__glyph">…</span><h4>{s.loadingTitle}</h4>
-              <p className="ax-caption">{s.loadingBody}</p>
-            </div>
+            <EmptyState glyph="…" title={s.loadingTitle} body={s.loadingBody} bare role="status" ariaBusy />
           }>
             <GeoMap
               center={[24.0, 44.5]} zoom={5}  // KSA-wide initial view
@@ -169,10 +167,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
 
         <aside className="ax-panel" style={{ inlineSize: "var(--ax-shell-panel-width)", padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           {!selected && (
-            <div className="ax-state ax-state--inline">
-              <span className="ax-state__glyph">◎</span><h4>{s.selectTitle}</h4>
-              <p className="ax-caption">{s.selectBody}</p>
-            </div>
+            <EmptyState glyph="◎" title={s.selectTitle} body={s.selectBody} inline bare />
           )}
 
           {selected && (

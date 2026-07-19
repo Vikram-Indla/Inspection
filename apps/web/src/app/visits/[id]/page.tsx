@@ -6,12 +6,15 @@ import Attachments, { type AttachmentRow, type AttachmentsStrings } from "./Atta
 import NotesEditor, { type NotesStrings } from "./NotesEditor";
 import DualStateRibbon, { type RibbonTrack, type RibbonStrings } from "./DualStateRibbon";
 import { mapError } from "./neutral";
+import CreatedToast from "@/components/CreatedToast";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
 const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical" };
 
-export default async function VisitDetail({ params }: { params: Promise<{ id: string }> }) {
+export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
+  const { created } = await searchParams;
   const { id } = await params;
   const { t } = await useT();
   const sb = await supabaseServer();
@@ -41,7 +44,10 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
     return <Shell current="/visits" title={t("visit.detail.errorTitle", "Visit — error")}><div className="ax-banner ax-banner--critical" role="alert"><div>{mapError(vErr, "load")}</div></div></Shell>;
   }
   if (!v) {
-    return <Shell current="/visits" title={t("visit.detail.notFoundTitle", "Visit not found")}><div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">∅</span><h4>{t("visit.detail.notFound", "Not in your scope or does not exist")}</h4><p className="ax-caption">{t("visit.detail.notFoundDesc", "IDs are immutable, never reused (FLD-VIS-001).")}</p></div></div></Shell>;
+    return <Shell current="/visits" title={t("visit.detail.notFoundTitle", "Visit not found")}>
+      <EmptyState glyph="∅" title={t("visit.detail.notFound", "Not in your scope or does not exist")}
+        body={t("visit.detail.notFoundDesc", "IDs are immutable, never reused (FLD-VIS-001).")} />
+    </Shell>;
   }
   const f = v.factories as unknown as { id: string; factory_code: string; name: string; cr_number: string; risk_band: string };
   // visits->visit_plans is TO-ONE (FK on visits): object or null (null = immediate, M01-050)
@@ -191,6 +197,9 @@ export default async function VisitDetail({ params }: { params: Promise<{ id: st
         <span className="ax-lozenge ax-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span>
         {pkg && <span className="ax-version">{pkg.packages.code} · {pkg.version_label}</span>}
       </>}>
+      <CreatedToast created={created}
+        registeredMessage={t("visit.detail.createdToast", "Visit created and dispatched.")}
+        unregisteredMessage={t("visit.detail.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
       {/* CD-027 — signature interaction: Dual-State Ribbon (one per screen) */}
       <DualStateRibbon tracks={ribbonTracks} strings={ribbonStrings} />
       <div className="ax-grid-2">

@@ -10,6 +10,7 @@ import {
 import { logFactoryError, mapFactoryError } from "./neutral";
 import FactorySpatialMap, { type FactoryLocationEvent } from "./FactorySpatialMap";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
@@ -79,10 +80,8 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
   logFactoryError("materials-read", mErr);
   if (!f) return (
     <Shell current="/factories" title={t("f360.notFound.title", "Factory not found")}>
-      <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">∅</span>
-        <h4>{t("f360.notFound.desc", "Not in your scope or does not exist")}</h4>
-        {fErr && <p className="ax-caption">{mapFactoryError(fErr, "load")}</p>}
-      </div></div>
+      <EmptyState glyph="∅" title={t("f360.notFound.desc", "Not in your scope or does not exist")}
+        body={fErr ? mapFactoryError(fErr, "load") : undefined} />
     </Shell>
   );
   const roles = (roleRows ?? []).map(r => r.role_key);
@@ -231,6 +230,14 @@ export default async function Factory360({ params }: { params: Promise<{ id: str
         <span className={`ax-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</span>
         <span className="ax-freshness">{t("f360.meta.source", "source")} {f.source} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
       </>}>
+
+      {/* الاجراءات quick action (Figma J-21) — the other three (إنشاء رصد حادث /
+          عرض مرفقات المحاضر / عرض تقرير التحديات) have no built feature to link to
+          yet (incident/challenge concepts don't exist — see reconciliation J-12/J-19);
+          only wiring the one real, existing action rather than fabricating dead links. */}
+      <div className="ax-row" style={{ justifyContent: "flex-end", marginBlockEnd: "var(--ax-space-200)" }}>
+        <a className="ax-btn ax-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>
+      </div>
 
       <div className="cd-w3">
         {/* Provenance-led aside — persistent identity, freshness, risk summary, location facts */}

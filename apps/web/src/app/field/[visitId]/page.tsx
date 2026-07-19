@@ -2,12 +2,15 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Startup, { type StartupStrings } from "./Startup";
+import CreatedToast from "@/components/CreatedToast";
+import EmptyState from "@/components/EmptyState";
 import packageInfo from "../../../../package.json";
 
 export const dynamic = "force-dynamic";
 
-export default async function FieldVisit({ params }: { params: Promise<{ visitId: string }> }) {
+export default async function FieldVisit({ params, searchParams }: { params: Promise<{ visitId: string }>; searchParams: Promise<{ created?: string }> }) {
   const { visitId } = await params;
+  const { created } = await searchParams;
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data: v } = await sb.from("visits")
@@ -51,10 +54,8 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
   if (!v) {
     return (
       <Shell current="/field" title={t("field.start.notFoundTitle", "Not found")}>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">∅</span><h4>{t("field.start.notFound", "Visit not found")}</h4>
-          <p className="ax-caption">{t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")}</p>
-        </div></div>
+        <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
+          body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
       </Shell>
     );
   }
@@ -238,6 +239,9 @@ export default async function FieldVisit({ params }: { params: Promise<{ visitId
   return (
     <Shell current="/field" title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-IPAD-610/620</span>}>
+      <CreatedToast created={created}
+        registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
+        unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
       <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

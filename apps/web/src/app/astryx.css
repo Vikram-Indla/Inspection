@@ -194,6 +194,49 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-tabs [role="tab"][aria-selected="true"] { color: var(--ax-color-primary); border-block-end-color: var(--ax-color-primary); }
 .ax-tabs [role="tab"]:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); border-radius: var(--ax-space-050); }
 
+/* Pagination (shared across list surfaces; built from existing button/chip tokens) */
+.ax-pagination { display: flex; align-items: center; justify-content: center; gap: var(--ax-space-100); }
+.ax-pagination__item {
+  border: 1px solid var(--ax-color-border); background: var(--ax-color-surface); color: var(--ax-color-text-secondary);
+  min-inline-size: var(--ax-control-height); min-block-size: var(--ax-control-height);
+  border-radius: var(--ax-radius-small); font: var(--ax-text-body-strong); cursor: pointer;
+}
+.ax-pagination__item[aria-current="page"] { background: var(--ax-color-primary); border-color: var(--ax-color-primary); color: var(--ax-color-canvas); }
+.ax-pagination__item:disabled { opacity: 0.5; cursor: not-allowed; }
+.ax-pagination__item:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.ax-pagination__overflow { color: var(--ax-color-text-secondary); padding-inline: var(--ax-space-100); }
+
+/* Accordion (DSM-020 — no literal accordion existed; built from nav-group's
+   proven chevron/RTL pattern, for content sections with progress counters
+   such as inspection item groups, not navigation). */
+.ax-accordion { display: flex; flex-direction: column; gap: var(--ax-space-100); }
+.ax-accordion__item { border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); }
+.ax-accordion__trigger {
+  inline-size: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-150);
+  padding: var(--ax-space-200) var(--ax-space-300); border: 0; background: none; color: var(--ax-color-text);
+  cursor: pointer; font: var(--ax-text-body-strong); text-align: start;
+}
+.ax-accordion__trigger:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.ax-accordion__progress { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.ax-accordion__chevron { transition: transform var(--ax-motion-fast); flex: 0 0 auto; }
+.ax-accordion__trigger[aria-expanded="false"] .ax-accordion__chevron { transform: rotate(-90deg); }
+[dir="rtl"] .ax-accordion__trigger[aria-expanded="false"] .ax-accordion__chevron { transform: rotate(90deg); }
+.ax-accordion__body { padding: 0 var(--ax-space-300) var(--ax-space-300); }
+
+/* Package/report-type single-select cards (Figma "report type" selector —
+   e.g. تقرير زيارة / فسح كيميائي — is the existing package_version_id field,
+   presented as cards instead of a plain <select>; same value, same name,
+   no new data or behavior). */
+.ax-typecards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--ax-space-150); }
+.ax-typecard {
+  display: block; cursor: pointer; border: 1.5px solid var(--ax-color-border); border-radius: var(--ax-radius-large);
+  background: var(--ax-color-surface); padding: var(--ax-space-200) var(--ax-space-300);
+}
+.ax-typecard.is-selected, .ax-typecard:has(input:checked) { border-color: var(--ax-color-primary); background: var(--ax-color-primary-tint); }
+.ax-typecard:has(input:focus-visible) { box-shadow: var(--ax-focus-ring); }
+.ax-typecard__title { font: var(--ax-text-body-strong); color: var(--ax-color-text); }
+.ax-typecard__meta { display: block; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); margin-block-start: 2px; }
+
 /* ==================================================== CORE: STATUS SYSTEM
    FIVE SEPARATE STATE DOMAINS — never conflated (BRD §9; MVP1-FND-002).
    Domain is carried by a glyph + bordered class, never by color alone

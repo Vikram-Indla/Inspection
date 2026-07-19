@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
+import EmptyState from "@/components/EmptyState";
 import { CreateRequest } from "./CreateRequest";
 
 // TASK-MVP2-M2-08-EXTERNAL-PORTAL-001 · MVP2-REQ-0109..0113 · CD-044 (external_portal_v1).
@@ -41,9 +42,8 @@ export default async function PortalPage() {
       }} />
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("portal.error", "Couldn’t load portal data. Nothing changed.")}</strong></div></div>}
       {!error && (reqs ?? []).length === 0 && (sas ?? []).length === 0 && (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">🏭</span>
-          <h4>{t("portal.empty.title", "No external submissions in scope")}</h4>
-          <p className="ax-caption">{t("portal.empty.body", "Requests and self-assessments appear here once submitted. Empty may also mean none are in your scope (RLS).")}</p></div></div>
+        <EmptyState glyph="🏭" title={t("portal.empty.title", "No external submissions in scope")}
+          body={t("portal.empty.body", "Requests and self-assessments appear here once submitted. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(reqs ?? []).map((r) => (
         <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

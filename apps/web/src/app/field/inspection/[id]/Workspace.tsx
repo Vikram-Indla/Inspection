@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { local, processOutbox, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
@@ -42,7 +43,8 @@ export type WorkspaceStrings = {
   lockedSection: string;
   mandatoryPhoto: string; submitBtn: string;
   autoViolation: string; plusActionForm: string; plusPhoto: string;
-  evidenceQueued: string; blockers: string; submitting: string; queuedOffline: string;
+  evidenceQueued: string; blockers: string; submitting: string; queuedOffline: string; retryNow: string;
+  exitBtn: string; exitTitle: string; exitSavedSynced: string; exitSavedLocal: string; exitConfirm: string; exitCancel: string;
   enumLabels: { [k: string]: string };
   // — Slice E2 runtime depth —
   progress: string;
@@ -78,8 +80,10 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
   evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null; locale: "en" | "ar";
 }) {
+  const router = useRouter();
   const [sync, setSync] = useState("synced" as SyncState);
   const [detail, setDetail] = useState(undefined as string | undefined);
+  const [exiting, setExiting] = useState(false);
   const [answers, setAnswers] = useState(() =>
     Object.fromEntries(serverResponses.filter(r => { return !!r.response; }).map(r => [r.item_id, r.response!])) as { [k: string]: Answer });
   const [ctx, setCtx] = useState(serverContext);
@@ -437,10 +441,29 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
       <div className="ax-row" style={{ justifyContent: "space-between", position: "sticky", insetBlockStart: 0, zIndex: 10, background: "var(--ax-color-canvas)", paddingBlock: "var(--ax-space-100)" }}>
-        <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
-        <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+        <span className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+          <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
+          {sync === "failed" && (
+            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => processOutbox(onState)}>{strings.retryNow}</button>
+          )}
+        </span>
+        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+          <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+          {!submitted && <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
+        </span>
       </div>
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
+
+      {/* DEC-A — Figma wizard-shell parity as a guided presentation over the existing
+          config-driven engine: pure anchor navigation over the unchanged section list
+          below, no new state, no altered validation/submit/RLS/offline behaviour. */}
+      {!submitted && sections.length > 1 && (
+        <nav className="ax-tabs" role="tablist" aria-label={strings.panelTitle} style={{ overflowX: "auto", flexWrap: "nowrap" }}>
+          {sections.map(s => (
+            <a key={s.key} role="tab" aria-selected="false" href={`#ax-section-${s.key}`} style={{ whiteSpace: "nowrap", textDecoration: "none" }}>{s.title}</a>
+          ))}
+        </nav>
+      )}
 
       {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
@@ -531,7 +554,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         }
         const sp = progress.find(p => p.key === s.key)!;
         return (
-        <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div key={s.key} id={`ax-section-${s.key}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-600)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
             <span className="ax-caption ax-numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
@@ -738,6 +761,24 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       {shot && !submitted && (
         <ImageAnnotator srcB64={shot.b64} mime={shot.mime} strings={strings.annot}
           onCancel={() => setPendingShots(q => q.slice(1))} onConfirm={confirmShot} />
+      )}
+      {/* J-13 exit/draft: every answer already autosaves to the durable IndexedDB draft
+          store the instant it's entered (FND-005) — there is no separate "unsaved buffer"
+          to discard, so this shows the REAL sync state honestly rather than fabricating
+          a "leave without saving" option the engine doesn't actually implement. */}
+      {exiting && !submitted && (
+        <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.exitTitle}>
+          <div className="ax-modal" style={{ inlineSize: "min(420px, 100%)" }}>
+            <div className="ax-modal__header"><h3>{strings.exitTitle}</h3></div>
+            <div className="ax-modal__body">
+              <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
+            </div>
+            <div className="ax-modal__footer">
+              <button className="ax-btn ax-btn--secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
+              <button className="ax-btn ax-btn--prominent" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
+            </div>
+          </div>
+        </div>
       )}
       {/* M04-164 — soft delete requires a reason; the update is captured by the evidence audit trigger */}
       {deleting && !submitted && (

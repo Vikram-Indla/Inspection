@@ -7,6 +7,7 @@ import {
   saveTranslation, markReviewed, addKey, syncFromCode, getHistory, restoreRevision,
   type L10nResult, type SyncResult, type Revision,
 } from "./actions";
+import EmptyState from "@/components/EmptyState";
 
 export type UiString = {
   key: string;
@@ -283,11 +284,8 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
   if (rows.length === 0) {
     return (
       <>
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🌐</span>
-          <h4>{labels.emptyTitle}</h4>
-          <p className="ax-caption">{labels.emptyBody} <span className="ax-numeric">scripts/i18n_coverage.py</span></p>
-        </div></div>
+        <EmptyState glyph="🌐" title={labels.emptyTitle}
+          body={<>{labels.emptyBody} <span className="ax-numeric">scripts/i18n_coverage.py</span></>} />
         <AddKeyForm labels={labels} />
       </>
     );
@@ -311,11 +309,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
       </div>
 
       {filtered.length === 0 ? (
-        <div className="ax-surface"><div className="ax-state">
-          <span className="ax-state__glyph">🔍</span>
-          <h4>{labels.noMatchTitle}</h4>
-          <p className="ax-caption">{labels.noMatchBody}</p>
-        </div></div>
+        <EmptyState glyph="🔍" title={labels.noMatchTitle} body={labels.noMatchBody} />
       ) : (
         <div className="lz-list">
           {filtered.map(r => <Row key={r.key} row={r} labels={labels} />)}

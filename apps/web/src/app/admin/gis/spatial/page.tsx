@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
+import EmptyState from "@/components/EmptyState";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { CreateLayer } from "./CreateLayer";
 
@@ -35,9 +36,8 @@ export default async function SpatialPage() {
       }} />
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("gis.sp.error", "Couldn’t load spatial data. Nothing changed.")}</strong></div></div>}
       {!error && (layers ?? []).length === 0 && (locs ?? []).length === 0 && (
-        <div className="ax-surface"><div className="ax-state"><span className="ax-state__glyph">🗺️</span>
-          <h4>{t("gis.sp.empty.title", "No layers or working locations in scope")}</h4>
-          <p className="ax-caption">{t("gis.sp.empty.body", "GIS layers and working factory locations appear here. Empty may also mean none are in your scope (RLS).")}</p></div></div>
+        <EmptyState glyph="🗺️" title={t("gis.sp.empty.title", "No layers or working locations in scope")}
+          body={t("gis.sp.empty.body", "GIS layers and working factory locations appear here. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(layers ?? []).map((l) => (
         <div key={l.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

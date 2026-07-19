@@ -2,6 +2,7 @@
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import EmptyState from "@/components/EmptyState";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
@@ -63,7 +64,7 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS }: { vis
       <div className="ax-surface" style={{ blockSize: 520, overflow: "hidden", padding: 0 }} dir="ltr">
         {markers.length ? <GeoMap center={center} zoom={region || selected ? 9 : 5} markers={markers}
           selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" /> : (
-          <div className="ax-state"><span className="ax-state__glyph">∅</span><h4>{s.noneInRegion}</h4></div>
+          <EmptyState glyph="∅" title={s.noneInRegion} bare />
         )}
       </div>
       <div className="ax-tablewrap"><table className="ax-table">
