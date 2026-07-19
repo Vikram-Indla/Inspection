@@ -2,7 +2,7 @@ import "./tokens.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
 import "./astryx.css";
-import { IBM_Plex_Sans_Arabic, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { getLocale } from "@/lib/i18n";
 import { registerAdapter } from "@/lib/notify";
 import { registerStagingNotificationAdapters } from "@/lib/providers/notification-stubs";
@@ -16,21 +16,40 @@ registerStagingNotificationAdapters(registerAdapter);
 // Government Foundation V1: IBM Plex Sans Arabic provides the shared bilingual
 // product voice. Space Grotesk remains loaded only for the frozen input contract;
 // JetBrains Mono is restricted to identifiers and machine telemetry.
-const grotesk = Space_Grotesk({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
+// Self-hosted (next/font/local) — Next.js dev/build must not depend on
+// reaching fonts.googleapis.com/fonts.gstatic.com at request time (offline
+// environments hit an unhandled Event from next/font/google's fetch failure).
+// Files sourced once from the matching @fontsource npm packages.
+const grotesk = localFont({
+  src: [
+    { path: "../fonts/space-grotesk/space-grotesk-latin-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/space-grotesk/space-grotesk-latin-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/space-grotesk/space-grotesk-latin-600.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/space-grotesk/space-grotesk-latin-700.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-grotesk",
   display: "swap",
 });
-const plexArabic = IBM_Plex_Sans_Arabic({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin", "arabic"],
+const plexArabic = localFont({
+  src: [
+    { path: "../fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-latin-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-latin-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-latin-600.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-latin-700.woff2", weight: "700", style: "normal" },
+    { path: "../fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-arabic-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-arabic-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-arabic-600.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-arabic-700.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-plex-arabic",
   display: "swap",
 });
-const jbMono = JetBrains_Mono({
-  weight: ["400", "500", "700"],
-  subsets: ["latin"],
+const jbMono = localFont({
+  src: [
+    { path: "../fonts/jetbrains-mono/jetbrains-mono-latin-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/jetbrains-mono/jetbrains-mono-latin-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/jetbrains-mono/jetbrains-mono-latin-700.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-jbmono",
   display: "swap",
 });
