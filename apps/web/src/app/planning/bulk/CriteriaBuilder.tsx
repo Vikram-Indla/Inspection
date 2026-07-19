@@ -88,22 +88,22 @@ export default function CriteriaBuilder({
     <li role="treeitem" aria-label={strings.conditionItem} className="ax-row"
       style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
       <div className="ax-field" style={{ maxInlineSize: 180 }}>
-        <label className="ax-field__label">{strings.fieldLabel}</label>
-        <select className="ax-select" value={c.field}
+        <label className="ax-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
+        <select className="ax-select" id={`crit-field-${key}`} value={c.field}
           onChange={e => patchCond(parentPath, idx, { field: e.target.value as Field, value: "" })}>
           {CRITERIA_FIELDS.map(f => <option key={f} value={f}>{fieldLabel(f)}</option>)}
         </select>
       </div>
       <div className="ax-field" style={{ maxInlineSize: 140 }}>
-        <label className="ax-field__label">{strings.opLabel}</label>
-        <select className="ax-select" value={c.op} onChange={e => patchCond(parentPath, idx, { op: e.target.value as "is" | "is-not" })}>
+        <label className="ax-field__label" htmlFor={`crit-op-${key}`}>{strings.opLabel}</label>
+        <select className="ax-select" id={`crit-op-${key}`} value={c.op} onChange={e => patchCond(parentPath, idx, { op: e.target.value as "is" | "is-not" })}>
           <option value="is">{strings.opIs}</option>
           <option value="is-not">{strings.opIsNot}</option>
         </select>
       </div>
       <div className="ax-field" style={{ maxInlineSize: 210 }}>
-        <label className="ax-field__label">{strings.valueLabel}</label>
-        <input className="ax-input" list={`vals-${c.field}`} value={c.value} aria-invalid={isEmpty || undefined}
+        <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+        <input className="ax-input" id={`crit-value-${key}`} list={`vals-${c.field}`} value={c.value} aria-invalid={isEmpty || undefined}
           onChange={e => patchCond(parentPath, idx, { value: e.target.value })} placeholder={strings.valuePlaceholder} />
         <datalist id={`vals-${c.field}`}>
           {(fieldOptions[c.field] ?? []).map(v => <option key={v} value={v} />)}
@@ -129,8 +129,8 @@ export default function CriteriaBuilder({
       style={{ listStyle: "none", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
       <div className="ax-row" style={{ alignItems: "flex-end", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
         <div className="ax-field" style={{ maxInlineSize: 220 }}>
-          <label className="ax-field__label">{strings.combineLabel}</label>
-          <select className="ax-select" value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
+          <label className="ax-field__label" htmlFor={`crit-combine-${path.length ? pathKey(path) : "root"}`}>{strings.combineLabel}</label>
+          <select className="ax-select" id={`crit-combine-${path.length ? pathKey(path) : "root"}`} value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
             <option value="all">{strings.combineAll}</option>
             <option value="any">{strings.combineAny}</option>
           </select>
