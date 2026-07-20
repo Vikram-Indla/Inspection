@@ -33,7 +33,7 @@ export default async function Access() {
         </tbody>
       </table></div>
       <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
-        {t("admin.access.rlsNote", "This roster is itself RLS-scoped: users outside your visibility are absent, not hidden rows. This screen is read-only.")}
+        {t("admin.access.rlsNote", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. This screen is read-only.")}
       </p>
 
       {/* R2: effective-access explanation and role changes are deliberately not

@@ -199,7 +199,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   };
   return (
     <Shell current="/visits" title={t("visit.list.title", "Visit management")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("visit.list.context", "SCR-WEB-200/210 · RLS-scoped")}</span>}>
+      context={<span className="ax-lozenge ax-lozenge--info">{t("visit.list.context", "Filtered to your access")}</span>}>
       {/* FIX WAVE F4 — M02-038 calendar + M02-018/037 workload entry points.
           CD-026 — the Map lens is HANDOFF_BLOCKED_MAP: no route, provider or
           coordinate wiring exists, so it is shown UNAVAILABLE (disabled) and the
@@ -211,7 +211,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
           <a className="ax-btn ax-btn--subtle" href="/visits/map">{t("visit.views.map", "Map")}</a>
         </div>
-        <span className="ax-caption ax-numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
+        <span className="ax-caption ax-numeric">{t("visit.list.scope", "Showing {shown} of {total} (filtered to your access)").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
       <ContextualAiPanel surface="visit_management_summary" title={t("visit.ai.title", "Visit management summary")} description={t("visit.ai.description", "Advisory summary of the visits currently in your authorized scope. It cannot change a visit, assignment, state or campaign.")} context={JSON.stringify({ scope: "visit-management" })} evidenceRefs={["MVP1-M02-001", "MVP1-M02-002", "MVP1-M02-017", "MVP1-M02-035", "SCR-WEB-200"]} generateLabel={t("visit.ai.generate", "Generate operational summary")} unavailableLabel={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")} evidenceLabel={t("visit.ai.evidence", "Source references")} advisoryLabel={t("visit.ai.advisory", "Advisory only · human decides")} reviewLabel={t("visit.ai.review", "Review or reject this advisory")} />
       {rows.length === 0 ? (

@@ -34,7 +34,7 @@ export default async function PortalPage() {
   const factoryId = fac?.id ?? null;
   return (
     <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="ax-lozenge ax-lozenge--info">CD-044 · REQ-0109..0113</span>}>
-      <div className="ax-banner"><div><strong>{t("portal.banner.title", "Internal compliance view.")}</strong> {t("portal.banner.body", "External requests and self-assessments. Only accepted self-assessments emit a risk signal. External-representative identity/MFA is held; this surface is internal and RLS-scoped.")}</div></div>
+      <div className="ax-banner"><div><strong>{t("portal.banner.title", "Internal compliance view.")}</strong> {t("portal.banner.body", "External requests and self-assessments. Only accepted self-assessments emit a risk signal. External-representative identity/MFA is held; this surface is internal and limited to your permitted access.")}</div></div>
       <CreateRequest factoryId={factoryId} strings={{
         type: t("portal.type", "Request type"), subject: t("portal.subject", "Subject"),
         create: t("portal.create", "Create request"), creating: t("portal.creating", "Creating…"),

@@ -65,7 +65,7 @@ export default async function ComplianceRequestWorkspace({ params, searchParams 
   );
   if (!request) return (
     <Shell current={shellCurrent} title="Compliance Configuration Request">
-      <div className="ax-surface"><div className="ax-state" role="status"><span className="ax-state__glyph" aria-hidden="true">🔎</span><h4>Request not found or outside your scope</h4><p className="ax-caption">The RLS-scoped read returned no request. No configuration content was loaded.</p><Link className="ax-link" href="/admin/compliance-requests">Return to register</Link></div></div>
+      <div className="ax-surface"><div className="ax-state" role="status"><span className="ax-state__glyph" aria-hidden="true">🔎</span><h4>Request not found or outside your scope</h4><p className="ax-caption">No request was found within your access. No configuration content was loaded.</p><Link className="ax-link" href="/admin/compliance-requests">Return to list</Link></div></div>
     </Shell>
   );
 

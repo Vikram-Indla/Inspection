@@ -42,7 +42,7 @@ export default async function Factories() {
     of: t("f360.list.of", "of"),
     factoriesWord: t("f360.list.factoriesWord", "factories"),
     emptyRegionTitle: t("f360.list.emptyRegion.title", "No factories in this region"),
-    emptyRegionDesc: t("f360.list.emptyRegion.desc", "Clear the filter to see the full registry."),
+    emptyRegionDesc: t("f360.list.emptyRegion.desc", "Clear the filter to see the full Factory list."),
     thFactory: t("f360.list.th.factory", "Factory"),
     thCr: t("f360.list.th.cr", "CR"),
     thRegion: t("f360.list.th.region", "Region"),
@@ -58,9 +58,9 @@ export default async function Factories() {
   const isEmpty = factoryRows.length === 0;
   return (
     <Shell current="/factories" title={t("f360.title", "Factory 360")} context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-400</span>}>
-      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The factory registry is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
+      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
       {!error && isEmpty && (
-        <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the registry")}
+        <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the list")}
           body={t("f360.empty.desc", "Factory identity records sync from the national source (M07-002).")} />
       )}
       {!error && !isEmpty && <FactoryList factories={factoryRows as FactoryRow[]} strings={listStrings} />}

@@ -309,7 +309,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           <section id="location" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4>{t("f360.geo.historyHeading", "Official, planned and observed locations (M07-005)")}</h4>
-            <p className="ax-caption">{t("f360.geo.historyCaption", "Official coordinates remain source-owned. Arrival, check-in and override coordinates are immutable inspection observations and never overwrite the factory master.")}</p>
+            <p className="ax-caption">{t("f360.geo.historyCaption", "Official coordinates remain source-owned. Arrival, check-in and override coordinates are locked inspection observations and never overwrite the Factory list.")}</p>
             {locationEvents.length ? <div className="ax-tablewrap"><table className="ax-table">
               <thead><tr><th scope="col">{t("common.when", "When")}</th><th scope="col">{t("common.kind", "Kind")}</th><th scope="col">{t("f360.geo.actual", "Observed coordinates")}</th><th scope="col">{t("f360.geo.mismatch", "Mismatch / reason")}</th><th scope="col">{t("common.visit", "Visit")}</th></tr></thead>
               <tbody>{locationEvents.map(e => <tr key={e.id}>
@@ -407,7 +407,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
               {f.source_synced_at && <li className="cd-tl" key="source-sync">
                 <span className="cd-tl__when ax-numeric">{new Date(f.source_synced_at).toISOString().slice(0, 10)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">↻</span></span>
-                <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.sourceSync", "Source registry synced")}</span><span>{f.source}</span></div>
+                <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.sourceSync", "Factory list synced")}</span><span>{f.source}</span></div>
               </li>}
               {(riskHistory ?? []).map(s => <li className="cd-tl" key={`risk-${s.id}`}>
                 <span className="cd-tl__when ax-numeric">{new Date(s.calculated_at).toISOString().slice(0, 10)}</span>
@@ -589,7 +589,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             {f.employees_total == null && f.capital_invested == null && f.production_capacity_note == null ? (
               <div className="ax-state ax-state--inline"><span className="ax-state__glyph">🏭</span>
                 <h4>{t("f360.wf.empty.title", "No workforce or indicator data synced")}</h4>
-                <p className="ax-caption">{t("f360.wf.empty.desc", "These figures arrive from the source registry sync; they are not editable here.")}</p></div>
+                <p className="ax-caption">{t("f360.wf.empty.desc", "These figures arrive from the Factory list sync; they are not editable here.")}</p></div>
             ) : (
               <>
                 <div className="ax-kpi-row">
@@ -615,7 +615,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
               </>
             )}
             <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-200)" }}>
-              {t("f360.wf.sourceOwned", "Source-owned figures (registry sync), like identity — displayed only, never edited here.")} {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}
+              {t("f360.wf.sourceOwned", "Source-owned figures (Factory list sync), like identity — displayed only, never edited here.")} {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}
             </p>
           </section>
         </div>
