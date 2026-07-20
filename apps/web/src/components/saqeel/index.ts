@@ -14,3 +14,7 @@ export { Avatar, UserChip, type AvatarProps, type UserChipProps } from "./data/A
 export { Skeleton, Progress, type SkeletonProps, type ProgressProps } from "./feedback/Skeleton";
 export { SeverityIndicator, type SeverityIndicatorProps } from "./inspection/SeverityIndicator";
 export { ExceptionMark, RailCell, EXC_LABELS, type ExceptionMarkProps, type RailCellProps, type ExceptionTone } from "./signature/ExceptionRail";
+// PR3 — application shell
+export { Sidebar, type SidebarProps, type SidebarGroup } from "./navigation/Sidebar";
+export { TopBar, PageHeader, type TopBarProps, type PageHeaderProps } from "./navigation/TopBar";
+export { Breadcrumb, Tabs, Steps, Pagination, type BreadcrumbProps, type TabsProps, type StepsProps, type PaginationProps } from "./navigation/Breadcrumb";

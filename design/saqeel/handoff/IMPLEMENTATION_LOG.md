@@ -9,6 +9,8 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 | 2026-07-20 | PR1 Tokens+fonts+contract specs (`7956290`) | platform-wide (token layer) | 1996 tok / 3537 cls (shimmed → SAQEEL) | none | 12px input radius→3px; 16px body→14px SAQEEL scale; Space Grotesk + JetBrains retired; dark primary→emerald #2e9e77 |
 | 2026-07-20 | PR2 Shared primitives (new components) | new `components/saqeel/*` + `saqeel-components.css` | unchanged (consumer swaps later) | none | components split one-file-per-family (Button/ButtonGroup+SplitButton/Field/Input+TextArea/Select/Choice[Checkbox+Switch+RadioGroup]/SegmentedControl/FileUpload/StatusBadge/Tag/Avatar+UserChip/Skeleton+Progress/SeverityIndicator/ExceptionMark+RailCell) |
 
+| 2026-07-20 | PR3 Application shell (new components) | new `navigation/*` (Sidebar/TopBar/PageHeader/Breadcrumb/Tabs/Steps/Pagination) | unchanged | UserMenu deferred to PR4 (needs Menu) | live Shell rewire (buildShellNavigation/RLS scope) deferred to a verifiable step |
+
 ## PR2 notes
 - Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
   imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.
