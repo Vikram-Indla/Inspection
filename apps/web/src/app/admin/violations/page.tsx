@@ -213,7 +213,7 @@ export default async function Violations({
     return (
       <span className={cls}>
         <span aria-hidden="true">{glyph}</span>{" "}
-        {t("admin.viol.severity", "severity")} <span className="ax-numeric">{level}</span>
+        {t("admin.viol.severity", "severity")} <span className="numeric">{level}</span>
       </span>
     );
   }
@@ -248,9 +248,9 @@ export default async function Violations({
         <ol className="stack" style={{ gap: "var(--ax-space-050)", marginBlockEnd: 0 }}>
           {events.map(event => (
             <li key={event.id}>
-              <span className="ax-numeric">{event.action}</span>{" · "}
-              <bdi dir="ltr" className="ax-numeric">{new Date(event.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</bdi>
-              {event.actor ? <> · {t("admin.viol.audit.actor", "actor")} <bdi dir="ltr" className="ax-numeric">{event.actor}</bdi></> : null}
+              <span className="numeric">{event.action}</span>{" · "}
+              <bdi dir="ltr" className="numeric">{new Date(event.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</bdi>
+              {event.actor ? <> · {t("admin.viol.audit.actor", "actor")} <bdi dir="ltr" className="numeric">{event.actor}</bdi></> : null}
             </li>
           ))}
         </ol>
@@ -284,7 +284,7 @@ export default async function Violations({
       {/* S07 STALE — a read fact with no invented duration or SLA. */}
       <p className="t-caption" role="status" aria-live="polite">
         {t("admin.viol.readAt", "Read at")}{" "}
-        <bdi dir="ltr" className="ax-numeric">{readAt}</bdi>{" · "}
+        <bdi dir="ltr" className="numeric">{readAt}</bdi>{" · "}
         {t("admin.viol.stale", "data may have changed since — reopen to refresh (no staleness verdict exists).")}
       </p>
 
@@ -348,7 +348,7 @@ export default async function Violations({
                 {/* Column 1 — violation */}
                 <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 200, flex: "1 1 200px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.violation", "Violation")}</span>
-                  <strong><span className="ax-numeric">{v.code}</span> — {v.title}</strong>
+                  <strong><span className="numeric">{v.code}</span> — {v.title}</strong>
                   <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
@@ -368,18 +368,18 @@ export default async function Violations({
                   <span className="ax-overline">{t("admin.viol.penalty.col.record", "Penalty mapping record")}</span>
                   {pm ? (
                     <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
-                      <span>{t("admin.viol.penalty", "Penalty")} <strong className="ax-numeric">{pm.penalty_ref}</strong></span>
+                      <span>{t("admin.viol.penalty", "Penalty")} <strong className="numeric">{pm.penalty_ref}</strong></span>
                       <span className="t-caption">{t("admin.viol.map.legalBasis", "Legal basis")}: <bdi dir="ltr">{pm.legal_basis}</bdi></span>
                       <span className="t-caption">
-                        {t("admin.viol.map.penaltyRange", "Range preset")}: <span className="ax-numeric">{pm.penalty_range?.schedule ?? t("admin.viol.map.rangeNone", "None")}</span>
+                        {t("admin.viol.map.penaltyRange", "Range preset")}: <span className="numeric">{pm.penalty_range?.schedule ?? t("admin.viol.map.rangeNone", "None")}</span>
                         {" · "}
-                        {t("admin.viol.map.repeatRule", "Repeat-rule preset")}: <span className="ax-numeric">{pm.repeat_rule?.repeat_12mo ?? t("admin.viol.map.repeatNone", "None")}</span>
+                        {t("admin.viol.map.repeatRule", "Repeat-rule preset")}: <span className="numeric">{pm.repeat_rule?.repeat_12mo ?? t("admin.viol.map.repeatNone", "None")}</span>
                       </span>
                       <span className="t-caption">
                         <span className="ax-version">{pm.mapping_version}</span>{" "}
                         {pm.status} · {pm.effective_from ?? "—"}{pm.effective_to ? ` → ${pm.effective_to}` : ""}
                       </span>
-                      <span className="t-caption">{strings.penaltyType}: {pm.penalty_type}{pm.amount !== null ? <> · {strings.amount}: <bdi dir="ltr" className="ax-numeric">{pm.amount}</bdi></> : null}{pm.grace_period_days !== null ? <> · {strings.gracePeriod}: {pm.grace_period_days}</> : null}{pm.due_period_days !== null ? <> · {strings.duePeriod}: {pm.due_period_days}</> : null}</span>
+                      <span className="t-caption">{strings.penaltyType}: {pm.penalty_type}{pm.amount !== null ? <> · {strings.amount}: <bdi dir="ltr" className="numeric">{pm.amount}</bdi></> : null}{pm.grace_period_days !== null ? <> · {strings.gracePeriod}: {pm.grace_period_days}</> : null}{pm.due_period_days !== null ? <> · {strings.duePeriod}: {pm.due_period_days}</> : null}</span>
                       {draft && canWrite ? <PublishMappingForm mappingId={draft.id} violationCode={v.code} strings={strings} /> : null}
                       {auditSummary(evidence?.mappingAudit, t("admin.viol.audit.mapping", "Mapping audit events"))}
                     </div>
@@ -423,7 +423,7 @@ export default async function Violations({
             return (
               <div key={v.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
                 <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
-                  <h3><span className="ax-numeric">{v.code}</span> — {v.title}</h3>
+                  <h3><span className="numeric">{v.code}</span> — {v.title}</h3>
                   <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
@@ -451,10 +451,10 @@ export default async function Violations({
                 {/* Explicit derivation — never a stored status enum. */}
                 <p className="t-caption">
                   {t("admin.viol.derived", "Lifecycle derived from active-from")}{" "}
-                  <bdi dir="ltr" className="ax-numeric">{v.active_from ?? "—"}</bdi>
-                  {v.active_to ? <> / {t("admin.viol.to", "active-to")} <bdi dir="ltr" className="ax-numeric">{v.active_to}</bdi></> : null}
+                  <bdi dir="ltr" className="numeric">{v.active_from ?? "—"}</bdi>
+                  {v.active_to ? <> / {t("admin.viol.to", "active-to")} <bdi dir="ltr" className="numeric">{v.active_to}</bdi></> : null}
                   {" "}{t("admin.viol.asOf", "as of today")}{" "}
-                  <bdi dir="ltr" className="ax-numeric">{today}</bdi>.
+                  <bdi dir="ltr" className="numeric">{today}</bdi>.
                 </p>
                 <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }} aria-label={t("admin.viol.usage.heading", "Usage and audit") }>
                   {evidence?.usage ? (

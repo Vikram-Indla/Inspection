@@ -299,7 +299,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                       <input type="file" accept="image/*,.pdf,application/pdf" multiple hidden onChange={e => { if (e.target.files?.length) { attach(f, e.target.files); e.target.value = ""; } }} />
                     </label>
                   )}
-                  {(evCountFor[f.key] ?? 0) > 0 && <div className="t-caption ax-numeric">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
+                  {(evCountFor[f.key] ?? 0) > 0 && <div className="t-caption numeric">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
                 </td>
               </tr>
             );
@@ -318,8 +318,8 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
               <div key={f.key} className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-100)" }}>
                 <div>
                   <strong>{f.label}</strong>
-                  {" · "}{strings.before}: <span className="ax-numeric">{c.source_value ?? "—"}</span>
-                  {" → "}{strings.after}: <span className="ax-numeric">{c.observed_value ?? "—"}</span>
+                  {" · "}{strings.before}: <span className="numeric">{c.source_value ?? "—"}</span>
+                  {" → "}{strings.after}: <span className="numeric">{c.observed_value ?? "—"}</span>
                   {(evCountFor[f.key] ?? 0) > 0 && <> · {fmt(strings.evCount, { n: evCountFor[f.key] })}</>}
                   {c.evidence_note && <div className="t-caption">{c.evidence_note}</div>}
                 </div>
@@ -332,7 +332,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       <div>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseTitle}</h4>
         {license
-          ? <p className="t-caption ax-numeric">{strings.licRef}: {license.reference_no ?? "—"} · {strings.licIssue}: {license.valid_from ?? "—"} · {strings.licExpiry}: {license.valid_to ?? "—"}</p>
+          ? <p className="t-caption numeric">{strings.licRef}: {license.reference_no ?? "—"} · {strings.licIssue}: {license.valid_from ?? "—"} · {strings.licExpiry}: {license.valid_to ?? "—"}</p>
           : <p className="t-caption">{strings.licNone}</p>}
       </div>
 
@@ -345,8 +345,8 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
             <tbody>{products.map((p, i) => (
               <tr key={i}>
                 <td>{p.name}{p.is_primary && <> <span className="ax-lozenge ax-lozenge--info">{strings.primaryTag}</span></>}</td>
-                <td className="ax-numeric">{p.hs_code ?? "—"}</td>
-                <td className="ax-numeric">{p.annual_capacity != null ? `${p.annual_capacity} ${p.unit ?? ""}` : "—"}</td>
+                <td className="numeric">{p.hs_code ?? "—"}</td>
+                <td className="numeric">{p.annual_capacity != null ? `${p.annual_capacity} ${p.unit ?? ""}` : "—"}</td>
               </tr>
             ))}</tbody>
           </table></div>
@@ -363,7 +363,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
               <tr key={i}>
                 <td>{m.name}</td>
                 <td>{m.source === "imported" ? strings.srcImported : strings.srcLocal}</td>
-                <td className="ax-numeric">{m.hs_code ?? "—"}</td>
+                <td className="numeric">{m.hs_code ?? "—"}</td>
               </tr>
             ))}</tbody>
           </table></div>

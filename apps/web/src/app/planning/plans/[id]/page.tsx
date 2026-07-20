@@ -87,7 +87,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       </>}>
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
         <a className="ax-link" href="/planning/plans">← {t("plan.drill.backToRegister", "Plan register")}</a>
-        <span className="t-caption ax-numeric">
+        <span className="t-caption numeric">
           {t("plan.drill.createdBy", "created by")} <strong>{creator}</strong> · {fmt(plan.created_at)}
           {plan.published_at && <> · {t("plan.drill.publishedAt", "published")} {fmt(plan.published_at)}</>}
         </span>
@@ -97,7 +97,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
         <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
           <h4 style={{ margin: 0 }}>{t("plan.drill.progressHeading", "Plan progress (M02-036)")}</h4>
-          <span className="ax-numeric"><strong>{pct(completed)}%</strong> {t("plan.drill.progressOf", "of {n} child visits completed").replace("{n}", String(total))}</span>
+          <span className="numeric"><strong>{pct(completed)}%</strong> {t("plan.drill.progressOf", "of {n} child visits completed").replace("{n}", String(total))}</span>
         </div>
         {total > 0 && (
           <div role="img" aria-label={t("plan.drill.progressBarAria", "Progress by child-visit state")}
@@ -111,7 +111,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
           {segments.map(s => (
             <span key={s.key} className="t-caption">
               <span aria-hidden="true" style={{ display: "inline-block", inlineSize: 10, blockSize: 10, borderRadius: "var(--ax-radius-full)", background: s.bg, marginInlineEnd: 6 }} />
-              {s.label} <span className="ax-numeric"><strong>{s.n}</strong></span>
+              {s.label} <span className="numeric"><strong>{s.n}</strong></span>
             </span>
           ))}
         </div>
@@ -135,14 +135,14 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
           <tbody>
             {visits.map(v => (
               <tr key={v.id}>
-                <td className="ax-numeric"><a className="ax-link" href={`/visits/${v.id}`}><strong>{v.id.slice(0, 8)}</strong></a></td>
+                <td className="numeric"><a className="ax-link" href={`/visits/${v.id}`}><strong>{v.id.slice(0, 8)}</strong></a></td>
                 <td>{v.factories ? <a className="ax-link" href={`/factories/${v.factories.id}`}>{v.factories.name}</a> : "—"}</td>
                 <td>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)}</td>
                 <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
                   {v.inspections?.status === "approved" && <> <span className="ax-lozenge ax-lozenge--success">{t("plan.drill.completed", "completed")}</span></>}</td>
                 <td><span className="ax-lozenge ax-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span></td>
                 <td>{v.assignments?.[0]?.profiles?.full_name ?? "—"}</td>
-                <td className="ax-td-num ax-numeric">{fmt(v.window_start)}</td>
+                <td className="ax-td-num numeric">{fmt(v.window_start)}</td>
               </tr>
             ))}
           </tbody>

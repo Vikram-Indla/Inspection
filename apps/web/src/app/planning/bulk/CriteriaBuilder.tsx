@@ -110,7 +110,7 @@ export default function CriteriaBuilder({
         </datalist>
       </div>
       {contribution != null && (
-        <button type="button" className="ax-btn ax-btn--subtle ax-numeric" aria-pressed={isFocused}
+        <button type="button" className="ax-btn ax-btn--subtle numeric" aria-pressed={isFocused}
           onClick={() => onFocus?.(isFocused ? null : key)}
           aria-label={(isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution)))}
           style={isFocused ? { borderColor: "var(--ax-color-primary)", fontWeight: 600 } : undefined}>
@@ -171,7 +171,7 @@ export default function CriteriaBuilder({
       <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent">{strings.apply}</button>
         <a className="ax-btn ax-btn--subtle" href="/planning/bulk">{strings.clear}</a>
-        <span className="t-caption ax-numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
+        <span className="t-caption numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
       </div>
       <p className="t-caption">{strings.hint}</p>
     </form>

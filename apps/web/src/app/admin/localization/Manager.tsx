@@ -138,7 +138,7 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
           {revs !== null && revs.length === 0 && <span className="t-caption">{labels.historyEmpty}</span>}
           {(revs ?? []).map(r => (
             <div key={r.id} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "baseline", flexWrap: "wrap", borderBlockStart: "1px dashed var(--ax-color-border)", paddingBlockStart: "var(--ax-space-100)" }}>
-              <span className="t-caption ax-numeric">{r.changed_at.slice(0, 16).replace("T", " ")} · {r.change_source} · {r.status}</span>
+              <span className="t-caption numeric">{r.changed_at.slice(0, 16).replace("T", " ")} · {r.change_source} · {r.status}</span>
               <span dir="rtl" lang="ar" style={{ font: "var(--ax-text-caption)" }}>{r.ar ?? "—"}</span>
               <form action={restAction}>
                 <input type="hidden" name="key" value={row.key} />
@@ -164,7 +164,7 @@ function SyncButton({ labels }: { labels: Labels }) {
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.syncing : labels.sync}</button>
       {state.report && !pending && (
         <span className="t-caption">
-          {labels.syncReport} <span className="ax-numeric">+{state.report.added.length}</span> · EN Δ <span className="ax-numeric">{state.report.enChanged.length}</span> · ⌀ <span className="ax-numeric">{state.report.orphaned.length}</span> · ↻ <span className="ax-numeric">{state.report.revived.length}</span>
+          {labels.syncReport} <span className="numeric">+{state.report.added.length}</span> · EN Δ <span className="numeric">{state.report.enChanged.length}</span> · ⌀ <span className="numeric">{state.report.orphaned.length}</span> · ↻ <span className="numeric">{state.report.revived.length}</span>
         </span>
       )}
       {state.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
@@ -233,7 +233,7 @@ function AddKeyForm({ labels }: { labels: Labels }) {
     <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div style={{ inlineSize: "100%" }}><strong>{labels.addTitle}</strong></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="l10n-add-key">{labels.addKeyField}</label>
-        <input className="ax-input ax-numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
+        <input className="ax-input numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="l10n-add-en">{labels.addEnField}</label>
         <input className="ax-input" name="en" id="l10n-add-en" required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="l10n-add-ar">{labels.addArField}</label>
@@ -285,7 +285,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
     return (
       <>
         <EmptyState glyph="🌐" title={labels.emptyTitle}
-          body={<>{labels.emptyBody} <span className="ax-numeric">scripts/i18n_coverage.py</span></>} />
+          body={<>{labels.emptyBody} <span className="numeric">scripts/i18n_coverage.py</span></>} />
         <AddKeyForm labels={labels} />
       </>
     );
@@ -305,7 +305,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
         </select>
         <button className="ax-btn" type="button" onClick={() => exportCsv(filtered)}>{labels.exportCsv}</button>
         <SyncButton labels={labels} />
-        <span className="t-caption">{labels.showing} <span className="ax-numeric">{filtered.length}/{rows.length}</span> · {labels.importNote}</span>
+        <span className="t-caption">{labels.showing} <span className="numeric">{filtered.length}/{rows.length}</span> · {labels.importNote}</span>
       </div>
 
       {filtered.length === 0 ? (

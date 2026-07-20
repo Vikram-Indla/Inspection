@@ -354,7 +354,7 @@
   --ax-font-arabic: var(--font-body);
   --ax-font-mono:   var(--font-mono);
   --ax-font-input:  var(--font-body);
-  --ax-numeric-features: "tnum" 1, "lnum" 1;
+  --numeric-features: "tnum" 1, "lnum" 1;
 
   /* Type shorthands (weight size/lh family) → SAQEEL roles */
   --ax-text-display:      600 28px/1.25 var(--font-body);

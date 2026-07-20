@@ -6,7 +6,7 @@
    RTL-safe throughout (logical properties only). */
 
 /* mono data (codes, CR, IDs, windows) — tabular numerals */
-.cd-mono { font-family: var(--ax-font-mono); font-feature-settings: var(--ax-numeric-features); }
+.cd-mono { font-family: var(--ax-font-mono); font-feature-settings: var(--numeric-features); }
 
 /* section header: title + right-aligned meta */
 .cd-sectionhead {
@@ -26,7 +26,7 @@
 .cd-ctx { padding: var(--ax-space-300); padding-block-start: var(--ax-space-200); }
 .cd-context dt { font: var(--ax-text-micro); letter-spacing: .01em; color: var(--ax-color-text-secondary); margin-block-end: var(--ax-space-050); }
 .cd-context dd { margin: 0; font: var(--ax-text-body); }
-.cd-count { font: var(--ax-text-title); font-feature-settings: var(--ax-numeric-features); line-height: 1.1; }
+.cd-count { font: var(--ax-text-title); font-feature-settings: var(--numeric-features); line-height: 1.1; }
 .cd-count small { font: var(--ax-text-body); color: var(--ax-color-text-secondary); }
 
 /* readiness rail */

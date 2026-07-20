@@ -199,7 +199,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                     style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--ax-space-150)" }}>
                     <span className={LOZ[cat]} aria-hidden="true">{GLYPH[cat]}</span>
                     <span>{label}</span>
-                    <span className="ax-numeric" style={{ marginInlineStart: "auto" }}>{cat === "unchanged" ? counts.unchanged : items.length}</span>
+                    <span className="numeric" style={{ marginInlineStart: "auto" }}>{cat === "unchanged" ? counts.unchanged : items.length}</span>
                   </button>
                   {open[cat] && (
                     <ul id={panelId} style={{ listStyle: "none", margin: 0, padding: "var(--ax-space-100) 0 0", display: "flex", flexDirection: "column", gap: 2 }}>
@@ -209,7 +209,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                           <li key={r.key}>
                             <button type="button" className="ax-btn ax-btn--subtle" onClick={() => goToRow(r.key)}
                               style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--ax-space-150)" }}>
-                              <span className="ax-numeric">{r.key}</span>
+                              <span className="numeric">{r.key}</span>
                               {r.section && <span className="t-caption">{r.section.title}</span>}
                             </button>
                           </li>
@@ -237,7 +237,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                 <tr key={r.key} id={`cmp-${r.key}`} data-changed={r.changed ? "true" : "false"} tabIndex={-1}
                   ref={el => { rowRefs.current[r.key] = el; }}
                   style={r.category === "unexpected" ? { borderInlineStart: "4px solid var(--ax-color-critical)" } : undefined}>
-                  <td><strong className="ax-numeric">{r.key}</strong></td>
+                  <td><strong className="numeric">{r.key}</strong></td>
                   <td>{r.section ? r.section.title : <span className="ax-lozenge ax-lozenge--warning" aria-hidden="false">{GLYPH.unavailable} {strings.catUnavailable}</span>}</td>
                   <td>{r.prev != null ? (strings.enumLabels[r.prev] ?? r.prev) : "—"}</td>
                   <td>{r.latest != null ? (strings.enumLabels[r.latest] ?? r.latest) : "—"}</td>

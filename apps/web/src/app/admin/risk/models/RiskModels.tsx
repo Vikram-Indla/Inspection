@@ -15,9 +15,9 @@ export function RiskModelsBoard({ rows, strings: s }: { rows: RiskModelRow[]; st
     <>
       <form action={cAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <div className="ax-field"><label className="ax-field__label" htmlFor="risk-model-version-label">{s.newLabel}</label>
-          <input className="ax-input ax-numeric" name="version_label" id="risk-model-version-label" required /></div>
+          <input className="ax-input numeric" name="version_label" id="risk-model-version-label" required /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="risk-model-payload">{s.payload}</label>
-          <textarea className="ax-input ax-numeric" name="payload" id="risk-model-payload" rows={6} spellCheck={false}
+          <textarea className="ax-input numeric" name="payload" id="risk-model-payload" rows={6} spellCheck={false}
             defaultValue={'{"factors":[{"key":"a","weight":1}],"bands":{"low":[0,39],"medium":[40,69],"high":[70,100]}}'} /></div>
         <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
           <button className="ax-btn" disabled={creating}>{creating ? s.creating : s.create}</button>

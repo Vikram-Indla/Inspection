@@ -105,10 +105,10 @@ export default async function FieldFactory360({ params, searchParams }: {
             {badge(dossier.crError, cr)}
           </div>
           <div className={styles.ids}>
-            <span><strong>{t("f360.id.cr", "CR")}</strong> <bdi className="ax-numeric">{cr.cr_number}</bdi></span>
-            {cr.unified_number && <span><strong>{t("f360.cr.unified", "Unified")}</strong> <bdi className="ax-numeric">{cr.unified_number}</bdi></span>}
-            <span><strong>{t("f360.id.license", "License")}</strong> <bdi className="ax-numeric">{text(selected?.license_number)}</bdi></span>
-            <span><strong>{t("f360.plant", "Plant")}</strong> <bdi className="ax-numeric">{text(selected?.plant_number)}</bdi></span>
+            <span><strong>{t("f360.id.cr", "CR")}</strong> <bdi className="numeric">{cr.cr_number}</bdi></span>
+            {cr.unified_number && <span><strong>{t("f360.cr.unified", "Unified")}</strong> <bdi className="numeric">{cr.unified_number}</bdi></span>}
+            <span><strong>{t("f360.id.license", "License")}</strong> <bdi className="numeric">{text(selected?.license_number)}</bdi></span>
+            <span><strong>{t("f360.plant", "Plant")}</strong> <bdi className="numeric">{text(selected?.plant_number)}</bdi></span>
             {selected && <span>{label(selected.license_type)} · {label(selected.stage)} · {label(selected.status)}</span>}
           </div>
           <Factory360Offline crId={cr.id} licenseId={selected?.id ?? null} locale={locale === "ar" ? "ar" : "en"} strings={{
@@ -139,21 +139,21 @@ export default async function FieldFactory360({ params, searchParams }: {
           <div className={styles.readiness}>
             <div className={`ax-surface ${styles.tile}`}>
               <span className="t-caption">{t("f360.risk.heading", "Saved risk")}</span>
-              <span className={`${styles.tileValue} ax-numeric`}>{permissions["view_risk_details"] ? text(factory?.risk_score) : t("f360.restricted", "restricted")}</span>
+              <span className={`${styles.tileValue} numeric`}>{permissions["view_risk_details"] ? text(factory?.risk_score) : t("f360.restricted", "restricted")}</span>
               <span className="t-caption">{permissions["view_risk_details"] ? label(factory?.risk_band) : ""}</span>
             </div>
             <div className={`ax-surface ${styles.tile}`}>
               <span className="t-caption">{t("f360.compliance.heading", "Approved compliance")}</span>
-              <span className={`${styles.tileValue} ax-numeric`}>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</span>
+              <span className={`${styles.tileValue} numeric`}>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</span>
               <span className="t-caption">{currentCompliance.status === "available" ? `${currentCompliance.passed}/${currentCompliance.answered}` : ""}</span>
             </div>
             <div className={`ax-surface ${styles.tile}`}>
               <span className="t-caption">{t("f360.cr.approvedInspections", "Approved inspections")}</span>
-              <span className={`${styles.tileValue} ax-numeric`}>{portfolioReportsResult.error ? t("f360.source.degraded", "degraded") : portfolioCounts.approvedInspections}</span>
+              <span className={`${styles.tileValue} numeric`}>{portfolioReportsResult.error ? t("f360.source.degraded", "degraded") : portfolioCounts.approvedInspections}</span>
             </div>
             <div className={`ax-surface ${styles.tile}`}>
               <span className="t-caption">{t("f360.location", "Location")}</span>
-              <span className="ax-numeric"><bdi>{address ? `${text(address.latitude)}, ${text(address.longitude)}` : (factory?.official_lat != null ? `${factory.official_lat}, ${factory.official_lng}` : "—")}</bdi></span>
+              <span className="numeric"><bdi>{address ? `${text(address.latitude)}, ${text(address.longitude)}` : (factory?.official_lat != null ? `${factory.official_lat}, ${factory.official_lng}` : "—")}</bdi></span>
             </div>
           </div>
           <p className="t-caption">{t("f360.cr.noAggregate", "Portfolio facts only. No CR-level risk score or compliance rate is calculated.")} {portfolioCounts.total} {t("f360.cr.totalLicenses", "licenses")} · {portfolioCounts.active}/{portfolioCounts.expired}/{portfolioCounts.suspended} {t("f360.cr.licenseStates", "active/expired/suspended")}{highestRiskLicense ? ` · ${t("f360.cr.highestRisk", "highest-risk")}: ${highestRiskLicense.license_number}` : ""}</p>
@@ -165,7 +165,7 @@ export default async function FieldFactory360({ params, searchParams }: {
           <div className={styles.sectionBody}>
             {selected && factory ? <dl className={styles.facts}>
               <div><dt>{t("f360.id.factory", "Factory")}</dt><dd>{factory.name} · <bdi>{factory.factory_code}</bdi></dd></div>
-              <div><dt>{t("f360.id.licenseDates", "Issued / expires")}</dt><dd className="ax-numeric">{dt(selected.issue_date)} → {dt(selected.expiry_date)}</dd></div>
+              <div><dt>{t("f360.id.licenseDates", "Issued / expires")}</dt><dd className="numeric">{dt(selected.issue_date)} → {dt(selected.expiry_date)}</dd></div>
               <div><dt>{t("f360.id.licenseHolder", "License holder")}</dt><dd>{text(selected.holder_name)}</dd></div>
               <div><dt>{t("f360.location", "Address")}</dt><dd>{address ? [address.address_line_1, locale === "ar" ? address.street_name_ar : address.street_name_en, locale === "ar" ? address.city_ar : address.city_en, locale === "ar" ? address.region_ar : address.region_en].filter(Boolean).join(" · ") || "—" : "—"}</dd></div>
               <div><dt>{t("common.region", "Region / city")}</dt><dd>{label(factory.region)} · {label(factory.city)}</dd></div>
@@ -179,10 +179,10 @@ export default async function FieldFactory360({ params, searchParams }: {
           <summary><span>{t("f360.compliance.heading", "Approved inspection compliance")}</span>{badge(reportsResult.error, reports, !!factoryId)}</summary>
           <div className={styles.sectionBody}>
             <p className="t-caption">{t("f360.compliance.rule", "Calculated only from the latest immutable submitted version of approved inspections and its frozen package definition. Returned or rejected inspections remain visible below but never affect this rate.")}</p>
-            <p><strong className="ax-numeric" style={{ fontSize: "2rem" }}>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</strong> <span className="t-caption">{currentCompliance.status === "available" ? `${currentCompliance.passed}/${currentCompliance.answered}` : t("f360.compliance.na", "No eligible approved scored answers")}{approvedTrend.length > 1 ? ` · ${t("f360.compliance.trend", "trend")} ${approvedTrend.map(row => `${row.compliance.rate}%`).join(" ← ")}` : ""}</span></p>
+            <p><strong className="numeric" style={{ fontSize: "2rem" }}>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</strong> <span className="t-caption">{currentCompliance.status === "available" ? `${currentCompliance.passed}/${currentCompliance.answered}` : t("f360.compliance.na", "No eligible approved scored answers")}{approvedTrend.length > 1 ? ` · ${t("f360.compliance.trend", "trend")} ${approvedTrend.map(row => `${row.compliance.rate}%`).join(" ← ")}` : ""}</span></p>
             {reports.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("f360.report.number", "Inspection")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.report.version", "Version")}</th><th scope="col">{t("f360.report.compliance", "Compliance")}</th><th scope="col" /></tr></thead><tbody>{reports.map(report => {
               const latest = latestSubmission(report); const compliance = reportCompliance[report.id];
-              return <tr key={report.id}><td><bdi>{text(report.inspection_no ?? report.id.slice(0, 8))}</bdi><br /><span className="t-caption ax-numeric">{dt(report.submitted_at ?? report.started_at)}</span></td><td><span className="ax-lozenge ax-lozenge--info">{label(report.status)}</span></td><td>{latest ? `v${latest.version_number}` : t("f360.report.notSubmitted", "not submitted")}</td><td className="ax-numeric">{compliance?.rate == null ? "—" : `${compliance.rate}%`}</td><td><a className="ax-link" href={`/reports/inspection/${report.id}`}>{t("f360.report.open", "Open")}</a></td></tr>;
+              return <tr key={report.id}><td><bdi>{text(report.inspection_no ?? report.id.slice(0, 8))}</bdi><br /><span className="t-caption numeric">{dt(report.submitted_at ?? report.started_at)}</span></td><td><span className="ax-lozenge ax-lozenge--info">{label(report.status)}</span></td><td>{latest ? `v${latest.version_number}` : t("f360.report.notSubmitted", "not submitted")}</td><td className="numeric">{compliance?.rate == null ? "—" : `${compliance.rate}%`}</td><td><a className="ax-link" href={`/reports/inspection/${report.id}`}>{t("f360.report.open", "Open")}</a></td></tr>;
             })}</tbody></table></div> : <p className="t-caption">{t("f360.reports.empty", "No inspection reports are available for the selected plant.")}</p>}
           </div>
         </details>
@@ -205,7 +205,7 @@ export default async function FieldFactory360({ params, searchParams }: {
           <summary><span>{t("f360.risk.heading", "Saved risk")}</span>{permissions["view_risk_details"] ? badge(riskResult.error, riskHistory, !!factoryId) : <span className="ax-lozenge">{t("f360.restricted", "restricted")}</span>}</summary>
           <div className={styles.sectionBody}>
             {!permissions["view_risk_details"] ? <p className="t-caption">{t("f360.risk.restricted", "Risk detail requires Factory Risk permission.")}</p> : <>
-              <p><strong className="ax-numeric" style={{ fontSize: "2rem" }}>{text(factory?.risk_score)}</strong> · {label(factory?.risk_band)}</p>
+              <p><strong className="numeric" style={{ fontSize: "2rem" }}>{text(factory?.risk_score)}</strong> · {label(factory?.risk_band)}</p>
               <p className="t-caption">{t("f360.risk.version", "Model")} {text(factory?.risk_version)} · {dt(factory?.risk_calculated_at)} · {riskHistory.length} {t("f360.risk.snapshots", "saved snapshots")}</p>
               {factoryId ? <ContextualAiPanel
                 surface="factory_risk_explanation"
@@ -228,7 +228,7 @@ export default async function FieldFactory360({ params, searchParams }: {
         <details className={`ax-surface ${styles.section}`}>
           <summary><span>{t("f360.industrial.heading", "Industrial information")}</span>{badge(linesResult.error, lines, !!licenseId)}</summary>
           <div className={styles.sectionBody}>
-            {lines.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.name", "Name")}</th><th scope="col">{t("f360.hsCode", "HS / activity")}</th><th scope="col">{t("f360.quantity", "Qty / cap")}</th><th scope="col">{t("f360.production", "Real / max")}</th></tr></thead><tbody>{lines.map(row => <tr key={row.id}><td>{label(row.item_type)}</td><td>{showLineName(row)}</td><td className="ax-numeric"><bdi>{text(row.hs_code ?? row.activity_code)}</bdi></td><td className="ax-numeric">{text(row.quantity)} / {text(row.capacity)}</td><td className="ax-numeric">{text(row.real_production)} / {text(row.maximum_production)}</td></tr>)}</tbody></table></div> : <p className="t-caption">{linesResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.industrial.empty", "No source-backed products, spare parts, machines, production lines or raw materials are available.")}</p>}
+            {lines.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.name", "Name")}</th><th scope="col">{t("f360.hsCode", "HS / activity")}</th><th scope="col">{t("f360.quantity", "Qty / cap")}</th><th scope="col">{t("f360.production", "Real / max")}</th></tr></thead><tbody>{lines.map(row => <tr key={row.id}><td>{label(row.item_type)}</td><td>{showLineName(row)}</td><td className="numeric"><bdi>{text(row.hs_code ?? row.activity_code)}</bdi></td><td className="numeric">{text(row.quantity)} / {text(row.capacity)}</td><td className="numeric">{text(row.real_production)} / {text(row.maximum_production)}</td></tr>)}</tbody></table></div> : <p className="t-caption">{linesResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.industrial.empty", "No source-backed products, spare parts, machines, production lines or raw materials are available.")}</p>}
             <h3>{t("f360.observed.heading", "Official vs latest approved observed snapshot")}</h3>
             {latestApprovedFactorySnapshot ? <>
               <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("common.field", "Field")}</th><th scope="col">{t("f360.observed.official", "Official")}</th><th scope="col">{t("f360.observed.captured", "Observed")}</th></tr></thead><tbody>{observedComparison.map(row => {
@@ -244,7 +244,7 @@ export default async function FieldFactory360({ params, searchParams }: {
         <details className={`ax-surface ${styles.section}`}>
           <summary><span>{t("f360.government.heading", "Government records")}</span>{badge(governmentResult.error, government, !!licenseId)}</summary>
           <div className={styles.sectionBody}>
-            {government.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.reference", "Reference")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th></tr></thead><tbody>{government.map(row => <tr key={row.id}><td>{text(row.title ?? row.record_type)}</td><td className="ax-numeric"><bdi>{row.external_record_id}</bdi></td><td>{label(row.status)}</td><td className="ax-numeric">{dt(row.valid_from)} → {dt(row.valid_to)}</td></tr>)}</tbody></table></div> : <p className="t-caption">{governmentResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.government.empty", "Government-domain records are unavailable until a governed source contract supplies them.")}</p>}
+            {government.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("common.type", "Type")}</th><th scope="col">{t("common.reference", "Reference")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.validity", "Validity")}</th></tr></thead><tbody>{government.map(row => <tr key={row.id}><td>{text(row.title ?? row.record_type)}</td><td className="numeric"><bdi>{row.external_record_id}</bdi></td><td>{label(row.status)}</td><td className="numeric">{dt(row.valid_from)} → {dt(row.valid_to)}</td></tr>)}</tbody></table></div> : <p className="t-caption">{governmentResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.government.empty", "Government-domain records are unavailable until a governed source contract supplies them.")}</p>}
           </div>
         </details>
 
@@ -273,7 +273,7 @@ export default async function FieldFactory360({ params, searchParams }: {
               <div><dt>{t("f360.xpc.plant", "Plant")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.plant.role)}`}>{label(canonical.plant.role)}</span> <span className="t-caption">{canonical.plant.source.provider}</span></dd></div>
               <div><dt>{t("f360.xpc.activities", "Activities / products / materials")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.products.role)}`}>{label(canonical.products.role)}</span> <span className="t-caption">{canonical.products.value?.length ?? 0}/{canonical.materials.value?.length ?? 0}/{canonical.machines.value?.length ?? 0}</span></dd></div>
               <div><dt>{t("f360.xpc.workforce", "Workforce / contacts / delegations")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.workforce.role)}`}>{label(canonical.workforce.role)}</span> <span className="t-caption">INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED</span></dd></div>
-              <div><dt>{t("f360.xpc.package", "Approved package / submission version")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.approvedPackageVersion.role)}`}>{label(canonical.approvedPackageVersion.role)}</span> <span className="t-caption ax-numeric">{text(canonical.approvedPackageVersion.value)} · {text(canonical.immutableSubmissionVersion.value)}</span></dd></div>
+              <div><dt>{t("f360.xpc.package", "Approved package / submission version")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.approvedPackageVersion.role)}`}>{label(canonical.approvedPackageVersion.role)}</span> <span className="t-caption numeric">{text(canonical.approvedPackageVersion.value)} · {text(canonical.immutableSubmissionVersion.value)}</span></dd></div>
             </div>
             <p className="t-caption">{t("f360.xpc.discrepancies", "Reconciliation")}: {Object.entries(discrepancyCounts).map(([state, n]) => `${label(state)} ${n}`).join(" · ") || t("f360.xpc.none", "no reconcilable facts")}</p>
           </div>

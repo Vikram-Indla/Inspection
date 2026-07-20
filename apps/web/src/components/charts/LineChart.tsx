@@ -47,7 +47,7 @@ export default function LineChart({ data, title, emptyLabel = "No data", height 
           <g key={`${p.label}-${i}`}>
             <circle cx={p.x} cy={p.y} r={3.5} fill="var(--ax-color-surface)"
               stroke="var(--ax-color-primary)" strokeWidth="2" />
-            <text x={p.x} y={p.y - 8} textAnchor="middle" className="ax-numeric" style={VALUE_TEXT}>{p.value}</text>
+            <text x={p.x} y={p.y - 8} textAnchor="middle" className="numeric" style={VALUE_TEXT}>{p.value}</text>
             <text x={p.x} y={height - 6} textAnchor="middle" style={AXIS_TEXT}>{p.label}</text>
           </g>
         ))}

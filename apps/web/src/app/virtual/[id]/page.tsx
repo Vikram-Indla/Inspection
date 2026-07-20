@@ -169,7 +169,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
   return (
     <Shell current="/virtual" title={t("virtual.room.title", "Virtual room — {factory}").replace("{factory}", (s.visits as unknown as { factories: { name: string } }).factories.name)}
       context={<>
-        <span className="ax-numeric t-caption">{new Date(s.appointment_at).toISOString().slice(0, 16).replace("T", " ")}</span>
+        <span className="numeric t-caption">{new Date(s.appointment_at).toISOString().slice(0, 16).replace("T", " ")}</span>
         <span className={`ax-lozenge ax-lozenge--virtual ${STATE_TONE[s.state] ?? "ax-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span>
       </>}>
       <Room session={s as never} strings={strings} rev={rev} />
@@ -178,11 +178,11 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
         {timeline.length === 0 && <p className="t-caption">{t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close.")}</p>}
         {timeline.map((ev, i) => (
           <p key={i} className="t-caption" style={{ marginBlockStart: 4 }}>
-            <span className="ax-numeric">{ev.at ? new Date(ev.at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
+            <span className="numeric">{ev.at ? new Date(ev.at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
             {" · "}<strong>{eventLabels[ev.event] ?? ev.event.replace(/_/g, " ")}</strong>
             {ev.detail?.participant ? ` · ${String(ev.detail.participant)}` : ""}
             {ev.detail?.reason ? ` · ${String(ev.detail.reason)}` : ""}
-            {ev.detail?.appointment_at ? <span className="ax-numeric"> · {String(ev.detail.appointment_at).slice(0, 16).replace("T", " ")}</span> : ""}
+            {ev.detail?.appointment_at ? <span className="numeric"> · {String(ev.detail.appointment_at).slice(0, 16).replace("T", " ")}</span> : ""}
           </p>
         ))}
       </div>

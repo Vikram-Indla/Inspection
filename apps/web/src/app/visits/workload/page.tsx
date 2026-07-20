@@ -86,7 +86,7 @@ export default async function Workload() {
             <thead><tr>
               <th scope="col">{t("visit.load.colInspector", "Inspector")}</th>
               {weekStarts.map((ms, i) => (
-                <th scope="col" key={ms} className="ax-td-num"><span className="ax-numeric">{weekLabel(ms)}</span>{i === 0 && <> · {t("visit.load.thisWeek", "this week")}</>}</th>
+                <th scope="col" key={ms} className="ax-td-num"><span className="numeric">{weekLabel(ms)}</span>{i === 0 && <> · {t("visit.load.thisWeek", "this week")}</>}</th>
               ))}
               <th scope="col" className="ax-td-num">{t("visit.load.colLater", "Later")}</th>
               <th scope="col" className="ax-td-num">{t("visit.load.colTotal", "Active total")}</th>
@@ -98,20 +98,20 @@ export default async function Workload() {
                   <td><strong>{a.name}</strong></td>
                   {a.weeks.map((n, i) => (
                     <td key={i} className="ax-td-num">
-                      <span className="ax-numeric" style={n === maxCell && n > 0 ? { color: "var(--ax-color-warning-strong)", fontWeight: 600 } : undefined}>{n}</span>
+                      <span className="numeric" style={n === maxCell && n > 0 ? { color: "var(--ax-color-warning-strong)", fontWeight: 600 } : undefined}>{n}</span>
                       <div aria-hidden="true" style={{ blockSize: 4, marginBlockStart: 2, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-neutral-tint)" }}>
                         <div style={{ blockSize: 4, borderRadius: "var(--ax-radius-full)", inlineSize: `${(n / maxCell) * 100}%`, background: "var(--ax-color-primary)" }} />
                       </div>
                     </td>
                   ))}
-                  <td className="ax-td-num ax-numeric">{a.beyond}</td>
-                  <td className="ax-td-num ax-numeric"><strong>{a.total}</strong></td>
+                  <td className="ax-td-num numeric">{a.beyond}</td>
+                  <td className="ax-td-num numeric"><strong>{a.total}</strong></td>
                   <td>
                     <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-100)" }}>
                       <div style={{ flex: 1, blockSize: 8, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-neutral-tint)" }}>
                         <div style={{ blockSize: 8, borderRadius: "var(--ax-radius-full)", inlineSize: `${Math.round((a.total / maxTotal) * 100)}%`, background: "var(--ax-color-info)" }} />
                       </div>
-                      <span className="t-caption ax-numeric">{Math.round((a.total / maxTotal) * 100)}%</span>
+                      <span className="t-caption numeric">{Math.round((a.total / maxTotal) * 100)}%</span>
                     </div>
                   </td>
                 </tr>

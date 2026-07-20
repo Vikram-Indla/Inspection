@@ -42,9 +42,9 @@ export default async function VirtualList() {
         <tbody>
           {rows.map(({ s, v }) => (
               <tr key={s.id}>
-                <td className="ax-numeric"><strong>{s.id.slice(0, 8)}</strong></td>
+                <td className="numeric"><strong>{s.id.slice(0, 8)}</strong></td>
                 <td>{v.factories.name} <span className="t-caption">{v.factories.factory_code}</span></td>
-                <td className="ax-td-num ax-numeric">{new Date(s.appointment_at).toISOString().slice(0, 16).replace("T", " ")}</td>
+                <td className="ax-td-num numeric">{new Date(s.appointment_at).toISOString().slice(0, 16).replace("T", " ")}</td>
                 <td><span className={`ax-lozenge ax-lozenge--virtual ${s.state === "verified" ? "ax-lozenge--success" : "ax-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span></td>
                 <td><a className="ax-link" href={`/virtual/${s.id}`}>{t("virtual.list.openRoom", "open room →")}</a></td>
               </tr>
@@ -58,7 +58,7 @@ export default async function VirtualList() {
           {unscheduled.map(v => (
             <div key={v.id} className="stack" style={{ gap: "var(--ax-space-100)" }}>
               <strong>{(v.factories as unknown as { name: string } | null)?.name}{" "}
-                <span className="t-caption ax-numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</span></strong>
+                <span className="t-caption numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</span></strong>
               <ScheduleForm visitId={v.id} strings={scheduleStrings} />
             </div>
           ))}

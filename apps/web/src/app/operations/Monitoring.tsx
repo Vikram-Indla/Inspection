@@ -121,7 +121,7 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
       )}
       <p className="t-caption">
         {pending ? s.refreshing : `${s.refreshedAt} `}
-        {!pending && at && <span className="ax-numeric">{at.slice(11, 19)}</span>}
+        {!pending && at && <span className="numeric">{at.slice(11, 19)}</span>}
         {" · "}{s.autoNote}
       </p>
     </div>

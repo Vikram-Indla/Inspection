@@ -448,7 +448,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
           )}
         </span>
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-          <span className="t-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+          <span className="t-caption numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
           {!submitted && <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
         </span>
       </div>
@@ -469,15 +469,15 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
       <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>
-          {strings.panelTitle}{inspectionNo ? <span className="ax-numeric"> · {inspectionNo}</span> : null}
+          {strings.panelTitle}{inspectionNo ? <span className="numeric"> · {inspectionNo}</span> : null}
         </summary>
         <div className="ax-grid-2" style={{ marginBlockStart: "var(--ax-space-200)" }}>
           <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelFactory}</summary>
             <div className="stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
               <div><strong>{panel.factory.name}</strong></div>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelCode}</span><span className="ax-numeric">{panel.factory.code ?? "—"}</span></div>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelLicense}</span><span className="ax-numeric">{panel.factory.license ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelCode}</span><span className="numeric">{panel.factory.code ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelLicense}</span><span className="numeric">{panel.factory.license ?? "—"}</span></div>
               <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
               <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
             </div>
@@ -485,7 +485,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
           <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelVisit}</summary>
             <div className="stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelWindow}</span><span className="ax-numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelWindow}</span><span className="numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
               <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
               <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="ax-version">{panel.pkg.label}</span></span></div>
             </div>
@@ -517,12 +517,12 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       {!submitted && (
         <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "center" }}>
           <span className="ax-overline">{strings.summaryTitle}</span>
-          <span className="ax-badge">{strings.sumAnswered} <span className="ax-numeric">{summary.answered}</span></span>
-          <span className="ax-badge">{strings.sumPending} <span className="ax-numeric">{summary.pending}</span></span>
-          <span className="ax-badge">{strings.sumCompliant} <span className="ax-numeric">{summary.compliant}</span></span>
-          <span className={`ax-badge ${summary.nonCompliant ? "ax-badge--critical" : ""}`}>{strings.sumNonCompliant} <span className="ax-numeric">{summary.nonCompliant}</span></span>
-          <span className={`ax-badge ${summary.violations ? "ax-badge--critical" : ""}`}>{strings.sumViolations} <span className="ax-numeric">{summary.violations}</span></span>
-          <span className="ax-badge">{strings.sumEvidence} <span className="ax-numeric">{summary.evidence}</span></span>
+          <span className="ax-badge">{strings.sumAnswered} <span className="numeric">{summary.answered}</span></span>
+          <span className="ax-badge">{strings.sumPending} <span className="numeric">{summary.pending}</span></span>
+          <span className="ax-badge">{strings.sumCompliant} <span className="numeric">{summary.compliant}</span></span>
+          <span className={`ax-badge ${summary.nonCompliant ? "ax-badge--critical" : ""}`}>{strings.sumNonCompliant} <span className="numeric">{summary.nonCompliant}</span></span>
+          <span className={`ax-badge ${summary.violations ? "ax-badge--critical" : ""}`}>{strings.sumViolations} <span className="numeric">{summary.violations}</span></span>
+          <span className="ax-badge">{strings.sumEvidence} <span className="numeric">{summary.evidence}</span></span>
         </div>
       )}
 
@@ -557,7 +557,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         <div key={s.key} id={`ax-section-${s.key}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-600)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
-            <span className="t-caption ax-numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
+            <span className="t-caption numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
           </div>
           {/* Per-section progress (M04-081) */}
           <div style={{ blockSize: 4, borderRadius: 2, background: "var(--ax-color-border)" }} role="progressbar" aria-valuenow={sp.pct} aria-valuemin={0} aria-valuemax={100}>
@@ -654,7 +654,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                               ? <img className="ax-evidence__thumb" src={url} alt={strings.evSyncedAlt} />
                               : <div className="ax-evidence__thumb" aria-hidden="true">{ev2.evidence_type === "document" ? "📄" : "📷"}</div>}
                             <div className="ax-evidence__meta">
-                              <span className="ax-numeric">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
+                              <span className="numeric">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
                               {archived
                                 ? <span className="ax-lozenge ax-lozenge--warning">{strings.evArchived}</span>
                                 : (

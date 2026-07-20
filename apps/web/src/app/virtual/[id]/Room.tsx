@@ -347,7 +347,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                     <input type="hidden" name="session_id" value={session.id} />
                     <input type="hidden" name="rev" value={rev} />
                     <div className="ax-field"><label className="ax-field__label" htmlFor="virtual-reschedule-appt">{t.rescheduleLabel}</label>
-                      <input className="ax-input ax-numeric" type="datetime-local" name="appointment_at" id="virtual-reschedule-appt" defaultValue={session.appointment_at.slice(0, 16)} required /></div>
+                      <input className="ax-input numeric" type="datetime-local" name="appointment_at" id="virtual-reschedule-appt" defaultValue={session.appointment_at.slice(0, 16)} required /></div>
                     <button className="ax-btn ax-btn--secondary" disabled={reschedPending || offline}>{reschedPending ? t.working : t.rescheduleSubmit}</button>
                   </form>
                 ) : (
@@ -419,7 +419,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                             </button>
                             {otpInfo[p.id]?.dev_code && <span className="ax-lozenge ax-lozenge--warning">{t.devCode} {otpInfo[p.id].dev_code}</span>}
                             <div className="ax-field cd-otpfield" style={{ maxInlineSize: 160 }}><label className="ax-field__label" htmlFor={`virtual-otp-code-${p.id}`}>{t.codeLabel}</label>
-                              <input className="ax-input ax-numeric" id={`virtual-otp-code-${p.id}`} value={codes[p.id] ?? ""} onChange={e => setCodes(c => ({ ...c, [p.id]: e.target.value }))} maxLength={6} /></div>
+                              <input className="ax-input numeric" id={`virtual-otp-code-${p.id}`} value={codes[p.id] ?? ""} onChange={e => setCodes(c => ({ ...c, [p.id]: e.target.value }))} maxLength={6} /></div>
                             <button className="ax-btn" onClick={() => verify(p)} disabled={busy || !!st?.locked}>{t.verify}</button>
                           </div>
                           {st?.status === "ok" && (

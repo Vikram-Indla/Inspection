@@ -472,10 +472,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       <div className="ax-kpi-row">
         {states.map(s => (
           <div key={s} className="ax-surface ax-kpi"><span className="ax-overline">{enumLabel(s)}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s]}</span></div>
+            <span className="ax-kpi__value numeric">{counts[s]}</span></div>
         ))}
       </div>
-      <p className="t-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
+      <p className="t-caption"><span className="numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
 
       <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} />
 
@@ -528,7 +528,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                       ? <a className="ax-link" href={`/factories/${f.visit.factories.id}`}>{f.visit.factories.name}</a>
                       : "—"}</td>
                     <td><span className="ax-lozenge ax-lozenge--ops">{enumLabel(f.visit.operational_state)}</span></td>
-                    <td><span className="ax-numeric">{new Date(f.deadlineMs).toISOString().slice(0, 16).replace("T", " ")}</span></td>
+                    <td><span className="numeric">{new Date(f.deadlineMs).toISOString().slice(0, 16).replace("T", " ")}</span></td>
                     <td><span className={`ax-lozenge ${f.kind === "reminder" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{slaKindLabel(f)}</span></td>
                     <td>{f.escalation
                       ? <span className={`ax-lozenge ${f.escalation === "L2" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{f.escalation}</span>
@@ -539,11 +539,11 @@ export default async function Operations({ searchParams }: { searchParams: Promi
             )}
             <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
               {t("ops.sla.confNote", "Thresholds from engine_settings (ENG-09):")}{" "}
-              {t("ops.sla.confCalendar", "calendar")} <span className="ax-numeric">{slaConf.calendar?.days ?? "—"} {slaConf.calendar?.hours ?? ""}</span> ·{" "}
-              {t("ops.sla.confReview", "review")} <span className="ax-numeric">{slaConf.review_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
-              {t("ops.sla.confResub", "resubmission")} <span className="ax-numeric">{slaConf.resubmission_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
-              {t("ops.sla.confAction", "action due")} <span className="ax-numeric">{slaConf.action_due_calendar_days ?? "—"}</span>{t("ops.sla.confDays", "d")} ·{" "}
-              {t("ops.sla.confReminders", "reminders at")} <span className="ax-numeric">{(slaConf.reminders ?? []).map(r => `${Math.round(r * 100)}%`).join(", ") || "—"}</span>
+              {t("ops.sla.confCalendar", "calendar")} <span className="numeric">{slaConf.calendar?.days ?? "—"} {slaConf.calendar?.hours ?? ""}</span> ·{" "}
+              {t("ops.sla.confReview", "review")} <span className="numeric">{slaConf.review_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
+              {t("ops.sla.confResub", "resubmission")} <span className="numeric">{slaConf.resubmission_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
+              {t("ops.sla.confAction", "action due")} <span className="numeric">{slaConf.action_due_calendar_days ?? "—"}</span>{t("ops.sla.confDays", "d")} ·{" "}
+              {t("ops.sla.confReminders", "reminders at")} <span className="numeric">{(slaConf.reminders ?? []).map(r => `${Math.round(r * 100)}%`).join(", ") || "—"}</span>
             </p>
           </div>
 
@@ -567,7 +567,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                         {a.inspections?.visit_id && <a className="ax-link t-caption" href={`/visits/${a.inspections.visit_id}`}>{visitWord} {a.inspections.visit_id.slice(0, 8)}</a>}</td>
                       <td>{a.owner_name ?? "—"}{a.owner_role && <span className="t-caption"> · {a.owner_role}</span>}</td>
                       <td>{a.due_at
-                        ? <span className={overdue ? "ax-lozenge ax-lozenge--critical" : "ax-numeric"}>{new Date(a.due_at).toISOString().slice(0, 10)}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
+                        ? <span className={overdue ? "ax-lozenge ax-lozenge--critical" : "numeric"}>{new Date(a.due_at).toISOString().slice(0, 10)}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
                         : "—"}</td>
                       <td>{a.is_blocking ? <span className="ax-lozenge ax-lozenge--critical">{t("ops.actions.blocking", "blocking")}</span> : <span className="ax-lozenge">{t("ops.actions.advisory", "advisory")}</span>}</td>
                       <td><span className={`ax-lozenge ${a.status === "acknowledged" ? "ax-lozenge--info" : "ax-lozenge--warning"}`}>{enumLabel(a.status)}</span></td>
@@ -595,7 +595,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                     <td><a className="ax-link" href={`/factories/${f.id}`}>{f.name}</a>
                       {f.activity_class && <><br /><span className="t-caption">{f.activity_class}</span></>}</td>
                     <td className="t-caption">{[f.region, f.city].filter(Boolean).join(" · ") || "—"}</td>
-                    <td><span className="ax-numeric">{f.risk_score}</span></td>
+                    <td><span className="numeric">{f.risk_score}</span></td>
                     <td>{f.risk_band
                       ? <span className={`ax-lozenge ${BAND_TONE[f.risk_band] ?? ""}`}>{enumLabel(f.risk_band)}</span>
                       : <span className="t-caption">—</span>}</td>
@@ -617,7 +617,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                   <div><strong>{enumLabel(g.kind)}</strong> ±{g.accuracy_m}m{" "}
                     {g.geofence_result && <span className={`ax-lozenge ${g.geofence_result === "inside" ? "ax-lozenge--success" : g.geofence_result === "override" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{enumLabel(g.geofence_result)}</span>}{" "}
                     <a className="ax-link t-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />
-                    <span className="ax-timeline__meta ax-numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
+                    <span className="ax-timeline__meta numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
                 </li>
               ))}</ul>
             )}
@@ -637,7 +637,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                     <td><span className="ax-lozenge ax-lozenge--info">{n.event_key}</span></td>
                     <td className="t-caption">{n.channel}</td>
                     <td><span className={`ax-lozenge ${NOTIF_TONE[n.delivery_state] ?? ""}`}>{enumLabel(n.delivery_state)}</span></td>
-                    <td><span className="ax-numeric">{new Date(n.created_at).toISOString().slice(5, 16).replace("T", " ")}</span></td>
+                    <td><span className="numeric">{new Date(n.created_at).toISOString().slice(5, 16).replace("T", " ")}</span></td>
                     <td>{n.delivery_state !== "handled" && <MarkNotificationHandled notificationId={n.id} strings={markHandledStrings} />}</td>
                   </tr>
                 ))}</tbody>

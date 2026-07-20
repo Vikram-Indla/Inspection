@@ -154,7 +154,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
           </select></label>
         <label className="cd-choice"><input type="checkbox" checked={overdue} onChange={e => setOverdue(e.target.checked)} /><span>{strings.overdueOnly}</span></label>
         {hasFilter && <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clearFilters}</button>}
-        <span className="t-caption ax-numeric" style={{ marginInlineStart: "auto" }}>
+        <span className="t-caption numeric" style={{ marginInlineStart: "auto" }}>
           {strings.showing.replace("{shown}", String(filtered.length)).replace("{total}", String(rows.length))}
         </span>
       </div>
@@ -184,7 +184,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
                 </td>
                 <td>{r.inspectorName || "—"}</td>
                 <td className="cd-sub">{r.typeLabel} · {r.modeLabel}</td>
-                <td><span className="ax-version">v{r.versionNumber ?? "—"}</span><div className="cd-sub cd-mono ax-numeric">{r.submittedDisplay}</div></td>
+                <td><span className="ax-version">v{r.versionNumber ?? "—"}</span><div className="cd-sub cd-mono numeric">{r.submittedDisplay}</div></td>
                 <td><Fingerprint r={r} s={strings.fp} /></td>
                 <td><span className={`ax-lozenge ax-lozenge--review ${r.statusTone}`}>{r.statusLabel}</span></td>
                 <td><a className="ax-btn ax-btn--secondary" href={r.href} title={strings.openHint}>{strings.open}</a></td>

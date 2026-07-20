@@ -66,7 +66,7 @@ export default function Attachments({ visitId, rows, strings }: {
               <tr key={a.id}>
                 <td><strong>{a.name}</strong></td>
                 <td className="t-caption">{a.mime}</td>
-                <td className="ax-td-num ax-numeric">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
+                <td className="ax-td-num numeric">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
                 <td>{a.uploadedBy}</td>
                 <td>
                   <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>

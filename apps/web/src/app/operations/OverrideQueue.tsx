@@ -74,10 +74,10 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
               </div>
               <p style={{ marginBlock: "var(--ax-space-150)" }}>{row.explanation}</p>
               <div className="row t-caption" style={{ gap: 12, flexWrap: "wrap" }}>
-                <span>{strings.captured}: <span className="ax-numeric">{stamp(row.device_occurred_at)} UTC</span></span>
-                <span className="ax-numeric">{row.observed_lat.toFixed(6)}, {row.observed_lng.toFixed(6)}</span>
-                <span>{strings.accuracy}: <span className="ax-numeric">±{Number(row.accuracy_m).toFixed(1)} m</span></span>
-                <span>{strings.distance}: <span className="ax-numeric">{Number(row.distance_m).toFixed(0)} m</span></span>
+                <span>{strings.captured}: <span className="numeric">{stamp(row.device_occurred_at)} UTC</span></span>
+                <span className="numeric">{row.observed_lat.toFixed(6)}, {row.observed_lng.toFixed(6)}</span>
+                <span>{strings.accuracy}: <span className="numeric">±{Number(row.accuracy_m).toFixed(1)} m</span></span>
+                <span>{strings.distance}: <span className="numeric">{Number(row.distance_m).toFixed(0)} m</span></span>
                 {row.safety_security_exception ? <span>{strings.safetyException}</span> : <span>
                   {strings.evidence}: {row.evidence_count}{" "}
                   {row.evidence_url

@@ -88,7 +88,7 @@ export default async function EnforcementRecommendations() {
               <span className="ax-lozenge ax-lozenge--warning">{actionLabel(row.recommended_action)}</span>
             </div>
             {row.recommendation_notes && <p className="t-caption">{row.recommendation_notes}</p>}
-            <p className="t-caption ax-numeric">{new Date(row.recommended_at).toLocaleString()}</p>
+            <p className="t-caption numeric">{new Date(row.recommended_at).toLocaleString()}</p>
             {isDecider
               ? <DecideForm id={row.id} strings={{
                   approve: tr("admin.enf.rec.approve", "Approve", "الموافقة"),
@@ -113,7 +113,7 @@ export default async function EnforcementRecommendations() {
                   <td>{(d.factories as unknown as { name: string } | null)?.name ?? "—"}</td>
                   <td>{actionLabel(d.recommended_action)}</td>
                   <td><span className={`ax-lozenge ${d.status === "approved" ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{d.status}</span></td>
-                  <td className="t-caption ax-numeric">{d.decided_at ? new Date(d.decided_at).toLocaleString() : "—"}</td>
+                  <td className="t-caption numeric">{d.decided_at ? new Date(d.decided_at).toLocaleString() : "—"}</td>
                 </tr>
               ))}
             </tbody></table></div>

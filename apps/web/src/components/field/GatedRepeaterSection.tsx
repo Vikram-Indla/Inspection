@@ -55,7 +55,7 @@ function PhotoAffordance({ inputId, label, helper }: { inputId: string; label: s
         />
       </label>
       <p id={helperId} className="t-caption">{helper}</p>
-      {chosen && <p className="t-caption ax-numeric">{chosen}</p>}
+      {chosen && <p className="t-caption numeric">{chosen}</p>}
     </div>
   );
 }

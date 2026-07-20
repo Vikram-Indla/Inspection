@@ -45,7 +45,7 @@ export default async function PlanRegister() {
         {["draft", "published", "returned", "cancelled"].map(s => (
           <div key={s} className="ax-surface ax-kpi">
             <span className="ax-overline">{t(`enum.${s}`, s)}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s] ?? 0}</span>
+            <span className="ax-kpi__value numeric">{counts[s] ?? 0}</span>
           </div>
         ))}
       </div>
@@ -68,13 +68,13 @@ export default async function PlanRegister() {
           <tbody>
             {plans.map(p => (
               <tr key={p.id}>
-                <td className="ax-numeric"><a className="ax-link" href={`/planning/plans/${p.id}`}><strong>{p.id.slice(0, 8)}</strong></a></td>
+                <td className="numeric"><a className="ax-link" href={`/planning/plans/${p.id}`}><strong>{p.id.slice(0, 8)}</strong></a></td>
                 <td><span className="ax-lozenge ax-lozenge--info">{t(`enum.${p.method}`, p.method)}</span></td>
                 <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[p.status] ?? ""}`}>{t(`enum.${p.status}`, p.status)}</span></td>
                 <td>{p.profiles?.full_name ?? "—"}</td>
-                <td className="ax-td-num ax-numeric">{fmt(p.created_at)}</td>
-                <td className="ax-td-num ax-numeric">{p.published_at ? fmt(p.published_at) : "—"}</td>
-                <td className="ax-td-num ax-numeric">{p.visits?.[0]?.count ?? 0}</td>
+                <td className="ax-td-num numeric">{fmt(p.created_at)}</td>
+                <td className="ax-td-num numeric">{p.published_at ? fmt(p.published_at) : "—"}</td>
+                <td className="ax-td-num numeric">{p.visits?.[0]?.count ?? 0}</td>
               </tr>
             ))}
           </tbody>

@@ -137,14 +137,14 @@ export default function NotificationRulesManager({ rows, roles, l }: { rows: Not
           <tbody>
             {rows.map(r => (
               <tr key={r.id}>
-                <td className="ax-numeric">{r.event_key}</td>
+                <td className="numeric">{r.event_key}</td>
                 <td>{r.channel}</td>
                 <td>{r.recipient_role || <span className="ax-lozenge ax-lozenge--warning">{l.missingRecipient}</span>}</td>
                 <td>{r.sla_minutes ? `${r.sla_minutes}m → ${r.escalation_role}` : "—"}</td>
                 <td><span className={`ax-lozenge ${r.status === "published" ? "ax-lozenge--success" : r.status === "deactivated" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
                   {r.status === "published" ? l.statusPublished : r.status === "deactivated" ? l.statusDeactivated : l.statusDraft}
                 </span></td>
-                <td className="ax-numeric">{r.version_label}</td>
+                <td className="numeric">{r.version_label}</td>
                 <td><RowActions row={r} l={l} /></td>
               </tr>
             ))}

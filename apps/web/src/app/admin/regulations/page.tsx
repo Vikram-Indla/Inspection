@@ -171,7 +171,7 @@ export default async function Regulations({
     return (
       <>
         {before}
-        <bdi dir="ltr" className="ax-numeric">{readAt}</bdi>
+        <bdi dir="ltr" className="numeric">{readAt}</bdi>
         {after ?? ""}
       </>
     );
@@ -264,13 +264,13 @@ export default async function Regulations({
               <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                 <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                   <h2 id="reg-dossier-h" style={{ margin: 0 }}>
-                    <span className="ax-numeric"><bdi dir="ltr">{reg.code}</bdi></span> — {reg.title}
+                    <span className="numeric"><bdi dir="ltr">{reg.code}</bdi></span> — {reg.title}
                   </h2>
                   <p className="t-caption" style={{ margin: 0 }}>
                     {reg.issuing_authority || "—"}
-                    {reg.created_at ? <> · {strings.createdAtLabel} <bdi dir="ltr" className="ax-numeric">{reg.created_at.slice(0, 10)}</bdi></> : null}
-                    {reg.effective_from ? <> · {strings.effectiveFrom} <bdi dir="ltr" className="ax-numeric">{reg.effective_from.slice(0, 10)}</bdi></> : null}
-                    <> · {strings.versionLabel} <bdi dir="ltr" className="ax-numeric">{reg.version_label}</bdi></>
+                    {reg.created_at ? <> · {strings.createdAtLabel} <bdi dir="ltr" className="numeric">{reg.created_at.slice(0, 10)}</bdi></> : null}
+                    {reg.effective_from ? <> · {strings.effectiveFrom} <bdi dir="ltr" className="numeric">{reg.effective_from.slice(0, 10)}</bdi></> : null}
+                    <> · {strings.versionLabel} <bdi dir="ltr" className="numeric">{reg.version_label}</bdi></>
                   </p>
                 </div>
                 <span className={`ax-lozenge ${reg.status === "published" ? "ax-lozenge--success" : reg.status === "deactivated" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
@@ -291,7 +291,7 @@ export default async function Regulations({
                 <ul className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                   {attachments.map(a => <li key={a.id}>
                     {attachmentUrls[a.id] ? <a className="ax-link" href={attachmentUrls[a.id]} target="_blank" rel="noreferrer"><strong>{a.file_name}</strong></a> : <strong>{a.file_name}</strong>}
-                    {a.media_type ? ` · ${a.media_type}` : ""}{a.sha256 ? <> · <bdi dir="ltr" className="ax-numeric">SHA-256 {a.sha256.slice(0, 12)}…</bdi></> : null}
+                    {a.media_type ? ` · ${a.media_type}` : ""}{a.sha256 ? <> · <bdi dir="ltr" className="numeric">SHA-256 {a.sha256.slice(0, 12)}…</bdi></> : null}
                   </li>)}
                 </ul>
               )}
@@ -326,7 +326,7 @@ export default async function Regulations({
                         const items = Array.isArray(c.inspection_items) ? c.inspection_items : null;
                         return (
                           <tr key={c.id}>
-                            <td className="ax-numeric"><strong><bdi dir="ltr">§{c.clause_ref ?? "—"}</bdi></strong></td>
+                            <td className="numeric"><strong><bdi dir="ltr">§{c.clause_ref ?? "—"}</bdi></strong></td>
                             <td>{c.title ?? "—"}</td>
                             <td className="t-caption">{c.applicability ?? "—"}</td>
                             <td className="t-caption">{c.legal_source ?? "—"}</td>
@@ -396,15 +396,15 @@ export default async function Regulations({
               {!isWriter ? <p className="t-caption">{t("admin.reg.audit.readonly", "The scoped author timeline is available to configuration writers; this read-only persona is not granted that RPC.")}</p>
                 : auditError ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.reg.audit.error", "The audit timeline is unavailable. Reload to retry; no empty-history claim is made.")}</div>
                 : auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.reg.audit.empty", "No scoped audit events returned — verified zero.")}</p>
-                : <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
+                : <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </section>
 
             <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-lineage-h">
               <h3 id="reg-lineage-h" style={{ margin: 0 }}>{t("admin.reg.lineage.heading", "Version lineage")}</h3>
               <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                 {lineage.map(version => <li key={version.id}>
-                  <a className="ax-link" href={`/admin/regulations?id=${encodeURIComponent(version.id)}`}><bdi dir="ltr" className="ax-numeric">{version.version_label}</bdi></a>
-                  {" · "}{version.status}{version.effective_from ? <> · <bdi dir="ltr" className="ax-numeric">{version.effective_from.slice(0, 10)}</bdi></> : null}
+                  <a className="ax-link" href={`/admin/regulations?id=${encodeURIComponent(version.id)}`}><bdi dir="ltr" className="numeric">{version.version_label}</bdi></a>
+                  {" · "}{version.status}{version.effective_from ? <> · <bdi dir="ltr" className="numeric">{version.effective_from.slice(0, 10)}</bdi></> : null}
                   {version.supersedes_id ? <> · {t("admin.reg.lineage.successor", "governed successor")}</> : null}
                   {version.deactivation_reason ? <div className="t-caption">{version.deactivation_reason}</div> : null}
                 </li>)}

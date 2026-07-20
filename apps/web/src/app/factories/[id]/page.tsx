@@ -259,7 +259,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.cr", "CR")}</span> <span className="cd-idv"><bdi>{identity(f.cr_number)}</bdi></span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.license", "license")}</span> <span className="cd-idv"><bdi>{identity(f.license_number)}</bdi></span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseStatus", "license status / stage")}</span> <span className="cd-idv">{identity(f.license_status)} · {identity(f.license_stage)}</span></p>
-            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseDates", "issued / expires")}</span> <span className="cd-idv ax-numeric">{identity(f.license_issue_date)} → {identity(f.license_expiry_date)}</span></p>
+            <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseDates", "issued / expires")}</span> <span className="cd-idv numeric">{identity(f.license_issue_date)} → {identity(f.license_expiry_date)}</span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.licenseHolder", "license holder")}</span> <span className="cd-idv">{identity(f.license_holder)}</span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.legalName", "CR legal name")}</span> <span className="cd-idv">{identity(f.legal_name)}</span></p>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.crStatus", "CR status / owner")}</span> <span className="cd-idv">{identity(f.cr_status)} · {identity(f.cr_owner_details)}</span></p>
@@ -276,7 +276,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <span className={`cd-riskscore ${riskTone}`}>{f.risk_score}</span>
             <p>{t("f360.risk.band", "band")} <strong>{f.risk_band ? enumLabel(f.risk_band) : "—"}</strong> · <span className="ax-version">{f.risk_version}</span></p>
             <p className="t-caption">{t("f360.risk.desc", "Recomputable from stored normalized inputs + this version; every calculation is retained.")}</p>
-            <p className="t-caption ax-numeric">{t("f360.risk.recalculated", "last recalculated")} {f.risk_calculated_at ? new Date(f.risk_calculated_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
+            <p className="t-caption numeric">{t("f360.risk.recalculated", "last recalculated")} {f.risk_calculated_at ? new Date(f.risk_calculated_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
             {driverEntries.length ? <ul className="t-caption">{driverEntries.map(([key, raw]) => {
               const d = typeof raw === "object" ? raw : {};
               return <li key={key}>{key.replace(/_/g, " ")}: {d.value ?? "—"} × {d.weight ?? "—"} = {d.contribution ?? "—"}</li>;
@@ -287,7 +287,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <h4>{t("f360.geo.heading", "Location")}</h4>
             <p className="cd-coords"><bdi>{f.official_lat}, {f.official_lng}</bdi> <span className="t-caption">{t("f360.id.gisOwned", "(GIS-Admin-owned, FND-007)")}</span></p>
             <p className="t-caption">{t("f360.geo.label", "Geofence (G-MAP):")} {f.geofence_radius_m != null
-              ? <><span className="ax-numeric">{f.geofence_radius_m} {t("f360.geo.unitM", "m")}</span> — {t("f360.geo.override", "per-factory override")}</>
+              ? <><span className="numeric">{f.geofence_radius_m} {t("f360.geo.unitM", "m")}</span> — {t("f360.geo.override", "per-factory override")}</>
               : t("f360.geo.engineDefault", "engine default (engine_settings gis.geofence_default_radius_m)")}</p>
             {f.official_lat != null && f.official_lng != null
               ? <FactorySpatialMap officialLat={Number(f.official_lat)} officialLng={Number(f.official_lng)} geofenceRadius={f.geofence_radius_m} events={locationEvents} strings={{
@@ -313,9 +313,9 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             {locationEvents.length ? <div className="ax-tablewrap"><table className="ax-table">
               <thead><tr><th scope="col">{t("common.when", "When")}</th><th scope="col">{t("common.kind", "Kind")}</th><th scope="col">{t("f360.geo.actual", "Observed coordinates")}</th><th scope="col">{t("f360.geo.mismatch", "Mismatch / reason")}</th><th scope="col">{t("common.visit", "Visit")}</th></tr></thead>
               <tbody>{locationEvents.map(e => <tr key={e.id}>
-                <td className="ax-numeric">{new Date(e.occurredAt).toISOString().slice(0, 16).replace("T", " ")}</td>
+                <td className="numeric">{new Date(e.occurredAt).toISOString().slice(0, 16).replace("T", " ")}</td>
                 <td><span className={`ax-lozenge ${e.kind === "override" ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>{enumLabel(e.kind)}</span></td>
-                <td className="ax-numeric"><bdi>{e.lat.toFixed(6)}, {e.lng.toFixed(6)}</bdi></td>
+                <td className="numeric"><bdi>{e.lat.toFixed(6)}, {e.lng.toFixed(6)}</bdi></td>
                 <td>{e.kind === "override" ? <strong>{e.overrideReason ?? t("f360.geo.overrideNoReason", "override reason unavailable")}</strong> : "—"}</td>
                 <td><a className="ax-link" href={`/visits/${e.visitId}`}>{e.visitId.slice(0, 8)}</a></td>
               </tr>)}</tbody>
@@ -344,8 +344,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 const drivers = s.drivers as Record<string, { value?: number; contribution?: number } | string>;
                 const entries = Object.entries(drivers).filter(([key]) => !key.startsWith("_"));
                 return <tr key={s.id}>
-                  <td className="ax-numeric">{new Date(s.calculated_at).toISOString().slice(0, 16).replace("T", " ")}</td>
-                  <td className="ax-numeric"><strong>{s.score}</strong></td><td>{enumLabel(s.band)}</td><td><span className="ax-version">{s.model_version}</span></td>
+                  <td className="numeric">{new Date(s.calculated_at).toISOString().slice(0, 16).replace("T", " ")}</td>
+                  <td className="numeric"><strong>{s.score}</strong></td><td>{enumLabel(s.band)}</td><td><span className="ax-version">{s.model_version}</span></td>
                   <td className="t-caption">{entries.length ? entries.map(([key, raw]) => {
                     const d = typeof raw === "object" ? raw : {};
                     return `${key.replace(/_/g, " ")} ${d.value ?? "—"} (${d.contribution ?? "—"})`;
@@ -375,7 +375,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                   const ins = v.inspections;
                   return (
                     <li key={v.id} className="cd-tl">
-                      <span className="cd-tl__when ax-numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</span>
+                      <span className="cd-tl__when numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</span>
                       <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-visit">◉</span><span className="cd-tl__line" /></span>
                       <div className="cd-tl__card">
                         <div className="cd-tl__head"><span className="cd-tl__kind">{enumLabel(v.visit_type)}</span><span className="cd-tl__title">{t("f360.hist.th.visit", "Visit")} <a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></span></div>
@@ -405,24 +405,24 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             )}
             <ol className="cd-timeline" style={{ marginBlockStart: sortedVisits.length === 0 ? 0 : "var(--ax-space-100)" }}>
               {f.source_synced_at && <li className="cd-tl" key="source-sync">
-                <span className="cd-tl__when ax-numeric">{new Date(f.source_synced_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__when numeric">{new Date(f.source_synced_at).toISOString().slice(0, 10)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">↻</span></span>
                 <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.sourceSync", "Source registry synced")}</span><span>{f.source}</span></div>
               </li>}
               {(riskHistory ?? []).map(s => <li className="cd-tl" key={`risk-${s.id}`}>
-                <span className="cd-tl__when ax-numeric">{new Date(s.calculated_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__when numeric">{new Date(s.calculated_at).toISOString().slice(0, 10)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-risk">◆</span></span>
                 <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.riskUpdated", "Score updated")}</span>
                   <span>{s.score} · {enumLabel(s.band)} · <span className="ax-version">{s.model_version}</span></span></div>
               </li>)}
               {(penaltyRows ?? []).map(p => <li className="cd-tl" key={`penalty-${p.id}`}>
-                <span className="cd-tl__when ax-numeric">{new Date(p.issued_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__when numeric">{new Date(p.issued_at).toISOString().slice(0, 10)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-risk">§</span></span>
                 <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.penaltyIssued", "Penalty issued")}</span>
                   <span>{p.notice_number} · {enumLabel(p.status)}</span></div>
               </li>)}
               {(evidenceRows ?? []).map(e => <li className="cd-tl" key={`evidence-${e.id}`}>
-                <span className="cd-tl__when ax-numeric">{new Date(e.captured_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__when numeric">{new Date(e.captured_at).toISOString().slice(0, 10)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">●</span></span>
                 <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.evidenceCaptured", "Evidence captured")}</span>
                   <span>{enumLabel(e.evidence_type)} · {enumLabel(e.linked_type)}</span></div>
@@ -446,7 +446,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                     return (
                       <tr key={v.id}>
                         <td><a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a> <span className="t-caption">{enumLabel(v.visit_type)}</span></td>
-                        <td className="ax-td-num ax-numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</td>
+                        <td className="ax-td-num numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</td>
                         <td><span className="ax-lozenge ax-lozenge--plan">{enumLabel(v.planning_status)}</span></td>
                         <td><span className="ax-lozenge ax-lozenge--ops">{enumLabel(v.operational_state)}</span></td>
                         <td>{ins ? <span className="ax-lozenge ax-lozenge--info">{enumLabel(ins.status)}</span> : <span className="t-caption">—</span>}</td>
@@ -484,9 +484,9 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                       <tr key={d.id}>
                         <td><span className="ax-lozenge ax-lozenge--info">{docTypeLabel(d.doc_type)}</span></td>
                         <td><strong>{d.title}</strong></td>
-                        <td className="ax-numeric">{d.reference_no ?? "—"}</td>
-                        <td className="ax-td-num ax-numeric">{d.valid_from ?? "—"}</td>
-                        <td className="ax-td-num ax-numeric">{d.valid_to ?? "—"}</td>
+                        <td className="numeric">{d.reference_no ?? "—"}</td>
+                        <td className="ax-td-num numeric">{d.valid_from ?? "—"}</td>
+                        <td className="ax-td-num numeric">{d.valid_to ?? "—"}</td>
                         <td><span className={badge.cls}>{badge.label}</span></td>
                       </tr>
                     );
@@ -520,7 +520,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                   <tr key={r.id}>
                     <td><strong>{r.full_name}</strong></td>
                     <td>{r.role_title ?? "—"}</td>
-                    {!maskContacts && <><td className="ax-numeric">{r.phone ?? "—"}</td><td>{r.email ?? "—"}</td></>}
+                    {!maskContacts && <><td className="numeric">{r.phone ?? "—"}</td><td>{r.email ?? "—"}</td></>}
                     <td>
                       {r.is_primary && <span className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 4 }}>{t("f360.reps.primary", "primary")}</span>}
                       <span className={`ax-lozenge ${r.active ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{r.active ? t("f360.reps.active", "active") : t("f360.reps.inactive", "inactive")}</span>
@@ -548,9 +548,9 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 <tbody>{(products ?? []).map(p => (
                   <tr key={p.id}>
                     <td><strong>{p.name}</strong></td>
-                    <td className="ax-td-num ax-numeric">{p.hs_code ?? "—"}</td>
+                    <td className="ax-td-num numeric">{p.hs_code ?? "—"}</td>
                     <td>{p.unit ?? "—"}</td>
-                    <td className="ax-td-num ax-numeric">{p.annual_capacity != null ? num.format(p.annual_capacity) : "—"}</td>
+                    <td className="ax-td-num numeric">{p.annual_capacity != null ? num.format(p.annual_capacity) : "—"}</td>
                     <td>{p.is_primary && <span className="ax-lozenge ax-lozenge--info">{t("f360.prod.primary", "primary")}</span>}</td>
                   </tr>
                 ))}</tbody>
@@ -575,7 +575,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                   <tr key={m.id}>
                     <td><strong>{m.name}</strong></td>
                     <td><span className={`ax-lozenge ${m.source === "local" ? "ax-lozenge--success" : "ax-lozenge--info"}`}>{m.source === "local" ? t("f360.mat.local", "local") : t("f360.mat.imported", "imported")}</span></td>
-                    <td className="ax-td-num ax-numeric">{m.hs_code ?? "—"}</td>
+                    <td className="ax-td-num numeric">{m.hs_code ?? "—"}</td>
                   </tr>
                 ))}</tbody>
               </table></div>

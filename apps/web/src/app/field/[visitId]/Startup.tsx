@@ -705,14 +705,14 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           <div className="stack" style={{ gap: 4, marginBlockStart: "var(--ax-space-200)" }}>
             <div className="row" style={{ justifyContent: "space-between" }}>
               <span className="t-caption">{strings.progressLabel}</span>
-              <span className="t-caption ax-numeric">{progress.toFixed(0)}%</span>
+              <span className="t-caption numeric">{progress.toFixed(0)}%</span>
             </div>
             <div role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}
               aria-label={strings.progressLabel}
               style={{ blockSize: 8, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-border)", overflow: "hidden" }}>
               <div style={{ blockSize: "100%", inlineSize: `${progress}%`, background: "var(--ax-color-primary)", borderRadius: "inherit" }} />
             </div>
-            <span className="t-caption ax-numeric">
+            <span className="t-caption numeric">
               {fmt(strings.progressCaption, { remaining: (remainingD ?? 0).toFixed(0), initial: (initialD ?? 0).toFixed(0) })}
             </span>
           </div>
@@ -790,7 +790,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {(overrideState === "queued" || overrideState === "pending") && !checkedIn && (
         <div className="ax-banner ax-banner--warning" role="status"><div>
           {overrideState === "queued" ? strings.overrideQueued : strings.overridePending}
-          {initialOverride?.status === "pending" && <> · <span className="ax-numeric">{new Date(initialOverride.expires_at).toISOString().slice(0, 16).replace("T", " ")} UTC</span></>}
+          {initialOverride?.status === "pending" && <> · <span className="numeric">{new Date(initialOverride.expires_at).toISOString().slice(0, 16).replace("T", " ")} UTC</span></>}
         </div></div>
       )}
       {overrideState === "approved" && (

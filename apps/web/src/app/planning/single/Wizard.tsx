@@ -205,7 +205,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
               <label className="ax-choice" style={{ display: "flex" }}>
                 <input key={resetKey} type="radio" name="license_number" value={factory.license_number} required
                   checked={licenseNumber === factory.license_number} onChange={() => setLicenseNumber(factory.license_number as string)} />
-                <span><strong className="ax-numeric">{factory.license_number}</strong> · {strings.licenseLabel} · {factory.name}</span>
+                <span><strong className="numeric">{factory.license_number}</strong> · {strings.licenseLabel} · {factory.name}</span>
               </label>
             </>
           ) : (
@@ -221,9 +221,9 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
           )}
           <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lat">{strings.plannerLat}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
+              <input key={resetKey} className="ax-input numeric" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lng">{strings.plannerLng}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="planner_lng" id="wizard-planner-lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
+              <input key={resetKey} className="ax-input numeric" name="planner_lng" id="wizard-planner-lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
           </div>
           <label className="ax-choice" style={{ display: "flex", marginBlockStart: "var(--ax-space-150)" }}>
             <input key={resetKey} type="checkbox" name="location_confirmed" value="1" required
@@ -246,9 +246,9 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
                 <option value="virtual" disabled={!virtualEligible}>{strings.modeVirtual}{!virtualEligible ? ` — ${strings.modeIneligible}` : ""}</option>
               </select></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-window-start">{strings.windowStart}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
+              <input key={resetKey} className="ax-input numeric" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-window-end">{strings.windowEnd}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="window_end" id="wizard-window-end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
+              <input key={resetKey} className="ax-input numeric" name="window_end" id="wizard-window-end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
             {/* M01-040 — auto-assign option (availability-checked) beside the manual pick */}
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-inspector">{strings.inspector}</label>
               <select key={resetKey} className="ax-select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>

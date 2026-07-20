@@ -116,7 +116,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
 
         <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           <h2 className="rp-title">{t("report.title", "Inspection report — {factory}").replace("{factory}", f.name)}</h2>
-          <span className="t-caption ax-numeric">{t("report.ref", "Inspection")} {ins.id.slice(0, 8)} · {latest ? `v${latest.version_number}` : t("report.noVersion", "no submitted version")} · {displayStatus}</span>
+          <span className="t-caption numeric">{t("report.ref", "Inspection")} {ins.id.slice(0, 8)} · {latest ? `v${latest.version_number}` : t("report.noVersion", "no submitted version")} · {displayStatus}</span>
         </div>
 
         {approvedWithoutVersion ? (
@@ -134,12 +134,12 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           <h3>{t("report.factory.heading", "Factory identity")}</h3>
           <dl className="rp-kv">
             <div><dt>{t("report.factory.name", "Establishment")}</dt><dd>{f.name}</dd></div>
-            <div><dt>{t("report.factory.code", "Factory code")}</dt><dd className="ax-numeric">{f.factory_code ?? "—"}</dd></div>
-            <div><dt>{t("report.factory.cr", "Commercial registration")}</dt><dd className="ax-numeric">{f.cr_number ?? "—"}</dd></div>
-            <div><dt>{t("report.factory.license", "Industrial license")}</dt><dd className="ax-numeric">{f.license_number ?? "—"}</dd></div>
+            <div><dt>{t("report.factory.code", "Factory code")}</dt><dd className="numeric">{f.factory_code ?? "—"}</dd></div>
+            <div><dt>{t("report.factory.cr", "Commercial registration")}</dt><dd className="numeric">{f.cr_number ?? "—"}</dd></div>
+            <div><dt>{t("report.factory.license", "Industrial license")}</dt><dd className="numeric">{f.license_number ?? "—"}</dd></div>
             <div><dt>{t("report.factory.location", "Region / city")}</dt><dd>{f.region ?? "—"} · {f.city ?? "—"}</dd></div>
             <div><dt>{t("report.factory.activity", "Activity class")}</dt><dd>{f.activity_class ?? "—"}</dd></div>
-            <div><dt>{t("report.factory.risk", "Risk band")}</dt><dd>{enumL(f.risk_band)} · <span className="ax-numeric">{f.risk_score ?? "—"}</span></dd></div>
+            <div><dt>{t("report.factory.risk", "Risk band")}</dt><dd>{enumL(f.risk_band)} · <span className="numeric">{f.risk_score ?? "—"}</span></dd></div>
           </dl>
         </section>
 
@@ -147,9 +147,9 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
         <section className="rp-section">
           <h3>{t("report.visit.heading", "Visit configuration")}</h3>
           <dl className="rp-kv">
-            <div><dt>{t("report.visit.id", "Visit")}</dt><dd className="ax-numeric">{v.id.slice(0, 8)}</dd></div>
+            <div><dt>{t("report.visit.id", "Visit")}</dt><dd className="numeric">{v.id.slice(0, 8)}</dd></div>
             <div><dt>{t("report.visit.type", "Type / mode")}</dt><dd>{enumL(v.visit_type)} · {enumL(v.execution_mode)}</dd></div>
-            <div><dt>{t("report.visit.window", "Window")}</dt><dd className="ax-numeric">{dt(v.window_start)} → {dt(v.window_end)}</dd></div>
+            <div><dt>{t("report.visit.window", "Window")}</dt><dd className="numeric">{dt(v.window_start)} → {dt(v.window_end)}</dd></div>
             <div><dt>{t("report.visit.state", "Lifecycle")}</dt><dd>{enumL(v.planning_status)} · {enumL(v.operational_state)}</dd></div>
             <div><dt>{t("report.visit.inspector", "Assigned inspector")}</dt><dd>{inspector}</dd></div>
             <div><dt>{t("report.visit.package", "Checklist package (locked)")}</dt><dd>{pkg.packages.code} · {pkg.packages.title} <span className="ax-version">{pkg.version_label}</span></dd></div>
@@ -177,11 +177,11 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                       const itemVios = vioByItem[code] ?? [];
                       return (
                         <tr key={code}>
-                          <td><strong className="ax-numeric">{code}</strong> {titleByCode[code] ?? ""}</td>
+                          <td><strong className="numeric">{code}</strong> {titleByCode[code] ?? ""}</td>
                           <td>{ans ? <span className={`ax-lozenge ${ans === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{enumL(ans)}</span> : <span className="t-caption">{t("report.items.notApplicable", "not answered / not applicable")}</span>}</td>
-                          <td>{snap.notes?.[code] ?? "—"}{snap.dates?.[code] ? <span className="t-caption ax-numeric"> · {snap.dates[code]}</span> : null}</td>
+                          <td>{snap.notes?.[code] ?? "—"}{snap.dates?.[code] ? <span className="t-caption numeric"> · {snap.dates[code]}</span> : null}</td>
                           <td>{itemVios.length ? itemVios.map(x => <span key={x.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.code}{x.level ? ` · ${enumL(x.level)}` : ""}</span>) : "—"}</td>
-                          <td className="ax-td-num ax-numeric">{snap.evidence?.by_item?.[code] ?? 0}</td>
+                          <td className="ax-td-num numeric">{snap.evidence?.by_item?.[code] ?? 0}</td>
                         </tr>
                       );
                     })}
@@ -210,7 +210,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                       <td>{x.title ?? "—"}</td>
                       <td>{enumL(x.level)}</td>
                       <td>{x.penalty_ref ? `${x.penalty_ref} · ${x.legal_basis ?? "—"} · ${enumL(notice?.status ?? "informational")}` : "—"}</td>
-                      <td className="ax-numeric">{x.mapping_version}</td>
+                      <td className="numeric">{x.mapping_version}</td>
                     </tr>
                   );
                 })}
@@ -231,7 +231,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                     <td>{a.form_type}</td>
                     <td>{a.required_correction ?? "—"}</td>
                     <td>{a.owner_name ?? "—"}{a.owner_role ? ` · ${a.owner_role}` : ""}</td>
-                    <td className="ax-td-num ax-numeric">{d10(a.due_at)}</td>
+                    <td className="ax-td-num numeric">{d10(a.due_at)}</td>
                     <td><span className={`ax-lozenge ${a.status === "complete" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{enumL(a.status)}</span></td>
                   </tr>
                 ))}
@@ -249,10 +249,10 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
               <tbody>
                 {evd.map((e, i) => (
                   <tr key={i}>
-                    <td className="ax-numeric">{e.storage_path}</td>
+                    <td className="numeric">{e.storage_path}</td>
                     <td>{enumL(e.evidence_type)}</td>
-                    <td className="ax-td-num ax-numeric">{dt(e.captured_at)}</td>
-                    <td className="ax-numeric">{e.content_sha256 ? `${e.content_sha256.slice(0, 16)}…` : "—"}</td>
+                    <td className="ax-td-num numeric">{dt(e.captured_at)}</td>
+                    <td className="numeric">{e.content_sha256 ? `${e.content_sha256.slice(0, 16)}…` : "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -270,7 +270,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
               {subs.map(s => (
                 <tr key={s.id}>
                   <td><span className="ax-version">v{s.version_number}</span> {t("report.hist.immutable", "immutable")}</td>
-                  <td className="ax-td-num ax-numeric">{dt(s.submitted_at)}</td>
+                  <td className="ax-td-num numeric">{dt(s.submitted_at)}</td>
                   <td>{s.profiles?.full_name ?? "—"}</td>
                   <td>{s.acknowledgement?.name ?? "—"}{s.acknowledgement?.signature_data_url ? ` · ${t("report.hist.signed", "signed")}` : ""}</td>
                 </tr>
@@ -281,7 +281,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
             <p key={i}>
               <span className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : r.decision === "reject" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{enumL(r.decision)}</span>{" "}
               <span className="ax-version">v{versionByReview(r.submission_version_id) ?? "—"}</span>{" "}
-              {r.profiles?.full_name ?? "—"} · <span className="ax-numeric">{dt(r.decided_at)}</span>
+              {r.profiles?.full_name ?? "—"} · <span className="numeric">{dt(r.decided_at)}</span>
               {r.decision_reason ? <> — {r.decision_reason}</> : null}
               {r.returned_sections?.length ? <span className="t-caption"> · {t("report.rev.sections", "returned sections:")} {r.returned_sections.join(", ")}</span> : null}
             </p>
@@ -298,18 +298,18 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img className="rp-sig__img" src={ack.signature_data_url} alt={t("report.sig.alt", "Representative signature")} />
                 : <div className="rp-sig__line" aria-hidden="true" />}
-              <p className="t-caption ax-numeric">{dt(ack?.signed_at ?? ack?.ts)}</p>
+              <p className="t-caption numeric">{dt(ack?.signed_at ?? ack?.ts)}</p>
             </div>
             <div>
               <dl className="rp-kv"><div><dt>{t("report.sig.inspector", "Inspector")}</dt><dd>{inspector}</dd></div></dl>
               <div className="rp-sig__line" aria-hidden="true" />
-              <p className="t-caption ax-numeric">{dt(latest?.submitted_at)}</p>
+              <p className="t-caption numeric">{dt(latest?.submitted_at)}</p>
             </div>
           </div>
         </section>
 
         <footer className="rp-foot">
-          <span>{t("report.foot.generated", "Generated from live records")} · <span className="ax-numeric">{dt(new Date().toISOString())}</span></span>
+          <span>{t("report.foot.generated", "Generated from live records")} · <span className="numeric">{dt(new Date().toISOString())}</span></span>
           <span>M04-215 · M06-018 · DEC-009 · ENG-12</span>
         </footer>
       </div>

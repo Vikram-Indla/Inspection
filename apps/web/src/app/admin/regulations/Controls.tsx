@@ -87,15 +87,15 @@ export function NewRegulationForm({ strings: s }: { strings: RegStrings }) {
   return (
     <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="reg-code">{s.code}</label>
-        <input id="reg-code" className="ax-input ax-numeric" name="code" placeholder="SBC-501" required /></div>
+        <input id="reg-code" className="ax-input numeric" name="code" placeholder="SBC-501" required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="reg-title">{s.title}</label>
         <input id="reg-title" className="ax-input" name="title" placeholder={s.titlePlaceholder} required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="reg-auth">{s.issuingAuthority}</label>
         <input id="reg-auth" className="ax-input" name="issuing_authority" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="reg-effective">{s.effectiveFrom}</label>
-        <input id="reg-effective" className="ax-input ax-numeric" type="date" name="effective_from" required /></div>
+        <input id="reg-effective" className="ax-input numeric" type="date" name="effective_from" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="reg-version">{s.versionLabel}</label>
-        <input id="reg-version" className="ax-input ax-numeric" name="version_label" defaultValue="v1" required /></div>
+        <input id="reg-version" className="ax-input numeric" name="version_label" defaultValue="v1" required /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.creating : s.create}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
@@ -112,7 +112,7 @@ export function AddClauseForm({ regulationId, strings: s }: { regulationId: stri
       <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <input type="hidden" name="regulation_id" value={regulationId} />
         <div className="ax-field"><label className="ax-field__label" htmlFor={`cl-ref-${regulationId}`}>{s.clauseRef}</label>
-          <input id={`cl-ref-${regulationId}`} className="ax-input ax-numeric" name="clause_ref" placeholder="4.2" required style={{ maxInlineSize: 100 }} /></div>
+          <input id={`cl-ref-${regulationId}`} className="ax-input numeric" name="clause_ref" placeholder="4.2" required style={{ maxInlineSize: 100 }} /></div>
         <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor={`cl-title-${regulationId}`}>{s.title}</label>
           <input id={`cl-title-${regulationId}`} className="ax-input" name="title" required /></div>
         <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor={`cl-src-${regulationId}`}>{s.legalSource}</label>
@@ -153,7 +153,7 @@ export function EditRegulationDraft({ regulation, strings: s }: {
         <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor={`reg-edit-auth-${regulation.id}`}>{s.issuingAuthority}</label>
           <input id={`reg-edit-auth-${regulation.id}`} className="ax-input" name="issuing_authority" defaultValue={regulation.issuingAuthority ?? ""} /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor={`reg-edit-effective-${regulation.id}`}>{s.effectiveFrom}</label>
-          <input id={`reg-edit-effective-${regulation.id}`} className="ax-input ax-numeric" type="date" name="effective_from" defaultValue={regulation.effectiveFrom?.slice(0, 10) ?? ""} /></div>
+          <input id={`reg-edit-effective-${regulation.id}`} className="ax-input numeric" type="date" name="effective_from" defaultValue={regulation.effectiveFrom?.slice(0, 10) ?? ""} /></div>
         <button className="ax-btn" disabled={pending}>{pending ? s.savingDraft : s.saveDraft}</button>
       </div>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
@@ -226,7 +226,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
         {/* Regulation */}
         <div className="stack" style={{ gap: "2px", minInlineSize: 140 }}>
           <span className="ax-overline">{s.railRegulation}</span>
-          <span className="ax-numeric"><bdi dir="ltr">{r.code}</bdi></span>
+          <span className="numeric"><bdi dir="ltr">{r.code}</bdi></span>
         </div>
         {/* Clauses — read verified / unknown / zero (draft with no clause is flagged) */}
         <div className="stack" style={{ gap: "2px", minInlineSize: 180 }}>
@@ -236,7 +236,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
           ) : noClauses ? (
             <span className="t-caption"><span aria-hidden="true">○</span> {s.railClausesZero}</span>
           ) : (
-            <span className="t-caption"><span aria-hidden="true">✓</span> <span className="ax-numeric"><bdi dir="ltr">{r.clauseCount}</bdi></span></span>
+            <span className="t-caption"><span aria-hidden="true">✓</span> <span className="numeric"><bdi dir="ltr">{r.clauseCount}</bdi></span></span>
           )}
           {r.status === "draft" && noClauses ? (
             <span className="t-caption" style={{ color: "var(--ax-color-warning-strong)" }}><span aria-hidden="true">⚠</span> {s.invalidNoClauses}</span>
@@ -250,7 +250,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
           ) : noItems ? (
             <span className="t-caption"><span aria-hidden="true">○</span> {s.railItemsZero}</span>
           ) : (
-            <span className="t-caption"><span aria-hidden="true">✓</span> <span className="ax-numeric"><bdi dir="ltr">{r.itemCount}</bdi></span></span>
+            <span className="t-caption"><span aria-hidden="true">✓</span> <span className="numeric"><bdi dir="ltr">{r.itemCount}</bdi></span></span>
           )}
         </div>
         {/* Beyond items — list disclosure stays conservative; dossier publication evaluates mappings. */}
@@ -325,10 +325,10 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
             <li key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
               <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                 <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
-                  <h3 style={{ margin: 0 }}><span className="ax-numeric"><bdi dir="ltr">{r.code}</bdi></span> — {r.title}</h3>
+                  <h3 style={{ margin: 0 }}><span className="numeric"><bdi dir="ltr">{r.code}</bdi></span> — {r.title}</h3>
                   <p className="t-caption" style={{ margin: 0 }}>
                     {r.issuing_authority || "—"}
-                    {r.created_at ? <> · {s.createdAtLabel} <bdi dir="ltr" className="ax-numeric">{r.created_at.slice(0, 10)}</bdi></> : null}
+                    {r.created_at ? <> · {s.createdAtLabel} <bdi dir="ltr" className="numeric">{r.created_at.slice(0, 10)}</bdi></> : null}
                   </p>
                 </div>
                 <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>

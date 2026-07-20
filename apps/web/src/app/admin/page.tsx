@@ -90,7 +90,7 @@ export default async function AdminHome() {
     );
   }
   const num = (n: number, unitEn?: string) => (
-    <span className="ax-numeric">
+    <span className="numeric">
       <bdi dir="ltr">{n.toLocaleString("en-US")}</bdi>
       {unitEn && locale === "en" ? ` ${unitEn}` : ""}
     </span>
@@ -140,7 +140,7 @@ export default async function AdminHome() {
   const readAtNode = withSlot(
     t("admin.overview.r2.readAt", "page read {time} — a source fact not a platform-health verdict"),
     "time",
-    <bdi dir="ltr" className="ax-numeric">{readAt}</bdi>,
+    <bdi dir="ltr" className="numeric">{readAt}</bdi>,
   );
 
   return (
@@ -234,7 +234,7 @@ export default async function AdminHome() {
                               {" · "}
                               <span className="ax-version"><bdi dir="ltr">{e.version_label}</bdi></span>
                               {e.updated_at ? (
-                                <> · <bdi dir="ltr" className="ax-numeric">{new Date(e.updated_at).toISOString().slice(0, 10)}</bdi></>
+                                <> · <bdi dir="ltr" className="numeric">{new Date(e.updated_at).toISOString().slice(0, 10)}</bdi></>
                               ) : null}
                             </li>
                           ))}

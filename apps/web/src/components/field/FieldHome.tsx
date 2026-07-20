@@ -133,7 +133,7 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: Fiel
           {strings.statusLabels[s.key] ?? s.key.replace(/_/g, " ")}
         </span>
       </div>
-      <span className="t-caption ax-numeric">
+      <span className="t-caption numeric">
         {fmtWindow(v.windowStart)} · {v.visitType} · {v.executionMode.replace(/_/g, " ")} · {v.city}
       </span>
       {(s.key === "expired" || s.key === "overdue") && (
@@ -162,7 +162,7 @@ function InboxRow({ n, strings }: { n: FieldNotification; strings: FieldHomeStri
           {n.label}{!read && <span className="sr-only"> — {strings.unreadBadge}</span>}
         </span>
         {n.detail && <span className="t-caption">{n.detail}</span>}
-        <span className="t-caption ax-numeric">{fmtWindow(n.createdAt)}</span>
+        <span className="t-caption numeric">{fmtWindow(n.createdAt)}</span>
         {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       </div>
       {!read && (

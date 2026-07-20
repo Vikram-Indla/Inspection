@@ -41,7 +41,7 @@ export default function OpsExport({ datasets, strings }: { datasets: ExportDatas
       {datasets.map(ds => (
         <button key={ds.key} type="button" className="ax-btn ax-btn--subtle" disabled={ds.rows.length === 0}
           onClick={() => download(ds)}>
-          {ds.label} <span className="ax-numeric">{ds.rows.length}</span>
+          {ds.label} <span className="numeric">{ds.rows.length}</span>
         </button>
       ))}
       <span className="t-caption">{strings.scopeNote}</span>

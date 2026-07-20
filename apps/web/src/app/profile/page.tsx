@@ -57,7 +57,7 @@ export default async function ProfileSettings() {
         <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-details-h">
           <h3 id="profile-details-h" style={{ margin: 0 }}>{t("profile.details.heading", "Personal details")}</h3>
           <Row label={t("profile.details.name", "Name")}><bdi dir="ltr">{profile?.full_name ?? "—"}</bdi></Row>
-          <Row label={t("profile.details.email", "Email")}><bdi dir="ltr" className="ax-numeric">{profile?.email ?? user.email ?? "—"}</bdi></Row>
+          <Row label={t("profile.details.email", "Email")}><bdi dir="ltr" className="numeric">{profile?.email ?? user.email ?? "—"}</bdi></Row>
           <Row label={t("profile.details.region", "Region")}><bdi dir="ltr">{profile?.region ?? "—"}</bdi></Row>
           <Row label={t("profile.details.roles", "Roles")}><bdi dir="ltr">{roles.length ? roles.map(roleLabel).join(", ") : "—"}</bdi></Row>
           <p className="t-caption" style={{ margin: 0, marginBlockStart: "var(--ax-space-100)" }}>
@@ -105,8 +105,8 @@ export default async function ProfileSettings() {
 
         <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-session-h">
           <h3 id="profile-session-h" style={{ margin: 0 }}>{t("profile.session.heading", "Session & security")}</h3>
-          <Row label={t("profile.session.issued", "Session started")}><bdi dir="ltr" className="ax-numeric">{issuedAt ?? "—"}</bdi></Row>
-          <Row label={t("profile.session.expires", "Session expires")}><bdi dir="ltr" className="ax-numeric">{expiresAt ?? "—"}</bdi></Row>
+          <Row label={t("profile.session.issued", "Session started")}><bdi dir="ltr" className="numeric">{issuedAt ?? "—"}</bdi></Row>
+          <Row label={t("profile.session.expires", "Session expires")}><bdi dir="ltr" className="numeric">{expiresAt ?? "—"}</bdi></Row>
           <a className="ax-btn ax-btn--subtle" href="/signout" style={{ alignSelf: "flex-start", marginBlockStart: "var(--ax-space-100)" }}>{t("nav.signout", "Sign out")}</a>
         </section>
       </div>

@@ -113,7 +113,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
         </div>
         <button type="button" className="ax-btn ax-btn--secondary" onClick={selectVisible}>{strings.selectVisible}</button>
         <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
-        <span className="t-caption ax-numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
+        <span className="t-caption numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
       </div>
 
       {confirmingSelectAll && (
@@ -124,7 +124,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
               <div className="ax-field" style={{ maxInlineSize: 140 }}>
                 <label className="ax-field__label" htmlFor="select-all-confirm-input">{strings.selectAllConfirmInputLabel}</label>
-                <input id="select-all-confirm-input" className="ax-input ax-numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
+                <input id="select-all-confirm-input" className="ax-input numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
               </div>
               <button type="button" className="ax-btn ax-btn--prominent" disabled={confirmInput.trim() !== String(filtered.length)} onClick={confirmSelectAllResults}>
                 {strings.selectAllConfirmButton.replace("{n}", String(filtered.length))}
@@ -151,12 +151,12 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             return (
               <tr key={f.id} style={isFocused ? { outline: "2px solid var(--ax-color-primary)", outlineOffset: -2 } : undefined}>
                 <td><input type="checkbox" disabled={dup} checked={selected.has(f.id)} onChange={e => toggle(f.id, e.target.checked)} aria-label={strings.selectFactory.replace("{name}", f.name)} /></td>
-                <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="t-caption ax-numeric"><bdi>{f.factory_code}</bdi></span></td>
-                <td className="ax-numeric"><bdi>{f.cr_number}</bdi></td>
+                <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="t-caption numeric"><bdi>{f.factory_code}</bdi></span></td>
+                <td className="numeric"><bdi>{f.cr_number}</bdi></td>
                 <td>{f.city ?? "—"}</td>
                 <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.riskBands[f.risk_band]) ?? "—"} · {f.risk_score ?? "?"}</span></td>
                 <td>{dup ? <span className="ax-lozenge ax-lozenge--critical">⛔ {strings.duplicate}</span> : <span className="ax-lozenge ax-lozenge--success">✓ {strings.eligible}</span>}</td>
-                <td className="t-caption ax-numeric"><span className="ax-freshness"><bdi>{provenance(f)}</bdi></span></td>
+                <td className="t-caption numeric"><span className="ax-freshness"><bdi>{provenance(f)}</bdi></span></td>
                 <td>{dq.length === 0 ? <span className="t-caption">{strings.dqComplete}</span> : dq.map(d => <div key={d.label}><span className={`ax-lozenge ax-lozenge--${d.kind}`}>{d.kind === "critical" ? "⛔" : "⚠"} {d.label}</span></div>)}</td>
               </tr>
             );
@@ -167,7 +167,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
 
       <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", justifyContent: "center" }}>
         <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
-        <span className="t-caption ax-numeric" role="status" aria-live="polite">
+        <span className="t-caption numeric" role="status" aria-live="polite">
           {strings.pageStatus.replace("{a}", String(filtered.length === 0 ? 0 : clampedPage * PAGE_SIZE + 1)).replace("{b}", String(Math.min(filtered.length, (clampedPage + 1) * PAGE_SIZE))).replace("{n}", String(filtered.length))}
         </span>
         <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
@@ -177,7 +177,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.summaryTitle}</h4>
         {sel.length === 0 ? <p className="t-caption">{strings.summaryEmpty}</p> : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "var(--ax-space-200)" }}>
-            <div><span className="t-caption">{strings.summarySelected}</span><div className="ax-numeric"><strong>{sel.length}</strong></div></div>
+            <div><span className="t-caption">{strings.summarySelected}</span><div className="numeric"><strong>{sel.length}</strong></div></div>
             <div><span className="t-caption">{strings.summaryByBand}</span>
               <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                 {Object.entries(byBand).map(([b, n]) => <span key={b} className={`ax-lozenge ${b === "high" ? "ax-lozenge--critical" : b === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{strings.riskBands[b] ?? b} · {n}</span>)}
@@ -193,7 +193,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       {/* persistent selection bar — cross-page count + hand-off to the P02 review step */}
       <div className="ax-surface row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--ax-space-200) var(--ax-space-300)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "center" }}>
         <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
-          <strong className="ax-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
+          <strong className="numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
           {selected.size === 0 && <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.readyNothing}</span>}
           {selected.size > 0 && <button type="button" className="ax-btn ax-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
         </div>

@@ -92,7 +92,7 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
           <ul className="t-caption" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
             {referencing.map(r => (
               <li key={`${r.code}-${r.label}`}>
-                <strong>{r.code}</strong> {r.title} <span className="ax-numeric">({r.label})</span> — {fmt(s.refShares, { n: r.sharedItems.length })}: {r.sharedItems.join(", ")}
+                <strong>{r.code}</strong> {r.title} <span className="numeric">({r.label})</span> — {fmt(s.refShares, { n: r.sharedItems.length })}: {r.sharedItems.join(", ")}
               </li>
             ))}
           </ul>

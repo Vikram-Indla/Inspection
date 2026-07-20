@@ -53,7 +53,7 @@ export default function FindingTraceChain({ traces, strings }: {
             <li key={trace.key} className="ax-trace__item">
               <details open>
                 <summary className="ax-trace__summary">
-                  <span className="ax-numeric">{trace.key}</span>
+                  <span className="numeric">{trace.key}</span>
                   <span>{trace.question.value}</span>
                 </summary>
                 <dl className="ax-trace__nodes">

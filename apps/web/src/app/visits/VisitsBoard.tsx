@@ -365,10 +365,10 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         ) : (
           <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
             <div style={{ minInlineSize: 200 }}>
-              <div className="ax-numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
-                {activeVisit.planId && <span className="t-caption ax-numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
+              <div className="numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
+                {activeVisit.planId && <span className="t-caption numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
               </div>
-              <div className="t-caption">{activeVisit.factoryName}{(activeVisit.crNumber || activeVisit.licenseNumber) && <> · <span className="ax-numeric">{[activeVisit.crNumber, activeVisit.licenseNumber].filter(Boolean).join(" · ")}</span></>}</div>
+              <div className="t-caption">{activeVisit.factoryName}{(activeVisit.crNumber || activeVisit.licenseNumber) && <> · <span className="numeric">{[activeVisit.crNumber, activeVisit.licenseNumber].filter(Boolean).join(" · ")}</span></>}</div>
               <div className="t-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
             </div>
             <div style={{ minInlineSize: 180 }}>
@@ -378,7 +378,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                 </span>
                 <span className="ax-lozenge ax-lozenge--ops">{activeVisit.opsLabel}</span>
               </div>
-              <div className="t-caption">{strings.spineWindow}: <span className="ax-numeric">{fmt(activeVisit.windowStart)}</span></div>
+              <div className="t-caption">{strings.spineWindow}: <span className="numeric">{fmt(activeVisit.windowStart)}</span></div>
               <div className="t-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
             </div>
             <a className="ax-btn ax-btn--subtle" href={`/visits/${activeVisit.id}`}
@@ -395,7 +395,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             onClick={() => setStatus(status === s ? "" : s)}
             style={{ cursor: "pointer", textAlign: "start", boxShadow: status === s ? "var(--ax-focus-ring)" : undefined }}>
             <span className="ax-overline">{strings.statusLabels[s] ?? s}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s] ?? 0}</span>
+            <span className="ax-kpi__value numeric">{counts[s] ?? 0}</span>
           </button>
         ))}
       </div>
@@ -426,11 +426,11 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         </select>
         <div className="ax-field" style={{ maxInlineSize: 170 }}>
           <label className="ax-field__label" htmlFor="visit-filter-from">{strings.fromDate}</label>
-          <input id="visit-filter-from" className="ax-input ax-numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
+          <input id="visit-filter-from" className="ax-input numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
         </div>
         <div className="ax-field" style={{ maxInlineSize: 170 }}>
           <label className="ax-field__label" htmlFor="visit-filter-to">{strings.toDate}</label>
-          <input id="visit-filter-to" className="ax-input ax-numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
+          <input id="visit-filter-to" className="ax-input numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
         </div>
         <select className="ax-select" value={sort} onChange={e => setSort(e.target.value as SortKey)} aria-label={strings.sortAria}>
           <option value="window_asc">{strings.sortWindowAsc}</option>
@@ -465,9 +465,9 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
-                <input id="bulk-window-start" className="ax-input ax-numeric" type="datetime-local" name="window_start" /></div>
+                <input id="bulk-window-start" className="ax-input numeric" type="datetime-local" name="window_start" /></div>
               <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-end">{strings.bulkWindowEnd}</label>
-                <input id="bulk-window-end" className="ax-input ax-numeric" type="datetime-local" name="window_end" /></div>
+                <input id="bulk-window-end" className="ax-input numeric" type="datetime-local" name="window_end" /></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkRescheduleBtn}</button>
             </form>
             <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="row" style={{ alignItems: "flex-end" }}>
@@ -542,7 +542,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             <tbody>
               {ledger.map(item => (
                 <tr key={item.id}>
-                  <td className="ax-numeric"><strong>{item.id.slice(0, 8)}</strong></td>
+                  <td className="numeric"><strong>{item.id.slice(0, 8)}</strong></td>
                   <td><span className={`ax-lozenge ${OUTCOME_TONE[item.outcome]}`}>
                     {item.outcome === "applied" ? strings.outcomeApplied
                       : item.outcome === "applied_no_notification" ? strings.ledgerShortNoNotif
@@ -578,7 +578,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                   style={isActive ? { outline: "var(--ax-focus-ring)", outlineOffset: "-2px" } : undefined}>
                   <td><input type="checkbox" checked={selected.has(v.id)} onChange={() => toggleOne(v.id)}
                     aria-label={strings.selectRowAria.replace("{id}", v.id.slice(0, 8))} /></td>
-                  <td className="ax-numeric">
+                  <td className="numeric">
                     {/* Button drives the continuity spine (keyboard-accessible);
                         the adjacent link preserves direct navigation to detail. */}
                     <button type="button" className="ax-link ax-inline-target" onClick={() => setActiveId(v.id)} aria-pressed={isActive}
@@ -588,11 +588,11 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                     {" "}<a className="ax-link t-caption ax-inline-target" href={`/visits/${v.id}`}
                       aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</a>
                     {v.planId && (
-                      <><br /><span className="t-caption ax-numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
+                      <><br /><span className="t-caption numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
                     )}
                   </td>
                   <td>{v.factoryName}{(v.crNumber || v.licenseNumber) && (
-                    <><br /><span className="t-caption ax-numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
+                    <><br /><span className="t-caption numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
                   )}</td>
                   <td>{v.typeLabel} · {v.modeLabel}</td>
                   <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[eff] ?? ""}`}>
@@ -600,7 +600,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                   </span></td>
                   <td><span className="ax-lozenge ax-lozenge--ops">{v.opsLabel}</span></td>
                   <td>{v.inspectorName || "—"}</td>
-                  <td className="ax-td-num ax-numeric">{fmt(v.windowStart)}</td>
+                  <td className="ax-td-num numeric">{fmt(v.windowStart)}</td>
                 </tr>
               );
             })}
@@ -610,7 +610,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
 
       {/* M02-020 — count display + load-more raises the server page cap */}
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-        <span className="t-caption ax-numeric">
+        <span className="t-caption numeric">
           {strings.showing.replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}
         </span>
         {nextLimit !== null && <a className="ax-btn ax-btn--subtle" href={`/visits?limit=${nextLimit}`}>{strings.loadMore}</a>}

@@ -23,7 +23,7 @@ function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: D
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
         <h4 style={{ margin: 0 }}>{dist.heading}</h4>
-        <span className="t-caption ax-numeric">{strings.ofDenominator.replace("{n}", String(dist.total))}</span>
+        <span className="t-caption numeric">{strings.ofDenominator.replace("{n}", String(dist.total))}</span>
       </div>
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
         {dist.buckets.map(b => {
@@ -39,7 +39,7 @@ function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: D
                 blockSize: 8, inlineSize: `${pct}%`, minInlineSize: 2,
                 background: "var(--ax-color-primary)", borderRadius: "var(--ax-radius-small)",
               }} />
-              <span className="ax-numeric t-caption" style={{ marginInlineStart: "auto" }}>{b.count}</span>
+              <span className="numeric t-caption" style={{ marginInlineStart: "auto" }}>{b.count}</span>
             </li>
           );
         })}

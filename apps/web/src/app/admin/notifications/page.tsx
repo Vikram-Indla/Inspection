@@ -108,10 +108,10 @@ export default async function AdminNotifications() {
           <tbody>
             {rulesError ? null : rows.map(r => (
               <tr key={r.id}>
-                <td className="ax-numeric">{r.event_key}</td><td>{r.channel}</td>
+                <td className="numeric">{r.event_key}</td><td>{r.channel}</td>
                 <td>{r.recipient_role || <span className="ax-lozenge ax-lozenge--warning">{l.missingRecipient}</span>}</td>
                 <td>{r.sla_minutes ? `${r.sla_minutes}m → ${r.escalation_role}` : "—"}</td>
-                <td>{r.status}</td><td className="ax-numeric">{r.version_label}</td>
+                <td>{r.status}</td><td className="numeric">{r.version_label}</td>
               </tr>
             ))}
           </tbody>

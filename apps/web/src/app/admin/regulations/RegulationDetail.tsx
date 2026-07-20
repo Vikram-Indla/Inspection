@@ -120,12 +120,12 @@ export default async function RegulationDetail({
               const items = c.inspection_items ?? [];
               return (
                 <tr key={c.id}>
-                  <td className="ax-numeric"><strong>§{c.clause_ref}</strong></td>
+                  <td className="numeric"><strong>§{c.clause_ref}</strong></td>
                   <td>{c.title}</td>
                   <td><bdi>{c.legal_source || "—"}</bdi></td>
                   <td>
                     {items.length > 0 ? (
-                      <span className="t-caption ax-numeric">{s.mappedCount.replace("{n}", String(items.length))}: {items.map(i => (
+                      <span className="t-caption numeric">{s.mappedCount.replace("{n}", String(items.length))}: {items.map(i => (
                         <span key={i.id} className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 6 }}>{i.code}</span>
                       ))}</span>
                     ) : (

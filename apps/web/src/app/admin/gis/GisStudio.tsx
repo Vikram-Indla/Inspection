@@ -143,8 +143,8 @@ export default function GisStudio({ factories, gis, strings: s }: {
           <option value="unbanded">{s.bandUnbanded}</option>
         </select>
         <span className="t-caption">
-          <span className="ax-numeric">{filtered.length}</span> / <span className="ax-numeric">{factories.length}</span> {s.shownOf}
-          {unlocated > 0 && <> · <span className="ax-numeric">{unlocated}</span> {s.noCoords}</>}
+          <span className="numeric">{filtered.length}</span> / <span className="numeric">{factories.length}</span> {s.shownOf}
+          {unlocated > 0 && <> · <span className="numeric">{unlocated}</span> {s.noCoords}</>}
         </span>
       </div>
 
@@ -187,7 +187,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
 
               <div>
                 <div className="ax-field__label">{s.coordsLabel}</div>
-                <p className="ax-numeric" dir="ltr">{selected.official_lat}, {selected.official_lng}</p>
+                <p className="numeric" dir="ltr">{selected.official_lat}, {selected.official_lng}</p>
                 <p className="t-caption">{s.coordsCaption}</p>
               </div>
 
@@ -196,12 +196,12 @@ export default function GisStudio({ factories, gis, strings: s }: {
                 <div className="ax-field">
                   <label className="ax-field__label" htmlFor="gis-radius">{s.radiusLabel}</label>
                   <input
-                    id="gis-radius" className="ax-input ax-numeric" name="geofence_radius_m"
+                    id="gis-radius" className="ax-input numeric" name="geofence_radius_m"
                     type="number" min={1} step={1} required
                     value={draftRadius} onChange={e => setDraftRadius(e.target.value)}
                     placeholder={String(defaultFence)}
                   />
-                  <p className="ax-field__hint">{s.radiusHint} (<span className="ax-numeric">{defaultFence}</span> m)</p>
+                  <p className="ax-field__hint">{s.radiusHint} (<span className="numeric">{defaultFence}</span> m)</p>
                 </div>
                 <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
                   <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.saving : s.save}</button>
@@ -216,17 +216,17 @@ export default function GisStudio({ factories, gis, strings: s }: {
             <div className="ax-field__label">{s.defaultsTitle}</div>
             <table className="ax-table">
               <tbody>
-                <tr><td>{s.defaultsCheckin}</td><td className="ax-numeric" dir="ltr">≤ {gis.gps_accuracy_checkin_max_m ?? "—"} m</td></tr>
-                <tr><td>{s.defaultsArrival}</td><td className="ax-numeric" dir="ltr">{gis.arrival_detection_radius_m ?? "—"} m</td></tr>
-                <tr><td>{s.defaultsFence}</td><td className="ax-numeric" dir="ltr">{defaultFence} m</td></tr>
+                <tr><td>{s.defaultsCheckin}</td><td className="numeric" dir="ltr">≤ {gis.gps_accuracy_checkin_max_m ?? "—"} m</td></tr>
+                <tr><td>{s.defaultsArrival}</td><td className="numeric" dir="ltr">{gis.arrival_detection_radius_m ?? "—"} m</td></tr>
+                <tr><td>{s.defaultsFence}</td><td className="numeric" dir="ltr">{defaultFence} m</td></tr>
               </tbody>
             </table>
             {/* Legend with live counts of the pins currently on the map */}
             <div className="row" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
-              <span className="ax-lozenge ax-lozenge--critical">{s.bandHigh} <span className="ax-numeric">{bandCounts.high}</span></span>
-              <span className="ax-lozenge ax-lozenge--warning">{s.bandMedium} <span className="ax-numeric">{bandCounts.medium}</span></span>
-              <span className="ax-lozenge ax-lozenge--success">{s.bandLow} <span className="ax-numeric">{bandCounts.low}</span></span>
-              {bandCounts.unbanded > 0 && <span className="ax-lozenge ax-lozenge--info">{s.bandUnbanded} <span className="ax-numeric">{bandCounts.unbanded}</span></span>}
+              <span className="ax-lozenge ax-lozenge--critical">{s.bandHigh} <span className="numeric">{bandCounts.high}</span></span>
+              <span className="ax-lozenge ax-lozenge--warning">{s.bandMedium} <span className="numeric">{bandCounts.medium}</span></span>
+              <span className="ax-lozenge ax-lozenge--success">{s.bandLow} <span className="numeric">{bandCounts.low}</span></span>
+              {bandCounts.unbanded > 0 && <span className="ax-lozenge ax-lozenge--info">{s.bandUnbanded} <span className="numeric">{bandCounts.unbanded}</span></span>}
               <span className="t-caption">{s.legendCaption}</span>
             </div>
           </div>
@@ -259,15 +259,15 @@ export default function GisStudio({ factories, gis, strings: s }: {
                     background: isSel ? "var(--ax-color-selected-tint, var(--ax-color-neutral-tint))" : undefined,
                   }}
                 >
-                  <td className="ax-numeric">{f.factory_code}</td>
+                  <td className="numeric">{f.factory_code}</td>
                   <td><strong>{f.name}</strong></td>
                   <td>{f.region ?? "—"}</td>
                   <td>{f.city ?? "—"}</td>
                   <td><span className={lozengeFor(f.risk_band)}>{bandLabel(f.risk_band)}</span></td>
-                  <td className="ax-numeric" dir="ltr">
+                  <td className="numeric" dir="ltr">
                     {f.geofence_radius_m ?? defaultFence} m{f.geofence_radius_m == null && <span className="t-caption"> · {s.radiusDefault}</span>}
                   </td>
-                  <td className="ax-numeric" dir="ltr">{hasCoords ? `${f.official_lat}, ${f.official_lng}` : "—"}</td>
+                  <td className="numeric" dir="ltr">{hasCoords ? `${f.official_lat}, ${f.official_lng}` : "—"}</td>
                 </tr>
               );
             })}

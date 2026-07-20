@@ -57,7 +57,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
           <span className="ax-field__label">{strings.searchFactoryLabel}</span>
           <input className="ax-input" value={query} onChange={e => setQuery(e.target.value)} placeholder={strings.searchFactoryPlaceholder} />
         </label>
-        <p className="t-caption ax-numeric">{fmt(strings.selectedCount, { n: selected.size })}</p>
+        <p className="t-caption numeric">{fmt(strings.selectedCount, { n: selected.size })}</p>
         <div className="stack" style={{ gap: "var(--ax-space-050)", maxBlockSize: 320, overflow: "auto" }}>
           {shown.map(f => (
             <label key={f.id} className="ax-choice" style={{ display: "flex", alignItems: "center" }}>
@@ -104,7 +104,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
           <div className="ax-tablewrap"><table className="ax-table"><tbody>
             {results.map(r => (
               <tr key={r.factory_id}>
-                <td className="t-caption ax-numeric">{r.factory_id}</td>
+                <td className="t-caption numeric">{r.factory_id}</td>
                 <td><span className={`ax-lozenge ${r.status === "success" ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{r.status === "success" ? strings.resultSuccess : strings.resultFailed}</span></td>
                 {r.error_code && <td className="t-caption">{r.error_code}</td>}
               </tr>

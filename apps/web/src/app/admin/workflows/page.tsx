@@ -89,7 +89,7 @@ export default async function Workflows() {
             {/* Approval chain — maker → checker, straight from config_versions (RBAC-002) */}
             <p className="t-caption">
               {t("admin.wf.chain.proposed", "Proposed by")} <strong>{nameOf(w.created_by) ?? "—"}</strong>
-              {w.created_at && <> · <span className="ax-numeric">{new Date(w.created_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
+              {w.created_at && <> · <span className="numeric">{new Date(w.created_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
               {" → "}
               {w.approved_by
                 ? <>{t("admin.wf.chain.approved", "approved by")} <strong>{nameOf(w.approved_by)}</strong> <span className="ax-lozenge ax-lozenge--success">{t("admin.wf.chain.distinct", "distinct approver")}</span></>

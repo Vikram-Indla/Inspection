@@ -59,7 +59,7 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
   return (
     <form action={formAction} className="ax-surface" aria-label={s.create} style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-code">{s.code}</label>
-        <input id="new-violation-code" className="ax-input ax-numeric" name="code" placeholder="V-FS-12" required style={{ maxInlineSize: 120 }} /></div>
+        <input id="new-violation-code" className="ax-input numeric" name="code" placeholder="V-FS-12" required style={{ maxInlineSize: 120 }} /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="new-violation-title">{s.title}</label>
         <input id="new-violation-title" className="ax-input" name="title" placeholder={s.titlePlaceholder} required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-level">{s.level}</label>
@@ -73,7 +73,7 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
           {clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
         </select></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-active-from">{s.activeFrom}</label>
-        <input id="new-violation-active-from" className="ax-input ax-numeric" name="active_from" type="date" required /></div>
+        <input id="new-violation-active-from" className="ax-input numeric" name="active_from" type="date" required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 240 }}><label className="ax-field__label" htmlFor="new-violation-corrective">{s.correctiveAction}</label><input id="new-violation-corrective" className="ax-input" name="corrective_action" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-grace">{s.gracePeriod}</label><input id="new-violation-grace" className="ax-input" name="grace_period_days" type="number" min="0" step="1" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-category">{s.category}</label><input id="new-violation-category" className="ax-input" name="category" /></div>
@@ -118,13 +118,13 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
       </div>
       <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-penalty-ref`}>{s.penaltyRef}</label>
-        <input id={`${baseId}-penalty-ref`} className="ax-input ax-numeric" name="penalty_ref" placeholder="P-042" required style={{ maxInlineSize: 100 }} /></div>
+        <input id={`${baseId}-penalty-ref`} className="ax-input numeric" name="penalty_ref" placeholder="P-042" required style={{ maxInlineSize: 100 }} /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor={`${baseId}-legal-basis`}>{s.legalBasis}</label>
         <input id={`${baseId}-legal-basis`} className="ax-input" name="legal_basis" placeholder={s.legalBasisPlaceholder} required value={legalBasis} onChange={e => setLegalBasis(e.target.value)} /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-mapping-version`}>{s.mappingVersion}</label>
-        <input id={`${baseId}-mapping-version`} className="ax-input ax-numeric" name="mapping_version" placeholder="v3" required style={{ maxInlineSize: 90 }} /></div>
+        <input id={`${baseId}-mapping-version`} className="ax-input numeric" name="mapping_version" placeholder="v3" required style={{ maxInlineSize: 90 }} /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-effective-from`}>{s.activeFrom}</label>
-        <input id={`${baseId}-effective-from`} className="ax-input ax-numeric" name="effective_from" type="date" required /></div>
+        <input id={`${baseId}-effective-from`} className="ax-input numeric" name="effective_from" type="date" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-range`}>{s.penaltyRange}</label>
         <select id={`${baseId}-range`} className="ax-select" name="penalty_range_preset" required value={rangePreset} onChange={e => setRangePreset(e.target.value)}>
           <option value="schedule_approved">{s.rangeApproved}</option>
@@ -175,7 +175,7 @@ export function DeactivateViolationForm({ violationId, violationCode, strings: s
       <input type="hidden" name="violation_code_id" value={violationId} />
       <div className="ax-field">
         <label className="ax-field__label" htmlFor={fieldId}>{s.activeTo}</label>
-        <input id={fieldId} className="ax-input ax-numeric" type="date" name="active_to" max={new Date().toISOString().slice(0, 10)} required />
+        <input id={fieldId} className="ax-input numeric" type="date" name="active_to" max={new Date().toISOString().slice(0, 10)} required />
       </div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reason`}>{s.deactivationReason}</label><input id={`${fieldId}-reason`} className="ax-input" name="deactivation_reason" required /></div>
       <button className="ax-btn ax-btn--subtle" aria-label={`${s.deactivate} ${violationCode}`} disabled={pending}>

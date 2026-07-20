@@ -114,7 +114,7 @@ export default async function InspectorRuntimePreview({
       {useError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>Package usage unavailable.</strong> Exact runtime placement is unknown; the item itself is shown from the live library.</div> : null}
 
       <section className="ax-surface cmp-runtime-head" aria-labelledby="runtime-item-heading">
-        <div><p className="t-caption ax-numeric"><bdi dir="ltr">{item.code}</bdi></p><h2 id="runtime-item-heading">{item.title}</h2><p>{textValue(source.guidance_en) ?? item.guidance_en ?? "No inspector guidance configured."}</p></div>
+        <div><p className="t-caption numeric"><bdi dir="ltr">{item.code}</bdi></p><h2 id="runtime-item-heading">{item.title}</h2><p>{textValue(source.guidance_en) ?? item.guidance_en ?? "No inspector guidance configured."}</p></div>
         <span className={`ax-lozenge ${item.active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{item.active ? "Operational" : "Inactive"}</span>
       </section>
 

@@ -381,6 +381,10 @@ td.rail-td > i { display: block; width: 4px; height: 100%; }
 .filter-chip button { border: 0; background: none; color: inherit; cursor: pointer; padding: 0; font-size: 10px; }
 
 /* ══ SAQEEL TSX port additions (inline styles → classes) ══════ */
+/* Generic numeral-alignment utility (astryx .ax-numeric equivalent) —
+   individual components (kpi-value, cell-num, id-code…) set their own
+   font-variant-numeric; this is for standalone numeral spans/cells. */
+.numeric { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1, "lnum" 1; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden;
   clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; padding: 0; margin: -1px; }
 .fileupload { display: flex; flex-direction: column; align-items: center; gap: var(--space-1);

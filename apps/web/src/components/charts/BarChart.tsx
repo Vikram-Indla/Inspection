@@ -42,7 +42,7 @@ export default function BarChart({ data, title, emptyLabel = "No data", height =
               <rect x={cx - slot * 0.32} y={y} width={slot * 0.64}
                 height={Math.max(h, d.value > 0 ? 2 : 0)} rx={3}
                 fill="var(--ax-color-primary)" />
-              <text x={cx} y={y - 5} textAnchor="middle" className="ax-numeric" style={VALUE_TEXT}>{d.value}</text>
+              <text x={cx} y={y - 5} textAnchor="middle" className="numeric" style={VALUE_TEXT}>{d.value}</text>
               <text x={cx} y={height - 6} textAnchor="middle" style={AXIS_TEXT}>{d.label}</text>
             </g>
           );

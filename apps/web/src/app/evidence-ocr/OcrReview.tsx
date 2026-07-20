@@ -23,7 +23,7 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
-          <h3>{row.evidenceType} <span className="t-caption ax-numeric">{row.capturedAt}</span></h3>
+          <h3>{row.evidenceType} <span className="t-caption numeric">{row.capturedAt}</span></h3>
           {row.inspectionId && <a className="ax-link t-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}
         </div>
         <form action={action}>

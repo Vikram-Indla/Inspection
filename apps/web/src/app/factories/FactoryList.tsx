@@ -76,7 +76,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
             <option value="">{strings.allCities}</option>
             {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select></div>
-        <span className="t-caption"><span className="ax-numeric">{rows.length}</span> {strings.of} <span className="ax-numeric">{factories.length}</span> {strings.factoriesWord}</span>
+        <span className="t-caption"><span className="numeric">{rows.length}</span> {strings.of} <span className="numeric">{factories.length}</span> {strings.factoriesWord}</span>
       </div>
       {rows.length === 0 ? (
         <EmptyState glyph="🏭" title={strings.emptyRegionTitle} body={strings.emptyRegionDesc} />
@@ -86,7 +86,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
           <tbody>{rows.map(f => (
             <tr key={f.id}>
               <td><strong>{f.name}</strong> <span className="t-caption">{f.factory_code}</span></td>
-              <td className="ax-numeric">{f.cr_number}</td>
+              <td className="numeric">{f.cr_number}</td>
               <td><span className="ax-lozenge ax-lozenge--info">{f.region ?? "—"}</span></td>
               <td>{f.city}</td>
               <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.bandLabels[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>

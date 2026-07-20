@@ -287,7 +287,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               <p key={i} className="t-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {new Date(a.due_at).toISOString().slice(0, 10)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
             ))}
             {(ins.evidence as unknown as { storage_path: string; content_sha256: string | null }[]).map((e, i) => (
-              <p key={i} className="t-caption ax-numeric" style={{ marginBlockStart: 8 }}>📎 {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
+              <p key={i} className="t-caption numeric" style={{ marginBlockStart: 8 }}>📎 {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
             ))}
           </div>
           {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}
@@ -321,7 +321,7 @@ const panelStrings: WorkspaceDecisionStrings = {
                     <td>{c.source_value ?? "—"}</td>
                     <td>{c.observed_value ?? "—"}</td>
                     <td><span className={`ax-lozenge ${c.status === "verified" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.fv.${c.status}`, c.status)}</span></td>
-                    <td className="ax-numeric">
+                    <td className="numeric">
                       {fvEvCount(c.id) || "—"}
                       {c.evidence_note && <div className="t-caption">{c.evidence_note}</div>}
                     </td>
@@ -338,7 +338,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
                 <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h4>
                 <p>
-                  <strong>{ack.name ?? "—"}</strong> · <span className="ax-numeric">{(ack.signed_at ?? ack.ts) ? new Date(ack.signed_at ?? ack.ts!).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
+                  <strong>{ack.name ?? "—"}</strong> · <span className="numeric">{(ack.signed_at ?? ack.ts) ? new Date(ack.signed_at ?? ack.ts!).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
                   {" "}<span className="ax-version">v{latest.version_number}</span>
                 </p>
                 {ack.signature_data_url
@@ -373,7 +373,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail (ENG-12)")}</h4>
               {(trail ?? []).map(ev => (
                 <p key={ev.id} className="t-caption" style={{ marginBlockStart: 4 }}>
-                  <span className="ax-numeric">{new Date(ev.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</span>
+                  <span className="numeric">{new Date(ev.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</span>
                   {" · "}<strong>{t(`enum.audit.${ev.object_type}`, ev.object_type.replace(/_/g, " "))}</strong>
                   {" · "}{t(`enum.audit.${ev.action}`, ev.action.replace(/_/g, " ").toLowerCase())}
                 </p>

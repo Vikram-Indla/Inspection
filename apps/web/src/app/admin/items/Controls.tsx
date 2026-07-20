@@ -73,7 +73,7 @@ export function NewItemForm({
     >
       <div className="ax-field">
         <label className="ax-field__label" htmlFor="item-code">{s.code}</label>
-        <input id="item-code" className="ax-input ax-numeric" name="code" placeholder="FS-110" required style={{ maxInlineSize: 120 }} />
+        <input id="item-code" className="ax-input numeric" name="code" placeholder="FS-110" required style={{ maxInlineSize: 120 }} />
       </div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}>
         <label className="ax-field__label" htmlFor="item-title">{s.title}</label>
@@ -88,7 +88,7 @@ export function NewItemForm({
       </div>
       <div className="ax-field">
         <label className="ax-field__label" htmlFor="item-weight">{s.weight}</label>
-        <input id="item-weight" className="ax-input ax-numeric" name="score_weight" inputMode="decimal" placeholder="5" style={{ maxInlineSize: 80 }} disabled={!scoring} />
+        <input id="item-weight" className="ax-input numeric" name="score_weight" inputMode="decimal" placeholder="5" style={{ maxInlineSize: 80 }} disabled={!scoring} />
       </div>
       <div className="ax-field" style={{ minInlineSize: 240 }}>
         <label className="ax-field__label" htmlFor="item-response">{s.responseModel}</label>
@@ -253,7 +253,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
       {/* Read-only runtime projection — disabled controls signal "not an authoring surface". */}
       <div className="ax-panel ax-surface" style={{ padding: "var(--ax-space-250)", background: "var(--ax-color-surface-sunken)" }}>
         <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
-          <strong className="ax-numeric"><bdi dir="ltr">{item.code}</bdi></strong>
+          <strong className="numeric"><bdi dir="ltr">{item.code}</bdi></strong>
           <span>{item.title}</span>
           <span className={`ax-lozenge ${item.active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
             <span aria-hidden="true">{item.active ? "●" : "✕"} </span>{item.active ? s.active : s.deactivatedWord}
@@ -271,7 +271,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
             </div>
             {item.ncTarget && <p className="t-caption">{fill(s.ncMaps, { target: item.ncTarget })}</p>}
             <p className="t-caption"><span aria-hidden="true">◇ </span>{item.requirement === "optional" ? s.optional : item.requirement === "conditional" ? s.conditional : s.required}</p>
-            {item.conditionalRule && <p className="t-caption"><bdi dir="ltr" className="ax-numeric">{item.conditionalRule}</bdi>{item.mandatoryWhenVisible ? ` · ${s.mandatoryVisible}` : ""}</p>}
+            {item.conditionalRule && <p className="t-caption"><bdi dir="ltr" className="numeric">{item.conditionalRule}</bdi>{item.mandatoryWhenVisible ? ` · ${s.mandatoryVisible}` : ""}</p>}
           </div>
 
           <div>

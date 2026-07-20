@@ -94,7 +94,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
         font: "var(--ax-text-caption)",
       }}
       title={`${v.factoryName} · ${v.typeLabel} · ${v.planningLabel} · ${v.opsLabel}`}>
-      {withTime && <span className="ax-numeric">{timeOf(v.windowStart)} </span>}{v.factoryName}
+      {withTime && <span className="numeric">{timeOf(v.windowStart)} </span>}{v.factoryName}
     </a>
   );
 
@@ -144,7 +144,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
                   background: inMonth(ms) ? "var(--ax-color-surface)" : "var(--ax-color-surface-sunken)",
                   display: "flex", flexDirection: "column", gap: 2, opacity: inMonth(ms) ? 1 : .6,
                 }}>
-                  <span className="t-caption ax-numeric" style={{ alignSelf: "flex-end" }}>{new Date(ms).getUTCDate()}</span>
+                  <span className="t-caption numeric" style={{ alignSelf: "flex-end" }}>{new Date(ms).getUTCDate()}</span>
                   {list.slice(0, 3).map(v => chip(v, false))}
                   {list.length > 3 && (
                     <button type="button" className="t-caption" onClick={() => { setAnchorMs(ms); setView("day"); }}
@@ -183,13 +183,13 @@ export default function CalendarBoard({ visits, locale, strings }: {
 
       {view === "day" && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-          <span className="t-caption ax-numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
+          <span className="t-caption numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
           {dayVisits.length === 0 ? (
             <div className="ax-state ax-state--inline"><p className="t-caption">{strings.emptyRange}</p></div>
           ) : dayVisits.map(v => (
             <a key={v.id} href={`/visits/${v.id}`} className="ax-surface"
               style={{ padding: "var(--ax-space-200)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", textDecoration: "none", color: "inherit", border: "1px solid var(--ax-color-border)" }}>
-              <span className="ax-numeric"><strong>{timeOf(v.windowStart)}</strong> → {timeOf(v.windowEnd)}</span>
+              <span className="numeric"><strong>{timeOf(v.windowStart)}</strong> → {timeOf(v.windowEnd)}</span>
               <strong>{v.factoryName}</strong>
               <span className="t-caption">{v.typeLabel}</span>
               <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[v.planningStatus] ?? ""}`}>{v.planningLabel}</span>

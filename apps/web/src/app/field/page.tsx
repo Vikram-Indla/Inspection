@@ -237,7 +237,7 @@ export default async function Field() {
               {kpis.map(([label, value]) => (
                 <div key={label} className="ax-surface ax-kpi">
                   <span className="t-caption">{label}</span>
-                  <span className="ax-kpi__value ax-numeric">{value}</span>
+                  <span className="ax-kpi__value numeric">{value}</span>
                 </div>
               ))}
             </div>

@@ -293,9 +293,9 @@ export default async function Items({
                 const ev = (i.evidence_rule ?? null) as EvidenceRule;
                 return (
                   <tr key={i.id}>
-                    <td className="ax-numeric"><strong><bdi dir="ltr">{i.code}</bdi></strong></td>
+                    <td className="numeric"><strong><bdi dir="ltr">{i.code}</bdi></strong></td>
                     <td>{i.title}</td>
-                    <td className="ax-numeric">{rc ? <bdi dir="ltr">{`${rc.regulations.code} §${rc.clause_ref}`}</bdi> : "—"}</td>
+                    <td className="numeric">{rc ? <bdi dir="ltr">{`${rc.regulations.code} §${rc.clause_ref}`}</bdi> : "—"}</td>
                     <td className="t-caption">
                       {(rm.responses ?? []).map(rLabel).join(" / ") || "—"}
                       {ncTarget && ` · ${t("admin.items.r2.sem.nc", "NC→")}${ncTarget}`}
@@ -305,7 +305,7 @@ export default async function Items({
                       {rm.conditional?.visible_when && ` · ${rm.conditional.visible_when}`}
                       {rm.scoring_enabled === false && ` · ${t("admin.items.r2.sem.scoringOff", "scoring off")}`}
                     </td>
-                    <td className="ax-td-num ax-numeric">{i.score_weight ?? "—"}</td>
+                    <td className="ax-td-num numeric">{i.score_weight ?? "—"}</td>
                     <td>
                       {(() => {
                         const usage = usageById.get(i.id);
@@ -344,9 +344,9 @@ export default async function Items({
           {!auditItemId ? <p className="t-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>
             : !auditItem ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.items.r2.audit.notFound", "The selected item is no longer in the readable catalogue.")}</div>
             : auditResult.error ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.items.r2.audit.unavailable", "Audit unavailable — reload to retry; history is not reported as empty.")}</div>
-            : <div className="stack" style={{ gap: "var(--ax-space-100)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="ax-numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
+            : <div className="stack" style={{ gap: "var(--ax-space-100)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
               {auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.items.r2.audit.empty", "No scoped audit events returned — verified zero.")}</p>
-                : <ol>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
+                : <ol>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </div>}
         </section>
       )}

@@ -91,10 +91,10 @@ export default async function Localization() {
       ) : (
         <>
           <div className="ax-kpi-row">
-            <div className="ax-kpi"><span className="ax-kpi__value ax-numeric">{total}</span>{t("l10n.kpi.total", "Total keys")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value ax-numeric">{translated}</span>{t("l10n.kpi.translated", "Translated (AR)")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value ax-numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value ax-numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
+            <div className="ax-kpi"><span className="ax-kpi__value numeric">{total}</span>{t("l10n.kpi.total", "Total keys")}</div>
+            <div className="ax-kpi"><span className="ax-kpi__value numeric">{translated}</span>{t("l10n.kpi.translated", "Translated (AR)")}</div>
+            <div className="ax-kpi"><span className="ax-kpi__value numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
+            <div className="ax-kpi"><span className="ax-kpi__value numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
           </div>
           <Manager rows={rows} labels={labels} />
         </>

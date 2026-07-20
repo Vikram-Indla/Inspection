@@ -40,29 +40,29 @@ export default function EligibilityLedger({
       style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-400)", alignItems: "flex-end" }}>
       <div>
         <span className="t-caption">{strings.denominator}</span>
-        <div className="ax-numeric" aria-live="polite"><strong style={{ font: "var(--ax-text-title)" }}>{denominator}</strong></div>
+        <div className="numeric" aria-live="polite"><strong style={{ font: "var(--ax-text-title)" }}>{denominator}</strong></div>
       </div>
       <div>
         <span className="t-caption">{strings.eligible}</span>
-        <div className="ax-numeric" aria-live="polite">
+        <div className="numeric" aria-live="polite">
           <span className="ax-lozenge ax-lozenge--success">✓ {eligible}</span>
         </div>
       </div>
       <div>
         <span className="t-caption">{strings.excluded}</span>
-        <div className="ax-numeric" aria-live="polite">
+        <div className="numeric" aria-live="polite">
           <span className="ax-lozenge ax-lozenge--info">− {excluded}</span>
         </div>
       </div>
       {focusedCount != null && (
         <div role="status" aria-live="polite">
           <span className="t-caption">{focusedLabel}</span>
-          <div className="ax-numeric"><span className="ax-lozenge ax-lozenge--info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
+          <div className="numeric"><span className="ax-lozenge ax-lozenge--info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
         </div>
       )}
       <div style={{ marginInlineStart: "auto" }}>
         <span className="t-caption">{strings.freshness}</span>
-        <div className="ax-freshness ax-numeric">
+        <div className="ax-freshness numeric">
           <bdi>{freshnessLabel}</bdi>
           {missingSync > 0 && (
             <> · <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.freshnessMissing.replace("{n}", String(missingSync))}</span></>

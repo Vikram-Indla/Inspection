@@ -87,9 +87,9 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
               <form action={rscAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
                 <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
-                  <input className="ax-input ax-numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
+                  <input className="ax-input numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
                 <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
-                  <input className="ax-input ax-numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
+                  <input className="ax-input numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
                 <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.rescheduleBtn}</button>
               </form>
               <form action={canAct} className="row" style={{ alignItems: "flex-end" }}>

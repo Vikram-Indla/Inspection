@@ -47,7 +47,7 @@ export default async function PlanningHome() {
   ] as const;
   return (
     <Shell current="/planning" title={t("plan.home.title", "Visit planning")}
-      context={<span className="t-caption ax-numeric">{t("plan.home.drafts", "{n} drafts").replace("{n}", String(drafts ?? 0))}</span>}>
+      context={<span className="t-caption numeric">{t("plan.home.drafts", "{n} drafts").replace("{n}", String(drafts ?? 0))}</span>}>
       {noPackage && (
         <div className="ax-banner ax-banner--critical"><div>
           <strong>{t("plan.home.noPackage", "No published inspection package.")}</strong> {t("plan.home.noPackageDesc", "Planning cannot publish without one (ERR-PUB-001).")} <a className="ax-link" href="/admin">{t("plan.home.openAdmin", "Open Admin")}</a>.
