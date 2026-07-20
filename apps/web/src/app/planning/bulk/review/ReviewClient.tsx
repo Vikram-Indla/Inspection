@@ -216,7 +216,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
         <div className="ax-banner ax-banner--immutable" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
           <div><strong>{s.stagedBanner}</strong><div className="ax-caption">{s.stagedSub}</div></div>
         </div>
-        <div className="ax-stack">{[0, 1, 2, 3].map(i => <div key={i} className="ax-skeleton" style={{ blockSize: 44 }} />)}</div>
+        <div className="ax-stack">{[0, 1, 2, 3].map(i => <div key={i} className="skeleton" style={{ blockSize: 44 }} />)}</div>
         <p className="ax-caption" role="status" style={{ marginBlockStart: "var(--ax-space-200)" }}>{s.loadingNote}</p>
       </div>
     );
@@ -255,7 +255,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
             <h3>{s.publishingTitle}</h3>
             <p role="status">{s.publishingBody}</p>
             <p className="ax-caption">{s.publishingSub}</p>
-            <div className="ax-skeleton" style={{ blockSize: 6, inlineSize: "60%" }} />
+            <div className="skeleton" style={{ blockSize: 6, inlineSize: "60%" }} />
           </div>
         </div>
       </section>

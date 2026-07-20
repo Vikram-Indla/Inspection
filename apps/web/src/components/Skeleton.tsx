@@ -10,7 +10,10 @@ type SkeletonBlockProps = {
 };
 
 export function SkeletonBlock({ blockSize = 14, inlineSize, style, ariaHidden }: SkeletonBlockProps) {
-  return <div className="ax-skeleton" style={{ blockSize, inlineSize, ...style }} aria-hidden={ariaHidden} />;
+  // SAQEEL: renders the new `.skeleton` class (design/saqeel components.css).
+  // Logical block/inline sizing preserved for RTL; migrates all 18 loading.tsx
+  // consumers off .ax-skeleton with no call-site change.
+  return <div className="skeleton" style={{ blockSize, inlineSize, ...style }} aria-hidden={ariaHidden} />;
 }
 
 type SkeletonRowsProps = {

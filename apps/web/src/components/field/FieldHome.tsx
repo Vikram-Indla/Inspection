@@ -19,7 +19,7 @@ import { markNotificationRead, requestVisitReschedule, type FieldActionResult } 
 // Mapbox is browser-only — dynamic import with ssr:false (GeoMap canon).
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
-  loading: () => <div className="ax-skeleton" style={{ blockSize: "100%", minBlockSize: 320 }} />,
+  loading: () => <div className="skeleton" style={{ blockSize: "100%", minBlockSize: 320 }} />,
 });
 
 export type FieldVisit = {
