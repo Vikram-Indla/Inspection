@@ -399,7 +399,10 @@ export default function ShellClient({
             <div className="ax-pagehead__context"><h2>{title}</h2>{context}</div>
           </div>
         </header>
-        <div className="ax-content">{children}</div>
+        {/* V2 Wave 7: admin/configuration surfaces adopt the 36/40px compact
+            density ladder — content only, never the shared nav rail/topbar
+            chrome, which stays the standard 44px everywhere for consistency. */}
+        <div className={current.startsWith("/admin") ? "ax-content ax-density-compact" : "ax-content"}>{children}</div>
       </main>
     </div>
   );
