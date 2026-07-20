@@ -351,3 +351,12 @@ Owner: CD004-EV-003 and CD004-EV-005 are closed. CD004-EV-004 remains blocked be
 | MVP2-M2-05-EV-004 | Typecheck, production build, M2-05 9/9 and static regression 12/12 | PASS; see `TASK-MVP2-M2-05-AUDIT-REPLAY-001.md` |
 | MVP2-M2-05-EV-005 | Authenticated UI/RLS/full regression | BLOCKED — shared-backend informed approval and fresh DB runtime absent |
 | MVP2-M2-05-EV-006 | Independent non-implementer source audit and remediation | SOURCE IMPLEMENTATION PASS — no remaining implementation P0/P1; runtime certification pending |
+## Factory 360 Industry Shared gap closure — 2026-07-20
+
+| ID | Evidence | Status |
+|---|---|---|
+| F360-ISH-EV-001..003 | ZIP checksum, endpoint inventory, and 9/9-page rendered specification review | Captured |
+| F360-ISH-EV-004..007 | Permanent endpoint/retirement/acceptance ledgers and server-only fail-closed provider contracts | Captured — source verified |
+| F360-ISH-EV-008..010 | Typecheck, production build, focused 4/4, protected static 135 pass / 4 intentional skips / 0 failed | PASS |
+| F360-ISH-EV-011 | Authenticated beta network/call-site contract capture for `ISH-API-001..011` | BLOCKED — beta login required |
+| F360-ISH-EV-012 | Controlled Industry Shared runtime normalization and stub retirement | NOT RUN — contracts and credentials absent |

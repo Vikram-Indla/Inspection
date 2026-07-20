@@ -1,5 +1,28 @@
 # Current State
 
+## 2026-07-20 UPDATE 105 — Industry Shared endpoint leads gated fail closed
+
+The sponsor-directed Factory 360 Industry Shared gap slice is source-implemented on the
+isolated `codex/industry-shared-factory360-gap-013` branch. Eleven supplied host/path leads
+are now represented by a permanent endpoint-contract ledger, stub-retirement matrix,
+acceptance ledger, and a dedicated server-only provider family. The provider records each
+lead once, keeps contacts, delegations, and the three workforce domains separate, and returns
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED` before any network call. It does not infer HTTP
+methods, authentication, identifiers, request or response fields, error semantics, privacy,
+retention, masking, or fixture data. The existing strict `/api/inspection` Senaei boundary,
+Factory 360 hierarchy, and `F360-BR-002` one-license-to-one-plant rule remain unchanged.
+
+The specification DOCX was rendered and inspected across all nine pages. The beta host is
+reachable, but both browser attempts terminate at its login page and no authenticated session
+or Industry Shared credential names are available. Repository search found no prior Industry
+Shared call sites; the supplied sanitized collection covers the different Senaei provider and
+cannot fill these contracts. Consequently all 11 endpoint rows remain `BLOCKED_EXTERNAL`, no
+stub is retired, and no canonical field migration is authorized. Typecheck and production
+build pass; focused contracts pass 4/4; protected static regression passes 135 with four
+intentional live-provider skips and zero failures. No remote DDL, deployment, main merge, or
+shared-environment mutation occurred. Exact evidence:
+`evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md`.
+
 ## 2026-07-20 UPDATE 104 — Factory 360 v2 Prompt 00 implemented and source-verified
 
 The sponsor-directed Factory 360 master slice is implemented on the isolated

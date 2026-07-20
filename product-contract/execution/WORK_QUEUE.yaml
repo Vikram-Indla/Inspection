@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013"
+    gate: "G11 Factory 360 integration hardening"
+    priority: "P0"
+    status: "FAIL_CLOSED_PROVIDER_BOUNDARY_IMPLEMENTED_CONTRACTS_BLOCKED_EXTERNAL"
+    owner: "Codex implementation and QA + Industry Shared API owner"
+    blocked_by: ["Authenticated beta contract capture or sanitized developer examples for ISH-API-001..011", "Sponsor decisions for contact/delegation and workforce privacy/retention if person-level fields exist"]
+    blocks: ["Retirement of F360-GAP-009", "Promotion of F360-AC-012 to functionally verified", "Web/iPad final Industry Shared reconciliation"]
+    note: "Exact baseline and isolated branch are correct. All eleven endpoint leads have permanent ledger rows and a dedicated server-only boundary that cannot infer methods or auth. Typecheck and production build pass; focused contracts pass 4/4; protected static regression passes 135 with four intentional live-provider skips and zero failures. No endpoint can be called or normalized until method/auth/request/response/error/privacy evidence and a sanitized fixture checksum exist. Existing Factory 360/Senaei, Mapbox, Risk, OCR, evidence, audit, RLS and offline behavior remain protected."
   - task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
     gate: "G11 sponsor-directed Compliance Approval Queue"
     priority: "P0"

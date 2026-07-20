@@ -1,63 +1,46 @@
 schema_version: "1.2"
-task_id: "TASK-FACTORY-360-COMPLETE-010"
-gate: "G11 Factory 360 v2 controlled implementation"
-title: "Factory 360 v2 — CR-centred industrial intelligence and Senaei integration"
-status: "SOURCE_VERIFIED_AWAITING_SPONSOR_FUNCTIONAL_ACCEPTANCE"
+task_id: "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013"
+gate: "G11 Factory 360 integration hardening"
+title: "Industry Shared API v2 deep discovery and Factory 360 gap closure"
+status: "DISCOVERY_AND_FAIL_CLOSED_IMPLEMENTATION_IN_PROGRESS"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#FACTORY-360-MASTER-EXECUTION-010"
-change_control_ref: "CC-FACTORY-360-MASTER-EXECUTION-010"
+approval_ref: "HUMAN_APPROVALS.yaml#FACTORY-360-INDUSTRY-SHARED-GAP-013"
+change_control_ref: "CC-FACTORY-360-INDUSTRY-SHARED-GAP-013"
 
-branch_at_start: "codex/factory-360-complete-010"
-head_at_start: "7f8cd1a"
+branch_at_start: "codex/industry-shared-factory360-gap-013"
+head_at_start: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
 process_ids: ["P12"]
 consumer_process_ids: ["P01", "P03", "P04", "P08", "P10", "P11"]
 requirement_ids:
-  - "MVP1-M07-001..020"
+  - "F360-ISH-REQ-001..018"
+  - "ISH-API-001..011"
+  - "F360-GAP-009"
+  - "NEW-GAP-LICENSE"
+  - "NEW-GAP-PRODUCTS"
+  - "NEW-GAP-WORKFORCE"
+  - "NEW-GAP-CONTACTS"
+  - "NEW-GAP-ACTIVITY"
   - "F360-BR-001..012"
   - "F360-LO-001..006"
-  - "F360-CR-001..008"
-  - "F360-II-001..004"
-  - "F360-GI-001..003"
-  - "F360-DOC-001..005"
-  - "F360-ARCH-001"
   - "F360-SRCH-001..003"
+  - "F360-II-001..004"
   - "F360-PERM-001..006"
-  - "F360-CALC-001"
-  - "F360-IMG-001"
-  - "F360-ACT-001..004"
 acceptance_ids:
-  - "AC-0410..0429"
-  - "F360-AC-001..016"
-  - "Every documented API endpoint, request field and response field in the Factory 360 API ledgers"
-evidence_ids: ["F360-EV-001..012"]
-screen_ids:
-  - "SCR-WEB-400"
-  - "SCR-WEB-100"
-  - "SCR-WEB-120"
-  - "SCR-WEB-210"
-  - "SCR-WEB-300"
-  - "SCR-WEB-310"
-  - "SCR-WEB-500"
-  - "SCR-IPAD-610"
-  - "SCR-ADM-001"
+  - "F360-ISH-AC-001..018"
+  - "F360-ISH-JRN-001..012"
+  - "F360-AC-001..016 (protected regression)"
+evidence_ids: ["F360-ISH-EV-001..012", "F360-EV-001..012 (protected baseline)"]
+screen_ids: ["SCR-WEB-400", "SCR-WEB-100", "SCR-WEB-120", "SCR-WEB-300", "SCR-WEB-310", "SCR-WEB-500"]
 engine_ids:
-  - "ENG-04"
-  - "ENG-06"
-  - "ENG-07"
-  - "ENG-08"
-  - "ENG-09"
-  - "ENG-11"
-  - "ENG-12"
-  - "Typed Senaei provider and synchronization adapter"
-  - "Permission-filtered PDF export service"
+  - "Typed Industry Shared API v2 provider and synchronization adapter"
+  - "Existing Factory 360 canonical source, RLS, audit and reconciliation engines"
 
 dependencies:
-  - "G8 PASS and broad implementation authorized."
-  - "Canonical setup/Inspection baseline 83043b1 merged with accepted Compliance line 8a8f26e in integration commit 7f8cd1a."
-  - "Checksum-verified Factory 360 execution pack dated 2026-07-20."
-  - "Factory_360_Specification_v2.0.docx, sanitized Inspection API JSON, sponsor direction and HTML interaction reference."
-  - "Existing CD-031 Factory 360 implementation and DEC-014 / DEC-012 evidence."
+  - "Exact pushed Web Factory 360 baseline db52854647fa9b4ca8fac362dfecd4ecc7ccf704."
+  - "Sponsor-supplied Industry Shared API Factory 360 gap-closure pack, SHA-256 212e89c0684cf1b0bc066e0a59d0b4cac0a252639385836155fdad682bf5a7d9."
+  - "Approved authenticated beta access or sanitized developer examples for contract verification."
+  - "Existing Factory 360 foundation migration and protected Web implementation."
 
 context_files:
   - "product-contract/factory-360/FACTORY_360_MASTER_LEDGER.csv"
@@ -69,51 +52,46 @@ context_files:
   - "product-contract/factory-360/FACTORY_360_PRESERVATION_LEDGER.csv"
   - "product-contract/factory-360/FACTORY_360_FUNCTIONAL_JOURNEYS.csv"
   - "product-contract/factory-360/FACTORY_360_EXECUTION_STATE.yaml"
-  - "product-contract/factory-360/source/README.md"
-  - "product-contract/factory-360/source/SANITIZATION_AUDIT.md"
-  - "product-contract/factory-360/source/FACTORY_360_SPONSOR_DIRECTION.txt"
-  - "product-contract/screens/screen_route_catalogue.csv"
-  - "product-contract/domain/field_dictionary.csv"
-  - "product-contract/domain/rbac_matrix.csv"
-  - "product-contract/domain/state_transitions.csv"
-  - "product-contract/governance/decision_register.csv"
-  - "product-contract/evidence/BUSINESS-UIUX-RECONCILIATION-2026-07-16.md"
-  - "product-contract/evidence/CODEX_AUDIT_CD-031_R3_2026-07-16.md"
+  - "product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv"
+  - "product-contract/factory-360/industry-shared/FACTORY360_STUB_RETIREMENT_MATRIX.csv"
+  - "apps/web/src/lib/integrations/senaei/client.ts"
+  - "apps/web/src/app/factories/cr/[id]/page.tsx"
+  - "supabase/migrations/20260720010000_factory360_v2_foundation.sql"
 
 open_decisions:
-  - "Undocumented Senaei domains remain BLOCKED_EXTERNAL with SENAEI_API_CONTRACT_NOT_SUPPLIED; no endpoints or values may be invented."
-  - "Provider credentials and live connectivity are separately controlled and must remain fail-closed."
-  - "Hijri dates display only when supplied or when a governed conversion authority is approved."
+  - "All eleven endpoint methods, authentication, request identifiers and response schemas remain unverified until authenticated beta or sanitized developer evidence is available."
+  - "Contact, delegation and HRSD person-level storage is prohibited until purpose, permission, retention and masking rules are explicitly approved."
+  - "One Industrial License represents one Plant under F360-BR-002; an apparent multi-plant response is a contract conflict, not permission to weaken cardinality."
   - "Qualified native-Arabic review remains a human release gate."
 
 do_not_touch:
-  - "Do not remove existing factory IDs/routes; preserve them through compatibility mappings or redirects."
+  - "Do not broaden or weaken the existing /api/inspection Senaei client allowlist."
+  - "Do not guess methods, authentication, identifiers, parameters, fields, endpoints or provider values."
+  - "Do not expose or persist unapproved person-level HRSD, contact or delegation data."
+  - "Do not remove existing factory IDs/routes, manual representative/product capabilities or historical records."
   - "Do not replace or duplicate Mapbox, Risk Engine, OCR, evidence custody, notification, audit, RLS or offline engines."
-  - "Do not mutate immutable inspection submissions or historical reports."
-  - "Do not show prototype/demo values as live data or fabricate unavailable Senaei responses."
-  - "Do not calculate CR-level risk or compliance."
-  - "Do not merge inspection evidence into the official factory gallery."
-  - "Do not deploy to production or apply remote DDL under Prompt 00."
+  - "Do not redesign the separately active Inspector iPad branch."
+  - "Do not merge, deploy, apply remote DDL or mutate shared beta/production data."
 
 authorized_file_scope:
-  - "Additive Factory 360 schema, migrations, RLS, audit, typed adapters, controlled stubs and compatibility projections."
-  - "Factory 360, global search, Administration/Integration Management and permission-bound action source."
-  - "Relocation of existing Factory 360 write controls without deleting their capability."
-  - "Focused tests, machine-readable ledgers, evidence indexes and session records."
-  - "Commit and push of the isolated Factory 360 branch only; no main merge."
+  - "Dedicated server-only Industry Shared API provider family, schemas, adapters and fail-closed errors."
+  - "Additive canonical reconciliation and schema changes justified only by verified endpoint contracts."
+  - "Web Factory 360 projections, search, source/freshness and partial-failure handling."
+  - "Sanitized fixtures, focused tests, machine-readable ledgers, evidence and session records."
+  - "Commit and push of the isolated Industry Shared branch only; no merge or deployment."
 
 required_evidence:
-  - "Source manifest and sanitization proof."
-  - "Complete requirement/API-field ledger disposition."
-  - "Schema, RLS, grants, audit and compatibility inventory."
-  - "Functional journeys for CR/license/plant search, selection, read-only behavior and partial provider failure."
-  - "Approved-snapshot compliance calculation and report/violation/penalty lineage."
-  - "Industrial/government/document/image/OCR/export and permission evidence."
-  - "Typecheck, production build, focused tests and protected regression."
+  - "Endpoint-by-endpoint method/auth/request/response/error/privacy contract or precise inaccessible disposition."
+  - "Sanitized fixture checksum for every CONTRACT_VERIFIED endpoint."
+  - "Host/path/method allowlist, auth fail-closed, timeout, size, invalid-JSON and privacy tests."
+  - "Canonical CR/license/plant/product/activity/workforce/contact/delegation mapping and conflict evidence."
+  - "Exact stub retirement/reduction/retention dispositions."
+  - "Typecheck, production build, focused contracts and protected Factory 360 regression."
 
 exit_condition: >-
-  Every mandatory Factory 360 ledger row is FUNCTIONALLY_VERIFIED or has a precise
-  BLOCKED_EXTERNAL disposition tied only to an absent external contract or credential;
-  protected engines and historical behavior regress cleanly; evidence and execution state
+  Every accessible Industry Shared endpoint is CONTRACT_VERIFIED, implemented through the
+  isolated provider, reconciled into the existing Factory 360 source model and functionally
+  verified; every inaccessible endpoint retains a precise fail-closed disposition with no
+  guessed contract; protected Factory 360 behavior regresses cleanly; ledgers and evidence
   are current; the isolated branch is committed and pushed; and the task stops at
-  AWAITING_SPONSOR_FACTORY_360_FUNCTIONAL_ACCEPTANCE.
+  AWAITING_SPONSOR_INDUSTRY_SHARED_API_GAP_ACCEPTANCE.

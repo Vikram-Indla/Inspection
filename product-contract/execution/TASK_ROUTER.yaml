@@ -39,6 +39,9 @@ routing_rules:
       - product-contract/factory-360/FACTORY_360_PRESERVATION_LEDGER.csv
       - product-contract/factory-360/FACTORY_360_FUNCTIONAL_JOURNEYS.csv
       - product-contract/factory-360/FACTORY_360_EXECUTION_STATE.yaml
+      - product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv
+      - product-contract/factory-360/industry-shared/FACTORY360_STUB_RETIREMENT_MATRIX.csv
+      - product-contract/factory-360/industry-shared/F360_INDUSTRY_SHARED_ACCEPTANCE_LEDGER.csv
       - product-contract/factory-360/source/Inspection_API_documentation.sanitized.json
       - product-contract/screens/screen_route_catalogue.csv
       - product-contract/domain/field_dictionary.csv

@@ -336,3 +336,10 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
   remain unrun/blocked; no row is upgraded by source inspection alone.
 - Independent source audit: **PASS after remediation**, with no remaining
   implementation P0/P1; this is not substituted for any runtime acceptance row.
+## Factory 360 Industry Shared gap closure — 2026-07-20
+
+- Task: `TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013`; acceptance rows `F360-ISH-AC-001..018`.
+- Source acceptance: provider isolation, exact lead inventory, fail-closed errors, privacy-domain separation, and preservation guards are implemented and verified.
+- Verification: typecheck PASS; production build PASS; focused contract suite 4/4 PASS; protected static inventory 135 PASS / 4 intentional live-provider skips / 0 failed.
+- Functional provider acceptance: **BLOCKED EXTERNAL** for `ISH-API-001..011`. No HTTP method, authentication, identifier, schema, error, privacy, fixture, or API-owner evidence was supplied or observable without beta authentication.
+- Retirement rule: no Factory 360 stub or gap may be marked retired until its endpoint contract, sanitized fixture checksum, normalization mapping, negative paths, and controlled runtime evidence are accepted.

@@ -1,92 +1,76 @@
-programme: FACTORY_360_V2
-status: SOURCE_VERIFIED_AWAITING_SPONSOR_FUNCTIONAL_ACCEPTANCE
-stop_state: AWAITING_SPONSOR_FACTORY_360_FUNCTIONAL_ACCEPTANCE
+programme: FACTORY_360_INDUSTRY_SHARED_API_GAP_CLOSURE
+status: SOURCE_VERIFIED_BLOCKED_EXTERNAL_BETA_AUTHENTICATION
+stop_state: AWAITING_AUTHENTICATED_BETA_INDUSTRY_SHARED_CONTRACT_CAPTURE
 canonical_repository_path: /Users/vikramindla/Developer/Inspection
-authorized_worktree_path: /Users/vikramindla/Developer/Inspection/.claude/worktrees/codex-factory-360-complete-010
-current_branch: codex/factory-360-complete-010
-current_commit: a92dd9f49e7df50af606ed16881c09954161c528
-base_branch: setup/Inspection
-base_commit: 83043b1
-accepted_compliance_commit: 8a8f26e
-integration_commit: 7f8cd1a
-active_chunk: null
+authorized_worktree_path: /Users/vikramindla/Developer/Inspection/.local-inputs/worktrees/industry-shared-factory360-gap-013
+current_branch: codex/industry-shared-factory360-gap-013
+current_commit: db52854647fa9b4ca8fac362dfecd4ecc7ccf704
+base_branch: codex/factory-360-complete-010
+base_commit: db52854647fa9b4ca8fac362dfecd4ecc7ccf704
+active_chunk: "Industry Shared contract gate and fail-closed provider boundary"
 active_agents: []
 ledger:
   authoritative: product-contract/factory-360/FACTORY_360_MASTER_LEDGER.csv
-  total: 90
-  code_complete: 90
-  acceptance_rows: 36
-  acceptance_functionally_verified: 34
-  acceptance_blocked_external: 2
-  journey_rows: 20
-  journey_code_complete: 20
-  preservation_rows: 11
-  preservation_functionally_verified: 11
-  integration_gap_rows: 14
-  integration_gap_blocked_external: 14
-  data_dictionary_rows: 87
-  data_dictionary_data_complete: 79
-  data_dictionary_blocked_external: 8
-  api_endpoint_rows: 11
-  api_field_rows: 438
-migrations:
-  - path: supabase/migrations/20260720010000_factory360_v2_foundation.sql
-    disposition: LOCAL_POSTGRESQL_16_COMPILE_AND_REPLAY_PASS_REMOTE_NOT_APPLIED
-  - path: supabase/tests/0032_factory360_v2_foundation_contract.sql
-    disposition: FACTORY360_V2_FOUNDATION_CONTRACT_PASS
-functionality_completed:
-  - "CR-centred read-only dossier with selected Industrial License and plant context."
-  - "CR portfolio facts without CR-level risk or compliance aggregation."
-  - "Approved inspection reports and approved frozen-snapshot compliance formula."
-  - "Existing Risk Engine history/explanation and violation/action/penalty lineage preserved."
-  - "Industrial, government, document/OCR and five-category media views with truthful unavailable states."
-  - "CR, unified/legal-name, license and plant global search with legacy factory compatibility."
-  - "Permission-bound planning context and print/PDF export path."
-  - "Guarded Administration import/reconciliation control plane with strict CSV and SHA-256 custody."
-  - "Typed server-only Senaei adapters for all eleven documented endpoints plus controlled stubs."
-  - "Additive normalized schema, immutable snapshots, RLS, audit and identifier guards."
-  - "Six exact Factory 360 permission keys and compatible role grants."
+  industry_shared_contracts: product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv
+  industry_shared_stub_matrix: product-contract/factory-360/industry-shared/FACTORY360_STUB_RETIREMENT_MATRIX.csv
+  industry_shared_acceptance: product-contract/factory-360/industry-shared/F360_INDUSTRY_SHARED_ACCEPTANCE_LEDGER.csv
+  endpoint_leads: 11
+  contract_verified: 0
+  blocked_external: 11
+  stubs_retired: 0
+  focused_acceptance_functionally_verified: 3
+implementation_completed:
+  - "Exact host and eleven developer-supplied paths recorded once in a permanent ledger."
+  - "Dedicated server-only Industry Shared provider family isolated from /api/inspection Senaei."
+  - "Every unverified endpoint returns INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED."
+  - "No method, authentication, identifier, request field, response field or privacy class is inferred."
+  - "Contacts, delegations and three workforce sources remain distinct and privacy fail closed."
+  - "F360-BR-002 one Industrial License equals one Plant remains protected."
 verification:
+  docx_render_review: "9/9 pages inspected"
   typecheck: PASS
-  production_build: PASS
-  focused_static: "20/20 PASS"
-  protected_static: "131 PASS / 4 intentional live-provider skips / 0 failed"
-  postgresql_16: "compile PASS; replay PASS; negative guards PASS; contract PASS; fixture rollback"
+  focused_static: "4/4 PASS"
   diff_check: PASS
-  ledger_shape: PASS
+  protected_static: "135 PASS / 4 intentional live-provider skips / 0 failed"
+  production_build: PASS
+discovery:
+  beta_host: beta-backoffice.industry.sa
+  beta_browser_state: "Login page reachable; no authenticated beta session available."
+  secure_environment: "No Industry Shared credential variable names present."
+  repository_call_sites: "No Industry Shared endpoint call sites found."
+  sanitized_api_collection: "Covers a different /api/inspection provider family and supplies no Industry Shared contract."
+open_contracts:
+  - ISH-API-001
+  - ISH-API-002
+  - ISH-API-003
+  - ISH-API-004
+  - ISH-API-005
+  - ISH-API-006
+  - ISH-API-007
+  - ISH-API-008
+  - ISH-API-009
+  - ISH-API-010
+  - ISH-API-011
+required_unblock_evidence:
+  - "Observed method and authentication mechanism name."
+  - "Exact identifiers, query/body fields and validation."
+  - "Sanitized success and common error schemas."
+  - "Complete field path/type/nullability/cardinality and pagination."
+  - "Bilingual labels, source IDs/timestamps and authority semantics."
+  - "Privacy classification and synthetic sanitized fixture checksum."
+  - "API owner confirmation or authenticated beta frontend call-site evidence."
+open_decisions:
+  - DEC-027
 preserved_existing_capabilities:
-  - "Existing factory IDs, registry and legacy dossier route"
-  - "Mapbox and spatial history"
-  - "Risk score, model, factors and history"
-  - "Immutable inspection/report versions"
-  - "Violation, action, review and penalty lineage"
-  - "Evidence custody, advisory OCR, audit, notifications, RLS and offline behavior"
-external_api_contract_gaps:
-  - government_incentives
-  - government_services
-  - chemical_permits
-  - customs_exemptions
-  - land_provider_history
-  - document_retrieval
-  - image_retrieval
-  - risk_history_provider
-  - factory_portfolio_search_provider
-  - authentication_contract
-  - base_url_contract
-  - production_line_method
-  - external_field_names
-  - nullability
-open_acceptance:
-  - acceptance_id: F360-AC-012
-    reason: "Live industrial equivalence requires approved Senaei configuration, credentials and connectivity."
-  - acceptance_id: F360-AC-013
-    reason: "Services/incentives endpoint contract was not supplied."
-  - gate: SPONSOR_FACTORY_360_FUNCTIONAL_ACCEPTANCE
-  - gate: QUALIFIED_NATIVE_ARABIC_REVIEW
+  - "Existing /api/inspection Senaei client and strict allowlist"
+  - "CR/license/plant canonical hierarchy and legacy factory compatibility"
+  - "Mapbox, Risk Engine, OCR, evidence custody, audit, notifications, RLS and offline behavior"
+  - "Immutable inspection/report versions and violation/penalty lineage"
+  - "Manual Administration representative, product, material and document capabilities"
 remote_actions:
   ddl_applied: false
   deployed: false
   main_merged: false
-next_exact_action: "Prompt 02: reconcile migration history, apply the additive migration in controlled staging, configure only approved Senaei contract values, and execute authenticated functional/negative/partial-provider journeys before sponsor acceptance."
-evidence: product-contract/evidence/TASK-FACTORY-360-COMPLETE-010.md
-last_updated_at: "2026-07-20T04:00:00+03:00"
+next_exact_action: "Obtain authenticated beta call-site/network evidence or sanitized developer contracts for ISH-API-001..011; verify one endpoint fully before adding a network method, schema parser or canonical migration."
+evidence: product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md
+last_updated_at: "2026-07-20T00:00:00+03:00"

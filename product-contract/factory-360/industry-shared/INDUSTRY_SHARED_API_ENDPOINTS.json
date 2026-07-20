@@ -1,0 +1,62 @@
+{
+  "authority": "Developer-supplied endpoint list, 2026-07-20",
+  "base_host": "beta-backoffice.industry.sa",
+  "api_prefix": "/shared/api/v2",
+  "unique_endpoints": [
+    {
+      "key": "license_info",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/license-info"
+    },
+    {
+      "key": "license_info_products",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/license-info/products"
+    },
+    {
+      "key": "license_info_preview",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/license-info/preview"
+    },
+    {
+      "key": "job_workforce_info",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/job-workforce-info"
+    },
+    {
+      "key": "contact_list",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/contact-list"
+    },
+    {
+      "key": "plants",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/plants"
+    },
+    {
+      "key": "plant_with_labors",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/plant-with-labors"
+    },
+    {
+      "key": "is_industrial_activity",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/is-industrial-activity"
+    },
+    {
+      "key": "get_industrial_activities",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/get-industrial-activities"
+    },
+    {
+      "key": "delegations",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/delegations"
+    },
+    {
+      "key": "hrsd_labors",
+      "url": "https://beta-backoffice.industry.sa/shared/api/v2/hrsd-labors"
+    }
+  ],
+  "duplicate_input": {
+    "url": "https://beta-backoffice.industry.sa/shared/api/v2/hrsd-labors",
+    "count_in_user_message": 2
+  },
+  "security": {
+    "credentials_included": false,
+    "methods_known": false,
+    "auth_contract_known": false,
+    "request_parameters_known": false,
+    "response_schemas_known": false
+  }
+}
