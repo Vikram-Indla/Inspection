@@ -212,6 +212,7 @@ export default function ShellClient({
   }, [groups, locale, query]);
 
   const routeScope = shellScopeForRoute(current);
+  const router = useRouter();
 
   function handleShellNavigation(event: ReactMouseEvent<HTMLDivElement>) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -245,7 +246,9 @@ export default function ShellClient({
     }
     const href = `${url.pathname}${url.search}${url.hash}`;
     setPendingHref(href);
-    router.replace(href);
+    // Client-router navigation (K-007): the page re-renders server-side with
+    // the new searchParams; a full document reload is not needed.
+    router.replace(href, { scroll: false });
   }
 
   function toggleCollapsed() {
@@ -427,8 +430,10 @@ export default function ShellClient({
                   <div className="ax-shell-account__menu" role="dialog" aria-label={strings.account}>
                     <strong>{email}</strong>
                     <span className="ax-caption">{strings.roles}: {roles.join(", ")}</span>
+                    {/* /locale and /signout are route handlers (cookie/session
+                        mutations), so they intentionally stay plain anchors. */}
                     <a href={languageHref} lang={languageLang}>{languageLabel}</a>
-                    <a href="/profile">{strings.profileSettings}</a>
+                    <Link href="/profile" prefetch={false}>{strings.profileSettings}</Link>
                     <a href="/signout">{strings.signOut}</a>
                   </div>
                 )}

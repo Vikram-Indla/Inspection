@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import EmptyState from "@/components/EmptyState";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).
 // M02-003/021: search by Visit ID / Factory / CR / Industrial License / Inspector
@@ -381,8 +382,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <div className="ax-caption">{strings.spineWindow}: <span className="ax-numeric">{fmt(activeVisit.windowStart)}</span></div>
               <div className="ax-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
             </div>
-            <a className="ax-btn ax-btn--subtle" href={`/visits/${activeVisit.id}`}
-              aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</a>
+            <Link className="ax-btn ax-btn--subtle" href={`/visits/${activeVisit.id}`} prefetch={false}
+              aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</Link>
           </div>
         )}
       </section>
@@ -550,7 +551,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       : strings.ledgerShortBlocked}
                   </span></td>
                   <td className="ax-caption">{outcomeText[item.outcome]}</td>
-                  <td><a className="ax-link ax-caption" href={`/visits/${item.id}`}>{strings.ledgerOpen}</a></td>
+                  <td><Link className="ax-link ax-caption" href={`/visits/${item.id}`} prefetch={false}>{strings.ledgerOpen}</Link></td>
                 </tr>
               ))}
             </tbody>
@@ -585,8 +586,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
                       <strong>{v.id.slice(0, 8)}</strong>
                     </button>
-                    {" "}<a className="ax-link ax-caption ax-inline-target" href={`/visits/${v.id}`}
-                      aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</a>
+                    {" "}<Link className="ax-link ax-caption ax-inline-target" href={`/visits/${v.id}`} prefetch={false}
+                      aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</Link>
                     {v.planId && (
                       <><br /><span className="ax-caption ax-numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
                     )}
@@ -613,7 +614,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         <span className="ax-caption ax-numeric">
           {strings.showing.replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}
         </span>
-        {nextLimit !== null && <a className="ax-btn ax-btn--subtle" href={`/visits?limit=${nextLimit}`}>{strings.loadMore}</a>}
+        {nextLimit !== null && <Link className="ax-btn ax-btn--subtle" href={`/visits?limit=${nextLimit}`} prefetch={false}>{strings.loadMore}</Link>}
       </div>
     </div>
   );
