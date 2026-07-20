@@ -7,6 +7,20 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 |---|---|---|---|---|---|
 | 2026-07-20 | §2 Inventory (`88f54e9`) | none (report only) | 1996 tok / 3537 cls | none | — |
 | 2026-07-20 | PR1 Tokens+fonts+contract specs (`7956290`) | platform-wide (token layer) | 1996 tok / 3537 cls (shimmed → SAQEEL) | none | 12px input radius→3px; 16px body→14px SAQEEL scale; Space Grotesk + JetBrains retired; dark primary→emerald #2e9e77 |
+| 2026-07-20 | PR2 Shared primitives (new components) | new `components/saqeel/*` + `saqeel-components.css` | unchanged (consumer swaps later) | none | components split one-file-per-family (Button/ButtonGroup+SplitButton/Field/Input+TextArea/Select/Choice[Checkbox+Switch+RadioGroup]/SegmentedControl/FileUpload/StatusBadge/Tag/Avatar+UserChip/Skeleton+Progress/SeverityIndicator/ExceptionMark+RailCell) |
+
+## PR2 notes
+- Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
+  imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.
+- New TSX primitives under `apps/web/src/components/saqeel/`, prop-exact to the
+  package `.d.ts`, emitting the package classNames. Barrel: `components/saqeel/index.ts`.
+- Grouped per family (named exports) rather than strictly one-file-per-component,
+  for velocity; every component individually importable. `tsc --noEmit` = 0 errors.
+- Moved 4 inline-styled bits (sr-only, fileupload, fileupload-label, tag-remove)
+  to classes appended to saqeel-components.css.
+- Consumer migration (`.ax-btn*` etc → these) is deferred to per-surface PRs; the
+  PR1 shim already renders all consumers in SAQEEL, so this is a zero-trace (PR12)
+  concern, not a visual one.
 
 ## PR1 notes
 - `apps/web/src/app/tokens.css` fully replaced with SAQEEL semantic tokens + a
