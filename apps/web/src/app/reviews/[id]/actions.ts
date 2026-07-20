@@ -45,9 +45,9 @@ export async function startReview(_: DecisionResult, fd: FormData): Promise<Deci
     reviews: { id: string; submission_version_id: string; decided_at: string | null }[];
   };
   const ins = aggregate as unknown as StartAggregate | null;
-  if (!ins) return { error: "Inspection not found, or outside your review scope (RLS)." };
+  if (!ins) return { error: "Inspection not found, or outside your review scope." };
   if (ins.status !== "submitted")
-    return { error: "This inspection is not awaiting a Level 2 review (M06-005)." };
+    return { error: "This inspection is not awaiting a Level 2 review." };
   const version = ins.submission_versions.find(row => row.id === submission_version_id);
   if (!version)
     return { error: "The submitted version does not belong to this inspection." };
@@ -112,7 +112,7 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
     console.error("[review decision read]", currentReadError.message, currentReadError.code);
     return { error: REVIEW_READ_ERROR };
   }
-  if (!current) return { error: "The review could not be found, or is outside your review scope (RLS)." };
+  if (!current) return { error: "The review could not be found, or is outside your review scope." };
   if (current.decided_at || current.status !== "under_review")
     return { error: "This review is no longer open. Refresh before deciding." };
   const definition = (current.inspections as unknown as { package_versions: { definition?: { sections?: { key: string }[] } } | null } | null)?.package_versions?.definition;
@@ -136,7 +136,7 @@ export async function decide(_: DecisionResult, fd: FormData): Promise<DecisionR
       console.error("[review decision version check]", versionError.message, versionError.code);
       return { error: REVIEW_READ_ERROR };
     }
-    if (!version) return { error: "Cannot approve — no immutable submitted version exists for this inspection (DEF-WF-006)." };
+    if (!version) return { error: "Cannot approve — no final submitted version exists for this inspection (DEF-WF-006)." };
   }
   const { data: rev, error } = await sb.from("reviews").update({
     status, decision, decision_reason: reason || null,

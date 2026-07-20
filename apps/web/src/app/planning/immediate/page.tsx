@@ -34,9 +34,9 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
 
   if (!isPlanner && !isInspector) {
     return (
-      <Shell current="/planning" title={t("plan.imm.title", "Immediate visit — urgent dispatch")}>
+      <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}>
         <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.imm.unauthorized.body", "Immediate Visit Planning (SCR-WEB-130) is available to Planner and Inspector roles only.", "تخطيط الزيارة الفورية (SCR-WEB-130) متاح لدوري المخطط والمفتش فقط.")} />
+          body={tr("plan.imm.unauthorized.body", "Create an urgent visit (SCR-WEB-130) is available to Planner and Inspector roles only.", "إنشاء زيارة عاجلة (SCR-WEB-130) متاح لدوري المخطط والمفتش فقط.")} />
       </Shell>
     );
   }
@@ -66,7 +66,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     previewCr: t("plan.imm.previewCr", "CR"),
     previewLicense: t("plan.imm.previewLicense", "License"),
     previewRegion: t("plan.imm.previewRegion", "Region"),
-    previewFreshness: t("plan.imm.previewFreshness", "Registry sync"),
+    previewFreshness: t("plan.imm.previewFreshness", "Factory list sync"),
     previewFreshnessNever: t("plan.imm.previewFreshnessNever", "no sync record"),
     previewRisk: t("plan.imm.previewRisk", "Risk (advisory)"),
     previewRiskUnknown: t("plan.imm.previewRiskUnknown", "unknown"),
@@ -79,7 +79,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     manualRegion: tr("plan.imm.manualRegionOptional", "Region (optional)", "المنطقة (اختيارية)"),
     manualCity: tr("plan.imm.manualCityOptional", "City (optional)", "المدينة (اختيارية)"),
     manualCityPlaceholder: t("plan.imm.manualCityPlaceholder", "City name"),
-    temporaryNote: t("plan.imm.temporaryNote", "This creates a flagged temporary entity pending registry reconciliation — no reconciliation queue surface exists yet (HANDOFF_BLOCKED); the flag alone is recorded."),
+    temporaryNote: t("plan.imm.temporaryNote", "This creates a flagged temporary entity pending Factory list reconciliation — no reconciliation queue surface exists yet (HANDOFF_BLOCKED); the flag alone is recorded."),
     urgencyReason: t("plan.imm.urgencyReason", "Urgency reason *"),
     reasonComplaint: t("plan.imm.reasonComplaint", "Complaint received"),
     reasonIncident: tr("plan.imm.reasonIncident", "Incident / accident report", "بلاغ حادث / إصابة"),
@@ -90,11 +90,11 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     useOfficialLocation: t("plan.imm.useOfficialLocation", "Use registered official location"),
     latitude: t("plan.imm.latitude", "Latitude *"),
     longitude: t("plan.imm.longitude", "Longitude *"),
-    locationSourceOfficial: t("plan.imm.locationSourceOfficial", "Source: official registry pin"),
+    locationSourceOfficial: t("plan.imm.locationSourceOfficial", "Source: official Factory list pin"),
     locationSourceManual: t("plan.imm.locationSourceManual", "Source: manually confirmed by {who} at {when}"),
     locationSourceNone: t("plan.imm.locationSourceNone", "No location entered yet"),
     mapLoading: t("plan.imm.mapLoading", "Loading location map"),
-    packageLabel: t("plan.imm.package", "Package *"),
+    packageLabel: t("plan.imm.package", "Inspection checklist *"),
     inspector: t("plan.imm.inspector", "Inspector — auto-assign or pick (M01-048)"),
     autoAssign: t("plan.imm.autoAssign", "Auto-assign — first available inspector (M01-048)"),
     visitType: t("plan.imm.visitType", "Visit type (M01-047)"),
@@ -133,7 +133,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     chipReasonLabel: tr("plan.imm.chip.reason", "REASON", "السبب"),
     chipIdentityLabel: tr("plan.imm.chip.identity", "IDENTITY", "الهوية"),
     chipLocationLabel: tr("plan.imm.chip.location", "LOCATION", "الموقع"),
-    chipPackageLabel: tr("plan.imm.chip.package", "PACKAGE", "الحزمة"),
+    chipPackageLabel: tr("plan.imm.chip.package", "CHECKLIST", "قائمة التفتيش"),
     chipInspectorLabel: tr("plan.imm.chip.inspector", "INSPECTOR", "المفتش"),
     chipWindowLabel: tr("plan.imm.chip.window", "WINDOW", "النافذة"),
     chipAuditLabel: tr("plan.imm.chip.audit", "AUDIT", "التدقيق"),
@@ -147,9 +147,9 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     chipIdentityRegistered: tr("plan.imm.chipIdentityRegistered", "registered factory selected", "تم اختيار مصنع مسجل"),
     chipIdentityTemporary: tr("plan.imm.chipIdentityTemporary", "temporary entity — flagged", "كيان مؤقت — معلّم"),
     chipLocationBlocked: tr("plan.imm.chipLocationBlocked", "enter valid coordinates", "أدخل إحداثيات صالحة"),
-    chipLocationOfficial: tr("plan.imm.chipLocationOfficial", "official registry pin", "نقطة السجل الرسمية"),
+    chipLocationOfficial: tr("plan.imm.chipLocationOfficial", "official Factory list pin", "نقطة قائمة المصانع الرسمية"),
     chipLocationManual: tr("plan.imm.chipLocationManual", "manually confirmed pin", "نقطة مؤكدة يدويًا"),
-    chipPackageBlocked: tr("plan.imm.chipPackageBlocked", "select a published package", "اختر حزمة منشورة"),
+    chipPackageBlocked: tr("plan.imm.chipPackageBlocked", "select an active inspection checklist", "اختر قائمة تفتيش نشطة"),
     chipInspectorAuto: tr("plan.imm.chipInspectorAuto", "auto-assign", "إسناد تلقائي"),
     chipInspectorManual: tr("plan.imm.chipInspectorManual", "manual pick", "اختيار يدوي"),
     chipInspectorBlocked: tr("plan.imm.chipInspectorBlocked", "no inspector available", "لا يوجد مفتش متاح"),
@@ -169,7 +169,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     enforcementNotesPlaceholder: tr("plan.imm.enforcementNotesPlaceholder", "What you observed — helps the reviewer decide", "ما لاحظته — يساعد المراجع على اتخاذ القرار"),
   };
   return (
-    <Shell current="/planning" title={t("plan.imm.title", "Immediate visit — urgent dispatch")}
+    <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}
       context={<><span className="ax-lozenge ax-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>{sourceCrId && sourceLicenseId ? <span className="ax-lozenge ax-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
       {safeReturnTo ? <p><Link className="ax-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
       <ImmediateForm

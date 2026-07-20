@@ -8,7 +8,7 @@ export default async function Loading() {
   return (
     <Shell current="/reviews" title={t("review.ws.loadingTitle", "Review")}>
       <EmptyState role="status" ariaBusy glyph="…" title={t("review.ws.loading", "Loading review")}
-        body={t("review.ws.loadingDesc", "Fetching checklist, evidence, factory verification and version comparison data (SCR-WEB-320).")} />
+        body={t("review.ws.loadingDesc", "Fetching checklist, evidence, factory verification and version comparison data.")} />
     </Shell>
   );
 }

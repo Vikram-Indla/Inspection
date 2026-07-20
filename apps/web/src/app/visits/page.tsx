@@ -115,7 +115,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     colFactory: t("visit.list.colFactory", "Factory"),
     colTypeMode: t("visit.list.colTypeMode", "Type · mode"),
     colPlanning: t("visit.list.colPlanning", "Planning status"),
-    colOperational: t("visit.list.colOperational", "Operational"),
+    colOperational: t("visit.list.colOperational", "Visit status"),
     colInspector: t("visit.list.colInspector", "Inspector"),
     colWindow: t("visit.list.colWindow", "Window"),
     selectAllAria: t("visit.list.selectAllAria", "Select all visible visits"),

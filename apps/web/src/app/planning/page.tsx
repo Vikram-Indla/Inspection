@@ -41,16 +41,16 @@ export default async function PlanningHome() {
   }
   const noPackage = (pkg ?? []).length === 0;
   const methods = [
-    ["▦", t("plan.method.bulk.title", "Bulk planning"), t("plan.method.bulk.desc", "AND/OR criteria over the factory master; many visits under one plan (M01-002)."), "/planning/bulk"],
-    ["▣", t("plan.method.single.title", "Single visit"), t("plan.method.single.desc", "One registered factory via CR / Industrial License; one plan, one visit (M01-034/042)."), "/planning/single"],
-    ["⚡", t("plan.method.immediate.title", "Immediate visit"), t("plan.method.immediate.desc", "Urgent dispatch; unregistered factory allowed with mandatory location (M01-045/046)."), "/planning/immediate"],
+    ["▦", t("plan.method.bulk.title", "Plan multiple visits"), t("plan.method.bulk.desc", "AND/OR criteria over the Factory list; many visits under one plan (M01-002)."), "/planning/bulk"],
+    ["▣", t("plan.method.single.title", "Plan one visit"), t("plan.method.single.desc", "One registered factory via CR / Industrial License; one plan, one visit (M01-034/042)."), "/planning/single"],
+    ["⚡", t("plan.method.immediate.title", "Create an urgent visit"), t("plan.method.immediate.desc", "Unregistered factory allowed with mandatory location (M01-045/046)."), "/planning/immediate"],
   ] as const;
   return (
     <Shell current="/planning" title={t("plan.home.title", "Visit planning")}
       context={<span className="ax-caption ax-numeric">{t("plan.home.drafts", "{n} drafts").replace("{n}", String(drafts ?? 0))}</span>}>
       {noPackage && (
         <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("plan.home.noPackage", "No published inspection package.")}</strong> {t("plan.home.noPackageDesc", "Planning cannot publish without one (ERR-PUB-001).")} <a className="ax-link" href="/admin">{t("plan.home.openAdmin", "Open Admin")}</a>.
+          <strong>{t("plan.home.noPackage", "No active inspection checklist.")}</strong> {t("plan.home.noPackageDesc", "Planning cannot publish without one (ERR-PUB-001).")} <a className="ax-link" href="/admin">{t("plan.home.openAdmin", "Open Admin")}</a>.
         </div></div>
       )}
       <div className="web-methods" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "var(--ax-space-300)" }}>
@@ -65,11 +65,11 @@ export default async function PlanningHome() {
       <p className="ax-caption">{t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001).")}</p>
       {(drafts ?? 0) > 0 && <div className="ax-banner ax-banner--warning"><div>
         <strong>{tr("plan.home.draftReview.title", "Draft plans need review", "توجد خطط مسودة تحتاج إلى مراجعة")}</strong>{" "}
-        {tr("plan.home.draftReview.body", "Open the plan register to inspect them. Editable resume remains unavailable until the governed draft route is reconciled.", "افتح سجل الخطط لمراجعتها. تظل متابعة التحرير غير متاحة حتى تتم مواءمة مسار المسودة المعتمد.")}{" "}
-        <a className="ax-link" href="/planning/plans">{tr("plan.home.draftReview.link", "Open plan register", "فتح سجل الخطط")}</a>
+        {tr("plan.home.draftReview.body", "Open Visit plans to inspect them. Editable resume remains unavailable until the governed draft route is reconciled.", "افتح خطط الزيارات لمراجعتها. تظل متابعة التحرير غير متاحة حتى تتم مواءمة مسار المسودة المعتمد.")}{" "}
+        <a className="ax-link" href="/planning/plans">{tr("plan.home.draftReview.link", "Open Visit plans", "فتح خطط الزيارات")}</a>
       </div></div>}
       {/* FIX WAVE F4 — M02-035 plan register entry point */}
-      <p><a className="ax-link" href="/planning/plans">{t("plan.home.registerLink", "Plan register — status, child visits and progress of every plan (M02-035) →")}</a></p>
+      <p><a className="ax-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress of every plan (M02-035) →")}</a></p>
     </Shell>
   );
 }

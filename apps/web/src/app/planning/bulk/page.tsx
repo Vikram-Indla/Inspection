@@ -36,7 +36,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (authError || rolesError) {
     console.error("[CD-021 bulk planning authorization]", authError?.message ?? rolesError?.message);
     return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <div className="ax-banner ax-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
       </Shell>
     );
@@ -44,9 +44,9 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
   if (!isPlanner) {
     return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <EmptyState glyph="⛔" title={t("plan.bulk.unauthorized.title", "Authorized role required")}
-          body={t("plan.bulk.unauthorized.body", "Bulk targeting (SCR-WEB-110) is available to the Planner role only.")} />
+          body={t("plan.bulk.unauthorized.body", "Plan multiple visits (SCR-WEB-110) is available to the Planner role only.")} />
       </Shell>
     );
   }
@@ -77,9 +77,9 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (factoriesError) {
     console.error("[CD-021] factories read failed:", factoriesError.message, factoriesError.code);
     return (
-      <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
-        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory registry unavailable")}
-          body={t("plan.bulk.serviceUnavailable.body", "The factory registry could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
+        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
+          body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
       </Shell>
     );
   }
@@ -156,7 +156,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     denominator: t("plan.bulk.ledger.denominator", "In scope"),
     eligible: t("plan.bulk.ledger.eligible", "Eligible (match criteria)"),
     excluded: t("plan.bulk.ledger.excluded", "Excluded by criteria"),
-    freshness: t("plan.bulk.ledger.freshness", "Oldest registry sync"),
+    freshness: t("plan.bulk.ledger.freshness", "Oldest Factory list sync"),
     freshnessNever: t("plan.bulk.ledger.freshnessNever", "no sync timestamp"),
     freshnessMissing: t("plan.bulk.ledger.freshnessMissing", "{n} missing sync"),
     focusContribution: t("plan.bulk.ledger.focus", "{n} from focused condition"),
@@ -245,7 +245,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     unfocusLabel: t("plan.bulk.criteria.unfocusLabel", "Clear focus"),
   };
   return (
-    <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}
+    <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("plan.bulk.context", "SCR-WEB-110 · AND/OR criteria builder")}</span>}>
       {ctWasInvalid && (
         <div className="ax-banner ax-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>

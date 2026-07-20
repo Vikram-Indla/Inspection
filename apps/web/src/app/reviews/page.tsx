@@ -219,7 +219,7 @@ export default async function Reviews() {
 
   const queueStrings: ReviewQueueStrings = {
     searchPlaceholder: t("review.list.searchPh", "factory, code or inspector…"),
-    searchAria: t("review.list.searchAria", "Search the review queue (M06-014)"),
+    searchAria: t("review.list.searchAria", "Search the review queue"),
     allStatuses: t("review.list.allStatuses", "All statuses"),
     allRisks: t("review.list.allRisks", "All risk levels"),
     overdueOnly: t("review.list.overdueOnly", "Overdue only"),
@@ -231,18 +231,18 @@ export default async function Reviews() {
     colInspector: t("review.list.colInspector", "Inspector"),
     colTypeMode: t("review.list.colTypeMode", "Type · mode"),
     colVersion: t("review.list.colVersion", "Version"),
-    colFingerprint: t("review.list.colFingerprint", "Evidence readiness & SLA-risk"),
+    colFingerprint: t("review.list.colFingerprint", "Review readiness"),
     colStatus: t("review.list.colStatus", "Status"),
-    colOpen: t("review.list.colOpen", "Workspace"),
-    open: t("review.list.open", "Open workspace"),
-    openHint: t("review.list.openHint", "Opens /reviews/:id read-only. Starting and deciding the review happen there, as explicit audited actions — this queue changes nothing."),
-    fpTitle: t("review.list.fpTitle", "Evidence readiness & SLA-risk fingerprint"),
-    fpHint: t("review.list.fpHint", "Labelled facts only — never a single severity score or colour-only signal. Missing SLA is not on-time; a risk band is not a recommendation. Any fact that cannot be read shows 'unavailable', never an invented result."),
+    colOpen: t("review.list.colOpen", "Review"),
+    open: t("review.list.open", "Open review"),
+    openHint: t("review.list.openHint", "Opens the review read-only. Starting and deciding the review happen there, as explicit audited actions — this queue changes nothing."),
+    fpTitle: t("review.list.fpTitle", "Review readiness"),
+    fpHint: t("review.list.fpHint", "Labelled facts only — never a single severity score or colour-only signal. Missing deadline information is not on-time; a risk band is not a recommendation. Any fact that cannot be read shows 'unavailable', never an invented result."),
     fp: {
-      sla: t("review.list.fp.sla", "SLA"),
+      sla: t("review.list.fp.sla", "Deadline"),
       slaOverdue: t("review.list.fp.slaOverdue", "overdue"),
       slaOnTime: t("review.list.fp.slaOnTime", "on time"),
-      slaUnavailable: t("review.list.fp.slaUnavailable", "SLA unavailable — required config/timestamp missing"),
+      slaUnavailable: t("review.list.fp.slaUnavailable", "Deadline unavailable — required config/timestamp missing"),
       risk: t("review.list.fp.risk", "Risk"),
       critical: t("review.list.fp.critical", "critical (L1)"),
       priority: t("review.list.fp.priority", "priority"),
@@ -255,7 +255,7 @@ export default async function Reviews() {
       verified: t("review.list.fp.verified", "verified"),
       updated: t("review.list.fp.updated", "updated"),
       unavailable: t("review.list.fp.unavailable", "unavailable"),
-      readyBlockTag: t("review.list.fp.readyBlockTag", "derived (RLS-scoped)"),
+      readyBlockTag: t("review.list.fp.readyBlockTag", "derived"),
       noEvidenceTitle: t("review.list.fp.noEvidenceTitle", "Evidence not yet readable"),
       noEvidenceBody: t("review.list.fp.noEvidenceBody", "A linked submission/evidence source could not be read for this row. It is flagged, not counted as ready — do not decide from an unreadable record."),
       unassignedTitle: t("review.list.fp.unassignedTitle", "Unassigned reviewer"),
@@ -264,24 +264,24 @@ export default async function Reviews() {
   };
 
   return (
-    <Shell current="/reviews" title={t("review.list.title", "Level 2 review queue")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("review.list.context", "SCR-WEB-300 · /reviews · RLS-scoped")}</span>}>
+    <Shell current="/reviews" title={t("review.list.title", "Inspection review queue")}
+      context={<span className="ax-lozenge ax-lozenge--info">{t("review.list.context", "Read-only queue")}</span>}>
       {!authorized ? (
         <section className="ax-surface cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h3>
-              <p>{t("review.list.unauthBody", "This queue requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p></div></div>
+              <p>{t("review.list.unauthBody", "This queue requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization.")}</p></div></div>
         </section>
       ) : (
         <>
           {/* opening is read-only now (CD-028 leg 5/10 resolved) — say so plainly */}
-          <div className="ax-banner" role="note"><div><strong>{t("review.list.scanTitle", "Scan-first queue")}</strong> — {t("review.list.scanBody", "Opening a review is read-only. Starting and deciding happen in the workspace as explicit, audited actions. This queue never edits inspector content or mutates state.")}</div></div>
+          <div className="ax-banner" role="note"><div><strong>{t("review.list.scanTitle", "Review overview")}</strong> — {t("review.list.scanBody", "Opening a review is read-only. Starting and deciding happen in the workspace as explicit, audited actions. This queue never edits inspector content or mutates state.")}</div></div>
           {missingSla && <div className="ax-banner ax-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "SLA configuration missing")}</strong> — {t("review.list.missingSlaBody", "engine_settings has no review_business_days / working-day calendar, so no SLA state is derived. Rows show 'SLA unavailable' — never invented as on-time.")}</div></div>}
           {degraded && <div className="ax-banner ax-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is unavailable")}</strong> — {t("review.list.degradedBody", "The queue loaded, but a linked source (evidence, factory-verification or violation counts) could not be read for some rows. Those facts read 'unavailable', never a default value.")}</div></div>}
           {rows.length === 0 ? (
             <section className="ax-surface cd-panelpad cd-result" role="status">
               <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--ok" aria-hidden="true">✅</div>
-                <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.empty", "Queue clear")}</h3>
+                <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.empty", "No inspections awaiting review")}</h3>
                   <p>{t("review.list.emptyBody", "No reviews in your scope await a Level 2 decision.")}</p></div></div>
             </section>
           ) : (

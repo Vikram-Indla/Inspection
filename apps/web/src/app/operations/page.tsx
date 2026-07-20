@@ -224,10 +224,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     geoRes.error && "geofence events",
     actionsRes.error && "corrective actions",
     notifsRes.error && "notifications",
-    factoriesRes.error && "factory registry",
+    factoriesRes.error && "factory list",
     engineRes.error && "engine settings",
     riskRes.error && "risk board",
-    overrideRes.error && "override approvals",
+    overrideRes.error && "location exception requests",
     overrideEvidenceRes.error && "override evidence",
   ].filter(Boolean) as string[];
   if (visitsRes.error) console.error(`[operations] visits read failed: ${visitsRes.error.message}`);
@@ -366,7 +366,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     allCities: t("ops.filter.allCities", "All cities"),
     thVisit: t("ops.live.th.visit", "Visit"),
     thFactory: t("ops.live.th.factory", "Factory"),
-    thOperational: t("ops.live.th.operational", "Operational"),
+    thOperational: t("ops.live.th.operational", "Visit status"),
     thGeofence: t("ops.live.th.geofence", "Geofence"),
     thInspector: t("ops.live.th.inspector", "Inspector"),
     emptyTitle: t("ops.live.empty.title", "No published visits to monitor"),
@@ -379,13 +379,13 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     loadingTitle: t("ops.map.loading.title", "Loading KSA map"),
     loadingBody: t("ops.map.loading.body", "Mapbox renders in the browser only."),
     open: t("ops.map.open", "Open"),
-    selectHint: t("ops.map.selectHint", "Click a pin to open the visit or factory dossier."),
+    selectHint: t("ops.map.selectHint", "Click a pin to open the visit or factory profile."),
     legendExecuting: t("ops.map.legend.executing", "executing"),
     legendEnRoute: t("ops.map.legend.enRoute", "en route / arrived"),
     legendFactory: t("ops.map.legend.factory", "factory"),
   };
   const overrideQueueStrings: OverrideQueueStrings = {
-    heading: t("ops.override.heading", "Geofence override approvals (M04-043)"),
+    heading: t("ops.override.heading", "Location exception requests"),
     caption: t("ops.override.caption", "Approve only the exact captured arrival attempt. The requester cannot decide; a pending request expires after 30 minutes or when the visit closes."),
     emptyTitle: t("ops.override.empty.title", "No override approvals pending"),
     emptyDesc: t("ops.override.empty.desc", "Outside-fence requests with their evidence appear here for Operations review."),
@@ -418,7 +418,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       filename: "ops_monitoring.csv",
       headers: [
         t("ops.live.th.visit", "Visit"), t("ops.live.th.factory", "Factory"),
-        t("ops.live.th.operational", "Operational"), t("ops.live.th.geofence", "Geofence"),
+        t("ops.live.th.operational", "Visit status"), t("ops.live.th.geofence", "Geofence"),
         t("ops.live.th.inspector", "Inspector"),
       ],
       rows: monitorRows.map(r => [
@@ -428,12 +428,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     },
     {
       key: "sla",
-      label: t("ops.export.sla", "SLA watch"),
+      label: t("ops.export.sla", "Deadline alerts"),
       filename: "ops_sla_watch.csv",
       headers: [
         t("ops.sla.th.visit", "Visit"), t("ops.sla.th.factory", "Factory"),
-        t("ops.sla.th.operational", "Operational"), t("ops.sla.th.deadline", "Deadline"),
-        t("ops.sla.th.sla", "SLA"), t("ops.sla.th.escalation", "Escalation"),
+        t("ops.sla.th.operational", "Visit status"), t("ops.sla.th.deadline", "Deadline"),
+        t("ops.sla.th.sla", "Deadline status"), t("ops.sla.th.escalation", "Escalation"),
       ],
       rows: slaFlags.map(f => [
         f.visit.id.slice(0, 8), f.visit.factories?.name ?? "—",
@@ -464,7 +464,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       context={<span className="ax-lozenge ax-lozenge--info">{t("ops.context", "SCR-WEB-500 · SB12 · operational state ≠ workflow status (FND-002)")}</span>}>
       {loadErrors.length > 0 && (
         <div className="ax-banner ax-banner--critical" role="alert"><div>
-          <strong>{t("ops.err.partial", "Partial service — some panels could not load.")}</strong> {loadErrors.join(" · ")} — {t("ops.err.retry", "retry")}.
+          <strong>{t("ops.err.partial", "Some information could not be loaded.")}</strong> {loadErrors.join(" · ")} — {t("ops.err.retry", "retry")}.
         </div></div>
       )}
 
@@ -492,7 +492,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       {/* KSA operations map — M08-002 */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)", marginBlockEnd: "var(--ax-space-150)" }}>
-          <h4 style={{ margin: 0 }}>{t("ops.map.heading", "KSA operations map (M08-002 · ENG-06)")}</h4>
+          <h4 style={{ margin: 0 }}>{t("ops.map.heading", "Live inspection map")}</h4>
           <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
         </div>
         {pins.length === 0 ? (
@@ -514,13 +514,13 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
           {/* SLA watch — ENG-09 thresholds vs live visit windows */}
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.sla.heading", "SLA watch (ENG-09)")}</h4>
+            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.sla.heading", "Deadline alerts")}</h4>
             {slaFlags.length === 0 ? (
-              <EmptyState bare glyph="✓" title={t("ops.sla.empty.title", "No SLA breaches in scope")}
+              <EmptyState bare glyph="✓" title={t("ops.sla.empty.title", "No deadline alerts in scope")}
                 body={t("ops.sla.empty.desc", "Published visits are inside their planned windows; breaches surface here the moment a window lapses.")} />
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
-                <thead><tr><th scope="col">{t("ops.sla.th.visit", "Visit")}</th><th scope="col">{t("ops.sla.th.factory", "Factory")}</th><th scope="col">{t("ops.sla.th.operational", "Operational")}</th><th scope="col">{t("ops.sla.th.deadline", "Deadline")}</th><th scope="col">{t("ops.sla.th.sla", "SLA")}</th><th scope="col">{t("ops.sla.th.escalation", "Escalation")}</th></tr></thead>
+                <thead><tr><th scope="col">{t("ops.sla.th.visit", "Visit")}</th><th scope="col">{t("ops.sla.th.factory", "Factory")}</th><th scope="col">{t("ops.sla.th.operational", "Visit status")}</th><th scope="col">{t("ops.sla.th.deadline", "Deadline")}</th><th scope="col">{t("ops.sla.th.sla", "Deadline status")}</th><th scope="col">{t("ops.sla.th.escalation", "Escalation")}</th></tr></thead>
                 <tbody>{slaFlags.map(f => (
                   <tr key={f.visit.id}>
                     <td><a className="ax-link" href={`/visits/${f.visit.id}`}>{f.visit.id.slice(0, 8)}</a></td>

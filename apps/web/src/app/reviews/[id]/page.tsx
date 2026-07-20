@@ -58,7 +58,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
         <section className="ax-surface cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.ws.unauthTitle", "You don’t have access to this review")}</h3>
-              <p>{t("review.ws.unauthBody", "This workspace requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p></div></div>
+              <p>{t("review.ws.unauthBody", "This workspace requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization.")}</p></div></div>
         </section>
       </Shell>
     );
@@ -190,7 +190,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const enumLabels: Record<string, string> = {};
   Array.from(new Set(compareVersions.flatMap(v => { return Object.values(v.answers); }))).forEach(v => { enumLabels[v] = t(`enum.${v}`, String(v).replace(/_/g, " ")); });
   const compareStrings: VersionCompareStrings = {
-    heading: t("review.cmp.heading", "Version comparison — Tamper-evident Scope Rail (SCR-WEB-320)"),
+    heading: t("review.cmp.heading", "Version comparison — Tamper-evident Scope Rail"),
     scopeSource: t("review.cmp.scopeSource", "Returned-scope authority (stored): {label}. Classification is never inferred from the diff."),
     noScope: t("review.cmp.noScope", "No returned scope on record — expected/unexpected cannot be established, so changes are shown 'unavailable', never 'unchanged'."),
     from: t("review.cmp.from", "Compare from"),
@@ -203,7 +203,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     catUnchanged: t("review.cmp.catUnchanged", "Unchanged"),
     catUnavailable: t("review.cmp.catUnavailable", "Unavailable"),
     tamperTitle: t("review.cmp.tamperTitle", "Out-of-scope change detected."),
-    tamperBody: t("review.cmp.tamperBody", "An answer changed outside the sections the reviewer returned. Read every flagged row before deciding (M06-050)."),
+    tamperBody: t("review.cmp.tamperBody", "An answer changed outside the sections the reviewer returned. Read every flagged row before deciding."),
     cleanTitle: t("review.cmp.cleanTitle", "Changes within returned scope."),
     cleanBody: t("review.cmp.cleanBody", "Every changed answer falls inside the returned sections. Non-answer comparisons remain unavailable below."),
     noPrior: t("review.cmp.noPrior", "No prior version to compare — this is the first submitted version."),
@@ -232,16 +232,16 @@ const panelStrings: WorkspaceDecisionStrings = {
     heading: t("review.ws.panelHeading", "Decision — irreversible once confirmed"),
     decisions: { approve: t("enum.approve", "approve"), return: t("enum.return", "return"), reject: t("enum.reject", "reject") },
     returnScopeTitle: t("review.ws.returnScopeTitle", "Exact return scope (STM-REV-003)"),
-    returnScopeHint: t("review.ws.returnScopeHint", "Only selected sections unlock; the rest stays locked (M06-006/043)."),
+    returnScopeHint: t("review.ws.returnScopeHint", "Only selected sections unlock; the rest stays locked."),
     reason: t("review.ws.reason", "Reason"),
     reasonPlaceholder: t("review.ws.reasonPlaceholder", "mandatory for return/reject — recorded immutably"),
-    approveWarnTitle: t("review.ws.approveWarnTitle", "Irreversible (M06-002):"),
+    approveWarnTitle: t("review.ws.approveWarnTitle", "Irreversible:"),
     approveWarnBody: t("review.ws.approveWarnBody", "locks the version, triggers compliance chain."),
-    rejectWarnTitle: t("review.ws.rejectWarnTitle", "Final (M06-007/008):"),
+    rejectWarnTitle: t("review.ws.rejectWarnTitle", "Final:"),
     rejectWarnBody: t("review.ws.rejectWarnBody", "no compliance trigger; new inspection needs a new visit."),
     confirm: t("review.ws.confirm", "Confirm {decision}"),
     recording: t("review.ws.recording", "Recording…"),
-    audited: t("review.ws.audited", "Audited: reviewer, reason, sections, prior/new status, version, timestamp (M06-009/027)."),
+    audited: t("review.ws.audited", "Audited: reviewer, reason, sections, prior/new status, version, timestamp."),
   };
   const startStrings: StartReviewStrings = {
     title: t("review.ws.startTitle", "Start Level 2 review"),
@@ -265,7 +265,7 @@ const panelStrings: WorkspaceDecisionStrings = {
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
       context={<><span className="ax-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="ax-lozenge ax-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="ax-btn ax-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report →")}</a></>}>
-      <div className="ax-banner ax-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version (M06-012).")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
+      <div className="ax-banner ax-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version.")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">
         <div className="ax-stack">
@@ -329,7 +329,7 @@ const panelStrings: WorkspaceDecisionStrings = {
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record (FND-007/M04-112); checks are audit-logged with before/after values (M04-113).")}</p>
+            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record; checks are audit-logged with before/after values.")}</p>
           </div>
           {/* M04-197 / M06-021 — acknowledgement signature made visible to the reviewer */}
           {latest?.acknowledgement != null && (() => {
@@ -370,7 +370,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           )}
           {(trail ?? []).length > 0 && (
             <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-              <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail (ENG-12)")}</h4>
+              <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail")}</h4>
               {(trail ?? []).map(ev => (
                 <p key={ev.id} className="ax-caption" style={{ marginBlockStart: 4 }}>
                   <span className="ax-numeric">{new Date(ev.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</span>
@@ -378,7 +378,7 @@ const panelStrings: WorkspaceDecisionStrings = {
                   {" · "}{t(`enum.audit.${ev.action}`, ev.action.replace(/_/g, " ").toLowerCase())}
                 </p>
               ))}
-              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes (FND-003).")}</p>
+              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes.")}</p>
             </div>
           )}
           {reviews.filter(r => { return !!r.decided_at; }).map(r => (

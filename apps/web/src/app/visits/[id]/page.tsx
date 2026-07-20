@@ -46,7 +46,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   if (!v) {
     return <Shell current="/visits" title={t("visit.detail.notFoundTitle", "Visit not found")}>
       <EmptyState glyph="∅" title={t("visit.detail.notFound", "Not in your scope or does not exist")}
-        body={t("visit.detail.notFoundDesc", "IDs are immutable, never reused (FLD-VIS-001).")} />
+        body={t("visit.detail.notFoundDesc", "IDs never change or get reused (FLD-VIS-001).")} />
     </Shell>;
   }
   const f = v.factories as unknown as { id: string; factory_code: string; name: string; cr_number: string; risk_band: string };
@@ -157,7 +157,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       eventLabel: latestAudit ? `${t(`enum.audit.${latestAudit.action}`, latestAudit.action)} · ${fmt(latestAudit.occurred_at)}` : noEvt,
       sourceLabel: t("visit.ribbon.src.audit", "append-only audit trail (ENG-12)"),
       boundaryLabel: planningBoundary, anchorHref: "#audit", anchorLabel: t("visit.ribbon.a.audit", "Open planning history") },
-    { id: "operational", domainLabel: t("visit.ribbon.operational", "Operational"),
+    { id: "operational", domainLabel: t("visit.ribbon.operational", "Visit status"),
       stateLabel: t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " ")), tone: "",
       eventLabel: latestGeo ? `${t(`enum.${latestGeo.kind}`, latestGeo.kind)} · ${fmt(latestGeo.occurred_at)}` : t("visit.ribbon.noJourney", "no journey yet"),
       sourceLabel: t("visit.ribbon.src.field", "field app / journey engine"),
@@ -171,8 +171,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       anchorHref: "#config", anchorLabel: t("visit.ribbon.a.config", "Open assignment") },
     { id: "inspection", domainLabel: t("visit.ribbon.inspection", "Inspection"),
       stateLabel: insp ? t(`enum.${insp.status}`, insp.status.replace(/_/g, " ")) : t("enum.not_started", "not started"), tone: insp ? "ax-lozenge--info" : "",
-      eventLabel: latestSub ? `v${latestSub.version_number} · ${fmt(latestSub.submitted_at)} · ${t("visit.detail.immutable", "immutable")}` : t("visit.ribbon.noSub", "not submitted"),
-      sourceLabel: t("visit.ribbon.src.insp", "inspection engine — submissions immutable"),
+      eventLabel: latestSub ? `v${latestSub.version_number} · ${fmt(latestSub.submitted_at)} · ${t("visit.detail.immutable", "final")}` : t("visit.ribbon.noSub", "not submitted"),
+      sourceLabel: t("visit.ribbon.src.insp", "inspection engine — submissions are final"),
       boundaryLabel: t("visit.ribbon.b.read", "Read-only here"), anchorHref: "#inspection", anchorLabel: t("visit.ribbon.a.insp", "Open inspection & versions") },
     { id: "review", domainLabel: t("visit.ribbon.review", "Review"),
       stateLabel: latestReview ? t(`enum.${latestReview.decision ?? latestReview.status}`, (latestReview.decision ?? latestReview.status).replace(/_/g, " ")) : t("visit.ribbon.noReview", "no review"),
@@ -214,7 +214,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             <div className="ax-stack" style={{ gap: 8 }}>
               <span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${insp.status}`, insp.status.replace(/_/g, " "))}</span>
               {insp.submission_versions.sort((a, b) => a.version_number - b.version_number).map(s => (
-                <p key={s.version_number} className="ax-numeric"><span className="ax-version">v{s.version_number}</span> {new Date(s.submitted_at).toISOString().slice(0, 16).replace("T", " ")} · {t("visit.detail.immutable", "immutable")}</p>
+                <p key={s.version_number} className="ax-numeric"><span className="ax-version">v{s.version_number}</span> {new Date(s.submitted_at).toISOString().slice(0, 16).replace("T", " ")} · {t("visit.detail.immutable", "final")}</p>
               ))}
               {insp.reviews.map((r, i) => (
                 <p key={i} className="ax-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
@@ -260,7 +260,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         <Attachments visitId={v.id} rows={attRows} strings={attachmentsStrings} />
       )}
       <div id="journey" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.journeyHeading", "Journey & location events — immutable (EV-005)")}</h4>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited (EV-005)")}</h4>
         <ul className="ax-timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (
             <li key={g.occurred_at} className={g.kind === "checkin" ? "is-key" : undefined}>
@@ -272,7 +272,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </ul>
       </div>
       <div id="audit" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.auditHeading", "Planning history — immutable, append-only (ENG-12, latest 30)")}</h4>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (ENG-12, latest 30)")}</h4>
         <ul className="ax-timeline">
           {(auditRows ?? []).map(a => (
             <li key={a.id}>

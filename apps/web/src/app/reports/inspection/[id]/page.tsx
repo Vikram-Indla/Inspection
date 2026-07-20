@@ -87,7 +87,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
   // now also enforced at the DB layer by trg_guard_approved_requires_submission).
   const approvedWithoutVersion = ins.status === "approved" && !latest;
   const displayStatus = approvedWithoutVersion
-    ? t("report.integrityBlocked.status", "approval invalid — no immutable version")
+    ? t("report.integrityBlocked.status", "approval invalid — no final submitted version")
     : enumL(ins.status);
   const strings = {
     print: t("report.print", "Print / Save as PDF"),
@@ -121,11 +121,11 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
 
         {approvedWithoutVersion ? (
           <div className="ax-banner ax-banner--critical no-print" role="alert"><div>
-            <strong>{t("report.integrityBlocked.title", "Data-integrity defect — invalid approval")}</strong> {t("report.integrityBlocked.body", "This inspection is recorded as approved but has no immutable submitted version on file. The approval is not valid and must not be relied on as an official decision until an immutable submission exists (DEF-WF-006).")}
+            <strong>{t("report.integrityBlocked.title", "Data-integrity defect — invalid approval")}</strong> {t("report.integrityBlocked.body", "This inspection is recorded as approved but has no final submitted version on file. The approval is not valid and must not be relied on as an official decision until a final submitted version exists (DEF-WF-006).")}
           </div></div>
         ) : !latest && (
           <div className="ax-banner ax-banner--warning no-print"><div>
-            <strong>{t("report.notSubmitted.title", "No immutable submission yet.")}</strong> {t("report.notSubmitted.body", "The official report is generated from the submitted version snapshot; identity and configuration below are live records (M04-215).")}
+            <strong>{t("report.notSubmitted.title", "No final submitted version yet.")}</strong> {t("report.notSubmitted.body", "The official report is generated from the submitted version snapshot; identity and configuration below are live records (M04-215).")}
           </div></div>
         )}
 
@@ -159,7 +159,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
         {/* 3 · Per-item responses from the immutable snapshot */}
         {latest && (
           <section className="rp-section">
-            <h3>{t("report.items.heading", "Checklist responses — immutable v{n}").replace("{n}", String(latest.version_number))}</h3>
+            <h3>{t("report.items.heading", "Checklist responses — final v{n}").replace("{n}", String(latest.version_number))}</h3>
             {sections.map(s => (
               <div key={s.key} className="rp-section">
                 <strong>{s.title}</strong>
@@ -269,7 +269,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
               {subs.length === 0 && <tr><td colSpan={4} className="ax-caption">{t("report.hist.none", "No submitted versions yet.")}</td></tr>}
               {subs.map(s => (
                 <tr key={s.id}>
-                  <td><span className="ax-version">v{s.version_number}</span> {t("report.hist.immutable", "immutable")}</td>
+                  <td><span className="ax-version">v{s.version_number}</span> {t("report.hist.immutable", "final")}</td>
                   <td className="ax-td-num ax-numeric">{dt(s.submitted_at)}</td>
                   <td>{s.profiles?.full_name ?? "—"}</td>
                   <td>{s.acknowledgement?.name ?? "—"}{s.acknowledgement?.signature_data_url ? ` · ${t("report.hist.signed", "signed")}` : ""}</td>

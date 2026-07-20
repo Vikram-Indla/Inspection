@@ -177,7 +177,7 @@ export default async function Packages() {
     effectiveFrom: t("admin.pkg.newDraft.effectiveFrom", "Effective from"),
     publishing: t("admin.pkg.publish.publishing", "Publishing…"),
     approvePublish: t("admin.pkg.publish.approve", "Approve & publish"),
-    published: t("admin.pkg.publish.published", "Version published. It is now immutable."),
+    published: t("admin.pkg.publish.published", "Version published. It is now locked and cannot be edited."),
     publishHint: t("admin.pkg.publish.hint", "Publish rechecks item, evidence, condition, violation, penalty and action-form dependencies. The approver must differ from the creator (RBAC-002)."),
     effectiveTo: t("admin.pkg.deactivate.effectiveTo", "Effective to"), deactivationReason: t("admin.pkg.deactivate.reason", "Deactivation reason"), deactivate: t("admin.pkg.deactivate.action", "Deactivate version"), deactivating: t("admin.pkg.deactivate.working", "Deactivating…"), deactivated: t("admin.pkg.deactivate.done", "Package version deactivated"),
   };
@@ -216,8 +216,8 @@ export default async function Packages() {
     evidencePhoto: t("admin.pkg.editor.evidence.photo", "Photo"), evidenceVideo: t("admin.pkg.editor.evidence.video", "Video"), evidenceDocument: t("admin.pkg.editor.evidence.document", "Document"), evidenceComment: t("admin.pkg.editor.evidence.comment", "Comment"),
   };
   const templateStrings: TemplateStrings = {
-    heading: t("admin.template.heading", "Governed template registry"), intro: t("admin.template.intro", "Create versioned bilingual form, report, action-form, or penalty templates. Published versions are immutable and can be referenced by package action forms and penalty mappings."),
-    key: t("admin.template.key", "Template key"), type: t("admin.template.type", "Type"), version: t("admin.template.version", "Version"), effectiveFrom: t("admin.template.effectiveFrom", "Effective from"), titleEn: t("admin.template.titleEn", "English title"), titleAr: t("admin.template.titleAr", "Arabic title"), schema: t("admin.template.schema", "Schema (JSON object)"), create: t("admin.template.create", "Create draft template version"), creating: t("admin.template.creating", "Creating…"), save: t("admin.template.save", "Save draft"), saving: t("admin.template.saving", "Saving…"), publish: t("admin.template.publish", "Approve & publish"), publishing: t("admin.template.publishing", "Publishing…"), effectiveTo: t("admin.template.effectiveTo", "Effective to"), reason: t("admin.template.reason", "Reason"), deactivate: t("admin.template.deactivate", "Deactivate"), deactivating: t("admin.template.deactivating", "Deactivating…"), historical: t("admin.template.historical", "Immutable historical template version."), saved: t("admin.template.saved", "Saved"),
+    heading: t("admin.template.heading", "Governed template registry"), intro: t("admin.template.intro", "Create versioned bilingual form, report, action-form, or penalty templates. Published versions are locked and cannot be edited, but can be referenced by package action forms and penalty mappings."),
+    key: t("admin.template.key", "Template key"), type: t("admin.template.type", "Type"), version: t("admin.template.version", "Version"), effectiveFrom: t("admin.template.effectiveFrom", "Effective from"), titleEn: t("admin.template.titleEn", "English title"), titleAr: t("admin.template.titleAr", "Arabic title"), schema: t("admin.template.schema", "Schema (JSON object)"), create: t("admin.template.create", "Create draft template version"), creating: t("admin.template.creating", "Creating…"), save: t("admin.template.save", "Save draft"), saving: t("admin.template.saving", "Saving…"), publish: t("admin.template.publish", "Approve & publish"), publishing: t("admin.template.publishing", "Publishing…"), effectiveTo: t("admin.template.effectiveTo", "Effective to"), reason: t("admin.template.reason", "Reason"), deactivate: t("admin.template.deactivate", "Deactivate"), deactivating: t("admin.template.deactivating", "Deactivating…"), historical: t("admin.template.historical", "Final historical template version."), saved: t("admin.template.saved", "Saved"),
     typeForm: t("admin.template.type.form", "Form"), typeReport: t("admin.template.type.report", "Report"), typeActionForm: t("admin.template.type.actionForm", "Action form"), typePenalty: t("admin.template.type.penalty", "Penalty"),
   };
   const previewStrings: PreviewStrings = {
@@ -248,7 +248,7 @@ export default async function Packages() {
     pinnedTitle: t("admin.pkg.impact.pinnedTitle", "In-flight work on prior published versions"),
     pinnedNone: t("admin.pkg.impact.pinnedNone", "No active visits or inspections are pinned to a prior published version."),
     pinnedVisits: t("admin.pkg.impact.pinnedVisits", "{n} active visit(s)"), pinnedInspections: t("admin.pkg.impact.pinnedInspections", "{n} active inspection(s)"),
-    pinnedHint: t("admin.pkg.impact.pinnedHint", "Existing work stays on the frozen version it downloaded; publishing never silently re-versions it."),
+    pinnedHint: t("admin.pkg.impact.pinnedHint", "Existing work stays on the checklist version it downloaded; publishing never silently re-versions it."),
     pinnedUnavailable: t("admin.pkg.impact.pinnedUnavailable", "In-flight counts are unavailable or outside your read scope — this is not zero."),
     priorLead: t("admin.pkg.impact.priorLead", "By prior version:"), priorLine: t("admin.pkg.impact.priorLine", "{label}: {visits} visit(s), {inspections} inspection(s)"),
     refTitle: t("admin.pkg.impact.refTitle", "Other published packages sharing these items"),
@@ -292,7 +292,7 @@ export default async function Packages() {
           <div className={styles.heroRow}>
             <div>
               <h2 id="pkg-overview" style={{ margin: 0 }}>{t("admin.pkg.overview.title", "Version-governed inspection packages")}</h2>
-              <p className="ax-caption">{t("admin.pkg.overview.body", "Drafts are editable. Publishing runs dependency validation and maker-checker approval; published and locked definitions remain immutable.")}</p>
+              <p className="ax-caption">{t("admin.pkg.overview.body", "Drafts are editable. Publishing runs dependency validation and maker-checker approval; published and locked definitions remain final and cannot be edited.")}</p>
               <p className="ax-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></p>
             </div>
             <span className={`ax-lozenge ${canWrite ? "ax-lozenge--success" : "ax-lozenge--info"}`}>
@@ -383,7 +383,7 @@ export default async function Packages() {
                       </summary>
                       <div className={styles.versionBody}>
                         {published && <div className="ax-banner ax-banner--immutable"><div>
-                          <strong><span aria-hidden="true">🔒 </span>{t("admin.pkg.immutable.title", "Published version — immutable.")}</strong>{" "}
+                          <strong><span aria-hidden="true">🔒 </span>{t("admin.pkg.immutable.title", "Published version — locked and cannot be edited.")}</strong>{" "}
                           {t("admin.pkg.immutable.body", "The database rejects definition and label edits. Create a new draft to change this package while existing inspections stay pinned to their downloaded version.")}
                         </div></div>}
 
