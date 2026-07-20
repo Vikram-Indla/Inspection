@@ -1,0 +1,1011 @@
+{
+  "generated_at": "2026-07-20T16:50:54.163Z",
+  "base_url": "http://127.0.0.1:3100",
+  "build": "production (next build && next start)",
+  "runs_file": "/Users/vikramindla/Developer/Inspection/docs/performance/results/runs-baseline.jsonl",
+  "total_runs": 145,
+  "failed_runs": 0,
+  "failures": [],
+  "routes": {
+    "/login->/dashboard": {
+      "login-chain": {
+        "n": 5,
+        "errors": 0,
+        "nav_ms": {
+          "median": 10433,
+          "p75": 12437,
+          "p95": 12789
+        },
+        "ttfb_ms": {
+          "median": 48,
+          "p75": 56,
+          "p95": 57
+        },
+        "dcl_ms": {
+          "median": 7665,
+          "p75": 7726,
+          "p95": 8024
+        },
+        "load_ms": {
+          "median": 7675,
+          "p75": 7743,
+          "p95": 8034
+        },
+        "fcp_ms": {
+          "median": 112,
+          "p75": 120,
+          "p95": 128
+        },
+        "lcp_ms": {
+          "median": 7716,
+          "p75": 7780,
+          "p95": 8080
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 83,
+          "p75": 83,
+          "p95": 83
+        },
+        "bytes": {
+          "median": 24300,
+          "p75": 26596,
+          "p95": 29296
+        },
+        "heap_mb": {
+          "median": 10.8,
+          "p75": 10.9,
+          "p95": 10.9
+        },
+        "supabase_calls": {
+          "median": 8,
+          "p75": 8,
+          "p95": 8
+        },
+        "supabase_ms_total": {
+          "median": 2026,
+          "p75": 2066,
+          "p95": 2102
+        },
+        "supabase_ms_max": {
+          "median": 698,
+          "p75": 706,
+          "p95": 723
+        }
+      }
+    },
+    "/dashboard": {
+      "cold": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 8997,
+          "p75": 11293,
+          "p95": 13277
+        },
+        "ttfb_ms": {
+          "median": 4,
+          "p75": 6,
+          "p95": 12
+        },
+        "dcl_ms": {
+          "median": 7952,
+          "p75": 10597,
+          "p95": 12735
+        },
+        "load_ms": {
+          "median": 7967,
+          "p75": 10620,
+          "p95": 12749
+        },
+        "fcp_ms": {
+          "median": 72,
+          "p75": 92,
+          "p95": 128
+        },
+        "lcp_ms": {
+          "median": 7644,
+          "p75": 10664,
+          "p95": 12784
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 33,
+          "p75": 54,
+          "p95": 54
+        },
+        "bytes": {
+          "median": 601918,
+          "p75": 601919,
+          "p95": 602277
+        },
+        "heap_mb": {
+          "median": 2,
+          "p75": 5.8,
+          "p95": 5.9
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 6,
+          "p95": 6
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 1342,
+          "p95": 1473
+        },
+        "supabase_ms_max": {
+          "median": 465,
+          "p75": 482,
+          "p95": 482
+        }
+      },
+      "warm": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 8260,
+          "p75": 10574,
+          "p95": 13914
+        },
+        "ttfb_ms": {
+          "median": 8,
+          "p75": 9,
+          "p95": 18
+        },
+        "dcl_ms": {
+          "median": 7715,
+          "p75": 10017,
+          "p95": 13331
+        },
+        "load_ms": {
+          "median": 7726,
+          "p75": 10028,
+          "p95": 13344
+        },
+        "fcp_ms": {
+          "median": 64,
+          "p75": 68,
+          "p95": 84
+        },
+        "lcp_ms": {
+          "median": 7720,
+          "p75": 9488,
+          "p95": 13376
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 33,
+          "p75": 33,
+          "p95": 33
+        },
+        "bytes": {
+          "median": 18916,
+          "p75": 18916,
+          "p95": 398516
+        },
+        "heap_mb": {
+          "median": 4.3,
+          "p75": 5.4,
+          "p95": 6.2
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    },
+    "/visits": {
+      "cold": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2989,
+          "p75": 5172,
+          "p95": 5386
+        },
+        "ttfb_ms": {
+          "median": 459,
+          "p75": 508,
+          "p95": 2954
+        },
+        "dcl_ms": {
+          "median": 2384,
+          "p75": 4574,
+          "p95": 4840
+        },
+        "load_ms": {
+          "median": 2387,
+          "p75": 4612,
+          "p95": 4876
+        },
+        "fcp_ms": {
+          "median": 512,
+          "p75": 560,
+          "p95": 3004
+        },
+        "lcp_ms": {
+          "median": 2452,
+          "p75": 4644,
+          "p95": 4900
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 1
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 51
+        },
+        "request_count": {
+          "median": 32,
+          "p75": 32,
+          "p95": 32
+        },
+        "bytes": {
+          "median": 624803,
+          "p75": 624803,
+          "p95": 624803
+        },
+        "heap_mb": {
+          "median": 1.7,
+          "p75": 1.7,
+          "p95": 1.7
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      },
+      "warm": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2873,
+          "p75": 2937,
+          "p95": 3041
+        },
+        "ttfb_ms": {
+          "median": 521,
+          "p75": 573,
+          "p95": 587
+        },
+        "dcl_ms": {
+          "median": 2332,
+          "p75": 2357,
+          "p95": 2494
+        },
+        "load_ms": {
+          "median": 2344,
+          "p75": 2360,
+          "p95": 2513
+        },
+        "fcp_ms": {
+          "median": 560,
+          "p75": 616,
+          "p95": 624
+        },
+        "lcp_ms": {
+          "median": 560,
+          "p75": 616,
+          "p95": 624
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 32,
+          "p75": 32,
+          "p95": 32
+        },
+        "bytes": {
+          "median": 39237,
+          "p75": 39237,
+          "p95": 39237
+        },
+        "heap_mb": {
+          "median": 4.8,
+          "p75": 7.5,
+          "p95": 9.1
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    },
+    "/factories": {
+      "cold": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2742,
+          "p75": 3100,
+          "p95": 6178
+        },
+        "ttfb_ms": {
+          "median": 3,
+          "p75": 4,
+          "p95": 3170
+        },
+        "dcl_ms": {
+          "median": 2220,
+          "p75": 2522,
+          "p95": 5599
+        },
+        "load_ms": {
+          "median": 2221,
+          "p75": 2579,
+          "p95": 5663
+        },
+        "fcp_ms": {
+          "median": 2384,
+          "p75": 2600,
+          "p95": 5696
+        },
+        "lcp_ms": {
+          "median": 2384,
+          "p75": 2600,
+          "p95": 5696
+        },
+        "longtask_count": {
+          "median": 1,
+          "p75": 1,
+          "p95": 1
+        },
+        "longtask_ms": {
+          "median": 54,
+          "p75": 55,
+          "p95": 60
+        },
+        "request_count": {
+          "median": 31,
+          "p75": 31,
+          "p95": 31
+        },
+        "bytes": {
+          "median": 680211,
+          "p75": 680211,
+          "p95": 680523
+        },
+        "heap_mb": {
+          "median": 2.4,
+          "p75": 2.4,
+          "p95": 2.4
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      },
+      "warm": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2751,
+          "p75": 2850,
+          "p95": 2981
+        },
+        "ttfb_ms": {
+          "median": 9,
+          "p75": 12,
+          "p95": 14
+        },
+        "dcl_ms": {
+          "median": 2214,
+          "p75": 2284,
+          "p95": 2386
+        },
+        "load_ms": {
+          "median": 2215,
+          "p75": 2284,
+          "p95": 2435
+        },
+        "fcp_ms": {
+          "median": 2368,
+          "p75": 2372,
+          "p95": 2456
+        },
+        "lcp_ms": {
+          "median": 2368,
+          "p75": 2372,
+          "p95": 2456
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 1,
+          "p95": 1
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 50,
+          "p95": 53
+        },
+        "request_count": {
+          "median": 31,
+          "p75": 31,
+          "p95": 31
+        },
+        "bytes": {
+          "median": 99263,
+          "p75": 99263,
+          "p95": 99263
+        },
+        "heap_mb": {
+          "median": 4.4,
+          "p75": 5.9,
+          "p95": 6.7
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    },
+    "/planning": {
+      "cold": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 1952,
+          "p75": 2039,
+          "p95": 4473
+        },
+        "ttfb_ms": {
+          "median": 1405,
+          "p75": 1487,
+          "p95": 3917
+        },
+        "dcl_ms": {
+          "median": 1419,
+          "p75": 1499,
+          "p95": 3959
+        },
+        "load_ms": {
+          "median": 1436,
+          "p75": 1516,
+          "p95": 3961
+        },
+        "fcp_ms": {
+          "median": 1460,
+          "p75": 1544,
+          "p95": 3996
+        },
+        "lcp_ms": {
+          "median": 1460,
+          "p75": 1544,
+          "p95": 3996
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 31,
+          "p75": 31,
+          "p95": 31
+        },
+        "bytes": {
+          "median": 593517,
+          "p75": 593517,
+          "p95": 593517
+        },
+        "heap_mb": {
+          "median": 2,
+          "p75": 2,
+          "p95": 2
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      },
+      "warm": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 1995,
+          "p75": 2041,
+          "p95": 4783
+        },
+        "ttfb_ms": {
+          "median": 1434,
+          "p75": 1481,
+          "p95": 4201
+        },
+        "dcl_ms": {
+          "median": 1457,
+          "p75": 1505,
+          "p95": 4233
+        },
+        "load_ms": {
+          "median": 1461,
+          "p75": 1510,
+          "p95": 4234
+        },
+        "fcp_ms": {
+          "median": 1480,
+          "p75": 1520,
+          "p95": 4252
+        },
+        "lcp_ms": {
+          "median": 1480,
+          "p75": 1520,
+          "p95": 4252
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 31,
+          "p75": 31,
+          "p95": 31
+        },
+        "bytes": {
+          "median": 13745,
+          "p75": 13745,
+          "p95": 13745
+        },
+        "heap_mb": {
+          "median": 4.6,
+          "p75": 6.3,
+          "p95": 9.5
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    },
+    "/field": {
+      "cold": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2458,
+          "p75": 2480,
+          "p95": 5155
+        },
+        "ttfb_ms": {
+          "median": 442,
+          "p75": 451,
+          "p95": 3112
+        },
+        "dcl_ms": {
+          "median": 1941,
+          "p75": 1970,
+          "p95": 4622
+        },
+        "load_ms": {
+          "median": 1946,
+          "p75": 1971,
+          "p95": 4624
+        },
+        "fcp_ms": {
+          "median": 488,
+          "p75": 492,
+          "p95": 3224
+        },
+        "lcp_ms": {
+          "median": 1980,
+          "p75": 2008,
+          "p95": 4672
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 31,
+          "p75": 31,
+          "p95": 31
+        },
+        "bytes": {
+          "median": 670686,
+          "p75": 670686,
+          "p95": 670686
+        },
+        "heap_mb": {
+          "median": 2.7,
+          "p75": 2.7,
+          "p95": 2.7
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      },
+      "warm": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2511,
+          "p75": 2589,
+          "p95": 2622
+        },
+        "ttfb_ms": {
+          "median": 519,
+          "p75": 528,
+          "p95": 805
+        },
+        "dcl_ms": {
+          "median": 1965,
+          "p75": 2057,
+          "p95": 2075
+        },
+        "load_ms": {
+          "median": 1966,
+          "p75": 2057,
+          "p95": 2076
+        },
+        "fcp_ms": {
+          "median": 560,
+          "p75": 568,
+          "p95": 844
+        },
+        "lcp_ms": {
+          "median": 560,
+          "p75": 568,
+          "p95": 844
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 31,
+          "p75": 31,
+          "p95": 31
+        },
+        "bytes": {
+          "median": 85220,
+          "p75": 85221,
+          "p95": 85221
+        },
+        "heap_mb": {
+          "median": 12.6,
+          "p75": 14.8,
+          "p95": 18.2
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    },
+    "/visits/calendar": {
+      "cold": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2230,
+          "p75": 2306,
+          "p95": 2582
+        },
+        "ttfb_ms": {
+          "median": 451,
+          "p75": 508,
+          "p95": 516
+        },
+        "dcl_ms": {
+          "median": 1720,
+          "p75": 1764,
+          "p95": 2071
+        },
+        "load_ms": {
+          "median": 1721,
+          "p75": 1764,
+          "p95": 2071
+        },
+        "fcp_ms": {
+          "median": 488,
+          "p75": 544,
+          "p95": 552
+        },
+        "lcp_ms": {
+          "median": 1756,
+          "p75": 1796,
+          "p95": 2332
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 63,
+          "p75": 63,
+          "p95": 63
+        },
+        "bytes": {
+          "median": 697209,
+          "p75": 697209,
+          "p95": 697209
+        },
+        "heap_mb": {
+          "median": 3.1,
+          "p75": 3.1,
+          "p95": 3.1
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      },
+      "warm": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2332,
+          "p75": 2373,
+          "p95": 4721
+        },
+        "ttfb_ms": {
+          "median": 459,
+          "p75": 487,
+          "p95": 580
+        },
+        "dcl_ms": {
+          "median": 1756,
+          "p75": 1790,
+          "p95": 4136
+        },
+        "load_ms": {
+          "median": 1756,
+          "p75": 1791,
+          "p95": 4136
+        },
+        "fcp_ms": {
+          "median": 496,
+          "p75": 536,
+          "p95": 620
+        },
+        "lcp_ms": {
+          "median": 496,
+          "p75": 536,
+          "p95": 620
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 31,
+          "p75": 31,
+          "p95": 31
+        },
+        "bytes": {
+          "median": 69884,
+          "p75": 69884,
+          "p95": 69884
+        },
+        "heap_mb": {
+          "median": 5.8,
+          "p75": 7.5,
+          "p95": 8.9
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    },
+    "/visits/[id]": {
+      "cold": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2408,
+          "p75": 2449,
+          "p95": 4942
+        },
+        "ttfb_ms": {
+          "median": 458,
+          "p75": 465,
+          "p95": 516
+        },
+        "dcl_ms": {
+          "median": 1836,
+          "p75": 1877,
+          "p95": 4368
+        },
+        "load_ms": {
+          "median": 1849,
+          "p75": 1886,
+          "p95": 4380
+        },
+        "fcp_ms": {
+          "median": 496,
+          "p75": 500,
+          "p95": 548
+        },
+        "lcp_ms": {
+          "median": 496,
+          "p75": 500,
+          "p95": 548
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 63,
+          "p75": 63,
+          "p95": 63
+        },
+        "bytes": {
+          "median": 448554,
+          "p75": 448554,
+          "p95": 448554
+        },
+        "heap_mb": {
+          "median": 1.6,
+          "p75": 1.6,
+          "p95": 1.6
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    }
+  },
+  "notes": [
+    "cold = fresh browser context (empty cache) with saved auth storage state; warm = in-context shell navigation (link-click) or in-context goto when the persona shell nav lacks the route",
+    "warm /visits used in-context-goto: the ops persona shell nav exposes no /visits link (role-scoped nav) - a real finding for K-006",
+    "warm /visits/[id] clicks the VisitsBoard row link which is a raw <a href> (full document load) - confirmed K-006 behavior",
+    "nav_ms = wall clock from click/goto to network-settled (500ms quiet, 30s cap); ttfb/dcl/load/fcp/lcp from the Navigation Timing + Paint/LCP observers (cold only; warm values reflect the host document)",
+    "supabase_calls counts only BROWSER-side supabase.co requests; server-side PostgREST calls inside RSC render are not visible to the browser (see evidence/*-requests.json)",
+    "server: next start (production build, Next 15.5.20) on 127.0.0.1:3100 against the live hosted Supabase project; measured 2026-07-21"
+  ]
+}

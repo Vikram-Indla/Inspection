@@ -89,3 +89,4 @@ tmp/node_modules
 
 # Sanitized Postman collection still contains business examples; keep it local.
 product-contract/factory-360/source/Inspection_API_documentation.sanitized.json
+apps/web/e2e/perf/.auth/

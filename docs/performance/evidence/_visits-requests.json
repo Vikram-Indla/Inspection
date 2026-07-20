@@ -1,0 +1,226 @@
+[
+ {
+  "url": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+  "ms": 3,
+  "bytes": 44580,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+  "ms": 2,
+  "bytes": 45596,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+  "ms": 3,
+  "bytes": 43148,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/31250b261513219c-s.p.woff2",
+  "ms": 3,
+  "bytes": 13612,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+  "ms": 4,
+  "bytes": 13688,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/46d978a299613541-s.p.woff2",
+  "ms": 4,
+  "bytes": 13140,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+  "ms": 5,
+  "bytes": 19804,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+  "ms": 5,
+  "bytes": 22208,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+  "ms": 5,
+  "bytes": 45988,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/4ccb217720945e9f.css",
+  "ms": 6,
+  "bytes": 1685,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+  "ms": 6,
+  "bytes": 22132,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+  "ms": 7,
+  "bytes": 20800,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+  "ms": 7,
+  "bytes": 19464,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/fab26a320de99c5d.css",
+  "ms": 8,
+  "bytes": 997,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+  "ms": 8,
+  "bytes": 13584,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/saqeel-prism.svg",
+  "ms": 8,
+  "bytes": 1147,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/0db30019d733d405.css",
+  "ms": 9,
+  "bytes": 14868,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/eae037355f033de2-s.p.woff2",
+  "ms": 8,
+  "bytes": 20388,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+  "ms": 8,
+  "bytes": 21468,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/webpack-01f9a4a5da3a3f5c.js",
+  "ms": 20,
+  "bytes": 0,
+  "supabase": false,
+  "failed": true
+ },
+ {
+  "url": "/_next/static/chunks/main-app-bef53c53ba363b2d.js",
+  "ms": 13,
+  "bytes": 905,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/layout-68d1478955f5c4cf.js",
+  "ms": 13,
+  "bytes": 884,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/2619-3c9e02e22d10480a.js",
+  "ms": 14,
+  "bytes": 3784,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/44530001-82096455ede4fd1e.js",
+  "ms": 15,
+  "bytes": 13770,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/visits/page-17bb8263d96f5fc4.js",
+  "ms": 16,
+  "bytes": 6478,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/4149-5fd6707709b3cd2a.js",
+  "ms": 16,
+  "bytes": 8667,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/1255-d90f22433f14e976.js",
+  "ms": 16,
+  "bytes": 46758,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/4bd1b696-f785427dddbba9fb.js",
+  "ms": 17,
+  "bytes": 54796,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/5402-b5bb1f141c536c5f.js",
+  "ms": 17,
+  "bytes": 51470,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/visits",
+  "ms": 2381,
+  "bytes": 38752,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJXaW5kb3",
+  "ms": 0,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/saqeel-prism.svg",
+  "ms": 1,
+  "bytes": 242,
+  "supabase": false,
+  "failed": false
+ }
+]
