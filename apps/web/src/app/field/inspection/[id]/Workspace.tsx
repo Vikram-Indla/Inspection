@@ -11,6 +11,7 @@ import {
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import Modal from "@/components/Modal";
 import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 
 type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
@@ -768,37 +769,41 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
           to discard, so this shows the REAL sync state honestly rather than fabricating
           a "leave without saving" option the engine doesn't actually implement. */}
       {exiting && !submitted && (
-        <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.exitTitle}>
-          <div className="ax-modal" style={{ inlineSize: "min(420px, 100%)" }}>
-            <div className="ax-modal__header"><h3>{strings.exitTitle}</h3></div>
-            <div className="ax-modal__body">
-              <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
-            </div>
-            <div className="ax-modal__footer">
-              <button className="ax-btn ax-btn--secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
-              <button className="ax-btn ax-btn--prominent" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
-            </div>
-          </div>
-        </div>
+        <Modal
+          open
+          onClose={() => setExiting(false)}
+          titleId="exit-confirm-title"
+          title={strings.exitTitle}
+          closeLabel={strings.exitCancel}
+          maxWidth="420px"
+          footer={<>
+            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
+            <button type="button" className="ax-btn ax-btn--prominent" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
+          </>}
+        >
+          <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
+        </Modal>
       )}
       {/* M04-164 — soft delete requires a reason; the update is captured by the evidence audit trigger */}
       {deleting && !submitted && (
-        <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.evDeleteTitle}>
-          <div className="ax-modal" style={{ inlineSize: "min(480px, 100%)" }}>
-            <div className="ax-modal__header"><h3>{strings.evDeleteTitle}</h3></div>
-            <div className="ax-modal__body">
-              <label className="ax-field">
-                <span className="ax-field__label">{strings.evDeleteReason}<span className="ax-req">*</span></span>
-                <textarea className="ax-textarea" rows={2} placeholder={strings.evDeleteReasonPh} value={deleting.reason}
-                  onChange={e => setDeleting(d => d ? { ...d, reason: e.target.value } : d)} />
-              </label>
-            </div>
-            <div className="ax-modal__footer">
-              <button className="ax-btn ax-btn--secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
-              <button className="ax-btn ax-btn--prominent" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
-            </div>
-          </div>
-        </div>
+        <Modal
+          open
+          onClose={() => setDeleting(null)}
+          titleId="ev-delete-title"
+          title={strings.evDeleteTitle}
+          closeLabel={strings.evDeleteCancel}
+          maxWidth="480px"
+          footer={<>
+            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
+            <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
+          </>}
+        >
+          <label className="ax-field">
+            <span className="ax-field__label">{strings.evDeleteReason}<span className="ax-req">*</span></span>
+            <textarea className="ax-textarea" rows={2} placeholder={strings.evDeleteReasonPh} value={deleting.reason}
+              onChange={e => setDeleting(d => d ? { ...d, reason: e.target.value } : d)} />
+          </label>
+        </Modal>
       )}
     </div>
   );

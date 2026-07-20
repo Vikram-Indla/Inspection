@@ -8,6 +8,7 @@
 // M04-166 — compressImageB64/compressImageFile: client-side compression
 // (longest edge 1600 px, JPEG q0.8) applied to all photo evidence pre-enqueue.
 import { useCallback, useEffect, useRef, useState } from "react";
+import Modal from "@/components/Modal";
 
 export type AnnotatorStrings = {
   title: string; hint: string;
@@ -173,35 +174,37 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
   }
 
   return (
-    <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.title}>
-      <div className="ax-modal" style={{ inlineSize: "min(720px, 100%)" }}>
-        <div className="ax-modal__header"><h3>{strings.title}</h3></div>
-        <div className="ax-modal__body">
-          <p className="ax-caption">{strings.hint}</p>
-          {/* V2 Wave 6: field/Pencil-critical tool switch — 48px targets, not desktop-compact. */}
-          <div className="ax-segmented ax-segmented--field" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
-            <button type="button" aria-pressed={tool === "pen"} onClick={() => setTool("pen")}>{strings.pen}</button>
-            <button type="button" aria-pressed={tool === "rect"} onClick={() => setTool("rect")}>{strings.rect}</button>
-          </div>
-          <canvas
-            ref={canvasRef}
-            role="img" aria-label={strings.imgAlt}
-            onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-            style={{
-              inlineSize: "100%", touchAction: "none", cursor: "crosshair", display: "block",
-              background: "var(--ax-color-surface-sunken)",
-              border: "1.5px solid var(--ax-color-border-strong)",
-              borderRadius: "var(--ax-radius-standard)",
-            }}
-          />
-        </div>
-        <div className="ax-modal__footer">
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setShapes(s => s.slice(0, -1))} disabled={!shapes.length}>{strings.undo}</button>
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setShapes([])} disabled={!shapes.length}>{strings.clear}</button>
-          <button type="button" className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
-          <button type="button" className="ax-btn ax-btn--prominent" onClick={confirm} disabled={!ready}>{strings.confirm}</button>
-        </div>
+    <Modal
+      open
+      onClose={onCancel}
+      titleId="annotator-title"
+      title={strings.title}
+      closeLabel={strings.cancel}
+      maxWidth="720px"
+      footer={<>
+        <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setShapes(s => s.slice(0, -1))} disabled={!shapes.length}>{strings.undo}</button>
+        <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setShapes([])} disabled={!shapes.length}>{strings.clear}</button>
+        <button type="button" className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
+        <button type="button" className="ax-btn ax-btn--prominent" onClick={confirm} disabled={!ready}>{strings.confirm}</button>
+      </>}
+    >
+      <p className="ax-caption">{strings.hint}</p>
+      {/* V2 Wave 6: field/Pencil-critical tool switch — 48px targets, not desktop-compact. */}
+      <div className="ax-segmented ax-segmented--field" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+        <button type="button" aria-pressed={tool === "pen"} onClick={() => setTool("pen")}>{strings.pen}</button>
+        <button type="button" aria-pressed={tool === "rect"} onClick={() => setTool("rect")}>{strings.rect}</button>
       </div>
-    </div>
+      <canvas
+        ref={canvasRef}
+        role="img" aria-label={strings.imgAlt}
+        onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
+        style={{
+          inlineSize: "100%", touchAction: "none", cursor: "crosshair", display: "block",
+          background: "var(--ax-color-surface-sunken)",
+          border: "1.5px solid var(--ax-color-border-strong)",
+          borderRadius: "var(--ax-radius-standard)",
+        }}
+      />
+    </Modal>
   );
 }

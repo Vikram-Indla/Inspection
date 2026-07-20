@@ -10,6 +10,7 @@
 // Senaei data is NEVER written back (FND-007 / M04-112).
 import { useEffect, useMemo, useRef, useState } from "react";
 import { local, processOutbox, sha256b64, type OutboxOp, type SyncState } from "@/lib/offline";
+import Modal from "@/components/Modal";
 
 type QueuedEvidence = Extract<OutboxOp, { kind: "evidence" }>;
 type CheckState = { id: string; field_key: string; source_value: string | null; observed_value: string | null; status: "verified" | "updated"; evidence_note: string | null };
@@ -102,22 +103,24 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
     onDone(inked ? c.toDataURL("image/png").split(",")[1] : null);
   }
   return (
-    <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.annotateTitle}>
-      <div className="ax-modal" style={{ inlineSize: "min(700px, 100%)" }}>
-        <div className="ax-modal__header"><h3>{strings.annotateTitle}</h3></div>
-        <div className="ax-modal__body">
-          <p className="ax-caption">{strings.annotateHint}</p>
-          <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-            style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--ax-color-border-strong)", borderRadius: "var(--ax-radius-standard)" }} />
-        </div>
-        <div className="ax-modal__footer">
-          <button className="ax-btn ax-btn--subtle" onClick={clear}>{strings.annotateClear}</button>
-          <button className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.annotateCancel}</button>
-          <button className="ax-btn ax-btn--secondary" onClick={() => onDone(null)}>{strings.annotateSkip}</button>
-          <button className="ax-btn ax-btn--prominent" aria-disabled={!inked} onClick={save}>{strings.annotateSave}</button>
-        </div>
-      </div>
-    </div>
+    <Modal
+      open
+      onClose={onCancel}
+      titleId="factory-annotate-title"
+      title={strings.annotateTitle}
+      closeLabel={strings.annotateCancel}
+      maxWidth="700px"
+      footer={<>
+        <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.annotateClear}</button>
+        <button type="button" className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.annotateCancel}</button>
+        <button type="button" className="ax-btn ax-btn--secondary" onClick={() => onDone(null)}>{strings.annotateSkip}</button>
+        <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!inked} onClick={save}>{strings.annotateSave}</button>
+      </>}
+    >
+      <p className="ax-caption">{strings.annotateHint}</p>
+      <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
+        style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--ax-color-border-strong)", borderRadius: "var(--ax-radius-standard)" }} />
+    </Modal>
   );
 }
 

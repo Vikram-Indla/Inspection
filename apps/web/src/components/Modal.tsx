@@ -21,9 +21,11 @@ export type ModalProps = {
   children: React.ReactNode;
   footer?: React.ReactNode;
   closeLabel: string;
+  /** CSS inline-size for wider content (e.g. a canvas editor). Defaults to the standard 560px. */
+  maxWidth?: string;
 };
 
-export default function Modal({ open, onClose, titleId, title, descriptionId, description, children, footer, closeLabel }: ModalProps) {
+export default function Modal({ open, onClose, titleId, title, descriptionId, description, children, footer, closeLabel, maxWidth }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
@@ -66,7 +68,7 @@ export default function Modal({ open, onClose, titleId, title, descriptionId, de
 
   return (
     <div className="ax-modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div ref={dialogRef} className="ax-modal" role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={description ? descriptionId : undefined}>
+      <div ref={dialogRef} className="ax-modal" role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={description ? descriptionId : undefined} style={maxWidth ? { inlineSize: `min(${maxWidth}, 100%)` } : undefined}>
         <div className="ax-modal__header ax-row" style={{ justifyContent: "space-between" }}>
           <h3 id={titleId} style={{ margin: 0 }}>{title}</h3>
           <button ref={closeBtnRef} type="button" className="ax-btn ax-btn--secondary ax-btn--icon" aria-label={closeLabel} onClick={onClose}>
