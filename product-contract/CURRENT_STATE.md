@@ -1,5 +1,50 @@
 # Current State
 
+## 2026-07-20 UPDATE 105 — Factory 360 Inspector iPad slice DONE (merged to canonical)
+
+TASK-FACTORY-360-IPAD-011 (PROMPT_10) is functionally complete and **merged to
+`setup/Inspection`**; `main` fast-forwarded to the same commit `0a2cb4c` (mirror
+identical, no divergence). PR #35. Base was web `codex/factory-360-complete-010`
+@ `db52854`.
+
+The Inspector iPad (SCR-IPAD) Factory 360 is a field-native, read-only surface
+that renders from the SAME shared projection as the web CR dossier, so business
+data, calculations and permissions are identical BY CONSTRUCTION (parity is
+structural, not asserted). Delivered:
+
+- Shared loader `lib/factory360/dossier.ts` (`loadFactory360Dossier` /
+  `resolveFactory360Permissions`) lifted out of the inline web page; web CR
+  dossier refactored to consume it with rendering unchanged.
+- `/field/factory-360/[id]` — touch-first single column, `ax-*` tokens, RTL via
+  CSS logical properties, `<details>` cards, sticky action bar over FieldTabs:
+  header + freshness, `?license=` selector (no leakage), readiness tiles,
+  profile, compliance rate + reports register (returned/rejected visible,
+  excluded), violations + penalties, saved risk + advisory AI, industrial +
+  official-vs-observed, government (gap-honest), docs + official gallery +
+  linked evidence, actions (open map / create inspection / export / return),
+  honest permission/not-found/degraded/empty states.
+- Offline: `lib/factory360/offline-snapshot.ts` in a SEPARATE IndexedDB
+  (`mim-field-f360-v1`, never the inspection send-queue);
+  `/api/field/factory-360/snapshot` RLS-scoped, permission-filtered,
+  `withSignedUrls:false`; island caches only on success, retains prior on
+  failed refresh, honest Live/Cached/Offline, no invented staleness threshold.
+- Entry: `/field/factory-360` resolver (factory/license/plant/cr/license_no/
+  cr_no → canonical URL), assigned-visit startup link, ShellClient field-channel
+  search href rewrite.
+
+Non-regression: existing inspection offline engine (`lib/offline.ts` /
+`mim-field-v1`) UNTOUCHED; additive route + two additive links only. Gates:
+typecheck 0 errors, production build PASS, all four routes dynamic, static
+parity/non-regression contract 16/16 (`e2e/factory360-ipad-field.spec.ts`). 22
+platform-parity rows STRUCTURAL_VERIFIED.
+
+Open (NOT done — no staging deploy this pass): live staging runtime for entry
+journeys J01–05 and offline-device journeys J09–11 (needs seeded CR/license on
+`iiozvqntawxfwbgffzqu`); native-Arabic label review. Ledgers:
+`product-contract/factory-360/ipad/FACTORY_360_IPAD_{MASTER_LEDGER,FUNCTIONAL_JOURNEYS,EXECUTION_STATE}`
+and `FACTORY_360_PLATFORM_PARITY_LEDGER.csv`. Status:
+`AWAITING_SPONSOR_FACTORY_360_IPAD_FUNCTIONAL_ACCEPTANCE`.
+
 ## 2026-07-20 UPDATE 104 — Factory 360 v2 Prompt 00 implemented and source-verified
 
 The sponsor-directed Factory 360 master slice is implemented on the isolated
