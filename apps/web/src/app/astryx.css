@@ -201,6 +201,10 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 }
 .ax-segmented button[aria-pressed="true"] { background: var(--ax-color-surface); color: var(--ax-color-text); box-shadow: var(--ax-shadow-raised); }
 .ax-segmented button:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+/* V2 Wave 6 — touch/Pencil-critical segmented controls (e.g. the field
+   evidence annotator's pen/rectangle tool switch) need the 48px field
+   target, not the 36px compact default meant for desktop admin density. */
+.ax-segmented--field button { min-height: var(--ax-control-height-prominent); font: var(--ax-text-field); }
 
 /* Tabs */
 .ax-tabs { display: flex; gap: var(--ax-space-300); border-block-end: 1px solid var(--ax-color-border); }

@@ -178,9 +178,10 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
         <div className="ax-modal__header"><h3>{strings.title}</h3></div>
         <div className="ax-modal__body">
           <p className="ax-caption">{strings.hint}</p>
-          <div className="ax-segmented" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
-            <button aria-pressed={tool === "pen"} onClick={() => setTool("pen")}>{strings.pen}</button>
-            <button aria-pressed={tool === "rect"} onClick={() => setTool("rect")}>{strings.rect}</button>
+          {/* V2 Wave 6: field/Pencil-critical tool switch — 48px targets, not desktop-compact. */}
+          <div className="ax-segmented ax-segmented--field" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+            <button type="button" aria-pressed={tool === "pen"} onClick={() => setTool("pen")}>{strings.pen}</button>
+            <button type="button" aria-pressed={tool === "rect"} onClick={() => setTool("rect")}>{strings.rect}</button>
           </div>
           <canvas
             ref={canvasRef}
@@ -195,10 +196,10 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
           />
         </div>
         <div className="ax-modal__footer">
-          <button className="ax-btn ax-btn--subtle" onClick={() => setShapes(s => s.slice(0, -1))} disabled={!shapes.length}>{strings.undo}</button>
-          <button className="ax-btn ax-btn--subtle" onClick={() => setShapes([])} disabled={!shapes.length}>{strings.clear}</button>
-          <button className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
-          <button className="ax-btn ax-btn--prominent" onClick={confirm} disabled={!ready}>{strings.confirm}</button>
+          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setShapes(s => s.slice(0, -1))} disabled={!shapes.length}>{strings.undo}</button>
+          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setShapes([])} disabled={!shapes.length}>{strings.clear}</button>
+          <button type="button" className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
+          <button type="button" className="ax-btn ax-btn--prominent" onClick={confirm} disabled={!ready}>{strings.confirm}</button>
         </div>
       </div>
     </div>
