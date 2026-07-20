@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-G11-REMEDIATION-PERFORMANCE-001"
+    gate: "G11 Hardening — platform navigation performance remediation"
+    priority: "P0"
+    status: "IMPLEMENTED_MEASURED_ACCEPTANCE_FAIL_DB_VALIDATION_BLOCKED"
+    owner: "Codex implementation and QA + governed Supabase operator"
+    blocked_by: ["Linked governed Supabase project and migration history", "Query-plan/advisor evidence", "Dashboard entity-search regression resolution", "Full protected regression"]
+    blocks: ["G11 navigation-performance acceptance", "Any claim that routine useful-content navigation meets <=500 ms p75"]
+    note: "App-side remediation at f2b86c4: visual acknowledgment now 61–71 ms p75; warm p75 improves 12.6–36.6% on five routes but Operations is flat and all six representative routes still miss useful-content acceptance. Apply/verify the forward index migration through an approved linked environment, profile Reviews/Dashboard/Operations, then rerun the committed 90-transition benchmark."
   - task_id: "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
     gate: "G11 Factory 360 integration hardening"
     priority: "P0"

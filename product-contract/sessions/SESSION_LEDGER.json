@@ -4379,9 +4379,29 @@
       "commit_sha": "ab0de9663a13e2b4ffcf369ec5458455367832b7",
       "next_task": "Complete structurally discoverable Inspection API contract mapping and retain Industry Shared fail-closed dimensions.",
       "resume_prompt": "Read the cross-provider CURRENT_SLICE, contract ledgers and Industry Shared ledger. Do not invent missing contracts or activate live submission."
+    },
+    {
+      "session_id": "2026-07-20-g11-performance-remediation-001",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "perf/p0-navigation-remediation--codex-pass",
+      "task_id": "TASK-G11-REMEDIATION-PERFORMANCE-001",
+      "gate": "G11 hardening — navigation performance",
+      "requirements": ["G11 non-functional navigation performance; protected MVP1 behavior unchanged"],
+      "acceptance_ids": ["MASTER_PROMPT_P0_PERFORMANCE §6/§9", "P0-01..60", "mandatory investigations 1..140"],
+      "screens": ["shared Shell", "Dashboard", "Operations", "Factory 360", "Planning", "Reviews", "AI Suggestions"],
+      "engines": ["Next.js App Router/RSC", "Supabase SSR/PostgREST", "PostgreSQL forward indexes"],
+      "files_changed": ["shared navigation, Shell and request caches", "six measured route loaders", "repeatable performance and visual suites", "forward index migration", "docs/performance evidence package"],
+      "tests": ["typecheck PASS", "production build PASS", "baseline performance 90/90 PASS", "final performance 90/90 PASS", "focused protected regression 23/23 PASS", "negative authentication PASS", "visual evidence PASS"],
+      "evidence": ["docs/performance/", "product-contract/evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md", "external before/after screenshots and traces indexed in docs/performance/evidence/INDEX.md"],
+      "decisions": ["G11 acceptance remains FAIL", "No remote DDL without a linked governed project", "No cross-user cache, pagination contract, mock or data-accuracy reduction introduced"],
+      "blockers": ["Useful-content warm p75 exceeds 500 ms", "Operations statement timeouts", "Unlinked Supabase project and unapplied migration", "Missing query plans and full protected regression", "Dashboard entity-search timeout"],
+      "commit_sha": "f2b86c4",
+      "next_task": "Apply and verify the performance migration in the governed linked Supabase environment, profile residual queries, then rerun benchmark and full protected regression.",
+      "resume_prompt": "Read CURRENT_STATE Update 111, CURRENT_SLICE.yaml, product-contract/evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md and docs/performance/inspection-agent-handover.md. Resume from f2b86c4. Link only the approved Supabase project, reconcile migration history, run advisors, apply and verify the forward indexes, capture query plans, and rerun the 90-transition benchmark plus full protected regression. Do not claim G11 PASS while useful-content p75 exceeds 500 ms or P0/P1 evidence is missing."
     }
   ],
-  "last_session": "2026-07-20-factory-360-cross-provider-contract-014",
+  "last_session": "2026-07-20-g11-performance-remediation-001",
   "rules": {
     "append_only": true,
     "required_fields": [

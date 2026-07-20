@@ -2,7 +2,7 @@ schema_version: "1.2"
 task_id: "TASK-G11-REMEDIATION-PERFORMANCE-001"
 gate: "G11 Hardening — platform navigation performance remediation"
 title: "P0 navigation-performance post-mortem and remediation across the Inspection Platform (Codex / Kimi K3 / Claude Code sequential passes)"
-status: "IN_PROGRESS"
+status: "REMEDIATED_RESIDUAL_P0_BLOCKED"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 branch: "perf/p0-navigation-remediation"
@@ -57,7 +57,11 @@ do_not_touch:
   - "Do not invent policy values, thresholds, SLAs, or performance budgets beyond docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §9."
 
 evidence:
-  - "Pending — Pass 1 (Codex) establishes baseline measurements and the initial P0 register."
+  - "docs/performance/results/baseline.json — 90 authenticated production-build samples (5 cold / 10 warm per representative route)."
+  - "docs/performance/results/final.json and route-results.csv — definitive after sample and calculated comparison."
+  - "docs/performance/inspection-p0-register.md — P0-01..60 plus all 140 user-mandated investigations classified."
+  - "docs/performance/inspection-performance-postmortem.md and inspection-regression-results.md."
+  - "External before/after screenshots and traces indexed by docs/performance/evidence/INDEX.md."
 
 exit_condition: >-
   All reachable routes measured cold/warm with median/p75/p95; P0 register
@@ -68,4 +72,7 @@ exit_condition: >-
   per docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §16 — not merged.
 
 open_blockers:
-  - "No baseline measurement yet — Pass 1 not started."
+  - "Useful-content acceptance remains failed: final warm p75 is 859–8,897 ms against the <=500 ms target."
+  - "Operations still logs statement timeouts for action_forms and geo-override evidence."
+  - "The checkout is not linked to a Supabase project, so the forward index migration cannot be remotely applied, advised or EXPLAIN-verified in this session."
+  - "Dashboard entity-search focused regression timed out once and the full mutation-heavy inventory was not rerun; no release certification is claimed."
