@@ -19,3 +19,4 @@ priority_decisions:
   - DEC-014 CD-031 Factory 360 scope + design-gate override (sponsor-resolved 2026-07-15; 2026-07-16 DEC-012 audit PASS; exact contact-privacy/provider rows still open)
   - DEC-025 Visit Planning /planning selector role-routing (AC-0001; CC-AC-0001-PLANNING-METHOD-ROLE-ROUTING-001; filed 2026-07-18)
   - DEC-026 Visit Planning AI Planning Summary MVP1/MVP2 scope (AC-0016/AC-0026; CC-AC-0016-0026-AI-PLANNING-SUMMARY-DEFERRAL-001; filed 2026-07-18)
+  - DEC-027 Industry Shared API contract authority, workforce precedence, privacy/masking/retention and plant-cardinality conflict handling

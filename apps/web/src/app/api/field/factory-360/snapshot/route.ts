@@ -7,7 +7,10 @@ import type { Factory360Snapshot } from "@/lib/factory360/offline-snapshot";
 
 export const dynamic = "force-dynamic";
 
-const PROJECTION_VERSION = "f360-ipad-snapshot-1";
+// v2 adds cross-provider canonical summary (F360IPAD-API-015). Backward
+// compatible: pre-015 cached snapshots (v1) remain readable — the offline
+// island does not gate on version.
+const PROJECTION_VERSION = "f360-ipad-snapshot-2";
 
 // TASK-FACTORY-360-IPAD-011 · F360IPAD-OFFLINE-005
 // Permission-filtered, versioned Factory 360 snapshot projection for the iPad
@@ -32,7 +35,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  const { cr, selected, factory, currentCompliance, portfolioCounts, lines, government, docs } = dossier;
+  const { cr, selected, factory, currentCompliance, portfolioCounts, lines, government, docs, canonical } = dossier;
 
   const sectionsOmitted: string[] = [];
   if (!permissions["view_risk_details"]) sectionsOmitted.push("risk");
@@ -69,6 +72,26 @@ export async function GET(request: Request) {
     documentCount: permissions["view_factory_documents"] ? docs.length : 0,
     sourceSystem: selected?.source_system ?? cr.source_system,
     sourceSyncedAt: selected?.source_synced_at ?? cr.source_synced_at,
+    // Cross-provider summary (F360IPAD-API-015) — source-labelled, never raw payload.
+    canonicalVersion: "f360-xpc-1",
+    sourceFamilies: Array.from(new Set([
+      canonical.commercialRegistration.source.provider,
+      canonical.approvedPackageVersion.source.provider,
+      canonical.workforce.source.provider,
+    ])),
+    activitySummary: {
+      activities: canonical.activities.value?.length ?? 0,
+      products: canonical.products.value?.length ?? 0,
+      materials: canonical.materials.value?.length ?? 0,
+      machines: canonical.machines.value?.length ?? 0,
+      spareParts: canonical.spareParts.value?.length ?? 0,
+    },
+    discrepancyStates: canonical.discrepancies.reduce<Record<string, number>>((acc, d) => { acc[d.state] = (acc[d.state] ?? 0) + 1; return acc; }, {}),
+    contractUnverifiedDomains: [
+      canonical.workforce.role === "contract_unverified" ? "workforce" : null,
+      canonical.contacts.role === "contract_unverified" ? "contacts" : null,
+      canonical.delegations.role === "contract_unverified" ? "delegations" : null,
+    ].filter((d): d is string => !!d),
   };
 
   const permissionsApplied = FACTORY_360_PERMISSIONS.filter(p => permissions[p]);

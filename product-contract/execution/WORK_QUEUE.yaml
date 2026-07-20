@@ -1,5 +1,21 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+    gate: "G11 Factory 360 integration hardening"
+    priority: "P0"
+    status: "IN_PROGRESS"
+    owner: "Codex implementation and QA + Sponsor acceptance authority"
+    blocked_by: ["Full Industry Shared contracts for ISH-API-001..011", "Governed external submission activation trigger"]
+    blocks: ["Industry Shared adapter activation and stub retirement"]
+    note: "Contract-first cross-provider structure/mapping slice; Inspection API structure is documented and Industry Shared remains fail closed until its full endpoint contracts are captured."
+  - task_id: "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013"
+    gate: "G11 Factory 360 integration hardening"
+    priority: "P0"
+    status: "REAL_BETA_READ_ONLY_DISCOVERY_EXHAUSTED_AWAITING_SPONSOR_ACCEPTANCE"
+    owner: "Codex implementation and QA + Industry Shared API owner"
+    blocked_by: ["Sanitized actual network export or developer contract for POST /shared/api/v2/license-info and remaining endpoints", "A supported authenticated request-inspection surface for headers bodies and responses", "Sponsor decisions for contact/delegation and workforce privacy/retention if person-level fields exist"]
+    blocks: ["Retirement of F360-GAP-009", "Promotion of F360-AC-012 to functionally verified", "Web/iPad final Industry Shared reconciliation"]
+    note: "Sponsor-authorized authenticated read-only discovery proves POST for ISH-API-001..005 and 008..010. ISH-API-006/007/011 remain method-unverified because the browser client blocked those routes. Visible license, product, contact, delegation, plant, activity and HRSD structures were recorded without real values, but no /shared/api/v2 call site or request-inspection surface exposed authentication, bodies or responses. All eleven contracts remain blocked; stubs retired remains zero; the provider has no network call; no canonical migration or Factory 360 projection changed. Next exact action: obtain a sanitized actual POST license-info request/response export or developer contract, then verify it end to end against the authorized beta record."
   - task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
     gate: "G11 sponsor-directed Compliance Approval Queue"
     priority: "P0"

@@ -1,0 +1,5 @@
+provider_family,condition,canonical_code,user_behavior,retry,sensitive_detail,status
+Industry Shared,any endpoint without CONTRACT_VERIFIED definition,INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED,show unavailable; do not call network,no,none,IMPLEMENTED
+Inspection API,configuration missing,SENAEI_* configuration code,show configured-unavailable state,after configuration,none,IMPLEMENTED
+Inspection API,HTTP/network/invalid JSON,SENAEI_HTTP_ERROR / SENAEI_NETWORK_ERROR / SENAEI_INVALID_JSON,degraded result; preserve existing dossier,GET only per client contract,none,IMPLEMENTED
+External submission,governed trigger absent,BLOCKED_TRIGGER_DECISION,retain payload/outbox contract; do not forward,no,none,IMPLEMENTED

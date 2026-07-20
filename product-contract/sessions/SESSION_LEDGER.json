@@ -3680,15 +3680,55 @@
       "branch": "codex/inspector-shell-uplift-002",
       "task_id": "TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003",
       "gate": "G11 source integration / G12 release gates remain open",
-      "requirements": ["SPONSOR-DSF-001..030", "SPONSOR-UIU-001..024", "SPONSOR-PDS-001..025"],
-      "acceptance_ids": ["DSF-AC-001..030", "UIU-ISP-AC-001..024", "PDS-AC-001..025"],
-      "screens": ["all authenticated web working pages", "SCR-SHARED-SHELL-001", "SCR-IPAD-600..670", "named auth/print/redirect exceptions"],
-      "engines": ["visual foundation only; ENG-01..ENG-20 behavior preserved"],
-      "files_changed": ["platform design inheritance contract", "shared Mapbox renderer palette", "inspector shell uplift", "acceptance/evidence/change-control/session records"],
-      "tests": ["npm run typecheck PASS", "npm run build PASS", "focused foundation/platform/inspector 16/16 PASS", "complete static inventory 75 PASS / 4 intentional provider skips / 0 failures"],
-      "evidence": ["product-contract/evidence/TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003.md", "product-contract/acceptance/PDS_PLATFORM_FOUNDATION_PROMOTION_003.csv", "design/claude-design-mvp1/ui-revamp-uplift/UI_REVAMP_UPLIFT_MASTER.md"],
-      "decisions": ["Sponsor expanded scope to every platform role and authorized main merge/push", "All working pages inherit the root foundation and shared shell or are named exceptions", "Maps use one governed palette", "Text entry and Cinematic Atlas remain protected", "Four production compliance gates remain open"],
-      "blockers": ["Production WCAG 2.2 AA full-page verification", "DGA/Platforms Code mapping", "Native Arabic/RTL review", "Observed inspector morning/night endurance sessions"],
+      "requirements": [
+        "SPONSOR-DSF-001..030",
+        "SPONSOR-UIU-001..024",
+        "SPONSOR-PDS-001..025"
+      ],
+      "acceptance_ids": [
+        "DSF-AC-001..030",
+        "UIU-ISP-AC-001..024",
+        "PDS-AC-001..025"
+      ],
+      "screens": [
+        "all authenticated web working pages",
+        "SCR-SHARED-SHELL-001",
+        "SCR-IPAD-600..670",
+        "named auth/print/redirect exceptions"
+      ],
+      "engines": [
+        "visual foundation only; ENG-01..ENG-20 behavior preserved"
+      ],
+      "files_changed": [
+        "platform design inheritance contract",
+        "shared Mapbox renderer palette",
+        "inspector shell uplift",
+        "acceptance/evidence/change-control/session records"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "focused foundation/platform/inspector 16/16 PASS",
+        "complete static inventory 75 PASS / 4 intentional provider skips / 0 failures"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-DESIGN-PLATFORM-FOUNDATION-PROMOTION-003.md",
+        "product-contract/acceptance/PDS_PLATFORM_FOUNDATION_PROMOTION_003.csv",
+        "design/claude-design-mvp1/ui-revamp-uplift/UI_REVAMP_UPLIFT_MASTER.md"
+      ],
+      "decisions": [
+        "Sponsor expanded scope to every platform role and authorized main merge/push",
+        "All working pages inherit the root foundation and shared shell or are named exceptions",
+        "Maps use one governed palette",
+        "Text entry and Cinematic Atlas remain protected",
+        "Four production compliance gates remain open"
+      ],
+      "blockers": [
+        "Production WCAG 2.2 AA full-page verification",
+        "DGA/Platforms Code mapping",
+        "Native Arabic/RTL review",
+        "Observed inspector morning/night endurance sessions"
+      ],
       "commit_sha": "feature ad025ac; verified main merge commit pending",
       "next_task": "Complete and push the verified main merge; then execute the four production release gates separately.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 96 and platform promotion evidence. Source is platform-wide and sponsor-authorized for main push. Do not claim production compliance until WCAG, DGA, native Arabic/RTL and endurance gates close."
@@ -3700,15 +3740,52 @@
       "branch": "codex/ui-compliance-certification-004",
       "task_id": "TASK-QA-UI-COMPLIANCE-CERT-004",
       "gate": "G11/G12 UI release certification",
-      "requirements": ["WCAG-2.2-A-AA", "DGA-PLATFORM-CODE", "DGA-5.13.8", "AR-RTL-RELEASE", "INSPECTOR-ENDURANCE"],
-      "acceptance_ids": ["UIC-AC-001..040"],
-      "screens": ["SCR-SHARED-SHELL-001", "planner, visits, reviews, admin, regulations and factory critical routes", "field component harness without shared-data mutation"],
-      "engines": ["visual and interaction verification only; ENG-01..ENG-20 preserved"],
-      "files_changed": ["accessibility-only CSS and label associations", "WCAG authenticated runtime and source guards", "acceptance/evidence/execution/session records"],
-      "tests": ["npm run typecheck PASS", "npm run build PASS", "compliance source guard 4/4 PASS", "eight authenticated runtime checks PASS in controlled shard executions", "git diff --check PASS"],
-      "evidence": ["product-contract/evidence/TASK-QA-UI-COMPLIANCE-CERT-004.md", "product-contract/acceptance/UIC_UI_COMPLIANCE_CERT_004.csv"],
-      "decisions": ["Technical UI certification is PASS with no open P0/P1 in scope", "Overall production verdict remains CONDITIONAL PASS", "Native Arabic and morning/night inspector endurance require independent human evidence", "Consolidated Auth 429 persists with pacing and exact checks remain shardable", "Inputs and Cinematic Atlas remain protected"],
-      "blockers": ["Qualified native Arabic review", "Observed representative 4–5 hour morning inspector session", "Observed representative 4–5 hour night inspector session"],
+      "requirements": [
+        "WCAG-2.2-A-AA",
+        "DGA-PLATFORM-CODE",
+        "DGA-5.13.8",
+        "AR-RTL-RELEASE",
+        "INSPECTOR-ENDURANCE"
+      ],
+      "acceptance_ids": [
+        "UIC-AC-001..040"
+      ],
+      "screens": [
+        "SCR-SHARED-SHELL-001",
+        "planner, visits, reviews, admin, regulations and factory critical routes",
+        "field component harness without shared-data mutation"
+      ],
+      "engines": [
+        "visual and interaction verification only; ENG-01..ENG-20 preserved"
+      ],
+      "files_changed": [
+        "accessibility-only CSS and label associations",
+        "WCAG authenticated runtime and source guards",
+        "acceptance/evidence/execution/session records"
+      ],
+      "tests": [
+        "npm run typecheck PASS",
+        "npm run build PASS",
+        "compliance source guard 4/4 PASS",
+        "eight authenticated runtime checks PASS in controlled shard executions",
+        "git diff --check PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-QA-UI-COMPLIANCE-CERT-004.md",
+        "product-contract/acceptance/UIC_UI_COMPLIANCE_CERT_004.csv"
+      ],
+      "decisions": [
+        "Technical UI certification is PASS with no open P0/P1 in scope",
+        "Overall production verdict remains CONDITIONAL PASS",
+        "Native Arabic and morning/night inspector endurance require independent human evidence",
+        "Consolidated Auth 429 persists with pacing and exact checks remain shardable",
+        "Inputs and Cinematic Atlas remain protected"
+      ],
+      "blockers": [
+        "Qualified native Arabic review",
+        "Observed representative 4\u20135 hour morning inspector session",
+        "Observed representative 4\u20135 hour night inspector session"
+      ],
       "commit_sha": "local feature branch HEAD created at closure from d09ed97",
       "next_task": "Execute and sign the three human evidence gates, then request an explicit release-gate decision; separately disposition the existing moderate Next.js/PostCSS advisory under G11 hardening.",
       "resume_prompt": "Read CURRENT_STATE UPDATE 98 and TASK-QA-UI-COMPLIANCE-CERT-004 evidence. Technical UI certification passes. Do not claim production PASS or self-approve UIC-AC-023/038/039/040. Obtain qualified native-Arabic and representative morning/night endurance records. Do not merge or push without a separate release decision."
@@ -3902,9 +3979,18 @@
       "branch": "codex/compliance-library-003",
       "task_id": "TASK-WEB-COMPLIANCE-LIBRARY-003",
       "gate": "G11 sponsor-directed Compliance Library",
-      "requirements": ["CMP-REQ-LIB-001..005"],
-      "acceptance_ids": ["CMP-ACC-LIB-001..020"],
-      "screens": ["SCR-ADM-010", "SCR-ADM-011", "SCR-ADM-020", "SCR-INSPECTOR-RUNTIME-PREVIEW"],
+      "requirements": [
+        "CMP-REQ-LIB-001..005"
+      ],
+      "acceptance_ids": [
+        "CMP-ACC-LIB-001..020"
+      ],
+      "screens": [
+        "SCR-ADM-010",
+        "SCR-ADM-011",
+        "SCR-ADM-020",
+        "SCR-INSPECTOR-RUNTIME-PREVIEW"
+      ],
       "engines": [
         "published package-version item snapshots",
         "legacy and governed immutable version lineage",
@@ -3954,10 +4040,22 @@
       "branch": "codex/compliance-approval-queue-004",
       "task_id": "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004",
       "gate": "G11 sponsor-directed Compliance Approval Queue",
-      "requirements": ["CMP-REQ-APQ-001..006"],
-      "acceptance_ids": ["CMP-ACC-APQ-001..020"],
-      "screens": ["CMP-SCR-004", "SCR-COMPLIANCE-REQUEST-WORKSPACE"],
-      "engines": ["CCR RLS", "maker-checker RPCs", "dependency evaluator", "transactional publication"],
+      "requirements": [
+        "CMP-REQ-APQ-001..006"
+      ],
+      "acceptance_ids": [
+        "CMP-ACC-APQ-001..020"
+      ],
+      "screens": [
+        "CMP-SCR-004",
+        "SCR-COMPLIANCE-REQUEST-WORKSPACE"
+      ],
+      "engines": [
+        "CCR RLS",
+        "maker-checker RPCs",
+        "dependency evaluator",
+        "transactional publication"
+      ],
       "files_changed": [
         "shared navigation real Approval Queue destination",
         "dedicated guarded Compliance Approval Queue route and states",
@@ -4004,9 +4102,33 @@
         "F360-II-001..004; F360-GI-001..003; F360-DOC-001..005",
         "F360-ARCH-001; F360-SRCH-001..003; F360-PERM-001..006; F360-CALC-001; F360-IMG-001; F360-ACT-001..004"
       ],
-      "acceptance_ids": ["AC-0410..0429", "F360-AC-001..016", "11 endpoint and 438 field inventory rows"],
-      "screens": ["SCR-WEB-400", "SCR-WEB-100", "SCR-WEB-120", "SCR-WEB-210", "SCR-WEB-300", "SCR-WEB-310", "SCR-WEB-500", "SCR-IPAD-610", "SCR-ADM-001"],
-      "engines": ["ENG-04", "ENG-06", "ENG-07", "ENG-08", "ENG-09", "ENG-11", "ENG-12", "typed Senaei provider", "permission-filtered print/PDF export"],
+      "acceptance_ids": [
+        "AC-0410..0429",
+        "F360-AC-001..016",
+        "11 endpoint and 438 field inventory rows"
+      ],
+      "screens": [
+        "SCR-WEB-400",
+        "SCR-WEB-100",
+        "SCR-WEB-120",
+        "SCR-WEB-210",
+        "SCR-WEB-300",
+        "SCR-WEB-310",
+        "SCR-WEB-500",
+        "SCR-IPAD-610",
+        "SCR-ADM-001"
+      ],
+      "engines": [
+        "ENG-04",
+        "ENG-06",
+        "ENG-07",
+        "ENG-08",
+        "ENG-09",
+        "ENG-11",
+        "ENG-12",
+        "typed Senaei provider",
+        "permission-filtered print/PDF export"
+      ],
       "files_changed": [
         "additive Factory 360 PostgreSQL migration and SQL contract",
         "CR-centred dossier, registry/search/planning compatibility and permission helpers",
@@ -4047,9 +4169,219 @@
       "commit_sha": "a92dd9f49e7df50af606ed16881c09954161c528",
       "next_task": "Prompt 02 controlled staging deployment and functional verification from the pushed Factory 360 branch.",
       "resume_prompt": "Read CURRENT_STATE Update 104, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml and evidence/TASK-FACTORY-360-COMPLETE-010.md. Reconcile migration history before remote DDL; configure only approved Senaei values; run authenticated staging and preserve every blocked-external disposition until evidenced."
+    },
+    {
+      "session_id": "2026-07-20-factory-360-industry-shared-gap-013",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "codex/industry-shared-factory360-gap-013",
+      "task_id": "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013",
+      "gate": "G11 Factory 360 integration hardening",
+      "requirements": [
+        "F360-ISH-REQ-001..018"
+      ],
+      "acceptance_ids": [
+        "F360-ISH-AC-001..018",
+        "ISH-API-001..011"
+      ],
+      "screens": [
+        "SCR-WEB-400",
+        "connected P01/P03/P04/P08/P10/P11 consumers"
+      ],
+      "engines": [
+        "dedicated fail-closed Industry Shared provider",
+        "existing Factory 360 and Senaei engines preserved"
+      ],
+      "files_changed": [
+        "server-only Industry Shared endpoint registry, client and Factory 360 adapter",
+        "focused Industry Shared static contract",
+        "endpoint-contract, stub-retirement and acceptance ledgers",
+        "Factory 360 task, change approval, decision, queue, current-state and evidence records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Industry Shared focused static contract 4/4 PASS",
+        "protected static inventory 135 PASS / 4 intentional provider skips / 0 failed",
+        "YAML/CSV/JSON/diff validation PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md",
+        "product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv",
+        "product-contract/factory-360/industry-shared/FACTORY360_STUB_RETIREMENT_MATRIX.csv",
+        "product-contract/factory-360/industry-shared/F360_INDUSTRY_SHARED_ACCEPTANCE_LEDGER.csv"
+      ],
+      "decisions": [
+        "DEC-027 filed for API authority, workforce precedence, privacy/retention, activity authority and plant-cardinality conflict handling",
+        "No method, auth, field, privacy, fixture or source-precedence value was inferred",
+        "All eleven endpoint leads and all stub retirements remain blocked external"
+      ],
+      "blockers": [
+        "Authenticated beta Industry Shared session or sanitized developer contracts for ISH-API-001..011",
+        "Sponsor privacy/masking/retention decisions if person-level contact, delegation or workforce fields exist"
+      ],
+      "commit_sha": "65a4db2c80482318ba617e0439424f9e5966c020",
+      "next_task": "Capture and verify one complete Industry Shared endpoint contract, then implement its parser, canonical mapping, negative paths and controlled runtime evidence.",
+      "resume_prompt": "Read CURRENT_STATE Update 105, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml, factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv and evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md. Work on codex/industry-shared-factory360-gap-013. Sign in to https://beta-backoffice.industry.sa first. Verify one endpoint completely before enabling network I/O; do not infer methods, auth, fields, privacy, retention, authority or plant cardinality."
+    },
+    {
+      "session_id": "2026-07-20-factory-360-industry-shared-auth-discovery-014",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "codex/industry-shared-factory360-gap-013",
+      "task_id": "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013",
+      "gate": "G11 Factory 360 integration hardening",
+      "requirements": [
+        "F360-ISH-REQ-001..018",
+        "ISH-API-001..011"
+      ],
+      "acceptance_ids": [
+        "F360-ISH-AC-001..018"
+      ],
+      "screens": [
+        "SCR-WEB-400",
+        "connected P01/P03/P04/P08/P10/P11 consumers"
+      ],
+      "engines": [
+        "dedicated fail-closed Industry Shared provider",
+        "existing Factory 360 and Senaei engines preserved"
+      ],
+      "files_changed": [
+        "method-only Industry Shared endpoint metadata and static guard",
+        "Industry Shared endpoint and acceptance ledgers",
+        "Factory 360 current state, work queue, execution state, acceptance and evidence records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Industry Shared focused static contract 4/4 PASS",
+        "protected static inventory 135 PASS / 4 intentional provider skips / 0 failed",
+        "YAML/CSV/diff validation PASS"
+      ],
+      "evidence": [
+        "authenticated beta dashboard and integration UI reached",
+        "POST method proven for ISH-API-001..003 and ISH-API-008..009",
+        "product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md",
+        "product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv"
+      ],
+      "decisions": [
+        "Recorded method-only evidence without promoting any endpoint to CONTRACT_VERIFIED",
+        "Did not exercise privacy-sensitive routes with real identifiers",
+        "Did not capture tokens, cookies, personal payloads, stack traces or framework versions",
+        "Retained the network-disabled boundary until auth, request, response, error, privacy and fixtures are verified"
+      ],
+      "blockers": [
+        "Sanitized developer contracts or explicitly authorized synthetic/test identifiers and expected outcomes",
+        "Authentication, body, schema, error, privacy/retention and fixture evidence for all eleven endpoints",
+        "Sponsor privacy/masking/retention decisions if person-level contact, delegation or workforce fields exist"
+      ],
+      "commit_sha": "ef2b7946bce7af2d6209b61b1082f632f56ff447",
+      "next_task": "Verify one POST endpoint end to end from sanitized contract evidence or an explicitly authorized synthetic/test identifier before enabling network I/O.",
+      "resume_prompt": "Read CURRENT_STATE Update 106, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml, factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv and evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md. Work on codex/industry-shared-factory360-gap-013 from source commit ef2b7946bce7af2d6209b61b1082f632f56ff447. POST is proven only for ISH-API-001..003 and 008..009. Do not issue a real POST without a user-supplied or explicitly authorized synthetic/test identifier and expected outcome; do not infer auth, body, schema, privacy, retention, authority or plant cardinality."
+    },
+    {
+      "session_id": "2026-07-20-factory-360-industry-shared-checkpoint-push-015",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "codex/industry-shared-factory360-gap-013",
+      "task_id": "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013",
+      "gate": "G11 Factory 360 integration hardening",
+      "requirements": [
+        "F360-ISH-REQ-001..018",
+        "ISH-API-001..011"
+      ],
+      "acceptance_ids": [
+        "F360-ISH-AC-001..018"
+      ],
+      "screens": [
+        "SCR-WEB-400",
+        "connected P01/P03/P04/P08/P10/P11 consumers"
+      ],
+      "engines": [
+        "dedicated fail-closed Industry Shared provider",
+        "existing Factory 360 and Senaei engines preserved"
+      ],
+      "files_changed": [
+        "sanitized checkpoint current state, queue, acceptance and evidence records",
+        "exact synthetic-contract continuation and session handoff"
+      ],
+      "tests": [
+        "secret/PII/banned-artifact branch-delta scan PASS",
+        "5 POST / 11 blocked / 0 retired structural guard PASS",
+        "provider no-network and sensitive-domain separation guard PASS",
+        "no canonical migration or Factory 360 projection change guard PASS",
+        "typecheck and production build PASS",
+        "Industry Shared focused contract 4/4 PASS",
+        "protected static inventory 135 PASS / 4 intentional provider skips / 0 failed",
+        "YAML/JSON/diff validation PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md",
+        "product-contract/factory-360/FACTORY_360_EXECUTION_STATE.yaml",
+        "product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv"
+      ],
+      "decisions": [
+        "Sponsor explicitly approved pushing only codex/industry-shared-factory360-gap-013 to the configured Vikram-Indla/Inspection remote",
+        "Method-only evidence does not authorize auth, body, schema, privacy, fixture, migration, projection or stub retirement",
+        "Stop state is AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT"
+      ],
+      "blockers": [
+        "Approved synthetic beta licence and expected result for POST /shared/api/v2/license-info",
+        "Sanitized contracts for the remaining endpoints",
+        "Privacy/masking/retention and RLS proof before any sensitive persistence"
+      ],
+      "commit_sha": "0a318f6ce1806abfc535542f3425bd96ec00a35c",
+      "next_task": "Verify POST /shared/api/v2/license-info end to end using the approved synthetic beta licence and expected result.",
+      "resume_prompt": "Read CURRENT_STATE Update 107, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml and evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md. Resume codex/industry-shared-factory360-gap-013 from checkpoint commit 0a318f6ce1806abfc535542f3425bd96ec00a35c. Wait for the approved synthetic beta licence and expected result, then verify POST /shared/api/v2/license-info end to end. Do not use real data or infer auth, request, response, error, privacy, retention, authority or canonical mapping."
+    },
+    {
+      "session_id": "2026-07-20-factory-360-cross-provider-contract-014",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "codex/industry-shared-factory360-gap-013",
+      "task_id": "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014",
+      "gate": "G11 Factory 360 integration hardening",
+      "requirements": [
+        "F360-XPC-REQ-001..018",
+        "INSP-API-001..011",
+        "ISH-API-001..011"
+      ],
+      "acceptance_ids": [
+        "F360-XPC-AC-001..018"
+      ],
+      "screens": [
+        "SCR-WEB-400",
+        "SCR-IPAD-600..670"
+      ],
+      "engines": [
+        "Inspection API adapter",
+        "Industry Shared fail-closed provider",
+        "Factory 360 canonical projection"
+      ],
+      "files_changed": [
+        "branch-local slice registration",
+        "cross-provider contract ledgers",
+        "canonical data dictionary"
+      ],
+      "tests": [
+        "ledger generator structural check pending final run"
+      ],
+      "evidence": [
+        "FACTORY_360_*_CONTRACT.csv ledgers"
+      ],
+      "decisions": [
+        "Sponsor authorized contract-first scope; no beta-data migration or live forwarding."
+      ],
+      "blockers": [
+        "Complete Industry Shared request/response/auth contracts",
+        "External submission trigger decision"
+      ],
+      "commit_sha": "ab0de9663a13e2b4ffcf369ec5458455367832b7",
+      "next_task": "Complete structurally discoverable Inspection API contract mapping and retain Industry Shared fail-closed dimensions.",
+      "resume_prompt": "Read the cross-provider CURRENT_SLICE, contract ledgers and Industry Shared ledger. Do not invent missing contracts or activate live submission."
     }
   ],
-  "last_session": "2026-07-20-factory-360-complete-010",
+  "last_session": "2026-07-20-factory-360-cross-provider-contract-014",
   "rules": {
     "append_only": true,
     "required_fields": [

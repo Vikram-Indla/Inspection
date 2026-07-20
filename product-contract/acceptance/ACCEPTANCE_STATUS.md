@@ -336,3 +336,17 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
   remain unrun/blocked; no row is upgraded by source inspection alone.
 - Independent source audit: **PASS after remediation**, with no remaining
   implementation P0/P1; this is not substituted for any runtime acceptance row.
+## Factory 360 Industry Shared gap closure — 2026-07-20
+
+## Factory 360 cross-provider contract — 2026-07-20
+
+- Task: `TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014`; acceptance namespace `F360-XPC-AC-001..018`.
+- Scope: documented Inspection API field structure, canonical field dispositions, shared Web/iPad consumption, offline/version and unavailable/error contracts.
+- Industry Shared: method evidence only; full contracts, adapters and retirement remain `BLOCKED_EXTERNAL`.
+
+- Task: `TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013`; acceptance rows `F360-ISH-AC-001..018`.
+- Source acceptance: provider isolation, exact lead inventory, fail-closed errors, privacy-domain separation, and preservation guards are implemented and verified.
+- Verification: typecheck PASS; production build PASS; focused contract suite 4/4 PASS; protected static inventory 135 PASS / 4 intentional live-provider skips / 0 failed.
+- Functional provider acceptance: **BLOCKED EXTERNAL** for `ISH-API-001..011`. Authenticated method-mismatch evidence proves POST for `ISH-API-001..003` and `ISH-API-008..009`; authentication, identifiers, bodies, schemas, errors, privacy, fixtures, and API-owner confirmation remain unverified for every endpoint.
+- Retirement rule: no Factory 360 stub or gap may be marked retired until its endpoint contract, sanitized fixture checksum, normalization mapping, negative paths, and controlled runtime evidence are accepted.
+- Checkpoint: sponsor-approved push readiness PASS; all endpoints remain `DISCOVERY_REQUIRED`, provider network calls remain absent, sensitive domains remain separate, zero stubs are retired, and no canonical migration or Factory 360 projection changed. Stop state: `AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT`.

@@ -61,7 +61,7 @@ test.describe("Factory 360 typed Senaei integration contract", () => {
     expect((auth.match(/method: "POST"/g) ?? []).length).toBe(4);
     expect(profile).toContain('"/api/inspection/profile"');
     expect(tasks).toContain('"/api/inspection/tasks"');
-    expect(submission).toContain("/api/inspection/tasks/submit-inspection/${segment(submission.taskId)}");
+    expect(submission).toContain('endpoint: "/api/inspection/tasks/submit-inspection/{task}"');
     expect(submission).toContain('method: "POST"');
     expect(submission).not.toContain('method: "GET"');
   });
@@ -78,7 +78,18 @@ test.describe("Factory 360 typed Senaei integration contract", () => {
     expect(client).toContain('options.body instanceof FormData');
     expect(client).toContain("Multipart content type must be generated with its FormData boundary.");
     expect(submission).toContain("submission.governanceRef.trim()");
-    expect(submission).toContain('submission.formData.has("inspection_type")');
-    expect(submission).toContain('submission.formData.has("is_distrupted")');
+    expect(submission).toContain('"inspection_type"');
+    expect(submission).toContain('"is_distrupted"');
+  });
+
+  test("builds the documented multipart structure but does not forward external submission", () => {
+    const submission = read(`${root}/adapters/inspection-submission.ts`);
+    const types = read(`${root}/types.ts`);
+    for (const field of ["factory_front_image[]", "distrubtion_report[]", "used_fuel_type[]", "checklist_items[${item.externalId}]", "[response_attachments][]", "selected_products[${index}][id]", "products_images[]", "selected_tools[${index}][is_passed]", "tools_images[]", "selected_raw_materials[${index}][is_in_factory]"]) expect(submission).toContain(field);
+    expect(submission).toContain("payloadChecksum");
+    expect(submission).toContain("createBlockedSubmissionOutbox");
+    expect(submission).toContain('"BLOCKED_TRIGGER_DECISION"');
+    expect(submission).not.toContain("client.requestJson(");
+    expect(types).toContain('deliveryStatus: "BLOCKED_TRIGGER_DECISION"');
   });
 });

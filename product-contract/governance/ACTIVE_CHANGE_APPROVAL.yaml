@@ -1,24 +1,33 @@
 schema_version: "1.0"
-change_id: "CC-FACTORY-360-MASTER-EXECUTION-010"
-title: "Factory 360 v2 complete implementation"
+change_id: "CC-FACTORY-360-INDUSTRY-SHARED-GAP-013"
+title: "Industry Shared API v2 deep discovery and Factory 360 gap closure"
 requestor: "Vikram Indla"
 approver: "Vikram Indla"
 authorization: >
-  The sponsor supplied the complete Factory 360 execution pack, instructed Codex to
-  start execution, explicitly authorized multi-agent implementation, required every
-  Word/API/HTML requirement to be maintained in permanent ledgers, and authorized the
-  finished isolated Factory 360 branch to be pushed. Missing external API contracts must
-  use honest unavailable stubs. Existing valuable functionality must be preserved.
+  The sponsor supplied eleven Industry Shared API v2 endpoint leads and the complete
+  gap-closure pack, instructed Codex to perform deep discovery and implementation in a
+  separate conversation, explicitly authorized multi-agent execution, required the
+  exact Factory 360 Web baseline and dedicated branch, and authorized the finished
+  isolated branch to be pushed. Unknown contracts must remain precise fail-closed states.
 scope_allowed:
-  - "Create and use codex/factory-360-complete-010 in an isolated canonical worktree."
-  - "Merge the accepted Compliance implementation line into the newer setup/Inspection baseline without discarding either history."
-  - "Implement the complete local Factory 360 v2 positive delta with additive migrations, RLS, tests and evidence."
-  - "Update active task, change-control, ledgers, queue, state, evidence and session controls for this approved slice."
-  - "Commit and push only the isolated Factory 360 branch to the private Inspection repository."
+  - "Create and use codex/industry-shared-factory360-gap-013 from exact baseline db52854647fa9b4ca8fac362dfecd4ecc7ccf704."
+  - "Discover verified beta frontend/API contracts without printing or committing credentials or personal data."
+  - "Implement a dedicated server-only Industry Shared provider and normalize verified data into the existing Factory 360 model."
+  - "Add forward-only schema only when verified fields cannot safely map to existing objects."
+  - "Update active task, ledgers, acceptance, evidence, queue and session controls for this slice."
+  - "Commit and push only the isolated Industry Shared branch."
 scope_forbidden:
-  - "Production deployment, main merge or main modification."
-  - "Remote DDL or shared-data mutation under Prompt 00."
-  - "Secrets, raw API collections, environment files, prototype data or external binary source documents in Git."
-  - "Destructive rewrite of current factory, inspection, evidence or historical data."
+  - "Production deployment, main/setup merge or main/setup modification."
+  - "Remote DDL or shared beta/production data mutation."
+  - "Guessed methods, auth, identifiers, fields, endpoints or false synchronization claims."
+  - "Secrets, cookies, tokens, raw personal data, environment files or external binary source documents in Git."
+  - "Weakening F360-BR-002 one-license/one-plant cardinality without approved change control."
 decision_owner: "Vikram Indla"
 effective_date: "2026-07-20"
+
+cross_provider_contract_014:
+  change_id: "CC-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+  approver: "Vikram Indla"
+  branch: "codex/industry-shared-factory360-gap-013"
+  authorization: "Establish structural API, field, canonical-mapping, Web/iPad, offline/version, unavailable/error and reconciliation contracts for /api/inspection/* and /shared/api/v2/*; no bulk beta-data migration, live submission, merge, deployment, destructive schema change or credential exposure."
+  effective_date: "2026-07-20"

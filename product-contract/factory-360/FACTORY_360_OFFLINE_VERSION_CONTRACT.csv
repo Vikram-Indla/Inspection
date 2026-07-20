@@ -1,0 +1,5 @@
+subject,source,snapshot_content,version_rule,permission_rule,conflict_rule,status
+Factory 360 dossier,shared server projection,"canonical fields, availability, source metadata",snapshot version + source timestamps,role/RLS filtered,never silently overwrite,PARTIAL
+Inspection API provider payload,server adapter,no raw payload,not stored as offline payload,exclude credentials and restricted identity,not applicable,IMPLEMENTED
+Industry Shared,fail-closed provider,unavailable state only until verified,no raw payload or contract guess,sensitive domains excluded pending proof,not applicable,IMPLEMENTED
+Submission outbox,server-side payload builder,governed submission envelope only,immutable version + idempotency pending provider evidence,role/audit governed,BLOCKED_TRIGGER_DECISION,PARTIAL
