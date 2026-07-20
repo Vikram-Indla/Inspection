@@ -135,6 +135,13 @@ export default function ShellClient({
     setRegionScope(params.get("region") ?? "");
   }, []);
 
+  // The server Shell supplies a new current route once App Router navigation
+  // completes. Clear the immediate acknowledgement so a preserved client shell
+  // cannot remain busy after the destination has rendered.
+  useEffect(() => {
+    setPendingHref(null);
+  }, [current]);
+
   useEffect(() => {
     const normalized = query.trim();
     if (normalized.length < 2) {
@@ -214,7 +221,11 @@ export default function ShellClient({
 
     const url = new URL(anchor.href, window.location.href);
     if (url.origin !== window.location.origin || url.pathname === "/signout" || url.pathname === "/login" || url.pathname === "/reset") return;
-    if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
+    if (
+      url.pathname === window.location.pathname
+      && url.search === window.location.search
+      && url.hash === window.location.hash
+    ) return;
 
     const href = `${url.pathname}${url.search}${url.hash}`;
     setPendingHref(href);

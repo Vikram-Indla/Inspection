@@ -177,6 +177,7 @@ test("PERF-G11-001 captures repeatable authenticated route timings", async ({ br
       const started = Date.now();
       await link.click();
       await expect(page.locator(".ax-pagehead__context h2")).toHaveText(target.title, { timeout: 40_000 });
+      await expect(page.locator(".ax-route-progress")).toHaveCount(0);
       samples.push(await collect(page, target.route, "warm", Date.now() - started));
     }
     await context.close();
