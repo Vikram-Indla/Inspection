@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getShellRegions, getUserRoles } from "@/lib/persona";
 import type { ReactNode } from "react";
 import { useT } from "@/lib/i18n";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
@@ -17,10 +18,10 @@ export default async function Shell({ current, children, title, context, topbar 
   // this query only prevents irrelevant or unauthorized destinations appearing
   // in the shared chrome (RBAC-001..014, TASK-WEB-SHELL-001).
   const [{ data: roleRows }, regionRead] = await Promise.all([
-    sb.from("user_roles").select("role_key").eq("user_id", user.id),
+    getUserRoles(user.id),
     // CMP-REQ-SHELL-002: values are RLS-scoped and source-backed. A failed or
     // empty read disables the shared region control; it never invents regions.
-    sb.from("factories").select("region").not("region", "is", null).limit(1000),
+    getShellRegions(),
   ]);
   const roles = Array.from(new Set((roleRows ?? []).map(row => row.role_key))).sort();
   const regions = regionRead.error

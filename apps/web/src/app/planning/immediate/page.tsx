@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -26,7 +27,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   // Inspector. The two paths remain distinct: Planner reviews/windows/assigns;
   // Inspector self-assigns and starts immediately (M01-047/048/051/052).
   const { data: myRoles } = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[] };
   const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
   const isInspector = (myRoles ?? []).some(r => r.role_key === "inspector");

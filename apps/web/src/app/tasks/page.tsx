@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
@@ -43,7 +44,7 @@ export default async function TasksPage() {
       .select("id, task_type, task_ref, assignee, status, branch, sector, active")
       .order("created_at", { ascending: false }),
     user ? sb.from("profiles").select("region, org_scope").eq("user_id", user.id).maybeSingle() : Promise.resolve({ data: null }),
-    user ? sb.from("user_roles").select("role_key").eq("user_id", user.id) : Promise.resolve({ data: [] }),
+    user ? getUserRoles(user.id) : Promise.resolve({ data: [] }),
   ]);
   if (error) console.error("[tasks] load failed", error);
 

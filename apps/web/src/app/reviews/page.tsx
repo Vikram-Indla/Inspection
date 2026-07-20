@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -67,7 +68,7 @@ export default async function Reviews() {
   // Distinguish unauthorized from queue-clear (WIRING leg 1). RLS is still the
   // real boundary; this only lets us render the correct empty/denied state
   // instead of a misleading "queue clear".
-  const { data: roleRows } = user ? await sb.from("user_roles").select("role_key").eq("user_id", user.id) : { data: null };
+  const { data: roleRows } = user ? await getUserRoles(user.id) : { data: null };
   const roles = new Set((roleRows ?? []).map(r => r.role_key));
   const authorized = roles.has("reviewer") || roles.has("ops");
 

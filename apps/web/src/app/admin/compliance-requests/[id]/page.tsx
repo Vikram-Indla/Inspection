@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getUserRoles } from "@/lib/persona";
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import ActionForm from "../ActionForm";
@@ -44,7 +45,7 @@ export default async function ComplianceRequestWorkspace({ params, searchParams 
     sb.from("compliance_request_component_dependencies").select("id,revision_number,parent_component_id,child_component_id").eq("request_id", id),
     sb.from("compliance_request_decisions").select("id,revision_number,component_id,decision,comments,decided_by,decided_at").eq("request_id", id).order("decided_at", { ascending: false }),
     sb.from("compliance_request_publications").select("id,revision_number,component_id,published_at,version_id").eq("request_id", id).order("published_at", { ascending: false }),
-    user ? sb.from("user_roles").select("role_key").eq("user_id", user.id) : Promise.resolve({ data: [], error: null }),
+    user ? getUserRoles(user.id) : Promise.resolve({ data: [], error: null }),
   ]);
   const readFailed = [requestRead.error, revisionRead.error, componentRead.error, dependencyRead.error, decisionRead.error, publicationRead.error, roleRead.error].some(Boolean);
   const request = requestRead.data as RequestRow | null;

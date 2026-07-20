@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer, getServerUser } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { type ExpectedAuditEvent, type ReplayEvent, neutralAuditError } from "@/lib/audit-replay";
@@ -40,7 +41,7 @@ export default async function AuditReplayPage({ searchParams }: {
   const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
   const { data: roleRows } = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[] };
   const roles = (roleRows ?? []).map(row => row.role_key);
   const authorized = roles.some(role => AUDIT_READ_ROLES.has(role));

@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { useT } from "@/lib/i18n";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getUserRoles } from "@/lib/persona";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { redirect } from "next/navigation";
 import {
@@ -96,10 +97,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // still RLS-scoped per persona (RBAC-001..014).
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
-  const { data: dashboardRoles, error: roleError } = await sb
-    .from("user_roles")
-    .select("role_key")
-    .eq("user_id", user.id);
+  const { data: dashboardRoles, error: roleError } = await getUserRoles(user.id);
   const businessRoles = BUSINESS_ROLE_KEYS as readonly string[];
   const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => businessRoles.includes(row.role_key));
   if (!mayViewDashboard) redirect("/launch");

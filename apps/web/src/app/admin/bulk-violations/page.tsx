@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import EmptyState from "@/components/EmptyState";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
@@ -19,7 +20,7 @@ export default async function BulkViolations() {
   const { data: { user } } = await getVerifiedUser(sb);
 
   const { data: roleRows, error: roleError } = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = (roleRows ?? []).map(r => r.role_key);
   const isAuthorized = roles.includes("ops") || roles.includes("compliance_admin");

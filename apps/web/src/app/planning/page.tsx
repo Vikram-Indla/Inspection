@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -12,7 +13,7 @@ export default async function PlanningHome() {
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
   const { data: myRoles, error: rolesError } = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[], error: null };
   const isPlanner = !rolesError && (myRoles ?? []).some(r => r.role_key === "planner");
   if (!isPlanner) {

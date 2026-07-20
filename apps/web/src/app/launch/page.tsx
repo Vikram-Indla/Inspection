@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 
@@ -36,7 +37,7 @@ export default async function Launch() {
     throw new Error("launch_auth_unavailable");
   }
 
-  const { data: roles, error: rolesError } = await sb.from("user_roles").select("role_key").eq("user_id", user.id);
+  const { data: roles, error: rolesError } = await getUserRoles(user.id);
   if (rolesError) {
     console.error("[CD-003 launch roles]", rolesError.message);
     throw new Error("launch_roles_unavailable");

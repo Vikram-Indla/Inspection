@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import NotificationRulesManager, { type NotificationRuleRow, type Labels } from "./NotificationRulesManager";
@@ -17,7 +18,7 @@ export default async function AdminNotifications() {
   const { data: { user } } = await getServerUser();
 
   const [{ data: roleRows, error: roleError }, { data: rulesData, error: rulesError }, { data: roleTable }] = await Promise.all([
-    user ? sb.from("user_roles").select("role_key").eq("user_id", user.id) : Promise.resolve({ data: [] as { role_key: string }[], error: null }),
+    user ? getUserRoles(user.id) : Promise.resolve({ data: [] as { role_key: string }[], error: null }),
     sb.from("notification_rules")
       .select("id, event_key, channel, recipient_role, template, sla_minutes, escalation_role, status, version_label, created_at, deactivation_reason")
       .order("event_key").order("channel"),
