@@ -62,10 +62,12 @@ test("atlas mounts without landing-page disclaimers or a location list", async (
   await expect(page.locator("#email")).toBeEnabled();
   await expect(page.getByRole("button", { name: /Sign In/i })).toBeEnabled();
 
-  // The approved public-safe image is the visible foundation; its interaction
-  // layer remains native DOM and therefore keyboard/touch accessible.
+  // The dedicated light image is the default visible foundation; the native
+  // dark source remains preloaded for an instant theme switch. Their shared
+  // interaction layer remains native DOM and keyboard/touch accessible.
   await expect(page.locator('.lg-atlas-image.is-ready[data-atlas-mode="public-safe-image"]')).toBeVisible();
-  await expect(page.locator('.lg-atlas-image__media[src$="inspection-atlas-scene-base-v2.png"]')).toBeVisible();
+  await expect(page.locator('.lg-atlas-image__media[src$="inspection-atlas-scene-base-v2-light.png"]')).toBeVisible();
+  await expect(page.locator('.lg-atlas-image__media[src$="inspection-atlas-scene-base-v2.png"]')).toHaveCSS("opacity", "0");
   await expect(page.locator(".lg-atlas-image__hotspot")).toHaveCount(9);
   await expect(page.locator(".lg-story__step")).toHaveCount(0);
   await expect(page.locator('link[rel="icon"][href="/saqeel-prism.svg"]')).toHaveCount(1);
@@ -130,12 +132,12 @@ test("five scenes reveal map, dispatch, arrival, inspection and zones sequential
   await expect(page.locator(".lg-atlas-motion__outcome--failed")).toHaveCount(1);
   await expect(page.locator(".lg-atlas-motion__outcome").first()).toContainText("Failed");
 
-  // 05 Zones — illustrative-sample summary appears with the disclosure.
+  // 05 Zones — interactive boundaries appear without a public statistics strip.
   await page.getByRole("tab", { name: /Zones/i }).click();
   await expect(page.locator('.lg-atlas-motion[data-stage="decide"]')).toBeVisible();
   await expect(page.locator(".lg-atlas-image__zones span").first()).toHaveCSS("opacity", "1");
-  await expect(page.locator(".lg-story__summary")).toContainText("Illustrative sample · not live data");
-  await expect(page.locator(".lg-story__summary")).toContainText("318");
+  await expect(page.locator(".lg-story__summary")).toHaveCount(0);
+  await expect(page.locator("body")).not.toContainText("Illustrative sample · not live data");
 });
 
 test("credential focus pauses decorative motion without changing the active Arabic story", async ({ page, context }) => {

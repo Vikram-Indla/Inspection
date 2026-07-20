@@ -1,0 +1,4 @@
+consumer,input_contract,projection,provider_client_allowed,id_rule,null_unavailable_rule,offline_rule,status
+Web Factory 360,typed server adapter results,shared Factory 360 dossier loader,no,canonical external/source IDs,neutral unavailable state with provider code,reads canonical version only,PARTIAL
+iPad shared dossier,same typed server adapter results,shared Factory 360 dossier loader,no,same canonical IDs,same neutral unavailable state,permission-filtered canonical snapshot only,PARTIAL
+Offline snapshot,canonical server projection,versioned dossier snapshot,no,canonical IDs + source/version metadata,unavailable fields remain unavailable,never raw provider payload or credentials,IMPLEMENTED

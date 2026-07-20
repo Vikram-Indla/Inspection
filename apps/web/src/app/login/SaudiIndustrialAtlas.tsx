@@ -25,7 +25,8 @@ import SaudiAtlasDossier, { type DossierStrings } from "./SaudiAtlasDossier";
 // Uniform factory footprint — small enough to shrink-to-fit the dense Eastern
 // cluster without clipping; matches the 140×112 structure viewBox aspect.
 const FACTORY_W = 58, FACTORY_H = 46;
-const PUBLIC_SAFE_ATLAS_BASE = "/brand/saudi-atlas/inspection-atlas-scene-base-v2";
+const DARK_ATLAS_SRC = "/brand/saudi-atlas/inspection-atlas-scene-base-v2.png";
+const LIGHT_ATLAS_SRC = "/brand/saudi-atlas/inspection-atlas-scene-base-v2-light.png";
 
 // Normalized positions over the approved 1672×941 public-safe composition.
 // They are interaction anchors only; the visible geography remains in the
@@ -126,7 +127,7 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
         ))}
         {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
           <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
-            href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-9" y="-18" width="18" height="36" opacity="0" transform="rotate(90)">
+            href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-13.5" y="-27" width="27" height="54" opacity="0" transform="rotate(90)">
             <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.88;1"
               dur="6s" begin={`${index * 2.5}s`} fill="remove" />
             <animateMotion path={route.path} rotate="auto" dur="6s" begin={`${index * 2.5}s`} fill="remove"
@@ -197,10 +198,16 @@ function ZoneLiftOverlay({
               className={`lg-zone-lift__slab${isActive ? " is-lifted" : ""}`}>
               <path className="lg-zone-lift__cavity" d={zone.path} aria-hidden="true" />
               <g className="lg-zone-lift__wall" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
-                <image href={`${PUBLIC_SAFE_ATLAS_BASE}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+                <image className="lg-atlas-theme-raster lg-atlas-theme-raster--dark" href={DARK_ATLAS_SRC}
+                  x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+                <image className="lg-atlas-theme-raster lg-atlas-theme-raster--light" href={LIGHT_ATLAS_SRC}
+                  x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
               </g>
               <g className="lg-zone-lift__terrain" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
-                <image href={`${PUBLIC_SAFE_ATLAS_BASE}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+                <image className="lg-atlas-theme-raster lg-atlas-theme-raster--dark" href={DARK_ATLAS_SRC}
+                  x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+                <image className="lg-atlas-theme-raster lg-atlas-theme-raster--light" href={LIGHT_ATLAS_SRC}
+                  x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
               </g>
               {/* Keyboard + pointer target. Focus lifts the slab (same info as
                   hover); Enter/Space locks it; Escape restores the resting map. */}
@@ -241,7 +248,7 @@ const ZONES: { en: string; ar: string; x: number; y: number }[] = [
 ];
 
 const INSPECTOR_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="6" r="3.2"/><path d="M6 22v-5a6 6 0 0 1 12 0v5Z"/></svg>';
-const VEHICLE_SVG = '<svg viewBox="0 0 24 24" width="18" height="12" fill="currentColor"><path d="M2 14V9l4-4h10l3 4h3v5Z"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/></svg>';
+const VEHICLE_SVG = '<svg viewBox="0 0 24 24" width="27" height="18" fill="currentColor"><path d="M2 14V9l4-4h10l3 4h3v5Z"/><circle cx="7" cy="16" r="2"/><circle cx="17" cy="16" r="2"/></svg>';
 const EVIDENCE_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4 10-10"/></svg>';
 const SEAL_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>';
 
@@ -458,11 +465,17 @@ function PublicSafeImageAtlas({
   const [hoveredZone, setHoveredZone] = useState<AtlasZoneId | null>(null);
   const [lockedZone, setLockedZone] = useState<AtlasZoneId | null>(null);
   const [ready, setReady] = useState(false);
+  const loadedThemes = useRef(new Set<"dark" | "light">());
   const refs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const shown = locked ?? hover;
   const activeZone = lockedZone ?? hoveredZone;
   const activeNode = stageNode(activeStage);
   const shownPosition = shown ? IMAGE_POSITIONS[shown.id] : undefined;
+
+  const markThemeLoaded = (theme: "dark" | "light") => {
+    loadedThemes.current.add(theme);
+    if (loadedThemes.current.size === 2) setReady(true);
+  };
 
   useEffect(() => { onInteractingChange(shown !== null || activeZone !== null); }, [shown, activeZone, onInteractingChange]);
 
@@ -476,11 +489,16 @@ function PublicSafeImageAtlas({
     <div className={`lg-atlas-image${ready ? " is-ready" : ""}${activeZone ? " is-zone-engaged" : ""}`} data-atlas-mode="public-safe-image"
       data-active-stage={activeStage} data-active-zone={stageZone(activeStage)}>
       <div className="lg-atlas-image__plane">
-        <picture>
-          <img className="lg-atlas-image__media" src={`${PUBLIC_SAFE_ATLAS_BASE}.png`}
+        <div className="lg-atlas-image__rasters" aria-hidden="true">
+          <img className="lg-atlas-image__media lg-atlas-image__media--dark" src={DARK_ATLAS_SRC}
             width="1672" height="941" alt="" decoding="async" draggable={false}
-            onLoad={() => setReady(true)} onError={onImageError} />
-        </picture>
+            loading="eager" fetchPriority="high"
+            onLoad={() => markThemeLoaded("dark")} onError={onImageError} />
+          <img className="lg-atlas-image__media lg-atlas-image__media--light" src={LIGHT_ATLAS_SRC}
+            width="1672" height="941" alt="" decoding="async" draggable={false}
+            loading="eager" fetchPriority="high"
+            onLoad={() => markThemeLoaded("light")} onError={onImageError} />
+        </div>
 
         <JourneyOverlay stage={activeStage} locale={locale} />
 

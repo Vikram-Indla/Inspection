@@ -8,20 +8,19 @@ import { buildShellNavigation } from "../src/lib/shell-navigation";
 const root = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 
-test.describe("Inspector-first Shell A contract", () => {
-  test("UIU-ISP-AC-001..006 A is default, B is optional and field work is first", () => {
+test.describe("Inspector shell foundation and sponsor-corrected shared business navigation", () => {
+  test("UIU-ISP-AC-001..006 collapse preference remains while Prompt 01 governs shared navigation", () => {
     const shell = read("src/components/ShellClient.tsx");
     const nav = buildShellNavigation(["inspector"]);
     expect(shell).toContain("useState(false)");
     expect(shell).toContain('localStorage.getItem("saqeel-shell-collapsed") === "1"');
     expect(shell).toContain('localStorage.setItem("saqeel-shell-collapsed", next ? "1" : "0")');
-    expect(nav[0].id).toBe("inspection");
-    expect(nav[0].labelEn).toBe("Field work");
-    expect(nav[0].labelAr).toBe("العمل الميداني");
-    expect(nav[0].items[0]).toMatchObject({ href: "/field", labelEn: "My assignments", labelAr: "مهامي" });
-    expect(nav.flatMap(group => group.items.map(item => item.href))).toEqual([
-      "/field", "/virtual", "/dashboard", "/operations", "/factories",
-    ]);
+    expect(nav.map(group => group.id)).toEqual(["overview", "operations", "compliance", "insights", "administration"]);
+    expect(nav.find(group => group.id === "operations")?.items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ href: "/field", labelEn: "Execution", labelAr: "التنفيذ", enabled: true }),
+    ]));
+    expect(nav.find(group => group.id === "administration")?.items).toHaveLength(7);
+    expect(nav.find(group => group.id === "administration")?.items.every(item => !item.enabled)).toBe(true);
   });
 
   test("UIU-ISP-AC-007..011 field task bar is labelled, restrained and touch sized", () => {

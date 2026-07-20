@@ -2,13 +2,13 @@ import { test, expect } from "@playwright/test";
 import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath } from "./personas";
 
-const evidenceDir = evidenceDirectory("shell-v1");
+const evidenceDir = evidenceDirectory("task-web-compliance-shared-shell-001");
 
-test.describe("TASK-WEB-SHELL-001 visual evidence", () => {
+test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 visual evidence", () => {
   test.use({ storageState: storageStatePath("planner") });
 
   test("captures matching light/dark desktop and collapsed navigation", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.setViewportSize({ width: 1440, height: 1200 });
     await page.goto("/locale?set=en");
     await page.goto("/planning");
     await page.evaluate(() => {
@@ -16,6 +16,7 @@ test.describe("TASK-WEB-SHELL-001 visual evidence", () => {
       document.documentElement.setAttribute("data-theme", "light");
     });
     await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
+    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(7);
     await page.screenshot({ path: `${evidenceDir}/planner-desktop-en-light.png`, fullPage: false });
 
     await page.evaluate(() => {
@@ -41,6 +42,9 @@ test.describe("TASK-WEB-SHELL-001 visual evidence", () => {
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await page.getByRole("button", { name: "فتح قائمة التنقل" }).click();
     await expect(page.locator(".ax-shell")).toHaveClass(/is-drawer-open/);
+    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(7);
+    const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(horizontalOverflow).toBeLessThanOrEqual(1);
     await page.waitForTimeout(300); // evidence frame after the 200ms drawer transition settles
     await page.screenshot({ path: `${evidenceDir}/planner-mobile-ar-light-drawer.png`, fullPage: false });
   });

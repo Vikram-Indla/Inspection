@@ -1,0 +1,97 @@
+schema_version: "1.2"
+task_id: "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013"
+gate: "G11 Factory 360 integration hardening"
+title: "Industry Shared API v2 deep discovery and Factory 360 gap closure"
+status: "DISCOVERY_AND_FAIL_CLOSED_IMPLEMENTATION_IN_PROGRESS"
+enforce_stop_gate: true
+broad_implementation_allowed: true
+approval_ref: "HUMAN_APPROVALS.yaml#FACTORY-360-INDUSTRY-SHARED-GAP-013"
+change_control_ref: "CC-FACTORY-360-INDUSTRY-SHARED-GAP-013"
+
+branch_at_start: "codex/industry-shared-factory360-gap-013"
+head_at_start: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
+process_ids: ["P12"]
+consumer_process_ids: ["P01", "P03", "P04", "P08", "P10", "P11"]
+requirement_ids:
+  - "F360-ISH-REQ-001..018"
+  - "ISH-API-001..011"
+  - "F360-GAP-009"
+  - "NEW-GAP-LICENSE"
+  - "NEW-GAP-PRODUCTS"
+  - "NEW-GAP-WORKFORCE"
+  - "NEW-GAP-CONTACTS"
+  - "NEW-GAP-ACTIVITY"
+  - "F360-BR-001..012"
+  - "F360-LO-001..006"
+  - "F360-SRCH-001..003"
+  - "F360-II-001..004"
+  - "F360-PERM-001..006"
+acceptance_ids:
+  - "F360-ISH-AC-001..018"
+  - "F360-ISH-JRN-001..012"
+  - "F360-AC-001..016 (protected regression)"
+evidence_ids: ["F360-ISH-EV-001..012", "F360-EV-001..012 (protected baseline)"]
+screen_ids: ["SCR-WEB-400", "SCR-WEB-100", "SCR-WEB-120", "SCR-WEB-300", "SCR-WEB-310", "SCR-WEB-500"]
+engine_ids:
+  - "Typed Industry Shared API v2 provider and synchronization adapter"
+  - "Existing Factory 360 canonical source, RLS, audit and reconciliation engines"
+
+dependencies:
+  - "Exact pushed Web Factory 360 baseline db52854647fa9b4ca8fac362dfecd4ecc7ccf704."
+  - "Sponsor-supplied Industry Shared API Factory 360 gap-closure pack, SHA-256 212e89c0684cf1b0bc066e0a59d0b4cac0a252639385836155fdad682bf5a7d9."
+  - "Approved authenticated beta access or sanitized developer examples for contract verification."
+  - "Existing Factory 360 foundation migration and protected Web implementation."
+
+context_files:
+  - "product-contract/factory-360/FACTORY_360_MASTER_LEDGER.csv"
+  - "product-contract/factory-360/FACTORY_360_API_ENDPOINT_INVENTORY.csv"
+  - "product-contract/factory-360/FACTORY_360_API_FIELD_INVENTORY.csv"
+  - "product-contract/factory-360/FACTORY_360_DATA_DICTIONARY.csv"
+  - "product-contract/factory-360/FACTORY_360_ACCEPTANCE_LEDGER.csv"
+  - "product-contract/factory-360/FACTORY_360_INTEGRATION_GAPS.csv"
+  - "product-contract/factory-360/FACTORY_360_PRESERVATION_LEDGER.csv"
+  - "product-contract/factory-360/FACTORY_360_FUNCTIONAL_JOURNEYS.csv"
+  - "product-contract/factory-360/FACTORY_360_EXECUTION_STATE.yaml"
+  - "product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv"
+  - "product-contract/factory-360/industry-shared/FACTORY360_STUB_RETIREMENT_MATRIX.csv"
+  - "apps/web/src/lib/integrations/senaei/client.ts"
+  - "apps/web/src/app/factories/cr/[id]/page.tsx"
+  - "supabase/migrations/20260720010000_factory360_v2_foundation.sql"
+
+open_decisions:
+  - "All eleven endpoint methods, authentication, request identifiers and response schemas remain unverified until authenticated beta or sanitized developer evidence is available."
+  - "Contact, delegation and HRSD person-level storage is prohibited until purpose, permission, retention and masking rules are explicitly approved."
+  - "One Industrial License represents one Plant under F360-BR-002; an apparent multi-plant response is a contract conflict, not permission to weaken cardinality."
+  - "Qualified native-Arabic review remains a human release gate."
+
+do_not_touch:
+  - "Do not broaden or weaken the existing /api/inspection Senaei client allowlist."
+  - "Do not guess methods, authentication, identifiers, parameters, fields, endpoints or provider values."
+  - "Do not expose or persist unapproved person-level HRSD, contact or delegation data."
+  - "Do not remove existing factory IDs/routes, manual representative/product capabilities or historical records."
+  - "Do not replace or duplicate Mapbox, Risk Engine, OCR, evidence custody, notification, audit, RLS or offline engines."
+  - "Do not redesign the separately active Inspector iPad branch."
+  - "Do not merge, deploy, apply remote DDL or mutate shared beta/production data."
+
+authorized_file_scope:
+  - "Dedicated server-only Industry Shared API provider family, schemas, adapters and fail-closed errors."
+  - "Additive canonical reconciliation and schema changes justified only by verified endpoint contracts."
+  - "Web Factory 360 projections, search, source/freshness and partial-failure handling."
+  - "Sanitized fixtures, focused tests, machine-readable ledgers, evidence and session records."
+  - "Commit and push of the isolated Industry Shared branch only; no merge or deployment."
+
+required_evidence:
+  - "Endpoint-by-endpoint method/auth/request/response/error/privacy contract or precise inaccessible disposition."
+  - "Sanitized fixture checksum for every CONTRACT_VERIFIED endpoint."
+  - "Host/path/method allowlist, auth fail-closed, timeout, size, invalid-JSON and privacy tests."
+  - "Canonical CR/license/plant/product/activity/workforce/contact/delegation mapping and conflict evidence."
+  - "Exact stub retirement/reduction/retention dispositions."
+  - "Typecheck, production build, focused contracts and protected Factory 360 regression."
+
+exit_condition: >-
+  Every accessible Industry Shared endpoint is CONTRACT_VERIFIED, implemented through the
+  isolated provider, reconciled into the existing Factory 360 source model and functionally
+  verified; every inaccessible endpoint retains a precise fail-closed disposition with no
+  guessed contract; protected Factory 360 behavior regresses cleanly; ledgers and evidence
+  are current; the isolated branch is committed and pushed; and the task stops at
+  AWAITING_SPONSOR_INDUSTRY_SHARED_API_GAP_ACCEPTANCE.

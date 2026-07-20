@@ -4,6 +4,7 @@ import EmptyState from "@/components/EmptyState";
 
 export type FactoryRow = {
   id: string; factory_code: string; name: string; cr_number: string;
+  dossier_href?: string;
   region: string | null; city: string | null; risk_band: string | null; risk_score: number | null;
   // FNS-103/104 — real registration flag. is_temporary = unregistered/unlicensed
   // establishment created for an immediate visit (0001_foundation L135, M01-045);
@@ -89,7 +90,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
               <td><span className="ax-lozenge ax-lozenge--info">{f.region ?? "—"}</span></td>
               <td>{f.city}</td>
               <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.bandLabels[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>
-              <td><a className="ax-link" href={`/factories/${f.id}`}>{strings.dossier} →</a></td>
+              <td><a className="ax-link" href={f.dossier_href ?? `/factories/${f.id}`}>{strings.dossier} →</a></td>
             </tr>
           ))}</tbody>
         </table></div>

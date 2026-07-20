@@ -1,5 +1,384 @@
 # Current State
 
+## 2026-07-20 UPDATE 112 — Saqeel wordmark-protected final override implemented
+
+`TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001` now implements the final consolidated
+wordmark-protected sponsor prompt on `feature/saqeel-login-revamp` from baseline
+`d53e09f`. The repository `SaqeelMark` source is unchanged (SHA-256
+`a9f61abf...bb6cea`) and the sole wordmark remains exactly `صقيل | صناعي`.
+National Single Sign-On, its Arabic equivalent, MIM Directory, Remember me,
+provider separators and reserved secondary-auth space are absent. Credential
+auth, reset anti-enumeration, safe errors, audit and `/launch` routing remain
+unchanged.
+
+Dark mode retains `inspection-atlas-scene-base-v2.png`; light mode uses the new
+dedicated `inspection-atlas-scene-base-v2-light.png`. Both are `1672×941`; edge
+registration resolves to `0px,0px`; main, lifted terrain and sidewall sources
+switch together without a CSS-generated light tint. Non-brand story/zone accents
+use semantic blue/green tokens; the protected prism remains untouched. All five
+stage/zone/camera/route/pause/reset contracts remain frozen; only vehicles are
+exactly 1.5× (`27×54`, `-13.5/-27`; fallback `42×30`).
+
+Verification: typecheck PASS; production build PASS; wordmark-protected 7/7;
+CD-001/reset/negative-auth 19/19; visual/video evidence 2/2 after correcting an
+evidence-only exact-name locator; `git diff --check` PASS; browser console has
+zero application errors; `/login`, dark/light rasters and vehicle asset return
+HTTP 200. External evidence contains 26 PNG frames plus one WebM under
+`saqeel-login-wordmark-protected-002`, with manifest
+`SAQEEL_LOGIN_WORDMARK_PROTECTED_002.json`.
+
+Status: **CONDITIONALLY COMPLETE — AWAITING SPONSOR VISUAL ACCEPTANCE**. Exact
+browser-level 200%/400% zoom remains a manual/browser certification gap (CSS
+viewport-equivalent reflow passes); the package has no lint script or ESLint
+dependency; asset/geography and qualified native-Arabic release checks remain
+human gates. No commit, push, merge, deploy, remote DDL or shared-data mutation.
+
+## 2026-07-20 UPDATE 111 — Saqeel login revamp implemented and verified on isolated branch
+
+`TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001` is implemented on
+`feature/saqeel-login-revamp` from exact `setup/Inspection` baseline `d53e09f`.
+The sponsor reopened CD-001 / SCR-PUB-010 under
+`CC-SAQEEL-LOGIN-REVAMP-001`; the existing performance branch and dirty root
+worktree were not modified.
+
+The accepted five-scene Saudi inspection atlas remains the trademark hero. Its
+zone paths, hover/focus lift amplitude and easing, cavity/wall/terrain geometry,
+click lock, Escape restoration, camera transform and duration, pause/freeze,
+readout content/timing, stage order/timing, route paths, vehicle starts,
+durations and motion spline are source-invariant and runtime-regressed. Broad
+plane/raster saturation, contrast and brightness filters were removed so the
+same approved native scene renders in both themes. Integration now belongs to
+the pearl/graphite shell, smoked stage, precise border, ambient halo and
+pointer-transparent tonal bridge.
+
+Primary route vehicles changed only from `18×36 @ (-9,-18)` to
+`27×54 @ (-13.5,-27)`; the generated fallback changed from `28×20` / `18×12`
+to `42×30` / `27×18`. Every dimension is exactly `1.5×` and every offset stays
+centered on the unchanged route anchor. Desktop and iPad Dispatch evidence
+shows no clipping or material collision.
+
+The form retains Email, Password, Sign In and password reset with the existing
+Supabase credential call, neutral errors, reset anti-enumeration, FND-003 audit
+and `/launch` RBAC routing. Remember me, MIM Directory and extra providers are
+absent. Exactly one National Single Sign-On secondary action is visible; it
+fails closed with an accessible neutral message because `MVP3-HOLD-003` has no
+approved/configured provider. No provider is simulated.
+
+Verification: typecheck PASS; production build PASS; 26 unique focused checks
+PASS across protected CD-001 interaction, CD-002 reset, negative auth, source
+invariants, vehicle scale, theme invariance, Arabic non-mirroring, responsive
+matrix and visual evidence. Eleven English/Arabic, light/dark, desktop, iPad,
+Stage Manager, mobile, 320 CSS px and Dispatch frames plus SHA-256 manifest are
+stored under the approved external documentation root. No commit, push, merge,
+deploy, remote DDL, shared-data mutation or unrelated source change occurred.
+Status: `IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_VISUAL_ACCEPTANCE`.
+
+## 2026-07-20 UPDATE 110 — Factory 360 iPad × cross-provider reconciliation SPONSOR-ACCEPTED & MERGED
+
+`TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015` accepted (SHA `1f17715`) and
+merged to canonical `setup/Inspection` via PR #36 (merge commit `e0363bc`).
+
+Status:
+- TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015: **SPONSOR_ACCEPTED_AND_MERGED**
+- structural Web/iPad contract parity: **COMPLETE**
+- live authenticated staging verification: **PENDING_SEPARATE_CLOSURE**
+- Industry Shared field contracts: **BLOCKED_EXTERNAL** (`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`)
+- external submission trigger: **BLOCKED_TRIGGER_DECISION**
+
+Post-merge verification on `e0363bc` (10/10): Web + iPad Factory 360 both use
+`loadFactory360Dossier`; offline snapshot `f360-ipad-snapshot-2`; `mim-field-f360-v1`
+separate; `mim-field-v1` inspection outbox unchanged; Industry Shared fail-closed;
+external submission blocked; `canonical-projection.ts` server-only; slice 015 +
+011/014/013 slice-history present. typecheck 0, build PASS, static suite
+149 passed / 4 skipped / 0 failed, diff-check + secret scan clean.
+
+`main` mirror is behind (`594fd87`) pending a separate sponsor-approved
+fast-forward; not touched under this task's explicit "do not merge to main".
+Merged remote reconciliation branch deleted per hygiene; API-contract branch,
+evidence, slice-history and accepted ledgers retained.
+
+## 2026-07-20 UPDATE 109 — iPad × cross-provider contract reconciliation (branch only)
+
+`TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015` on
+`codex/factory360-ipad-api-contract-consumption-015` (base `594fd87`, union-merged
+accepted API-contract `ede6628`, merge `9edd34e`). NOT merged to canonical.
+
+Web and iPad now consume the accepted cross-provider structure through ONE shared
+server projection: `cross-provider-contract.ts` (types + reconcile) →
+`canonical-projection.ts` (NEW, server-only; builds source-labelled canonical
+facts + discrepancy states from the dossier; Industry Shared fail-closed) →
+`loadFactory360Dossier` (now returns `canonical`) → Web + iPad + offline snapshot
+(v2, backward-compatible; `mim-field-f360-v1` namespace unchanged). iPad renders
+canonical roles/discrepancies additively; it never calls a provider, re-resolves
+precedence, re-maps the 438 fields, or calculates compliance. Industry Shared 11
+endpoints stay fail-closed; external Submit Inspection stays
+`BLOCKED_TRIGGER_DECISION`; `lib/offline.ts` / `mim-field-v1` untouched.
+
+Fixed in-scope defects that pre-existed on the accepted branches: the web
+CR-dossier contract now asserts the extracted queries against the shared loader;
+the Senaei submission builder gained `bodyKind:"multipart_form_data"` + multipart
+field validation to satisfy its own accepted cross-provider spec. Gates: typecheck
+0, build PASS, full static suite 149 passed / 4 skipped / 0 failed, 10/10 negative
+proofs, diff-check + secret scan clean. Status:
+`AWAITING_SPONSOR_IPAD_API_CONTRACT_CONSUMPTION_ACCEPTANCE`.
+
+## 2026-07-20 UPDATE 105 — Factory 360 Inspector iPad slice DONE (merged to canonical)
+
+TASK-FACTORY-360-IPAD-011 (PROMPT_10) is functionally complete and **merged to
+`setup/Inspection`**; `main` fast-forwarded to the same commit `0a2cb4c` (mirror
+identical, no divergence). PR #35. Base was web `codex/factory-360-complete-010`
+@ `db52854`.
+
+The Inspector iPad (SCR-IPAD) Factory 360 is a field-native, read-only surface
+that renders from the SAME shared projection as the web CR dossier, so business
+data, calculations and permissions are identical BY CONSTRUCTION (parity is
+structural, not asserted). Delivered:
+
+- Shared loader `lib/factory360/dossier.ts` (`loadFactory360Dossier` /
+  `resolveFactory360Permissions`) lifted out of the inline web page; web CR
+  dossier refactored to consume it with rendering unchanged.
+- `/field/factory-360/[id]` — touch-first single column, `ax-*` tokens, RTL via
+  CSS logical properties, `<details>` cards, sticky action bar over FieldTabs:
+  header + freshness, `?license=` selector (no leakage), readiness tiles,
+  profile, compliance rate + reports register (returned/rejected visible,
+  excluded), violations + penalties, saved risk + advisory AI, industrial +
+  official-vs-observed, government (gap-honest), docs + official gallery +
+  linked evidence, actions (open map / create inspection / export / return),
+  honest permission/not-found/degraded/empty states.
+- Offline: `lib/factory360/offline-snapshot.ts` in a SEPARATE IndexedDB
+  (`mim-field-f360-v1`, never the inspection send-queue);
+  `/api/field/factory-360/snapshot` RLS-scoped, permission-filtered,
+  `withSignedUrls:false`; island caches only on success, retains prior on
+  failed refresh, honest Live/Cached/Offline, no invented staleness threshold.
+- Entry: `/field/factory-360` resolver (factory/license/plant/cr/license_no/
+  cr_no → canonical URL), assigned-visit startup link, ShellClient field-channel
+  search href rewrite.
+
+Non-regression: existing inspection offline engine (`lib/offline.ts` /
+`mim-field-v1`) UNTOUCHED; additive route + two additive links only. Gates:
+typecheck 0 errors, production build PASS, all four routes dynamic, static
+parity/non-regression contract 16/16 (`e2e/factory360-ipad-field.spec.ts`). 22
+platform-parity rows STRUCTURAL_VERIFIED.
+
+Open (NOT done — no staging deploy this pass): live staging runtime for entry
+journeys J01–05 and offline-device journeys J09–11 (needs seeded CR/license on
+`iiozvqntawxfwbgffzqu`); native-Arabic label review. Ledgers:
+`product-contract/factory-360/ipad/FACTORY_360_IPAD_{MASTER_LEDGER,FUNCTIONAL_JOURNEYS,EXECUTION_STATE}`
+and `FACTORY_360_PLATFORM_PARITY_LEDGER.csv`. Status:
+`AWAITING_SPONSOR_FACTORY_360_IPAD_FUNCTIONAL_ACCEPTANCE`.
+
+## 2026-07-20 UPDATE 108 — Cross-provider contract slice approved
+
+`TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014` is active only on
+`codex/industry-shared-factory360-gap-013`. It preserves the former Industry Shared
+slice in branch-local history and establishes contract-first work for the documented
+Inspection API and the fail-closed Industry Shared API. This is not beta-data migration:
+real records are representative structure evidence only. External submission remains
+`BLOCKED_TRIGGER_DECISION`; Industry Shared stays
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED` until complete endpoint contracts exist.
+
+## 2026-07-20 UPDATE 108 — Sponsor-authorized real-beta discovery exhausted safely
+
+The sponsor authorized read-only use of existing business records in the authenticated Senaei
+beta environment. Licence detail, product, contact, delegated-user, plant, industrial-activity,
+and HRSD inquiry screens were inspected without submitting, approving, editing, deleting,
+creating, synchronizing, suspending, cancelling, or otherwise changing a business record.
+Authenticated method-mismatch evidence now proves `POST` for `ISH-API-001..005` and
+`ISH-API-008..010`. Direct inspection of `ISH-API-006`, `ISH-API-007`, and `ISH-API-011` was
+blocked by the browser client, so their methods remain unverified.
+
+The visible UI proves useful domain separation and labels, including bilingual activity labels,
+but it exposes no supplied `/shared/api/v2` frontend call site. The available authenticated
+browser interface exposes page/Livewire state and console output, not request headers, bodies,
+or responses. Consequently authentication, content type, exact identifiers and fields,
+success/error schemas, pagination, nullability, cardinality, authority semantics, source
+metadata, and privacy rules remain unverified for all eleven endpoints. Visible UI columns were
+not promoted into API or canonical schemas. No real business value, personal contact value,
+credential, cookie, token, raw capture, stack trace, or framework version was retained in Git.
+
+The provider therefore still has no network call and every endpoint remains
+`DISCOVERY_REQUIRED`, returning `INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`. No typed live
+adapter, canonical mapping, Factory 360 projection change, fixture, or stub retirement was
+authorized by method-only/UI-only evidence. The exact remaining first action is to obtain a
+sanitized actual `POST /shared/api/v2/license-info` request/response export or developer contract
+that exposes authentication, content type, exact fields and schemas, then verify it end to end
+against the sponsor-authorized beta record. Stop state:
+`AWAITING_SPONSOR_INDUSTRY_SHARED_API_GAP_ACCEPTANCE`.
+
+## 2026-07-20 UPDATE 107 — Industry Shared checkpoint approved for push
+
+The sponsor accepted the truthful method-only discovery and explicitly approved pushing
+`codex/industry-shared-factory360-gap-013` to the configured Vikram-Indla/Inspection remote.
+The checkpoint remains fail closed: only the five observed POST methods are recorded; every
+endpoint remains `DISCOVERY_REQUIRED`; the client contains no network call; the exact error is
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`; contacts, delegations, job workforce, plant labour,
+and HRSD remain distinct; and zero stubs are retired. No migration, canonical Factory 360
+projection, environment file, browser capture, credential, cookie, token, personal identifier,
+or unsanitized payload is included in the branch delta.
+
+Typecheck and production build pass; the focused Industry Shared contract passes 4/4; the
+protected static inventory passes 135 with four intentional live-provider skips and zero
+failures. The branch is ready to resume in the sponsor-specified endpoint order. Exact next
+action: verify `POST /shared/api/v2/license-info` end to end using the approved synthetic beta
+licence and expected result. Until that sanitized contract arrives, the stop state is
+`AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT`.
+
+## 2026-07-20 UPDATE 106 — Authenticated beta proves five POST methods only
+
+The authenticated Senaei beta dashboard and its integration area are reachable. Read-only
+method-mismatch probes against the five lowest-risk supplied routes prove `POST` for
+`ISH-API-001..003`, `ISH-API-008`, and `ISH-API-009`. The authenticated HRSD inquiry page
+also exposes one required text field labelled `HR Factory` inside a POST form, but that UI
+does not prove the `hrsd-labors` API body or response. The plant route could not be inspected
+through the browser client, and privacy-sensitive contact, delegation, and workforce routes
+were not queried with real identifiers.
+
+This evidence is deliberately partial. Authentication semantics, identifier placement,
+request bodies, success/error schemas, field authority, pagination, privacy, masking,
+retention, and sanitized fixtures remain unverified for every endpoint. The provider records
+only the five observed POST methods and still blocks all network calls with
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`; no endpoint is `CONTRACT_VERIFIED`, no stub is
+retired, and no schema or Factory 360 projection changes. The beta host also rendered a verbose
+framework exception page for method mismatch; only the security finding, not stack details or
+versions, is retained. Next evidence must be a sanitized developer contract or explicitly
+authorized synthetic/test identifier with expected outcomes.
+
+## 2026-07-20 UPDATE 105 — Industry Shared endpoint leads gated fail closed
+
+The sponsor-directed Factory 360 Industry Shared gap slice is source-implemented on the
+isolated `codex/industry-shared-factory360-gap-013` branch. Eleven supplied host/path leads
+are now represented by a permanent endpoint-contract ledger, stub-retirement matrix,
+acceptance ledger, and a dedicated server-only provider family. The provider records each
+lead once, keeps contacts, delegations, and the three workforce domains separate, and returns
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED` before any network call. It does not infer HTTP
+methods, authentication, identifiers, request or response fields, error semantics, privacy,
+retention, masking, or fixture data. The existing strict `/api/inspection` Senaei boundary,
+Factory 360 hierarchy, and `F360-BR-002` one-license-to-one-plant rule remain unchanged.
+
+The specification DOCX was rendered and inspected across all nine pages. The beta host is
+reachable, but both browser attempts terminate at its login page and no authenticated session
+or Industry Shared credential names are available. Repository search found no prior Industry
+Shared call sites; the supplied sanitized collection covers the different Senaei provider and
+cannot fill these contracts. Consequently all 11 endpoint rows remain `BLOCKED_EXTERNAL`, no
+stub is retired, and no canonical field migration is authorized. Typecheck and production
+build pass; focused contracts pass 4/4; protected static regression passes 135 with four
+intentional live-provider skips and zero failures. No remote DDL, deployment, main merge, or
+shared-environment mutation occurred. Exact evidence:
+`evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md`.
+
+## 2026-07-20 UPDATE 104 — Factory 360 v2 Prompt 00 implemented and source-verified
+
+The sponsor-directed Factory 360 master slice is implemented on the isolated
+`codex/factory-360-complete-010` branch. The CR-centred read-only dossier now preserves the
+existing factory identity and route while adding governed CR → Industrial License → plant
+selection, CR portfolio facts, selected-license industrial data, approved inspection reports,
+approved-snapshot compliance, existing Risk Engine explanation/history, government records,
+documents/OCR, separated official/profile and inspection media, violation/action lineage,
+source provenance, permission-bound planning/export, and controlled unavailable states.
+Global search covers CR/unified/legal-name/license/plant identifiers. Existing Factory 360
+write capabilities are retained under the guarded Administration integration control plane;
+strict CSV ingestion records SHA-256 custody and reconciliation rows without directly changing
+source truth.
+
+The additive PostgreSQL foundation supplies normalized hierarchy, immutable provider and
+submission-linked snapshots, versioned production-line rows, government/media/reconciliation
+records, RLS, audit, immutable identifier guards, and six exact Factory 360 permissions. The
+server-only Senaei boundary types every documented endpoint and fails closed for conflicting or
+absent contracts. PostgreSQL 16 compile, replay, negative date/immutability, and SQL contract
+tests pass. Typecheck and production build pass; focused contracts pass 20/20; protected static
+regression passes 131 with four intentional live-provider skips and zero failures.
+
+No remote DDL, production deployment, main merge, live Senaei equivalence claim, CR-level
+risk/compliance calculation, or source binary/JSON commit occurred. Fourteen provider/contract
+gaps remain `BLOCKED_EXTERNAL`; `F360-AC-012` and `F360-AC-013` require approved contract values,
+credentials/connectivity, and controlled staging evidence. Authenticated sponsor acceptance,
+native-Arabic review, and Prompt 02 staging remain open. Exact evidence:
+`evidence/TASK-FACTORY-360-COMPLETE-010.md`.
+
+## 2026-07-19 UPDATE 103 — Compliance Prompt 04 Approval Queue implemented
+
+Prompt 04 adds a dedicated `/admin/compliance-approvals` route and points the shared
+Compliance navigation to it. The page is explicitly distinct from Inspection Review &
+Approval, uses the existing compliance_admin/reviewer route guard and CCR RLS, excludes
+maker-owned requests in the UI while retaining database maker-checker enforcement, orders
+eligible work by submitted time, and shows factual Pending Review, Partially Approved and
+Ready to Publish views with component/dependency progress. It introduces no invented SLA,
+priority or assignment semantics.
+
+Review opens the Prompt 02 workspace with Current/Proposed comparison, component decisions,
+required Return/Reject comments, dependency tree, immutable decision history and transactional
+publication. Queue mutations still pass exclusively through the existing guarded RPC actions.
+Typecheck and production build pass; focused Prompt 04 contracts pass 6/6; the protected static
+inventory passes 111 with four intentional live-provider skips. No Inspector/iPad, inspection
+review queue, DDL, runtime data, Mapbox, signature, offline, provider or historical source changed.
+Populated shared-runtime evidence remains dependent on applying the Prompt 02 migration under
+separate controlled remote-DDL authority. Exact evidence:
+`evidence/TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004.md`.
+
+## 2026-07-19 UPDATE 102 — Compliance Prompt 03 library and runtime preview implemented
+
+After Prompt 02 was pushed and remotely verified, the sponsor directed continuous forward
+implementation without another analysis or approval pause. Prompt 03 unifies the existing
+Regulation and Inspection Item surfaces as the Compliance Library, explicitly marks direct
+configuration controls as temporary legacy compatibility authoring, and hands new/modified
+work to the governed Compliance Configuration Request create route with safe prefilling.
+
+The authorized read-only Inspector Runtime Preview now renders the selected immutable
+published package-version snapshot, Regulation/clause/section, item/guidance, response
+semantics and mappings, mandatory/evidence rules, Self-Assessment visibility, package/report
+placement, exact effective version, linked Violation and Penalty context, and immutable legacy/
+CCR lineage. Missing published fields are recorded as `INSPECTOR_RUNTIME_INTEGRATION_GAP`
+with route, change, risk and separate-slice disposition. No Inspector/iPad source, route,
+navigation, workflow, database schema, runtime data or provider integration was changed.
+
+Typecheck and production build pass; focused Prompt 03 contracts pass 5/5; the protected
+static inventory passes 105 with four intentional live-provider skips; authenticated read-only
+runtime evidence passes 6/6 initially and 1/1 after the active-tab contrast correction. Exact
+evidence: `evidence/TASK-WEB-COMPLIANCE-LIBRARY-003.md`. Sponsor Prompt 03 acceptance remains
+pending.
+
+## 2026-07-19 UPDATE 101 — Compliance Prompt 02 request engine implemented and verified
+
+Sponsor accepted Prompt 01, explicitly authorized its exact push, and authorized Prompt 02
+from accepted commit `26a8b4363fab9b8d66811aae949b604e2e9b14b9`. The Prompt 01 remote branch resolves
+to that exact commit. Prompt 02 adds an additive governed Compliance Configuration Request
+engine for Regulations, Inspection Items, Violations and Penalties: immutable revisions and
+snapshots, maker-checker RPCs, RLS-scoped reads, deterministic dependency rejection, partial
+approval, transactional immutable publication heads, compatibility mapping, correlated audit
+events, existing notification-provider integration, and a working register/create/detail UI.
+
+An isolated PostgreSQL 16 execution proved migration compilation and a second idempotent run;
+maker self-approval denial; recursive child auto-rejection; independent partial approval;
+single-branch publication; orphan rejection with unchanged version/head counts; and rollback of
+all fixture data. The catalog/RLS probe passes. Typecheck, focused Prompt 02 8/8 and production
+build pass. No remote DDL, shared runtime data, legacy Compliance table, historical inspection/
+report, Inspector/iPad, Mapbox, digital-signature, offline-execution or unrelated Administration
+source changed. Exact evidence: `evidence/TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md`.
+Sponsor Prompt 02 acceptance remains pending.
+
+## 2026-07-19 UPDATE 100 — Compliance Prompt 01 shared shell implemented and verified
+
+Sponsor acknowledged the corrected Compliance-only programme boundary and authorized
+Prompt 01. The corrected Prompt 00 decision pack is durably stored under the approved
+external documentation root; its required ZIP SHA-256
+`8964ae5580b9962802fae8762f229e8a521bffe8e8b037009e23e0bd81fe569a` and all 19
+manifest entries verify. The Web/Admin shell now has the exact Overview, Operations,
+Compliance, Insights and Administration groups; every non-admin persona has the ten
+authorized business destinations; and all seven primary Administration options remain
+visible but accessibly locked unless the existing role model permits them. The topbar
+unifies authenticated RLS-scoped search, date/region scope, theme, notifications, AI and
+account behavior while retaining language, profile and sign-out.
+
+Typecheck and production build pass. Prompt 01/protected source checks pass 10/10,
+shared-shell browser checks pass 8/8, visual evidence passes 2/2 with four reviewed
+English/Arabic light/dark expanded/collapsed/responsive frames, and the live regulation
+publish RLS negative passes 2/2 without mutation. The complete non-mutating static
+inventory reports 91 pass, 4 intentional provider skips and one unrelated pre-existing
+font import-name assertion failure. No schema, DDL, Inspector runtime, shared runtime data,
+route guard, RLS policy, provider, offline or historical-record source changed. Sponsor
+shared-shell acceptance remains pending. Exact evidence:
+`evidence/TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md`.
+
 ## 2026-07-18 UPDATE 98 — UI compliance technical gate passed; human gates remain
 
 Sponsor authorized the dedicated `TASK-QA-UI-COMPLIANCE-CERT-004` release-certification
@@ -833,3 +1212,62 @@ Fresh independent audit completed on canonical `setup/Inspection` at `2f24a7b` a
 - 2026-07-15 UPDATE 49 (CD-031 FACTORY 360 DOSSIER — TASK-SLICE + DESIGN-GATE OVERRIDE, DEC-014): sponsor asked to import and implement CD-031 Factory 360 (r3) from claude_design project 20cb0dce. Two governance stops were raised and explicitly overridden by the sponsor in-chat, recorded as DEC-014: (1) CD-031 is outside the currently authorized TASK-BASELINE-WIRING-AUDIT-001 slice (CD-001..003/CD-020..024 only); (2) the design package itself is `implementation_authorized:false` with a DO-NOT-EXECUTE / BASELINE_REVERIFY_REQUIRED flag. Verified locally before proceeding: `/factories/[id]` already existed as a 7-tab dossier fully wired to real schema, and no risk-driver/coordinate-conflict/boundary-polygon columns exist anywhere in migrations — the design's HANDOFF_BLOCKED assumptions hold against this repo, not just its stale claimed "main" baseline. Restructured the route into a two-column provenance-led dossier (aside: identity/freshness/risk/location; main: sticky section strip + Spatial Case Timeline signature + history/documents/representatives/products/materials/workforce), preserving every existing query and Add*/Toggle control. Added leadership-only representative-contact masking (HANDOFF_BLOCKED_ROLE) and explicit unavailable rows for risk drivers, risk-version history, evidence timeline, map/boundary, and document preview — none fabricated. No invented staleness threshold. Verified: typecheck clean, production build clean, new `apps/web/e2e/cd-031-factory-360.spec.ts` 15/15 PASS (source-truth + live planner persona + Arabic/RTL). Full no-exclusion regression: 178 PASS / 4 FAIL / 3 skipped — all 4 failures are in files this change never touched (admin, planning/bulk/review, dashboard-kpi-seed, golden-journey P5 review-approve timing); two reproduced as flaky on isolated re-run, the other two are pre-existing gaps unrelated to CD-031 (confirmed by touching none of the same files). CD-031 is `IMPLEMENTED_PENDING_CODEX_WIRING_AUDIT` per DEC-012 — the independent Codex wiring audit against `WIRING_MAP_CD-031.csv` (18 legs + 4b/4c) has not run and this is not a self-certified closure. No commit, push, merge, deploy, or `main` modification occurred.
 
 - 2026-07-15 UPDATE 50 (CD-030 NEW-1 ACCESS-REGRESSION FIX): a concurrent session's independent CD-030 R2 audit (`product-contract/evidence/CODEX_AUDIT_CD-030_2026-07-15_R2.md`, finding NEW-1) flagged that the `/reviews/:id` page-level `authorized` check (added earlier the same day) only allowed `reviewer`/`ops`, silently blocking `auditor`/`planner`/`leadership` from a route that RLS (`0002_rbac_audit.sql` `inspections_read`/`subs_read`/`reviews_read`) and the CD-030 design scope itself ("P11 · Reviewer/Auditor", `screen_route_catalogue.csv:26`) explicitly grant read access to — a regression against an accepted permission (CLAUDE.md: never weaken accepted behavior/permission), flagged via a cross-session message while this session was mid-CD-031-work in the same dirty tree. Independently re-verified the claim against the migration and catalogue before acting (not taken on trust). Fixed: `authorized` broadened to `reviewer/ops/auditor/planner/leadership`; a new `canDecide` (`reviewer/ops` only, unchanged from the original narrower check) now gates `DecisionPanel`/`StartReview` so the previously-open RLS `reviews_insert` policy doesn't become a live path for a read-only role to submit a decision; a `{role} · read-only` lozenge renders for non-deciding viewers. Verified: `tsc --noEmit`/`next build` clean; `cd-030-version-comparison`/`cd-029-review-workspace`/`cd-028-review-queue` 30/31 PASS, 1 skip — the single failure (`cd-028` leg 5) reproduces identically with or without this fix and is explained by shared live review data already advanced to `under_review` by earlier same-day test runs (queue's first open-workspace link no longer points at a start/no-open-decision row), not a defect in this change. No commit, push, merge, deploy, or `main` modification occurred.
+
+## 2026-07-20 UPDATE 113 — Saqeel unified login surface correction complete
+
+The sponsor's correction 003 is implemented on `feature/saqeel-login-revamp`
+without changing the protected wordmark, authentication, motion engine, route
+paths/timing, camera or zone geometry. The hero now has one atlas frame with
+absolute event and stage-rail overlays. The public five-cell statistics strip
+and its flow spacing are removed. A 48px atmospheric bridge integrates the full
+registered 1672×941 plane into light/dark host surfaces without independent
+child transforms, geographic distortion or facility crop. Resting zone noise is
+absent and Zones feedback uses semantic blue. Verification: typecheck PASS;
+production build PASS; login/atlas/reset/negative-auth 27/27 PASS; final visual/
+video evidence 2/2 PASS; required 16-state before/after set and annotations are
+recorded in `docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md` and
+external manifest `SAQEEL_LOGIN_UNIFIED_SURFACE_003.json`. Port 3000 serves the
+final production build. Sponsor visual acceptance and the existing manual zoom,
+Arabic, rights/geography and lint-tooling holds remain; no commit, push, merge,
+deployment, remote DDL or shared-data mutation occurred.
+
+## 2026-07-20 UPDATE 114 — Saqeel one-fade / one-unison correction complete
+
+The sponsor rejected the remaining frame-card composition and supplied a strict
+full-height hero contract. The right rail is now the atlas environment itself:
+the frame is absolute at `inset:0`, while title/control, event and stage rail are
+positioned overlays. Top/bottom fades are pointer-inert atmospheric overlays,
+not layout bands. The rail's border, radius, background, blur and shadow are
+removed. Login actions, links, trust icon and story controls share the scoped
+semantic-blue accent; the exact protected prism and `صقيل | صناعي` remain
+unchanged. The overlay-hidden light/dark test leaves one uninterrupted full-
+height atlas canvas. Typecheck/build PASS; protected login/atlas/reset/negative-
+auth regression 27/27 PASS; visual/video evidence 2/2 PASS. Evidence is under
+`saqeel-login-one-unison-004/` with manifest
+`SAQEEL_LOGIN_ONE_UNISON_004.json`. Port 3000 serves the final build. Sponsor
+visual acceptance and existing manual zoom/Arabic/rights/geography/lint holds
+remain; no commit, push, merge, deployment, remote DDL or shared-data mutation
+occurred.
+
+## 2026-07-20 UPDATE 115 — Saqeel event statement correction complete
+
+The sponsor's screenshot-based correction is implemented: the stage event no
+longer renders as an opaque card over the atlas. Background, border, radius,
+blur and box shadow are removed; the compact stage marker and balanced sentence
+render directly in the top atmospheric field with a restrained text shadow.
+Event content/status semantics/timing, the borderless bottom rail, map scene,
+authentication and every protected motion contract remain unchanged. Typecheck
+and production build PASS; protected functional regression 27/27 PASS; refreshed
+visual/video evidence 2/2 PASS under `saqeel-login-one-unison-004/`. Port 3000
+serves the statement treatment. Sponsor visual acceptance remains pending; no
+commit, push, merge, deployment, remote DDL or shared-data mutation occurred.
+
+## 2026-07-20 UPDATE 116 — Saqeel event typography reduced
+
+Sponsor screenshot review found the borderless statement still too large and
+bold. It is now 13px/18px at weight 500 with an 9px/13px weight-600 stage marker
+and slightly softened text colour. Card removal, placement, event content,
+status semantics, timing, rail and protected atlas behavior are unchanged.
+Typecheck and production build PASS; focused story/structure/responsive checks
+3/3 PASS. Port 3000 serves the refinement; no commit, push, merge or deployment
+occurred.

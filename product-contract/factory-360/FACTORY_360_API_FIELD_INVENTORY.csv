@@ -1,0 +1,439 @@
+endpoint,direction,field_path,data_type,source
+User > Login,request,email,text,formdata
+User > Login,request,password,text,formdata
+User > Login,response,$.success,bool,Successful Response
+User > Login,response,$.token,str,Successful Response
+User > Login,response,$.user,dict,Successful Response
+User > Login,response,$.user.id,str,Successful Response
+User > Login,response,$.user.old_id,NoneType,Successful Response
+User > Login,response,$.user.username,str,Successful Response
+User > Login,response,$.user.first_name,str,Successful Response
+User > Login,response,$.user.last_name,str,Successful Response
+User > Login,response,$.user.national_id,str,Successful Response
+User > Login,response,$.user.email,str,Successful Response
+User > Login,response,$.user.mobile,str,Successful Response
+User > Login,response,$.user.entity,str,Successful Response
+User > Login,response,$.user.date_of_birth,str,Successful Response
+User > Login,response,$.user.language,str,Successful Response
+User > Login,response,$.user.email_verified_at,str,Successful Response
+User > Login,response,$.user.mobile_verified_at,str,Successful Response
+User > Login,response,$.user.blocked_at,NoneType,Successful Response
+User > Login,response,$.user.disabled_at,NoneType,Successful Response
+User > Login,response,$.user.created_at,str,Successful Response
+User > Login,response,$.user.updated_at,str,Successful Response
+User > Login,response,$.user.last_login_at,str,Successful Response
+User > Login,response,$.user.ndb_synched_at,NoneType,Successful Response
+User > Login,response,$.user.ndb_last_ops_at,NoneType,Successful Response
+User > Logout,response,$.success,bool,Successful Response
+User > Logout,response,$.message,str,Successful Response
+User > Profile,response,$.user,dict,Successful Response
+User > Profile,response,$.user.id,str,Successful Response
+User > Profile,response,$.user.old_id,NoneType,Successful Response
+User > Profile,response,$.user.username,str,Successful Response
+User > Profile,response,$.user.first_name,str,Successful Response
+User > Profile,response,$.user.last_name,str,Successful Response
+User > Profile,response,$.user.national_id,str,Successful Response
+User > Profile,response,$.user.email,str,Successful Response
+User > Profile,response,$.user.mobile,str,Successful Response
+User > Profile,response,$.user.entity,str,Successful Response
+User > Profile,response,$.user.date_of_birth,str,Successful Response
+User > Profile,response,$.user.language,str,Successful Response
+User > Profile,response,$.user.email_verified_at,str,Successful Response
+User > Profile,response,$.user.mobile_verified_at,str,Successful Response
+User > Profile,response,$.user.blocked_at,NoneType,Successful Response
+User > Profile,response,$.user.disabled_at,NoneType,Successful Response
+User > Profile,response,$.user.created_at,str,Successful Response
+User > Profile,response,$.user.updated_at,str,Successful Response
+User > Profile,response,$.user.last_login_at,str,Successful Response
+User > Profile,response,$.user.ndb_synched_at,NoneType,Successful Response
+User > Profile,response,$.user.ndb_last_ops_at,NoneType,Successful Response
+User > Forget Password,request,email,text,formdata
+User > Forget Password,response,$.success,bool,Successful Response
+User > Forget Password,response,$.message,str,Successful Response
+User > Reset Password,request,email,text,formdata
+User > Reset Password,request,code,text,formdata
+User > Reset Password,request,password,text,formdata
+User > Reset Password,request,password_confirmation,text,formdata
+User > Reset Password,response,$.success,bool,Successful Response
+User > Reset Password,response,$.message,str,Successful Response
+Regulation > List Regulation,response,$.data,list,Successful Response
+Regulation > List Regulation,response,$.data[].id,str,Successful Response
+Regulation > List Regulation,response,$.data[].name,str,Successful Response
+Regulation > List Regulation,response,$.data[].number,str,Successful Response
+Regulation > List Regulation,response,$.data[].issue_date,str,Successful Response
+Regulation > List Regulation,response,$.data[].status,bool,Successful Response
+Regulation > List Regulation,response,$.data[].issuing_authorities,list,Successful Response
+Regulation > List Regulation,response,$.data[].issuing_authorities[].value,str,Successful Response
+Regulation > List Regulation,response,$.data[].issuing_authorities[].label,str,Successful Response
+Regulation > List Regulation,response,$.data[].documents,list,Successful Response
+Regulation > List Regulation,response,$.data[].items,list,Successful Response
+Regulation > List Regulation,response,$.data[].items[].id,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].type,dict,Successful Response
+Regulation > List Regulation,response,$.data[].items[].type.value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].type.label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].entity_notification,bool,Successful Response
+Regulation > List Regulation,response,$.data[].items[].geographical_location,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].administrative_name,dict,Successful Response
+Regulation > List Regulation,response,$.data[].items[].administrative_name.value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].administrative_name.label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].name,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].appeared_in_self_assessment,bool,Successful Response
+Regulation > List Regulation,response,$.data[].items[].report_kind,dict,Successful Response
+Regulation > List Regulation,response,$.data[].items[].report_kind.value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].report_kind.label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].description,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].approval_option,dict,Successful Response
+Regulation > List Regulation,response,$.data[].items[].approval_option.value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].approval_option.label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].rejection_option,dict,Successful Response
+Regulation > List Regulation,response,$.data[].items[].rejection_option.value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].rejection_option.label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].status,dict,Successful Response
+Regulation > List Regulation,response,$.data[].items[].status.value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].status.label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].attachment_mode,dict,Successful Response
+Regulation > List Regulation,response,$.data[].items[].attachment_mode.value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].attachment_mode.label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].is_mandatory_for_inspector,bool,Successful Response
+Regulation > List Regulation,response,$.data[].items[].report_types,list,Successful Response
+Regulation > List Regulation,response,$.data[].items[].report_types[].value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].report_types[].label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].associated_reports,list,Successful Response
+Regulation > List Regulation,response,$.data[].items[].associated_reports[].value,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].associated_reports[].label,str,Successful Response
+Regulation > List Regulation,response,$.data[].items[].violations,list,Successful Response
+Regulation > List Regulation,response,$.data[].items[].created_at,str,Successful Response
+Regulation > List Regulation,response,$.data[].created_at,str,Successful Response
+Regulation > Show Regulation,response,$.data,dict,Successful Response
+Regulation > Show Regulation,response,$.data.id,str,Successful Response
+Regulation > Show Regulation,response,$.data.name,str,Successful Response
+Regulation > Show Regulation,response,$.data.number,str,Successful Response
+Regulation > Show Regulation,response,$.data.issue_date,str,Successful Response
+Regulation > Show Regulation,response,$.data.status,bool,Successful Response
+Regulation > Show Regulation,response,$.data.issuing_authorities,list,Successful Response
+Regulation > Show Regulation,response,$.data.issuing_authorities[].value,str,Successful Response
+Regulation > Show Regulation,response,$.data.issuing_authorities[].label,str,Successful Response
+Regulation > Show Regulation,response,$.data.documents,list,Successful Response
+Regulation > Show Regulation,response,$.data.items,list,Successful Response
+Regulation > Show Regulation,response,$.data.items[].id,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].type,dict,Successful Response
+Regulation > Show Regulation,response,$.data.items[].type.value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].type.label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].entity_notification,bool,Successful Response
+Regulation > Show Regulation,response,$.data.items[].geographical_location,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].administrative_name,dict,Successful Response
+Regulation > Show Regulation,response,$.data.items[].administrative_name.value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].administrative_name.label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].name,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].appeared_in_self_assessment,bool,Successful Response
+Regulation > Show Regulation,response,$.data.items[].report_kind,dict,Successful Response
+Regulation > Show Regulation,response,$.data.items[].report_kind.value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].report_kind.label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].description,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].approval_option,dict,Successful Response
+Regulation > Show Regulation,response,$.data.items[].approval_option.value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].approval_option.label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].rejection_option,dict,Successful Response
+Regulation > Show Regulation,response,$.data.items[].rejection_option.value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].rejection_option.label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].status,dict,Successful Response
+Regulation > Show Regulation,response,$.data.items[].status.value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].status.label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].attachment_mode,dict,Successful Response
+Regulation > Show Regulation,response,$.data.items[].attachment_mode.value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].attachment_mode.label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].is_mandatory_for_inspector,bool,Successful Response
+Regulation > Show Regulation,response,$.data.items[].report_types,list,Successful Response
+Regulation > Show Regulation,response,$.data.items[].report_types[].value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].report_types[].label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].associated_reports,list,Successful Response
+Regulation > Show Regulation,response,$.data.items[].associated_reports[].value,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].associated_reports[].label,str,Successful Response
+Regulation > Show Regulation,response,$.data.items[].violations,list,Successful Response
+Regulation > Show Regulation,response,$.data.items[].created_at,str,Successful Response
+Regulation > Show Regulation,response,$.data.created_at,str,Successful Response
+Task > List Task,response,$.data,list,Successful Response
+Task > List Task,response,$.data[].id,str,Successful Response
+Task > List Task,response,$.data[].number,str,Successful Response
+Task > List Task,response,$.data[].workflow,str,Successful Response
+Task > List Task,response,$.data[].status,str,Successful Response
+Task > List Task,response,$.data[].created_at,str,Successful Response
+Task > List Task,response,$.data[].visit,dict,Successful Response
+Task > List Task,response,$.data[].visit.id,str,Successful Response
+Task > List Task,response,$.data[].visit.type,dict,Successful Response
+Task > List Task,response,$.data[].visit.type.value,str,Successful Response
+Task > List Task,response,$.data[].visit.type.label,str,Successful Response
+Task > List Task,response,$.data[].visit.method,dict,Successful Response
+Task > List Task,response,$.data[].visit.method.value,str,Successful Response
+Task > List Task,response,$.data[].visit.method.label,str,Successful Response
+Task > List Task,response,$.data[].visit.visit_date,str,Successful Response
+Task > List Task,response,$.data[].visit.facility_name,str,Successful Response
+Task > List Task,response,$.data[].visit.cr_number,str,Successful Response
+Task > List Task,response,$.data[].visit.notes,str,Successful Response
+Task > List Task,response,$.data[].visit.third_parties,NoneType,Successful Response
+Task > List Task,response,$.data[].visit.inspector,dict,Successful Response
+Task > List Task,response,$.data[].visit.inspector.id,str,Successful Response
+Task > List Task,response,$.data[].visit.inspector.name,str,Successful Response
+Task > Show Task,response,$.data,dict,Successful Response
+Task > Show Task,response,$.data.id,str,Successful Response
+Task > Show Task,response,$.data.number,str,Successful Response
+Task > Show Task,response,$.data.workflow,str,Successful Response
+Task > Show Task,response,$.data.status,str,Successful Response
+Task > Show Task,response,$.data.created_at,str,Successful Response
+Task > Show Task,response,$.data.license,dict,Successful Response
+Task > Show Task,response,$.data.license.id,str,Successful Response
+Task > Show Task,response,$.data.license.license_number,str,Successful Response
+Task > Show Task,response,$.data.license.license_type,dict,Successful Response
+Task > Show Task,response,$.data.license.license_type.value,str,Successful Response
+Task > Show Task,response,$.data.license.license_type.label,str,Successful Response
+Task > Show Task,response,$.data.license.status,dict,Successful Response
+Task > Show Task,response,$.data.license.status.value,str,Successful Response
+Task > Show Task,response,$.data.license.status.label,str,Successful Response
+Task > Show Task,response,$.data.license.investment_type,dict,Successful Response
+Task > Show Task,response,$.data.license.investment_type.value,str,Successful Response
+Task > Show Task,response,$.data.license.investment_type.label,str,Successful Response
+Task > Show Task,response,$.data.license.investment_size,int,Successful Response
+Task > Show Task,response,$.data.visit,dict,Successful Response
+Task > Show Task,response,$.data.visit.id,str,Successful Response
+Task > Show Task,response,$.data.visit.type,dict,Successful Response
+Task > Show Task,response,$.data.visit.type.value,str,Successful Response
+Task > Show Task,response,$.data.visit.type.label,str,Successful Response
+Task > Show Task,response,$.data.visit.method,dict,Successful Response
+Task > Show Task,response,$.data.visit.method.value,str,Successful Response
+Task > Show Task,response,$.data.visit.method.label,str,Successful Response
+Task > Show Task,response,$.data.visit.visit_date,str,Successful Response
+Task > Show Task,response,$.data.visit.cr_number,str,Successful Response
+Task > Show Task,response,$.data.visit.notes,str,Successful Response
+Task > Show Task,response,$.data.visit.third_parties,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.inspector,dict,Successful Response
+Task > Show Task,response,$.data.visit.inspector.id,str,Successful Response
+Task > Show Task,response,$.data.visit.inspector.name,str,Successful Response
+Task > Show Task,response,$.data.visit.plant,dict,Successful Response
+Task > Show Task,response,$.data.visit.plant.id,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.plant_number,int,Successful Response
+Task > Show Task,response,$.data.visit.plant.state,dict,Successful Response
+Task > Show Task,response,$.data.visit.plant.state.value,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.state.label,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.main_activity_code_l2,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.main_activity_code_l4,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.has_approved_manpower,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.inside_industrial_city,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.started_production_at,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.closed_at,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.established_at,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.canceled_at,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address,dict,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.address_id,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.type_code,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.address_line_1,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.land_mark,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.district_en,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.district_ar,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.building_number,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.additional_number,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.zip_code,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.unit_no,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.street_name_ar,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.street_name_en,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.latitude,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.longitude,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.city,dict,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.city.name_en,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.city.name_ar,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.region,dict,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.region.name_en,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.address.region.name_ar,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.land_provider,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.industrial_city,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.license_number,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.hs_12_confirmed_at,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.city,dict,Successful Response
+Task > Show Task,response,$.data.visit.plant.city.id,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.city.name_en,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.city.name_ar,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.commercial_entity,dict,Successful Response
+Task > Show Task,response,$.data.visit.plant.commercial_entity.number,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.commercial_entity.unified_number,str,Successful Response
+Task > Show Task,response,$.data.visit.plant.commercial_entity.name_en,NoneType,Successful Response
+Task > Show Task,response,$.data.visit.plant.commercial_entity.name_ar,str,Successful Response
+Task > Show Task,response,$.data.visit.city,dict,Successful Response
+Task > Show Task,response,$.data.visit.city.id,str,Successful Response
+Task > Show Task,response,$.data.visit.city.code,int,Successful Response
+Task > Show Task,response,$.data.visit.city.name_en,str,Successful Response
+Task > Show Task,response,$.data.visit.city.name_ar,str,Successful Response
+Task > Show Task,response,$.data.visit.city.region_id,str,Successful Response
+Task > Show Task,response,$.data.visit.region,dict,Successful Response
+Task > Show Task,response,$.data.visit.region.id,str,Successful Response
+Task > Show Task,response,$.data.visit.region.name_en,str,Successful Response
+Task > Show Task,response,$.data.visit.region.name_ar,str,Successful Response
+Task > Show Task,response,$.data.visit.region.code,int,Successful Response
+Task > Plant Production Line,response,$.current_page,int,Successful Response
+Task > Plant Production Line,response,$.data,list,Successful Response
+Task > Plant Production Line,response,$.data[].id,str,Successful Response
+Task > Plant Production Line,response,$.data[].old_id,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].plant_id,str,Successful Response
+Task > Plant Production Line,response,$.data[].product_id,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit_id,str,Successful Response
+Task > Plant Production Line,response,$.data[].quantity,int,Successful Response
+Task > Plant Production Line,response,$.data[].is_primary,int,Successful Response
+Task > Plant Production Line,response,$.data[].real_production,str,Successful Response
+Task > Plant Production Line,response,$.data[].maximum_production,str,Successful Response
+Task > Plant Production Line,response,$.data[].price,str,Successful Response
+Task > Plant Production Line,response,$.data[].created_at,str,Successful Response
+Task > Plant Production Line,response,$.data[].updated_at,str,Successful Response
+Task > Plant Production Line,response,$.data[].deleted_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].meta,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].hs10_product_id,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].ndb_synched_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].ndb_last_ops_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].plant,dict,Successful Response
+Task > Plant Production Line,response,$.data[].plant.id,str,Successful Response
+Task > Plant Production Line,response,$.data[].plant.number,int,Successful Response
+Task > Plant Production Line,response,$.data[].plant.license,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].plant.address,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].plant.industrial_city,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product,dict,Successful Response
+Task > Plant Production Line,response,$.data[].product.id,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.old_id,int,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity_id,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.product_class_id,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.parent_id,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.hs_code,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.name_en,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.name_ar,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.quantity,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.hs_code_type,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.standard_unit_id,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.unit_price,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.active,int,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_export_category_active,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.export_category,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.last_updated_by,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_allowed,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_fully_manufactured,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_license_restricted,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.remark,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_spare_part,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_machine,int,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_end_product,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_raw_material,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.is_industrial_auditing_product,int,Successful Response
+Task > Plant Production Line,response,$.data[].product.none_industrial_product,int,Successful Response
+Task > Plant Production Line,response,$.data[].product.exempted_percentage,int,Successful Response
+Task > Plant Production Line,response,$.data[].product.created_at,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.updated_at,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.deleted_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.hs12_product_id,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.ndb_synched_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.ndb_last_ops_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.name,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.product_class,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity,dict,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.id,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.old_id,int,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.parent_id,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.isic_code,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.name_en,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.name_ar,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.is_industrial,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.is_medical,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.is_military,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.is_restricted,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.is_gold,bool,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.show_warning_message,int,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.warning_message,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.created_at,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.updated_at,str,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.deleted_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.ndb_synched_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.ndb_last_ops_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.industrial_sector_id,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].product.activity.name,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit,dict,Successful Response
+Task > Plant Production Line,response,$.data[].unit.id,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.parent_id,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].unit.code,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.name_en,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.name_ar,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.is_thermal,int,Successful Response
+Task > Plant Production Line,response,$.data[].unit.is_scanning,int,Successful Response
+Task > Plant Production Line,response,$.data[].unit.is_for_gold_activity,int,Successful Response
+Task > Plant Production Line,response,$.data[].unit.is_diesel,int,Successful Response
+Task > Plant Production Line,response,$.data[].unit.is_natural_gas,int,Successful Response
+Task > Plant Production Line,response,$.data[].unit.created_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].unit.updated_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].unit.ndb_synched_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].unit.ndb_last_ops_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].unit.name,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit,dict,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.id,int,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.system,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.map_key,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.source_code,int,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.target_code,int,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.created_at,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.updated_at,str,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.ndb_synched_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.data[].unit.mapped_unit.ndb_last_ops_at,NoneType,Successful Response
+Task > Plant Production Line,response,$.first_page_url,str,Successful Response
+Task > Plant Production Line,response,$.from,int,Successful Response
+Task > Plant Production Line,response,$.last_page,int,Successful Response
+Task > Plant Production Line,response,$.last_page_url,str,Successful Response
+Task > Plant Production Line,response,$.links,list,Successful Response
+Task > Plant Production Line,response,$.links[].url,NoneType,Successful Response
+Task > Plant Production Line,response,$.links[].label,str,Successful Response
+Task > Plant Production Line,response,$.links[].active,bool,Successful Response
+Task > Plant Production Line,response,$.next_page_url,NoneType,Successful Response
+Task > Plant Production Line,response,$.path,str,Successful Response
+Task > Plant Production Line,response,$.per_page,int,Successful Response
+Task > Plant Production Line,response,$.prev_page_url,NoneType,Successful Response
+Task > Plant Production Line,response,$.to,int,Successful Response
+Task > Plant Production Line,response,$.total,int,Successful Response
+Task > Submit Inspection,request,inspection_type,text,formdata
+Task > Submit Inspection,request,is_distrupted,text,formdata
+Task > Submit Inspection,request,distrubtion_reason,text,formdata
+Task > Submit Inspection,request,other_distrubtion_reason,text,formdata
+Task > Submit Inspection,request,factory_front_image[],file,formdata
+Task > Submit Inspection,request,distrubtion_report[],file,formdata
+Task > Submit Inspection,request,factory_condition,text,formdata
+Task > Submit Inspection,request,used_fuel_type[],text,formdata
+Task > Submit Inspection,request,factory_stop_reason,text,formdata
+Task > Submit Inspection,request,production_date,text,formdata
+Task > Submit Inspection,request,<redacted-sensitive-value>istrators_number,text,formdata
+Task > Submit Inspection,request,specialized_professions_number,text,formdata
+Task > Submit Inspection,request,technicians_number,text,formdata
+Task > Submit Inspection,request,other_team_number,text,formdata
+Task > Submit Inspection,request,shifts_number,text,formdata
+Task > Submit Inspection,request,factory_operation_mechanism,text,formdata
+Task > Submit Inspection,request,production_lines_number,text,formdata
+Task > Submit Inspection,request,licensed_products_number,text,formdata
+Task > Submit Inspection,request,un_licensed_products_number,text,formdata
+Task > Submit Inspection,request,actual_products_number,text,formdata
+Task > Submit Inspection,request,is_exporting,text,formdata
+Task > Submit Inspection,request,exported_products_number,text,formdata
+Task > Submit Inspection,request,tools_and_equipments_number,text,formdata
+Task > Submit Inspection,request,is_exmpted,text,formdata
+Task > Submit Inspection,request,notes,text,formdata
+Task > Submit Inspection,request,checklist_items[01ktw7637s3bc407yq3wheepj1][applies],text,formdata
+Task > Submit Inspection,request,checklist_items[01ktw7637s3bc407yq3wheepj1][remarks],text,formdata
+Task > Submit Inspection,request,checklist_items[01ktw7637s3bc407yq3wheepj1][response_attachments][],file,formdata
+Task > Submit Inspection,request,selected_products[0][id],text,formdata
+Task > Submit Inspection,request,selected_products[0][name],text,formdata
+Task > Submit Inspection,request,selected_products[0][hs_code],text,formdata
+Task > Submit Inspection,request,selected_products[0][is_regulated],text,formdata
+Task > Submit Inspection,request,selected_products[1][id],text,formdata
+Task > Submit Inspection,request,selected_products[1][name],text,formdata
+Task > Submit Inspection,request,selected_products[1][hs_code],text,formdata
+Task > Submit Inspection,request,selected_products[1][is_regulated],text,formdata
+Task > Submit Inspection,request,products_images[],file,formdata
+Task > Submit Inspection,request,selected_tools[0][id],text,formdata
+Task > Submit Inspection,request,selected_tools[0][name],text,formdata
+Task > Submit Inspection,request,selected_tools[0][is_passed],text,formdata
+Task > Submit Inspection,request,tools_images[],file,formdata
+Task > Submit Inspection,request,selected_raw_materials[0][id],text,formdata
+Task > Submit Inspection,request,selected_raw_materials[0][name],text,formdata
+Task > Submit Inspection,request,selected_raw_materials[0][quantity],text,formdata
+Task > Submit Inspection,request,selected_raw_materials[0][is_beneficiary],text,formdata
+Task > Submit Inspection,request,selected_raw_materials[0][is_in_factory],text,formdata
+Task > Submit Inspection,response,$.success,bool,Successful Response
+Task > Submit Inspection,response,$.message,str,Successful Response

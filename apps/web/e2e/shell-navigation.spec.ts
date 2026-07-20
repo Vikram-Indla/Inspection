@@ -1,52 +1,38 @@
 import { test, expect } from "@playwright/test";
-import { buildShellNavigation, isShellRouteCurrent } from "../src/lib/shell-navigation";
+import { buildShellNavigation, isShellRouteCurrent, shellScopeForRoute } from "../src/lib/shell-navigation";
 import { storageStatePath } from "./personas";
 
-const hrefsFor = (roles: string[]) => buildShellNavigation(roles).flatMap(group => group.items.map(item => item.href));
+const itemsFor = (roles: string[]) => buildShellNavigation(roles).flatMap(group => group.items);
+const enabledHrefsFor = (roles: string[]) => itemsFor(roles).filter(item => item.enabled).map(item => item.href);
 
-test.describe("TASK-WEB-SHELL-001 role matrix", () => {
-  test("planner sees the shared Command destinations plus governed planning/workspace", () => {
-    // Dashboard + Operations Center are shared non-admin destinations (business
-    // direction 2026-07-16); Factory 360 was already shared.
-    expect(hrefsFor(["planner"])).toEqual(["/dashboard", "/operations", "/factories", "/planning", "/visits"]);
+test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
+  const businessHrefs = ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews", "/admin/regulations", "/admin", "/admin/violations", "/ai/suggestions"];
+
+  test("every non-admin persona receives the same enabled business catalogue and seven locked admin entries", () => {
+    for (const role of ["planner", "inspector", "reviewer", "ops", "leadership"]) {
+      const groups = buildShellNavigation([role]);
+      expect(groups.map(group => group.id)).toEqual(["overview", "operations", "compliance", "insights", "administration"]);
+      expect(enabledHrefsFor([role])).toEqual(businessHrefs);
+      const adminItems = groups.find(group => group.id === "administration")!.items;
+      expect(adminItems).toHaveLength(7);
+      expect(adminItems.every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
+    }
   });
 
-  test("inspector sees the shared Command destinations plus field, never admin", () => {
-    // UIU-ISP-AC-004: inspector field work is ordered first; accepted shared
-    // destinations remain present below it and authorization is unchanged.
-    expect(hrefsFor(["inspector"])).toEqual(["/field", "/virtual", "/dashboard", "/operations", "/factories"]);
-  });
+  test("admin primary and advanced options compose from existing role families", () => {
+    const security = itemsFor(["security_admin"]);
+    expect(security.find(item => item.id === "users")?.enabled).toBe(true);
+    expect(security.find(item => item.id === "roles")?.enabled).toBe(true);
+    expect(security.find(item => item.id === "risk")?.enabled).toBe(false);
+    expect(security.find(item => item.id === "surveys")?.enabled).toBe(false);
+    expect(security.find(item => item.id === "devices")?.enabled).toBe(true);
+    expect(security.find(item => item.id === "gis")).toBeUndefined();
 
-  test("admin-family grants compose without inventing unsupported tabs", () => {
-    // compliance_admin → regulations/packages/violations/items/localization/audit;
-    // security_admin → access/localization/audit; risk_owner → risk/audit.
-    // /admin (home) and /admin/audit are visible to every admin family.
-    const hrefs = hrefsFor(["compliance_admin", "security_admin", "risk_owner"]);
-    expect(hrefs).toEqual([
-      "/admin",
-      "/admin/integrations",
-      "/admin/operations",
-      "/admin/security-access",
-      "/admin/devices",
-      "/admin/regulations",
-      "/admin/packages",
-      "/admin/violations",
-      "/admin/items",
-      "/admin/risk",
-      "/admin/access",
-      "/admin/notifications",
-      "/admin/localization",
-      "/admin/audit",
-      "/enforcement",
+    const composed = itemsFor(["compliance_admin", "form_admin", "workflow_admin", "security_admin", "gis_admin", "risk_owner"]);
+    expect(composed.filter(item => item.visibility === "admin-primary").every(item => item.enabled)).toBe(true);
+    expect(composed.filter(item => item.visibility === "admin-advanced").map(item => item.id)).toEqual([
+      "workflows", "gis", "audit", "platform-operations", "security-access", "devices", "enforcement-cases",
     ]);
-    // SCR-ADM-080 (Cycle 2) — Notification & SLA Rules is visible to every
-    // admin family (adminRoles), same as /admin and /admin/audit.
-    expect(hrefs).toContain("/admin/notifications");
-    expect(hrefs).not.toContain("/analytics");
-    expect(hrefs).not.toContain("/admin/lookups");
-    // workflows (workflow_admin) and gis (gis_admin) are outside this role set.
-    expect(hrefs).not.toContain("/admin/workflows");
-    expect(hrefs).not.toContain("/admin/gis");
   });
 
   test("dashboard and live operations have distinct active states", () => {
@@ -56,23 +42,27 @@ test.describe("TASK-WEB-SHELL-001 role matrix", () => {
     expect(isShellRouteCurrent("/operations/live", "/operations")).toBe(true);
   });
 
-  test("operations and leadership receive the dashboard plus operations center without admin leakage", () => {
-    expect(hrefsFor(["ops"])).toEqual(["/dashboard", "/operations", "/factories", "/visits"]);
-    expect(hrefsFor(["leadership"])).toEqual(["/dashboard", "/operations", "/factories"]);
+  test("scope consumers are explicit and non-consuming pages stay disabled", () => {
+    expect(shellScopeForRoute("/dashboard")).toEqual({ date: true, region: true });
+    expect(shellScopeForRoute("/operations")).toEqual({ date: false, region: true });
+    expect(shellScopeForRoute("/planning")).toEqual({ date: false, region: false });
   });
 });
 
 test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
   test.use({ storageState: storageStatePath("planner") });
 
-  test("desktop navigation collapses without exposing another persona's tabs", async ({ page }) => {
+  test("desktop navigation collapses with unified business and accessible locked admin options", async ({ page }) => {
     await page.goto("/locale?set=en");
     await page.goto("/planning");
     const nav = page.getByRole("navigation", { name: "Primary navigation" });
     await expect(nav.getByRole("link", { name: "Planning" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Factory 360" })).toBeVisible();
-    await expect(nav.getByRole("link", { name: "Review & Approval" })).toHaveCount(0);
-    await expect(nav.getByRole("link", { name: "Approval & Configuration" })).toHaveCount(0);
+    await expect(nav.getByRole("link", { name: "Review & Approval" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Compliance Library" })).toBeVisible();
+    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(7);
+    await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).toHaveAttribute("aria-disabled", "true");
+    await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).not.toHaveAttribute("href");
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
     await expect(page.locator(".ax-shell")).toHaveClass(/is-collapsed/);

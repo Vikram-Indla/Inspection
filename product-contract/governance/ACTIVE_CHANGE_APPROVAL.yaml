@@ -1,23 +1,50 @@
 schema_version: "1.0"
-change_id: "CC-QA-UI-COMPLIANCE-CERT-004"
-title: "UI production compliance certification"
-requestor: "Codex on behalf of Vikram Indla"
-approver: "Vikram Indla"
+change_id: "CC-SAQEEL-LOGIN-REVAMP-001"
+title: "Saqeel login revamp — native atlas integration and protected motion"
+requestor: "Vikram Indla"
+business_reason: >
+  Improve the public Saqeel sign-in composition while preserving the accepted
+  animated Saudi inspection atlas as the trademark hero, removing broad scene
+  tinting, increasing vehicle legibility and establishing complete bilingual,
+  theme and responsive parity.
+source_evidence:
+  - "Sponsor event-statement correction supplied with three screenshots on 2026-07-20; remove the event card shell and retain statement typography over the atlas."
+  - "Sponsor one-fade/one-unison/one-theme correction supplied on 2026-07-20; requires a full-height positioned atlas scene and overlay-hidden visual proof."
+  - "Sponsor unified-surface correction supplied on 2026-07-20; layout-only override requiring one continuous atlas stage, removal of the public statistics strip and 16-state before/after evidence."
+  - "Wordmark-protected final consolidated prompt supplied in the 2026-07-20 Codex task; it explicitly overrides every earlier Saqeel login prompt."
+  - "SAQEEL_LOGIN_WORDMARK_PROTECTED_CODEX_PACK.zip SHA-256 b960c12719bca2890f7cc86b6be483694fc06e9e33d3ba8e91a6900fcbd3d8af."
+  - "Sponsor acceptance contract supplied in the 2026-07-20 Codex task."
+  - "SAQEEL_LOGIN_REVAMP_CODEX_HANDOFF.zip SHA-256 93ee887a35ac715bb745da4460b13c7fb7556e6418367e09a16610c130bbb6f4."
+  - "Current and proposed light/dark references in the stakeholder package; references are direction only, not replacement HTML."
+affected_scope:
+  requirements: ["CD-001", "CD-002", "DEC-011", "SLR-REQ-001..018"]
+  screens: ["SCR-PUB-010"]
+  fields: ["Email", "Password"]
+  states: ["sign-in", "forgot password", "reset sent", "atlas story stages", "zone hover", "zone locked"]
+  apis: ["Existing Supabase credential and reset calls unchanged; no public SSO control or provider API added"]
+  tests: ["CD-001", "CD-002", "negative auth", "login revamp acceptance", "visual evidence"]
+  storyboards: ["CD-001 five-stage atlas storyboard; timing and sequence unchanged"]
+mvp_impact: "MVP1 public access visual hardening; no MVP2/MVP3 behavior change. MVP3-HOLD-003 remains open."
+regression_impact: "High for protected atlas motion and authentication; requires source invariants plus runtime regression."
 authorization: >
-  After being told that a perfect release PASS requires executed WCAG, DGA,
-  native Arabic/RTL and inspector-endurance evidence, the sponsor instructed
-  Codex to proceed, then explicitly instructed Codex to commit the verified
-  certification branch to main and clarified that it must be pushed.
+  Sponsor explicitly replied that this is the authorization and authorized the
+  work on 2026-07-20. Reopen CD-001/SCR-PUB-010 for the supplied acceptance
+  contract, use an isolated branch, preserve authentication and protected map
+  behavior, implement the exact 1.5x vehicle scale, and do not commit, push,
+  merge, deploy or invent an external SSO provider. The later wordmark-protected
+  consolidated prompt is the final sponsor direction and overrides the earlier
+  requirement to render one fail-closed SSO control.
 scope_allowed:
-  - "Execute technical accessibility, RTL and DGA evidence checks."
-  - "Remediate UI-only P0/P1 defects found by those checks."
-  - "Prepare and run controlled authenticated read-only journeys."
-  - "Prepare the native-review and inspector-endurance protocols and evidence registers."
-  - "Create the local certification commit and fast-forward local main to it."
-  - "Push the verified local main fast-forward to origin/main and confirm port 3000."
+  - "Create feature/saqeel-login-revamp from setup/Inspection d53e09f."
+  - "Edit login-only components/CSS, focused tests, evidence and branch-local governance/session records."
+  - "Remove National Single Sign-On and every secondary-auth wrapper from the public login while MVP3-HOLD-003 remains an internal fail-closed provider hold."
+  - "Add a dedicated pixel-registered light atlas raster and use it for the main plane, lifted terrain and sidewall source."
+  - "Correct the login hero shell to one framed atlas environment with absolute event/rail overlays, a 48px atmospheric bridge, no public statistics strip and restrained blue zone interaction feedback."
+  - "Promote the atlas environment to the full right rail; overlay title/control, event and rail; remove the rail card shell; consolidate login-only accents and capture overlay-hidden light/dark canvas proof."
 scope_forbidden:
-  - "Self-approval of native linguistic quality or representative human endurance."
-  - "Shared-data mutation solely for evidence, remote DDL or production hosting deployment."
-  - "Workflow, RLS, provider, audit, offline, immutable-version, input or Atlas changes."
+  - "Authentication logic changes, provider invention, production deployment, main/setup modification, merge or push."
+  - "Camera, route, stage timing, zone interaction, geography or scene-material recoloring changes beyond removing broad scene filters."
+  - "Committing stakeholder ZIP/screenshots or unrelated worktree changes."
 decision_owner: "Vikram Indla"
-effective_date: "2026-07-18"
+approval: "APPROVED in-session"
+effective_version: "2026-07-20 / feature/saqeel-login-revamp"

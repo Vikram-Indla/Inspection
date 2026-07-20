@@ -22,7 +22,8 @@ test.describe("Platform-wide government design-system contract", () => {
     const layout = read("src/app/layout.tsx");
     expect(layout).toContain('import "./tokens.css"');
     expect(layout).toContain('import "./astryx.css"');
-    expect(layout).toContain("IBM_Plex_Sans_Arabic");
+    expect(layout).toContain('localFont({');
+    expect(layout).toContain("ibm-plex-sans-arabic");
     expect(layout).toContain('dir={locale === "ar" ? "rtl" : "ltr"}');
     expect(layout).toContain("<ThemeScript />");
   });

@@ -4,6 +4,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import ImmediateForm, { type ImmediateStrings } from "./ImmediateForm";
 import EmptyState from "@/components/EmptyState";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +14,9 @@ export const dynamic = "force-dynamic";
 const distinct = (rows: { [k: string]: unknown }[], key: string) =>
   [...new Set(rows.map(r => r[key]).filter((v): v is string => typeof v === "string" && v.length > 0))].sort();
 
-export default async function Immediate({ searchParams }: { searchParams: Promise<{ factory?: string }> }) {
-  const { factory: initialFactoryId } = await searchParams;
+export default async function Immediate({ searchParams }: { searchParams: Promise<{ factory?: string; cr?: string; license?: string; returnTo?: string }> }) {
+  const { factory: initialFactoryId, cr: sourceCrId, license: sourceLicenseId, returnTo } = await searchParams;
+  const safeReturnTo = returnTo?.startsWith("/factories/cr/") ? returnTo : null;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
@@ -168,7 +170,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   };
   return (
     <Shell current="/planning" title={t("plan.imm.title", "Immediate visit — urgent dispatch")}
-      context={<span className="ax-lozenge ax-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>}>
+      context={<><span className="ax-lozenge ax-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>{sourceCrId && sourceLicenseId ? <span className="ax-lozenge ax-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
+      {safeReturnTo ? <p><Link className="ax-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
       <ImmediateForm
         factories={(factories ?? []) as never}
         packages={(pkgs ?? []) as never}

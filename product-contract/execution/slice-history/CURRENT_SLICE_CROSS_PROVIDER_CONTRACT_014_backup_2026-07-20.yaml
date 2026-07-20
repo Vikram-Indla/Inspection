@@ -1,0 +1,27 @@
+schema_version: "1.2"
+task_id: "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+gate: "G11 Factory 360 integration hardening"
+title: "Cross-provider API structure, canonical mapping and shared platform-consumption contract"
+status: "IN_PROGRESS"
+enforce_stop_gate: true
+broad_implementation_allowed: true
+approval_ref: "HUMAN_APPROVALS.yaml#FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+change_control_ref: "CC-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+branch_at_start: "codex/industry-shared-factory360-gap-013"
+head_at_start: "ab0de9663a13e2b4ffcf369ec5458455367832b7"
+process_ids: ["P02", "P03", "P04", "P06A", "P09"]
+requirement_ids: ["F360-XPC-REQ-001..018", "INSP-API-001..011", "ISH-API-001..011"]
+acceptance_ids: ["F360-XPC-AC-001..018"]
+evidence_ids: ["F360-XPC-EV-001..010"]
+screen_ids: ["SCR-WEB-400", "SCR-IPAD-600..670"]
+engine_ids: ["Inspection API adapter", "Industry Shared fail-closed provider", "Factory 360 canonical projection", "offline/version boundary"]
+dependencies: ["Sanitized Inspection API documentation and existing typed Senaei adapter family.", "Industry Shared method-only evidence; all unverified dimensions remain fail closed.", "Existing Factory 360 canonical hierarchy, Risk Engine and immutable inspection reports."]
+open_decisions: ["DEC-027: Industry Shared auth/request/response/authority/privacy/retention/workforce precedence/plant cardinality remain unresolved.", "External submission activation trigger remains undecided; contract work uses BLOCKED_TRIGGER_DECISION."]
+do_not_touch: ["No bulk beta-data migration, production deployment, destructive schema change, merge or main/default-branch modification.", "No credentials, cookies, tokens, raw captures, speculative contracts or live external submission.", "No separate Web and iPad provider clients or business models."]
+authorized_file_scope: ["Factory 360 contract ledgers, data dictionary, adapters, server-side projections, contract tests and branch-local governance/session records."]
+required_evidence: ["Complete structural field disposition for sanitized Inspection API inventory.", "Fail-closed Industry Shared evidence and exact blocked dimensions.", "Shared Web/iPad canonical-consumption and offline/version contracts.", "Typecheck, production build and focused contract regression."]
+exit_condition: >-
+  All structurally discoverable provider contracts are inventoried and mapped once;
+  unverified Industry Shared dimensions remain explicitly unavailable; no external
+  submission is activated without a governed trigger; and tests/evidence identify
+  every retained external blocker.

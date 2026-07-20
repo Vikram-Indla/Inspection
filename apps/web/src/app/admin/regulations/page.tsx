@@ -181,11 +181,21 @@ export default async function Regulations({
   const context = (
     <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
       <span className="ax-lozenge ax-lozenge--info">SCR-ADM-010/011</span>
+      <a className="ax-link" href="/admin/compliance-requests">
+        {t("admin.reg.requests", "Configuration Requests")}
+      </a>
       <span role="status" aria-live="polite" className="ax-caption">{readAtNode}</span>
       {regsError ? (
         <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {t("admin.reg.r1.degraded.chip", "register unavailable")}</span>
       ) : null}
     </span>
+  );
+  const libraryTabs = (
+    <nav className="cmp-library-tabs" aria-label="Compliance Library">
+      <a className="ax-btn ax-btn--prominent" href="/admin/regulations" aria-current="page">Regulations</a>
+      <a className="ax-btn ax-btn--secondary ax-link" href="/admin/items">Inspection Items</a>
+      {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href="/admin/compliance-requests/new">Create governed request</a> : null}
+    </nav>
   );
 
   // ---- S05/S06 read-only disclosure inside the module route guard ----
@@ -238,6 +248,7 @@ export default async function Regulations({
       <Shell current="/admin/regulations" title={title} context={context}>
         {degradedBanner}
         {readOnlyBanner}
+        {libraryTabs}
 
         <p className="ax-caption" style={{ margin: 0 }}>
           <a className="ax-link" href="/admin/regulations">← {t("admin.reg.r1.backToRegister", "Back to register")}</a>
@@ -426,6 +437,9 @@ export default async function Regulations({
     <Shell current="/admin/regulations" title={title} context={context}>
       {degradedBanner}
       {readOnlyBanner}
+      {libraryTabs}
+
+      {isWriter ? <div className="ax-banner ax-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct regulation controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this library remains the published source of truth.</div> : null}
 
       {isWriter ? <NewRegulationForm strings={strings} /> : null}
 

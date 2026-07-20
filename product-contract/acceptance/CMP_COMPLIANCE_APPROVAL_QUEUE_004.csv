@@ -1,0 +1,21 @@
+acceptance_id,requirement_id,assertion,evidence,status
+CMP-ACC-APQ-001,CMP-REQ-APQ-001,"Approval Queue has a dedicated Compliance route","shell navigation; focused contract",PASS
+CMP-ACC-APQ-002,CMP-REQ-APQ-001,"Queue is explicitly distinct from Inspection Review & Approval","route copy; focused contract",PASS
+CMP-ACC-APQ-003,CMP-REQ-APQ-001,"Only compliance_admin and reviewer roles enter the route","AdminRouteBoundary; focused contract",PASS
+CMP-ACC-APQ-004,CMP-REQ-APQ-002,"Pending Review view reads only pending_review requests","queue source contract",PASS
+CMP-ACC-APQ-005,CMP-REQ-APQ-002,"Partially Approved view reads only partially_approved requests","queue source contract",PASS
+CMP-ACC-APQ-006,CMP-REQ-APQ-002,"Ready to Publish view reads only approved requests","queue source contract",PASS
+CMP-ACC-APQ-007,CMP-REQ-APQ-002,"Requests are ordered by submitted time without invented priority","focused contract",PASS
+CMP-ACC-APQ-008,CMP-REQ-APQ-003,"Maker-owned requests are excluded from eligible workload","focused contract",PASS
+CMP-ACC-APQ-009,CMP-REQ-APQ-003,"Database RPC independently denies maker decisions/publication","Prompt 02 migration contract",PASS
+CMP-ACC-APQ-010,CMP-REQ-APQ-003,"RLS remains the read authority","Prompt 02 policy contract",PASS
+CMP-ACC-APQ-011,CMP-REQ-APQ-004,"Cards show request number type revision status and correlation","focused contract",PASS
+CMP-ACC-APQ-012,CMP-REQ-APQ-004,"Cards show current component decision progress","focused contract",PASS
+CMP-ACC-APQ-013,CMP-REQ-APQ-004,"Cards show current dependency count","focused contract",PASS
+CMP-ACC-APQ-014,CMP-REQ-APQ-005,"Review opens Current-versus-Proposed component comparison","existing workspace; focused contract",PASS
+CMP-ACC-APQ-015,CMP-REQ-APQ-005,"Approve and Reject remain component-level guarded actions","existing workspace/RPC contract",PASS
+CMP-ACC-APQ-016,CMP-REQ-APQ-005,"Return and Reject comments remain required","existing workspace/database constraints",PASS
+CMP-ACC-APQ-017,CMP-REQ-APQ-005,"Publication remains transactional and dependency guarded","Prompt 02 migration contract",PASS
+CMP-ACC-APQ-018,CMP-REQ-APQ-006,"Queue contains no direct DML or RPC decision bypass","focused contract",PASS
+CMP-ACC-APQ-019,CMP-REQ-APQ-006,"Loading error empty and own-request states are honest","route state source; build",PASS
+CMP-ACC-APQ-020,CMP-REQ-APQ-006,"Existing Inspector inspection-review providers and history are unchanged","boundary diff; protected static regression",PASS

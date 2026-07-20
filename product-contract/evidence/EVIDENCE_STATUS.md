@@ -1,5 +1,36 @@
 # Evidence Status
 
+## TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002 — 2026-07-19
+
+| ID | Evidence | Status |
+|---|---|---|
+| CMP-CCR-EV-001 | Additive migration compilation and second idempotent execution | Captured — PASS |
+| CMP-CCR-EV-002 | Lifecycle and immutable revision contracts | Captured — PASS |
+| CMP-CCR-EV-003 | Maker-checker and direct-DML/RLS negatives | Captured — PASS |
+| CMP-CCR-EV-004 | Parent rejection cascade and partial approval | Captured — PASS |
+| CMP-CCR-EV-005 | Transactional publication and orphan rollback | Captured — PASS |
+| CMP-CCR-EV-006 | Legacy compatibility/no destructive rewrite | Captured — PASS |
+| CMP-CCR-EV-007 | Existing notification and audit engine integration | Captured — PASS |
+| CMP-CCR-EV-008 | Register/create/workspace and honest states | Captured — PASS |
+| CMP-CCR-EV-009 | Typecheck, build, focused and protected static regression | Captured — PASS |
+
+Exact record: `TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002.md`.
+
+## TASK-WEB-COMPLIANCE-SHARED-SHELL-001 — 2026-07-19
+
+| ID | Evidence | Status |
+|---|---|---|
+| CMP-SHELL-EV-001 | Durable Prompt 00 pack, transfer record, inventory and SHA-256 | Captured — PASS |
+| CMP-SHELL-EV-002 | Five-group IA and unified persona matrix | Captured — PASS |
+| CMP-SHELL-EV-003 | Accessible locked Administration and role-composed enabled/hidden rules | Captured — PASS |
+| CMP-SHELL-EV-004 | Shared topbar and authenticated RLS-scoped search | Captured — PASS |
+| CMP-SHELL-EV-005 | Route-guard source contract and live RLS-denied publish | Captured — 2/2 PASS |
+| CMP-SHELL-EV-006 | EN/AR, light/dark, expanded/collapsed/responsive screenshots | Captured — 2/2 harness, four reviewed frames |
+| CMP-SHELL-EV-007 | Typecheck, build and shell tests | Captured — PASS; focused 10/10 and runtime 8/8 |
+| CMP-SHELL-EV-008 | Non-mutating protected regression | Captured — 91 pass / 4 intentional skips / 1 pre-existing unrelated failure |
+
+Exact record: `TASK-WEB-COMPLIANCE-SHARED-SHELL-001.md`.
+
 ## 2026-07-18 — Platform foundation promotion 003
 
 Source inheritance and integration evidence is complete: typecheck/build PASS, focused 16/16,
@@ -320,3 +351,46 @@ Owner: CD004-EV-003 and CD004-EV-005 are closed. CD004-EV-004 remains blocked be
 | MVP2-M2-05-EV-004 | Typecheck, production build, M2-05 9/9 and static regression 12/12 | PASS; see `TASK-MVP2-M2-05-AUDIT-REPLAY-001.md` |
 | MVP2-M2-05-EV-005 | Authenticated UI/RLS/full regression | BLOCKED — shared-backend informed approval and fresh DB runtime absent |
 | MVP2-M2-05-EV-006 | Independent non-implementer source audit and remediation | SOURCE IMPLEMENTATION PASS — no remaining implementation P0/P1; runtime certification pending |
+## Factory 360 Industry Shared gap closure — 2026-07-20
+
+## Factory 360 cross-provider contract — 2026-07-20
+
+| ID | Evidence | Status |
+|---|---|---|
+| F360-XPC-EV-001 | Sanitized Inspection API endpoint and field inventory mapped to canonical dispositions | Captured structurally |
+| F360-XPC-EV-002 | Shared Web/iPad, offline/version, source-precedence and unavailable contracts | Captured structurally; runtime projection integration pending |
+| F360-XPC-EV-003 | Industry Shared endpoint contract ledger and stub-retirement matrix | BLOCKED_EXTERNAL — exact fail-closed state retained |
+
+| ID | Evidence | Status |
+|---|---|---|
+| F360-ISH-EV-001..003 | ZIP checksum, endpoint inventory, and 9/9-page rendered specification review | Captured |
+| F360-ISH-EV-004..007 | Permanent endpoint/retirement/acceptance ledgers and server-only fail-closed provider contracts | Captured — source verified |
+| F360-ISH-EV-008..010 | Typecheck, production build, focused 4/4, protected static 135 pass / 4 intentional skips / 0 failed | PASS |
+| F360-ISH-EV-011 | Authenticated beta contract capture for `ISH-API-001..011` | PARTIAL — POST proven for five low-risk routes; auth/body/response/error/privacy/fixture evidence still blocked |
+| F360-ISH-EV-012 | Controlled Industry Shared runtime normalization and stub retirement | NOT RUN — contracts and credentials absent |
+
+Checkpoint addendum: sponsor-approved pre-push secret/PII/artifact scan PASS; provider-network,
+domain-separation, zero-stub-retirement, no-schema/projection-change, typecheck/build, focused
+4/4 and protected 135 pass / 4 intentional skips / 0 failed guards PASS. Awaiting the approved
+synthetic beta licence and expected result for `POST /shared/api/v2/license-info`.
+
+## Saqeel login revamp — 2026-07-20
+
+| ID | Evidence | Status |
+|---|---|---|
+| SLR-EV-001 | Protected motion inventory and source invariants | PASS — `docs/login-revamp/PROTECTED-MOTION-INVENTORY.md`; focused source test |
+| SLR-EV-002 | Exact vehicle `1.5×` dimensions, centered anchors and unchanged route timing | PASS — source/runtime checks |
+| SLR-EV-003 | Protected wordmark + EN/AR × light/dark principal runtime frames | PASS — unchanged source SHA-256 and frames under `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/saqeel-login-wordmark-protected-002/` |
+| SLR-EV-004 | iPad landscape/portrait, mobile, exact viewport matrix and 200%/400% equivalent reflow | PASS for automated matrix; exact browser zoom remains human/browser certification |
+| SLR-EV-005 | Every story stage, Dispatch 1.5× vehicles, every zone hover, locked zone and theme switch | PASS — 26 PNG frames plus protected interaction WebM |
+| SLR-EV-006 | CD-002 reset and negative authentication regression | PASS 6/6 |
+| SLR-EV-007 | Typecheck, production build, CD-001 and wordmark-protected suites | PASS — 26/26 functional checks plus 2/2 evidence checks; package has no lint script/dependency |
+| SLR-EV-008 | External screenshot/video SHA-256/size/authority/lifecycle manifest | `${INSPECTION_DOCS_ROOT}/MANIFESTS/SAQEEL_LOGIN_WORDMARK_PROTECTED_002.json` |
+| SLR-EV-009 | Unified-surface correction: required 16-state before/after set plus annotated comparison | PASS — `docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md`; corrected frames under `saqeel-login-unified-surface-003/` |
+| SLR-EV-010 | One-frame/absolute-overlay/no-summary/blue-zone source and runtime checks | PASS — final login/atlas/reset/negative-auth regression 27/27 |
+| SLR-EV-011 | Final corrected screenshot/video capture and external manifest | PASS 2/2 — `${INSPECTION_DOCS_ROOT}/MANIFESTS/SAQEEL_LOGIN_UNIFIED_SURFACE_003.json` |
+| SLR-EV-012 | One-fade structural contract: frame equals full hero; title/event/rail positioned; rail has no card shell | PASS — focused runtime/source assertion in `saqeel-login-revamp.spec.ts` |
+| SLR-EV-013 | Mandatory overlay-hidden canvas proof in light and dark | PASS — `canvas-only-light-desktop.png`, `canvas-only-dark-desktop.png` under `saqeel-login-one-unison-004/` |
+| SLR-EV-014 | Final one-unison screenshot/video manifest | PASS 2/2 — `${INSPECTION_DOCS_ROOT}/MANIFESTS/SAQEEL_LOGIN_ONE_UNISON_004.json` |
+| SLR-EV-015 | Borderless event-statement source/runtime proof and refreshed light/dark/responsive frames | PASS — event background transparent, border 0px, shadow none; functional 27/27 and refreshed visual 2/2 |
+| SLR-EV-016 | Sponsor-directed quieter event typography | PASS — 13px/18px weight 500 statement; 9px/13px weight 600 marker; typecheck/build and focused 3/3 |

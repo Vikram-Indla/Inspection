@@ -1,0 +1,16 @@
+acceptance_id,requirement_id,assertion,evidence,status
+CMP-ACC-013,CMP-REQ-SHELL-001,"Five exact shell groups render in order","apps/web/e2e/compliance-shared-shell.spec.ts; shell visual evidence",PASS
+CMP-ACC-016,CMP-REQ-SHELL-001,"Ten unified business destinations are enabled for every non-admin persona","apps/web/e2e/shell-navigation.spec.ts role matrix",PASS
+CMP-ACC-017,CMP-REQ-SHELL-001,"Inspection contains Execution and Review & Approval children","apps/web/src/lib/shell-navigation.ts; visual evidence",PASS
+CMP-ACC-018,CMP-REQ-SHELL-002,"Seven Administration options remain visible and accessibly locked without role authority","apps/web/e2e/shell-navigation.spec.ts; English/Arabic evidence",PASS
+CMP-ACC-019,CMP-REQ-SHELL-002,"Authorized Administration enablement composes from existing role families","apps/web/e2e/shell-navigation.spec.ts admin matrix",PASS
+CMP-ACC-024,CMP-REQ-SHELL-003,"Topbar includes search, date, region, theme, notifications, AI and account","apps/web/e2e/compliance-shared-shell.spec.ts; visual evidence",PASS
+CMP-ACC-030,CMP-REQ-SHELL-003,"Existing language, profile and sign-out behavior is retained","apps/web/e2e/shell-navigation.spec.ts; ShellClient account surface",PASS
+CMP-ACC-031,CMP-REQ-SHELL-003,"Global search is authenticated and RLS-scoped without an elevated client","apps/web/src/app/api/shell/search/route.ts; source contract",PASS
+CMP-ACC-032,CMP-REQ-SHELL-003,"Date and region scope controls state their applicable routes honestly","apps/web/e2e/shell-navigation.spec.ts scope contract",PASS
+CMP-ACC-033,CMP-REQ-SHELL-001,"English and Arabic RTL states render","visual harness 2/2; shell browser suite",PASS
+CMP-ACC-034,CMP-REQ-SHELL-001,"Light and dark themes render","visual harness; shell browser suite",PASS
+CMP-ACC-035,CMP-REQ-SHELL-001,"Expanded and collapsed desktop navigation render","visual harness; shell browser suite",PASS
+CMP-ACC-036,CMP-REQ-SHELL-001,"Responsive drawer has focus/Escape behavior and no horizontal overflow","shell browser suite; Arabic mobile evidence",PASS
+CMP-ACC-037,CMP-REQ-SHELL-002,"Route guards, action permissions and RLS remain enforcement authorities","Prompt 01 source contracts; live RLS denial 2/2",PASS
+CMP-ACC-038,CMP-REQ-SHELL-001,"No schema, Inspector runtime, business-data redesign or protected integration source changed","git diff inventory and boundary scan",PASS

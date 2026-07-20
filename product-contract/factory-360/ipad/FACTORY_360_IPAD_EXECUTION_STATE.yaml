@@ -1,0 +1,54 @@
+schema_version: "1.0"
+program: "Factory 360 — Inspector iPad (field-native)"
+prompt: "PROMPT_10_IPAD_MASTER_EXECUTION"
+executor: "Claude Code (sponsor-authorized override of active UI-cert slice)"
+
+web_base:
+  branch: "codex/factory-360-complete-010"
+  remote_head: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
+  status: "AWAITING_SPONSOR_FACTORY_360_FUNCTIONAL_ACCEPTANCE (web)"
+
+ipad:
+  branch: "codex/factory-360-ipad-011"
+  base_sha: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
+  head_sha: "dc56a35 + field surface commit (this session)"
+
+surface_facts:
+  app_kind: "Next.js web app; iPad = responsive /field surface (not native)"
+  web_dossier_route: "apps/web/src/app/factories/cr/[id]/page.tsx (?license= selection)"
+  shared_lib: "apps/web/src/lib/factory360/{compliance,permissions}.ts (dossier.ts to be added)"
+  field_surface: "apps/web/src/app/field/**, apps/web/src/components/field/**"
+  tokens: "bespoke ax-* system (app/tokens.css) — NOT tailwind/atlaskit"
+  i18n: "strings-prop canon; client never calls useT(); Arabic default; RTL via CSS logical props"
+  offline_engine: "lib/offline.ts IndexedDB mim-field-v1 (drafts/packages/outbox/conflicts) — DO NOT touch"
+  search: "app/api/shell/search/route.ts already resolves CR/unified/license/plant/factory"
+  handoff: "planning/immediate?factory=&cr=&license=&returnTo="
+
+completed_modules:
+  - "F360IPAD-EXTRACT-016 — shared lib/factory360/dossier.ts loader; web CR page refactored to consume it (CODE_COMPLETE, typecheck+build PASS)"
+  - "F360IPAD-NATIVE-003 — /field/factory-360/[id] field-native server page (header, license strip, readiness tiles, profile, compliance+reports, violations+penalties, risk+AI, industrial+observed, government, docs+media, honest states, RTL logical props)"
+  - "F360IPAD-SWITCH-004 — ?license= selection strip refreshes all sections (CODE_COMPLETE)"
+  - "F360IPAD-COMPLIANCE-006 / RISK-007 / INDUSTRIAL-008 / GOV-009 / DOCS-010 — rendered from shared loader (CODE_COMPLETE)"
+  - "F360IPAD-RBAC-013 — 6 permission gates applied via resolveFactory360Permissions (CODE_COMPLETE)"
+  - "F360IPAD-ACTIONS-011 / PDF-012 — sticky action bar: open map (geo:), create inspection (planning/immediate handoff w/ returnTo), export (reused Factory360ExportButton), return-to-visit (CODE_COMPLETE)"
+  - "F360IPAD-PARITY-014 — structural: both surfaces render one loader (IN_IMPLEMENTATION; E2E proof pending)"
+
+active_module: "COMPLETE (functional) — awaiting sponsor acceptance + live staging runtime"
+
+ledger_totals:
+  master_rows: 16
+  functionally_verified: 4   # PARITY-014, NONREG-015, EXTRACT-016, SEARCH-002
+  code_complete: 12          # all remaining chunks built + build-verified
+  runtime_pending: "entry (J01-05) + offline device (J09-11) journeys need seeded staging"
+
+migrations: "none; iPad reuses web factory360 v2 schema (20260720010000). Snapshot store is client IndexedDB — no server DDL."
+
+functionality_proven: "typecheck 0 errors; production build PASS; both /factories/cr/[id] and /field/factory-360/[id] compile as dynamic routes. Runtime journeys against staging data NOT yet executed (needs seeded CR)."
+
+build_note: "worktree has no node_modules (git worktrees don't copy it). Symlinked apps/web/node_modules -> canonical checkout (deps byte-identical db52854 vs 83043b1). Symlink is node_modules (gitignored) — never committed."
+
+external_blockers:
+  - "New combined Web+iPad pack zip (SAQEEL_..._(1).zip) is TCC-blocked in ~/Downloads; the two iPad .md files (IPAD_RUNTIME_SPEC, WEB_IPAD_SHARED_CONTRACT) unread. Mitigation: PROMPT_10 itself contains the full iPad spec (13 chunks/journeys/parity), and web source-authority pack is already extracted in the web worktree. Not a hard blocker."
+  - "Supabase staging (iiozvqntawxfwbgffzqu) credentials not verified this session — not needed for functional build; only for later live closure."
+
+next_exact_action: "SPONSOR: functional build complete + pushed. Remaining = live staging runtime verification (seeded CR/license on iiozvqntawxfwbgffzqu) for entry journeys J01-05 and offline-device journeys J09-11, plus native-Arabic label review. Explicitly NOT done this pass per sponsor instruction (no staging deploy)."

@@ -1,0 +1,12 @@
+endpoint_id,provider_family,name,method,path,auth_contract,content_type,status,authority_semantics,evidence
+INSP-API-001,Inspection API,Login,POST,/api/inspection/login,NOT_DOCUMENTED,multipart/form-data,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-002,Inspection API,Logout,POST,/api/inspection/logout,bearer,multipart/form-data,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-003,Inspection API,Profile,GET,/api/inspection/profile,bearer,NOT_DOCUMENTED,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-004,Inspection API,Forget Password,POST,/api/inspection/forgot-password,NOT_DOCUMENTED,multipart/form-data,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-005,Inspection API,Reset Password,POST,/api/inspection/reset-password,NOT_DOCUMENTED,multipart/form-data,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-006,Inspection API,List Regulation,GET,/api/inspection/regulations,bearer,NOT_DOCUMENTED,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-007,Inspection API,Show Regulation,GET,/api/inspection/regulations/{{regulationId}},bearer,NOT_DOCUMENTED,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-008,Inspection API,List Task,GET,/api/inspection/tasks,bearer,NOT_DOCUMENTED,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-009,Inspection API,Show Task,GET,/api/inspection/tasks/{{taskId}},bearer,NOT_DOCUMENTED,STRUCTURALLY_DOCUMENTED,provider_contract,Inspection_API_documentation.sanitized.json
+INSP-API-010,Inspection API,Plant Production Line,GET,/api/inspection/tasks/production-line?plant_id=01k81herryyca9bvvvsardw41q&type=product,bearer,NOT_DOCUMENTED,STRUCTURALLY_DOCUMENTED,NOT_DOCUMENTED,Inspection_API_documentation.sanitized.json
+INSP-API-011,Inspection API,Submit Inspection,POST,/api/inspection/tasks/submit-inspection/{{task}},bearer,multipart/form-data,STRUCTURALLY_DOCUMENTED,submission_candidate_BLOCKED_TRIGGER_DECISION,Inspection_API_documentation.sanitized.json

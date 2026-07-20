@@ -1,0 +1,2 @@
+endpoint_id,path,method,content_type,payload_contract,attachments,idempotency,forwarding,status,evidence
+INSP-API-011,/api/inspection/tasks/submit-inspection/{task},POST,multipart/form-data,Every documented request field is inventoried in FACTORY_360_API_FIELD_MAPPING_LEDGER.csv; conditional rules remain NOT_DOCUMENTED unless structurally documented.,FormData boundary required; attachment field semantics structurally documented only.,NOT_DOCUMENTED,BLOCKED_TRIGGER_DECISION,PARTIAL,Inspection_API_documentation.sanitized.json + existing server adapter
