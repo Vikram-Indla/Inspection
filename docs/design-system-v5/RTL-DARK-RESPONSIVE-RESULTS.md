@@ -1,6 +1,6 @@
 # RTL / Dark Mode / Responsive Results — Saqeel V5.1
 
-## Done and verified: 18 real, authenticated screenshots
+## Done and verified: 26 real, authenticated screenshots
 Captured with `apps/web/scripts/capture-v5-evidence.mjs` — a standalone Playwright script (not a test; no CI wiring) that logs into a real running dev server as the actual seeded e2e personas (`apps/web/e2e/personas.ts`: `admin@mim.gov.sa`, `ops@mim.gov.sa`, `planner@mim.gov.sa`, `inspector@mim.gov.sa`, `reviewer@mim.gov.sa`) and navigates to real routes. Every screenshot is the actual running application with real data from the seeded database, not a mock or the reference HTML. Stored under `INSPECTION_DOCS_ROOT` per this repo's documentation-storage policy (screenshots are never committed to git):
 
 `/Users/vikramindla/Desktop/Inspection Documentation/05_UI_UX_AND_STORYBOARDS/saqeel-v5-implementation-evidence-2026-07-20/`
@@ -28,12 +28,19 @@ Captured with `apps/web/scripts/capture-v5-evidence.mjs` — a standalone Playwr
 | 16a | **report-screen-layers** | ops | 1000×1400, screen (light) | Same live submitted inspection, on-screen (not print) view — confirms the 5 layer headings render correctly on-screen too, not only in print media, and that no chapter content/logic changed. |
 | 19 | **report-print-missing-signature** | ops | 1000×1400, print media emulated | A different real inspection (`bf7b4a07`) found by querying seeded data directly — v2's acknowledgement has no signature (empty representative line), while v1 (same table) shows a real signed name. Also shows this inspection's real violation, open corrective-action form, and a returned→corrected→approved review-decision sequence — richer real data than the original single-inspection capture. |
 | 20 | **report-print-multiple-versions** | ops | 1000×1400, print media emulated | Same inspection (`bf7b4a07`) — 2 real submission versions rendering in the submission-history table (multi-version inspections are the norm in this seeded dataset, not a rare edge case). |
+| 21 | factories-list | ops | 1440×900 | `/factories` — previously unshot surface, real seeded factory list. |
+| 22 | visits-list | ops | 1440×900 | `/visits` — previously unshot surface. |
+| 23 | tasks | ops | 1440×900 | `/tasks` — previously unshot surface. |
+| 24 | cases | ops | 1440×900 | `/cases` — previously unshot surface. |
+| 25 | visits-calendar | planner | 1440×900 | `/visits/calendar` — previously unshot surface. |
+
+26 real, authenticated screenshots total — satisfies `CURRENT_SLICE.SAQEEL-V5-IMPLEMENTATION.yaml`'s `required_evidence: "At least 25 implementation screenshots"` (21 existed before this pass; 5 more captured 2026-07-20 to close the gap).
 
 ## What this confirms, live, not by construction
 - Dark-theme primary is genuinely green in the running app (screenshot 13), not just in `tokens.css` source.
 - The Riyadh date service renders correctly in Arabic in the real UI (screenshots 02, 05: "٢٠ يوليو ٢٠٢٦, ١٣:٢٠ (الرياض)" / "20 Jul 2026, 13:20 (Riyadh)"-equivalent text) and in the official report (screenshot 16).
 - Admin compact density, iPad field density, and the FND-011 glyph+word status system (never color-only) are all visibly correct in real rendered pages, including print.
-- RTL layout (Arabic is the default locale) renders correctly across every captured route — no mirrored-incorrectly or broken-layout artifacts observed across these 18 pages.
+- RTL layout (Arabic is the default locale) renders correctly across every captured route — no mirrored-incorrectly or broken-layout artifacts observed across these 26 pages.
 - The report/print CSS conformance fixes (Wave 8) are confirmed correct against a real submitted inspection, not just read from source.
 - Desktop breakpoints from 1440 down to 320 (1440/1280/1024/320) all reflow without visible breakage.
 
@@ -41,5 +48,5 @@ Captured with `apps/web/scripts/capture-v5-evidence.mjs` — a standalone Playwr
 The print-preview capture initially returned a blank white page, and a follow-up debug run showed `Cannot find module './vendor-chunks/@supabase.js'` — a Next.js dev-server webpack module-cache corruption under rapid concurrent route compilation (the same class of transient issue hit twice earlier in this branch's work, always on this one long-running dev-server process). `next build` (a full, fresh production compile) passed cleanly immediately before and after both incidents. Restarting the dev server and re-running the capture produced the correct, complete result shown above (screenshot 16) — confirmed dev-server-only, not a regression in this branch's code.
 
 ## Still not done
-- No manual visual review of these 18 screenshots against a formal checklist beyond the spot-checks noted above — a full independent visual-acceptance pass (per the sponsor's stated sequence: ChatGPT Work 25+ screen audit) is still the next step, not something this session substitutes for.
+- No manual visual review of these 26 screenshots against a formal checklist beyond the spot-checks noted above — a full independent visual-acceptance pass (per the sponsor's stated sequence: ChatGPT Work 25+ screen audit) is still the next step, not something this session substitutes for.
 - Real-device iPad testing (physical Split View, Apple Pencil hardware) — a viewport-sized browser screenshot proves layout/reflow correctness, not real touch/pencil hardware interaction; no device lab was available in this environment.

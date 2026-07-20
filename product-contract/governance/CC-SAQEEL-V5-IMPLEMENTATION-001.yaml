@@ -41,3 +41,25 @@ completion_rule: >
   is recorded with the required screenshot evidence, and the branch is left
   unmerged pending a separate independent visual-acceptance review and explicit
   sponsor merge approval.
+status: "IMPLEMENTED_PER_COMPLETION_RULE — 2 OPEN DECISIONS FILED, NEITHER BLOCKS THIS CC's STATED completion_rule"
+status_detail: >
+  All 8 waves (tokens/guardrails, components, date service, shell, operations,
+  field, admin, report/print incl. 5-layer grouping) are implemented on
+  feature/saqeel-v5-implementation, verified (tsc clean, guardrail 0/305,
+  17/17 date checks, build clean, axe 0 violations/10 routes, real
+  authenticated screenshots, real seeded-data print fixtures, live
+  DEF-WF-006 trigger test, touch-emulation geometry check), and recorded in
+  docs/design-system-v5/FINAL-IMPLEMENTATION-REPORT.md — satisfying this
+  CC's completion_rule as written. Two items exceed what this CC's
+  scope_allowed/scope_forbidden permit closing outright and are filed as
+  open decisions rather than silently dropped or fabricated: DEC-027 (real
+  iPad/Apple-Pencil hardware verification — needs a provisioned physical
+  device or device-lab service, not obtainable by further code changes) and
+  DEC-028 (print-fixture synthesis for many-violations/long-notes/
+  20-100-300-item checklists — the only path to synthesizing them is a raw
+  insert into the immutable submission_versions table, forbidden by
+  scope_forbidden's "immutable-version rules" clause and by CLAUDE.md
+  directly, or a new checklist-package catalogue entry outside
+  scope_allowed). Branch stays unmerged pending the separate independent
+  visual-acceptance review and explicit sponsor merge approval this CC
+  already requires, plus sponsor resolution of DEC-027/DEC-028.
