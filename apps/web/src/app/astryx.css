@@ -173,6 +173,8 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-check { display: flex; align-items: flex-start; gap: var(--ax-space-100); min-block-size: var(--ax-control-height); cursor: pointer; }
 .ax-check input { inline-size: 20px; block-size: 20px; flex-shrink: 0; margin-block-start: 2px; accent-color: var(--ax-color-primary); cursor: pointer; }
 .ax-check input:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); border-radius: var(--ax-space-050); }
+.ax-check--field { min-block-size: var(--ax-control-height-field); align-items: center; font: var(--ax-text-field); }
+.ax-check--field input { inline-size: 24px; block-size: 24px; }
 
 .ax-switch { position: relative; inline-size: 40px; block-size: 22px; display: inline-block; }
 .ax-switch input { opacity: 0; inline-size: 100%; block-size: 100%; margin: 0; cursor: pointer; }

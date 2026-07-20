@@ -778,7 +778,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           <label className="ax-field"><span className="ax-field__label">{strings.overrideEvidence}</span>
             <input className="ax-input" type="file" accept="image/*" onChange={e => setOverrideFile(e.target.files?.[0] ?? null)} />
           </label>
-          <label className="ax-row" style={{ gap: 8, alignItems: "center" }}>
+          <label className="ax-check ax-check--field">
             <input type="checkbox" checked={overrideSafetyException} disabled={overrideReasonKey !== "safety_security"}
               onChange={e => setOverrideSafetyException(e.target.checked)} />
             <span>{strings.overrideSafetyException}</span>
@@ -869,11 +869,11 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.prestartHeading}</h4>
           <div className="ax-stack" style={{ gap: 8 }}>
-            <label className="ax-row" style={{ gap: 8, alignItems: "center" }}>
+            <label className="ax-check ax-check--field">
               <input type="checkbox" checked={repPresent} onChange={e => setRepPresent(e.target.checked)} />
               <span>{strings.prestartRep}</span>
             </label>
-            <label className="ax-row" style={{ gap: 8, alignItems: "center" }}>
+            <label className="ax-check ax-check--field">
               <input type="checkbox" checked={locConfirmed} onChange={e => setLocConfirmed(e.target.checked)} />
               <span>{strings.prestartLoc}</span>
             </label>
