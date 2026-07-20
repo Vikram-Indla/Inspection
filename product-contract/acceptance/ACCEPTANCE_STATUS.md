@@ -1,5 +1,20 @@
 # Acceptance Status
 
+## TASK-G11-REMEDIATION-PERFORMANCE-001 — 2026-07-20
+
+- Immediate visual acknowledgement: **PASS_MEASURED** — six representative
+  warm-route p75 values are 61–71 ms against the <=100 ms target.
+- Completed-navigation progress state: **PASS_VERIFIED** at `496ed0c`; exact-current
+  navigation is ignored and completed route changes clear `aria-busy`.
+- Useful-content performance: **FAIL** — representative warm p75 remains
+  859–8,897 ms against the <=500 ms target.
+- Database optimization/runtime certification: **BLOCKED** — migration is
+  unapplied; the current Supabase connector identity cannot read project metadata,
+  migration history, advisors or catalog indexes.
+- Overall G11 performance verdict: **FAIL**. No release acceptance is granted.
+- Exact evidence: `../evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md` and
+  `../../docs/performance/`.
+
 ## TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002 — 2026-07-19
 
 - CMP-ACC-CCR-001..030: **PASS_IMPLEMENTED_VERIFIED**.

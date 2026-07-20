@@ -4399,9 +4399,29 @@
       "commit_sha": "f2b86c4",
       "next_task": "Apply and verify the performance migration in the governed linked Supabase environment, profile residual queries, then rerun benchmark and full protected regression.",
       "resume_prompt": "Read CURRENT_STATE Update 111, CURRENT_SLICE.yaml, product-contract/evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md and docs/performance/inspection-agent-handover.md. Resume from f2b86c4. Link only the approved Supabase project, reconcile migration history, run advisors, apply and verify the forward indexes, capture query plans, and rerun the 90-transition benchmark plus full protected regression. Do not claim G11 PASS while useful-content p75 exceeds 500 ms or P0/P1 evidence is missing."
+    },
+    {
+      "session_id": "2026-07-20-g11-performance-remediation-001-r2",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "perf/p0-navigation-remediation--codex-pass",
+      "task_id": "TASK-G11-REMEDIATION-PERFORMANCE-001",
+      "gate": "G11 hardening — navigation performance",
+      "requirements": ["G11 non-functional navigation performance; protected MVP1 behavior unchanged"],
+      "acceptance_ids": ["MASTER_PROMPT_P0_PERFORMANCE §6/§9", "P0-01..60", "mandatory investigations 1..140"],
+      "screens": ["shared Shell", "Dashboard", "Operations", "Factory 360", "Planning", "Reviews", "AI Suggestions"],
+      "engines": ["Next.js App Router/RSC", "Supabase SSR/PostgREST", "PostgreSQL forward indexes"],
+      "files_changed": ["Shell completed-navigation progress guard", "performance benchmark negative-path assertion", "performance acceptance/evidence/current-state/handoff records"],
+      "tests": ["typecheck PASS", "production build PASS", "protected shell/design contracts 16/16 PASS", "reduced production benchmark 1/1 PASS across six warm transitions", "diff check PASS"],
+      "evidence": ["docs/performance/inspection-regression-results.md", "product-contract/evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md", "product-contract/sessions/HANDOFF_2026-07-20_G11_PERFORMANCE_001_R2.md"],
+      "decisions": ["Exact-current navigation does not enter pending state", "Completed route changes clear accessible progress", "Definitive 90-sample timing dataset remains unchanged", "No remote DDL without explicit approval"],
+      "blockers": ["Useful-content warm p75 exceeds 500 ms", "Operations statement timeout", "Supabase connector permission denial", "Unapplied migration and missing query plans/advisors", "Dashboard entity-search timeout", "Full protected regression"],
+      "commit_sha": "496ed0c",
+      "next_task": "Obtain governed Supabase access, verify/apply the performance indexes through an approved path, then rerun the definitive benchmark and full protected regression.",
+      "resume_prompt": "Read CURRENT_STATE Update 112, execution/CURRENT_SLICE.yaml, evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md and docs/performance/inspection-agent-handover.md. Resume from 496ed0c on perf/p0-navigation-remediation--codex-pass. Obtain governed Supabase access; do not bypass the current permission denial. Reconcile migration history, run advisors/query plans, apply and verify the performance indexes only with explicit remote-DDL approval, then rerun the definitive benchmark and full protected regression. Do not claim G11 PASS while useful-content p75 exceeds 500 ms or P0/P1 evidence is missing."
     }
   ],
-  "last_session": "2026-07-20-g11-performance-remediation-001",
+  "last_session": "2026-07-20-g11-performance-remediation-001-r2",
   "rules": {
     "append_only": true,
     "required_fields": [

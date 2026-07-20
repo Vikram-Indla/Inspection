@@ -2,6 +2,11 @@
 
 ## Passing
 
+- Post-audit navigation-progress guard (`496ed0c`) — typecheck PASS; production
+  build PASS; protected shell/design source contracts 16/16 PASS; reduced
+  production benchmark 1/1 PASS across six warm route transitions. The reduced
+  run validates that the accessible progress indicator clears after each
+  destination renders; it does not replace the definitive 90-sample dataset.
 - `npm --prefix apps/web run typecheck` — PASS.
 - `npm --prefix apps/web run build` — PASS; 73 app routes emitted; shared First Load JS 103 kB.
 - Performance benchmark — PASS: 90/90 route samples and destination assertions, 8.8 minutes final.
@@ -20,3 +25,8 @@ The full mutation-heavy Playwright inventory was not run. Safe evidence did not 
 ## Residual failures
 
 Operations continues to log statement timeouts for corrective actions and geo-override evidence. Useful-content performance targets remain failed. The forward database migration is unapplied because `supabase migration list --linked` reports that no project ref is linked.
+
+The Supabase connector was also probed read-only on 2026-07-20 for the governed
+project. Project metadata, migration history, performance advisors and catalog
+index reads all returned `You do not have permission to perform this action`.
+No remote SQL or DDL was executed.

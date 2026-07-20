@@ -9,6 +9,8 @@ branch: "perf/p0-navigation-remediation"
 
 baseline_sha: "d53e09f7ee4018bf2046e36d95fe45df355b11a"
 head_at_activation: "f55e2eac80d040cb69c7a7211c67e80f7cfb9d51"
+measured_remediation_sha: "f2b86c4"
+post_audit_progress_guard_sha: "496ed0c"
 
 worktrees:
   - path: "Inspection (main checkout)"
@@ -75,4 +77,5 @@ open_blockers:
   - "Useful-content acceptance remains failed: final warm p75 is 859–8,897 ms against the <=500 ms target."
   - "Operations still logs statement timeouts for action_forms and geo-override evidence."
   - "The checkout is not linked to a Supabase project, so the forward index migration cannot be remotely applied, advised or EXPLAIN-verified in this session."
+  - "The current Supabase connector identity is also denied read-only project, migration, advisor and catalog access."
   - "Dashboard entity-search focused regression timed out once and the full mutation-heavy inventory was not rerun; no release certification is claimed."
