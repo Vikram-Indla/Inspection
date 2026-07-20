@@ -30,7 +30,7 @@ export default function FactorySpatialMap({ officialLat, officialLng, geofenceRa
       <div style={{ blockSize: 280, borderRadius: "var(--ax-radius-standard)", overflow: "hidden", border: "1px solid var(--ax-color-border)" }} dir="ltr">
         <GeoMap center={[officialLat, officialLng]} zoom={14} markers={markers} height="100%" />
       </div>
-      <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
         <span className="ax-lozenge ax-lozenge--info">{s.officialPin}</span>
         <span className="ax-lozenge ax-lozenge--success">{s.observedArrival}</span>
         <span className="ax-lozenge ax-lozenge--critical">{s.gpsOverride}</span>

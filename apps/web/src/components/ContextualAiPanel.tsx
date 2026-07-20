@@ -15,7 +15,7 @@ export default function ContextualAiPanel({ surface, title, description, context
   }, []);
   return (
     <section className="ax-surface" aria-labelledby={`${surface}-heading`} data-testid={`${surface}-panel`} style={{ padding: "var(--ax-space-300)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
         <div>
           <h3 id={`${surface}-heading`}>{title}</h3>
           <p className="ax-caption">{description}</p>
@@ -29,7 +29,7 @@ export default function ContextualAiPanel({ surface, title, description, context
         {targetRef && <input type="hidden" name="target_ref" value={targetRef} />}
         {itemId && <input type="hidden" name="item_id" value={itemId} />}
         {locale && <input type="hidden" name="locale" value={locale} />}
-        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <span className="ax-caption">{evidenceLabel}: {evidenceRefs.join(" · ")}</span>
           <button className="ax-btn" disabled={pending || offline}>{offline ? unavailableLabel : pending ? `${generateLabel}…` : generateLabel}</button>
         </div>

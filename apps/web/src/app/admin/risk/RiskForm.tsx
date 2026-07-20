@@ -92,7 +92,7 @@ export default function RiskForm({
       </div>
 
       <h4>{labels.bandsTitle}</h4>
-      <div className="ax-row">
+      <div className="row">
         <div className="ax-field"><label className="ax-field__label" htmlFor="low_max">{labels.lowEnds}</label>
           <input className="ax-input ax-numeric" id="low_max" name="low_max" type="number" value={lowMax}
             onChange={e => setLowMax(parseInt(e.target.value, 10))} /></div>
@@ -108,9 +108,9 @@ export default function RiskForm({
         <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--ax-color-critical)" }} />{labels.bandHigh} {medMax + 1}–100</span>
       </div>
 
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <p className="ax-caption ax-numeric">{labels.lastUpdated} {updatedAt ? new Date(updatedAt).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
-        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
           {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
           <button className="ax-btn ax-btn--prominent" disabled={pending || !sumOk} aria-disabled={!sumOk}>
             {pending ? labels.saving : labels.save}

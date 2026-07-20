@@ -120,7 +120,7 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: Fiel
       onDragStart={() => onDragStart(v.id)}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", color: "inherit", borderInlineStart: `4px solid ${accent}`,
         outline: selected ? "var(--ax-focus-ring)" : undefined, outlineOffset: selected ? "-2px" : undefined }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)" }}>
+      <div className="row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)" }}>
         {/* Select-on-click/focus drives the persistent highlight (real state in
             the parent); the button is natively keyboard-operable. */}
         <button type="button" className="ax-link ax-inline-target" aria-pressed={selected}
@@ -141,7 +141,7 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: Fiel
           {strings.windowEnds.replace("{date}", fmtWindow(v.windowEnd))}
         </span>
       )}
-      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+      <div className="row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
         {s.key !== "expired" && s.key !== "approved" ? <span className="ax-caption">{strings.rescheduleHint}</span> : <span />}
         <a href={visitHref(v)} className="ax-link ax-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
           aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)}>{strings.openDetails} →</a>
@@ -155,7 +155,7 @@ function InboxRow({ n, strings }: { n: FieldNotification; strings: FieldHomeStri
   const [state, formAction, pending] = useActionState<FieldActionResult, FormData>(markNotificationRead, {});
   const read = !n.unread || !!state.ok;
   return (
-    <li className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-start", paddingBlock: "var(--ax-space-100)", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
+    <li className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-start", paddingBlock: "var(--ax-space-100)", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
       <span aria-hidden="true" style={{ marginBlockStart: 6, inlineSize: 8, blockSize: 8, flex: "0 0 auto", borderRadius: "var(--ax-radius-full)", background: read ? "var(--ax-color-border)" : "var(--ax-color-primary)" }} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
         <span style={{ font: "var(--ax-text-body-strong)" }}>
@@ -288,7 +288,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
       <section id="visits" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-300)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
           <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.heading}</h3>
           {/* M03-003 — view switch */}
           <div className="ax-segmented" role="group" aria-label={strings.viewSwitchAria}>
@@ -300,7 +300,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         {rescheduleMessage && <div className="ax-banner" role="status">{rescheduleMessage}</div>}
 
         {/* M03-004 — search / filter / sort */}
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
           <span className="ax-search" style={{ flex: "1 1 220px" }}>
             <input className="ax-input" style={{ inlineSize: "100%" }} value={q}
               onChange={e => setQ(e.target.value)}
@@ -355,7 +355,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
             {byDay.map(([day, group]) => (
               <div key={day} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-                <div className="ax-row" style={{ gap: "var(--ax-space-150)" }} onDragOver={e => e.preventDefault()} onDrop={() => void dropOnDay(day)}>
+                <div className="row" style={{ gap: "var(--ax-space-150)" }} onDragOver={e => e.preventDefault()} onDrop={() => void dropOnDay(day)}>
                   <span className="ax-overline">{dayLabel(day)}</span>
                   <span className="ax-badge">{group.length}</span>
                   {draggedId && <span className="ax-caption">{rescheduleBusy ? "…" : strings.rescheduleHint}</span>}
@@ -384,7 +384,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
       {/* M03-001 — inspector inbox remains available after the active work
           queue so alerts do not displace the next assignment. */}
       <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between" }}>
+        <div className="row" style={{ justifyContent: "space-between" }}>
           <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.inboxTitle}</h3>
           {unread > 0 && <span className="ax-badge">{unread}</span>}
         </div>

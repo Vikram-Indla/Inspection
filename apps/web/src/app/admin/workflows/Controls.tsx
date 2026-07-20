@@ -21,7 +21,7 @@ export function ProposeDraftForm({ baseVersionId, baseLabel, strings: s }: { bas
   const [state, formAction, pending] = useActionState<WfResult, FormData>(proposeWorkflowDraft, {});
   const fieldId = useId();
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="base_version_id" value={baseVersionId} />
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-version-label`}>{s.newVersionLabel}</label>
         <input className="ax-input ax-numeric" name="version_label" id={`${fieldId}-version-label`} placeholder={`${baseLabel}-next`} required /></div>
@@ -42,7 +42,7 @@ export function DraftPayloadEditor({ versionId, payload, strings: s }: { version
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-payload`}>{s.payloadLabel}</label>
         <textarea className="ax-input ax-numeric" name="payload" id={`${fieldId}-payload`} rows={14} defaultValue={JSON.stringify(payload, null, 2)} spellCheck={false} /></div>
       {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
         <button className="ax-btn" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
         {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.saved}</span>}
       </div>
@@ -54,7 +54,7 @@ export function DraftPayloadEditor({ versionId, payload, strings: s }: { version
 export function ApprovePublish({ versionId, strings: s }: { versionId: string; strings: WfStrings }) {
   const [state, formAction, pending] = useActionState<WfResult, FormData>(approvePublishWorkflow, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
       <input type="hidden" name="version_id" value={versionId} />
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.publishing : s.approvePublish}</button>
       {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}

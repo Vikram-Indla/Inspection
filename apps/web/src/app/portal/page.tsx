@@ -47,12 +47,12 @@ export default async function PortalPage() {
       )}
       {(reqs ?? []).map((r) => (
         <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="ax-caption">{r.subject ?? ""}</span></h3><span className="ax-lozenge ax-lozenge--info">{r.status}</span></div>
+          <div className="row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="ax-caption">{r.subject ?? ""}</span></h3><span className="ax-lozenge ax-lozenge--info">{r.status}</span></div>
         </div>
       ))}
       {(sas ?? []).map((a) => (
         <div key={a.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}><h3>{t("portal.sa", "Self-assessment")}</h3>
+          <div className="row" style={{ justifyContent: "space-between" }}><h3>{t("portal.sa", "Self-assessment")}</h3>
             <span className={`ax-lozenge ${a.risk_signal_emitted ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{a.status}</span></div>
         </div>
       ))}

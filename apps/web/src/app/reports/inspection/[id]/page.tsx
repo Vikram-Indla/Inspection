@@ -114,7 +114,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           </div>
         </header>
 
-        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           <h2 className="rp-title">{t("report.title", "Inspection report — {factory}").replace("{factory}", f.name)}</h2>
           <span className="ax-caption ax-numeric">{t("report.ref", "Inspection")} {ins.id.slice(0, 8)} · {latest ? `v${latest.version_number}` : t("report.noVersion", "no submitted version")} · {displayStatus}</span>
         </div>

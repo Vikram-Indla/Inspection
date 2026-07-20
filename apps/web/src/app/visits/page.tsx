@@ -204,8 +204,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           CD-026 — the Map lens is HANDOFF_BLOCKED_MAP: no route, provider or
           coordinate wiring exists, so it is shown UNAVAILABLE (disabled) and the
           authoritative list below is the working equivalent — never faked. */}
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--ax-space-150)" }}>
-        <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--ax-space-150)" }}>
+        <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
           <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits">{t("visit.views.list", "List")}</a>
           <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
           <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>

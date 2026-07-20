@@ -8,7 +8,7 @@ type SpinnerProps = {
 
 export default function Spinner({ label }: SpinnerProps) {
   return (
-    <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+    <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
       <div className="lg-waiting__spinner" aria-hidden="true" />
       {label ? <span className="ax-caption">{label}</span> : null}
     </div>

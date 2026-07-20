@@ -54,7 +54,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
 
   return (
     <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row">
+      <div className="row">
         <button type="button" className="ax-btn ax-btn--secondary" aria-expanded={open} onClick={() => setOpen(o => !o)}>
           {open ? s.close : s.open}
         </button>
@@ -63,7 +63,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
 
       {open && (
         <div className="ipad-preview ax-surface" role="region" aria-label={s.title} style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", background: "var(--ax-color-surface-sunken)", borderRadius: "var(--ax-radius-large)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
+          <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <strong style={{ font: "var(--ax-text-body-strong)" }}>{s.title}</strong>
             <span className="ax-caption">{s.asInspector}</span>
           </div>
@@ -72,7 +72,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
             const codes = sec.items ?? [];
             return (
               <section key={sec.key} className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-                <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+                <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
                   <h4 style={{ font: "var(--ax-text-heading-xs)" }}>{sec.title}</h4>
                   {sec.mandatory && <span className="ax-lozenge ax-lozenge--critical">{s.sectionMandatory}</span>}
                 </div>
@@ -85,7 +85,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                   const form = it.ncActionForm ? formByKey[it.ncActionForm] : undefined;
                   return (
                     <div key={code} className="ipad-q" style={{ border: "1px solid var(--ax-color-border)", borderRadius: "var(--ax-radius-large)", padding: "var(--ax-space-300)", background: "var(--ax-color-surface)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-                      <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "baseline" }}>
+                      <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "baseline" }}>
                         <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{it.code} · {it.title}</p>
                         {it.clause && <span className="ax-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
                         {it.conditional && <span className="ax-lozenge ax-lozenge--info" title={`${s.conditionalWhen} ${it.conditional}`}>{s.conditionalBadge}</span>}
@@ -99,7 +99,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                       {it.conditional && <p className="ax-caption">{s.conditionalWhen} <code>{it.conditional}</code></p>}
                       {it.guidance && <p className="ax-caption">💡 {s.guidanceLabel}: {it.guidance}</p>}
 
-                      <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+                      <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                         {it.isDate ? (
                           <label className="ax-field">
                             <span className="ax-field__label">{s.dateLabel}</span>
@@ -125,7 +125,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
 
                       {form && (
                         <div className="ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", borderInlineStart: "4px solid var(--ax-color-critical)" }}>
-                          <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+                          <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                             <strong>{form.title}</strong>
                             <span className={`ax-lozenge ${form.blocking ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>{form.blocking ? s.formBlocking : s.formNonBlocking}</span>
                           </div>

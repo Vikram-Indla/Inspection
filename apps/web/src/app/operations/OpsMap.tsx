@@ -60,7 +60,7 @@ export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: 
             selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" />
         </Suspense>
       </div>
-      <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
+      <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
         <span className="ax-caption">
           <span className="ax-lozenge ax-lozenge--success">{s.legendExecuting}</span>{" "}
           <span className="ax-lozenge ax-lozenge--warning">{s.legendEnRoute}</span>{" "}

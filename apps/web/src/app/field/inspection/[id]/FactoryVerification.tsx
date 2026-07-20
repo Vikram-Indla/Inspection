@@ -237,7 +237,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
   return (
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
         <h4>{strings.title}</h4>
         <span className={`ax-lozenge ${changeCount ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>
           {changeCount ? fmt(strings.changeCounter, { n: changeCount }) : strings.noChanges}
@@ -247,7 +247,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       {readOnly && <div className="ax-banner ax-banner--immutable"><div>{strings.readOnly}</div></div>}
       {checksLoadError && <div className="ax-banner ax-banner--warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
       {failDetail !== null && (
-        <div className="ax-banner ax-banner--critical"><div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-200)" }}>
+        <div className="ax-banner ax-banner--critical"><div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-200)" }}>
           <span>{strings.syncFailed}{failDetail ? ` · ${failDetail}` : ""}</span>
           <button className="ax-btn ax-btn--secondary" onClick={() => processOutbox(onState)}>{strings.retry}</button>
         </div></div>

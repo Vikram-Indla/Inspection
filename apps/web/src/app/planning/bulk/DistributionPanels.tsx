@@ -21,7 +21,7 @@ function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: D
   return (
     <section className="ax-surface" aria-label={dist.heading}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
         <h4 style={{ margin: 0 }}>{dist.heading}</h4>
         <span className="ax-caption ax-numeric">{strings.ofDenominator.replace("{n}", String(dist.total))}</span>
       </div>
@@ -30,7 +30,7 @@ function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: D
           const pct = Math.round((b.count / max) * 100);
           const isFocused = focusedValue != null && b.label.toLowerCase() === focusedValue.toLowerCase();
           return (
-            <li key={b.label} className="ax-row"
+            <li key={b.label} className="row"
               style={{ gap: "var(--ax-space-150)", alignItems: "center", outline: isFocused ? "2px solid var(--ax-color-primary)" : undefined, borderRadius: "var(--ax-radius-small)" }}>
               <span style={{ minInlineSize: 120, flexShrink: 0 }}>
                 {b.unknown ? <span className="ax-lozenge ax-lozenge--warning">? {strings.unknown}</span> : <bdi>{b.label}</bdi>}

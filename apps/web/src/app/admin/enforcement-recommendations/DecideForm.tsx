@@ -12,7 +12,7 @@ export default function DecideForm({ id, strings }: { id: string; strings: Decid
   return (
     <form action={formAction} className="stack" style={{ gap: "var(--ax-space-150)" }}>
       <input type="hidden" name="id" value={id} />
-      <div className="ax-row">
+      <div className="row">
         <label className="ax-choice"><input type="radio" name="decision" value="approved" checked={decision === "approved"} onChange={() => setDecision("approved")} /> {strings.approve}</label>
         <label className="ax-choice"><input type="radio" name="decision" value="rejected" checked={decision === "rejected"} onChange={() => setDecision("rejected")} /> {strings.reject}</label>
       </div>

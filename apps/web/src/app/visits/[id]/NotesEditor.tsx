@@ -29,7 +29,7 @@ export default function NotesEditor({ visitId, initialNotes, strings }: {
           <label className="ax-field__label" htmlFor="visit-notes">{strings.label}</label>
           <textarea className="ax-textarea" name="notes" id="visit-notes" rows={3} defaultValue={initialNotes} placeholder={strings.placeholder} />
         </div>
-        <div className="ax-row" style={{ alignItems: "center", gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-150)" }}>
           <button className="ax-btn ax-btn--secondary" disabled={pending}>{pending ? strings.saving : strings.saveBtn}</button>
           <span className="ax-caption">{strings.hint}</span>
         </div>

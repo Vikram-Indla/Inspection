@@ -44,7 +44,7 @@ export default async function ProfileSettings() {
   const languageLabel = locale === "ar" ? "English" : "العربية";
 
   const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="ax-row" style={{ gap: "var(--ax-space-150)", justifyContent: "space-between", padding: "var(--ax-space-100) 0", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
+    <div className="row" style={{ gap: "var(--ax-space-150)", justifyContent: "space-between", padding: "var(--ax-space-100) 0", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
       <span className="ax-caption">{label}</span>
       <span>{children}</span>
     </div>

@@ -41,7 +41,7 @@ export default async function CommitteePage() {
       )}
       {(acts ?? []).map((a) => (
         <div key={a.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>{a.kind} · {a.outcome}</h3><span className="ax-lozenge ax-lozenge--warning">{a.verification_status}</span>
           </div>
         </div>

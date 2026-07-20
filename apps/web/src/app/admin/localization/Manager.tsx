@@ -137,7 +137,7 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
           {err && <span className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{err}</span>}
           {revs !== null && revs.length === 0 && <span className="ax-caption">{labels.historyEmpty}</span>}
           {(revs ?? []).map(r => (
-            <div key={r.id} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "baseline", flexWrap: "wrap", borderBlockStart: "1px dashed var(--ax-color-border)", paddingBlockStart: "var(--ax-space-100)" }}>
+            <div key={r.id} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "baseline", flexWrap: "wrap", borderBlockStart: "1px dashed var(--ax-color-border)", paddingBlockStart: "var(--ax-space-100)" }}>
               <span className="ax-caption ax-numeric">{r.changed_at.slice(0, 16).replace("T", " ")} · {r.change_source} · {r.status}</span>
               <span dir="rtl" lang="ar" style={{ font: "var(--ax-text-caption)" }}>{r.ar ?? "—"}</span>
               <form action={restAction}>
@@ -160,7 +160,7 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
 function SyncButton({ labels }: { labels: Labels }) {
   const [state, formAction, pending] = useActionState<SyncResult, FormData>(syncFromCode, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.syncing : labels.sync}</button>
       {state.report && !pending && (
         <span className="ax-caption">
@@ -197,7 +197,7 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
       {/* Arabic — inline edit + Save (returns to draft). */}
       <div className="lz-cell" dir="rtl">
         <span className="lz-key" dir="ltr">AR</span>
-        <form action={saveAction} className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", inlineSize: "100%" }}>
+        <form action={saveAction} className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", inlineSize: "100%" }}>
           <input type="hidden" name="key" value={row.key} />
           <input className="ax-input lz-ar" name="ar" dir="rtl" lang="ar" value={ar} onChange={e => setAr(e.target.value)}
             placeholder="—" aria-label={`${labels.colAr}: ${row.key}`} style={{ flex: 1, minInlineSize: 160 }} />

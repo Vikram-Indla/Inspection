@@ -196,7 +196,7 @@ export default async function Items({
       current="/admin/items"
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={
-        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
           <span className="ax-lozenge ax-lozenge--info">SCR-ADM-020 · ENG-01</span>
           <span role="status" className="ax-caption">
             {fill(t("admin.items.r2.readAt", "catalogue read {time} — a source fact, not a freshness verdict"), { time: readAt })}
@@ -321,7 +321,7 @@ export default async function Items({
                       </span>
                     </td>
                     <td>
-                      <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+                      <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
                         <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/items/${encodeURIComponent(i.id)}/runtime-preview`}>Inspector Runtime Preview</a>
                         {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/compliance-requests/new?request_type=modify&title=${encodeURIComponent(`Modify inspection item ${i.code}`)}&description=${encodeURIComponent(`Governed change request for inspection item ${i.code} — ${i.title}.`)}`}>Request change</a> : null}
                         {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="ax-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}

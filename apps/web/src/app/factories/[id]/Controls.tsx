@@ -68,7 +68,7 @@ export type AddMaterialStrings = {
 export function AddDocumentForm({ factoryId, strings }: { factoryId: string; strings: AddDocumentStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(addFactoryDocument, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
       <div className="ax-field"><label className="ax-field__label" htmlFor="factory-doc-type">{strings.typeLabel}</label>
         <select className="ax-select" name="doc_type" id="factory-doc-type" required defaultValue="license">
@@ -97,7 +97,7 @@ export function AddDocumentForm({ factoryId, strings }: { factoryId: string; str
 export function AddRepresentativeForm({ factoryId, strings }: { factoryId: string; strings: AddRepresentativeStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(addRepresentative, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
       <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor="factory-rep-full-name">{strings.fullNameLabel}</label>
         <input className="ax-input" name="full_name" id="factory-rep-full-name" placeholder={strings.fullNamePlaceholder} required /></div>
@@ -120,7 +120,7 @@ export function AddRepresentativeForm({ factoryId, strings }: { factoryId: strin
 export function AddProductForm({ factoryId, strings }: { factoryId: string; strings: AddProductStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(addFactoryProduct, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="factory-product-name">{strings.nameLabel}</label>
         <input className="ax-input" name="name" id="factory-product-name" placeholder={strings.namePlaceholder} required /></div>
@@ -143,7 +143,7 @@ export function AddProductForm({ factoryId, strings }: { factoryId: string; stri
 export function AddMaterialForm({ factoryId, strings }: { factoryId: string; strings: AddMaterialStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(addFactoryMaterial, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-200)" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="factory-material-name">{strings.nameLabel}</label>
         <input className="ax-input" name="name" id="factory-material-name" placeholder={strings.namePlaceholder} required /></div>
@@ -165,7 +165,7 @@ export function AddMaterialForm({ factoryId, strings }: { factoryId: string; str
 export function ToggleRepActive({ repId, factoryId, active, strings }: { repId: string; factoryId: string; active: boolean; strings: ToggleRepStrings }) {
   const [state, formAction, pending] = useActionState<F360Result, FormData>(toggleRepresentativeActive, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
       <input type="hidden" name="rep_id" value={repId} />
       <input type="hidden" name="factory_id" value={factoryId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />

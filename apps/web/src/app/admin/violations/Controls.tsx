@@ -116,7 +116,7 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
           {check(Boolean(rangePreset && repeatPreset), s.checkPresets)}
         </ul>
       </div>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-penalty-ref`}>{s.penaltyRef}</label>
         <input id={`${baseId}-penalty-ref`} className="ax-input ax-numeric" name="penalty_ref" placeholder="P-042" required style={{ maxInlineSize: 100 }} /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor={`${baseId}-legal-basis`}>{s.legalBasis}</label>
@@ -150,12 +150,12 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
 
 export function PublishViolationForm({ violationId, violationCode, strings: s }: { violationId: string; violationCode: string; strings: VioStrings }) {
   const [state, formAction, pending] = useActionState<VioResult, FormData>(publishViolationCode, {});
-  return <form action={formAction} className="ax-row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="ax-btn ax-btn--prominent" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="ax-validation" role="alert">{state.error}</span>}{state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.codePublished}</span>}</form>;
+  return <form action={formAction} className="row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="ax-btn ax-btn--prominent" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="ax-validation" role="alert">{state.error}</span>}{state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.codePublished}</span>}</form>;
 }
 
 export function PublishMappingForm({ mappingId, violationCode, strings: s }: { mappingId: string; violationCode: string; strings: VioStrings }) {
   const [state, formAction, pending] = useActionState<VioResult, FormData>(publishPenaltyMapping, {});
-  return <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+  return <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
     <input type="hidden" name="mapping_id" value={mappingId} />
     <button className="ax-btn ax-btn--prominent" aria-label={`${s.approveMapping} ${violationCode}`} disabled={pending}>{pending ? s.publishingMapping : s.approveMapping}</button>
     {state.error ? <span className="ax-validation" role="alert">{state.error}</span> : null}
@@ -171,7 +171,7 @@ export function DeactivateViolationForm({ violationId, violationCode, strings: s
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="ax-row" aria-label={`${s.deactivate} ${violationCode}`} style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" aria-label={`${s.deactivate} ${violationCode}`} style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="violation_code_id" value={violationId} />
       <div className="ax-field">
         <label className="ax-field__label" htmlFor={fieldId}>{s.activeTo}</label>

@@ -364,7 +364,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                 <input className="ax-input" name="reason" id="virtual-close-reason" placeholder={t.reasonPh} required />
                 <label className="ax-field__label" htmlFor="virtual-close-comments">{t.closeComments}</label>
                 <textarea className="ax-textarea" name="comments" id="virtual-close-comments" rows={2} />
-                <div className="ax-row" style={{ justifyContent: "flex-end" }}>
+                <div className="row" style={{ justifyContent: "flex-end" }}>
                   <button className="ax-btn ax-btn--danger" disabled={closePending || offline}>{closePending ? t.closeWorking : t.closeSubmit}</button>
                 </div>
               </form>
@@ -405,7 +405,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                   <li key={p.id} className="cd-prow">
                     <div><strong>{p.display_name}</strong><div className="cd-sub">{t.roles[p.role] ?? p.role.replace(/_/g, " ")}</div>
                       {open && !p.joined_at && (
-                        <form action={joinAction} className="ax-row" style={{ marginBlockStart: 6 }}>
+                        <form action={joinAction} className="row" style={{ marginBlockStart: 6 }}>
                           <input type="hidden" name="session_id" value={session.id} />
                           <input type="hidden" name="participant_id" value={p.id} />
                           <button className="ax-btn ax-btn--secondary" disabled={joinPending}>{joinPending ? t.working : t.markJoined}</button>
@@ -413,7 +413,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                       )}
                       {open && !isVerified && p.role === "factory_rep" && (
                         <div className="cd-otp">
-                          <div className="ax-row" style={{ alignItems: "flex-end", marginBlockStart: 6 }}>
+                          <div className="row" style={{ alignItems: "flex-end", marginBlockStart: 6 }}>
                             <button className="ax-btn ax-btn--secondary" onClick={() => requestOtp(p)} disabled={busy || !!st?.locked}>
                               {st?.has_active_code || (st?.resends_used ?? 0) > 0 ? t.resendOtp : t.sendOtp}
                             </button>

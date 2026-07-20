@@ -80,7 +80,7 @@ export default async function EnforcementRecommendations() {
           <EmptyState glyph="🗂️" title={tr("admin.enf.rec.empty", "No pending recommendations", "لا توجد توصيات معلقة")} inline />
         ) : rows.map(row => (
           <div key={row.id} className="ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-            <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+            <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
               <div>
                 <strong>{row.factories?.name ?? row.factory_id}</strong>
                 <div className="ax-caption">{row.factories?.city ?? "—"}{row.factories?.region ? `, ${row.factories.region}` : ""} · {row.factories?.factory_code ?? tr("admin.enf.rec.unregistered", "unregistered/temporary", "غير مسجّلة/مؤقتة")}</div>

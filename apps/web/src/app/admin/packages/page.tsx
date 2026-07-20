@@ -282,7 +282,7 @@ export default async function Packages() {
 
   return (
     <Shell current="/admin/packages" title={t("admin.pkg.title", "Package library & designer")}
-      context={<span className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+      context={<span className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
         <span className="ax-lozenge ax-lozenge--info">SCR-ADM-030/031 · ENG-02</span>
         <span className="ax-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
       </span>}>

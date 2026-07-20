@@ -58,7 +58,7 @@ export default async function VisitsCalendar() {
   return (
     <Shell current="/visits" title={t("visit.cal.title", "Visit calendar")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("visit.cal.context", "M02-038 · RLS-scoped")}</span>}>
-      <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+      <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
         <a className="ax-btn ax-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
         <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
         <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>

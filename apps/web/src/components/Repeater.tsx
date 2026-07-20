@@ -30,7 +30,7 @@ export default function Repeater<T>({ items, onChange, makeItem, renderItem, add
     <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
       {items.map((item, i) => (
         <div key={i} className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
             <div style={{ flex: 1 }}>{renderItem(item, i, next => update(i, next))}</div>
             {items.length > minItems && (
               <button type="button" className="ax-btn ax-btn--subtle" style={{ color: "var(--ax-color-critical)" }} onClick={() => remove(i)}>{removeLabel}</button>

@@ -41,7 +41,7 @@ export default async function SpatialPage() {
       )}
       {(layers ?? []).map((l) => (
         <div key={l.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>{l.label} <span className="ax-caption">· {l.layer_type}</span></h3>
             <span className={`ax-lozenge ${l.active ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{l.active ? "active" : "inactive"}</span>
           </div>

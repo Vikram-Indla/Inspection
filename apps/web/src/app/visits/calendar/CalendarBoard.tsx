@@ -113,13 +113,13 @@ export default function CalendarBoard({ visits, locale, strings }: {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <div className="ax-segmented" role="group" aria-label={strings.viewSwitchAria}>
           {([["day", strings.viewDay], ["week", strings.viewWeek], ["month", strings.viewMonth]] as [ViewKey, string][]).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
           ))}
         </div>
-        <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+        <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
           <button type="button" className="ax-btn ax-btn--subtle" onClick={() => shift(-1)} aria-label={strings.prev}>‹</button>
           <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setAnchorMs(utcMidnight(new Date()))}>{strings.today}</button>
           <button type="button" className="ax-btn ax-btn--subtle" onClick={() => shift(1)} aria-label={strings.next}>›</button>

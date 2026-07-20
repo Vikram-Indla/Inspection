@@ -65,7 +65,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
         <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
           {rows.map(row => (
             <div key={row.id} className="ax-surface" style={{ padding: "var(--ax-space-200)", borderColor: "var(--ax-color-warning)" }}>
-              <div className="ax-row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
+              <div className="row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div>
                   <strong>{row.factory_name ?? row.visit_id.slice(0, 8)}</strong>
                   <p className="ax-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
@@ -73,7 +73,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
                 <span className="ax-lozenge ax-lozenge--warning">{strings.expires}: {stamp(row.expires_at)} UTC</span>
               </div>
               <p style={{ marginBlock: "var(--ax-space-150)" }}>{row.explanation}</p>
-              <div className="ax-row ax-caption" style={{ gap: 12, flexWrap: "wrap" }}>
+              <div className="row ax-caption" style={{ gap: 12, flexWrap: "wrap" }}>
                 <span>{strings.captured}: <span className="ax-numeric">{stamp(row.device_occurred_at)} UTC</span></span>
                 <span className="ax-numeric">{row.observed_lat.toFixed(6)}, {row.observed_lng.toFixed(6)}</span>
                 <span>{strings.accuracy}: <span className="ax-numeric">±{Number(row.accuracy_m).toFixed(1)} m</span></span>
@@ -85,7 +85,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
                     : row.evidence_count > 0 ? <span>({strings.evidenceUnavailable})</span> : null}
                 </span>}
               </div>
-              <div className="ax-row" style={{ gap: 8, alignItems: "end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-150)" }}>
+              <div className="row" style={{ gap: 8, alignItems: "end", flexWrap: "wrap", marginBlockStart: "var(--ax-space-150)" }}>
                 <label className="ax-field" style={{ flex: 1, minInlineSize: 220 }}>
                   <span className="ax-field__label">{strings.rejectReason}</span>
                   <input className="ax-input" value={rejection[row.id] ?? ""} onChange={e => setRejection(v => ({ ...v, [row.id]: e.target.value }))} />

@@ -48,20 +48,20 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
   const targets = AI_DISPOSITIONS.filter((x) => isDispositionAllowed(r.disposition, x));
   return (
     <div id={`ai-suggestion-${r.id}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between" }}>
+      <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{r.surface} <span className="ax-caption">{r.text}</span></h3>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)" }}>
           <span className="ax-lozenge ax-lozenge--info">{r.disposition}</span>
           <span className="ax-lozenge ax-lozenge--warning">{r.provider_status}</span>
         </div>
       </div>
-      <dl className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+      <dl className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
         <div><dt className="ax-caption">{s.evidenceRefs}</dt><dd>{r.evidenceRefs.length ? r.evidenceRefs.join(" · ") : "—"}</dd></div>
         <div><dt className="ax-caption">{s.clauseRefs}</dt><dd>{r.clauseRefs.length ? r.clauseRefs.join(" · ") : "—"}</dd></div>
         <div><dt className="ax-caption">{s.confidence}</dt><dd>{r.confidence == null ? s.confidenceUnavailable : `${Math.round(r.confidence * 100)}%`}</dd></div>
       </dl>
       {targets.length > 0 && (
-        <form action={dAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+        <form action={dAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
           <input type="hidden" name="suggestion_id" value={r.id} />
           <input type="hidden" name="from" value={r.disposition} />
           <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-dispose`}>{s.dispose}</label>

@@ -41,7 +41,7 @@ export default async function ExceptionsPage() {
       )}
       {groups.map((g) => (
         <div key={g.category} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>{g.category.replace(/_/g, " ")}</h3><span className="ax-lozenge ax-lozenge--warning ax-numeric">{g.count}</span>
           </div>
         </div>

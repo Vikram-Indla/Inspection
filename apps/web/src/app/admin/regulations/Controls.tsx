@@ -109,7 +109,7 @@ export function AddClauseForm({ regulationId, strings: s }: { regulationId: stri
   const [state, formAction, pending] = useActionState<RegResult, FormData>(addClause, {});
   return (
     <form action={formAction} className="stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <input type="hidden" name="regulation_id" value={regulationId} />
         <div className="ax-field"><label className="ax-field__label" htmlFor={`cl-ref-${regulationId}`}>{s.clauseRef}</label>
           <input id={`cl-ref-${regulationId}`} className="ax-input ax-numeric" name="clause_ref" placeholder="4.2" required style={{ maxInlineSize: 100 }} /></div>
@@ -131,7 +131,7 @@ export function AddClauseForm({ regulationId, strings: s }: { regulationId: stri
 export function PublishRegulation({ regulationId, strings: s }: { regulationId: string; strings: RegStrings }) {
   const [state, formAction, pending] = useActionState<RegResult, FormData>(publishRegulation, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
       <input type="hidden" name="regulation_id" value={regulationId} />
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.publishing : s.publish}</button>
       {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
@@ -147,7 +147,7 @@ export function EditRegulationDraft({ regulation, strings: s }: {
   return (
     <form action={formAction} className="stack" style={{ gap: "var(--ax-space-150)" }} aria-label={s.saveDraft}>
       <input type="hidden" name="regulation_id" value={regulation.id} />
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor={`reg-edit-title-${regulation.id}`}>{s.title}</label>
           <input id={`reg-edit-title-${regulation.id}`} className="ax-input" name="title" defaultValue={regulation.title} required /></div>
         <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor={`reg-edit-auth-${regulation.id}`}>{s.issuingAuthority}</label>
@@ -167,7 +167,7 @@ export function AddRegulationAttachment({ regulationId, strings: s }: { regulati
   return (
     <form action={formAction} className="stack" style={{ gap: "var(--ax-space-150)" }} aria-label={s.addAttachment}>
       <input type="hidden" name="regulation_id" value={regulationId} />
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <div className="ax-field" style={{ flex: 1, minInlineSize: 260 }}><label className="ax-field__label" htmlFor={`att-file-${regulationId}`}>{s.attachmentName}</label><input id={`att-file-${regulationId}`} className="ax-input" type="file" name="file" required /></div>
         <button className="ax-btn" disabled={pending}>{pending ? s.addingAttachment : s.addAttachment}</button>
       </div>
@@ -222,7 +222,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
   return (
     <div className="ax-surface" style={{ padding: "var(--ax-space-200)", background: "var(--ax-color-surface-sunken)", marginBlockStart: "var(--ax-space-150)" }}>
       <p className="ax-overline" style={{ margin: 0 }}>{s.railHeading}</p>
-      <div className="ax-row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-100)" }}>
+      <div className="row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-100)" }}>
         {/* Regulation */}
         <div className="stack" style={{ gap: "2px", minInlineSize: 140 }}>
           <span className="ax-overline">{s.railRegulation}</span>
@@ -309,7 +309,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
             aria-label={s.searchPlaceholder}
           />
         </div>
-        <div className="ax-row" role="group" aria-label={s.filterLegend} style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+        <div className="row" role="group" aria-label={s.filterLegend} style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
           {chip("all", s.filterAll, counts.all)}
           {chip("published", s.filterPublished, counts.published)}
           {chip("draft", s.filterDraft, counts.draft)}
@@ -323,7 +323,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
         <ul className="stack" style={{ gap: "var(--ax-space-200)", listStyle: "none", margin: 0, padding: 0 }}>
           {filtered.map(r => (
             <li key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-              <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+              <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                 <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                   <h3 style={{ margin: 0 }}><span className="ax-numeric"><bdi dir="ltr">{r.code}</bdi></span> — {r.title}</h3>
                   <p className="ax-caption" style={{ margin: 0 }}>
@@ -331,7 +331,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
                     {r.created_at ? <> · {s.createdAtLabel} <bdi dir="ltr" className="ax-numeric">{r.created_at.slice(0, 10)}</bdi></> : null}
                   </p>
                 </div>
-                <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+                <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
                   <StatusChip status={r.status} s={s} />
                   {/* Logical detail mode — same route, ?id= query param (CD-006). */}
                   <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/regulations/${encodeURIComponent(r.id)}`}>

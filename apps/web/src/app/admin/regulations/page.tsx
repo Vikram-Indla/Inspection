@@ -179,7 +179,7 @@ export default async function Regulations({
 
   const title = t("admin.reg.r1.title", "Compliance Library — regulation register");
   const context = (
-    <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+    <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
       <span className="ax-lozenge ax-lozenge--info">SCR-ADM-010/011</span>
       <a className="ax-link" href="/admin/compliance-requests">
         {t("admin.reg.requests", "Configuration Requests")}
@@ -261,7 +261,7 @@ export default async function Regulations({
           <>
             {/* Dossier header */}
             <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-dossier-h">
-              <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+              <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                 <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                   <h2 id="reg-dossier-h" style={{ margin: 0 }}>
                     <span className="ax-numeric"><bdi dir="ltr">{reg.code}</bdi></span> — {reg.title}
@@ -368,7 +368,7 @@ export default async function Regulations({
                 {/* S04: the action performs the same mapped-clause validation shown here. */}
                 {reg.status === "draft" ? (
                   <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
-                    <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
+                    <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
                       <PublishRegulation regulationId={reg.id} strings={strings} />
                       <span className="ax-caption">{t("admin.reg.r1.detail.publish.direct", "Publish validates that at least one clause exists and every clause maps to an inspection item. Maker-checker rejects self-approval, and a successful transition is audited.")}</span>
                     </div>

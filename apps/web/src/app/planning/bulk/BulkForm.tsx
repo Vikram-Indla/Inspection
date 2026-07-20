@@ -98,7 +98,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           <div>
             <strong>{strings.invalidTitle}</strong>
             <p>{strings.invalidBody.replace("{n}", String(invalidDropped))}</p>
-            <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+            <div className="row" style={{ gap: "var(--ax-space-150)" }}>
               <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setInvalidDropped(0)}>{strings.invalidKeep}</button>
               <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { clearSelection(); setInvalidDropped(0); }}>{strings.invalidClear}</button>
             </div>
@@ -106,7 +106,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
         </div>
       )}
 
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "flex-end" }}>
         <div className="ax-field" style={{ maxInlineSize: 280, flex: 1 }}>
           <label className="ax-field__label" htmlFor="bulk-filter">{strings.filterLabel}</label>
           <input id="bulk-filter" className="ax-input" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} placeholder={strings.filterPlaceholder} />
@@ -121,7 +121,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           <div>
             <strong>{strings.selectAllConfirmTitle}</strong>
             <p>{strings.selectAllConfirmBody.replaceAll("{n}", String(filtered.length))}</p>
-            <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
+            <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
               <div className="ax-field" style={{ maxInlineSize: 140 }}>
                 <label className="ax-field__label" htmlFor="select-all-confirm-input">{strings.selectAllConfirmInputLabel}</label>
                 <input id="select-all-confirm-input" className="ax-input ax-numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
@@ -165,7 +165,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       </table></div>
       <p className="ax-caption">{strings.riskAdvisory}</p>
 
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", justifyContent: "center" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", justifyContent: "center" }}>
         <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
         <span className="ax-caption ax-numeric" role="status" aria-live="polite">
           {strings.pageStatus.replace("{a}", String(filtered.length === 0 ? 0 : clampedPage * PAGE_SIZE + 1)).replace("{b}", String(Math.min(filtered.length, (clampedPage + 1) * PAGE_SIZE))).replace("{n}", String(filtered.length))}
@@ -179,11 +179,11 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "var(--ax-space-200)" }}>
             <div><span className="ax-caption">{strings.summarySelected}</span><div className="ax-numeric"><strong>{sel.length}</strong></div></div>
             <div><span className="ax-caption">{strings.summaryByBand}</span>
-              <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+              <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                 {Object.entries(byBand).map(([b, n]) => <span key={b} className={`ax-lozenge ${b === "high" ? "ax-lozenge--critical" : b === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{strings.riskBands[b] ?? b} · {n}</span>)}
               </div></div>
             <div><span className="ax-caption">{strings.summaryByRegion}</span>
-              <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+              <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                 {Object.entries(byRegion).map(([r, n]) => <span key={r} className="ax-lozenge ax-lozenge--info"><bdi>{r}</bdi> · {n}</span>)}
               </div></div>
           </div>
@@ -191,8 +191,8 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       </div>
 
       {/* persistent selection bar — cross-page count + hand-off to the P02 review step */}
-      <div className="ax-surface ax-row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--ax-space-200) var(--ax-space-300)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "center" }}>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="ax-surface row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--ax-space-200) var(--ax-space-300)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "center" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="ax-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
           {selected.size === 0 && <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.readyNothing}</span>}
           {selected.size > 0 && <button type="button" className="ax-btn ax-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}

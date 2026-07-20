@@ -11,7 +11,7 @@ function Result({ state }: { state: FactoryDataResult }) {
 
 function RepresentativeToggle({ factoryId, representative }: { factoryId: string; representative: { id: string; full_name: string; active: boolean } }) {
   const [state, action, pending] = useActionState<FactoryDataResult, FormData>(mutateFactoryMasterData, {});
-  return <form action={action} className="ax-row" style={{ justifyContent: "space-between" }}>
+  return <form action={action} className="row" style={{ justifyContent: "space-between" }}>
     <input type="hidden" name="factory_id" value={factoryId} /><input type="hidden" name="operation" value="representative_status" />
     <input type="hidden" name="representative_id" value={representative.id} /><input type="hidden" name="active" value={representative.active ? "false" : "true"} />
     <span>{representative.full_name} <span className="ax-lozenge">{representative.active ? "active" : "inactive"}</span></span>

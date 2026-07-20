@@ -11,7 +11,7 @@ export type ScheduleFormStrings = {
 export default function ScheduleForm({ visitId, strings }: { visitId: string; strings: ScheduleFormStrings }) {
   const [state, formAction, pending] = useActionState<VirtualActionResult, FormData>(scheduleSession, {});
   return (
-    <form action={formAction} className="ax-row" style={{ alignItems: "flex-end" }}>
+    <form action={formAction} className="row" style={{ alignItems: "flex-end" }}>
       <input type="hidden" name="visit_id" value={visitId} />
       <div className="ax-field"><label className="ax-field__label" htmlFor="schedule-appointment">{strings.appointment}</label>
         <input className="ax-input ax-numeric" type="datetime-local" name="appointment_at" id="schedule-appointment" required /></div>

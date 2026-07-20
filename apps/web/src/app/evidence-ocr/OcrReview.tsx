@@ -21,7 +21,7 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
   const shown = state.text !== undefined ? state : (row.lastExtraction ? { text: row.lastExtraction.text ?? undefined, status: row.lastExtraction.status } : {});
   return (
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between" }}>
+      <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
           <h3>{row.evidenceType} <span className="ax-caption ax-numeric">{row.capturedAt}</span></h3>
           {row.inspectionId && <a className="ax-link ax-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}

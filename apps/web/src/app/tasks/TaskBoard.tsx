@@ -38,11 +38,11 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
 
   return (
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <h3>
           {task.taskType} <span className="ax-version">{task.taskRef ?? "—"}</span>
         </h3>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
           <span className="ax-lozenge ax-lozenge--info">{task.status.replace(/_/g, " ")}</span>
           <span className={`ax-lozenge ${task.active ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>
             {task.active ? s.activeYes : s.activeNo}
@@ -56,9 +56,9 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
       {!task.canManage && <p className="ax-caption">{/* read-only: RLS/scope */}—</p>}
 
       {task.canManage && (
-        <div className="ax-row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap", alignItems: "flex-start" }}>
+        <div className="row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap", alignItems: "flex-start" }}>
           {/* Reassign — reason mandatory, terminal tasks blocked (task machine) */}
-          <form action={reassignAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+          <form action={reassignAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
             <input type="hidden" name="task_id" value={task.id} />
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reassign-to`}>{s.reassignTo}</label>
               <input className="ax-input" name="to_assignee" id={`${fieldId}-reassign-to`} required disabled={isTerminal} /></div>
@@ -70,7 +70,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
           </form>
 
           {/* Status transition — only machine-legal targets are offered */}
-          <form action={statusAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+          <form action={statusAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
             <input type="hidden" name="task_id" value={task.id} />
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-status`}>{s.changeStatus}</label>
               <select className="ax-input" name="to_status" id={`${fieldId}-status`} required disabled={isTerminal}>
@@ -84,7 +84,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
           </form>
 
           {/* Activation — reason mandatory; reactivation of a terminal task blocked */}
-          <form action={activeAction} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+          <form action={activeAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
             <input type="hidden" name="task_id" value={task.id} />
             <input type="hidden" name="active" value={task.active ? "false" : "true"} />
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-active-reason`}>{s.reason}</label>

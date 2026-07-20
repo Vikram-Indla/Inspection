@@ -124,7 +124,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
   return (
     <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
       {/* Toolbar — search + filters + result count (RTL mirrors via flex) */}
-      <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
         <input
           className="ax-input" type="search" value={query}
           aria-label={s.searchLabel} placeholder={s.searchPlaceholder}
@@ -174,7 +174,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
             <>
               <div>
                 <h4>{selected.name}</h4>
-                <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-100)" }}>
+                <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-100)" }}>
                   <span className="ax-lozenge ax-lozenge--info">{selected.factory_code}</span>
                   <span className={lozengeFor(selected.risk_band)}>
                     {bandLabel(selected.risk_band)}{selected.risk_score != null ? ` · ${selected.risk_score}` : ""}
@@ -203,7 +203,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                   />
                   <p className="ax-field__hint">{s.radiusHint} (<span className="ax-numeric">{defaultFence}</span> m)</p>
                 </div>
-                <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+                <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
                   <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.saving : s.save}</button>
                   {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
                   {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.saved}</span>}
@@ -222,7 +222,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
               </tbody>
             </table>
             {/* Legend with live counts of the pins currently on the map */}
-            <div className="ax-row" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+            <div className="row" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
               <span className="ax-lozenge ax-lozenge--critical">{s.bandHigh} <span className="ax-numeric">{bandCounts.high}</span></span>
               <span className="ax-lozenge ax-lozenge--warning">{s.bandMedium} <span className="ax-numeric">{bandCounts.medium}</span></span>
               <span className="ax-lozenge ax-lozenge--success">{s.bandLow} <span className="ax-numeric">{bandCounts.low}</span></span>

@@ -227,7 +227,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             <>
               <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-name">{strings.manualName}</label>
                 <input id="imm-manual-name" key={`mn-${resetKey}`} className="ax-input" name="manual_name" value={manualName} onChange={e => setManualName(e.target.value)} placeholder={strings.manualPlaceholder} /></div>
-              <div className="ax-row">
+              <div className="row">
                 <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-region">{strings.manualRegion}</label>
                   <input id="imm-manual-region" key={`mrg-${resetKey}`} className="ax-input" name="manual_region" list="imm-region-options" value={manualRegion} onChange={e => setManualRegion(e.target.value)} /></div>
                 <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-city">{strings.manualCity}</label>
@@ -235,7 +235,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
               </div>
               <datalist id="imm-region-options">{regionOptions.map(r => <option key={r} value={r} />)}</datalist>
               <datalist id="imm-city-options">{cityOptions.map(c => <option key={c} value={c} />)}</datalist>
-              <div className="ax-row">
+              <div className="row">
                 <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-cr">{strings.manualCr}</label>
                   <input id="imm-manual-cr" key={`mcr-${resetKey}`} className="ax-input ax-numeric" name="manual_cr" value={manualCr} onChange={e => setManualCr(e.target.value)} /></div>
                 <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-license">{strings.manualLicense}</label>
@@ -295,7 +295,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
           <div style={{ blockSize: 240, marginBlockEnd: "var(--ax-space-100)" }}>
             <GeoMap center={mapCenter} zoom={locationOk ? 14 : 6} markers={mapMarkers} height="100%" />
           </div>
-          <div className="ax-row">
+          <div className="row">
             <div className="ax-field"><label className="ax-field__label" htmlFor="imm-lat">{strings.latitude}</label>
               <input id="imm-lat" key={`lat-${resetKey}`} className="ax-input ax-numeric" name="lat" value={lat} onChange={e => onLatChange(e.target.value)} /></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="imm-lng">{strings.longitude}</label>
@@ -308,7 +308,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
           </p>
 
           {actorMode === "planner" ? <>
-            <div className="ax-row">
+            <div className="row">
               <div className="ax-field"><label className="ax-field__label" htmlFor="imm-window-start">{strings.windowStart}</label>
                 <input id="imm-window-start" key={`ws-${resetKey}`} className="ax-input ax-numeric" name="window_start" type="datetime-local" value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
               <div className="ax-field"><label className="ax-field__label" htmlFor="imm-window-end">{strings.windowEnd}</label>
@@ -360,7 +360,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
 
       {state.error && <div className="ax-validation" role="alert"><strong>{strings.blockedTitle}</strong><div>{state.error}</div></div>}
 
-      <div className="ax-row" style={{ justifyContent: "flex-end" }}>
+      <div className="row" style={{ justifyContent: "flex-end" }}>
         <button className="ax-btn ax-btn--prominent" disabled={pending || !requestId || (actorMode === "planner" && !reviewed)}>
           {pending ? strings.creating : actorMode === "inspector" ? strings.createAndStart : strings.create}
         </button>

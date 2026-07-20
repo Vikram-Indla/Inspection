@@ -49,14 +49,14 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS }: { vis
 
   return (
     <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
         <label className="ax-field" style={{ minInlineSize: 260 }}><span className="ax-field__label">{s.region}</span>
           <select className="ax-select" value={region} onChange={e => { setRegion(e.target.value); setSelectedId(null); }}>
             <option value="">{s.allRegions}</option>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
         </label>
-        <div className="ax-row" style={{ gap: 8 }}>
+        <div className="row" style={{ gap: 8 }}>
           <span className="ax-lozenge ax-lozenge--info">{"● "}{s.factoryVisitLegend}</span>
           <span className="ax-lozenge ax-lozenge--warning">{"● "}{s.inspectorLegend}</span>
         </div>

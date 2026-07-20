@@ -109,7 +109,7 @@ export function NewItemForm({
         </select>
         <span className="ax-caption">{s.evidenceSource}</span>
       </div>
-      <label className="ax-row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
+      <label className="row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
         <input type="hidden" name="scoring_enabled" value={scoring ? "true" : "false"} />
         <input type="checkbox" checked={scoring} onChange={e => setScoring(e.target.checked)} /> {scoring ? s.scoringEnabled : s.scoringDisabled}
       </label>
@@ -161,7 +161,7 @@ export function EditItemForm({ item, clauses, strings: s }: {
 export function ToggleActive({ itemId, active, strings: s }: { itemId: string; active: boolean; strings: ItemStrings }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(toggleItemActive, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="item_id" value={itemId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
       {active ? <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required /></label> : null}
@@ -252,7 +252,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
 
       {/* Read-only runtime projection — disabled controls signal "not an authoring surface". */}
       <div className="ax-panel ax-surface" style={{ padding: "var(--ax-space-250)", background: "var(--ax-color-surface-sunken)" }}>
-        <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="ax-numeric"><bdi dir="ltr">{item.code}</bdi></strong>
           <span>{item.title}</span>
           <span className={`ax-lozenge ${item.active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
@@ -264,7 +264,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
         <div className="stack" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
           <div>
             <p className="ax-overline">{s.responsesLabel}</p>
-            <div className="ax-row" role="group" aria-label={s.responsesLabel} style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+            <div className="row" role="group" aria-label={s.responsesLabel} style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
               {item.responses.map(r => (
                 <button key={r} type="button" className="ax-btn ax-btn--secondary" disabled aria-disabled="true">{label(r)}</button>
               ))}

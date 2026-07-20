@@ -349,7 +349,7 @@ export default async function Violations({
                 <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 200, flex: "1 1 200px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.violation", "Violation")}</span>
                   <strong><span className="ax-numeric">{v.code}</span> — {v.title}</strong>
-                  <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+                  <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
                   </div>
@@ -422,9 +422,9 @@ export default async function Violations({
             const evidence = evidenceById.get(v.id);
             return (
               <div key={v.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-                <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+                <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
                   <h3><span className="ax-numeric">{v.code}</span> — {v.title}</h3>
-                  <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+                  <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
                     {pm
@@ -437,7 +437,7 @@ export default async function Violations({
                   <span className="ax-overline">{t("admin.viol.trace", "Legal trace")}:</span>{" "}
                   {rc ? <bdi dir="ltr">{rc.regulations?.code ?? "?"} §{rc.clause_ref}</bdi> : t("admin.viol.noAnchor", "No clause anchor")}
                 </p>
-                <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+                <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
                   <span className="ax-lozenge ax-lozenge--info">v{v.configuration_version}</span>
                   {v.category && <span className="ax-lozenge ax-lozenge--info">{v.category}</span>}
                   {v.applicability && <span className="ax-caption">{v.applicability}</span>}
@@ -456,7 +456,7 @@ export default async function Violations({
                   {" "}{t("admin.viol.asOf", "as of today")}{" "}
                   <bdi dir="ltr" className="ax-numeric">{today}</bdi>.
                 </p>
-                <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }} aria-label={t("admin.viol.usage.heading", "Usage and audit") }>
+                <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }} aria-label={t("admin.viol.usage.heading", "Usage and audit") }>
                   {evidence?.usage ? (
                     <span className="ax-caption" data-usage-state="available">
                       <span aria-hidden="true">↗</span> {t("admin.viol.usage.items", "Item references")}: <strong>{evidence.usage.item_count}</strong>{" · "}

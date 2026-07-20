@@ -79,9 +79,9 @@ export default async function RegulationDetail({
 
   return (
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between" }}>
+      <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{reg.code} — {reg.title}</h3>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)" }}>
           <span className={`ax-lozenge ${reg.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${reg.status}`, String(reg.status).replace(/_/g, " "))}</span>
           {reg.status === "draft" && <PublishRegulation regulationId={reg.id} strings={s} />}
         </div>

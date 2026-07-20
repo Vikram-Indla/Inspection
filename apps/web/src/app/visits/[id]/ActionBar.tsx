@@ -51,9 +51,9 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
       {/* ── ZONE: AVAILABLE NOW ────────────────────────────────── */}
       <div className="ax-actionzone">
         <p className="ax-actionzone__label ax-caption">{strings.zoneAvailable}</p>
-        <div className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+        <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           {status === "published" && (
-            <form action={retAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={retAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
               <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="visit-return-reason">{strings.returnReason}</label>
                 <input className="ax-input" name="reason" id="visit-return-reason" placeholder={strings.returnPlaceholder} /></div>
@@ -65,7 +65,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.republishBtn}</button></form>
           )}
           {canReassign && (
-            <form action={reaAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={reaAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
               <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reassign-inspector">{strings.reassignTo}</label>
                 <select className="ax-select" name="inspector_id" id="visit-reassign-inspector"><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
@@ -74,7 +74,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
           )}
           {canManage && (
             <>
-              <form action={vtAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+              <form action={vtAct} className="row" style={{ alignItems: "flex-end" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
                 <div className="ax-field" style={{ maxInlineSize: 200 }}><label className="ax-field__label" htmlFor="visit-type-select">{strings.visitTypeLabel}</label>
                   <select className="ax-select" name="visit_type" id="visit-type-select" defaultValue={visitType}>
@@ -84,7 +84,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
                   </select></div>
                 <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.visitTypeBtn}</button>
               </form>
-              <form action={rscAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+              <form action={rscAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
                 <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
                   <input className="ax-input ax-numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
@@ -92,7 +92,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
                   <input className="ax-input ax-numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
                 <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.rescheduleBtn}</button>
               </form>
-              <form action={canAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+              <form action={canAct} className="row" style={{ alignItems: "flex-end" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
                 <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="visit-cancel-reason">{strings.cancelReason}</label>
                   <input className="ax-input" name="reason" id="visit-cancel-reason" placeholder={strings.cancelPlaceholder} /></div>

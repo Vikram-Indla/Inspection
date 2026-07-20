@@ -354,7 +354,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           selected identity + state + allowed-action context, carried in-session. */}
       <section className="ax-surface" aria-label={strings.spineHeading}
         style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
           <span className="ax-overline">{strings.spineHeading}</span>
           {activeVisit && (
             <span className={`ax-lozenge ${allowedTone[allowedKey(activeVisit)]}`}>{allowedLabel[allowedKey(activeVisit)]}</span>
@@ -363,7 +363,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         {!activeVisit ? (
           <p className="ax-caption" style={{ margin: 0 }}>{strings.spineEmpty}</p>
         ) : (
-          <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
             <div style={{ minInlineSize: 200 }}>
               <div className="ax-numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
                 {activeVisit.planId && <span className="ax-caption ax-numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
@@ -372,7 +372,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <div className="ax-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
             </div>
             <div style={{ minInlineSize: 180 }}>
-              <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+              <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
                 <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[effectiveStatus(activeVisit)] ?? ""}`}>
                   {effectiveStatus(activeVisit) === "expired" && activeVisit.planningStatus === "published" ? strings.expiredLabel : activeVisit.planningLabel}
                 </span>
@@ -443,7 +443,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       {/* M02-007/011/031-034 — bulk action bar over the selection */}
       {selected.size > 0 && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+          <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
             <h4 style={{ margin: 0 }}>{strings.bulkHeading} · {strings.selectedCount.replace("{n}", String(selected.size))}</h4>
             <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
           </div>
@@ -451,7 +451,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           {/* CD-026 — eligibility preview: verified now, re-checked at submit */}
           <div className="ax-state ax-state--inline" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-050)", alignItems: "flex-start" }}>
             <span className="ax-overline">{strings.eligHeading}</span>
-            <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
               <span className="ax-caption">{strings.eligReschedule}: <strong>{eligLine(elig.publishNew)}</strong></span>
               <span className="ax-caption">{strings.eligCancel}: <strong>{eligLine(elig.publishNew)}</strong></span>
               <span className="ax-caption">{strings.eligReassign}: <strong>{eligLine(elig.notStarted)}</strong></span>
@@ -461,8 +461,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             {!elig.samePlan && <span className="ax-lozenge ax-lozenge--warning">{strings.eligSamePlanBlocked}</span>}
           </div>
 
-          <div className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
-            <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+          <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+            <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
                 <input id="bulk-window-start" className="ax-input ax-numeric" type="datetime-local" name="window_start" /></div>
@@ -470,20 +470,20 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                 <input id="bulk-window-end" className="ax-input ax-numeric" type="datetime-local" name="window_end" /></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkRescheduleBtn}</button>
             </form>
-            <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="row" style={{ alignItems: "flex-end" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
                 <select id="bulk-inspector" className="ax-select" name="inspector_id"><option value="">{strings.selectOption}</option>
                   {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkReassignBtn}</button>
             </form>
-            <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="row" style={{ alignItems: "flex-end" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
                 <input id="bulk-cancel-reason" className="ax-input" name="reason" placeholder={strings.bulkCancelPlaceholder} /></div>
               <button className="ax-btn ax-btn--danger" disabled={busy}>{strings.bulkCancelBtn}</button>
             </form>
-            <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+            <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 180 }}><label className="ax-field__label" htmlFor="bulk-visit-type">{strings.bulkEditType}</label>
                 <select id="bulk-visit-type" className="ax-select" name="visit_type"><option value="">{strings.selectOption}</option>
@@ -526,7 +526,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           className={`ax-surface ${anyProblem ? "ax-banner--critical" : ""}`}
           role={anyProblem ? "alert" : "status"} aria-live="polite"
           style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-          <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>
+          <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>
             <strong>{verbLabel[result!.verb as BulkVerb] ?? ""}</strong>
             {nApplied > 0 && <span className="ax-lozenge ax-lozenge--success">{strings.ledgerSummaryApplied.replace("{n}", String(nApplied))}</span>}
             {nBlocked > 0 && <span className="ax-lozenge ax-lozenge--warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
@@ -609,7 +609,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       )}
 
       {/* M02-020 — count display + load-more raises the server page cap */}
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
         <span className="ax-caption ax-numeric">
           {strings.showing.replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}
         </span>

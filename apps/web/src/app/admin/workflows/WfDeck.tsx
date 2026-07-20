@@ -50,7 +50,7 @@ export function WfDeck({ payload, strings }: Props) {
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-250)" }}>
       {/* Validation ledger — the graph check that previously did not exist */}
       <section aria-label={strings.ledgerTitle} className="ax-surface" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between" }}>
+        <div className="row" style={{ justifyContent: "space-between" }}>
           <h4 style={{ margin: 0 }}>{strings.ledgerTitle}</h4>
           <span className={`ax-lozenge ${validation.ok ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
             {validation.ok ? `✓ ${strings.passed}` : `⛔ ${strings.failed}`}

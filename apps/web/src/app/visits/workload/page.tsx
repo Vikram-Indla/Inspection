@@ -71,7 +71,7 @@ export default async function Workload() {
   return (
     <Shell current="/visits" title={t("visit.load.title", "Inspector workload")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("visit.load.context", "M02-018/037 · assignments × published windows")}</span>}>
-      <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+      <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
         <a className="ax-btn ax-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
         <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
         <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
@@ -107,7 +107,7 @@ export default async function Workload() {
                   <td className="ax-td-num ax-numeric">{a.beyond}</td>
                   <td className="ax-td-num ax-numeric"><strong>{a.total}</strong></td>
                   <td>
-                    <div className="ax-row" style={{ alignItems: "center", gap: "var(--ax-space-100)" }}>
+                    <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-100)" }}>
                       <div style={{ flex: 1, blockSize: 8, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-neutral-tint)" }}>
                         <div style={{ blockSize: 8, borderRadius: "var(--ax-radius-full)", inlineSize: `${Math.round((a.total / maxTotal) * 100)}%`, background: "var(--ax-color-info)" }} />
                       </div>

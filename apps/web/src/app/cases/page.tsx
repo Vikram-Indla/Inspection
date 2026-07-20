@@ -41,7 +41,7 @@ export default async function CasesPage() {
       )}
       {(rows ?? []).map((c) => (
         <div key={c.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>{c.case_type} <span className="ax-caption">· {c.origin_type ?? "—"}</span></h3>
             <span className="ax-lozenge ax-lozenge--info">{c.status}</span>
           </div>

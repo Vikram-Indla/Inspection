@@ -85,7 +85,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
         <span className="ax-lozenge ax-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>
         <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
       </>}>
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
         <a className="ax-link" href="/planning/plans">← {t("plan.drill.backToRegister", "Plan register")}</a>
         <span className="ax-caption ax-numeric">
           {t("plan.drill.createdBy", "created by")} <strong>{creator}</strong> · {fmt(plan.created_at)}
@@ -95,7 +95,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
 
       {/* M02-036 — progress calculation + % bar over persisted child states */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
           <h4 style={{ margin: 0 }}>{t("plan.drill.progressHeading", "Plan progress (M02-036)")}</h4>
           <span className="ax-numeric"><strong>{pct(completed)}%</strong> {t("plan.drill.progressOf", "of {n} child visits completed").replace("{n}", String(total))}</span>
         </div>
@@ -107,7 +107,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
             ))}
           </div>
         )}
-        <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+        <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           {segments.map(s => (
             <span key={s.key} className="ax-caption">
               <span aria-hidden="true" style={{ display: "inline-block", inlineSize: 10, blockSize: 10, borderRadius: "var(--ax-radius-full)", background: s.bg, marginInlineEnd: 6 }} />

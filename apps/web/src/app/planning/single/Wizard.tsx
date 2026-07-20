@@ -219,7 +219,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
           {!hasOfficial && (
             <div className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-150)" }}><div>{strings.noOfficialPin}</div></div>
           )}
-          <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lat">{strings.plannerLat}</label>
               <input key={resetKey} className="ax-input ax-numeric" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lng">{strings.plannerLng}</label>
@@ -262,7 +262,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
       {factory && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.readinessTitle}</h4>
-          <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+          <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
             <span className={`ax-lozenge ${factory ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{factory ? "✓" : "✕"} {strings.readyIdentity}</span>
             <span className={`ax-lozenge ${licenseOk ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{licenseOk ? "✓" : "✕"} {strings.readyLicense}</span>
             <span className={`ax-lozenge ${locationConfirmed ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{locationConfirmed ? "✓" : "✕"} {strings.readyLocation}</span>
@@ -286,7 +286,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
         </div>
       )}
 
-      <div className="ax-row" style={{ justifyContent: "flex-end" }}>
+      <div className="row" style={{ justifyContent: "flex-end" }}>
         <button className="ax-btn ax-btn--prominent" disabled={pending || !configUnlocked}>
           {pending ? strings.publishing : state.resumeId ? strings.retry : strings.publish}
         </button>

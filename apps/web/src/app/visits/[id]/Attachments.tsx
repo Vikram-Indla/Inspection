@@ -35,7 +35,7 @@ export type AttachmentsStrings = {
 function RemoveButton({ attachmentId, visitId, name, strings }: { attachmentId: string; visitId: string; name: string; strings: AttachmentsStrings }) {
   const [state, act, pending] = useActionState<ActionResult, FormData>(removeVisitAttachment, {});
   return (
-    <form action={act} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+    <form action={act} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
       <input type="hidden" name="attachment_id" value={attachmentId} />
       <input type="hidden" name="visit_id" value={visitId} />
       <button className="ax-btn ax-btn--subtle" disabled={pending} aria-label={strings.removeAria.replace("{name}", name)}>{strings.remove}</button>
@@ -69,7 +69,7 @@ export default function Attachments({ visitId, rows, strings }: {
                 <td className="ax-td-num ax-numeric">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
                 <td>{a.uploadedBy}</td>
                 <td>
-                  <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+                  <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
                     {a.url
                       ? <a className="ax-btn ax-btn--subtle" href={a.url} download={a.name}>{strings.download}</a>
                       : <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="status">{a.urlError ?? strings.urlFailed}</span>}
@@ -81,7 +81,7 @@ export default function Attachments({ visitId, rows, strings }: {
           </tbody>
         </table></div>
       )}
-      <form action={upAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      <form action={upAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <input type="hidden" name="visit_id" value={visitId} />
         <div className="ax-field" style={{ maxInlineSize: 340 }}>
           <label className="ax-field__label" htmlFor="visit-attachment-file">{strings.fileLabel}</label>

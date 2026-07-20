@@ -256,7 +256,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
           <div className="stack" style={{ gap: 8 }}>
-            <div className="ax-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span className={`ax-lozenge ${physicalEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
                 {physicalEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
@@ -265,7 +265,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
                 : t("field.start.physicalImmediateRule", "Physical Immediate Visit — using the location confirmed with the visit (M01-046); factory master coordinates remain unchanged (FND-007)")}</span>
               {v.execution_mode !== "virtual" && <span className="ax-lozenge ax-lozenge--info">{t("field.start.plannedMode", "planned mode")}</span>}
             </div>
-            <div className="ax-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span className={`ax-lozenge ${virtualEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
                 {virtualEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>

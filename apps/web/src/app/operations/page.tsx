@@ -491,7 +491,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
       {/* KSA operations map — M08-002 */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)", marginBlockEnd: "var(--ax-space-150)" }}>
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)", marginBlockEnd: "var(--ax-space-150)" }}>
           <h4 style={{ margin: 0 }}>{t("ops.map.heading", "KSA operations map (M08-002 · ENG-06)")}</h4>
           <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
         </div>

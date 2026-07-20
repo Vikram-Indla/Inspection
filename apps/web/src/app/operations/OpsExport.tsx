@@ -36,7 +36,7 @@ function download(ds: ExportDataset) {
 
 export default function OpsExport({ datasets, strings }: { datasets: ExportDataset[]; strings: OpsExportStrings }) {
   return (
-    <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+    <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
       <strong>{strings.heading}</strong>
       {datasets.map(ds => (
         <button key={ds.key} type="button" className="ax-btn ax-btn--subtle" disabled={ds.rows.length === 0}

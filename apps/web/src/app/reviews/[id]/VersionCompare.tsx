@@ -144,7 +144,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       )}
 
       {/* Version selectors — explicit from/to. Default latest vs prior. */}
-      <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
+      <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
         <div className="ax-field" style={{ maxInlineSize: 220 }}>
           <label className="ax-field__label" htmlFor="cmp-from">{strings.from}</label>
           <select id="cmp-from" className="ax-select" value={fromN ?? ""} onChange={e => setFromN(e.target.value === "" ? undefined : Number(e.target.value))}>

@@ -45,7 +45,7 @@ export function PushOptIn({ strings: s }: { strings: { enable: string; enabling:
   }
 
   return (
-    <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+    <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
       <button className="ax-btn" onClick={enable} disabled={state === "working" || state === "on"}>
         {state === "working" ? s.enabling : state === "on" ? s.enabled : s.enable}
       </button>

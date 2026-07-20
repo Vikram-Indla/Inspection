@@ -77,7 +77,7 @@ function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]
       <label className="ax-field"><span>{l.template}</span>
         <textarea name="template" required rows={2} placeholder="e.g. Review decision recorded: {decision}" />
       </label>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
         <button type="submit" className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? l.creating : l.create}</button>
         <Msg state={state} />
       </div>
@@ -107,7 +107,7 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
           <button type="submit" className="ax-btn" disabled={testPending}>{testPending ? l.testing : l.test}</button>
         </form>
         <Msg state={testState} />
-        <form action={deactAction} className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
+        <form action={deactAction} className="row" style={{ gap: "var(--ax-space-100)" }}>
           <input type="hidden" name="rule_id" value={row.id} />
           <input type="text" name="deactivation_reason" placeholder={l.deactivationReason} required />
           <button type="submit" className="ax-btn" disabled={deactPending}>{deactPending ? l.deactivating : l.deactivate}</button>

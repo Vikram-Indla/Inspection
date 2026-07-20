@@ -65,7 +65,7 @@ export default async function AdminNotifications() {
 
   const title = t("admin.notif.title", "Notification & SLA Rules");
   const context = (
-    <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+    <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
       <span className="ax-lozenge ax-lozenge--info">SCR-ADM-080</span>
       {rulesError ? <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {t("admin.notif.degraded.chip", "register unavailable")}</span> : null}
     </span>

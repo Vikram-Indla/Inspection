@@ -22,7 +22,7 @@ export function NewDraftForm({ packageId, strings: s }: { packageId: string; str
   const feedbackRef = useRef<HTMLDivElement>(null);
   useEffect(() => { if (state.error || state.ok) feedbackRef.current?.focus(); }, [state]);
   return (
-    <form action={formAction} className="ax-row" aria-busy={pending} style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" aria-busy={pending} style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="package_id" value={packageId} />
       <div className="ax-field">
         <label className="ax-field__label" htmlFor={`version-label-${packageId}`}>{s.newDraftLabel}</label>
@@ -40,7 +40,7 @@ export function NewDraftForm({ packageId, strings: s }: { packageId: string; str
 
 export function DeactivatePackage({ versionId, strings: s }: { versionId: string; strings: PublishStrings }) {
   const [state, formAction, pending] = useActionState<PkgResult, FormData>(deactivatePackageVersion, {});
-  return <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}><input type="hidden" name="version_id" value={versionId}/><label className="ax-field"><span className="ax-field__label">{s.effectiveTo}</span><input className="ax-input" type="date" name="effective_to" required/></label><label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required/></label><button className="ax-btn" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>{state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}{state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.deactivated}</span>}</form>;
+  return <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}><input type="hidden" name="version_id" value={versionId}/><label className="ax-field"><span className="ax-field__label">{s.effectiveTo}</span><input className="ax-input" type="date" name="effective_to" required/></label><label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required/></label><button className="ax-btn" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>{state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}{state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.deactivated}</span>}</form>;
 }
 
 export function ApprovePublish({ versionId, strings: s }: { versionId: string; strings: PublishStrings }) {

@@ -148,7 +148,7 @@ export default async function AdminHome() {
       current="/admin"
       title={t("admin.overview.r2.title", "Approval & Configuration — overview")}
       context={
-        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
           <span role="status" aria-live="polite" className="ax-caption">{readAtNode}</span>
           {failed > 0 ? (
             <span className="ax-lozenge ax-lozenge--warning">
@@ -262,7 +262,7 @@ export default async function AdminHome() {
         <h3 id="cd004-links-h" style={{ margin: 0 }}>
           {t("admin.overview.r2.linkOnly.heading", "Families this gateway reads no data for today — links only:")}
         </h3>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
           {linkOnly.map(l => (
             <a key={l.href} className="ax-btn ax-btn--secondary ax-link" href={l.href}>
               {t(l.key, l.en)}

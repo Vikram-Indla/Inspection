@@ -249,7 +249,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   if (phase === "publishing") {
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
+        <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon lock" aria-hidden="true">🔒</div>
           <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3>{s.publishingTitle}</h3>
@@ -264,7 +264,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   if (phase === "failure") {
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
+        <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon fail" aria-hidden="true">✕</div>
           <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3 tabIndex={-1} ref={failHeadingRef} role="alert">{s.failTitle}</h3>
@@ -272,7 +272,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
             <p className="ax-caption">{s.failSub}</p>
           </div>
         </div>
-        <div className="ax-row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
           <form action={formAction}>{hiddenPublishFields(workingIds, pkgId, windowStart, windowEnd, notes, picks)}
             <button className="ax-btn ax-btn--prominent">{s.tryAgain}</button></form>
           <a className="ax-btn ax-btn--secondary" href="/planning/bulk">{s.backConfig}</a>
@@ -284,7 +284,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(val?.retained ?? "")], [s.sAssign, String(val?.retained ?? "")], [s.sNotif, String(val?.retained ?? "")]];
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
+        <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon ok" aria-hidden="true">✓</div>
           <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3 tabIndex={-1} ref={successHeadingRef} role="status">{s.successTitle}</h3>
@@ -299,7 +299,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
             <p className="ax-caption">{s.successSub}</p>
           </div>
         </div>
-        <div className="ax-row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
           <a className="ax-btn ax-btn--prominent" href="/visits">{s.goVisits}</a>
           {/* optional read-only plan link — only when the publisher returned a plan ID */}
           {state.planId && <a className="ax-btn ax-btn--secondary" href={`/planning/plans/${state.planId}`}>{s.openPlan}</a>}
@@ -409,7 +409,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
             <select className="ax-select" name="package_version_id" aria-label={s.packageLabel} value={pkgId} onChange={e => setPkgId(e.target.value)}>
               {data!.packages.map(p => <option key={p.id} value={p.id}>{p.code} · {p.version_label}</option>)}
             </select></dd></div>
-          <div><dt>{s.window}</dt><dd className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
+          <div><dt>{s.window}</dt><dd className="row" style={{ gap: "var(--ax-space-100)" }}>
             <input ref={windowRef} className="ax-input cd-mono" name="window_start" type="datetime-local" aria-label={s.windowStart} value={windowStart} onChange={e => setWindowStart(e.target.value)} />
             <span aria-hidden="true">→</span>
             <input className="ax-input cd-mono" name="window_end" type="datetime-local" aria-label={s.windowEnd} value={windowEnd} onChange={e => setWindowEnd(e.target.value)} />
@@ -425,7 +425,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           <p className="ax-caption" role="status">{s.loadingNote}</p>
         ) : blockers.length ? (
           <>
-            <div className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
+            <div className="row" style={{ gap: "var(--ax-space-100)" }}>
               <span className="ax-lozenge ax-lozenge--critical">{s.blockedTag}</span>
               <strong>{interp(s.blockersN, { n: blockers.length })}</strong>
             </div>
@@ -449,7 +449,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
             </ul>
           </>
         ) : (
-          <div className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
+          <div className="row" style={{ gap: "var(--ax-space-100)" }}>
             <span className="ax-lozenge ax-lozenge--success">{s.readyTag}</span>
             <strong>{s.clearAll}</strong>
           </div>
@@ -562,7 +562,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       <form action={formAction} className="cd-actionbar" id="cd-publish" aria-label={s.correctH}>
         {hiddenPublishFields(workingIds, pkgId, windowStart, windowEnd, notes, picks)}
         <div className="cd-sectionhead" style={{ margin: 0 }}><h3>{s.correctH}</h3></div>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)" }}>
           <a className="ax-link" href="/planning/bulk">{s.backConfig}</a>
           <span className="ax-caption">{s.backConfigD}</span>
         </div>

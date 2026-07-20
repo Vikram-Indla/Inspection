@@ -25,7 +25,7 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
     <form action={formAction} className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4>{strings.heading}</h4>
       <input type="hidden" name="review_id" value={reviewId} />
-      <div className="ax-row">
+      <div className="row">
         {["approve", "return", "reject"].map(d => (
           <label key={d} className="ax-choice"><input type="radio" name="decision" value={d} checked={decision === d} onChange={() => setDecision(d)} /> {strings.decisions[d] ?? d}</label>
         ))}

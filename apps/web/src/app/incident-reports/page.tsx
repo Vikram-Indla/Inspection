@@ -74,7 +74,7 @@ export default async function IncidentReportsPage() {
       )}
       {(rows ?? []).map((r) => (
         <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>
               {r.establishment_code ?? "—"}{" "}
               <span className="ax-caption">{r.incident_type ?? ""}</span>

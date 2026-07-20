@@ -41,7 +41,7 @@ const fmt = (t: string, vars: Record<string, string | number>) => t.replace(/\{(
 function CodeList({ label, codes, tone }: { label: string; codes: string[]; tone: string }) {
   if (codes.length === 0) return null;
   return (
-    <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", alignItems: "baseline" }}>
+    <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", alignItems: "baseline" }}>
       <span className="ax-caption">{label}</span>
       {codes.map(c => <span key={c} className={`ax-lozenge ${tone}`}>{c}</span>)}
     </div>
@@ -66,7 +66,7 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
           <p className="ax-caption" role="status"><span aria-hidden="true">✓ </span>{s.pinnedNone}</p>
         ) : (
           <>
-            <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
               <span className="ax-lozenge ax-lozenge--warning">{fmt(s.pinnedVisits, { n: pinned.active_visits })}</span>
               <span className="ax-lozenge ax-lozenge--warning">{fmt(s.pinnedInspections, { n: pinned.active_inspections })}</span>
             </div>

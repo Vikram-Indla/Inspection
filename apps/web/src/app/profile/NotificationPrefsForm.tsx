@@ -17,7 +17,7 @@ export default function NotificationPrefsForm({
       <label className="ax-choice"><input type="checkbox" name="push_enabled" defaultChecked={push} /> {l.push}</label>
       <label className="ax-choice"><input type="checkbox" name="sms_enabled" defaultChecked={sms} /> {l.sms}</label>
       <label className="ax-choice"><input type="checkbox" name="email_enabled" defaultChecked={email} /> {l.email}</label>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
         <button type="submit" className="ax-btn" disabled={pending}>{pending ? l.saving : l.save}</button>
         {state.ok ? <span className="ax-caption" role="status">{l.saved}</span> : null}
         {state.error ? <span className="ax-caption" role="alert">{state.error}</span> : null}

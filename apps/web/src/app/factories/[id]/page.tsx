@@ -246,7 +246,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           عرض مرفقات المحاضر / عرض تقرير التحديات) have no built feature to link to
           yet (incident/challenge concepts don't exist — see reconciliation J-12/J-19);
           only wiring the one real, existing action rather than fabricating dead links. */}
-      <div className="ax-row" style={{ justifyContent: "flex-end", marginBlockEnd: "var(--ax-space-200)" }}>
+      <div className="row" style={{ justifyContent: "flex-end", marginBlockEnd: "var(--ax-space-200)" }}>
         <a className="ax-btn ax-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>
       </div>
 
@@ -355,7 +355,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             </table></div> : <p className="ax-caption">{t("f360.risk.noHistory", "No risk calculation history is available.")}</p>}
             <h5 style={{ marginBlockStart: "var(--ax-space-200)" }}>{t("f360.risk.relatedViolations", "Related violations")}</h5>
             {canSeeSensitiveHistory && sortedVisits.some(v => (v.inspections?.violations.length ?? 0) > 0)
-              ? <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }}>{sortedVisits.flatMap(v => v.inspections?.violations ?? []).map((x, i) => <span key={`${x.violation_codes.code}-${i}`} className="ax-lozenge ax-lozenge--critical">{x.violation_codes.code} · {x.violation_codes.title}</span>)}</div>
+              ? <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>{sortedVisits.flatMap(v => v.inspections?.violations ?? []).map((x, i) => <span key={`${x.violation_codes.code}-${i}`} className="ax-lozenge ax-lozenge--critical">{x.violation_codes.code} · {x.violation_codes.title}</span>)}</div>
               : <p className="ax-caption">{canSeeSensitiveHistory ? t("f360.risk.noRelatedViolations", "No related violations are recorded.") : t("f360.risk.violationsRestricted", "Violation detail is restricted for this role.")}</p>}
           </section>
 

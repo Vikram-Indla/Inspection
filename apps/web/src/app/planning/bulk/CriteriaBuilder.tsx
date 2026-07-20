@@ -85,7 +85,7 @@ export default function CriteriaBuilder({
     const isEmpty = c.value.trim() === "";
     const isFocused = focusedPath === key;
     return (
-    <li role="treeitem" aria-label={strings.conditionItem} className="ax-row"
+    <li role="treeitem" aria-label={strings.conditionItem} className="row"
       style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
       <div className="ax-field" style={{ maxInlineSize: 180 }}>
         <label className="ax-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
@@ -127,7 +127,7 @@ export default function CriteriaBuilder({
   const renderGroup = (g: GroupNode, path: number[]): React.ReactNode => (
     <li role="treeitem" aria-label={strings.groupItem}
       style={{ listStyle: "none", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ alignItems: "flex-end", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+      <div className="row" style={{ alignItems: "flex-end", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
         <div className="ax-field" style={{ maxInlineSize: 220 }}>
           <label className="ax-field__label" htmlFor={`crit-combine-${path.length ? pathKey(path) : "root"}`}>{strings.combineLabel}</label>
           <select className="ax-select" id={`crit-combine-${path.length ? pathKey(path) : "root"}`} value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
@@ -146,7 +146,7 @@ export default function CriteriaBuilder({
             : <span key={i}>{renderGroup(child, [...path, i])}</span>
         )}
       </ul>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
         <button type="button" className="ax-btn ax-btn--secondary" onClick={() => addCond(path)}>{strings.addCondition}</button>
         <button type="button" className="ax-btn ax-btn--subtle" onClick={() => addGroup(path)}>{strings.addGroup}</button>
       </div>
@@ -168,7 +168,7 @@ export default function CriteriaBuilder({
           <p>{strings.invalidBody.replace("{n}", String(invalid.length))}</p>
         </div>
       )}
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent">{strings.apply}</button>
         <a className="ax-btn ax-btn--subtle" href="/planning/bulk">{strings.clear}</a>
         <span className="ax-caption ax-numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>

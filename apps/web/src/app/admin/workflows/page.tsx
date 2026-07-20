@@ -73,9 +73,9 @@ export default async function Workflows() {
         const isOwnDraft = w.status === "draft" && !!user && w.created_by === user.id;
         return (
           <div key={w.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-            <div className="ax-row" style={{ justifyContent: "space-between" }}>
+            <div className="row" style={{ justifyContent: "space-between" }}>
               <h3>{t("admin.wf.object", "Object:")} {p.object ?? "—"} <span className="ax-version">{w.version_label}</span></h3>
-              <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+              <div className="row" style={{ gap: "var(--ax-space-150)" }}>
                 <span className={`ax-lozenge ${w.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${w.status}`, String(w.status).replace(/_/g, " "))}</span>
                 {w.status === "draft" && !isOwnDraft && <ApprovePublish versionId={w.id} strings={strings} />}
                 {isOwnDraft && (

@@ -46,7 +46,7 @@ export function RegionCityFilter({ region, city, regions, cities, strings: s }: 
     router.replace(q ? `/operations?${q}` : "/operations");
   };
   return (
-    <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="monitoring-region">{s.regionLabel}</label>
         {/* changing region resets city — the city list is region-scoped server-side */}
         <select className="ax-select" id="monitoring-region" style={{ maxInlineSize: 220 }} value={region}
