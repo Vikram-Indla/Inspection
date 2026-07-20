@@ -9,7 +9,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import {
-  loadOutline, REGIONS, nearestRegionIndex, type StatusRole,
+  loadOutline, REGIONS, FACILITIES, ROUTES, project, nearestRegionIndex,
+  type StatusRole, type GeoPoint,
 } from "./ksa-atlas-geometry";
 
 const STATUS_VAR: Record<StatusRole, string> = {
@@ -76,6 +77,18 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
     const terrainGroup = new THREE.Group();
     scene.add(terrainGroup);
 
+    // World-space overlay (facilities, routes, vehicles, labels) — rebuilt on
+    // theme change for colours. Geo → world: X = px, Z = -pz (project gives
+    // [px, pz]; terrain is the same shape rotated flat), Y = raised height.
+    const overlayGroup = new THREE.Group();
+    scene.add(overlayGroup);
+    const worldPos = (p: GeoPoint, y: number) => {
+      const [px, pz] = project(p);
+      return new THREE.Vector3(px, y, -pz);
+    };
+    type Vehicle = { mesh: THREE.Object3D; curve: THREE.CatmullRomCurve3; speed: number; offset: number };
+    let vehicles: Vehicle[] = [];
+
     // Build / rebuild palette-dependent look. Called on mount + theme flip.
     let outline: [number, number][] | null = null;
     function applyTheme() {
@@ -121,6 +134,63 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
       topMesh.position.z = 0.002;
       g.add(slabMesh, topMesh);
       terrainGroup.add(g);
+
+      // ── overlay: facilities, routes+vehicles, region markers ──────────────
+      overlayGroup.clear();
+      vehicles = [];
+      const emissive = (c: THREE.Color, k: number) =>
+        new THREE.MeshStandardMaterial({ color: c, roughness: 0.55, metalness: 0.1,
+          emissive: c.clone().multiplyScalar(d ? k : 0), emissiveIntensity: d ? 1 : 0 });
+
+      // Facilities — small low-poly industrial clusters, status-coloured, on a
+      // sand pad so they read as built structures, never as terrain.
+      const tankGeo = new THREE.CylinderGeometry(0.11, 0.11, 0.26, 12);
+      const stackGeo = new THREE.BoxGeometry(0.1, 0.5, 0.1);
+      const padGeo = new THREE.CylinderGeometry(0.34, 0.36, 0.05, 18);
+      const padMat = new THREE.MeshStandardMaterial({ color: sandEdge, roughness: 1 });
+      for (const f of FACILITIES) {
+        const st = status[f.status];
+        const cluster = new THREE.Group();
+        cluster.position.copy(worldPos(f.at, 0.02));
+        const pad = new THREE.Mesh(padGeo, padMat); cluster.add(pad);
+        const t1 = new THREE.Mesh(tankGeo, emissive(st, 0.35)); t1.position.set(-0.13, 0.16, 0.05); cluster.add(t1);
+        const t2 = new THREE.Mesh(tankGeo, emissive(st, 0.35)); t2.position.set(0.10, 0.16, -0.08); t2.scale.y = 0.8; cluster.add(t2);
+        const stack = new THREE.Mesh(stackGeo, emissive(st, 0.5)); stack.position.set(0.02, 0.28, 0.12); cluster.add(stack);
+        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 10),
+          new THREE.MeshStandardMaterial({ color: st, emissive: st, emissiveIntensity: d ? 1.4 : 0.5 }));
+        tip.position.set(0.02, 0.55, 0.12); cluster.add(tip);
+        overlayGroup.add(cluster);
+      }
+
+      // Region markers — a lit dot at each of the 13 capitals so the zones read
+      // as distinct places (labels come next stage).
+      for (const r of REGIONS) {
+        const c = status[r.status];
+        const dot = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10),
+          new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: d ? 1.1 : 0.35 }));
+        dot.position.copy(worldPos(r.capital, 0.06));
+        overlayGroup.add(dot);
+      }
+
+      // Winding routes (Catmull-Rom) + a vehicle gliding along each.
+      for (const route of ROUTES) {
+        const curve = new THREE.CatmullRomCurve3(route.points.map(p => worldPos(p, 0.1)), false, "catmullrom", 0.5);
+        const col = status[route.status];
+        const tube = new THREE.Mesh(
+          new THREE.TubeGeometry(curve, 90, 0.028, 6, false),
+          new THREE.MeshStandardMaterial({ color: col, roughness: 0.6,
+            emissive: col.clone().multiplyScalar(d ? 0.5 : 0), transparent: true, opacity: 0.85 }));
+        overlayGroup.add(tube);
+        // Vehicle: a cone nested in a carrier so lookAt() aims the tip along
+        // the direction of travel.
+        const carrier = new THREE.Group();
+        const cone = new THREE.Mesh(new THREE.ConeGeometry(0.085, 0.24, 8),
+          new THREE.MeshStandardMaterial({ color: canvas, emissive: col, emissiveIntensity: d ? 0.9 : 0.3, roughness: 0.4 }));
+        cone.rotation.x = -Math.PI / 2; // tip → carrier -Z (forward)
+        carrier.add(cone);
+        overlayGroup.add(carrier);
+        vehicles.push({ mesh: carrier, curve, speed: 0.045 + route.points.length * 0.002, offset: ROUTES.indexOf(route) * 0.33 });
+      }
     }
 
     // Load the outline, then build.
@@ -154,8 +224,26 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
     const mo = new MutationObserver(() => applyTheme());
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
+    // Subtle idle auto-rotate; pauses while the user is dragging.
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.35;
+    controls.addEventListener("start", () => { controls.autoRotate = false; });
+
     let raf = 0;
-    const loop = () => { controls.update(); renderer.render(scene, camera); raf = requestAnimationFrame(loop); };
+    const start = performance.now();
+    const fwd = new THREE.Vector3();
+    const loop = () => {
+      const t = (performance.now() - start) / 1000;
+      for (const v of vehicles) {
+        const u = (t * v.speed + v.offset) % 1;
+        v.mesh.position.copy(v.curve.getPointAt(u));
+        v.curve.getTangentAt(u, fwd);
+        v.mesh.lookAt(fwd.add(v.mesh.position));
+      }
+      controls.update();
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(loop);
+    };
     loop();
 
     return () => {
