@@ -1,18 +1,25 @@
-# Accessibility Results — Saqeel V5.1 (this session)
+# Accessibility Results — Saqeel V5.1
 
-No automated accessibility audit (e.g. `@axe-core/playwright`, already a devDependency in this repo) or manual screen-reader pass was run this session. This file records what was implemented and reasoned about, not a certified audit.
+## Real automated audit: 0 violations across 10 authenticated routes
+`apps/web/scripts/audit-v5-a11y.mjs` runs `@axe-core/playwright` (already a devDependency, never run against these specific routes before this branch) against a real running dev server, authenticated as the actual seeded personas, scoped to WCAG 2.1 A/AA (`withTags(["wcag2a","wcag2aa","wcag21a","wcag21aa"])`). Routes audited: `/admin`, `/admin/violations`, `/admin/regulations` (admin persona); `/dashboard`, `/operations`, `/visits/workload` (ops); `/planning`, `/planning/bulk` (planner); `/reviews` (reviewer); `/field` (inspector).
 
-## Implemented and typechecked, not yet audited live
-- `components/Modal.tsx`: `role="dialog"`, `aria-modal`, `aria-labelledby`/`aria-describedby`, focus moves to the close button on open, Tab/Shift+Tab trapped inside while open, Escape closes, focus returns to the trigger element on close, background scroll locked. Not adopted by any page yet (see COMPONENT-MIGRATION-MATRIX.md), so there is nothing live to audit.
-- `components/Tabs.tsx`: `role="tablist"/"tab"/"tabpanel"`, `aria-selected`, roving `tabIndex` (0 on the active tab, -1 on the rest), ArrowLeft/Right + Home/End, RTL-aware via the nearest `[dir]` ancestor. Not adopted by any page yet.
-- `.ax-search` icon: `aria-hidden` mask-based glyph, self-suppresses via `:has()` if a real `<Icon>` is already present in the same container (avoids two icons announced/shown at once). Not visually verified in a real browser — `:has()` support was assumed (Chrome 105+/Safari 15.4+/Firefox 121+), not tested against this repo's target browser matrix.
-- Loading buttons keep their visible label text instead of `color: transparent` — directly improves screen-reader and low-vision users' ability to tell what's pending, since the accessible name is no longer visually blanked while the DOM text is unchanged either way (this was a visual-only bug, not an accessible-name bug, but it's a real usability regression that's now fixed).
+The first run found 2 real, distinct bugs, both fixed (commit `34326e7`):
+1. **[serious] color-contrast** — `admin/violations`'s catalogue/penalty-mapping mode toggle combined `.ax-btn--prominent` (green fill) with `.ax-link` (Wave 4's information-blue text color), producing insufficient contrast. Every other `.ax-btn`+`.ax-link` combination in the codebase was checked (6 more files) and confirmed to pair `.ax-link` with `.ax-btn--secondary` (white/bordered background, where blue text has good contrast) — this was the one place a filled variant was involved, so the fix is scoped to that one call site (`.ax-link` removed — it was redundant anyway, `.ax-btn` already removes underline styling), not a change to the shared rule.
+2. **[critical] aria-allowed-attr** — `components/field/FieldHome.tsx`'s `VisitCard` set `aria-selected` on a plain `<div>`. That attribute is only valid on elements with a role that supports it (option/row/tab/gridcell/etc per the ARIA spec) — a bare div doesn't. The card's inner button already carries `aria-pressed`, which correctly communicates the selected state; the outer `aria-selected` was both redundant and invalid. Confirmed no CSS rule depended on it (the selected-state visual comes from an inline `outline` style, not a `[aria-selected]` selector) before removing it.
+
+Re-run after the fixes: **0 violations across all 10 routes.** One later run showed 2 different findings (a `meta-refresh` flag on Next's own internal `#__next-page-redirect` element, and a contrast finding on an unrelated pre-existing `lg-atlas3d` 3D-visualization component this branch never touched) that did not reproduce on a clean server restart + re-run — not chased as real bugs since they weren't reproducible; recorded here rather than silently ignored.
+
+## Implemented and confirmed live (not just typechecked)
+- `components/Modal.tsx`: `role="dialog"`, `aria-modal`, `aria-labelledby`/`aria-describedby`, focus moves to the close button on open, Tab/Shift+Tab trapped inside while open, Escape closes, focus returns to the trigger element on close, background scroll locked. **Adopted at all 4 known raw-modal call sites** (`ImageAnnotator`, `FactoryVerification`, 2 dialogs in `Workspace.tsx`, `SignaturePad`) — see COMPONENT-MIGRATION-MATRIX.md.
+- `.ax-search` icon: `aria-hidden` mask-based glyph, self-suppresses via `:has()` if a real `<Icon>` is already present in the same container. `:has()` support assumed (Chrome 105+/Safari 15.4+/Firefox 121+) — the axe audit above doesn't check this specifically since axe doesn't flag `:has()` browser-support gaps, so this remains unverified against older browsers, though it is confirmed working in the Chromium-based screenshots.
+- Loading buttons keep their visible label text instead of `color: transparent` — directly improves screen-reader and low-vision users' ability to tell what's pending.
 
 ## Audited and found already correct (no fix needed)
 - The 6 live `role="tab"` usages found in the codebase (`DashboardView.tsx`, `admin/violations/page.tsx`, `field/inspection/[id]/Workspace.tsx`, `login/StoryPanel.tsx`, `visits/[id]/DualStateRibbon.tsx`) were checked against the "route nav must never use role=tab" rule from the spec. All are same-page content toggles (query-param view switches or hash-anchor jumps), not route navigation — correct usage, not a bug. None were changed.
 
-## Not done
+## Still not done
+- `components/Tabs.tsx` (WAI-ARIA roving tabindex, RTL-aware arrows) — built and typechecked, but no page currently needs it (the 6 `role="tab"` usages above are all already correct without it).
 - DataTable sort-button semantics and `aria-sort` management — not audited this session.
-- Field error/hint `aria-describedby` association — not audited this session.
-- Contrast verification against the new token values — the V5.1 token file's own comments cite computed contrast ratios (e.g. dark primary `#64C2A1` vs canvas `#101317` = 8.67:1) from the design package; those were not independently re-verified in this session.
-- No screen-reader (VoiceOver/NVDA/JAWS) pass was performed.
+- Field error/hint `aria-describedby` association — not specifically audited beyond what axe's `wcag2a`/`wcag2aa` rule set covers (axe found 0 issues on the audited routes, but axe's automated coverage of this specific pattern is incomplete by nature — it can't catch every mismatched `aria-describedby` id).
+- Contrast verification against the new token values beyond what axe checked live — the V5.1 token file's own comments cite computed contrast ratios (e.g. dark primary `#64C2A1` vs canvas `#101317` = 8.67:1) from the design package; axe's live check against the 10 audited routes (in light theme) found no contrast violations, but dark theme and the print palette weren't separately axe-audited (only screenshotted).
+- No manual screen-reader (VoiceOver/NVDA/JAWS) pass was performed — axe-core catches a meaningful subset of WCAG failures but is not a substitute for a real assistive-technology walkthrough.
