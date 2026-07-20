@@ -1,0 +1,22 @@
+# Session Handoff
+
+- Session ID: `2026-07-20-factory-360-industry-shared-gap-013`
+- Date/time: 2026-07-20 Asia/Riyadh
+- Gate: G11 Factory 360 integration hardening
+- Task ID: `TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013`
+- Branch: `codex/industry-shared-factory360-gap-013`
+- Starting commit: `db52854647fa9b4ca8fac362dfecd4ecc7ccf704`
+- Ending source commit: `65a4db2c80482318ba617e0439424f9e5966c020`
+- Requirements: `F360-ISH-REQ-001..018`
+- Acceptance IDs: `F360-ISH-AC-001..018`
+- Screens: `SCR-WEB-400` plus connected Factory 360 consumers
+- Engines: dedicated server-only Industry Shared boundary; existing Factory 360, Senaei, Risk, OCR, audit, RLS and offline engines preserved
+- Files changed: Industry Shared endpoint/provider/adapters and static contracts; endpoint, retirement and acceptance ledgers; Factory 360 integration gap; governed task, decision, queue, current-state and evidence records.
+- Database/API changes: no database change and no live API call; eleven endpoint leads are represented by a network-disabled fail-closed boundary.
+- Tests run: typecheck PASS; production build PASS; focused static 4/4 PASS; protected static 135 PASS / 4 intentional live-provider skips / 0 failed; diff check PASS.
+- Evidence captured: `evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md` and `factory-360/industry-shared/` ledgers.
+- Decisions made: DEC-027 keeps unverified contracts, privacy/retention, authority, workforce precedence, and plant-cardinality conflicts fail closed.
+- Open blockers: authenticated beta Industry Shared session or sanitized developer contracts for `ISH-API-001..011`; sponsor privacy decisions if person-level contact/delegation/workforce fields exist.
+- Regression result: source regression PASS; provider functional verification and stub retirement are not claimed.
+- Exact next task: capture and verify one complete endpoint contract from an authenticated beta network trace or sanitized developer contract, then implement its parser, canonical mapping, negative paths, and controlled runtime evidence.
+- Ready-to-paste resume prompt: Read `CURRENT_STATE.md` Update 105, `execution/CURRENT_SLICE.yaml`, `factory-360/FACTORY_360_EXECUTION_STATE.yaml`, `factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv`, and `evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md`. Work on `codex/industry-shared-factory360-gap-013`. Sign in to `https://beta-backoffice.industry.sa` first. Verify one endpoint contract completely before enabling network I/O; do not infer methods, auth, fields, privacy, retention, authority, or plant cardinality, and do not weaken the existing Senaei boundary.

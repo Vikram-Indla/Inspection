@@ -45,6 +45,105 @@ journeys J01–05 and offline-device journeys J09–11 (needs seeded CR/license 
 and `FACTORY_360_PLATFORM_PARITY_LEDGER.csv`. Status:
 `AWAITING_SPONSOR_FACTORY_360_IPAD_FUNCTIONAL_ACCEPTANCE`.
 
+## 2026-07-20 UPDATE 108 — Cross-provider contract slice approved
+
+`TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014` is active only on
+`codex/industry-shared-factory360-gap-013`. It preserves the former Industry Shared
+slice in branch-local history and establishes contract-first work for the documented
+Inspection API and the fail-closed Industry Shared API. This is not beta-data migration:
+real records are representative structure evidence only. External submission remains
+`BLOCKED_TRIGGER_DECISION`; Industry Shared stays
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED` until complete endpoint contracts exist.
+
+## 2026-07-20 UPDATE 108 — Sponsor-authorized real-beta discovery exhausted safely
+
+The sponsor authorized read-only use of existing business records in the authenticated Senaei
+beta environment. Licence detail, product, contact, delegated-user, plant, industrial-activity,
+and HRSD inquiry screens were inspected without submitting, approving, editing, deleting,
+creating, synchronizing, suspending, cancelling, or otherwise changing a business record.
+Authenticated method-mismatch evidence now proves `POST` for `ISH-API-001..005` and
+`ISH-API-008..010`. Direct inspection of `ISH-API-006`, `ISH-API-007`, and `ISH-API-011` was
+blocked by the browser client, so their methods remain unverified.
+
+The visible UI proves useful domain separation and labels, including bilingual activity labels,
+but it exposes no supplied `/shared/api/v2` frontend call site. The available authenticated
+browser interface exposes page/Livewire state and console output, not request headers, bodies,
+or responses. Consequently authentication, content type, exact identifiers and fields,
+success/error schemas, pagination, nullability, cardinality, authority semantics, source
+metadata, and privacy rules remain unverified for all eleven endpoints. Visible UI columns were
+not promoted into API or canonical schemas. No real business value, personal contact value,
+credential, cookie, token, raw capture, stack trace, or framework version was retained in Git.
+
+The provider therefore still has no network call and every endpoint remains
+`DISCOVERY_REQUIRED`, returning `INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`. No typed live
+adapter, canonical mapping, Factory 360 projection change, fixture, or stub retirement was
+authorized by method-only/UI-only evidence. The exact remaining first action is to obtain a
+sanitized actual `POST /shared/api/v2/license-info` request/response export or developer contract
+that exposes authentication, content type, exact fields and schemas, then verify it end to end
+against the sponsor-authorized beta record. Stop state:
+`AWAITING_SPONSOR_INDUSTRY_SHARED_API_GAP_ACCEPTANCE`.
+
+## 2026-07-20 UPDATE 107 — Industry Shared checkpoint approved for push
+
+The sponsor accepted the truthful method-only discovery and explicitly approved pushing
+`codex/industry-shared-factory360-gap-013` to the configured Vikram-Indla/Inspection remote.
+The checkpoint remains fail closed: only the five observed POST methods are recorded; every
+endpoint remains `DISCOVERY_REQUIRED`; the client contains no network call; the exact error is
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`; contacts, delegations, job workforce, plant labour,
+and HRSD remain distinct; and zero stubs are retired. No migration, canonical Factory 360
+projection, environment file, browser capture, credential, cookie, token, personal identifier,
+or unsanitized payload is included in the branch delta.
+
+Typecheck and production build pass; the focused Industry Shared contract passes 4/4; the
+protected static inventory passes 135 with four intentional live-provider skips and zero
+failures. The branch is ready to resume in the sponsor-specified endpoint order. Exact next
+action: verify `POST /shared/api/v2/license-info` end to end using the approved synthetic beta
+licence and expected result. Until that sanitized contract arrives, the stop state is
+`AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT`.
+
+## 2026-07-20 UPDATE 106 — Authenticated beta proves five POST methods only
+
+The authenticated Senaei beta dashboard and its integration area are reachable. Read-only
+method-mismatch probes against the five lowest-risk supplied routes prove `POST` for
+`ISH-API-001..003`, `ISH-API-008`, and `ISH-API-009`. The authenticated HRSD inquiry page
+also exposes one required text field labelled `HR Factory` inside a POST form, but that UI
+does not prove the `hrsd-labors` API body or response. The plant route could not be inspected
+through the browser client, and privacy-sensitive contact, delegation, and workforce routes
+were not queried with real identifiers.
+
+This evidence is deliberately partial. Authentication semantics, identifier placement,
+request bodies, success/error schemas, field authority, pagination, privacy, masking,
+retention, and sanitized fixtures remain unverified for every endpoint. The provider records
+only the five observed POST methods and still blocks all network calls with
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`; no endpoint is `CONTRACT_VERIFIED`, no stub is
+retired, and no schema or Factory 360 projection changes. The beta host also rendered a verbose
+framework exception page for method mismatch; only the security finding, not stack details or
+versions, is retained. Next evidence must be a sanitized developer contract or explicitly
+authorized synthetic/test identifier with expected outcomes.
+
+## 2026-07-20 UPDATE 105 — Industry Shared endpoint leads gated fail closed
+
+The sponsor-directed Factory 360 Industry Shared gap slice is source-implemented on the
+isolated `codex/industry-shared-factory360-gap-013` branch. Eleven supplied host/path leads
+are now represented by a permanent endpoint-contract ledger, stub-retirement matrix,
+acceptance ledger, and a dedicated server-only provider family. The provider records each
+lead once, keeps contacts, delegations, and the three workforce domains separate, and returns
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED` before any network call. It does not infer HTTP
+methods, authentication, identifiers, request or response fields, error semantics, privacy,
+retention, masking, or fixture data. The existing strict `/api/inspection` Senaei boundary,
+Factory 360 hierarchy, and `F360-BR-002` one-license-to-one-plant rule remain unchanged.
+
+The specification DOCX was rendered and inspected across all nine pages. The beta host is
+reachable, but both browser attempts terminate at its login page and no authenticated session
+or Industry Shared credential names are available. Repository search found no prior Industry
+Shared call sites; the supplied sanitized collection covers the different Senaei provider and
+cannot fill these contracts. Consequently all 11 endpoint rows remain `BLOCKED_EXTERNAL`, no
+stub is retired, and no canonical field migration is authorized. Typecheck and production
+build pass; focused contracts pass 4/4; protected static regression passes 135 with four
+intentional live-provider skips and zero failures. No remote DDL, deployment, main merge, or
+shared-environment mutation occurred. Exact evidence:
+`evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md`.
+
 ## 2026-07-20 UPDATE 104 — Factory 360 v2 Prompt 00 implemented and source-verified
 
 The sponsor-directed Factory 360 master slice is implemented on the isolated

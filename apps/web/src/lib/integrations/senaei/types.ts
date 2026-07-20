@@ -31,4 +31,37 @@ export type SenaeiUserProfile = { externalId: string; legacyId: string | null; u
 export type SenaeiLoginResult = { token: string; user: SenaeiUserProfile };
 export type SenaeiOperationResult = { success: boolean; message: string | null };
 export type SenaeiTaskSummary = { externalId: string; number: string | null; workflow: string | null; status: string | null; createdAt: string | null; visit: { externalId: string; type: LabelValue | null; method: LabelValue | null; visitDate: string | null; facilityName: string | null; crNumber: string | null; notes: string | null; inspector: { externalId: string | null; name: string | null } | null } | null };
+// INSP-API-011 is structurally documented as multipart/form-data.  The wire
+// spellings below are intentional: the provider's documented misspellings are
+// confined to this boundary and never become Factory 360 field names.
+export type SenaeiSubmissionAttachment = { file: Blob; filename: string; sha256: string };
+export type SenaeiSubmissionChecklistItem = { externalId: string; applies?: string; remarks?: string; responseAttachments?: SenaeiSubmissionAttachment[] };
+export type SenaeiSubmissionProduct = { id?: string; name?: string; hsCode?: string; isRegulated?: string };
+export type SenaeiSubmissionTool = { id?: string; name?: string; isPassed?: string };
+export type SenaeiSubmissionRawMaterial = { id?: string; name?: string; quantity?: string; isBeneficiary?: string; isInFactory?: string };
+export type SenaeiInspectionSubmissionPayload = {
+  taskId: string; governanceRef: string; inspectionType?: string; isDistrupted?: string;
+  distrubtionReason?: string; otherDistrubtionReason?: string; factoryFrontImages?: SenaeiSubmissionAttachment[];
+  distrubtionReports?: SenaeiSubmissionAttachment[]; factoryCondition?: string; usedFuelTypes?: string[];
+  factoryStopReason?: string; productionDate?: string; specializedProfessionsNumber?: string;
+  techniciansNumber?: string; otherTeamNumber?: string; shiftsNumber?: string; factoryOperationMechanism?: string;
+  productionLinesNumber?: string; licensedProductsNumber?: string; unLicensedProductsNumber?: string;
+  actualProductsNumber?: string; isExporting?: string; exportedProductsNumber?: string;
+  toolsAndEquipmentsNumber?: string; isExmpted?: string; notes?: string;
+  checklistItems?: SenaeiSubmissionChecklistItem[]; selectedProducts?: SenaeiSubmissionProduct[];
+  productImages?: SenaeiSubmissionAttachment[]; selectedTools?: SenaeiSubmissionTool[];
+  toolImages?: SenaeiSubmissionAttachment[]; selectedRawMaterials?: SenaeiSubmissionRawMaterial[];
+};
+export type SenaeiSubmissionAttachmentManifest = { field: string; filename: string; sha256: string; size: number; type: string };
+export type PreparedSenaeiInspectionSubmission = {
+  endpoint: "/api/inspection/tasks/submit-inspection/{task}"; method: "POST"; contentType: "multipart/form-data";
+  taskId: string; governanceRef: string; formData: FormData; attachmentManifest: SenaeiSubmissionAttachmentManifest[]; payloadChecksum: string;
+};
+export type SenaeiSubmissionOutboxEnvelope = {
+  kind: "senaei_inspection_submission"; idempotencyKey: string; payloadChecksum: string;
+  deliveryStatus: "BLOCKED_TRIGGER_DECISION"; attemptCount: 0; providerResult: null;
+  error: { code: "BLOCKED_TRIGGER_DECISION"; message: string; retryable: false };
+  prepared: PreparedSenaeiInspectionSubmission;
+};
+// Legacy entry point retained for callers while forwarding is governed off.
 export type GovernedInspectionSubmission = { taskId: string; governanceRef: string; formData: FormData };
