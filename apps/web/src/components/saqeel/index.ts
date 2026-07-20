@@ -39,3 +39,8 @@ export { ChecklistQuestion, type ChecklistQuestionProps } from "./inspection/Che
 export { DataGrid, type DataGridProps, type DataGridColumn, type SortRule } from "./grid/DataGrid";
 export { FilterBar, FilterRule, type FilterBarProps, type FilterRuleProps, type FilterRuleValue } from "./navigation/FilterBar";
 export { ColumnManager, type ColumnManagerProps, type ManagedColumn } from "./navigation/ColumnManager";
+// PR7 — map chrome (engine untouched)
+export { MapMarker, MapCluster, type MapMarkerProps, type MapClusterProps, type MarkerTone } from "./map/MapMarker";
+export { MapPanel, MapLegend, MapLayerControl, type MapPanelProps, type MapLegendItem, type MapLayer } from "./map/MapPanel";
+export { MapToolbar, MapZoom, type MapToolbarProps, type MapZoomProps } from "./map/MapToolbar";
+export { GeoWorkspace, type GeoWorkspaceProps } from "./signature/GeoWorkspace";

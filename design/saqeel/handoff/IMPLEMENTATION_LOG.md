@@ -17,6 +17,8 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 
 | 2026-07-20 | PR6 Data grid (new components) | new DataGrid + FilterBar/FilterRule + ColumnManager | unchanged | none | sticky header, pinned col, multi-sort, bulk bar, expansion, densities, loading/empty/error; consumers windowed by caller |
 
+| 2026-07-20 | PR7 Map chrome (new components) | new MapMarker/MapCluster, MapPanel/MapLegend/MapLayerControl, MapToolbar/MapZoom, GeoWorkspace | unchanged | none | chrome only — map ENGINE untouched (basemap slot); markers status-toned by KIND not colour-only |
+
 ## PR2 notes
 - Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
   imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.
