@@ -24,3 +24,10 @@ scope_forbidden:
   - "Weakening F360-BR-002 one-license/one-plant cardinality without approved change control."
 decision_owner: "Vikram Indla"
 effective_date: "2026-07-20"
+
+cross_provider_contract_014:
+  change_id: "CC-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+  approver: "Vikram Indla"
+  branch: "codex/industry-shared-factory360-gap-013"
+  authorization: "Establish structural API, field, canonical-mapping, Web/iPad, offline/version, unavailable/error and reconciliation contracts for /api/inspection/* and /shared/api/v2/*; no bulk beta-data migration, live submission, merge, deployment, destructive schema change or credential exposure."
+  effective_date: "2026-07-20"

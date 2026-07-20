@@ -1,5 +1,15 @@
 # Current State
 
+## 2026-07-20 UPDATE 108 — Cross-provider contract slice approved
+
+`TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014` is active only on
+`codex/industry-shared-factory360-gap-013`. It preserves the former Industry Shared
+slice in branch-local history and establishes contract-first work for the documented
+Inspection API and the fail-closed Industry Shared API. This is not beta-data migration:
+real records are representative structure evidence only. External submission remains
+`BLOCKED_TRIGGER_DECISION`; Industry Shared stays
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED` until complete endpoint contracts exist.
+
 ## 2026-07-20 UPDATE 108 — Sponsor-authorized real-beta discovery exhausted safely
 
 The sponsor authorized read-only use of existing business records in the authenticated Senaei

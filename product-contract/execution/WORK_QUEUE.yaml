@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+    gate: "G11 Factory 360 integration hardening"
+    priority: "P0"
+    status: "IN_PROGRESS"
+    owner: "Codex implementation and QA + Sponsor acceptance authority"
+    blocked_by: ["Full Industry Shared contracts for ISH-API-001..011", "Governed external submission activation trigger"]
+    blocks: ["Industry Shared adapter activation and stub retirement"]
+    note: "Contract-first cross-provider structure/mapping slice; Inspection API structure is documented and Industry Shared remains fail closed until its full endpoint contracts are captured."
   - task_id: "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013"
     gate: "G11 Factory 360 integration hardening"
     priority: "P0"

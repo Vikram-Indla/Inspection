@@ -353,6 +353,14 @@ Owner: CD004-EV-003 and CD004-EV-005 are closed. CD004-EV-004 remains blocked be
 | MVP2-M2-05-EV-006 | Independent non-implementer source audit and remediation | SOURCE IMPLEMENTATION PASS — no remaining implementation P0/P1; runtime certification pending |
 ## Factory 360 Industry Shared gap closure — 2026-07-20
 
+## Factory 360 cross-provider contract — 2026-07-20
+
+| ID | Evidence | Status |
+|---|---|---|
+| F360-XPC-EV-001 | Sanitized Inspection API endpoint and field inventory mapped to canonical dispositions | Captured structurally |
+| F360-XPC-EV-002 | Shared Web/iPad, offline/version, source-precedence and unavailable contracts | Captured structurally; runtime projection integration pending |
+| F360-XPC-EV-003 | Industry Shared endpoint contract ledger and stub-retirement matrix | BLOCKED_EXTERNAL — exact fail-closed state retained |
+
 | ID | Evidence | Status |
 |---|---|---|
 | F360-ISH-EV-001..003 | ZIP checksum, endpoint inventory, and 9/9-page rendered specification review | Captured |

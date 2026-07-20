@@ -168,6 +168,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-20"
     change_ref: "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml#CC-FACTORY-360-INDUSTRY-SHARED-GAP-013"
+  - gate: "FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+    decision: "APPROVED — sponsor explicitly authorized the dedicated branch-local slice to establish /api/inspection and /shared/api/v2 structural, field-level, canonical mapping, Web/iPad, offline/version, unavailable/error and reconciliation contracts. No bulk data migration, live submission, merge, deployment, destructive schema change, credential exposure or speculative contract is authorized."
+    approver: "Vikram Indla"
+    date: "2026-07-20"
+    change_ref: "product-contract/execution/CURRENT_SLICE.yaml#TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

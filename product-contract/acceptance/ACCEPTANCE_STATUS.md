@@ -338,6 +338,12 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
   implementation P0/P1; this is not substituted for any runtime acceptance row.
 ## Factory 360 Industry Shared gap closure — 2026-07-20
 
+## Factory 360 cross-provider contract — 2026-07-20
+
+- Task: `TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014`; acceptance namespace `F360-XPC-AC-001..018`.
+- Scope: documented Inspection API field structure, canonical field dispositions, shared Web/iPad consumption, offline/version and unavailable/error contracts.
+- Industry Shared: method evidence only; full contracts, adapters and retirement remain `BLOCKED_EXTERNAL`.
+
 - Task: `TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013`; acceptance rows `F360-ISH-AC-001..018`.
 - Source acceptance: provider isolation, exact lead inventory, fail-closed errors, privacy-domain separation, and preservation guards are implemented and verified.
 - Verification: typecheck PASS; production build PASS; focused contract suite 4/4 PASS; protected static inventory 135 PASS / 4 intentional live-provider skips / 0 failed.
