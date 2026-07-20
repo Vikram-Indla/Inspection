@@ -536,9 +536,9 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
             {flags.map(k => (
               <div key={k} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
                 <span style={{ font: "var(--ax-text-field)" }}>{strings.ctxLabels[k] ?? k}</span>
-                <div className="ax-segmented">
-                  <button aria-pressed={ctx[k] === "yes"} onClick={() => saveCtx(k, "yes")}>{strings.ctxYes}</button>
-                  <button aria-pressed={ctx[k] === "no"} onClick={() => saveCtx(k, "no")}>{strings.ctxNo}</button>
+                <div className="ax-segmented ax-segmented--field">
+                  <button type="button" aria-pressed={ctx[k] === "yes"} onClick={() => saveCtx(k, "yes")}>{strings.ctxYes}</button>
+                  <button type="button" aria-pressed={ctx[k] === "no"} onClick={() => saveCtx(k, "no")}>{strings.ctxNo}</button>
                 </div>
               </div>
             ))}

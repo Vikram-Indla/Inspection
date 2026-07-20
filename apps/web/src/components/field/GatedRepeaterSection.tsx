@@ -102,7 +102,7 @@ export default function GatedRepeaterSection({
           names the toggle for assistive tech; mirrors the Workspace ctx toggle. */}
       <div role="group" aria-labelledby={gateLabelId} className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
         <p id={gateLabelId} className="ax-field__label">{gate}</p>
-        <div className="ax-segmented" style={{ alignSelf: "flex-start" }}>
+        <div className="ax-segmented ax-segmented--field" style={{ alignSelf: "flex-start" }}>
           <button type="button" aria-pressed={gateAnswer === "yes"} onClick={() => setGateAnswer("yes")}>{gateYes}</button>
           <button type="button" aria-pressed={gateAnswer === "no"} onClick={() => setGateAnswer("no")}>{gateNo}</button>
         </div>

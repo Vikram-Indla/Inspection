@@ -294,7 +294,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
           <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.heading}</h3>
           {/* M03-003 — view switch */}
-          <div className="ax-segmented" role="group" aria-label={strings.viewSwitchAria}>
+          <div className="ax-segmented ax-segmented--field" role="group" aria-label={strings.viewSwitchAria}>
             {([["list", strings.viewList], ["calendar", strings.viewCalendar], ["map", strings.viewMap]] as [ViewKey, string][]).map(([k, label]) => (
               <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
             ))}
