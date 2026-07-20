@@ -23,6 +23,8 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 
 | 2026-07-20 | PR9 Field/iPad (slice) | field/page.tsx root gets data-density="field" (52px controls, 15px body) | unchanged | factory-360 field root untouched (do_not_touch) | full field taskbar/offline-alert/card-list rebuild + iPad matrices need runtime build |
 
+| 2026-07-20 | PR10 safe-swap #1 (skeletons) | SkeletonBlock (18 loading.tsx) + 3 raw ax-skeleton -> SAQEEL .skeleton | -21 ax-skeleton | none | one clean contract-free swap; EmptyState/Spinner/lozenge swaps deferred (contract/atlas/semantic entanglement — need runtime) |
+
 ## PR2 notes
 - Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
   imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.
