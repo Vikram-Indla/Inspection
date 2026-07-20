@@ -222,7 +222,7 @@ export default async function Items({
 
       {/* S08 partial degradation announced sr-only; the visible fact lives in the header. */}
       {clauseUnavailable && !error && (
-        <div className="ax-sr-only" role="status">
+        <div className="sr-only" role="status">
           {t("admin.items.r2.degraded.body", "The clause list couldn’t be read. The catalogue below still rendered; only the clause control is unavailable.")}
         </div>
       )}
@@ -271,7 +271,7 @@ export default async function Items({
         <section className="ax-stack" aria-labelledby="cd007-catalogue-h">
           <h3 id="cd007-catalogue-h" style={{ margin: 0 }}>{t("admin.items.r2.catalogue.heading", "Catalogue")}</h3>
           <div className="ax-tablewrap"><table className="ax-table">
-            <caption className="ax-sr-only">{t("admin.items.r2.catalogue.heading", "Catalogue")}</caption>
+            <caption className="sr-only">{t("admin.items.r2.catalogue.heading", "Catalogue")}</caption>
             <thead><tr>
               <th scope="col">{t("admin.items.r2.col.code", "Code")}</th>
               <th scope="col">{t("admin.items.r2.col.title", "Title")}</th>

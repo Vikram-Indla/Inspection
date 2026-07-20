@@ -166,7 +166,7 @@ export default async function AdminHome() {
           {t("admin.overview.r2.totalFailure", "Configuration sources couldn't be read. Nothing shown is current. Your session and navigation still work.")}
         </div>
       ) : failed > 0 ? (
-        <div className="ax-sr-only" role="alert">
+        <div className="sr-only" role="alert">
           {fill(t("admin.overview.r2.lozenge.partial", "{n} source unavailable"), { n: failed })}
         </div>
       ) : null}
@@ -175,7 +175,7 @@ export default async function AdminHome() {
         <h3 id="cd004-spine-h" style={{ margin: 0 }}>{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</h3>
         <div className="ax-tablewrap">
           <table className="ax-table">
-            <caption className="ax-sr-only">{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</caption>
+            <caption className="sr-only">{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</caption>
             <thead>
               <tr>
                 <th scope="col">{t("admin.overview.r2.col.family", "Family")}</th>

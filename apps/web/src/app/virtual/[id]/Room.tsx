@@ -385,7 +385,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                     <span className="cd-node__dot" aria-hidden="true"></span>
                     {i < curIdx ? <span className="cd-node__badge" aria-hidden="true">✓</span> : i === curIdx ? <span className="cd-node__badge cd-node__badge--now">{t.now}</span> : <span className="cd-node__badge" aria-hidden="true">{i + 1}</span>}
                     <span className="cd-node__label">{stLabel[s]}</span>
-                    <span className="ax-sr-only"> — {i < curIdx ? t.done : i === curIdx ? t.now : t.next}</span>
+                    <span className="sr-only"> — {i < curIdx ? t.done : i === curIdx ? t.now : t.next}</span>
                   </li>
                 );
               })}

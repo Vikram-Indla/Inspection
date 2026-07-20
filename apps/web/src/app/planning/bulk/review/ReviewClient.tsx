@@ -391,7 +391,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     <div className="ax-stack" style={{ gap: "var(--ax-space-400)" }} id="cd-main">
       <a href="#cd-publish" className="ax-link cd-skip">{s.skipToPublish}</a>
       {/* S10 — polite scope-reduction announcement (visually hidden, does not shift layout) */}
-      <p className="ax-sr-only" role="status" aria-live="polite">{announce}</p>
+      <p className="sr-only" role="status" aria-live="polite">{announce}</p>
 
       {/* ---- context card ---- */}
       <section className="ax-surface ax-panel">

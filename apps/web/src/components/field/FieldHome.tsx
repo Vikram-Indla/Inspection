@@ -159,7 +159,7 @@ function InboxRow({ n, strings }: { n: FieldNotification; strings: FieldHomeStri
       <span aria-hidden="true" style={{ marginBlockStart: 6, inlineSize: 8, blockSize: 8, flex: "0 0 auto", borderRadius: "var(--ax-radius-full)", background: read ? "var(--ax-color-border)" : "var(--ax-color-primary)" }} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
         <span style={{ font: "var(--ax-text-body-strong)" }}>
-          {n.label}{!read && <span className="ax-sr-only"> — {strings.unreadBadge}</span>}
+          {n.label}{!read && <span className="sr-only"> — {strings.unreadBadge}</span>}
         </span>
         {n.detail && <span className="ax-caption">{n.detail}</span>}
         <span className="ax-caption ax-numeric">{fmtWindow(n.createdAt)}</span>

@@ -12,7 +12,7 @@ export default async function Loading() {
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-020 · ENG-01</span>}
     >
-      <div className="ax-sr-only" role="status">{t("admin.items.r2.loading", "Loading the item catalogue…")}</div>
+      <div className="sr-only" role="status">{t("admin.items.r2.loading", "Loading the item catalogue…")}</div>
       <section className="ax-surface ax-stack" aria-hidden="true" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }}>
         <SkeletonBlock inlineSize="40%" blockSize={20} />
         {[0, 1, 2, 3, 4].map(n => (
