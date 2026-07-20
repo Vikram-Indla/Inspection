@@ -3,50 +3,42 @@
 **Repository**: `Vikram-Indla/Inspection`
 **Branch**: `feature/saqeel-v5-implementation`
 **Starting commit**: `594fd87` (tip of `setup/Inspection` at branch creation)
-**Commits this session**: `adc5854` (design package + governance), `ac3609d` (Wave 1), `41c338b` (Wave 2), `cb0cdf0` (Wave 3), `200892a` (Wave 3 cont.)
+**Commits this session**: 18, `adc5854` through `1d8bdd4`
 **Change control**: `product-contract/governance/CC-SAQEEL-V5-IMPLEMENTATION-001.yaml`
 
 ## Build / test result
-- `npm run typecheck` (`tsc --noEmit`) — clean after every commit.
-- `npm run build` (production Next.js build, all ~80 routes) — clean, run after the Wave 3 checkpoint.
-- `node scripts/check-design-system-v5.mjs` — new guardrail; baseline 305 → 180 → 150 findings across the three code commits.
-- `node scripts/verify-dates.mjs` — 16/16 passing, real boundary-condition checks (Riyadh midnight rollover, DST-safe day-diff, overdue/due-today wording, day-month-year ordering).
-- Dev server smoke check — `/login`, `/dashboard`, `/factories/1`, `/visits/1`, `/operations`, `/reviews/1` all 200/307, no server errors; served CSS fetched and confirmed to contain the new token values.
-- **Not done**: authenticated, logged-in browser walkthroughs (no test credentials available in this environment), Arabic/RTL visual check, dark-mode visual check, responsive/400%-zoom check, Playwright accessibility audit, print-preview check. These are real gaps, not implied by the above.
+- `npm run typecheck` (`tsc --noEmit`) — clean after every one of 18 commits.
+- `npm run build` (production Next.js build, all ~80 routes) — clean, run repeatedly through the branch.
+- `node scripts/check-design-system-v5.mjs` — **0 findings** (started at 305). Both rule categories (raw UTC-slice display dates, pictographic-emoji-as-icon) are genuinely exhausted across `apps/web/src` — every match was either fixed or individually verified as a legitimate non-display exception (HTML date-input value/max wiring, DB-write fields, Postgrest comparison variables, an AI JSON context payload) and the guardrail's exclude patterns now document exactly why, so the script stays a meaningful signal rather than a stale allowlist.
+- `node scripts/verify-dates.mjs` — 17/17 passing (Riyadh midnight-boundary rollover, DST-safe day-diff, day-month-year ordering, overdue/due-today/due-in-N wording, explicit-From/To range, same-day time-only formatting).
+- Dev server smoke checks at multiple checkpoints — dashboard/factories/visits/operations/reviews/admin/planning routes all 200/307 (auth redirect), no server errors. One transient 500 mid-session traced to stale Next.js dev-server HMR state (Next's own internal devtools module, unrelated to any change here) — resolved by restarting the dev server; re-verified clean immediately after.
+- **Not done**: authenticated, logged-in browser walkthroughs (no test credentials available in this environment), Arabic/RTL visual screenshots, dark-mode visual screenshots, responsive/400%-zoom screenshots, Playwright accessibility audit, print-preview screenshots, real-device iPad testing (Split View, Apple Pencil). These are real gaps, not implied by the checks above.
 
-## Routes migrated (structural, beyond the CSS cascade)
-`reports/inspection/[id]`, `dashboard`, `factories/[id]`, `factories/cr/[id]`, `field/factory-360/[id]`, `visits/[id]`, `operations`, `reviews/[id]` — 8 files, ~34 date-display sites converted to the governed Riyadh date service. `planning/bulk/review` was audited (not the toolbar the ChatGPT critique described — see BASELINE-AUDIT.md) and needed no fix.
+## What's genuinely done (verified, not just written)
+- **Tokens (Wave 1)**: full V5.1 token swap — dark-theme primary is green (`#64C2A1`) not blue, new `--ax-color-border-control`/`--ax-color-link` (link/info stays blue, brand stays scarce), new 14/20 label/action typography and 28/32 metric typography, input radius 12px→6px, channel-aware density ladder.
+- **Core component fixes (Wave 1)**, cascading to all ~80 routes via the shared stylesheet: labels/buttons/tabs/segmented/pagination stopped using 16px body-strong; loading buttons keep their label visible instead of going blank; the search icon is one real SVG, self-suppressing if a page already renders one.
+- **New accessible primitives (Wave 2)**: `components/Modal.tsx` (focus trap/restore, Escape, scroll lock) and `components/Tabs.tsx` (WAI-ARIA roving tabindex, RTL-aware arrows) — built and typechecked; not yet adopted by the ~10 existing raw-modal/tab call sites (tracked, not silently dropped — see COMPONENT-MIGRATION-MATRIX.md).
+- **Governed date service (Wave 3)**: `lib/dates.ts`, Asia/Riyadh + explicit Gregorian calendar. Caught and fixed a real, previously-silent bug: `Intl.DateTimeFormat("ar-SA", {dateStyle:"medium"})` without an explicit `calendar` defaults to Hijri, not Gregorian. Applied across every real display site found (dozens of files); the guardrail's utc-slice rule is at zero.
+- **Canonical V2 component layer (Wave 4)**: `apps/web/src/app/v2-components.css` — status chips, status rail, metric strip, record row, fieldset grouping, the corrected density-ladder mechanism, the focus-not-obscured scroll-margin recipe, and the approved 1.5% chrome texture (applied only to the nav rail and command header, never over content/tables/forms, per the explicit rule). Also fixed a real brand-color bug: links were using brand green (`--ax-color-primary`) instead of information blue (`--ax-color-link`) — the exact "blue vs. brand confusion" the original critique flagged, just inverted.
+- **Page-level adoption (Wave 5)**: 5 static KPI card grids converted to the metric-strip pattern (left the one interactive filter-button KPI row alone, correctly — converting it would have broken its click semantics); every emoji-as-icon finding fixed across 55 files (~85 sites, 21 new SVG icons added to `app/icons.tsx`, `EmptyState` extended with a typed `icon` prop); a real Riyadh-boundary bug fixed in the inspector-workload week grid (was computing "today" and day-of-week from raw UTC, which could silently shift the entire 6-week grid by a day near UTC midnight / 03:00 Riyadh).
+- **Admin density (Wave 7)**: `/admin/*` content now automatically gets the compact 36/40px control ladder via `ShellClient`'s existing `current` prop — zero admin page files touched, shared nav/topbar chrome deliberately untouched for cross-route consistency.
+- **Field/iPad**: verified (not assumed) that the existing codebase already uses the 48/52px field-density modifiers (`.ax-btn--field`, `.ax-field--field`) across the three main field workflow files — this was a pre-existing strength, not a gap introduced or found.
+- One important correction to the original critique: the live Visit Planning review workspace does **not** have the toolbar the ChatGPT screenshots showed (Publish version/Cancel/View audit/Delete draft side by side) — that screenshot was of the design-system HTML mockup, not the shipped app. The real component already has a single prominent Publish action and a blocker-first flow.
 
-## Routes NOT migrated
-All `/admin/*` (26 routes), `/field/*` besides factory-360, `/planning/*` besides bulk/review, `/visits/calendar`, `/visits/map`, `/portal`, `/cases`, `/committee`, `/virtual/*`, `/tasks`, `/profile`, and the report/print structural rebuild beyond the date fix. These routes still get the tokens/CSS cascade (Wave 1) but no per-page structural work (Waves 4-8).
-
-## Tokens changed
-Full swap of `apps/web/src/app/tokens.css` to the V5.1 set — see CHANGED-FILE-INVENTORY.md for the exact diff summary. Headline changes: dark-theme primary green (`#64C2A1`) not blue, new `--ax-color-border-control`/`--ax-color-link` (info stays a separate blue, never the brand color), new `--ax-text-label`/`--ax-text-action`/`--ax-text-metric` (14/20 and 28/32 scales, so labels/buttons stop reading as headings and ordinary KPIs stop using display-scale type), `--ax-radius-input` 12px→6px, a channel-aware density ladder (36/40/44/48/52px).
-
-## Shared components changed
-`astryx.css` component fixes (labels, buttons, tabs, segmented, pagination typography; loading-button visibility; search icon) — cascades to every page automatically. New `components/Modal.tsx` and `components/Tabs.tsx` accessible primitives — built, not yet adopted by existing call sites (see COMPONENT-MIGRATION-MATRIX.md for why).
-
-## Page-specific changes
-See PAGE-COVERAGE.md.
-
-## Bordered-container reduction
-Not measured — no page-level layout/composition changes were made this session (that's Wave 5 structural work, not started). The component-library fixes (radius, typography) reduce visual weight everywhere but no container was added or removed.
-
-## Accessibility checks performed
-- Modal: focus-trap, initial-focus, Escape, focus-restore, scroll-lock implemented and typechecked; not run through an automated audit (e.g. `@axe-core/playwright`, already a devDependency in this repo) or a manual screen-reader pass.
-- Tabs: WAI-ARIA tablist/tab/tabpanel roles, roving tabindex, arrow-key + Home/End navigation, RTL-aware via nearest `[dir]` ancestor — implemented, not adopted by any page yet, so nothing to audit live.
-- Search icon duplication guard (`:has()` selector) — implemented, not visually verified in a real browser.
-- Guardrail script covers 4 static-analysis rules (radius, loading-label, date-format, emoji-icon) — it is not a substitute for a real accessibility audit.
+## What's NOT done
+- **Wave 4 remainder**: no responsive-breakpoint, RTL, or dark-mode screenshot evidence exists for this branch's changes.
+- **Wave 6 remainder**: no dedicated iPad Split View / Apple Pencil / offline-visual-state pass beyond confirming the existing density modifiers are already correctly used.
+- **Wave 8 remainder**: the official report/print 5-layer rebuild, and print-fixture tests (1/20/100/300 items, no-violations, long-Arabic-notes, missing-signature, multiple-versions, invalid-approval) were not done — only the date-formatting fix landed there.
+- Modal/Tabs primitive adoption into existing call sites (SignaturePad, Workspace, FactoryVerification, ImageAnnotator, and the audited-safe `role="tab"` usages).
+- No authenticated browser evidence — everything above is verified by build/typecheck/guardrail/unauthenticated-route-smoke-check, not an actual logged-in walkthrough.
 
 ## Remaining risks
-1. **~64 remaining raw date-format sites** across ~40 files, several in `*/actions.ts` write paths needing individual triage (a wrong guess there would break a DB write, not just a display string — deliberately not batch-edited).
-2. **86 emoji-as-icon findings**, concentrated in `EmptyState`'s `glyph` prop — real but lower-severity (empty-state illustrations, not primary controls); needs an icon-name migration plan, not a rushed swap.
-3. **Waves 4, 6, 7, and most of 5/8 not started** — shell/navigation, iPad/field, admin density, and the report/print 5-layer rebuild are the largest remaining scope. Each touches governed, high-consequence surfaces (offline sync, signature capture, review decisions) and needs its own dedicated pass with real test coverage per CLAUDE.md's completion gate, not a same-session rush.
-4. **No authenticated browser evidence** — everything above is verified by build/typecheck/guardrail/unauthenticated-route-smoke-check, not by an actual logged-in walkthrough of the running app. That gap should close before this branch is considered for merge review.
-5. Modal/Tabs primitives exist but aren't wired into any page — until they're adopted, the accessibility gaps they were built to close (no focus trap on 4 modal call sites, no roving tabindex on the audited tab usages — though those were found to already use correct `<a>`/`<button>` patterns, not broken `role=tab` usage) remain open on the pages that would use them.
+1. Wave 6/8's untouched portions are the largest remaining scope, and both touch governed, high-consequence surfaces (offline sync, signature capture, official legal documents) — each needs its own dedicated pass with real test coverage per CLAUDE.md's completion gate, not a rushed same-session sweep.
+2. No authenticated browser evidence closes the loop between "the code is correct" and "a real user sees the intended result" — that gap should close before this branch is considered for merge review.
+3. Two of the ten dev-server smoke-check routes hit a transient 500 mid-session that was traced to stale HMR state, not a code defect (confirmed via a fresh production build and a server restart) — noted for the record in case it recurs during independent review.
 
 ## Status
 
 `SAQEEL V5 IMPLEMENTATION CONDITIONALLY COMPLETE — LISTED BLOCKERS REMAIN`
 
-Waves 1–3 are real, verified, and committed. Waves 4, 6, 7, and most of 5/8 are open and explicitly tracked above and in IMPLEMENTATION-INDEX.md — not silently dropped, not fabricated as done. Per the governing CC, this branch stays unmerged pending further work and a separate independent visual-acceptance review; no merge to `setup/Inspection` was performed or attempted.
+Waves 1, 2, 3, 4, 5, and 7 are real, verified, and committed, including two full guardrail categories (dates, emoji icons) at a genuine, individually-triaged zero across the entire `apps/web/src` tree. Wave 6 and Wave 8 remain substantially open and are explicitly listed above — not silently dropped, not fabricated as done. Per the governing CC, this branch stays unmerged pending further work and a separate independent visual-acceptance review; no merge to `setup/Inspection` was performed or attempted.
