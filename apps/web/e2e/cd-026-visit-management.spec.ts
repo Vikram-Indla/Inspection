@@ -152,12 +152,22 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     }
   });
 
-  test("expiry refresh failures are observable without changing the rendered state contract", () => {
+  test("expiry is owned by the pg_cron sweep, not a per-request RPC (K-009)", () => {
+    // Perf Phase 3 (K-009): the synchronous expire_lapsed_visits RPC ran on every
+    // visits page load and serialised those loads behind a write. M02-016 expiry is
+    // already owned by the pg_cron sweep expire_lapsed_visits_scheduled
+    // (supabase/migrations/0025_scheduled_visit_expiry.sql, 15-min cadence), so the
+    // per-request RPC was removed. This contract now proves the new ownership shape:
+    // pages document the cron owner and must not re-introduce the inline RPC.
     for (const p of ["src/app/visits/page.tsx", "src/app/visits/calendar/page.tsx", "src/app/visits/workload/page.tsx"]) {
       const src = SRC(p);
-      expect(src, `${p} must inspect expiry RPC failures`).toContain("const { error: expiryError } = await sb.rpc(\"expire_lapsed_visits\")");
-      expect(src, `${p} must log expiry failures server-side`).toContain("expiry refresh failed");
+      expect(src, `${p} must document the cron-owned expiry sweep`).toContain("expire_lapsed_visits_scheduled");
+      expect(src, `${p} must not call the expiry RPC per request`).not.toContain('rpc("expire_lapsed_visits")');
     }
+    // The sweep itself must exist, be scheduled, and not be callable by clients.
+    const migration = readFileSync(join(process.cwd(), "..", "..", "supabase", "migrations", "0025_scheduled_visit_expiry.sql"), "utf8");
+    expect(migration).toContain("create or replace function expire_lapsed_visits_scheduled()");
+    expect(migration).toContain("revoke all on function expire_lapsed_visits_scheduled() from public, authenticated");
   });
 
   test("the Map lens uses the delivered governed route", () => {
