@@ -1,24 +1,23 @@
 # Last Session
-- Time: 2026-07-18T23:27:26.427810+00:00
-- Session ID: aae4a5cd-2f0b-4d37-aee8-ed3cf7748f3d
+- Time: 2026-07-20T17:26:48.404339+00:00
+- Session ID: dd3b78b7-c722-45e8-9f52-fc8cb1811153
 - End reason: other
-- Branch: setup/Inspection
-- Commit: e19b388
+- Branch: improved
+- Commit: a22d3cf
 - Working tree:
 ```
 M .project-memory/audit/instructions_loaded.jsonl
  M .project-memory/audit/session_end.jsonl
  M .project-memory/audit/tool_events.jsonl
- M AGENTS.md
- M product-contract/governance/OPEN_DECISIONS.yaml
- M product-contract/governance/decision_register.csv
+ M apps/web/src/app/dashboard/DashboardView.tsx
+ M apps/web/src/app/visits/VisitsBoard.tsx
+ M apps/web/src/app/visits/page.tsx
+ M apps/web/src/components/FieldTabs.tsx
+ M apps/web/src/components/ShellClient.tsx
+ M apps/web/src/components/field/FieldHome.tsx
  M product-contract/sessions/LAST_SESSION.md
-?? 00_ONBOARD_ANY_ACCOUNT.md
-?? design/claude-design-mvp1/operationalization/
-?? product-contract/governance/CC-AC-0001-PLANNING-METHOD-ROLE-ROUTING-001.yaml
-?? product-contract/governance/CC-AC-0016-0026-AI-PLANNING-SUMMARY-DEFERRAL-001.yaml
-?? product-contract/governance/CC-OPS-CONTROL-SYSTEM-001.yaml
-?? product-contract/operationalization/
-?? scripts/ops_loopback_supervisor.py
+?? .worktrees/
+?? docs/performance/inspection-p0-register.md
+?? package.json
 ```
 - Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.
