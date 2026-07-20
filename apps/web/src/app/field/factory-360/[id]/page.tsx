@@ -39,16 +39,16 @@ export default async function FieldFactory360({ params, searchParams }: {
   if (!permissions["view_factory_360"]) return (
     <Shell current="/field" title={t("f360.title", "Factory 360")}>
       <EmptyState glyph="⛔" title={t("f360.permission.title", "Factory 360 access required")}
-        body={t("f360.permission.body", "This CR dossier is outside your authorized permissions.")} />
+        body={t("f360.permission.body", "You do not have access to this factory profile.")} />
       {tabs}
     </Shell>
   );
 
   const dossier = await loadFactory360Dossier(sb, id, requestedLicense, permissions);
   if (!dossier.found || !dossier.cr) return (
-    <Shell current="/field" title={t("f360.notFound.title", "Factory 360 dossier unavailable")}>
-      <EmptyState glyph="∅" title={t("f360.notFound.desc", "CR not in your scope or does not exist")}
-        body={dossier.crError ? t("f360.err.neutral", "The registry is temporarily unavailable. Nothing was changed.") : undefined} />
+    <Shell current="/field" title={t("f360.notFound.title", "Factory 360 profile unavailable")}>
+      <EmptyState glyph="∅" title={t("f360.notFound.desc", "Factory registration not found or not available to you.")}
+        body={dossier.crError ? t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.") : undefined} />
       {tabs}
     </Shell>
   );
@@ -156,7 +156,7 @@ export default async function FieldFactory360({ params, searchParams }: {
               <span className="ax-numeric"><bdi>{address ? `${text(address.latitude)}, ${text(address.longitude)}` : (factory?.official_lat != null ? `${factory.official_lat}, ${factory.official_lng}` : "—")}</bdi></span>
             </div>
           </div>
-          <p className="ax-caption">{t("f360.cr.noAggregate", "Portfolio facts only. No CR-level risk score or compliance rate is calculated.")} {portfolioCounts.total} {t("f360.cr.totalLicenses", "licenses")} · {portfolioCounts.active}/{portfolioCounts.expired}/{portfolioCounts.suspended} {t("f360.cr.licenseStates", "active/expired/suspended")}{highestRiskLicense ? ` · ${t("f360.cr.highestRisk", "highest-risk")}: ${highestRiskLicense.license_number}` : ""}</p>
+          <p className="ax-caption">{t("f360.cr.noAggregate", "All-licenses facts only. No CR-level risk score or compliance rate is calculated.")} {portfolioCounts.total} {t("f360.cr.totalLicenses", "licenses")} · {portfolioCounts.active}/{portfolioCounts.expired}/{portfolioCounts.suspended} {t("f360.cr.licenseStates", "active/expired/suspended")}{highestRiskLicense ? ` · ${t("f360.cr.highestRisk", "highest-risk")}: ${highestRiskLicense.license_number}` : ""}</p>
         </section>
 
         {/* Factory profile */}
@@ -195,7 +195,7 @@ export default async function FieldFactory360({ params, searchParams }: {
               <bdi>{text(violation.violation_codes?.code)}</bdi> · {text(violation.violation_codes?.title)} · {label(violation.violation_codes?.level)}
               <div className="ax-caption">{t("f360.violation.corrective", "Corrective")}: {text(violation.violation_codes?.corrective_action)}{violation.violation_codes?.grace_period_days != null ? ` · ${violation.violation_codes.grace_period_days} ${t("common.days", "days")}` : ""} · <a className="ax-link" href={`/reports/inspection/${report.id}`}>{text(report.inspection_no ?? report.id.slice(0, 8))}</a></div>
             </li>)}</ul> : <p className="ax-caption">{reportsResult.error ? t("f360.section.degraded", "This source section is degraded; other sections remain available.") : t("f360.violations.empty", "No violations from approved inspection reports are visible in your scope.")}</p>}
-            <h3>{t("f360.enforcement.heading", "Penalty lineage")}</h3>
+            <h3>{t("f360.enforcement.heading", "Penalty history")}</h3>
             {penaltiesResult.error ? <p className="ax-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p> : penalties.length ? <ul>{penalties.map(row => <li key={row.id}><bdi>{row.notice_number}</bdi> · {label(row.status)} · {dt(row.issued_at)}</li>)}</ul> : <p className="ax-caption">{t("f360.enforcement.empty", "No penalty notices are visible in your scope.")}</p>}
           </div>
         </details>

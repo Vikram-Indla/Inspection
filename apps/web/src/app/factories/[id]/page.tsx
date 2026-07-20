@@ -91,7 +91,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   logFactoryError("materials-read", mErr);
   if (!f) return (
     <Shell current="/factories" title={t("f360.notFound.title", "Factory not found")}>
-      <EmptyState glyph="∅" title={t("f360.notFound.desc", "Not in your scope or does not exist")}
+      <EmptyState glyph="∅" title={t("f360.notFound.desc", "Factory registration not found or not available to you.")}
         body={fErr ? mapFactoryError(fErr, "load") : undefined} />
     </Shell>
   );

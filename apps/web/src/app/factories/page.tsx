@@ -48,7 +48,7 @@ export default async function Factories() {
     thRegion: t("f360.list.th.region", "Region"),
     thCity: t("f360.list.th.city", "City"),
     thRisk: t("f360.list.th.risk", "Risk"),
-    dossier: t("f360.list.dossier", "dossier"),
+    dossier: t("f360.list.dossier", "View factory"),
     bandLabels: {
       high: t("enum.high", "high"),
       medium: t("enum.medium", "medium"),

@@ -23,7 +23,7 @@ export default async function FactoryDataPage({ searchParams }: { searchParams: 
   const batchByRun = new Map((batchesRead.data ?? []).map(batch => [batch.sync_run_id, batch]));
 
   return <Shell current="/admin/integrations" title="Factory data integration" context={<span className="ax-lozenge ax-lozenge--info">TASK-FACTORY-360-COMPLETE-010 · P12</span>}>
-    <div className="ax-banner"><div><strong>Control plane only.</strong> Factory 360 dossiers are read-only. Provider configuration does not prove connectivity, CSV rows remain staged until a separately governed reconciliation, and source identifiers cannot be silently replaced.</div></div>
+    <div className="ax-banner"><div><strong>Control plane only.</strong> Factory 360 profiles are read-only. Provider configuration does not prove connectivity, CSV rows remain staged until a separately governed reconciliation, and source identifiers cannot be silently replaced.</div></div>
     {schemaUnavailable ? <div className="ax-banner ax-banner--warning" role="alert"><div>Factory 360 integration schema is not available in this environment. No provider or history state is inferred.</div></div> : null}
 
     <div className="ax-grid" style={{ marginBlock: "var(--ax-space-200)" }}>
@@ -36,7 +36,7 @@ export default async function FactoryDataPage({ searchParams }: { searchParams: 
     <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", marginBlockEnd: "var(--ax-space-200)" }} aria-labelledby="master-data"><h3 id="master-data">Governed factory master-data controls</h3>
       <p className="ax-caption">These retained operations are audit-triggered and RLS-enforced. They do not edit external CR, license, or plant identifiers.</p>
       <form method="get" className="ax-row"><label className="ax-field" style={{ flex: 1 }}><span className="ax-field__label">Factory</span><select className="ax-select" name="factory" defaultValue={selectedFactory}><option value="">Select a factory</option>{factories.map(factory => <option key={factory.id} value={factory.id}>{factory.name} · {factory.factory_code ?? factory.cr_number ?? "—"}</option>)}</select></label><button className="ax-btn ax-btn--secondary">Open controls</button></form>
-      {selected ? <><p><strong>{selected.name}</strong> · CR <bdi>{selected.cr_number ?? "—"}</bdi> · License <bdi>{selected.license_number ?? "—"}</bdi> · <Link href={`/factories/${selected.id}`}>Open read-only dossier</Link></p><MasterDataForms factoryId={selected.id} representatives={representativesRead.data ?? []} /></> : null}
+      {selected ? <><p><strong>{selected.name}</strong> · CR <bdi>{selected.cr_number ?? "—"}</bdi> · License <bdi>{selected.license_number ?? "—"}</bdi> · <Link href={`/factories/${selected.id}`}>Open read-only profile</Link></p><MasterDataForms factoryId={selected.id} representatives={representativesRead.data ?? []} /></> : null}
     </section>
 
     <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="sync-history"><h3 id="sync-history">Sync and import history</h3>
