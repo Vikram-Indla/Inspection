@@ -1,5 +1,29 @@
 # Current State
 
+## 2026-07-20 UPDATE 110 — Factory 360 iPad × cross-provider reconciliation SPONSOR-ACCEPTED & MERGED
+
+`TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015` accepted (SHA `1f17715`) and
+merged to canonical `setup/Inspection` via PR #36 (merge commit `e0363bc`).
+
+Status:
+- TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015: **SPONSOR_ACCEPTED_AND_MERGED**
+- structural Web/iPad contract parity: **COMPLETE**
+- live authenticated staging verification: **PENDING_SEPARATE_CLOSURE**
+- Industry Shared field contracts: **BLOCKED_EXTERNAL** (`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`)
+- external submission trigger: **BLOCKED_TRIGGER_DECISION**
+
+Post-merge verification on `e0363bc` (10/10): Web + iPad Factory 360 both use
+`loadFactory360Dossier`; offline snapshot `f360-ipad-snapshot-2`; `mim-field-f360-v1`
+separate; `mim-field-v1` inspection outbox unchanged; Industry Shared fail-closed;
+external submission blocked; `canonical-projection.ts` server-only; slice 015 +
+011/014/013 slice-history present. typecheck 0, build PASS, static suite
+149 passed / 4 skipped / 0 failed, diff-check + secret scan clean.
+
+`main` mirror is behind (`594fd87`) pending a separate sponsor-approved
+fast-forward; not touched under this task's explicit "do not merge to main".
+Merged remote reconciliation branch deleted per hygiene; API-contract branch,
+evidence, slice-history and accepted ledgers retained.
+
 ## 2026-07-20 UPDATE 109 — iPad × cross-provider contract reconciliation (branch only)
 
 `TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015` on
