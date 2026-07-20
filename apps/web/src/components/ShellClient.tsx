@@ -255,7 +255,13 @@ export default function ShellClient({
       <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
       <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
         <div className="ax-shell__brand">
-          <img className="ax-shell__brand-mark" src="/saqeel-prism.svg" alt="" />
+          {/* SAQEEL shell mark — interim wordmark treatment (PR 1b). Atlas/prism
+              palette is login-only; the authenticated shell uses the emerald
+              nav-indicator shield. Official logo pending brand assets. */}
+          <svg className="ax-shell__brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
           <span className="ax-shell__brand-lockup">
             <span className="ax-shell__brand-wordmark" lang="ar">صقيل</span>
             <span className="ax-shell__brand-sub" lang="ar">صناعي</span>

@@ -102,7 +102,7 @@
 .cd-result__icon.fail { background: var(--ax-color-critical-tint); color: var(--ax-color-critical-strong); }
 .cd-result__icon.lock { background: var(--ax-color-neutral-tint); color: var(--ax-color-text-secondary); }
 .cd-result h3 { font: var(--ax-text-heading); margin: 0; }
-.cd-result h3:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); border-radius: var(--ax-radius-small); }
+.cd-result h3:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: var(--ax-radius-small); }
 .cd-resultgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--ax-space-200); }
 
 /* handoff-status tag (annotation of an unresolved governance leg) */

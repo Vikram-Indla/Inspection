@@ -13,7 +13,7 @@
   border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-full);
   background: var(--ax-color-surface-sunken); color: var(--ax-color-text); font: var(--ax-text-body);
 }
-.search:focus-visible, .filter:focus-visible, .apply:focus-visible, .dateSummary:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.search:focus-visible, .filter:focus-visible, .apply:focus-visible, .dateSummary:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .filter, .apply, .dateSummary {
   min-block-size: var(--ax-control-height); border: 1px solid var(--ax-color-border);
   border-radius: var(--ax-radius-full); background: var(--ax-color-surface); color: var(--ax-color-text);
@@ -38,7 +38,7 @@
 .tabs { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 5px; align-self: flex-start; border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-large); background: var(--ax-color-surface-raised); }
 .tab { min-inline-size: 180px; padding: 10px 20px; border-radius: var(--ax-radius-standard); color: var(--ax-color-text-secondary); text-align: center; text-decoration: none; font: var(--ax-text-body-strong); }
 .tab[aria-selected="true"] { background: var(--ax-color-primary); color: var(--ax-color-inverse-text); box-shadow: none; }
-.tab:focus-visible, .dimension:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+.tab:focus-visible, .dimension:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
 .section { display: grid; gap: var(--ax-space-150); }
 .sectionHead { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--ax-space-150); flex-wrap: wrap; }
