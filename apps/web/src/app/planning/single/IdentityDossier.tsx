@@ -8,13 +8,15 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import type { GradedFactory, WizardStrings } from "./Wizard";
+import { formatDate } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
 export default function IdentityDossier({
-  factory, plannerLat, plannerLng, strings,
+  factory, plannerLat, plannerLng, strings, locale,
 }: {
-  factory: GradedFactory; plannerLat: string; plannerLng: string; strings: WizardStrings;
+  factory: GradedFactory; plannerLat: string; plannerLng: string; strings: WizardStrings; locale: Locale;
 }) {
   const [view, setView] = useState<"map" | "text">("map");
   const hasOfficial = factory.official_lat != null && factory.official_lng != null;
@@ -53,7 +55,7 @@ export default function IdentityDossier({
       </dl>
 
       {/* Provenance — real FND-013 freshness; no invented staleness threshold */}
-      <p className="ax-caption">{strings.freshnessLabel}: <bdi>{factory.source_synced_at ? new Date(factory.source_synced_at).toISOString().slice(0, 10) : strings.freshnessNever}</bdi></p>
+      <p className="ax-caption">{strings.freshnessLabel}: <bdi>{factory.source_synced_at ? formatDate(factory.source_synced_at, locale) : strings.freshnessNever}</bdi></p>
 
       {factory.duplicate && (
         <div className="ax-banner ax-banner--warning" role="status">

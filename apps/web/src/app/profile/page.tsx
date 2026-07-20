@@ -3,6 +3,7 @@ import Shell from "@/components/Shell";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import NotificationPrefsForm from "./NotificationPrefsForm";
 import { PushOptIn } from "@/app/push/PushOptIn";
 
@@ -34,8 +35,9 @@ export default async function ProfileSettings() {
   ]);
   const roles = (roleRows ?? []).map(r => r.role_key);
   const claims = claimsData?.claims as { iat?: number; exp?: number } | undefined;
-  const issuedAt = claims?.iat ? new Date(claims.iat * 1000).toISOString().slice(0, 16).replace("T", " ") : null;
-  const expiresAt = claims?.exp ? new Date(claims.exp * 1000).toISOString().slice(0, 16).replace("T", " ") : null;
+  const dLang = locale === "ar" ? "ar" : "en";
+  const issuedAt = claims?.iat ? formatDateTime(claims.iat * 1000, dLang) : null;
+  const expiresAt = claims?.exp ? formatDateTime(claims.exp * 1000, dLang) : null;
   // Role keys are canonical identifiers (roles.role_key), not free text — kept
   // as-is (bdi/ltr) rather than inventing a per-role translation surface.
   const roleLabel = (key: string) => key;

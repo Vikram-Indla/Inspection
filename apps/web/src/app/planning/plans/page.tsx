@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -18,10 +19,10 @@ type PlanRow = {
   visits: { count: number }[];
 };
 
-const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 
 export default async function PlanRegister() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const sb = await supabaseServer();
   const { data, error } = await sb.from("visit_plans")
     .select("id, method, status, created_at, published_at, profiles(full_name), visits(count)")

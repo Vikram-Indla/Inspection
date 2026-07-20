@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -21,11 +22,11 @@ type ChildVisit = {
   inspections: { status: string } | null; // TO-ONE embed — object or null
 };
 
-const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 
 export default async function PlanDrilldown({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const sb = await supabaseServer();
   const { error: expiryError } = await sb.rpc("expire_lapsed_visits"); // persist published→expired before counting (M02-016)
   if (expiryError) {
