@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked } from "@/app/icons";
 import Wizard, { type WizardStrings, type GradedFactory } from "./Wizard";
 import { findDuplicateActiveVisits } from "./duplicate";
 
@@ -61,7 +62,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   if (!isPlanner) {
     return (
       <Shell current="/planning" title={t("plan.single.title", "Single visit planning")}>
-        <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState icon={<IconBlocked size={28} />} title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.single.unauthorized.body", "Single Visit Planning (SCR-WEB-120) is available to the Planner role only.", "تخطيط الزيارة الفردية (SCR-WEB-120) متاح لدور المخطط فقط.")} />
       </Shell>
     );

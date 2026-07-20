@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export default async function PlanningHome() {
     if (rolesError) console.error("[CD-020] role lookup failed:", rolesError);
     return (
       <Shell current="/planning" title={t("plan.home.title", "Visit planning")}>
-        <EmptyState glyph="⛔" title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState icon={<IconBlocked size={28} />} title={tr("plan.home.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.home.unauthorized.body", "Visit Planning (SCR-WEB-100) is available to the Planner role only.", "تخطيط الزيارات (SCR-WEB-100) متاح لدور المخطط فقط.")} />
       </Shell>
     );

@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
+import { IconCalendar } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -120,7 +121,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
 
       {/* M02-017 — child visits with assignments */}
       {visits.length === 0 ? (
-        <EmptyState glyph="🗓" title={t("plan.drill.noChildren", "No child visits under this plan")}
+        <EmptyState icon={<IconCalendar size={28} />} title={t("plan.drill.noChildren", "No child visits under this plan")}
           body={t("plan.drill.noChildrenDesc", "Visits are attached at plan creation; immediate visits never carry a plan (M01-050).")} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">

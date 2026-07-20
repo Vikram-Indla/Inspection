@@ -5,6 +5,7 @@ import { formatDate, formatDateTime } from "@/lib/dates";
 import { NewViolationForm, AddMappingForm, PublishMappingForm, PublishViolationForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
 import { getViolationUsage, type ViolationUsage } from "./actions";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked, IconLock } from "@/app/icons";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
 // CD-010 (SCR-ADM-040 · Violation Catalogue) + CD-011 (SCR-ADM-041 · Penalty
@@ -207,7 +208,7 @@ export default async function Violations({
   // Severity = glyph + word + colour (never colour alone). The "word" is the
   // schema level label (L1/L2/L3); no invented severity noun.
   function severityChip(level: string) {
-    const glyph = level === "L1" ? "⛔" : level === "L2" ? "▲" : "◆";
+    const glyph = level === "L1" ? <IconBlocked size={16} /> : level === "L2" ? "▲" : "◆";
     const cls =
       level === "L1" ? "ax-lozenge ax-lozenge--critical"
       : level === "L2" ? "ax-lozenge ax-lozenge--warning"
@@ -236,7 +237,7 @@ export default async function Violations({
 
   function auditSummary(events: AuditEvent[] | null | undefined, label: string) {
     if (events === undefined) {
-      return <span className="ax-caption"><span aria-hidden="true">🔒</span> {t("admin.viol.audit.writerOnly", "Audit history is available to configuration writers.")}</span>;
+      return <span className="ax-caption"><IconLock size={16} /> {t("admin.viol.audit.writerOnly", "Audit history is available to configuration writers.")}</span>;
     }
     if (events === null) {
       return <span className="ax-caption"><span aria-hidden="true">⚠</span> {t("admin.viol.audit.unavailable", "Audit history unavailable — no zero-event claim was made.")}</span>;
@@ -310,7 +311,7 @@ export default async function Violations({
       ) : !canWrite && !error && (
         <div className="ax-surface ax-permission" style={{ padding: "var(--ax-space-300)" }}>
           <p className="ax-caption" style={{ margin: 0 }}>
-            <span aria-hidden="true">🔒</span>{" "}
+            <IconLock size={16} />{" "}
             {t("admin.viol.readonly", "Read-only view — configuration writes require the compliance-admin or form-admin role (RLS). Route visibility does not grant write authority.")}
           </p>
         </div>
@@ -467,7 +468,7 @@ export default async function Violations({
                   ) : canWrite ? (
                     <span className="ax-caption" data-usage-state="unavailable"><span aria-hidden="true">⚠</span> {t("admin.viol.usage.unavailable", "Usage unavailable — no zero-count claim was made.")}</span>
                   ) : (
-                    <span className="ax-caption" data-usage-state="restricted"><span aria-hidden="true">🔒</span> {t("admin.viol.usage.writerOnly", "Usage counts are available to configuration writers.")}</span>
+                    <span className="ax-caption" data-usage-state="restricted"><IconLock size={16} /> {t("admin.viol.usage.writerOnly", "Usage counts are available to configuration writers.")}</span>
                   )}
                   {auditSummary(evidence?.codeAudit, t("admin.viol.audit.code", "Violation audit events"))}
                 </div>

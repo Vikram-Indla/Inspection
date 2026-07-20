@@ -2,6 +2,7 @@
 import EmptyState from "@/components/EmptyState";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
+import { IconSearch } from "@/app/icons";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).
 // M02-003/021: search by Visit ID / Factory / CR / Industrial License / Inspector
 //              — client filter over the loaded server page (RLS-scoped rows).
@@ -563,7 +564,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       )}
 
       {filtered.length === 0 ? (
-        <EmptyState glyph="🔍" title={strings.noMatch} />
+        <EmptyState icon={<IconSearch size={28} />} title={strings.noMatch} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>

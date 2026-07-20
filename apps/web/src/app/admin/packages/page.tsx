@@ -10,6 +10,7 @@ import ImpactPanel, { type ImpactStrings, type ImpactData, type ReferencingPacka
 import { getPinnedActiveImpact } from "./actions";
 import styles from "./packages.module.css";
 import TemplateRegistry, { type TemplateRow, type TemplateStrings } from "./TemplateRegistry";
+import { IconLock } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -384,7 +385,7 @@ export default async function Packages() {
                       </summary>
                       <div className={styles.versionBody}>
                         {published && <div className="ax-banner ax-banner--immutable"><div>
-                          <strong><span aria-hidden="true">🔒 </span>{t("admin.pkg.immutable.title", "Published version — immutable.")}</strong>{" "}
+                          <strong><IconLock size={16} /> {t("admin.pkg.immutable.title", "Published version — immutable.")}</strong>{" "}
                           {t("admin.pkg.immutable.body", "The database rejects definition and label edits. Create a new draft to change this package while existing inspections stay pinned to their downloaded version.")}
                         </div></div>}
 

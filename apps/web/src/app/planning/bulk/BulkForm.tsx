@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { formatDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
+import { IconBlocked } from "@/app/icons";
 
 // CD-021 (SCR-WEB-110) — evidence table + persistent selection (frames 1a/1d).
 // This screen is TARGETING only: which factories, with the provenance to trust
@@ -157,9 +158,9 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
                 <td className="ax-numeric"><bdi>{f.cr_number}</bdi></td>
                 <td>{f.city ?? "—"}</td>
                 <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.riskBands[f.risk_band]) ?? "—"} · {f.risk_score ?? "?"}</span></td>
-                <td>{dup ? <span className="ax-lozenge ax-lozenge--critical">⛔ {strings.duplicate}</span> : <span className="ax-lozenge ax-lozenge--success">✓ {strings.eligible}</span>}</td>
+                <td>{dup ? <span className="ax-lozenge ax-lozenge--critical"><IconBlocked size={16} /> {strings.duplicate}</span> : <span className="ax-lozenge ax-lozenge--success">✓ {strings.eligible}</span>}</td>
                 <td className="ax-caption ax-numeric"><span className="ax-freshness"><bdi>{provenance(f)}</bdi></span></td>
-                <td>{dq.length === 0 ? <span className="ax-caption">{strings.dqComplete}</span> : dq.map(d => <div key={d.label}><span className={`ax-lozenge ax-lozenge--${d.kind}`}>{d.kind === "critical" ? "⛔" : "⚠"} {d.label}</span></div>)}</td>
+                <td>{dq.length === 0 ? <span className="ax-caption">{strings.dqComplete}</span> : dq.map(d => <div key={d.label}><span className={`ax-lozenge ax-lozenge--${d.kind}`}>{d.kind === "critical" ? <IconBlocked size={16} /> : "⚠"} {d.label}</span></div>)}</td>
               </tr>
             );
           })}

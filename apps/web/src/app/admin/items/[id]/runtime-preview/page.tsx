@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
+import { IconSearch } from "@/app/icons";
 import type { ReactNode } from "react";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +61,7 @@ export default async function InspectorRuntimePreview({
   const item = rawItem as unknown as Item | null;
 
   if (itemError || !item) {
-    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="ax-surface"><div className="ax-state" role="alert"><span className="ax-state__glyph" aria-hidden="true">🔎</span><h4>{itemError ? "Preview unavailable" : "Inspection item not found"}</h4><p className="ax-caption">{itemError ? "The configuration read failed. Retry without assuming the item is absent." : "The read succeeded, but no item has this identifier."}</p><a className="ax-link" href="/admin/items">Back to Compliance Library</a></div></div></Shell>;
+    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="ax-surface"><div className="ax-state" role="alert"><span className="ax-state__glyph" aria-hidden="true"><IconSearch size={20} /></span><h4>{itemError ? "Preview unavailable" : "Inspection item not found"}</h4><p className="ax-caption">{itemError ? "The configuration read failed. Retry without assuming the item is absent." : "The read succeeded, but no item has this identifier."}</p><a className="ax-link" href="/admin/items">Back to Compliance Library</a></div></div></Shell>;
   }
 
   const [{ data: rawUses, error: useError }, { data: legacyVersions }, { data: governedVersions }] = await Promise.all([

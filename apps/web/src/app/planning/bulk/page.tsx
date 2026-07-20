@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked } from "@/app/icons";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 import type { BulkFormStrings } from "./BulkForm";
 import type { CriteriaBuilderStrings } from "./CriteriaBuilder";
@@ -45,7 +46,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   if (!isPlanner) {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}>
-        <EmptyState glyph="⛔" title={t("plan.bulk.unauthorized.title", "Authorized role required")}
+        <EmptyState icon={<IconBlocked size={28} />} title={t("plan.bulk.unauthorized.title", "Authorized role required")}
           body={t("plan.bulk.unauthorized.body", "Bulk targeting (SCR-WEB-110) is available to the Planner role only.")} />
       </Shell>
     );

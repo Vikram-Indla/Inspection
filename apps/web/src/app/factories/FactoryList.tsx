@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import EmptyState from "@/components/EmptyState";
+import { IconFactory } from "@/app/icons";
 
 export type FactoryRow = {
   id: string; factory_code: string; name: string; cr_number: string;
@@ -79,7 +80,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
         <span className="ax-caption"><span className="ax-numeric">{rows.length}</span> {strings.of} <span className="ax-numeric">{factories.length}</span> {strings.factoriesWord}</span>
       </div>
       {rows.length === 0 ? (
-        <EmptyState glyph="🏭" title={strings.emptyRegionTitle} body={strings.emptyRegionDesc} />
+        <EmptyState icon={<IconFactory size={28} />} title={strings.emptyRegionTitle} body={strings.emptyRegionDesc} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr><th scope="col">{strings.thFactory}</th><th scope="col">{strings.thCr}</th><th scope="col">{strings.thRegion}</th><th scope="col">{strings.thCity}</th><th scope="col" className="ax-td-num">{strings.thRisk}</th><th scope="col"></th></tr></thead>

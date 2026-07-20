@@ -11,6 +11,7 @@ import {
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 
 type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
@@ -549,7 +550,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         if (inspection.status === "returned") {
           const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
           if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
-            return <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} 🔒</h4><p className="ax-caption">{strings.lockedSection}</p></div>;
+            return <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="ax-caption">{strings.lockedSection}</p></div>;
           }
         }
         const sp = progress.find(p => p.key === s.key)!;
@@ -582,7 +583,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                   {it.clause && <span className="ax-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
                   {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
                 </div>
-                {it.guidance && <p className="ax-caption">💡 {strings.guidanceLabel}: {it.guidance}</p>}
+                {it.guidance && <p className="ax-caption"><IconLightbulb size={16} /> {strings.guidanceLabel}: {it.guidance}</p>}
                 {/* MVP1-M04-138: separate advisory explanation; it cannot alter the answer/evidence/violation controls below. */}
                 <ContextualAiPanel
                   surface="inspection_item_explanation"
@@ -652,7 +653,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                           <div key={ev2.id} className={`ax-evidence ${archived ? "is-quarantined" : ""}`}>
                             {url
                               ? <img className="ax-evidence__thumb" src={url} alt={strings.evSyncedAlt} />
-                              : <div className="ax-evidence__thumb" aria-hidden="true">{ev2.evidence_type === "document" ? "📄" : "📷"}</div>}
+                              : <div className="ax-evidence__thumb" aria-hidden="true">{ev2.evidence_type === "document" ? <IconDocument size={24} /> : <IconVideo size={24} />}</div>}
                             <div className="ax-evidence__meta">
                               <span className="ax-numeric">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
                               {archived

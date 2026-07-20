@@ -20,6 +20,7 @@ import {
   type OverlapEvidence, type SourceState,
 } from "../actions";
 import EvidenceLedger, { type LedgerFocus, type EvidenceLedgerStrings } from "./EvidenceLedger";
+import { IconLock } from "@/app/icons";
 
 const SEL_KEY = "cd021-bulk-selection";
 
@@ -250,7 +251,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
         <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
-          <div className="cd-result__icon lock" aria-hidden="true">🔒</div>
+          <div className="cd-result__icon lock" aria-hidden="true"><IconLock size={24} /></div>
           <div className="ax-stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3>{s.publishingTitle}</h3>
             <p role="status">{s.publishingBody}</p>

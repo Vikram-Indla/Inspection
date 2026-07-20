@@ -9,6 +9,7 @@ import {
 import { MonitoringTable, RegionCityFilter, type MonitoringStrings } from "./Monitoring";
 import OpsMap, { type OpsPin, type OpsMapStrings } from "./OpsMap";
 import EmptyState from "@/components/EmptyState";
+import { IconMap, IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
 import OverrideQueue, { type GeoOverrideQueueRow, type OverrideQueueStrings } from "./OverrideQueue";
 import type { MonitorRow } from "./actions";
@@ -497,7 +498,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
         </div>
         {pins.length === 0 ? (
-          <EmptyState bare glyph="🗺" title={t("ops.map.empty.title", "No mappable factories in scope")}
+          <EmptyState bare icon={<IconMap size={28} />} title={t("ops.map.empty.title", "No mappable factories in scope")}
             body={t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006).")} />
         ) : (
           <OpsMap pins={pins} strings={mapStrings} />
@@ -610,7 +611,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
             {scopedGeo.length === 0 ? (
-              <EmptyState bare glyph="📍" title={t("ops.geo.empty.title", "No location events yet")}
+              <EmptyState bare icon={<IconPin size={28} />} title={t("ops.geo.empty.title", "No location events yet")}
                 body={t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")} />
             ) : (
               <ul className="ax-timeline">{scopedGeo.slice(0, 10).map(g => (
@@ -628,7 +629,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
             {notifs.length === 0 ? (
-              <EmptyState bare glyph="🔔" title={t("ops.notifs.empty.title", "No notifications")}
+              <EmptyState bare icon={<IconBell size={28} />} title={t("ops.notifs.empty.title", "No notifications")}
                 body={t("ops.notifs.empty.desc", "Event-keyed messages queue here as workflow events fire (REF-014).")} />
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">

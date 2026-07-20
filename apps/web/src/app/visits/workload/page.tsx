@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { riyadhDateParts } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
@@ -40,12 +41,18 @@ export default async function Workload() {
   }
   const rows = (data ?? []) as unknown as Row[];
 
-  // Week buckets: current KSA week (Sunday) + the next (WEEKS-1).
-  const now = new Date();
-  const todayMs = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  const week0 = todayMs - now.getUTCDay() * DAY_MS;
+  // Week buckets: current KSA week (Sunday) + the next (WEEKS-1). Riyadh-local
+  // "today", not raw UTC — near UTC midnight (03:00 Riyadh) the two disagree
+  // on both the calendar day AND the day-of-week, which silently shifted the
+  // whole 6-week grid by a day for part of every 24h cycle.
+  const riyadhToday = riyadhDateParts(Date.now());
+  const todayMs = Date.UTC(riyadhToday.year, riyadhToday.month - 1, riyadhToday.day);
+  const week0 = todayMs - new Date(todayMs).getUTCDay() * DAY_MS;
   const weekStarts = Array.from({ length: WEEKS }, (_, i) => week0 + i * 7 * DAY_MS);
-  const weekLabel = (ms: number) => new Date(ms).toISOString().slice(5, 10).replace("-", "/");
+  const weekLabel = (ms: number) => {
+    const { month, day } = riyadhDateParts(ms);
+    return `${String(month).padStart(2, "0")}/${String(day).padStart(2, "0")}`;
+  };
   const weekIndex = (iso: string) => {
     const ms = Date.parse(iso);
     if (Number.isNaN(ms) || ms < week0 || ms >= week0 + WEEKS * 7 * DAY_MS) return -1;

@@ -4,6 +4,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./DecisionPanel";
+import { IconBlocked } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -269,7 +270,7 @@ export default async function Reviews() {
       context={<span className="ax-lozenge ax-lozenge--info">{t("review.list.context", "SCR-WEB-300 · /reviews · RLS-scoped")}</span>}>
       {!authorized ? (
         <section className="ax-surface cd-panelpad cd-result" role="alert">
-          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
+          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h3>
               <p>{t("review.list.unauthBody", "This queue requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p></div></div>
         </section>

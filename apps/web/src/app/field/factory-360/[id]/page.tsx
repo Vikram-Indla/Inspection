@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n";
 import { formatDate } from "@/lib/dates";
 import { loadFactory360Dossier, resolveFactory360Permissions, latestSubmission } from "@/lib/factory360/dossier";
 import styles from "./field-factory360.module.css";
+import { IconBlocked } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,7 @@ export default async function FieldFactory360({ params, searchParams }: {
 
   if (!permissions["view_factory_360"]) return (
     <Shell current="/field" title={t("f360.title", "Factory 360")}>
-      <EmptyState glyph="⛔" title={t("f360.permission.title", "Factory 360 access required")}
+      <EmptyState icon={<IconBlocked size={28} />} title={t("f360.permission.title", "Factory 360 access required")}
         body={t("f360.permission.body", "This CR dossier is outside your authorized permissions.")} />
       {tabs}
     </Shell>

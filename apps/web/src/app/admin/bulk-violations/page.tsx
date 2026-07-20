@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked } from "@/app/icons";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -27,7 +28,7 @@ export default async function BulkViolations() {
   if (!isAuthorized) {
     return (
       <Shell current="/admin/bulk-violations" title={t("admin.bulkvio.title", "Bulk violation issuance")}>
-        <EmptyState glyph="⛔" title={tr("admin.bulkvio.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState icon={<IconBlocked size={28} />} title={tr("admin.bulkvio.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("admin.bulkvio.unauthorized.body", "Bulk violation issuance (DEC-L) is available to Operations and Compliance Admin roles only.", "إصدار المخالفات الجماعي (DEC-L) متاح لدوري العمليات ومسؤول الامتثال فقط.")} />
       </Shell>
     );

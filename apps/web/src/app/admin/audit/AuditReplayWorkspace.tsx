@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { compareReconstructions, completenessFor, reconstructAt, type ExpectedAuditEvent, type ReplayEvent } from "@/lib/audit-replay";
+import { IconShieldCheck } from "@/app/icons";
 
 type Props = {
   locale: "en" | "ar"; mode: string; caseRef: string; query: string; at: string | null; vs: string | null;
@@ -31,7 +32,7 @@ export default function AuditReplayWorkspace(props: Props) {
   const close = () => { const id = selectedId; setSelectedId(null); requestAnimationFrame(() => id && triggerRefs.current.get(id)?.focus()); };
   const modes = [["recorder",L.recorder],["reconstruct",L.reconstruct],["compare",L.compare],["ledger",L.ledger],["custody",L.custody],["print",L.print]];
 
-  if (!props.authorized) return <section className="ax-surface ar-denied" role="alert"><span aria-hidden="true">🛡</span><h2>{L.unauthorized}</h2><p>{"RBAC / RLS · "}{L.zeroDisclosure}</p></section>;
+  if (!props.authorized) return <section className="ax-surface ar-denied" role="alert"><IconShieldCheck size={20} /><h2>{L.unauthorized}</h2><p>{"RBAC / RLS · "}{L.zeroDisclosure}</p></section>;
 
   return <div className="ar-workspace" dir={props.locale === "ar" ? "rtl" : "ltr"}>
     <a className="ax-shell__skip" href="#audit-chronology">{L.skip}</a>

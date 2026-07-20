@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import NotificationRulesManager, { type NotificationRuleRow, type Labels } from "./NotificationRulesManager";
+import { IconEye } from "@/app/icons";
 
 // SCR-ADM-080 — Notification & SLA Rules (Cycle 2 Wave 0 / DEF-ADM-080). Governed
 // event → channel → recipient → template → SLA/escalation configuration for the
@@ -75,7 +76,7 @@ export default async function AdminNotifications() {
     <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div>
   ) : !isWriter ? (
     <div className="ax-banner" role="note">
-      <strong><span aria-hidden="true">👁</span> {t("admin.notif.readonly.title", "Read-only for your role")}</strong>{" "}
+      <strong><IconEye size={16} /> {t("admin.notif.readonly.title", "Read-only for your role")}</strong>{" "}
       {t("admin.notif.readonly.body", "You can view configuration; creating, publishing and deactivating rules require an admin configuration role and are enforced by row-level security.")}
     </div>
   ) : null;

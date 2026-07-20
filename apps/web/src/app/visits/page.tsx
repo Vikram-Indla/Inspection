@@ -4,6 +4,7 @@ import { useT } from "@/lib/i18n";
 import VisitsBoard, { type VisitRow, type VisitsBoardStrings } from "./VisitsBoard";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import EmptyState from "@/components/EmptyState";
+import { IconCalendar } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -215,7 +216,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       </div>
       <ContextualAiPanel surface="visit_management_summary" title={t("visit.ai.title", "Visit management summary")} description={t("visit.ai.description", "Advisory summary of the visits currently in your authorized scope. It cannot change a visit, assignment, state or campaign.")} context={JSON.stringify({ scope: "visit-management" })} evidenceRefs={["MVP1-M02-001", "MVP1-M02-002", "MVP1-M02-017", "MVP1-M02-035", "SCR-WEB-200"]} generateLabel={t("visit.ai.generate", "Generate operational summary")} unavailableLabel={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")} evidenceLabel={t("visit.ai.evidence", "Source references")} advisoryLabel={t("visit.ai.advisory", "Advisory only · human decides")} reviewLabel={t("visit.ai.review", "Review or reject this advisory")} />
       {rows.length === 0 ? (
-        <EmptyState glyph="🗓" title={t("visit.list.empty", "No visits in your scope")}
+        <EmptyState icon={<IconCalendar size={28} />} title={t("visit.list.empty", "No visits in your scope")}
           body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
           <a className="ax-btn" href="/planning">{t("visit.list.createPlan", "Create a plan")}</a>
         </EmptyState>

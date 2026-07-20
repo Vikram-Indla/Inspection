@@ -7,6 +7,7 @@ import { calculateApprovedCompliance } from "@/lib/factory360/compliance";
 import { loadFactory360Dossier, resolveFactory360Permissions, latestSubmission } from "@/lib/factory360/dossier";
 import Factory360ExportButton from "./Factory360ExportButton";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import { IconBlocked } from "@/app/icons";
 import styles from "./factory360.module.css";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +29,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
 
   if (!permissions["view_factory_360"]) return (
     <Shell current="/factories" title={t("f360.title", "Factory 360")}>
-      <EmptyState glyph="⛔" title={t("f360.permission.title", "Factory 360 access required")}
+      <EmptyState icon={<IconBlocked size={28} />} title={t("f360.permission.title", "Factory 360 access required")}
         body={t("f360.permission.body", "This CR dossier is outside your authorized permissions.")} />
     </Shell>
   );

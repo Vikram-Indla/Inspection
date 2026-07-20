@@ -9,6 +9,7 @@ import StartReview, { type StartReviewStrings } from "./StartReview";
 import VersionCompare, { type VersionCompareStrings, type ItemSection } from "./VersionCompare";
 import FindingTraceChain, { type FindingTrace, type TraceNode } from "./FindingTraceChain";
 import { fetchFactoryChecks, updatedCount, FACTORY_FIELD_EN } from "@/lib/factory-verification";
+import { IconBlocked, IconPaperclip } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +59,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     return (
       <Shell current="/reviews" title={t("review.ws.unauthTitle", "You don’t have access to this review")}>
         <section className="ax-surface cd-panelpad cd-result" role="alert">
-          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
+          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.ws.unauthTitle", "You don’t have access to this review")}</h3>
               <p>{t("review.ws.unauthBody", "This workspace requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p></div></div>
         </section>
@@ -289,7 +290,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               <p key={i} className="ax-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {formatDate(a.due_at, lang)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
             ))}
             {(ins.evidence as unknown as { storage_path: string; content_sha256: string | null }[]).map((e, i) => (
-              <p key={i} className="ax-caption ax-numeric" style={{ marginBlockStart: 8 }}>📎 {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
+              <p key={i} className="ax-caption ax-numeric" style={{ marginBlockStart: 8 }}><IconPaperclip size={16} /> {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
             ))}
           </div>
           {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}

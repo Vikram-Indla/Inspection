@@ -1,5 +1,5 @@
 import Shell from "@/components/Shell";
-import { IconFactory } from "@/app/icons";
+import { IconFactory, IconMap, IconCalendar, IconDocument, IconUser, IconLock, IconPackage, IconLayers } from "@/app/icons";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -371,7 +371,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <h4 id="cd-tl-h">{t("f360.tl.heading", "Spatial Case Timeline")}</h4>
             <p className="ax-caption">{t("f360.tl.desc", "Source-labelled facts linking location context, inspections, findings, actions, reviews and the current risk version. Connective, not causal.")}</p>
             {sortedVisits.length === 0 ? (
-              <div className="ax-state ax-state--inline"><span className="ax-state__glyph">🗺</span>
+              <div className="ax-state ax-state--inline"><span className="ax-state__glyph"><IconMap size={24} /></span>
                 <h4>{t("f360.tl.empty.title", "No case events recorded")}</h4>
                 <p className="ax-caption">{t("f360.tl.empty.desc", "The timeline populates once visits are planned and executed.")}</p></div>
             ) : (
@@ -439,7 +439,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           <section id="history" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.hist.heading", "Inspection history — official records only (M07-011/012)")}</h4>
             {sortedVisits.length === 0 ? (
-              <div className="ax-state ax-state--inline"><span className="ax-state__glyph">🗓</span>
+              <div className="ax-state ax-state--inline"><span className="ax-state__glyph"><IconCalendar size={24} /></span>
                 <h4>{t("f360.hist.empty.title", "No visits recorded for this factory")}</h4>
                 <p className="ax-caption">{t("f360.hist.empty.desc", "History appears once visits are planned and executed.")}</p></div>
             ) : (
@@ -475,7 +475,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.docs.heading", "Documents — metadata registry (SB11)")}</h4>
             {dErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.docs.err", "Couldn’t load documents.")}</strong> {mapFactoryError(dErr, "load")} — {retry}.</div></div>}
             {!dErr && docsEmpty && (
-              <div className="ax-state ax-state--inline"><span className="ax-state__glyph">📄</span>
+              <div className="ax-state ax-state--inline"><span className="ax-state__glyph"><IconDocument size={24} /></span>
                 <h4>{t("f360.docs.empty.title", "No documents recorded")}</h4>
                 <p className="ax-caption">{t("f360.docs.empty.desc", "Register license, CR, safety certificates and layouts below.")}</p></div>
             )}
@@ -498,7 +498,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                   })}</tbody>
                 </table></div>
                 <div className="cd-docrow is-unavail" role="status">
-                  <span className="cd-docrow__icon" aria-hidden="true">📄</span>
+                  <span className="cd-docrow__icon" aria-hidden="true"><IconDocument size={20} /></span>
                   <span>{t("f360.docs.previewUnavail", "Document preview is unavailable — this surface exposes metadata and storage path only, with no signed URL, viewer or custody retrieval (HANDOFF_BLOCKED_DOCUMENT_VIEWER).")}</span>
                 </div>
               </>
@@ -511,12 +511,12 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
             {rErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — {retry}.</div></div>}
             {!rErr && repsEmpty && (
-              <div className="ax-state ax-state--inline"><span className="ax-state__glyph">👤</span>
+              <div className="ax-state ax-state--inline"><span className="ax-state__glyph"><IconUser size={24} /></span>
                 <h4>{t("f360.reps.empty.title", "No representatives on record")}</h4>
                 <p className="ax-caption">{t("f360.reps.empty.desc", "Add the factory’s contact roster below.")}</p></div>
             )}
             {!rErr && maskContacts && !repsEmpty && (
-              <div className="cd-masked" role="status"><span aria-hidden="true">🔒</span>{t("f360.reps.masked", "Contact details are role-restricted for this persona (HANDOFF_BLOCKED_ROLE).")}</div>
+              <div className="cd-masked" role="status"><span aria-hidden="true"><IconLock size={16} /></span>{t("f360.reps.masked", "Contact details are role-restricted for this persona (HANDOFF_BLOCKED_ROLE).")}</div>
             )}
             {!rErr && !repsEmpty && (
               <div className="ax-tablewrap"><table className="ax-table">
@@ -543,7 +543,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.prod.heading", "Products & HS codes (M07-006)")}</h4>
             {pErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.prod.err", "Couldn’t load products.")}</strong> {mapFactoryError(pErr, "load")} — {retry}.</div></div>}
             {!pErr && productsEmpty && (
-              <div className="ax-state ax-state--inline"><span className="ax-state__glyph">📦</span>
+              <div className="ax-state ax-state--inline"><span className="ax-state__glyph"><IconPackage size={24} /></span>
                 <h4>{t("f360.prod.empty.title", "No products recorded")}</h4>
                 <p className="ax-caption">{t("f360.prod.empty.desc", "Register the factory’s product list with HS codes below.")}</p></div>
             )}
@@ -569,7 +569,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.mat.heading", "Raw materials (M07-007)")}</h4>
             {mErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.mat.err", "Couldn’t load materials.")}</strong> {mapFactoryError(mErr, "load")} — {retry}.</div></div>}
             {!mErr && materialsEmpty && (
-              <div className="ax-state ax-state--inline"><span className="ax-state__glyph">🧱</span>
+              <div className="ax-state ax-state--inline"><span className="ax-state__glyph"><IconLayers size={24} /></span>
                 <h4>{t("f360.mat.empty.title", "No raw materials recorded")}</h4>
                 <p className="ax-caption">{t("f360.mat.empty.desc", "Register the factory’s raw-material inputs below.")}</p></div>
             )}

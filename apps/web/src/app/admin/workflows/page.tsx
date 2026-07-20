@@ -4,6 +4,7 @@ import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
+import { IconShuffle } from "@/app/icons";
 import { ProposeDraftForm, DraftPayloadEditor, ApprovePublish, type WfStrings } from "./Controls";
 import { WfDeck, type WfDeckStrings } from "./WfDeck";
 
@@ -63,7 +64,7 @@ export default async function Workflows() {
         </div></div>
       )}
       {!error && (wfs ?? []).length === 0 && (
-        <EmptyState glyph="🔀" title={t("admin.wf.empty.title", "No workflow configuration published")}
+        <EmptyState icon={<IconShuffle size={28} />} title={t("admin.wf.empty.title", "No workflow configuration published")}
           body={t("admin.wf.empty.body", "Workflow state machines are versioned config (ENG-03).")} />
       )}
       {(wfs ?? []).map(w => {
@@ -81,7 +82,7 @@ export default async function Workflows() {
                 {w.status === "draft" && !isOwnDraft && <ApprovePublish versionId={w.id} strings={strings} />}
                 {isOwnDraft && (
                   <span className="ax-lozenge ax-lozenge--warning" title={t("admin.wf.sod.desc", "You proposed this draft (the maker). A different checker must approve it — separation of duties is enforced by a DB constraint.")}>
-                    ⛔ {t("admin.wf.sod.title", "You proposed this — a distinct checker must approve")}
+                    {t("admin.wf.sod.title", "You proposed this — a distinct checker must approve")}
                   </span>
                 )}
               </div>

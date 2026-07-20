@@ -10,6 +10,7 @@
 // client components cannot call useT()). Colors: ax tokens only; logical props.
 import { useEffect, useMemo, useState } from "react";
 import { formatDateTime } from "@/lib/dates";
+import { IconCalendar, IconSearch } from "@/app/icons";
 import { useActionState } from "react";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/components/Pagination"; // FNS-011 shared client-side pager
@@ -336,10 +337,10 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         </div>
 
         {visits.length === 0 && (
-          <EmptyState glyph="🗓" title={strings.emptyTitle} body={strings.emptyBody} />
+          <EmptyState icon={<IconCalendar size={28} />} title={strings.emptyTitle} body={strings.emptyBody} />
         )}
         {visits.length > 0 && filtered.length === 0 && (
-          <EmptyState glyph="🔍" title={strings.noMatch} inline />
+          <EmptyState icon={<IconSearch size={28} />} title={strings.noMatch} inline />
         )}
 
         {view === "list" && filtered.length > 0 && (

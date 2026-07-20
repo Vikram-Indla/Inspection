@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/dates";
 import { logConfigurationReadFailure } from "@/lib/admin-configuration";
 import { PublishRegulation, type RegStrings } from "./Controls";
 import EmptyState from "@/components/EmptyState";
+import { IconScroll } from "@/app/icons";
 
 // SCR-ADM-011 — regulation detail dossier: a logical mode of /admin/regulations
 // (?regulation=<id>), not a dedicated route (no route guard is proven — CD-006
@@ -63,7 +64,7 @@ export default async function RegulationDetail({
   }
   if (!reg) {
     return (
-      <EmptyState glyph="📜" title={s.notFoundTitle} body={s.notFoundBody}>
+      <EmptyState icon={<IconScroll size={28} />} title={s.notFoundTitle} body={s.notFoundBody}>
         <a className="ax-btn ax-btn--subtle" href="/admin/regulations">{s.backToList}</a>
       </EmptyState>
     );

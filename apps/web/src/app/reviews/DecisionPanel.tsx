@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
+import { IconSearch } from "@/app/icons";
 
 // CD-028 / SCR-WEB-300 — Level 2 review queue (scan-first).
 // The queue renders NO decision controls (leg 10): a row opens /reviews/:id,
@@ -160,7 +161,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
       </div>
       {filtered.length === 0 ? (
         <section className="ax-surface cd-panelpad cd-result" role="status">
-          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--neutral" aria-hidden="true">🔍</div>
+          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--neutral" aria-hidden="true"><IconSearch size={24} /></div>
             <div className="cd-stack"><h3 tabIndex={-1}>{strings.noMatch}</h3><p>{strings.noMatchBody}</p></div></div>
         </section>
       ) : (

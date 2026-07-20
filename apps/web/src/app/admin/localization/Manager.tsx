@@ -8,6 +8,7 @@ import {
   type L10nResult, type SyncResult, type Revision,
 } from "./actions";
 import EmptyState from "@/components/EmptyState";
+import { IconGlobe, IconSearch } from "@/app/icons";
 
 export type UiString = {
   key: string;
@@ -284,7 +285,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
   if (rows.length === 0) {
     return (
       <>
-        <EmptyState glyph="🌐" title={labels.emptyTitle}
+        <EmptyState icon={<IconGlobe size={28} />} title={labels.emptyTitle}
           body={<>{labels.emptyBody} <span className="ax-numeric">scripts/i18n_coverage.py</span></>} />
         <AddKeyForm labels={labels} />
       </>
@@ -309,7 +310,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState glyph="🔍" title={labels.noMatchTitle} body={labels.noMatchBody} />
+        <EmptyState icon={<IconSearch size={28} />} title={labels.noMatchTitle} body={labels.noMatchBody} />
       ) : (
         <div className="lz-list">
           {filtered.map(r => <Row key={r.key} row={r} labels={labels} />)}

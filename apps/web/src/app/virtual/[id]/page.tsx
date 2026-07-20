@@ -4,6 +4,7 @@ import { useT } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/dates";
 import Room, { type RoomStrings } from "./Room";
 import EmptyState from "@/components/EmptyState";
+import { IconShieldCheck } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
     .eq("id", id).single();
   if (!s) {
     return <Shell current="/virtual" title={t("virtual.room.notFoundTitle", "Session not found")}>
-      <EmptyState glyph="🛡" title={t("virtual.room.notFound", "Wrong appointment or out of scope")}
+      <EmptyState icon={<IconShieldCheck size={28} />} title={t("virtual.room.notFound", "Wrong appointment or out of scope")}
         body={t("virtual.room.notFoundDesc", "Access denied safely; attempt audited (SCR-VIR-700 failure state).")} />
     </Shell>;
   }
