@@ -1,6 +1,7 @@
 import "../../report.css";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import PrintReport from "@/components/PrintReport";
 
 export const dynamic = "force-dynamic";
@@ -27,12 +28,15 @@ type Ack = { name?: string; signed?: boolean; ts?: string; signed_at?: string; s
 type Sub = { id: string; version_number: number; snapshot: Snapshot; acknowledgement: Ack | null; submitted_at: string; profiles: { full_name: string } | null };
 type Rev = { status: string; decision: string | null; decision_reason: string | null; returned_sections: string[] | null; decided_at: string | null; submission_version_id: string; profiles: { full_name: string } | null };
 
-const dt = (s: string | null | undefined) => s ? new Date(s).toISOString().slice(0, 16).replace("T", " ") : "—";
-const d10 = (s: string | null | undefined) => s ? new Date(s).toISOString().slice(0, 10) : "—";
-
 export default async function InspectionReport({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  // Governed Riyadh/Gregorian formatting (lib/dates) — the previous
+  // toISOString().slice() raw-UTC formatting was neither Riyadh-local nor
+  // locale-aware, and wasn't legible on an official document (SR-EV-001).
+  const lang = locale === "ar" ? "ar" : "en";
+  const dt = (s: string | null | undefined) => s ? formatDateTime(s, lang) : "—";
+  const d10 = (s: string | null | undefined) => s ? formatDate(s, lang) : "—";
   const sb = await supabaseServer();
   const [{ data: ins, error }, { data: itemRows }] = await Promise.all([
     sb.from("inspections").select(`id, status, context,

@@ -6,6 +6,7 @@ import Factory360ExportButton from "@/app/factories/cr/[id]/Factory360ExportButt
 import Factory360Offline from "./Factory360Offline";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/dates";
 import { loadFactory360Dossier, resolveFactory360Permissions, latestSubmission } from "@/lib/factory360/dossier";
 import styles from "./field-factory360.module.css";
 
@@ -62,7 +63,7 @@ export default async function FieldFactory360({ params, searchParams }: {
     penaltiesResult, portfolioReportsResult, snapshotsResult,
   } = dossier;
 
-  const dt = (value: string | null | undefined) => value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
+  const dt = (value: string | null | undefined) => value ? formatDate(value, locale === "ar" ? "ar" : "en") : "—";
   const label = (value: string | null | undefined) => value ? t(`enum.${value}`, value.replaceAll("_", " ")) : "—";
   const sourceStatus = (error: unknown, value: unknown, queried = true) => {
     if (error) return t("f360.source.degraded", "degraded");

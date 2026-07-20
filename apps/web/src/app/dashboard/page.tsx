@@ -1,5 +1,6 @@
 import Shell from "@/components/Shell";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { redirect } from "next/navigation";
@@ -185,7 +186,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     to: scope.toDate,
     region,
   };
-  const refreshedAt = new Date(nowMs).toISOString().slice(0, 16).replace("T", " ");
+  const refreshedAt = formatDateTime(nowMs, locale === "ar" ? "ar" : "en");
   return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
     context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-500 · DASH-001..016</span>}>
     {failedSources.length > 0 && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}

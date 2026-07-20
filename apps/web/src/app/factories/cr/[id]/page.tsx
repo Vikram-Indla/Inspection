@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import EmptyState from "@/components/EmptyState";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/dates";
 import { calculateApprovedCompliance } from "@/lib/factory360/compliance";
 import { loadFactory360Dossier, resolveFactory360Permissions, latestSubmission } from "@/lib/factory360/dossier";
 import Factory360ExportButton from "./Factory360ExportButton";
@@ -49,7 +50,10 @@ export default async function Factory360ByCr({ params, searchParams }: {
     penaltiesResult, portfolioReportsResult, snapshotsResult,
   } = dossier;
 
-  const dt = (value: string | null | undefined) => value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
+  // Governed Riyadh/Gregorian formatting (lib/dates) — dateStyle:"medium" on
+  // ar-SA silently defaulted to the Hijri calendar and US-style month-day
+  // ordering on en-SA; both are wrong for this contract.
+  const dt = (value: string | null | undefined) => value ? formatDate(value, locale === "ar" ? "ar" : "en") : "—";
   const label = (value: string | null | undefined) => value ? t(`enum.${value}`, value.replaceAll("_", " ")) : "—";
   const sourceStatus = (error: unknown, value: unknown, queried = true) => {
     if (error) return t("f360.source.degraded", "degraded");

@@ -9,7 +9,8 @@
     "seed:kpi": "node scripts/seed-dashboard-kpis.mjs",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "check:design-system-v5": "node scripts/check-design-system-v5.mjs"
+    "check:design-system-v5": "node scripts/check-design-system-v5.mjs",
+    "verify:dates": "node scripts/verify-dates.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

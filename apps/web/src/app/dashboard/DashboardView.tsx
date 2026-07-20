@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { FactoryRef, GeoRow, ReviewRow, ResponseRow, VisitRow } from "./metrics";
 import { complianceBreakdown, formatDuration } from "./metrics";
+import { formatDateTime } from "@/lib/dates";
 import styles from "./dashboard.module.css";
 
 type Locale = "en" | "ar";
@@ -220,7 +221,7 @@ export function OperationalView({ locale, metrics }: { locale: Locale; metrics: 
             <td className={styles.numeric}>{row.observed_lat}, {row.observed_lng}</td>
             <td>{row.override_reason ?? copy(locale, "Not recorded", "غير مسجل")}</td>
             <td>{copy(locale, "Unavailable — no confirmation field", "غير متاح — لا يوجد حقل تأكيد")}</td>
-            <td className={styles.numeric}>{new Date(row.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</td>
+            <td className={styles.numeric}>{formatDateTime(row.occurred_at, locale === "ar" ? "ar" : "en")}</td>
           </tr>)}</tbody>
         </table></div> : <div className={styles.empty} role="status">{copy(locale, "No GPS overrides in the selected scope.", "لا توجد تجاوزات GPS ضمن النطاق المحدد.")}</div>}
       </section>
@@ -228,7 +229,7 @@ export function OperationalView({ locale, metrics }: { locale: Locale; metrics: 
         <h4 id="timeline-heading">{copy(locale, "Planning-to-review operational timeline", "الخط الزمني التشغيلي من التخطيط إلى المراجعة")}</h4>
         {o.timeline.length ? <div className={styles.tableWrap}><table className={styles.table}>
           <thead><tr><th scope="col">{copy(locale, "Event", "الحدث")}</th><th scope="col">{copy(locale, "Object", "العنصر")}</th><th scope="col">{copy(locale, "At", "الوقت")}</th></tr></thead>
-          <tbody>{o.timeline.slice(0, 12).map(row => <tr key={row.id}><td><strong>{row.action}</strong>{row.requirement_refs?.length ? <><br /><span className={styles.detail}>{row.requirement_refs.join(" · ")}</span></> : null}</td><td>{row.object_type} · {row.object_id?.slice(0, 8)}</td><td className={styles.numeric}>{new Date(row.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</td></tr>)}</tbody>
+          <tbody>{o.timeline.slice(0, 12).map(row => <tr key={row.id}><td><strong>{row.action}</strong>{row.requirement_refs?.length ? <><br /><span className={styles.detail}>{row.requirement_refs.join(" · ")}</span></> : null}</td><td>{row.object_type} · {row.object_id?.slice(0, 8)}</td><td className={styles.numeric}>{formatDateTime(row.occurred_at, locale === "ar" ? "ar" : "en")}</td></tr>)}</tbody>
         </table></div> : <div className={styles.empty} role="status">{copy(locale, "No scoped audit events in the selected window.", "لا توجد أحداث تدقيق ضمن النطاق والفترة المحددين.")}</div>}
       </section>
     </div>
