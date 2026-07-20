@@ -36,7 +36,7 @@ test.describe("Factory 360 governed admin control plane", () => {
     expect(actions).toContain("validTo < validFrom");
     expect(actions).toContain("annualCapacity < 0");
     expect(actions).toContain("mapFactoryError(error, \"update\")");
-    expect(page).toContain("Factory 360 dossiers are read-only");
+    expect(page).toContain("Factory 360 profiles are read-only");
     expect(page).toContain("SENAEI_API_CONTRACT_NOT_SUPPLIED");
     for (const table of ["senaei_sync_runs", "factory_import_batches", "factory_import_rows"]) expect(migration).toContain(`'${table}'`);
     expect(migration).toContain("audit_row_change()");
