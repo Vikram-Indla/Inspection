@@ -4134,9 +4134,53 @@
       "commit_sha": "ef2b7946bce7af2d6209b61b1082f632f56ff447",
       "next_task": "Verify one POST endpoint end to end from sanitized contract evidence or an explicitly authorized synthetic/test identifier before enabling network I/O.",
       "resume_prompt": "Read CURRENT_STATE Update 106, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml, factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv and evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md. Work on codex/industry-shared-factory360-gap-013 from source commit ef2b7946bce7af2d6209b61b1082f632f56ff447. POST is proven only for ISH-API-001..003 and 008..009. Do not issue a real POST without a user-supplied or explicitly authorized synthetic/test identifier and expected outcome; do not infer auth, body, schema, privacy, retention, authority or plant cardinality."
+    },
+    {
+      "session_id": "2026-07-20-factory-360-industry-shared-checkpoint-push-015",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "codex/industry-shared-factory360-gap-013",
+      "task_id": "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013",
+      "gate": "G11 Factory 360 integration hardening",
+      "requirements": ["F360-ISH-REQ-001..018", "ISH-API-001..011"],
+      "acceptance_ids": ["F360-ISH-AC-001..018"],
+      "screens": ["SCR-WEB-400", "connected P01/P03/P04/P08/P10/P11 consumers"],
+      "engines": ["dedicated fail-closed Industry Shared provider", "existing Factory 360 and Senaei engines preserved"],
+      "files_changed": [
+        "sanitized checkpoint current state, queue, acceptance and evidence records",
+        "exact synthetic-contract continuation and session handoff"
+      ],
+      "tests": [
+        "secret/PII/banned-artifact branch-delta scan PASS",
+        "5 POST / 11 blocked / 0 retired structural guard PASS",
+        "provider no-network and sensitive-domain separation guard PASS",
+        "no canonical migration or Factory 360 projection change guard PASS",
+        "typecheck and production build PASS",
+        "Industry Shared focused contract 4/4 PASS",
+        "protected static inventory 135 PASS / 4 intentional provider skips / 0 failed",
+        "YAML/JSON/diff validation PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md",
+        "product-contract/factory-360/FACTORY_360_EXECUTION_STATE.yaml",
+        "product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv"
+      ],
+      "decisions": [
+        "Sponsor explicitly approved pushing only codex/industry-shared-factory360-gap-013 to the configured Vikram-Indla/Inspection remote",
+        "Method-only evidence does not authorize auth, body, schema, privacy, fixture, migration, projection or stub retirement",
+        "Stop state is AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT"
+      ],
+      "blockers": [
+        "Approved synthetic beta licence and expected result for POST /shared/api/v2/license-info",
+        "Sanitized contracts for the remaining endpoints",
+        "Privacy/masking/retention and RLS proof before any sensitive persistence"
+      ],
+      "commit_sha": "0a318f6ce1806abfc535542f3425bd96ec00a35c",
+      "next_task": "Verify POST /shared/api/v2/license-info end to end using the approved synthetic beta licence and expected result.",
+      "resume_prompt": "Read CURRENT_STATE Update 107, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml and evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md. Resume codex/industry-shared-factory360-gap-013 from checkpoint commit 0a318f6ce1806abfc535542f3425bd96ec00a35c. Wait for the approved synthetic beta licence and expected result, then verify POST /shared/api/v2/license-info end to end. Do not use real data or infer auth, request, response, error, privacy, retention, authority or canonical mapping."
     }
   ],
-  "last_session": "2026-07-20-factory-360-industry-shared-auth-discovery-014",
+  "last_session": "2026-07-20-factory-360-industry-shared-checkpoint-push-015",
   "rules": {
     "append_only": true,
     "required_fields": [
