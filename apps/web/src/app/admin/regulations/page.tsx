@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { getUserRoles } from "@/lib/persona";
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
@@ -90,7 +91,7 @@ export default async function Regulations({
   // Route layout restricts module visibility; writes remain independently RLS-gated.
   const { data: { user } } = await getServerUser();
   const { data: roleRows, error: roleError } = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = new Set((roleRows ?? []).map(r => r.role_key));
   const isWriter = roles.has("compliance_admin") || roles.has("form_admin");

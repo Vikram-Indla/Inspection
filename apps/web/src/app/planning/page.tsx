@@ -1,5 +1,6 @@
 import Shell, { preloadShell } from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
+import { getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
 
@@ -12,7 +13,7 @@ export default async function PlanningHome() {
   const sb = await supabaseServer();
   const { data: { user } } = await getServerUser();
   const { data: myRoles, error: rolesError } = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[], error: null };
   const isPlanner = !rolesError && (myRoles ?? []).some(r => r.role_key === "planner");
   if (!isPlanner) {

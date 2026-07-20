@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -81,7 +82,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
       .select("id, name, source, hs_code, created_at")
       .eq("factory_id", id).order("created_at", { ascending: true }),
     user
-      ? sb.from("user_roles").select("role_key").eq("user_id", user.id)
+      ? getUserRoles(user.id)
       : Promise.resolve({ data: null as { role_key: string }[] | null }),
   ]);
   logFactoryError("factory-read", fErr);

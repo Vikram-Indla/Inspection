@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -28,7 +29,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     );
   }
   const { data: roleRows, error: roleReadError } = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: null, error: null };
   if (roleReadError) {
     console.error("[review workspace role read]", roleReadError.message, roleReadError.code);

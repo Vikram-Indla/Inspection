@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
@@ -82,7 +83,7 @@ export default async function Packages() {
 
   const user = authRead.data.user;
   const roleRead = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[], error: authRead.error };
   if (roleRead.error) logProviderError("admin package role read", roleRead.error);
   const roles = (roleRead.data ?? []).map(row => row.role_key);

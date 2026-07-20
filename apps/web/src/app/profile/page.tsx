@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getUserRoles } from "@/lib/persona";
 import Shell from "@/components/Shell";
 import ThemeToggle from "@/components/ThemeToggle";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
@@ -28,7 +29,7 @@ export default async function ProfileSettings() {
 
   const [{ data: profile }, { data: roleRows }, { data: pref }, { data: claimsData }] = await Promise.all([
     sb.from("profiles").select("full_name, email, region, org_scope, created_at").eq("user_id", user.id).maybeSingle(),
-    sb.from("user_roles").select("role_key").eq("user_id", user.id),
+    getUserRoles(user.id),
     sb.from("notification_preferences").select("push_enabled, sms_enabled, email_enabled").eq("user_id", user.id).maybeSingle(),
     sb.auth.getClaims(),
   ]);

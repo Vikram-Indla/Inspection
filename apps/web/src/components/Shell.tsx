@@ -1,24 +1,24 @@
 import { redirect } from "next/navigation";
 import { cache, type ReactNode } from "react";
+import { getShellRegions, getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
-import { getServerUser, supabaseServer } from "@/lib/supabase-server";
+import { getServerUser } from "@/lib/supabase-server";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 import { shellScopeForRoute } from "@/lib/shell-navigation";
 import ShellClient, { type ShellClientStrings } from "@/components/ShellClient";
 import { type BellStrings } from "@/components/NotificationBell";
 
 const loadShellData = cache(async (current: string) => {
-  const [{ t, locale }, sb, { data: { user } }] = await Promise.all([
+  const [{ t, locale }, { data: { user } }] = await Promise.all([
     useT(),
-    supabaseServer(),
     getServerUser(),
   ]);
   if (!user) return { t, locale, user, roles: [] as string[], regions: [] as string[] };
   const needsRegions = shellScopeForRoute(current).region;
   const [{ data: roleRows }, regionRead] = await Promise.all([
-    sb.from("user_roles").select("role_key").eq("user_id", user.id),
+    getUserRoles(user.id),
     needsRegions
-      ? sb.from("factories").select("region").not("region", "is", null).limit(1000)
+      ? getShellRegions()
       : Promise.resolve({ data: [] as { region: string | null }[], error: null }),
   ]);
   const roles = Array.from(new Set((roleRows ?? []).map(row => row.role_key))).sort();

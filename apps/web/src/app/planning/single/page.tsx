@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -45,7 +46,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   // (has_role('planner') on visit_plans/visits inserts) regardless.
   const { data: { user }, error: userError } = await getVerifiedUser(sb);
   const { data: myRoles, error: rolesError } = user
-    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
+    ? await getUserRoles(user.id)
     : { data: [] as { role_key: string }[], error: null };
   if (userError || rolesError) {
     console.error("[CD-022 single-planning authorization]", userError?.message ?? rolesError?.message);

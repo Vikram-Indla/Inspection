@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { getUserRoles } from "@/lib/persona";
 import { redirect } from "next/navigation";
 import Shell from "@/components/Shell";
 import EmptyState from "@/components/EmptyState";
@@ -12,7 +13,7 @@ export default async function AdminRouteBoundary({ allowedRoles, children }: { a
   if (!user || authError?.name === "AuthSessionMissingError") redirect("/login");
   if (authError) throw new Error("admin_route_auth_unavailable");
 
-  const { data, error } = await sb.from("user_roles").select("role_key").eq("user_id", user.id);
+  const { data, error } = await getUserRoles(user.id);
   if (error) throw new Error("admin_route_roles_unavailable");
   const roles = new Set((data ?? []).map(row => row.role_key));
   if (allowedRoles.some(role => roles.has(role))) return children;
