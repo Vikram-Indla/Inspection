@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell, { preloadShell } from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import {
@@ -158,6 +158,7 @@ function computeSlaFlags(visits: VisitRow[], sla: SlaConf, nowMs: number): SlaFl
 }
 
 export default async function Operations({ searchParams }: { searchParams: Promise<{ region?: string; city?: string }> }) {
+  preloadShell("/operations");
   const sp = await searchParams;
   const region = typeof sp.region === "string" ? sp.region : "";
   const city = typeof sp.city === "string" ? sp.city : "";

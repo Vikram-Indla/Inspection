@@ -1,0 +1,7 @@
+route,cold_median_before_ms,cold_p75_before_ms,cold_p95_before_ms,cold_median_after_ms,cold_p75_after_ms,cold_p95_after_ms,warm_median_before_ms,warm_p75_before_ms,warm_p95_before_ms,warm_median_after_ms,warm_p75_after_ms,warm_p95_after_ms,warm_p75_improvement_pct,request_count_median_before,request_count_median_after,transferred_bytes_median_before,transferred_bytes_median_after
+/dashboard,7636,7703,7775,6390,6420,6498,7912,7918,8399,6910,6921,7422,12.6,10,10,0,0
+/operations,5674,5727,5789,5611,5631,5647,838,842,848,830,859,863,-2.0,4,4,0,0
+/factories,2276,2419,2460,1795,1809,1958,2378,2387,2401,1882,1885,1888,21.0,9,9,0,0
+/planning,927,932,1003,487,494,494,1351,1352,1355,857,860,1326,36.4,9,9,0,0
+/reviews,11296,11391,11826,8236,8364,8761,11409,11911,12407,8409,8897,8912,25.3,9,9,0,0
+/ai/suggestions,1005,1083,1097,521,547,625,1342,1356,1358,847,860,864,36.6,9,9,0,0

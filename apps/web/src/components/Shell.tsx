@@ -1,31 +1,43 @@
 import { redirect } from "next/navigation";
-import type { ReactNode } from "react";
+import { cache, type ReactNode } from "react";
 import { useT } from "@/lib/i18n";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { buildShellNavigation } from "@/lib/shell-navigation";
+import { shellScopeForRoute } from "@/lib/shell-navigation";
 import ShellClient, { type ShellClientStrings } from "@/components/ShellClient";
 import { type BellStrings } from "@/components/NotificationBell";
 
-export default async function Shell({ current, children, title, context, topbar }: {
-  current: string; children: ReactNode; title: string; context?: ReactNode; topbar?: ReactNode;
-}) {
-  const [{ t, locale }, sb] = await Promise.all([useT(), supabaseServer()]);
-  const { data: { user } } = await getServerUser();
-  if (!user) redirect("/login");
-
-  // Server-side role-scoped navigation. RLS remains the authorization boundary;
-  // this query only prevents irrelevant or unauthorized destinations appearing
-  // in the shared chrome (RBAC-001..014, TASK-WEB-SHELL-001).
+const loadShellData = cache(async (current: string) => {
+  const [{ t, locale }, sb, { data: { user } }] = await Promise.all([
+    useT(),
+    supabaseServer(),
+    getServerUser(),
+  ]);
+  if (!user) return { t, locale, user, roles: [] as string[], regions: [] as string[] };
+  const needsRegions = shellScopeForRoute(current).region;
   const [{ data: roleRows }, regionRead] = await Promise.all([
     sb.from("user_roles").select("role_key").eq("user_id", user.id),
-    // CMP-REQ-SHELL-002: values are RLS-scoped and source-backed. A failed or
-    // empty read disables the shared region control; it never invents regions.
-    sb.from("factories").select("region").not("region", "is", null).limit(1000),
+    needsRegions
+      ? sb.from("factories").select("region").not("region", "is", null).limit(1000)
+      : Promise.resolve({ data: [] as { region: string | null }[], error: null }),
   ]);
   const roles = Array.from(new Set((roleRows ?? []).map(row => row.role_key))).sort();
   const regions = regionRead.error
     ? []
     : Array.from(new Set((regionRead.data ?? []).map(row => row.region).filter((value): value is string => !!value))).sort();
+  return { t, locale, user, roles, regions };
+});
+
+/** Start shell/auth/RBAC/reference reads while the route loads its own data. */
+export function preloadShell(current: string) {
+  void loadShellData(current);
+}
+
+export default async function Shell({ current, children, title, context, topbar }: {
+  current: string; children: ReactNode; title: string; context?: ReactNode; topbar?: ReactNode;
+}) {
+  const { t, locale, user, roles, regions } = await loadShellData(current);
+  if (!user) redirect("/login");
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,
     label: t(group.labelKey, locale === "ar" ? group.labelAr : group.labelEn),
@@ -74,6 +86,7 @@ export default async function Shell({ current, children, title, context, topbar 
     themeLight: t("theme.light", locale === "ar" ? "الوضع الفاتح" : "Light mode"),
     themeDark: t("theme.dark", locale === "ar" ? "الوضع الداكن" : "Dark mode"),
     skipToContent: t("shell.skip", locale === "ar" ? "الانتقال إلى المحتوى" : "Skip to content"),
+    loadingDestination: t("shell.loadingDestination", locale === "ar" ? "جارٍ تحميل الوجهة…" : "Loading destination…"),
   };
 
   const bellStrings: BellStrings = {

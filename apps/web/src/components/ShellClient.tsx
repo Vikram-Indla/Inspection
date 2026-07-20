@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
 import { isShellRouteCurrent, shellScopeForRoute, type ShellIcon } from "@/lib/shell-navigation";
@@ -43,6 +44,7 @@ export type ShellClientStrings = {
   themeLight: string;
   themeDark: string;
   skipToContent: string;
+  loadingDestination: string;
 };
 
 function Icon({ name }: { name: ShellIcon }) {
@@ -105,6 +107,7 @@ export default function ShellClient({
   roles: string[];
   regions: string[];
 }) {
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -116,6 +119,7 @@ export default function ShellClient({
   const [dateFrom, setDateFrom] = useState(initialDates.from);
   const [dateTo, setDateTo] = useState(initialDates.to);
   const [regionScope, setRegionScope] = useState("");
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(groups.map(group => [group.id, true])),
   );
@@ -202,13 +206,35 @@ export default function ShellClient({
 
   const routeScope = shellScopeForRoute(current);
 
+  function handleShellNavigation(event: ReactMouseEvent<HTMLDivElement>) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const target = event.target as Element;
+    const anchor = target.closest<HTMLAnchorElement>("a[href]");
+    if (!anchor || anchor.target || anchor.download || anchor.getAttribute("rel")?.split(/\s+/).includes("external")) return;
+
+    const url = new URL(anchor.href, window.location.href);
+    if (url.origin !== window.location.origin || url.pathname === "/signout" || url.pathname === "/login" || url.pathname === "/reset") return;
+    if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
+
+    const href = `${url.pathname}${url.search}${url.hash}`;
+    setPendingHref(href);
+    // Let Next's own Link handler consume its prefetched RSC response. Raw
+    // internal anchors fall through to the router so legacy screens still avoid
+    // a document reload while they are migrated incrementally.
+    if (anchor.dataset.nextSpa === "true") return;
+    event.preventDefault();
+    router.push(href);
+  }
+
   function replaceScope(updates: Record<string, string>) {
     const url = new URL(window.location.href);
     for (const [key, value] of Object.entries(updates)) {
       if (value) url.searchParams.set(key, value);
       else url.searchParams.delete(key);
     }
-    window.location.assign(`${url.pathname}${url.search}${url.hash}`);
+    const href = `${url.pathname}${url.search}${url.hash}`;
+    setPendingHref(href);
+    router.replace(href);
   }
 
   function toggleCollapsed() {
@@ -242,7 +268,7 @@ export default function ShellClient({
     return (
       <Link key={item.id} className={className} aria-label={collapsed ? item.label : undefined}
         aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
-        href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled">
+        href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled" data-next-spa="true">
         <span className="ax-nav-icon"><Icon name={item.icon} /></span>
         <span className="ax-nav-label">{item.label}</span>
       </Link>
@@ -250,7 +276,9 @@ export default function ShellClient({
   }
 
   return (
-    <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}`}>
+    <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
+      aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
+      {pendingHref ? <div className="ax-route-progress" role="status"><span className="ax-sr-only">{strings.loadingDestination}</span></div> : null}
       <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
       <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
       <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
@@ -323,14 +351,14 @@ export default function ShellClient({
                   {searchOpen && query.trim().length >= 2 && (
                     <div id="shell-global-search-results" className="ax-shell-search__results" role="listbox" aria-label={strings.searchResults}>
                       {navigationResults.map(item => (
-                        <Link role="option" key={`nav-${item.id}`} href={item.href} onClick={closeAfterNavigate}>
+                        <Link role="option" key={`nav-${item.id}`} href={item.href} onClick={closeAfterNavigate} data-next-spa="true">
                           <Icon name={item.icon} /><span><strong>{item.label}</strong><small>{strings.navigation}</small></span>
                         </Link>
                       ))}
                       {globalResults.map(item => (
                         // F360IPAD-ENTRY-001 — on the inspector field channel, CR/license/plant
                         // search opens the field-native Factory 360 instead of the web dossier.
-                        <Link role="option" key={`${item.type}-${item.id}`} href={current?.startsWith("/field") && item.href.startsWith("/factories/cr/") ? item.href.replace("/factories/cr/", "/field/factory-360/") : item.href} onClick={closeAfterNavigate}>
+                        <Link role="option" key={`${item.type}-${item.id}`} href={current?.startsWith("/field") && item.href.startsWith("/factories/cr/") ? item.href.replace("/factories/cr/", "/field/factory-360/") : item.href} onClick={closeAfterNavigate} data-next-spa="true">
                           <Icon name={item.type === "factory" ? "factory" : item.type === "visit" ? "visits" : "inspect"} />
                           <span><strong>{item.label}</strong><small>{item.detail}</small></span>
                         </Link>
@@ -373,7 +401,7 @@ export default function ShellClient({
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               <NotificationBell strings={bellStrings} />
-              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry}>
+              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true">
                 <Icon name="insights" />
               </Link>
               <div ref={accountRef} className="ax-shell-account">

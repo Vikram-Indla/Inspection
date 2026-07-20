@@ -1312,3 +1312,31 @@ button.ax-shell-scope { cursor: pointer; }
 @media(max-width:900px){.ccr-grid{grid-template-columns:1fr}.ccr-card--wide{grid-column:auto}.ccr-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:900px){.cmp-approval-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.ccr-facts,.ccr-compare,.ccr-form,.cmp-runtime-facts,.cmp-approval-facts{grid-template-columns:1fr}.ccr-span{grid-column:auto}.ccr-register-head .ax-btn,.ccr-actions .ax-btn,.cmp-library-tabs .ax-btn,.cmp-approval-filters .ax-btn{inline-size:100%}.ccr-inline-form{align-items:stretch}.ccr-inline-form .ax-field{inline-size:100%;max-inline-size:none}.cmp-runtime-head,.cmp-runtime-selector{align-items:stretch;flex-direction:column}.cmp-approval-card footer .ax-btn{inline-size:100%}}
+
+/* TASK-G11-REMEDIATION-PERFORMANCE-001 — immediate, truthful route-transition acknowledgement. */
+.ax-route-progress {
+  position: fixed;
+  z-index: var(--ax-z-modal);
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 3px;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--ax-color-primary-tint);
+}
+.ax-route-progress::after {
+  content: "";
+  display: block;
+  inline-size: 38%;
+  block-size: 100%;
+  background: var(--ax-color-primary);
+  animation: ax-route-progress 900ms ease-in-out infinite;
+}
+@keyframes ax-route-progress {
+  from { transform: translateX(-110%); }
+  to { transform: translateX(295%); }
+}
+[dir="rtl"] .ax-route-progress::after { animation-direction: reverse; }
+@media (prefers-reduced-motion: reduce) {
+  .ax-route-progress::after { animation: none; inline-size: 100%; }
+}

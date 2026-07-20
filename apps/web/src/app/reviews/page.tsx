@@ -1,6 +1,5 @@
-import Shell from "@/components/Shell";
-import { supabaseServer } from "@/lib/supabase-server";
-import { getVerifiedUser } from "@/lib/verified-user";
+import Shell, { preloadShell } from "@/components/Shell";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./DecisionPanel";
 
@@ -60,9 +59,10 @@ type Joined = {
 const fmt = (iso: string | null) => iso ? new Date(iso).toISOString().slice(0, 16).replace("T", " ") : "—";
 
 export default async function Reviews() {
+  preloadShell("/reviews");
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { data: { user } } = await getVerifiedUser(sb);
+  const { data: { user } } = await getServerUser();
 
   // Distinguish unauthorized from queue-clear (WIRING leg 1). RLS is still the
   // real boundary; this only lets us render the correct empty/denied state
@@ -75,7 +75,7 @@ export default async function Reviews() {
   // client-side over these rows (M06-014/030). Readiness sources (checklist
   // answers, acknowledgement, evidence) are joined so the fingerprint can derive
   // real facts (CD-028 leg 3b) instead of showing everything "unavailable".
-  const [{ data: allReviews, error: reviewsErr }, { data: slaRow }] = await Promise.all([
+  const [{ data: allReviews, error: reviewsErr }, { data: slaRow }, { data: undiscovered, error: undiscoveredErr }] = await Promise.all([
     sb.from("reviews")
       .select(`id, status, decided_at, reviewer_id,
         submission_versions(version_number, submitted_at, acknowledgement, snapshot),
@@ -87,6 +87,15 @@ export default async function Reviews() {
           evidence(id))`)
       .order("decided_at", { ascending: false, nullsFirst: true }),
     sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
+    sb.from("inspections")
+      .select(`id, status, submitted_at,
+        visits(visit_type, execution_mode, priority,
+          factories(name, factory_code, risk_band),
+          assignments(profiles(full_name))),
+        submission_versions(id, version_number, submitted_at, acknowledgement, snapshot),
+        violations(violation_codes(level)),
+        evidence(id)`)
+      .eq("status", "submitted"),
   ]);
   const sla = slaRow?.settings as { review_business_days?: number; calendar?: { days?: string } } | undefined;
   const reviewDays = sla?.review_business_days ?? null;
@@ -103,15 +112,6 @@ export default async function Reviews() {
   // (startReview and decide() both transition status away from 'submitted'
   // the moment a row exists), so this can never duplicate a row already in
   // `rows` above — no exists/not-exists check needed.
-  const { data: undiscovered, error: undiscoveredErr } = await sb.from("inspections")
-    .select(`id, status, submitted_at,
-      visits(visit_type, execution_mode, priority,
-        factories(name, factory_code, risk_band),
-        assignments(profiles(full_name))),
-      submission_versions(id, version_number, submitted_at, acknowledgement, snapshot),
-      violations(violation_codes(level)),
-      evidence(id)`)
-    .eq("status", "submitted");
   for (const insp of (undiscovered ?? []) as unknown as {
     id: string; status: string; submitted_at: string | null;
     visits: Joined["inspections"] extends null ? never : NonNullable<Joined["inspections"]>["visits"];

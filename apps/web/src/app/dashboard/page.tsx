@@ -1,7 +1,6 @@
-import Shell from "@/components/Shell";
+import Shell, { preloadShell } from "@/components/Shell";
 import { useT } from "@/lib/i18n";
-import { supabaseServer } from "@/lib/supabase-server";
-import { getVerifiedUser } from "@/lib/verified-user";
+import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import {
   buildDashboardMetrics,
@@ -75,6 +74,7 @@ type SearchParams = {
 };
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  preloadShell("/dashboard");
   const params = await searchParams;
   const { locale } = await useT();
   const text = (en: string, ar: string) => locale === "ar" ? ar : en;
@@ -94,7 +94,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   // The Dashboard is a shared Command destination for every non-admin persona
   // (business direction 2026-07-16); admin-only users are redirected. Data is
   // still RLS-scoped per persona (RBAC-001..014).
-  const { data: { user } } = await getVerifiedUser(sb);
+  const { data: { user } } = await getServerUser();
   if (!user) redirect("/login");
   const { data: dashboardRoles, error: roleError } = await sb
     .from("user_roles")
@@ -142,13 +142,17 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     ...reviewsResult.rows.map(row => row.id),
     ...violationsResult.rows.map(row => row.id),
   ];
-  const auditResult = await collectLatestAudit(auditObjectIds, ids => sb.from("audit_events")
-    .select("id, object_type, object_id, action, requirement_refs, occurred_at")
-    .in("object_id", ids)
-    .gte("occurred_at", new Date(scope.fromMs).toISOString())
-    .lte("occurred_at", new Date(scope.toMs).toISOString())
-    .order("occurred_at", { ascending: false })
-    .limit(12) as unknown as PromiseLike<RowPage<AuditRow>>);
+  // The audit timeline exists only in Operational View. Strategic navigation
+  // must not wait for a query whose result it cannot render.
+  const auditResult = view === "operational"
+    ? await collectLatestAudit(auditObjectIds, ids => sb.from("audit_events")
+      .select("id, object_type, object_id, action, requirement_refs, occurred_at")
+      .in("object_id", ids)
+      .gte("occurred_at", new Date(scope.fromMs).toISOString())
+      .lte("occurred_at", new Date(scope.toMs).toISOString())
+      .order("occurred_at", { ascending: false })
+      .limit(12) as unknown as PromiseLike<RowPage<AuditRow>>)
+    : { rows: [] as AuditRow[], failed: false };
 
   const failedSources = [
     visitsResult.failed && text("visits", "الزيارات"),

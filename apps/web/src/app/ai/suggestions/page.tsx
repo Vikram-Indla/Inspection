@@ -1,4 +1,4 @@
-import Shell from "@/components/Shell";
+import Shell, { preloadShell } from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 const MODES = ["off", "on"] as const;
 
 export default async function AiSuggestionsPage() {
+  preloadShell("/ai/suggestions");
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_AI_DOCKETS, MODES, "off") !== "on") {
     return (
