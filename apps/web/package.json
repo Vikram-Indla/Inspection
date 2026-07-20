@@ -8,7 +8,8 @@
     "start": "next start",
     "seed:kpi": "node scripts/seed-dashboard-kpis.mjs",
     "typecheck": "tsc --noEmit",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:design-system-v5": "node scripts/check-design-system-v5.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

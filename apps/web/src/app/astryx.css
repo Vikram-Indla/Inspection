@@ -57,7 +57,7 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
   padding-block: 0; padding-inline: var(--ax-space-200);
   border-radius: var(--ax-radius-small);
   border: 1px solid transparent;
-  font: var(--ax-text-body-strong);
+  font: var(--ax-text-action); /* V2: 14/20 — was 16px body-strong, read too heavy */
   text-decoration: none; /* Cycle 2 completion pass — an <a class="ax-btn"> must never look like an underlined link */
   cursor: pointer; user-select: none;
   transition: background var(--ax-motion-fast), border-color var(--ax-motion-fast), box-shadow var(--ax-motion-fast);
@@ -82,16 +82,22 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-btn--field { min-height: var(--ax-control-height-field); font: var(--ax-text-field); font-weight: 600; } /* iPad ≥48px */
 .ax-btn--icon { padding-inline: 0; inline-size: var(--ax-control-height); }
 .ax-btn--icon.ax-btn--field { inline-size: var(--ax-control-height-field); }
-.ax-btn.is-loading { position: relative; color: transparent; pointer-events: none; }
-.ax-btn.is-loading::after {
-  content: ""; position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
-  inline-size: 16px; block-size: 16px; margin-block-start: -8px; margin-inline-start: -8px;
+/* V2: loading keeps the label visible (e.g. "Publishing version…") — a
+   button must never go anonymous/blank while busy. Spinner is a leading
+   inline glyph via ::before, not an absolute overlay hiding the text. */
+.ax-btn.is-loading { position: relative; pointer-events: none; padding-inline-start: calc(var(--ax-space-200) + 20px); }
+.ax-btn.is-loading::before {
+  content: ""; position: absolute; inset-inline-start: var(--ax-space-200); inset-block-start: 50%;
+  inline-size: 14px; block-size: 14px; margin-block-start: -7px;
   border-radius: var(--ax-radius-full);
   border: 2px solid color-mix(in srgb, currentColor 0%, var(--ax-color-surface));
   border-block-start-color: transparent;
   animation: ax-spin .7s linear infinite;
 }
-.ax-btn--secondary.is-loading::after, .ax-btn--subtle.is-loading::after { border-color: var(--ax-color-primary); border-block-start-color: transparent; }
+.ax-btn--secondary.is-loading::before, .ax-btn--subtle.is-loading::before { border-color: var(--ax-color-primary); border-block-start-color: transparent; }
+/* Icon-only buttons have no label to preserve — center the spinner in place of the icon. */
+.ax-btn--icon.is-loading { padding-inline-start: 0; color: transparent; }
+.ax-btn--icon.is-loading::before { inset-inline-start: 50%; margin-inline-start: -7px; }
 @keyframes ax-spin { to { transform: rotate(360deg); } }
 
 /* Split button */
@@ -107,7 +113,7 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
    Validation errors preserve user work + identify exact blockers (BRD cross-
    cutting; ERR-SUB-001). Read-only ≠ disabled: read-only remains legible. */
 .ax-field { display: flex; flex-direction: column; gap: var(--ax-space-050); max-inline-size: 420px; }
-.ax-field__label { font: var(--ax-text-body-strong); }
+.ax-field__label { font: var(--ax-text-label); } /* V2: labels must not read as headings */
 .ax-field__label .ax-req { color: var(--ax-color-critical); }
 .ax-field__hint { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
 .ax-field__error { font: var(--ax-text-caption); color: var(--ax-color-critical-strong); font-weight: 600; display: none; }
@@ -141,10 +147,21 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 
 .ax-search { position: relative; }
 .ax-search .ax-input { padding-inline-start: var(--ax-space-400); }
+/* V2: one canonical SVG search glyph (matches components/icons/Icon "search"),
+   not a generated Unicode ⌕ character. Masked so it inherits theme color. */
 .ax-search::before {
-  content: "⌕"; position: absolute; inset-inline-start: var(--ax-space-150); inset-block-start: 50%;
-  translate: 0 -50%; color: var(--ax-color-text-secondary); font-size: 18px; pointer-events: none;
+  content: ""; position: absolute; inset-inline-start: var(--ax-space-150); inset-block-start: 50%;
+  translate: 0 -50%; inline-size: 18px; block-size: 18px; pointer-events: none;
+  background-color: var(--ax-color-text-secondary);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
 }
+/* If a page already renders <Icon name="search"> inside .ax-search, suppress
+   the generated glyph so the two icons never stack. */
+.ax-search:has(svg)::before, .ax-search:has(.ax-search__icon)::before { content: none; background: none; }
 
 /* Checkbox / radio / switch — 20px marks inside ≥40px targets */
 .ax-choice { display: inline-flex; align-items: center; gap: var(--ax-space-100); min-block-size: var(--ax-control-height); cursor: pointer; }
@@ -176,8 +193,8 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 /* Segmented control */
 .ax-segmented { display: inline-flex; background: var(--ax-color-neutral-tint); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-small); padding: 2px; gap: 2px; }
 .ax-segmented button {
-  border: 0; background: transparent; font: var(--ax-text-body-strong); color: var(--ax-color-text-secondary);
-  min-height: calc(var(--ax-control-height) - 8px); padding-inline: var(--ax-space-200);
+  border: 0; background: transparent; font: var(--ax-text-action); color: var(--ax-color-text-secondary);
+  min-height: var(--ax-control-height-compact); padding-inline: var(--ax-space-200);
   border-radius: calc(var(--ax-radius-small) - 2px); cursor: pointer;
 }
 .ax-segmented button[aria-pressed="true"] { background: var(--ax-color-surface); color: var(--ax-color-text); box-shadow: var(--ax-shadow-raised); }
@@ -187,8 +204,8 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-tabs { display: flex; gap: var(--ax-space-300); border-block-end: 1px solid var(--ax-color-border); }
 .ax-tabs [role="tab"] {
   border: 0; background: none; cursor: pointer;
-  font: var(--ax-text-body-strong); color: var(--ax-color-text-secondary);
-  padding-block: var(--ax-space-150); padding-inline: var(--ax-space-050);
+  font: var(--ax-text-action); color: var(--ax-color-text-secondary);
+  padding-block: var(--ax-space-100); padding-inline: var(--ax-space-050);
   border-block-end: 2px solid transparent; margin-block-end: -1px;
 }
 .ax-tabs [role="tab"][aria-selected="true"] { color: var(--ax-color-primary); border-block-end-color: var(--ax-color-primary); }
@@ -199,7 +216,7 @@ a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-pagination__item {
   border: 1px solid var(--ax-color-border); background: var(--ax-color-surface); color: var(--ax-color-text-secondary);
   min-inline-size: var(--ax-control-height); min-block-size: var(--ax-control-height);
-  border-radius: var(--ax-radius-small); font: var(--ax-text-body-strong); cursor: pointer;
+  border-radius: var(--ax-radius-small); font: var(--ax-text-action); cursor: pointer;
 }
 .ax-pagination__item[aria-current="page"] { background: var(--ax-color-primary); border-color: var(--ax-color-primary); color: var(--ax-color-canvas); }
 .ax-pagination__item:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -853,6 +870,17 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-flow__node.is-error { border-color: var(--ax-color-critical); }
 .ax-flow__edge { position: absolute; font: var(--ax-text-micro); color: var(--ax-color-text-secondary); background: var(--ax-color-surface); padding: 1px 6px; border-radius: var(--ax-radius-small); border: 1px solid var(--ax-color-border); }
 
+/* V2 density scope — opt-in wrapper so admin/compact surfaces can adopt the
+   36/40px control ladder without rewriting every shared component call site.
+   Web/iPad default (44/48/52px) is unaffected unless a page wraps in this. */
+.ax-density-admin .ax-btn:not(.ax-btn--prominent):not(.ax-btn--field):not(.ax-btn--icon) { min-height: var(--ax-control-height-admin); }
+.ax-density-admin .ax-btn--icon { inline-size: var(--ax-control-height-admin); }
+.ax-density-admin .ax-input:not(.ax-field--field .ax-input),
+.ax-density-admin .ax-select:not(.ax-field--field .ax-select),
+.ax-density-admin .ax-textarea { min-height: var(--ax-control-height-admin); }
+.ax-density-compact .ax-btn:not(.ax-btn--prominent):not(.ax-btn--field):not(.ax-btn--icon) { min-height: var(--ax-control-height-compact); }
+.ax-density-compact .ax-input, .ax-density-compact .ax-select { min-height: var(--ax-control-height-compact); }
+
 /* ============================================================ UTILITIES    */
 .ax-stack { display: flex; flex-direction: column; gap: var(--ax-space-200); }
 .ax-row { display: flex; align-items: center; gap: var(--ax-space-150); flex-wrap: wrap; }
@@ -914,7 +942,7 @@ button.ax-shell-scope { cursor: pointer; }
   border-radius: var(--ax-radius-standard); cursor: pointer;
   padding-block: var(--ax-space-150); padding-inline: var(--ax-space-200);
   min-block-size: 48px; color: var(--ax-color-text-secondary);
-  font: var(--ax-text-body-strong);
+  font: var(--ax-text-action);
 }
 .ax-ribbon__track.is-active {
   border-color: var(--ax-color-primary); color: var(--ax-color-text);
