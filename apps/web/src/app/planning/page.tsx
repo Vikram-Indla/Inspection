@@ -47,7 +47,7 @@ export default async function PlanningHome() {
   ] as const;
   return (
     <Shell current="/planning" title={t("plan.home.title", "Visit planning")}
-      context={<span className="ax-caption ax-numeric">{t("plan.home.drafts", "{n} drafts").replace("{n}", String(drafts ?? 0))}</span>}>
+      context={<span className="t-caption ax-numeric">{t("plan.home.drafts", "{n} drafts").replace("{n}", String(drafts ?? 0))}</span>}>
       {noPackage && (
         <div className="ax-banner ax-banner--critical"><div>
           <strong>{t("plan.home.noPackage", "No published inspection package.")}</strong> {t("plan.home.noPackageDesc", "Planning cannot publish without one (ERR-PUB-001).")} <a className="ax-link" href="/admin">{t("plan.home.openAdmin", "Open Admin")}</a>.
@@ -55,14 +55,14 @@ export default async function PlanningHome() {
       )}
       <div className="web-methods" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "var(--ax-space-300)" }}>
         {methods.map(([glyph, title, desc, href]) => {
-          const content = <><span style={{ fontSize: 22 }}>{glyph}</span><h3>{title}</h3><p className="ax-caption">{desc}</p></>;
+          const content = <><span style={{ fontSize: 22 }}>{glyph}</span><h3>{title}</h3><p className="t-caption">{desc}</p></>;
           const style = { padding: "var(--ax-space-400)", display: "flex", flexDirection: "column" as const, gap: "var(--ax-space-150)", textDecoration: "none", color: "inherit", opacity: noPackage ? .55 : 1 };
           return noPackage
             ? <div key={href} className="ax-surface ax-panel" aria-disabled="true" style={style}>{content}</div>
             : <a key={href} href={href} className="ax-surface ax-panel" style={style}>{content}</a>;
         })}
       </div>
-      <p className="ax-caption">{t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001).")}</p>
+      <p className="t-caption">{t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001).")}</p>
       {(drafts ?? 0) > 0 && <div className="ax-banner ax-banner--warning"><div>
         <strong>{tr("plan.home.draftReview.title", "Draft plans need review", "توجد خطط مسودة تحتاج إلى مراجعة")}</strong>{" "}
         {tr("plan.home.draftReview.body", "Open the plan register to inspect them. Editable resume remains unavailable until the governed draft route is reconciled.", "افتح سجل الخطط لمراجعتها. تظل متابعة التحرير غير متاحة حتى تتم مواءمة مسار المسودة المعتمد.")}{" "}

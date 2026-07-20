@@ -361,15 +361,15 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           )}
         </div>
         {!activeVisit ? (
-          <p className="ax-caption" style={{ margin: 0 }}>{strings.spineEmpty}</p>
+          <p className="t-caption" style={{ margin: 0 }}>{strings.spineEmpty}</p>
         ) : (
           <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
             <div style={{ minInlineSize: 200 }}>
               <div className="ax-numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
-                {activeVisit.planId && <span className="ax-caption ax-numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
+                {activeVisit.planId && <span className="t-caption ax-numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
               </div>
-              <div className="ax-caption">{activeVisit.factoryName}{(activeVisit.crNumber || activeVisit.licenseNumber) && <> · <span className="ax-numeric">{[activeVisit.crNumber, activeVisit.licenseNumber].filter(Boolean).join(" · ")}</span></>}</div>
-              <div className="ax-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
+              <div className="t-caption">{activeVisit.factoryName}{(activeVisit.crNumber || activeVisit.licenseNumber) && <> · <span className="ax-numeric">{[activeVisit.crNumber, activeVisit.licenseNumber].filter(Boolean).join(" · ")}</span></>}</div>
+              <div className="t-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
             </div>
             <div style={{ minInlineSize: 180 }}>
               <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
@@ -378,8 +378,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                 </span>
                 <span className="ax-lozenge ax-lozenge--ops">{activeVisit.opsLabel}</span>
               </div>
-              <div className="ax-caption">{strings.spineWindow}: <span className="ax-numeric">{fmt(activeVisit.windowStart)}</span></div>
-              <div className="ax-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
+              <div className="t-caption">{strings.spineWindow}: <span className="ax-numeric">{fmt(activeVisit.windowStart)}</span></div>
+              <div className="t-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
             </div>
             <a className="ax-btn ax-btn--subtle" href={`/visits/${activeVisit.id}`}
               aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</a>
@@ -452,12 +452,12 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           <div className="ax-state ax-state--inline" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-050)", alignItems: "flex-start" }}>
             <span className="ax-overline">{strings.eligHeading}</span>
             <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
-              <span className="ax-caption">{strings.eligReschedule}: <strong>{eligLine(elig.publishNew)}</strong></span>
-              <span className="ax-caption">{strings.eligCancel}: <strong>{eligLine(elig.publishNew)}</strong></span>
-              <span className="ax-caption">{strings.eligReassign}: <strong>{eligLine(elig.notStarted)}</strong></span>
-              <span className="ax-caption">{strings.eligEdit}: <strong>{elig.samePlan ? eligLine(elig.publishNew) : "—"}</strong></span>
+              <span className="t-caption">{strings.eligReschedule}: <strong>{eligLine(elig.publishNew)}</strong></span>
+              <span className="t-caption">{strings.eligCancel}: <strong>{eligLine(elig.publishNew)}</strong></span>
+              <span className="t-caption">{strings.eligReassign}: <strong>{eligLine(elig.notStarted)}</strong></span>
+              <span className="t-caption">{strings.eligEdit}: <strong>{elig.samePlan ? eligLine(elig.publishNew) : "—"}</strong></span>
             </div>
-            <span className="ax-caption">{strings.eligVerified}</span>
+            <span className="t-caption">{strings.eligVerified}</span>
             {!elig.samePlan && <span className="ax-lozenge ax-lozenge--warning">{strings.eligSamePlanBlocked}</span>}
           </div>
 
@@ -549,13 +549,13 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       : item.outcome === "error" ? strings.ledgerShortError
                       : strings.ledgerShortBlocked}
                   </span></td>
-                  <td className="ax-caption">{outcomeText[item.outcome]}</td>
-                  <td><a className="ax-link ax-caption" href={`/visits/${item.id}`}>{strings.ledgerOpen}</a></td>
+                  <td className="t-caption">{outcomeText[item.outcome]}</td>
+                  <td><a className="ax-link t-caption" href={`/visits/${item.id}`}>{strings.ledgerOpen}</a></td>
                 </tr>
               ))}
             </tbody>
           </table></div>
-          {nBlocked > 0 && <span className="ax-caption">{strings.ledgerRetrySafe}</span>}
+          {nBlocked > 0 && <span className="t-caption">{strings.ledgerRetrySafe}</span>}
         </div>
       )}
 
@@ -585,14 +585,14 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
                       <strong>{v.id.slice(0, 8)}</strong>
                     </button>
-                    {" "}<a className="ax-link ax-caption ax-inline-target" href={`/visits/${v.id}`}
+                    {" "}<a className="ax-link t-caption ax-inline-target" href={`/visits/${v.id}`}
                       aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</a>
                     {v.planId && (
-                      <><br /><span className="ax-caption ax-numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
+                      <><br /><span className="t-caption ax-numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
                     )}
                   </td>
                   <td>{v.factoryName}{(v.crNumber || v.licenseNumber) && (
-                    <><br /><span className="ax-caption ax-numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
+                    <><br /><span className="t-caption ax-numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
                   )}</td>
                   <td>{v.typeLabel} · {v.modeLabel}</td>
                   <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[eff] ?? ""}`}>
@@ -610,7 +610,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
 
       {/* M02-020 — count display + load-more raises the server page cap */}
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-        <span className="ax-caption ax-numeric">
+        <span className="t-caption ax-numeric">
           {strings.showing.replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}
         </span>
         {nextLimit !== null && <a className="ax-btn ax-btn--subtle" href={`/visits?limit=${nextLimit}`}>{strings.loadMore}</a>}

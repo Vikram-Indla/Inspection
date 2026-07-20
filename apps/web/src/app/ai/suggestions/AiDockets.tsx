@@ -24,7 +24,7 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-generate-evidence">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" id="ai-generate-evidence" required /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-generate-clause">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" id="ai-generate-clause" /></div>
         <button className="ax-btn" disabled={generating}>{generating ? s.generating : s.generate}</button>
-        {gState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{gState.error}</span>}
+        {gState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{gState.error}</span>}
         {gState.ok && <span className="ax-lozenge ax-lozenge--success">{s.generated}</span>}
       </form>
       <form action={pAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
@@ -34,7 +34,7 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-evidence">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" id="ai-propose-evidence" required /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-clause">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" id="ai-propose-clause" /></div>
         <button className="ax-btn" disabled={proposing}>{proposing ? s.proposing : s.propose}</button>
-        {pState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{pState.error}</span>}
+        {pState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{pState.error}</span>}
         {pState.ok && <span className="ax-lozenge ax-lozenge--success">{s.proposed}</span>}
       </form>
       {rows.map((r) => <AiRowView key={r.id} r={r} strings={s} />)}
@@ -49,16 +49,16 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
   return (
     <div id={`ai-suggestion-${r.id}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
-        <h3>{r.surface} <span className="ax-caption">{r.text}</span></h3>
+        <h3>{r.surface} <span className="t-caption">{r.text}</span></h3>
         <div className="row" style={{ gap: "var(--ax-space-150)" }}>
           <span className="ax-lozenge ax-lozenge--info">{r.disposition}</span>
           <span className="ax-lozenge ax-lozenge--warning">{r.provider_status}</span>
         </div>
       </div>
       <dl className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
-        <div><dt className="ax-caption">{s.evidenceRefs}</dt><dd>{r.evidenceRefs.length ? r.evidenceRefs.join(" · ") : "—"}</dd></div>
-        <div><dt className="ax-caption">{s.clauseRefs}</dt><dd>{r.clauseRefs.length ? r.clauseRefs.join(" · ") : "—"}</dd></div>
-        <div><dt className="ax-caption">{s.confidence}</dt><dd>{r.confidence == null ? s.confidenceUnavailable : `${Math.round(r.confidence * 100)}%`}</dd></div>
+        <div><dt className="t-caption">{s.evidenceRefs}</dt><dd>{r.evidenceRefs.length ? r.evidenceRefs.join(" · ") : "—"}</dd></div>
+        <div><dt className="t-caption">{s.clauseRefs}</dt><dd>{r.clauseRefs.length ? r.clauseRefs.join(" · ") : "—"}</dd></div>
+        <div><dt className="t-caption">{s.confidence}</dt><dd>{r.confidence == null ? s.confidenceUnavailable : `${Math.round(r.confidence * 100)}%`}</dd></div>
       </dl>
       {targets.length > 0 && (
         <form action={dAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
@@ -68,7 +68,7 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
             <select className="ax-input" name="to" id={`${fieldId}-dispose`}>{targets.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
           <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reason`}>{s.reason}</label><input className="ax-input" name="reason" id={`${fieldId}-reason`} /></div>
           <button className="ax-btn" disabled={disposing}>{disposing ? s.disposing : s.dispose}</button>
-          {dState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{dState.error}</span>}
+          {dState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{dState.error}</span>}
           {dState.ok && <span className="ax-lozenge ax-lozenge--success">{s.disposed}</span>}
         </form>
       )}

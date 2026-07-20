@@ -214,10 +214,10 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     return (
       <div className="ax-surface ax-panel cd-panelpad" id="cd-main">
         <div className="ax-banner ax-banner--immutable" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
-          <div><strong>{s.stagedBanner}</strong><div className="ax-caption">{s.stagedSub}</div></div>
+          <div><strong>{s.stagedBanner}</strong><div className="t-caption">{s.stagedSub}</div></div>
         </div>
         <div className="stack">{[0, 1, 2, 3].map(i => <div key={i} className="skeleton" style={{ blockSize: 44 }} />)}</div>
-        <p className="ax-caption" role="status" style={{ marginBlockStart: "var(--ax-space-200)" }}>{s.loadingNote}</p>
+        <p className="t-caption" role="status" style={{ marginBlockStart: "var(--ax-space-200)" }}>{s.loadingNote}</p>
       </div>
     );
   }
@@ -231,7 +231,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
         <div className="ax-state">
           <span className="ax-state__glyph" aria-hidden="true">◌</span>
           <h3>{s.scopeTitle}</h3>
-          <p className="ax-caption">{s.scopeBody.replace("{n}", String(missing))}</p>
+          <p className="t-caption">{s.scopeBody.replace("{n}", String(missing))}</p>
           <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
         </div>
       </div>
@@ -241,7 +241,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     return (
       <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
         <h3>{s.emptyTitle}</h3>
-        <p className="ax-caption">{s.emptyBody}</p>
+        <p className="t-caption">{s.emptyBody}</p>
         <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
       </div>
     );
@@ -254,7 +254,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3>{s.publishingTitle}</h3>
             <p role="status">{s.publishingBody}</p>
-            <p className="ax-caption">{s.publishingSub}</p>
+            <p className="t-caption">{s.publishingSub}</p>
             <div className="skeleton" style={{ blockSize: 6, inlineSize: "60%" }} />
           </div>
         </div>
@@ -269,7 +269,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3 tabIndex={-1} ref={failHeadingRef} role="alert">{s.failTitle}</h3>
             <p>{state.error}</p>
-            <p className="ax-caption">{s.failSub}</p>
+            <p className="t-caption">{s.failSub}</p>
           </div>
         </div>
         <div className="row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
@@ -296,7 +296,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
                 </div>
               ))}
             </div>
-            <p className="ax-caption">{s.successSub}</p>
+            <p className="t-caption">{s.successSub}</p>
           </div>
         </div>
         <div className="row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
@@ -352,17 +352,17 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   // Per-row evidence cell (glyph + text; never colour alone).
   const rowEvidence = (fid: string) => {
     const pick = picks[fid] ?? "";
-    if (!pick) return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>◐ {s.ecAuto}</span>;
+    if (!pick) return <span className="t-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>◐ {s.ecAuto}</span>;
     const inPool = (data?.inspectors ?? []).some(i => i.user_id === pick);
-    if (!inPool) return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {s.ev.bNotPool}</span>;
-    if (overlapSource === "failed") return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {s.ecFail}</span>;
-    if (!windowSet || overlapSource === "not-evaluated") return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>○ {s.ecSetWindow}</span>;
+    if (!inPool) return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {s.ev.bNotPool}</span>;
+    if (overlapSource === "failed") return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {s.ecFail}</span>;
+    if (!windowSet || overlapSource === "not-evaluated") return <span className="t-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>○ {s.ecSetWindow}</span>;
     const ov = overlapFor(pick);
     if (ov && ov.count > 0) {
       const sm = ov.samples[0];
-      return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · <bdi>{sm.visit_id.slice(0, 8)}</bdi> {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
+      return <span className="t-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · <bdi>{sm.visit_id.slice(0, 8)}</bdi> {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
     }
-    return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
+    return <span className="t-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
   };
 
   const blockerCopy = (b: Blocker) => {
@@ -399,7 +399,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           <span className="ax-lozenge ax-lozenge--plan">{s.method}</span>
           {freshness && <span className="ax-freshness">{s.freshnessPrefix} {freshness}</span>}
         </div>
-        <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }}>{s.stagedBanner}</p>
+        <p className="t-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }}>{s.stagedBanner}</p>
         <dl className="cd-context cd-ctx">
           <div><dt>{s.selected} / {s.retained}</dt><dd className="cd-count">{workingIds.length}{workingIds.length !== retained ? <> <small>→</small> {retained}</> : null}</dd></div>
           <div><dt>{s.visits}</dt><dd className="cd-count">{retained}</dd></div>
@@ -422,7 +422,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
         role={blockers.length ? "alert" : "status"} aria-label={s.readiness}>
         <div className="cd-sectionhead"><h3 tabIndex={-1} ref={readinessHeadingRef}>{s.readiness}</h3></div>
         {validating ? (
-          <p className="ax-caption" role="status">{s.loadingNote}</p>
+          <p className="t-caption" role="status">{s.loadingNote}</p>
         ) : blockers.length ? (
           <>
             <div className="row" style={{ gap: "var(--ax-space-100)" }}>
@@ -460,7 +460,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       <section>
         <div className="cd-sectionhead">
           <h3>{s.targetsH}</h3>
-          <span className="ax-caption cd-mono">{workingIds.length} {s.selectedLabel} · {retained} {s.retainedLabel}</span>
+          <span className="t-caption cd-mono">{workingIds.length} {s.selectedLabel} · {retained} {s.retainedLabel}</span>
         </div>
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
@@ -480,7 +480,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
                   <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div></td>
                   <td>{f.city ?? "—"}</td>
                   <td><span className={`ax-lozenge ${RISK_TONE[f.risk_band ?? ""] ?? ""}`}>{f.risk_band === "high" ? s.riskHigh : f.risk_band === "medium" ? s.riskMedium : f.risk_band === "low" ? s.riskLow : "—"}</span></td>
-                  <td>{excluded ? <span className="ax-caption">—</span> : <span className="ax-lozenge ax-lozenge--plan">{s.typePeriodic}</span>}</td>
+                  <td>{excluded ? <span className="t-caption">—</span> : <span className="ax-lozenge ax-lozenge--plan">{s.typePeriodic}</span>}</td>
                   <td>
                     {excluded ? (
                       <span className="ax-lozenge ax-lozenge--critical ax-lozenge--plan">{s.excludedLozenge}</span>
@@ -507,27 +507,27 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       {/* ---- CD-024 assignment evidence ledger (signature pattern) ---- */}
       <section id="cd-evidence-ledger">
         <div className="cd-sectionhead"><h3>{s.evTitle}</h3></div>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{s.evLead}</p>
+        <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{s.evLead}</p>
         <EvidenceLedger focus={ledgerFocus} strings={s.ev} />
       </section>
 
       {/* ---- assignment evidence ---- */}
       <section>
-        <div className="cd-sectionhead"><h3>{s.assignH}</h3><span className="ax-caption cd-mono">{interp(s.splitLine, { manual, auto })}</span></div>
+        <div className="cd-sectionhead"><h3>{s.assignH}</h3><span className="t-caption cd-mono">{interp(s.splitLine, { manual, auto })}</span></div>
         <div className="ax-grid-2">
           <div className="ax-surface ax-panel cd-panelpad"><div className="ax-overline">{s.manualNamed}</div>
             <div className="cd-count" style={{ marginBlock: "var(--ax-space-050)" }}>{manual}</div>
-            <p className="ax-caption">{s.manualEvidenceNote}</p></div>
+            <p className="t-caption">{s.manualEvidenceNote}</p></div>
           <div className="ax-surface ax-panel cd-panelpad"><div className="ax-overline">{s.autoChosen}</div>
             <div className="cd-count" style={{ marginBlock: "var(--ax-space-050)" }}>{auto}</div>
-            <p className="ax-caption">{s.autoNote}</p></div>
+            <p className="t-caption">{s.autoNote}</p></div>
         </div>
       </section>
 
       {/* ---- publish consequence ledger (signature pattern) ---- */}
       <section>
         <div className="cd-sectionhead"><h3>{s.ledgerH}</h3></div>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{s.ledgerLead}</p>
+        <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{s.ledgerLead}</p>
         <div className="cd-ledger">
           <div className="cd-lgroup">
             <div className="cd-lgroup__head">1 · {s.gCreate}</div>
@@ -564,18 +564,18 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
         <div className="cd-sectionhead" style={{ margin: 0 }}><h3>{s.correctH}</h3></div>
         <div className="row" style={{ gap: "var(--ax-space-150)" }}>
           <a className="ax-link" href="/planning/bulk">{s.backConfig}</a>
-          <span className="ax-caption">{s.backConfigD}</span>
+          <span className="t-caption">{s.backConfigD}</span>
         </div>
         <div className="ax-field" style={{ maxInlineSize: "100%" }}>
           <label className="ax-field__label" htmlFor="cd-notes">{s.notes}</label>
           {/* value submitted via the mirrored hidden field so notes survive the source failure form too */}
           <textarea id="cd-notes" className="ax-textarea" rows={2} placeholder={s.notesPlaceholder} value={notes} onChange={e => setNotes(e.target.value)} />
         </div>
-        <p className="ax-caption">{s.willRecheck}</p>
+        <p className="t-caption">{s.willRecheck}</p>
         <div className="cd-actionbar__row">
           <div className="cd-grow">
             {committable
-              ? <div className="ax-caption">{s.allClear}</div>
+              ? <div className="t-caption">{s.allClear}</div>
               : <div className="cd-disabledreason" id={reasonId}>{s.disabledPrefix}{validating ? s.checking : interp(s.blockersN, { n: blockers.length })}</div>}
           </div>
           <button className="ax-btn ax-btn--prominent cd-publishbtn" disabled={!committable}

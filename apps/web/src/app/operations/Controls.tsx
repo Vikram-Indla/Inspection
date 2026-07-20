@@ -28,7 +28,7 @@ export function ActionFormControls({ actionFormId, status, strings }: { actionFo
       <button className="ax-btn ax-btn--prominent" name="next_status" value="closed" disabled={pending}>
         {pending ? "…" : strings.close}
       </button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.updated}</span>}
     </form>
   );
@@ -41,7 +41,7 @@ export function MarkNotificationHandled({ notificationId, strings }: { notificat
     <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="hidden" name="notification_id" value={notificationId} />
       <button className="ax-btn" disabled={pending}>{pending ? "…" : strings.markHandled}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.handled}</span>}
     </form>
   );

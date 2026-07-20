@@ -177,7 +177,7 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
       <div className="ax-modal" style={{ inlineSize: "min(720px, 100%)" }}>
         <div className="ax-modal__header"><h3>{strings.title}</h3></div>
         <div className="ax-modal__body">
-          <p className="ax-caption">{strings.hint}</p>
+          <p className="t-caption">{strings.hint}</p>
           <div className="ax-segmented" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
             <button aria-pressed={tool === "pen"} onClick={() => setTool("pen")}>{strings.pen}</button>
             <button aria-pressed={tool === "rect"} onClick={() => setTool("rect")}>{strings.rect}</button>

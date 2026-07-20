@@ -26,7 +26,7 @@ function Node({ node }: { node: TraceNode }) {
         {node.unavailable
           ? <span className="ax-lozenge ax-lozenge--warning">○ {node.value}</span>
           : node.value}
-        <span className="ax-caption ax-trace__source">{node.source}</span>
+        <span className="t-caption ax-trace__source">{node.source}</span>
       </dd>
     </div>
   );
@@ -44,7 +44,7 @@ export default function FindingTraceChain({ traces, strings }: {
   return (
     <section className="ax-surface ax-trace" aria-labelledby="finding-trace-heading">
       <h4 id="finding-trace-heading">{strings.heading}</h4>
-      <p className="ax-caption">{strings.hint}</p>
+      <p className="t-caption">{strings.hint}</p>
       {traces.length === 0 ? (
         <div className="ax-banner" role="status"><div>{strings.empty}</div></div>
       ) : (

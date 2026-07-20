@@ -272,7 +272,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
               <span>{t("field.start.virtualRule", "Virtual — requires OTP identity-verification engine configured (ENG · REF-011)")}</span>
               {v.execution_mode === "virtual" && <span className="ax-lozenge ax-lozenge--info">{t("field.start.plannedMode", "planned mode")}</span>}
             </div>
-            <p className="ax-caption">
+            <p className="t-caption">
               {t("field.start.eligibilityCaption", "This visit is planned as {mode}. Eligibility is evaluated from engine configuration and factory master data — not selectable here.").replace("{mode}", modeWord(v.execution_mode))}
             </p>
           </div>

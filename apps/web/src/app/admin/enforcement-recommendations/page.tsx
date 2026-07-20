@@ -83,12 +83,12 @@ export default async function EnforcementRecommendations() {
             <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
               <div>
                 <strong>{row.factories?.name ?? row.factory_id}</strong>
-                <div className="ax-caption">{row.factories?.city ?? "—"}{row.factories?.region ? `, ${row.factories.region}` : ""} · {row.factories?.factory_code ?? tr("admin.enf.rec.unregistered", "unregistered/temporary", "غير مسجّلة/مؤقتة")}</div>
+                <div className="t-caption">{row.factories?.city ?? "—"}{row.factories?.region ? `, ${row.factories.region}` : ""} · {row.factories?.factory_code ?? tr("admin.enf.rec.unregistered", "unregistered/temporary", "غير مسجّلة/مؤقتة")}</div>
               </div>
               <span className="ax-lozenge ax-lozenge--warning">{actionLabel(row.recommended_action)}</span>
             </div>
-            {row.recommendation_notes && <p className="ax-caption">{row.recommendation_notes}</p>}
-            <p className="ax-caption ax-numeric">{new Date(row.recommended_at).toLocaleString()}</p>
+            {row.recommendation_notes && <p className="t-caption">{row.recommendation_notes}</p>}
+            <p className="t-caption ax-numeric">{new Date(row.recommended_at).toLocaleString()}</p>
             {isDecider
               ? <DecideForm id={row.id} strings={{
                   approve: tr("admin.enf.rec.approve", "Approve", "الموافقة"),
@@ -98,7 +98,7 @@ export default async function EnforcementRecommendations() {
                   submit: tr("admin.enf.rec.submit", "Record decision", "تسجيل القرار"),
                   recording: tr("admin.enf.rec.recording", "Recording…", "جارٍ التسجيل…"),
                 }} />
-              : <p className="ax-caption">{tr("admin.enf.rec.awaitingDecider", "Awaiting an Operations or Compliance Admin decision.", "بانتظار قرار من العمليات أو مسؤول الامتثال.")}</p>}
+              : <p className="t-caption">{tr("admin.enf.rec.awaitingDecider", "Awaiting an Operations or Compliance Admin decision.", "بانتظار قرار من العمليات أو مسؤول الامتثال.")}</p>}
           </div>
         ))}
       </section>
@@ -106,14 +106,14 @@ export default async function EnforcementRecommendations() {
       {isDecider && (
         <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", marginBlockStart: "var(--ax-space-200)" }}>
           <h3>{tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}</h3>
-          {!(decided ?? []).length ? <p className="ax-caption">{tr("admin.enf.rec.noneDecided", "No decisions recorded yet.", "لم تُسجَّل أي قرارات بعد.")}</p> : (
+          {!(decided ?? []).length ? <p className="t-caption">{tr("admin.enf.rec.noneDecided", "No decisions recorded yet.", "لم تُسجَّل أي قرارات بعد.")}</p> : (
             <div className="ax-tablewrap"><table className="ax-table"><tbody>
               {(decided ?? []).map(d => (
                 <tr key={d.id}>
                   <td>{(d.factories as unknown as { name: string } | null)?.name ?? "—"}</td>
                   <td>{actionLabel(d.recommended_action)}</td>
                   <td><span className={`ax-lozenge ${d.status === "approved" ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{d.status}</span></td>
-                  <td className="ax-caption ax-numeric">{d.decided_at ? new Date(d.decided_at).toLocaleString() : "—"}</td>
+                  <td className="t-caption ax-numeric">{d.decided_at ? new Date(d.decided_at).toLocaleString() : "—"}</td>
                 </tr>
               ))}
             </tbody></table></div>

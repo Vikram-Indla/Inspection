@@ -284,10 +284,10 @@ const panelStrings: WorkspaceDecisionStrings = {
               <p key={i}><span className="ax-lozenge ax-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="ax-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
             ))}
             {(ins.action_forms as unknown as { owner_name: string; due_at: string; status: string; required_correction: string }[]).map((a, i) => (
-              <p key={i} className="ax-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {new Date(a.due_at).toISOString().slice(0, 10)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
+              <p key={i} className="t-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {new Date(a.due_at).toISOString().slice(0, 10)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
             ))}
             {(ins.evidence as unknown as { storage_path: string; content_sha256: string | null }[]).map((e, i) => (
-              <p key={i} className="ax-caption ax-numeric" style={{ marginBlockStart: 8 }}>📎 {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
+              <p key={i} className="t-caption ax-numeric" style={{ marginBlockStart: 8 }}>📎 {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
             ))}
           </div>
           {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}
@@ -301,9 +301,9 @@ const panelStrings: WorkspaceDecisionStrings = {
               </span>
             </h4>
             {fv.error ? (
-              <p className="ax-caption">{t("review.ws.fvError", "Verification data is temporarily unavailable. Source-versus-observed comparison cannot be shown yet.")}</p>
+              <p className="t-caption">{t("review.ws.fvError", "Verification data is temporarily unavailable. Source-versus-observed comparison cannot be shown yet.")}</p>
             ) : fv.checks.length === 0 ? (
-              <p className="ax-caption">{t("review.ws.fvEmpty", "No factory-field checks recorded for this inspection.")}</p>
+              <p className="t-caption">{t("review.ws.fvEmpty", "No factory-field checks recorded for this inspection.")}</p>
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
                 <thead><tr>
@@ -323,13 +323,13 @@ const panelStrings: WorkspaceDecisionStrings = {
                     <td><span className={`ax-lozenge ${c.status === "verified" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.fv.${c.status}`, c.status)}</span></td>
                     <td className="ax-numeric">
                       {fvEvCount(c.id) || "—"}
-                      {c.evidence_note && <div className="ax-caption">{c.evidence_note}</div>}
+                      {c.evidence_note && <div className="t-caption">{c.evidence_note}</div>}
                     </td>
                   </tr>
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record (FND-007/M04-112); checks are audit-logged with before/after values (M04-113).")}</p>
+            <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record (FND-007/M04-112); checks are audit-logged with before/after values (M04-113).")}</p>
           </div>
           {/* M04-197 / M06-021 — acknowledgement signature made visible to the reviewer */}
           {latest?.acknowledgement != null && (() => {
@@ -344,7 +344,7 @@ const panelStrings: WorkspaceDecisionStrings = {
                 {ack.signature_data_url
                   // eslint-disable-next-line @next/next/no-img-element
                   ? <img src={ack.signature_data_url} alt={t("review.ws.sigAlt", "Representative signature")} style={{ maxInlineSize: 280, maxBlockSize: 120, background: "var(--ax-color-surface-sunken)", border: "1px solid var(--ax-color-border)", borderRadius: "var(--ax-radius-standard)" }} />
-                  : <p className="ax-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>}
+                  : <p className="t-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>}
               </div>
             );
           })()}
@@ -372,29 +372,29 @@ const panelStrings: WorkspaceDecisionStrings = {
             <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
               <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail (ENG-12)")}</h4>
               {(trail ?? []).map(ev => (
-                <p key={ev.id} className="ax-caption" style={{ marginBlockStart: 4 }}>
+                <p key={ev.id} className="t-caption" style={{ marginBlockStart: 4 }}>
                   <span className="ax-numeric">{new Date(ev.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</span>
                   {" · "}<strong>{t(`enum.audit.${ev.object_type}`, ev.object_type.replace(/_/g, " "))}</strong>
                   {" · "}{t(`enum.audit.${ev.action}`, ev.action.replace(/_/g, " ").toLowerCase())}
                 </p>
               ))}
-              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes (FND-003).")}</p>
+              <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes (FND-003).")}</p>
             </div>
           )}
           {reviews.filter(r => { return !!r.decided_at; }).map(r => (
-            <div key={r.id} className="ax-banner ax-banner--warning"><div><strong>{t("review.ws.priorDecision", "Prior decision:")}</strong> {r.decision ? t(`enum.${r.decision}`, r.decision) : "—"} · {r.decision_reason} {r.returned_sections && `· ${t("review.ws.sections", "sections")} ${r.returned_sections.join(", ")}`} <span className="ax-caption">({t("review.ws.immutable", "immutable")})</span></div></div>
+            <div key={r.id} className="ax-banner ax-banner--warning"><div><strong>{t("review.ws.priorDecision", "Prior decision:")}</strong> {r.decision ? t(`enum.${r.decision}`, r.decision) : "—"} · {r.decision_reason} {r.returned_sections && `· ${t("review.ws.sections", "sections")} ${r.returned_sections.join(", ")}`} <span className="t-caption">({t("review.ws.immutable", "immutable")})</span></div></div>
           ))}
         </div>
         {!canDecide
           // HANDOFF read-only path — auditor/planner/leadership can read the
           // whole workspace above but never see Start review / the decision
           // controls, regardless of open/canStart state.
-          ? <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
+          ? <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="t-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
           ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))} strings={panelStrings} />
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
-          : <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
+          : <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="t-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
       </div>
     </Shell>
   );

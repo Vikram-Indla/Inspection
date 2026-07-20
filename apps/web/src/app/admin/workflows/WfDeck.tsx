@@ -58,7 +58,7 @@ export function WfDeck({ payload, strings }: Props) {
         </div>
         <ul style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
           {validation.checks.map((c) => (
-            <li key={c.id} className="ax-caption">
+            <li key={c.id} className="t-caption">
               <span className={`ax-lozenge ${c.ok ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
                 {c.ok ? "✓" : "✕"} {c.id}
               </span>{" "}
@@ -90,7 +90,7 @@ export function WfDeck({ payload, strings }: Props) {
             </li>
           ))}
         </ol>
-        <p className="ax-caption">
+        <p className="t-caption">
           {def.states.filter((s) => s.initial).map((s) => `▶ ${s.key} ${strings.initial}`).join(" · ")}
           {" · "}
           {def.states.filter((s) => s.terminal).map((s) => `⛔ ${s.key} ${strings.terminal}`).join(" · ")}
@@ -100,7 +100,7 @@ export function WfDeck({ payload, strings }: Props) {
       {/* Transition inspector */}
       <section aria-label={strings.inspectorTitle} className="ax-surface" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <h4 style={{ margin: 0 }}>{strings.inspectorTitle}</h4>
-        <p className="ax-caption">{strings.selectHint}</p>
+        <p className="t-caption">{strings.selectHint}</p>
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
             <th scope="col">{strings.graphTitle}</th><th scope="col">{strings.actor}</th><th scope="col">{strings.guards}</th><th scope="col">{strings.sideEffects}</th>
@@ -108,10 +108,10 @@ export function WfDeck({ payload, strings }: Props) {
           <tbody>
             {shown.map(({ t, i }) => (
               <tr key={i} aria-selected={selectedIdx === i} onClick={() => setSelectedIdx(i)} style={{ cursor: "pointer" }}>
-                <td>{t.from} <span aria-hidden="true">→</span> {t.to} <span className="ax-caption">({t.trigger})</span></td>
+                <td>{t.from} <span aria-hidden="true">→</span> {t.to} <span className="t-caption">({t.trigger})</span></td>
                 <td>{t.actor ? t.actor : <span className="ax-lozenge ax-lozenge--critical">✕ {strings.actor}</span>}</td>
-                <td className="ax-caption">{(t.guards ?? []).join(", ") || strings.none}</td>
-                <td className="ax-caption">
+                <td className="t-caption">{(t.guards ?? []).join(", ") || strings.none}</td>
+                <td className="t-caption">
                   {(t.fx ?? []).length === 0 ? strings.none : (t.fx ?? []).map((f, k) => (
                     <span key={k} className={`ax-lozenge ${f.idempotencyKey ? "ax-lozenge--success" : "ax-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>
                       {f.idempotencyKey ? `✓ ${f.kind} ${strings.idempotent}` : `⚠ ${f.kind} ${strings.noIdempotencyKey}`}

@@ -113,7 +113,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
         </div>
         <button type="button" className="ax-btn ax-btn--secondary" onClick={selectVisible}>{strings.selectVisible}</button>
         <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
-        <span className="ax-caption ax-numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
+        <span className="t-caption ax-numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
       </div>
 
       {confirmingSelectAll && (
@@ -151,23 +151,23 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             return (
               <tr key={f.id} style={isFocused ? { outline: "2px solid var(--ax-color-primary)", outlineOffset: -2 } : undefined}>
                 <td><input type="checkbox" disabled={dup} checked={selected.has(f.id)} onChange={e => toggle(f.id, e.target.checked)} aria-label={strings.selectFactory.replace("{name}", f.name)} /></td>
-                <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="ax-caption ax-numeric"><bdi>{f.factory_code}</bdi></span></td>
+                <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="t-caption ax-numeric"><bdi>{f.factory_code}</bdi></span></td>
                 <td className="ax-numeric"><bdi>{f.cr_number}</bdi></td>
                 <td>{f.city ?? "—"}</td>
                 <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.riskBands[f.risk_band]) ?? "—"} · {f.risk_score ?? "?"}</span></td>
                 <td>{dup ? <span className="ax-lozenge ax-lozenge--critical">⛔ {strings.duplicate}</span> : <span className="ax-lozenge ax-lozenge--success">✓ {strings.eligible}</span>}</td>
-                <td className="ax-caption ax-numeric"><span className="ax-freshness"><bdi>{provenance(f)}</bdi></span></td>
-                <td>{dq.length === 0 ? <span className="ax-caption">{strings.dqComplete}</span> : dq.map(d => <div key={d.label}><span className={`ax-lozenge ax-lozenge--${d.kind}`}>{d.kind === "critical" ? "⛔" : "⚠"} {d.label}</span></div>)}</td>
+                <td className="t-caption ax-numeric"><span className="ax-freshness"><bdi>{provenance(f)}</bdi></span></td>
+                <td>{dq.length === 0 ? <span className="t-caption">{strings.dqComplete}</span> : dq.map(d => <div key={d.label}><span className={`ax-lozenge ax-lozenge--${d.kind}`}>{d.kind === "critical" ? "⛔" : "⚠"} {d.label}</span></div>)}</td>
               </tr>
             );
           })}
         </tbody>
       </table></div>
-      <p className="ax-caption">{strings.riskAdvisory}</p>
+      <p className="t-caption">{strings.riskAdvisory}</p>
 
       <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", justifyContent: "center" }}>
         <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
-        <span className="ax-caption ax-numeric" role="status" aria-live="polite">
+        <span className="t-caption ax-numeric" role="status" aria-live="polite">
           {strings.pageStatus.replace("{a}", String(filtered.length === 0 ? 0 : clampedPage * PAGE_SIZE + 1)).replace("{b}", String(Math.min(filtered.length, (clampedPage + 1) * PAGE_SIZE))).replace("{n}", String(filtered.length))}
         </span>
         <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
@@ -175,14 +175,14 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
 
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.summaryTitle}</h4>
-        {sel.length === 0 ? <p className="ax-caption">{strings.summaryEmpty}</p> : (
+        {sel.length === 0 ? <p className="t-caption">{strings.summaryEmpty}</p> : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "var(--ax-space-200)" }}>
-            <div><span className="ax-caption">{strings.summarySelected}</span><div className="ax-numeric"><strong>{sel.length}</strong></div></div>
-            <div><span className="ax-caption">{strings.summaryByBand}</span>
+            <div><span className="t-caption">{strings.summarySelected}</span><div className="ax-numeric"><strong>{sel.length}</strong></div></div>
+            <div><span className="t-caption">{strings.summaryByBand}</span>
               <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                 {Object.entries(byBand).map(([b, n]) => <span key={b} className={`ax-lozenge ${b === "high" ? "ax-lozenge--critical" : b === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{strings.riskBands[b] ?? b} · {n}</span>)}
               </div></div>
-            <div><span className="ax-caption">{strings.summaryByRegion}</span>
+            <div><span className="t-caption">{strings.summaryByRegion}</span>
               <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                 {Object.entries(byRegion).map(([r, n]) => <span key={r} className="ax-lozenge ax-lozenge--info"><bdi>{r}</bdi> · {n}</span>)}
               </div></div>

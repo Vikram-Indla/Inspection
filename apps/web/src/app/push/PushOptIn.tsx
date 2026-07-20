@@ -49,7 +49,7 @@ export function PushOptIn({ strings: s }: { strings: { enable: string; enabling:
       <button className="ax-btn" onClick={enable} disabled={state === "working" || state === "on"}>
         {state === "working" ? s.enabling : state === "on" ? s.enabled : s.enable}
       </button>
-      {msg && <span className="ax-caption" role={state === "error" ? "alert" : "status"} style={state === "error" ? { color: "var(--ax-color-critical)" } : undefined}>{msg}</span>}
+      {msg && <span className="t-caption" role={state === "error" ? "alert" : "status"} style={state === "error" ? { color: "var(--ax-color-critical)" } : undefined}>{msg}</span>}
     </div>
   );
 }

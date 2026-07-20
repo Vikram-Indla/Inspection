@@ -18,7 +18,7 @@ export default function ContextualAiPanel({ surface, title, description, context
       <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
         <div>
           <h3 id={`${surface}-heading`}>{title}</h3>
-          <p className="ax-caption">{description}</p>
+          <p className="t-caption">{description}</p>
         </div>
         <span className="ax-lozenge ax-lozenge--info">{advisoryLabel}</span>
       </div>
@@ -30,12 +30,12 @@ export default function ContextualAiPanel({ surface, title, description, context
         {itemId && <input type="hidden" name="item_id" value={itemId} />}
         {locale && <input type="hidden" name="locale" value={locale} />}
         <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <span className="ax-caption">{evidenceLabel}: {evidenceRefs.join(" · ")}</span>
+          <span className="t-caption">{evidenceLabel}: {evidenceRefs.join(" · ")}</span>
           <button className="ax-btn" disabled={pending || offline}>{offline ? unavailableLabel : pending ? `${generateLabel}…` : generateLabel}</button>
         </div>
       </form>
-      {state.error && <p role="alert" className="ax-caption" style={{ color: "var(--ax-color-critical)", marginBlockStart: "var(--ax-space-150)" }}>{state.error.includes("unavailable") ? unavailableLabel : state.error}</p>}
-      {state.ok && state.text && <div className="ax-banner ax-banner--immutable" role="status" style={{ marginBlockStart: "var(--ax-space-200)", whiteSpace: "pre-wrap" }}><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{evidenceLabel}: {evidenceRefs.join(" · ")}</div>{state.insightId && reviewLabel && <a className="ax-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel} →</a>}</div>}
+      {state.error && <p role="alert" className="t-caption" style={{ color: "var(--ax-color-critical)", marginBlockStart: "var(--ax-space-150)" }}>{state.error.includes("unavailable") ? unavailableLabel : state.error}</p>}
+      {state.ok && state.text && <div className="ax-banner ax-banner--immutable" role="status" style={{ marginBlockStart: "var(--ax-space-200)", whiteSpace: "pre-wrap" }}><strong>{advisoryLabel}</strong><div>{state.text}</div><div className="t-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{evidenceLabel}: {evidenceRefs.join(" · ")}</div>{state.insightId && reviewLabel && <a className="ax-link" href={`/ai/suggestions#ai-suggestion-${state.insightId}`}>{reviewLabel} →</a>}</div>}
     </section>
   );
 }

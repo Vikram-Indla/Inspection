@@ -50,7 +50,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
 
       {/* ── ZONE: AVAILABLE NOW ────────────────────────────────── */}
       <div className="ax-actionzone">
-        <p className="ax-actionzone__label ax-caption">{strings.zoneAvailable}</p>
+        <p className="ax-actionzone__label t-caption">{strings.zoneAvailable}</p>
         <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           {status === "published" && (
             <form action={retAct} className="row" style={{ alignItems: "flex-end" }}>
@@ -100,22 +100,22 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
               </form>
             </>
           )}
-          {!hasAvailable && <p className="ax-caption">{strings.noneAvailable}</p>}
+          {!hasAvailable && <p className="t-caption">{strings.noneAvailable}</p>}
         </div>
       </div>
 
       {/* ── ZONE: DISABLED, WITH WHY ───────────────────────────── */}
       {(scheduleBlocked || reassignBlocked) && (
         <div className="ax-actionzone">
-          <p className="ax-actionzone__label ax-caption">{strings.zoneBlocked}</p>
+          <p className="ax-actionzone__label t-caption">{strings.zoneBlocked}</p>
           <ul className="stack" style={{ gap: "var(--ax-space-100)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
             {scheduleBlocked && (
               <li><span className="ax-lozenge ax-lozenge--warning">{strings.cancelBtn} · {strings.rescheduleBtn} · {strings.visitTypeBtn}</span>{" "}
-                <span className="ax-caption">{strings.scheduleLockedWhy.replace("{state}", opStateLabel)}</span></li>
+                <span className="t-caption">{strings.scheduleLockedWhy.replace("{state}", opStateLabel)}</span></li>
             )}
             {reassignBlocked && (
               <li><span className="ax-lozenge ax-lozenge--warning">{strings.reassignBtn}</span>{" "}
-                <span className="ax-caption">{strings.reassignLockedWhy.replace("{state}", opStateLabel)}</span></li>
+                <span className="t-caption">{strings.reassignLockedWhy.replace("{state}", opStateLabel)}</span></li>
             )}
           </ul>
         </div>
@@ -124,7 +124,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
       {/* ── ZONE: UNAVAILABLE (final lifecycle state) ──────────── */}
       {isFinal && (
         <div className="ax-actionzone">
-          <p className="ax-actionzone__label ax-caption">{strings.zoneUnavailable}</p>
+          <p className="ax-actionzone__label t-caption">{strings.zoneUnavailable}</p>
           <span className="ax-lozenge">{strings.finalState}</span>
         </div>
       )}

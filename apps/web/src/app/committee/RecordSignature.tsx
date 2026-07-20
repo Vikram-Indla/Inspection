@@ -11,7 +11,7 @@ export function RecordSignature({ strings: s }: { strings: { record: string; rec
       <div className="ax-field"><label className="ax-field__label" htmlFor="committee-signature-outcome">{s.outcome}</label>
         <select className="ax-input" name="outcome" id="committee-signature-outcome"><option value="captured">captured</option><option value="refused">refused</option><option value="queued">queued</option><option value="failed">failed</option></select></div>
       <button className="ax-btn" disabled={pending}>{pending ? s.recording : s.record}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.recorded}</span>}
     </form>
   );

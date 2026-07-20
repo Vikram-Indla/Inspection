@@ -22,7 +22,7 @@ export default function BarChart({ data, title, emptyLabel = "No data", height =
   data: BarDatum[]; title: string; emptyLabel?: string; height?: number;
 }) {
   if (data.length === 0) {
-    return <p className="ax-caption" role="status">{emptyLabel}</p>;
+    return <p className="t-caption" role="status">{emptyLabel}</p>;
   }
   const w = 360, padX = 8, padTop = 18, padBottom = 22;
   const innerH = height - padTop - padBottom;

@@ -45,7 +45,7 @@ export default async function ProfileSettings() {
 
   const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div className="row" style={{ gap: "var(--ax-space-150)", justifyContent: "space-between", padding: "var(--ax-space-100) 0", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
-      <span className="ax-caption">{label}</span>
+      <span className="t-caption">{label}</span>
       <span>{children}</span>
     </div>
   );
@@ -60,7 +60,7 @@ export default async function ProfileSettings() {
           <Row label={t("profile.details.email", "Email")}><bdi dir="ltr" className="ax-numeric">{profile?.email ?? user.email ?? "—"}</bdi></Row>
           <Row label={t("profile.details.region", "Region")}><bdi dir="ltr">{profile?.region ?? "—"}</bdi></Row>
           <Row label={t("profile.details.roles", "Roles")}><bdi dir="ltr">{roles.length ? roles.map(roleLabel).join(", ") : "—"}</bdi></Row>
-          <p className="ax-caption" style={{ margin: 0, marginBlockStart: "var(--ax-space-100)" }}>
+          <p className="t-caption" style={{ margin: 0, marginBlockStart: "var(--ax-space-100)" }}>
             {t("profile.details.editNote", "Personal details, region and roles are governed elsewhere and are not editable from this screen (no self-service identity or role changes).")}
           </p>
         </section>
@@ -73,7 +73,7 @@ export default async function ProfileSettings() {
           <Row label={t("profile.appearance.themeLabel", "Theme")}>
             <ThemeToggle labels={{ toLight: t("theme.light", "Light mode"), toDark: t("theme.dark", "Dark mode") }} className="ax-btn ax-btn--subtle" />
           </Row>
-          <p className="ax-caption" style={{ margin: 0 }}>{t("profile.appearance.themeNote", "Theme preference is saved to this browser.")}</p>
+          <p className="t-caption" style={{ margin: 0 }}>{t("profile.appearance.themeNote", "Theme preference is saved to this browser.")}</p>
         </section>
 
         <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-notif-h">
@@ -93,7 +93,7 @@ export default async function ProfileSettings() {
               saved: t("profile.notif.saved", "Saved"),
             }}
           />
-          <p className="ax-caption" style={{ margin: 0 }}>{t("profile.notif.pushOptInNote", "Push notifications require enabling on this device (browser permission + subscription). Toggling the preference above only controls whether push is SENT to devices you've enabled.")}</p>
+          <p className="t-caption" style={{ margin: 0 }}>{t("profile.notif.pushOptInNote", "Push notifications require enabling on this device (browser permission + subscription). Toggling the preference above only controls whether push is SENT to devices you've enabled.")}</p>
           <PushOptIn strings={{
             enable: t("profile.notif.pushEnable", "Enable push on this device"),
             enabling: t("profile.notif.pushEnabling", "Requesting permission…"),

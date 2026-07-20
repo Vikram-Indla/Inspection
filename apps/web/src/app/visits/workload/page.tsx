@@ -111,14 +111,14 @@ export default async function Workload() {
                       <div style={{ flex: 1, blockSize: 8, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-neutral-tint)" }}>
                         <div style={{ blockSize: 8, borderRadius: "var(--ax-radius-full)", inlineSize: `${Math.round((a.total / maxTotal) * 100)}%`, background: "var(--ax-color-info)" }} />
                       </div>
-                      <span className="ax-caption ax-numeric">{Math.round((a.total / maxTotal) * 100)}%</span>
+                      <span className="t-caption ax-numeric">{Math.round((a.total / maxTotal) * 100)}%</span>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table></div>
-          <p className="ax-caption">
+          <p className="t-caption">
             {t("visit.load.relativeNote", "Utilization is relative to the busiest inspector — no capacity threshold is configured in engine_settings (ENG-05), so no absolute capacity is invented. Weeks start Sunday (ENG-09 calendar).")}
           </p>
         </div>

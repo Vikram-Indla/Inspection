@@ -201,7 +201,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.licenseStep}</h4>
           {factory.license_number ? (
             <>
-              <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseSelect}</p>
+              <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseSelect}</p>
               <label className="ax-choice" style={{ display: "flex" }}>
                 <input key={resetKey} type="radio" name="license_number" value={factory.license_number} required
                   checked={licenseNumber === factory.license_number} onChange={() => setLicenseNumber(factory.license_number as string)} />

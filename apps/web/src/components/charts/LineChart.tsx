@@ -21,7 +21,7 @@ export default function LineChart({ data, title, emptyLabel = "No data", height 
   data: LineDatum[]; title: string; emptyLabel?: string; height?: number;
 }) {
   if (data.length === 0) {
-    return <p className="ax-caption" role="status">{emptyLabel}</p>;
+    return <p className="t-caption" role="status">{emptyLabel}</p>;
   }
   const w = 360, padX = 18, padTop = 18, padBottom = 22;
   const innerH = height - padTop - padBottom;

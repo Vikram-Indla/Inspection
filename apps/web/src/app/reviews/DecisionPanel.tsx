@@ -154,7 +154,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
           </select></label>
         <label className="cd-choice"><input type="checkbox" checked={overdue} onChange={e => setOverdue(e.target.checked)} /><span>{strings.overdueOnly}</span></label>
         {hasFilter && <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clearFilters}</button>}
-        <span className="ax-caption ax-numeric" style={{ marginInlineStart: "auto" }}>
+        <span className="t-caption ax-numeric" style={{ marginInlineStart: "auto" }}>
           {strings.showing.replace("{shown}", String(filtered.length)).replace("{total}", String(rows.length))}
         </span>
       </div>

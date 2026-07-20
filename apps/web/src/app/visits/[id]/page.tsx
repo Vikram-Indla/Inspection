@@ -217,12 +217,12 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                 <p key={s.version_number} className="ax-numeric"><span className="ax-version">v{s.version_number}</span> {new Date(s.submitted_at).toISOString().slice(0, 16).replace("T", " ")} · {t("visit.detail.immutable", "immutable")}</p>
               ))}
               {insp.reviews.map((r, i) => (
-                <p key={i} className="ax-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
+                <p key={i} className="t-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
               ))}
               {/* M04-215 — official report (browser print-to-PDF is the production PDF path) */}
               <p><a className="ax-link" href={`/reports/inspection/${insp.id}`}>{t("visit.detail.reportLink", "Official inspection report →")}</a></p>
             </div>
-          ) : <p className="ax-caption">{t("visit.detail.notStarted", "Not started.")}</p>}
+          ) : <p className="t-caption">{t("visit.detail.notStarted", "Not started.")}</p>}
         </div>
       </div>
       {/* M02-005 — linked plan info: how this visit was planned, by whom, published when */}
@@ -237,7 +237,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             {" "}· <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
           </p>
         ) : (
-          <p className="ax-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
+          <p className="t-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
         )}
       </div>
       {/* M02-008/029 — return reason surfaced, not just stored */}
@@ -268,7 +268,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                 <span className="ax-timeline__meta ax-numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")} · gis {g.gis_version}</span></div>
             </li>
           )))}
-          {journeys.length === 0 && <p className="ax-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
+          {journeys.length === 0 && <p className="t-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
         </ul>
       </div>
       <div id="audit" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
@@ -280,7 +280,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
                 <span className="ax-timeline__meta ax-numeric">{new Date(a.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
             </li>
           ))}
-          {(auditRows ?? []).length === 0 && <p className="ax-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}
+          {(auditRows ?? []).length === 0 && <p className="t-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}
         </ul>
       </div>
     </Shell>

@@ -160,7 +160,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       </div>
 
       {/* Returned-scope authority — always stated; never inferred from the diff. */}
-      <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+      <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
         {scopeKnown
           ? strings.scopeSource.replace("{label}", scopeLabel ?? "—")
           : strings.noScope}
@@ -168,7 +168,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
 
       {/* Navigation-only is a property of the whole surface — stated even in the
           no-prior state where there is no rail to scroll. */}
-      <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.navHint}</p>
+      <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.navHint}</p>
 
       {fromN === undefined ? (
         <div className="ax-banner" role="status"><div>{strings.noPrior}</div></div>
@@ -204,13 +204,13 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                   {open[cat] && (
                     <ul id={panelId} style={{ listStyle: "none", margin: 0, padding: "var(--ax-space-100) 0 0", display: "flex", flexDirection: "column", gap: 2 }}>
                       {items.length === 0
-                        ? <li className="ax-caption">{cat === "unavailable" && !scopeKnown ? strings.noScope : "—"}</li>
+                        ? <li className="t-caption">{cat === "unavailable" && !scopeKnown ? strings.noScope : "—"}</li>
                         : items.map(r => (
                           <li key={r.key}>
                             <button type="button" className="ax-btn ax-btn--subtle" onClick={() => goToRow(r.key)}
                               style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--ax-space-150)" }}>
                               <span className="ax-numeric">{r.key}</span>
-                              {r.section && <span className="ax-caption">{r.section.title}</span>}
+                              {r.section && <span className="t-caption">{r.section.title}</span>}
                             </button>
                           </li>
                         ))}
@@ -254,10 +254,10 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       {/* Explicitly unavailable comparison categories — never rendered as "unchanged". */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)" }}>
         <p className="ax-overline" style={{ marginBlockEnd: 8 }}>{strings.unavailableHeading}</p>
-        <p className="ax-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
-        <p className="ax-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
-        <p className="ax-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>
-        <p className="ax-caption" style={{ marginBlockStart: 8 }}>{strings.unavailNote}</p>
+        <p className="t-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
+        <p className="t-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
+        <p className="t-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>
+        <p className="t-caption" style={{ marginBlockStart: 8 }}>{strings.unavailNote}</p>
       </div>
     </div>
   );

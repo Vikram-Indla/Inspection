@@ -15,7 +15,7 @@ export default function Mvp3ActionForm({ action, children, submitLabel }: {
       <button className="ax-btn ax-btn--secondary" type="submit" disabled={pending}>
         {pending ? "Working…" : submitLabel}
       </button>
-      {state.message ? <p role="status" className={state.ok ? "ax-caption" : "ax-banner ax-banner--critical"}>{state.message}</p> : null}
+      {state.message ? <p role="status" className={state.ok ? "t-caption" : "ax-banner ax-banner--critical"}>{state.message}</p> : null}
     </form>
   );
 }

@@ -24,7 +24,7 @@ export default async function Access() {
           {(profiles ?? []).map(p => (
             <tr key={p.user_id}>
               <td><strong>{p.full_name}</strong></td>
-              <td className="ax-caption">{p.email}</td>
+              <td className="t-caption">{p.email}</td>
               <td>{p.region}</td>
               <td>{(p.user_roles as { role_key: string }[]).map(r =>
                 <span key={r.role_key} className={`ax-lozenge ${(roles ?? []).find(x => x.role_key === r.role_key)?.is_admin ? "ax-lozenge--warning" : "ax-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{r.role_key}</span>)}</td>
@@ -32,7 +32,7 @@ export default async function Access() {
           ))}
         </tbody>
       </table></div>
-      <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+      <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
         {t("admin.access.rlsNote", "This roster is itself RLS-scoped: users outside your visibility are absent, not hidden rows. This screen is read-only.")}
       </p>
 

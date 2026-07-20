@@ -475,7 +475,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
             <span className="ax-kpi__value ax-numeric">{counts[s]}</span></div>
         ))}
       </div>
-      <p className="ax-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
+      <p className="t-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
 
       <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} />
 
@@ -532,12 +532,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                     <td><span className={`ax-lozenge ${f.kind === "reminder" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{slaKindLabel(f)}</span></td>
                     <td>{f.escalation
                       ? <span className={`ax-lozenge ${f.escalation === "L2" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{f.escalation}</span>
-                      : <span className="ax-caption">—</span>}</td>
+                      : <span className="t-caption">—</span>}</td>
                   </tr>
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
               {t("ops.sla.confNote", "Thresholds from engine_settings (ENG-09):")}{" "}
               {t("ops.sla.confCalendar", "calendar")} <span className="ax-numeric">{slaConf.calendar?.days ?? "—"} {slaConf.calendar?.hours ?? ""}</span> ·{" "}
               {t("ops.sla.confReview", "review")} <span className="ax-numeric">{slaConf.review_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
@@ -564,8 +564,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                       <td>{factory
                         ? <a className="ax-link" href={`/factories/${factory.id}`}>{factory.name}</a>
                         : "—"}<br />
-                        {a.inspections?.visit_id && <a className="ax-link ax-caption" href={`/visits/${a.inspections.visit_id}`}>{visitWord} {a.inspections.visit_id.slice(0, 8)}</a>}</td>
-                      <td>{a.owner_name ?? "—"}{a.owner_role && <span className="ax-caption"> · {a.owner_role}</span>}</td>
+                        {a.inspections?.visit_id && <a className="ax-link t-caption" href={`/visits/${a.inspections.visit_id}`}>{visitWord} {a.inspections.visit_id.slice(0, 8)}</a>}</td>
+                      <td>{a.owner_name ?? "—"}{a.owner_role && <span className="t-caption"> · {a.owner_role}</span>}</td>
                       <td>{a.due_at
                         ? <span className={overdue ? "ax-lozenge ax-lozenge--critical" : "ax-numeric"}>{new Date(a.due_at).toISOString().slice(0, 10)}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
                         : "—"}</td>
@@ -593,12 +593,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 <tbody>{highRisk.map(f => (
                   <tr key={f.id}>
                     <td><a className="ax-link" href={`/factories/${f.id}`}>{f.name}</a>
-                      {f.activity_class && <><br /><span className="ax-caption">{f.activity_class}</span></>}</td>
-                    <td className="ax-caption">{[f.region, f.city].filter(Boolean).join(" · ") || "—"}</td>
+                      {f.activity_class && <><br /><span className="t-caption">{f.activity_class}</span></>}</td>
+                    <td className="t-caption">{[f.region, f.city].filter(Boolean).join(" · ") || "—"}</td>
                     <td><span className="ax-numeric">{f.risk_score}</span></td>
                     <td>{f.risk_band
                       ? <span className={`ax-lozenge ${BAND_TONE[f.risk_band] ?? ""}`}>{enumLabel(f.risk_band)}</span>
-                      : <span className="ax-caption">—</span>}</td>
+                      : <span className="t-caption">—</span>}</td>
                   </tr>
                 ))}</tbody>
               </table></div>
@@ -616,7 +616,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 <li key={g.id} className={g.kind === "checkin" ? "is-key" : undefined}>
                   <div><strong>{enumLabel(g.kind)}</strong> ±{g.accuracy_m}m{" "}
                     {g.geofence_result && <span className={`ax-lozenge ${g.geofence_result === "inside" ? "ax-lozenge--success" : g.geofence_result === "override" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{enumLabel(g.geofence_result)}</span>}{" "}
-                    <a className="ax-link ax-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />
+                    <a className="ax-link t-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />
                     <span className="ax-timeline__meta ax-numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
                 </li>
               ))}</ul>
@@ -635,7 +635,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 <tbody>{notifs.map(n => (
                   <tr key={n.id}>
                     <td><span className="ax-lozenge ax-lozenge--info">{n.event_key}</span></td>
-                    <td className="ax-caption">{n.channel}</td>
+                    <td className="t-caption">{n.channel}</td>
                     <td><span className={`ax-lozenge ${NOTIF_TONE[n.delivery_state] ?? ""}`}>{enumLabel(n.delivery_state)}</span></td>
                     <td><span className="ax-numeric">{new Date(n.created_at).toISOString().slice(5, 16).replace("T", " ")}</span></td>
                     <td>{n.delivery_state !== "handled" && <MarkNotificationHandled notificationId={n.id} strings={markHandledStrings} />}</td>
@@ -643,7 +643,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
               {t("ops.notifs.rlsNote", "Notification reads and mark-handled updates are recipient/Operations scoped by separate RLS policies; the database verdict remains authoritative.")}
             </p>
           </div>

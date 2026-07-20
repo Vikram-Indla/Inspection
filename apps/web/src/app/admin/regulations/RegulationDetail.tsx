@@ -99,12 +99,12 @@ export default async function RegulationDetail({
 
       {/* Metadata + maker-checker evidence */}
       <dl className="ax-grid-2" style={{ rowGap: "var(--ax-space-100)" }}>
-        <div><dt className="ax-caption">{s.issuingAuthority}</dt><dd><bdi>{reg.issuing_authority || "—"}</bdi></dd></div>
-        <div><dt className="ax-caption">{s.metaCreated}</dt><dd><bdi>{new Date(reg.created_at).toISOString().slice(0, 10)}</bdi></dd></div>
-        <div><dt className="ax-caption">{s.metaCreatedBy}</dt><dd><bdi>{nameOf(reg.created_by)}</bdi></dd></div>
-        <div><dt className="ax-caption">{s.metaApprovedBy}</dt><dd><bdi>{reg.approved_by ? nameOf(reg.approved_by) : s.neverApproved}</bdi></dd></div>
+        <div><dt className="t-caption">{s.issuingAuthority}</dt><dd><bdi>{reg.issuing_authority || "—"}</bdi></dd></div>
+        <div><dt className="t-caption">{s.metaCreated}</dt><dd><bdi>{new Date(reg.created_at).toISOString().slice(0, 10)}</bdi></dd></div>
+        <div><dt className="t-caption">{s.metaCreatedBy}</dt><dd><bdi>{nameOf(reg.created_by)}</bdi></dd></div>
+        <div><dt className="t-caption">{s.metaApprovedBy}</dt><dd><bdi>{reg.approved_by ? nameOf(reg.approved_by) : s.neverApproved}</bdi></dd></div>
         {reg.published_at && (
-          <div><dt className="ax-caption">{s.metaPublishedAt}</dt><dd><bdi>{new Date(reg.published_at).toISOString().slice(0, 10)}</bdi></dd></div>
+          <div><dt className="t-caption">{s.metaPublishedAt}</dt><dd><bdi>{new Date(reg.published_at).toISOString().slice(0, 10)}</bdi></dd></div>
         )}
       </dl>
 
@@ -125,7 +125,7 @@ export default async function RegulationDetail({
                   <td><bdi>{c.legal_source || "—"}</bdi></td>
                   <td>
                     {items.length > 0 ? (
-                      <span className="ax-caption ax-numeric">{s.mappedCount.replace("{n}", String(items.length))}: {items.map(i => (
+                      <span className="t-caption ax-numeric">{s.mappedCount.replace("{n}", String(items.length))}: {items.map(i => (
                         <span key={i.id} className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 6 }}>{i.code}</span>
                       ))}</span>
                     ) : (
@@ -141,10 +141,10 @@ export default async function RegulationDetail({
 
       {/* Downstream unproven legs — disclosed, not faked as working controls */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-        <div><strong className="ax-caption">{s.auditTitle}</strong><p className="ax-caption">{s.auditBody}</p></div>
-        <div><strong className="ax-caption">{s.lineageTitle}</strong><p className="ax-caption">{s.lineageBody}</p></div>
-        <div><strong className="ax-caption">{s.dependencyEngineTitle}</strong><p className="ax-caption">{s.dependencyEngineBody}</p></div>
-        <div><strong className="ax-caption">{s.routeGuardTitle}</strong><p className="ax-caption">{s.routeGuardBody}</p></div>
+        <div><strong className="t-caption">{s.auditTitle}</strong><p className="t-caption">{s.auditBody}</p></div>
+        <div><strong className="t-caption">{s.lineageTitle}</strong><p className="t-caption">{s.lineageBody}</p></div>
+        <div><strong className="t-caption">{s.dependencyEngineTitle}</strong><p className="t-caption">{s.dependencyEngineBody}</p></div>
+        <div><strong className="t-caption">{s.routeGuardTitle}</strong><p className="t-caption">{s.routeGuardBody}</p></div>
       </div>
 
       <a className="ax-btn ax-btn--subtle" href="/admin/regulations">{s.backToList}</a>

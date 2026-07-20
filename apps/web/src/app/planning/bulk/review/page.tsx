@@ -40,7 +40,7 @@ export default async function BulkReview() {
           <div className="ax-state ax-state--inline">
             <span className="ax-state__glyph" aria-hidden="true">⛔</span>
             <h4 tabIndex={-1}>{t("plan.review.unauth.title", "You don’t have access to review this plan")}</h4>
-            <p className="ax-caption">{t("plan.review.unauth.body", "This view requires the Planner role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
+            <p className="t-caption">{t("plan.review.unauth.body", "This view requires the Planner role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
             <a className="ax-link" href="/planning">{t("plan.review.unauth.back", "Back to planning")}</a>
           </div>
         </section>

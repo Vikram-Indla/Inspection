@@ -113,13 +113,13 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
               <td><span className={`ax-lozenge ax-lozenge--ops ${v.operational_state === "executing" ? "ax-lozenge--success" : ""}`}>{label(v.operational_state)}</span></td>
               <td>{v.geofence
                 ? <span className={`ax-lozenge ${GEOFENCE_TONE[v.geofence] ?? "ax-lozenge--critical"}`}>{label(v.geofence)}</span>
-                : <span className="ax-caption">—</span>}</td>
+                : <span className="t-caption">—</span>}</td>
               <td>{v.inspector ?? "—"}</td>
             </tr>
           ))}</tbody>
         </table></div>
       )}
-      <p className="ax-caption">
+      <p className="t-caption">
         {pending ? s.refreshing : `${s.refreshedAt} `}
         {!pending && at && <span className="ax-numeric">{at.slice(11, 19)}</span>}
         {" · "}{s.autoNote}

@@ -8,7 +8,7 @@ export default function PrintReport({ strings, backHref }: { strings: PrintRepor
     <div className="row no-print" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-200)", padding: "var(--ax-space-200) var(--ax-space-300)" }}>
       <a className="ax-link" href={backHref}>← {strings.back}</a>
       <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-200)" }}>
-        <span className="ax-caption">{strings.hint}</span>
+        <span className="t-caption">{strings.hint}</span>
         <button className="ax-btn ax-btn--prominent" onClick={() => window.print()}>{strings.print}</button>
       </div>
     </div>

@@ -87,7 +87,7 @@ export function AddDocumentForm({ factoryId, strings }: { factoryId: string; str
       <div className="ax-field"><label className="ax-field__label" htmlFor="factory-doc-valid-to">{strings.validTo}</label>
         <input className="ax-input ax-numeric" type="date" name="valid_to" id="factory-doc-valid-to" /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.adding : strings.add}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.added}</span>}
     </form>
   );
@@ -110,7 +110,7 @@ export function AddRepresentativeForm({ factoryId, strings }: { factoryId: strin
       <label className="ax-choice" style={{ alignSelf: "center" }}>
         <input type="checkbox" name="is_primary" /> {strings.primaryContact}</label>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.adding : strings.add}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.added}</span>}
     </form>
   );
@@ -133,7 +133,7 @@ export function AddProductForm({ factoryId, strings }: { factoryId: string; stri
       <label className="ax-choice" style={{ alignSelf: "center" }}>
         <input type="checkbox" name="is_primary" /> {strings.primaryProduct}</label>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.adding : strings.add}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.added}</span>}
     </form>
   );
@@ -155,7 +155,7 @@ export function AddMaterialForm({ factoryId, strings }: { factoryId: string; str
       <div className="ax-field"><label className="ax-field__label" htmlFor="factory-material-hs">{strings.hsLabel}</label>
         <input className="ax-input ax-numeric" name="hs_code" id="factory-material-hs" placeholder="3901.10" /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.adding : strings.add}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.added}</span>}
     </form>
   );
@@ -171,7 +171,7 @@ export function ToggleRepActive({ repId, factoryId, active, strings }: { repId: 
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
       <button className="ax-btn ax-btn--subtle" disabled={pending}>
         {pending ? strings.saving : active ? strings.deactivate : strings.reactivate}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
     </form>
   );
 }

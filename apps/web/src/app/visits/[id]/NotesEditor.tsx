@@ -31,7 +31,7 @@ export default function NotesEditor({ visitId, initialNotes, strings }: {
         </div>
         <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-150)" }}>
           <button className="ax-btn ax-btn--secondary" disabled={pending}>{pending ? strings.saving : strings.saveBtn}</button>
-          <span className="ax-caption">{strings.hint}</span>
+          <span className="t-caption">{strings.hint}</span>
         </div>
       </form>
       {state.error && <div className="ax-banner ax-banner--critical"><div>{state.error}</div></div>}

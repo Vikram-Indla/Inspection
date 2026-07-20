@@ -20,7 +20,7 @@ export default function EmptyState({ glyph, title, body, inline, bare, children,
     <div className={inline ? "ax-state ax-state--inline" : "ax-state"} role={role} aria-busy={ariaBusy}>
       <span className="ax-state__glyph" aria-hidden="true">{glyph}</span>
       <h4>{title}</h4>
-      {body ? <p className="ax-caption">{body}</p> : null}
+      {body ? <p className="t-caption">{body}</p> : null}
       {children}
     </div>
   );

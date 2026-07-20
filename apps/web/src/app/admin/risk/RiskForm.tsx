@@ -109,7 +109,7 @@ export default function RiskForm({
       </div>
 
       <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
-        <p className="ax-caption ax-numeric">{labels.lastUpdated} {updatedAt ? new Date(updatedAt).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
+        <p className="t-caption ax-numeric">{labels.lastUpdated} {updatedAt ? new Date(updatedAt).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
           {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
           <button className="ax-btn ax-btn--prominent" disabled={pending || !sumOk} aria-disabled={!sumOk}>
@@ -117,8 +117,8 @@ export default function RiskForm({
           </button>
         </span>
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)" }}>{state.error}</p>}
-      <p className="ax-caption">{labels.savedNote}</p>
+      {state.error && <p className="t-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)" }}>{state.error}</p>}
+      <p className="t-caption">{labels.savedNote}</p>
     </form>
   );
 }

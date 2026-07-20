@@ -107,7 +107,7 @@ export function NewItemForm({
           <option value="document_nc_mandatory">{s.evidenceDocumentNc}</option>
           <option value="comment_nc_mandatory">{s.evidenceCommentNc}</option>
         </select>
-        <span className="ax-caption">{s.evidenceSource}</span>
+        <span className="t-caption">{s.evidenceSource}</span>
       </div>
       <label className="row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
         <input type="hidden" name="scoring_enabled" value={scoring ? "true" : "false"} />
@@ -122,7 +122,7 @@ export function NewItemForm({
       </button>
       {/* role=alert so screen readers move to the rejection; role=status for success. */}
       {state.error && (
-        <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">
+        <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">
           <span aria-hidden="true">✕ </span>{state.error}
         </span>
       )}
@@ -150,7 +150,7 @@ export function EditItemForm({ item, clauses, strings: s }: {
         <label className="ax-field"><span className="ax-field__label">{s.clause}</span><select className="ax-select" name="clause_id" defaultValue={item.clauseId} required>{clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
         <label className="ax-field"><span className="ax-field__label">{s.guidance}</span><textarea className="ax-input" name="guidance_en" defaultValue={item.guidance ?? ""} /></label>
         <button className="ax-btn" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
-        {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
         {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.draftSaved}</span>}
       </form>
     </details>
@@ -169,7 +169,7 @@ export function ToggleActive({ itemId, active, strings: s }: { itemId: string; a
         {pending ? s.saving : active ? s.deactivate : s.reactivate}
       </button>
       {state.error && (
-        <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">
+        <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">
           <span aria-hidden="true">✕ </span>{state.error}
         </span>
       )}
@@ -259,7 +259,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
             <span aria-hidden="true">{item.active ? "●" : "✕"} </span>{item.active ? s.active : s.deactivatedWord}
           </span>
         </div>
-        {!item.active && <p className="ax-caption">{s.deactivated}</p>}
+        {!item.active && <p className="t-caption">{s.deactivated}</p>}
 
         <div className="stack" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
           <div>
@@ -269,24 +269,24 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
                 <button key={r} type="button" className="ax-btn ax-btn--secondary" disabled aria-disabled="true">{label(r)}</button>
               ))}
             </div>
-            {item.ncTarget && <p className="ax-caption">{fill(s.ncMaps, { target: item.ncTarget })}</p>}
-            <p className="ax-caption"><span aria-hidden="true">◇ </span>{item.requirement === "optional" ? s.optional : item.requirement === "conditional" ? s.conditional : s.required}</p>
-            {item.conditionalRule && <p className="ax-caption"><bdi dir="ltr" className="ax-numeric">{item.conditionalRule}</bdi>{item.mandatoryWhenVisible ? ` · ${s.mandatoryVisible}` : ""}</p>}
+            {item.ncTarget && <p className="t-caption">{fill(s.ncMaps, { target: item.ncTarget })}</p>}
+            <p className="t-caption"><span aria-hidden="true">◇ </span>{item.requirement === "optional" ? s.optional : item.requirement === "conditional" ? s.conditional : s.required}</p>
+            {item.conditionalRule && <p className="t-caption"><bdi dir="ltr" className="ax-numeric">{item.conditionalRule}</bdi>{item.mandatoryWhenVisible ? ` · ${s.mandatoryVisible}` : ""}</p>}
           </div>
 
           <div>
             <p className="ax-overline">{s.evidenceLabel}</p>
-            <p className="ax-caption">
+            <p className="t-caption">
               {item.evidence?.mandatory
                 ? fill(s.evidenceRequired, { type: item.evidence.type ?? "evidence", min: item.evidence.min ?? 1 })
                 : s.evidenceNone}
             </p>
-            <p className="ax-caption"><span>{s.evidenceSource}</span></p>
+            <p className="t-caption"><span>{s.evidenceSource}</span></p>
           </div>
 
           <div>
             <p className="ax-overline">{s.scoringLabel}</p>
-            <p className="ax-caption">
+            <p className="t-caption">
               {!item.scoringEnabled ? s.scoringOff : item.scoreWeight != null ? fill(s.weight, { weight: item.scoreWeight }) : s.noWeight}
               {item.scoreExcludedOn.length > 0 &&
                 ` · ${fill(s.scoreExcluded, { responses: item.scoreExcludedOn.map(label).join(", ") })}`}
@@ -295,11 +295,11 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
 
           <div>
             <p className="ax-overline">{s.guidanceLabel}</p>
-            <p className="ax-caption">{item.guidance || s.guidanceNone}</p>
+            <p className="t-caption">{item.guidance || s.guidanceNone}</p>
           </div>
         </div>
       </div>
-      <p className="ax-caption"><span aria-hidden="true">🔒 </span>{s.readonly}</p>
+      <p className="t-caption"><span aria-hidden="true">🔒 </span>{s.readonly}</p>
     </div>
   );
 }

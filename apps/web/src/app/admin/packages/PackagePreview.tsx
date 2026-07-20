@@ -65,7 +65,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
         <div className="ipad-preview ax-surface" role="region" aria-label={s.title} style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", background: "var(--ax-color-surface-sunken)", borderRadius: "var(--ax-radius-large)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <strong style={{ font: "var(--ax-text-body-strong)" }}>{s.title}</strong>
-            <span className="ax-caption">{s.asInspector}</span>
+            <span className="t-caption">{s.asInspector}</span>
           </div>
 
           {sections.map(sec => {
@@ -76,7 +76,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                   <h4 style={{ font: "var(--ax-text-heading-xs)" }}>{sec.title}</h4>
                   {sec.mandatory && <span className="ax-lozenge ax-lozenge--critical">{s.sectionMandatory}</span>}
                 </div>
-                {codes.length === 0 && <p className="ax-caption">{s.emptySection}</p>}
+                {codes.length === 0 && <p className="t-caption">{s.emptySection}</p>}
                 {codes.map(code => {
                   const it = itemMap[code];
                   if (!it || it.missing) {
@@ -87,7 +87,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                     <div key={code} className="ipad-q" style={{ border: "1px solid var(--ax-color-border)", borderRadius: "var(--ax-radius-large)", padding: "var(--ax-space-300)", background: "var(--ax-color-surface)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
                       <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "baseline" }}>
                         <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{it.code} · {it.title}</p>
-                        {it.clause && <span className="ax-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
+                        {it.clause && <span className="t-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
                         {it.conditional && <span className="ax-lozenge ax-lozenge--info" title={`${s.conditionalWhen} ${it.conditional}`}>{s.conditionalBadge}</span>}
                         <span className={`ax-lozenge ${it.requirement === "required" ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>
                           <span aria-hidden="true">{it.requirement === "required" ? "● " : "○ "}</span>
@@ -96,8 +96,8 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                         {it.mandatoryWhenVisible && <span className="ax-lozenge ax-lozenge--warning">{s.mandatoryWhenVisible}</span>}
                         {!it.scoringEnabled && <span className="ax-lozenge ax-lozenge--info">{s.scoringDisabled}</span>}
                       </div>
-                      {it.conditional && <p className="ax-caption">{s.conditionalWhen} <code>{it.conditional}</code></p>}
-                      {it.guidance && <p className="ax-caption">💡 {s.guidanceLabel}: {it.guidance}</p>}
+                      {it.conditional && <p className="t-caption">{s.conditionalWhen} <code>{it.conditional}</code></p>}
+                      {it.guidance && <p className="t-caption">💡 {s.guidanceLabel}: {it.guidance}</p>}
 
                       <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                         {it.isDate ? (
@@ -129,7 +129,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                             <strong>{form.title}</strong>
                             <span className={`ax-lozenge ${form.blocking ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>{form.blocking ? s.formBlocking : s.formNonBlocking}</span>
                           </div>
-                          <p className="ax-caption">{s.formAppearsWhen}</p>
+                          <p className="t-caption">{s.formAppearsWhen}</p>
                           <div className="ax-grid-2">
                             {(form.fields ?? []).map(f => (
                               <label key={f} className="ax-field" style={f === "required_correction" ? { gridColumn: "1 / -1" } : undefined}>

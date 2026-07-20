@@ -80,7 +80,7 @@ export default async function PlanRegister() {
           </tbody>
         </table></div>
       )}
-      <p className="ax-caption">{t("plan.register.drillHint", "Open a plan to see its child visits and per-plan progress (M02-017/036).")}</p>
+      <p className="t-caption">{t("plan.register.drillHint", "Open a plan to see its child visits and per-plan progress (M02-017/036).")}</p>
     </Shell>
   );
 }

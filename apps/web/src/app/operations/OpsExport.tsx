@@ -44,7 +44,7 @@ export default function OpsExport({ datasets, strings }: { datasets: ExportDatas
           {ds.label} <span className="ax-numeric">{ds.rows.length}</span>
         </button>
       ))}
-      <span className="ax-caption">{strings.scopeNote}</span>
+      <span className="t-caption">{strings.scopeNote}</span>
     </div>
   );
 }

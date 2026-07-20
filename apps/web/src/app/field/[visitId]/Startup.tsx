@@ -699,20 +699,20 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             {strings.mapsGeo}
           </a>
         </div>
-        <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.mapsCaption}</p>
+        <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.mapsCaption}</p>
         {/* F3 · M04-026 — journey progress % (travelled vs initial distance from first fix) */}
         {journeyId && progress != null && (
           <div className="stack" style={{ gap: 4, marginBlockStart: "var(--ax-space-200)" }}>
             <div className="row" style={{ justifyContent: "space-between" }}>
-              <span className="ax-caption">{strings.progressLabel}</span>
-              <span className="ax-caption ax-numeric">{progress.toFixed(0)}%</span>
+              <span className="t-caption">{strings.progressLabel}</span>
+              <span className="t-caption ax-numeric">{progress.toFixed(0)}%</span>
             </div>
             <div role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}
               aria-label={strings.progressLabel}
               style={{ blockSize: 8, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-border)", overflow: "hidden" }}>
               <div style={{ blockSize: "100%", inlineSize: `${progress}%`, background: "var(--ax-color-primary)", borderRadius: "inherit" }} />
             </div>
-            <span className="ax-caption ax-numeric">
+            <span className="t-caption ax-numeric">
               {fmt(strings.progressCaption, { remaining: (remainingD ?? 0).toFixed(0), initial: (initialD ?? 0).toFixed(0) })}
             </span>
           </div>
@@ -751,7 +751,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <div style={{ blockSize: 240, borderRadius: "var(--ax-radius-standard)", overflow: "hidden", border: "1px solid var(--ax-color-border)" }} dir="ltr">
           <GeoMap center={[visit.dispatch_lat, visit.dispatch_lng]} zoom={15} markers={mapMarkers} height="100%" />
         </div>
-        <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>
+        <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>
           {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}
         </p>
       </div>
@@ -759,7 +759,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <div className="ax-surface" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
           style={{ padding: "var(--ax-space-300)", borderColor: "var(--ax-color-critical)" }}>
           <h4 id="gps-override-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.overrideHeading}</h4>
-          <p className="ax-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
+          <p className="t-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
           <label className="ax-field"><span className="ax-field__label">{strings.overrideReasonCode}</span>
             <select className="ax-select" value={overrideReasonKey} onChange={e => {
               setOverrideReasonKey(e.target.value);
@@ -805,7 +805,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
             <div>
               <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cardsVisitTitle}</h4>
-              <p className="ax-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {strings.insideFence}</p>
+              <p className="t-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {strings.insideFence}</p>
             </div>
             <span className="ax-lozenge ax-lozenge--success">{strings.arrivalDetected}</span>
           </div>
@@ -845,7 +845,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           {arrivalEventId && (
             <div className="ax-surface" style={{ padding: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}>
               <h5 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.arrivalEvidenceHeading}</h5>
-              <p className="ax-caption">{strings.arrivalEvidenceCaption}</p>
+              <p className="t-caption">{strings.arrivalEvidenceCaption}</p>
               {arrivalEvidenceSaved ? <span className="ax-lozenge ax-lozenge--success">{strings.arrivalSaved}</span> : (
                 <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
                   <label className="ax-field"><span className="ax-field__label">{strings.arrivalPhoto}</span>
@@ -899,11 +899,11 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {/* F3 M04-056/057/058 cancellation REQUEST (RBAC: planner/ops own the actual cancel). */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cancelHeading}</h4>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.cancelCaption}</p>
+        <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.cancelCaption}</p>
         {cancelRequested ? (
           <span className="ax-lozenge ax-lozenge--warning">{strings.cancelRequestedChip}</span>
         ) : reasons.length === 0 ? (
-          <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{strings.cancelReasonsMissing}</p>
+          <p className="t-caption" style={{ color: "var(--ax-color-critical)" }}>{strings.cancelReasonsMissing}</p>
         ) : (
           <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
             <label className="ax-field"><span className="ax-field__label">{strings.cancelSelectReason}</span>
@@ -925,7 +925,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {/* F3 M03-006 inspector return for blocked visits (request + notify planner). */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.returnHeading}</h4>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.returnCaption}</p>
+        <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.returnCaption}</p>
         {returnRequested ? (
           <span className="ax-lozenge ax-lozenge--warning">{strings.returnRequestedChip}</span>
         ) : (

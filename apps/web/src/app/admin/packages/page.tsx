@@ -284,7 +284,7 @@ export default async function Packages() {
     <Shell current="/admin/packages" title={t("admin.pkg.title", "Package library & designer")}
       context={<span className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
         <span className="ax-lozenge ax-lozenge--info">SCR-ADM-030/031 · ENG-02</span>
-        <span className="ax-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
+        <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
       </span>}>
       <div className={styles.pageStack}>
         {!packageUnavailable && canWrite && <TemplateRegistry templates={templates} strings={templateStrings} />}
@@ -292,8 +292,8 @@ export default async function Packages() {
           <div className={styles.heroRow}>
             <div>
               <h2 id="pkg-overview" style={{ margin: 0 }}>{t("admin.pkg.overview.title", "Version-governed inspection packages")}</h2>
-              <p className="ax-caption">{t("admin.pkg.overview.body", "Drafts are editable. Publishing runs dependency validation and maker-checker approval; published and locked definitions remain immutable.")}</p>
-              <p className="ax-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></p>
+              <p className="t-caption">{t("admin.pkg.overview.body", "Drafts are editable. Publishing runs dependency validation and maker-checker approval; published and locked definitions remain immutable.")}</p>
+              <p className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></p>
             </div>
             <span className={`ax-lozenge ${canWrite ? "ax-lozenge--success" : "ax-lozenge--info"}`}>
               <span aria-hidden="true">{canWrite ? "✎ " : "◉ "}</span>
@@ -320,7 +320,7 @@ export default async function Packages() {
         {!packageUnavailable && (roleRead.error || !canWrite) && (
           <section className={`ax-surface ${styles.governance}`} aria-labelledby="pkg-access">
             <h3 id="pkg-access" style={{ margin: 0 }}>{t("admin.pkg.readonly.title", "Read-only package access")}</h3>
-            <p className="ax-caption">{roleRead.error
+            <p className="t-caption">{roleRead.error
               ? t("admin.pkg.readonly.unknown", "Your write permissions could not be verified, so all mutation controls are hidden. Reload to retry; RLS remains authoritative.")
               : t("admin.pkg.readonly.body", "You can inspect versions, previews and publish impact. Creating, saving and publishing require compliance_admin or form_admin; navigation access does not grant write permission.")}</p>
           </section>
@@ -331,7 +331,7 @@ export default async function Packages() {
             <div className="ax-state">
               <span className="ax-state__glyph" aria-hidden="true">▦</span>
               <h3>{t("admin.pkg.empty.title", "No packages configured")}</h3>
-              <p className="ax-caption">{t("admin.pkg.empty.body", "The package read succeeded and returned no rows. Package creation is not exposed by this route, so no unsupported create control is shown.")}</p>
+              <p className="t-caption">{t("admin.pkg.empty.body", "The package read succeeded and returned no rows. Package creation is not exposed by this route, so no unsupported create control is shown.")}</p>
             </div>
           </section>
         )}
@@ -343,7 +343,7 @@ export default async function Packages() {
             <details key={pkg.id} className={`ax-surface ${styles.packageGroup}`} open>
               <summary>
                 <span className={styles.packageHeading}>
-                  <span><strong><bdi dir="ltr">{pkg.code}</bdi> — {pkg.title}</strong><br /><span className="ax-caption">{pkg.scope ?? t("admin.pkg.scopeNone", "No scope recorded")}</span></span>
+                  <span><strong><bdi dir="ltr">{pkg.code}</bdi> — {pkg.title}</strong><br /><span className="t-caption">{pkg.scope ?? t("admin.pkg.scopeNone", "No scope recorded")}</span></span>
                   <span className="ax-lozenge ax-lozenge--info">{versions.length} {t("admin.pkg.versions", "version(s)")}</span>
                 </span>
               </summary>
@@ -360,7 +360,7 @@ export default async function Packages() {
                         const itemCount = (version.definition.sections ?? []).reduce((sum, section) => sum + (section.items?.length ?? 0), 0);
                         return <tr key={version.id}>
                           <td data-label={t("admin.pkg.col.version", "Version")}><bdi dir="ltr" className="ax-version">{version.version_label}</bdi></td>
-                          <td data-label={t("admin.pkg.col.state", "State")}><span className={`ax-lozenge ${version.status === "draft" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}><span aria-hidden="true">{version.status === "draft" ? "✎ " : "✓ "}</span>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>{derivedSuperseded && <span className="ax-caption"> · {t("admin.pkg.derivedSuperseded", "older than current publish (derived)")}</span>}</td>
+                          <td data-label={t("admin.pkg.col.state", "State")}><span className={`ax-lozenge ${version.status === "draft" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}><span aria-hidden="true">{version.status === "draft" ? "✎ " : "✓ "}</span>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>{derivedSuperseded && <span className="t-caption"> · {t("admin.pkg.derivedSuperseded", "older than current publish (derived)")}</span>}</td>
                           <td data-label={t("admin.pkg.col.published", "Published")}><bdi dir="ltr">{version.published_at ? version.published_at.slice(0, 10) : "—"}</bdi></td>
                           <td data-label={t("admin.pkg.col.definition", "Definition")}>{version.definition.sections?.length ?? 0} {t("admin.pkg.sections", "section(s)")} · {itemCount} {t("admin.pkg.items", "item(s)")}</td>
                         </tr>;
@@ -415,8 +415,8 @@ export default async function Packages() {
 
         {!packageUnavailable && <section className={`ax-surface ${styles.governance}`} aria-labelledby="pkg-blockers">
           <h3 id="pkg-blockers" style={{ margin: 0 }}>{t("admin.pkg.blockers.title", "Boundaries kept visible")}</h3>
-          <p className="ax-caption">{t("admin.pkg.blockers.body", "The designer now authors ordered bilingual sections, package-item policy, action forms, and governed template references. Publish revalidates dependencies and rejects circular conditions. Package footprint/fingerprint metrics and visual simulation remain unclaimed because no approved metric or simulator contract exists.")}</p>
-          <p className="ax-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="ax-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
+          <p className="t-caption">{t("admin.pkg.blockers.body", "The designer now authors ordered bilingual sections, package-item policy, action forms, and governed template references. Publish revalidates dependencies and rejects circular conditions. Package footprint/fingerprint metrics and visual simulation remain unclaimed because no approved metric or simulator contract exists.")}</p>
+          <p className="t-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="ax-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
         </section>}
       </div>
     </Shell>

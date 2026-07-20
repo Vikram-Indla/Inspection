@@ -85,7 +85,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
       <div className="ax-modal" style={{ inlineSize: "min(560px, 100%)" }}>
         <div className="ax-modal__header"><h3>{strings.title}</h3></div>
         <div className="ax-modal__body">
-          <p className="ax-caption">{strings.hint}</p>
+          <p className="t-caption">{strings.hint}</p>
           <label className="ax-field">
             <span className="ax-field__label">{strings.nameLabel}<span className="ax-req">*</span></span>
             <input className="ax-input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />

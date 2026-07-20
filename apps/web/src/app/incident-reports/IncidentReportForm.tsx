@@ -39,7 +39,7 @@ export function IncidentReportForm({ strings: s }: { strings: IncidentFormString
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-description">{s.preliminaryIncidentDescription}</label><textarea className="ax-textarea" name="preliminary_incident_description" id="ir-description" /></div>
       <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.submitting : s.submit}</button>
-        {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
         {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.created}</span>}
       </div>
     </form>

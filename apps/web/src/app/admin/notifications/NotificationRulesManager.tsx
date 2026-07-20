@@ -37,8 +37,8 @@ const EVENT_KEYS = ["assignment", "reschedule", "review_decision", "virtual_clos
 const CHANNELS = ["inapp", "push", "sms", "email"];
 
 function Msg({ state }: { state: NotifRuleResult }) {
-  if (state.error) return <p className="ax-caption" role="alert" style={{ color: "var(--ax-fg-critical, inherit)" }}>{state.error}</p>;
-  if (state.notice) return <p className="ax-caption" role="status">{state.notice}</p>;
+  if (state.error) return <p className="t-caption" role="alert" style={{ color: "var(--ax-fg-critical, inherit)" }}>{state.error}</p>;
+  if (state.notice) return <p className="t-caption" role="status">{state.notice}</p>;
   return null;
 }
 
@@ -116,7 +116,7 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
       </div>
     );
   }
-  return <span className="ax-caption">{row.deactivation_reason ?? "—"}</span>;
+  return <span className="t-caption">{row.deactivation_reason ?? "—"}</span>;
 }
 
 export default function NotificationRulesManager({ rows, roles, l }: { rows: NotificationRuleRow[]; roles: { role_key: string; title: string }[]; l: Labels }) {

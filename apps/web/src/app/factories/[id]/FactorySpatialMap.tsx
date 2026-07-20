@@ -35,7 +35,7 @@ export default function FactorySpatialMap({ officialLat, officialLng, geofenceRa
         <span className="ax-lozenge ax-lozenge--success">{s.observedArrival}</span>
         <span className="ax-lozenge ax-lozenge--critical">{s.gpsOverride}</span>
       </div>
-      {events.length === 0 && <p className="ax-caption">{s.noLocations}</p>}
+      {events.length === 0 && <p className="t-caption">{s.noLocations}</p>}
     </div>
   );
 }

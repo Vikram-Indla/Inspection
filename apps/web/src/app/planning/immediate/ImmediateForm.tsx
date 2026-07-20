@@ -215,10 +215,10 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
               {factory && (
                 <div className="ax-surface" style={{ padding: "var(--ax-space-200)", background: "var(--ax-color-surface-sunken)" }}>
                   <strong><bdi>{factory.name}</bdi></strong>
-                  <div className="ax-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
+                  <div className="t-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
                     {factory.license_number && <> · {strings.previewLicense} <bdi>{factory.license_number}</bdi></>}
                     {" · "}{strings.previewRegion} <bdi>{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</bdi></div>
-                  <div className="ax-caption">{strings.previewFreshness}: {factory.source_synced_at ? <bdi>{new Date(factory.source_synced_at).toISOString().slice(0, 10)}</bdi> : strings.previewFreshnessNever}
+                  <div className="t-caption">{strings.previewFreshness}: {factory.source_synced_at ? <bdi>{new Date(factory.source_synced_at).toISOString().slice(0, 10)}</bdi> : strings.previewFreshnessNever}
                     {" · "}{strings.previewRisk}: {factory.risk_band ?? strings.previewRiskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</div>
                 </div>
               )}
@@ -243,14 +243,14 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
               </div>
               <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-activity">{strings.manualActivity}</label>
                 <input id="imm-manual-activity" key={`mac-${resetKey}`} className="ax-input" name="manual_activity" value={manualActivity} onChange={e => setManualActivity(e.target.value)} placeholder={strings.manualActivityPlaceholder} /></div>
-              <p className="ax-caption">{strings.temporaryNote}</p>
+              <p className="t-caption">{strings.temporaryNote}</p>
 
               {/* DEC-F — recommendation only. This inspector never executes the
                   decision: enforcement_recommendations RLS grants inspector
                   insert-only; ops/compliance_admin hold the sole update policy. */}
               <div className="ax-field" style={{ maxInlineSize: "none" }}>
                 <label className="ax-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
-                <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.enforcementHint}</p>
+                <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.enforcementHint}</p>
                 <div id="imm-enforcement" className="ax-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
                   {[["", strings.enforcementNone], ["fine", strings.enforcementFine], ["committee", strings.enforcementCommittee], ["warning", strings.enforcementWarning], ["closure", strings.enforcementClosure]].map(([v, label]) => (
                     <button key={v} type="button" aria-pressed={enforcementAction === v} onClick={() => setEnforcementAction(v)}>{label}</button>
@@ -275,7 +275,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
                 <button key={v} type="button" aria-pressed={reason === v} onClick={() => setReason(v)}>{label}</button>
               ))}
             </div>
-            {reason === "Other" && <p id="imm-reason-other-hint" className="ax-caption">{strings.reasonOtherHint}</p>}
+            {reason === "Other" && <p id="imm-reason-other-hint" className="t-caption">{strings.reasonOtherHint}</p>}
           </div>
           <input type="hidden" name="urgency_reason" value={reason} key={`ur-${resetKey}`} />
 
@@ -301,7 +301,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             <div className="ax-field"><label className="ax-field__label" htmlFor="imm-lng">{strings.longitude}</label>
               <input id="imm-lng" key={`lng-${resetKey}`} className="ax-input ax-numeric" name="lng" value={lng} onChange={e => onLngChange(e.target.value)} /></div>
           </div>
-          <p className="ax-caption" dir="ltr">
+          <p className="t-caption" dir="ltr">
             {!locationOk ? strings.locationSourceNone
               : locationSource === "official" ? strings.locationSourceOfficial
                 : strings.locationSourceManual.replace("{who}", actorName || "—").replace("{when}", locationAt ? new Date(locationAt).toLocaleString() : "")}
@@ -314,7 +314,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
               <div className="ax-field"><label className="ax-field__label" htmlFor="imm-window-end">{strings.windowEnd}</label>
                 <input id="imm-window-end" key={`we-${resetKey}`} className="ax-input ax-numeric" name="window_end" type="datetime-local" value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
             </div>
-            <span className="ax-caption">{strings.windowHint}</span>
+            <span className="t-caption">{strings.windowHint}</span>
           </> : <div className="ax-banner ax-banner--info"><div>{strings.inspectorStartNow}</div></div>}
 
           <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-priority">{strings.priority}</label>
@@ -347,10 +347,10 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.consequenceTitle}</h4>
         <ul style={{ margin: 0, paddingInlineStart: "1.2em", display: "flex", flexDirection: "column", gap: "var(--ax-space-050)" }}>
-          <li className="ax-caption">{strings.consequenceVisit}</li>
-          <li className="ax-caption">{strings.consequenceAssign}</li>
-          <li className="ax-caption">{strings.consequenceNotify}</li>
-          <li className="ax-caption">{strings.consequenceAudit}</li>
+          <li className="t-caption">{strings.consequenceVisit}</li>
+          <li className="t-caption">{strings.consequenceAssign}</li>
+          <li className="t-caption">{strings.consequenceNotify}</li>
+          <li className="t-caption">{strings.consequenceAudit}</li>
         </ul>
         {actorMode === "planner" && <label className="ax-check" style={{ marginBlockStart: "var(--ax-space-200)" }}>
           <input type="checkbox" name="review_confirmed" value="yes" checked={reviewed} onChange={e => setReviewed(e.target.checked)} />

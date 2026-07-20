@@ -455,8 +455,8 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
                   <span className="cd-roombox__glyph" aria-hidden="true">{simVideo.state === "connected" ? "●" : simVideo.state === "degraded" ? "▲" : "✕"}</span>
                   <span className="cd-roombox__lab">{simVideo.state.replace(/_/g, " ")}</span>
                 </div>
-                <p className="ax-caption">camera: {simVideo.camera} · mic: {simVideo.mic} · fixture: {simVideo.fixtureId}</p>
-                <p className="ax-caption">Test/staging simulation only — no real media connection exists (provider={simVideo.provider}).</p>
+                <p className="t-caption">camera: {simVideo.camera} · mic: {simVideo.mic} · fixture: {simVideo.fixtureId}</p>
+                <p className="t-caption">Test/staging simulation only — no real media connection exists (provider={simVideo.provider}).</p>
               </div>
             ) : (
               <div className="cd-roombox" role="img" aria-label={t.roomPending}><span className="cd-roombox__glyph" aria-hidden="true">▲</span><span className="cd-roombox__lab">{t.roomPending}</span></div>

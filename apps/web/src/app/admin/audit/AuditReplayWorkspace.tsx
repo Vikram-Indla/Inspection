@@ -36,7 +36,7 @@ export default function AuditReplayWorkspace(props: Props) {
   return <div className="ar-workspace" dir={props.locale === "ar" ? "rtl" : "ltr"}>
     <a className="ax-shell__skip" href="#audit-chronology">{L.skip}</a>
     <section className="ar-casehead ax-surface">
-      <div><span className="ax-caption">MVP2-CD-031-M2-05</span><h2>{L.title}</h2><p className="ax-caption">{props.caseRef || L.portfolio} · {props.events.length} · {completenessAvailable ? `${completeness.found}/${completeness.expected}` : L.ledger}</p></div>
+      <div><span className="t-caption">MVP2-CD-031-M2-05</span><h2>{L.title}</h2><p className="t-caption">{props.caseRef || L.portfolio} · {props.events.length} · {completenessAvailable ? `${completeness.found}/${completeness.expected}` : L.ledger}</p></div>
       <div className="ar-status"><span className="ax-lozenge ax-lozenge--success">append-only</span><span className="ax-lozenge ax-lozenge--info">{props.roles.join(" · ")}</span></div>
     </section>
     <form method="get" className="ar-filter ax-surface">

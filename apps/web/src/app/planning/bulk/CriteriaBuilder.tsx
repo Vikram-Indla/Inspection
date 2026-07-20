@@ -171,9 +171,9 @@ export default function CriteriaBuilder({
       <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent">{strings.apply}</button>
         <a className="ax-btn ax-btn--subtle" href="/planning/bulk">{strings.clear}</a>
-        <span className="ax-caption ax-numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
+        <span className="t-caption ax-numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
       </div>
-      <p className="ax-caption">{strings.hint}</p>
+      <p className="t-caption">{strings.hint}</p>
     </form>
   );
 }

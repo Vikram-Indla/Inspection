@@ -23,8 +23,8 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
-          <h3>{row.evidenceType} <span className="ax-caption ax-numeric">{row.capturedAt}</span></h3>
-          {row.inspectionId && <a className="ax-link ax-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}
+          <h3>{row.evidenceType} <span className="t-caption ax-numeric">{row.capturedAt}</span></h3>
+          {row.inspectionId && <a className="ax-link t-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}
         </div>
         <form action={action}>
           <input type="hidden" name="evidence_id" value={row.id} />
@@ -32,11 +32,11 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
         </form>
       </div>
       {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
-      {shown.status === "unavailable" && <p className="ax-caption">{s.unavailable}</p>}
-      {shown.status === "no_text_found" && <p className="ax-caption">{s.noText}</p>}
+      {shown.status === "unavailable" && <p className="t-caption">{s.unavailable}</p>}
+      {shown.status === "no_text_found" && <p className="t-caption">{s.noText}</p>}
       {shown.text && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-150)" }}>
-          <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{s.extracted}</p>
+          <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{s.extracted}</p>
           <pre style={{ whiteSpace: "pre-wrap", margin: 0, fontFamily: "var(--ax-font-mono, monospace)" }}>{shown.text}</pre>
         </div>
       )}

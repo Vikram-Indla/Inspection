@@ -58,7 +58,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
   return (
     <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="geo-override-queue-heading">
       <h4 id="geo-override-queue-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.heading}</h4>
-      <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-200)" }}>{strings.caption}</p>
+      <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-200)" }}>{strings.caption}</p>
       {rows.length === 0 ? (
         <EmptyState glyph="✓" title={strings.emptyTitle} body={strings.emptyDesc} inline bare />
       ) : (
@@ -68,12 +68,12 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
               <div className="row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div>
                   <strong>{row.factory_name ?? row.visit_id.slice(0, 8)}</strong>
-                  <p className="ax-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
+                  <p className="t-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
                 </div>
                 <span className="ax-lozenge ax-lozenge--warning">{strings.expires}: {stamp(row.expires_at)} UTC</span>
               </div>
               <p style={{ marginBlock: "var(--ax-space-150)" }}>{row.explanation}</p>
-              <div className="row ax-caption" style={{ gap: 12, flexWrap: "wrap" }}>
+              <div className="row t-caption" style={{ gap: 12, flexWrap: "wrap" }}>
                 <span>{strings.captured}: <span className="ax-numeric">{stamp(row.device_occurred_at)} UTC</span></span>
                 <span className="ax-numeric">{row.observed_lat.toFixed(6)}, {row.observed_lng.toFixed(6)}</span>
                 <span>{strings.accuracy}: <span className="ax-numeric">±{Number(row.accuracy_m).toFixed(1)} m</span></span>
@@ -93,7 +93,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
                 <button className="ax-btn ax-btn--secondary" disabled={pending} onClick={() => decide(row, "rejected")}>{strings.reject}</button>
                 <button className="ax-btn ax-btn--field" disabled={pending} onClick={() => decide(row, "approved")}>{strings.approve}</button>
               </div>
-              {message[row.id] && <p className="ax-caption" role="status" style={{ marginBlockStart: 8 }}>{pending ? strings.deciding : message[row.id]}</p>}
+              {message[row.id] && <p className="t-caption" role="status" style={{ marginBlockStart: 8 }}>{pending ? strings.deciding : message[row.id]}</p>}
             </div>
           ))}
         </div>

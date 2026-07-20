@@ -198,7 +198,7 @@ export default async function Items({
       context={
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
           <span className="ax-lozenge ax-lozenge--info">SCR-ADM-020 · ENG-01</span>
-          <span role="status" className="ax-caption">
+          <span role="status" className="t-caption">
             {fill(t("admin.items.r2.readAt", "catalogue read {time} — a source fact, not a freshness verdict"), { time: readAt })}
           </span>
           {clauseUnavailable && (
@@ -241,7 +241,7 @@ export default async function Items({
           authorization; the write path is RLS-guarded and every row change is audited. */}
       <section className="ax-surface ax-permission stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
-        <p className="ax-caption" style={{ margin: 0 }}>
+        <p className="t-caption" style={{ margin: 0 }}>
           {t("admin.items.r3.gov.body", "Anyone signed in can read the catalogue; writes require compliance_admin or form_admin. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
         </p>
       </section>
@@ -296,7 +296,7 @@ export default async function Items({
                     <td className="ax-numeric"><strong><bdi dir="ltr">{i.code}</bdi></strong></td>
                     <td>{i.title}</td>
                     <td className="ax-numeric">{rc ? <bdi dir="ltr">{`${rc.regulations.code} §${rc.clause_ref}`}</bdi> : "—"}</td>
-                    <td className="ax-caption">
+                    <td className="t-caption">
                       {(rm.responses ?? []).map(rLabel).join(" / ") || "—"}
                       {ncTarget && ` · ${t("admin.items.r2.sem.nc", "NC→")}${ncTarget}`}
                       {ev?.mandatory && ` · ${ev.type ?? t("admin.items.r2.sem.evidence", "evidence")} ${t("admin.items.r2.sem.onNc", "on NC")}`}
@@ -309,9 +309,9 @@ export default async function Items({
                     <td>
                       {(() => {
                         const usage = usageById.get(i.id);
-                        if (!isWriter) return <span className="ax-caption">{t("admin.items.r2.usage.writerOnly", "Available to configuration writers")}</span>;
+                        if (!isWriter) return <span className="t-caption">{t("admin.items.r2.usage.writerOnly", "Available to configuration writers")}</span>;
                         if (!usage) return <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠ </span>{t("admin.items.r2.usage.unavailable", "unavailable — retry reload")}</span>;
-                        return <span className="ax-caption"><span aria-hidden="true">✓ </span>{fill(t("admin.items.r2.usage.counts", "{packages} package(s) · {versions} version(s)"), { packages: usage.package_count, versions: usage.version_count })}</span>;
+                        return <span className="t-caption"><span aria-hidden="true">✓ </span>{fill(t("admin.items.r2.usage.counts", "{packages} package(s) · {versions} version(s)"), { packages: usage.package_count, versions: usage.version_count })}</span>;
                       })()}
                     </td>
                     <td>
@@ -324,7 +324,7 @@ export default async function Items({
                       <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
                         <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/items/${encodeURIComponent(i.id)}/runtime-preview`}>Inspector Runtime Preview</a>
                         {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/compliance-requests/new?request_type=modify&title=${encodeURIComponent(`Modify inspection item ${i.code}`)}&description=${encodeURIComponent(`Governed change request for inspection item ${i.code} — ${i.title}.`)}`}>Request change</a> : null}
-                        {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="ax-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}
+                        {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="t-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}
                         {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/items?audit=${encodeURIComponent(i.id)}#cd007-audit-h`}>{t("admin.items.r2.audit.open", "Audit")}</a> : null}
                         {isWriter ? <EditItemForm item={{ id: i.id, title: i.title, clauseId: i.clause_id, guidance: i.guidance_en, version: i.configuration_version ?? 1 }} clauses={clauseOptions} strings={strings} /> : null}
                       </div>
@@ -340,18 +340,18 @@ export default async function Items({
       {!error && rows.length > 0 && isWriter && (
         <section className="ax-surface stack" aria-labelledby="cd007-audit-h" style={{ padding: "var(--ax-space-300)" }}>
           <h3 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Scoped item audit")}</h3>
-          <p className="ax-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to inspect its object-scoped configuration history; broad audit-table access is not granted.")}</p>
-          {!auditItemId ? <p className="ax-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>
+          <p className="t-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to inspect its object-scoped configuration history; broad audit-table access is not granted.")}</p>
+          {!auditItemId ? <p className="t-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>
             : !auditItem ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.items.r2.audit.notFound", "The selected item is no longer in the readable catalogue.")}</div>
             : auditResult.error ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.items.r2.audit.unavailable", "Audit unavailable — reload to retry; history is not reported as empty.")}</div>
             : <div className="stack" style={{ gap: "var(--ax-space-100)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="ax-numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
-              {auditEvents.length === 0 ? <p className="ax-caption" role="status">{t("admin.items.r2.audit.empty", "No scoped audit events returned — verified zero.")}</p>
+              {auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.items.r2.audit.empty", "No scoped audit events returned — verified zero.")}</p>
                 : <ol>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </div>}
         </section>
       )}
 
-      <p className="ax-caption">
+      <p className="t-caption">
         {t("admin.items.r2.footer", "Items belong to regulations and are reused across packages (M09-002/007); deactivation preserves history (M09-014). Writes require compliance_admin/form_admin — RLS is the authority. inspection_items row changes are audit-tracked (trg_audit_inspection_items).")}
       </p>
     </Shell>

@@ -44,7 +44,7 @@ test.describe("UI compliance release guard", () => {
     expect(visits).toContain('id="visit-filter-from"');
     expect(visits).toContain('htmlFor="visit-filter-to"');
     expect(visits).toContain('id="visit-filter-to"');
-    expect(visits).toContain('ax-link ax-caption ax-inline-target');
+    expect(visits).toContain('ax-link t-caption ax-inline-target'); // SAQEEL: t-caption replaces ax-caption
     expect(factories).toContain('htmlFor="factory-region-filter"');
     expect(factories).toContain('id="factory-region-filter"');
   });

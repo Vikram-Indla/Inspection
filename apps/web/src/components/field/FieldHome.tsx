@@ -133,17 +133,17 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: Fiel
           {strings.statusLabels[s.key] ?? s.key.replace(/_/g, " ")}
         </span>
       </div>
-      <span className="ax-caption ax-numeric">
+      <span className="t-caption ax-numeric">
         {fmtWindow(v.windowStart)} · {v.visitType} · {v.executionMode.replace(/_/g, " ")} · {v.city}
       </span>
       {(s.key === "expired" || s.key === "overdue") && (
-        <span className="ax-caption" style={{ color: s.key === "expired" ? "var(--ax-color-critical)" : "var(--ax-color-warning-strong)" }}>
+        <span className="t-caption" style={{ color: s.key === "expired" ? "var(--ax-color-critical)" : "var(--ax-color-warning-strong)" }}>
           {strings.windowEnds.replace("{date}", fmtWindow(v.windowEnd))}
         </span>
       )}
       <div className="row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
-        {s.key !== "expired" && s.key !== "approved" ? <span className="ax-caption">{strings.rescheduleHint}</span> : <span />}
-        <a href={visitHref(v)} className="ax-link ax-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
+        {s.key !== "expired" && s.key !== "approved" ? <span className="t-caption">{strings.rescheduleHint}</span> : <span />}
+        <a href={visitHref(v)} className="ax-link t-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
           aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)}>{strings.openDetails} →</a>
       </div>
     </div>
@@ -161,9 +161,9 @@ function InboxRow({ n, strings }: { n: FieldNotification; strings: FieldHomeStri
         <span style={{ font: "var(--ax-text-body-strong)" }}>
           {n.label}{!read && <span className="sr-only"> — {strings.unreadBadge}</span>}
         </span>
-        {n.detail && <span className="ax-caption">{n.detail}</span>}
-        <span className="ax-caption ax-numeric">{fmtWindow(n.createdAt)}</span>
-        {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {n.detail && <span className="t-caption">{n.detail}</span>}
+        <span className="t-caption ax-numeric">{fmtWindow(n.createdAt)}</span>
+        {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       </div>
       {!read && (
         <form action={formAction}>
@@ -358,7 +358,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
                 <div className="row" style={{ gap: "var(--ax-space-150)" }} onDragOver={e => e.preventDefault()} onDrop={() => void dropOnDay(day)}>
                   <span className="ax-overline">{dayLabel(day)}</span>
                   <span className="ax-badge">{group.length}</span>
-                  {draggedId && <span className="ax-caption">{rescheduleBusy ? "…" : strings.rescheduleHint}</span>}
+                  {draggedId && <span className="t-caption">{rescheduleBusy ? "…" : strings.rescheduleHint}</span>}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
                   {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
@@ -370,7 +370,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
         {view === "map" && filtered.length > 0 && (
           markers.length === 0
-            ? <div className="ax-surface"><div className="ax-state ax-state--inline"><p className="ax-caption">{strings.mapEmpty}</p></div></div>
+            ? <div className="ax-surface"><div className="ax-state ax-state--inline"><p className="t-caption">{strings.mapEmpty}</p></div></div>
             : <div className="ax-surface ax-map" style={{ blockSize: 420, overflow: "hidden" }}>
                 <GeoMap center={mapCenter} zoom={markers.length === 1 ? 13 : 6} markers={markers} height="100%"
                   onMarkerClick={(id) => {
@@ -389,7 +389,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
           {unread > 0 && <span className="ax-badge">{unread}</span>}
         </div>
         {notifications.length === 0
-          ? <span className="ax-caption">{strings.inboxEmpty}</span>
+          ? <span className="t-caption">{strings.inboxEmpty}</span>
           : <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {notifications.map(n => <InboxRow key={n.id} n={n} strings={strings} />)}
             </ul>}

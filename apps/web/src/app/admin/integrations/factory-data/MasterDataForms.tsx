@@ -54,6 +54,6 @@ export default function MasterDataForms({ factoryId, representatives }: { factor
     </form>
   </div><section className="ax-surface stack" style={{ padding: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}><h4>Representative status</h4>
     {representatives.map(representative => <RepresentativeToggle key={representative.id} factoryId={factoryId} representative={representative} />)}
-    {!representatives.length ? <p className="ax-caption">No representatives are recorded for this factory.</p> : null}
+    {!representatives.length ? <p className="t-caption">No representatives are recorded for this factory.</p> : null}
   </section></>;
 }

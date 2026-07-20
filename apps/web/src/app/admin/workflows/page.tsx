@@ -85,9 +85,9 @@ export default async function Workflows() {
                 )}
               </div>
             </div>
-            <p className="ax-caption">{t("admin.wf.states", "States:")} {(p.states ?? []).join(" · ")} {t("admin.wf.statesNote", "— runtime evaluates transitions against this published version; no status bypass (RBAC-003; maker-checker on config_versions enforced by DB constraint).")}</p>
+            <p className="t-caption">{t("admin.wf.states", "States:")} {(p.states ?? []).join(" · ")} {t("admin.wf.statesNote", "— runtime evaluates transitions against this published version; no status bypass (RBAC-003; maker-checker on config_versions enforced by DB constraint).")}</p>
             {/* Approval chain — maker → checker, straight from config_versions (RBAC-002) */}
-            <p className="ax-caption">
+            <p className="t-caption">
               {t("admin.wf.chain.proposed", "Proposed by")} <strong>{nameOf(w.created_by) ?? "—"}</strong>
               {w.created_at && <> · <span className="ax-numeric">{new Date(w.created_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
               {" → "}

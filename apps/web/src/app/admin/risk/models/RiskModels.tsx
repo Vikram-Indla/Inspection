@@ -21,7 +21,7 @@ export function RiskModelsBoard({ rows, strings: s }: { rows: RiskModelRow[]; st
             defaultValue={'{"factors":[{"key":"a","weight":1}],"bands":{"low":[0,39],"medium":[40,69],"high":[70,100]}}'} /></div>
         <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
           <button className="ax-btn" disabled={creating}>{creating ? s.creating : s.create}</button>
-          {cState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{cState.error}</span>}
+          {cState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{cState.error}</span>}
           {cState.ok && <span className="ax-lozenge ax-lozenge--success">{s.created}</span>}
         </div>
       </form>
@@ -49,7 +49,7 @@ function RiskRow({ m, strings: s }: { m: RiskModelRow; strings: RiskStrings }) {
             <select className="ax-input" name="to_status" id={`${fieldId}-to-status`}>{targets.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
           <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reason`}>{s.reasonPh}</label><input className="ax-input" name="reason" id={`${fieldId}-reason`} /></div>
           <button className="ax-btn" disabled={applying}>{applying ? s.applying : s.apply}</button>
-          {tState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{tState.error}</span>}
+          {tState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{tState.error}</span>}
           {tState.ok && <span className="ax-lozenge ax-lozenge--success">{s.done}</span>}
         </form>
       )}

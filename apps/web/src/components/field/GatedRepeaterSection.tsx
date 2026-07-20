@@ -17,7 +17,7 @@
  * wire-in). All state below is local and ephemeral by design; it deliberately
  * touches none of the offline/outbox machinery.
  *
- * Design-system only: ax-surface / ax-segmented / ax-btn / ax-field / ax-caption,
+ * Design-system only: ax-surface / ax-segmented / ax-btn / ax-field / t-caption,
  * no bare colors, input geometry untouched.
  */
 "use client";
@@ -54,8 +54,8 @@ function PhotoAffordance({ inputId, label, helper }: { inputId: string; label: s
           onChange={e => setChosen(e.target.files?.[0]?.name ?? null)}
         />
       </label>
-      <p id={helperId} className="ax-caption">{helper}</p>
-      {chosen && <p className="ax-caption ax-numeric">{chosen}</p>}
+      <p id={helperId} className="t-caption">{helper}</p>
+      {chosen && <p className="t-caption ax-numeric">{chosen}</p>}
     </div>
   );
 }
@@ -134,7 +134,7 @@ export default function GatedRepeaterSection({
                   detail form lands after live-Figma label extraction + engine
                   wire-in; this marker keeps the shell honest in the meantime. */}
               <p
-                className="ax-caption"
+                className="t-caption"
                 data-shell-placeholder="samples-seizure-item-fields"
                 style={{ fontStyle: "italic", color: "var(--ax-color-text-secondary)" }}
               >

@@ -142,7 +142,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
           <option value="low">{s.bandLow}</option>
           <option value="unbanded">{s.bandUnbanded}</option>
         </select>
-        <span className="ax-caption">
+        <span className="t-caption">
           <span className="ax-numeric">{filtered.length}</span> / <span className="ax-numeric">{factories.length}</span> {s.shownOf}
           {unlocated > 0 && <> · <span className="ax-numeric">{unlocated}</span> {s.noCoords}</>}
         </span>
@@ -180,7 +180,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                     {bandLabel(selected.risk_band)}{selected.risk_score != null ? ` · ${selected.risk_score}` : ""}
                   </span>
                 </div>
-                <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>
+                <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>
                   {selected.region ?? "—"} · {selected.city ?? "—"}
                 </p>
               </div>
@@ -188,7 +188,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
               <div>
                 <div className="ax-field__label">{s.coordsLabel}</div>
                 <p className="ax-numeric" dir="ltr">{selected.official_lat}, {selected.official_lng}</p>
-                <p className="ax-caption">{s.coordsCaption}</p>
+                <p className="t-caption">{s.coordsCaption}</p>
               </div>
 
               <form action={formAction} className="stack" style={{ gap: "var(--ax-space-150)" }}>
@@ -205,7 +205,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                 </div>
                 <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
                   <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.saving : s.save}</button>
-                  {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+                  {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
                   {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.saved}</span>}
                 </div>
               </form>
@@ -227,7 +227,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
               <span className="ax-lozenge ax-lozenge--warning">{s.bandMedium} <span className="ax-numeric">{bandCounts.medium}</span></span>
               <span className="ax-lozenge ax-lozenge--success">{s.bandLow} <span className="ax-numeric">{bandCounts.low}</span></span>
               {bandCounts.unbanded > 0 && <span className="ax-lozenge ax-lozenge--info">{s.bandUnbanded} <span className="ax-numeric">{bandCounts.unbanded}</span></span>}
-              <span className="ax-caption">{s.legendCaption}</span>
+              <span className="t-caption">{s.legendCaption}</span>
             </div>
           </div>
         </aside>
@@ -244,7 +244,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
           </thead>
           <tbody>
             {filtered.length === 0 && (
-              <tr><td colSpan={7}><span className="ax-caption">{s.noResults}</span></td></tr>
+              <tr><td colSpan={7}><span className="t-caption">{s.noResults}</span></td></tr>
             )}
             {filtered.map(f => {
               const hasCoords = f.official_lat != null && f.official_lng != null;
@@ -265,7 +265,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                   <td>{f.city ?? "—"}</td>
                   <td><span className={lozengeFor(f.risk_band)}>{bandLabel(f.risk_band)}</span></td>
                   <td className="ax-numeric" dir="ltr">
-                    {f.geofence_radius_m ?? defaultFence} m{f.geofence_radius_m == null && <span className="ax-caption"> · {s.radiusDefault}</span>}
+                    {f.geofence_radius_m ?? defaultFence} m{f.geofence_radius_m == null && <span className="t-caption"> · {s.radiusDefault}</span>}
                   </td>
                   <td className="ax-numeric" dir="ltr">{hasCoords ? `${f.official_lat}, ${f.official_lng}` : "—"}</td>
                 </tr>

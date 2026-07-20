@@ -87,7 +87,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       </>}>
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
         <a className="ax-link" href="/planning/plans">← {t("plan.drill.backToRegister", "Plan register")}</a>
-        <span className="ax-caption ax-numeric">
+        <span className="t-caption ax-numeric">
           {t("plan.drill.createdBy", "created by")} <strong>{creator}</strong> · {fmt(plan.created_at)}
           {plan.published_at && <> · {t("plan.drill.publishedAt", "published")} {fmt(plan.published_at)}</>}
         </span>
@@ -109,7 +109,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
         )}
         <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           {segments.map(s => (
-            <span key={s.key} className="ax-caption">
+            <span key={s.key} className="t-caption">
               <span aria-hidden="true" style={{ display: "inline-block", inlineSize: 10, blockSize: 10, borderRadius: "var(--ax-radius-full)", background: s.bg, marginInlineEnd: 6 }} />
               {s.label} <span className="ax-numeric"><strong>{s.n}</strong></span>
             </span>

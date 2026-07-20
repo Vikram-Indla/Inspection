@@ -47,7 +47,7 @@ export default async function PortalPage() {
       )}
       {(reqs ?? []).map((r) => (
         <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="ax-caption">{r.subject ?? ""}</span></h3><span className="ax-lozenge ax-lozenge--info">{r.status}</span></div>
+          <div className="row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="t-caption">{r.subject ?? ""}</span></h3><span className="ax-lozenge ax-lozenge--info">{r.status}</span></div>
         </div>
       ))}
       {(sas ?? []).map((a) => (

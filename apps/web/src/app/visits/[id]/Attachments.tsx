@@ -39,7 +39,7 @@ function RemoveButton({ attachmentId, visitId, name, strings }: { attachmentId: 
       <input type="hidden" name="attachment_id" value={attachmentId} />
       <input type="hidden" name="visit_id" value={visitId} />
       <button className="ax-btn ax-btn--subtle" disabled={pending} aria-label={strings.removeAria.replace("{name}", name)}>{strings.remove}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
     </form>
   );
 }
@@ -54,7 +54,7 @@ export default function Attachments({ visitId, rows, strings }: {
     <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
       {rows.length === 0 ? (
-        <p className="ax-caption">{strings.empty}</p>
+        <p className="t-caption">{strings.empty}</p>
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
@@ -65,14 +65,14 @@ export default function Attachments({ visitId, rows, strings }: {
             {rows.map(a => (
               <tr key={a.id}>
                 <td><strong>{a.name}</strong></td>
-                <td className="ax-caption">{a.mime}</td>
+                <td className="t-caption">{a.mime}</td>
                 <td className="ax-td-num ax-numeric">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
                 <td>{a.uploadedBy}</td>
                 <td>
                   <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
                     {a.url
                       ? <a className="ax-btn ax-btn--subtle" href={a.url} download={a.name}>{strings.download}</a>
-                      : <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="status">{a.urlError ?? strings.urlFailed}</span>}
+                      : <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="status">{a.urlError ?? strings.urlFailed}</span>}
                     <RemoveButton attachmentId={a.id} visitId={visitId} name={a.name} strings={strings} />
                   </div>
                 </td>

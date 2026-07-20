@@ -26,7 +26,7 @@ export function ProposeDraftForm({ baseVersionId, baseLabel, strings: s }: { bas
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-version-label`}>{s.newVersionLabel}</label>
         <input className="ax-input ax-numeric" name="version_label" id={`${fieldId}-version-label`} placeholder={`${baseLabel}-next`} required /></div>
       <button className="ax-btn" disabled={pending}>{pending ? s.proposing : s.propose}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.draftCreated}</span>}
     </form>
   );
@@ -57,7 +57,7 @@ export function ApprovePublish({ versionId, strings: s }: { versionId: string; s
     <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
       <input type="hidden" name="version_id" value={versionId} />
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.publishing : s.approvePublish}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
     </form>
   );
 }

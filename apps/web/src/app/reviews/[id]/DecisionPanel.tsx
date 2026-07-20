@@ -36,7 +36,7 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
           {sections.map(s => (
             <label key={s.key} className="ax-choice" style={{ display: "flex" }}><input type="checkbox" name="returned_section" value={s.key} /> {s.title}</label>
           ))}
-          <p className="ax-caption">{strings.returnScopeHint}</p>
+          <p className="t-caption">{strings.returnScopeHint}</p>
         </div>
       )}
       <div className="ax-field" style={{ maxInlineSize: "none" }}>
@@ -47,7 +47,7 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
       {decision === "approve" && <div className="ax-banner ax-banner--warning"><div><strong>{strings.approveWarnTitle}</strong> {strings.approveWarnBody}</div></div>}
       {decision === "reject" && <div className="ax-banner ax-banner--critical"><div><strong>{strings.rejectWarnTitle}</strong> {strings.rejectWarnBody}</div></div>}
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.recording : strings.confirm.replace("{decision}", strings.decisions[decision] ?? decision)}</button>
-      <p className="ax-caption">{strings.audited}</p>
+      <p className="t-caption">{strings.audited}</p>
     </form>
   );
 }

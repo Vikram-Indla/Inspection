@@ -76,7 +76,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
             <option value="">{strings.allCities}</option>
             {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select></div>
-        <span className="ax-caption"><span className="ax-numeric">{rows.length}</span> {strings.of} <span className="ax-numeric">{factories.length}</span> {strings.factoriesWord}</span>
+        <span className="t-caption"><span className="ax-numeric">{rows.length}</span> {strings.of} <span className="ax-numeric">{factories.length}</span> {strings.factoriesWord}</span>
       </div>
       {rows.length === 0 ? (
         <EmptyState glyph="🏭" title={strings.emptyRegionTitle} body={strings.emptyRegionDesc} />
@@ -85,7 +85,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
           <thead><tr><th scope="col">{strings.thFactory}</th><th scope="col">{strings.thCr}</th><th scope="col">{strings.thRegion}</th><th scope="col">{strings.thCity}</th><th scope="col" className="ax-td-num">{strings.thRisk}</th><th scope="col"></th></tr></thead>
           <tbody>{rows.map(f => (
             <tr key={f.id}>
-              <td><strong>{f.name}</strong> <span className="ax-caption">{f.factory_code}</span></td>
+              <td><strong>{f.name}</strong> <span className="t-caption">{f.factory_code}</span></td>
               <td className="ax-numeric">{f.cr_number}</td>
               <td><span className="ax-lozenge ax-lozenge--info">{f.region ?? "—"}</span></td>
               <td>{f.city}</td>

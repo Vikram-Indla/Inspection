@@ -104,7 +104,7 @@ export default async function AdminHome() {
       return (
         <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
           {chip("verifiedZero")}
-          {emptyHint ? <span className="ax-caption">{emptyHint}</span> : null}
+          {emptyHint ? <span className="t-caption">{emptyHint}</span> : null}
         </div>
       );
     }
@@ -149,7 +149,7 @@ export default async function AdminHome() {
       title={t("admin.overview.r2.title", "Approval & Configuration — overview")}
       context={
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
-          <span role="status" aria-live="polite" className="ax-caption">{readAtNode}</span>
+          <span role="status" aria-live="polite" className="t-caption">{readAtNode}</span>
           {failed > 0 ? (
             <span className="ax-lozenge ax-lozenge--warning">
               <span aria-hidden="true">⚠</span>{" "}
@@ -189,7 +189,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyCompliance}</th>
                 <td>{countCell(regsRes, "regulations", t("admin.overview.r2.empty.compliance", "The library is genuinely empty — the read succeeded. Add the first regulation inside the module."))}</td>
-                <td className="ax-caption">{t("admin.overview.r2.lifecycle.regulations", "per-regulation status lives in the module; no update timestamp is read here")}</td>
+                <td className="t-caption">{t("admin.overview.r2.lifecycle.regulations", "per-regulation status lives in the module; no update timestamp is read here")}</td>
                 <td>{openLink(familyCompliance, "/admin/regulations")}</td>
               </tr>
 
@@ -206,7 +206,7 @@ export default async function AdminHome() {
                     ) : chip("unavailable")}
                   </div>
                 </td>
-                <td className="ax-caption">{t("admin.overview.r2.lifecycle.packages", "draft/published proven · distinct approver enforced · immutable once published")}</td>
+                <td className="t-caption">{t("admin.overview.r2.lifecycle.packages", "draft/published proven · distinct approver enforced · immutable once published")}</td>
                 <td>{openLink(familyPackages, "/admin/packages")}</td>
               </tr>
 
@@ -214,7 +214,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyEnforcement}</th>
                 <td>{countCell(viosRes, "violation codes")}</td>
-                <td className="ax-caption" aria-hidden="true">—</td>
+                <td className="t-caption" aria-hidden="true">—</td>
                 <td>{openLink(familyEnforcement, "/admin/violations")}</td>
               </tr>
 
@@ -229,7 +229,7 @@ export default async function AdminHome() {
                         <span>{chip("verified")} {num(engines.length, "domains")}</span>
                         <ul className="stack" style={{ gap: "2px", listStyle: "none", margin: 0, padding: 0 }}>
                           {engines.map(e => (
-                            <li key={e.engine} className="ax-caption">
+                            <li key={e.engine} className="t-caption">
                               <bdi dir="ltr">{e.engine}</bdi>
                               {" · "}
                               <span className="ax-version"><bdi dir="ltr">{e.version_label}</bdi></span>
@@ -242,7 +242,7 @@ export default async function AdminHome() {
                       </div>
                     )}
                 </td>
-                <td className="ax-caption">{t("admin.overview.r2.lifecycle.engines", "direct audited update — timestamp is provenance only")}</td>
+                <td className="t-caption">{t("admin.overview.r2.lifecycle.engines", "direct audited update — timestamp is provenance only")}</td>
                 <td aria-hidden="true">—</td>
               </tr>
 
@@ -250,7 +250,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyAudit}</th>
                 <td>{countCell(auditsRes, "events")}</td>
-                <td className="ax-caption" aria-hidden="true">—</td>
+                <td className="t-caption" aria-hidden="true">—</td>
                 <td>{openLink(familyAudit, "/admin/audit")}</td>
               </tr>
             </tbody>
@@ -275,7 +275,7 @@ export default async function AdminHome() {
         <h3 id="cd004-scope-h" style={{ margin: 0 }}>
           {fill(t("admin.overview.r2.scope.heading", "Your scope — {role}"), { role: roleLabel })}
         </h3>
-        <p className="ax-caption" style={{ margin: 0 }}>
+        <p className="t-caption" style={{ margin: 0 }}>
           {fill(
             t("admin.overview.r2.scope.body", "You can act in {families}. Other families are shown for awareness; visibility grants nothing — every action is authorized inside its module."),
             { families: familiesLabel },

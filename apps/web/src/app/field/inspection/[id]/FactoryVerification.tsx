@@ -106,7 +106,7 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
       <div className="ax-modal" style={{ inlineSize: "min(700px, 100%)" }}>
         <div className="ax-modal__header"><h3>{strings.annotateTitle}</h3></div>
         <div className="ax-modal__body">
-          <p className="ax-caption">{strings.annotateHint}</p>
+          <p className="t-caption">{strings.annotateHint}</p>
           <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
             style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--ax-color-border-strong)", borderRadius: "var(--ax-radius-standard)" }} />
         </div>
@@ -243,7 +243,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
           {changeCount ? fmt(strings.changeCounter, { n: changeCount }) : strings.noChanges}
         </span>
       </div>
-      <p className="ax-caption">{strings.hint}</p>
+      <p className="t-caption">{strings.hint}</p>
       {readOnly && <div className="ax-banner ax-banner--immutable"><div>{strings.readOnly}</div></div>}
       {checksLoadError && <div className="ax-banner ax-banner--warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
       {failDetail !== null && (
@@ -269,7 +269,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                 <td style={isUpdated ? { borderInlineStart: "4px solid var(--ax-color-warning)" } : undefined}><strong>{f.label}</strong></td>
                 <td>
                   <div>{f.source ?? "—"}</div>
-                  <div className="ax-caption">{strings.sourceTag}</div>
+                  <div className="t-caption">{strings.sourceTag}</div>
                 </td>
                 <td>
                   <input className="ax-input" style={{ minInlineSize: 140 }} disabled={readOnly}
@@ -289,7 +289,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                   <div>
                     {c
                       ? <span className={`ax-lozenge ${c.status === "verified" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{c.status === "verified" ? strings.verified : strings.updated}</span>
-                      : <span className="ax-caption">{strings.unchecked}</span>}
+                      : <span className="t-caption">{strings.unchecked}</span>}
                   </div>
                 </td>
                 <td>
@@ -299,7 +299,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                       <input type="file" accept="image/*,.pdf,application/pdf" multiple hidden onChange={e => { if (e.target.files?.length) { attach(f, e.target.files); e.target.value = ""; } }} />
                     </label>
                   )}
-                  {(evCountFor[f.key] ?? 0) > 0 && <div className="ax-caption ax-numeric">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
+                  {(evCountFor[f.key] ?? 0) > 0 && <div className="t-caption ax-numeric">{fmt(strings.evCount, { n: evCountFor[f.key] })}</div>}
                 </td>
               </tr>
             );
@@ -311,7 +311,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       <div>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.reviewTitle}</h4>
         {updatedFields.length === 0
-          ? <p className="ax-caption">{strings.reviewEmpty}</p>
+          ? <p className="t-caption">{strings.reviewEmpty}</p>
           : updatedFields.map(f => {
             const c = checks[f.key]!;
             return (
@@ -321,7 +321,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                   {" · "}{strings.before}: <span className="ax-numeric">{c.source_value ?? "—"}</span>
                   {" → "}{strings.after}: <span className="ax-numeric">{c.observed_value ?? "—"}</span>
                   {(evCountFor[f.key] ?? 0) > 0 && <> · {fmt(strings.evCount, { n: evCountFor[f.key] })}</>}
-                  {c.evidence_note && <div className="ax-caption">{c.evidence_note}</div>}
+                  {c.evidence_note && <div className="t-caption">{c.evidence_note}</div>}
                 </div>
               </div>
             );
@@ -332,14 +332,14 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       <div>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseTitle}</h4>
         {license
-          ? <p className="ax-caption ax-numeric">{strings.licRef}: {license.reference_no ?? "—"} · {strings.licIssue}: {license.valid_from ?? "—"} · {strings.licExpiry}: {license.valid_to ?? "—"}</p>
-          : <p className="ax-caption">{strings.licNone}</p>}
+          ? <p className="t-caption ax-numeric">{strings.licRef}: {license.reference_no ?? "—"} · {strings.licIssue}: {license.valid_from ?? "—"} · {strings.licExpiry}: {license.valid_to ?? "—"}</p>
+          : <p className="t-caption">{strings.licNone}</p>}
       </div>
 
       {/* M04-098 — products & HS codes inside the execution flow (read-only, Senaei-sourced) */}
       <div>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.productsTitle}</h4>
-        {products.length === 0 ? <p className="ax-caption">{strings.productsEmpty}</p> : (
+        {products.length === 0 ? <p className="t-caption">{strings.productsEmpty}</p> : (
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr><th scope="col">{strings.colProduct}</th><th scope="col">{strings.colHs}</th><th scope="col">{strings.colCapacity}</th></tr></thead>
             <tbody>{products.map((p, i) => (
@@ -356,7 +356,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       {/* M04-099 — raw materials inside the execution flow (read-only, Senaei-sourced) */}
       <div>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.materialsTitle}</h4>
-        {materials.length === 0 ? <p className="ax-caption">{strings.materialsEmpty}</p> : (
+        {materials.length === 0 ? <p className="t-caption">{strings.materialsEmpty}</p> : (
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr><th scope="col">{strings.colMaterial}</th><th scope="col">{strings.colMatSource}</th><th scope="col">{strings.colHs}</th></tr></thead>
             <tbody>{materials.map((m, i) => (

@@ -77,7 +77,7 @@ export default async function IncidentReportsPage() {
           <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>
               {r.establishment_code ?? "—"}{" "}
-              <span className="ax-caption">{r.incident_type ?? ""}</span>
+              <span className="t-caption">{r.incident_type ?? ""}</span>
             </h3>
             <span className="ax-lozenge ax-lozenge--info">{r.report_source ?? "—"}</span>
           </div>

@@ -184,7 +184,7 @@ export default async function Regulations({
       <a className="ax-link" href="/admin/compliance-requests">
         {t("admin.reg.requests", "Configuration Requests")}
       </a>
-      <span role="status" aria-live="polite" className="ax-caption">{readAtNode}</span>
+      <span role="status" aria-live="polite" className="t-caption">{readAtNode}</span>
       {regsError ? (
         <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {t("admin.reg.r1.degraded.chip", "register unavailable")}</span>
       ) : null}
@@ -250,7 +250,7 @@ export default async function Regulations({
         {readOnlyBanner}
         {libraryTabs}
 
-        <p className="ax-caption" style={{ margin: 0 }}>
+        <p className="t-caption" style={{ margin: 0 }}>
           <a className="ax-link" href="/admin/regulations">← {t("admin.reg.r1.backToRegister", "Back to register")}</a>
         </p>
 
@@ -266,7 +266,7 @@ export default async function Regulations({
                   <h2 id="reg-dossier-h" style={{ margin: 0 }}>
                     <span className="ax-numeric"><bdi dir="ltr">{reg.code}</bdi></span> — {reg.title}
                   </h2>
-                  <p className="ax-caption" style={{ margin: 0 }}>
+                  <p className="t-caption" style={{ margin: 0 }}>
                     {reg.issuing_authority || "—"}
                     {reg.created_at ? <> · {strings.createdAtLabel} <bdi dir="ltr" className="ax-numeric">{reg.created_at.slice(0, 10)}</bdi></> : null}
                     {reg.effective_from ? <> · {strings.effectiveFrom} <bdi dir="ltr" className="ax-numeric">{reg.effective_from.slice(0, 10)}</bdi></> : null}
@@ -278,7 +278,7 @@ export default async function Regulations({
                   {reg.status === "published" ? strings.statusPublished : reg.status === "deactivated" ? t("admin.reg.status.deactivated", "Deactivated") : strings.statusDraft}
                 </span>
               </div>
-              <p className="ax-caption" style={{ margin: 0 }}>
+              <p className="t-caption" style={{ margin: 0 }}>
                 <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Regulation-row changes are audit-tracked by the generic trigger. Clause additions on this dossier are audit-tracked too (trg_audit_regulation_clauses).")}
               </p>
             </section>
@@ -286,7 +286,7 @@ export default async function Regulations({
             <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-attachments-h">
               <h3 id="reg-attachments-h" style={{ margin: 0 }}>{t("admin.reg.attachments.heading", "Source attachments")}</h3>
               {attachments.length === 0 ? (
-                <p className="ax-caption" role="status">{t("admin.reg.attachments.empty", "No attachment metadata recorded — verified zero.")}</p>
+                <p className="t-caption" role="status">{t("admin.reg.attachments.empty", "No attachment metadata recorded — verified zero.")}</p>
               ) : (
                 <ul className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                   {attachments.map(a => <li key={a.id}>
@@ -296,7 +296,7 @@ export default async function Regulations({
                 </ul>
               )}
               {isWriter && reg.status === "draft" ? <AddRegulationAttachment regulationId={reg.id} strings={strings} /> : null}
-              <p className="ax-caption" style={{ margin: 0 }}>{t("admin.reg.attachments.truth", "Files are uploaded to governed private storage, checksummed, and retrieved through short-lived signed links.")}</p>
+              <p className="t-caption" style={{ margin: 0 }}>{t("admin.reg.attachments.truth", "Files are uploaded to governed private storage, checksummed, and retrieved through short-lived signed links.")}</p>
             </section>
 
             {/* Clause navigator + clause→item dependency rail */}
@@ -307,7 +307,7 @@ export default async function Regulations({
                 <div className="ax-state ax-state--inline" role="status">
                   <span className="ax-state__glyph" aria-hidden="true">📄</span>
                   <h4>{t("admin.reg.r1.detail.clauses.empty.title", "No clauses yet")}</h4>
-                  <p className="ax-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below — the read succeeded, it is genuinely empty.")}</p>
+                  <p className="t-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below — the read succeeded, it is genuinely empty.")}</p>
                 </div>
               ) : (
                 <div className="ax-tablewrap">
@@ -328,13 +328,13 @@ export default async function Regulations({
                           <tr key={c.id}>
                             <td className="ax-numeric"><strong><bdi dir="ltr">§{c.clause_ref ?? "—"}</bdi></strong></td>
                             <td>{c.title ?? "—"}</td>
-                            <td className="ax-caption">{c.applicability ?? "—"}</td>
-                            <td className="ax-caption">{c.legal_source ?? "—"}</td>
+                            <td className="t-caption">{c.applicability ?? "—"}</td>
+                            <td className="t-caption">{c.legal_source ?? "—"}</td>
                             <td>
                               {items === null ? (
                                 <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {strings.railItemsUnknown}</span>
                               ) : items.length === 0 ? (
-                                <span className="ax-caption"><span aria-hidden="true">○</span> {strings.railItemsZero}</span>
+                                <span className="t-caption"><span aria-hidden="true">○</span> {strings.railItemsZero}</span>
                               ) : (
                                 items.map(i => (
                                   <span key={i.id} className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 6 }}>
@@ -350,7 +350,7 @@ export default async function Regulations({
                   </table>
                 </div>
               )}
-              <p className="ax-caption" style={{ margin: 0 }}>
+              <p className="t-caption" style={{ margin: 0 }}>
                 <span aria-hidden="true">✓</span> {t("admin.reg.r1.detail.beyond", "Publish dependency gate is evaluated from the authoritative clause-to-item mappings shown above. Package versions freeze the referenced item snapshots at publication.")}
               </p>
             </section>
@@ -370,7 +370,7 @@ export default async function Regulations({
                   <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
                     <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
                       <PublishRegulation regulationId={reg.id} strings={strings} />
-                      <span className="ax-caption">{t("admin.reg.r1.detail.publish.direct", "Publish validates that at least one clause exists and every clause maps to an inspection item. Maker-checker rejects self-approval, and a successful transition is audited.")}</span>
+                      <span className="t-caption">{t("admin.reg.r1.detail.publish.direct", "Publish validates that at least one clause exists and every clause maps to an inspection item. Maker-checker rejects self-approval, and a successful transition is audited.")}</span>
                     </div>
                     <div className={`ax-banner ${unmappedClauses > 0 || clauses.length === 0 ? "ax-banner--warning" : ""}`} role={unmappedClauses > 0 || clauses.length === 0 ? "alert" : "status"}>
                       <strong><span aria-hidden="true">{unmappedClauses > 0 || clauses.length === 0 ? "⚠" : "✓"}</span> {t("admin.reg.r1.detail.validation.title", "Publish readiness")}</strong>{" "}
@@ -393,9 +393,9 @@ export default async function Regulations({
 
             <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-audit-h">
               <h3 id="reg-audit-h" style={{ margin: 0 }}>{t("admin.reg.audit.heading", "Configuration audit timeline")}</h3>
-              {!isWriter ? <p className="ax-caption">{t("admin.reg.audit.readonly", "The scoped author timeline is available to configuration writers; this read-only persona is not granted that RPC.")}</p>
+              {!isWriter ? <p className="t-caption">{t("admin.reg.audit.readonly", "The scoped author timeline is available to configuration writers; this read-only persona is not granted that RPC.")}</p>
                 : auditError ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.reg.audit.error", "The audit timeline is unavailable. Reload to retry; no empty-history claim is made.")}</div>
-                : auditEvents.length === 0 ? <p className="ax-caption" role="status">{t("admin.reg.audit.empty", "No scoped audit events returned — verified zero.")}</p>
+                : auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.reg.audit.empty", "No scoped audit events returned — verified zero.")}</p>
                 : <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </section>
 
@@ -406,7 +406,7 @@ export default async function Regulations({
                   <a className="ax-link" href={`/admin/regulations?id=${encodeURIComponent(version.id)}`}><bdi dir="ltr" className="ax-numeric">{version.version_label}</bdi></a>
                   {" · "}{version.status}{version.effective_from ? <> · <bdi dir="ltr" className="ax-numeric">{version.effective_from.slice(0, 10)}</bdi></> : null}
                   {version.supersedes_id ? <> · {t("admin.reg.lineage.successor", "governed successor")}</> : null}
-                  {version.deactivation_reason ? <div className="ax-caption">{version.deactivation_reason}</div> : null}
+                  {version.deactivation_reason ? <div className="t-caption">{version.deactivation_reason}</div> : null}
                 </li>)}
               </ol>
             </section>

@@ -61,14 +61,14 @@ export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: 
         </Suspense>
       </div>
       <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", justifyContent: "space-between" }}>
-        <span className="ax-caption">
+        <span className="t-caption">
           <span className="ax-lozenge ax-lozenge--success">{s.legendExecuting}</span>{" "}
           <span className="ax-lozenge ax-lozenge--warning">{s.legendEnRoute}</span>{" "}
           <span className="ax-lozenge">{s.legendFactory}</span>
         </span>
         {selected
           ? <a className="ax-link" href={selected.href}>{s.open} — {selected.label}</a>
-          : <span className="ax-caption">{s.selectHint}</span>}
+          : <span className="t-caption">{s.selectHint}</span>}
       </div>
     </div>
   );

@@ -53,7 +53,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
     if (error) console.error("[inspection report] load failed", error);
     return (
       <div className="rp-page"><div className="rp-doc">
-        <p className="ax-caption">{error ? t("report.loadError", "The inspection report is temporarily unavailable. Nothing was changed. Try again.") : t("report.notFound", "Report unavailable — inspection not in your scope or does not exist (RLS).")}</p>
+        <p className="t-caption">{error ? t("report.loadError", "The inspection report is temporarily unavailable. Nothing was changed. Try again.") : t("report.notFound", "Report unavailable — inspection not in your scope or does not exist (RLS).")}</p>
       </div></div>
     );
   }
@@ -104,19 +104,19 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           <div className="rp-head__col">
             <strong>{t("report.head.kingdom", "Kingdom of Saudi Arabia")}</strong>
             <strong>{t("report.head.ministry", "Ministry of Industry and Mineral Resources")}</strong>
-            <span className="ax-caption">{t("report.head.platform", "Saqeel Inspection Platform — official inspection report")}</span>
+            <span className="t-caption">{t("report.head.platform", "Saqeel Inspection Platform — official inspection report")}</span>
           </div>
           <div className="rp-head__mark" aria-hidden="true"><span lang="ar">صقيل</span></div>
           <div className="rp-head__col rp-head__ar">
             <strong>المملكة العربية السعودية</strong>
             <strong>وزارة الصناعة والثروة المعدنية</strong>
-            <span className="ax-caption">منصة التفتيش — تقرير التفتيش الرسمي</span>
+            <span className="t-caption">منصة التفتيش — تقرير التفتيش الرسمي</span>
           </div>
         </header>
 
         <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           <h2 className="rp-title">{t("report.title", "Inspection report — {factory}").replace("{factory}", f.name)}</h2>
-          <span className="ax-caption ax-numeric">{t("report.ref", "Inspection")} {ins.id.slice(0, 8)} · {latest ? `v${latest.version_number}` : t("report.noVersion", "no submitted version")} · {displayStatus}</span>
+          <span className="t-caption ax-numeric">{t("report.ref", "Inspection")} {ins.id.slice(0, 8)} · {latest ? `v${latest.version_number}` : t("report.noVersion", "no submitted version")} · {displayStatus}</span>
         </div>
 
         {approvedWithoutVersion ? (
@@ -178,8 +178,8 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                       return (
                         <tr key={code}>
                           <td><strong className="ax-numeric">{code}</strong> {titleByCode[code] ?? ""}</td>
-                          <td>{ans ? <span className={`ax-lozenge ${ans === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{enumL(ans)}</span> : <span className="ax-caption">{t("report.items.notApplicable", "not answered / not applicable")}</span>}</td>
-                          <td>{snap.notes?.[code] ?? "—"}{snap.dates?.[code] ? <span className="ax-caption ax-numeric"> · {snap.dates[code]}</span> : null}</td>
+                          <td>{ans ? <span className={`ax-lozenge ${ans === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{enumL(ans)}</span> : <span className="t-caption">{t("report.items.notApplicable", "not answered / not applicable")}</span>}</td>
+                          <td>{snap.notes?.[code] ?? "—"}{snap.dates?.[code] ? <span className="t-caption ax-numeric"> · {snap.dates[code]}</span> : null}</td>
                           <td>{itemVios.length ? itemVios.map(x => <span key={x.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.code}{x.level ? ` · ${enumL(x.level)}` : ""}</span>) : "—"}</td>
                           <td className="ax-td-num ax-numeric">{snap.evidence?.by_item?.[code] ?? 0}</td>
                         </tr>
@@ -195,7 +195,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
         {/* 4 · Violations & penalties (immutable submission/config snapshots) */}
         <section className="rp-section">
           <h3>{t("report.vio.heading", "Violations and penalty references")}</h3>
-          {(snap.violations?.length ?? vios.length) === 0 ? <p className="ax-caption">{t("report.vio.none", "No violations recorded for this inspection.")}</p> : (
+          {(snap.violations?.length ?? vios.length) === 0 ? <p className="t-caption">{t("report.vio.none", "No violations recorded for this inspection.")}</p> : (
             <table className="rp-table">
               <thead><tr><th scope="col">{t("report.vio.th.code", "Code")}</th><th scope="col">{t("report.vio.th.title", "Title")}</th><th scope="col">{t("report.vio.th.level", "Severity")}</th><th scope="col">{t("report.vio.th.penalty", "Penalty ref · legal basis")}</th><th scope="col">{t("report.vio.th.mapping", "Mapping version")}</th></tr></thead>
               <tbody>
@@ -222,7 +222,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
         {/* 5 · Corrective action forms */}
         <section className="rp-section">
           <h3>{t("report.af.heading", "Corrective action forms")}</h3>
-          {forms.length === 0 ? <p className="ax-caption">{t("report.af.none", "No action forms required.")}</p> : (
+          {forms.length === 0 ? <p className="t-caption">{t("report.af.none", "No action forms required.")}</p> : (
             <table className="rp-table">
               <thead><tr><th scope="col">{t("report.af.th.type", "Form")}</th><th scope="col">{t("report.af.th.correction", "Required correction")}</th><th scope="col">{t("report.af.th.owner", "Owner")}</th><th scope="col" className="ax-td-num">{t("report.af.th.due", "Due")}</th><th scope="col">{t("report.af.th.status", "Status")}</th></tr></thead>
               <tbody>
@@ -243,7 +243,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
         {/* 6 · Evidence manifest (custody: sha256 at sync, ENG-07) */}
         <section className="rp-section">
           <h3>{t("report.ev.heading", "Evidence manifest")}</h3>
-          {evd.length === 0 ? <p className="ax-caption">{t("report.ev.none", "No evidence attached.")}</p> : (
+          {evd.length === 0 ? <p className="t-caption">{t("report.ev.none", "No evidence attached.")}</p> : (
             <table className="rp-table">
               <thead><tr><th scope="col">{t("report.ev.th.file", "Stored file")}</th><th scope="col">{t("report.ev.th.type", "Type")}</th><th scope="col" className="ax-td-num">{t("report.ev.th.captured", "Captured")}</th><th scope="col">{t("report.ev.th.sha", "Integrity (sha256)")}</th></tr></thead>
               <tbody>
@@ -266,7 +266,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
           <table className="rp-table">
             <thead><tr><th scope="col">{t("report.hist.th.version", "Version")}</th><th scope="col" className="ax-td-num">{t("report.hist.th.submitted", "Submitted")}</th><th scope="col">{t("report.hist.th.by", "By")}</th><th scope="col">{t("report.hist.th.ack", "Acknowledgement")}</th></tr></thead>
             <tbody>
-              {subs.length === 0 && <tr><td colSpan={4} className="ax-caption">{t("report.hist.none", "No submitted versions yet.")}</td></tr>}
+              {subs.length === 0 && <tr><td colSpan={4} className="t-caption">{t("report.hist.none", "No submitted versions yet.")}</td></tr>}
               {subs.map(s => (
                 <tr key={s.id}>
                   <td><span className="ax-version">v{s.version_number}</span> {t("report.hist.immutable", "immutable")}</td>
@@ -277,13 +277,13 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
               ))}
             </tbody>
           </table>
-          {reviews.length === 0 ? <p className="ax-caption">{t("report.rev.none", "No review decision recorded yet.")}</p> : reviews.map((r, i) => (
+          {reviews.length === 0 ? <p className="t-caption">{t("report.rev.none", "No review decision recorded yet.")}</p> : reviews.map((r, i) => (
             <p key={i}>
               <span className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : r.decision === "reject" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{enumL(r.decision)}</span>{" "}
               <span className="ax-version">v{versionByReview(r.submission_version_id) ?? "—"}</span>{" "}
               {r.profiles?.full_name ?? "—"} · <span className="ax-numeric">{dt(r.decided_at)}</span>
               {r.decision_reason ? <> — {r.decision_reason}</> : null}
-              {r.returned_sections?.length ? <span className="ax-caption"> · {t("report.rev.sections", "returned sections:")} {r.returned_sections.join(", ")}</span> : null}
+              {r.returned_sections?.length ? <span className="t-caption"> · {t("report.rev.sections", "returned sections:")} {r.returned_sections.join(", ")}</span> : null}
             </p>
           ))}
         </section>
@@ -298,12 +298,12 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                 // eslint-disable-next-line @next/next/no-img-element
                 ? <img className="rp-sig__img" src={ack.signature_data_url} alt={t("report.sig.alt", "Representative signature")} />
                 : <div className="rp-sig__line" aria-hidden="true" />}
-              <p className="ax-caption ax-numeric">{dt(ack?.signed_at ?? ack?.ts)}</p>
+              <p className="t-caption ax-numeric">{dt(ack?.signed_at ?? ack?.ts)}</p>
             </div>
             <div>
               <dl className="rp-kv"><div><dt>{t("report.sig.inspector", "Inspector")}</dt><dd>{inspector}</dd></div></dl>
               <div className="rp-sig__line" aria-hidden="true" />
-              <p className="ax-caption ax-numeric">{dt(latest?.submitted_at)}</p>
+              <p className="t-caption ax-numeric">{dt(latest?.submitted_at)}</p>
             </div>
           </div>
         </section>

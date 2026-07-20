@@ -88,7 +88,7 @@ export default async function AdminNotifications() {
   ) : null;
 
   const escalationNote = (
-    <p className="ax-caption" style={{ margin: 0 }}>
+    <p className="t-caption" style={{ margin: 0 }}>
       <span aria-hidden="true">ⓘ</span> {t("admin.notif.escalationNote", "SLA timers and escalation roles are stored as governed configuration. Automatic breach-firing (a scheduled process that escalates when a timer elapses) is separate runtime scope and is not built by this screen.")}
     </p>
   );

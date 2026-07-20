@@ -448,7 +448,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
           )}
         </span>
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-          <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
+          <span className="t-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
           {!submitted && <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
         </span>
       </div>
@@ -476,23 +476,23 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelFactory}</summary>
             <div className="stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
               <div><strong>{panel.factory.name}</strong></div>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelCode}</span><span className="ax-numeric">{panel.factory.code ?? "—"}</span></div>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelLicense}</span><span className="ax-numeric">{panel.factory.license ?? "—"}</span></div>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelCode}</span><span className="ax-numeric">{panel.factory.code ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelLicense}</span><span className="ax-numeric">{panel.factory.license ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelRegion}</span><span>{panel.factory.region ?? "—"} · {panel.factory.city ?? "—"}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
             </div>
           </details>
           <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelVisit}</summary>
             <div className="stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelWindow}</span><span className="ax-numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
-              <div className="row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="ax-version">{panel.pkg.label}</span></span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelWindow}</span><span className="ax-numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
+              <div className="row" style={{ justifyContent: "space-between" }}><span className="t-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="ax-version">{panel.pkg.label}</span></span></div>
             </div>
           </details>
         </div>
         {/* M04-136/137 — source of the previous-inspection comparison shown per item below */}
-        {prev && <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
+        {prev && <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
       </details>
       {conflicts.map(c => (
         <div key={c.key} className="ax-conflict">
@@ -530,7 +530,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       {!submitted && flags.length > 0 && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
           <h4>{strings.ctxTitle}</h4>
-          <p className="ax-caption">{strings.ctxHint}</p>
+          <p className="t-caption">{strings.ctxHint}</p>
           <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)" }}>
             {flags.map(k => (
               <div key={k} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
@@ -549,7 +549,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         if (inspection.status === "returned") {
           const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
           if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
-            return <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} 🔒</h4><p className="ax-caption">{strings.lockedSection}</p></div>;
+            return <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} 🔒</h4><p className="t-caption">{strings.lockedSection}</p></div>;
           }
         }
         const sp = progress.find(p => p.key === s.key)!;
@@ -557,7 +557,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         <div key={s.key} id={`ax-section-${s.key}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-600)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
-            <span className="ax-caption ax-numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
+            <span className="t-caption ax-numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
           </div>
           {/* Per-section progress (M04-081) */}
           <div style={{ blockSize: 4, borderRadius: 2, background: "var(--ax-color-border)" }} role="progressbar" aria-valuenow={sp.pct} aria-valuemin={0} aria-valuemax={100}>
@@ -579,10 +579,10 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
               <div key={code} className={`ipad-q ${val?.value ? "is-answered" : ""}`} style={{ border: "1px solid var(--ax-color-border)", borderRadius: "var(--ax-radius-large)", padding: "var(--ax-space-300)", borderInlineStart: val?.value ? "4px solid var(--ax-color-success)" : undefined, display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
                 <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "baseline" }}>
                   <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{code} · {it.title}</p>
-                  {it.clause && <span className="ax-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
+                  {it.clause && <span className="t-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
                   {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
                 </div>
-                {it.guidance && <p className="ax-caption">💡 {strings.guidanceLabel}: {it.guidance}</p>}
+                {it.guidance && <p className="t-caption">💡 {strings.guidanceLabel}: {it.guidance}</p>}
                 {/* MVP1-M04-138: separate advisory explanation; it cannot alter the answer/evidence/violation controls below. */}
                 <ContextualAiPanel
                   surface="inspection_item_explanation"
@@ -600,7 +600,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                 />
                 {/* M04-136/137 — same item's answer + evidence count from the factory's latest prior approved inspection */}
                 {prev && (
-                  <p className="ax-caption">
+                  <p className="t-caption">
                     ↩ {fmt(strings.prevLine, {
                       value: prev.answers[it.id] ? (strings.enumLabels[prev.answers[it.id]] ?? prev.answers[it.id].replace(/_/g, " ")) : strings.prevNoAnswer,
                       n: prev.evidence[it.id] ?? 0,
@@ -636,8 +636,8 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                     <span className={`ax-lozenge ${evCount >= leg.min ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{fmt(strings.evCount, { n: evCount, min: leg.min })}</span>
                   )}
                 </div>
-                {val?.value && scoreExcluded(it, val.value) && <p className="ax-caption">{strings.naExcluded}</p>}
-                {leg?.applies && leg.mandatory && evCount < leg.min && <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
+                {val?.value && scoreExcluded(it, val.value) && <p className="t-caption">{strings.naExcluded}</p>}
+                {leg?.applies && leg.mandatory && evCount < leg.min && <p className="t-caption" style={{ color: "var(--ax-color-critical)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
                 {/* F2 — evidence list per item: synced thumbnails + REPLACE (archive, M04-163)
                     + DELETE (soft, audited, M04-164); queued captures ride alongside unsynced */}
                 {(() => {
@@ -690,7 +690,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                       <strong>{def.title}</strong>
                       <span className={`ax-lozenge ${complete ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{complete ? strings.afComplete : strings.afIncomplete}</span>
                     </div>
-                    {def.blocking && !complete && <p className="ax-caption">{strings.afBlocking}</p>}
+                    {def.blocking && !complete && <p className="t-caption">{strings.afBlocking}</p>}
                     <div className="ax-grid-2">
                       {def.fields.map(f => (
                         <label key={f} className="ax-field" style={f === "required_correction" ? { gridColumn: "1 / -1" } : undefined}>
@@ -713,7 +713,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       {!submitted && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
           <h4>{strings.vioTitle}</h4>
-          {implied.length === 0 ? <p className="ax-caption">{strings.vioNone}</p> : implied.map(v => (
+          {implied.length === 0 ? <p className="t-caption">{strings.vioNone}</p> : implied.map(v => (
             <div key={`${v.itemCode}-${v.code}`} className="ax-banner ax-banner--critical">
               <div>
                 <strong>{v.code}</strong> · {v.config?.title ?? ""} · {fmt(strings.vioLevel, { level: v.config?.level ?? "" })} · {v.itemCode}
@@ -736,9 +736,9 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
             {validation.map(g => (
               <li key={g.key}>
                 <strong>{g.title}</strong>
-                {g.unanswered.length > 0 && <div className="ax-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
-                {g.evidence.length > 0 && <div className="ax-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
-                {g.forms.length > 0 && <div className="ax-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}
+                {g.unanswered.length > 0 && <div className="t-caption">{fmt(strings.valUnanswered, { items: g.unanswered.join(", ") })}</div>}
+                {g.evidence.length > 0 && <div className="t-caption">{fmt(strings.valEvidence, { items: g.evidence.join(", ") })}</div>}
+                {g.forms.length > 0 && <div className="t-caption">{fmt(strings.valForms, { items: g.forms.join(", ") })}</div>}
               </li>
             ))}
           </ul>
@@ -748,7 +748,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       {!submitted && (
         <div className="row" style={{ justifyContent: "flex-end", alignItems: "center", gap: "var(--ax-space-200)" }}>
           {/* Readiness evaluation (M04-204): submit stays clickable so refusal + grouped blockers surface on tap */}
-          <span className="ax-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
+          <span className="t-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
           <button className="ax-btn ax-btn--prominent ax-btn--field" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
         </div>
       )}

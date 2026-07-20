@@ -97,7 +97,7 @@ export function NewRegulationForm({ strings: s }: { strings: RegStrings }) {
       <div className="ax-field"><label className="ax-field__label" htmlFor="reg-version">{s.versionLabel}</label>
         <input id="reg-version" className="ax-input ax-numeric" name="version_label" defaultValue="v1" required /></div>
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.creating : s.create}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
     </form>
   );
@@ -118,10 +118,10 @@ export function AddClauseForm({ regulationId, strings: s }: { regulationId: stri
         <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor={`cl-src-${regulationId}`}>{s.legalSource}</label>
           <input id={`cl-src-${regulationId}`} className="ax-input" name="legal_source" placeholder={s.legalSourcePlaceholder} /></div>
         <button className="ax-btn" disabled={pending}>{pending ? s.adding : s.addClause}</button>
-        {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
         {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.added}</span>}
       </div>
-      <p className="ax-caption" style={{ margin: 0 }}><span aria-hidden="true">ⓘ</span> {s.clauseNotAudited}</p>
+      <p className="t-caption" style={{ margin: 0 }}><span aria-hidden="true">ⓘ</span> {s.clauseNotAudited}</p>
     </form>
   );
 }
@@ -134,7 +134,7 @@ export function PublishRegulation({ regulationId, strings: s }: { regulationId: 
     <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
       <input type="hidden" name="regulation_id" value={regulationId} />
       <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.publishing : s.publish}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
     </form>
   );
 }
@@ -156,7 +156,7 @@ export function EditRegulationDraft({ regulation, strings: s }: {
           <input id={`reg-edit-effective-${regulation.id}`} className="ax-input ax-numeric" type="date" name="effective_from" defaultValue={regulation.effectiveFrom?.slice(0, 10) ?? ""} /></div>
         <button className="ax-btn" disabled={pending}>{pending ? s.savingDraft : s.saveDraft}</button>
       </div>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.draftSaved}</span>}
     </form>
   );
@@ -171,7 +171,7 @@ export function AddRegulationAttachment({ regulationId, strings: s }: { regulati
         <div className="ax-field" style={{ flex: 1, minInlineSize: 260 }}><label className="ax-field__label" htmlFor={`att-file-${regulationId}`}>{s.attachmentName}</label><input id={`att-file-${regulationId}`} className="ax-input" type="file" name="file" required /></div>
         <button className="ax-btn" disabled={pending}>{pending ? s.addingAttachment : s.addAttachment}</button>
       </div>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.attachmentAdded}</span>}
     </form>
   );
@@ -184,7 +184,7 @@ export function DeactivateRegulation({ regulationId, strings: s }: { regulationI
       <input type="hidden" name="regulation_id" value={regulationId} />
       <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><textarea className="ax-input" name="deactivation_reason" required /></label>
       <button className="ax-btn ax-btn--subtle" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
       {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.deactivated}</span>}
     </form>
   );
@@ -234,12 +234,12 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
           {clausesUnknown ? (
             <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {s.railClausesUnknown}</span>
           ) : noClauses ? (
-            <span className="ax-caption"><span aria-hidden="true">○</span> {s.railClausesZero}</span>
+            <span className="t-caption"><span aria-hidden="true">○</span> {s.railClausesZero}</span>
           ) : (
-            <span className="ax-caption"><span aria-hidden="true">✓</span> <span className="ax-numeric"><bdi dir="ltr">{r.clauseCount}</bdi></span></span>
+            <span className="t-caption"><span aria-hidden="true">✓</span> <span className="ax-numeric"><bdi dir="ltr">{r.clauseCount}</bdi></span></span>
           )}
           {r.status === "draft" && noClauses ? (
-            <span className="ax-caption" style={{ color: "var(--ax-color-warning-strong)" }}><span aria-hidden="true">⚠</span> {s.invalidNoClauses}</span>
+            <span className="t-caption" style={{ color: "var(--ax-color-warning-strong)" }}><span aria-hidden="true">⚠</span> {s.invalidNoClauses}</span>
           ) : null}
         </div>
         {/* Mapped items — read verified / unknown / verified-zero */}
@@ -248,15 +248,15 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
           {itemsUnknown ? (
             <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {s.railItemsUnknown}</span>
           ) : noItems ? (
-            <span className="ax-caption"><span aria-hidden="true">○</span> {s.railItemsZero}</span>
+            <span className="t-caption"><span aria-hidden="true">○</span> {s.railItemsZero}</span>
           ) : (
-            <span className="ax-caption"><span aria-hidden="true">✓</span> <span className="ax-numeric"><bdi dir="ltr">{r.itemCount}</bdi></span></span>
+            <span className="t-caption"><span aria-hidden="true">✓</span> <span className="ax-numeric"><bdi dir="ltr">{r.itemCount}</bdi></span></span>
           )}
         </div>
         {/* Beyond items — list disclosure stays conservative; dossier publication evaluates mappings. */}
         <div className="stack" style={{ gap: "2px", minInlineSize: 180 }}>
           <span className="ax-overline">{s.railBeyond}</span>
-          <span className="ax-caption"><span aria-hidden="true">⋯</span> {s.railNotEvaluated}</span>
+          <span className="t-caption"><span aria-hidden="true">⋯</span> {s.railNotEvaluated}</span>
         </div>
       </div>
     </div>
@@ -326,7 +326,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
               <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                 <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                   <h3 style={{ margin: 0 }}><span className="ax-numeric"><bdi dir="ltr">{r.code}</bdi></span> — {r.title}</h3>
-                  <p className="ax-caption" style={{ margin: 0 }}>
+                  <p className="t-caption" style={{ margin: 0 }}>
                     {r.issuing_authority || "—"}
                     {r.created_at ? <> · {s.createdAtLabel} <bdi dir="ltr" className="ax-numeric">{r.created_at.slice(0, 10)}</bdi></> : null}
                   </p>

@@ -49,11 +49,11 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
           </span>
         </div>
       </div>
-      <p className="ax-caption">
+      <p className="t-caption">
         {[task.branch, task.sector].filter(Boolean).join(" · ") || "—"} · {task.assignee ?? "—"}
       </p>
 
-      {!task.canManage && <p className="ax-caption">{/* read-only: RLS/scope */}—</p>}
+      {!task.canManage && <p className="t-caption">{/* read-only: RLS/scope */}—</p>}
 
       {task.canManage && (
         <div className="row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap", alignItems: "flex-start" }}>
@@ -65,7 +65,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reassign-reason`}>{s.reason}</label>
               <input className="ax-input" name="reason" id={`${fieldId}-reassign-reason`} required disabled={isTerminal} /></div>
             <button className="ax-btn" disabled={reassigning || isTerminal}>{reassigning ? s.reassigning : s.reassign}</button>
-            {reassignState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{reassignState.error}</span>}
+            {reassignState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{reassignState.error}</span>}
             {reassignState.ok && <span className="ax-lozenge ax-lozenge--success">{s.reassigned}</span>}
           </form>
 
@@ -79,7 +79,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-status-reason`}>{s.reason}</label>
               <input className="ax-input" name="reason" id={`${fieldId}-status-reason`} /></div>
             <button className="ax-btn" disabled={applying || isTerminal}>{applying ? s.applying : s.apply}</button>
-            {statusState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{statusState.error}</span>}
+            {statusState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{statusState.error}</span>}
             {statusState.ok && <span className="ax-lozenge ax-lozenge--success">{s.statusChanged}</span>}
           </form>
 
@@ -90,12 +90,12 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-active-reason`}>{s.reason}</label>
               <input className="ax-input" name="reason" id={`${fieldId}-active-reason`} required /></div>
             <button className="ax-btn" disabled={activating}>{activating ? s.activating : (task.active ? s.deactivate : s.reactivate)}</button>
-            {activeState.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{activeState.error}</span>}
+            {activeState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{activeState.error}</span>}
             {activeState.ok && <span className="ax-lozenge ax-lozenge--success">✓</span>}
           </form>
         </div>
       )}
-      {isTerminal && <p className="ax-caption">{s.terminalNote}</p>}
+      {isTerminal && <p className="t-caption">{s.terminalNote}</p>}
     </div>
   );
 }

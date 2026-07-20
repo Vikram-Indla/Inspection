@@ -21,7 +21,7 @@ export default function StartReview({ inspectionId, submissionVersionId, strings
       style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}
     >
       <h4>{strings.title}</h4>
-      <p className="ax-caption">{strings.body}</p>
+      <p className="t-caption">{strings.body}</p>
       <input type="hidden" name="inspection_id" value={inspectionId} />
       <input type="hidden" name="submission_version_id" value={submissionVersionId} />
       {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}

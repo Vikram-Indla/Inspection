@@ -41,19 +41,19 @@ export default function IdentityDossier({
           ? <span className="ax-lozenge ax-lozenge--success" style={{ marginInlineStart: 8 }}>{strings.exactBadge}</span>
           : <span className="ax-lozenge ax-lozenge--warning" style={{ marginInlineStart: 8 }}>{strings.similarBadge}</span>}
         {factory.degraded && <span className="ax-lozenge ax-lozenge--critical" style={{ marginInlineStart: 8 }}>{strings.degradedBadge}</span>}
-        <p className="ax-caption">{factory.grade === "exact" ? strings.exactRule : strings.similarRule}</p>
+        <p className="t-caption">{factory.grade === "exact" ? strings.exactRule : strings.similarRule}</p>
       </div>
 
       {/* Identifier grid — bdi-isolated so LTR codes read correctly inside Arabic labels */}
       <dl className="ax-grid-2" style={{ rowGap: "var(--ax-space-100)" }}>
-        <div><dt className="ax-caption">{strings.crPrefix}</dt><dd><bdi>{factory.cr_number ?? "—"}</bdi></dd></div>
-        <div><dt className="ax-caption">{strings.licenseLabel}</dt><dd><bdi>{factory.license_number ?? strings.licenseNone}</bdi></dd></div>
-        <div><dt className="ax-caption">{strings.factory360}</dt><dd><bdi>{factory.factory_code ?? "—"}</bdi></dd></div>
-        <div><dt className="ax-caption">{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</dt></div>
+        <div><dt className="t-caption">{strings.crPrefix}</dt><dd><bdi>{factory.cr_number ?? "—"}</bdi></dd></div>
+        <div><dt className="t-caption">{strings.licenseLabel}</dt><dd><bdi>{factory.license_number ?? strings.licenseNone}</bdi></dd></div>
+        <div><dt className="t-caption">{strings.factory360}</dt><dd><bdi>{factory.factory_code ?? "—"}</bdi></dd></div>
+        <div><dt className="t-caption">{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</dt></div>
       </dl>
 
       {/* Provenance — real FND-013 freshness; no invented staleness threshold */}
-      <p className="ax-caption">{strings.freshnessLabel}: <bdi>{factory.source_synced_at ? new Date(factory.source_synced_at).toISOString().slice(0, 10) : strings.freshnessNever}</bdi></p>
+      <p className="t-caption">{strings.freshnessLabel}: <bdi>{factory.source_synced_at ? new Date(factory.source_synced_at).toISOString().slice(0, 10) : strings.freshnessNever}</bdi></p>
 
       {factory.duplicate && (
         <div className="ax-banner ax-banner--warning" role="status">
@@ -79,14 +79,14 @@ export default function IdentityDossier({
             <GeoMap center={center} zoom={hasOfficial || hasPlannerPin ? 14 : 6} markers={markers} height="100%" />
           </div>
         ) : (
-          <ul className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }} aria-label={strings.textEquivalent}>
+          <ul className="t-caption" style={{ marginBlockStart: "var(--ax-space-150)" }} aria-label={strings.textEquivalent}>
             <li>{strings.officialPin}: {hasOfficial ? <bdi>{factory.official_lat}, {factory.official_lng}</bdi> : strings.noOfficialPin}</li>
             {hasPlannerPin && <li>{strings.plannerPin}: <bdi>{plannerLat}, {plannerLng}</bdi></li>}
           </ul>
         )}
       </div>
 
-      <p className="ax-caption">{strings.riskContext}: {factory.risk_band ?? strings.riskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</p>
+      <p className="t-caption">{strings.riskContext}: {factory.risk_band ?? strings.riskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</p>
 
       <a href={`/factories/${factory.id}`} target="_blank" rel="noopener noreferrer" className="ax-btn ax-btn--secondary">{strings.factory360}</a>
     </div>

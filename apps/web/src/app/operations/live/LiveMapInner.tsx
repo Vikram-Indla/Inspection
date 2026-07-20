@@ -132,6 +132,6 @@ export default function LiveMapInner({ factories, regions, inspectors, selectedI
     updateSources(map, factories, regions, projected(inspectors, tick, reduce));
   }, [factories, inspectors, regions, reduce, tick]);
 
-  if (!token || failed) return <div className="ax-state" role="status" data-map-provider="mapbox-unavailable"><span className="ax-state__glyph">⌖</span><h4>{s.unavailable}</h4><p className="ax-caption">{s.notConfigured}</p></div>;
+  if (!token || failed) return <div className="ax-state" role="status" data-map-provider="mapbox-unavailable"><span className="ax-state__glyph">⌖</span><h4>{s.unavailable}</h4><p className="t-caption">{s.notConfigured}</p></div>;
   return <div ref={containerRef} aria-label={s.ariaLabel} data-map-provider="mapbox" style={{ blockSize: "100%", inlineSize: "100%", background: "var(--ax-color-canvas)" }} />;
 }
