@@ -147,3 +147,11 @@ export function IconLink({ size = 20, className }: IconProps) {
     </svg>
   );
 }
+
+export function IconClose({ size = 16, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
