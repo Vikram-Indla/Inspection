@@ -4,12 +4,26 @@
 // seeded e2e personas (e2e/personas.ts) against a real running dev server.
 // Run: BASE_URL=http://127.0.0.1:3002 node scripts/capture-v5-evidence.mjs
 import { chromium } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { readFileSync } from "node:fs";
 
 const BASE_URL = process.env.BASE_URL ?? "http://127.0.0.1:3002";
 const OUT_DIR = join(import.meta.dirname, "..", "..", "..", "docs", "design-system-v5", "screenshots");
 mkdirSync(OUT_DIR, { recursive: true });
+
+// Standalone script — not run through Next's env loader — so read .env.local directly.
+function loadEnvLocal() {
+  const path = join(import.meta.dirname, "..", ".env.local");
+  const out = {};
+  for (const line of readFileSync(path, "utf8").split("\n")) {
+    const m = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
+    if (m) out[m[1]] = m[2];
+  }
+  return out;
+}
+const env = loadEnvLocal();
 
 const PERSONAS = {
   admin: { email: "admin@mim.gov.sa", password: "MimAdmin!2026", home: "/admin" },
@@ -111,23 +125,42 @@ await run("ops", [
   ["15-dashboard-320px", "/dashboard"],
 ], { width: 320, height: 900 });
 
-// Print preview approximation (emulate print media, screenshot the report)
+// Intermediate desktop breakpoints (the master prompt's minimum list names
+// 1440/1280/1024/tablet/mobile — 1440 and 320 were already covered above).
+await run("ops", [
+  ["17-dashboard-1280", "/dashboard"],
+], { width: 1280, height: 900 });
+await run("ops", [
+  ["18-dashboard-1024-tablet", "/dashboard"],
+], { width: 1024, height: 900 });
+
+// Print preview — find a real submitted inspection directly via Supabase
+// (RLS-scoped as the ops role, which the seeded data grants broad read
+// access to) rather than relying on the reviewer's own /reviews queue,
+// which only lists inspections still awaiting THAT reviewer's decision.
 {
-  const context = await browser.newContext({ viewport: { width: 1000, height: 1400 } });
-  const page = await context.newPage();
-  await login(page, PERSONAS.reviewer);
-  // Find a real submitted inspection id via the reviews queue, else fall back.
-  await page.goto(`${BASE_URL}/reviews`, { waitUntil: "networkidle" }).catch(() => {});
-  const firstReviewLink = await page.locator('a[href^="/reports/inspection/"]').first().getAttribute("href").catch(() => null);
-  const reportPath = firstReviewLink ?? null;
-  if (reportPath) {
+  let reportId = null;
+  try {
+    const sb = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    const { error: authErr } = await sb.auth.signInWithPassword({ email: PERSONAS.ops.email, password: PERSONAS.ops.password });
+    if (authErr) throw authErr;
+    const { data, error } = await sb.from("submission_versions").select("inspection_id").limit(1).order("submitted_at", { ascending: false });
+    if (error) throw error;
+    reportId = data?.[0]?.inspection_id ?? null;
+  } catch (e) {
+    console.log(`(print-preview lookup failed: ${e.message ?? e})`);
+  }
+  if (reportId) {
+    const context = await browser.newContext({ viewport: { width: 1000, height: 1400 } });
+    const page = await context.newPage();
+    await login(page, PERSONAS.ops);
     await page.emulateMedia({ media: "print" });
     total++;
-    if (await shot(page, "16-report-print-preview", reportPath)) okCount++;
+    if (await shot(page, "16-report-print-preview", `/reports/inspection/${reportId}`)) okCount++;
+    await context.close();
   } else {
-    console.log("skip 16-report-print-preview  (no submitted report reachable from /reviews for this persona)");
+    console.log("skip 16-report-print-preview  (no submitted inspection found in submission_versions)");
   }
-  await context.close();
 }
 
 await browser.close();
