@@ -29,6 +29,22 @@ const RULES = [
     pattern: /toISOString\(\)\.slice\(/,
     exts: new Set([".tsx", ".ts"]),
     message: "Raw toISOString().slice() for a user-facing date — use lib/dates.ts (Asia/Riyadh) for display text. (OK for <input type=date> value wiring — audit call site.)",
+    // Wave 5 triage (docs/design-system-v5/CHANGED-FILE-INVENTORY.md): every
+    // remaining match is one of these verified-non-display shapes, checked
+    // individually against its call site, not a blanket assumption —
+    //  - `today`/`soon` ISO-string comparison variables (Postgrest filters,
+    //    DB effective_from/to comparisons) and their <=/>=/> comparisons
+    //  - <input type="date"|"datetime-local"> value/max wiring (HTML contract)
+    //  - a DB-write field value (effective_to:) or an AI JSON context payload
+    //    field (generated_for:), neither ever rendered to a user
+    //  - named helpers that are pure calendar-key/date-arithmetic, not
+    //    display formatting: keyOf, toLocal, proposedStart, ymd(), isoDate,
+    //    defaultDateRange/format() in ShellClient
+    // This intentionally does NOT cover visits/workload/page.tsx's
+    // weekLabel() — that one IS a real display bug (rendered column header
+    // text); its fix needs its own pass since it touches week-bucket
+    // boundary math, so it's left flagged on purpose, not allowlisted.
+    exclude: /\btoday\s*=|\bsoon\s*=|<=\s*today|>=\s*today\.|<=\s*new Date\(\)|>\s*new Date\(\)|type="date"|type="datetime-local"|effective_to:|due_at: new Date|generated_for:|\bkeyOf\s*=|\btoLocal\s*=|proposedStart|return d\.toISOString|\bisoDate\s*=|defaultDateRange|const format = \(value: Date\)|^\s*\/\/|^\s*\*/,
   },
   {
     // Narrow to true pictographic emoji (camera/shield/map/eye/etc). Deliberately
