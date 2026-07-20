@@ -85,7 +85,7 @@ const fill = (tmpl: string, vars: Record<string, string | number>) =>
 export function NewRegulationForm({ strings: s }: { strings: RegStrings }) {
   const [state, formAction, pending] = useActionState<RegResult, FormData>(createRegulation, {});
   return (
-    <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="reg-code">{s.code}</label>
         <input id="reg-code" className="ax-input numeric" name="code" placeholder="SBC-501" required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="reg-title">{s.title}</label>
@@ -220,7 +220,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
   const itemsUnknown = r.itemCount === null;
   const noItems = r.itemCount === 0;
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-200)", background: "var(--ax-color-surface-sunken)", marginBlockStart: "var(--ax-space-150)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-200)", background: "var(--ax-color-surface-sunken)", marginBlockStart: "var(--ax-space-150)" }}>
       <p className="ax-overline" style={{ margin: 0 }}>{s.railHeading}</p>
       <div className="row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-100)" }}>
         {/* Regulation */}
@@ -322,7 +322,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
       ) : (
         <ul className="stack" style={{ gap: "var(--ax-space-200)", listStyle: "none", margin: 0, padding: 0 }}>
           {filtered.map(r => (
-            <li key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+            <li key={r.id} className="panel" style={{ padding: "var(--ax-space-300)" }}>
               <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                 <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                   <h3 style={{ margin: 0 }}><span className="numeric"><bdi dir="ltr">{r.code}</bdi></span> — {r.title}</h3>

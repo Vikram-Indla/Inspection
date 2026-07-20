@@ -5,7 +5,7 @@ import { recordSignatureAct, type CmteResult } from "./actions";
 export function RecordSignature({ strings: s }: { strings: { record: string; recording: string; recorded: string; kind: string; outcome: string } }) {
   const [state, action, pending] = useActionState<CmteResult, FormData>(recordSignatureAct, {});
   return (
-    <form action={action} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={action} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="committee-signature-kind">{s.kind}</label>
         <select className="ax-input" name="kind" id="committee-signature-kind"><option value="signature">signature</option><option value="refusal">refusal</option></select></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="committee-signature-outcome">{s.outcome}</label>

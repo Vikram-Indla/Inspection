@@ -127,7 +127,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
   const categories: Category[] = ["unexpected", "expected", "unavailable", "unchanged"];
 
   return (
-    <div className="ax-surface cd-version-compare" style={{ padding: "var(--ax-space-300)" }}>
+    <div className="panel cd-version-compare" style={{ padding: "var(--ax-space-300)" }}>
       <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.heading}</h4>
 
       {staleAt != null && (
@@ -193,7 +193,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
               const label = cat === "expected" ? strings.catExpected : cat === "unexpected" ? strings.catUnexpected : cat === "unchanged" ? strings.catUnchanged : strings.catUnavailable;
               const panelId = `cmp-cat-${cat}`;
               return (
-                <div key={cat} className="ax-surface" style={{ padding: "var(--ax-space-150)" }}>
+                <div key={cat} className="panel" style={{ padding: "var(--ax-space-150)" }}>
                   <button type="button" className="btn btn-ghost btn-touch" aria-expanded={open[cat]} aria-controls={panelId}
                     onClick={() => setOpen(o => ({ ...o, [cat]: !o[cat] }))}
                     style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--ax-space-150)" }}>
@@ -252,7 +252,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       )}
 
       {/* Explicitly unavailable comparison categories — never rendered as "unchanged". */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)" }}>
         <p className="ax-overline" style={{ marginBlockEnd: 8 }}>{strings.unavailableHeading}</p>
         <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
         <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>

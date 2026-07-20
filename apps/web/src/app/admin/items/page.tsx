@@ -239,7 +239,7 @@ export default async function Items({
 
       {/* Permission + governance truth (S05/S06 + audit fact). Visibility is not
           authorization; the write path is RLS-guarded and every row change is audited. */}
-      <section className="ax-surface ax-permission stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel ax-permission stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
         <p className="t-caption" style={{ margin: 0 }}>
           {t("admin.items.r3.gov.body", "Anyone signed in can read the catalogue; writes require compliance_admin or form_admin. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
@@ -247,7 +247,7 @@ export default async function Items({
       </section>
 
       {!error && isWriter && (
-        <section className="ax-surface stack" aria-labelledby="cd007-create-h" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="panel stack" aria-labelledby="cd007-create-h" style={{ padding: "var(--ax-space-300)" }}>
           <h3 id="cd007-create-h" style={{ margin: 0 }}>{t("admin.items.r2.create.heading", "Add an inspection item")}</h3>
           <NewItemForm clauses={clauseOptions} clauseUnavailable={clauseUnavailable} strings={strings} />
         </section>
@@ -338,7 +338,7 @@ export default async function Items({
       )}
 
       {!error && rows.length > 0 && isWriter && (
-        <section className="ax-surface stack" aria-labelledby="cd007-audit-h" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="panel stack" aria-labelledby="cd007-audit-h" style={{ padding: "var(--ax-space-300)" }}>
           <h3 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Scoped item audit")}</h3>
           <p className="t-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to inspect its object-scoped configuration history; broad audit-table access is not granted.")}</p>
           {!auditItemId ? <p className="t-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>

@@ -253,7 +253,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
         {factory360Href && <a className="btn btn-ghost btn-touch" href={factory360Href}>{t("field.start.openFactory360", "Open Factory 360")}</a>}
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
           <div className="stack" style={{ gap: 8 }}>
             <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>

@@ -22,7 +22,7 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4>{strings.heading}</h4>
       <input type="hidden" name="review_id" value={reviewId} />
       <div className="row">
@@ -31,7 +31,7 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
         ))}
       </div>
       {decision === "return" && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-200)" }}>
           <p className="ax-overline" style={{ marginBlockEnd: 8 }}>{strings.returnScopeTitle}</p>
           {sections.map(s => (
             <label key={s.key} className="ax-choice" style={{ display: "flex" }}><input type="checkbox" name="returned_section" value={s.key} /> {s.title}</label>

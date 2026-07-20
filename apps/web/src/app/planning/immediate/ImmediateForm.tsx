@@ -188,7 +188,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       <AuthorityBar chips={chips} strings={{ groupLabel: strings.chipGroupLabel, satisfied: strings.chipSatisfied, blocking: strings.chipBlocking, truth: strings.chipTruth, allSatisfied: strings.chipAllSatisfied, blockedAnnouncement: strings.chipBlockedAnnouncement }} />
 
       <div className="ax-grid-2">
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4>{strings.identity}</h4>
           <div className="ax-segmented" role="group" aria-label={strings.identity}>
             <button type="button" aria-pressed={mode === "registered"} onClick={() => setMode("registered")}>{strings.identityToggleRegistered}</button>
@@ -213,7 +213,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
                 </select>
               </div>
               {factory && (
-                <div className="ax-surface" style={{ padding: "var(--ax-space-200)", background: "var(--ax-color-surface-sunken)" }}>
+                <div className="panel" style={{ padding: "var(--ax-space-200)", background: "var(--ax-color-surface-sunken)" }}>
                   <strong><bdi>{factory.name}</bdi></strong>
                   <div className="t-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
                     {factory.license_number && <> · {strings.previewLicense} <bdi>{factory.license_number}</bdi></>}
@@ -287,7 +287,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             </select></div>
         </div>
 
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4>{strings.locationDispatch}</h4>
           {mode === "registered" && factory?.official_lat != null && factory?.official_lng != null && (
             <button type="button" className="btn btn-secondary btn-touch" onClick={useOfficialLocation}>{strings.useOfficialLocation}</button>
@@ -344,7 +344,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
         </div>
       </div>
 
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.consequenceTitle}</h4>
         <ul style={{ margin: 0, paddingInlineStart: "1.2em", display: "flex", flexDirection: "column", gap: "var(--ax-space-050)" }}>
           <li className="t-caption">{strings.consequenceVisit}</li>

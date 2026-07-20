@@ -58,8 +58,8 @@ export default async function PlanningHome() {
           const content = <><span style={{ fontSize: 22 }}>{glyph}</span><h3>{title}</h3><p className="t-caption">{desc}</p></>;
           const style = { padding: "var(--ax-space-400)", display: "flex", flexDirection: "column" as const, gap: "var(--ax-space-150)", textDecoration: "none", color: "inherit", opacity: noPackage ? .55 : 1 };
           return noPackage
-            ? <div key={href} className="ax-surface ax-panel" aria-disabled="true" style={style}>{content}</div>
-            : <a key={href} href={href} className="ax-surface ax-panel" style={style}>{content}</a>;
+            ? <div key={href} className="panel" aria-disabled="true" style={style}>{content}</div>
+            : <a key={href} href={href} className="panel" style={style}>{content}</a>;
         })}
       </div>
       <p className="t-caption">{t("plan.home.oneMethod", "One planning method per creation session (M01-011 · REF-001).")}</p>

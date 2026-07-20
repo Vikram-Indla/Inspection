@@ -13,7 +13,7 @@ export function RiskModelsBoard({ rows, strings: s }: { rows: RiskModelRow[]; st
   const [cState, cAction, creating] = useActionState<RiskResult, FormData>(createRiskDraft, {});
   return (
     <>
-      <form action={cAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <form action={cAction} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <div className="ax-field"><label className="ax-field__label" htmlFor="risk-model-version-label">{s.newLabel}</label>
           <input className="ax-input numeric" name="version_label" id="risk-model-version-label" required /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="risk-model-payload">{s.payload}</label>
@@ -35,7 +35,7 @@ function RiskRow({ m, strings: s }: { m: RiskModelRow; strings: RiskStrings }) {
   const fieldId = useId();
   const targets = RISK_MODEL_STATUSES.filter((x) => isRiskModelTransitionAllowed(m.status, x));
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{m.version_label} <span className="ax-version">v{m.row_version}</span></h3>
         <span className="badge badge-info">{m.status}</span>

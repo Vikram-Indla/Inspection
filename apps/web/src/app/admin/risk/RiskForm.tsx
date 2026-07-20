@@ -66,7 +66,7 @@ export default function RiskForm({
   const maxWeight = Math.max(0.0001, ...Object.values(weights).map(w => (Number.isFinite(w) ? w : 0)));
 
   return (
-    <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", maxInlineSize: 720 }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", maxInlineSize: 720 }}>
       <h4>{labels.factorsTitle}</h4>
       {initialFactors.map(f => {
         const w = weights[f.key] ?? 0;

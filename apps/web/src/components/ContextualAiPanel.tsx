@@ -14,7 +14,7 @@ export default function ContextualAiPanel({ surface, title, description, context
     return () => { window.removeEventListener("online", update); window.removeEventListener("offline", update); };
   }, []);
   return (
-    <section className="ax-surface" aria-labelledby={`${surface}-heading`} data-testid={`${surface}-panel`} style={{ padding: "var(--ax-space-300)" }}>
+    <section className="panel" aria-labelledby={`${surface}-heading`} data-testid={`${surface}-panel`} style={{ padding: "var(--ax-space-300)" }}>
       <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
         <div>
           <h3 id={`${surface}-heading`}>{title}</h3>

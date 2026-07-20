@@ -171,7 +171,7 @@ export default async function AdminHome() {
         </div>
       ) : null}
 
-      <section className="ax-surface stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-spine-h" style={{ margin: 0 }}>{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</h3>
         <div className="ax-tablewrap">
           <table className="ax-table">
@@ -258,7 +258,7 @@ export default async function AdminHome() {
         </div>
       </section>
 
-      <nav className="ax-surface stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--ax-space-300)" }}>
+      <nav className="panel stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-links-h" style={{ margin: 0 }}>
           {t("admin.overview.r2.linkOnly.heading", "Families this gateway reads no data for today — links only:")}
         </h3>
@@ -271,7 +271,7 @@ export default async function AdminHome() {
         </div>
       </nav>
 
-      <section className="ax-surface ax-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel ax-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-scope-h" style={{ margin: 0 }}>
           {fill(t("admin.overview.r2.scope.heading", "Your scope — {role}"), { role: roleLabel })}
         </h3>

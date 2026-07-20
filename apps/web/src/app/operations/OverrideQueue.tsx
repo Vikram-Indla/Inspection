@@ -56,7 +56,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
   }
 
   return (
-    <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="geo-override-queue-heading">
+    <section className="panel" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="geo-override-queue-heading">
       <h4 id="geo-override-queue-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.heading}</h4>
       <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-200)" }}>{strings.caption}</p>
       {rows.length === 0 ? (
@@ -64,7 +64,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
       ) : (
         <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
           {rows.map(row => (
-            <div key={row.id} className="ax-surface" style={{ padding: "var(--ax-space-200)", borderColor: "var(--ax-color-warning)" }}>
+            <div key={row.id} className="panel" style={{ padding: "var(--ax-space-200)", borderColor: "var(--ax-color-warning)" }}>
               <div className="row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div>
                   <strong>{row.factory_name ?? row.visit_id.slice(0, 8)}</strong>

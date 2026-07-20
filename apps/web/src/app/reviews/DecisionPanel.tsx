@@ -134,12 +134,12 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
   return (
     <div className="cd-queue">
       {/* fingerprint legend — states the contract before the table */}
-      <section className="ax-surface cd-panelpad">
+      <section className="panel cd-panelpad">
         <div className="cd-sectionhead"><h3>{strings.fpTitle}</h3></div>
         <p className="cd-sub">{strings.fpHint}</p>
       </section>
       {/* M06-014/030 — client search + status + risk + overdue-only over the RLS page */}
-      <div className="ax-surface cd-filters">
+      <div className="panel cd-filters">
         <label className="cd-fl cd-fl--search"><span className="cd-fl__k">{strings.searchPlaceholder}</span>
           <input className="ax-input" value={q} onChange={e => setQ(e.target.value)} placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} /></label>
         <label className="cd-fl"><span className="cd-fl__k">{strings.allStatuses}</span>
@@ -159,7 +159,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
         </span>
       </div>
       {filtered.length === 0 ? (
-        <section className="ax-surface cd-panelpad cd-result" role="status">
+        <section className="panel cd-panelpad cd-result" role="status">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--neutral" aria-hidden="true">🔍</div>
             <div className="cd-stack"><h3 tabIndex={-1}>{strings.noMatch}</h3><p>{strings.noMatchBody}</p></div></div>
         </section>

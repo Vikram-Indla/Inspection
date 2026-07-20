@@ -51,7 +51,7 @@ export default function Attachments({ visitId, rows, strings }: {
 }) {
   const [up, upAct, upPending] = useActionState<ActionResult, FormData>(uploadVisitAttachment, {});
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
       {rows.length === 0 ? (
         <p className="t-caption">{strings.empty}</p>

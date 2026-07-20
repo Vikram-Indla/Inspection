@@ -128,7 +128,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
       </div>
 
       {view === "month" && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-200)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
             {weekDays.map(ms => (
               <div key={`h${ms}`} className="ax-overline" style={{ padding: "var(--ax-space-050)", textAlign: "center" }}>{weekdayName.format(new Date(ms))}</div>
@@ -160,7 +160,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "week" && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-200)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "var(--ax-space-100)" }}>
             {weekDays.map(ms => {
               const k = keyOf(ms);
@@ -182,12 +182,12 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "day" && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
           <span className="t-caption numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
           {dayVisits.length === 0 ? (
             <div className="ax-state ax-state--inline"><p className="t-caption">{strings.emptyRange}</p></div>
           ) : dayVisits.map(v => (
-            <a key={v.id} href={`/visits/${v.id}`} className="ax-surface"
+            <a key={v.id} href={`/visits/${v.id}`} className="panel"
               style={{ padding: "var(--ax-space-200)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", textDecoration: "none", color: "inherit", border: "1px solid var(--ax-color-border)" }}>
               <span className="numeric"><strong>{timeOf(v.windowStart)}</strong> → {timeOf(v.windowEnd)}</span>
               <strong>{v.factoryName}</strong>

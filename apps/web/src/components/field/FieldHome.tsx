@@ -116,7 +116,7 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: Fiel
     : s.tone === "warning" ? "var(--ax-color-warning)"
     : "var(--ax-color-primary)";
   return (
-    <div className="ax-surface ax-panel" aria-selected={selected} draggable={s.key !== "expired" && s.key !== "approved"}
+    <div className="panel" aria-selected={selected} draggable={s.key !== "expired" && s.key !== "approved"}
       onDragStart={() => onDragStart(v.id)}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", color: "inherit", borderInlineStart: `4px solid ${accent}`,
         outline: selected ? "var(--ax-focus-ring)" : undefined, outlineOffset: selected ? "-2px" : undefined }}>
@@ -370,8 +370,8 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
         {view === "map" && filtered.length > 0 && (
           markers.length === 0
-            ? <div className="ax-surface"><div className="ax-state ax-state--inline"><p className="t-caption">{strings.mapEmpty}</p></div></div>
-            : <div className="ax-surface ax-map" style={{ blockSize: 420, overflow: "hidden" }}>
+            ? <div className="panel"><div className="ax-state ax-state--inline"><p className="t-caption">{strings.mapEmpty}</p></div></div>
+            : <div className="panel ax-map" style={{ blockSize: 420, overflow: "hidden" }}>
                 <GeoMap center={mapCenter} zoom={markers.length === 1 ? 13 : 6} markers={markers} height="100%"
                   onMarkerClick={(id) => {
                     const hit = filtered.find(({ v }) => v.id === id);
@@ -383,7 +383,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
       {/* M03-001 — inspector inbox remains available after the active work
           queue so alerts do not displace the next assignment. */}
-      <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <section className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <div className="row" style={{ justifyContent: "space-between" }}>
           <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.inboxTitle}</h3>
           {unread > 0 && <span className="ax-badge">{unread}</span>}

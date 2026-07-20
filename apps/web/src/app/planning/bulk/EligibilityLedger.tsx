@@ -36,7 +36,7 @@ export default function EligibilityLedger({
     : strings.freshnessNever;
 
   return (
-    <section className="ax-surface" aria-label={strings.heading}
+    <section className="panel" aria-label={strings.heading}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-400)", alignItems: "flex-end" }}>
       <div>
         <span className="t-caption">{strings.denominator}</span>

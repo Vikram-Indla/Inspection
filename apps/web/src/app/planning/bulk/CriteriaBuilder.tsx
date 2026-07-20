@@ -154,7 +154,7 @@ export default function CriteriaBuilder({
   );
 
   return (
-    <form method="get" action="/planning/bulk" className="ax-surface"
+    <form method="get" action="/planning/bulk" className="panel"
       onSubmit={e => { if (invalid.length > 0) { e.preventDefault(); setShowInvalid(true); } }}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>

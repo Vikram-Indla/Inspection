@@ -236,7 +236,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   const changeCount = updatedFields.length;                                              // M04-110
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
         <h4>{strings.title}</h4>
         <span className={`ax-lozenge ${changeCount ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>

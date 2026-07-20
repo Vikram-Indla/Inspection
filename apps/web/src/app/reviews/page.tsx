@@ -267,7 +267,7 @@ export default async function Reviews() {
     <Shell current="/reviews" title={t("review.list.title", "Level 2 review queue")}
       context={<span className="badge badge-info">{t("review.list.context", "SCR-WEB-300 · /reviews · RLS-scoped")}</span>}>
       {!authorized ? (
-        <section className="ax-surface cd-panelpad cd-result" role="alert">
+        <section className="panel cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.unauthTitle", "You don’t have access to the review queue")}</h3>
               <p>{t("review.list.unauthBody", "This queue requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p></div></div>
@@ -279,7 +279,7 @@ export default async function Reviews() {
           {missingSla && <div className="ax-banner ax-banner--warning" role="note"><div><strong>{t("review.list.missingSlaTitle", "SLA configuration missing")}</strong> — {t("review.list.missingSlaBody", "engine_settings has no review_business_days / working-day calendar, so no SLA state is derived. Rows show 'SLA unavailable' — never invented as on-time.")}</div></div>}
           {degraded && <div className="ax-banner ax-banner--warning" role="alert"><div><strong>{t("review.list.degradedTitle", "Some linked information is unavailable")}</strong> — {t("review.list.degradedBody", "The queue loaded, but a linked source (evidence, factory-verification or violation counts) could not be read for some rows. Those facts read 'unavailable', never a default value.")}</div></div>}
           {rows.length === 0 ? (
-            <section className="ax-surface cd-panelpad cd-result" role="status">
+            <section className="panel cd-panelpad cd-result" role="status">
               <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--ok" aria-hidden="true">✅</div>
                 <div className="cd-stack"><h3 tabIndex={-1}>{t("review.list.empty", "Queue clear")}</h3>
                   <p>{t("review.list.emptyBody", "No reviews in your scope await a Level 2 decision.")}</p></div></div>

@@ -17,7 +17,7 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
   return (
     <>
       {/* Gemini-generated advisory suggestion — fail-closed, human still disposes */}
-      <form action={gAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+      <form action={gAction} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-generate-surface">{s.surface}</label>
           <select className="ax-input" name="surface" id="ai-generate-surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
         <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label" htmlFor="ai-generate-context">{s.context}</label><input className="ax-input" name="context" id="ai-generate-context" /></div>
@@ -27,7 +27,7 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
         {gState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{gState.error}</span>}
         {gState.ok && <span className="badge badge-compliant">{s.generated}</span>}
       </form>
-      <form action={pAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+      <form action={pAction} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-surface">{s.surface}</label>
           <select className="ax-input" name="surface" id="ai-propose-surface"><option>planning</option><option>inspection</option><option>review</option><option>operations</option></select></div>
         <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label" htmlFor="ai-propose-text">{s.text}</label><input className="ax-input" name="text" id="ai-propose-text" required /></div>
@@ -47,7 +47,7 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
   const fieldId = useId();
   const targets = AI_DISPOSITIONS.filter((x) => isDispositionAllowed(r.disposition, x));
   return (
-    <div id={`ai-suggestion-${r.id}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+    <div id={`ai-suggestion-${r.id}`} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{r.surface} <span className="t-caption">{r.text}</span></h3>
         <div className="row" style={{ gap: "var(--ax-space-150)" }}>

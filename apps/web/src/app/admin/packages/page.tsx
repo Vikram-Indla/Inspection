@@ -288,7 +288,7 @@ export default async function Packages() {
       </span>}>
       <div className={styles.pageStack}>
         {!packageUnavailable && canWrite && <TemplateRegistry templates={templates} strings={templateStrings} />}
-        <section className={`ax-surface ${styles.hero}`} aria-labelledby="pkg-overview">
+        <section className={`panel ${styles.hero}`} aria-labelledby="pkg-overview">
           <div className={styles.heroRow}>
             <div>
               <h2 id="pkg-overview" style={{ margin: 0 }}>{t("admin.pkg.overview.title", "Version-governed inspection packages")}</h2>
@@ -318,7 +318,7 @@ export default async function Packages() {
         )}
 
         {!packageUnavailable && (roleRead.error || !canWrite) && (
-          <section className={`ax-surface ${styles.governance}`} aria-labelledby="pkg-access">
+          <section className={`panel ${styles.governance}`} aria-labelledby="pkg-access">
             <h3 id="pkg-access" style={{ margin: 0 }}>{t("admin.pkg.readonly.title", "Read-only package access")}</h3>
             <p className="t-caption">{roleRead.error
               ? t("admin.pkg.readonly.unknown", "Your write permissions could not be verified, so all mutation controls are hidden. Reload to retry; RLS remains authoritative.")
@@ -327,7 +327,7 @@ export default async function Packages() {
         )}
 
         {!packageUnavailable && pkgs.length === 0 && (
-          <section className={`ax-surface ${styles.emptyState}`}>
+          <section className={`panel ${styles.emptyState}`}>
             <div className="ax-state">
               <span className="ax-state__glyph" aria-hidden="true">▦</span>
               <h3>{t("admin.pkg.empty.title", "No packages configured")}</h3>
@@ -340,7 +340,7 @@ export default async function Packages() {
           const versions = orderedVersions(pkg);
           const latestPublished = currentPublished(pkg);
           return (
-            <details key={pkg.id} className={`ax-surface ${styles.packageGroup}`} open>
+            <details key={pkg.id} className={`panel ${styles.packageGroup}`} open>
               <summary>
                 <span className={styles.packageHeading}>
                   <span><strong><bdi dir="ltr">{pkg.code}</bdi> — {pkg.title}</strong><br /><span className="t-caption">{pkg.scope ?? t("admin.pkg.scopeNone", "No scope recorded")}</span></span>
@@ -374,7 +374,7 @@ export default async function Packages() {
                   const definition = version.definition ?? {};
                   const impact = impactMap.get(version.id) ?? { pinned: null, referencing: [], diff: null };
                   return (
-                    <details key={version.id} className={`ax-panel ${styles.versionCard}`} open={version.status === "draft" || index === 0}>
+                    <details key={version.id} className={`panel ${styles.versionCard}`} open={version.status === "draft" || index === 0}>
                       <summary>
                         <span className={styles.versionHeading}>
                           <strong><bdi dir="ltr">{version.version_label}</bdi></strong>
@@ -398,7 +398,7 @@ export default async function Packages() {
                         {published && canWrite && <DeactivatePackage versionId={version.id} strings={publishStrings} />}
 
                         {version.status === "draft" && canWrite && (
-                          <section className="ax-surface" style={{ padding: "var(--ax-space-200)" }} aria-label={t("admin.pkg.publish.heading", "Publish gate")}>
+                          <section className="panel" style={{ padding: "var(--ax-space-200)" }} aria-label={t("admin.pkg.publish.heading", "Publish gate")}>
                             <ApprovePublish versionId={version.id} strings={publishStrings} />
                           </section>
                         )}
@@ -407,13 +407,13 @@ export default async function Packages() {
                   );
                 })}</div>
 
-                {canWrite && <section className="ax-surface" style={{ padding: "var(--ax-space-200)" }}><NewDraftForm packageId={pkg.id} strings={publishStrings} /></section>}
+                {canWrite && <section className="panel" style={{ padding: "var(--ax-space-200)" }}><NewDraftForm packageId={pkg.id} strings={publishStrings} /></section>}
               </div>
             </details>
           );
         })}
 
-        {!packageUnavailable && <section className={`ax-surface ${styles.governance}`} aria-labelledby="pkg-blockers">
+        {!packageUnavailable && <section className={`panel ${styles.governance}`} aria-labelledby="pkg-blockers">
           <h3 id="pkg-blockers" style={{ margin: 0 }}>{t("admin.pkg.blockers.title", "Boundaries kept visible")}</h3>
           <p className="t-caption">{t("admin.pkg.blockers.body", "The designer now authors ordered bilingual sections, package-item policy, action forms, and governed template references. Publish revalidates dependencies and rejects circular conditions. Package footprint/fingerprint metrics and visual simulation remain unclaimed because no approved metric or simulator contract exists.")}</p>
           <p className="t-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="ax-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>

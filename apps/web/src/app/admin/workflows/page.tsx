@@ -72,7 +72,7 @@ export default async function Workflows() {
         // pre-empt it with an explanation rather than an Approve button that fails.
         const isOwnDraft = w.status === "draft" && !!user && w.created_by === user.id;
         return (
-          <div key={w.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+          <div key={w.id} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
             <div className="row" style={{ justifyContent: "space-between" }}>
               <h3>{t("admin.wf.object", "Object:")} {p.object ?? "—"} <span className="ax-version">{w.version_label}</span></h3>
               <div className="row" style={{ gap: "var(--ax-space-150)" }}>

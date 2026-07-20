@@ -203,12 +203,12 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {/* CD-027 — signature interaction: Dual-State Ribbon (one per screen) */}
       <DualStateRibbon tracks={ribbonTracks} strings={ribbonStrings} />
       <div className="ax-grid-2">
-        <div id="config" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div id="config" className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
           <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
           <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="ax-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360 →")}</a></p>
         </div>
-        <div id="inspection" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div id="inspection" className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.inspectionVersions", "Inspection & versions")}</h4>
           {insp ? (
             <div className="stack" style={{ gap: 8 }}>
@@ -226,7 +226,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </div>
       </div>
       {/* M02-005 — linked plan info: how this visit was planned, by whom, published when */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h4>
         {plan ? (
           <p>
@@ -259,7 +259,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       ) : (
         <Attachments visitId={v.id} rows={attRows} strings={attachmentsStrings} />
       )}
-      <div id="journey" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div id="journey" className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.journeyHeading", "Journey & location events — immutable (EV-005)")}</h4>
         <ul className="ax-timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (
@@ -271,7 +271,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           {journeys.length === 0 && <p className="t-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
         </ul>
       </div>
-      <div id="audit" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div id="audit" className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.auditHeading", "Planning history — immutable, append-only (ENG-12, latest 30)")}</h4>
         <ul className="ax-timeline">
           {(auditRows ?? []).map(a => (

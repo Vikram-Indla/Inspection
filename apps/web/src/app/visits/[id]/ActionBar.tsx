@@ -45,7 +45,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
   const hasAvailable = status === "published" || status === "returned";
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
 
       {/* ── ZONE: AVAILABLE NOW ────────────────────────────────── */}

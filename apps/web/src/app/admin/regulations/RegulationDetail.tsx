@@ -78,7 +78,7 @@ export default async function RegulationDetail({
   const unmapped = clauses.filter(c => !(c.inspection_items ?? []).length);
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{reg.code} — {reg.title}</h3>
         <div className="row" style={{ gap: "var(--ax-space-150)" }}>
@@ -140,7 +140,7 @@ export default async function RegulationDetail({
       </div>
 
       {/* Downstream unproven legs — disclosed, not faked as working controls */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
         <div><strong className="t-caption">{s.auditTitle}</strong><p className="t-caption">{s.auditBody}</p></div>
         <div><strong className="t-caption">{s.lineageTitle}</strong><p className="t-caption">{s.lineageBody}</p></div>
         <div><strong className="t-caption">{s.dependencyEngineTitle}</strong><p className="t-caption">{s.dependencyEngineBody}</p></div>

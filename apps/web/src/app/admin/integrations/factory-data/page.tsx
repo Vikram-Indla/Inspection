@@ -27,25 +27,25 @@ export default async function FactoryDataPage({ searchParams }: { searchParams: 
     {schemaUnavailable ? <div className="ax-banner ax-banner--warning" role="alert"><div>Factory 360 integration schema is not available in this environment. No provider or history state is inferred.</div></div> : null}
 
     <div className="ax-grid" style={{ marginBlock: "var(--ax-space-200)" }}>
-      <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="provider-state"><h3 id="provider-state">Senaei provider</h3>
+      <section className="panel stack" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="provider-state"><h3 id="provider-state">Senaei provider</h3>
         <span className="badge badge-warning">Not configured / not verified here</span><p className="t-caption">No remote call is made from this page. Undocumented provider domains remain <bdi>SENAEI_API_CONTRACT_NOT_SUPPLIED</bdi>.</p>
       </section>
-      <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="csv-stage"><h3 id="csv-stage">CSV staging and validation</h3><CsvImportForm /></section>
+      <section className="panel stack" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="csv-stage"><h3 id="csv-stage">CSV staging and validation</h3><CsvImportForm /></section>
     </div>
 
-    <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", marginBlockEnd: "var(--ax-space-200)" }} aria-labelledby="master-data"><h3 id="master-data">Governed factory master-data controls</h3>
+    <section className="panel stack" style={{ padding: "var(--ax-space-300)", marginBlockEnd: "var(--ax-space-200)" }} aria-labelledby="master-data"><h3 id="master-data">Governed factory master-data controls</h3>
       <p className="t-caption">These retained operations are audit-triggered and RLS-enforced. They do not edit external CR, license, or plant identifiers.</p>
       <form method="get" className="row"><label className="ax-field" style={{ flex: 1 }}><span className="ax-field__label">Factory</span><select className="ax-select" name="factory" defaultValue={selectedFactory}><option value="">Select a factory</option>{factories.map(factory => <option key={factory.id} value={factory.id}>{factory.name} · {factory.factory_code ?? factory.cr_number ?? "—"}</option>)}</select></label><button className="btn btn-secondary btn-touch">Open controls</button></form>
       {selected ? <><p><strong>{selected.name}</strong> · CR <bdi>{selected.cr_number ?? "—"}</bdi> · License <bdi>{selected.license_number ?? "—"}</bdi> · <Link href={`/factories/${selected.id}`}>Open read-only dossier</Link></p><MasterDataForms factoryId={selected.id} representatives={representativesRead.data ?? []} /></> : null}
     </section>
 
-    <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="sync-history"><h3 id="sync-history">Sync and import history</h3>
+    <section className="panel stack" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="sync-history"><h3 id="sync-history">Sync and import history</h3>
       <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th>Created</th><th>Mode / source</th><th>Status</th><th>Custody</th><th>Counts</th></tr></thead><tbody>{(runsRead.data ?? []).map(run => { const batch = batchByRun.get(run.id); return <tr key={run.id}><td>{new Date(run.created_at).toLocaleString()}</td><td>{run.mode}<div className="t-caption">{run.source_file_name ?? "provider"}</div></td><td><span className="badge">{run.status}</span>{batch ? <div className="t-caption">batch {batch.status}</div> : null}</td><td className="t-caption"><bdi>{run.correlation_id}</bdi>{batch ? <div>SHA-256 <bdi>{batch.file_sha256.slice(0, 12)}…</bdi></div> : null}</td><td>{run.rows_received} / {run.rows_accepted} / {run.rows_rejected}</td></tr>})}{!schemaUnavailable && !(runsRead.data ?? []).length ? <tr><td colSpan={5}>No RLS-visible sync or import runs.</td></tr> : null}</tbody></table></div>
     </section>
 
     <div className="ax-grid" style={{ marginBlockStart: "var(--ax-space-200)" }}>
-      <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }}><h3>Rejected staged rows</h3>{(rowsRead.data ?? []).map(row => <div key={row.id}><strong>Row {row.row_number}</strong> <span className="badge badge-critical">{row.status}</span><p className="t-caption">{row.safe_error_codes.join(", ")}</p></div>)}{!schemaUnavailable && !(rowsRead.data ?? []).length ? <p className="t-caption">No rejected staged rows.</p> : null}</section>
-      <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }}><h3>Reconciliation history</h3>{(reconciliationRead.data ?? []).map(row => <div key={row.id}><strong>{row.entity_type}</strong> · <bdi>{row.external_id ?? "—"}</bdi> <span className="badge">{row.outcome}</span><p className="t-caption">{row.safe_reason_codes.join(", ") || "No reason code"}</p></div>)}{!schemaUnavailable && !(reconciliationRead.data ?? []).length ? <p className="t-caption">No RLS-visible reconciliation records. Staged does not mean imported.</p> : null}</section>
+      <section className="panel stack" style={{ padding: "var(--ax-space-300)" }}><h3>Rejected staged rows</h3>{(rowsRead.data ?? []).map(row => <div key={row.id}><strong>Row {row.row_number}</strong> <span className="badge badge-critical">{row.status}</span><p className="t-caption">{row.safe_error_codes.join(", ")}</p></div>)}{!schemaUnavailable && !(rowsRead.data ?? []).length ? <p className="t-caption">No rejected staged rows.</p> : null}</section>
+      <section className="panel stack" style={{ padding: "var(--ax-space-300)" }}><h3>Reconciliation history</h3>{(reconciliationRead.data ?? []).map(row => <div key={row.id}><strong>{row.entity_type}</strong> · <bdi>{row.external_id ?? "—"}</bdi> <span className="badge">{row.outcome}</span><p className="t-caption">{row.safe_reason_codes.join(", ") || "No reason code"}</p></div>)}{!schemaUnavailable && !(reconciliationRead.data ?? []).length ? <p className="t-caption">No RLS-visible reconciliation records. Staged does not mean imported.</p> : null}</section>
     </div>
   </Shell>;
 }

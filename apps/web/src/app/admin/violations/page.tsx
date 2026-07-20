@@ -306,7 +306,7 @@ export default async function Violations({
       {roleError && !error ? (
         <div className="ax-banner ax-banner--warning" role="alert"><div><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>
       ) : !canWrite && !error && (
-        <div className="ax-surface ax-permission" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel ax-permission" style={{ padding: "var(--ax-space-300)" }}>
           <p className="t-caption" style={{ margin: 0 }}>
             <span aria-hidden="true">🔒</span>{" "}
             {t("admin.viol.readonly", "Read-only view — configuration writes require the compliance-admin or form-admin role (RLS). Route visibility does not grant write authority.")}
@@ -318,7 +318,7 @@ export default async function Violations({
         /* ============ CD-011 · Penalty mapping mode ============ */
         <>
           {/* Signature — Mapping Validation Lens: exactly the four proven checks. */}
-          <section className="ax-surface stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+          <section className="panel stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
             <h3 id="pen-lens-h" style={{ margin: 0 }}>{t("admin.viol.lens.title", "Mapping Validation Lens")}</h3>
             <p className="t-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping validates legal basis, lifecycle, type, optional amount, timing, repeat policy, and an optional immutable template reference. No value is inferred or invented.")}</p>
             <ul className="stack" style={{ gap: "var(--ax-space-050)", margin: 0, paddingInlineStart: "var(--ax-space-200)" }}>
@@ -344,7 +344,7 @@ export default async function Violations({
             const lc = deriveLifecycle(v.active_from, v.active_to, today);
             const evidence = evidenceById.get(v.id);
             return (
-              <div key={v.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
+              <div key={v.id} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
                 {/* Column 1 — violation */}
                 <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 200, flex: "1 1 200px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.violation", "Violation")}</span>
@@ -421,7 +421,7 @@ export default async function Violations({
             const lc = deriveLifecycle(v.active_from, v.active_to, today);
             const evidence = evidenceById.get(v.id);
             return (
-              <div key={v.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+              <div key={v.id} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
                 <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
                   <h3><span className="numeric">{v.code}</span> — {v.title}</h3>
                   <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>

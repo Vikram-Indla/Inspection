@@ -136,7 +136,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await page.goto("/field");
   // Two links can point at the same next visit: the assignment card and the
   // "Start next visit" FAB — scope to the card (ax-surface panel), not the FAB.
-  await expect(page.locator(`a.ax-surface[href="/field/${visitId}"]`)).toContainText(factory.name);
+  await expect(page.locator(`a.ax-surface[href="/field/${visitId}"], a.panel[href="/field/${visitId}"]`)).toContainText(factory.name);
 
   // Startup: four steps, enabled strictly in order (SB05)
   await page.goto(`/field/${visitId}`);
@@ -229,7 +229,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
         await expect(annotateDialog).toBeHidden();
       }
       // Blocking action form (M04-171..184) — fill every generic field it asks for.
-      const formFields = q.locator(".ax-panel input, .ax-panel textarea");
+      const formFields = q.locator(".ax-panel input, .ax-panel textarea, .panel input, .panel textarea");
       const fc = await formFields.count();
       for (let f = 0; f < fc; f++) {
         const field = formFields.nth(f);

@@ -19,7 +19,7 @@ export type DistributionStrings = {
 function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: DistributionStrings; focusedValue?: string }) {
   const max = Math.max(1, ...dist.buckets.map(b => b.count));
   return (
-    <section className="ax-surface" aria-label={dist.heading}
+    <section className="panel" aria-label={dist.heading}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
         <h4 style={{ margin: 0 }}>{dist.heading}</h4>

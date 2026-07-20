@@ -21,7 +21,7 @@ export default function NotesEditor({ visitId, initialNotes, strings }: {
 }) {
   const [state, act, pending] = useActionState<ActionResult, FormData>(updateVisitNotes, {});
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
       <form action={act} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <input type="hidden" name="visit_id" value={visitId} />

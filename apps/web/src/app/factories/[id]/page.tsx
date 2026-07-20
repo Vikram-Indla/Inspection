@@ -253,7 +253,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
       <div className="cd-w3">
         {/* Provenance-led aside — persistent identity, freshness, risk summary, location facts */}
         <aside className="cd-side3">
-          <div className="ax-surface cd-idcard">
+          <div className="panel cd-idcard">
             <h4>{t("f360.id.heading", "Identity — read-only from source (M07-002)")}</h4>
             <span className="cd-idcard__code"><bdi>{identity(f.factory_code)}</bdi></span>
             <p className="cd-idrow"><span className="cd-idk">{t("f360.id.cr", "CR")}</span> <span className="cd-idv"><bdi>{identity(f.cr_number)}</bdi></span></p>
@@ -266,12 +266,12 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <p className="cd-idrow">{f.activity_class} · {f.region} · {f.city}</p>
           </div>
 
-          <div className="ax-surface cd-fresh">
+          <div className="panel cd-fresh">
             <span className="cd-fresh__g" aria-hidden="true">⏱</span>
             <span>{t("f360.meta.source", "source")} <strong>{f.source}</strong> · {t("f360.meta.synced", "synced")} <bdi className="cd-idv">{f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</bdi></span>
           </div>
 
-          <div className="ax-surface cd-riskcard">
+          <div className="panel cd-riskcard">
             <h4>{t("f360.risk.heading", "Risk — reproducible (EV-004)")}</h4>
             <span className={`cd-riskscore ${riskTone}`}>{f.risk_score}</span>
             <p>{t("f360.risk.band", "band")} <strong>{f.risk_band ? enumLabel(f.risk_band) : "—"}</strong> · <span className="ax-version">{f.risk_version}</span></p>
@@ -283,7 +283,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             })}</ul> : <p className="t-caption cd-warn">{t("f360.risk.driversUnavailable", "No driver snapshot exists for this legacy score; the absence is preserved, not reconstructed.")}</p>}
           </div>
 
-          <div className="ax-surface cd-maplens">
+          <div className="panel cd-maplens">
             <h4>{t("f360.geo.heading", "Location")}</h4>
             <p className="cd-coords"><bdi>{f.official_lat}, {f.official_lng}</bdi> <span className="t-caption">{t("f360.id.gisOwned", "(GIS-Admin-owned, FND-007)")}</span></p>
             <p className="t-caption">{t("f360.geo.label", "Geofence (G-MAP):")} {f.geofence_radius_m != null
@@ -307,7 +307,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             {SECTIONS.map(s => <a key={s.id} className="cd-secitem" href={`#${s.id}`}>{s.label}</a>)}
           </nav>
 
-          <section id="location" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <section id="location" className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4>{t("f360.geo.historyHeading", "Official, planned and observed locations (M07-005)")}</h4>
             <p className="t-caption">{t("f360.geo.historyCaption", "Official coordinates remain source-owned. Arrival, check-in and override coordinates are immutable inspection observations and never overwrite the factory master.")}</p>
             {locationEvents.length ? <div className="ax-tablewrap"><table className="ax-table">
@@ -322,7 +322,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             </table></div> : <p className="t-caption">{t("f360.geo.noObserved", "No observed locations are visible in your authorized scope.")}</p>}
           </section>
 
-          <section id="risk" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <section id="risk" className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4>{t("f360.risk.historyHeading", "Factory health score and risk history (M07-014/015)")}</h4>
             <p className="t-caption">{t("f360.risk.historyCaption", "Each row freezes the DEC-001 model version, normalized driver values, weights and contributions used at recalculation time.")}</p>
             <ContextualAiPanel
@@ -362,7 +362,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           {/* Spatial Case Timeline — signature interaction. Built only from
               already-fetched route facts; risk-version history and the
               evidence timeline are explicit unavailable rows, never inferred. */}
-          <section id="timeline" className="ax-surface" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="cd-tl-h">
+          <section id="timeline" className="panel" style={{ padding: "var(--ax-space-300)" }} aria-labelledby="cd-tl-h">
             <h4 id="cd-tl-h">{t("f360.tl.heading", "Spatial Case Timeline")}</h4>
             <p className="t-caption">{t("f360.tl.desc", "Source-labelled facts linking location context, inspections, findings, actions, reviews and the current risk version. Connective, not causal.")}</p>
             {sortedVisits.length === 0 ? (
@@ -431,7 +431,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           {/* Inspection history — tabular record, distinct from the narrative timeline above. */}
-          <section id="history" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <section id="history" className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.hist.heading", "Inspection history — official records only (M07-011/012)")}</h4>
             {sortedVisits.length === 0 ? (
               <div className="ax-state ax-state--inline"><span className="ax-state__glyph">🗓</span>
@@ -466,7 +466,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           {/* Documents — metadata registry; per-section failure isolation (SB11) */}
-          {canSeeDocuments && <section id="documents" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          {canSeeDocuments && <section id="documents" className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.docs.heading", "Documents — metadata registry (SB11)")}</h4>
             {dErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.docs.err", "Couldn’t load documents.")}</strong> {mapFactoryError(dErr, "load")} — {retry}.</div></div>}
             {!dErr && docsEmpty && (
@@ -502,7 +502,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>}
 
           {/* Representatives — contact fields masked for leadership only (HANDOFF_BLOCKED_ROLE) */}
-          {canSeeContacts && <section id="representatives" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          {canSeeContacts && <section id="representatives" className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.reps.heading", "Representatives (SB11)")}</h4>
             {rErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.reps.err", "Couldn’t load representatives.")}</strong> {mapFactoryError(rErr, "load")} — {retry}.</div></div>}
             {!rErr && repsEmpty && (
@@ -534,7 +534,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>}
 
           {/* Products & HS codes (maintainable, W3 / M07-006) */}
-          <section id="products" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <section id="products" className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.prod.heading", "Products & HS codes (M07-006)")}</h4>
             {pErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.prod.err", "Couldn’t load products.")}</strong> {mapFactoryError(pErr, "load")} — {retry}.</div></div>}
             {!pErr && productsEmpty && (
@@ -560,7 +560,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           {/* Raw materials (maintainable, W3 / M07-007) */}
-          <section id="materials" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <section id="materials" className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.mat.heading", "Raw materials (M07-007)")}</h4>
             {mErr && <div className="ax-banner ax-banner--critical"><div><strong>{t("f360.mat.err", "Couldn’t load materials.")}</strong> {mapFactoryError(mErr, "load")} — {retry}.</div></div>}
             {!mErr && materialsEmpty && (
@@ -584,7 +584,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           </section>
 
           {/* Workforce & industrial indicators — source-owned, display-only (W3 / M07-008/009) */}
-          <section id="workforce" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <section id="workforce" className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.wf.heading", "Workforce & indicators — read-only from source (M07-008/009)")}</h4>
             {f.employees_total == null && f.capital_invested == null && f.production_capacity_note == null ? (
               <div className="ax-state ax-state--inline"><span className="ax-state__glyph">🏭</span>
@@ -593,16 +593,16 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             ) : (
               <>
                 <div className="ax-kpi-row">
-                  <div className="ax-surface ax-kpi">
+                  <div className="panel ax-kpi">
                     <span className="t-caption">{t("f360.wf.employeesTotal", "Employees — total")}</span>
                     <span className="ax-kpi__value">{f.employees_total != null ? num.format(f.employees_total) : "—"}</span>
                   </div>
-                  <div className="ax-surface ax-kpi">
+                  <div className="panel ax-kpi">
                     <span className="t-caption">{t("f360.wf.employeesSaudi", "Employees — Saudi")}</span>
                     <span className="ax-kpi__value">{f.employees_saudi != null ? num.format(f.employees_saudi) : "—"}</span>
                     {saudization != null && <span className="ax-kpi__delta">{t("f360.wf.saudization", "Saudization")} {num.format(saudization)}%</span>}
                   </div>
-                  <div className="ax-surface ax-kpi">
+                  <div className="panel ax-kpi">
                     <span className="t-caption">{t("f360.wf.capital", "Capital invested (SAR)")}</span>
                     <span className="ax-kpi__value">{f.capital_invested != null ? num.format(f.capital_invested) : "—"}</span>
                   </div>

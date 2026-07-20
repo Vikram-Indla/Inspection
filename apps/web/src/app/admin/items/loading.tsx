@@ -13,7 +13,7 @@ export default async function Loading() {
       context={<span className="badge badge-info">SCR-ADM-020 · ENG-01</span>}
     >
       <div className="sr-only" role="status">{t("admin.items.r2.loading", "Loading the item catalogue…")}</div>
-      <section className="ax-surface stack" aria-hidden="true" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }}>
+      <section className="panel stack" aria-hidden="true" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }}>
         <SkeletonBlock inlineSize="40%" blockSize={20} />
         {[0, 1, 2, 3, 4].map(n => (
           <SkeletonBlock key={n} inlineSize="100%" blockSize={24} />

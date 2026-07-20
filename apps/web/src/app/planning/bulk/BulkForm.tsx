@@ -173,7 +173,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
         <button type="button" className="btn btn-ghost btn-touch" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
       </div>
 
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.summaryTitle}</h4>
         {sel.length === 0 ? <p className="t-caption">{strings.summaryEmpty}</p> : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "var(--ax-space-200)" }}>
@@ -191,7 +191,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       </div>
 
       {/* persistent selection bar — cross-page count + hand-off to the P02 review step */}
-      <div className="ax-surface row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--ax-space-200) var(--ax-space-300)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "center" }}>
+      <div className="panel row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--ax-space-200) var(--ax-space-300)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "center" }}>
         <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
           {selected.size === 0 && <span className="badge badge-warning">⚠ {strings.readyNothing}</span>}

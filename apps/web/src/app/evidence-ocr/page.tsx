@@ -52,7 +52,7 @@ export default async function EvidenceOcrPage() {
   return (
     <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="badge badge-info">REQ-OCR</span>}>
       <div className="ax-banner"><div><strong>{t("ocr.banner.title", "Advisory only.")}</strong> {t("ocr.banner.body", "Extracted text helps a human read a photo faster — it is never auto-applied to any authoritative field. Always verify against the source image before acting on it.")}</div></div>
-      <section className="ax-surface" style={{ padding: "var(--ax-space-300)", marginBlock: "var(--ax-space-300)" }} aria-labelledby="ocr-how-it-works">
+      <section className="panel" style={{ padding: "var(--ax-space-300)", marginBlock: "var(--ax-space-300)" }} aria-labelledby="ocr-how-it-works">
         <h3 id="ocr-how-it-works">{t("ocr.journey.title", "How to use evidence text extraction")}</h3>
         <ol style={{ marginBlock: "var(--ax-space-150)", paddingInlineStart: "var(--ax-space-400)" }}>
           <li>{t("ocr.journey.capture", "Open the relevant field inspection and attach a photo or document to its checklist item.")}</li>

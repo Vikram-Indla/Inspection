@@ -12,7 +12,7 @@ function Feedback({ state, saved }: { state: TemplateResult; saved: string }) {
 
 export default function TemplateRegistry({ templates, strings: s }: { templates: TemplateRow[]; strings: TemplateStrings }) {
   const [createState, createAction, creating] = useActionState<TemplateResult, FormData>(createTemplateVersion, {});
-  return <details className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }}>
+  return <details className="panel stack" style={{ padding: "var(--ax-space-300)" }}>
     <summary><strong>{s.heading}</strong> · M09-006/008/009</summary>
     <p className="t-caption">{s.intro}</p>
     <form action={createAction} className="ax-grid-2">

@@ -230,7 +230,7 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
 function AddKeyForm({ labels }: { labels: Labels }) {
   const [state, formAction, pending] = useActionState<L10nResult, FormData>(addKey, {});
   return (
-    <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div style={{ inlineSize: "100%" }}><strong>{labels.addTitle}</strong></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="l10n-add-key">{labels.addKeyField}</label>
         <input className="ax-input numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
@@ -293,7 +293,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
 
   return (
     <>
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-200) var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
         <input className="ax-input" value={query} onChange={e => setQuery(e.target.value)}
           placeholder={labels.searchPlaceholder} aria-label={labels.searchPlaceholder} style={{ flex: 1, minInlineSize: 220 }} />
         <select className="ax-select" value={filter} onChange={e => setFilter(e.target.value as Filter)} aria-label={labels.colStatus}>

@@ -235,7 +235,7 @@ export default async function Field() {
           <div className="ax-field-performance__body">
             <div className="ax-kpi-row">
               {kpis.map(([label, value]) => (
-                <div key={label} className="ax-surface ax-kpi">
+                <div key={label} className="panel ax-kpi">
                   <span className="t-caption">{label}</span>
                   <span className="ax-kpi__value numeric">{value}</span>
                 </div>
@@ -243,11 +243,11 @@ export default async function Field() {
             </div>
 
             <div className="ax-field-performance__charts">
-              <section className="ax-surface ax-panel" style={panelStyle}>
+              <section className="panel" style={panelStyle}>
                 <h3 style={headingStyle}>{t("field.dashboard.visitsByMonth", "Visits by month")}</h3>
                 <BarChart data={visitsByMonth} title={t("field.dashboard.visitsByMonth", "Visits by month")} emptyLabel={noData} />
               </section>
-              <section className="ax-surface ax-panel" style={panelStyle}>
+              <section className="panel" style={panelStyle}>
                 <h3 style={headingStyle}>{t("field.dashboard.reviewOutcomes", "Review outcomes")}</h3>
                 <DonutChart
                   data={[
@@ -260,7 +260,7 @@ export default async function Field() {
                   emptyLabel={noData}
                 />
               </section>
-              <section className="ax-surface ax-panel" style={panelStyle}>
+              <section className="panel" style={panelStyle}>
                 <h3 style={headingStyle}>{t("field.dashboard.submissionsTrend", "Submissions trend")}</h3>
                 <LineChart data={submissionsByMonth} title={t("field.dashboard.submissionsTrend", "Submissions trend")} emptyLabel={noData} />
               </section>

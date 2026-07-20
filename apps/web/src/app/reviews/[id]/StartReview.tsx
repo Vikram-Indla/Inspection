@@ -17,7 +17,7 @@ export default function StartReview({ inspectionId, submissionVersionId, strings
   return (
     <form
       action={formAction}
-      className="ax-surface ax-panel"
+      className="panel"
       style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}
     >
       <h4>{strings.title}</h4>

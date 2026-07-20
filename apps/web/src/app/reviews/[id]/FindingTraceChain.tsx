@@ -42,7 +42,7 @@ export default function FindingTraceChain({ traces, strings }: {
   strings: { heading: string; hint: string; empty: string; question: string; response: string; evidence: string; clause: string; violation: string; action: string; decision: string; unavailable: string };
 }) {
   return (
-    <section className="ax-surface ax-trace" aria-labelledby="finding-trace-heading">
+    <section className="panel ax-trace" aria-labelledby="finding-trace-heading">
       <h4 id="finding-trace-heading">{strings.heading}</h4>
       <p className="t-caption">{strings.hint}</p>
       {traces.length === 0 ? (

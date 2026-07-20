@@ -20,7 +20,7 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
   const [state, action, pending] = useActionState<OcrActionResult, FormData>(extractAction, {});
   const shown = state.text !== undefined ? state : (row.lastExtraction ? { text: row.lastExtraction.text ?? undefined, status: row.lastExtraction.status } : {});
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
           <h3>{row.evidenceType} <span className="t-caption numeric">{row.capturedAt}</span></h3>
@@ -35,7 +35,7 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
       {shown.status === "unavailable" && <p className="t-caption">{s.unavailable}</p>}
       {shown.status === "no_text_found" && <p className="t-caption">{s.noText}</p>}
       {shown.text && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-150)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-150)" }}>
           <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{s.extracted}</p>
           <pre style={{ whiteSpace: "pre-wrap", margin: 0, fontFamily: "var(--ax-font-mono, monospace)" }}>{shown.text}</pre>
         </div>

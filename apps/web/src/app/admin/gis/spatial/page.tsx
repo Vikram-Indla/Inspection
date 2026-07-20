@@ -40,7 +40,7 @@ export default async function SpatialPage() {
           body={t("gis.sp.empty.body", "GIS layers and working factory locations appear here. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(layers ?? []).map((l) => (
-        <div key={l.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div key={l.id} className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>{l.label} <span className="t-caption">· {l.layer_type}</span></h3>
             <span className={`ax-lozenge ${l.active ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{l.active ? "active" : "inactive"}</span>

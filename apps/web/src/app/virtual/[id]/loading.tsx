@@ -11,7 +11,7 @@ export default async function Loading() {
   const { t } = await useT();
   return (
     <Shell current="/virtual" title={t("virtual.room.loadingTitle", "Virtual session")}>
-      <div className="ax-surface" role="status" aria-busy="true">
+      <div className="panel" role="status" aria-busy="true">
         <EmptyState bare glyph="…" title={t("virtual.room.loading", "Loading session")}
           body={t("virtual.room.loadingDesc", "Reading the session state, frozen package, participants and timeline (SCR-VIR-720).")} />
         <div className="cd-vir" aria-hidden="true" style={{ marginBlockStart: "var(--ax-space-300)" }}>

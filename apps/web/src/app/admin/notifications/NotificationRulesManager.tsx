@@ -122,7 +122,7 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
 export default function NotificationRulesManager({ rows, roles, l }: { rows: NotificationRuleRow[]; roles: { role_key: string; title: string }[]; l: Labels }) {
   return (
     <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
-      <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+      <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
         <CreateForm roles={roles} l={l} />
       </section>
 

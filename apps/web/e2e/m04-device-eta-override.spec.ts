@@ -156,7 +156,7 @@ test("production device/Mapbox ETA survives offline as stale and outside arrival
   await opsPage.goto("/locale?set=en");
   await opsPage.goto("/operations");
   const queue = opsPage.getByRole("heading", { name: /Geofence override approvals/i }).locator("xpath=..");
-  const requestCard = queue.locator(".ax-surface").filter({ hasText: factoryName }).first();
+  const requestCard = queue.locator(".ax-surface, .panel").filter({ hasText: factoryName }).first();
   await expect(requestCard).toBeVisible({ timeout: 30_000 });
   await expect(requestCard).toContainText("Safety/security photo exception declared");
   await requestCard.getByRole("button", { name: "Approve override" }).click();

@@ -471,7 +471,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       {/* KPI cards — visits by operational_state (all planning statuses; FND-002) */}
       <div className="ax-kpi-row">
         {states.map(s => (
-          <div key={s} className="ax-surface ax-kpi"><span className="ax-overline">{enumLabel(s)}</span>
+          <div key={s} className="panel ax-kpi"><span className="ax-overline">{enumLabel(s)}</span>
             <span className="ax-kpi__value numeric">{counts[s]}</span></div>
         ))}
       </div>
@@ -480,17 +480,17 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} />
 
       {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>
         <OpsExport datasets={exportDatasets} strings={exportStrings} />
       </div>
 
       {/* Region/city scope — filters monitoring, map and SLA watch (M08-010) */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <RegionCityFilter region={region} city={city} regions={regions} cities={cities} strings={monitoringStrings} />
       </div>
 
       {/* KSA operations map — M08-002 */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)", marginBlockEnd: "var(--ax-space-150)" }}>
           <h4 style={{ margin: 0 }}>{t("ops.map.heading", "KSA operations map (M08-002 · ENG-06)")}</h4>
           <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
@@ -506,14 +506,14 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       <div className="ax-grid-2">
         <div className="stack">
           {/* Live monitoring — M08-003 (auto-refresh via server action) */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h4>
             <MonitoringTable initialRows={monitorRows} initialAt={nowIso} region={region} city={city}
               enumLabels={enumLabels} strings={monitoringStrings} />
           </div>
 
           {/* SLA watch — ENG-09 thresholds vs live visit windows */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.sla.heading", "SLA watch (ENG-09)")}</h4>
             {slaFlags.length === 0 ? (
               <EmptyState bare glyph="✓" title={t("ops.sla.empty.title", "No SLA breaches in scope")}
@@ -548,7 +548,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Corrective actions queue — SB12 write leg */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.actions.heading", "Corrective actions queue (M09-027 · ENG-11)")}</h4>
             {actions.length === 0 ? (
               <EmptyState bare glyph="✓" title={t("ops.actions.empty.title", "No open corrective actions")}
@@ -582,7 +582,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
         <div className="stack">
           {/* High-risk factory board — M08-006 (ENG-04 output) */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.risk.heading", "High-risk factories (M08-006 · ENG-04)")}</h4>
             {highRisk.length === 0 ? (
               <EmptyState bare glyph="◎" title={t("ops.risk.empty.title", "No scored factories yet")}
@@ -606,7 +606,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Location events — M08-014 immutable */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
             {scopedGeo.length === 0 ? (
               <EmptyState bare glyph="📍" title={t("ops.geo.empty.title", "No location events yet")}
@@ -624,7 +624,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Notifications — ENG-11 */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
             {notifs.length === 0 ? (
               <EmptyState bare glyph="🔔" title={t("ops.notifs.empty.title", "No notifications")}

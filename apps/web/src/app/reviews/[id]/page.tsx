@@ -20,7 +20,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     console.error("[review workspace auth read]", authError.message, authError.code);
     return (
       <Shell current="/reviews" title={t("review.ws.loadError", "Could not load")}>
-        <section className="ax-surface cd-panelpad cd-result" role="alert">
+        <section className="panel cd-panelpad cd-result" role="alert">
           <h3 tabIndex={-1}>{t("review.ws.loadError", "Could not load")}</h3>
           <p>{t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")}</p>
         </section>
@@ -34,7 +34,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     console.error("[review workspace role read]", roleReadError.message, roleReadError.code);
     return (
       <Shell current="/reviews" title={t("review.ws.loadError", "Could not load")}>
-        <section className="ax-surface cd-panelpad cd-result" role="alert">
+        <section className="panel cd-panelpad cd-result" role="alert">
           <h3 tabIndex={-1}>{t("review.ws.loadError", "Could not load")}</h3>
           <p>{t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")}</p>
         </section>
@@ -55,7 +55,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   if (!authorized) {
     return (
       <Shell current="/reviews" title={t("review.ws.unauthTitle", "You don’t have access to this review")}>
-        <section className="ax-surface cd-panelpad cd-result" role="alert">
+        <section className="panel cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.ws.unauthTitle", "You don’t have access to this review")}</h3>
               <p>{t("review.ws.unauthBody", "This workspace requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p></div></div>
@@ -269,7 +269,7 @@ const panelStrings: WorkspaceDecisionStrings = {
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">
         <div className="stack">
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h4>
             <div className="ax-tablewrap"><table className="ax-table">
               <thead><tr><th scope="col">{t("review.ws.colItem", "Item")}</th><th scope="col">{t("review.ws.colResponse", "Response")}</th></tr></thead>
@@ -278,7 +278,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               ))}</tbody>
             </table></div>
           </div>
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h4>
             {(ins.violations as unknown as { violation_codes: { code: string; title: string; level: string }; mapping_version: string }[]).map((v, i) => (
               <p key={i}><span className="badge badge-critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="ax-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
@@ -291,7 +291,7 @@ const panelStrings: WorkspaceDecisionStrings = {
             ))}
           </div>
           {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>
               {t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)")}{" "}
               <span className={`ax-lozenge ${fvUpdated ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>
@@ -335,7 +335,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           {latest?.acknowledgement != null && (() => {
             const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
             return (
-              <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+              <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
                 <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h4>
                 <p>
                   <strong>{ack.name ?? "—"}</strong> · <span className="numeric">{(ack.signed_at ?? ack.ts) ? new Date(ack.signed_at ?? ack.ts!).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
@@ -362,14 +362,14 @@ const panelStrings: WorkspaceDecisionStrings = {
             // submitted inspection always has at least one version on record).
             // State it explicitly; never render nothing where a comparison
             // surface belongs.
-            <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+            <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
               <div className="ax-banner ax-banner--warning" role="status">
                 <div><strong>{t("review.cmp.sourceUnavailable", "Comparison source unavailable.")}</strong> {t("review.cmp.sourceUnavailableBody", "Submitted-version data could not be loaded for this record, so no comparison can be shown — this is unavailable, not an empty result.")}</div>
               </div>
             </div>
           )}
           {(trail ?? []).length > 0 && (
-            <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+            <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
               <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail (ENG-12)")}</h4>
               {(trail ?? []).map(ev => (
                 <p key={ev.id} className="t-caption" style={{ marginBlockStart: 4 }}>
@@ -389,12 +389,12 @@ const panelStrings: WorkspaceDecisionStrings = {
           // HANDOFF read-only path — auditor/planner/leadership can read the
           // whole workspace above but never see Start review / the decision
           // controls, regardless of open/canStart state.
-          ? <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="t-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
+          ? <div className="panel" style={{ padding: "var(--ax-space-300)" }}><p className="t-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
           ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))} strings={panelStrings} />
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
-          : <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="t-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
+          : <div className="panel" style={{ padding: "var(--ax-space-300)" }}><p className="t-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
       </div>
     </Shell>
   );

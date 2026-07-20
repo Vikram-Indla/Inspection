@@ -94,7 +94,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       </div>
 
       {/* M02-036 — progress calculation + % bar over persisted child states */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
         <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
           <h4 style={{ margin: 0 }}>{t("plan.drill.progressHeading", "Plan progress (M02-036)")}</h4>
           <span className="numeric"><strong>{pct(completed)}%</strong> {t("plan.drill.progressOf", "of {n} child visits completed").replace("{n}", String(total))}</span>

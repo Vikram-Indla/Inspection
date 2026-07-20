@@ -92,7 +92,7 @@ export default function GatedRepeaterSection({
 
   return (
     <section
-      className="ax-surface"
+      className="panel"
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}
       aria-labelledby={`${idPrefix}-title`}
     >

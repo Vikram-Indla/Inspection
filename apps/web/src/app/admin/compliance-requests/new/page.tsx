@@ -16,7 +16,7 @@ export default async function NewComplianceRequest({
     <Shell current="/admin/compliance-requests" title="Create Compliance Configuration Request"
       context={<span className="badge badge-info">Draft · Revision 1</span>}>
       <p className="t-caption"><Link className="ax-link" href="/admin/compliance-requests">← Request register</Link></p>
-      <section className="ax-surface ccr-form-card" aria-labelledby="ccr-create-heading">
+      <section className="panel ccr-form-card" aria-labelledby="ccr-create-heading">
         <h3 id="ccr-create-heading">Request foundation</h3>
         <p className="t-caption">Create the governed envelope first. Components and dependencies are added in the request workspace.</p>
         <ActionForm action={createComplianceRequest} className="ccr-form" redirectOnCreate>

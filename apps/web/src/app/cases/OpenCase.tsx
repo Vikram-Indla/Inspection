@@ -6,7 +6,7 @@ export function OpenCase({ factoryId, strings: s }: { factoryId: string | null; 
   const [state, action, pending] = useActionState<CaseResult, FormData>(openCase, {});
   if (!factoryId) return <p className="t-caption">{s.noFactory}</p>;
   return (
-    <form action={action} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={action} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="factory_id" value={factoryId} />
       <div className="ax-field"><label className="ax-field__label" htmlFor="open-case-type">{s.type}</label>
         <select className="ax-input" name="case_type" id="open-case-type"><option value="correction">correction</option><option value="reinspection">reinspection</option><option value="appeal">appeal</option></select></div>

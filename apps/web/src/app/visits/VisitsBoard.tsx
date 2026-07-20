@@ -352,7 +352,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       {/* CD-026 — Selected Visit Continuity Spine (signature pattern). One stable
           selected identity + state + allowed-action context, carried in-session. */}
-      <section className="ax-surface" aria-label={strings.spineHeading}
+      <section className="panel" aria-label={strings.spineHeading}
         style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
         <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
           <span className="ax-overline">{strings.spineHeading}</span>
@@ -390,7 +390,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       {/* M02-002 — KPI tiles double as status filters */}
       <div className="ax-kpi-row" role="group" aria-label={strings.kpiFilterHint}>
         {["draft", "published", "returned", "cancelled", "expired"].map(s => (
-          <button key={s} type="button" className="ax-surface ax-kpi"
+          <button key={s} type="button" className="panel ax-kpi"
             aria-pressed={status === s}
             onClick={() => setStatus(status === s ? "" : s)}
             style={{ cursor: "pointer", textAlign: "start", boxShadow: status === s ? "var(--ax-focus-ring)" : undefined }}>
@@ -401,7 +401,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       </div>
 
       {/* M02-003/004 — search + filters + sort */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
         <input className="ax-input" style={{ inlineSize: 260 }} value={q} onChange={e => setQ(e.target.value)}
           placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} />
         <select className="ax-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
@@ -442,7 +442,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
 
       {/* M02-007/011/031-034 — bulk action bar over the selection */}
       {selected.size > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
           <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
             <h4 style={{ margin: 0 }}>{strings.bulkHeading} · {strings.selectedCount.replace("{n}", String(selected.size))}</h4>
             <button type="button" className="btn btn-ghost btn-touch" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
@@ -523,7 +523,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           mixed result. Partial/failed → role=alert; all-applied → role=status. */}
       {!pending && hasLedger && (
         <div ref={summaryRef} tabIndex={-1}
-          className={`ax-surface ${anyProblem ? "ax-banner--critical" : ""}`}
+          className={`panel ${anyProblem ? "ax-banner--critical" : ""}`}
           role={anyProblem ? "alert" : "status"} aria-live="polite"
           style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
           <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>

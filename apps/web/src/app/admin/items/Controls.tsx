@@ -68,7 +68,7 @@ export function NewItemForm({
   return (
     <form
       action={formAction}
-      className="ax-surface"
+      className="panel"
       style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}
     >
       <div className="ax-field">
@@ -238,7 +238,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
   const item = items.find(i => i.id === selected) ?? items[0];
   const label = (r: string) => s.responseLabels[r] ?? r.replace(/_/g, " ");
   return (
-    <div className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }}>
+    <div className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }}>
       <div className="ax-field" style={{ maxInlineSize: 360 }}>
         <label className="ax-field__label" htmlFor={selectId}>{s.select}</label>
         <select id={selectId} className="ax-select" value={item.id} onChange={e => setSelected(e.target.value)}>
@@ -251,7 +251,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
       </div>
 
       {/* Read-only runtime projection — disabled controls signal "not an authoring surface". */}
-      <div className="ax-panel ax-surface" style={{ padding: "var(--ax-space-250)", background: "var(--ax-color-surface-sunken)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-250)", background: "var(--ax-color-surface-sunken)" }}>
         <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="numeric"><bdi dir="ltr">{item.code}</bdi></strong>
           <span>{item.title}</span>

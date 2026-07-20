@@ -9,11 +9,11 @@ export default async function Loading() {
   return (
     <div className="ax-content stack" style={{ gap: "var(--ax-space-200)" }} role="status" aria-busy="true" aria-live="polite">
       <span className="sr-only">{t("admin.reg.r1.loading", "Loading regulation register…")}</span>
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <SkeletonBlock inlineSize="40%" blockSize={20} ariaHidden />
       </div>
       {[0, 1, 2].map(i => (
-        <div key={i} className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+        <div key={i} className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
           <SkeletonBlock inlineSize="55%" blockSize={18} ariaHidden />
           <SkeletonBlock inlineSize="80%" blockSize={40} ariaHidden />
         </div>

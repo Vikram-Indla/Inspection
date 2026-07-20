@@ -57,7 +57,7 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="ax-surface" aria-label={s.create} style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="panel" aria-label={s.create} style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-code">{s.code}</label>
         <input id="new-violation-code" className="ax-input numeric" name="code" placeholder="V-FS-12" required style={{ maxInlineSize: 120 }} /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="new-violation-title">{s.title}</label>
@@ -107,7 +107,7 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
   return (
     <form ref={formRef} action={formAction} className="stack" aria-label={`${s.mapTo} ${violationCode}`} style={{ gap: "var(--ax-space-150)" }}>
       <input type="hidden" name="violation_code_id" value={violationId} />
-      <div className="ax-surface stack" role="status" aria-live="polite" aria-label={s.validationLens} style={{ padding: "var(--ax-space-150)", gap: "var(--ax-space-050)" }}>
+      <div className="panel stack" role="status" aria-live="polite" aria-label={s.validationLens} style={{ padding: "var(--ax-space-150)", gap: "var(--ax-space-050)" }}>
         <strong>{s.validationLens}</strong>
         <ul style={{ margin: 0, paddingInlineStart: "var(--ax-space-250)" }}>
           {check(true, s.checkUnmapped)}

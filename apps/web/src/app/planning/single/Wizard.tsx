@@ -155,7 +155,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
     <form action={formAction} className="stack" style={{ gap: "var(--ax-space-300)" }}>
       <input type="hidden" name="resume_visit_plan_id" value={state.resumeId ?? ""} />
 
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.findFactory}</h4>
         <span className="ax-search"><input className="ax-input" placeholder={strings.searchPlaceholder} value={queryInput} onChange={e => setQueryInput(e.target.value)} /></span>
         {searching && registryUnavailable && (
@@ -197,7 +197,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
       </div>
 
       {factory && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.licenseStep}</h4>
           {factory.license_number ? (
             <>
@@ -214,7 +214,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
         </div>
       )}
       {factory && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.locationStep}</h4>
           {!hasOfficial && (
             <div className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-150)" }}><div>{strings.noOfficialPin}</div></div>
@@ -233,7 +233,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
         </div>
       )}
       {factory && configUnlocked && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.configStep}</h4>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: "var(--ax-space-200)" }}>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-visit-type">{strings.visitType}</label>
@@ -260,7 +260,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
       )}
 
       {factory && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.readinessTitle}</h4>
           <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
             <span className={`ax-lozenge ${factory ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{factory ? "✓" : "✕"} {strings.readyIdentity}</span>

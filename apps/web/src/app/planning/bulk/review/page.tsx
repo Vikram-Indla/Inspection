@@ -36,7 +36,7 @@ export default async function BulkReview() {
   if (!isPlanner) {
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
-        <section className="ax-surface ax-panel cd-panelpad ax-permission">
+        <section className="panel cd-panelpad ax-permission">
           <div className="ax-state ax-state--inline">
             <span className="ax-state__glyph" aria-hidden="true">⛔</span>
             <h4 tabIndex={-1}>{t("plan.review.unauth.title", "You don’t have access to review this plan")}</h4>

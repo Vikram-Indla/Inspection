@@ -49,7 +49,7 @@ export function WfDeck({ payload, strings }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-250)" }}>
       {/* Validation ledger — the graph check that previously did not exist */}
-      <section aria-label={strings.ledgerTitle} className="ax-surface" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <section aria-label={strings.ledgerTitle} className="panel" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <div className="row" style={{ justifyContent: "space-between" }}>
           <h4 style={{ margin: 0 }}>{strings.ledgerTitle}</h4>
           <span className={`ax-lozenge ${validation.ok ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
@@ -69,7 +69,7 @@ export function WfDeck({ payload, strings }: Props) {
       </section>
 
       {/* Graph + outline — keyboard-accessible ordered stepper (wraps, never clipped) */}
-      <section aria-label={strings.graphTitle} className="ax-surface" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <section aria-label={strings.graphTitle} className="panel" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <h4 style={{ margin: 0 }}>{strings.graphTitle}</h4>
         <ol role="list" style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "center" }}>
           {def.states.map((s, idx) => (
@@ -98,7 +98,7 @@ export function WfDeck({ payload, strings }: Props) {
       </section>
 
       {/* Transition inspector */}
-      <section aria-label={strings.inspectorTitle} className="ax-surface" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <section aria-label={strings.inspectorTitle} className="panel" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <h4 style={{ margin: 0 }}>{strings.inspectorTitle}</h4>
         <p className="t-caption">{strings.selectHint}</p>
         <div className="ax-tablewrap"><table className="ax-table">

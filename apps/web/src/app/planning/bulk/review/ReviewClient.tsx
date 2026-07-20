@@ -212,7 +212,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
 
   if (phase === "loading") {
     return (
-      <div className="ax-surface ax-panel cd-panelpad" id="cd-main">
+      <div className="panel cd-panelpad" id="cd-main">
         <div className="ax-banner ax-banner--immutable" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
           <div><strong>{s.stagedBanner}</strong><div className="t-caption">{s.stagedSub}</div></div>
         </div>
@@ -227,7 +227,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   if (phase === "scope") {
     const missing = data?.missingFactoryIds?.length ?? 0;
     return (
-      <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
+      <div className="panel" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
         <div className="ax-state">
           <span className="ax-state__glyph" aria-hidden="true">◌</span>
           <h3>{s.scopeTitle}</h3>
@@ -239,7 +239,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   }
   if (phase === "empty") {
     return (
-      <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
+      <div className="panel" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
         <h3>{s.emptyTitle}</h3>
         <p className="t-caption">{s.emptyBody}</p>
         <a className="btn btn-primary btn-lg btn-touch" href="/planning/bulk">{s.backToTargeting}</a>
@@ -248,7 +248,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   }
   if (phase === "publishing") {
     return (
-      <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
+      <section className="panel cd-panelpad cd-result" id="cd-main">
         <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon lock" aria-hidden="true">🔒</div>
           <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
@@ -263,7 +263,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   }
   if (phase === "failure") {
     return (
-      <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
+      <section className="panel cd-panelpad cd-result" id="cd-main">
         <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon fail" aria-hidden="true">✕</div>
           <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
@@ -283,7 +283,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   if (phase === "success") {
     const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(val?.retained ?? "")], [s.sAssign, String(val?.retained ?? "")], [s.sNotif, String(val?.retained ?? "")]];
     return (
-      <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
+      <section className="panel cd-panelpad cd-result" id="cd-main">
         <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon ok" aria-hidden="true">✓</div>
           <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
@@ -291,7 +291,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
             <p>{s.successBody}</p>
             <div className="cd-resultgrid" style={{ marginBlock: "var(--ax-space-150)" }}>
               {cells.map(([k, v]) => (
-                <div key={k} className="ax-surface" style={{ padding: "var(--ax-space-150) var(--ax-space-200)" }}>
+                <div key={k} className="panel" style={{ padding: "var(--ax-space-150) var(--ax-space-200)" }}>
                   <div className="ax-overline">{k}</div><div className="cd-count">{v}</div>
                 </div>
               ))}
@@ -394,7 +394,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       <p className="sr-only" role="status" aria-live="polite">{announce}</p>
 
       {/* ---- context card ---- */}
-      <section className="ax-surface ax-panel">
+      <section className="panel">
         <div className="cd-methodline cd-panelpad" style={{ paddingBlockEnd: 0 }}>
           <span className="ax-lozenge ax-lozenge--plan">{s.method}</span>
           {freshness && <span className="ax-freshness">{s.freshnessPrefix} {freshness}</span>}
@@ -418,7 +418,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       </section>
 
       {/* ---- readiness rail (error summary) ---- */}
-      <section className={`ax-surface ax-panel cd-panelpad cd-ready ${validating ? "" : blockers.length ? "is-blocked" : "is-clear"}`}
+      <section className={`panel cd-panelpad cd-ready ${validating ? "" : blockers.length ? "is-blocked" : "is-clear"}`}
         role={blockers.length ? "alert" : "status"} aria-label={s.readiness}>
         <div className="cd-sectionhead"><h3 tabIndex={-1} ref={readinessHeadingRef}>{s.readiness}</h3></div>
         {validating ? (
@@ -515,10 +515,10 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       <section>
         <div className="cd-sectionhead"><h3>{s.assignH}</h3><span className="t-caption cd-mono">{interp(s.splitLine, { manual, auto })}</span></div>
         <div className="ax-grid-2">
-          <div className="ax-surface ax-panel cd-panelpad"><div className="ax-overline">{s.manualNamed}</div>
+          <div className="panel cd-panelpad"><div className="ax-overline">{s.manualNamed}</div>
             <div className="cd-count" style={{ marginBlock: "var(--ax-space-050)" }}>{manual}</div>
             <p className="t-caption">{s.manualEvidenceNote}</p></div>
-          <div className="ax-surface ax-panel cd-panelpad"><div className="ax-overline">{s.autoChosen}</div>
+          <div className="panel cd-panelpad"><div className="ax-overline">{s.autoChosen}</div>
             <div className="cd-count" style={{ marginBlock: "var(--ax-space-050)" }}>{auto}</div>
             <p className="t-caption">{s.autoNote}</p></div>
         </div>

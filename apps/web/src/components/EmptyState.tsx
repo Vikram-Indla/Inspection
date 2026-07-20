@@ -24,5 +24,5 @@ export default function EmptyState({ glyph, title, body, inline, bare, children,
       {children}
     </div>
   );
-  return bare ? inner : <div className="ax-surface">{inner}</div>;
+  return bare ? inner : <div className="panel">{inner}</div>;
 }

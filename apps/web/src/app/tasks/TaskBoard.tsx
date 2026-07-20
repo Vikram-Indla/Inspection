@@ -37,7 +37,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
   const isTerminal = targets.length === 0;
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <h3>
           {task.taskType} <span className="ax-version">{task.taskRef ?? "—"}</span>

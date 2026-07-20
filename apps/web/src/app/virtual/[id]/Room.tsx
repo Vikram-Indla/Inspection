@@ -261,7 +261,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
       <div className="cd-grid">
         <div className="cd-grid__main">
           {/* six-link readiness contract */}
-          <section className="ax-surface cd-contract" aria-label={t.contract}>
+          <section className="panel cd-contract" aria-label={t.contract}>
             <div className="cd-sectionhead"><h3>{t.contract}</h3></div>
             <p className="cd-sub">{t.contractHint}</p>
             <ol className="cd-links">
@@ -327,7 +327,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
           </section>
 
           {/* action zone — gated primary + reschedule + close-with-reason */}
-          <section className="ax-surface cd-action" id="vir-actionzone" tabIndex={-1} aria-label={t.transition}>
+          <section className="panel cd-action" id="vir-actionzone" tabIndex={-1} aria-label={t.transition}>
             <div className="cd-sectionhead"><h3>{t.transition}</h3></div>
             <p className="cd-sub">{t.transHint}</p>
             {next.key !== "none" && (
@@ -374,7 +374,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
 
         <aside className="cd-grid__side">
           {/* canonical state path */}
-          <section className="ax-surface cd-path" aria-label={t.statePath}>
+          <section className="panel cd-path" aria-label={t.statePath}>
             <div className="cd-sectionhead"><h3>{t.statePath}</h3></div>
             <ol className="cd-nodes">
               {ORDER.map((s, i) => {
@@ -394,7 +394,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
           </section>
 
           {/* participant register */}
-          <section className="ax-surface cd-side" aria-label={t.partLink}>
+          <section className="panel cd-side" aria-label={t.partLink}>
             <div className="cd-sectionhead"><h3>{t.partLink}</h3></div>
             {parts.length === 0 && <p className="cd-sub">{t.emptyPart}</p>}
             <ul className="cd-plist">
@@ -446,7 +446,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
           </section>
 
           {/* provider-pending room — bounded, never a call surface */}
-          <section className="ax-surface cd-side cd-room" aria-label={t.room}>
+          <section className="panel cd-side cd-room" aria-label={t.room}>
             <div className="cd-sectionhead"><h3>{t.room}</h3><span className="cd-tag cd-tag--blocked">{t.roomTag}</span></div>
             {simVideo ? (
               <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
@@ -466,7 +466,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
           </section>
 
           {/* fallback route — bounded, no invented policy */}
-          <section className="ax-surface cd-side" aria-label={t.fallback}>
+          <section className="panel cd-side" aria-label={t.fallback}>
             <div className="cd-sectionhead"><h3>{t.fallback}</h3><span className="cd-tag cd-tag--blocked">{t.fallbackTag}</span></div>
             <p className="cd-sub">{t.fallbackBody}</p>
             <p className="cd-sub">{t.fallbackResched}</p>

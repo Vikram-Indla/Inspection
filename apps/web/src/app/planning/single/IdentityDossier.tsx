@@ -34,7 +34,7 @@ export default function IdentityDossier({
     : hasPlannerPin ? [pLat, pLng] : [24.7136, 46.6753];
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }} role="region" aria-label={factory.name}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }} role="region" aria-label={factory.name}>
       <div>
         <strong style={{ fontSize: "var(--ax-font-size-150)" }}>{factory.name}</strong>
         {factory.grade === "exact"

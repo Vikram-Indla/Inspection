@@ -467,7 +467,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
 
       {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
-      <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <details className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>
           {strings.panelTitle}{inspectionNo ? <span className="numeric"> · {inspectionNo}</span> : null}
         </summary>
@@ -528,7 +528,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
 
       {/* Site conditions — flags feeding conditional.visible_when (M04-119); persisted on the inspection row */}
       {!submitted && flags.length > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
           <h4>{strings.ctxTitle}</h4>
           <p className="t-caption">{strings.ctxHint}</p>
           <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)" }}>
@@ -549,12 +549,12 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         if (inspection.status === "returned") {
           const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
           if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
-            return <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} 🔒</h4><p className="t-caption">{strings.lockedSection}</p></div>;
+            return <div key={s.key} className="panel" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} 🔒</h4><p className="t-caption">{strings.lockedSection}</p></div>;
           }
         }
         const sp = progress.find(p => p.key === s.key)!;
         return (
-        <div key={s.key} id={`ax-section-${s.key}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-600)" }}>
+        <div key={s.key} id={`ax-section-${s.key}`} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-600)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
             <span className="t-caption numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
@@ -711,7 +711,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
 
       {/* Violation auto-display — config-driven, non-overridable (M04-142/143/144) */}
       {!submitted && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
           <h4>{strings.vioTitle}</h4>
           {implied.length === 0 ? <p className="t-caption">{strings.vioNone}</p> : implied.map(v => (
             <div key={`${v.itemCode}-${v.code}`} className="ax-banner ax-banner--critical">

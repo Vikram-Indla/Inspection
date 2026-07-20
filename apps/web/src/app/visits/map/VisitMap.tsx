@@ -61,7 +61,7 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS }: { vis
           <span className="badge badge-warning">{"● "}{s.inspectorLegend}</span>
         </div>
       </div>
-      <div className="ax-surface" style={{ blockSize: 520, overflow: "hidden", padding: 0 }} dir="ltr">
+      <div className="panel" style={{ blockSize: 520, overflow: "hidden", padding: 0 }} dir="ltr">
         {markers.length ? <GeoMap center={center} zoom={region || selected ? 9 : 5} markers={markers}
           selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" /> : (
           <EmptyState glyph="∅" title={s.noneInRegion} bare />

@@ -5,7 +5,7 @@ import { createGisLayer, type GisResult } from "./actions";
 export function CreateLayer({ strings: s }: { strings: { key: string; label: string; type: string; create: string; creating: string; created: string } }) {
   const [state, action, pending] = useActionState<GisResult, FormData>(createGisLayer, {});
   return (
-    <form action={action} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={action} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="gis-layer-key">{s.key}</label><input className="ax-input numeric" name="layer_key" id="gis-layer-key" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="gis-layer-label">{s.label}</label><input className="ax-input" name="label" id="gis-layer-label" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="gis-layer-type">{s.type}</label>

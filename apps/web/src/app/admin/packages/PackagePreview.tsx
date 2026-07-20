@@ -62,7 +62,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
       </div>
 
       {open && (
-        <div className="ipad-preview ax-surface" role="region" aria-label={s.title} style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", background: "var(--ax-color-surface-sunken)", borderRadius: "var(--ax-radius-large)" }}>
+        <div className="ipad-preview panel" role="region" aria-label={s.title} style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", background: "var(--ax-color-surface-sunken)", borderRadius: "var(--ax-radius-large)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <strong style={{ font: "var(--ax-text-body-strong)" }}>{s.title}</strong>
             <span className="t-caption">{s.asInspector}</span>

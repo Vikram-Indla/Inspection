@@ -26,7 +26,7 @@ export type IncidentFormStrings = {
 export function IncidentReportForm({ strings: s }: { strings: IncidentFormStrings }) {
   const [state, action, pending] = useActionState<IncidentResult, FormData>(createIncidentReport, {});
   return (
-    <form action={action} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <form action={action} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-establishment-code">{s.establishmentCode}</label><input className="ax-input" name="establishment_code" id="ir-establishment-code" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-cr-number">{s.commercialRegistrationNumber}</label><input className="ax-input" name="commercial_registration_number" id="ir-cr-number" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-report-source">{s.reportSource}</label><input className="ax-input" name="report_source" id="ir-report-source" /></div>

@@ -679,7 +679,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     : null;
   return (
     <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="field-device-readiness">
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }} data-testid="field-device-readiness">
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.readiness}</h4>
         <div className="stack" style={{ gap: 8 }}>
           <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {new Date(visit.window_start).toISOString().slice(0,16).replace("T"," ")} → {new Date(visit.window_end).toISOString().slice(11,16)}</div>
@@ -731,7 +731,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         advisoryLabel={strings.aiAdvisory}
       />
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-150)" }}>
           <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="badge badge-info">SB20 · ENG-08</span></h4>
           <span className="row" style={{ gap: 8, alignItems: "center" }}>
@@ -756,7 +756,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         </p>
       </div>
       {pendingOverride && !checkedIn && (
-        <div className="ax-surface" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
+        <div className="panel" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
           style={{ padding: "var(--ax-space-300)", borderColor: "var(--ax-color-critical)" }}>
           <h4 id="gps-override-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.overrideHeading}</h4>
           <p className="t-caption">{fmt(strings.overrideBody, { d: pendingOverride.d.toFixed(0), fence, lat: pendingOverride.lat.toFixed(6), lng: pendingOverride.lng.toFixed(6) })}</p>
@@ -801,7 +801,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       )}
       {/* M04-050..054 — arrival confirmation, context cards and journey summary. */}
       {checkedIn && (
-        <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }} aria-label={strings.cardsVisitTitle}>
+        <section className="panel" style={{ padding: "var(--ax-space-300)" }} aria-label={strings.cardsVisitTitle}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
             <div>
               <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cardsVisitTitle}</h4>
@@ -843,7 +843,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             </details>
           </div>
           {arrivalEventId && (
-            <div className="ax-surface" style={{ padding: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}>
+            <div className="panel" style={{ padding: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}>
               <h5 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.arrivalEvidenceHeading}</h5>
               <p className="t-caption">{strings.arrivalEvidenceCaption}</p>
               {arrivalEvidenceSaved ? <span className="badge badge-compliant">{strings.arrivalSaved}</span> : (
@@ -863,7 +863,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       )}
       {/* M03-010 — mandatory pre-start confirmations, persisted to journey_sessions.prestart */}
       {checkedIn && !existing && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.prestartHeading}</h4>
           <div className="stack" style={{ gap: 8 }}>
             <label className="row" style={{ gap: 8, alignItems: "center" }}>
@@ -887,7 +887,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       </div>
       {/* ENG-06 / FLD-GEO-005 — manual exception record while the journey is active */}
       {journeyId && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.exceptionHeading}</h4>
           <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             <input className="ax-input" style={{ flex: 1, minInlineSize: 220 }} value={exceptionNote}
@@ -897,7 +897,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         </div>
       )}
       {/* F3 M04-056/057/058 cancellation REQUEST (RBAC: planner/ops own the actual cancel). */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cancelHeading}</h4>
         <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.cancelCaption}</p>
         {cancelRequested ? (
@@ -923,7 +923,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         )}
       </div>
       {/* F3 M03-006 inspector return for blocked visits (request + notify planner). */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.returnHeading}</h4>
         <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.returnCaption}</p>
         {returnRequested ? (
@@ -936,7 +936,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           </div>
         )}
       </div>
-      {log.length > 0 && <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      {log.length > 0 && <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <ul className="ax-timeline">{log.map((m, i) => <li key={i}><div>{m}</div></li>)}</ul>
       </div>}
     </div>

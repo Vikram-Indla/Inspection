@@ -43,7 +43,7 @@ export default async function PlanRegister() {
       context={<span className="badge badge-info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
       <div className="ax-kpi-row">
         {["draft", "published", "returned", "cancelled"].map(s => (
-          <div key={s} className="ax-surface ax-kpi">
+          <div key={s} className="panel ax-kpi">
             <span className="ax-overline">{t(`enum.${s}`, s)}</span>
             <span className="ax-kpi__value numeric">{counts[s] ?? 0}</span>
           </div>

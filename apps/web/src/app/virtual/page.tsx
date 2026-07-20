@@ -52,7 +52,7 @@ export default async function VirtualList() {
         </tbody>
       </table></div>
       {unscheduled.length > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4>{t("virtual.list.scheduleHeading", "Schedule a session (M05-002)")}</h4>
           <p className="t-caption">{t("virtual.list.scheduleHint", "Published virtual visits without a session. Scheduling creates the room, binds participants and notifies the inspector; the factory representative row records its SMS delivery state honestly (provider adapter pending).")}</p>
           {unscheduled.map(v => (

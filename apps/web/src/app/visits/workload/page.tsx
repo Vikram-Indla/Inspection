@@ -80,7 +80,7 @@ export default async function Workload() {
         <EmptyState glyph="◫" title={t("visit.load.empty", "No active assigned load")}
           body={t("visit.load.emptyDesc", "Published, not-yet-submitted visits with an assignment appear here grouped by inspector and week (M02-018).")} />
       ) : (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4 style={{ margin: 0 }}>{t("visit.load.heading", "Active visits per inspector per week (M02-018)")}</h4>
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr>
