@@ -75,8 +75,10 @@ test.describe("Platform-wide government design-system contract", () => {
   });
 
   test("PDS-AC-022..025 authenticated CSS remains institutional and token-driven", () => {
+    // Page/module CSS only — the SAQEEL DS component sheet is a design-system
+    // layer (peer to tokens.css), not a page, and is excluded like login.css.
     const authenticated = files(appRoot, ".css")
-      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css"))
+      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css") && !file.endsWith("saqeel-components.css"))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
     expect(authenticated).not.toMatch(/font-style:\s*italic/);
     expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);

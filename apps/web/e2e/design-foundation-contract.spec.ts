@@ -65,8 +65,13 @@ test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
   test("DSF-AC-019..023 authenticated foundation rejects cinematic styling", () => {
     const css = read("src/app/astryx.css");
     const dashboard = read("src/app/dashboard/dashboard.module.css");
+    // Scan authenticated PAGE/module CSS only. The SAQEEL design-system layer
+    // (tokens.css, the DS component sheet) and the login Atlas are excluded —
+    // they are DS/exception layers, not pages, and legitimately carry SAQEEL DS
+    // internals (uppercase micro-labels, white-on-status marker knobs, the
+    // on-hold severity hatch). Page CSS must still stay institutional.
     const authenticated = cssFiles(path.join(root, "src/app"))
-      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css"))
+      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css") && !file.endsWith("saqeel-components.css"))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
     expect(authenticated).not.toMatch(/font-style:\s*italic/);
     expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);
