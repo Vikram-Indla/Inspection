@@ -1,0 +1,89 @@
+<!-- @dsCard group="Screens" viewport="1440x950" subtitle="Corrective-action workflow — rail, spine, verification" name="Corrective actions" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../../styles.css"><style>
+html,body{height:100%}
+.app{display:flex;height:100vh;overflow:hidden}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.content{flex:1;overflow:auto;position:relative;padding:var(--page-pad);background:var(--surface-canvas)}
+</style></head><body>
+<div class="app">
+<nav class="sidebar" aria-label="Main">
+<div class="sidebar-brand"><svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg><span class="brand-label">SAQEEL</span></div>
+<div style="flex:1;overflow-y:auto;padding-block:var(--space-2)"><div class="sidebar-group">Operations</div><a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span class="nav-label">Dashboard</span></a><a class="nav-item" href="register.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 13 2 2 4-4"/></svg><span class="nav-label">Inspections</span><span class="nav-count">128</span></a><a class="nav-item" href="map-command.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3"/><path d="M9 3v15M15 6v15"/></svg><span class="nav-label">Map command</span></a><a class="nav-item is-active" href="detail.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4c4-2 8 2 12 0v10c-4 2-8-2-12 0"/></svg><span class="nav-label">Findings</span><span class="nav-count">24</span></a><div class="sidebar-group">Oversight</div><a class="nav-item" href="review.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7"/><circle cx="12" cy="12" r="3"/></svg><span class="nav-label">Review queue</span><span class="nav-count">9</span></a><a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span class="nav-label">Reports</span></a><a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg><span class="nav-label">Facilities</span></a><a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="nav-label">Settings</span></a></div>
+<div style="padding:var(--space-3);border-block-start:1px solid var(--nav-border)"><span class="user-chip" style="color:var(--nav-text)"><span class="avatar avatar-sm">FH</span><span style="font-size:12px">Faisal Al-Harbi</span></span></div>
+</nav>
+<div class="main">
+<header class="topbar">
+<button class="btn btn-ghost btn-icon" aria-label="Toggle navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+<span class="input-affix grow" style="max-width:400px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="Search inspections, permits, facilities"></span>
+<div class="grow"></div>
+<div class="seg"><button class="seg-opt" aria-pressed="true">EN</button><button class="seg-opt" aria-pressed="false">AR</button></div>
+<button class="btn btn-ghost btn-icon" aria-label="Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"/></svg></button>
+<button class="btn btn-ghost btn-icon" aria-label="Notifications" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span style="position:absolute;top:5px;inset-inline-end:5px;width:7px;height:7px;border-radius:50%;background:var(--status-critical)"></span></button>
+<span class="avatar">FH</span>
+</header>
+<main class="content">
+<div class="stack" style="gap:var(--space-4)">
+<div class="page-header">
+<div class="stack" style="gap:2px"><h2 class="t-page-title">Corrective actions</h2><span class="t-meta">64 open · Riyadh region</span></div>
+<div class="row"><button class="btn btn-secondary">Export</button><button class="btn btn-primary">New corrective action</button></div>
+</div>
+<div class="tabs"><button class="tab is-active">Open<span class="tab-count">64</span></button><button class="tab">Awaiting verification<span class="tab-count">12</span></button><button class="tab">Overdue<span class="tab-count">8</span></button><button class="tab">Closed</button></div>
+<div class="filter-bar">
+<select class="select" style="width:auto;height:28px;font-size:12px"><option>All records</option><option>My verifications</option></select>
+<button class="filter-chip is-set">Severity: Critical + Major <span>✕</span></button>
+<button class="filter-chip">Facility</button>
+<button class="filter-chip">Due date</button>
+<button class="btn btn-ghost btn-sm">Advanced filters</button>
+</div>
+<div style="display:grid;grid-template-columns:1.7fr 1fr;gap:var(--space-4);align-items:start">
+<div class="table-wrap"><table class="table"><thead><tr><th style="width:4px;padding:0"></th><th>Action</th><th>Description</th><th>Facility</th><th>Owner</th><th>Status</th><th style="text-align:end">Due</th><th style="width:40px"></th></tr></thead><tbody>
+<tr>
+<td class="rail-td"><i style="display:block;width:4px;height:100%;background:var(--status-critical)"></i></td>
+<td><span class="id-code">CAP-2026-0091</span></td><td class="cell-trunc" style="max-inline-size:300px" title="Clear blocked emergency exit and restore signage">Clear blocked emergency exit and restore signage</td><td>Al Noor Food Processing</td><td>Facility manager</td>
+<td><span class="exc exc-pending"><i class="exc-mark"></i>Awaiting verification</span></td><td class="cell-num" style="color:var(--status-warning-text);font-weight:500">21 Jul</td>
+<td><button class="btn btn-ghost btn-sm btn-icon" aria-label="Actions">⋯</button></td></tr>
+<tr>
+<td class="rail-td"><i style="display:block;width:4px;height:100%;background:var(--status-major)"></i></td>
+<td><span class="id-code">CAP-2026-0087</span></td><td class="cell-trunc" style="max-inline-size:300px" title="Recalibrate cold-room thermometers (rooms 2–3)">Recalibrate cold-room thermometers (rooms 2–3)</td><td>Al Noor Food Processing</td><td>Facility manager</td>
+<td><span class="exc exc-pending"><i class="exc-mark"></i>Awaiting verification</span></td><td class="cell-num">28 Jul</td>
+<td><button class="btn btn-ghost btn-sm btn-icon" aria-label="Actions">⋯</button></td></tr>
+<tr>
+<td class="rail-td"><i style="display:block;width:4px;height:100%;background:var(--status-major)"></i></td>
+<td><span class="id-code">CAP-2026-0083</span></td><td class="cell-trunc" style="max-inline-size:300px" title="Replace expired fire extinguishers, floor 2">Replace expired fire extinguishers, floor 2</td><td>Riyadh Steel Fabrication Co.</td><td>Safety officer</td>
+<td><span class="exc exc-critical"><i class="exc-mark"></i>Overdue</span></td><td class="cell-num" style="color:var(--status-critical-text);font-weight:500">15 Jul</td>
+<td><button class="btn btn-ghost btn-sm btn-icon" aria-label="Actions">⋯</button></td></tr>
+<tr>
+<td class="rail-td"><i style="display:block;width:4px;height:100%;background:var(--status-warning)"></i></td>
+<td><span class="id-code">CAP-2026-0079</span></td><td class="cell-trunc" style="max-inline-size:300px" title="Complete June hygiene training records">Complete June hygiene training records</td><td>Golden Dates Packing House</td><td>HR supervisor</td>
+<td><span class="exc exc-info"><i class="exc-mark"></i>In progress</span></td><td class="cell-num">30 Jul</td>
+<td><button class="btn btn-ghost btn-sm btn-icon" aria-label="Actions">⋯</button></td></tr>
+<tr>
+<td class="rail-td"><i style="display:block;width:4px;height:100%;background:var(--status-compliant)"></i></td>
+<td><span class="id-code">CAP-2026-0075</span></td><td class="cell-trunc" style="max-inline-size:300px" title="Install anti-slip flooring at loading bay">Install anti-slip flooring at loading bay</td><td>Eastern Cold Storage</td><td>Facility manager</td>
+<td><span class="exc exc-completed"><i class="exc-mark"></i>Verified & closed</span></td><td class="cell-num">—</td>
+<td><button class="btn btn-ghost btn-sm btn-icon" aria-label="Actions">⋯</button></td></tr>
+</tbody></table>
+<div class="grid-footer"><span>64 records</span><nav class="pagination"><button class="page-btn">‹</button><span class="t-meta">1 / 4</span><button class="page-btn">›</button></nav></div></div>
+<div class="stack" style="gap:var(--space-4)">
+<div class="panel">
+<div class="panel-header"><span class="panel-title">CAP-2026-0091 — verification</span><span class="exc exc-pending"><i class="exc-mark"></i>Awaiting verification</span></div>
+<div class="panel-body stack" style="gap:10px">
+<div class="t-compact" style="color:var(--text-secondary)">Clear blocked emergency exit and restore signage. Raised from <span class="id-code">VIO-2026-0122</span> (Critical).</div>
+<ol class="spine is-compact">
+<li class="spine-node is-done"><span class="spine-dot">✓</span><span class="spine-body"><span class="spine-title">Action raised</span></span></li>
+<li class="spine-node is-done"><span class="spine-dot">✓</span><span class="spine-body"><span class="spine-title">Facility notified</span></span></li>
+<li class="spine-node is-done"><span class="spine-dot">✓</span><span class="spine-body"><span class="spine-title">Remediation reported</span></span></li>
+<li class="spine-node is-current"><span class="spine-dot"></span><span class="spine-body"><span class="spine-title">Verification visit</span></span></li>
+<li class="spine-node"><span class="spine-dot"></span><span class="spine-body"><span class="spine-title">Closed</span></span></li>
+</ol>
+<div class="t-label">Remediation evidence</div>
+<div class="row" style="align-items:flex-start;gap:10px;padding-block:8px;border-block-end:1px solid var(--border-subtle)">
+<span style="width:80px;aspect-ratio:4/3;display:grid;place-items:center;background:var(--surface-sunken);border:1px solid var(--border-subtle);border-radius:3px;color:var(--text-muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="12" cy="12" r="3.5"/></svg></span>
+<div class="stack grow" style="gap:2px"><div class="row" style="justify-content:space-between"><span style="font-weight:500;font-size:13px">Cleared exit, warehouse B</span><span class="exc exc-pending"><i class="exc-mark"></i>Unverified</span></div><span class="t-caption">Submitted by facility · 21 Jul 09:12</span></div>
+</div>
+<div class="field"><label>Verification note</label><textarea class="input" rows="2" placeholder="Confirm on-site verification"></textarea></div>
+<div class="row" style="justify-content:flex-end"><button class="btn btn-secondary">Request re-work</button><button class="btn btn-primary">Verify & close</button></div>
+</div></div>
+</div></div></div></main>
+</div></div></body></html>

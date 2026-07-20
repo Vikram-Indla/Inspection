@@ -1,0 +1,47 @@
+{
+  "surface": {
+    "canvas": "#17191d",
+    "primary": "#1e2126",
+    "secondary": "#23262c",
+    "sunken": "#131518",
+    "raised": "#282c33",
+    "overlay": "rgba(8,9,11,0.62)"
+  },
+  "navigation": {
+    "surface": "#131519",
+    "hover": "#1d2025",
+    "selected": "#16342a",
+    "border": "#262a30",
+    "text": "#a8adb4",
+    "textActive": "#f2f4f5",
+    "indicator": "#3fbd8d"
+  },
+  "text": {
+    "primary": "#e8eaec",
+    "secondary": "#b1b6bc",
+    "muted": "#82888f",
+    "disabled": "#565c63",
+    "inverse": "#1a1d1f",
+    "onAction": "#08120e",
+    "link": "#57c49a"
+  },
+  "border": {
+    "subtle": "#2c3036",
+    "strong": "#43484f",
+    "input": "#4c525a"
+  },
+  "focus": {
+    "ring": "#3fae83"
+  },
+  "action": {
+    "primary": "#2e9e77",
+    "primaryHover": "#38b086",
+    "primaryPressed": "#47c095",
+    "soft": "#1c352c",
+    "softHover": "#234135",
+    "softText": "#7fd4b2",
+    "danger": "#d5554c",
+    "dangerHover": "#de6c64",
+    "dangerPressed": "#e5847d"
+  }
+}

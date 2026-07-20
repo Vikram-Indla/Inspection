@@ -1,0 +1,130 @@
+{
+  "meanings": {
+    "critical": "immediate danger / overdue-critical",
+    "major": "major violation / escalation",
+    "warning": "approaching due / attention",
+    "compliant": "passed",
+    "info": "informational",
+    "pending": "awaiting another actor",
+    "draft": "unsubmitted",
+    "onhold": "paused",
+    "completed": "closed terminal",
+    "disabled": "inactive entity"
+  },
+  "light": {
+    "critical": {
+      "base": "#b3261e",
+      "soft": "#f8e6e4",
+      "text": "#8c1d17"
+    },
+    "major": {
+      "base": "#c2410c",
+      "soft": "#faeadd",
+      "text": "#9a3412"
+    },
+    "warning": {
+      "base": "#b45309",
+      "soft": "#f8efd6",
+      "text": "#8a4207"
+    },
+    "compliant": {
+      "base": "#1a7a4f",
+      "soft": "#e2f0e7",
+      "text": "#14603e"
+    },
+    "info": {
+      "base": "#25619a",
+      "soft": "#e5edf5",
+      "text": "#1d4d7c"
+    },
+    "pending": {
+      "base": "#5b6472",
+      "soft": "#e9ebee",
+      "text": "#454d59"
+    },
+    "draft": {
+      "base": "#6f6a5f",
+      "soft": "#edeae2",
+      "text": "#565248"
+    },
+    "onhold": {
+      "base": "#8f6b2e",
+      "soft": "#f2ecdc",
+      "text": "#6f5324"
+    },
+    "completed": {
+      "base": "#256d5f",
+      "soft": "#e0eeeb",
+      "text": "#1b544a"
+    },
+    "disabled": {
+      "base": "#a4aab0",
+      "soft": "#efeeea",
+      "text": "#71787e"
+    }
+  },
+  "dark": {
+    "critical": {
+      "base": "#e0655c",
+      "soft": "#3a201e",
+      "text": "#f0a29b"
+    },
+    "major": {
+      "base": "#e0763c",
+      "soft": "#392318",
+      "text": "#f0ab84"
+    },
+    "warning": {
+      "base": "#d9982e",
+      "soft": "#372a14",
+      "text": "#ecc27b"
+    },
+    "compliant": {
+      "base": "#47b381",
+      "soft": "#1c3529",
+      "text": "#8ed4b3"
+    },
+    "info": {
+      "base": "#5b96d1",
+      "soft": "#1d2b3b",
+      "text": "#9dc2e8"
+    },
+    "pending": {
+      "base": "#8b95a4",
+      "soft": "#262b33",
+      "text": "#b9c1cc"
+    },
+    "draft": {
+      "base": "#a29a88",
+      "soft": "#2b2822",
+      "text": "#c9c2b3"
+    },
+    "onhold": {
+      "base": "#c09a52",
+      "soft": "#322817",
+      "text": "#dcc08a"
+    },
+    "completed": {
+      "base": "#4aa896",
+      "soft": "#1b322e",
+      "text": "#90cec2"
+    },
+    "disabled": {
+      "base": "#565c63",
+      "soft": "#22262b",
+      "text": "#82888f"
+    }
+  },
+  "evidence": {
+    "light": {
+      "verified": "#1a7a4f",
+      "pending": "#5b6472",
+      "rejected": "#b3261e"
+    },
+    "dark": {
+      "verified": "#47b381",
+      "pending": "#8b95a4",
+      "rejected": "#e0655c"
+    }
+  }
+}

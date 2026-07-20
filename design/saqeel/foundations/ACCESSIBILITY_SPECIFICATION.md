@@ -1,0 +1,11 @@
+# ACCESSIBILITY_SPECIFICATION — WCAG 2.2 AA
+- Contrast: text tokens ≥4.5:1 on their surfaces (status base colours never used for body-size text — use -text slots); UI chrome ≥3:1.
+- Focus: :focus-visible = 2px --focus-ring offset 2 on EVERY interactive element; never removed.
+- Keyboard: full operability — menus/palette/listbox arrow navigation, Esc closes layers, focus trapped in dialogs/drawers and restored on close; no keyboard traps elsewhere.
+- Status beyond colour: StatusBadge = dot+label; ExceptionMark = shape+colour+label; spine states use glyphs; charts pair colour with labels.
+- Forms: label element per field; errors via aria-describedby + role=alert; required marked in label; validation summary links to fields.
+- Tables: th scope="col", aria-sort on sorted columns, row selection checkboxes labelled.
+- Touch: ≥44px targets on tablet/field surfaces; 24px minimum pointer targets elsewhere (WCAG 2.2 target-size).
+- Motion: prefers-reduced-motion collapses all transitions/animations.
+- Arabic: lang="ar" set for screen readers; reading order follows DOM in both directions; identifiers announced as codes (mono spans).
+- Dialog behaviour: aria-modal, labelled by title, backdrop click + Esc close (unless destructive confirmation).

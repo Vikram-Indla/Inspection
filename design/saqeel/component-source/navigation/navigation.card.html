@@ -1,0 +1,21 @@
+<!-- @dsCard group="Components" viewport="700x360" subtitle="Sidebar, breadcrumb, tabs, steps, pagination, segmented" name="Navigation" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>body{padding:14px;display:flex;gap:14px;align-items:flex-start}</style></head><body>
+<div style="background:var(--nav-bg);border-radius:4px;padding:8px 0;width:200px;flex:none">
+<div class="sidebar-brand" style="padding:8px 14px;min-height:0;border:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>Inspection</div>
+<div class="sidebar-group">Operations</div>
+<button class="nav-item">Dashboard</button>
+<button class="nav-item is-active">Inspections<span class="nav-count">128</span></button>
+<button class="nav-item">Map command</button>
+<button class="nav-item">Findings<span class="nav-count">24</span></button>
+<div class="sidebar-group">Oversight</div>
+<button class="nav-item">Review queue</button>
+<button class="nav-item">Reports</button>
+</div>
+<div class="stack" style="flex:1;gap:16px">
+<nav class="breadcrumb"><a href="#">Inspections</a><span class="sep">/</span><a href="#">Register</a><span class="sep">/</span><span style="color:var(--text-secondary)">INS-2026-004821</span></nav>
+<div class="tabs"><button class="tab is-active">Details</button><button class="tab">Checklist</button><button class="tab">Findings<span class="tab-count">4</span></button><button class="tab">Evidence<span class="tab-count">12</span></button><button class="tab">History</button></div>
+<ol class="steps" style="list-style:none;margin:0;padding:0"><li class="step is-done"><span class="step-dot">✓</span><span>Details</span></li><span class="step-line"></span><li class="step is-current"><span class="step-dot">2</span><span>Checklist</span></li><span class="step-line"></span><li class="step"><span class="step-dot">3</span><span>Evidence</span></li><span class="step-line"></span><li class="step"><span class="step-dot">4</span><span>Review</span></li></ol>
+<div class="row"><nav class="pagination"><button class="page-btn">‹</button><button class="page-btn">1</button><button class="page-btn is-active">2</button><button class="page-btn">3</button><span class="t-meta">…</span><button class="page-btn">42</button><button class="page-btn">›</button></nav>
+<div class="seg"><button class="seg-opt" aria-pressed="true">EN</button><button class="seg-opt">AR</button></div></div>
+</div>
+</body></html>

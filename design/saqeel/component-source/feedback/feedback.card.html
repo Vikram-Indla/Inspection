@@ -1,0 +1,15 @@
+<!-- @dsCard group="Components" viewport="700x420" subtitle="Alerts, toast, dialog, empty state, skeleton, progress" name="Feedback" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>body{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}</style></head><body>
+<div class="stack" style="gap:8px">
+<div class="alert alert-critical"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0"/></svg><div><div class="alert-title">Critical finding requires escalation</div>Gas leak reported at facility FAC-2291.</div></div>
+<div class="alert alert-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0"/></svg><div><div class="alert-title">3 inspections due tomorrow</div></div></div>
+<div class="alert alert-success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg><div>Checklist section saved.</div></div>
+<div class="toast"><span class="toast-accent" style="background:var(--status-compliant)"></span><div class="grow"><div style="font-weight:600">Inspection submitted</div><div class="t-meta">INS-2026-004821 sent for review</div></div><button class="btn btn-ghost btn-sm btn-icon">✕</button></div>
+</div>
+<div class="stack" style="gap:12px">
+<div class="dialog" style="width:100%;box-shadow:var(--shadow-md)"><div class="dialog-title">Reject inspection?</div><div class="dialog-body">The inspector will be asked to revise and resubmit. A reason is required.</div><div class="dialog-actions"><button class="btn btn-ghost">Cancel</button><button class="btn btn-danger">Reject</button></div></div>
+<div class="empty" style="padding:20px;border:1px solid var(--border-subtle);border-radius:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><div class="empty-title">No inspections match these filters</div><p>Try widening the date range.</p></div>
+<div class="stack" style="gap:6px"><span class="skeleton" style="width:70%;height:13px;display:block"></span><span class="skeleton" style="width:50%;height:13px;display:block"></span></div>
+<div class="progress"><i style="width:64%"></i></div>
+</div>
+</body></html>

@@ -1,0 +1,22 @@
+<!-- @dsCard group="Components" viewport="700x430" subtitle="Inspection cards, findings, checklist, score, review" name="Inspection components" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>body{padding:14px;display:grid;grid-template-columns:1fr 1.15fr;gap:12px;align-items:start}</style></head><body>
+<div class="stack" style="gap:10px">
+<div class="panel" style="padding:12px 14px;display:flex;flex-direction:column;gap:6px"><span class="row" style="justify-content:space-between"><span class="id-code">INS-2026-004821</span><span class="badge badge-pending"><i class="dot"></i>Pending</span></span><span style="font-weight:600">Al Noor Food Processing</span><span class="row t-meta" style="justify-content:space-between"><span>Food safety · A. Al-Zahrani</span><span style="color:var(--status-warning-text);font-weight:500">Due 24 Jul</span></span></div>
+<div class="row" style="gap:12px"><svg width="56" height="56"><circle cx="28" cy="28" r="24" fill="none" stroke="var(--surface-sunken)" stroke-width="5"/><circle cx="28" cy="28" r="24" fill="none" stroke="var(--status-warning)" stroke-width="5" stroke-dasharray="150.8" stroke-dashoffset="33" transform="rotate(-90 28 28)"/><text x="50%" y="54%" text-anchor="middle" style="font:600 13px var(--font-body);fill:var(--text-primary)">78%</text></svg><div class="stack" style="gap:3px"><span class="t-label">Compliance</span><span class="badge badge-warning"><i class="dot"></i>Needs attention</span></div></div>
+<div class="stack" style="gap:6px;padding:10px;border:1px solid var(--border-subtle);border-radius:4px">
+<div class="row"><span class="t-label" style="min-width:24">4.2</span><span class="t-compact" style="font-weight:500">Emergency exits unobstructed and signposted</span></div>
+<div class="row" style="padding-inline-start:24px"><div class="seg"><button class="seg-opt">Compliant</button><button class="seg-opt" aria-pressed="true" style="background:var(--status-critical-soft);color:var(--status-critical-text)">Violation</button><button class="seg-opt">N/A</button></div><button class="btn btn-ghost btn-sm">Evidence (3)</button></div>
+</div>
+</div>
+<div class="stack" style="gap:10px">
+<div class="panel" style="border-inline-start:3px solid var(--status-critical)">
+<div class="panel-header" style="padding-block:8px"><span class="row"><span class="t-label" style="text-transform:uppercase;letter-spacing:.05em">Violation</span><span class="id-code">VIO-2026-0122</span></span>
+<span class="row" style="gap:6px;font-size:12px;font-weight:500;color:var(--status-critical-text)"><span style="display:inline-flex;gap:2px;align-items:flex-end"><i style="width:4px;height:10px;background:var(--status-critical)"></i><i style="width:4px;height:13px;background:var(--status-critical)"></i><i style="width:4px;height:16px;background:var(--status-critical)"></i></span>Critical</span></div>
+<div class="panel-body stack" style="gap:6px;padding-block:10px"><div style="font-weight:600">Blocked emergency exit — warehouse B</div><div class="t-caption">Requirement: Civil Defense Code 4.2.1</div><div class="row t-meta" style="gap:16px"><span>Due 28 Jul</span><span>3 evidence items</span></div><div class="row"><button class="btn btn-secondary btn-sm">Add corrective action</button></div></div>
+</div>
+<div class="panel"><div class="panel-header"><span class="panel-title">Supervisor review</span></div><div class="panel-body stack" style="gap:10px">
+<div class="field"><label>Decision note<span class="req">*</span></label><textarea class="input" rows="2" placeholder="Required for rejection or escalation"></textarea></div>
+<div class="row" style="justify-content:flex-end"><button class="btn btn-secondary">Escalate</button><button class="btn btn-danger" disabled>Reject</button><button class="btn btn-primary">Approve</button></div>
+</div></div>
+</div>
+</body></html>

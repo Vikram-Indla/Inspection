@@ -1,0 +1,53 @@
+{
+  "surface": {
+    "canvas": "#f4f3f0",
+    "primary": "#ffffff",
+    "secondary": "#faf9f7",
+    "sunken": "#edece8",
+    "raised": "#ffffff",
+    "overlay": "rgba(21,23,26,0.44)"
+  },
+  "navigation": {
+    "surface": "#1f2328",
+    "hover": "#2a2f35",
+    "selected": "#17352b",
+    "border": "#32373d",
+    "text": "#b9bec4",
+    "textActive": "#f5f6f7",
+    "indicator": "#35b285"
+  },
+  "text": {
+    "primary": "#1a1d1f",
+    "secondary": "#4c5258",
+    "muted": "#71787e",
+    "disabled": "#a4aab0",
+    "inverse": "#f5f6f7",
+    "onAction": "#ffffff",
+    "link": "#0e5b43"
+  },
+  "border": {
+    "subtle": "#e6e3dd",
+    "strong": "#c8c4bc",
+    "input": "#b4b0a8"
+  },
+  "focus": {
+    "ring": "#12674c"
+  },
+  "action": {
+    "primary": "#115c44",
+    "primaryHover": "#0d4c38",
+    "primaryPressed": "#0a3e2d",
+    "soft": "#e3efe9",
+    "softHover": "#d4e7dd",
+    "softText": "#0b4a36",
+    "danger": "#b3261e",
+    "dangerHover": "#991f18",
+    "dangerPressed": "#801913"
+  },
+  "shadow": {
+    "xs": "0 1px 2px rgba(26,29,31,0.06)",
+    "sm": "0 1px 3px rgba(26,29,31,0.10)",
+    "md": "0 4px 14px rgba(26,29,31,0.13)",
+    "lg": "0 12px 32px rgba(26,29,31,0.18)"
+  }
+}

@@ -1,0 +1,2 @@
+# IPAD_RTL_SPECIFICATION
+Identical to ../patterns/RTL_SPECIFICATION.md (logical properties everywhere). iPad-specific checks: bottom drawer handles centred (no flip); field taskbar action order mirrors; camera/capture icons don't flip; Arabic 15px body at field density keeps 1.65 leading; keyboard avoidance with Arabic input verified.

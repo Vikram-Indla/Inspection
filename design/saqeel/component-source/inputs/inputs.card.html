@@ -1,0 +1,15 @@
+<!-- @dsCard group="Components" viewport="700x430" subtitle="Fields, selects, choices, switch, segmented, upload" name="Inputs" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>body{padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:start}</style></head><body>
+<div class="field"><label>Facility name<span class="req">*</span></label><input class="input" placeholder="Enter facility name"><span class="field-help">As registered with the municipality</span></div>
+<div class="field is-error"><label>Permit number<span class="req">*</span></label><input class="input input-mono" value="PRM-88"><span class="field-error">Permit number must be 8 digits</span></div>
+<div class="field"><label>Region</label><select class="select"><option>Riyadh</option><option>Makkah</option></select></div>
+<div class="field"><label>Scheduled date</label><input class="input" type="date" value="2026-07-24"></div>
+<div class="field"><label>Search</label><span class="input-affix"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="Search register"></span></div>
+<div class="field"><label>Read-only</label><input class="input" readonly value="Al Olaya district"></div>
+<div class="stack" style="gap:8px"><label class="check"><input type="checkbox" checked><span>Include closed</span></label><label class="check"><input type="checkbox" id="ind"><span>Partial selection</span></label><label class="check"><input type="checkbox" disabled><span>Disabled</span></label></div>
+<div class="stack" style="gap:8px"><label class="radio"><input type="radio" name="s" checked><span>Critical</span></label><label class="radio"><input type="radio" name="s"><span>Major</span></label><label class="radio"><input type="radio" name="s"><span>Minor</span></label></div>
+<div class="stack" style="gap:10px"><label class="switch"><input type="checkbox" role="switch" checked><span>Show vehicles</span></label><div class="seg"><button class="seg-opt" aria-pressed="true">List</button><button class="seg-opt">Map</button></div></div>
+<div class="field" style="grid-column:span 2"><label>Notes</label><textarea class="input" rows="2" placeholder="Describe the finding"></textarea></div>
+<div style="border:1px dashed var(--border-strong);border-radius:4px;background:var(--surface-secondary);padding:14px;text-align:center" class="t-caption">Add evidence — photos or PDF</div>
+<script>document.getElementById('ind').indeterminate=true</script>
+</body></html>

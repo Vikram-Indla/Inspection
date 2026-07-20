@@ -1,0 +1,7 @@
+# INSPECTION_PATTERNS — SAQEEL signature language
+Five patterns make this system original to SAQEEL (all canonical components, not guidance):
+1. **Geospatial Command Workspace** (signature/GeoWorkspace) — the composed operational map surface. See MAP_SYSTEM_SPECIFICATION.md.
+2. **Inspection Status Spine** (signature/StatusSpine) — 13-stage lifecycle (assignment…closed ± onhold/reopened) as one restrained emerald line with done/current/pending/blocked/overdue/reopened states, timestamps and actors. Vertical (detail/review), horizontal (headers), compact (cards). Replaces badge-cluttered progressions.
+3. **Evidence Stack** (signature/EvidenceStack) — evidence is an object with provenance: media + capture time + coordinates + inspector + linked finding + verification status + audit line. Variants list/grid/compact/detailed.
+4. **Operational Exception Rail** (signature/ExceptionRail) — one severity language: shape (▲ critical ◆ major ■ warning ○ pending ▨ on-hold ● compliant) + colour + label, plus the 4px RailCell table edge. Used identically in tables, markers, cards, timelines, charts, drawers, forms and summaries.
+5. **Field-to-Command Continuity** — the same inspection object (mono ID, status vocabulary, severity shapes, evidence treatment) renders recognisably across tablet form → map panel → register row → detail → review → dashboard. Verify with: tablet.html, map-command.html, register.html, detail.html, review.html, dashboard.html (all show INS-2026-004821 / -004819).

@@ -1,0 +1,2 @@
+# IPAD_EVIDENCE_SYSTEM
+Capture-first: FileUpload plate opens camera; each capture lands in EvidenceStack compact grid with auto meta (time, coords, inspector, device provenance); caption entry optional inline; verification is a supervisor (desktop) task — iPad shows verification state read-only; offline captures show pending SyncIndicator per item.

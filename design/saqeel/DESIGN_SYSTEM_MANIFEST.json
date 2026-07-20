@@ -1,0 +1,73 @@
+{
+  "name": "SAQEEL Inspection Design System",
+  "nameArabic": "نظام تصميم صقيل للتفتيش",
+  "version": "1.0",
+  "exported": "2026-07-20T19:06:40.613Z",
+  "sourceProject": "SAQEEL Inspection Design System (Claude Design)",
+  "designSyncReference": "Claude Design project 'Inspection identity redesign' — set file type to Design System and publish; Claude Code consumes via /design-sync against the published system",
+  "publishedReference": "pending user publish action (Share → File type: Design System → publish to organisation)",
+  "folders": [
+    "foundations",
+    "tokens",
+    "tokens-css",
+    "components",
+    "component-source",
+    "patterns",
+    "ipad",
+    "screens/html",
+    "screens/png",
+    "handoff",
+    "assets"
+  ],
+  "componentFamilies": {
+    "actions": 3,
+    "inputs": 12,
+    "navigation": 11,
+    "feedback": 10,
+    "data": 8,
+    "grid": 1,
+    "inspection": 9,
+    "map": 3,
+    "signature": 4
+  },
+  "componentsTotal": 61,
+  "screensHtml": 18,
+  "screensPng": 13,
+  "themes": [
+    "light",
+    "dark (data-theme)"
+  ],
+  "directions": [
+    "ltr",
+    "rtl (dir=rtl, Arabic-first stack)"
+  ],
+  "viewports": [
+    "1440x900",
+    "1280x800",
+    "1024x768",
+    "768x1024"
+  ],
+  "ipadOrientations": [
+    "landscape",
+    "portrait"
+  ],
+  "densityProfiles": [
+    "comfortable",
+    "compact",
+    "field"
+  ],
+  "fonts": [
+    "IBM Plex Sans",
+    "IBM Plex Sans Arabic",
+    "IBM Plex Mono (identifiers only)"
+  ],
+  "tokenVersion": "1.0",
+  "statusRoles": 10,
+  "knownLimitations": [
+    "no approved logo asset (placeholder wordmark)",
+    "live map engine not re-tested (chrome-only design)",
+    "Hijri/Arabic-Indic numerals pending regulatory decision",
+    "forms/palette non-default modes token-structural (no dedicated screens)"
+  ],
+  "astryxTrace": "none — see handoff/ASTRYX_MIGRATION_TEMPLATE.md zero-trace gate"
+}
