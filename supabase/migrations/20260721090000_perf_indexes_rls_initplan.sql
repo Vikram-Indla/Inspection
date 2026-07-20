@@ -23,8 +23,6 @@ create index if not exists visits_planning_status_idx
   on public.visits (planning_status);
 create index if not exists checklist_responses_inspection_idx
   on public.checklist_responses (inspection_id);
-create index if not exists violations_inspection_idx
-  on public.violations (inspection_id);
 create index if not exists factories_region_idx
   on public.factories (region);
 create index if not exists assignments_inspector_idx
