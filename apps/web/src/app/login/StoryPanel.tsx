@@ -14,7 +14,9 @@ import { STORY_SCENE_ORDER, type AtlasStageId } from "./saudi-atlas-locations";
 import { createAtlasTimeline, type AtlasTimeline } from "./saudi-atlas-motion";
 import type { DossierStrings } from "./SaudiAtlasDossier";
 
-const Atlas = dynamic(() => import("./SaudiIndustrialAtlas"), { ssr: false });
+// Stage 1 of the 3D atlas rebuild. The raster atlas (SaudiIndustrialAtlas)
+// remains in the tree as the reduced-data/offline fallback path.
+const Atlas = dynamic(() => import("./atlas3d/SaudiAtlas3D"), { ssr: false });
 
 export type StoryStrings = {
   title: string;
