@@ -26,7 +26,7 @@ export default function FactorySpatialMap({ officialLat, officialLng, geofenceRa
     })),
   ];
   return (
-    <div className="ax-stack" style={{ gap: 8 }}>
+    <div className="stack" style={{ gap: 8 }}>
       <div style={{ blockSize: 280, borderRadius: "var(--ax-radius-standard)", overflow: "hidden", border: "1px solid var(--ax-color-border)" }} dir="ltr">
         <GeoMap center={[officialLat, officialLng]} zoom={14} markers={markers} height="100%" />
       </div>

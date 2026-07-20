@@ -186,7 +186,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
           ) : null}
 
           {/* Tamper-evident Scope Rail — keyboard disclosure list, non-color glyphs. */}
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlock: "var(--ax-space-200)" }} aria-label={strings.heading}>
+          <div className="stack" style={{ gap: "var(--ax-space-100)", marginBlock: "var(--ax-space-200)" }} aria-label={strings.heading}>
             {categories.map(cat => {
               const items = rows.filter(r => r.category === cat && (cat === "unchanged" ? true : r.changed));
               if (cat !== "unchanged" && items.length === 0 && counts[cat] === 0 && !(cat === "unavailable" && !scopeKnown)) return null;

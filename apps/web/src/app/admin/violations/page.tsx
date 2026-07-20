@@ -245,7 +245,7 @@ export default async function Violations({
     return (
       <details className="ax-caption">
         <summary><span aria-hidden="true">✓</span> {label}: <strong>{events.length}</strong></summary>
-        <ol className="ax-stack" style={{ gap: "var(--ax-space-050)", marginBlockEnd: 0 }}>
+        <ol className="stack" style={{ gap: "var(--ax-space-050)", marginBlockEnd: 0 }}>
           {events.map(event => (
             <li key={event.id}>
               <span className="ax-numeric">{event.action}</span>{" · "}
@@ -318,10 +318,10 @@ export default async function Violations({
         /* ============ CD-011 · Penalty mapping mode ============ */
         <>
           {/* Signature — Mapping Validation Lens: exactly the four proven checks. */}
-          <section className="ax-surface ax-stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+          <section className="ax-surface stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
             <h3 id="pen-lens-h" style={{ margin: 0 }}>{t("admin.viol.lens.title", "Mapping Validation Lens")}</h3>
             <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping validates legal basis, lifecycle, type, optional amount, timing, repeat policy, and an optional immutable template reference. No value is inferred or invented.")}</p>
-            <ul className="ax-stack" style={{ gap: "var(--ax-space-050)", margin: 0, paddingInlineStart: "var(--ax-space-200)" }}>
+            <ul className="stack" style={{ gap: "var(--ax-space-050)", margin: 0, paddingInlineStart: "var(--ax-space-200)" }}>
               <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c1", "The violation is not already mapped (one mapping per violation).")}</li>
               <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c2", "A second mapping is rejected by the database unique constraint.")}</li>
               <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c3", "Legal basis is present before create (never invented).")}</li>
@@ -346,7 +346,7 @@ export default async function Violations({
             return (
               <div key={v.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
                 {/* Column 1 — violation */}
-                <div className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 200, flex: "1 1 200px" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 200, flex: "1 1 200px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.violation", "Violation")}</span>
                   <strong><span className="ax-numeric">{v.code}</span> — {v.title}</strong>
                   <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
@@ -355,7 +355,7 @@ export default async function Violations({
                   </div>
                 </div>
                 {/* Column 2 — lens status */}
-                <div className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 180, flex: "1 1 180px" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 180, flex: "1 1 180px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.lens", "Validation lens")}</span>
                   {activeMapping
                     ? <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {t("admin.viol.lens.mapped", "one active mapping; one-to-one satisfied")}</span>
@@ -364,10 +364,10 @@ export default async function Violations({
                     : <span className="ax-lozenge ax-lozenge--warning" role="status"><span aria-hidden="true">○</span> {t("admin.viol.lens.unmapped", "no mapping yet — one is required")}</span>}
                 </div>
                 {/* Column 3 — mapping record or create form */}
-                <div className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 260, flex: "2 1 260px" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 260, flex: "2 1 260px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.record", "Penalty mapping record")}</span>
                   {pm ? (
-                    <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+                    <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                       <span>{t("admin.viol.penalty", "Penalty")} <strong className="ax-numeric">{pm.penalty_ref}</strong></span>
                       <span className="ax-caption">{t("admin.viol.map.legalBasis", "Legal basis")}: <bdi dir="ltr">{pm.legal_basis}</bdi></span>
                       <span className="ax-caption">

@@ -449,7 +449,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
           <section className="ax-surface cd-side cd-room" aria-label={t.room}>
             <div className="cd-sectionhead"><h3>{t.room}</h3><span className="cd-tag cd-tag--blocked">{t.roomTag}</span></div>
             {simVideo ? (
-              <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+              <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
                 <span className="ax-lozenge ax-lozenge--warning" role="status">{t.simulatedSession}</span>
                 <div className="cd-roombox" role="img" aria-label={simVideo.state}>
                   <span className="cd-roombox__glyph" aria-hidden="true">{simVideo.state === "connected" ? "●" : simVideo.state === "degraded" ? "▲" : "✕"}</span>

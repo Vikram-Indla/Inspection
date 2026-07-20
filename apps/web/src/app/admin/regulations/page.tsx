@@ -260,9 +260,9 @@ export default async function Regulations({
         ) : (
           <>
             {/* Dossier header */}
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-dossier-h">
+            <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-dossier-h">
               <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
-                <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                   <h2 id="reg-dossier-h" style={{ margin: 0 }}>
                     <span className="ax-numeric"><bdi dir="ltr">{reg.code}</bdi></span> — {reg.title}
                   </h2>
@@ -283,12 +283,12 @@ export default async function Regulations({
               </p>
             </section>
 
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-attachments-h">
+            <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-attachments-h">
               <h3 id="reg-attachments-h" style={{ margin: 0 }}>{t("admin.reg.attachments.heading", "Source attachments")}</h3>
               {attachments.length === 0 ? (
                 <p className="ax-caption" role="status">{t("admin.reg.attachments.empty", "No attachment metadata recorded — verified zero.")}</p>
               ) : (
-                <ul className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
+                <ul className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                   {attachments.map(a => <li key={a.id}>
                     {attachmentUrls[a.id] ? <a className="ax-link" href={attachmentUrls[a.id]} target="_blank" rel="noreferrer"><strong>{a.file_name}</strong></a> : <strong>{a.file_name}</strong>}
                     {a.media_type ? ` · ${a.media_type}` : ""}{a.sha256 ? <> · <bdi dir="ltr" className="ax-numeric">SHA-256 {a.sha256.slice(0, 12)}…</bdi></> : null}
@@ -300,7 +300,7 @@ export default async function Regulations({
             </section>
 
             {/* Clause navigator + clause→item dependency rail */}
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-clauses-h">
+            <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-clauses-h">
               <h3 id="reg-clauses-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.clauses.heading", "Clauses & mapped inspection items")}</h3>
               {clauses.length === 0 ? (
                 // S03 EMPTY — no clauses: invite, never "complete/mapped"
@@ -357,7 +357,7 @@ export default async function Regulations({
 
             {/* Writer actions — proven legs only */}
             {isWriter ? (
-              <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }} aria-labelledby="reg-actions-h">
+              <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }} aria-labelledby="reg-actions-h">
                 <h3 id="reg-actions-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.actions.heading", "Author & publish")}</h3>
 
                 {reg.status === "draft" ? <>
@@ -367,7 +367,7 @@ export default async function Regulations({
 
                 {/* S04: the action performs the same mapped-clause validation shown here. */}
                 {reg.status === "draft" ? (
-                  <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+                  <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
                     <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
                       <PublishRegulation regulationId={reg.id} strings={strings} />
                       <span className="ax-caption">{t("admin.reg.r1.detail.publish.direct", "Publish validates that at least one clause exists and every clause maps to an inspection item. Maker-checker rejects self-approval, and a successful transition is audited.")}</span>
@@ -391,17 +391,17 @@ export default async function Regulations({
               </section>
             ) : null}
 
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-audit-h">
+            <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-audit-h">
               <h3 id="reg-audit-h" style={{ margin: 0 }}>{t("admin.reg.audit.heading", "Configuration audit timeline")}</h3>
               {!isWriter ? <p className="ax-caption">{t("admin.reg.audit.readonly", "The scoped author timeline is available to configuration writers; this read-only persona is not granted that RPC.")}</p>
                 : auditError ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.reg.audit.error", "The audit timeline is unavailable. Reload to retry; no empty-history claim is made.")}</div>
                 : auditEvents.length === 0 ? <p className="ax-caption" role="status">{t("admin.reg.audit.empty", "No scoped audit events returned — verified zero.")}</p>
-                : <ol className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
+                : <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </section>
 
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-lineage-h">
+            <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-lineage-h">
               <h3 id="reg-lineage-h" style={{ margin: 0 }}>{t("admin.reg.lineage.heading", "Version lineage")}</h3>
-              <ol className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
+              <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                 {lineage.map(version => <li key={version.id}>
                   <a className="ax-link" href={`/admin/regulations?id=${encodeURIComponent(version.id)}`}><bdi dir="ltr" className="ax-numeric">{version.version_label}</bdi></a>
                   {" · "}{version.status}{version.effective_from ? <> · <bdi dir="ltr" className="ax-numeric">{version.effective_from.slice(0, 10)}</bdi></> : null}

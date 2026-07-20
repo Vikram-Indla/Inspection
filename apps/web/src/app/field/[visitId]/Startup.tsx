@@ -678,10 +678,10 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     ? Math.max(0, Math.round(((new Date(arrivalAt ?? new Date().toISOString()).getTime() - new Date(journeyStartedAt).getTime()) / 60000)))
     : null;
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="field-device-readiness">
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.readiness}</h4>
-        <div className="ax-stack" style={{ gap: 8 }}>
+        <div className="stack" style={{ gap: 8 }}>
           <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {new Date(visit.window_start).toISOString().slice(0,16).replace("T"," ")} → {new Date(visit.window_end).toISOString().slice(11,16)}</div>
           <div style={{ display: "flex", gap: 8 }}>{cached ? "✓" : "○"} {strings.packageLine} {visit.package_versions.packages.code} · {visit.package_versions.version_label} {cached && strings.packageCached}</div>
           <div style={{ display: "flex", gap: 8 }}>{journeyId ? "✓" : "○"} {strings.journeySession}</div>
@@ -702,7 +702,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.mapsCaption}</p>
         {/* F3 · M04-026 — journey progress % (travelled vs initial distance from first fix) */}
         {journeyId && progress != null && (
-          <div className="ax-stack" style={{ gap: 4, marginBlockStart: "var(--ax-space-200)" }}>
+          <div className="stack" style={{ gap: 4, marginBlockStart: "var(--ax-space-200)" }}>
             <div className="ax-row" style={{ justifyContent: "space-between" }}>
               <span className="ax-caption">{strings.progressLabel}</span>
               <span className="ax-caption ax-numeric">{progress.toFixed(0)}%</span>
@@ -816,7 +816,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             <span className="ax-badge">{strings.lblWindow}: {journeyDurationM == null ? "—" : `${journeyDurationM} min`}</span>
             <span className="ax-badge">{Math.round(distanceTravelledM)} m travelled</span>
           </div>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+          <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
             <details open>
               <summary style={{ cursor: "pointer", font: "var(--ax-text-body-strong)" }}>{strings.cardsFactoryTitle}</summary>
               <dl className="ax-detail-grid" style={{ marginBlockStart: "var(--ax-space-150)" }}>
@@ -847,7 +847,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               <h5 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.arrivalEvidenceHeading}</h5>
               <p className="ax-caption">{strings.arrivalEvidenceCaption}</p>
               {arrivalEvidenceSaved ? <span className="ax-lozenge ax-lozenge--success">{strings.arrivalSaved}</span> : (
-                <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
                   <label className="ax-field"><span className="ax-field__label">{strings.arrivalPhoto}</span>
                     <input className="ax-input" type="file" accept="image/*" onChange={e => setArrivalFile(e.target.files?.[0] ?? null)} />
                   </label>
@@ -865,7 +865,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {checkedIn && !existing && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.prestartHeading}</h4>
-          <div className="ax-stack" style={{ gap: 8 }}>
+          <div className="stack" style={{ gap: 8 }}>
             <label className="ax-row" style={{ gap: 8, alignItems: "center" }}>
               <input type="checkbox" checked={repPresent} onChange={e => setRepPresent(e.target.checked)} />
               <span>{strings.prestartRep}</span>
@@ -905,7 +905,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         ) : reasons.length === 0 ? (
           <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{strings.cancelReasonsMissing}</p>
         ) : (
-          <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+          <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
             <label className="ax-field"><span className="ax-field__label">{strings.cancelSelectReason}</span>
               <select className="ax-select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
                 <option value="">\u2014</option>

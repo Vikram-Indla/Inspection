@@ -97,7 +97,7 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
   const label = (v: string) => enumLabels[v] ?? v.replace(/_/g, " ");
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
       {err && <div className="ax-banner ax-banner--critical" role="alert"><div>{err}</div></div>}
       {rows.length === 0 ? (
         <EmptyState glyph="🛰" title={s.emptyTitle} body={s.emptyDesc} bare />

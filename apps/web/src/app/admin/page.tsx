@@ -102,14 +102,14 @@ export default async function AdminHome() {
     const c = r.count ?? 0;
     if (c === 0) {
       return (
-        <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+        <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
           {chip("verifiedZero")}
           {emptyHint ? <span className="ax-caption">{emptyHint}</span> : null}
         </div>
       );
     }
     return (
-      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
         {chip("verified")} {num(c, unitEn)}
       </div>
     );
@@ -171,7 +171,7 @@ export default async function AdminHome() {
         </div>
       ) : null}
 
-      <section className="ax-surface ax-stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="ax-surface stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-spine-h" style={{ margin: 0 }}>{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</h3>
         <div className="ax-tablewrap">
           <table className="ax-table">
@@ -197,7 +197,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyPackages}</th>
                 <td>
-                  <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+                  <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
                     {ok(pkgsRes) ? (
                       <span>{chip("verified")} {num(pkgsRes.count ?? 0, "published")}</span>
                     ) : chip("unavailable")}
@@ -225,9 +225,9 @@ export default async function AdminHome() {
                   {!ok(enginesRes) ? chip("unavailable")
                     : engines.length === 0 ? chip("verifiedZero")
                     : (
-                      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+                      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                         <span>{chip("verified")} {num(engines.length, "domains")}</span>
-                        <ul className="ax-stack" style={{ gap: "2px", listStyle: "none", margin: 0, padding: 0 }}>
+                        <ul className="stack" style={{ gap: "2px", listStyle: "none", margin: 0, padding: 0 }}>
                           {engines.map(e => (
                             <li key={e.engine} className="ax-caption">
                               <bdi dir="ltr">{e.engine}</bdi>
@@ -258,7 +258,7 @@ export default async function AdminHome() {
         </div>
       </section>
 
-      <nav className="ax-surface ax-stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--ax-space-300)" }}>
+      <nav className="ax-surface stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-links-h" style={{ margin: 0 }}>
           {t("admin.overview.r2.linkOnly.heading", "Families this gateway reads no data for today — links only:")}
         </h3>
@@ -271,7 +271,7 @@ export default async function AdminHome() {
         </div>
       </nav>
 
-      <section className="ax-surface ax-permission ax-stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="ax-surface ax-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-scope-h" style={{ margin: 0 }}>
           {fill(t("admin.overview.r2.scope.heading", "Your scope — {role}"), { role: roleLabel })}
         </h3>

@@ -19,7 +19,7 @@ export default function CsvImportForm() {
   }
 
   return (
-    <form action={action} className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
+    <form action={action} className="stack" style={{ gap: "var(--ax-space-200)" }}>
       <input type="hidden" name="schema_version" value={SCHEMA_VERSION} />
       <label className="ax-field" style={{ maxInlineSize: "none" }}>
         <span className="ax-field__label">CSV file</span>

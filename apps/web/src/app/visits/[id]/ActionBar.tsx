@@ -108,7 +108,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
       {(scheduleBlocked || reassignBlocked) && (
         <div className="ax-actionzone">
           <p className="ax-actionzone__label ax-caption">{strings.zoneBlocked}</p>
-          <ul className="ax-stack" style={{ gap: "var(--ax-space-100)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
+          <ul className="stack" style={{ gap: "var(--ax-space-100)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
             {scheduleBlocked && (
               <li><span className="ax-lozenge ax-lozenge--warning">{strings.cancelBtn} · {strings.rescheduleBtn} · {strings.visitTypeBtn}</span>{" "}
                 <span className="ax-caption">{strings.scheduleLockedWhy.replace("{state}", opStateLabel)}</span></li>

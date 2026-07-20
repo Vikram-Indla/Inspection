@@ -10,7 +10,7 @@ export default function Mvp3ActionForm({ action, children, submitLabel }: {
 }) {
   const [state, formAction, pending] = useActionState(action, { ok: false, message: "" });
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-100)" }}>
       {children}
       <button className="ax-btn ax-btn--secondary" type="submit" disabled={pending}>
         {pending ? "Working…" : submitLabel}

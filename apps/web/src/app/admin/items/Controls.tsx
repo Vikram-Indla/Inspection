@@ -142,9 +142,9 @@ export function EditItemForm({ item, clauses, strings: s }: {
 }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(updateItem, {});
   return (
-    <details className="ax-stack">
+    <details className="stack">
       <summary className="ax-btn ax-btn--subtle">Edit · v{item.version}</summary>
-      <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 280 }}>
+      <form action={formAction} className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 280 }}>
         <input type="hidden" name="item_id" value={item.id} />
         <label className="ax-field"><span className="ax-field__label">{s.title}</span><input className="ax-input" name="title" defaultValue={item.title} required /></label>
         <label className="ax-field"><span className="ax-field__label">{s.clause}</span><select className="ax-select" name="clause_id" defaultValue={item.clauseId} required>{clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
@@ -238,7 +238,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
   const item = items.find(i => i.id === selected) ?? items[0];
   const label = (r: string) => s.responseLabels[r] ?? r.replace(/_/g, " ");
   return (
-    <div className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }}>
+    <div className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }}>
       <div className="ax-field" style={{ maxInlineSize: 360 }}>
         <label className="ax-field__label" htmlFor={selectId}>{s.select}</label>
         <select id={selectId} className="ax-select" value={item.id} onChange={e => setSelected(e.target.value)}>
@@ -261,7 +261,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
         </div>
         {!item.active && <p className="ax-caption">{s.deactivated}</p>}
 
-        <div className="ax-stack" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
+        <div className="stack" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
           <div>
             <p className="ax-overline">{s.responsesLabel}</p>
             <div className="ax-row" role="group" aria-label={s.responsesLabel} style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>

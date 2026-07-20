@@ -39,7 +39,7 @@ function PhotoAffordance({ inputId, label, helper }: { inputId: string; label: s
   const helperId = `${inputId}-helper`;
   const [chosen, setChosen] = useState<string | null>(null);
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-050)", marginBlockStart: "var(--ax-space-100)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-050)", marginBlockStart: "var(--ax-space-100)" }}>
       {/* Wrapping <label> = implicit control association (accessible); it is NOT
           className="ax-field__label" so the a11y-form-label release guard's
           htmlFor requirement does not apply to this button-style file control. */}
@@ -100,7 +100,7 @@ export default function GatedRepeaterSection({
 
       {/* Yes/No gate question (VR-037 / VR-039). role=group + aria-labelledby
           names the toggle for assistive tech; mirrors the Workspace ctx toggle. */}
-      <div role="group" aria-labelledby={gateLabelId} className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+      <div role="group" aria-labelledby={gateLabelId} className="stack" style={{ gap: "var(--ax-space-100)" }}>
         <p id={gateLabelId} className="ax-field__label">{gate}</p>
         <div className="ax-segmented" style={{ alignSelf: "flex-start" }}>
           <button type="button" aria-pressed={gateAnswer === "yes"} onClick={() => setGateAnswer("yes")}>{gateYes}</button>
@@ -117,7 +117,7 @@ export default function GatedRepeaterSection({
           addLabel={addLabel}
           removeLabel={removeLabel}
           renderItem={(_item, index) => (
-            <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+            <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
               {itemHeader && (
                 // Captured header template; swap the captured numeral for the real
                 // 1-based row index (numeric formatting over the captured string —

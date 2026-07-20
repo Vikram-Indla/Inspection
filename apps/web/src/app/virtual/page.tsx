@@ -56,7 +56,7 @@ export default async function VirtualList() {
           <h4>{t("virtual.list.scheduleHeading", "Schedule a session (M05-002)")}</h4>
           <p className="ax-caption">{t("virtual.list.scheduleHint", "Published virtual visits without a session. Scheduling creates the room, binds participants and notifies the inspector; the factory representative row records its SMS delivery state honestly (provider adapter pending).")}</p>
           {unscheduled.map(v => (
-            <div key={v.id} className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+            <div key={v.id} className="stack" style={{ gap: "var(--ax-space-100)" }}>
               <strong>{(v.factories as unknown as { name: string } | null)?.name}{" "}
                 <span className="ax-caption ax-numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</span></strong>
               <ScheduleForm visitId={v.id} strings={scheduleStrings} />

@@ -12,7 +12,7 @@ export default function NotificationPrefsForm({
 }: { push: boolean; sms: boolean; email: boolean; l: PrefsLabels }) {
   const [state, action, pending] = useActionState<ProfileResult, FormData>(saveNotificationPreferences, {});
   return (
-    <form action={action} className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+    <form action={action} className="stack" style={{ gap: "var(--ax-space-150)" }}>
       <p className="ax-caption" style={{ margin: 0 }}>{l.inappNote}</p>
       <label className="ax-choice"><input type="checkbox" name="push_enabled" defaultChecked={push} /> {l.push}</label>
       <label className="ax-choice"><input type="checkbox" name="sms_enabled" defaultChecked={sms} /> {l.sms}</label>

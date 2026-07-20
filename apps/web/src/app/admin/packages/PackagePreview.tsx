@@ -53,7 +53,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
   const formByKey = Object.fromEntries(actionForms.map(f => [f.key, f]));
 
   return (
-    <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <div className="ax-row">
         <button type="button" className="ax-btn ax-btn--secondary" aria-expanded={open} onClick={() => setOpen(o => !o)}>
           {open ? s.close : s.open}
@@ -71,7 +71,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
           {sections.map(sec => {
             const codes = sec.items ?? [];
             return (
-              <section key={sec.key} className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+              <section key={sec.key} className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
                 <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
                   <h4 style={{ font: "var(--ax-text-heading-xs)" }}>{sec.title}</h4>
                   {sec.mandatory && <span className="ax-lozenge ax-lozenge--critical">{s.sectionMandatory}</span>}

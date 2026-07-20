@@ -92,7 +92,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   };
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
       {invalidDropped > 0 && (
         <div className="ax-banner ax-banner--warning" role="alertdialog" aria-label={strings.invalidTitle}>
           <div>

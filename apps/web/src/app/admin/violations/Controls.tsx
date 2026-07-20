@@ -105,9 +105,9 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
     <li><span aria-hidden="true">{ok ? "✓" : "✕"}</span> {ok ? s.pass : s.needsAttention} — {label}</li>
   );
   return (
-    <form ref={formRef} action={formAction} className="ax-stack" aria-label={`${s.mapTo} ${violationCode}`} style={{ gap: "var(--ax-space-150)" }}>
+    <form ref={formRef} action={formAction} className="stack" aria-label={`${s.mapTo} ${violationCode}`} style={{ gap: "var(--ax-space-150)" }}>
       <input type="hidden" name="violation_code_id" value={violationId} />
-      <div className="ax-surface ax-stack" role="status" aria-live="polite" aria-label={s.validationLens} style={{ padding: "var(--ax-space-150)", gap: "var(--ax-space-050)" }}>
+      <div className="ax-surface stack" role="status" aria-live="polite" aria-label={s.validationLens} style={{ padding: "var(--ax-space-150)", gap: "var(--ax-space-050)" }}>
         <strong>{s.validationLens}</strong>
         <ul style={{ margin: 0, paddingInlineStart: "var(--ax-space-250)" }}>
           {check(true, s.checkUnmapped)}

@@ -152,7 +152,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
   );
 
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-300)" }}>
       <input type="hidden" name="resume_visit_plan_id" value={state.resumeId ?? ""} />
 
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>

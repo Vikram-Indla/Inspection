@@ -54,7 +54,7 @@ export default async function ProfileSettings() {
     <Shell current="/profile" title={t("profile.title", "Profile settings")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("profile.badge", "My account")}</span>}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "var(--ax-space-200)" }}>
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-details-h">
+        <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-details-h">
           <h3 id="profile-details-h" style={{ margin: 0 }}>{t("profile.details.heading", "Personal details")}</h3>
           <Row label={t("profile.details.name", "Name")}><bdi dir="ltr">{profile?.full_name ?? "—"}</bdi></Row>
           <Row label={t("profile.details.email", "Email")}><bdi dir="ltr" className="ax-numeric">{profile?.email ?? user.email ?? "—"}</bdi></Row>
@@ -65,7 +65,7 @@ export default async function ProfileSettings() {
           </p>
         </section>
 
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-appearance-h">
+        <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-appearance-h">
           <h3 id="profile-appearance-h" style={{ margin: 0 }}>{t("profile.appearance.heading", "Language & appearance")}</h3>
           <Row label={t("profile.appearance.languageLabel", "Language")}>
             <a className="ax-btn ax-btn--subtle" href={languageHref} lang={locale === "ar" ? "en" : "ar"}>{languageLabel}</a>
@@ -76,7 +76,7 @@ export default async function ProfileSettings() {
           <p className="ax-caption" style={{ margin: 0 }}>{t("profile.appearance.themeNote", "Theme preference is saved to this browser.")}</p>
         </section>
 
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-notif-h">
+        <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-notif-h">
           <h3 id="profile-notif-h" style={{ margin: 0 }}>{t("profile.notif.heading", "Notification preferences")}</h3>
           <NotificationPrefsForm
             push={pref?.push_enabled ?? true}
@@ -103,7 +103,7 @@ export default async function ProfileSettings() {
           }} />
         </section>
 
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-session-h">
+        <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-session-h">
           <h3 id="profile-session-h" style={{ margin: 0 }}>{t("profile.session.heading", "Session & security")}</h3>
           <Row label={t("profile.session.issued", "Session started")}><bdi dir="ltr" className="ax-numeric">{issuedAt ?? "—"}</bdi></Row>
           <Row label={t("profile.session.expires", "Session expires")}><bdi dir="ltr" className="ax-numeric">{expiresAt ?? "—"}</bdi></Row>

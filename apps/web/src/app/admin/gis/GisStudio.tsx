@@ -122,7 +122,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
     `ax-lozenge ${b === "high" ? "ax-lozenge--critical" : b === "medium" ? "ax-lozenge--warning" : b === "low" ? "ax-lozenge--success" : "ax-lozenge--info"}`;
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
       {/* Toolbar — search + filters + result count (RTL mirrors via flex) */}
       <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
         <input
@@ -191,7 +191,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                 <p className="ax-caption">{s.coordsCaption}</p>
               </div>
 
-              <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+              <form action={formAction} className="stack" style={{ gap: "var(--ax-space-150)" }}>
                 <input type="hidden" name="factory_id" value={selected.id} />
                 <div className="ax-field">
                   <label className="ax-field__label" htmlFor="gis-radius">{s.radiusLabel}</label>

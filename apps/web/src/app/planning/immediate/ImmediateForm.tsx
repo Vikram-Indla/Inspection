@@ -180,7 +180,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const mapCenter: [number, number] = locationOk ? [latNum, lngNum] : (factory?.official_lat != null ? [factory.official_lat, factory.official_lng as number] : [23.8859, 45.0792]);
 
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-300)" }}>
       <input type="hidden" name="request_id" value={requestId} />
       <input type="hidden" name="actor_mode" value={actorMode} />
       <input type="hidden" name="locale" value={locale} />

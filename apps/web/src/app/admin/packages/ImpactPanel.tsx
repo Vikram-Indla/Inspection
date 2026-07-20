@@ -58,7 +58,7 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
       <h4 style={{ font: "var(--ax-text-body-strong)", margin: 0 }}>{s.title}</h4>
 
       {/* 1 · in-flight items pinned to prior published versions */}
-      <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <span className="ax-field__label">{s.pinnedTitle}</span>
         {pinned == null ? (
           <p className="ax-caption" role="status"><span aria-hidden="true">⚠ </span>{s.pinnedUnavailable}</p>
@@ -84,7 +84,7 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
       </div>
 
       {/* 2 · other published packages sharing these items */}
-      <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <span className="ax-field__label">{s.refTitle}</span>
         {referencing.length === 0 ? (
           <p className="ax-caption">{s.refNone}</p>
@@ -100,7 +100,7 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
       </div>
 
       {/* 3 · definition diff vs currently-published version */}
-      <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <span className="ax-field__label">{s.diffTitle}</span>
         {(() => {
           if (diff == null) return <p className="ax-caption">{s.diffNoBaseline}</p>;

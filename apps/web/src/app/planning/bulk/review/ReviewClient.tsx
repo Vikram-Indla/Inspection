@@ -216,7 +216,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
         <div className="ax-banner ax-banner--immutable" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
           <div><strong>{s.stagedBanner}</strong><div className="ax-caption">{s.stagedSub}</div></div>
         </div>
-        <div className="ax-stack">{[0, 1, 2, 3].map(i => <div key={i} className="skeleton" style={{ blockSize: 44 }} />)}</div>
+        <div className="stack">{[0, 1, 2, 3].map(i => <div key={i} className="skeleton" style={{ blockSize: 44 }} />)}</div>
         <p className="ax-caption" role="status" style={{ marginBlockStart: "var(--ax-space-200)" }}>{s.loadingNote}</p>
       </div>
     );
@@ -251,7 +251,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
         <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon lock" aria-hidden="true">🔒</div>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
+          <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3>{s.publishingTitle}</h3>
             <p role="status">{s.publishingBody}</p>
             <p className="ax-caption">{s.publishingSub}</p>
@@ -266,7 +266,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
         <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon fail" aria-hidden="true">✕</div>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
+          <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3 tabIndex={-1} ref={failHeadingRef} role="alert">{s.failTitle}</h3>
             <p>{state.error}</p>
             <p className="ax-caption">{s.failSub}</p>
@@ -286,7 +286,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
         <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
           <div className="cd-result__icon ok" aria-hidden="true">✓</div>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
+          <div className="stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
             <h3 tabIndex={-1} ref={successHeadingRef} role="status">{s.successTitle}</h3>
             <p>{s.successBody}</p>
             <div className="cd-resultgrid" style={{ marginBlock: "var(--ax-space-150)" }}>
@@ -388,7 +388,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   const createMark: "ok" | "pending" = committable ? "ok" : "pending";
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-400)" }} id="cd-main">
+    <div className="stack" style={{ gap: "var(--ax-space-400)" }} id="cd-main">
       <a href="#cd-publish" className="ax-link cd-skip">{s.skipToPublish}</a>
       {/* S10 — polite scope-reduction announcement (visually hidden, does not shift layout) */}
       <p className="sr-only" role="status" aria-live="polite">{announce}</p>

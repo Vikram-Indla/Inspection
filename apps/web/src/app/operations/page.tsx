@@ -504,7 +504,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       </div>
 
       <div className="ax-grid-2">
-        <div className="ax-stack">
+        <div className="stack">
           {/* Live monitoring — M08-003 (auto-refresh via server action) */}
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h4>
@@ -580,7 +580,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
         </div>
 
-        <div className="ax-stack">
+        <div className="stack">
           {/* High-risk factory board — M08-006 (ENG-04 output) */}
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.risk.heading", "High-risk factories (M08-006 · ENG-04)")}</h4>

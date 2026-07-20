@@ -10,7 +10,7 @@ export default function DecideForm({ id, strings }: { id: string; strings: Decid
   const [state, formAction, pending] = useActionState<DecideResult, FormData>(decideEnforcementRecommendation, {});
   const [decision, setDecision] = useState<"approved" | "rejected">("approved");
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-150)" }}>
       <input type="hidden" name="id" value={id} />
       <div className="ax-row">
         <label className="ax-choice"><input type="radio" name="decision" value="approved" checked={decision === "approved"} onChange={() => setDecision("approved")} /> {strings.approve}</label>

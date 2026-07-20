@@ -49,16 +49,16 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
   const failedCount = results.filter(r => r.status === "failed").length;
 
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-300)" }}>
       <input type="hidden" name="request_id" value={requestId} />
 
-      <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }}>
         <label className="ax-field" style={{ maxInlineSize: "none" }}>
           <span className="ax-field__label">{strings.searchFactoryLabel}</span>
           <input className="ax-input" value={query} onChange={e => setQuery(e.target.value)} placeholder={strings.searchFactoryPlaceholder} />
         </label>
         <p className="ax-caption ax-numeric">{fmt(strings.selectedCount, { n: selected.size })}</p>
-        <div className="ax-stack" style={{ gap: "var(--ax-space-050)", maxBlockSize: 320, overflow: "auto" }}>
+        <div className="stack" style={{ gap: "var(--ax-space-050)", maxBlockSize: 320, overflow: "auto" }}>
           {shown.map(f => (
             <label key={f.id} className="ax-choice" style={{ display: "flex", alignItems: "center" }}>
               <input type="checkbox" name="factory_id" value={f.id} checked={selected.has(f.id)} onChange={() => toggle(f.id)} />
@@ -68,7 +68,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
         </div>
       </section>
 
-      <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }}>
         <label className="ax-field" style={{ maxInlineSize: "none" }}>
           <span className="ax-field__label">{strings.violationLabel}</span>
           <select className="ax-select" name="violation_code" value={violationCode} onChange={e => setViolationCode(e.target.value)}>
@@ -83,7 +83,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
       </section>
 
       {selected.size > 0 && chosenViolation && (
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }}>
           <h4>{strings.previewTitle}</h4>
           <p>{fmt(strings.previewBody, { n: selected.size, level: chosenViolation.level, code: chosenViolation.code, penalty: chosenViolation.penalty_ref ?? "—" })}</p>
           <label className="ax-choice" style={{ display: "flex" }}>
@@ -96,7 +96,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
       {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
 
       {results.length > 0 && (
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }}>
           <h4>{strings.resultsTitle}</h4>
           {failedCount > 0
             ? <div className="ax-banner ax-banner--warning" role="alert"><div>{strings.partialWarning}</div></div>

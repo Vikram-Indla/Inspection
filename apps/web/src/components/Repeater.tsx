@@ -27,7 +27,7 @@ export default function Repeater<T>({ items, onChange, makeItem, renderItem, add
     onChange([...items, makeItem()]);
   }
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
       {items.map((item, i) => (
         <div key={i} className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>

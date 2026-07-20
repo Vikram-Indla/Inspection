@@ -12,7 +12,7 @@ function Feedback({ state, saved }: { state: TemplateResult; saved: string }) {
 
 export default function TemplateRegistry({ templates, strings: s }: { templates: TemplateRow[]; strings: TemplateStrings }) {
   const [createState, createAction, creating] = useActionState<TemplateResult, FormData>(createTemplateVersion, {});
-  return <details className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+  return <details className="ax-surface stack" style={{ padding: "var(--ax-space-300)" }}>
     <summary><strong>{s.heading}</strong> · M09-006/008/009</summary>
     <p className="ax-caption">{s.intro}</p>
     <form action={createAction} className="ax-grid-2">
@@ -25,7 +25,7 @@ export default function TemplateRegistry({ templates, strings: s }: { templates:
       <label className="ax-field" style={{ gridColumn: "1 / -1" }}><span className="ax-field__label">{s.schema}</span><textarea className="ax-input ax-numeric" name="schema" defaultValue={'{"fields":[]}'} required /></label>
       <button className="ax-btn ax-btn--prominent" disabled={creating}>{creating ? s.creating : s.create}</button><Feedback state={createState} saved={s.saved}/>
     </form>
-    <div className="ax-stack">{templates.map(template => <TemplateCard key={template.id} template={template} strings={s} />)}</div>
+    <div className="stack">{templates.map(template => <TemplateCard key={template.id} template={template} strings={s} />)}</div>
   </details>;
 }
 

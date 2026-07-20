@@ -51,7 +51,7 @@ export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: 
   }));
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
       <div style={{ blockSize: 380, borderRadius: "var(--ax-radius-200)", overflow: "hidden" }}>
         <Suspense fallback={
           <EmptyState glyph="…" title={s.loadingTitle} body={s.loadingBody} bare role="status" ariaBusy />

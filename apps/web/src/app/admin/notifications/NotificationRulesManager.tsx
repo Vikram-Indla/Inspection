@@ -45,7 +45,7 @@ function Msg({ state }: { state: NotifRuleResult }) {
 function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]; l: Labels }) {
   const [state, action, pending] = useActionState<NotifRuleResult, FormData>(createNotificationRule, {});
   return (
-    <form action={action} className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+    <form action={action} className="stack" style={{ gap: "var(--ax-space-150)" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--ax-space-150)" }}>
         <label className="ax-field"><span>{l.eventKey}</span>
           <select name="event_key" required defaultValue="">
@@ -92,7 +92,7 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
 
   if (row.status === "draft") {
     return (
-      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
         <form action={pubAction}><input type="hidden" name="rule_id" value={row.id} />
           <button type="submit" className="ax-btn" disabled={pubPending}>{pubPending ? l.publishing : l.publish}</button>
         </form>
@@ -102,7 +102,7 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
   }
   if (row.status === "published") {
     return (
-      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
         <form action={testAction}><input type="hidden" name="rule_id" value={row.id} />
           <button type="submit" className="ax-btn" disabled={testPending}>{testPending ? l.testing : l.test}</button>
         </form>
@@ -121,8 +121,8 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
 
 export default function NotificationRulesManager({ rows, roles, l }: { rows: NotificationRuleRow[]; roles: { role_key: string; title: string }[]; l: Labels }) {
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
-      <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
+      <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
         <CreateForm roles={roles} l={l} />
       </section>
 

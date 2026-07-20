@@ -62,7 +62,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
       {rows.length === 0 ? (
         <EmptyState glyph="✓" title={strings.emptyTitle} body={strings.emptyDesc} inline bare />
       ) : (
-        <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
+        <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
           {rows.map(row => (
             <div key={row.id} className="ax-surface" style={{ padding: "var(--ax-space-200)", borderColor: "var(--ax-color-warning)" }}>
               <div className="ax-row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
