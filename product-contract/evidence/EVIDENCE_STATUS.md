@@ -360,3 +360,8 @@ Owner: CD004-EV-003 and CD004-EV-005 are closed. CD004-EV-004 remains blocked be
 | F360-ISH-EV-008..010 | Typecheck, production build, focused 4/4, protected static 135 pass / 4 intentional skips / 0 failed | PASS |
 | F360-ISH-EV-011 | Authenticated beta contract capture for `ISH-API-001..011` | PARTIAL — POST proven for five low-risk routes; auth/body/response/error/privacy/fixture evidence still blocked |
 | F360-ISH-EV-012 | Controlled Industry Shared runtime normalization and stub retirement | NOT RUN — contracts and credentials absent |
+
+Checkpoint addendum: sponsor-approved pre-push secret/PII/artifact scan PASS; provider-network,
+domain-separation, zero-stub-retirement, no-schema/projection-change, typecheck/build, focused
+4/4 and protected 135 pass / 4 intentional skips / 0 failed guards PASS. Awaiting the approved
+synthetic beta licence and expected result for `POST /shared/api/v2/license-info`.

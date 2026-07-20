@@ -1,6 +1,6 @@
 programme: FACTORY_360_INDUSTRY_SHARED_API_GAP_CLOSURE
-status: PARTIAL_METHOD_EVIDENCE_CAPTURED_CONTRACTS_STILL_BLOCKED_EXTERNAL
-stop_state: AWAITING_SANITIZED_DEVELOPER_CONTRACTS_OR_AUTHORIZED_TEST_IDENTIFIERS
+status: CHECKPOINT_PUSH_APPROVED_AWAITING_SYNTHETIC_CONTRACT
+stop_state: AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT
 canonical_repository_path: /Users/vikramindla/Developer/Inspection
 authorized_worktree_path: /Users/vikramindla/Developer/Inspection/.local-inputs/worktrees/industry-shared-factory360-gap-013
 current_branch: codex/industry-shared-factory360-gap-013
@@ -75,6 +75,8 @@ remote_actions:
   ddl_applied: false
   deployed: false
   main_merged: false
-next_exact_action: "Provide sanitized developer contracts or authorized synthetic/test identifiers and expected outcomes for the POST endpoints; verify one endpoint fully before adding auth, a request body, schema parser or canonical migration."
+  isolated_branch_push_approved: true
+  push_target: "https://github.com/Vikram-Indla/Inspection.git"
+next_exact_action: "Verify POST /shared/api/v2/license-info end to end using the approved synthetic beta licence and expected result."
 evidence: product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md
 last_updated_at: "2026-07-20T03:41:08+03:00"

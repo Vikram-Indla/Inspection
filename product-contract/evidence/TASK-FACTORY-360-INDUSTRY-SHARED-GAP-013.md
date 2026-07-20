@@ -75,3 +75,25 @@ Exact next action: provide sanitized developer contracts or authorize named synt
 identifiers and expected outcomes for the POST endpoints. The next implementation must verify
 one endpoint end to end before adding auth, a request body, parser, canonical mapping, or
 migration.
+
+## Approved checkpoint safety verification
+
+The sponsor accepted the partial discovery and explicitly approved pushing the isolated branch
+to `https://github.com/Vikram-Indla/Inspection.git`. Before push, the branch was verified as
+`codex/industry-shared-factory360-gap-013`, clean at the reported checkpoint history, with
+`ef2b794` contained under `810a7a2` before this sanitized continuation record.
+
+- Added/changed filenames contain no environment, cookie, token, credential, HAR, screenshot,
+  document, archive, video, or other browser-capture artifact.
+- Added content scans contain no private key, JWT, GitHub/OpenAI/AWS key pattern, assigned
+  secret, email address, Saudi phone number, or standalone ten-digit real identifier.
+- The Industry Shared client contains no `fetch` or other network call and all endpoints remain
+  `DISCOVERY_REQUIRED`.
+- Contact, delegation, job-workforce, plant-labour, and HRSD domains remain separate.
+- `stubs_retired` remains zero; every retirement disposition remains retained/pending/blocked.
+- No Supabase migration or Factory 360 page/projection file is changed by this branch.
+- Typecheck and production build pass; focused contracts pass 4/4; protected static regression
+  passes 135 with four intentional live-provider skips and zero failures.
+
+Exact next action: Verify `POST /shared/api/v2/license-info` end to end using the approved
+synthetic beta licence and expected result.

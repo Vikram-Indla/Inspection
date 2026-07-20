@@ -3,11 +3,11 @@ items:
   - task_id: "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013"
     gate: "G11 Factory 360 integration hardening"
     priority: "P0"
-    status: "PARTIAL_METHOD_EVIDENCE_CAPTURED_CONTRACTS_BLOCKED_EXTERNAL"
+    status: "CHECKPOINT_PUSH_APPROVED_AWAITING_SYNTHETIC_CONTRACT"
     owner: "Codex implementation and QA + Industry Shared API owner"
-    blocked_by: ["Sanitized developer contracts or authorized synthetic/test identifiers and expected outcomes for ISH-API-001..011", "Sponsor decisions for contact/delegation and workforce privacy/retention if person-level fields exist"]
+    blocked_by: ["Approved synthetic beta licence and expected result for POST /shared/api/v2/license-info", "Sanitized developer contracts for remaining ISH-API endpoints", "Sponsor decisions for contact/delegation and workforce privacy/retention if person-level fields exist"]
     blocks: ["Retirement of F360-GAP-009", "Promotion of F360-AC-012 to functionally verified", "Web/iPad final Industry Shared reconciliation"]
-    note: "Authenticated beta method-mismatch evidence proves POST for ISH-API-001..003 and 008..009 only. All eleven leads retain permanent ledger rows and the server-only boundary remains network-disabled because auth, identifiers, bodies, responses, errors, privacy and fixtures are not verified. Typecheck/build and protected regression remain green from the checkpoint; focused contracts will be rerun after this evidence update. Existing Factory 360/Senaei, Mapbox, Risk, OCR, evidence, audit, RLS and offline behavior remain protected."
+    note: "Authenticated beta method-mismatch evidence proves POST for ISH-API-001..003 and 008..009 only. All eleven leads retain permanent ledger rows; stubs retired remains zero; the provider has no network call; no canonical migration or Factory 360 projection changed. Typecheck/build pass, focused contracts pass 4/4 and protected static regression passes 135 with four intentional live-provider skips. Next exact action: Verify POST /shared/api/v2/license-info end to end using the approved synthetic beta licence and expected result."
   - task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
     gate: "G11 sponsor-directed Compliance Approval Queue"
     priority: "P0"
