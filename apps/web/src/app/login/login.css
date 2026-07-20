@@ -165,9 +165,11 @@
   padding: clamp(18px, 2.2vw, 30px) clamp(20px, 2.4vw, 34px); pointer-events: none; }
 .lg-story__head > * { pointer-events: auto; }
 .lg-story__heading { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
-.lg-story__title { font: 700 18px/24px var(--ax-font-sans); color: var(--ax-color-atlas-text); }
+.lg-story__title { font: 700 18px/24px var(--ax-font-sans); color: var(--ax-color-atlas-text);
+  text-shadow: 0 1px 12px var(--ax-color-atlas-canvas), 0 0 4px var(--ax-color-atlas-canvas); }
 .lg-story__overline { font: 600 10px/14px var(--ax-font-mono); letter-spacing: 0.16em;
-  color: var(--ax-color-atlas-muted); align-self: start; }
+  color: var(--ax-color-atlas-muted); align-self: start;
+  text-shadow: 0 1px 8px var(--ax-color-atlas-canvas); }
 [dir="rtl"] .lg-story__overline { align-self: end; }
 [dir="rtl"] .lg-story__title,
 [dir="rtl"] .lg-story__overline { font-family: var(--ax-font-arabic); text-align: right; letter-spacing: 0; }
@@ -178,14 +180,14 @@
 /* atmospheric top/bottom fades so the title and rail melt into the hero */
 .lg-story__frame::before, .lg-story__frame::after { content: ""; position: absolute;
   inset-inline: 0; z-index: 22; pointer-events: none; }
-.lg-story__frame::before { inset-block-start: 0; block-size: 176px;
+.lg-story__frame::before { inset-block-start: 0; block-size: 132px;
   background: linear-gradient(to bottom,
-    color-mix(in srgb, var(--ax-color-atlas-canvas) 88%, transparent) 8%,
-    color-mix(in srgb, var(--ax-color-atlas-canvas) 34%, transparent) 55%, transparent); }
-.lg-story__frame::after { inset-block-end: 0; block-size: 150px;
+    color-mix(in srgb, var(--ax-color-atlas-canvas) 60%, transparent),
+    color-mix(in srgb, var(--ax-color-atlas-canvas) 14%, transparent) 58%, transparent); }
+.lg-story__frame::after { inset-block-end: 0; block-size: 112px;
   background: linear-gradient(to top,
-    color-mix(in srgb, var(--ax-color-atlas-canvas) 82%, transparent) 6%,
-    color-mix(in srgb, var(--ax-color-atlas-canvas) 30%, transparent) 55%, transparent); }
+    color-mix(in srgb, var(--ax-color-atlas-canvas) 52%, transparent),
+    color-mix(in srgb, var(--ax-color-atlas-canvas) 12%, transparent) 58%, transparent); }
 .lg-story__summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; overflow: hidden;
   border: 1px solid var(--ax-color-atlas-border); border-radius: var(--ax-radius-standard);
   background: color-mix(in srgb, var(--ax-color-atlas-surface) 94%, transparent); }
