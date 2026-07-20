@@ -90,3 +90,16 @@ Generated from the App Router source tree at starting commit `186c42e64c137c3404
 ## Measured representative route set
 
 Five cold and ten warm samples were captured for each of `/dashboard`, `/operations`, `/factories`, `/planning`, `/reviews`, and `/ai/suggestions`. These cover the shared shell plus the highest-cost data/control-plane shapes. The complete route tree was inspected statically; it was not credible to claim 15-run runtime measurements for every dynamic/deep route without safe seed identities and mutation authorization.
+
+## Line-A independent architecture findings retained by the union
+
+The independent Line-A inventory at `7994cc6` counted the same 71 page routes plus five route handlers and established these additional cross-route facts. They are retained here alongside Line B's per-route source table:
+
+- The root layout owns fonts, theme, and PWA registration only; application chrome is still rendered inside each page, so the shell is not structurally persistent.
+- Authenticated pages are server-first React Server Components backed by direct RLS-scoped Supabase reads. There is no application-level React Query, SWR, Zustand, or Redux cache.
+- Middleware validates claims for route and RSC requests; page and shell guards then perform their own user/role reads. The integrated `persona.ts` and request caches collapse duplicate reads within one render without cross-request role staleness.
+- Sixty-nine pages remain explicitly dynamic. Cookie-backed locale/auth dependencies make most authenticated pages dynamic even without the export; removing it without a safe per-user invalidation design would not create a valid shared route cache.
+- The heaviest remaining source shapes are dashboard aggregation, the inspection workspace catalog/reference reads, global search's multi-query leading-wildcard scan, and signed-URL generation.
+- iPad field routes use the same server-first/RLS boundary; the benchmark inventory therefore includes portrait and landscape checks rather than treating iPad as a separate data plane.
+
+The detailed Line-A code-path evidence remains in `kimi-independent-review.md` and `pass3-independent-review.md`; the machine-generated Line-B route/data-source table above is the canonical route count for Pass 4.
