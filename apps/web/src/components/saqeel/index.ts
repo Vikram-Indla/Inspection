@@ -18,3 +18,14 @@ export { ExceptionMark, RailCell, EXC_LABELS, type ExceptionMarkProps, type Rail
 export { Sidebar, type SidebarProps, type SidebarGroup } from "./navigation/Sidebar";
 export { TopBar, PageHeader, type TopBarProps, type PageHeaderProps } from "./navigation/TopBar";
 export { Breadcrumb, Tabs, Steps, Pagination, type BreadcrumbProps, type TabsProps, type StepsProps, type PaginationProps } from "./navigation/Breadcrumb";
+export { UserMenu, type UserMenuProps } from "./navigation/UserMenu";
+// PR4 — feedback layer
+export { Alert, type AlertProps, type AlertTone } from "./feedback/Alert";
+export { Toast, type ToastProps, type ToastTone } from "./feedback/Toast";
+export { Modal, type ModalProps } from "./feedback/Modal";
+export { Drawer, type DrawerProps } from "./feedback/Drawer";
+export { Tooltip, type TooltipProps } from "./feedback/Tooltip";
+export { Menu, type MenuProps, type MenuItem } from "./feedback/Menu";
+export { EmptyState, type EmptyStateProps } from "./feedback/EmptyState";
+export { SyncIndicator, type SyncIndicatorProps, type SyncState } from "./feedback/SyncIndicator";
+export { DiffView, type DiffViewProps, type DiffRow } from "./feedback/DiffView";
