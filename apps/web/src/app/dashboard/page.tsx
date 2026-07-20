@@ -90,6 +90,16 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     : "region";
   const sb = await supabaseServer();
 
+  // K-003 — DB-side bounds. buildDashboardMetrics only counts rows dated inside
+  // the current scope or the immediately-previous comparison window
+  // (previousScope in metrics.ts), plus "today" for the today's-visits card.
+  // Rows older than bound on every relevant date are provably uncounted, so
+  // the full-table scans become window scans. Open inspections are always
+  // loaded (they can enter scope at any time); factories stay unbounded
+  // (reference data for search/region filters).
+  const prevScopeFromMs = scope.fromMs - (scope.toMs - scope.fromMs + 1);
+  const boundIso = new Date(Math.min(prevScopeFromMs, today.fromMs)).toISOString();
+
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
   // The Dashboard is a shared Command destination for every non-admin persona
@@ -107,29 +117,29 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       id, planning_status, operational_state, window_start, window_end, priority, cancellation_reason, created_at,
       factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary),
       assignments(inspector_id, profiles(full_name))
-    `).range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>),
+    `).or(`window_start.gte.${boundIso},created_at.gte.${boundIso}`).range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>),
     collect<InspectionRow>((from, to) => sb.from("inspections").select(`
       id, visit_id, status, started_at, submitted_at,
       visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
-    `).range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>),
+    `).or(`submitted_at.gte.${boundIso},started_at.gte.${boundIso},status.eq.not_started,status.eq.in_progress`).range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>),
     collect<ReviewRow>((from, to) => sb.from("reviews").select(`
       id, inspection_id, status, decision, decided_at,
-      inspections(submitted_at, visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary)))
-    `).range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>),
+      inspections!inner(submitted_at, visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary)))
+    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>),
     collect<ResponseRow>((from, to) => sb.from("checklist_responses").select(`
       inspection_id, is_complete, response,
-      inspections(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
+      inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
       inspection_items(regulation_clauses(regulations(title, issuing_authority)))
-    `).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>),
+    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>),
     collect<ViolationRow>((from, to) => sb.from("violations").select(`
       id, inspection_id,
-      inspections(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
+      inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
       violation_codes(title, level, regulation_clauses(regulations(title, issuing_authority)))
-    `).range(from, to) as unknown as PromiseLike<RowPage<ViolationRow>>),
+    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ViolationRow>>),
     collect<GeoRow>((from, to) => sb.from("geo_events").select(`
       id, visit_id, kind, geofence_result, override_reason, occurred_at, observed_lat, observed_lng,
       visits(planner_lat, planner_lng, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
-    `).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
+    `).gte("occurred_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
     collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
     sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
   ]);
