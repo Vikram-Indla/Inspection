@@ -19,6 +19,8 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 
 | 2026-07-20 | PR7 Map chrome (new components) | new MapMarker/MapCluster, MapPanel/MapLegend/MapLayerControl, MapToolbar/MapZoom, GeoWorkspace | unchanged | none | chrome only — map ENGINE untouched (basemap slot); markers status-toned by KIND not colour-only |
 
+| 2026-07-20 | PR8 Inspection+signature+data (new components) | InspectionCard/FindingCard/ComplianceScore/DueDate/EvidenceCard/EvidenceStack/ReviewPanel/AuditTrail/StatusSpine/CommandPalette + KPICard/MetricStrip/Timeline/DescriptionList | unchanged | none | StatusSpine 13-stage lifecycle; EvidenceStack surfaces provenance; ReviewPanel reject-gated-on-reason |
+
 ## PR2 notes
 - Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
   imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.
