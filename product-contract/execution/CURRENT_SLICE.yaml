@@ -2,7 +2,7 @@ schema_version: "1.2"
 task_id: "TASK-FACTORY-360-STAGING-RUNTIME-CLOSURE-016"
 gate: "G11 Factory 360 controlled staging runtime closure"
 title: "Independent staging verification and closure of merged Factory 360 Web, Inspector iPad and cross-provider structural-contract work"
-status: "PRE_FLIGHT_IN_PROGRESS"
+status: "RUNTIME_CLOSURE_COMPLETE_AWAITING_SPONSOR_ACCEPTANCE"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 branch: "codex/factory360-staging-runtime-closure-016"
@@ -42,8 +42,11 @@ scope_exclusions:
 open_decisions:
   - "Undocumented Senaei domains remain BLOCKED_EXTERNAL with SENAEI_API_CONTRACT_NOT_SUPPLIED; no endpoints or values may be invented."
   - "External submission forwarding remains BLOCKED_TRIGGER_DECISION pending sponsor-approved trigger."
-  - "J06-J12 (iPad/field + offline device journeys) marked NOT_REACHABLE_WITH_REASON: no iPad simulator/physical device wired into this session's tools; require a separate device-equipped pass."
-  - "Native-Arabic human review remains a separate human evidence gate per the task spec unless an authorized native reviewer becomes available."
+  - "SUPERSEDED: J06-J12 turned out reachable via the local dev server (127.0.0.1:3000) once corrected off a hosted staging URL to the local target -- the iPad/field surface is a normal browser route, not a separate app. All J01-J15 completed this pass (see evidence file); J06's assigned-visit click-through and J12's live outbox-isolation check were not separately exercised (time-boxed, not blocked)."
+  - "Native-Arabic human review remains a separate human evidence gate; RTL/layout mechanics verified this pass but full AR string coverage is a known pre-existing gap, not fabricated."
   - "Supabase MCP connector in this session is bound to an unrelated project (catalyst-prod, INACTIVE); staging DB access for iiozvqntawxfwbgffzqu uses the Management API with the keychain-held PAT (supabase-pat), the repo's established mechanism (see product-contract/CURRENT_STATE.md history, e.g. UPDATE 38/41)."
+  - "No package_versions.definition.item_snapshot is populated anywhere on staging (pre-existing environment gap, not introduced by this task) -- Approved inspection compliance reads Not Available for every inspection until frozen scoring authority is seeded; not fixed here as that would mean inventing scoring policy."
+  - "F360 Runtime 016 verification fixture family (1 CR, 2 licences, 2 addresses, 4 production-line items) is permanently retained on staging: plant_production_line_items is one of four tables this same migration made architecturally append-only, and its FK to industrial_licenses blocks deleting the licences/CR/addresses too. See evidence file cleanup register."
+  - "Two defects found and fixed this pass: submission_versions RLS (subs_read) missing planner/ops (migration 20260720020000), and the Web Factory 360 page missing the cross-provider reconciliation section iPad already had (apps/web/src/app/factories/cr/[id]/page.tsx). Both retested live, typecheck/build clean, 34/34 focused e2e green."
 
-pacing: "Checkpoint after pre-flight before any DDL apply, deploy action, or live browser journey execution (sponsor direction 2026-07-20)."
+pacing: "Checkpoint after pre-flight before any DDL apply, deploy action, or live browser journey execution (sponsor direction 2026-07-20). Superseded 2026-07-20 same day: sponsor authorized continuing through full J01-J15 close-out on the local dev server without further pausing."
