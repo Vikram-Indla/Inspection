@@ -4090,9 +4090,53 @@
       "commit_sha": "65a4db2c80482318ba617e0439424f9e5966c020",
       "next_task": "Capture and verify one complete Industry Shared endpoint contract, then implement its parser, canonical mapping, negative paths and controlled runtime evidence.",
       "resume_prompt": "Read CURRENT_STATE Update 105, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml, factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv and evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md. Work on codex/industry-shared-factory360-gap-013. Sign in to https://beta-backoffice.industry.sa first. Verify one endpoint completely before enabling network I/O; do not infer methods, auth, fields, privacy, retention, authority or plant cardinality."
+    },
+    {
+      "session_id": "2026-07-20-factory-360-industry-shared-auth-discovery-014",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "codex/industry-shared-factory360-gap-013",
+      "task_id": "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013",
+      "gate": "G11 Factory 360 integration hardening",
+      "requirements": ["F360-ISH-REQ-001..018", "ISH-API-001..011"],
+      "acceptance_ids": ["F360-ISH-AC-001..018"],
+      "screens": ["SCR-WEB-400", "connected P01/P03/P04/P08/P10/P11 consumers"],
+      "engines": ["dedicated fail-closed Industry Shared provider", "existing Factory 360 and Senaei engines preserved"],
+      "files_changed": [
+        "method-only Industry Shared endpoint metadata and static guard",
+        "Industry Shared endpoint and acceptance ledgers",
+        "Factory 360 current state, work queue, execution state, acceptance and evidence records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Industry Shared focused static contract 4/4 PASS",
+        "protected static inventory 135 PASS / 4 intentional provider skips / 0 failed",
+        "YAML/CSV/diff validation PASS"
+      ],
+      "evidence": [
+        "authenticated beta dashboard and integration UI reached",
+        "POST method proven for ISH-API-001..003 and ISH-API-008..009",
+        "product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md",
+        "product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv"
+      ],
+      "decisions": [
+        "Recorded method-only evidence without promoting any endpoint to CONTRACT_VERIFIED",
+        "Did not exercise privacy-sensitive routes with real identifiers",
+        "Did not capture tokens, cookies, personal payloads, stack traces or framework versions",
+        "Retained the network-disabled boundary until auth, request, response, error, privacy and fixtures are verified"
+      ],
+      "blockers": [
+        "Sanitized developer contracts or explicitly authorized synthetic/test identifiers and expected outcomes",
+        "Authentication, body, schema, error, privacy/retention and fixture evidence for all eleven endpoints",
+        "Sponsor privacy/masking/retention decisions if person-level contact, delegation or workforce fields exist"
+      ],
+      "commit_sha": "ef2b7946bce7af2d6209b61b1082f632f56ff447",
+      "next_task": "Verify one POST endpoint end to end from sanitized contract evidence or an explicitly authorized synthetic/test identifier before enabling network I/O.",
+      "resume_prompt": "Read CURRENT_STATE Update 106, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml, factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv and evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md. Work on codex/industry-shared-factory360-gap-013 from source commit ef2b7946bce7af2d6209b61b1082f632f56ff447. POST is proven only for ISH-API-001..003 and 008..009. Do not issue a real POST without a user-supplied or explicitly authorized synthetic/test identifier and expected outcome; do not infer auth, body, schema, privacy, retention, authority or plant cardinality."
     }
   ],
-  "last_session": "2026-07-20-factory-360-industry-shared-gap-013",
+  "last_session": "2026-07-20-factory-360-industry-shared-auth-discovery-014",
   "rules": {
     "append_only": true,
     "required_fields": [
