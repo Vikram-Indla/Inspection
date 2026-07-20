@@ -25,7 +25,35 @@ import SaudiAtlasDossier, { type DossierStrings } from "./SaudiAtlasDossier";
 // Uniform factory footprint — small enough to shrink-to-fit the dense Eastern
 // cluster without clipping; matches the 140×112 structure viewBox aspect.
 const FACTORY_W = 58, FACTORY_H = 46;
-const PUBLIC_SAFE_ATLAS_BASE = "/brand/saudi-atlas/inspection-atlas-scene-base-v2";
+// Theme-specific renders of the SAME scene (same 1672×941 framing, camera and
+// facility geometry). Every hotspot %, zone-lift clip and route is authored
+// against this shared grid, so swapping the raster by theme keeps them pixel-
+// aligned. Dark = native cinematic render; light = daylight/mineral render.
+const ATLAS_BASE_DARK = "/brand/saudi-atlas/inspection-atlas-scene-base-v2";
+const ATLAS_BASE_LIGHT = "/brand/saudi-atlas/inspection-atlas-scene-light-v1";
+const PUBLIC_SAFE_ATLAS_BASE = ATLAS_BASE_DARK;
+
+// Live theme resolution so the atlas swaps its render on theme flip with no
+// reload. Mirrors StoryMapInner.isDark() and observes data-theme changes.
+function resolveDark(): boolean {
+  if (typeof document === "undefined") return true;
+  const attr = document.documentElement.getAttribute("data-theme");
+  if (attr === "light") return false;
+  if (attr === "dark") return true;
+  return !window.matchMedia?.("(prefers-color-scheme: light)").matches;
+}
+function useAtlasBase(): string {
+  const [dark, setDark] = useState(resolveDark);
+  useEffect(() => {
+    const sync = () => setDark(resolveDark());
+    const obs = new MutationObserver(sync);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    const mq = window.matchMedia?.("(prefers-color-scheme: light)");
+    mq?.addEventListener?.("change", sync);
+    return () => { obs.disconnect(); mq?.removeEventListener?.("change", sync); };
+  }, []);
+  return dark ? ATLAS_BASE_DARK : ATLAS_BASE_LIGHT;
+}
 
 // Normalized positions over the approved 1672×941 public-safe composition.
 // They are interaction anchors only; the visible geography remains in the
@@ -126,7 +154,7 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
         ))}
         {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
           <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
-            href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-9" y="-18" width="18" height="36" opacity="0" transform="rotate(90)">
+            href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-13.5" y="-27" width="27" height="54" opacity="0" transform="rotate(90)">
             <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.88;1"
               dur="6s" begin={`${index * 2.5}s`} fill="remove" />
             <animateMotion path={route.path} rotate="auto" dur="6s" begin={`${index * 2.5}s`} fill="remove"
@@ -159,11 +187,12 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
 }
 
 function ZoneLiftOverlay({
-  locale, activeZone, lockedZone, onHover, onLock, onClose,
+  locale, activeZone, lockedZone, atlasBase, onHover, onLock, onClose,
 }: {
   locale: "ar" | "en";
   activeZone: AtlasZoneId | null;
   lockedZone: AtlasZoneId | null;
+  atlasBase: string;
   onHover: (zone: AtlasZoneId | null) => void;
   onLock: (zone: AtlasZoneId) => void;
   onClose: () => void;
@@ -197,10 +226,10 @@ function ZoneLiftOverlay({
               className={`lg-zone-lift__slab${isActive ? " is-lifted" : ""}`}>
               <path className="lg-zone-lift__cavity" d={zone.path} aria-hidden="true" />
               <g className="lg-zone-lift__wall" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
-                <image href={`${PUBLIC_SAFE_ATLAS_BASE}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+                <image href={`${atlasBase}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
               </g>
               <g className="lg-zone-lift__terrain" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
-                <image href={`${PUBLIC_SAFE_ATLAS_BASE}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+                <image href={`${atlasBase}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
               </g>
               {/* Keyboard + pointer target. Focus lifts the slab (same info as
                   hover); Enter/Space locks it; Escape restores the resting map. */}
@@ -458,6 +487,7 @@ function PublicSafeImageAtlas({
   const [hoveredZone, setHoveredZone] = useState<AtlasZoneId | null>(null);
   const [lockedZone, setLockedZone] = useState<AtlasZoneId | null>(null);
   const [ready, setReady] = useState(false);
+  const atlasBase = useAtlasBase();
   const refs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const shown = locked ?? hover;
   const activeZone = lockedZone ?? hoveredZone;
@@ -477,14 +507,14 @@ function PublicSafeImageAtlas({
       data-active-stage={activeStage} data-active-zone={stageZone(activeStage)}>
       <div className="lg-atlas-image__plane">
         <picture>
-          <img className="lg-atlas-image__media" src={`${PUBLIC_SAFE_ATLAS_BASE}.png`}
+          <img className="lg-atlas-image__media" src={`${atlasBase}.png`} key={atlasBase}
             width="1672" height="941" alt="" decoding="async" draggable={false}
             onLoad={() => setReady(true)} onError={onImageError} />
         </picture>
 
         <JourneyOverlay stage={activeStage} locale={locale} />
 
-        <ZoneLiftOverlay locale={locale} activeZone={activeZone} lockedZone={lockedZone}
+        <ZoneLiftOverlay locale={locale} activeZone={activeZone} lockedZone={lockedZone} atlasBase={atlasBase}
           onHover={zone => { if (!lockedZone) setHoveredZone(zone); }}
           onLock={zone => { setLockedZone(current => current === zone ? null : zone); setHoveredZone(zone); }}
           onClose={() => { setLockedZone(null); setHoveredZone(null); }} />

@@ -136,7 +136,16 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
         }}>
         <header className="lg-lockup">
           <SaqeelMark className="lg-lockup__mark" />
-          <span className="lg-lockup__wordmark" lang="ar">{s.wordmarkFull}</span>
+          <span className="lg-lockup__text">
+            <span className="lg-lockup__names">
+              <span className="lg-lockup__ar" lang="ar">صقيل</span>
+              <span className="lg-lockup__div" aria-hidden="true" />
+              <span className="lg-lockup__latin" lang="en">SAQEEL</span>
+            </span>
+            <span className="lg-lockup__sub" dir={s.dir}>
+              {s.lang === "ar" ? "التفتيش الصناعي" : "INDUSTRIAL INSPECTIONS"}
+            </span>
+          </span>
           {/* the story panel (and its theme toggle) is hidden on small screens */}
           <div className="lg-controls lg-controls--compact">
             <ThemeToggle className="lg-iconbtn" labels={themeLabels} />

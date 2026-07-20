@@ -144,14 +144,6 @@ export default function StoryPanel({ strings: s, locale, themeLabels, subdued = 
           </div>
         )}
       </div>
-      {!subdued && !mapFailed && stage === "decide" && (
-        <section className="lg-story__summary" aria-label={s.illustrativeSummary} dir={locale === "ar" ? "rtl" : "ltr"}>
-          <small>{s.illustrativeSummary}</small>
-          {s.zoneStats.map(stat => <div key={stat.zone}>
-            <strong>{stat.inspections}</strong><span>{stat.zone}</span><em>{stat.detail}</em>
-          </div>)}
-        </section>
-      )}
     </aside>
   );
 }
