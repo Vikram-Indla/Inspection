@@ -1,0 +1,60 @@
+route_id,route,route_group,storyline_phase,demo_chapter,learning_personas,learning_items,truth_labels,source_refs
+RTE-001,/admin,Admin,Plan,C02,PA-ADM-*,SCOPE;JMAP,IMPLEMENTED,FULL_59_ROUTE_SCREENSHOT_SCOPE.csv;CURRENT_STATE admin scope band
+RTE-002,/admin/access,Admin,Plan,C02,PA-ADM-SEC,CH-PA-ADM-SEC;DAY-PA-ADM-SEC,IMPLEMENTED,route scope csv
+RTE-003,/admin/gis,Admin,Plan,C03,PA-ADM-GIS,CH-PA-ADM-GIS;DAY-PA-ADM-GIS,IMPLEMENTED,route scope csv
+RTE-004,/admin/items,Admin,Plan,C02,PA-ADM-COMP;PA-ADM-FORM,CH/DAY items,IMPLEMENTED,route scope csv
+RTE-005,/admin/notifications,Admin,Plan,C22,PA-ADM-SEC,EXPL-07,IMPLEMENTED+PROVIDER_DEP (queued not confirmed delivered),CURRENT_STATE notification truth
+RTE-006,/admin/packages,Admin,Plan,C02,PA-ADM-FORM,CH-PA-ADM-FORM,IMPLEMENTED,route scope csv
+RTE-007,/admin/regulations,Admin,Plan,C02,PA-ADM-COMP,CH-PA-ADM-COMP;TASK anchor,IMPLEMENTED,route scope csv
+RTE-008,/admin/regulations/:id,Admin,Plan,C02,PA-ADM-COMP,CH-PA-ADM-COMP,IMPLEMENTED (use authorized deterministic record),route scope csv safety note
+RTE-009,/admin/risk,Admin,Plan,C03,PA-ADM-RISK,CH-PA-ADM-RISK,IMPLEMENTED (do not publish/change model),route scope csv safety note
+RTE-010,/admin/violations,Admin,Plan,C02,PA-ADM-COMP,CH-PA-ADM-COMP,IMPLEMENTED,route scope csv
+RTE-011,/admin/workflows,Admin,Plan,C03,PA-ADM-WF,CH-PA-ADM-WF,IMPLEMENTED (do not publish/change workflow),route scope csv safety note
+RTE-012,/factories/:id,Factory360,Prepare,C08,PA-INS;PA-LEAD;PA-AUD,TASK-INS-01;EXPL-06,IMPLEMENTED (map/boundary explicit unavailable; leadership contact masking),CD-031;CURRENT_STATE
+RTE-013,/field,Field,Prepare,C07,PA-INS,DAY-PA-INS;TASK-INS-01,IMPLEMENTED (page-load mutation risk; fixture only),route scope csv;CURRENT_STATE pre-start lock
+RTE-014,/field/:visitId,Field,Inspect+Prove,C10;C14,PA-INS,TASK-INS-02/03,IMPLEMENTED (geofence; override governance; offline outbox),CURRENT_STATE;request_geo_override
+RTE-015,/field/inspection/:id,Field,Inspect+Prove,C11;C13,PA-INS,TASK-INS-03/04/05;EXPL-02,IMPLEMENTED (immutable submitted version),CURRENT_STATE
+RTE-016,/operations,Operations,Improve,C21,PA-OPS,DAY-PA-OPS,IMPLEMENTED,route scope csv
+RTE-017,/operations/live,Operations,Improve,C21;C09,PA-OPS,TASK-OPS-01,IMPLEMENTED+PROVIDER_DEP (projected not live GPS),design 00_START_HERE truth label;route scope csv
+RTE-018,/planning,Planning,Plan,C04,PA-PLN,DAY-PA-PLN,IMPLEMENTED (confirm role routing),route scope csv
+RTE-019,/planning/bulk,Planning,Plan,C04,PA-PLN,TASK-PLN-01,IMPLEMENTED (server planner guard RBAC-007; do not create/publish in capture),CURRENT_STATE CD-021
+RTE-020,/planning/bulk/review,Planning,Plan,C04,PA-PLN,TASK-PLN-01,IMPLEMENTED (do not assign/publish in capture),CD-021 increment 5
+RTE-021,/planning/immediate,Planning,Plan,C05,PA-PLN;PA-INS,TASK-PLN-02,IMPLEMENTED (create_immediate_visit; governed urgency reasons),CD-023
+RTE-022,/planning/plans/:id,Planning,Plan,C04,PA-PLN,JMAP,IMPLEMENTED (read-only post-publish),route scope csv
+RTE-023,/planning/single,Planning,Plan,C05,PA-PLN,TASK-PLN-03,IMPLEMENTED (isPlanner gate; duplicate guard),CD-022
+RTE-024,/reviews,Review,Decide,C16,PA-REV;PA-AUD,TASK-REV-01,IMPLEMENTED (scan-first queue; do not claim/reassign in capture),CD-028
+RTE-025,/reviews/:id,Review,Decide,C16;C20,PA-REV;PA-AUD;PA-LEAD,TASK-REV-01;EXPL-03,IMPLEMENTED (read=reviewer/ops/auditor/planner/leadership; decide=reviewer/ops; read-only lozenge),CD-029/CD-030
+RTE-026,/virtual/:id,Virtual,Inspect,C12,PA-INS;PA-FREP,TASK-VIR-01,IMPLEMENTED+PROVIDER_DEP (OTP/state/audit live; video provider-pending; do not fake video),CD-042/CD-043;design truth labels
+RTE-027,/visits,Visits,Plan,C06,PA-PLN;PA-OPS,DAY-PA-PLN,IMPLEMENTED+PROVIDER_DEP (map lens UNAVAILABLE; list is working equivalent),CD-026
+RTE-028,/visits/:id,Visits,Plan,C06,PA-PLN;PA-OPS;PA-LEAD,JMAP,IMPLEMENTED (DualStateRibbon five state domains),CD-027
+RTE-029,/admin/audit,MVP2,Prove,C15,PA-AUD,TASK-AUD-01;EXPL-06,IMPLEMENTED (M2-05 source pass; runtime certification pending),CURRENT_STATE M2-05
+RTE-030,/admin/gis/spatial,MVP2,Plan,C03,PA-ADM-GIS,CH-PA-ADM-GIS,IMPLEMENTED (do not publish location change),route scope csv
+RTE-031,/admin/risk/models,MVP2,Plan,C03,PA-ADM-RISK,CH-PA-ADM-RISK,IMPLEMENTED (do not publish model),route scope csv
+RTE-032,/ai/suggestions,MVP2,Decide,not demoed as live,held,EXPL-07 mention only,PROVIDER_DEP (ai advisory and provider truth; AI destinations hidden in shell),route scope csv;CURRENT_STATE
+RTE-033,/cases,MVP2,Decide,C17,PA-COM(HELD),held,IMPLEMENTED surface + SPONSOR_DECISION role binding (do not transition case),route scope csv
+RTE-034,/committee,MVP2,Decide,C17,PA-COM(HELD),held,IMPLEMENTED surface + SPONSOR_DECISION role binding (do not record decision),route scope csv
+RTE-035,/evidence-ocr,MVP2,Prove,C15 mention,PA-AUD,EXPL-07 mention,IMPLEMENTED surface + PROVIDER_DEP (do not upload sensitive evidence),route scope csv
+RTE-036,/operations/exceptions,MVP2,Improve,C21,PA-OPS,DAY-PA-OPS,IMPLEMENTED (do not resolve exception in capture),route scope csv
+RTE-037,/portal,MVP2,Improve,C23,PA-FREP,CH-PA-FREP;DAY-PA-FREP,IMPLEMENTED surface (external scope and privacy),route scope csv
+RTE-038,/tasks,MVP2,Improve,C23,PA-OPS;PA-REV,JMAP,IMPLEMENTED (do not claim/complete task in capture),route scope csv
+RTE-039,/admin/devices,MVP3,Plan,C22,PA-ADM-SEC,CH-PA-ADM-SEC,IMPLEMENTED surface + PROVIDER_DEP MDM (do not enroll/revoke),route scope csv
+RTE-040,/admin/integrations,MVP3,Plan,C22,PA-INT(HELD),held,IMPLEMENTED surface + PROVIDER_DEP (provider truth; no credentials),route scope csv
+RTE-041,/admin/operations,MVP3,Improve,C22,PA-ADM-SEC;PA-OPS,JMAP,IMPLEMENTED (confirm actions before click),route scope csv
+RTE-042,/admin/security-access,MVP3,Plan,C22,PA-ADM-SEC,CH-PA-ADM-SEC,IMPLEMENTED (do not change permissions),route scope csv
+RTE-043,/enforcement,MVP3,Decide,C18,PA-ENF(HELD),held,IMPLEMENTED surface + SPONSOR_DECISION role binding (do not create/finalize enforcement),route scope csv
+RTE-044,/admin/localization,Platform,Improve,C22,PA-ADM-* family,TASK-ADM-01;EXPL-08,IMPLEMENTED (1815 ui_strings rows; AR pending native review),CURRENT_STATE
+RTE-045,/dashboard,Platform,Decide,C19,PA-LEAD;PA-OPS,TASK-LEAD-01;Minister chapter,IMPLEMENTED (governed metrics only; explicit unavailable states; no AI briefs),TASK-WEB-DASHBOARD-002
+RTE-046,/factories,Platform,Prepare,C08,PA-INS;PA-LEAD,TASK-INS-01,IMPLEMENTED (read-only on load),route scope csv
+RTE-047,/planning/plans,Platform,Plan,C04,PA-PLN,JMAP,IMPLEMENTED (confirm actions before click),route scope csv
+RTE-048,/profile,Platform,Orientation,C23,ALL,HELP,IMPLEMENTED (do not change account in capture),route scope csv
+RTE-049,/reports/inspection/:id,Platform,Prove,C23,PA-AUD;PA-REV,DAY-PA-AUD,IMPLEMENTED (authorized read-only record),route scope csv
+RTE-050,/virtual,Platform,Inspect,C12,PA-INS,TASK-VIR-01,IMPLEMENTED (read-only on load),route scope csv
+RTE-051,/visits/calendar,Platform,Plan,C06,PA-PLN,DAY-PA-PLN,IMPLEMENTED (page-load mutation risk; fixture only),route scope csv
+RTE-052,/visits/map,Platform,Plan,C06 mention,PA-PLN,EXPL-07,PROVIDER_DEP (read-only; map provider not governed),route scope csv;CD-026 map truth
+RTE-053,/visits/workload,Platform,Plan,C06,PA-PLN,DAY-PA-PLN,IMPLEMENTED (page-load mutation risk; fixture only),route scope csv
+RTE-054,/,Public,Orientation,C00,ALL,C00 chapter,IMPLEMENTED (redirect to /login),CURRENT_STATE SCR-PUB-000 retired
+RTE-055,/launch,Public,Orientation,C00,ALL,C00 chapter,IMPLEMENTED (role-derived redirect),CURRENT_STATE /launch RBAC routing
+RTE-056,/launch/no-workspace,Public,Orientation,C00,ALL,C00 chapter,IMPLEMENTED (no-workspace state),route scope csv
+RTE-057,/login,Public,Orientation,C00,ALL,C00;EXPL-08,IMPLEMENTED (Arabic-first lang=ar dir=rtl; sanitized atlas; demo credentials server-gated never on screen),CURRENT_STATE
+RTE-058,/reset,Public,Orientation,C00,ALL,C00 chapter,IMPLEMENTED (anti-enumeration; do not send real reset),CURRENT_STATE ERR-AUTH-001
+RTE-059,/reviews/:id/started,Review,Decide,C16,PA-REV,TASK-REV-01,IMPLEMENTED (reviewer transition trace only),route scope csv

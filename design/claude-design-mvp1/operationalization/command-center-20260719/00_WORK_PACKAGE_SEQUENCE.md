@@ -33,18 +33,13 @@ Local CLI agents must read these paths directly. Browser agents must be given up
 
 ## Non-negotiable sequence
 
-1. `WP-01` Codex captures the as-is platform, records findings and creates the premium KSA design-system requirement pack.
-2. `WP-02` Claude Design creates the shared design system and five representative existing-product golden screens.
-3. Sponsor explicitly approves and Codex records `DESIGN_SYSTEM_LOCK.yaml`.
-4. In parallel with steps 1–3:
-   - `WP-03` ChatGPT researches and specifies the complete onboarding, real-character video and learning module.
-   - `WP-04` Claude Chat researches and specifies the complete Minister/Leadership dashboard, map/list and conversational-AI module.
-5. Only after the design-system lock:
-   - `WP-05` Claude Design designs the onboarding/video module as an addendum using the locked system.
-   - `WP-06` Claude Design designs the Minister/Leadership module as an addendum using the locked system.
-6. Only after module-design acceptance:
-   - `WP-07` a new Claude Code session implements both modules as controlled vertical slices.
-7. After the design-system lock, independently from the two new modules:
-   - `WP-08` Codex implements accepted per-screen UI/UX findings across the existing platform, excluding files reserved for WP-07 until integration.
+Codex WP-01 continues independent capture, findings and shared-design-system evidence work. The external-specialist sequence is strictly:
+
+1. `WP-03` ChatGPT Task 1 independently completes the onboarding, Persona Academy, real-character video and learning research handoff.
+2. `WP-04-KIMI` Kimi Task 2 independently completes the Minister/Leadership research, hostile roast and corrected brief.
+3. Claude Design Task 3 starts only after Codex WP-01, ChatGPT Task 1 and Kimi Task 2 are complete. It creates the shared system and five golden screens, receives explicit sponsor lock, then creates WP-05/WP-06 addenda.
+4. Claude Code WP-07 Task 4 starts only after both addenda receive sponsor acceptance and exact implementation authority exists.
+
+After the shared-system lock, Codex WP-08 implements accepted existing-screen findings without overlapping WP-07 file ownership.
 
 No research completion authorizes design. No design completion authorizes implementation. No screenshot proves behaviour. No agent other than the master controller updates the fresh programme ledger.

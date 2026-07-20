@@ -4,6 +4,10 @@
 
 Direct access to `/Users/vikramindla/Developer/Inspection`, its Git worktree and mandatory authority files is required before any generation or implementation. If access fails, return only `CANONICAL_PATH_ACCESS_GATE: FAIL`, exact errors, `NO_WORK_PERFORMED: true` and the action required to restore access. Never use another checkout.
 
+## Task-order gate
+
+You are Task 4. Do not begin until Claude Design Task 3 has an explicit sponsor-locked shared system, sponsor-accepted onboarding addendum, sponsor-accepted Minister addendum and exact implementation slice authority. If any is absent, return `WAITING_ON_GATE` and generate nothing. The controlling sequence is `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/04_EXECUTION_SEQUENCE.md`.
+
 ## Portable execution header — mandatory on every account
 
 Run this prompt on the same Mac from any Claude Code account. Do not rely on chat history.

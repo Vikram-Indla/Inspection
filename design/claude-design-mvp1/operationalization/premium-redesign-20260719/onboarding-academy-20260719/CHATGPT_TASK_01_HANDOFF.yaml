@@ -1,0 +1,114 @@
+schema_version: "1.0"
+handoff_id: "CHATGPT-TASK-01-HANDOFF-20260719"
+from_task: "TASK-01 Onboarding / Persona Academy / real-character video / learning-module research"
+workstream: "TASK-01 — independent parallel research workstream"
+downstream_consumer: "Claude Design (WP-02), which may start only after all three independent workstreams (Task 1, Kimi Task 2, Codex WP-01) exist"
+date: "2026-07-19"
+canonical_repository: "/Users/vikramindla/Developer/Inspection"
+retired_path_used: false
+programme_ledger_edited: false
+no_invented_product_behaviour: true
+
+workstream_independence:
+  note: "Task 1, Kimi Task 2 and Codex WP-01 are three independent parallel workstreams. None waits for, gates, or must validate another."
+  task_01_chatgpt_claude: "independent"
+  kimi_task_02_minister_leadership: "independent — does NOT wait for or validate this Task 1 handoff"
+  codex_wp_01_screenshot_and_design_system: "independent"
+  only_downstream: "Claude Design after all three outputs exist; Claude Code after sponsor-approved Claude Design"
+  this_handoff_role: "programme evidence and optional context — NOT a gate on Kimi Task 2 or any other research workstream"
+
+gate_check:
+  canonical_path_access_gate: "PASS"
+  authority_files_read:
+    - "AGENTS.md"
+    - "product-contract/00_START_HERE.md"
+    - "product-contract/CURRENT_STATE.md"
+    - "product-contract/GATE_STATUS.md"
+    - "product-contract/execution/CURRENT_SLICE.yaml"
+    - "design/claude-design-mvp1/00_START_HERE.md"
+    - "design/claude-design-mvp1/operationalization/premium-redesign-20260719/MASTER_UIUX_OPERATIONALIZATION_PLAN.md"
+    - "design/claude-design-mvp1/operationalization/premium-redesign-20260719/FULL_59_ROUTE_SCREENSHOT_SCOPE.csv"
+    - "design/claude-design-mvp1/operationalization/premium-redesign-20260719/FIFTY_ADDITIONAL_RECOMMENDATIONS.csv"
+    - "InspectionOps .../01_SOURCE_BASELINE/Inspection_Platform_Strategic_Baseline_61_Sheets.xlsx"
+    - "InspectionOps .../01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx"
+    - "InspectionOps .../01_SOURCE_BASELINE/KSA_Inspection_Storyboard_Reference_20_Pages.pdf"
+    - "InspectionOps .../01_SOURCE_BASELINE/MIM_Inspection_Strategic_BRD_Source.pdf"
+
+deliverables_produced:
+  location: "design/claude-design-mvp1/operationalization/premium-redesign-20260719/onboarding-academy-20260719/"
+  files:
+    - "ONBOARDING_MODULE_PRD.md"
+    - "PERSONA_ACADEMY_CONTENT_MATRIX.csv"
+    - "FOUR_HOUR_PLATFORM_STORYLINE.md"
+    - "VIDEO_SERIES_BIBLE.md"
+    - "VIDEO_SCRIPTS_AND_STORYBOARDS.md"
+    - "CASTING_LOCATION_PPE_AND_RIGHTS_BRIEF.md"
+    - "ONBOARDING_ROUTE_AND_SOURCE_TRACEABILITY.csv"
+    - "ONBOARDING_ACCEPTANCE_CRITERIA.csv"
+    - "CLAUDE_DESIGN_ONBOARDING_INPUT_PROMPT.md"
+    - "CHATGPT_TASK_01_HANDOFF.yaml"
+
+summary:
+  persona_launch_set: 13   # Compliance/Form/Workflow/Risk/GIS/Security Admins, Planner, Operations, Inspector, Reviewer, Auditor, Minister-Leadership, Factory Representative
+  personas_held: 3         # Committee, Enforcement/Compliance Officer, Integration Admin (role-binding reconciliation)
+  routes_traced: 59        # RTE-001..RTE-059, all dispositioned in ONBOARDING_ROUTE_AND_SOURCE_TRACEABILITY.csv
+  storyline: "24 chapters / 6 acts / 240 min + 8-chapter 30-min executive cut + 4-segment 10-min leadership cut"
+  acceptance_rows: 40      # OB-AC-001..040
+  truth_classes_used: ["IMPLEMENTED", "IMPROVEMENT", "PROPOSAL", "MEDIA_DEP", "PROVIDER_DEP", "SPONSOR_DECISION"]
+
+open_verification_items:
+  note: "These are open repo/code verification items raised by Task 1. They are NOT assigned to Kimi Task 2 and do NOT block it. They are repo-truth checks best owned by the master-controller Codex / Codex WP-01, to be routed as the programme sees fit. Claude Design must have OV-01..OV-03 resolved (or explicit held-state instructions) before finalizing affected surfaces."
+  - id: "OV-01"
+    item: "Enumerate the 13-role enum from migration 0001 / RLS policies and re-map Academy admin-family display names to exact runtime role keys"
+    owner_hint: "Codex / repo evidence"
+    source: "CURRENT_STATE quotes '13 roles' without the list; only planner/inspector/reviewer/ops/auditor/leadership/admin are individually evidenced"
+  - id: "OV-02"
+    item: "Confirm the full operational_state enum (CURRENT_STATE names new/on_the_way/arrived/executing/expired of 'six operational states'); correct storyline chips if the sixth differs"
+    owner_hint: "Codex / repo evidence"
+  - id: "OV-03"
+    item: "Confirm role bindings for /committee, /cases, /enforcement, /portal before un-holding PA-COM/PA-ENF content"
+    owner_hint: "Codex / repo evidence + governance"
+  - id: "OV-04"
+    item: "Validate TASK capture list against the current release tag and capture safety notes (do-not-mutate rules per route)"
+    owner_hint: "Codex WP-01 screenshot workstream"
+  - id: "OV-05"
+    item: "Reconcile Academy persona names with FABLE_UNDERSTANDING_TRACEABILITY.csv / FABLE_ACCEPTANCE_UNDERSTANDING.csv row-level mapping"
+    owner_hint: "Codex / repo evidence"
+  - id: "OV-06"
+    item: "Verify M2-05 flight-recorder demo caveat wording against latest runtime-certification status before recording C15"
+    owner_hint: "Codex / repo evidence"
+
+sponsor_decisions_pending:
+  - "Minister display naming over the leadership boundary (REC-024)"
+  - "Committee / Enforcement / Integration Admin persona inclusion"
+  - "Vision 2030 and ministry emblem brand usage in produced media"
+  - "Learning-analytics targets (none set; inventing targets is prohibited)"
+  - "Media production budget, vendors, government location facilitation"
+  - "Progress-persistence storage for Academy (requires change control)"
+
+provider_dependencies_taught_not_patched:
+  - "Video provider (virtual room provider-pending)"
+  - "Notification delivery (queued, not confirmed delivered)"
+  - "Google Routes (honest unavailable; movement projected, not live GPS)"
+  - "Signature/PKI (acknowledgement unverified, never labelled PKI)"
+  - "SSO, AI briefing, MDM, retention (fail-closed)"
+
+media_dependencies:
+  - "All filmed chapters (S1, S5) — poster/text fallback ships first"
+  - "Captions/transcripts/AD in AR+EN per item"
+  - "Talent/location releases with expiry tracking; HSE PPE sign-off per cut"
+  - "Arabic scripts gated on the open native-Arabic human review gate"
+
+claude_design_will_need:
+  - "CD-PREM-01 provisional chassis contract (blocking precondition)"
+  - "This pack's 10 files, especially the content matrix and traceability CSV as the only route/persona authority"
+  - "Resolved OV-01..OV-03 or explicit held-state instructions"
+  - "Screenshot evidence for the routes each designed surface embeds (Phase 2 capture manifest)"
+  - "Sponsor direction from the five-screen gate (Onboarding & secure access screen)"
+  - "Poster-fallback art direction approval before any media-player spec is finalized"
+
+do_not:
+  - "Edit the programme ledger, acceptance ledger, or frozen product-contract artifacts"
+  - "Create final visual screens or application code from this pack"
+  - "Invent roles, metrics, targets, providers, policy values, or persona permissions"
+  - "Use the retired non-canonical checkout for anything (only /Users/vikramindla/Developer/Inspection is authoritative)"

@@ -52,6 +52,7 @@ Read these onboarding files first:
 1. `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/01_PROGRAMME_CONTEXT.md`
 2. `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/02_PATH_REGISTRY.yaml`
 3. `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/03_ASSIGNMENT_ROUTER.yaml`
+4. `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/04_EXECUTION_SEQUENCE.md`
 
 Then read the repository authority in this exact order:
 
@@ -97,15 +98,14 @@ The detailed prompts live at:
 
 `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719`
 
-The controlled sequence is:
+The approved external-task sequence is:
 
-1. `WP-01` Codex captures all screenshots and produces per-screen findings and the design-system requirement pack.
-2. `WP-02` Claude Design creates the shared design system and five existing-product golden screens from WP-01 evidence.
-3. The sponsor approves the design direction; master Codex records the design-system lock.
-4. In parallel, `WP-03` ChatGPT researches/specifies onboarding, real-character video and Persona Academy; `WP-04` Claude Chat researches/specifies the Minister/Leadership dashboard, map/list and governed AI.
-5. After the design-system lock, `WP-05` and `WP-06` Claude Design create the onboarding and Minister design addenda.
-6. After sponsor acceptance of those module designs, `WP-07` Claude Code implements both modules as controlled vertical slices.
-7. After the shared design-system lock, `WP-08` Codex implements accepted per-screen findings without overlapping WP-07 ownership.
+1. `WP-03` ChatGPT completes onboarding/Persona Academy/video research.
+2. `WP-04-KIMI` Kimi independently completes Minister/Leadership research, roast and correction.
+3. Claude Design starts only after Task 1, Task 2 and Codex `WP-01` evidence are complete. It creates the shared system, receives sponsor lock, then designs the two module addenda.
+4. `WP-07` Claude Code implements only after both module addenda receive sponsor acceptance and an exact implementation slice exists.
+
+ChatGPT Task 1, Kimi Task 2 and Codex WP-01 are independent parallel workstreams. Claude Design waits for all three; later `WP-08` accepted per-screen implementation has its own gate.
 
 No research output authorizes design. No design output authorizes implementation. No screenshot alone proves behaviour. No agent self-approves a gate.
 
@@ -115,7 +115,7 @@ Read `03_ASSIGNMENT_ROUTER.yaml`, identify the product you are running in, and o
 
 - Codex local execution: master coordination or the specifically assigned Codex package (`WP-01` or, after its gate, `WP-08`).
 - ChatGPT browser research: `WP-03` only.
-- Claude Chat browser research: `WP-04` only.
+- Kimi research: `WP-04-KIMI` independently, after canonical access and required source reads.
 - Claude Design: `WP-02`, then `WP-05` or `WP-06` only when their input gates are satisfied.
 - Claude Code: `WP-07` only after both module designs and required acceptance are present; otherwise report the gate and do not implement.
 
