@@ -35,3 +35,7 @@ export { DateRangePicker, type DateRangePickerProps } from "./inputs/DateRangePi
 export { StatusSelector, type StatusSelectorProps } from "./inputs/StatusSelector";
 export { Accordion, type AccordionProps, type AccordionSection } from "./data/Accordion";
 export { ChecklistQuestion, type ChecklistQuestionProps } from "./inspection/ChecklistQuestion";
+// PR6 — data grid
+export { DataGrid, type DataGridProps, type DataGridColumn, type SortRule } from "./grid/DataGrid";
+export { FilterBar, FilterRule, type FilterBarProps, type FilterRuleProps, type FilterRuleValue } from "./navigation/FilterBar";
+export { ColumnManager, type ColumnManagerProps, type ManagedColumn } from "./navigation/ColumnManager";

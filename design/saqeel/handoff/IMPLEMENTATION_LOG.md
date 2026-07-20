@@ -15,6 +15,8 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 
 | 2026-07-20 | PR5 Forms (new components) | new Combobox/DateRangePicker/StatusSelector/Accordion/ChecklistQuestion | unchanged | none | multi-select chips + ARIA combobox; checklist compliant/violation/na |
 
+| 2026-07-20 | PR6 Data grid (new components) | new DataGrid + FilterBar/FilterRule + ColumnManager | unchanged | none | sticky header, pinned col, multi-sort, bulk bar, expansion, densities, loading/empty/error; consumers windowed by caller |
+
 ## PR2 notes
 - Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
   imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.
