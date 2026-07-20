@@ -344,6 +344,42 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
 - Scope: documented Inspection API field structure, canonical field dispositions, shared Web/iPad consumption, offline/version and unavailable/error contracts.
 - Industry Shared: method evidence only; full contracts, adapters and retirement remain `BLOCKED_EXTERNAL`.
 
+## Saqeel login revamp — 2026-07-20
+
+- Task: `TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001`; screen `SCR-PUB-010`; rows `SLR-AC-001..018`.
+- Engineering acceptance: **18/18 PASS** in `SLR_SAQEEL_LOGIN_REVAMP_001.csv`.
+- Protected motion: zone lift/click/camera/pause/reveal/reset, five-stage timing and route motion unchanged; exact `1.5×` vehicle scale is the sole motion-layer delta.
+- Protected lockup: repository `SaqeelMark` SHA-256 is unchanged and the sole visible Arabic wordmark is exactly `صقيل | صناعي`.
+- Authentication: credential and reset behavior regress cleanly; the final wordmark-protected override removes National SSO and all secondary-auth wrappers while `MVP3-HOLD-003` remains an internal provider hold.
+- Atlas themes: native dark plus dedicated `1672×941` light raster; main/lifted/sidewall sources switch together; edge registration is `0px,0px`; no CSS-generated light tint.
+- Responsive/theme/i18n: EN/AR, light/dark, desktop, iPad landscape/portrait, Stage Manager, mobile and 320 CSS px matrix PASS with no page overflow or geographic mirroring.
+- Sponsor status: **CONDITIONALLY COMPLETE — AWAITING VISUAL ACCEPTANCE**. Exact browser-level 200%/400% zoom, repository lint tooling, asset/geography and qualified native-Arabic release checks remain listed; no commit/push/merge/deploy is authorized or performed.
+
+### Unified-surface correction addendum
+
+- One atlas environment: **PASS** — event and rail are absolute overlays; one outer frame/radius; a 48px atmospheric bridge removes hard top/bottom seams without cropping the registered plane.
+- Public statistics strip: **PASS** — component, heading, five metric cells, borders and flow spacing removed; interactive zone readout retained.
+- Resting zone noise: **PASS** — no resting boundaries outside the Zones interaction; feedback uses restrained semantic blue, not red/purple/green grid tones.
+- Registration: **PASS** — complete scene plane retains `1672/941`; no child-layer transform or RTL mirror; hover/lock/Escape, routes, facilities and labels regress cleanly.
+- Required responsive and 16-state before/after evidence: **PASS** — see `docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md` and external manifest `SAQEEL_LOGIN_UNIFIED_SURFACE_003.json`.
+- Correction status: **ENGINEERING COMPLETE — READY FOR SPONSOR VISUAL REVIEW**; human/release holds above remain unchanged.
+
+### One fade / one unison / one theme addendum
+
+- Full-height hero structure: **PASS** — `.lg-story__frame` is absolute and equals the entire `.lg-story` rail; title/control, event and stage rail are absolute overlays.
+- Overlay-hidden test: **PASS** in light and dark — removing title/event/rail leaves one uninterrupted full-height atmospheric atlas canvas.
+- Navigation integration: **PASS** — rail outer border, radius, background, blur and shadow are removed; the bottom fade supplies contrast.
+- Theme unison: **PASS** — Sign In, forgot-password, trust icon, language and story controls use the login-scoped semantic blue accent; protected prism remains unchanged.
+- Horizontal overflow: **PASS** across the exact responsive matrix; full split shell is constrained to `100%` inline size.
+- Protected behavior: **PASS** — complete login/atlas/reset/negative-auth suite remains 27/27.
+
+### Event statement correction
+
+- Event presentation: **PASS** — stage copy is direct typography on the atmospheric atlas; background, border, radius, blur and box shadow are absent.
+- Placement/legibility: **PASS** — compact balanced statement remains within the top atmosphere, uses pointer-inert text shadow, and does not mask facilities or zone controls.
+- Rail and motion preservation: **PASS** — image-3 rail treatment, status semantics, stage timing and map motion remain unchanged; protected regression 27/27.
+- Typography refinement: **PASS** — statement reduced to 13px/18px weight 500 and stage marker to 9px/13px weight 600; focused story/structure/responsive checks 3/3.
+
 - Task: `TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013`; acceptance rows `F360-ISH-AC-001..018`.
 - Source acceptance: provider isolation, exact lead inventory, fail-closed errors, privacy-domain separation, and preservation guards are implemented and verified.
 - Verification: typecheck PASS; production build PASS; focused contract suite 4/4 PASS; protected static inventory 135 PASS / 4 intentional live-provider skips / 0 failed.

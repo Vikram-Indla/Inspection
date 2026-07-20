@@ -1,35 +1,39 @@
 # Session Handoff
 
-- Session ID: `2026-07-16-ipad-geofence-override-approval`
-- Date/time: 2026-07-16 Asia/Riyadh
-- Gate: G11 hardening
-- Task ID: `TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003`
-- Branch: `codex/ipad/m04-geofence-policy-promotion-002`
-- Starting commit: `9ba5a24`
-- Ending source commit: `62916ee`
-- Requirements: `MVP1-M04-039`, `MVP1-M04-043`, `MVP1-M04-045`, `MVP1-M08-013`
-- Acceptance IDs: `AC-0152..AC-0156`
-- Screens: `SCR-IPAD-620`, `SCR-WEB-500`, `SCR-ADM-070`
-- Engines: `ENG-06`, `ENG-08`, `ENG-11`
-- Files changed: iPad Startup/field loader/offline outbox; Operations queue/action;
-  two forward migrations; focused policy tests; contract/evidence records.
-- Database/API changes: RLS-protected `geo_override_requests`; guarded request,
-  decision and expiry RPCs; audit and visit-close expiry triggers; controlled
-  reason configuration; committed `geo_override` evidence enum value.
-- Tests run: typecheck PASS; production build PASS; static Playwright PASS 3/3;
-  diff check PASS.
-- Evidence captured: `evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md`.
-- Decisions made: sponsor 1A/2A/3A/4A recorded in `HUMAN_APPROVALS.yaml`; no
-  numeric GIS policy, map provider or migration-history decision was invented.
-- Open blockers: controlled Supabase migration/RLS runtime, authenticated
-  inspector/Operations scenario, and remote migration-history/access repair.
-- Regression result: source regression PASS; runtime not claimed.
-- Exact next task: apply the two forward migrations in a reconciled staging or
-  approved shared environment and execute the inspector/Operations/offline
-  acceptance journey before production promotion.
-- Ready-to-paste resume prompt: Read `CURRENT_STATE.md` UPDATE 89,
+- Session ID: `2026-07-20-saqeel-login-revamp-001`
+- Date/time: 2026-07-20 Asia/Riyadh
+- Gate: G10 verification / G11 UI hardening
+- Task ID: `TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001`
+- Branch: `feature/saqeel-login-revamp`
+- Starting commit: `d53e09f7ee4018bf2046e36d95fe45df355b11a2`
+- Ending source commit: `UNCOMMITTED`
+- Requirements: `CD-001`, `CD-002`, `SLR-REQ-001..018`
+- Acceptance IDs: `SLR-AC-001..018`
+- Screens: `SCR-PUB-010`
+- Engines: Supabase Auth, `FND-003`, Saudi atlas motion, theme and locale.
+- Files changed: login client/page/atlas/CSS; focused and visual Playwright
+  suites; protected-motion inventory; acceptance, evidence and governance
+  records.
+- Database/API changes: none.
+- Tests run: typecheck PASS; production build PASS; functional product checks
+  26/26 PASS; final visual/video evidence capture 2/2 PASS; diff/integrity checks PASS.
+- Evidence captured: `evidence/TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001.md`,
+  external 26-frame + interaction-video set and SHA-256 manifest.
+- Decisions made: final wordmark-protected prompt overrides earlier prompts;
+  repository prism + `صقيل | صناعي` stay exact; National SSO is absent; dark
+  native/light dedicated atlas sources are registered; only vehicle scale
+  changed in the protected motion layer.
+- Open blockers: exact browser-level 200%/400% zoom certification; unavailable
+  repository lint tooling; atlas rights/geographic confirmation; qualified
+  native-Arabic review; sponsor visual acceptance.
+- Regression result: authentication, reset, protected motion, theme, locale and
+  responsive matrix PASS; no external SSO control or capability is claimed.
+- Exact next task: sponsor visual acceptance of the evidence set, followed by
+  explicit direction for commit/push/merge/deploy if accepted.
+- Ready-to-paste resume prompt: Read `CURRENT_STATE.md` UPDATE 111,
   `execution/CURRENT_SLICE.yaml`, and
-  `evidence/TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003.md`. Work on branch
-  `codex/ipad/m04-geofence-policy-promotion-002`; source commit `62916ee` is
-  verified. Do not apply the migrations blindly. Reconcile remote migration
-  history/access, then run the controlled inspector/Operations runtime suite.
+  `evidence/TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001.md`. Review the 26 external
+  frames, interaction video and `MANIFESTS/SAQEEL_LOGIN_WORDMARK_PROTECTED_002.json`
+  on branch `feature/saqeel-login-revamp`. Engineering acceptance is 18/18 PASS;
+  exact zoom/lint/human release checks and sponsor visual acceptance remain open.
+  Do not add SSO or commit, push, merge, deploy without explicit authorization.

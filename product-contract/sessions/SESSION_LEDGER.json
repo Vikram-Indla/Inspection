@@ -4379,9 +4379,213 @@
       "commit_sha": "ab0de9663a13e2b4ffcf369ec5458455367832b7",
       "next_task": "Complete structurally discoverable Inspection API contract mapping and retain Industry Shared fail-closed dimensions.",
       "resume_prompt": "Read the cross-provider CURRENT_SLICE, contract ledgers and Industry Shared ledger. Do not invent missing contracts or activate live submission."
+    },
+    {
+      "session_id": "2026-07-20-saqeel-login-revamp-001",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "feature/saqeel-login-revamp",
+      "task_id": "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001",
+      "gate": "G10 verification / G11 UI hardening",
+      "requirements": [
+        "CD-001",
+        "CD-002",
+        "SLR-REQ-001..018"
+      ],
+      "acceptance_ids": [
+        "SLR-AC-001..018"
+      ],
+      "screens": [
+        "SCR-PUB-010"
+      ],
+      "engines": [
+        "Supabase Auth",
+        "FND-003",
+        "Saudi atlas protected motion",
+        "theme and locale"
+      ],
+      "files_changed": [
+        "login client/page/atlas/CSS",
+        "focused and visual Playwright suites",
+        "protected-motion inventory",
+        "acceptance, evidence and governance records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "focused product checks 26/26 PASS",
+        "final visual evidence capture 1/1 PASS",
+        "diff and record integrity checks PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001.md",
+        "external eleven-frame screenshot set",
+        "external MANIFESTS/SAQEEL_LOGIN_REVAMP_001.json"
+      ],
+      "decisions": [
+        "Sponsor authorized the Saqeel login revamp",
+        "Native atlas colors remain theme-invariant and only vehicle scale changes in the motion layer",
+        "National SSO fails closed while MVP3-HOLD-003 remains open",
+        "No commit, push, merge or deployment was authorized or performed"
+      ],
+      "blockers": [
+        "National SSO provider configuration",
+        "Atlas rights and official geographic confirmation",
+        "Qualified native-Arabic review",
+        "Sponsor visual acceptance"
+      ],
+      "commit_sha": "UNCOMMITTED (base d53e09f7ee4018bf2046e36d95fe45df355b11a2)",
+      "next_task": "Sponsor visual acceptance of the eleven-frame evidence set, followed by explicit direction for commit/push/merge/deploy if accepted.",
+      "resume_prompt": "Read CURRENT_STATE.md UPDATE 111, execution/CURRENT_SLICE.yaml, and evidence/TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001.md. Review the eleven external frames and MANIFESTS/SAQEEL_LOGIN_REVAMP_001.json on branch feature/saqeel-login-revamp. Engineering acceptance is 18/18 PASS, but sponsor visual acceptance and all release holds remain open. Do not activate SSO or commit, push, merge, deploy without explicit authorization."
+    },
+    {
+      "session_id": "2026-07-20-saqeel-login-wordmark-protected-002",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "feature/saqeel-login-revamp",
+      "task_id": "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001",
+      "gate": "G11 controlled public-access UI hardening",
+      "requirements": [
+        "CD-001",
+        "CD-002",
+        "SLR-REQ-001..018",
+        "wordmark-protected final consolidated override"
+      ],
+      "acceptance_ids": [
+        "SLR-AC-001..018"
+      ],
+      "screens": [
+        "SCR-PUB-010"
+      ],
+      "engines": [
+        "Supabase Auth",
+        "FND-003",
+        "Saudi atlas protected motion",
+        "theme-specific atlas source switching",
+        "theme and locale"
+      ],
+      "files_changed": [
+        "login page/atlas/CSS and dedicated light raster",
+        "focused and visual Playwright suites",
+        "final implementation report and protected-motion inventory",
+        "acceptance, evidence and governance records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "wordmark-protected acceptance 7/7 PASS",
+        "CD-001 reset and negative-auth 19/19 PASS",
+        "visual and video evidence 2/2 PASS",
+        "diff and runtime integrity checks PASS",
+        "lint unavailable: no package script or dependency"
+      ],
+      "evidence": [
+        "docs/login-revamp/final/FINAL_IMPLEMENTATION_REPORT.md",
+        "product-contract/evidence/TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001.md",
+        "external 26 PNG plus one WebM evidence set",
+        "external MANIFESTS/SAQEEL_LOGIN_WORDMARK_PROTECTED_002.json"
+      ],
+      "decisions": [
+        "Final wordmark-protected prompt overrides earlier login prompts",
+        "Protected repository prism and exact Arabic wordmark remain unchanged",
+        "National SSO and every secondary-auth wrapper are absent",
+        "Native dark and dedicated registered light atlas switch together through lifted states",
+        "Only vehicle scale changes in the protected motion layer",
+        "No commit push merge or deployment was performed"
+      ],
+      "blockers": [
+        "Exact browser-level 200 and 400 percent zoom certification",
+        "Repository lint script or ESLint dependency unavailable",
+        "Atlas rights and official geographic confirmation",
+        "Qualified native-Arabic review",
+        "Sponsor visual acceptance"
+      ],
+      "commit_sha": "UNCOMMITTED (base d53e09f7ee4018bf2046e36d95fe45df355b11a2)",
+      "next_task": "Sponsor visual acceptance of the live port-3000 implementation and wordmark-protected evidence set; then explicit commit/push/merge direction if accepted.",
+      "resume_prompt": "Read CURRENT_STATE.md UPDATE 112, execution/CURRENT_SLICE.yaml, docs/login-revamp/final/FINAL_IMPLEMENTATION_REPORT.md and evidence/TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001.md. Review the 26 frames, interaction WebM and MANIFESTS/SAQEEL_LOGIN_WORDMARK_PROTECTED_002.json on feature/saqeel-login-revamp. Do not add SSO or commit, push, merge or deploy without explicit authorization."
+    },
+    {
+      "session_id": "2026-07-20-saqeel-login-unified-surface-003",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "feature/saqeel-login-revamp",
+      "task_id": "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001",
+      "gate": "G11 controlled public-access UI hardening",
+      "requirements": ["CD-001", "CD-002", "SLR-REQ-001..018", "unified-surface correction 003"],
+      "acceptance_ids": ["SLR-AC-001..018", "unified-surface correction P0 acceptance"],
+      "screens": ["SCR-PUB-010"],
+      "engines": ["Supabase Auth", "FND-003", "Saudi atlas protected motion", "theme-specific raster switching", "theme and locale"],
+      "files_changed": ["StoryPanel public-summary removal", "login strings and unified-surface CSS", "focused and visual Playwright suites", "unified-surface report and governance/evidence records"],
+      "tests": ["typecheck PASS", "production build PASS", "login atlas reset negative-auth 27/27 PASS", "visual/video evidence 2/2 PASS", "diff and record integrity checks PASS"],
+      "evidence": ["docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md", "external required 16-state before/after set", "external protected interaction WebM", "external MANIFESTS/SAQEEL_LOGIN_UNIFIED_SURFACE_003.json"],
+      "decisions": ["One atlas environment with absolute event and rail overlays", "Public five-cell statistics strip removed while interactive readout remains", "48px atmospheric bridge preserves full plane without child transforms or facility crop", "Resting zone noise absent and Zones feedback uses semantic blue", "No commit push merge or deployment was performed"],
+      "blockers": ["Sponsor visual acceptance", "Exact manual browser-level 200 and 400 percent zoom review", "Repository lint script or dependency unavailable", "Atlas rights and official geographic confirmation", "Qualified native-Arabic review"],
+      "commit_sha": "UNCOMMITTED (base d53e09f7ee4018bf2046e36d95fe45df355b11a2)",
+      "next_task": "Sponsor visual review of the live port-3000 unified surface and 16-state comparison; then explicit commit/push/merge direction if accepted.",
+      "resume_prompt": "Read CURRENT_STATE.md UPDATE 113, execution/CURRENT_SLICE.yaml and docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md. Review port 3000 and MANIFESTS/SAQEEL_LOGIN_UNIFIED_SURFACE_003.json on feature/saqeel-login-revamp. Do not commit, push, merge or deploy without explicit authorization."
+    },
+    {
+      "session_id": "2026-07-20-saqeel-login-one-unison-004",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "feature/saqeel-login-revamp",
+      "task_id": "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001",
+      "gate": "G11 controlled public-access UI hardening",
+      "requirements": ["CD-001", "CD-002", "SLR-REQ-001..018", "one fade one unison one theme correction 004"],
+      "acceptance_ids": ["SLR-AC-001..018", "full-height hero and overlay-hidden acceptance"],
+      "screens": ["SCR-PUB-010"],
+      "engines": ["Supabase Auth", "FND-003", "Saudi atlas protected motion", "theme-specific raster switching", "theme and locale"],
+      "files_changed": ["full-height login hero and scoped accent CSS", "focused structural and visual Playwright suites", "unified correction report and governance/evidence records"],
+      "tests": ["typecheck PASS", "production build PASS", "protected functional regression 27/27 PASS", "visual/video evidence 2/2 PASS", "overlay-hidden light/dark canvas proof PASS"],
+      "evidence": ["docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md", "external canvas-only light/dark frames", "external responsive/interaction frames and WebM", "external MANIFESTS/SAQEEL_LOGIN_ONE_UNISON_004.json"],
+      "decisions": ["Full right rail is the atlas scene host", "Title event and rail are overlays", "Top and bottom fades are decorative overlays not bands", "Rail card shell removed", "Login-scoped accent system unified blue", "No commit push merge or deployment was performed"],
+      "blockers": ["Sponsor visual acceptance", "Exact manual browser-level 200 and 400 percent zoom review", "Repository lint script or dependency unavailable", "Atlas rights and official geographic confirmation", "Qualified native-Arabic review"],
+      "commit_sha": "UNCOMMITTED (base d53e09f7ee4018bf2046e36d95fe45df355b11a2)",
+      "next_task": "Sponsor visual review of the live one-unison port-3000 page and overlay-hidden evidence; then explicit commit/push/merge direction if accepted.",
+      "resume_prompt": "Read CURRENT_STATE.md UPDATE 114, execution/CURRENT_SLICE.yaml and docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md. Review port 3000 and MANIFESTS/SAQEEL_LOGIN_ONE_UNISON_004.json on feature/saqeel-login-revamp. Do not commit, push, merge or deploy without explicit authorization."
+    },
+    {
+      "session_id": "2026-07-20-saqeel-login-event-statement-005",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "feature/saqeel-login-revamp",
+      "task_id": "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001",
+      "gate": "G11 controlled public-access UI hardening",
+      "requirements": ["CD-001", "SLR-REQ-001..018", "event statement correction 005"],
+      "acceptance_ids": ["SLR-AC-001..018", "borderless event statement"],
+      "screens": ["SCR-PUB-010"],
+      "engines": ["Saudi atlas protected motion", "theme and locale", "Supabase Auth"],
+      "files_changed": ["login event-statement CSS", "focused structural assertion", "correction report and governance/evidence records"],
+      "tests": ["typecheck PASS", "production build PASS", "protected functional regression 27/27 PASS", "refreshed visual/video evidence 2/2 PASS"],
+      "evidence": ["three sponsor screenshots", "docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md", "external MANIFESTS/SAQEEL_LOGIN_ONE_UNISON_004.json"],
+      "decisions": ["Event copy is direct typography rather than a card", "Rail and protected motion remain unchanged", "No commit push merge or deployment was performed"],
+      "blockers": ["Sponsor visual acceptance", "Existing manual zoom Arabic rights geography and lint release holds"],
+      "commit_sha": "UNCOMMITTED (base d53e09f7ee4018bf2046e36d95fe45df355b11a2)",
+      "next_task": "Sponsor visual review of the live statement treatment; then explicit commit/push/merge direction if accepted.",
+      "resume_prompt": "Read CURRENT_STATE.md UPDATE 115 and the unified correction report. Review http://127.0.0.1:3000/login?statement=7. Do not commit, push, merge or deploy without explicit authorization."
+    },
+    {
+      "session_id": "2026-07-20-saqeel-login-event-type-006",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "feature/saqeel-login-revamp",
+      "task_id": "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001",
+      "gate": "G11 controlled public-access UI hardening",
+      "requirements": ["event statement typography refinement 006"],
+      "acceptance_ids": ["quiet statement hierarchy"],
+      "screens": ["SCR-PUB-010"],
+      "engines": ["Saudi atlas protected motion"],
+      "files_changed": ["login event typography CSS", "correction report and evidence records"],
+      "tests": ["typecheck PASS", "production build PASS", "focused story structure responsive 3/3 PASS"],
+      "evidence": ["sponsor screenshot", "live port-3000 inspection state"],
+      "decisions": ["Statement 13px/18px weight 500", "Stage marker 9px/13px weight 600", "No protected behavior change"],
+      "blockers": ["Sponsor visual acceptance", "Existing release holds"],
+      "commit_sha": "UNCOMMITTED (base d53e09f7ee4018bf2046e36d95fe45df355b11a2)",
+      "next_task": "Sponsor visual review of the quieter statement typography.",
+      "resume_prompt": "Read CURRENT_STATE.md UPDATE 116 and review http://127.0.0.1:3000/login?typeScale=8. Do not commit, push, merge or deploy without explicit authorization."
     }
   ],
-  "last_session": "2026-07-20-factory-360-cross-provider-contract-014",
+  "last_session": "2026-07-20-saqeel-login-event-type-006",
   "rules": {
     "append_only": true,
     "required_fields": [

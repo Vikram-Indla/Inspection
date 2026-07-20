@@ -1,0 +1,19 @@
+acceptance_id,requirement_id,assertion,evidence,status
+SLR-AC-001,SLR-REQ-001,"Existing animated Saudi inspection atlas and five-scene storyline remain present","apps/web/e2e/saqeel-login-revamp.spec.ts",PASS
+SLR-AC-002,SLR-REQ-002,"Zone hover lift amplitude, easing, cavity, wall and restoration remain unchanged","docs/login-revamp/PROTECTED-MOTION-INVENTORY.md; apps/web/e2e/saqeel-login-revamp.spec.ts",PASS
+SLR-AC-003,SLR-REQ-003,"Zone click locks the same target, pauses the story, reveals the same readout and Escape restores","apps/web/e2e/cd-001-v7-atlas.spec.ts; apps/web/e2e/saqeel-login-revamp.spec.ts",PASS
+SLR-AC-004,SLR-REQ-004,"Camera transform, route paths, route starts, durations, easing and stage timing are unchanged","docs/login-revamp/PROTECTED-MOTION-INVENTORY.md; source invariant test",PASS
+SLR-AC-005,SLR-REQ-005,"Map pins routes story controls zones and host treatments contain no rejected pink/magenta/purple tint; the protected lockup is exempt and unchanged","apps/web/e2e/saqeel-login-revamp.spec.ts; visual evidence",PASS
+SLR-AC-006,SLR-REQ-006,"Dark mode uses the native atlas and light mode uses the dedicated pixel-registered light atlas for main terrain lifted top and sidewall source without CSS-generated light tint","apps/web/e2e/saqeel-login-revamp.spec.ts; visual evidence; registration check",PASS
+SLR-AC-007,SLR-REQ-007,"Theme integration is owned by page shell, smoked stage, border, halo and non-intercepting tonal bridge","apps/web/src/app/login/login.css; visual evidence",PASS
+SLR-AC-008,SLR-REQ-008,"Every primary and fallback inspection vehicle renders at exactly prior dimensions times 1.5 with centered route anchor","source invariant test; runtime geometry",PASS
+SLR-AC-009,SLR-REQ-009,"Vehicle route path, start, duration, easing, camera and story timing remain unchanged","source invariant test",PASS
+SLR-AC-010,SLR-REQ-010,"Email/password credential authentication, validation, loading, errors, reset and /launch routing remain unchanged","negative-auth; cd-002-reset; source invariant test",PASS
+SLR-AC-011,SLR-REQ-011,"Remember me is absent","apps/web/e2e/saqeel-login-revamp.spec.ts",PASS
+SLR-AC-012,SLR-REQ-012,"National Single Sign-On and every Arabic/secondary-auth equivalent are absent from the public login","apps/web/e2e/saqeel-login-revamp.spec.ts; source string scan",PASS
+SLR-AC-013,SLR-REQ-013,"MIM Directory and additional providers are absent","apps/web/e2e/saqeel-login-revamp.spec.ts",PASS
+SLR-AC-014,SLR-REQ-014,"English/Arabic and light/dark parity render with polished hierarchy","visual evidence; apps/web/e2e/saqeel-login-revamp.spec.ts",PASS
+SLR-AC-015,SLR-REQ-015,"Arabic mirrors appropriate shell composition but never mirrors Saudi geography or route direction","source invariant test; Arabic runtime geometry",PASS
+SLR-AC-016,SLR-REQ-016,"Desktop, iPad landscape/portrait, Stage Manager, mobile and 320 CSS px reflow without page overflow","apps/web/e2e/saqeel-login-revamp.spec.ts",PASS
+SLR-AC-017,SLR-REQ-017,"Interactive hero and story rail remain available on every supported viewport with 48px iPad targets","apps/web/e2e/saqeel-login-revamp.spec.ts",PASS
+SLR-AC-018,SLR-REQ-018,"Existing SaqeelMark geometry and exact Arabic wordmark صقيل | صناعي remain unchanged and the supplied references are layout direction only","protected source SHA-256; runtime DOM; git diff inventory",PASS
