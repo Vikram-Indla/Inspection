@@ -23,7 +23,7 @@ type Joined = {
 export default async function Visits({ searchParams }: { searchParams: Promise<{ limit?: string }> }) {
   const sp = await searchParams;
   const limit = Math.min(Math.max(Number.parseInt(sp.limit ?? "", 10) || PAGE_STEP, PAGE_STEP), PAGE_MAX);
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   // M02-016 — persist published→expired before reading (parity with field home;
   // security-definer rpc runs the canonical transition, audit trigger records it).
@@ -222,7 +222,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}
           regionOptions={regionOptions} cityOptions={cityOptions}
-          total={total} limit={limit} nextLimit={nextLimit} strings={strings} />
+          total={total} limit={limit} nextLimit={nextLimit} strings={strings} locale={locale} />
       )}
     </Shell>
   );

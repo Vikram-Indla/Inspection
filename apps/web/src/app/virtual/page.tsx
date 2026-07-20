@@ -1,13 +1,15 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import ScheduleForm, { type ScheduleFormStrings } from "./ScheduleForm";
 import EmptyState from "@/components/EmptyState";
 
 export const dynamic = "force-dynamic";
 
 export default async function VirtualList() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const dLang = locale === "ar" ? "ar" : "en";
   const sb = await supabaseServer();
   const { data: sessions, error } = await sb.from("virtual_sessions")
     .select("id, state, appointment_at, visits(id, factories(name, factory_code), inspections(id, status))")
@@ -44,7 +46,7 @@ export default async function VirtualList() {
               <tr key={s.id}>
                 <td className="ax-numeric"><strong>{s.id.slice(0, 8)}</strong></td>
                 <td>{v.factories.name} <span className="ax-caption">{v.factories.factory_code}</span></td>
-                <td className="ax-td-num ax-numeric">{new Date(s.appointment_at).toISOString().slice(0, 16).replace("T", " ")}</td>
+                <td className="ax-td-num ax-numeric">{formatDateTime(s.appointment_at, dLang)}</td>
                 <td><span className={`ax-lozenge ax-lozenge--virtual ${s.state === "verified" ? "ax-lozenge--success" : "ax-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span></td>
                 <td><a className="ax-link" href={`/virtual/${s.id}`}>{t("virtual.list.openRoom", "open room →")}</a></td>
               </tr>
@@ -58,7 +60,7 @@ export default async function VirtualList() {
           {unscheduled.map(v => (
             <div key={v.id} className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
               <strong>{(v.factories as unknown as { name: string } | null)?.name}{" "}
-                <span className="ax-caption ax-numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</span></strong>
+                <span className="ax-caption ax-numeric">{formatDate(v.window_start, dLang)}</span></strong>
               <ScheduleForm visitId={v.id} strings={scheduleStrings} />
             </div>
           ))}

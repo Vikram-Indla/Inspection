@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import { ReviewQueue, type QueueBadges, type QueueRow, type Readiness, type ReadinessFact, type ReviewQueueStrings } from "./DecisionPanel";
 
 export const dynamic = "force-dynamic";
@@ -57,10 +58,10 @@ type Joined = {
   } | null;
 };
 
-const fmt = (iso: string | null) => iso ? new Date(iso).toISOString().slice(0, 16).replace("T", " ") : "—";
 
 export default async function Reviews() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const fmt = (iso: string | null) => iso ? formatDateTime(iso, locale === "ar" ? "ar" : "en") : "—";
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
 

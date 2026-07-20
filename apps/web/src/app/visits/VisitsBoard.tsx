@@ -1,5 +1,7 @@
 "use client";
 import EmptyState from "@/components/EmptyState";
+import { formatDateTime } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).
 // M02-003/021: search by Visit ID / Factory / CR / Industrial License / Inspector
 //              — client filter over the loaded server page (RLS-scoped rows).
@@ -168,10 +170,9 @@ const OUTCOME_TONE: Record<OutcomeCode, string> = {
 type SortKey = "window_asc" | "window_desc" | "factory";
 type AllowedKey = "editable" | "locked" | "final" | "expired";
 
-const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 const EMPTY: ActionResult = {};
 
-export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings }: {
+export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings, locale }: {
   rows: VisitRow[];
   inspectors: Inspector[];
   typeOptions: { value: string; label: string }[];
@@ -182,7 +183,9 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   limit: number;
   nextLimit: number | null;
   strings: VisitsBoardStrings;
+  locale: Locale;
 }) {
+  const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
   const [type, setType] = useState("");
