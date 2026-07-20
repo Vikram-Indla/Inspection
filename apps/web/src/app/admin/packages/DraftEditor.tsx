@@ -43,9 +43,14 @@ export default function DraftEditor({ versionId, definition, catalog, violations
   versionId: string; definition: Definition; catalog: CatalogItem[]; violations: Choice[]; templates: Choice[];
   strings: DraftEditorStrings; preview: ReactNode;
 }) {
-  const normalized = useMemo<Definition>(() => ({ ...definition, sections: definition.sections ?? [], action_forms: definition.action_forms ?? [], item_rules: definition.item_rules ?? {}, template_refs: definition.template_refs ?? [] }), [definition]);
+  const normalized = useMemo<Definition>(() => {
+    const sections = (definition.sections ?? []).map(section => ({ ...section, title_en: section.title_en ?? section.title }));
+    const item_rules = { ...(definition.item_rules ?? {}) };
+    for (const section of sections) for (const code of section.items ?? []) if (!item_rules[code]) item_rules[code] = { requirement: "required", scoring_enabled: true };
+    return { ...definition, sections, action_forms: definition.action_forms ?? [], item_rules, template_refs: definition.template_refs ?? [] };
+  }, [definition]);
   const [state, formAction, pending] = useActionState<PkgResult, FormData>(saveDraftDefinition, {});
-  const [initial, setInitial] = useState(() => JSON.stringify(normalized));
+  const [initial, setInitial] = useState(() => JSON.stringify(definition));
   const [def, setDef] = useState<Definition>(normalized);
   const [selectedKey, setSelectedKey] = useState(normalized.sections?.[0]?.key ?? "");
   const [selectedItem, setSelectedItem] = useState("");
