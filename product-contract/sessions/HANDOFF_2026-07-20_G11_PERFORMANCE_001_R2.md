@@ -18,5 +18,8 @@
 - Decisions made: exact-current navigation does not begin a pending state; completed route change clears the accessible progress state; definitive timing dataset remains unchanged
 - Open blockers: useful-content warm p75 exceeds 500 ms; Operations statement timeout; connector permission denial; unapplied migration; missing advisors/query plans; Dashboard entity-search timeout; full protected regression
 - Regression result: local progress-state regression PASS; overall G11 performance acceptance FAIL
+- Remote handoff: `origin/perf/p0-navigation-remediation` fast-forwarded through `a3250c6`; `setup/Inspection` and `main` unchanged
 - Exact next task: grant the operator governed read/DDL access or provide an approved Supabase operator; inspect migration history and query plans, apply/verify the forward indexes through the approved path, then rerun the 90-transition benchmark and full protected regression
 - Ready-to-paste resume prompt: Read `CURRENT_STATE.md` UPDATE 112, `execution/CURRENT_SLICE.yaml`, `evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md`, and `docs/performance/inspection-agent-handover.md`. Resume from `496ed0c` on `perf/p0-navigation-remediation--codex-pass`. Obtain governed Supabase access; do not bypass the current permission denial. Reconcile migration history, run advisors/query plans, apply and verify the performance indexes only with explicit remote-DDL approval, then rerun the definitive benchmark and full protected regression. Do not claim G11 PASS while useful-content p75 exceeds 500 ms or P0/P1 evidence is missing.
+
+The perf/p0-navigation-remediation branch has been pushed to origin and is ready for the next controlled agent pass.

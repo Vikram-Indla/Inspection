@@ -23,4 +23,9 @@ access rather than retrying or bypassing that boundary.
 
 ## Truth boundary
 
-No remote schema was changed. No branch was pushed at generation time. No claim is made that ≤500 ms useful-content acceptance passed.
+No remote schema was changed. The shared performance branch was verified as a
+fast-forward and pushed through handoff commit `a3250c6`; `setup/Inspection` and
+`main` were not modified. No claim is made that <=500 ms useful-content
+acceptance passed.
+
+The perf/p0-navigation-remediation branch has been pushed to origin and is ready for the next controlled agent pass.
