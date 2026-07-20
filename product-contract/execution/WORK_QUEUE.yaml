@@ -1,5 +1,37 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
+    gate: "G11 sponsor-directed Compliance Approval Queue"
+    priority: "P0"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
+    owner: "Codex implementation and QA + Sponsor acceptance authority"
+    blocked_by: ["Remote Prompt 02 migration application for populated shared-runtime evidence"]
+    blocks: []
+    note: "Dedicated CCR approval route, existing reviewer guard, maker-owned request exclusion, factual status filters, component/dependency progress and RPC-enforced workspace handoff implemented. Typecheck/build, focused 6/6 and protected static 111 pass/4 intentional provider skips."
+  - task_id: "TASK-WEB-COMPLIANCE-LIBRARY-003"
+    gate: "G11 sponsor-directed Compliance Library"
+    priority: "P0"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
+    owner: "Codex implementation and QA + Sponsor acceptance authority"
+    blocked_by: []
+    blocks: ["Prompt 04 Compliance Approval Queue"]
+    note: "Unified Regulations/Inspection Items library, CCR handoff and read-only Inspector Runtime Preview are implemented from immutable published package snapshots. Typecheck/build, focused 5/5, protected static 105 pass/4 intentional provider skips and authenticated read-only runtime evidence pass. Inspector source and runtime behavior remain untouched."
+  - task_id: "TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002"
+    gate: "G11 sponsor-authorized Compliance request engine"
+    priority: "P0"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_ACCEPTANCE"
+    owner: "Codex implementation and QA + Sponsor acceptance authority"
+    blocked_by: ["Sponsor Prompt 02 acceptance"]
+    blocks: ["Prompt 03 and later Compliance implementation slices"]
+    note: "Additive CCR engine implements immutable revisions/snapshots, role- and RLS-enforced maker-checker RPCs, deterministic dependency cascade, partial approval, transactional immutable publication, legacy compatibility, existing audit/notification integration and working register/create/detail routes. Isolated migration ran twice; maker-checker, cascade, partial publish, orphan rollback and catalog/RLS probes pass. No remote DDL or excluded runtime source changed."
+  - task_id: "TASK-WEB-COMPLIANCE-SHARED-SHELL-001"
+    gate: "G11 sponsor-authorized Compliance shared shell"
+    priority: "P0"
+    status: "SPONSOR_ACCEPTED_REMOTE_VERIFIED"
+    owner: "Sponsor acceptance authority"
+    blocked_by: []
+    blocks: []
+    note: "Prompt 01 accepted. Remote branch codex/compliance-shared-shell-001 resolves exactly to 26a8b4363fab9b8d66811aae949b604e2e9b14b9."
   - task_id: "TASK-QA-UI-COMPLIANCE-CERT-004"
     gate: "G11/G12 UI release certification"
     priority: "P0"
@@ -232,3 +264,11 @@ items:
     blocked_by: ["Authoritative WIRING_MAP_CD-031.csv absent from approved design handoff", "Leadership contact-privacy decision", "Design package hash/preflight companion"]
     blocks: []
     note: "SCR-WEB-400 /factories/:id. Design imported from claude_design project 20cb0dce (outputs/cd-031-r3/), which is marked implementation_authorized:false / DO-NOT-EXECUTE / BASELINE_REVERIFY_REQUIRED, and is outside TASK-BASELINE-WIRING-AUDIT-001's authorized slice — sponsor explicitly overrode both stops in-chat (DEC-014). Restructured the existing 7-tab dossier into a two-column provenance-led layout (aside: identity/freshness/risk/location facts; main: sticky section strip + Spatial Case Timeline signature + history/documents/representatives/products/materials/workforce sections), preserving every existing query, AddDocument/AddRepresentative/AddProduct/AddMaterial/ToggleRepActive control, and per-section error isolation. New: representative contact fields masked for the leadership role only (HANDOFF_BLOCKED_ROLE); explicit unavailable rows for risk-driver breakdown (HANDOFF_BLOCKED_RISK_DRIVERS), risk-version history (HANDOFF_BLOCKED_RISK_HISTORY), evidence timeline (HANDOFF_BLOCKED_EVIDENCE_TIMELINE), map/boundary (HANDOFF_BLOCKED_MAP/_BOUNDARY), document preview (HANDOFF_BLOCKED_DOCUMENT_VIEWER); no computed staleness threshold added (freshness is a plain fact per the state matrix's own 'no invented staleness threshold' note); no map provider, boundary polygon, coordinate-conflict resolution, or risk recalculation added — confirmed no such columns exist in migrations, so the design's HANDOFF_BLOCKED assumptions hold against this repo, not just its stale claimed baseline. Verified: typecheck clean, production build clean (0 errors), new apps/web/e2e/cd-031-factory-360.spec.ts 15/15 PASS (source-truth + live planner persona + RTL). Independent Codex audit is recorded in product-contract/evidence/CODEX_AUDIT_CD-031_2026-07-15.md: supplemental legs reviewed, but DEC-012 certification is withheld because the authoritative WIRING_MAP_CD-031.csv, leadership privacy decision, and design preflight/hash companion are absent. No commit, push, merge, deploy, or main modification occurred."
+  - task_id: "TASK-FACTORY-360-COMPLETE-010"
+    gate: "G11 Factory 360 v2 controlled implementation"
+    priority: "P0"
+    status: "SOURCE_VERIFIED_AWAITING_SPONSOR_FUNCTIONAL_ACCEPTANCE"
+    owner: "Codex implementation and QA + Sponsor functional acceptance authority"
+    blocked_by: ["Prompt 02 controlled migration/runtime", "Approved Senaei contract configuration and credentials", "Qualified native-Arabic review"]
+    blocks: ["Factory 360 v2 functional acceptance", "Factory 360 staging closure"]
+    note: "Prompt 00 source implementation is complete: CR-centred dossier, search, guarded admin import/reconciliation, typed fail-closed Senaei boundary, additive audited/RLS schema and six permissions. Typecheck/build PASS; focused 20/20; protected static 131 pass/4 intentional provider skips; PostgreSQL 16 compile/replay/contract PASS. Fourteen external contract gaps and F360-AC-012/013 remain explicitly blocked. No production deploy, main merge or remote DDL under Prompt 00. Evidence: product-contract/evidence/TASK-FACTORY-360-COMPLETE-010.md."

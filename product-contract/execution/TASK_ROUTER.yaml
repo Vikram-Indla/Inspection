@@ -29,6 +29,22 @@ routing_rules:
       - product-contract/screens/screen_route_catalogue.csv
       - product-contract/domain/field_dictionary.csv
       - product-contract/domain/state_transitions.csv
+  - intent: factory_360
+    id_pattern: "TASK-FACTORY-360-*"
+    required_context:
+      - product-contract/factory-360/FACTORY_360_MASTER_LEDGER.csv
+      - product-contract/factory-360/FACTORY_360_API_ENDPOINT_INVENTORY.csv
+      - product-contract/factory-360/FACTORY_360_API_FIELD_INVENTORY.csv
+      - product-contract/factory-360/FACTORY_360_ACCEPTANCE_LEDGER.csv
+      - product-contract/factory-360/FACTORY_360_PRESERVATION_LEDGER.csv
+      - product-contract/factory-360/FACTORY_360_FUNCTIONAL_JOURNEYS.csv
+      - product-contract/factory-360/FACTORY_360_EXECUTION_STATE.yaml
+      - product-contract/factory-360/source/Inspection_API_documentation.sanitized.json
+      - product-contract/screens/screen_route_catalogue.csv
+      - product-contract/domain/field_dictionary.csv
+      - product-contract/domain/rbac_matrix.csv
+      - product-contract/domain/state_transitions.csv
+      - product-contract/governance/decision_register.csv
   - intent: ipad
     id_pattern: "TASK-IPAD-*"
     required_context:

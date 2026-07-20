@@ -1,0 +1,12 @@
+group,name,method,url,auth_type,factory_360_relevance,description_present
+User,Login,POST,https://sectorial-be.senaei.app/api/inspection/login,,Factory 360 / integration,yes
+User,Logout,POST,https://sectorial-be.senaei.app/api/inspection/logout,bearer,Factory 360 / integration,yes
+User,Profile,GET,https://sectorial-be.senaei.app/api/inspection/profile,bearer,Factory 360 / integration,yes
+User,Forget Password,POST,https://sectorial-be.senaei.app/api/inspection/forgot-password,,Supporting,yes
+User,Reset Password,POST,https://sectorial-be.senaei.app/api/inspection/reset-password,,Supporting,yes
+Regulation,List Regulation,GET,https://sectorial-be.senaei.app/api/inspection/regulations,bearer,Factory 360 / integration,yes
+Regulation,Show Regulation,GET,https://sectorial-be.senaei.app/api/inspection/regulations/{{regulationId}},bearer,Factory 360 / integration,yes
+Task,List Task,GET,https://sectorial-be.senaei.app/api/inspection/tasks,bearer,Factory 360 / integration,yes
+Task,Show Task,GET,https://sectorial-be.senaei.app/api/inspection/tasks/{{taskId}},bearer,Factory 360 / integration,yes
+Task,Plant Production Line,GET,https://sectorial-be.senaei.app/api/inspection/tasks/production-line?plant_id={{plantId}}&type={{type}},bearer,Factory 360 / integration,yes
+Task,Submit Inspection,POST,https://sectorial-be.senaei.app/api/inspection/tasks/submit-inspection/{{task}},bearer,Factory 360 / integration,yes

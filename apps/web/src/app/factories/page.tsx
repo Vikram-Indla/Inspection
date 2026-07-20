@@ -14,6 +14,19 @@ export default async function Factories() {
     .select("id, factory_code, name, cr_number, region, city, risk_band, risk_score, is_temporary")
     .order("risk_score", { ascending: false });
   if (error) console.error("[factory registry] load failed", error);
+  // F360-SRCH-001/F360-ARCH-001 — prefer the additive CR-centred dossier when
+  // this legacy factory has a verified license mapping. If the new projection
+  // is unavailable or unmapped, preserve the established /factories/:id path.
+  const factoryIds = (fs ?? []).map(row => row.id);
+  const { data: hierarchyRows } = factoryIds.length
+    ? await sb.from("industrial_licenses").select("factory_id, commercial_registration_id").in("factory_id", factoryIds)
+    : { data: [] as { factory_id: string; commercial_registration_id: string | null }[] };
+  const crByFactory = new Map((hierarchyRows ?? []).filter(row => !!row.commercial_registration_id)
+    .map(row => [row.factory_id, row.commercial_registration_id!]));
+  const factoryRows = (fs ?? []).map(row => ({
+    ...row,
+    dossier_href: crByFactory.has(row.id) ? `/factories/cr/${crByFactory.get(row.id)}` : `/factories/${row.id}`,
+  }));
   const listStrings: FactoryListStrings = {
     regionLabel: t("f360.list.region", "Region"),
     allRegions: t("f360.list.allRegions", "All regions"),
@@ -42,7 +55,7 @@ export default async function Factories() {
       low: t("enum.low", "low"),
     },
   };
-  const isEmpty = (fs ?? []).length === 0;
+  const isEmpty = factoryRows.length === 0;
   return (
     <Shell current="/factories" title={t("f360.title", "Factory 360")} context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-400</span>}>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The factory registry is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
@@ -50,7 +63,7 @@ export default async function Factories() {
         <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the registry")}
           body={t("f360.empty.desc", "Factory identity records sync from the national source (M07-002).")} />
       )}
-      {!error && !isEmpty && <FactoryList factories={(fs ?? []) as FactoryRow[]} strings={listStrings} />}
+      {!error && !isEmpty && <FactoryList factories={factoryRows as FactoryRow[]} strings={listStrings} />}
     </Shell>
   );
 }

@@ -1,0 +1,24 @@
+parity_field,web_source,ipad_source,parity_mechanism,status
+cr_id,dossier.cr.id,dossier.cr.id,shared lib/factory360/dossier.ts loader,STRUCTURAL_VERIFIED
+unified_number,dossier.cr.unified_number,same,shared loader,STRUCTURAL_VERIFIED
+license_id_number,dossier.selected.id/license_number,same,shared loader,STRUCTURAL_VERIFIED
+plant_id_number,dossier.selected.plant_number,same,shared loader,STRUCTURAL_VERIFIED
+selected_license_behaviour,?license= default first,same,shared loader,STRUCTURAL_VERIFIED
+license_type_stage_status_dates,dossier.selected,same,shared loader,STRUCTURAL_VERIFIED
+compliance_rate,calculateApprovedCompliance latest approved,same,shared lib/factory360/compliance.ts,STRUCTURAL_VERIFIED
+compliance_trend,approvedTrend,same,shared loader,STRUCTURAL_VERIFIED
+inspection_report_version,latestSubmission,same,shared loader,STRUCTURAL_VERIFIED
+risk_score_model,factory.risk_* + factory_risk_snapshots,same,shared loader,STRUCTURAL_VERIFIED
+risk_factors,riskHistory drivers,same,shared loader,STRUCTURAL_VERIFIED
+violations_penalties,approvedEnforcement + penalties,same,shared loader,STRUCTURAL_VERIFIED
+industrial_lines,plant_production_line_items,same,shared loader,STRUCTURAL_VERIFIED
+official_vs_observed,observedComparison,same,shared loader,STRUCTURAL_VERIFIED
+government_gap_state,SENAEI_API_CONTRACT_NOT_SUPPLIED,same,shared loader/provider,STRUCTURAL_VERIFIED
+document_metadata_checksum,docs + snapshot_sha256,same,shared loader,STRUCTURAL_VERIFIED
+ocr_extraction_reference,evidence_id -> /evidence-ocr,same,shared loader,STRUCTURAL_VERIFIED
+permissions,FACTORY_360_PERMISSIONS via has_permission,same,shared lib/factory360/permissions.ts,STRUCTURAL_VERIFIED
+source_freshness,source_system/source_synced_at,same,shared loader,STRUCTURAL_VERIFIED
+deep_links,/reports/inspection/{id},same,shared loader,STRUCTURAL_VERIFIED
+create_inspection_context,planning/immediate?factory=&cr=&license=&returnTo=,same,shared handoff,STRUCTURAL_VERIFIED
+partial_provider_failure,per-domain sourceStatus/degraded,same,shared loader,STRUCTURAL_VERIFIED
+allowed_differences,layout/density/touch/offline/action-placement ONLY,intentional,platform-native rendering,ALLOWED

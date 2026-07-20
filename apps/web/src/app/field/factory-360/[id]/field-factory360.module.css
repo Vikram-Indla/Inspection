@@ -1,0 +1,110 @@
+/* TASK-FACTORY-360-IPAD-011 · SCR-IPAD Factory 360 field-native layout.
+   Single-column, touch-first, RTL-safe via CSS logical properties only.
+   Business data/calc/permissions come from the SHARED dossier loader; this
+   file governs layout/density/touch/action-placement only (the permitted
+   platform differences in FACTORY_360_PLATFORM_PARITY_LEDGER). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-300, 12px);
+  padding-block-end: 96px; /* clear the sticky action bar + task bar */
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-200, 8px);
+}
+.headerTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ax-space-200, 8px);
+  justify-content: space-between;
+}
+.headerName { margin: 0; font-size: 1.25rem; }
+.ids {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ax-space-200, 8px);
+  font-size: 0.85rem;
+}
+.ids > span { white-space: nowrap; }
+
+/* Horizontally scrollable license selector — touch friendly. */
+.licenseStrip {
+  display: flex;
+  gap: var(--ax-space-200, 8px);
+  overflow-x: auto;
+  padding-block: var(--ax-space-100, 4px);
+  scroll-snap-type: inline mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.licenseChip {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+  min-inline-size: 160px;
+  min-block-size: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--ax-space-200, 8px) var(--ax-space-300, 12px);
+  border: 1px solid var(--ax-color-border, currentColor);
+  border-radius: var(--ax-radius-300, 10px);
+  text-decoration: none;
+  color: inherit;
+}
+.licenseChip[aria-current="page"] {
+  border-color: var(--ax-color-primary, currentColor);
+  box-shadow: inset 0 0 0 1px var(--ax-color-primary, currentColor);
+}
+
+/* Field-readiness quick facts as a responsive tile grid. */
+.readiness {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--ax-space-200, 8px);
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--ax-space-200, 8px);
+}
+.tileValue { font-size: 1.35rem; }
+
+.section { padding: 0; }
+.section > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ax-space-200, 8px);
+  padding: var(--ax-space-300, 12px);
+  min-block-size: 48px;
+}
+.section > summary::-webkit-details-marker { display: none; }
+.sectionBody { padding: 0 var(--ax-space-300, 12px) var(--ax-space-300, 12px); }
+
+.facts { display: grid; grid-template-columns: 1fr; gap: var(--ax-space-100, 4px); margin: 0; }
+.facts > div { display: flex; justify-content: space-between; gap: var(--ax-space-200, 8px); padding-block: 4px; }
+.facts dt { color: var(--ax-text-subtle, inherit); }
+.facts dd { margin: 0; text-align: end; }
+
+.mediaGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--ax-space-200, 8px); }
+.mediaGrid img { inline-size: 100%; block-size: auto; border-radius: var(--ax-radius-200, 8px); }
+
+/* Sticky field action bar — sits above the FieldTabs task bar. */
+.actionBar {
+  position: sticky;
+  inset-block-end: 64px;
+  display: flex;
+  gap: var(--ax-space-200, 8px);
+  overflow-x: auto;
+  padding: var(--ax-space-200, 8px);
+  border-radius: var(--ax-radius-300, 10px);
+  -webkit-overflow-scrolling: touch;
+}
+.actionBar .ax-btn, .actionBar a, .actionBar > * { flex: 0 0 auto; min-block-size: 48px; }

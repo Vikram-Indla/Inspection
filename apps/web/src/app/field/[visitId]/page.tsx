@@ -61,6 +61,14 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   }
   const factory = v.factories as unknown as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null };
   const factoryName = factory.name_is_system_generated ? t("field.start.unregisteredFactory", "Unregistered factory") : factory.name;
+  // F360IPAD-ENTRY-001 — assigned visit opens the iPad Factory 360 with the
+  // visit's license selected, carrying a return context to this startup.
+  const facIds = v.factories as unknown as { cr_number: string | null; license_number: string | null };
+  const factory360Href = facIds.license_number
+    ? `/field/factory-360?license_no=${encodeURIComponent(facIds.license_number)}&return=${encodeURIComponent(`/field/${v.id}`)}`
+    : facIds.cr_number
+      ? `/field/factory-360?cr_no=${encodeURIComponent(facIds.cr_number)}&return=${encodeURIComponent(`/field/${v.id}`)}`
+      : null;
   const dispatchLat = v.planner_lat ?? factory.official_lat;
   const dispatchLng = v.planner_lng ?? factory.official_lng;
   const dispatchSource = v.visit_location_source === "official" ? "official" : "planned";
@@ -243,6 +251,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
         registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
       <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+        {factory360Href && <a className="ax-btn ax-btn--subtle" href={factory360Href}>{t("field.start.openFactory360", "Open Factory 360")}</a>}
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
