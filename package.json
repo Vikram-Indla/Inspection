@@ -1,0 +1,13 @@
+{
+  "name": "inspection-monorepo",
+  "private": true,
+  "description": "Repo-root shortcut scripts forwarding to apps/web",
+  "scripts": {
+    "dev": "npm --prefix apps/web run dev",
+    "build": "npm --prefix apps/web run build",
+    "start": "npm --prefix apps/web run start",
+    "typecheck": "npm --prefix apps/web run typecheck",
+    "test:e2e": "npm --prefix apps/web run test:e2e",
+    "seed:kpi": "npm --prefix apps/web run seed:kpi"
+  }
+}
