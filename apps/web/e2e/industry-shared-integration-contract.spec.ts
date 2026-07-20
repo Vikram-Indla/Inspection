@@ -26,8 +26,8 @@ test.describe("Industry Shared API v2 contract gate", () => {
     expect((endpoints.match(/\/shared\/api\/v2\/hrsd-labors/g) ?? []).length).toBe(1);
     expect(types).toContain('export type IndustrySharedObservedMethod = "POST"');
     expect(types).toContain("readonly method: IndustrySharedObservedMethod | null");
-    expect((endpoints.match(/, "POST"\)/g) ?? []).length).toBe(5);
-    expect((endpoints.match(/, null\)/g) ?? []).length).toBe(6);
+    expect((endpoints.match(/, "POST"\)/g) ?? []).length).toBe(8);
+    expect((endpoints.match(/, null\)/g) ?? []).length).toBe(3);
     expect(types).toContain("readonly authContract: null");
     expect(types).toContain("readonly requestContract: null");
     expect(types).toContain("readonly responseContract: null");

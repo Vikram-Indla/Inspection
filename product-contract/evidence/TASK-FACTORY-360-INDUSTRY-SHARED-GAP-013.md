@@ -20,12 +20,20 @@ response schemas, common errors, pagination, privacy handling, or sanitized fixt
 
 The beta host redirected to `https://beta-backoffice.industry.sa/login` on the initial
 attempt and the user-requested retry. After the user authenticated, the Senaei dashboard and
-integration area became available. Authenticated GET method-mismatch probes prove `POST` for
-`ISH-API-001..003`, `ISH-API-008`, and `ISH-API-009`. The HRSD integration UI proves only that
-its visible inquiry form uses POST and requires a text field labelled `HR Factory`; it does not
-prove the `hrsd-labors` API request contract. The plant API path was blocked by the browser
-client, and sensitive contact, delegation, and workforce routes were not exercised with real
-identifiers. No token, cookie, personal payload, stack trace, or framework version was stored.
+integration area became available. The sponsor then explicitly authorized read-only discovery
+with existing beta business records. Authenticated GET method-mismatch probes prove `POST` for
+`ISH-API-001..005` and `ISH-API-008..010`. The `plants`, `plant-with-labors`, and `hrsd-labors`
+routes were blocked by the browser client, so their methods remain unverified.
+
+Read-only inspection covered licence detail and its product, contact and delegated-user
+relations; the legacy plant register; the future-factories list; the industrial journey contact
+lookup; the English and Arabic activity catalogue; and the HRSD inquiry. The HRSD UI proves one
+required text field labelled `HR Factory` and the validation format `xx-xxxxxxx`, but not the
+`hrsd-labors` API body. No supplied `/shared/api/v2` call site appears in the visible pages or
+Livewire state. The available authenticated browser surface exposes DOM/Livewire state and
+console output, but no request-header, request-body or response inspection. UI fields were
+therefore recorded only as structural/domain evidence and were not treated as API schemas.
+No real value, token, cookie, personal payload, stack trace, or framework version was stored.
 No Industry Shared credential variable names or prior repository call sites were found.
 The available sanitized API collection belongs to the separate `/api/inspection` Senaei
 provider family and was not reused as Industry Shared contract authority.
@@ -36,7 +44,7 @@ provider family and was not reused as Industry Shared contract authority.
 - A dedicated server-only Industry Shared provider family is isolated from Senaei.
 - Every lead fails before network I/O with
   `INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`.
-- POST is recorded only for the five endpoints proven by authenticated method-mismatch
+- POST is recorded only for the eight endpoints proven by authenticated method-mismatch
   responses. Auth, identifiers, bodies, schemas, errors, privacy, retention, masking, and
   fixture values remain explicit discovery requirements rather than inferred defaults.
 - Contact, delegation, GOSI, MHRSD, and NIC workforce domains remain distinct.
@@ -64,17 +72,18 @@ preconditions are recorded in
 
 ## Blocking evidence and exact continuation
 
-All eleven endpoint contracts remain `BLOCKED_EXTERNAL`; five now have method-only evidence.
-For each endpoint, continuation requires a sanitized developer contract or an explicitly
-authorized synthetic/test identifier and expected outcome that
+All eleven endpoint contracts remain `BLOCKED_EXTERNAL`; eight now have method-only evidence
+and three remain method-unverified because the browser client blocked the exact route. For each
+endpoint, continuation requires a sanitized actual network export or developer contract that
 proves method, authentication mechanism, identifiers and validation, request/response/error
 schemas, field types/nullability/cardinality, pagination, bilingual/source metadata,
-authority semantics, privacy/masking/retention, and a synthetic fixture checksum.
+authority semantics, privacy/masking/retention, and a sanitized fixture checksum.
 
-Exact next action: provide sanitized developer contracts or authorize named synthetic/test
-identifiers and expected outcomes for the POST endpoints. The next implementation must verify
-one endpoint end to end before adding auth, a request body, parser, canonical mapping, or
-migration.
+Exact next action: obtain a sanitized actual `POST /shared/api/v2/license-info` request/response
+export or developer contract that exposes authentication, content type, exact fields and
+schemas, then verify it end to end against the sponsor-authorized beta record. The next
+implementation must verify that endpoint before adding auth, a request body, parser, canonical
+mapping, or migration.
 
 ## Approved checkpoint safety verification
 
@@ -95,5 +104,17 @@ to `https://github.com/Vikram-Indla/Inspection.git`. Before push, the branch was
 - Typecheck and production build pass; focused contracts pass 4/4; protected static regression
   passes 135 with four intentional live-provider skips and zero failures.
 
-Exact next action: Verify `POST /shared/api/v2/license-info` end to end using the approved
-synthetic beta licence and expected result.
+## Sponsor-authorized real-beta continuation safety verification
+
+- The exact licence, CR, plant, business, product, contact and delegation values used at runtime
+  were not copied into fixtures, ledgers, logs, screenshots, or committed evidence.
+- No mutation control was used. The HRSD inquiry was read-only and returned validation only.
+- Product, contact, delegation, plant and bilingual activity UI labels are structural evidence,
+  not inferred request/response or canonical schemas.
+- The verbose framework-error exposure remains a sanitized security finding; no stack or version
+  detail is reproduced.
+- Eight POST methods are preserved, three methods remain unknown, all eleven endpoints remain
+  `DISCOVERY_REQUIRED`, and `stubs_retired` remains zero.
+
+Exact next action: obtain a sanitized actual `POST /shared/api/v2/license-info` request/response
+export or developer contract, then verify it end to end against the authorized beta record.

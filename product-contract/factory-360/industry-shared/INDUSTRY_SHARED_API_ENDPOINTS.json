@@ -54,7 +54,18 @@
   },
   "security": {
     "credentials_included": false,
-    "methods_known": false,
+    "methods_known": "8_of_11_post",
+    "observed_post_endpoint_ids": [
+      "ISH-API-001",
+      "ISH-API-002",
+      "ISH-API-003",
+      "ISH-API-004",
+      "ISH-API-005",
+      "ISH-API-008",
+      "ISH-API-009",
+      "ISH-API-010"
+    ],
+    "browser_blocked_method_endpoint_ids": ["ISH-API-006", "ISH-API-007", "ISH-API-011"],
     "auth_contract_known": false,
     "request_parameters_known": false,
     "response_schemas_known": false

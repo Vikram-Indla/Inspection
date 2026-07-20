@@ -3,11 +3,11 @@ items:
   - task_id: "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013"
     gate: "G11 Factory 360 integration hardening"
     priority: "P0"
-    status: "CHECKPOINT_PUSH_APPROVED_AWAITING_SYNTHETIC_CONTRACT"
+    status: "REAL_BETA_READ_ONLY_DISCOVERY_EXHAUSTED_AWAITING_SPONSOR_ACCEPTANCE"
     owner: "Codex implementation and QA + Industry Shared API owner"
-    blocked_by: ["Approved synthetic beta licence and expected result for POST /shared/api/v2/license-info", "Sanitized developer contracts for remaining ISH-API endpoints", "Sponsor decisions for contact/delegation and workforce privacy/retention if person-level fields exist"]
+    blocked_by: ["Sanitized actual network export or developer contract for POST /shared/api/v2/license-info and remaining endpoints", "A supported authenticated request-inspection surface for headers bodies and responses", "Sponsor decisions for contact/delegation and workforce privacy/retention if person-level fields exist"]
     blocks: ["Retirement of F360-GAP-009", "Promotion of F360-AC-012 to functionally verified", "Web/iPad final Industry Shared reconciliation"]
-    note: "Authenticated beta method-mismatch evidence proves POST for ISH-API-001..003 and 008..009 only. All eleven leads retain permanent ledger rows; stubs retired remains zero; the provider has no network call; no canonical migration or Factory 360 projection changed. Typecheck/build pass, focused contracts pass 4/4 and protected static regression passes 135 with four intentional live-provider skips. Next exact action: Verify POST /shared/api/v2/license-info end to end using the approved synthetic beta licence and expected result."
+    note: "Sponsor-authorized authenticated read-only discovery proves POST for ISH-API-001..005 and 008..010. ISH-API-006/007/011 remain method-unverified because the browser client blocked those routes. Visible license, product, contact, delegation, plant, activity and HRSD structures were recorded without real values, but no /shared/api/v2 call site or request-inspection surface exposed authentication, bodies or responses. All eleven contracts remain blocked; stubs retired remains zero; the provider has no network call; no canonical migration or Factory 360 projection changed. Next exact action: obtain a sanitized actual POST license-info request/response export or developer contract, then verify it end to end against the authorized beta record."
   - task_id: "TASK-WEB-COMPLIANCE-APPROVAL-QUEUE-004"
     gate: "G11 sponsor-directed Compliance Approval Queue"
     priority: "P0"

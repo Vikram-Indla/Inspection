@@ -1,6 +1,6 @@
 programme: FACTORY_360_INDUSTRY_SHARED_API_GAP_CLOSURE
-status: CHECKPOINT_PUSH_APPROVED_AWAITING_SYNTHETIC_CONTRACT
-stop_state: AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT
+status: REAL_BETA_READ_ONLY_DISCOVERY_EXHAUSTED_AWAITING_SPONSOR_ACCEPTANCE
+stop_state: AWAITING_SPONSOR_INDUSTRY_SHARED_API_GAP_ACCEPTANCE
 canonical_repository_path: /Users/vikramindla/Developer/Inspection
 authorized_worktree_path: /Users/vikramindla/Developer/Inspection/.local-inputs/worktrees/industry-shared-factory360-gap-013
 current_branch: codex/industry-shared-factory360-gap-013
@@ -23,7 +23,7 @@ implementation_completed:
   - "Exact host and eleven developer-supplied paths recorded once in a permanent ledger."
   - "Dedicated server-only Industry Shared provider family isolated from /api/inspection Senaei."
   - "Every unverified endpoint returns INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED."
-  - "POST is recorded only for ISH-API-001..003 and 008..009 from authenticated beta method-mismatch evidence."
+  - "POST is recorded only for ISH-API-001..005 and 008..010 from authenticated beta method-mismatch evidence."
   - "No authentication, identifier, request field, response field, error schema or privacy class is inferred."
   - "Contacts, delegations and three workforce sources remain distinct and privacy fail closed."
   - "F360-BR-002 one Industrial License equals one Plant remains protected."
@@ -36,9 +36,12 @@ verification:
   production_build: PASS
 discovery:
   beta_host: beta-backoffice.industry.sa
-  beta_browser_state: "Authenticated Senaei dashboard and integration UI reached. Five low-risk endpoint GET probes returned method-mismatch evidence proving POST. Plant path was blocked by the browser client; sensitive routes were not probed with real identifiers."
-  observed_post_methods: ["ISH-API-001", "ISH-API-002", "ISH-API-003", "ISH-API-008", "ISH-API-009"]
-  hrsd_ui_evidence: "Authenticated HRSD inquiry UI contains one required text field labelled HR Factory and a POST form; this does not prove the hrsd-labors API request contract."
+  beta_browser_state: "Sponsor-authorized authenticated read-only discovery inspected license, product, contact, delegated-user, plant, activity and HRSD screens. Eight endpoint GET probes returned method-mismatch evidence proving POST. The plants, plant-with-labors and hrsd-labors routes were blocked by the browser client. No supplied endpoint call site or network-request inspection interface was exposed."
+  observed_post_methods: ["ISH-API-001", "ISH-API-002", "ISH-API-003", "ISH-API-004", "ISH-API-005", "ISH-API-008", "ISH-API-009", "ISH-API-010"]
+  browser_blocked_methods: ["ISH-API-006", "ISH-API-007", "ISH-API-011"]
+  visible_domain_structure: "License detail separates product, contact and delegated-user relations; plant registry exposes plant/license/owner/source labels; activity catalogue exposes English and Arabic labels; none is treated as an API schema."
+  hrsd_ui_evidence: "Authenticated HRSD inquiry UI contains one required text field labelled HR Factory and validates the format xx-xxxxxxx; this does not prove the hrsd-labors API request contract."
+  network_discovery_limit: "The authenticated browser surface exposes DOM, Livewire state and console output but no request headers, bodies or responses. Visible pages contain no /shared/api/v2 call site, so authentication, content type, identifier placement and schemas remain unverified."
   beta_security_observation: "Method mismatch renders a verbose framework exception page; no stack details or versions are persisted in evidence."
   secure_environment: "No Industry Shared credential variable names present."
   repository_call_sites: "No Industry Shared endpoint call sites found."
@@ -61,7 +64,7 @@ required_unblock_evidence:
   - "Sanitized success and common error schemas."
   - "Complete field path/type/nullability/cardinality and pagination."
   - "Bilingual labels, source IDs/timestamps and authority semantics."
-  - "Privacy classification and synthetic sanitized fixture checksum."
+  - "Privacy classification and sanitized fixture checksum."
   - "API owner confirmation or authenticated beta frontend call-site evidence."
 open_decisions:
   - DEC-027
@@ -77,6 +80,6 @@ remote_actions:
   main_merged: false
   isolated_branch_push_approved: true
   push_target: "https://github.com/Vikram-Indla/Inspection.git"
-next_exact_action: "Verify POST /shared/api/v2/license-info end to end using the approved synthetic beta licence and expected result."
+next_exact_action: "Obtain a sanitized actual POST /shared/api/v2/license-info request/response export or developer contract that exposes authentication, content type, exact fields and schemas; then verify it end to end against the sponsor-authorized beta record."
 evidence: product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md
 last_updated_at: "2026-07-20T03:52:47+03:00"
