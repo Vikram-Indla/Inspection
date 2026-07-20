@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -201,6 +202,7 @@ export default function ShellClient({
   }, [groups, locale, query]);
 
   const routeScope = shellScopeForRoute(current);
+  const router = useRouter();
 
   function replaceScope(updates: Record<string, string>) {
     const url = new URL(window.location.href);
@@ -208,7 +210,9 @@ export default function ShellClient({
       if (value) url.searchParams.set(key, value);
       else url.searchParams.delete(key);
     }
-    window.location.assign(`${url.pathname}${url.search}${url.hash}`);
+    // Client-router navigation (K-007): the page re-renders server-side with
+    // the new searchParams; a full document reload is not needed.
+    router.replace(`${url.pathname}${url.search}${url.hash}`, { scroll: false });
   }
 
   function toggleCollapsed() {
@@ -388,8 +392,10 @@ export default function ShellClient({
                   <div className="ax-shell-account__menu" role="dialog" aria-label={strings.account}>
                     <strong>{email}</strong>
                     <span className="ax-caption">{strings.roles}: {roles.join(", ")}</span>
+                    {/* /locale and /signout are route handlers (cookie/session
+                        mutations), so they intentionally stay plain anchors. */}
                     <a href={languageHref} lang={languageLang}>{languageLabel}</a>
-                    <a href="/profile">{strings.profileSettings}</a>
+                    <Link href="/profile" prefetch={false}>{strings.profileSettings}</Link>
                     <a href="/signout">{strings.signOut}</a>
                   </div>
                 )}

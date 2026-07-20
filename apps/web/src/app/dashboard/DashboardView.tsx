@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import type { FactoryRef, GeoRow, ReviewRow, ResponseRow, VisitRow } from "./metrics";
 import { complianceBreakdown, formatDuration } from "./metrics";
@@ -18,7 +19,7 @@ function MetricCard({ question, title, value, formula, detail, href, action, una
     <div className={styles.value}>{value}</div>
     <div className={styles.formula}>{formula}</div>
     <p className={styles.detail}>{detail}</p>
-    {href && action && <a className={styles.action} href={href}>{action}</a>}
+    {href && action && <Link className={styles.action} href={href} prefetch={false}>{action}</Link>}
   </article>;
 }
 
@@ -40,12 +41,12 @@ function paramsHref(current: Record<string, string>, patch: Record<string, strin
 
 export function DashboardTabs({ locale, view, params }: { locale: Locale; view: "strategic" | "operational"; params: Record<string, string> }) {
   return <nav className={styles.tabs} role="tablist" aria-label={copy(locale, "Dashboard perspective", "منظور لوحة القيادة")}>
-    <a id="dashboard-tab-strategic" className={styles.tab} role="tab" aria-controls="dashboard-strategic" aria-selected={view === "strategic"} href={paramsHref(params, { view: "strategic" })}>
+    <Link id="dashboard-tab-strategic" className={styles.tab} role="tab" aria-controls="dashboard-strategic" aria-selected={view === "strategic"} href={paramsHref(params, { view: "strategic" })} prefetch={false}>
       {copy(locale, "Strategic View", "المنظور الاستراتيجي")}
-    </a>
-    <a id="dashboard-tab-operational" className={styles.tab} role="tab" aria-controls="dashboard-operational" aria-selected={view === "operational"} href={paramsHref(params, { view: "operational" })}>
+    </Link>
+    <Link id="dashboard-tab-operational" className={styles.tab} role="tab" aria-controls="dashboard-operational" aria-selected={view === "operational"} href={paramsHref(params, { view: "operational" })} prefetch={false}>
       {copy(locale, "Operational View", "المنظور التشغيلي")}
-    </a>
+    </Link>
   </nav>;
 }
 
@@ -95,7 +96,7 @@ export function StrategicView({ locale, metrics, group, params }: {
       <div className={styles.explorerHead}>
         <div><h4 id="compliance-explorer-title">{copy(locale, "One formula, four governed lenses", "معادلة واحدة وأربع زوايا معتمدة")}</h4><p className={styles.detail}>{copy(locale, "Every bar uses the same eligible-answer denominator.", "يستخدم كل شريط مقام الإجابات المؤهلة نفسه.")}</p></div>
         <nav className={styles.dimensions} aria-label={copy(locale, "Group compliance by", "تجميع الامتثال حسب")}>
-          {dimensions.map(([id, label]) => <a key={id} className={styles.dimension} aria-current={group === id} href={paramsHref(params, { group: id })}>{label}</a>)}
+          {dimensions.map(([id, label]) => <Link key={id} className={styles.dimension} aria-current={group === id} href={paramsHref(params, { group: id })} prefetch={false}>{label}</Link>)}
         </nav>
       </div>
       <Bars rows={breakdown.map(row => ({ label: `${row.label} · ${row.compliant}/${row.total}`, value: row.rate ?? 0 }))} empty={copy(locale, "No eligible answers exist in this scope.", "لا توجد إجابات مؤهلة ضمن هذا النطاق.")} suffix="%" />
@@ -190,7 +191,7 @@ export function OperationalView({ locale, metrics }: { locale: Locale; metrics: 
         <p className={styles.detail}>{copy(locale, "Conditions are computed from records and accepted SLA configuration; use Operations Center notifications for persisted acknowledgement.", "يتم احتساب الشروط من السجلات وتهيئة اتفاقية الخدمة المعتمدة؛ استخدم إشعارات مركز العمليات للإقرار المحفوظ.")}</p>
         {alerts.length ? <div className={styles.tableWrap}><table className={styles.table}>
           <thead><tr><th scope="col">{copy(locale, "Severity", "الشدة")}</th><th scope="col">{copy(locale, "Condition", "الشرط")}</th><th scope="col">{copy(locale, "Object", "العنصر")}</th><th scope="col"></th></tr></thead>
-          <tbody>{alerts.slice(0, 12).map(alert => <tr key={alert.key}><td><strong>{alert.tone}</strong></td><td>{alert.label}</td><td>{alert.detail}</td><td><a className={styles.action} href={alert.href}>{action}</a></td></tr>)}</tbody>
+          <tbody>{alerts.slice(0, 12).map(alert => <tr key={alert.key}><td><strong>{alert.tone}</strong></td><td>{alert.label}</td><td>{alert.detail}</td><td><Link className={styles.action} href={alert.href} prefetch={false}>{action}</Link></td></tr>)}</tbody>
         </table></div> : <div className={styles.empty} role="status">{copy(locale, "No governed alert condition is active in this scope.", "لا يوجد شرط تنبيه معتمد نشط ضمن هذا النطاق.")}</div>}
       </section>
       <section className={styles.panel} aria-labelledby="coverage-heading">
@@ -215,7 +216,7 @@ export function OperationalView({ locale, metrics }: { locale: Locale; metrics: 
         {o.overrides.length ? <div className={styles.tableWrap}><table className={styles.table}>
           <thead><tr><th scope="col">{copy(locale, "Visit / factory", "الزيارة / المصنع")}</th><th scope="col">{copy(locale, "Planned", "المخطط")}</th><th scope="col">{copy(locale, "Observed", "المرصود")}</th><th scope="col">{copy(locale, "Reason", "السبب")}</th><th scope="col">{copy(locale, "Inspector confirmation", "تأكيد المفتش")}</th><th scope="col">{copy(locale, "At", "الوقت")}</th></tr></thead>
           <tbody>{o.overrides.slice(0, 10).map((row: GeoRow) => <tr key={row.id}>
-            <td><a className={styles.action} href={`/visits/${row.visit_id}`}>{row.visits?.factories?.name ?? row.visit_id.slice(0, 8)}</a></td>
+            <td><Link className={styles.action} href={`/visits/${row.visit_id}`} prefetch={false}>{row.visits?.factories?.name ?? row.visit_id.slice(0, 8)}</Link></td>
             <td className={styles.numeric}>{row.visits?.planner_lat != null && row.visits?.planner_lng != null ? `${row.visits.planner_lat}, ${row.visits.planner_lng}` : "—"}</td>
             <td className={styles.numeric}>{row.observed_lat}, {row.observed_lng}</td>
             <td>{row.override_reason ?? copy(locale, "Not recorded", "غير مسجل")}</td>
@@ -263,9 +264,9 @@ export function SearchResults({ locale, query, factories, visits, inspections }:
   return <section className={styles.results} aria-labelledby="dashboard-search-results">
     <h3 id="dashboard-search-results">{copy(locale, `Search results for “${query}”`, `نتائج البحث عن «${query}»`)}</h3>
     {!total ? <p role="status">{copy(locale, "No RLS-visible factory, visit or inspection matched.", "لا يوجد مصنع أو زيارة أو تفتيش ظاهر حسب الصلاحيات يطابق البحث.")}</p> : <div className={styles.resultGrid}>
-      <div className={styles.resultGroup}><h4>{copy(locale, "Factories", "المصانع")}</h4>{f.length ? f.map(row => <a className={styles.result} href={`/factories/${row.id}`} key={row.id}><strong>{row.name}</strong><br /><span className={styles.detail}>{row.factory_code ?? "—"} · {[row.region, row.city].filter(Boolean).join(" · ")}</span></a>) : <span className={styles.detail}>—</span>}</div>
-      <div className={styles.resultGroup}><h4>{copy(locale, "Visits", "الزيارات")}</h4>{v.length ? v.map(row => <a className={styles.result} href={`/visits/${row.id}`} key={row.id}><strong>{row.factories?.name ?? row.id.slice(0, 8)}</strong><br /><span className={styles.detail}>{row.id.slice(0, 8)} · {row.operational_state}</span></a>) : <span className={styles.detail}>—</span>}</div>
-      <div className={styles.resultGroup}><h4>{copy(locale, "Inspections", "التفتيشات")}</h4>{i.length ? i.map(row => <a className={styles.result} href={`/reports/inspection/${row.id}`} key={row.id}><strong>{row.visits?.factories?.name ?? row.id.slice(0, 8)}</strong><br /><span className={styles.detail}>{row.id.slice(0, 8)}</span></a>) : <span className={styles.detail}>—</span>}</div>
+      <div className={styles.resultGroup}><h4>{copy(locale, "Factories", "المصانع")}</h4>{f.length ? f.map(row => <Link className={styles.result} href={`/factories/${row.id}`} key={row.id} prefetch={false}><strong>{row.name}</strong><br /><span className={styles.detail}>{row.factory_code ?? "—"} · {[row.region, row.city].filter(Boolean).join(" · ")}</span></Link>) : <span className={styles.detail}>—</span>}</div>
+      <div className={styles.resultGroup}><h4>{copy(locale, "Visits", "الزيارات")}</h4>{v.length ? v.map(row => <Link className={styles.result} href={`/visits/${row.id}`} key={row.id} prefetch={false}><strong>{row.factories?.name ?? row.id.slice(0, 8)}</strong><br /><span className={styles.detail}>{row.id.slice(0, 8)} · {row.operational_state}</span></Link>) : <span className={styles.detail}>—</span>}</div>
+      <div className={styles.resultGroup}><h4>{copy(locale, "Inspections", "التفتيشات")}</h4>{i.length ? i.map(row => <Link className={styles.result} href={`/reports/inspection/${row.id}`} key={row.id} prefetch={false}><strong>{row.visits?.factories?.name ?? row.id.slice(0, 8)}</strong><br /><span className={styles.detail}>{row.id.slice(0, 8)}</span></Link>) : <span className={styles.detail}>—</span>}</div>
     </div>}
   </section>;
 }

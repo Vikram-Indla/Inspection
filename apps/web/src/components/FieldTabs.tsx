@@ -3,6 +3,9 @@
 // three highest-frequency field destinations and one explicit next action
 // within reach without the legacy raised circular FAB. Labels arrive
 // pre-translated from the server page; logical properties preserve RTL.
+// next/link (prefetch off — all targets are force-dynamic) keeps tab taps on
+// the client router instead of full document reloads (K-006).
+import Link from "next/link";
 
 export type FieldTabsLabels = {
   dashboard: string;
@@ -35,20 +38,20 @@ export default function FieldTabs({ active, fabHref, labels }: {
 }) {
   return (
     <nav aria-label={labels.dashboard} className="ax-field-taskbar">
-      <a href="/field" className="ax-field-taskbar__item"
+      <Link href="/field" className="ax-field-taskbar__item" prefetch={false}
         aria-current={active === "dashboard" ? "page" : undefined}>
         <Icon d={GLYPHS.dashboard} />{labels.dashboard}
-      </a>
-      <a href="/field#visits" className="ax-field-taskbar__item"
+      </Link>
+      <Link href="/field#visits" className="ax-field-taskbar__item" prefetch={false}
         aria-current={active === "visits" ? "page" : undefined}>
         <Icon d={GLYPHS.visits} />{labels.visits}
-      </a>
-      <a href="/virtual" className="ax-field-taskbar__item">
+      </Link>
+      <Link href="/virtual" className="ax-field-taskbar__item" prefetch={false}>
         <Icon d={GLYPHS.virtual} />{labels.virtual}
-      </a>
-      <a href={fabHref} aria-label={labels.fab} className="ax-field-taskbar__primary">
+      </Link>
+      <Link href={fabHref} aria-label={labels.fab} className="ax-field-taskbar__primary" prefetch={false}>
         <span>{labels.fab}</span><Icon d={GLYPHS.next} />
-      </a>
+      </Link>
     </nav>
   );
 }

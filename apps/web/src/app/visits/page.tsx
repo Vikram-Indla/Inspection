@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
@@ -206,10 +207,10 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           authoritative list below is the working equivalent — never faked. */}
       <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--ax-space-150)" }}>
         <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-          <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits">{t("visit.views.list", "List")}</a>
-          <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
-          <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
-          <a className="ax-btn ax-btn--subtle" href="/visits/map">{t("visit.views.map", "Map")}</a>
+          <Link className="ax-btn ax-btn--secondary" aria-current="page" href="/visits" prefetch={false}>{t("visit.views.list", "List")}</Link>
+          <Link className="ax-btn ax-btn--subtle" href="/visits/calendar" prefetch={false}>{t("visit.views.calendar", "Calendar")}</Link>
+          <Link className="ax-btn ax-btn--subtle" href="/visits/workload" prefetch={false}>{t("visit.views.workload", "Workload")}</Link>
+          <Link className="ax-btn ax-btn--subtle" href="/visits/map" prefetch={false}>{t("visit.views.map", "Map")}</Link>
         </div>
         <span className="ax-caption ax-numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
@@ -217,7 +218,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       {rows.length === 0 ? (
         <EmptyState glyph="🗓" title={t("visit.list.empty", "No visits in your scope")}
           body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
-          <a className="ax-btn" href="/planning">{t("visit.list.createPlan", "Create a plan")}</a>
+          <Link className="ax-btn" href="/planning" prefetch={false}>{t("visit.list.createPlan", "Create a plan")}</Link>
         </EmptyState>
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}

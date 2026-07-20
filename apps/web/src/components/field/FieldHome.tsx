@@ -8,6 +8,8 @@
 // M03-001: inspector notification inbox card with mark-read (delivery_state).
 // All strings arrive pre-translated from the server page (strings-prop canon —
 // client components cannot call useT()). Colors: ax tokens only; logical props.
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useActionState } from "react";
 import EmptyState from "@/components/EmptyState";
@@ -143,8 +145,8 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: Fiel
       )}
       <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
         {s.key !== "expired" && s.key !== "approved" ? <span className="ax-caption">{strings.rescheduleHint}</span> : <span />}
-        <a href={visitHref(v)} className="ax-link ax-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
-          aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)}>{strings.openDetails} →</a>
+        <Link href={visitHref(v)} prefetch={false} className="ax-link ax-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
+          aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)}>{strings.openDetails} →</Link>
       </div>
     </div>
   );
@@ -182,6 +184,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
   nowIso: string;   // server clock — keeps expiry display SSR/CSR consistent
   locale: string;
 }) {
+  const router = useRouter();
   const nowMs = new Date(nowIso).getTime();
   const [view, setView] = useState<ViewKey>("list");
   const [q, setQ] = useState("");
@@ -375,7 +378,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
                 <GeoMap center={mapCenter} zoom={markers.length === 1 ? 13 : 6} markers={markers} height="100%"
                   onMarkerClick={(id) => {
                     const hit = filtered.find(({ v }) => v.id === id);
-                    if (hit) window.location.href = visitHref(hit.v);
+                    if (hit) router.push(visitHref(hit.v));
                   }} />
               </div>
         )}
