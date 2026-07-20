@@ -27,13 +27,9 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { error: expiryError } = await sb.rpc("expire_lapsed_visits"); // persist published→expired before counting (M02-016)
-  if (expiryError) {
-    console.error("[planning plan drill expiry]", expiryError);
-    return <Shell current="/planning" title={t("plan.drill.errorTitle", "Plan — error")}>
-      <div className="ax-banner ax-banner--critical"><div>{t("plan.drill.loadErrorSafe", "Could not load the current plan state. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
-    </Shell>;
-  }
+  // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
+  // (0025, every 15 min, unscoped); boards render display-level 'expired' for
+  // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
   const [{ data: plan, error: pErr }, { data: kids, error: kErr }] = await Promise.all([
     sb.from("visit_plans")
       .select("id, method, status, criteria, created_at, published_at, profiles(full_name)")

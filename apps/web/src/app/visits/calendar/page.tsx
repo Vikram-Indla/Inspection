@@ -18,8 +18,9 @@ type Joined = {
 export default async function VisitsCalendar() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
-  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
-  if (expiryError) console.error(`[visits.calendar] expiry refresh failed: ${expiryError.message}`);
+  // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
+  // (0025, every 15 min, unscoped); boards render display-level 'expired' for
+  // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
   const { data, error } = await sb.from("visits")
     .select("id, visit_type, planning_status, operational_state, window_start, window_end, factories(name)")
     .order("window_start", { ascending: true })

@@ -52,17 +52,9 @@ export default async function Field() {
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) redirect("/login");  // ERR-AUTH-001: never proceed with a null session
 
-  // M03-015 — persist published→expired before reading (security-definer rpc,
-  // canonical transition; a missing function pre-0015 just leaves display-only expiry).
-  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
-  if (expiryError) {
-    console.error("[field dashboard expiry]", expiryError.message, expiryError.code);
-    return (
-      <Shell current="/field" title={t("field.dashboard.title", "Field dashboard")}>
-        <div className="ax-banner ax-banner--critical" role="alert">{t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
-      </Shell>
-    );
-  }
+  // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
+    // (0025, every 15 min, unscoped); boards render display-level 'expired' for
+    // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
 
   const [assignmentRead, notificationRead] = await Promise.all([
     sb.from("assignments")

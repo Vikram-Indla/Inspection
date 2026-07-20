@@ -24,8 +24,9 @@ type Row = {
 export default async function Workload() {
   const { t } = await useT();
   const sb = await supabaseServer();
-  const { error: expiryError } = await sb.rpc("expire_lapsed_visits"); // count real published load, not lapsed windows (M02-016)
-  if (expiryError) console.error(`[visits.workload] expiry refresh failed: ${expiryError.message}`);
+  // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
+  // (0025, every 15 min, unscoped); boards render display-level 'expired' for
+  // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
   const { data, error } = await sb.from("assignments")
     .select("inspector_id, profiles(full_name), visits(id, planning_status, operational_state, window_start, window_end)")
     .limit(2000);

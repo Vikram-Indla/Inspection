@@ -26,10 +26,9 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   const limit = Math.min(Math.max(Number.parseInt(sp.limit ?? "", 10) || PAGE_STEP, PAGE_STEP), PAGE_MAX);
   const { t } = await useT();
   const sb = await supabaseServer();
-  // M02-016 — persist published→expired before reading (parity with field home;
-  // security-definer rpc runs the canonical transition, audit trigger records it).
-  const { error: expiryError } = await sb.rpc("expire_lapsed_visits");
-  if (expiryError) console.error(`[visits.list] expiry refresh failed: ${expiryError.message}`);
+  // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
+  // (0025, every 15 min, unscoped); boards render display-level 'expired' for
+  // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
   const [{ data: visits, error, count }, { data: inspRows }] = await Promise.all([
     sb.from("visits")
       .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, visit_plan_id,
