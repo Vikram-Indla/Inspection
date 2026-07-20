@@ -1,0 +1,380 @@
+[
+ {
+  "url": "/_next/static/media/31250b261513219c-s.p.woff2",
+  "ms": 3,
+  "bytes": 13612,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+  "ms": 3,
+  "bytes": 44580,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+  "ms": 3,
+  "bytes": 43148,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+  "ms": 3,
+  "bytes": 45596,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/46d978a299613541-s.p.woff2",
+  "ms": 3,
+  "bytes": 13140,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/4ccb217720945e9f.css",
+  "ms": 4,
+  "bytes": 1685,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+  "ms": 5,
+  "bytes": 13688,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/fab26a320de99c5d.css",
+  "ms": 5,
+  "bytes": 997,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/6256c0dbe9cb9edc.css",
+  "ms": 5,
+  "bytes": 2699,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/0db30019d733d405.css",
+  "ms": 6,
+  "bytes": 14868,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+  "ms": 6,
+  "bytes": 19804,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+  "ms": 6,
+  "bytes": 45988,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+  "ms": 7,
+  "bytes": 22208,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+  "ms": 7,
+  "bytes": 22132,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+  "ms": 8,
+  "bytes": 19464,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+  "ms": 8,
+  "bytes": 20800,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+  "ms": 8,
+  "bytes": 13584,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+  "ms": 9,
+  "bytes": 21468,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/eae037355f033de2-s.p.woff2",
+  "ms": 9,
+  "bytes": 20388,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/webpack-01f9a4a5da3a3f5c.js",
+  "ms": 9,
+  "bytes": 2830,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/layout-68d1478955f5c4cf.js",
+  "ms": 9,
+  "bytes": 884,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/main-app-bef53c53ba363b2d.js",
+  "ms": 9,
+  "bytes": 905,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/1255-d90f22433f14e976.js",
+  "ms": 12,
+  "bytes": 46758,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/4bd1b696-f785427dddbba9fb.js",
+  "ms": 13,
+  "bytes": 54796,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/saqeel-prism.svg",
+  "ms": 1,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/2619-3c9e02e22d10480a.js",
+  "ms": 4,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/dashboard",
+  "ms": 10595,
+  "bytes": 18429,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/dashboard/page-b4e0b42f7bc5e0fa.js",
+  "ms": 5,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/4149-5fd6707709b3cd2a.js",
+  "ms": 5,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/44530001-82096455ede4fd1e.js",
+  "ms": 6,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/5402-b5bb1f141c536c5f.js",
+  "ms": 8,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBmaWxsPSJXaW5kb3",
+  "ms": 0,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/saqeel-prism.svg",
+  "ms": 1,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/reviews?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 16,
+  "bytes": 0,
+  "supabase": false,
+  "failed": true
+ },
+ {
+  "url": "/planning?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 16,
+  "bytes": 0,
+  "supabase": false,
+  "failed": true
+ },
+ {
+  "url": "/factories?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 25,
+  "bytes": 0,
+  "supabase": false,
+  "failed": true
+ },
+ {
+  "url": "/ai/suggestions?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 16,
+  "bytes": 518,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/auth/v1/.well-known/jwks.json",
+  "ms": 146,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/auth/v1/.well-known/jwks.json",
+  "ms": 200,
+  "bytes": 891,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+  "ms": 33,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order",
+  "ms": 33,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/operations?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 493,
+  "bytes": 4185,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/field?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 493,
+  "bytes": 0,
+  "supabase": false,
+  "failed": true
+ },
+ {
+  "url": "/admin/violations?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 477,
+  "bytes": 0,
+  "supabase": false,
+  "failed": true
+ },
+ {
+  "url": "/_next/static/chunks/app/admin/violations/page-83d6608149e591af.js",
+  "ms": 3,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/operations/page-1e4cd56a38198f7d.js",
+  "ms": 3,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/field/page-23a4ed7b6c6944f7.js",
+  "ms": 3,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order",
+  "ms": 464,
+  "bytes": 1729,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+  "ms": 465,
+  "bytes": 0,
+  "supabase": true,
+  "failed": true
+ },
+ {
+  "url": "/admin/regulations?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 921,
+  "bytes": 0,
+  "supabase": false,
+  "failed": true
+ },
+ {
+  "url": "/admin/compliance-approvals?_rsc=Uj5fJzh3oSqZfPD_",
+  "ms": 920,
+  "bytes": 4489,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/admin/compliance-approvals/page-77503822e1d095fc.js",
+  "ms": 3,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/admin/regulations/page-7fc9be422e75871b.js",
+  "ms": 3,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/1859-de225aa1c2cae48c.js",
+  "ms": 3,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ }
+]
