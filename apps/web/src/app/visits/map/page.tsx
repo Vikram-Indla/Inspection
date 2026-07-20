@@ -6,7 +6,7 @@ import VisitMap, { type MappedVisit } from "./VisitMap";
 export const dynamic = "force-dynamic";
 
 export default async function VisitsMapPage() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   const [{ data: visits, error }, { data: geo }] = await Promise.all([
     sb.from("visits").select(`id, factory_id, operational_state,
@@ -52,7 +52,7 @@ export default async function VisitsMapPage() {
             inspectorLocation: t("visit.map.inspectorLocation", "Inspector location"), state: t("visit.map.state", "State"),
             assignedInspector: t("visit.map.assignedInspector", "Assigned inspector"), inspectorFallback: t("visit.map.inspectorFallback", "Inspector"),
             unavailableScope: t("visit.map.unavailableScope", "Unavailable under current scope"), latestLocation: t("visit.map.latestLocation", "latest location"),
-          }} />}
+          }} locale={locale} />}
     </Shell>
   );
 }
