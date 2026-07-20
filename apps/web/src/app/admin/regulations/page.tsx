@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 import {
   NewRegulationForm,
@@ -164,7 +165,7 @@ export default async function Regulations({
     invalidNoClauses: t("admin.reg.r1.invalid.noClauses", "draft with no clauses — incomplete; publishing it would be meaningless"),
   };
 
-  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const readAt = formatDateTime(Date.now(), locale === "ar" ? "ar" : "en");
   const readAtNode: ReactNode = (() => {
     const tmpl = t("admin.reg.r1.readAt", "read at {time} — not refreshed since; no staleness verdict exists, the age is shown");
     const [before, after] = tmpl.split("{time}");

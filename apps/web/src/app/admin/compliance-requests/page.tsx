@@ -2,6 +2,7 @@ import Link from "next/link";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ const statusLabel: Record<string, string> = {
 };
 
 export default async function ComplianceRequestRegister() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   const [{ data, error }, roleRead] = await Promise.all([
     sb.from("compliance_configuration_requests")
@@ -41,7 +42,7 @@ export default async function ComplianceRequestRegister() {
         <div className="ax-surface"><div className="ax-state" role="status"><span className="ax-state__glyph" aria-hidden="true">◇</span><h4>No configuration requests</h4><p className="ax-caption">The RLS-scoped read succeeded and returned zero requests. Create the first governed request when authorized.</p>{canCreate ? <Link className="ax-btn ax-btn--secondary" href="/admin/compliance-requests/new">Create Request</Link> : null}</div></div>
       ) : (
         <div className="ax-tablewrap"><table className="ax-table"><caption className="ax-sr-only">Compliance Configuration Request register</caption><thead><tr><th scope="col">Request</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Revision</th><th scope="col">Created</th><th scope="col">Open</th></tr></thead><tbody>
-          {rows.map(row => <tr key={row.id}><th scope="row"><strong>{row.request_number}</strong><div className="ax-caption">{row.title}</div></th><td>{row.request_type === "create" ? "Create" : "Modify"}</td><td><span className={`ax-lozenge ccr-status ccr-status--${row.status}`}>{statusLabel[row.status] ?? row.status}</span></td><td className="ax-numeric">R{row.current_revision}</td><td className="ax-numeric">{new Date(row.created_at).toISOString().slice(0, 10)}</td><td><Link className="ax-link" href={`/admin/compliance-requests/${row.id}`}>Open workspace</Link></td></tr>)}
+          {rows.map(row => <tr key={row.id}><th scope="row"><strong>{row.request_number}</strong><div className="ax-caption">{row.title}</div></th><td>{row.request_type === "create" ? "Create" : "Modify"}</td><td><span className={`ax-lozenge ccr-status ccr-status--${row.status}`}>{statusLabel[row.status] ?? row.status}</span></td><td className="ax-numeric">R{row.current_revision}</td><td className="ax-numeric">{formatDate(row.created_at, locale === "ar" ? "ar" : "en")}</td><td><Link className="ax-link" href={`/admin/compliance-requests/${row.id}`}>Open workspace</Link></td></tr>)}
         </tbody></table></div>
       )}
     </Shell>

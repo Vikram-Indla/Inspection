@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
 import { ProposeDraftForm, DraftPayloadEditor, ApprovePublish, type WfStrings } from "./Controls";
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 type Transition = { id: string; from: string; to: string; actor: string; guard: string; side_effects?: string[]; terminal?: boolean };
 
 export default async function Workflows() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   const { data: wfs, error } = await sb.from("config_versions")
@@ -89,7 +90,7 @@ export default async function Workflows() {
             {/* Approval chain — maker → checker, straight from config_versions (RBAC-002) */}
             <p className="ax-caption">
               {t("admin.wf.chain.proposed", "Proposed by")} <strong>{nameOf(w.created_by) ?? "—"}</strong>
-              {w.created_at && <> · <span className="ax-numeric">{new Date(w.created_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
+              {w.created_at && <> · <span className="ax-numeric">{formatDateTime(w.created_at, locale === "ar" ? "ar" : "en")}</span></>}
               {" → "}
               {w.approved_by
                 ? <>{t("admin.wf.chain.approved", "approved by")} <strong>{nameOf(w.approved_by)}</strong> <span className="ax-lozenge ax-lozenge--success">{t("admin.wf.chain.distinct", "distinct approver")}</span></>

@@ -6,6 +6,8 @@ import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { local, processOutbox, sha256b64, type SyncState } from "@/lib/offline";
 import { getFieldDeviceMetadata } from "@/lib/field-device";
+import { formatDateTime, formatTime } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
@@ -79,7 +81,8 @@ function distM(a: [number, number], b: [number, number]) {
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 
-export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string }) {
+export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion, locale }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string; locale: Locale }) {
+  const dLang = locale === "ar" ? "ar" : "en";
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
   const [log, setLog] = useState([] as string[]);
@@ -682,13 +685,13 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="field-device-readiness">
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.readiness}</h4>
         <div className="ax-stack" style={{ gap: 8 }}>
-          <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {new Date(visit.window_start).toISOString().slice(0,16).replace("T"," ")} → {new Date(visit.window_end).toISOString().slice(11,16)}</div>
+          <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {formatDateTime(visit.window_start, dLang)} → {formatTime(visit.window_end, dLang)}</div>
           <div style={{ display: "flex", gap: 8 }}>{cached ? "✓" : "○"} {strings.packageLine} {visit.package_versions.packages.code} · {visit.package_versions.version_label} {cached && strings.packageCached}</div>
           <div style={{ display: "flex", gap: 8 }}>{journeyId ? "✓" : "○"} {strings.journeySession}</div>
           <div style={{ display: "flex", gap: 8 }}>{deviceInfo ? "✓" : "○"} {strings.deviceInfo}{deviceInfo ? ` · ${deviceInfo.os_version} · app ${deviceInfo.app_version}` : ""}</div>
           <div style={{ display: "flex", gap: 8 }}>{telemetryCount > 0 ? "✓" : "○"} {fmt(strings.telemetryRow, { s: telemetryS, n: telemetryCount })}</div>
           <div style={{ display: "flex", gap: 8 }} data-testid="route-estimate">{eta ? "✓" : "○"} {strings.etaLabel} {eta
-            ? <span>{fmt(strings.etaAvailable, { minutes: eta.minutes, distance: eta.distance, at: new Date(eta.updatedAt).toISOString().slice(11, 16) })} · {eta.provider}{eta.stale ? ` · ${strings.etaStale}` : ""}</span>
+            ? <span>{fmt(strings.etaAvailable, { minutes: eta.minutes, distance: eta.distance, at: formatTime(eta.updatedAt, dLang) })} · {eta.provider}{eta.stale ? ` · ${strings.etaStale}` : ""}</span>
             : etaUnavailable ? strings.etaUnavailable : "—"}</div>
           <div style={{ display: "flex", gap: 8 }}>{checkedIn ? "✓" : "○"} {fmt(strings.geofenceCheck, { acc: maxAcc, fence })}</div>
         </div>
@@ -790,7 +793,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {(overrideState === "queued" || overrideState === "pending") && !checkedIn && (
         <div className="ax-banner ax-banner--warning" role="status"><div>
           {overrideState === "queued" ? strings.overrideQueued : strings.overridePending}
-          {initialOverride?.status === "pending" && <> · <span className="ax-numeric">{new Date(initialOverride.expires_at).toISOString().slice(0, 16).replace("T", " ")} UTC</span></>}
+          {initialOverride?.status === "pending" && <> · <span className="ax-numeric">{formatDateTime(initialOverride.expires_at, dLang)}</span></>}
         </div></div>
       )}
       {overrideState === "approved" && (
@@ -834,7 +837,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               <dl className="ax-detail-grid" style={{ marginBlockStart: "var(--ax-space-150)" }}>
                 <dt>{strings.lblType}</dt><dd>{visit.visit_type}</dd>
                 <dt>{strings.lblMode}</dt><dd>{visit.execution_mode}</dd>
-                <dt>{strings.lblWindow}</dt><dd>{new Date(visit.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(visit.window_end).toISOString().slice(11, 16)}</dd>
+                <dt>{strings.lblWindow}</dt><dd>{formatDateTime(visit.window_start, dLang)} → {formatTime(visit.window_end, dLang)}</dd>
                 <dt>{strings.lblPackage}</dt><dd>{visit.package_versions.packages.code} · {visit.package_versions.version_label}</dd>
                 <dt>{strings.lblPriority}</dt><dd>{visit.priority ?? "—"}</dd>
                 <dt>{strings.lblPlanningStatus}</dt><dd>{visit.planning_status}</dd>

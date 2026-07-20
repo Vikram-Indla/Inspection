@@ -3,6 +3,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 
 // CD-004 / SCR-ADM-001 — Approval & Configuration home (Configuration Evidence Spine).
@@ -67,7 +68,7 @@ export default async function AdminHome() {
     ? actFamilies.join(sep)
     : t("admin.overview.r2.scope.none", "none");
 
-  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const readAt = formatDateTime(Date.now(), locale === "ar" ? "ar" : "en");
   const engines = enginesRes.data ?? [];
 
   // Read-state chip: glyph + word (never colour-only). "en" carries the count-unit noun;
@@ -234,7 +235,7 @@ export default async function AdminHome() {
                               {" · "}
                               <span className="ax-version"><bdi dir="ltr">{e.version_label}</bdi></span>
                               {e.updated_at ? (
-                                <> · <bdi dir="ltr" className="ax-numeric">{new Date(e.updated_at).toISOString().slice(0, 10)}</bdi></>
+                                <> · <bdi dir="ltr" className="ax-numeric">{formatDate(e.updated_at, locale === "ar" ? "ar" : "en")}</bdi></>
                               ) : null}
                             </li>
                           ))}

@@ -9,6 +9,8 @@
 // There is no draft/approval step: a successful save is effective immediately.
 import { useMemo, useState, useActionState } from "react";
 import { saveRiskSettings } from "./actions";
+import { formatDateTime } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 // Factor names are resolved to strings on the server — a function prop cannot
 // cross the server→client boundary (Next throws at render).
@@ -39,12 +41,14 @@ export default function RiskForm({
   medMax: initialMed,
   updatedAt,
   labels,
+  locale,
 }: {
   factors: Factor[];
   lowMax: number;
   medMax: number;
   updatedAt: string | null;
   labels: RiskLabels;
+  locale: Locale;
 }) {
   const [weights, setWeights] = useState<Record<string, number>>(
     Object.fromEntries(initialFactors.map(f => [f.key, f.weight])),
@@ -109,7 +113,7 @@ export default function RiskForm({
       </div>
 
       <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
-        <p className="ax-caption ax-numeric">{labels.lastUpdated} {updatedAt ? new Date(updatedAt).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
+        <p className="ax-caption ax-numeric">{labels.lastUpdated} {updatedAt ? formatDateTime(updatedAt, locale === "ar" ? "ar" : "en") : "—"}</p>
         <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
           {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
           <button className="ax-btn ax-btn--prominent" disabled={pending || !sumOk} aria-disabled={!sumOk}>

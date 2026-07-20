@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 import {
   NewItemForm,
@@ -66,7 +67,7 @@ export default async function Items({
     return { id: c.id, label: `${reg?.code ?? "?"} §${c.clause_ref} — ${c.title ?? ""}` };
   });
 
-  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const readAt = formatDateTime(Date.now(), locale === "ar" ? "ar" : "en");
   const rows = items ?? [];
   const { data: { user } } = await getServerUser();
   const { data: roleRows, error: roleError } = user

@@ -6,7 +6,7 @@
 //   node scripts/verify-dates.mjs                              (Node >=23.6)
 import assert from "node:assert/strict";
 import {
-  formatDate, formatDateTime, formatDue, formatDateRange,
+  formatDate, formatDateTime, formatDue, formatDateRange, formatTime,
   riyadhDateParts, riyadhDayDiff, isBeforeRiyadhToday, formatRelative,
 } from "../src/lib/dates.ts";
 
@@ -78,6 +78,10 @@ check("formatDateRange en uses explicit From/To", () => {
 });
 check("formatDateRange ar uses من/إلى", () => {
   assert.equal(formatDateRange("2026-07-01T00:00:00Z", "2026-07-18T00:00:00Z", "ar").startsWith("من "), true);
+});
+
+check("formatTime renders Riyadh-local HH:MM for a same-day window end", () => {
+  assert.equal(formatTime("2026-07-18T08:40:00Z", "en"), "11:40");
 });
 
 check("formatDateTime includes the Riyadh label", () => {

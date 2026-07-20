@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import { NewViolationForm, AddMappingForm, PublishMappingForm, PublishViolationForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
 import { getViolationUsage, type ViolationUsage } from "./actions";
 import EmptyState from "@/components/EmptyState";
@@ -90,7 +91,8 @@ export default async function Violations({
 }) {
   const sp = await searchParams;
   const penaltyMode = sp.mode === "penalty";
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const lang = locale === "ar" ? "ar" : "en";
   const sb = await supabaseServer();
 
   const [{ data: codesRaw, error }, { data: clauses, error: clauseError }, templateRead, itemTraceRead] = await Promise.all([
@@ -118,7 +120,7 @@ export default async function Violations({
   const templateChoices = (templateRead.data ?? []).map(template => ({ id: template.id, label: `${template.template_key} · ${template.version_label} — ${template.title_en}` }));
   const itemTraces = (itemTraceRead.data ?? []) as Array<{ code: string; title: string; response_model: { mapping?: Record<string, { violation?: string }> } | null }>;
   const today = new Date().toISOString().slice(0, 10);
-  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const readAt = formatDateTime(Date.now(), lang);
 
   const clauseOptions: ClauseOption[] = (clauses ?? []).map(c => {
     const reg = c.regulations as unknown as { code: string } | null;
@@ -249,7 +251,7 @@ export default async function Violations({
           {events.map(event => (
             <li key={event.id}>
               <span className="ax-numeric">{event.action}</span>{" · "}
-              <bdi dir="ltr" className="ax-numeric">{new Date(event.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</bdi>
+              <bdi dir="ltr" className="ax-numeric">{formatDateTime(event.occurred_at, lang)}</bdi>
               {event.actor ? <> · {t("admin.viol.audit.actor", "actor")} <bdi dir="ltr" className="ax-numeric">{event.actor}</bdi></> : null}
             </li>
           ))}
@@ -454,7 +456,7 @@ export default async function Violations({
                   <bdi dir="ltr" className="ax-numeric">{v.active_from ?? "—"}</bdi>
                   {v.active_to ? <> / {t("admin.viol.to", "active-to")} <bdi dir="ltr" className="ax-numeric">{v.active_to}</bdi></> : null}
                   {" "}{t("admin.viol.asOf", "as of today")}{" "}
-                  <bdi dir="ltr" className="ax-numeric">{today}</bdi>.
+                  <bdi dir="ltr" className="ax-numeric">{formatDate(today, lang)}</bdi>.
                 </p>
                 <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }} aria-label={t("admin.viol.usage.heading", "Usage and audit") }>
                   {evidence?.usage ? (

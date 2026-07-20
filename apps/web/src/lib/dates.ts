@@ -57,6 +57,18 @@ export function formatDateTime(value: string | number | Date, locale: Locale): s
   return `${formatDate(value, locale)}, ${time} (${riyadhLabel})`;
 }
 
+/** "11:40" — Riyadh-local time only, for a same-day start->end window where
+ *  repeating the full date on both ends would be redundant. */
+export function formatTime(value: string | number | Date, locale: Locale): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
+    timeZone: TIME_ZONE,
+    calendar: CALENDAR,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(toDate(value));
+}
+
 /** Riyadh-local Y/M/D parts for the given instant — day-boundary arithmetic
  *  must use these, never raw UTC millisecond division (DST-safe, tz-safe). */
 export function riyadhDateParts(value: string | number | Date): { year: number; month: number; day: number } {

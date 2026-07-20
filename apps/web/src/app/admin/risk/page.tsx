@@ -8,7 +8,7 @@ import RiskForm, { type RiskLabels } from "./RiskForm";
 export const dynamic = "force-dynamic";
 
 export default async function RiskStudio() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data } = await sb.from("engine_settings").select("settings, version_label, updated_at").eq("engine", "risk").single();
   const s = data?.settings as { factors: { key: string; weight: number }[]; bands: Record<string, number[]> } | undefined;
@@ -53,6 +53,7 @@ export default async function RiskStudio() {
           medMax={s.bands?.medium?.[1] ?? 69}
           updatedAt={data.updated_at}
           labels={labels}
+          locale={locale}
         />
       )}
 

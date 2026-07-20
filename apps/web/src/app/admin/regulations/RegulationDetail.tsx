@@ -1,4 +1,6 @@
 import { supabaseServer } from "@/lib/supabase-server";
+import { useT } from "@/lib/i18n";
+import { formatDate } from "@/lib/dates";
 import { logConfigurationReadFailure } from "@/lib/admin-configuration";
 import { PublishRegulation, type RegStrings } from "./Controls";
 import EmptyState from "@/components/EmptyState";
@@ -43,6 +45,8 @@ export default async function RegulationDetail({
   strings: DetailStrings;
   t: (key: string, en: string) => string;
 }) {
+  const { locale } = await useT();
+  const dLang = locale === "ar" ? "ar" : "en";
   const sb = await supabaseServer();
   const { data: reg, error } = await sb.from("regulations")
     .select("id, code, title, issuing_authority, status, created_at, created_by, approved_by, published_at, regulation_clauses(id, clause_ref, title, applicability, legal_source, inspection_items(id, code, title))")
@@ -100,11 +104,11 @@ export default async function RegulationDetail({
       {/* Metadata + maker-checker evidence */}
       <dl className="ax-grid-2" style={{ rowGap: "var(--ax-space-100)" }}>
         <div><dt className="ax-caption">{s.issuingAuthority}</dt><dd><bdi>{reg.issuing_authority || "—"}</bdi></dd></div>
-        <div><dt className="ax-caption">{s.metaCreated}</dt><dd><bdi>{new Date(reg.created_at).toISOString().slice(0, 10)}</bdi></dd></div>
+        <div><dt className="ax-caption">{s.metaCreated}</dt><dd><bdi>{formatDate(reg.created_at, dLang)}</bdi></dd></div>
         <div><dt className="ax-caption">{s.metaCreatedBy}</dt><dd><bdi>{nameOf(reg.created_by)}</bdi></dd></div>
         <div><dt className="ax-caption">{s.metaApprovedBy}</dt><dd><bdi>{reg.approved_by ? nameOf(reg.approved_by) : s.neverApproved}</bdi></dd></div>
         {reg.published_at && (
-          <div><dt className="ax-caption">{s.metaPublishedAt}</dt><dd><bdi>{new Date(reg.published_at).toISOString().slice(0, 10)}</bdi></dd></div>
+          <div><dt className="ax-caption">{s.metaPublishedAt}</dt><dd><bdi>{formatDate(reg.published_at, dLang)}</bdi></dd></div>
         )}
       </dl>
 

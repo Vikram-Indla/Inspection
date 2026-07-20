@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 import { NewDraftForm, ApprovePublish, DeactivatePackage, type PublishStrings } from "./PublishControls";
 import DraftEditor, { type DraftEditorStrings } from "./DraftEditor";
@@ -95,7 +96,7 @@ export default async function Packages() {
   const templateChoices = templates.filter(template => ["published", "locked"].includes(template.status)).map(template => ({ id: template.id, label: `${template.template_key} · ${template.version_label} — ${locale === "ar" ? template.title_ar : template.title_en}` }));
   const violationChoices = (violationRead.data ?? []).map(violation => ({ id: violation.code, label: `${violation.code} — ${violation.title}` }));
   const itemMap = new Map(items.map(item => [item.code, item]));
-  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const readAt = formatDateTime(Date.now(), locale === "ar" ? "ar" : "en");
 
   const previewItems: Record<string, PreviewItem> = {};
   for (const item of items) {
