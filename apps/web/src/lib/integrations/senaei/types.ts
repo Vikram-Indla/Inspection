@@ -55,6 +55,7 @@ export type SenaeiInspectionSubmissionPayload = {
 export type SenaeiSubmissionAttachmentManifest = { field: string; filename: string; sha256: string; size: number; type: string };
 export type PreparedSenaeiInspectionSubmission = {
   endpoint: "/api/inspection/tasks/submit-inspection/{task}"; method: "POST"; contentType: "multipart/form-data";
+  bodyKind: "multipart_form_data";
   taskId: string; governanceRef: string; formData: FormData; attachmentManifest: SenaeiSubmissionAttachmentManifest[]; payloadChecksum: string;
 };
 export type SenaeiSubmissionOutboxEnvelope = {

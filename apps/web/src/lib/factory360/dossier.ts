@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { calculateApprovedCompliance, type FrozenPackageDefinition, type ComplianceSnapshot, type ComplianceResult } from "@/lib/factory360/compliance";
 import { FACTORY_360_PERMISSIONS, hasFactory360Permission, type Factory360Permission } from "@/lib/factory360/permissions";
+import { buildFactory360CanonicalProjection } from "@/lib/factory360/canonical-projection";
+import type { Factory360CanonicalProjection } from "@/lib/factory360/cross-provider-contract";
 
 // TASK-FACTORY-360-IPAD-011 · F360IPAD-EXTRACT-016
 // Shared, platform-neutral Factory 360 read model. Both the web CR dossier
@@ -93,6 +95,10 @@ export type Factory360Dossier = {
   downloadUrls: Record<string, string>;
   mediaUrls: Record<string, string>;
   observedComparison: ObservedRow[];
+  // Provider-neutral canonical projection (source precedence + discrepancy
+  // states) built server-side from this dossier. Web + iPad consume it; neither
+  // re-resolves precedence nor calls a provider. Industry Shared is fail-closed.
+  canonical: Factory360CanonicalProjection;
   // Raw provider results preserved so callers can render per-section degraded state.
   addressResult: Result<unknown>;
   linesResult: Result<unknown>;
@@ -242,7 +248,7 @@ export async function loadFactory360Dossier(
     { key: "source", official: selected?.source_system ?? factory?.source, observedKey: "source_system" },
   ] : [];
 
-  return {
+  const base: Omit<Factory360Dossier, "canonical"> = {
     found: true, permissions, cr: cr as unknown as CommercialRegistration, crError, licenses, licenseError,
     selected, factory, factoryId, licenseId, address, lines, government, docs, media, officialMedia, linkedEvidence,
     reports, riskHistory, penalties, snapshots, latestApprovedFactorySnapshot, snapshotOrigin,
@@ -250,11 +256,12 @@ export async function loadFactory360Dossier(
     downloadUrls, mediaUrls, observedComparison,
     addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult, penaltiesResult, portfolioReportsResult, snapshotsResult,
   };
+  return { ...base, canonical: buildFactory360CanonicalProjection(base as Factory360Dossier) };
 }
 
 function blankDossier(permissions: Factory360Permissions, cr: CommercialRegistration | null, crError: unknown, licenseError: unknown): Factory360Dossier {
   const empty: Result<unknown> = { data: null, error: null };
-  return {
+  const base: Omit<Factory360Dossier, "canonical"> = {
     found: false, permissions, cr, crError, licenses: [], licenseError, selected: null, factory: null,
     factoryId: undefined, licenseId: undefined, address: null, lines: [], government: [], docs: [], media: [],
     officialMedia: [], linkedEvidence: [], reports: [], riskHistory: [], penalties: [], snapshots: [],
@@ -265,4 +272,5 @@ function blankDossier(permissions: Factory360Permissions, cr: CommercialRegistra
     addressResult: empty, linesResult: empty, governmentResult: empty, docsResult: empty, mediaResult: empty,
     reportsResult: empty, riskResult: empty, penaltiesResult: empty, portfolioReportsResult: empty, snapshotsResult: empty,
   };
+  return { ...base, canonical: buildFactory360CanonicalProjection(base as Factory360Dossier) };
 }

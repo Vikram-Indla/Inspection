@@ -59,8 +59,13 @@ export default async function FieldFactory360({ params, searchParams }: {
     latestApprovedFactorySnapshot, snapshotOrigin, approvedTrend, currentCompliance, reportCompliance,
     approvedEnforcement, portfolioCounts, highestRiskLicense, downloadUrls, mediaUrls, observedComparison,
     addressResult, linesResult, governmentResult, docsResult, mediaResult, reportsResult, riskResult,
-    penaltiesResult, portfolioReportsResult, snapshotsResult,
+    penaltiesResult, portfolioReportsResult, snapshotsResult, canonical,
   } = dossier;
+  // Cross-provider canonical facts (TASK-...-015): consumed from the shared
+  // server projection only — the iPad never calls a provider or re-resolves
+  // precedence. Roles/discrepancy states surfaced honestly.
+  const roleLozenge = (role: string) => role === "authoritative" ? "ax-lozenge--success" : role === "contract_unverified" ? "ax-lozenge--warning" : role === "conflicting" ? "ax-lozenge--critical" : role === "permission_restricted" || role === "unavailable" ? "" : "ax-lozenge--info";
+  const discrepancyCounts = canonical.discrepancies.reduce<Record<string, number>>((acc, d) => { acc[d.state] = (acc[d.state] ?? 0) + 1; return acc; }, {});
 
   const dt = (value: string | null | undefined) => value ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-SA", { dateStyle: "medium" }).format(new Date(value)) : "—";
   const label = (value: string | null | undefined) => value ? t(`enum.${value}`, value.replaceAll("_", " ")) : "—";
@@ -254,6 +259,23 @@ export default async function FieldFactory360({ params, searchParams }: {
               <h3>{t("f360.media.evidence", "Linked inspection evidence")}</h3>
               {linkedEvidence.length ? <ul>{linkedEvidence.map(asset => <li key={asset.id}><span className="ax-lozenge ax-lozenge--info">{label(asset.category)}</span> {asset.title ?? text(asset.evidence_id)} · {dt(asset.captured_at)} {asset.inspection_id ? <a className="ax-link" href={`/reports/inspection/${asset.inspection_id}`}>{t("f360.media.origin", "origin report")}</a> : null} {asset.evidence_id ? <a className="ax-link" href={`/evidence-ocr?evidence=${asset.evidence_id}`}>{t("f360.media.ocr", "Contextual OCR")}</a> : null}</li>)}</ul> : <p className="ax-caption">{t("f360.media.evidenceEmpty", "No linked inspection, arrival or violation evidence is visible in your scope.")}</p>}
             </>}
+          </div>
+        </details>
+
+        {/* Cross-provider canonical source & discrepancies (F360IPAD-API-015) */}
+        <details className={`ax-surface ${styles.section}`}>
+          <summary><span>{t("f360.xpc.heading", "Source & cross-provider reconciliation")}</span><span className={`ax-lozenge ${discrepancyCounts["conflicting"] ? "ax-lozenge--critical" : discrepancyCounts["contract_unverified"] ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{discrepancyCounts["conflicting"] ? t("f360.xpc.conflicts", "conflicts") : discrepancyCounts["contract_unverified"] ? t("f360.xpc.unverified", "unverified master") : t("f360.xpc.reconciled", "reconciled")}</span></summary>
+          <div className={styles.sectionBody}>
+            <p className="ax-caption">{t("f360.xpc.rule", "Facts are resolved once, server-side. Industry Shared master data is contract-unverified (fail-closed); Inspection API values are contextual; approved report facts are authoritative. Conflicts are surfaced, never overwritten.")}</p>
+            <div className={styles.facts}>
+              <div><dt>{t("f360.xpc.cr", "Commercial registration")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.commercialRegistration.role)}`}>{label(canonical.commercialRegistration.role)}</span> <span className="ax-caption">{canonical.commercialRegistration.source.provider}</span></dd></div>
+              <div><dt>{t("f360.xpc.license", "Industrial license")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.industrialLicense.role)}`}>{label(canonical.industrialLicense.role)}</span> <span className="ax-caption">{canonical.industrialLicense.source.provider}</span></dd></div>
+              <div><dt>{t("f360.xpc.plant", "Plant")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.plant.role)}`}>{label(canonical.plant.role)}</span> <span className="ax-caption">{canonical.plant.source.provider}</span></dd></div>
+              <div><dt>{t("f360.xpc.activities", "Activities / products / materials")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.products.role)}`}>{label(canonical.products.role)}</span> <span className="ax-caption">{canonical.products.value?.length ?? 0}/{canonical.materials.value?.length ?? 0}/{canonical.machines.value?.length ?? 0}</span></dd></div>
+              <div><dt>{t("f360.xpc.workforce", "Workforce / contacts / delegations")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.workforce.role)}`}>{label(canonical.workforce.role)}</span> <span className="ax-caption">INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED</span></dd></div>
+              <div><dt>{t("f360.xpc.package", "Approved package / submission version")}</dt><dd><span className={`ax-lozenge ${roleLozenge(canonical.approvedPackageVersion.role)}`}>{label(canonical.approvedPackageVersion.role)}</span> <span className="ax-caption ax-numeric">{text(canonical.approvedPackageVersion.value)} · {text(canonical.immutableSubmissionVersion.value)}</span></dd></div>
+            </div>
+            <p className="ax-caption">{t("f360.xpc.discrepancies", "Reconciliation")}: {Object.entries(discrepancyCounts).map(([state, n]) => `${label(state)} ${n}`).join(" · ") || t("f360.xpc.none", "no reconcilable facts")}</p>
           </div>
         </details>
 

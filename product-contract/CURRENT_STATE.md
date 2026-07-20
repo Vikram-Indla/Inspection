@@ -1,5 +1,30 @@
 # Current State
 
+## 2026-07-20 UPDATE 109 — iPad × cross-provider contract reconciliation (branch only)
+
+`TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015` on
+`codex/factory360-ipad-api-contract-consumption-015` (base `594fd87`, union-merged
+accepted API-contract `ede6628`, merge `9edd34e`). NOT merged to canonical.
+
+Web and iPad now consume the accepted cross-provider structure through ONE shared
+server projection: `cross-provider-contract.ts` (types + reconcile) →
+`canonical-projection.ts` (NEW, server-only; builds source-labelled canonical
+facts + discrepancy states from the dossier; Industry Shared fail-closed) →
+`loadFactory360Dossier` (now returns `canonical`) → Web + iPad + offline snapshot
+(v2, backward-compatible; `mim-field-f360-v1` namespace unchanged). iPad renders
+canonical roles/discrepancies additively; it never calls a provider, re-resolves
+precedence, re-maps the 438 fields, or calculates compliance. Industry Shared 11
+endpoints stay fail-closed; external Submit Inspection stays
+`BLOCKED_TRIGGER_DECISION`; `lib/offline.ts` / `mim-field-v1` untouched.
+
+Fixed in-scope defects that pre-existed on the accepted branches: the web
+CR-dossier contract now asserts the extracted queries against the shared loader;
+the Senaei submission builder gained `bodyKind:"multipart_form_data"` + multipart
+field validation to satisfy its own accepted cross-provider spec. Gates: typecheck
+0, build PASS, full static suite 149 passed / 4 skipped / 0 failed, 10/10 negative
+proofs, diff-check + secret scan clean. Status:
+`AWAITING_SPONSOR_IPAD_API_CONTRACT_CONSUMPTION_ACCEPTANCE`.
+
 ## 2026-07-20 UPDATE 105 — Factory 360 Inspector iPad slice DONE (merged to canonical)
 
 TASK-FACTORY-360-IPAD-011 (PROMPT_10) is functionally complete and **merged to

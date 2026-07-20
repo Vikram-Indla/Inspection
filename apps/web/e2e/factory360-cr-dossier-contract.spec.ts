@@ -6,6 +6,11 @@ import { calculateApprovedCompliance } from "../src/lib/factory360/compliance";
 const webRoot = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8");
 const PAGE = "src/app/factories/cr/[id]/page.tsx";
+// The CR-centred projection (queries + derivation) was extracted into the shared
+// dossier loader so Web and iPad render one projection. Query/select/derivation
+// assertions therefore check page + loader combined; rendering assertions stay
+// on the page.
+const LOADER = "src/lib/factory360/dossier.ts";
 
 test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () => {
   test("reproduces the approved-snapshot compliance formula and excludes non-scored answers", () => {
@@ -23,11 +28,12 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
   });
   test("uses the governed CR -> license -> plant hierarchy and keeps legacy links compatible", () => {
     const page = read(PAGE);
+    const src = page + read(LOADER);
     const list = read("src/app/factories/page.tsx");
     const legacy = read("src/app/factories/[id]/page.tsx");
-    expect(page).toContain('from("commercial_registrations")');
-    expect(page).toContain('from("industrial_licenses")');
-    expect(page).toContain('from("plant_addresses")');
+    expect(src).toContain('from("commercial_registrations")');
+    expect(src).toContain('from("industrial_licenses")');
+    expect(src).toContain('from("plant_addresses")');
     expect(page).toContain('aria-current={row.id === selected?.id ? "page" : undefined}');
     expect(list).toContain('dossier_href: crByFactory.has(row.id)');
     expect(list).toContain('`/factories/${row.id}`');
@@ -38,8 +44,9 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
 
   test("is a read-only dossier with independent industrial, government, document and media reads", () => {
     const page = read(PAGE);
+    const src = page + read(LOADER);
     for (const table of ["plant_production_line_items", "factory_government_records", "factory_documents", "factory_media_assets"]) {
-      expect(page).toContain(`from("${table}")`);
+      expect(src).toContain(`from("${table}")`);
     }
     expect(page).not.toMatch(/\.insert\(|\.update\(|\.upsert\(|\.delete\(/);
     expect(page).not.toMatch(/<form|contentEditable|AddDocumentForm|AddProductForm/);
@@ -48,17 +55,18 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
 
   test("lists inspection reports, not visit history, and calculates only approved frozen submissions", () => {
     const page = read(PAGE);
-    expect(page).toContain('from("inspections")');
-    expect(page).toContain("submission_versions!inner");
-    expect(page).toContain("filter(report => !!latestSubmission(report))");
-    expect(page).toContain('report.status === "approved"');
-    expect(page).toContain("latestSubmission(report)");
-    expect(page).toContain("calculateApprovedCompliance(latest.snapshot, report.package_versions?.definition)");
+    const src = page + read(LOADER);
+    expect(src).toContain('from("inspections")');
+    expect(src).toContain("submission_versions!inner");
+    expect(src).toContain("filter(report => !!latestSubmission(report))");
+    expect(src).toContain('report.status === "approved"');
+    expect(src).toContain("latestSubmission(report)");
+    expect(src).toContain("calculateApprovedCompliance(latest.snapshot, report.package_versions?.definition)");
     expect(page).toContain('href={`/reports/inspection/${report.id}`}');
     expect(page).not.toContain('href={`/visits/${');
     expect(page).toContain("Returned or rejected inspections remain visible below but never affect this rate.");
-    expect(page).toContain("violations(id, mapping_version, violation_codes(code, title, level, corrective_action, grace_period_days))");
-    expect(page).toContain('reports.filter(report => report.status === "approved")');
+    expect(src).toContain("violations(id, mapping_version, violation_codes(code, title, level, corrective_action, grace_period_days))");
+    expect(src).toContain('reports.filter(report => report.status === "approved")');
     expect(page).toContain("Approved inspection violations & corrective actions");
   });
 
@@ -91,8 +99,9 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
 
   test("keeps official media separate from inspection evidence and never invents a freshness SLA", () => {
     const page = read(PAGE);
-    for (const category of ["official_factory_image", "factory_profile_image", "inspection_evidence", "arrival_evidence", "violation_evidence"]) expect(page).toContain(`"${category}"`);
-    expect(page).toContain("evidence_id, inspection_id, violation_id");
+    const src = page + read(LOADER);
+    for (const category of ["official_factory_image", "factory_profile_image", "inspection_evidence", "arrival_evidence", "violation_evidence"]) expect(src).toContain(`"${category}"`);
+    expect(src).toContain("evidence_id, inspection_id, violation_id");
     expect(page).toContain('href={`/evidence-ocr?evidence=${asset.evidence_id}`}');
     expect(page).toContain('href={`/reports/inspection/${asset.inspection_id}`}');
     expect(page).toContain("Inspection evidence remains linked to its inspection report and is never merged into this gallery.");
@@ -103,7 +112,8 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
 
   test("filters ungoverned government workflow states and carries selected context into actions", () => {
     const page = read(PAGE);
-    expect(page).toContain('["pending", "returned", "rejected", "draft"].includes(row.status)');
+    const src = page + read(LOADER);
+    expect(src).toContain('["pending", "returned", "rejected", "draft"].includes(row.status)');
     expect(page).toContain('href={`/factories/${factoryId}?compat=legacy#location`}');
     expect(page).toContain("&cr=${cr.id}&license=${selected?.id");
     expect(page).toContain("&returnTo=${encodeURIComponent(");
@@ -112,11 +122,12 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
 
   test("captures submission-time factory facts and compares only an approved observed snapshot", () => {
     const page = read(PAGE);
+    const src = page + read(LOADER);
     const migration = read("../../supabase/migrations/20260720010000_factory360_v2_foundation.sql");
     expect(migration).toContain("capture_inspection_factory_snapshot");
     expect(migration).toContain("trg_capture_inspection_factory_snapshot");
-    expect(page).toContain('sb.from("inspection_factory_snapshots")');
-    expect(page).toContain('report.status === "approved"');
+    expect(src).toContain('sb.from("inspection_factory_snapshots")');
+    expect(src).toContain('report.status === "approved"');
     expect(page).toContain("Official vs latest approved observed snapshot");
     expect(page).toContain("does not overwrite current source truth");
   });

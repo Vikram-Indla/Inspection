@@ -55,7 +55,7 @@ export function buildInspectionSubmissionPayload(payload: SenaeiInspectionSubmis
   appendRawMaterials(formData, payload.selectedRawMaterials);
   const fieldsForChecksum = Array.from(formData.entries()).filter((entry): entry is [string, string] => typeof entry[1] === "string").sort(([a, av], [b, bv]) => a.localeCompare(b) || av.localeCompare(bv));
   const stableManifest = [...attachmentManifest].sort((a, b) => `${a.field}:${a.filename}:${a.sha256}`.localeCompare(`${b.field}:${b.filename}:${b.sha256}`));
-  return { endpoint: "/api/inspection/tasks/submit-inspection/{task}", method: "POST", contentType: "multipart/form-data", taskId: payload.taskId, governanceRef: payload.governanceRef, formData, attachmentManifest: stableManifest, payloadChecksum: digest({ taskId: payload.taskId, governanceRef: payload.governanceRef, fields: fieldsForChecksum, attachments: stableManifest }) };
+  return { endpoint: "/api/inspection/tasks/submit-inspection/{task}", method: "POST", contentType: "multipart/form-data", bodyKind: "multipart_form_data", taskId: payload.taskId, governanceRef: payload.governanceRef, formData, attachmentManifest: stableManifest, payloadChecksum: digest({ taskId: payload.taskId, governanceRef: payload.governanceRef, fields: fieldsForChecksum, attachments: stableManifest }) };
 }
 
 /** The outbox representation is delivery-neutral: enqueue is not a provider submission. */
@@ -66,6 +66,6 @@ export function createBlockedSubmissionOutbox(prepared: PreparedSenaeiInspection
 
 /** Compatibility boundary: intentionally fail closed until a submission trigger is approved. */
 export async function submitInspection(_client: SenaeiClient, submission: GovernedInspectionSubmission): Promise<DomainResult<SenaeiOperationResult>> {
-  if (!submission.taskId.trim() || !submission.governanceRef.trim() || !(submission.formData instanceof FormData)) return failed("SENAEI_REQUEST_INVALID", "Inspection submission requires task, governance reference and caller-provided FormData.");
+  if (!submission.taskId.trim() || !submission.governanceRef.trim() || !(submission.formData instanceof FormData) || !submission.formData.has("inspection_type") || !submission.formData.has("is_distrupted")) return failed("SENAEI_REQUEST_INVALID", "Inspection submission requires task, governance reference and multipart FormData with inspection_type and is_distrupted.");
   return failed("BLOCKED_TRIGGER_DECISION", BLOCKED_MESSAGE);
 }

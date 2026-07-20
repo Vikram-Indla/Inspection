@@ -52,6 +52,15 @@ export type Factory360SnapshotSummary = {
   documentCount: number;
   sourceSystem: string | null;
   sourceSyncedAt: string | null;
+  // Cross-provider extensions (F360IPAD-API-015). Optional for backward
+  // compatibility: snapshots cached by the pre-015 projection omit these and
+  // remain readable. NO raw provider payloads, credentials, tokens or signed
+  // URLs are ever cached — only summarised, source-labelled facts.
+  canonicalVersion?: string;
+  sourceFamilies?: string[];
+  activitySummary?: { activities: number; products: number; materials: number; machines: number; spareParts: number };
+  discrepancyStates?: Record<string, number>;
+  contractUnverifiedDomains?: string[];
 };
 
 export type Factory360Snapshot = Factory360SnapshotMeta & { summary: Factory360SnapshotSummary };
