@@ -147,7 +147,7 @@ export default async function Regulations({
     statusPublished: t("admin.reg.r1.status.published", "Published"),
     statusDraft: t("admin.reg.r1.status.draft", "Draft"),
     statusDeactivated: t("admin.reg.r1.status.deactivated", "Deactivated"),
-    openDossier: t("admin.reg.r1.openDossier", "Open dossier"),
+    openDossier: t("admin.reg.r1.openDossier", "Open record"),
     filteredEmptyTitle: t("admin.reg.r1.filteredEmpty.title", "No regulations match"),
     filteredEmptyBody: t("admin.reg.r1.filteredEmpty.body", "The register itself is not empty — clear the search or lifecycle filter."),
     createdAtLabel: t("admin.reg.r1.createdAt", "created"),
@@ -177,7 +177,7 @@ export default async function Regulations({
     );
   })();
 
-  const title = t("admin.reg.r1.title", "Compliance Library — regulation register");
+  const title = t("admin.reg.r1.title", "Inspection Rules — regulation register");
   const context = (
     <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
       <span className="ax-lozenge ax-lozenge--info">SCR-ADM-010/011</span>
@@ -191,7 +191,7 @@ export default async function Regulations({
     </span>
   );
   const libraryTabs = (
-    <nav className="cmp-library-tabs" aria-label="Compliance Library">
+    <nav className="cmp-library-tabs" aria-label="Inspection Rules">
       <a className="ax-btn ax-btn--prominent" href="/admin/regulations" aria-current="page">Regulations</a>
       <a className="ax-btn ax-btn--secondary ax-link" href="/admin/items">Inspection Items</a>
       {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href="/admin/compliance-requests/new">Create governed request</a> : null}
@@ -279,7 +279,7 @@ export default async function Regulations({
                 </span>
               </div>
               <p className="ax-caption" style={{ margin: 0 }}>
-                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Regulation-row changes are audit-tracked by the generic trigger. Clause additions on this dossier are audit-tracked too (trg_audit_regulation_clauses).")}
+                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Regulation-row changes are audit-tracked by the generic trigger. Clause additions on this record are audit-tracked too (trg_audit_regulation_clauses).")}
               </p>
             </section>
 
@@ -400,7 +400,7 @@ export default async function Regulations({
             </section>
 
             <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-lineage-h">
-              <h3 id="reg-lineage-h" style={{ margin: 0 }}>{t("admin.reg.lineage.heading", "Version lineage")}</h3>
+              <h3 id="reg-lineage-h" style={{ margin: 0 }}>{t("admin.reg.lineage.heading", "Version history")}</h3>
               <ol className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                 {lineage.map(version => <li key={version.id}>
                   <a className="ax-link" href={`/admin/regulations?id=${encodeURIComponent(version.id)}`}><bdi dir="ltr" className="ax-numeric">{version.version_label}</bdi></a>
@@ -439,7 +439,7 @@ export default async function Regulations({
       {readOnlyBanner}
       {libraryTabs}
 
-      {isWriter ? <div className="ax-banner ax-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct regulation controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this library remains the published source of truth.</div> : null}
+      {isWriter ? <div className="ax-banner ax-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct regulation controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; these Inspection Rules remain the published source of truth.</div> : null}
 
       {isWriter ? <NewRegulationForm strings={strings} /> : null}
 
@@ -447,8 +447,8 @@ export default async function Regulations({
         // S03 EMPTY — verified zero (read succeeded, genuinely no regulations)
         <EmptyState role="status" glyph="📜" title={t("admin.reg.r1.empty.title", "No regulations configured")}
           body={isWriter
-            ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the library is genuinely empty. Create the first regulation above (MVP1-M09-001: regulations are the parents of inspection items).")
-            : t("admin.reg.r1.empty.body", "The read succeeded — the library is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
+            ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the list is genuinely empty. Create the first regulation above (MVP1-M09-001: regulations are the parents of inspection items).")
+            : t("admin.reg.r1.empty.body", "The read succeeded — the list is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
       ) : (
         <RegulationRegister rows={lite} strings={strings} />
       )}

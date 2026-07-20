@@ -46,7 +46,7 @@ export async function saveWorkflowDraft(_: WfResult, formData: FormData): Promis
   try { payload = JSON.parse(String(formData.get("payload") ?? "")); }
   catch { return { error: "Payload was not valid JSON." } }
   if (!payload || typeof payload.object !== "string" || !Array.isArray(payload.states) || !Array.isArray(payload.transitions)) {
-    return { error: "Payload must define object, states[] and transitions[] (ENG-03 state machine shape)." };
+    return { error: "Payload must define object, states[] and transitions[] (state machine shape)." };
   }
 
   // GAP-08 optimistic concurrency: when the editor submits the row_version it

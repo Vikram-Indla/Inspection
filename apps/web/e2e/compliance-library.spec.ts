@@ -16,7 +16,7 @@ test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contra
 
   test("unified library exposes regulations, items and governed request handoff", () => {
     for (const page of [items, regulations]) {
-      expect(page).toContain('aria-label="Compliance Library"');
+      expect(page).toContain('aria-label="Inspection Rules"');
       expect(page).toContain('/admin/regulations');
       expect(page).toContain('/admin/items');
       expect(page).toContain('/admin/compliance-requests/new');

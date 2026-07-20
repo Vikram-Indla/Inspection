@@ -5,7 +5,7 @@ export default function Loading() {
   return (
     <div style={{ margin: "var(--ax-space-300)" }}>
       <EmptyState glyph="🌐"
-        title={<>Loading localization… · <span lang="ar">جارٍ تحميل الترجمة…</span></>}
+        title={<>Loading translations… · <span lang="ar">جارٍ تحميل الترجمة…</span></>}
         body="ui_strings · SCR-ADM-100" />
     </div>
   );

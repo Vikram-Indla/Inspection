@@ -15,7 +15,7 @@ export default async function CommitteePage() {
   if (resolveFeatureFlag(process.env.FEATURE_DECISION_DOSSIER, MODES, "off") !== "on") {
     return (
       <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="ax-lozenge ax-lozenge--warning">CD-049 · REQ-0128</span>}>
-        <NotYetBoundary title={t("cmte.title", "Committee & signatures")} consequence={t("cmte.off", "The committee decision dossier is not enabled here. PKI/EBDA verification is held.")}
+        <NotYetBoundary title={t("cmte.title", "Committee & signatures")} consequence={t("cmte.off", "The committee decision record is not enabled here. PKI/EBDA verification is held.")}
           seam="FEATURE_DECISION_DOSSIER=off + PKI/EBDA held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
     );

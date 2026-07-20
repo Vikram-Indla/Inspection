@@ -11,7 +11,7 @@ test.describe("TASK-WEB-COMPLIANCE-LIBRARY-003 read-only runtime evidence", () =
     await page.setViewportSize({ width: 1440, height: 1200 });
     await page.goto("/locale?set=en");
     await page.goto("/admin/items");
-    await expect(page.getByRole("navigation", { name: "Compliance Library" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Inspection Rules" })).toBeVisible();
     await expect(page.getByText("Legacy compatibility authoring.")).toBeVisible();
     await page.screenshot({ path: `${evidenceDir}/compliance-library-items-en-light.png`, fullPage: true });
 

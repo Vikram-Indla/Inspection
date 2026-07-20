@@ -15,7 +15,7 @@ const MODES = ["off", "on"] as const;
 
 export async function recordSignatureAct(_: CmteResult, formData: FormData): Promise<CmteResult> {
   if (resolveFeatureFlag(process.env.FEATURE_DECISION_DOSSIER, MODES, "off") !== "on")
-    return { error: "Committee dossier is feature-flagged off (FEATURE_DECISION_DOSSIER)." };
+    return { error: "Committee decision record is feature-flagged off (FEATURE_DECISION_DOSSIER)." };
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
   if (!user) return { error: "Session expired — sign in again." };
