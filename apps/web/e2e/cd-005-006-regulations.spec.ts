@@ -70,10 +70,10 @@ test.describe("CD-006 detail — logical mode and governed lineage", () => {
 
   test("lineage and publish dependency readiness are enabled", async ({ page }) => {
     await page.goto("/admin/regulations");
-    const dossier = page.getByRole("link", { name: /Open dossier/i }).first();
+    const dossier = page.getByRole("link", { name: /Open record/i }).first();
     if (await dossier.count()) {
       await dossier.click();
-      await expect(page.getByRole("heading", { name: /Version lineage/i })).toBeVisible();
+      await expect(page.getByRole("heading", { name: /Version history/i })).toBeVisible();
       await expect(page.getByText(/Publish dependency gate/i)).toBeVisible();
       await expect(page.locator("[data-blocked-leg]")).toHaveCount(0);
       await page.screenshot({ path: join(EVIDENCE_DIR, "detail-lineage-en-light-1440.png"), fullPage: true });

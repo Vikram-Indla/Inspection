@@ -94,7 +94,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     }
   }
   if (!location_confirmed) blockers.push("Location must be confirmed on the map before publish (M01-038)");
-  if (!package_version_id) blockers.push("No published package selected (ERR-PUB-001)");
+  if (!package_version_id) blockers.push("No active inspection checklist selected (ERR-PUB-001)");
   if (package_version_id) {
     const today = new Date().toISOString().slice(0, 10);
     const { data: packageVersion, error: packageError } = await sb.from("package_versions")
@@ -104,7 +104,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
       console.error("[CD-022 publishSingleVisit] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
     }
-    if (!packageVersion) blockers.push("No published package selected (ERR-PUB-001)");
+    if (!packageVersion) blockers.push("No active inspection checklist selected (ERR-PUB-001)");
   }
   // M01-040 — either a manual inspector or the auto-assign option ("auto") is required.
   const autoAssign = inspector_id === "auto";

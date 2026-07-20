@@ -60,7 +60,7 @@ export default async function InspectorRuntimePreview({
   const item = rawItem as unknown as Item | null;
 
   if (itemError || !item) {
-    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="ax-surface"><div className="ax-state" role="alert"><span className="ax-state__glyph" aria-hidden="true">🔎</span><h4>{itemError ? "Preview unavailable" : "Inspection item not found"}</h4><p className="ax-caption">{itemError ? "The configuration read failed. Retry without assuming the item is absent." : "The read succeeded, but no item has this identifier."}</p><a className="ax-link" href="/admin/items">Back to Compliance Library</a></div></div></Shell>;
+    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="ax-surface"><div className="ax-state" role="alert"><span className="ax-state__glyph" aria-hidden="true">🔎</span><h4>{itemError ? "Preview unavailable" : "Inspection item not found"}</h4><p className="ax-caption">{itemError ? "The configuration read failed. Retry without assuming the item is absent." : "The read succeeded, but no item has this identifier."}</p><a className="ax-link" href="/admin/items">Back to Inspection Rules</a></div></div></Shell>;
   }
 
   const [{ data: rawUses, error: useError }, { data: legacyVersions }, { data: governedVersions }] = await Promise.all([
@@ -109,7 +109,7 @@ export default async function InspectorRuntimePreview({
 
   return (
     <Shell current="/admin/items" title="Inspector Runtime Preview" context={<span className="ax-lozenge ax-lozenge--info">Read-only · configuration verification</span>}>
-      <nav className="cmp-library-tabs" aria-label="Compliance Library"><a className="ax-btn ax-btn--secondary ax-link" href="/admin/regulations">Regulations</a><a className="ax-btn ax-btn--prominent" href="/admin/items" aria-current="page">Inspection Items</a></nav>
+      <nav className="cmp-library-tabs" aria-label="Inspection Rules"><a className="ax-btn ax-btn--secondary ax-link" href="/admin/regulations">Regulations</a><a className="ax-btn ax-btn--prominent" href="/admin/items" aria-current="page">Inspection Items</a></nav>
       <div className="ax-banner" role="note"><strong>Control-plane preview only.</strong> This page reads approved Compliance configuration and immutable package snapshots. It does not author, publish, or change the Inspector application.</div>
       {useError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>Package usage unavailable.</strong> Exact runtime placement is unknown; the item itself is shown from the live library.</div> : null}
 

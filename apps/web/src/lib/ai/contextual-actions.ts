@@ -30,7 +30,7 @@ export async function generateContextualInsight(_: ContextualResult, formData: F
   let serverContext = clientContext;
   if (surface === "planning_summary") {
     const { data: factories, error } = await sb.from("factories").select("id, region, risk_band, source_synced_at").limit(1000);
-    if (error) return { error: "Factory registry unavailable — no advisory was generated or stored." };
+    if (error) return { error: "Factory list unavailable — no advisory was generated or stored." };
     const rows = factories ?? [];
     const counts = (key: "region" | "risk_band") => rows.reduce<Record<string, number>>((acc, row) => {
       const value = typeof row[key] === "string" && row[key].trim() ? row[key] : "unknown";

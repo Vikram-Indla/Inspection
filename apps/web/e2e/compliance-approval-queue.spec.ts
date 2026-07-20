@@ -57,9 +57,9 @@ test.describe("Prompt 04 Compliance Approval Queue contract", () => {
 
   test("queue performs no direct decision writes and exposes honest states", () => {
     expect(queue).not.toMatch(/\.insert\(|\.update\(|\.delete\(|\.rpc\(/);
-    expect(queue).toContain("Approval Queue unavailable");
+    expect(queue).toContain("Awaiting Approval unavailable");
     expect(queue).toContain("returned zero eligible maker-checker assignments");
-    expect(readWeb("src/app/admin/compliance-approvals/loading.tsx")).toContain("Loading Compliance Approval Queue");
+    expect(readWeb("src/app/admin/compliance-approvals/loading.tsx")).toContain("Loading Awaiting Approval");
     expect(readWeb("src/app/admin/compliance-approvals/error.tsx")).toContain("no decision was recorded");
   });
 });

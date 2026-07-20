@@ -219,7 +219,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const blockers: string[] = [];
   if (factoryIds.length === 0) blockers.push("No factories selected — only selected targets proceed (M01-005)");
   if (visit_type !== "periodic") blockers.push("Visit type is not supported by this planning method (FLD-PLAN-003)");
-  if (!package_version_id) blockers.push("No published package (ERR-PUB-001)");
+  if (!package_version_id) blockers.push("No active inspection checklist (ERR-PUB-001)");
   const startMs = Date.parse(window_start);
   const endMs = Date.parse(window_end);
   if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) blockers.push("Invalid window (FLD-PLAN-005)");
@@ -233,7 +233,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
       console.error("[CD-021 publishBulkPlan] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
     }
-    if (!packageVersion) blockers.push("No published package (ERR-PUB-001)");
+    if (!packageVersion) blockers.push("No active inspection checklist (ERR-PUB-001)");
   }
   // per-row duplicate check (P01: duplicates flagged; conflicts listed, skip allowed)
   const { data: dups, error: duplicateError } = await sb.from("visits").select("factory_id")

@@ -12,8 +12,8 @@ test.describe("TASK-MVP3-RETROFIT-REGRESSION-001 integrated control planes", () 
 
   test("live MVP3 schema renders through all four additive control-plane routes", async ({ page }) => {
     const routes = [
-      ["/admin/integrations", "Integration trust console"],
-      ["/admin/operations", "Platform operations and resilience"],
+      ["/admin/integrations", "System Connections"],
+      ["/admin/operations", "System operations and resilience"],
       ["/admin/security-access", "Security posture and access review"],
       ["/admin/devices", "Trusted device and offline administration"],
     ] as const;
@@ -68,7 +68,7 @@ test.describe("TASK-MVP3-RETROFIT-REGRESSION-001 inherited persona containment",
     await page.goto("/field");
     await expect(page.getByRole("heading", { name: "Field dashboard" })).toBeVisible();
     await page.goto("/admin/integrations");
-    await expect(page.getByRole("heading", { name: "Integration trust console" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "System Connections" })).toBeVisible();
     await expect(page.locator("tbody tr")).toHaveCount(1);
     await expect(page.locator("tbody")).toContainText("No endpoints are registered");
     await expect(page.locator("body")).not.toContainText("EBDA data exchange");

@@ -75,7 +75,7 @@ export default async function Localization() {
   };
 
   return (
-    <Shell current="/admin/localization" title={t("l10n.title", "Localization")}
+    <Shell current="/admin/localization" title={t("l10n.title", "Language & Translations")}
       context={
         <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
           <span className="ax-lozenge ax-lozenge--info">SCR-ADM-100 · SB19</span>
@@ -86,7 +86,7 @@ export default async function Localization() {
       }>
       {error ? (
         <div className="ax-banner ax-banner--critical" role="alert">
-          {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
+          {t("l10n.error.load", "Could not load the translation dictionary. Nothing was changed. Try again.")}
         </div>
       ) : (
         <>

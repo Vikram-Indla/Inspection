@@ -40,7 +40,7 @@ test.describe("CD-004 configuration evidence spine (ADM-QG-04/07, CD004-QG-02)",
     // Five read-backed families, each a row header (th scope=row).
     const rowHeaders = table.locator("tbody th[scope=row]");
     await expect(rowHeaders).toHaveCount(5);
-    for (const fam of ["Compliance Library", "Packages & Surveys", "Enforcement Library", "Engine settings", "Audit trail"]) {
+    for (const fam of ["Inspection Rules", "Packages & Surveys", "Violations & Penalties", "Engine settings", "Activity Log"]) {
       await expect(rowHeaders.filter({ hasText: fam })).toHaveCount(1);
     }
     await page.screenshot({ path: join(EVIDENCE_DIR, "spine-en-light-1440.png"), fullPage: true });
@@ -62,9 +62,9 @@ test.describe("CD-004 configuration evidence spine (ADM-QG-04/07, CD004-QG-02)",
     const spine = page.locator("table.ax-table");
     // Each read-backed family that owns a route links to that module with a scoped name.
     for (const [name, href] of [
-      ["Compliance Library", "/admin/regulations"],
+      ["Inspection Rules", "/admin/regulations"],
       ["Packages & Surveys", "/admin/packages"],
-      ["Enforcement Library", "/admin/violations"],
+      ["Violations & Penalties", "/admin/violations"],
       ["Audit trail", "/admin/audit"],
     ] as const) {
       await expect(spine.getByRole("link", { name: new RegExp(`Open ${name} — ${name}`) })).toHaveAttribute("href", href);
@@ -99,7 +99,7 @@ test.describe("CD-004 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
     // are h3 (spine / families-without-reads / your scope) — clean h2→h3, no skip.
     await expect(page.getByRole("heading", { level: 3 })).toHaveCount(3);
     // Accessible action name carries the family (spec §4).
-    await expect(page.getByRole("link", { name: /Open Compliance Library — Compliance Library/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open Inspection Rules — Inspection Rules/i })).toBeVisible();
   });
 
   test("primary action targets are at least 44px (spec §10)", async ({ page }) => {

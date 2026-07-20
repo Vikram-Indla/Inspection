@@ -50,7 +50,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   if (userError || rolesError) {
     console.error("[CD-022 single-planning authorization]", userError?.message ?? rolesError?.message);
     return (
-      <Shell current="/planning" title={t("plan.single.title", "Single visit planning")}>
+      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
         <div className="ax-banner ax-banner--critical" role="alert">
           {tr("plan.single.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.", "بيانات التخطيط غير متاحة مؤقتًا (ERR-OPS-001). حاول مرة أخرى.")}
         </div>
@@ -60,9 +60,9 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
   if (!isPlanner) {
     return (
-      <Shell current="/planning" title={t("plan.single.title", "Single visit planning")}>
+      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
         <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.single.unauthorized.body", "Single Visit Planning (SCR-WEB-120) is available to the Planner role only.", "تخطيط الزيارة الفردية (SCR-WEB-120) متاح لدور المخطط فقط.")} />
+          body={tr("plan.single.unauthorized.body", "Plan one visit (SCR-WEB-120) is available to the Planner role only.", "تخطيط زيارة واحدة (SCR-WEB-120) متاح لدور المخطط فقط.")} />
       </Shell>
     );
   }
@@ -77,7 +77,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   if (packageRead.error || inspectorRead.error || otpRead.error) {
     console.error("[CD-022 single-planning configuration]", packageRead.error?.message ?? inspectorRead.error?.message ?? otpRead.error?.message);
     return (
-      <Shell current="/planning" title={t("plan.single.title", "Single visit planning")}>
+      <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
         <div className="ax-banner ax-banner--critical" role="alert">
           {tr("plan.single.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.", "بيانات التخطيط غير متاحة مؤقتًا (ERR-OPS-001). حاول مرة أخرى.")}
         </div>
@@ -135,7 +135,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     findFactory: t("plan.single.findFactory", "1 · Find factory — CR, code, Industrial License or name (M01-035)"),
     searchPlaceholder: t("plan.single.searchPlaceholder", "CR number, factory code, Industrial License or name"),
     noMatch: t("plan.single.noMatch", "No factory matches — check the number, or create an Immediate Visit (M01-045)."),
-    registryUnavailable: t("plan.single.registryUnavailable", "The factory registry is temporarily unavailable — try your search again."),
+    registryUnavailable: t("plan.single.registryUnavailable", "The Factory list is temporarily unavailable — try your search again."),
     crPrefix: t("plan.single.crPrefix", "CR"),
     exactBadge: t("plan.single.exactBadge", "EXACT"),
     exactRule: t("plan.single.exactRule", "Matches a governed identifier exactly (CR, factory code or Industrial License)"),
@@ -162,7 +162,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     textEquivalent: t("plan.single.textEquivalent", "Text equivalent of the location map"),
     riskContext: t("plan.single.riskContext", "Risk context (ENG-04 v1 · advisory — never drives selection)"),
     riskUnknown: t("plan.single.riskUnknown", "not recorded"),
-    freshnessLabel: t("plan.single.freshnessLabel", "Registry sync"),
+    freshnessLabel: t("plan.single.freshnessLabel", "Factory list sync"),
     freshnessNever: t("plan.single.freshnessNever", "no sync record"),
     factory360: t("plan.single.factory360", "Open Factory 360"),
     configStep: t("plan.single.configStep", "4 · Configure & assign"),
@@ -170,7 +170,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     typeFollowUp: t("enum.follow_up", "Follow-up"),
     typeComplaint: t("enum.complaint", "Complaint-triggered"),
-    packageLabel: t("plan.single.package", "Package (published only)"),
+    packageLabel: t("plan.single.package", "Inspection checklist (active only)"),
     mode: t("plan.single.mode", "Mode"),
     modePhysical: t("enum.physical", "Physical"),
     modeVirtual: t("enum.virtual", "Virtual"),
@@ -206,7 +206,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     },
   };
   return (
-    <Shell current="/planning" title={t("plan.single.title", "Single visit planning")}
+    <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("plan.single.context", "SCR-WEB-120 · identity confidence lens")}</span>}>
       <Wizard query={q} results={graded} registryUnavailable={registryUnavailable} packages={(pkgs ?? []) as never} inspectors={inspectors} strings={strings} virtualEligible={virtualEligible} />
     </Shell>

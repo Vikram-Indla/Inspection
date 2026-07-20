@@ -86,7 +86,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
         <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
       </>}>
       <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-        <a className="ax-link" href="/planning/plans">← {t("plan.drill.backToRegister", "Plan register")}</a>
+        <a className="ax-link" href="/planning/plans">← {t("plan.drill.backToRegister", "Visit plans")}</a>
         <span className="ax-caption ax-numeric">
           {t("plan.drill.createdBy", "created by")} <strong>{creator}</strong> · {fmt(plan.created_at)}
           {plan.published_at && <> · {t("plan.drill.publishedAt", "published")} {fmt(plan.published_at)}</>}
@@ -128,7 +128,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
             <th scope="col">{t("plan.drill.colFactory", "Factory")}</th>
             <th scope="col">{t("plan.drill.colTypeMode", "Type · mode")}</th>
             <th scope="col">{t("plan.drill.colPlanning", "Planning status")}</th>
-            <th scope="col">{t("plan.drill.colOperational", "Operational")}</th>
+            <th scope="col">{t("plan.drill.colOperational", "Visit status")}</th>
             <th scope="col">{t("plan.drill.colInspector", "Inspector")}</th>
             <th scope="col" className="ax-td-num">{t("plan.drill.colWindow", "Window")}</th>
           </tr></thead>

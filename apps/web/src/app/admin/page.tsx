@@ -115,11 +115,11 @@ export default async function AdminHome() {
     );
   }
 
-  const familyCompliance = t("admin.overview.r2.family.compliance", "Compliance Library");
+  const familyCompliance = t("admin.overview.r2.family.compliance", "Inspection Rules");
   const familyPackages = t("admin.overview.r2.family.packages", "Packages & Surveys");
-  const familyEnforcement = t("admin.overview.r2.family.enforcement", "Enforcement Library");
+  const familyEnforcement = t("admin.overview.r2.family.enforcement", "Violations & Penalties");
   const familyEngines = t("admin.overview.r2.family.engines", "Engine settings");
-  const familyAudit = t("admin.overview.r2.family.audit", "Audit trail");
+  const familyAudit = t("admin.overview.r2.family.audit", "Activity Log");
   const openTmpl = t("admin.overview.r2.open", "Open {family}");
   const openLink = (family: string, href: string) => (
     <a className="ax-btn ax-btn--secondary ax-link" href={href} aria-label={`${fill(openTmpl, { family })} — ${family}`}>
@@ -129,12 +129,12 @@ export default async function AdminHome() {
 
   const linkOnly = [
     { href: "/admin/items", key: "shell.nav.items", en: "Inspection Items" },
-    { href: "/admin/workflows", key: "shell.nav.workflows", en: "Workflow Configuration" },
-    { href: "/admin/risk", key: "shell.nav.risk", en: "Risk Configuration" },
-    { href: "/admin/gis", key: "shell.nav.gis", en: "GIS Configuration" },
+    { href: "/admin/workflows", key: "shell.nav.workflows", en: "Workflow Settings" },
+    { href: "/admin/risk", key: "shell.nav.risk", en: "Risk Settings" },
+    { href: "/admin/gis", key: "shell.nav.gis", en: "Map Settings" },
     { href: "/admin/access", key: "shell.nav.access", en: "Users & Roles" },
-    { href: "/admin/localization", key: "shell.nav.localization", en: "Localization" },
-    { href: "/admin/audit", key: "shell.nav.audit", en: "Audit Trail" },
+    { href: "/admin/localization", key: "shell.nav.localization", en: "Language & Translations" },
+    { href: "/admin/audit", key: "shell.nav.audit", en: "Activity Log" },
   ];
 
   const readAtNode = withSlot(

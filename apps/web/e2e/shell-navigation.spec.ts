@@ -59,7 +59,7 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await expect(nav.getByRole("link", { name: "Planning" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Factory 360" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Review & Approval" })).toBeVisible();
-    await expect(nav.getByRole("link", { name: "Compliance Library" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Inspection Rules" })).toBeVisible();
     await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(7);
     await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).toHaveAttribute("aria-disabled", "true");
     await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).not.toHaveAttribute("href");

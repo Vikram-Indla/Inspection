@@ -28,15 +28,15 @@ export default async function Factory360ByCr({ params, searchParams }: {
   if (!permissions["view_factory_360"]) return (
     <Shell current="/factories" title={t("f360.title", "Factory 360")}>
       <EmptyState glyph="⛔" title={t("f360.permission.title", "Factory 360 access required")}
-        body={t("f360.permission.body", "This CR dossier is outside your authorized permissions.")} />
+        body={t("f360.permission.body", "You do not have access to this factory profile.")} />
     </Shell>
   );
 
   const dossier = await loadFactory360Dossier(sb, id, requestedLicense, permissions);
   if (!dossier.found || !dossier.cr) return (
-    <Shell current="/factories" title={t("f360.notFound.title", "Factory 360 dossier unavailable")}>
-      <EmptyState glyph="∅" title={t("f360.notFound.desc", "CR not in your scope or does not exist")}
-        body={dossier.crError ? t("f360.err.neutral", "The registry is temporarily unavailable. Nothing was changed.") : undefined} />
+    <Shell current="/factories" title={t("f360.notFound.title", "Factory 360 profile unavailable")}>
+      <EmptyState glyph="∅" title={t("f360.notFound.desc", "Factory registration not found or not available to you.")}
+        body={dossier.crError ? t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.") : undefined} />
     </Shell>
   );
 
@@ -103,7 +103,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
               <div><dt>{t("f360.cr.dates", "Issued / expires")}</dt><dd className="ax-numeric">{dt(cr.issue_date)} → {dt(cr.expiry_date)}</dd></div>
               <div><dt>{t("f360.cr.owner", "Owner details")}</dt><dd>{text(cr.owner_details)}</dd></div>
             </dl>
-            <h3>{t("f360.cr.portfolio", "License portfolio")}</h3>
+            <h3>{t("f360.cr.portfolio", "All licenses")}</h3>
             <dl className={styles.facts}>
               <div><dt>{t("f360.cr.totalLicenses", "Total licenses")}</dt><dd className="ax-numeric">{portfolioCounts.total}</dd></div>
               <div><dt>{t("f360.cr.licenseStates", "Active / expired / suspended")}</dt><dd className="ax-numeric">{portfolioCounts.active} / {portfolioCounts.expired} / {portfolioCounts.suspended}</dd></div>
@@ -112,7 +112,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
               <div><dt>{t("f360.cr.openViolations", "Open violations")}</dt><dd>{t("f360.cr.openViolationsUnavailable", "Not Available — runtime violations have no governed open/closed state")}</dd></div>
               <div><dt>{t("f360.cr.activePenalties", "Active penalties")}</dt><dd>{t("f360.cr.activePenaltiesUnavailable", "Not Available — current penalty statuses do not define Active/Expired/Cancelled")}</dd></div>
             </dl>
-            <p className="ax-caption">{t("f360.cr.noAggregate", "Portfolio facts only. No CR-level risk score or compliance rate is calculated.")}</p>
+            <p className="ax-caption">{t("f360.cr.noAggregate", "All-licenses facts only. No CR-level risk score or compliance rate is calculated.")}</p>
           </section>
 
           <section className={`ax-surface ${styles.panel}`} aria-labelledby="f360-license-heading">
@@ -221,7 +221,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
             </>}
           </section>
           <section className={`ax-surface ${styles.panel}`}>
-            <h2>{t("f360.enforcement.heading", "Penalty lineage")}</h2>
+            <h2>{t("f360.enforcement.heading", "Penalty history")}</h2>
             {penaltiesResult.error ? <p className="ax-caption">{t("f360.section.degraded", "This source section is degraded; other sections remain available.")}</p> : penalties.length ? <ul>{penalties.map(row => <li key={row.id}><bdi>{row.notice_number}</bdi> · {label(row.status)} · {dt(row.issued_at)}</li>)}</ul> : <p className="ax-caption">{t("f360.enforcement.empty", "No penalty notices are visible in your scope.")}</p>}
           </section>
           <section className={`ax-surface ${styles.panel}`}>

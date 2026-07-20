@@ -20,7 +20,7 @@ test.describe("Prompt 01 shared shell source contract", () => {
     const business = buildShellNavigation(["planner"]).flatMap(group => group.items).filter(item => item.visibility === "business");
     expect(business.map(item => item.labelEn)).toEqual([
       "Dashboard", "Operations Center", "Factory 360", "Planning", "Execution", "Review & Approval",
-      "Compliance Library", "Approval Queue", "Enforcement Library", "AI Insights",
+      "Inspection Rules", "Awaiting Approval", "Violations & Penalties", "AI Insights",
     ]);
     expect(business.filter(item => item.parentId === "inspection").map(item => item.labelEn)).toEqual(["Execution", "Review & Approval"]);
   });
@@ -28,8 +28,8 @@ test.describe("Prompt 01 shared shell source contract", () => {
   test("seven primary Administration options are locked without permission and never navigate", () => {
     const items = buildShellNavigation(["reviewer"]).find(group => group.id === "administration")!.items;
     expect(items.map(item => item.labelEn)).toEqual([
-      "Users", "Roles", "Lookup Management", "Risk Configuration", "Survey Configuration",
-      "Notification Configuration", "Integration Management",
+      "Users", "Roles", "Reference Lists", "Risk Settings", "Inspection Forms",
+      "Notification Settings", "System Connections",
     ]);
     expect(items.every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
     const shell = read("src/components/ShellClient.tsx");

@@ -6,6 +6,6 @@ export default async function DashboardLoading() {
   const ar = locale === "ar";
   return <main className="ax-content" aria-busy="true" aria-live="polite">
     <EmptyState glyph="◫" title={ar ? "جارٍ تحميل لوحة القيادة…" : "Loading dashboard…"}
-      body={ar ? "جارٍ تحميل مصادر لوحة القيادة المقيّدة حسب صلاحيات الصفوف." : "Loading RLS-scoped dashboard sources."} />
+      body={ar ? "جارٍ تحميل مصادر لوحة القيادة المقيّدة حسب صلاحيات الصفوف." : "Loading dashboard sources filtered to your access."} />
   </main>;
 }

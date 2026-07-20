@@ -13,7 +13,7 @@ export default async function IntegrationsPage() {
     sb.from("mvp3_export_jobs").select("id,export_kind,purpose,status,artifact_hash,requested_at,completed_at").order("requested_at", { ascending: false }).limit(20),
   ]);
   return (
-    <Shell current="/admin/integrations" title={t("mvp3.integrations.title", "Integration trust console")}
+    <Shell current="/admin/integrations" title={t("mvp3.integrations.title", "System Connections")}
       context={<span className="ax-lozenge ax-lozenge--info">{"M3-00 · CD-050 · "}{t("mvp3.integrations.badge", "14 controlled rows")}</span>}>
       <div className="ax-banner"><div><strong>{t("mvp3.integrations.truth", "Configuration is not connectivity.")}</strong> {t("mvp3.integrations.truthBody", "An endpoint becomes configured only with an approved contract and runtime address. Secrets are never displayed here.")}</div></div>
       <div className="ax-row" style={{ marginBlock: "var(--ax-space-200)" }}><Link className="ax-btn ax-btn--secondary" href="/admin/integrations/factory-data">Factory data integration and import</Link></div>

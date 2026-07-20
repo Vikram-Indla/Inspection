@@ -229,7 +229,7 @@ export default async function Items({
 
       {roleError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="ax-banner" role="note"><strong><span aria-hidden="true">👁 </span>{t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can inspect item semantics, usage and runtime previews. Creating or changing active state requires Compliance or Form Admin and is enforced by the server guard and RLS.")}</div>}
 
-      <nav className="cmp-library-tabs" aria-label="Compliance Library">
+      <nav className="cmp-library-tabs" aria-label="Inspection Rules">
         <a className="ax-btn ax-btn--secondary ax-link" href="/admin/regulations">Regulations</a>
         <a className="ax-btn ax-btn--prominent" href="/admin/items" aria-current="page">Inspection Items</a>
         {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href="/admin/compliance-requests/new">Create governed request</a> : null}

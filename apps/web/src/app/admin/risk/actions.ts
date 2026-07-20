@@ -11,7 +11,7 @@ export async function saveRiskSettings(formData: FormData) {
     return { error: "Every weight must be a number between 0 and 1 — draft preserved." };
   }
   const total = factors.reduce((s, f) => s + f.weight, 0);
-  if (Math.abs(total - 1) > 0.001) return { error: `Weights must sum to 1.00 (got ${total.toFixed(2)}) — draft preserved (ERR pattern: exact blocker)` };
+  if (Math.abs(total - 1) > 0.001) return { error: `Weights must sum to 1.00 (got ${total.toFixed(2)}) — draft preserved` };
   const lowMax = Number(formData.get("low_max"));
   const medMax = Number(formData.get("med_max"));
   if (!Number.isInteger(lowMax) || !Number.isInteger(medMax) || lowMax < 0 || medMax > 99 || medMax <= lowMax) {
@@ -26,7 +26,7 @@ export async function saveRiskSettings(formData: FormData) {
   const { error } = await sb.from("engine_settings")
     .update({ settings: { factors, bands }, version_label: `v-edit-${version}`, updated_at: new Date().toISOString() })
     .eq("engine", "risk");
-  if (error) { logProviderError("admin risk settings", error); return { error: `${NEUTRAL_WRITE_ERROR} (risk-owner scope required — RBAC-004).` }; }
+  if (error) { logProviderError("admin risk settings", error); return { error: `${NEUTRAL_WRITE_ERROR} (risk-owner scope required).` }; }
   revalidatePath("/admin/risk");
   return { ok: true };
 }

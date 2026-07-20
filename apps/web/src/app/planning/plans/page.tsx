@@ -30,7 +30,7 @@ export default async function PlanRegister() {
   if (error) {
     console.error("[planning plan register]", error);
     return (
-      <Shell current="/planning" title={t("plan.register.title", "Plan register")}>
+      <Shell current="/planning" title={t("plan.register.title", "Visit plans")}>
         <div className="ax-banner ax-banner--critical"><div>{t("plan.register.loadErrorSafe", "Could not load plans. Nothing was changed. Try again (ERR-OPS-001).")}</div></div>
       </Shell>
     );
@@ -39,7 +39,7 @@ export default async function PlanRegister() {
   const counts: Record<string, number> = {};
   for (const p of plans) counts[p.status] = (counts[p.status] ?? 0) + 1;
   return (
-    <Shell current="/planning" title={t("plan.register.title", "Plan register")}
+    <Shell current="/planning" title={t("plan.register.title", "Visit plans")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
       <div className="ax-kpi-row">
         {["draft", "published", "returned", "cancelled"].map(s => (
