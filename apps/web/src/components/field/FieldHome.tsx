@@ -119,7 +119,12 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart, locale }: {
     : s.tone === "warning" ? "var(--ax-color-warning)"
     : "var(--ax-color-primary)";
   return (
-    <div className="ax-surface ax-panel" aria-selected={selected} draggable={s.key !== "expired" && s.key !== "approved"}
+    // V2 a11y fix: aria-selected is only a valid ARIA attribute on elements
+    // with a role that supports it (option/row/tab/gridcell/etc) — axe
+    // flagged it here as unsupported on a plain div. The inner button's
+    // aria-pressed (below) already correctly communicates the selected
+    // state; this outer attribute was redundant as well as invalid.
+    <div className="ax-surface ax-panel" draggable={s.key !== "expired" && s.key !== "approved"}
       onDragStart={() => onDragStart(v.id)}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", color: "inherit", borderInlineStart: `4px solid ${accent}`,
         outline: selected ? "var(--ax-focus-ring)" : undefined, outlineOffset: selected ? "-2px" : undefined }}>

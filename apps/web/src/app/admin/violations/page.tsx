@@ -263,12 +263,17 @@ export default async function Violations({
 
   const modeTabs = (
     <div className="ax-segmented" role="tablist" aria-label={t("admin.viol.mode.label", "Catalogue view")}>
+      {/* V2 a11y fix: .ax-link forces the information-blue text color (Wave 4);
+          combined with .ax-btn--prominent's green fill that produced a
+          blue-on-green combination axe flagged as insufficient contrast.
+          .ax-btn already removes the underline/link styling .ax-link existed
+          for here, so it was redundant even before that regression. */}
       <a role="tab" aria-selected={!penaltyMode} aria-current={!penaltyMode ? "page" : undefined}
-        className={`ax-btn ${!penaltyMode ? "ax-btn--prominent" : "ax-btn--subtle"} ax-link`} href="/admin/violations">
+        className={`ax-btn ${!penaltyMode ? "ax-btn--prominent" : "ax-btn--subtle"}`} href="/admin/violations">
         {t("admin.viol.mode.catalogue", "Violation catalogue")}
       </a>
       <a role="tab" aria-selected={penaltyMode} aria-current={penaltyMode ? "page" : undefined}
-        className={`ax-btn ${penaltyMode ? "ax-btn--prominent" : "ax-btn--subtle"} ax-link`} href="/admin/violations?mode=penalty">
+        className={`ax-btn ${penaltyMode ? "ax-btn--prominent" : "ax-btn--subtle"}`} href="/admin/violations?mode=penalty">
         {t("admin.viol.mode.penalty", "Penalty mapping")}
       </a>
     </div>
