@@ -43,7 +43,7 @@ function PhotoAffordance({ inputId, label, helper }: { inputId: string; label: s
       {/* Wrapping <label> = implicit control association (accessible); it is NOT
           className="ax-field__label" so the a11y-form-label release guard's
           htmlFor requirement does not apply to this button-style file control. */}
-      <label className="ax-btn ax-btn--secondary" htmlFor={inputId} style={{ cursor: "pointer", alignSelf: "flex-start" }}>
+      <label className="btn btn-secondary btn-touch" htmlFor={inputId} style={{ cursor: "pointer", alignSelf: "flex-start" }}>
         {label}
         <input
           id={inputId}

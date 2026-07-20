@@ -168,7 +168,7 @@ function InboxRow({ n, strings }: { n: FieldNotification; strings: FieldHomeStri
       {!read && (
         <form action={formAction}>
           <input type="hidden" name="notification_id" value={n.id} />
-          <button className="ax-btn ax-btn--subtle" disabled={pending}>{pending ? "…" : strings.markRead}</button>
+          <button className="btn btn-ghost btn-touch" disabled={pending}>{pending ? "…" : strings.markRead}</button>
         </form>
       )}
     </li>

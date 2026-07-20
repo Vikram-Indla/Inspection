@@ -106,8 +106,8 @@ test("M2-11 Gemini: generate an AI advisory suggestion, then human-dispose (live
   // dispose it; AI never mutates the decision state itself.
   const row = page.locator(".ax-surface").filter({ hasText: evidenceRef }).first();
   await expect(row).toBeVisible();
-  await expect(row.locator(".ax-lozenge", { hasText: "proposed" })).toBeVisible();
-  await expect(row.locator(".ax-lozenge", { hasText: "configured" })).toBeVisible();
+  await expect(row.locator(".ax-lozenge, .badge", { hasText: "proposed" })).toBeVisible();
+  await expect(row.locator(".ax-lozenge, .badge", { hasText: "configured" })).toBeVisible();
   await row.locator('select[name="to"]').selectOption("rejected");
   await row.locator('input[name="reason"]').fill("Regression evidence item completed");
   await row.getByRole("button", { name: /Disposition|Applying/i }).click();

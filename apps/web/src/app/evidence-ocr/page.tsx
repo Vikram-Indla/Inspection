@@ -16,7 +16,7 @@ export default async function EvidenceOcrPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_OCR_REVIEW, MODES, "off") !== "on") {
     return (
-      <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="ax-lozenge ax-lozenge--warning">REQ-OCR</span>}>
+      <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="badge badge-warning">REQ-OCR</span>}>
         <NotYetBoundary title={t("ocr.title", "Evidence text extraction (OCR)")}
           consequence={t("ocr.off", "OCR review is not enabled here. Extracted text is always advisory and never auto-fills a field.")}
           seam="FEATURE_OCR_REVIEW=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
@@ -50,7 +50,7 @@ export default async function EvidenceOcrPage() {
     openInspection: t("ocr.openInspection", "Open the inspection item that owns this evidence →"),
   };
   return (
-    <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="ax-lozenge ax-lozenge--info">REQ-OCR</span>}>
+    <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="badge badge-info">REQ-OCR</span>}>
       <div className="ax-banner"><div><strong>{t("ocr.banner.title", "Advisory only.")}</strong> {t("ocr.banner.body", "Extracted text helps a human read a photo faster — it is never auto-applied to any authoritative field. Always verify against the source image before acting on it.")}</div></div>
       <section className="ax-surface" style={{ padding: "var(--ax-space-300)", marginBlock: "var(--ax-space-300)" }} aria-labelledby="ocr-how-it-works">
         <h3 id="ocr-how-it-works">{t("ocr.journey.title", "How to use evidence text extraction")}</h3>
@@ -59,7 +59,7 @@ export default async function EvidenceOcrPage() {
           <li>{t("ocr.journey.return", "Return here, find that stored evidence, then choose Extract text.")}</li>
           <li>{t("ocr.journey.verify", "Read the result beside the source evidence and verify it manually. OCR never fills or changes an inspection answer.")}</li>
         </ol>
-        <a className="ax-btn ax-btn--secondary" href="/field">{t("ocr.journey.openField", "Open field inspections to capture evidence")}</a>
+        <a className="btn btn-secondary btn-touch" href="/field">{t("ocr.journey.openField", "Open field inspections to capture evidence")}</a>
       </section>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("ocr.error", "Couldn’t load evidence. Nothing changed.")}</strong></div></div>}
       {!error && rows.length === 0 && (

@@ -156,7 +156,7 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
                 <div>{s.invalidBody}</div>
               </div>
               <p className="lg-card__sub">{s.invalidHint}</p>
-              <a ref={invalidCtaRef} className="ax-btn ax-btn--prominent lg-submit" href="/login">{s.toSignIn}</a>
+              <a ref={invalidCtaRef} className="btn btn-primary btn-lg lg-submit btn-touch" href="/login">{s.toSignIn}</a>
             </div>
           )}
 
@@ -189,7 +189,7 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
                 {fieldError?.id === "pw2" && <p id="pw2-err" className="ax-field__error">{fieldError.message}</p>}
               </div>
               {bannerError && <div className="ax-banner ax-banner--critical" role="alert"><div>{bannerError}</div></div>}
-              <button className="ax-btn ax-btn--prominent lg-submit" disabled={busy} aria-busy={busy}>{busy ? s.saving : s.save}</button>
+              <button className="btn btn-primary btn-lg lg-submit btn-touch" disabled={busy} aria-busy={busy}>{busy ? s.saving : s.save}</button>
             </form>
           )}
 
@@ -197,7 +197,7 @@ export default function ResetClient({ strings: s }: { strings: ResetStrings }) {
             <div className="lg-waiting" role="status">
               <div className="ax-banner ax-banner--success"><div>{s.doneTitle}</div></div>
               <p className="lg-card__sub">{s.doneBody}</p>
-              <a ref={doneCtaRef} className="ax-btn ax-btn--prominent lg-submit" href="/login">{s.toSignIn}</a>
+              <a ref={doneCtaRef} className="btn btn-primary btn-lg lg-submit btn-touch" href="/login">{s.toSignIn}</a>
             </div>
           )}
         </div>

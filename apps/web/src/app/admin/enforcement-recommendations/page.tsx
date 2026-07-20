@@ -69,7 +69,7 @@ export default async function EnforcementRecommendations() {
 
   return (
     <Shell current="/admin/enforcement-recommendations" title={t("admin.enf.rec.title", "Enforcement recommendations")}
-      context={<span className="ax-lozenge ax-lozenge--info">DEC-F</span>}>
+      context={<span className="badge badge-info">DEC-F</span>}>
       {roleError && <div className="ax-banner ax-banner--warning" role="alert"><div>{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>}
       {readOnlyBanner}
       {pendingError && <div className="ax-banner ax-banner--warning" role="alert"><div>{tr("admin.enf.rec.loadError", "The recommendation queue is unavailable in this environment. No count is claimed.", "قائمة التوصيات غير متاحة في هذه البيئة. لا يُدَّعى أي عدد.")}</div></div>}
@@ -85,7 +85,7 @@ export default async function EnforcementRecommendations() {
                 <strong>{row.factories?.name ?? row.factory_id}</strong>
                 <div className="t-caption">{row.factories?.city ?? "—"}{row.factories?.region ? `, ${row.factories.region}` : ""} · {row.factories?.factory_code ?? tr("admin.enf.rec.unregistered", "unregistered/temporary", "غير مسجّلة/مؤقتة")}</div>
               </div>
-              <span className="ax-lozenge ax-lozenge--warning">{actionLabel(row.recommended_action)}</span>
+              <span className="badge badge-warning">{actionLabel(row.recommended_action)}</span>
             </div>
             {row.recommendation_notes && <p className="t-caption">{row.recommendation_notes}</p>}
             <p className="t-caption numeric">{new Date(row.recommended_at).toLocaleString()}</p>

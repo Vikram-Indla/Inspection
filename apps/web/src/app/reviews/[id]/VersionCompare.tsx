@@ -136,7 +136,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
             <strong>{strings.staleTitle ?? "A newer version was submitted."}</strong>{" "}
             {(strings.staleBody ?? "Version v{n} arrived while you had this open — refresh before relying on this comparison.").replace("{n}", String(staleAt))}
             {" "}
-            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => router.refresh()}>
+            <button type="button" className="btn btn-ghost btn-touch" onClick={() => router.refresh()}>
               {strings.staleRefresh ?? "Refresh"}
             </button>
           </div>
@@ -194,7 +194,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
               const panelId = `cmp-cat-${cat}`;
               return (
                 <div key={cat} className="ax-surface" style={{ padding: "var(--ax-space-150)" }}>
-                  <button type="button" className="ax-btn ax-btn--subtle" aria-expanded={open[cat]} aria-controls={panelId}
+                  <button type="button" className="btn btn-ghost btn-touch" aria-expanded={open[cat]} aria-controls={panelId}
                     onClick={() => setOpen(o => ({ ...o, [cat]: !o[cat] }))}
                     style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--ax-space-150)" }}>
                     <span className={LOZ[cat]} aria-hidden="true">{GLYPH[cat]}</span>
@@ -207,7 +207,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                         ? <li className="t-caption">{cat === "unavailable" && !scopeKnown ? strings.noScope : "—"}</li>
                         : items.map(r => (
                           <li key={r.key}>
-                            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => goToRow(r.key)}
+                            <button type="button" className="btn btn-ghost btn-touch" onClick={() => goToRow(r.key)}
                               style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--ax-space-150)" }}>
                               <span className="numeric">{r.key}</span>
                               {r.section && <span className="t-caption">{r.section.title}</span>}
@@ -238,7 +238,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                   ref={el => { rowRefs.current[r.key] = el; }}
                   style={r.category === "unexpected" ? { borderInlineStart: "4px solid var(--ax-color-critical)" } : undefined}>
                   <td><strong className="numeric">{r.key}</strong></td>
-                  <td>{r.section ? r.section.title : <span className="ax-lozenge ax-lozenge--warning" aria-hidden="false">{GLYPH.unavailable} {strings.catUnavailable}</span>}</td>
+                  <td>{r.section ? r.section.title : <span className="badge badge-warning" aria-hidden="false">{GLYPH.unavailable} {strings.catUnavailable}</span>}</td>
                   <td>{r.prev != null ? (strings.enumLabels[r.prev] ?? r.prev) : "—"}</td>
                   <td>{r.latest != null ? (strings.enumLabels[r.latest] ?? r.latest) : "—"}</td>
                   <td><span className={LOZ[r.category]}><span aria-hidden="true">{GLYPH[r.category]}</span>{" "}{
@@ -254,9 +254,9 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       {/* Explicitly unavailable comparison categories — never rendered as "unchanged". */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)" }}>
         <p className="ax-overline" style={{ marginBlockEnd: 8 }}>{strings.unavailableHeading}</p>
-        <p className="t-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
-        <p className="t-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
-        <p className="t-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>
+        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
+        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
+        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>
         <p className="t-caption" style={{ marginBlockStart: 8 }}>{strings.unavailNote}</p>
       </div>
     </div>

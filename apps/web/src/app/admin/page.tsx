@@ -122,7 +122,7 @@ export default async function AdminHome() {
   const familyAudit = t("admin.overview.r2.family.audit", "Audit trail");
   const openTmpl = t("admin.overview.r2.open", "Open {family}");
   const openLink = (family: string, href: string) => (
-    <a className="ax-btn ax-btn--secondary ax-link" href={href} aria-label={`${fill(openTmpl, { family })} — ${family}`}>
+    <a className="btn btn-secondary ax-link btn-touch" href={href} aria-label={`${fill(openTmpl, { family })} — ${family}`}>
       {fill(openTmpl, { family })}
     </a>
   );
@@ -151,7 +151,7 @@ export default async function AdminHome() {
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
           <span role="status" aria-live="polite" className="t-caption">{readAtNode}</span>
           {failed > 0 ? (
-            <span className="ax-lozenge ax-lozenge--warning">
+            <span className="badge badge-warning">
               <span aria-hidden="true">⚠</span>{" "}
               {fill(t("admin.overview.r2.lozenge.partial", "{n} source unavailable"), { n: failed })}
             </span>
@@ -264,7 +264,7 @@ export default async function AdminHome() {
         </h3>
         <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
           {linkOnly.map(l => (
-            <a key={l.href} className="ax-btn ax-btn--secondary ax-link" href={l.href}>
+            <a key={l.href} className="btn btn-secondary ax-link btn-touch" href={l.href}>
               {t(l.key, l.en)}
             </a>
           ))}

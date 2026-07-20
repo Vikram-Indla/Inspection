@@ -99,8 +99,8 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             <strong>{strings.invalidTitle}</strong>
             <p>{strings.invalidBody.replace("{n}", String(invalidDropped))}</p>
             <div className="row" style={{ gap: "var(--ax-space-150)" }}>
-              <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setInvalidDropped(0)}>{strings.invalidKeep}</button>
-              <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { clearSelection(); setInvalidDropped(0); }}>{strings.invalidClear}</button>
+              <button type="button" className="btn btn-secondary btn-touch" onClick={() => setInvalidDropped(0)}>{strings.invalidKeep}</button>
+              <button type="button" className="btn btn-ghost btn-touch" onClick={() => { clearSelection(); setInvalidDropped(0); }}>{strings.invalidClear}</button>
             </div>
           </div>
         </div>
@@ -111,8 +111,8 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           <label className="ax-field__label" htmlFor="bulk-filter">{strings.filterLabel}</label>
           <input id="bulk-filter" className="ax-input" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} placeholder={strings.filterPlaceholder} />
         </div>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={selectVisible}>{strings.selectVisible}</button>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
+        <button type="button" className="btn btn-secondary btn-touch" onClick={selectVisible}>{strings.selectVisible}</button>
+        <button type="button" className="btn btn-secondary btn-touch" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
         <span className="t-caption numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
       </div>
 
@@ -126,10 +126,10 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
                 <label className="ax-field__label" htmlFor="select-all-confirm-input">{strings.selectAllConfirmInputLabel}</label>
                 <input id="select-all-confirm-input" className="ax-input numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
               </div>
-              <button type="button" className="ax-btn ax-btn--prominent" disabled={confirmInput.trim() !== String(filtered.length)} onClick={confirmSelectAllResults}>
+              <button type="button" className="btn btn-primary btn-lg btn-touch" disabled={confirmInput.trim() !== String(filtered.length)} onClick={confirmSelectAllResults}>
                 {strings.selectAllConfirmButton.replace("{n}", String(filtered.length))}
               </button>
-              <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>{strings.selectAllConfirmCancel}</button>
+              <button type="button" className="btn btn-ghost btn-touch" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>{strings.selectAllConfirmCancel}</button>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
                 <td className="numeric"><bdi>{f.cr_number}</bdi></td>
                 <td>{f.city ?? "—"}</td>
                 <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.riskBands[f.risk_band]) ?? "—"} · {f.risk_score ?? "?"}</span></td>
-                <td>{dup ? <span className="ax-lozenge ax-lozenge--critical">⛔ {strings.duplicate}</span> : <span className="ax-lozenge ax-lozenge--success">✓ {strings.eligible}</span>}</td>
+                <td>{dup ? <span className="badge badge-critical">⛔ {strings.duplicate}</span> : <span className="badge badge-compliant">✓ {strings.eligible}</span>}</td>
                 <td className="t-caption numeric"><span className="ax-freshness"><bdi>{provenance(f)}</bdi></span></td>
                 <td>{dq.length === 0 ? <span className="t-caption">{strings.dqComplete}</span> : dq.map(d => <div key={d.label}><span className={`ax-lozenge ax-lozenge--${d.kind}`}>{d.kind === "critical" ? "⛔" : "⚠"} {d.label}</span></div>)}</td>
               </tr>
@@ -166,11 +166,11 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       <p className="t-caption">{strings.riskAdvisory}</p>
 
       <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", justifyContent: "center" }}>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
+        <button type="button" className="btn btn-ghost btn-touch" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
         <span className="t-caption numeric" role="status" aria-live="polite">
           {strings.pageStatus.replace("{a}", String(filtered.length === 0 ? 0 : clampedPage * PAGE_SIZE + 1)).replace("{b}", String(Math.min(filtered.length, (clampedPage + 1) * PAGE_SIZE))).replace("{n}", String(filtered.length))}
         </span>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
+        <button type="button" className="btn btn-ghost btn-touch" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
       </div>
 
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
@@ -184,7 +184,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
               </div></div>
             <div><span className="t-caption">{strings.summaryByRegion}</span>
               <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
-                {Object.entries(byRegion).map(([r, n]) => <span key={r} className="ax-lozenge ax-lozenge--info"><bdi>{r}</bdi> · {n}</span>)}
+                {Object.entries(byRegion).map(([r, n]) => <span key={r} className="badge badge-info"><bdi>{r}</bdi> · {n}</span>)}
               </div></div>
           </div>
         )}
@@ -194,12 +194,12 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       <div className="ax-surface row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--ax-space-200) var(--ax-space-300)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "center" }}>
         <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
-          {selected.size === 0 && <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.readyNothing}</span>}
-          {selected.size > 0 && <button type="button" className="ax-btn ax-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
+          {selected.size === 0 && <span className="badge badge-warning">⚠ {strings.readyNothing}</span>}
+          {selected.size > 0 && <button type="button" className="btn btn-ghost btn-touch" onClick={clearSelection}>{strings.clearSelection}</button>}
         </div>
         {selected.size > 0
-          ? <a className="ax-btn ax-btn--prominent" href="/planning/bulk/review">{strings.reviewContinue} →</a>
-          : <button type="button" className="ax-btn ax-btn--prominent" disabled>{strings.reviewContinue} →</button>}
+          ? <a className="btn btn-primary btn-lg btn-touch" href="/planning/bulk/review">{strings.reviewContinue} →</a>
+          : <button type="button" className="btn btn-primary btn-lg btn-touch" disabled>{strings.reviewContinue} →</button>}
       </div>
     </div>
   );

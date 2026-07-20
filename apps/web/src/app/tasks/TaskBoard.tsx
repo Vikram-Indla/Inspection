@@ -43,7 +43,7 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
           {task.taskType} <span className="ax-version">{task.taskRef ?? "—"}</span>
         </h3>
         <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
-          <span className="ax-lozenge ax-lozenge--info">{task.status.replace(/_/g, " ")}</span>
+          <span className="badge badge-info">{task.status.replace(/_/g, " ")}</span>
           <span className={`ax-lozenge ${task.active ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>
             {task.active ? s.activeYes : s.activeNo}
           </span>
@@ -64,9 +64,9 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
               <input className="ax-input" name="to_assignee" id={`${fieldId}-reassign-to`} required disabled={isTerminal} /></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reassign-reason`}>{s.reason}</label>
               <input className="ax-input" name="reason" id={`${fieldId}-reassign-reason`} required disabled={isTerminal} /></div>
-            <button className="ax-btn" disabled={reassigning || isTerminal}>{reassigning ? s.reassigning : s.reassign}</button>
+            <button className="btn btn-primary btn-touch" disabled={reassigning || isTerminal}>{reassigning ? s.reassigning : s.reassign}</button>
             {reassignState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{reassignState.error}</span>}
-            {reassignState.ok && <span className="ax-lozenge ax-lozenge--success">{s.reassigned}</span>}
+            {reassignState.ok && <span className="badge badge-compliant">{s.reassigned}</span>}
           </form>
 
           {/* Status transition — only machine-legal targets are offered */}
@@ -78,9 +78,9 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
               </select></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-status-reason`}>{s.reason}</label>
               <input className="ax-input" name="reason" id={`${fieldId}-status-reason`} /></div>
-            <button className="ax-btn" disabled={applying || isTerminal}>{applying ? s.applying : s.apply}</button>
+            <button className="btn btn-primary btn-touch" disabled={applying || isTerminal}>{applying ? s.applying : s.apply}</button>
             {statusState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{statusState.error}</span>}
-            {statusState.ok && <span className="ax-lozenge ax-lozenge--success">{s.statusChanged}</span>}
+            {statusState.ok && <span className="badge badge-compliant">{s.statusChanged}</span>}
           </form>
 
           {/* Activation — reason mandatory; reactivation of a terminal task blocked */}
@@ -89,9 +89,9 @@ export function TaskRow({ task, strings: s }: { task: TaskRowData; strings: Task
             <input type="hidden" name="active" value={task.active ? "false" : "true"} />
             <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-active-reason`}>{s.reason}</label>
               <input className="ax-input" name="reason" id={`${fieldId}-active-reason`} required /></div>
-            <button className="ax-btn" disabled={activating}>{activating ? s.activating : (task.active ? s.deactivate : s.reactivate)}</button>
+            <button className="btn btn-primary btn-touch" disabled={activating}>{activating ? s.activating : (task.active ? s.deactivate : s.reactivate)}</button>
             {activeState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{activeState.error}</span>}
-            {activeState.ok && <span className="ax-lozenge ax-lozenge--success">✓</span>}
+            {activeState.ok && <span className="badge badge-compliant">✓</span>}
           </form>
         </div>
       )}

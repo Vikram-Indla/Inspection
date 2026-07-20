@@ -45,19 +45,19 @@ export default function EligibilityLedger({
       <div>
         <span className="t-caption">{strings.eligible}</span>
         <div className="numeric" aria-live="polite">
-          <span className="ax-lozenge ax-lozenge--success">✓ {eligible}</span>
+          <span className="badge badge-compliant">✓ {eligible}</span>
         </div>
       </div>
       <div>
         <span className="t-caption">{strings.excluded}</span>
         <div className="numeric" aria-live="polite">
-          <span className="ax-lozenge ax-lozenge--info">− {excluded}</span>
+          <span className="badge badge-info">− {excluded}</span>
         </div>
       </div>
       {focusedCount != null && (
         <div role="status" aria-live="polite">
           <span className="t-caption">{focusedLabel}</span>
-          <div className="numeric"><span className="ax-lozenge ax-lozenge--info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
+          <div className="numeric"><span className="badge badge-info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
         </div>
       )}
       <div style={{ marginInlineStart: "auto" }}>
@@ -65,7 +65,7 @@ export default function EligibilityLedger({
         <div className="ax-freshness numeric">
           <bdi>{freshnessLabel}</bdi>
           {missingSync > 0 && (
-            <> · <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.freshnessMissing.replace("{n}", String(missingSync))}</span></>
+            <> · <span className="badge badge-warning">⚠ {strings.freshnessMissing.replace("{n}", String(missingSync))}</span></>
           )}
         </div>
       </div>

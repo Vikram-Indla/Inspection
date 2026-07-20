@@ -82,7 +82,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   return (
     <Shell current="/planning" title={t("plan.drill.title", "Plan {id}").replace("{id}", plan.id.slice(0, 8))}
       context={<>
-        <span className="ax-lozenge ax-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>
+        <span className="badge badge-info">{t(`enum.${plan.method}`, plan.method)}</span>
         <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
       </>}>
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
@@ -139,7 +139,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
                 <td>{v.factories ? <a className="ax-link" href={`/factories/${v.factories.id}`}>{v.factories.name}</a> : "—"}</td>
                 <td>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)}</td>
                 <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
-                  {v.inspections?.status === "approved" && <> <span className="ax-lozenge ax-lozenge--success">{t("plan.drill.completed", "completed")}</span></>}</td>
+                  {v.inspections?.status === "approved" && <> <span className="badge badge-compliant">{t("plan.drill.completed", "completed")}</span></>}</td>
                 <td><span className="ax-lozenge ax-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span></td>
                 <td>{v.assignments?.[0]?.profiles?.full_name ?? "—"}</td>
                 <td className="ax-td-num numeric">{fmt(v.window_start)}</td>

@@ -15,7 +15,7 @@ export default async function AiSuggestionsPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_AI_DOCKETS, MODES, "off") !== "on") {
     return (
-      <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")} context={<span className="ax-lozenge ax-lozenge--warning">CD-048 · REQ-0056</span>}>
+      <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")} context={<span className="badge badge-warning">CD-048 · REQ-0056</span>}>
         <NotYetBoundary title={t("ai.title", "Assistive AI dockets")}
           consequence={t("ai.off", "Assistive AI is off by default. Suggestions are advisory and require human disposition; the AI provider is fail-closed until configured, and legal source text is never generated.")}
           seam="FEATURE_AI_DOCKETS=off + AI provider held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
@@ -44,7 +44,7 @@ export default async function AiSuggestionsPage() {
     confidence: typeof (r.suggestion as { confidence?: unknown })?.confidence === "number" ? (r.suggestion as { confidence: number }).confidence : null,
   }));
   return (
-    <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")} context={<span className="ax-lozenge ax-lozenge--info">CD-048 · REQ-0056..0066</span>}>
+    <Shell current="/ai/suggestions" title={t("ai.title", "Assistive AI dockets")} context={<span className="badge badge-info">CD-048 · REQ-0056..0066</span>}>
       <div className="ax-banner"><div><strong>{t("ai.banner.title", "Advisory only — human decides.")}</strong> {t("ai.banner.body", "AI never writes a decision or legal text. Every suggestion needs a human disposition. The provider is fail-closed (unavailable) until configured; nothing is auto-actioned.")}</div></div>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("ai.error", "Couldn’t load suggestions. Nothing changed.")}</strong></div></div>}
       {!error && mapped.length === 0 && (

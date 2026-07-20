@@ -120,9 +120,9 @@ export default function CalendarBoard({ visits, locale, strings }: {
           ))}
         </div>
         <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => shift(-1)} aria-label={strings.prev}>‹</button>
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setAnchorMs(utcMidnight(new Date()))}>{strings.today}</button>
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => shift(1)} aria-label={strings.next}>›</button>
+          <button type="button" className="btn btn-ghost btn-touch" onClick={() => shift(-1)} aria-label={strings.prev}>‹</button>
+          <button type="button" className="btn btn-ghost btn-touch" onClick={() => setAnchorMs(utcMidnight(new Date()))}>{strings.today}</button>
+          <button type="button" className="btn btn-ghost btn-touch" onClick={() => shift(1)} aria-label={strings.next}>›</button>
           <strong style={{ marginInlineStart: "var(--ax-space-150)" }}>{heading}</strong>
         </div>
       </div>

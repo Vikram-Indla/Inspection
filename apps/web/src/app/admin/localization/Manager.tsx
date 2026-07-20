@@ -102,10 +102,10 @@ function PhText({ text, errTokens }: { text: string; errTokens: Set<string> }) {
 }
 
 function StatusLozenge({ row, labels }: { row: UiString; labels: Labels }) {
-  if (row.orphaned) return <span className="ax-lozenge">{labels.statusOrphaned}</span>;
-  if (missingAr(row)) return <span className="ax-lozenge ax-lozenge--critical">{labels.statusMissing}</span>;
-  if (row.status === "reviewed") return <span className="ax-lozenge ax-lozenge--success">{labels.statusReviewed}</span>;
-  return <span className="ax-lozenge ax-lozenge--warning">{labels.statusDraft}</span>;
+  if (row.orphaned) return <span className="badge">{labels.statusOrphaned}</span>;
+  if (missingAr(row)) return <span className="badge badge-critical">{labels.statusMissing}</span>;
+  if (row.status === "reviewed") return <span className="badge badge-compliant">{labels.statusReviewed}</span>;
+  return <span className="badge badge-warning">{labels.statusDraft}</span>;
 }
 
 // Trigger-written history: last few revisions with restore (restore itself
@@ -143,13 +143,13 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
               <form action={restAction}>
                 <input type="hidden" name="key" value={row.key} />
                 <input type="hidden" name="revision_id" value={r.id} />
-                <button className="ax-btn" style={{ paddingBlock: 2, font: "var(--ax-text-caption)" }} disabled={restPending}>
+                <button className="btn btn-primary btn-touch" style={{ paddingBlock: 2, font: "var(--ax-text-caption)" }} disabled={restPending}>
                   {restPending ? labels.restoring : labels.restore}
                 </button>
               </form>
             </div>
           ))}
-          {restState.ok && <span className="ax-lozenge ax-lozenge--success">{labels.restored}</span>}
+          {restState.ok && <span className="badge badge-compliant">{labels.restored}</span>}
           {restState.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{restState.error}</span>}
         </div>
       )}
@@ -161,7 +161,7 @@ function SyncButton({ labels }: { labels: Labels }) {
   const [state, formAction, pending] = useActionState<SyncResult, FormData>(syncFromCode, {});
   return (
     <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.syncing : labels.sync}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? labels.syncing : labels.sync}</button>
       {state.report && !pending && (
         <span className="t-caption">
           {labels.syncReport} <span className="numeric">+{state.report.added.length}</span> · EN Δ <span className="numeric">{state.report.enChanged.length}</span> · ⌀ <span className="numeric">{state.report.orphaned.length}</span> · ↻ <span className="numeric">{state.report.revived.length}</span>
@@ -201,8 +201,8 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
           <input type="hidden" name="key" value={row.key} />
           <input className="ax-input lz-ar" name="ar" dir="rtl" lang="ar" value={ar} onChange={e => setAr(e.target.value)}
             placeholder="—" aria-label={`${labels.colAr}: ${row.key}`} style={{ flex: 1, minInlineSize: 160 }} />
-          <button className="ax-btn" disabled={savePending || phErr} aria-disabled={phErr}>{savePending ? labels.saving : labels.save}</button>
-          {saveState.ok && !savePending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
+          <button className="btn btn-primary btn-touch" disabled={savePending || phErr} aria-disabled={phErr}>{savePending ? labels.saving : labels.save}</button>
+          {saveState.ok && !savePending && <span className="badge badge-compliant">{labels.saved}</span>}
         </form>
         {arLonger && <span className="lz-risk">↔ {labels.riskLong}</span>}
         {phErr && <span className="lz-risk lz-risk--critical" role="alert">✕ {labels.placeholderErr.replace("{token}", `{{${missing[0]}}}`)}</span>}
@@ -216,7 +216,7 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
           <div className="lz-actions">
             <form action={revAction}>
               <input type="hidden" name="key" value={row.key} />
-              <button className="ax-btn ax-btn--secondary" disabled={revPending}>{revPending ? labels.marking : labels.markReviewed}</button>
+              <button className="btn btn-secondary btn-touch" disabled={revPending}>{revPending ? labels.marking : labels.markReviewed}</button>
             </form>
           </div>
         )}
@@ -240,9 +240,9 @@ function AddKeyForm({ labels }: { labels: Labels }) {
         <input className="ax-input" name="ar" id="l10n-add-ar" dir="rtl" lang="ar" /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor="l10n-add-context">{labels.addContextField}</label>
         <input className="ax-input" name="context" id="l10n-add-context" placeholder="SCR-ADM-100" /></div>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.adding : labels.addBtn}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? labels.adding : labels.addBtn}</button>
       {state.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
-      {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.added}</span>}
+      {state.ok && !pending && <span className="badge badge-compliant">{labels.added}</span>}
     </form>
   );
 }
@@ -303,7 +303,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
           <option value="missing-ar">{labels.filterMissing}</option>
           <option value="orphaned">{labels.filterOrphaned}</option>
         </select>
-        <button className="ax-btn" type="button" onClick={() => exportCsv(filtered)}>{labels.exportCsv}</button>
+        <button className="btn btn-primary btn-touch" type="button" onClick={() => exportCsv(filtered)}>{labels.exportCsv}</button>
         <SyncButton labels={labels} />
         <span className="t-caption">{labels.showing} <span className="numeric">{filtered.length}/{rows.length}</span> · {labels.importNote}</span>
       </div>

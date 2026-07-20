@@ -230,7 +230,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h4>
         {plan ? (
           <p>
-            <span className="ax-lozenge ax-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
+            <span className="badge badge-info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
             <span className="numeric">{plan.id.slice(0, 8)}</span> · {t("visit.detail.planCreatedBy", "created by")} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
             <span className="numeric">{new Date(plan.created_at).toISOString().slice(0, 16).replace("T", " ")}</span>
             {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="numeric">{new Date(plan.published_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
@@ -264,7 +264,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         <ul className="ax-timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (
             <li key={g.occurred_at} className={g.kind === "checkin" ? "is-key" : undefined}>
-              <div><strong>{t(`enum.${g.kind}`, g.kind)}</strong> · ±{g.accuracy_m} m {g.geofence_result && <span className="ax-lozenge ax-lozenge--success">{t(`enum.${g.geofence_result}`, g.geofence_result)}</span>}<br />
+              <div><strong>{t(`enum.${g.kind}`, g.kind)}</strong> · ±{g.accuracy_m} m {g.geofence_result && <span className="badge badge-compliant">{t(`enum.${g.geofence_result}`, g.geofence_result)}</span>}<br />
                 <span className="ax-timeline__meta numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")} · gis {g.gis_version}</span></div>
             </li>
           )))}

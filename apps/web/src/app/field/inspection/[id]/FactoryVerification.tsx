@@ -111,10 +111,10 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
             style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--ax-color-border-strong)", borderRadius: "var(--ax-radius-standard)" }} />
         </div>
         <div className="ax-modal__footer">
-          <button className="ax-btn ax-btn--subtle" onClick={clear}>{strings.annotateClear}</button>
-          <button className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.annotateCancel}</button>
-          <button className="ax-btn ax-btn--secondary" onClick={() => onDone(null)}>{strings.annotateSkip}</button>
-          <button className="ax-btn ax-btn--prominent" aria-disabled={!inked} onClick={save}>{strings.annotateSave}</button>
+          <button className="btn btn-ghost btn-touch" onClick={clear}>{strings.annotateClear}</button>
+          <button className="btn btn-secondary btn-touch" onClick={onCancel}>{strings.annotateCancel}</button>
+          <button className="btn btn-secondary btn-touch" onClick={() => onDone(null)}>{strings.annotateSkip}</button>
+          <button className="btn btn-primary btn-lg btn-touch" aria-disabled={!inked} onClick={save}>{strings.annotateSave}</button>
         </div>
       </div>
     </div>
@@ -249,7 +249,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       {failDetail !== null && (
         <div className="ax-banner ax-banner--critical"><div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-200)" }}>
           <span>{strings.syncFailed}{failDetail ? ` · ${failDetail}` : ""}</span>
-          <button className="ax-btn ax-btn--secondary" onClick={() => processOutbox(onState)}>{strings.retry}</button>
+          <button className="btn btn-secondary btn-touch" onClick={() => processOutbox(onState)}>{strings.retry}</button>
         </div></div>
       )}
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
@@ -284,7 +284,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                 </td>
                 <td>
                   {!readOnly && (
-                    <button className="ax-btn ax-btn--secondary" style={{ marginBlockEnd: "var(--ax-space-100)" }} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
+                    <button className="btn btn-secondary btn-touch" style={{ marginBlockEnd: "var(--ax-space-100)" }} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
                   )}
                   <div>
                     {c
@@ -294,7 +294,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                 </td>
                 <td>
                   {!readOnly && (
-                    <label className="ax-btn ax-btn--secondary" style={{ cursor: "pointer" }}>
+                    <label className="btn btn-secondary btn-touch" style={{ cursor: "pointer" }}>
                       {strings.evAttach}
                       <input type="file" accept="image/*,.pdf,application/pdf" multiple hidden onChange={e => { if (e.target.files?.length) { attach(f, e.target.files); e.target.value = ""; } }} />
                     </label>
@@ -344,7 +344,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
             <thead><tr><th scope="col">{strings.colProduct}</th><th scope="col">{strings.colHs}</th><th scope="col">{strings.colCapacity}</th></tr></thead>
             <tbody>{products.map((p, i) => (
               <tr key={i}>
-                <td>{p.name}{p.is_primary && <> <span className="ax-lozenge ax-lozenge--info">{strings.primaryTag}</span></>}</td>
+                <td>{p.name}{p.is_primary && <> <span className="badge badge-info">{strings.primaryTag}</span></>}</td>
                 <td className="numeric">{p.hs_code ?? "—"}</td>
                 <td className="numeric">{p.annual_capacity != null ? `${p.annual_capacity} ${p.unit ?? ""}` : "—"}</td>
               </tr>

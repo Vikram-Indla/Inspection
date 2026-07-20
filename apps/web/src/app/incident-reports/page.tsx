@@ -30,7 +30,7 @@ export default async function IncidentReportsPage() {
     <Shell
       current="/incident-reports"
       title={t("figma.establishmentmanagement.em029", "Report an Incident")}
-      context={<span className="ax-lozenge ax-lozenge--info">FNS-033 · J-12</span>}
+      context={<span className="badge badge-info">FNS-033 · J-12</span>}
     >
       <div className="ax-banner">
         <div>
@@ -79,7 +79,7 @@ export default async function IncidentReportsPage() {
               {r.establishment_code ?? "—"}{" "}
               <span className="t-caption">{r.incident_type ?? ""}</span>
             </h3>
-            <span className="ax-lozenge ax-lozenge--info">{r.report_source ?? "—"}</span>
+            <span className="badge badge-info">{r.report_source ?? "—"}</span>
           </div>
         </div>
       ))}

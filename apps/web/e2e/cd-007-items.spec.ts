@@ -49,7 +49,7 @@ test.describe("CD-007 semantic catalogue (AC-0454/0455)", () => {
       await expect(table.locator("thead th[scope=col]", { hasText: col })).toBeVisible();
     }
     // Status carries a non-colour cue (word), never colour alone.
-    await expect(table.locator(".ax-lozenge", { hasText: /active|deactivated/i }).first()).toBeVisible();
+    await expect(table.locator(".ax-lozenge, .badge", { hasText: /active|deactivated/i }).first()).toBeVisible();
   });
 
   test("runtime-preview strip is a read-only projection (disabled response controls)", async ({ page }) => {

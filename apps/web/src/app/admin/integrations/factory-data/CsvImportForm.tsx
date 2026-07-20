@@ -33,7 +33,7 @@ export default function CsvImportForm() {
       </div> : null}
       {state.error ? <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div> : null}
       {state.ok ? <div className="ax-banner ax-banner--success" role="status"><div>Batch <bdi>{state.batchId}</bdi> staged: {state.pendingReconciliation} pending reconciliation, {state.rejected} rejected with safe row errors. Zero rows are accepted until governed reconciliation.</div></div> : null}
-      <button className="ax-btn ax-btn--prominent" disabled={pending || !!preview?.errors.length}>{pending ? "Staging…" : "Stage validated batch"}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !!preview?.errors.length}>{pending ? "Staging…" : "Stage validated batch"}</button>
     </form>
   );
 }

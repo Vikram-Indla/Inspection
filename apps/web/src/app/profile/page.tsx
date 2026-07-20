@@ -52,7 +52,7 @@ export default async function ProfileSettings() {
 
   return (
     <Shell current="/profile" title={t("profile.title", "Profile settings")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("profile.badge", "My account")}</span>}>
+      context={<span className="badge badge-info">{t("profile.badge", "My account")}</span>}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "var(--ax-space-200)" }}>
         <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-details-h">
           <h3 id="profile-details-h" style={{ margin: 0 }}>{t("profile.details.heading", "Personal details")}</h3>
@@ -68,10 +68,10 @@ export default async function ProfileSettings() {
         <section className="ax-surface stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-appearance-h">
           <h3 id="profile-appearance-h" style={{ margin: 0 }}>{t("profile.appearance.heading", "Language & appearance")}</h3>
           <Row label={t("profile.appearance.languageLabel", "Language")}>
-            <a className="ax-btn ax-btn--subtle" href={languageHref} lang={locale === "ar" ? "en" : "ar"}>{languageLabel}</a>
+            <a className="btn btn-ghost btn-touch" href={languageHref} lang={locale === "ar" ? "en" : "ar"}>{languageLabel}</a>
           </Row>
           <Row label={t("profile.appearance.themeLabel", "Theme")}>
-            <ThemeToggle labels={{ toLight: t("theme.light", "Light mode"), toDark: t("theme.dark", "Dark mode") }} className="ax-btn ax-btn--subtle" />
+            <ThemeToggle labels={{ toLight: t("theme.light", "Light mode"), toDark: t("theme.dark", "Dark mode") }} className="btn btn-ghost btn-touch" />
           </Row>
           <p className="t-caption" style={{ margin: 0 }}>{t("profile.appearance.themeNote", "Theme preference is saved to this browser.")}</p>
         </section>
@@ -107,7 +107,7 @@ export default async function ProfileSettings() {
           <h3 id="profile-session-h" style={{ margin: 0 }}>{t("profile.session.heading", "Session & security")}</h3>
           <Row label={t("profile.session.issued", "Session started")}><bdi dir="ltr" className="numeric">{issuedAt ?? "—"}</bdi></Row>
           <Row label={t("profile.session.expires", "Session expires")}><bdi dir="ltr" className="numeric">{expiresAt ?? "—"}</bdi></Row>
-          <a className="ax-btn ax-btn--subtle" href="/signout" style={{ alignSelf: "flex-start", marginBlockStart: "var(--ax-space-100)" }}>{t("nav.signout", "Sign out")}</a>
+          <a className="btn btn-ghost btn-touch" href="/signout" style={{ alignSelf: "flex-start", marginBlockStart: "var(--ax-space-100)" }}>{t("nav.signout", "Sign out")}</a>
         </section>
       </div>
     </Shell>

@@ -180,21 +180,21 @@ export default async function Regulations({
   const title = t("admin.reg.r1.title", "Compliance Library — regulation register");
   const context = (
     <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
-      <span className="ax-lozenge ax-lozenge--info">SCR-ADM-010/011</span>
+      <span className="badge badge-info">SCR-ADM-010/011</span>
       <a className="ax-link" href="/admin/compliance-requests">
         {t("admin.reg.requests", "Configuration Requests")}
       </a>
       <span role="status" aria-live="polite" className="t-caption">{readAtNode}</span>
       {regsError ? (
-        <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {t("admin.reg.r1.degraded.chip", "register unavailable")}</span>
+        <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {t("admin.reg.r1.degraded.chip", "register unavailable")}</span>
       ) : null}
     </span>
   );
   const libraryTabs = (
     <nav className="cmp-library-tabs" aria-label="Compliance Library">
-      <a className="ax-btn ax-btn--prominent" href="/admin/regulations" aria-current="page">Regulations</a>
-      <a className="ax-btn ax-btn--secondary ax-link" href="/admin/items">Inspection Items</a>
-      {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href="/admin/compliance-requests/new">Create governed request</a> : null}
+      <a className="btn btn-primary btn-lg btn-touch" href="/admin/regulations" aria-current="page">Regulations</a>
+      <a className="btn btn-secondary ax-link btn-touch" href="/admin/items">Inspection Items</a>
+      {isWriter ? <a className="btn btn-secondary ax-link btn-touch" href="/admin/compliance-requests/new">Create governed request</a> : null}
     </nav>
   );
 
@@ -332,12 +332,12 @@ export default async function Regulations({
                             <td className="t-caption">{c.legal_source ?? "—"}</td>
                             <td>
                               {items === null ? (
-                                <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {strings.railItemsUnknown}</span>
+                                <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {strings.railItemsUnknown}</span>
                               ) : items.length === 0 ? (
                                 <span className="t-caption"><span aria-hidden="true">○</span> {strings.railItemsZero}</span>
                               ) : (
                                 items.map(i => (
-                                  <span key={i.id} className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 6 }}>
+                                  <span key={i.id} className="badge badge-info" style={{ marginInlineEnd: 6 }}>
                                     <bdi dir="ltr">{i.code}</bdi>
                                   </span>
                                 ))

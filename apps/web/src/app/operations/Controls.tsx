@@ -21,15 +21,15 @@ export function ActionFormControls({ actionFormId, status, strings }: { actionFo
     <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="hidden" name="action_form_id" value={actionFormId} />
       {status === "open" && (
-        <button className="ax-btn" name="next_status" value="acknowledged" disabled={pending}>
+        <button className="btn btn-primary btn-touch" name="next_status" value="acknowledged" disabled={pending}>
           {pending ? "…" : strings.acknowledge}
         </button>
       )}
-      <button className="ax-btn ax-btn--prominent" name="next_status" value="closed" disabled={pending}>
+      <button className="btn btn-primary btn-lg btn-touch" name="next_status" value="closed" disabled={pending}>
         {pending ? "…" : strings.close}
       </button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.updated}</span>}
+      {state.ok && <span className="badge badge-compliant">{strings.updated}</span>}
     </form>
   );
 }
@@ -40,9 +40,9 @@ export function MarkNotificationHandled({ notificationId, strings }: { notificat
   return (
     <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="hidden" name="notification_id" value={notificationId} />
-      <button className="ax-btn" disabled={pending}>{pending ? "…" : strings.markHandled}</button>
+      <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? "…" : strings.markHandled}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.handled}</span>}
+      {state.ok && <span className="badge badge-compliant">{strings.handled}</span>}
     </form>
   );
 }

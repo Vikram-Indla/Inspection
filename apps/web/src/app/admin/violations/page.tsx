@@ -277,7 +277,7 @@ export default async function Violations({
 
   return (
     <Shell current="/admin/violations" title={title}
-      context={<span className="ax-lozenge ax-lozenge--info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
+      context={<span className="badge badge-info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
 
       {modeTabs}
 
@@ -358,10 +358,10 @@ export default async function Violations({
                 <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 180, flex: "1 1 180px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.lens", "Validation lens")}</span>
                   {activeMapping
-                    ? <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {t("admin.viol.lens.mapped", "one active mapping; one-to-one satisfied")}</span>
+                    ? <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {t("admin.viol.lens.mapped", "one active mapping; one-to-one satisfied")}</span>
                     : draft
-                    ? <span className="ax-lozenge ax-lozenge--warning" role="status"><span aria-hidden="true">◷</span> {t("admin.viol.lens.draft", "draft awaiting a distinct approver")}</span>
-                    : <span className="ax-lozenge ax-lozenge--warning" role="status"><span aria-hidden="true">○</span> {t("admin.viol.lens.unmapped", "no mapping yet — one is required")}</span>}
+                    ? <span className="badge badge-warning" role="status"><span aria-hidden="true">◷</span> {t("admin.viol.lens.draft", "draft awaiting a distinct approver")}</span>
+                    : <span className="badge badge-warning" role="status"><span aria-hidden="true">○</span> {t("admin.viol.lens.unmapped", "no mapping yet — one is required")}</span>}
                 </div>
                 {/* Column 3 — mapping record or create form */}
                 <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 260, flex: "2 1 260px" }}>
@@ -428,8 +428,8 @@ export default async function Violations({
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
                     {pm
-                      ? <span className="ax-lozenge ax-lozenge--success"><span aria-hidden="true">✓</span> {t("admin.viol.mapped", "penalty mapped")}</span>
-                      : <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">○</span> {t("admin.viol.unmapped", "unmapped")}</span>}
+                      ? <span className="badge badge-compliant"><span aria-hidden="true">✓</span> {t("admin.viol.mapped", "penalty mapped")}</span>
+                      : <span className="badge badge-warning"><span aria-hidden="true">○</span> {t("admin.viol.unmapped", "unmapped")}</span>}
                   </div>
                 </div>
                 {/* Clause-link trace only — legal basis lives on the penalty mapping, not here. */}
@@ -438,8 +438,8 @@ export default async function Violations({
                   {rc ? <bdi dir="ltr">{rc.regulations?.code ?? "?"} §{rc.clause_ref}</bdi> : t("admin.viol.noAnchor", "No clause anchor")}
                 </p>
                 <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
-                  <span className="ax-lozenge ax-lozenge--info">v{v.configuration_version}</span>
-                  {v.category && <span className="ax-lozenge ax-lozenge--info">{v.category}</span>}
+                  <span className="badge badge-info">v{v.configuration_version}</span>
+                  {v.category && <span className="badge badge-info">{v.category}</span>}
                   {v.applicability && <span className="t-caption">{v.applicability}</span>}
                 </div>
                 <p className="t-caption"><strong>{t("admin.viol.corrective", "Corrective action")}:</strong> {v.corrective_action ?? "—"}{v.grace_period_days !== null ? <> · {t("admin.viol.grace", "Grace period")}: {v.grace_period_days} {t("admin.days", "days")}</> : null}</p>

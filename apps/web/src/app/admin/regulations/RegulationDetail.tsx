@@ -60,7 +60,7 @@ export default async function RegulationDetail({
   if (!reg) {
     return (
       <EmptyState glyph="📜" title={s.notFoundTitle} body={s.notFoundBody}>
-        <a className="ax-btn ax-btn--subtle" href="/admin/regulations">{s.backToList}</a>
+        <a className="btn btn-ghost btn-touch" href="/admin/regulations">{s.backToList}</a>
       </EmptyState>
     );
   }
@@ -126,10 +126,10 @@ export default async function RegulationDetail({
                   <td>
                     {items.length > 0 ? (
                       <span className="t-caption numeric">{s.mappedCount.replace("{n}", String(items.length))}: {items.map(i => (
-                        <span key={i.id} className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 6 }}>{i.code}</span>
+                        <span key={i.id} className="badge badge-info" style={{ marginInlineEnd: 6 }}>{i.code}</span>
                       ))}</span>
                     ) : (
-                      <span className="ax-lozenge ax-lozenge--warning">{s.unmappedTag}</span>
+                      <span className="badge badge-warning">{s.unmappedTag}</span>
                     )}
                   </td>
                 </tr>
@@ -147,7 +147,7 @@ export default async function RegulationDetail({
         <div><strong className="t-caption">{s.routeGuardTitle}</strong><p className="t-caption">{s.routeGuardBody}</p></div>
       </div>
 
-      <a className="ax-btn ax-btn--subtle" href="/admin/regulations">{s.backToList}</a>
+      <a className="btn btn-ghost btn-touch" href="/admin/regulations">{s.backToList}</a>
     </div>
   );
 }

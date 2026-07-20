@@ -39,7 +39,7 @@ export default function OpsExport({ datasets, strings }: { datasets: ExportDatas
     <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
       <strong>{strings.heading}</strong>
       {datasets.map(ds => (
-        <button key={ds.key} type="button" className="ax-btn ax-btn--subtle" disabled={ds.rows.length === 0}
+        <button key={ds.key} type="button" className="btn btn-ghost btn-touch" disabled={ds.rows.length === 0}
           onClick={() => download(ds)}>
           {ds.label} <span className="numeric">{ds.rows.length}</span>
         </button>

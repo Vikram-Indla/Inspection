@@ -23,9 +23,9 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
         <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label" htmlFor="ai-generate-context">{s.context}</label><input className="ax-input" name="context" id="ai-generate-context" /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-generate-evidence">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" id="ai-generate-evidence" required /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-generate-clause">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" id="ai-generate-clause" /></div>
-        <button className="ax-btn" disabled={generating}>{generating ? s.generating : s.generate}</button>
+        <button className="btn btn-primary btn-touch" disabled={generating}>{generating ? s.generating : s.generate}</button>
         {gState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{gState.error}</span>}
-        {gState.ok && <span className="ax-lozenge ax-lozenge--success">{s.generated}</span>}
+        {gState.ok && <span className="badge badge-compliant">{s.generated}</span>}
       </form>
       <form action={pAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-surface">{s.surface}</label>
@@ -33,9 +33,9 @@ export function AiDockets({ rows, strings: s }: { rows: AiRow[]; strings: AiStri
         <div className="ax-field" style={{ flex: 1 }}><label className="ax-field__label" htmlFor="ai-propose-text">{s.text}</label><input className="ax-input" name="text" id="ai-propose-text" required /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-evidence">{s.evidenceRefs}</label><input className="ax-input" name="evidence_refs" id="ai-propose-evidence" required /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="ai-propose-clause">{s.clauseRefs}</label><input className="ax-input" name="clause_refs" id="ai-propose-clause" /></div>
-        <button className="ax-btn" disabled={proposing}>{proposing ? s.proposing : s.propose}</button>
+        <button className="btn btn-primary btn-touch" disabled={proposing}>{proposing ? s.proposing : s.propose}</button>
         {pState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{pState.error}</span>}
-        {pState.ok && <span className="ax-lozenge ax-lozenge--success">{s.proposed}</span>}
+        {pState.ok && <span className="badge badge-compliant">{s.proposed}</span>}
       </form>
       {rows.map((r) => <AiRowView key={r.id} r={r} strings={s} />)}
     </>
@@ -51,8 +51,8 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{r.surface} <span className="t-caption">{r.text}</span></h3>
         <div className="row" style={{ gap: "var(--ax-space-150)" }}>
-          <span className="ax-lozenge ax-lozenge--info">{r.disposition}</span>
-          <span className="ax-lozenge ax-lozenge--warning">{r.provider_status}</span>
+          <span className="badge badge-info">{r.disposition}</span>
+          <span className="badge badge-warning">{r.provider_status}</span>
         </div>
       </div>
       <dl className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
@@ -67,9 +67,9 @@ function AiRowView({ r, strings: s }: { r: AiRow; strings: AiStrings }) {
           <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-dispose`}>{s.dispose}</label>
             <select className="ax-input" name="to" id={`${fieldId}-dispose`}>{targets.map((t) => <option key={t} value={t}>{t}</option>)}</select></div>
           <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reason`}>{s.reason}</label><input className="ax-input" name="reason" id={`${fieldId}-reason`} /></div>
-          <button className="ax-btn" disabled={disposing}>{disposing ? s.disposing : s.dispose}</button>
+          <button className="btn btn-primary btn-touch" disabled={disposing}>{disposing ? s.disposing : s.dispose}</button>
           {dState.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{dState.error}</span>}
-          {dState.ok && <span className="ax-lozenge ax-lozenge--success">{s.disposed}</span>}
+          {dState.ok && <span className="badge badge-compliant">{s.disposed}</span>}
         </form>
       )}
     </div>

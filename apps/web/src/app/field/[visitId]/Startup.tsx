@@ -694,7 +694,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         </div>
         {/* F3 · M04-016 — real navigation handoff with this Visit's governed dispatch coordinates */}
         <div className="row" style={{ gap: 8, flexWrap: "wrap", alignItems: "center", marginBlockStart: "var(--ax-space-200)" }}>
-          <a className="ax-btn" target="_blank" rel="noopener noreferrer"
+          <a className="btn btn-primary btn-touch" target="_blank" rel="noopener noreferrer"
             href={`geo:${visit.dispatch_lat},${visit.dispatch_lng}?q=${visit.dispatch_lat},${visit.dispatch_lng}`}>
             {strings.mapsGeo}
           </a>
@@ -733,7 +733,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       {/* SB20 / ENG-08 — compact geofence map card; official and visit-selected coordinates remain distinct (FND-007/M01-046). */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-150)" }}>
-          <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="ax-lozenge ax-lozenge--info">SB20 · ENG-08</span></h4>
+          <h4>{fmt(strings.geofenceHeading, { name: visit.factories.name })} <span className="badge badge-info">SB20 · ENG-08</span></h4>
           <span className="row" style={{ gap: 8, alignItems: "center" }}>
             {/* M04-037 — live distance-to-fence readout while journey active */}
             {live && !checkedIn && (
@@ -781,8 +781,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             <span>{strings.overrideSafetyException}</span>
           </label>
           <div className="row" style={{ justifyContent: "flex-end", gap: 8 }}>
-            <button className="ax-btn ax-btn--subtle" onClick={() => { setPendingOverride(null); setOverrideReason(""); setOverrideReasonKey(""); setOverrideFile(null); setOverrideSafetyException(false); }}>{strings.overrideCancel}</button>
-            <button className="ax-btn ax-btn--danger" onClick={requestGpsOverride}
+            <button className="btn btn-ghost btn-touch" onClick={() => { setPendingOverride(null); setOverrideReason(""); setOverrideReasonKey(""); setOverrideFile(null); setOverrideSafetyException(false); }}>{strings.overrideCancel}</button>
+            <button className="btn btn-danger btn-touch" onClick={requestGpsOverride}
               disabled={busy || !overrideReasonKey || !overrideReason.trim() || (!overrideSafetyException && !overrideFile)}>{strings.overrideConfirm}</button>
           </div>
         </div>
@@ -807,7 +807,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cardsVisitTitle}</h4>
               <p className="t-caption">{arrivalAt ? new Date(arrivalAt).toISOString().replace("T", " ").slice(0, 19) : "—"} · {strings.insideFence}</p>
             </div>
-            <span className="ax-lozenge ax-lozenge--success">{strings.arrivalDetected}</span>
+            <span className="badge badge-compliant">{strings.arrivalDetected}</span>
           </div>
           <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlock: "var(--ax-space-200)" }}>
             <span className="ax-badge">{strings.progressLabel}: {progress == null ? "—" : `${progress.toFixed(0)}%`}</span>
@@ -846,7 +846,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             <div className="ax-surface" style={{ padding: "var(--ax-space-200)", marginBlockStart: "var(--ax-space-200)" }}>
               <h5 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.arrivalEvidenceHeading}</h5>
               <p className="t-caption">{strings.arrivalEvidenceCaption}</p>
-              {arrivalEvidenceSaved ? <span className="ax-lozenge ax-lozenge--success">{strings.arrivalSaved}</span> : (
+              {arrivalEvidenceSaved ? <span className="badge badge-compliant">{strings.arrivalSaved}</span> : (
                 <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
                   <label className="ax-field"><span className="ax-field__label">{strings.arrivalPhoto}</span>
                     <input className="ax-input" type="file" accept="image/*" onChange={e => setArrivalFile(e.target.files?.[0] ?? null)} />
@@ -854,7 +854,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
                   <label className="ax-field"><span className="ax-field__label">{strings.arrivalComment}</span>
                     <textarea className="ax-textarea" rows={2} value={arrivalComment} onChange={e => setArrivalComment(e.target.value)} />
                   </label>
-                  <button className="ax-btn" onClick={saveArrivalEvidence} disabled={busy || (!arrivalFile && !arrivalComment.trim())}>{strings.arrivalSave}</button>
+                  <button className="btn btn-primary btn-touch" onClick={saveArrivalEvidence} disabled={busy || (!arrivalFile && !arrivalComment.trim())}>{strings.arrivalSave}</button>
                 </div>
               )}
             </div>
@@ -892,7 +892,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             <input className="ax-input" style={{ flex: 1, minInlineSize: 220 }} value={exceptionNote}
               onChange={e => setExceptionNote(e.target.value)} placeholder={strings.exceptionPlaceholder} />
-            <button className="ax-btn" onClick={reportException} disabled={busy || !exceptionNote.trim() || (!live && !checkin)}>{strings.exceptionSend}</button>
+            <button className="btn btn-primary btn-touch" onClick={reportException} disabled={busy || !exceptionNote.trim() || (!live && !checkin)}>{strings.exceptionSend}</button>
           </div>
         </div>
       )}
@@ -901,7 +901,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cancelHeading}</h4>
         <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.cancelCaption}</p>
         {cancelRequested ? (
-          <span className="ax-lozenge ax-lozenge--warning">{strings.cancelRequestedChip}</span>
+          <span className="badge badge-warning">{strings.cancelRequestedChip}</span>
         ) : reasons.length === 0 ? (
           <p className="t-caption" style={{ color: "var(--ax-color-critical)" }}>{strings.cancelReasonsMissing}</p>
         ) : (
@@ -917,7 +917,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               <input className="ax-input" type="file" accept="image/*" onChange={e => setCancelFile(e.target.files?.[0] ?? null)} />
             </label>
             <div className="row" style={{ justifyContent: "flex-end" }}>
-              <button className="ax-btn ax-btn--danger" onClick={submitCancellation} disabled={busy || !cancelReason}>{strings.cancelSubmit}</button>
+              <button className="btn btn-danger btn-touch" onClick={submitCancellation} disabled={busy || !cancelReason}>{strings.cancelSubmit}</button>
             </div>
           </div>
         )}
@@ -927,12 +927,12 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.returnHeading}</h4>
         <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.returnCaption}</p>
         {returnRequested ? (
-          <span className="ax-lozenge ax-lozenge--warning">{strings.returnRequestedChip}</span>
+          <span className="badge badge-warning">{strings.returnRequestedChip}</span>
         ) : (
           <div className="row" style={{ gap: 8, alignItems: "flex-start", flexWrap: "wrap" }}>
             <textarea className="ax-textarea" style={{ flex: 1, minInlineSize: 220 }} rows={2} value={returnReason}
               onChange={e => setReturnReason(e.target.value)} placeholder={strings.returnPlaceholder} />
-            <button className="ax-btn" onClick={submitReturn} disabled={busy || !returnReason.trim()}>{strings.returnSubmit}</button>
+            <button className="btn btn-primary btn-touch" onClick={submitReturn} disabled={busy || !returnReason.trim()}>{strings.returnSubmit}</button>
           </div>
         )}
       </div>

@@ -246,7 +246,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   };
   return (
     <Shell current="/planning" title={t("plan.bulk.title", "Bulk planning — criteria & targeting")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.bulk.context", "SCR-WEB-110 · AND/OR criteria builder")}</span>}>
+      context={<span className="badge badge-info">{t("plan.bulk.context", "SCR-WEB-110 · AND/OR criteria builder")}</span>}>
       {ctWasInvalid && (
         <div className="ax-banner ax-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>
           <strong>{t("plan.bulk.invalidCt.title", "Criteria could not be read")}</strong>

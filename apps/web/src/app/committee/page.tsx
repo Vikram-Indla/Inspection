@@ -14,7 +14,7 @@ export default async function CommitteePage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_DECISION_DOSSIER, MODES, "off") !== "on") {
     return (
-      <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="ax-lozenge ax-lozenge--warning">CD-049 · REQ-0128</span>}>
+      <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-warning">CD-049 · REQ-0128</span>}>
         <NotYetBoundary title={t("cmte.title", "Committee & signatures")} consequence={t("cmte.off", "The committee decision dossier is not enabled here. PKI/EBDA verification is held.")}
           seam="FEATURE_DECISION_DOSSIER=off + PKI/EBDA held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -28,7 +28,7 @@ export default async function CommitteePage() {
   const error = e1 || e2;
   if (error) console.error("[committee] load", error);
   return (
-    <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="ax-lozenge ax-lozenge--info">CD-049 · REQ-0128..0136</span>}>
+    <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-info">CD-049 · REQ-0128..0136</span>}>
       <div className="ax-banner"><div><strong>{t("cmte.banner.title", "Signature & verification.")}</strong> {t("cmte.banner.body", "Signature and refusal are distinct facts; queued is not delivered. Verification is never “verified” without a provider — PKI/EBDA is held. Acknowledgement is not a signature.")}</div></div>
       <RecordSignature strings={{
         record: t("cmte.record", "Record signature act"), recording: t("cmte.recording", "Recording…"),
@@ -42,7 +42,7 @@ export default async function CommitteePage() {
       {(acts ?? []).map((a) => (
         <div key={a.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <div className="row" style={{ justifyContent: "space-between" }}>
-            <h3>{a.kind} · {a.outcome}</h3><span className="ax-lozenge ax-lozenge--warning">{a.verification_status}</span>
+            <h3>{a.kind} · {a.outcome}</h3><span className="badge badge-warning">{a.verification_status}</span>
           </div>
         </div>
       ))}

@@ -94,7 +94,7 @@ export default async function FieldFactory360({ params, searchParams }: {
 
   return (
     <Shell current="/field" title={crTitle}
-      context={<><span className="ax-lozenge ax-lozenge--info">SCR-IPAD · Factory 360</span><span className="ax-freshness">{t("f360.meta.source", "source")} {text(selected?.source_system ?? cr.source_system)} · {t("f360.meta.synced", "recorded")} {dt(selected?.source_synced_at ?? cr.source_synced_at)}</span></>}>
+      context={<><span className="badge badge-info">SCR-IPAD · Factory 360</span><span className="ax-freshness">{t("f360.meta.source", "source")} {text(selected?.source_system ?? cr.source_system)} · {t("f360.meta.synced", "recorded")} {dt(selected?.source_synced_at ?? cr.source_synced_at)}</span></>}>
       <div className={`ax-field-page ${styles.page}`} data-factory360-layout="ipad-field">
         {licenseError ? <div className="ax-banner ax-banner--warning" role="status">{t("f360.licenses.degraded", "Industrial-license data is temporarily degraded; CR identity remains available.")}</div> : null}
 
@@ -182,7 +182,7 @@ export default async function FieldFactory360({ params, searchParams }: {
             <p><strong className="numeric" style={{ fontSize: "2rem" }}>{currentCompliance.rate == null ? t("f360.compliance.notAvailable", "Not Available") : `${currentCompliance.rate}%`}</strong> <span className="t-caption">{currentCompliance.status === "available" ? `${currentCompliance.passed}/${currentCompliance.answered}` : t("f360.compliance.na", "No eligible approved scored answers")}{approvedTrend.length > 1 ? ` · ${t("f360.compliance.trend", "trend")} ${approvedTrend.map(row => `${row.compliance.rate}%`).join(" ← ")}` : ""}</span></p>
             {reports.length ? <div className="ax-tablewrap"><table className="ax-table"><thead><tr><th scope="col">{t("f360.report.number", "Inspection")}</th><th scope="col">{t("common.status", "Status")}</th><th scope="col">{t("f360.report.version", "Version")}</th><th scope="col">{t("f360.report.compliance", "Compliance")}</th><th scope="col" /></tr></thead><tbody>{reports.map(report => {
               const latest = latestSubmission(report); const compliance = reportCompliance[report.id];
-              return <tr key={report.id}><td><bdi>{text(report.inspection_no ?? report.id.slice(0, 8))}</bdi><br /><span className="t-caption numeric">{dt(report.submitted_at ?? report.started_at)}</span></td><td><span className="ax-lozenge ax-lozenge--info">{label(report.status)}</span></td><td>{latest ? `v${latest.version_number}` : t("f360.report.notSubmitted", "not submitted")}</td><td className="numeric">{compliance?.rate == null ? "—" : `${compliance.rate}%`}</td><td><a className="ax-link" href={`/reports/inspection/${report.id}`}>{t("f360.report.open", "Open")}</a></td></tr>;
+              return <tr key={report.id}><td><bdi>{text(report.inspection_no ?? report.id.slice(0, 8))}</bdi><br /><span className="t-caption numeric">{dt(report.submitted_at ?? report.started_at)}</span></td><td><span className="badge badge-info">{label(report.status)}</span></td><td>{latest ? `v${latest.version_number}` : t("f360.report.notSubmitted", "not submitted")}</td><td className="numeric">{compliance?.rate == null ? "—" : `${compliance.rate}%`}</td><td><a className="ax-link" href={`/reports/inspection/${report.id}`}>{t("f360.report.open", "Open")}</a></td></tr>;
             })}</tbody></table></div> : <p className="t-caption">{t("f360.reports.empty", "No inspection reports are available for the selected plant.")}</p>}
           </div>
         </details>
@@ -202,7 +202,7 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Risk + AI explanation */}
         <details className={`ax-surface ${styles.section}`}>
-          <summary><span>{t("f360.risk.heading", "Saved risk")}</span>{permissions["view_risk_details"] ? badge(riskResult.error, riskHistory, !!factoryId) : <span className="ax-lozenge">{t("f360.restricted", "restricted")}</span>}</summary>
+          <summary><span>{t("f360.risk.heading", "Saved risk")}</span>{permissions["view_risk_details"] ? badge(riskResult.error, riskHistory, !!factoryId) : <span className="badge">{t("f360.restricted", "restricted")}</span>}</summary>
           <div className={styles.sectionBody}>
             {!permissions["view_risk_details"] ? <p className="t-caption">{t("f360.risk.restricted", "Risk detail requires Factory Risk permission.")}</p> : <>
               <p><strong className="numeric" style={{ fontSize: "2rem" }}>{text(factory?.risk_score)}</strong> · {label(factory?.risk_band)}</p>
@@ -250,14 +250,14 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Documents & media */}
         <details className={`ax-surface ${styles.section}`}>
-          <summary><span>{t("f360.documents.heading", "Documents & factory media")}</span>{permissions["view_factory_documents"] ? badge(docsResult.error || mediaResult.error, [...docs, ...officialMedia, ...linkedEvidence], !!factoryId) : <span className="ax-lozenge">{t("f360.restricted", "restricted")}</span>}</summary>
+          <summary><span>{t("f360.documents.heading", "Documents & factory media")}</span>{permissions["view_factory_documents"] ? badge(docsResult.error || mediaResult.error, [...docs, ...officialMedia, ...linkedEvidence], !!factoryId) : <span className="badge">{t("f360.restricted", "restricted")}</span>}</summary>
           <div className={styles.sectionBody}>
             {!permissions["view_factory_documents"] ? <p className="t-caption">{t("f360.documents.restricted", "Document metadata requires Factory Documents permission.")}</p> : <>
               {docs.length ? <ul>{docs.map(doc => <li key={doc.id}>{label(doc.business_category ?? doc.doc_type)} · {doc.title} · <bdi>{text(doc.reference_no)}</bdi> {permissions["download_factory_documents"] && downloadUrls[doc.id] ? <a className="ax-link" href={downloadUrls[doc.id]} download>{t("common.download", "Download")}</a> : <span className="t-caption">{permissions["download_factory_documents"] ? t("f360.download.unavailable", "file unavailable") : t("f360.download.restricted", "download restricted")}</span>}</li>)}</ul> : <p className="t-caption">{t("f360.documents.empty", "No source-backed document metadata is available.")}</p>}
               {officialMedia.some(asset => mediaUrls[asset.id]) && <><h3>{t("f360.media.official", "Official factory gallery")}</h3><div className={styles.mediaGrid}>{officialMedia.filter(asset => mediaUrls[asset.id]).map(asset => <figure key={asset.id}><img src={mediaUrls[asset.id]} alt={asset.title ?? t("f360.media.alt", "Official factory image")} /><figcaption className="t-caption">{asset.title ?? label(asset.category)}</figcaption></figure>)}</div></>}
               <p className="t-caption">{t("f360.media.boundary", "Only official factory/profile media appears here. Inspection evidence remains linked to its inspection report and is never merged into this gallery.")}</p>
               <h3>{t("f360.media.evidence", "Linked inspection evidence")}</h3>
-              {linkedEvidence.length ? <ul>{linkedEvidence.map(asset => <li key={asset.id}><span className="ax-lozenge ax-lozenge--info">{label(asset.category)}</span> {asset.title ?? text(asset.evidence_id)} · {dt(asset.captured_at)} {asset.inspection_id ? <a className="ax-link" href={`/reports/inspection/${asset.inspection_id}`}>{t("f360.media.origin", "origin report")}</a> : null} {asset.evidence_id ? <a className="ax-link" href={`/evidence-ocr?evidence=${asset.evidence_id}`}>{t("f360.media.ocr", "Contextual OCR")}</a> : null}</li>)}</ul> : <p className="t-caption">{t("f360.media.evidenceEmpty", "No linked inspection, arrival or violation evidence is visible in your scope.")}</p>}
+              {linkedEvidence.length ? <ul>{linkedEvidence.map(asset => <li key={asset.id}><span className="badge badge-info">{label(asset.category)}</span> {asset.title ?? text(asset.evidence_id)} · {dt(asset.captured_at)} {asset.inspection_id ? <a className="ax-link" href={`/reports/inspection/${asset.inspection_id}`}>{t("f360.media.origin", "origin report")}</a> : null} {asset.evidence_id ? <a className="ax-link" href={`/evidence-ocr?evidence=${asset.evidence_id}`}>{t("f360.media.ocr", "Contextual OCR")}</a> : null}</li>)}</ul> : <p className="t-caption">{t("f360.media.evidenceEmpty", "No linked inspection, arrival or violation evidence is visible in your scope.")}</p>}
             </>}
           </div>
         </details>
@@ -282,9 +282,9 @@ export default async function FieldFactory360({ params, searchParams }: {
         {/* Sticky field action bar */}
         <div className={`ax-surface ${styles.actionBar}`} role="group" aria-label={t("common.actions", "Actions")}>
           {factoryId && (factory?.official_lat != null) && <a className="ax-btn ax-btn--field" href={`geo:${factory.official_lat},${factory.official_lng}?q=${factory.official_lat},${factory.official_lng}(${encodeURIComponent(factory.name)})`}>{t("f360.actions.openMap", "Open map")}</a>}
-          {permissions["create_inspection"] && factoryId && <a className="ax-btn ax-btn--prominent" href={`/planning/immediate?factory=${factoryId}&cr=${cr.id}&license=${selected?.id ?? ""}&returnTo=${encodeURIComponent(withLicense(selected?.id))}`}>{t("f360.actions.createInspection", "Create inspection")}</a>}
+          {permissions["create_inspection"] && factoryId && <a className="btn btn-primary btn-lg btn-touch" href={`/planning/immediate?factory=${factoryId}&cr=${cr.id}&license=${selected?.id ?? ""}&returnTo=${encodeURIComponent(withLicense(selected?.id))}`}>{t("f360.actions.createInspection", "Create inspection")}</a>}
           {permissions["export_factory"] && <Factory360ExportButton label={t("f360.actions.exportPdf", "Export / share PDF")} />}
-          {safeReturn && <a className="ax-btn ax-btn--subtle" href={safeReturn}>{t("f360.actions.return", "Return to visit")}</a>}
+          {safeReturn && <a className="btn btn-ghost btn-touch" href={safeReturn}>{t("f360.actions.return", "Return to visit")}</a>}
         </div>
       </div>
       {tabs}

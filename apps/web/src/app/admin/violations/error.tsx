@@ -15,7 +15,7 @@ export default function ViolationsError({ reset }: { error: Error & { digest?: s
         <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
           <h1 id="violations-error-title" ref={headingRef} tabIndex={-1}>{copy.title}</h1>
           <p>{copy.body}</p>
-          <button type="button" className="ax-btn ax-btn--prominent" onClick={reset}>{copy.retry}</button>
+          <button type="button" className="btn btn-primary btn-lg btn-touch" onClick={reset}>{copy.retry}</button>
         </div>
       </section>
     </main>

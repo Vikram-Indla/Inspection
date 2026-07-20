@@ -46,7 +46,7 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
       {state.error && <div ref={errorRef} tabIndex={-1} className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
       {decision === "approve" && <div className="ax-banner ax-banner--warning"><div><strong>{strings.approveWarnTitle}</strong> {strings.approveWarnBody}</div></div>}
       {decision === "reject" && <div className="ax-banner ax-banner--critical"><div><strong>{strings.rejectWarnTitle}</strong> {strings.rejectWarnBody}</div></div>}
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.recording : strings.confirm.replace("{decision}", strings.decisions[decision] ?? decision)}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.recording : strings.confirm.replace("{decision}", strings.decisions[decision] ?? decision)}</button>
       <p className="t-caption">{strings.audited}</p>
     </form>
   );

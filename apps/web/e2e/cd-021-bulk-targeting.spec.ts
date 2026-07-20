@@ -71,7 +71,7 @@ test.describe("CD-021 evidence table + provenance (FND-011, FND-013, M02-012)", 
     await expect(page.getByRole("columnheader", { name: /Source \/ synced/i })).toBeVisible();
     await expect(page.getByRole("columnheader", { name: /Data quality/i })).toBeVisible();
     // FND-011: eligibility status is not color-only — a glyph precedes the label
-    const elig = page.locator(".ax-lozenge", { hasText: /eligible|duplicate/i }).first();
+    const elig = page.locator(".ax-lozenge, .badge", { hasText: /eligible|duplicate/i }).first();
     await expect(elig).toContainText(/[✓⛔]/);
   });
 });

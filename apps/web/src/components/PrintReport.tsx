@@ -9,7 +9,7 @@ export default function PrintReport({ strings, backHref }: { strings: PrintRepor
       <a className="ax-link" href={backHref}>← {strings.back}</a>
       <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-200)" }}>
         <span className="t-caption">{strings.hint}</span>
-        <button className="ax-btn ax-btn--prominent" onClick={() => window.print()}>{strings.print}</button>
+        <button className="btn btn-primary btn-lg btn-touch" onClick={() => window.print()}>{strings.print}</button>
       </div>
     </div>
   );

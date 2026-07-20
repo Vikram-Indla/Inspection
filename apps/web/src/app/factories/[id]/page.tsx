@@ -237,7 +237,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   return (
     <Shell current="/factories" title={`${f.name} — ${identity(f.factory_code)}`}
       context={<>
-        <span className="ax-lozenge ax-lozenge--info">SB11</span>
+        <span className="badge badge-info">SB11</span>
         <span className={`ax-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</span>
         <span className="ax-freshness">{t("f360.meta.source", "source")} {f.source} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
       </>}>
@@ -247,7 +247,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           yet (incident/challenge concepts don't exist — see reconciliation J-12/J-19);
           only wiring the one real, existing action rather than fabricating dead links. */}
       <div className="row" style={{ justifyContent: "flex-end", marginBlockEnd: "var(--ax-space-200)" }}>
-        <a className="ax-btn ax-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>
+        <a className="btn btn-secondary btn-touch" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>
       </div>
 
       <div className="cd-w3">
@@ -355,7 +355,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             </table></div> : <p className="t-caption">{t("f360.risk.noHistory", "No risk calculation history is available.")}</p>}
             <h5 style={{ marginBlockStart: "var(--ax-space-200)" }}>{t("f360.risk.relatedViolations", "Related violations")}</h5>
             {canSeeSensitiveHistory && sortedVisits.some(v => (v.inspections?.violations.length ?? 0) > 0)
-              ? <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>{sortedVisits.flatMap(v => v.inspections?.violations ?? []).map((x, i) => <span key={`${x.violation_codes.code}-${i}`} className="ax-lozenge ax-lozenge--critical">{x.violation_codes.code} · {x.violation_codes.title}</span>)}</div>
+              ? <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>{sortedVisits.flatMap(v => v.inspections?.violations ?? []).map((x, i) => <span key={`${x.violation_codes.code}-${i}`} className="badge badge-critical">{x.violation_codes.code} · {x.violation_codes.title}</span>)}</div>
               : <p className="t-caption">{canSeeSensitiveHistory ? t("f360.risk.noRelatedViolations", "No related violations are recorded.") : t("f360.risk.violationsRestricted", "Violation detail is restricted for this role.")}</p>}
           </section>
 
@@ -387,7 +387,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                               {ins.submission_versions.length > 0 && <> · <a className="ax-link" href={`/reports/inspection/${ins.id}`}>{t("f360.hist.report", "report")}</a></>}
                             </p>
                             {canSeeSensitiveHistory && ins.violations.length > 0 && (
-                              <p className="cd-tl__src">{t("f360.tl.violations", "findings")} {ins.violations.map(x => <span key={x.violation_codes.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>)}</p>
+                              <p className="cd-tl__src">{t("f360.tl.violations", "findings")} {ins.violations.map(x => <span key={x.violation_codes.code} className="badge badge-critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>)}</p>
                             )}
                             {canSeeSensitiveHistory && ins.action_forms.length > 0 && (
                               <p className="cd-tl__src">{t("f360.hist.th.actions", "Actions")} {ins.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ")}</p>
@@ -449,12 +449,12 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                         <td className="ax-td-num numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</td>
                         <td><span className="ax-lozenge ax-lozenge--plan">{enumLabel(v.planning_status)}</span></td>
                         <td><span className="ax-lozenge ax-lozenge--ops">{enumLabel(v.operational_state)}</span></td>
-                        <td>{ins ? <span className="ax-lozenge ax-lozenge--info">{enumLabel(ins.status)}</span> : <span className="t-caption">—</span>}</td>
+                        <td>{ins ? <span className="badge badge-info">{enumLabel(ins.status)}</span> : <span className="t-caption">—</span>}</td>
                         <td>
                           {ins?.submission_versions.map(s => <span key={s.version_number} className="ax-version" style={{ marginInlineEnd: 4 }}>v{s.version_number}</span>)}
                           {ins && ins.submission_versions.length > 0 && <a className="ax-link" href={`/reports/inspection/${ins.id}`}>{t("f360.hist.report", "report")}</a>}
                         </td>
-                        <td>{canSeeSensitiveHistory ? ins?.violations.map(x => <span key={x.violation_codes.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>) : <span className="t-caption">restricted</span>}</td>
+                        <td>{canSeeSensitiveHistory ? ins?.violations.map(x => <span key={x.violation_codes.code} className="badge badge-critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>) : <span className="t-caption">restricted</span>}</td>
                         <td className="t-caption">{canSeeSensitiveHistory ? ins?.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ") : "restricted"}</td>
                         <td>{canSeeSensitiveHistory ? ins?.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : "ax-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>{r.decision ? enumLabel(r.decision) : null}</span>) : <span className="t-caption">restricted</span>}</td>
                       </tr>
@@ -482,7 +482,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                     const badge = VALIDITY_BADGE[docValidity(d.valid_to)];
                     return (
                       <tr key={d.id}>
-                        <td><span className="ax-lozenge ax-lozenge--info">{docTypeLabel(d.doc_type)}</span></td>
+                        <td><span className="badge badge-info">{docTypeLabel(d.doc_type)}</span></td>
                         <td><strong>{d.title}</strong></td>
                         <td className="numeric">{d.reference_no ?? "—"}</td>
                         <td className="ax-td-num numeric">{d.valid_from ?? "—"}</td>
@@ -522,7 +522,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                     <td>{r.role_title ?? "—"}</td>
                     {!maskContacts && <><td className="numeric">{r.phone ?? "—"}</td><td>{r.email ?? "—"}</td></>}
                     <td>
-                      {r.is_primary && <span className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 4 }}>{t("f360.reps.primary", "primary")}</span>}
+                      {r.is_primary && <span className="badge badge-info" style={{ marginInlineEnd: 4 }}>{t("f360.reps.primary", "primary")}</span>}
                       <span className={`ax-lozenge ${r.active ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{r.active ? t("f360.reps.active", "active") : t("f360.reps.inactive", "inactive")}</span>
                     </td>
                     <td><ToggleRepActive repId={r.id} factoryId={f.id} active={r.active} strings={toggleStrings} /></td>
@@ -551,7 +551,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                     <td className="ax-td-num numeric">{p.hs_code ?? "—"}</td>
                     <td>{p.unit ?? "—"}</td>
                     <td className="ax-td-num numeric">{p.annual_capacity != null ? num.format(p.annual_capacity) : "—"}</td>
-                    <td>{p.is_primary && <span className="ax-lozenge ax-lozenge--info">{t("f360.prod.primary", "primary")}</span>}</td>
+                    <td>{p.is_primary && <span className="badge badge-info">{t("f360.prod.primary", "primary")}</span>}</td>
                   </tr>
                 ))}</tbody>
               </table></div>

@@ -175,7 +175,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
               <div>
                 <h4>{selected.name}</h4>
                 <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-100)" }}>
-                  <span className="ax-lozenge ax-lozenge--info">{selected.factory_code}</span>
+                  <span className="badge badge-info">{selected.factory_code}</span>
                   <span className={lozengeFor(selected.risk_band)}>
                     {bandLabel(selected.risk_band)}{selected.risk_score != null ? ` · ${selected.risk_score}` : ""}
                   </span>
@@ -204,9 +204,9 @@ export default function GisStudio({ factories, gis, strings: s }: {
                   <p className="ax-field__hint">{s.radiusHint} (<span className="numeric">{defaultFence}</span> m)</p>
                 </div>
                 <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
-                  <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.saving : s.save}</button>
+                  <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.saving : s.save}</button>
                   {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-                  {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.saved}</span>}
+                  {state.ok && <span className="badge badge-compliant">{s.saved}</span>}
                 </div>
               </form>
             </>
@@ -223,10 +223,10 @@ export default function GisStudio({ factories, gis, strings: s }: {
             </table>
             {/* Legend with live counts of the pins currently on the map */}
             <div className="row" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
-              <span className="ax-lozenge ax-lozenge--critical">{s.bandHigh} <span className="numeric">{bandCounts.high}</span></span>
-              <span className="ax-lozenge ax-lozenge--warning">{s.bandMedium} <span className="numeric">{bandCounts.medium}</span></span>
-              <span className="ax-lozenge ax-lozenge--success">{s.bandLow} <span className="numeric">{bandCounts.low}</span></span>
-              {bandCounts.unbanded > 0 && <span className="ax-lozenge ax-lozenge--info">{s.bandUnbanded} <span className="numeric">{bandCounts.unbanded}</span></span>}
+              <span className="badge badge-critical">{s.bandHigh} <span className="numeric">{bandCounts.high}</span></span>
+              <span className="badge badge-warning">{s.bandMedium} <span className="numeric">{bandCounts.medium}</span></span>
+              <span className="badge badge-compliant">{s.bandLow} <span className="numeric">{bandCounts.low}</span></span>
+              {bandCounts.unbanded > 0 && <span className="badge badge-info">{s.bandUnbanded} <span className="numeric">{bandCounts.unbanded}</span></span>}
               <span className="t-caption">{s.legendCaption}</span>
             </div>
           </div>

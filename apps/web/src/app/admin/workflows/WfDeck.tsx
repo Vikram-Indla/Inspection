@@ -109,7 +109,7 @@ export function WfDeck({ payload, strings }: Props) {
             {shown.map(({ t, i }) => (
               <tr key={i} aria-selected={selectedIdx === i} onClick={() => setSelectedIdx(i)} style={{ cursor: "pointer" }}>
                 <td>{t.from} <span aria-hidden="true">→</span> {t.to} <span className="t-caption">({t.trigger})</span></td>
-                <td>{t.actor ? t.actor : <span className="ax-lozenge ax-lozenge--critical">✕ {strings.actor}</span>}</td>
+                <td>{t.actor ? t.actor : <span className="badge badge-critical">✕ {strings.actor}</span>}</td>
                 <td className="t-caption">{(t.guards ?? []).join(", ") || strings.none}</td>
                 <td className="t-caption">
                   {(t.fx ?? []).length === 0 ? strings.none : (t.fx ?? []).map((f, k) => (

@@ -396,8 +396,8 @@
   --ax-shadow-overlay: var(--shadow-lg);
 
   /* Control metrics (field surfaces raise --control-h-lg to 52 via density) */
-  --ax-control-height:           var(--control-h-lg);
-  --ax-control-height-prominent: var(--touch-target);
+  --ax-control-height:           var(--touch-target); /* restores original 44px floor (was 40 via control-h-lg) */
+  --ax-control-height-prominent: 48px;                 /* restores original 48px; no SAQEEL token matches exactly */
   --ax-control-height-field:     52px;  /* legacy field controls expected an unconditional 52px touch target */
   --ax-focus-ring: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--focus-ring);
 

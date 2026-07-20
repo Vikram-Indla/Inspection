@@ -15,7 +15,7 @@ export default async function Access() {
   if (error) console.error("[admin access] load failed", error);
   return (
     <Shell current="/admin/access" title={t("admin.access.title", "Roles & permissions")}
-      context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-090 · RBAC-001..014</span>}>
+      context={<span className="badge badge-info">SCR-ADM-090 · RBAC-001..014</span>}>
       <div className="ax-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load roster. Nothing was changed. Try again.")}</strong></div></div>}
       <div className="ax-tablewrap"><table className="ax-table">

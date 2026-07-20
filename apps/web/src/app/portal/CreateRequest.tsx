@@ -10,9 +10,9 @@ export function CreateRequest({ factoryId, strings: s }: { factoryId: string | n
       <input type="hidden" name="factory_id" value={factoryId} />
       <div className="ax-field"><label className="ax-field__label" htmlFor="portal-request-type">{s.type}</label><input className="ax-input" name="request_type" id="portal-request-type" defaultValue="correction" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="portal-request-subject">{s.subject}</label><input className="ax-input" name="subject" id="portal-request-subject" /></div>
-      <button className="ax-btn" disabled={pending}>{pending ? s.creating : s.create}</button>
+      <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.created}</span>}
+      {state.ok && <span className="badge badge-compliant">{s.created}</span>}
     </form>
   );
 }

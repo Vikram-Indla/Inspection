@@ -119,7 +119,7 @@ test.describe("TASK-DASH-KPI-SEED-001", () => {
 
     const action = page.locator(".ax-surface").filter({ has: page.getByRole("heading", { name: /Corrective actions queue/ }) });
     await expect(action.getByText("KPI Verify — Executing overdue").first()).toBeVisible();
-    await expect(action.locator(".ax-lozenge").filter({ hasText: /^blocking$/ }).first()).toBeVisible();
+    await expect(action.locator(".ax-lozenge, .badge").filter({ hasText: /^blocking$/ }).first()).toBeVisible();
 
     const geo = page.locator(".ax-surface").filter({ has: page.getByRole("heading", { name: /Location events/ }) });
     await expect(geo.getByText("checkin").first()).toBeVisible();

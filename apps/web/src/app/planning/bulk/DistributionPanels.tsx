@@ -33,7 +33,7 @@ function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: D
             <li key={b.label} className="row"
               style={{ gap: "var(--ax-space-150)", alignItems: "center", outline: isFocused ? "2px solid var(--ax-color-primary)" : undefined, borderRadius: "var(--ax-radius-small)" }}>
               <span style={{ minInlineSize: 120, flexShrink: 0 }}>
-                {b.unknown ? <span className="ax-lozenge ax-lozenge--warning">? {strings.unknown}</span> : <bdi>{b.label}</bdi>}
+                {b.unknown ? <span className="badge badge-warning">? {strings.unknown}</span> : <bdi>{b.label}</bdi>}
               </span>
               <span aria-hidden="true" style={{
                 blockSize: 8, inlineSize: `${pct}%`, minInlineSize: 2,

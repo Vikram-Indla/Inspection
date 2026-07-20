@@ -199,17 +199,17 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   };
   return (
     <Shell current="/visits" title={t("visit.list.title", "Visit management")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("visit.list.context", "SCR-WEB-200/210 · RLS-scoped")}</span>}>
+      context={<span className="badge badge-info">{t("visit.list.context", "SCR-WEB-200/210 · RLS-scoped")}</span>}>
       {/* FIX WAVE F4 — M02-038 calendar + M02-018/037 workload entry points.
           CD-026 — the Map lens is HANDOFF_BLOCKED_MAP: no route, provider or
           coordinate wiring exists, so it is shown UNAVAILABLE (disabled) and the
           authoritative list below is the working equivalent — never faked. */}
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--ax-space-150)" }}>
         <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-          <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits">{t("visit.views.list", "List")}</a>
-          <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
-          <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
-          <a className="ax-btn ax-btn--subtle" href="/visits/map">{t("visit.views.map", "Map")}</a>
+          <a className="btn btn-secondary btn-touch" aria-current="page" href="/visits">{t("visit.views.list", "List")}</a>
+          <a className="btn btn-ghost btn-touch" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
+          <a className="btn btn-ghost btn-touch" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
+          <a className="btn btn-ghost btn-touch" href="/visits/map">{t("visit.views.map", "Map")}</a>
         </div>
         <span className="t-caption numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
@@ -217,7 +217,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       {rows.length === 0 ? (
         <EmptyState glyph="🗓" title={t("visit.list.empty", "No visits in your scope")}
           body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
-          <a className="ax-btn" href="/planning">{t("visit.list.createPlan", "Create a plan")}</a>
+          <a className="btn btn-primary btn-touch" href="/planning">{t("visit.list.createPlan", "Create a plan")}</a>
         </EmptyState>
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}

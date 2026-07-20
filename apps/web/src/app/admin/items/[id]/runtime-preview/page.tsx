@@ -108,8 +108,8 @@ export default async function InspectorRuntimePreview({
   ].filter(Boolean) as string[];
 
   return (
-    <Shell current="/admin/items" title="Inspector Runtime Preview" context={<span className="ax-lozenge ax-lozenge--info">Read-only · configuration verification</span>}>
-      <nav className="cmp-library-tabs" aria-label="Compliance Library"><a className="ax-btn ax-btn--secondary ax-link" href="/admin/regulations">Regulations</a><a className="ax-btn ax-btn--prominent" href="/admin/items" aria-current="page">Inspection Items</a></nav>
+    <Shell current="/admin/items" title="Inspector Runtime Preview" context={<span className="badge badge-info">Read-only · configuration verification</span>}>
+      <nav className="cmp-library-tabs" aria-label="Compliance Library"><a className="btn btn-secondary ax-link btn-touch" href="/admin/regulations">Regulations</a><a className="btn btn-primary btn-lg btn-touch" href="/admin/items" aria-current="page">Inspection Items</a></nav>
       <div className="ax-banner" role="note"><strong>Control-plane preview only.</strong> This page reads approved Compliance configuration and immutable package snapshots. It does not author, publish, or change the Inspector application.</div>
       {useError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>Package usage unavailable.</strong> Exact runtime placement is unknown; the item itself is shown from the live library.</div> : null}
 
@@ -118,7 +118,7 @@ export default async function InspectorRuntimePreview({
         <span className={`ax-lozenge ${item.active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{item.active ? "Operational" : "Inactive"}</span>
       </section>
 
-      {uses.length > 0 ? <form className="ax-surface cmp-runtime-selector" method="get"><label className="ax-field"><span className="ax-field__label">Published package/version context</span><select className="ax-select" name="package_version" defaultValue={selectedUse?.package_version_id}>{uses.map(use => <option key={use.package_version_id} value={use.package_version_id}>{use.package_versions?.packages?.code ?? "Package"} · {use.package_versions?.version_label ?? "version unknown"} · {use.package_versions?.status ?? "status unknown"}</option>)}</select></label><button className="ax-btn ax-btn--secondary" type="submit">Preview exact version</button></form> : null}
+      {uses.length > 0 ? <form className="ax-surface cmp-runtime-selector" method="get"><label className="ax-field"><span className="ax-field__label">Published package/version context</span><select className="ax-select" name="package_version" defaultValue={selectedUse?.package_version_id}>{uses.map(use => <option key={use.package_version_id} value={use.package_version_id}>{use.package_versions?.packages?.code ?? "Package"} · {use.package_versions?.version_label ?? "version unknown"} · {use.package_versions?.status ?? "status unknown"}</option>)}</select></label><button className="btn btn-secondary btn-touch" type="submit">Preview exact version</button></form> : null}
 
       <section className="ax-surface cmp-runtime-card" aria-labelledby="runtime-config-heading"><h3 id="runtime-config-heading">Published execution configuration</h3><dl className="cmp-runtime-facts">
         <Fact label="Regulation">{item.regulation_clauses?.regulations ? `${item.regulation_clauses.regulations.code} — ${item.regulation_clauses.regulations.title}` : "Not configured"}</Fact>
@@ -126,7 +126,7 @@ export default async function InspectorRuntimePreview({
         <Fact label="Inspection Section">{show(textValue(section?.name) ?? textValue(section?.title))}</Fact>
         <Fact label="Clause">{show(item.regulation_clauses?.clause_ref)}</Fact>
         <Fact label="Response Type">{show(responseModel.type)}</Fact>
-        <Fact label="Response Values and evaluation mapping"><span className="cmp-runtime-values">{responses.length ? responses.map(value => <span className="ax-lozenge" key={value}>{value} → {show(objectValue(mapping[value.toLowerCase().replaceAll(" ", "_")]).result)}</span>) : "Not configured"}</span></Fact>
+        <Fact label="Response Values and evaluation mapping"><span className="cmp-runtime-values">{responses.length ? responses.map(value => <span className="badge" key={value}>{value} → {show(objectValue(mapping[value.toLowerCase().replaceAll(" ", "_")]).result)}</span>) : "Not configured"}</span></Fact>
         <Fact label="Mandatory status">{mandatory === null ? "Not configured" : boolLabel(mandatory)}</Fact>
         <Fact label="Evidence requirement">{boolLabel(evidenceRule.mandatory)}</Fact>
         <Fact label="Acceptable Evidence Types">{evidenceTypes.length ? evidenceTypes.join(", ") : "Not configured"}</Fact>

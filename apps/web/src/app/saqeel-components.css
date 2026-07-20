@@ -33,6 +33,11 @@
 .btn-icon { width: var(--control-h-md); padding: 0; }
 .btn-icon.btn-sm { width: var(--control-h-sm); }
 .btn-block { width: 100%; }
+/* Astryx migration: every .ax-btn (any color, unmodified size) carried a
+   universal >=44px touch-safe floor with no "small" variant. Applied
+   alongside color/size classes on migrated buttons so that floor survives;
+   does not touch the base .btn/.btn-sm sizing used by new SAQEEL components. */
+.btn-touch { min-height: var(--touch-target); }
 .btn svg { width: 16px; height: 16px; flex: none; }
 [dir="rtl"] .btn svg[data-directional] { transform: scaleX(-1); }
 .btn-group { display: inline-flex; }

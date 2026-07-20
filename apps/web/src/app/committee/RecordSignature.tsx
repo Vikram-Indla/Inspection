@@ -10,9 +10,9 @@ export function RecordSignature({ strings: s }: { strings: { record: string; rec
         <select className="ax-input" name="kind" id="committee-signature-kind"><option value="signature">signature</option><option value="refusal">refusal</option></select></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="committee-signature-outcome">{s.outcome}</label>
         <select className="ax-input" name="outcome" id="committee-signature-outcome"><option value="captured">captured</option><option value="refused">refused</option><option value="queued">queued</option><option value="failed">failed</option></select></div>
-      <button className="ax-btn" disabled={pending}>{pending ? s.recording : s.record}</button>
+      <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.recording : s.record}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.recorded}</span>}
+      {state.ok && <span className="badge badge-compliant">{s.recorded}</span>}
     </form>
   );
 }

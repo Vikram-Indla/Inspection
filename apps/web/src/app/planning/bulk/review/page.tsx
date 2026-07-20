@@ -226,7 +226,7 @@ export default async function BulkReview() {
 
   return (
     <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.review.context", "SCR-WEB-150 · review · publish")}</span>}>
+      context={<span className="badge badge-info">{t("plan.review.context", "SCR-WEB-150 · review · publish")}</span>}>
       <ReviewClient strings={strings} />
     </Shell>
   );

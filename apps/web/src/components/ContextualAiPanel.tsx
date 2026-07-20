@@ -20,7 +20,7 @@ export default function ContextualAiPanel({ surface, title, description, context
           <h3 id={`${surface}-heading`}>{title}</h3>
           <p className="t-caption">{description}</p>
         </div>
-        <span className="ax-lozenge ax-lozenge--info">{advisoryLabel}</span>
+        <span className="badge badge-info">{advisoryLabel}</span>
       </div>
       <form action={offline ? undefined : action} style={{ marginBlockStart: "var(--ax-space-200)" }}>
         <input type="hidden" name="surface" value={surface} />
@@ -31,7 +31,7 @@ export default function ContextualAiPanel({ surface, title, description, context
         {locale && <input type="hidden" name="locale" value={locale} />}
         <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
           <span className="t-caption">{evidenceLabel}: {evidenceRefs.join(" · ")}</span>
-          <button className="ax-btn" disabled={pending || offline}>{offline ? unavailableLabel : pending ? `${generateLabel}…` : generateLabel}</button>
+          <button className="btn btn-primary btn-touch" disabled={pending || offline}>{offline ? unavailableLabel : pending ? `${generateLabel}…` : generateLabel}</button>
         </div>
       </form>
       {state.error && <p role="alert" className="t-caption" style={{ color: "var(--ax-color-critical)", marginBlockStart: "var(--ax-space-150)" }}>{state.error.includes("unavailable") ? unavailableLabel : state.error}</p>}

@@ -265,7 +265,7 @@ export default async function Reviews() {
 
   return (
     <Shell current="/reviews" title={t("review.list.title", "Level 2 review queue")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("review.list.context", "SCR-WEB-300 · /reviews · RLS-scoped")}</span>}>
+      context={<span className="badge badge-info">{t("review.list.context", "SCR-WEB-300 · /reviews · RLS-scoped")}</span>}>
       {!authorized ? (
         <section className="ax-surface cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true">⛔</div>

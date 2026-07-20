@@ -28,7 +28,7 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
         </div>
         <form action={action}>
           <input type="hidden" name="evidence_id" value={row.id} />
-          <button className="ax-btn" disabled={pending}>{pending ? s.extracting : s.extract}</button>
+          <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.extracting : s.extract}</button>
         </form>
       </div>
       {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}

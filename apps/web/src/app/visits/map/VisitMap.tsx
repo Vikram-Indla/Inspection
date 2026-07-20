@@ -57,8 +57,8 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS }: { vis
           </select>
         </label>
         <div className="row" style={{ gap: 8 }}>
-          <span className="ax-lozenge ax-lozenge--info">{"● "}{s.factoryVisitLegend}</span>
-          <span className="ax-lozenge ax-lozenge--warning">{"● "}{s.inspectorLegend}</span>
+          <span className="badge badge-info">{"● "}{s.factoryVisitLegend}</span>
+          <span className="badge badge-warning">{"● "}{s.inspectorLegend}</span>
         </div>
       </div>
       <div className="ax-surface" style={{ blockSize: 520, overflow: "hidden", padding: 0 }} dir="ltr">

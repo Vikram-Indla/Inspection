@@ -283,7 +283,7 @@ export default async function Packages() {
   return (
     <Shell current="/admin/packages" title={t("admin.pkg.title", "Package library & designer")}
       context={<span className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
-        <span className="ax-lozenge ax-lozenge--info">SCR-ADM-030/031 · ENG-02</span>
+        <span className="badge badge-info">SCR-ADM-030/031 · ENG-02</span>
         <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
       </span>}>
       <div className={styles.pageStack}>
@@ -344,7 +344,7 @@ export default async function Packages() {
               <summary>
                 <span className={styles.packageHeading}>
                   <span><strong><bdi dir="ltr">{pkg.code}</bdi> — {pkg.title}</strong><br /><span className="t-caption">{pkg.scope ?? t("admin.pkg.scopeNone", "No scope recorded")}</span></span>
-                  <span className="ax-lozenge ax-lozenge--info">{versions.length} {t("admin.pkg.versions", "version(s)")}</span>
+                  <span className="badge badge-info">{versions.length} {t("admin.pkg.versions", "version(s)")}</span>
                 </span>
               </summary>
               <div className={styles.packageBody}>

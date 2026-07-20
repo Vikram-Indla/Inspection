@@ -161,7 +161,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
         {searching && registryUnavailable && (
           <div className="ax-banner ax-banner--critical" role="alert" style={{ marginBlockStart: "var(--ax-space-150)" }}>
             <div>{strings.registryUnavailable}</div>
-            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => router.refresh()}>{strings.retry}</button>
+            <button type="button" className="btn btn-secondary btn-touch" onClick={() => router.refresh()}>{strings.retry}</button>
           </div>
         )}
         {searching && !registryUnavailable && results.length === 0 && (
@@ -182,7 +182,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
                   <span className={`ax-lozenge ${f.grade === "exact" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>
                     {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
                   </span>
-                  {f.degraded && <span className="ax-lozenge ax-lozenge--critical">{strings.degradedBadge}</span>}
+                  {f.degraded && <span className="badge badge-critical">{strings.degradedBadge}</span>}
                   <span><strong>{f.name}</strong> · <bdi>{f.cr_number ?? "—"}</bdi>{f.license_number ? <> · <bdi>{f.license_number}</bdi></> : null}</span>
                 </label>
                 {factoryId === f.id && (
@@ -287,7 +287,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
       )}
 
       <div className="row" style={{ justifyContent: "flex-end" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending || !configUnlocked}>
+        <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !configUnlocked}>
           {pending ? strings.publishing : state.resumeId ? strings.retry : strings.publish}
         </button>
       </div>

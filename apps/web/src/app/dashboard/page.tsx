@@ -187,7 +187,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   };
   const refreshedAt = new Date(nowMs).toISOString().slice(0, 16).replace("T", " ");
   return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
-    context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-500 · DASH-001..016</span>}>
+    context={<span className="badge badge-info">SCR-WEB-500 · DASH-001..016</span>}>
     {failedSources.length > 0 && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
     <DashboardTabs locale={locale} view={view} params={currentParams} />
     <DashboardScope locale={locale} from={scope.fromDate} to={scope.toDate} region={region} refreshedAt={refreshedAt} />

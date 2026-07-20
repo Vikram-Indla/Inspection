@@ -29,7 +29,7 @@ export function StatusSelector({
     <div className="combo" ref={ref}>
       <button
         type="button"
-        className="btn btn-secondary"
+        className="btn btn-secondary btn-touch"
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}

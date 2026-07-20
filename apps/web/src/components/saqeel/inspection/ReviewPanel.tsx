@@ -66,12 +66,12 @@ export function ReviewPanel({
             </div>
             <div className="row" style={{ justifyContent: "flex-end", flexWrap: "wrap" }}>
               {onEscalate && (
-                <button className="btn btn-secondary" disabled={busy} onClick={onEscalate}>
+                <button className="btn btn-secondary btn-touch" disabled={busy} onClick={onEscalate}>
                   Escalate
                 </button>
               )}
               {onReject && (
-                <button className="btn btn-danger" disabled={busy || !reason} onClick={onReject}>
+                <button className="btn btn-danger btn-touch" disabled={busy || !reason} onClick={onReject}>
                   Reject
                 </button>
               )}

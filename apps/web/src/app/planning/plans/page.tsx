@@ -40,7 +40,7 @@ export default async function PlanRegister() {
   for (const p of plans) counts[p.status] = (counts[p.status] ?? 0) + 1;
   return (
     <Shell current="/planning" title={t("plan.register.title", "Plan register")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
+      context={<span className="badge badge-info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
       <div className="ax-kpi-row">
         {["draft", "published", "returned", "cancelled"].map(s => (
           <div key={s} className="ax-surface ax-kpi">
@@ -52,7 +52,7 @@ export default async function PlanRegister() {
       {plans.length === 0 ? (
         <EmptyState glyph="▦" title={t("plan.register.empty", "No plans yet")}
           body={t("plan.register.emptyDesc", "Bulk and single plans appear here the moment they are created (M01-002/034).")}>
-          <a className="ax-btn" href="/planning">{t("plan.register.createPlan", "Create a plan")}</a>
+          <a className="btn btn-primary btn-touch" href="/planning">{t("plan.register.createPlan", "Create a plan")}</a>
         </EmptyState>
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
@@ -69,7 +69,7 @@ export default async function PlanRegister() {
             {plans.map(p => (
               <tr key={p.id}>
                 <td className="numeric"><a className="ax-link" href={`/planning/plans/${p.id}`}><strong>{p.id.slice(0, 8)}</strong></a></td>
-                <td><span className="ax-lozenge ax-lozenge--info">{t(`enum.${p.method}`, p.method)}</span></td>
+                <td><span className="badge badge-info">{t(`enum.${p.method}`, p.method)}</span></td>
                 <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[p.status] ?? ""}`}>{t(`enum.${p.status}`, p.status)}</span></td>
                 <td>{p.profiles?.full_name ?? "—"}</td>
                 <td className="ax-td-num numeric">{fmt(p.created_at)}</td>

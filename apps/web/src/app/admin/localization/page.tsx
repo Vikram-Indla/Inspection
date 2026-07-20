@@ -78,7 +78,7 @@ export default async function Localization() {
     <Shell current="/admin/localization" title={t("l10n.title", "Localization")}
       context={
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-          <span className="ax-lozenge ax-lozenge--info">SCR-ADM-100 · SB19</span>
+          <span className="badge badge-info">SCR-ADM-100 · SB19</span>
           {locale === "ar"
             ? <a className="ax-link" href="/locale?set=en">English</a>
             : <a className="ax-link" href="/locale?set=ar" lang="ar">العربية</a>}

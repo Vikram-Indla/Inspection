@@ -36,12 +36,12 @@ export default async function VisitsMapPage() {
     }];
   });
   return (
-    <Shell current="/visits" title={t("visit.map.title", "Visit management — map")} context={<span className="ax-lozenge ax-lozenge--info">{t("visit.map.context", "MVP1-M02-039 · RLS-scoped")}</span>}>
+    <Shell current="/visits" title={t("visit.map.title", "Visit management — map")} context={<span className="badge badge-info">{t("visit.map.context", "MVP1-M02-039 · RLS-scoped")}</span>}>
       <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-        <a className="ax-btn ax-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
-        <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/map">{t("visit.views.map", "Map")}</a>
+        <a className="btn btn-ghost btn-touch" href="/visits">{t("visit.views.list", "List")}</a>
+        <a className="btn btn-ghost btn-touch" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
+        <a className="btn btn-ghost btn-touch" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
+        <a className="btn btn-secondary btn-touch" aria-current="page" href="/visits/map">{t("visit.views.map", "Map")}</a>
       </div>
       {error ? <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.map.error", "Map data is temporarily unavailable. Please try again.")}</div></div>
         : <VisitMap visits={rows} strings={{

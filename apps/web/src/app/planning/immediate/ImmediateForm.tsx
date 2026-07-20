@@ -290,7 +290,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4>{strings.locationDispatch}</h4>
           {mode === "registered" && factory?.official_lat != null && factory?.official_lng != null && (
-            <button type="button" className="ax-btn ax-btn--secondary" onClick={useOfficialLocation}>{strings.useOfficialLocation}</button>
+            <button type="button" className="btn btn-secondary btn-touch" onClick={useOfficialLocation}>{strings.useOfficialLocation}</button>
           )}
           <div style={{ blockSize: 240, marginBlockEnd: "var(--ax-space-100)" }}>
             <GeoMap center={mapCenter} zoom={locationOk ? 14 : 6} markers={mapMarkers} height="100%" />
@@ -361,7 +361,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       {state.error && <div className="ax-validation" role="alert"><strong>{strings.blockedTitle}</strong><div>{state.error}</div></div>}
 
       <div className="row" style={{ justifyContent: "flex-end" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending || !requestId || (actorMode === "planner" && !reviewed)}>
+        <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !requestId || (actorMode === "planner" && !reviewed)}>
           {pending ? strings.creating : actorMode === "inspector" ? strings.createAndStart : strings.create}
         </button>
       </div>

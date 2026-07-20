@@ -95,9 +95,9 @@ function Fingerprint({ r, s }: { r: QueueRow; s: FingerprintStrings }) {
           : <span className={`cd-fpchip cd-fpchip--${r.slaState === "overdue" ? "bad" : "ok"}`}><span className="cd-fpchip__g" aria-hidden="true">{r.slaState === "overdue" ? "▲" : "✓"}</span>{fp.sla}: {r.slaState === "overdue" ? fp.slaOverdue : fp.slaOnTime}</span>}
         <span className={`ax-lozenge ${r.riskBand ? r.riskTone : ""}`}>{fp.risk}: {r.riskBand ? r.riskLabel : fp.unavailable}</span>
         {r.criticalCount > 0
-          ? <span className="ax-lozenge ax-lozenge--critical">{r.criticalCount} {fp.critical}</span>
+          ? <span className="badge badge-critical">{r.criticalCount} {fp.critical}</span>
           : <span className="cd-sub">0 {fp.critical}</span>}
-        {r.priorityLabel && <span className="ax-lozenge ax-lozenge--info">{fp.priority}: {r.priorityLabel}</span>}
+        {r.priorityLabel && <span className="badge badge-info">{fp.priority}: {r.priorityLabel}</span>}
       </div>
       <div className="cd-fp__row">
         <FactChip label={fp.checklist} fact={r.readiness.checklist} valueLabel={factLabel(r.readiness.checklist)} />
@@ -153,7 +153,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
             {riskOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select></label>
         <label className="cd-choice"><input type="checkbox" checked={overdue} onChange={e => setOverdue(e.target.checked)} /><span>{strings.overdueOnly}</span></label>
-        {hasFilter && <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clearFilters}</button>}
+        {hasFilter && <button type="button" className="btn btn-ghost btn-touch" onClick={clear}>{strings.clearFilters}</button>}
         <span className="t-caption numeric" style={{ marginInlineStart: "auto" }}>
           {strings.showing.replace("{shown}", String(filtered.length)).replace("{total}", String(rows.length))}
         </span>
@@ -187,7 +187,7 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
                 <td><span className="ax-version">v{r.versionNumber ?? "—"}</span><div className="cd-sub cd-mono numeric">{r.submittedDisplay}</div></td>
                 <td><Fingerprint r={r} s={strings.fp} /></td>
                 <td><span className={`ax-lozenge ax-lozenge--review ${r.statusTone}`}>{r.statusLabel}</span></td>
-                <td><a className="ax-btn ax-btn--secondary" href={r.href} title={strings.openHint}>{strings.open}</a></td>
+                <td><a className="btn btn-secondary btn-touch" href={r.href} title={strings.openHint}>{strings.open}</a></td>
               </tr>
             ))}
           </tbody>

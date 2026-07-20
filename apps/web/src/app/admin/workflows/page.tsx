@@ -52,7 +52,7 @@ export default async function Workflows() {
   };
   return (
     <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow configuration")}
-      context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-050/051 · ENG-03</span>}>
+      context={<span className="badge badge-info">SCR-ADM-050/051 · ENG-03</span>}>
       <div className="ax-banner"><div>
         <strong>{t("admin.wf.banner.title", "Governed change only.")}</strong> {t("admin.wf.banner.before", "Runtime evaluates transitions against the published version — no status bypass (RBAC-003). Changes flow draft → distinct-approver publish (RBAC-002 maker-checker, enforced by a DB constraint on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions are immutable. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and are not editable here.")}
       </div></div>
@@ -79,7 +79,7 @@ export default async function Workflows() {
                 <span className={`ax-lozenge ${w.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${w.status}`, String(w.status).replace(/_/g, " "))}</span>
                 {w.status === "draft" && !isOwnDraft && <ApprovePublish versionId={w.id} strings={strings} />}
                 {isOwnDraft && (
-                  <span className="ax-lozenge ax-lozenge--warning" title={t("admin.wf.sod.desc", "You proposed this draft (the maker). A different checker must approve it — separation of duties is enforced by a DB constraint.")}>
+                  <span className="badge badge-warning" title={t("admin.wf.sod.desc", "You proposed this draft (the maker). A different checker must approve it — separation of duties is enforced by a DB constraint.")}>
                     ⛔ {t("admin.wf.sod.title", "You proposed this — a distinct checker must approve")}
                   </span>
                 )}
@@ -92,7 +92,7 @@ export default async function Workflows() {
               {w.created_at && <> · <span className="numeric">{new Date(w.created_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
               {" → "}
               {w.approved_by
-                ? <>{t("admin.wf.chain.approved", "approved by")} <strong>{nameOf(w.approved_by)}</strong> <span className="ax-lozenge ax-lozenge--success">{t("admin.wf.chain.distinct", "distinct approver")}</span></>
+                ? <>{t("admin.wf.chain.approved", "approved by")} <strong>{nameOf(w.approved_by)}</strong> <span className="badge badge-compliant">{t("admin.wf.chain.distinct", "distinct approver")}</span></>
                 : <>{t("admin.wf.chain.pending", "awaiting a distinct approver (maker-checker, DB-enforced)")}</>}
             </p>
             {/* M2-02 Workflow Flight Deck — graph + outline, transition inspector,

@@ -103,9 +103,9 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
           {err && <p className="ax-field__error">{err}</p>}
         </div>
         <div className="ax-modal__footer">
-          <button className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clear}</button>
-          <button className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
-          <button className="ax-btn ax-btn--prominent" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
+          <button className="btn btn-ghost btn-touch" onClick={clear}>{strings.clear}</button>
+          <button className="btn btn-secondary btn-touch" onClick={onCancel}>{strings.cancel}</button>
+          <button className="btn btn-primary btn-lg btn-touch" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
         </div>
       </div>
     </div>

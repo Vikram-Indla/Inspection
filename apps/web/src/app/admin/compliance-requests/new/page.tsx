@@ -14,7 +14,7 @@ export default async function NewComplianceRequest({
   const requestedDescription = typeof sp.description === "string" ? sp.description.slice(0, 2000) : "";
   return (
     <Shell current="/admin/compliance-requests" title="Create Compliance Configuration Request"
-      context={<span className="ax-lozenge ax-lozenge--info">Draft · Revision 1</span>}>
+      context={<span className="badge badge-info">Draft · Revision 1</span>}>
       <p className="t-caption"><Link className="ax-link" href="/admin/compliance-requests">← Request register</Link></p>
       <section className="ax-surface ccr-form-card" aria-labelledby="ccr-create-heading">
         <h3 id="ccr-create-heading">Request foundation</h3>
@@ -24,7 +24,7 @@ export default async function NewComplianceRequest({
           <label className="ax-field"><span className="ax-field__label">Title</span><input className="ax-input" name="title" required maxLength={180} defaultValue={requestedTitle} /></label>
           <label className="ax-field ccr-span"><span className="ax-field__label">Description</span><textarea className="ax-textarea" name="description" rows={4} defaultValue={requestedDescription} /></label>
           <label className="ax-field ccr-span"><span className="ax-field__label">Initial comments</span><textarea className="ax-textarea" name="comments" rows={3} /></label>
-          <div className="ccr-span ccr-actions"><button className="ax-btn ax-btn--prominent" type="submit">Create draft request</button><Link className="ax-btn ax-btn--secondary" href="/admin/compliance-requests">Cancel</Link></div>
+          <div className="ccr-span ccr-actions"><button className="btn btn-primary btn-lg btn-touch" type="submit">Create draft request</button><Link className="btn btn-secondary btn-touch" href="/admin/compliance-requests">Cancel</Link></div>
         </ActionForm>
       </section>
     </Shell>

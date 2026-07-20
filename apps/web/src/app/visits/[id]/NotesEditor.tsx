@@ -30,7 +30,7 @@ export default function NotesEditor({ visitId, initialNotes, strings }: {
           <textarea className="ax-textarea" name="notes" id="visit-notes" rows={3} defaultValue={initialNotes} placeholder={strings.placeholder} />
         </div>
         <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-150)" }}>
-          <button className="ax-btn ax-btn--secondary" disabled={pending}>{pending ? strings.saving : strings.saveBtn}</button>
+          <button className="btn btn-secondary btn-touch" disabled={pending}>{pending ? strings.saving : strings.saveBtn}</button>
           <span className="t-caption">{strings.hint}</span>
         </div>
       </form>

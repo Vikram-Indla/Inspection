@@ -86,9 +86,9 @@ export function AddDocumentForm({ factoryId, strings }: { factoryId: string; str
         <input className="ax-input numeric" type="date" name="valid_from" id="factory-doc-valid-from" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="factory-doc-valid-to">{strings.validTo}</label>
         <input className="ax-input numeric" type="date" name="valid_to" id="factory-doc-valid-to" /></div>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.adding : strings.add}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.adding : strings.add}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.added}</span>}
+      {state.ok && <span className="badge badge-compliant">{strings.added}</span>}
     </form>
   );
 }
@@ -109,9 +109,9 @@ export function AddRepresentativeForm({ factoryId, strings }: { factoryId: strin
         <input className="ax-input" type="email" name="email" id="factory-rep-email" /></div>
       <label className="ax-choice" style={{ alignSelf: "center" }}>
         <input type="checkbox" name="is_primary" /> {strings.primaryContact}</label>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.adding : strings.add}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.adding : strings.add}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.added}</span>}
+      {state.ok && <span className="badge badge-compliant">{strings.added}</span>}
     </form>
   );
 }
@@ -132,9 +132,9 @@ export function AddProductForm({ factoryId, strings }: { factoryId: string; stri
         <input className="ax-input numeric" type="number" name="annual_capacity" id="factory-product-capacity" min="0" step="0.01" /></div>
       <label className="ax-choice" style={{ alignSelf: "center" }}>
         <input type="checkbox" name="is_primary" /> {strings.primaryProduct}</label>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.adding : strings.add}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.adding : strings.add}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.added}</span>}
+      {state.ok && <span className="badge badge-compliant">{strings.added}</span>}
     </form>
   );
 }
@@ -154,9 +154,9 @@ export function AddMaterialForm({ factoryId, strings }: { factoryId: string; str
         </select></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="factory-material-hs">{strings.hsLabel}</label>
         <input className="ax-input numeric" name="hs_code" id="factory-material-hs" placeholder="3901.10" /></div>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.adding : strings.add}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.adding : strings.add}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.added}</span>}
+      {state.ok && <span className="badge badge-compliant">{strings.added}</span>}
     </form>
   );
 }
@@ -169,7 +169,7 @@ export function ToggleRepActive({ repId, factoryId, active, strings }: { repId: 
       <input type="hidden" name="rep_id" value={repId} />
       <input type="hidden" name="factory_id" value={factoryId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
-      <button className="ax-btn ax-btn--subtle" disabled={pending}>
+      <button className="btn btn-ghost btn-touch" disabled={pending}>
         {pending ? strings.saving : active ? strings.deactivate : strings.reactivate}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
     </form>

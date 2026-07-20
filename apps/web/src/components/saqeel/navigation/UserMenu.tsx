@@ -15,7 +15,7 @@ export function UserMenu({ name, role, items = [] }: UserMenuProps) {
       align="end"
       trigger={
         <button
-          className="btn btn-ghost"
+          className="btn btn-ghost btn-touch"
           style={{ paddingInline: "var(--space-1)" }}
           aria-label={"User menu — " + name}
         >

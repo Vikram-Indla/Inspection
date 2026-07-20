@@ -38,7 +38,7 @@ function RemoveButton({ attachmentId, visitId, name, strings }: { attachmentId: 
     <form action={act} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
       <input type="hidden" name="attachment_id" value={attachmentId} />
       <input type="hidden" name="visit_id" value={visitId} />
-      <button className="ax-btn ax-btn--subtle" disabled={pending} aria-label={strings.removeAria.replace("{name}", name)}>{strings.remove}</button>
+      <button className="btn btn-ghost btn-touch" disabled={pending} aria-label={strings.removeAria.replace("{name}", name)}>{strings.remove}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
     </form>
   );
@@ -71,7 +71,7 @@ export default function Attachments({ visitId, rows, strings }: {
                 <td>
                   <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
                     {a.url
-                      ? <a className="ax-btn ax-btn--subtle" href={a.url} download={a.name}>{strings.download}</a>
+                      ? <a className="btn btn-ghost btn-touch" href={a.url} download={a.name}>{strings.download}</a>
                       : <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="status">{a.urlError ?? strings.urlFailed}</span>}
                     <RemoveButton attachmentId={a.id} visitId={visitId} name={a.name} strings={strings} />
                   </div>
@@ -87,7 +87,7 @@ export default function Attachments({ visitId, rows, strings }: {
           <label className="ax-field__label" htmlFor="visit-attachment-file">{strings.fileLabel}</label>
           <input className="ax-input" type="file" name="file" id="visit-attachment-file" required />
         </div>
-        <button className="ax-btn ax-btn--secondary" disabled={upPending}>{upPending ? strings.uploading : strings.uploadBtn}</button>
+        <button className="btn btn-secondary btn-touch" disabled={upPending}>{upPending ? strings.uploading : strings.uploadBtn}</button>
       </form>
       {up.error && <div className="ax-banner ax-banner--critical"><div>{up.error}</div></div>}
       {up.ok && <div className="ax-banner ax-banner--success"><div>{up.ok}</div></div>}

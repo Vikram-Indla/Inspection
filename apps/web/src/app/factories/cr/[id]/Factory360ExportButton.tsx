@@ -4,5 +4,5 @@
 // server-side permission check. Browser print-to-PDF is the platform's
 // existing sanctioned PDF path and preserves the permission-filtered DOM.
 export default function Factory360ExportButton({ label }: { label: string }) {
-  return <button className="ax-btn ax-btn--secondary" type="button" onClick={() => window.print()}>{label}</button>;
+  return <button className="btn btn-secondary btn-touch" type="button" onClick={() => window.print()}>{label}</button>;
 }

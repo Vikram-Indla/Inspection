@@ -461,7 +461,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
   return (
     <Shell current="/operations" title={t("ops.title", "Operations Center")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("ops.context", "SCR-WEB-500 · SB12 · operational state ≠ workflow status (FND-002)")}</span>}>
+      context={<span className="badge badge-info">{t("ops.context", "SCR-WEB-500 · SB12 · operational state ≠ workflow status (FND-002)")}</span>}>
       {loadErrors.length > 0 && (
         <div className="ax-banner ax-banner--critical" role="alert"><div>
           <strong>{t("ops.err.partial", "Partial service — some panels could not load.")}</strong> {loadErrors.join(" · ")} — {t("ops.err.retry", "retry")}.
@@ -569,7 +569,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                       <td>{a.due_at
                         ? <span className={overdue ? "ax-lozenge ax-lozenge--critical" : "numeric"}>{new Date(a.due_at).toISOString().slice(0, 10)}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
                         : "—"}</td>
-                      <td>{a.is_blocking ? <span className="ax-lozenge ax-lozenge--critical">{t("ops.actions.blocking", "blocking")}</span> : <span className="ax-lozenge">{t("ops.actions.advisory", "advisory")}</span>}</td>
+                      <td>{a.is_blocking ? <span className="badge badge-critical">{t("ops.actions.blocking", "blocking")}</span> : <span className="badge">{t("ops.actions.advisory", "advisory")}</span>}</td>
                       <td><span className={`ax-lozenge ${a.status === "acknowledged" ? "ax-lozenge--info" : "ax-lozenge--warning"}`}>{enumLabel(a.status)}</span></td>
                       <td><ActionFormControls actionFormId={a.id} status={a.status} strings={actionControlStrings} /></td>
                     </tr>
@@ -634,7 +634,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 <thead><tr><th scope="col">{t("ops.notifs.th.event", "Event")}</th><th scope="col">{t("ops.notifs.th.channel", "Channel")}</th><th scope="col">{t("ops.notifs.th.state", "State")}</th><th scope="col">{t("ops.notifs.th.at", "At")}</th><th scope="col"></th></tr></thead>
                 <tbody>{notifs.map(n => (
                   <tr key={n.id}>
-                    <td><span className="ax-lozenge ax-lozenge--info">{n.event_key}</span></td>
+                    <td><span className="badge badge-info">{n.event_key}</span></td>
                     <td className="t-caption">{n.channel}</td>
                     <td><span className={`ax-lozenge ${NOTIF_TONE[n.delivery_state] ?? ""}`}>{enumLabel(n.delivery_state)}</span></td>
                     <td><span className="numeric">{new Date(n.created_at).toISOString().slice(5, 16).replace("T", " ")}</span></td>

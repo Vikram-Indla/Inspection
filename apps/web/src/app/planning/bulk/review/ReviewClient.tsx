@@ -232,7 +232,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           <span className="ax-state__glyph" aria-hidden="true">◌</span>
           <h3>{s.scopeTitle}</h3>
           <p className="t-caption">{s.scopeBody.replace("{n}", String(missing))}</p>
-          <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
+          <a className="btn btn-primary btn-lg btn-touch" href="/planning/bulk">{s.backToTargeting}</a>
         </div>
       </div>
     );
@@ -242,7 +242,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
         <h3>{s.emptyTitle}</h3>
         <p className="t-caption">{s.emptyBody}</p>
-        <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
+        <a className="btn btn-primary btn-lg btn-touch" href="/planning/bulk">{s.backToTargeting}</a>
       </div>
     );
   }
@@ -274,8 +274,8 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
         </div>
         <div className="row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
           <form action={formAction}>{hiddenPublishFields(workingIds, pkgId, windowStart, windowEnd, notes, picks)}
-            <button className="ax-btn ax-btn--prominent">{s.tryAgain}</button></form>
-          <a className="ax-btn ax-btn--secondary" href="/planning/bulk">{s.backConfig}</a>
+            <button className="btn btn-primary btn-lg btn-touch">{s.tryAgain}</button></form>
+          <a className="btn btn-secondary btn-touch" href="/planning/bulk">{s.backConfig}</a>
         </div>
       </section>
     );
@@ -300,9 +300,9 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           </div>
         </div>
         <div className="row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
-          <a className="ax-btn ax-btn--prominent" href="/visits">{s.goVisits}</a>
+          <a className="btn btn-primary btn-lg btn-touch" href="/visits">{s.goVisits}</a>
           {/* optional read-only plan link — only when the publisher returned a plan ID */}
-          {state.planId && <a className="ax-btn ax-btn--secondary" href={`/planning/plans/${state.planId}`}>{s.openPlan}</a>}
+          {state.planId && <a className="btn btn-secondary btn-touch" href={`/planning/plans/${state.planId}`}>{s.openPlan}</a>}
         </div>
       </section>
     );
@@ -426,7 +426,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
         ) : blockers.length ? (
           <>
             <div className="row" style={{ gap: "var(--ax-space-100)" }}>
-              <span className="ax-lozenge ax-lozenge--critical">{s.blockedTag}</span>
+              <span className="badge badge-critical">{s.blockedTag}</span>
               <strong>{interp(s.blockersN, { n: blockers.length })}</strong>
             </div>
             <ul className="cd-blockerlist" style={{ marginBlockStart: "var(--ax-space-150)" }}>
@@ -440,7 +440,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
                       <span className="cd-blocker__title">{title}</span>
                       {detail && <div className="cd-blocker__detail">{detail}</div>}
                       {meta.fix !== "none" && (
-                        <div className="cd-fix"><button type="button" className="ax-btn ax-btn--secondary" onClick={() => runFix(b)}>{fixLabel(b)}</button></div>
+                        <div className="cd-fix"><button type="button" className="btn btn-secondary btn-touch" onClick={() => runFix(b)}>{fixLabel(b)}</button></div>
                       )}
                     </div>
                   </li>
@@ -450,7 +450,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           </>
         ) : (
           <div className="row" style={{ gap: "var(--ax-space-100)" }}>
-            <span className="ax-lozenge ax-lozenge--success">{s.readyTag}</span>
+            <span className="badge badge-compliant">{s.readyTag}</span>
             <strong>{s.clearAll}</strong>
           </div>
         )}
@@ -578,7 +578,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
               ? <div className="t-caption">{s.allClear}</div>
               : <div className="cd-disabledreason" id={reasonId}>{s.disabledPrefix}{validating ? s.checking : interp(s.blockersN, { n: blockers.length })}</div>}
           </div>
-          <button className="ax-btn ax-btn--prominent cd-publishbtn" disabled={!committable}
+          <button className="btn btn-primary btn-lg cd-publishbtn btn-touch" disabled={!committable}
             aria-describedby={committable ? undefined : reasonId}>
             {committable ? interp(s.publishReady, { n: retained }) : validating ? s.checking : interp(s.publishBlocked, { n: blockers.length })}
           </button>

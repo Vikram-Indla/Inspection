@@ -110,16 +110,16 @@ export default function CriteriaBuilder({
         </datalist>
       </div>
       {contribution != null && (
-        <button type="button" className="ax-btn ax-btn--subtle numeric" aria-pressed={isFocused}
+        <button type="button" className="btn btn-ghost numeric btn-touch" aria-pressed={isFocused}
           onClick={() => onFocus?.(isFocused ? null : key)}
           aria-label={(isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution)))}
           style={isFocused ? { borderColor: "var(--ax-color-primary)", fontWeight: 600 } : undefined}>
           {contribution}
         </button>
       )}
-      <button type="button" className="ax-btn ax-btn--subtle" onClick={() => move(parentPath, idx, -1)} disabled={idx === 0} aria-label={strings.moveUp}>↑</button>
-      <button type="button" className="ax-btn ax-btn--subtle" onClick={() => move(parentPath, idx, 1)} disabled={idx === count - 1} aria-label={strings.moveDown}>↓</button>
-      <button type="button" className="ax-btn ax-btn--subtle" onClick={() => removeAt(parentPath, idx)}>{strings.remove}</button>
+      <button type="button" className="btn btn-ghost btn-touch" onClick={() => move(parentPath, idx, -1)} disabled={idx === 0} aria-label={strings.moveUp}>↑</button>
+      <button type="button" className="btn btn-ghost btn-touch" onClick={() => move(parentPath, idx, 1)} disabled={idx === count - 1} aria-label={strings.moveDown}>↓</button>
+      <button type="button" className="btn btn-ghost btn-touch" onClick={() => removeAt(parentPath, idx)}>{strings.remove}</button>
     </li>
     );
   };
@@ -136,7 +136,7 @@ export default function CriteriaBuilder({
           </select>
         </div>
         {path.length > 0 && (
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])}>{strings.removeGroup}</button>
+          <button type="button" className="btn btn-ghost btn-touch" onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])}>{strings.removeGroup}</button>
         )}
       </div>
       <ul role="group" style={{ listStyle: "none", margin: "var(--ax-space-150) 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
@@ -147,8 +147,8 @@ export default function CriteriaBuilder({
         )}
       </ul>
       <div className="row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={() => addCond(path)}>{strings.addCondition}</button>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={() => addGroup(path)}>{strings.addGroup}</button>
+        <button type="button" className="btn btn-secondary btn-touch" onClick={() => addCond(path)}>{strings.addCondition}</button>
+        <button type="button" className="btn btn-ghost btn-touch" onClick={() => addGroup(path)}>{strings.addGroup}</button>
       </div>
     </li>
   );
@@ -169,8 +169,8 @@ export default function CriteriaBuilder({
         </div>
       )}
       <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
-        <button className="ax-btn ax-btn--prominent">{strings.apply}</button>
-        <a className="ax-btn ax-btn--subtle" href="/planning/bulk">{strings.clear}</a>
+        <button className="btn btn-primary btn-lg btn-touch">{strings.apply}</button>
+        <a className="btn btn-ghost btn-touch" href="/planning/bulk">{strings.clear}</a>
         <span className="t-caption numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
       </div>
       <p className="t-caption">{strings.hint}</p>

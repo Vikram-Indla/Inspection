@@ -195,10 +195,10 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
           />
         </div>
         <div className="ax-modal__footer">
-          <button className="ax-btn ax-btn--subtle" onClick={() => setShapes(s => s.slice(0, -1))} disabled={!shapes.length}>{strings.undo}</button>
-          <button className="ax-btn ax-btn--subtle" onClick={() => setShapes([])} disabled={!shapes.length}>{strings.clear}</button>
-          <button className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
-          <button className="ax-btn ax-btn--prominent" onClick={confirm} disabled={!ready}>{strings.confirm}</button>
+          <button className="btn btn-ghost btn-touch" onClick={() => setShapes(s => s.slice(0, -1))} disabled={!shapes.length}>{strings.undo}</button>
+          <button className="btn btn-ghost btn-touch" onClick={() => setShapes([])} disabled={!shapes.length}>{strings.clear}</button>
+          <button className="btn btn-secondary btn-touch" onClick={onCancel}>{strings.cancel}</button>
+          <button className="btn btn-primary btn-lg btn-touch" onClick={confirm} disabled={!ready}>{strings.confirm}</button>
         </div>
       </div>
     </div>

@@ -87,7 +87,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
             <tr key={f.id}>
               <td><strong>{f.name}</strong> <span className="t-caption">{f.factory_code}</span></td>
               <td className="numeric">{f.cr_number}</td>
-              <td><span className="ax-lozenge ax-lozenge--info">{f.region ?? "—"}</span></td>
+              <td><span className="badge badge-info">{f.region ?? "—"}</span></td>
               <td>{f.city}</td>
               <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.bandLabels[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>
               <td><a className="ax-link" href={f.dossier_href ?? `/factories/${f.id}`}>{strings.dossier} →</a></td>

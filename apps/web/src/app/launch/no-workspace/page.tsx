@@ -30,7 +30,7 @@ export default async function NoWorkspace() {
       identityLabel={t("access.noWorkspace.signedInAs", "Signed in as")}
       actions={
         <>
-          <a className="ax-btn ax-btn--prominent lg-submit" href="/launch">{t("access.noWorkspace.checkAgain", "Check again")}</a>
+          <a className="btn btn-primary btn-lg lg-submit btn-touch" href="/launch">{t("access.noWorkspace.checkAgain", "Check again")}</a>
           <a className="lg-linkbtn" href="/signout">{t("nav.signout", "Sign out")}</a>
         </>
       }

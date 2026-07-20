@@ -67,8 +67,8 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
         ) : (
           <>
             <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
-              <span className="ax-lozenge ax-lozenge--warning">{fmt(s.pinnedVisits, { n: pinned.active_visits })}</span>
-              <span className="ax-lozenge ax-lozenge--warning">{fmt(s.pinnedInspections, { n: pinned.active_inspections })}</span>
+              <span className="badge badge-warning">{fmt(s.pinnedVisits, { n: pinned.active_visits })}</span>
+              <span className="badge badge-warning">{fmt(s.pinnedInspections, { n: pinned.active_inspections })}</span>
             </div>
             {pinned.prior.length > 0 && (
               <ul className="t-caption" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>

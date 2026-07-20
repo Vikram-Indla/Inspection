@@ -180,7 +180,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
                           <td><strong className="numeric">{code}</strong> {titleByCode[code] ?? ""}</td>
                           <td>{ans ? <span className={`ax-lozenge ${ans === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{enumL(ans)}</span> : <span className="t-caption">{t("report.items.notApplicable", "not answered / not applicable")}</span>}</td>
                           <td>{snap.notes?.[code] ?? "—"}{snap.dates?.[code] ? <span className="t-caption numeric"> · {snap.dates[code]}</span> : null}</td>
-                          <td>{itemVios.length ? itemVios.map(x => <span key={x.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.code}{x.level ? ` · ${enumL(x.level)}` : ""}</span>) : "—"}</td>
+                          <td>{itemVios.length ? itemVios.map(x => <span key={x.code} className="badge badge-critical" style={{ marginInlineEnd: 4 }}>{x.code}{x.level ? ` · ${enumL(x.level)}` : ""}</span>) : "—"}</td>
                           <td className="ax-td-num numeric">{snap.evidence?.by_item?.[code] ?? 0}</td>
                         </tr>
                       );

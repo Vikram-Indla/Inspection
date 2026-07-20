@@ -197,12 +197,12 @@ export default async function Items({
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
-          <span className="ax-lozenge ax-lozenge--info">SCR-ADM-020 · ENG-01</span>
+          <span className="badge badge-info">SCR-ADM-020 · ENG-01</span>
           <span role="status" className="t-caption">
             {fill(t("admin.items.r2.readAt", "catalogue read {time} — a source fact, not a freshness verdict"), { time: readAt })}
           </span>
           {clauseUnavailable && (
-            <span className="ax-lozenge ax-lozenge--warning">
+            <span className="badge badge-warning">
               <span aria-hidden="true">⚠ </span>{t("admin.items.r2.degraded.clause", "clause list unavailable")}
             </span>
           )}
@@ -230,9 +230,9 @@ export default async function Items({
       {roleError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="ax-banner" role="note"><strong><span aria-hidden="true">👁 </span>{t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can inspect item semantics, usage and runtime previews. Creating or changing active state requires Compliance or Form Admin and is enforced by the server guard and RLS.")}</div>}
 
       <nav className="cmp-library-tabs" aria-label="Compliance Library">
-        <a className="ax-btn ax-btn--secondary ax-link" href="/admin/regulations">Regulations</a>
-        <a className="ax-btn ax-btn--prominent" href="/admin/items" aria-current="page">Inspection Items</a>
-        {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href="/admin/compliance-requests/new">Create governed request</a> : null}
+        <a className="btn btn-secondary ax-link btn-touch" href="/admin/regulations">Regulations</a>
+        <a className="btn btn-primary btn-lg btn-touch" href="/admin/items" aria-current="page">Inspection Items</a>
+        {isWriter ? <a className="btn btn-secondary ax-link btn-touch" href="/admin/compliance-requests/new">Create governed request</a> : null}
       </nav>
 
       {isWriter ? <div className="ax-banner ax-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct item controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this catalogue remains the published source of truth.</div> : null}
@@ -310,7 +310,7 @@ export default async function Items({
                       {(() => {
                         const usage = usageById.get(i.id);
                         if (!isWriter) return <span className="t-caption">{t("admin.items.r2.usage.writerOnly", "Available to configuration writers")}</span>;
-                        if (!usage) return <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠ </span>{t("admin.items.r2.usage.unavailable", "unavailable — retry reload")}</span>;
+                        if (!usage) return <span className="badge badge-warning"><span aria-hidden="true">⚠ </span>{t("admin.items.r2.usage.unavailable", "unavailable — retry reload")}</span>;
                         return <span className="t-caption"><span aria-hidden="true">✓ </span>{fill(t("admin.items.r2.usage.counts", "{packages} package(s) · {versions} version(s)"), { packages: usage.package_count, versions: usage.version_count })}</span>;
                       })()}
                     </td>
@@ -322,10 +322,10 @@ export default async function Items({
                     </td>
                     <td>
                       <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
-                        <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/items/${encodeURIComponent(i.id)}/runtime-preview`}>Inspector Runtime Preview</a>
-                        {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/compliance-requests/new?request_type=modify&title=${encodeURIComponent(`Modify inspection item ${i.code}`)}&description=${encodeURIComponent(`Governed change request for inspection item ${i.code} — ${i.title}.`)}`}>Request change</a> : null}
+                        <a className="btn btn-secondary ax-link btn-touch" href={`/admin/items/${encodeURIComponent(i.id)}/runtime-preview`}>Inspector Runtime Preview</a>
+                        {isWriter ? <a className="btn btn-secondary ax-link btn-touch" href={`/admin/compliance-requests/new?request_type=modify&title=${encodeURIComponent(`Modify inspection item ${i.code}`)}&description=${encodeURIComponent(`Governed change request for inspection item ${i.code} — ${i.title}.`)}`}>Request change</a> : null}
                         {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="t-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}
-                        {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/items?audit=${encodeURIComponent(i.id)}#cd007-audit-h`}>{t("admin.items.r2.audit.open", "Audit")}</a> : null}
+                        {isWriter ? <a className="btn btn-secondary ax-link btn-touch" href={`/admin/items?audit=${encodeURIComponent(i.id)}#cd007-audit-h`}>{t("admin.items.r2.audit.open", "Audit")}</a> : null}
                         {isWriter ? <EditItemForm item={{ id: i.id, title: i.title, clauseId: i.clause_id, guidance: i.guidance_en, version: i.configuration_version ?? 1 }} clauses={clauseOptions} strings={strings} /> : null}
                       </div>
                     </td>

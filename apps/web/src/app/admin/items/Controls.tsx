@@ -117,7 +117,7 @@ export function NewItemForm({
         <label className="ax-field__label" htmlFor="item-guidance">{s.guidance}</label>
         <input id="item-guidance" className="ax-input" name="guidance_en" placeholder={s.guidancePlaceholder} />
       </div>
-      <button className="ax-btn ax-btn--prominent" disabled={pending || clauseUnavailable}>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending || clauseUnavailable}>
         {pending ? s.creating : s.create}
       </button>
       {/* role=alert so screen readers move to the rejection; role=status for success. */}
@@ -127,7 +127,7 @@ export function NewItemForm({
         </span>
       )}
       {state.ok && (
-        <span className="ax-lozenge ax-lozenge--success" role="status">
+        <span className="badge badge-compliant" role="status">
           <span aria-hidden="true">✓ </span>{s.created}
         </span>
       )}
@@ -143,15 +143,15 @@ export function EditItemForm({ item, clauses, strings: s }: {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(updateItem, {});
   return (
     <details className="stack">
-      <summary className="ax-btn ax-btn--subtle">Edit · v{item.version}</summary>
+      <summary className="btn btn-ghost btn-touch">Edit · v{item.version}</summary>
       <form action={formAction} className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 280 }}>
         <input type="hidden" name="item_id" value={item.id} />
         <label className="ax-field"><span className="ax-field__label">{s.title}</span><input className="ax-input" name="title" defaultValue={item.title} required /></label>
         <label className="ax-field"><span className="ax-field__label">{s.clause}</span><select className="ax-select" name="clause_id" defaultValue={item.clauseId} required>{clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
         <label className="ax-field"><span className="ax-field__label">{s.guidance}</span><textarea className="ax-input" name="guidance_en" defaultValue={item.guidance ?? ""} /></label>
-        <button className="ax-btn" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
+        <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
         {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-        {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.draftSaved}</span>}
+        {state.ok && <span className="badge badge-compliant" role="status">✓ {s.draftSaved}</span>}
       </form>
     </details>
   );
@@ -165,7 +165,7 @@ export function ToggleActive({ itemId, active, strings: s }: { itemId: string; a
       <input type="hidden" name="item_id" value={itemId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
       {active ? <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required /></label> : null}
-      <button className="ax-btn" disabled={pending} title={s.reasonNote}>
+      <button className="btn btn-primary btn-touch" disabled={pending} title={s.reasonNote}>
         {pending ? s.saving : active ? s.deactivate : s.reactivate}
       </button>
       {state.error && (
@@ -266,7 +266,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
             <p className="ax-overline">{s.responsesLabel}</p>
             <div className="row" role="group" aria-label={s.responsesLabel} style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
               {item.responses.map(r => (
-                <button key={r} type="button" className="ax-btn ax-btn--secondary" disabled aria-disabled="true">{label(r)}</button>
+                <button key={r} type="button" className="btn btn-secondary btn-touch" disabled aria-disabled="true">{label(r)}</button>
               ))}
             </div>
             {item.ncTarget && <p className="t-caption">{fill(s.ncMaps, { target: item.ncTarget })}</p>}

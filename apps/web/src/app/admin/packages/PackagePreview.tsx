@@ -55,10 +55,10 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
   return (
     <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <div className="row">
-        <button type="button" className="ax-btn ax-btn--secondary" aria-expanded={open} onClick={() => setOpen(o => !o)}>
+        <button type="button" className="btn btn-secondary btn-touch" aria-expanded={open} onClick={() => setOpen(o => !o)}>
           {open ? s.close : s.open}
         </button>
-        {open && <span className="ax-lozenge ax-lozenge--info">{s.readOnly}</span>}
+        {open && <span className="badge badge-info">{s.readOnly}</span>}
       </div>
 
       {open && (
@@ -74,7 +74,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
               <section key={sec.key} className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
                 <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
                   <h4 style={{ font: "var(--ax-text-heading-xs)" }}>{sec.title}</h4>
-                  {sec.mandatory && <span className="ax-lozenge ax-lozenge--critical">{s.sectionMandatory}</span>}
+                  {sec.mandatory && <span className="badge badge-critical">{s.sectionMandatory}</span>}
                 </div>
                 {codes.length === 0 && <p className="t-caption">{s.emptySection}</p>}
                 {codes.map(code => {
@@ -88,13 +88,13 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                       <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "baseline" }}>
                         <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{it.code} · {it.title}</p>
                         {it.clause && <span className="t-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
-                        {it.conditional && <span className="ax-lozenge ax-lozenge--info" title={`${s.conditionalWhen} ${it.conditional}`}>{s.conditionalBadge}</span>}
+                        {it.conditional && <span className="badge badge-info" title={`${s.conditionalWhen} ${it.conditional}`}>{s.conditionalBadge}</span>}
                         <span className={`ax-lozenge ${it.requirement === "required" ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>
                           <span aria-hidden="true">{it.requirement === "required" ? "● " : "○ "}</span>
                           {it.requirement === "required" ? s.required : it.requirement === "conditional" ? s.conditionalBadge : s.optional}
                         </span>
-                        {it.mandatoryWhenVisible && <span className="ax-lozenge ax-lozenge--warning">{s.mandatoryWhenVisible}</span>}
-                        {!it.scoringEnabled && <span className="ax-lozenge ax-lozenge--info">{s.scoringDisabled}</span>}
+                        {it.mandatoryWhenVisible && <span className="badge badge-warning">{s.mandatoryWhenVisible}</span>}
+                        {!it.scoringEnabled && <span className="badge badge-info">{s.scoringDisabled}</span>}
                       </div>
                       {it.conditional && <p className="t-caption">{s.conditionalWhen} <code>{it.conditional}</code></p>}
                       {it.guidance && <p className="t-caption">💡 {s.guidanceLabel}: {it.guidance}</p>}
@@ -115,7 +115,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                             {(s.evTypeLabels[it.evidence.type] ?? it.evidence.type)} · {it.evidence.mandatory ? s.evidenceMandatory : s.evidenceOptional}{it.evidence.min > 1 ? ` · ${s.evidenceMin} ${it.evidence.min}` : ""}
                           </span>
                         )}
-                        {it.ncViolation && <span className="ax-lozenge ax-lozenge--warning">{s.ncViolation} {it.ncViolation}</span>}
+                        {it.ncViolation && <span className="badge badge-warning">{s.ncViolation} {it.ncViolation}</span>}
                       </div>
 
                       <label className="ax-field">

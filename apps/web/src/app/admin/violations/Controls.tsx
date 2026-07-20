@@ -79,9 +79,9 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-category">{s.category}</label><input id="new-violation-category" className="ax-input" name="category" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-applicability">{s.applicability}</label><input id="new-violation-applicability" className="ax-input" name="applicability" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-version">{s.configurationVersion}</label><input id="new-violation-version" className="ax-input" name="configuration_version" type="number" min="1" step="1" defaultValue="1" required /></div>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.creating : s.create}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
       {state.error && <span ref={errorRef} tabIndex={-1} className="ax-validation" role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
+      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
     </form>
   );
 }
@@ -140,9 +140,9 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-grace`}>{s.gracePeriod}</label><input id={`${baseId}-grace`} className="ax-input" name="grace_period_days" type="number" min="0" step="1" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-due`}>{s.duePeriod}</label><input id={`${baseId}-due`} className="ax-input" name="due_period_days" type="number" min="0" step="1" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-template`}>{s.template}</label><select id={`${baseId}-template`} className="ax-select" name="template_version_id" defaultValue=""><option value="">{s.none}</option>{templates.map(template => <option key={template.id} value={template.id}>{template.label}</option>)}</select></div>
-      <button className="ax-btn" disabled={pending}>{pending ? s.mapping : `${s.mapTo} ${violationCode}`}</button>
+      <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.mapping : `${s.mapTo} ${violationCode}`}</button>
       {state.error && <span ref={errorRef} tabIndex={-1} className="ax-validation" role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.mapped}</span>}
+      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.mapped}</span>}
       </div>
     </form>
   );
@@ -150,16 +150,16 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
 
 export function PublishViolationForm({ violationId, violationCode, strings: s }: { violationId: string; violationCode: string; strings: VioStrings }) {
   const [state, formAction, pending] = useActionState<VioResult, FormData>(publishViolationCode, {});
-  return <form action={formAction} className="row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="ax-btn ax-btn--prominent" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="ax-validation" role="alert">{state.error}</span>}{state.ok && <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.codePublished}</span>}</form>;
+  return <form action={formAction} className="row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="btn btn-primary btn-lg btn-touch" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="ax-validation" role="alert">{state.error}</span>}{state.ok && <span className="badge badge-compliant" role="status">✓ {s.codePublished}</span>}</form>;
 }
 
 export function PublishMappingForm({ mappingId, violationCode, strings: s }: { mappingId: string; violationCode: string; strings: VioStrings }) {
   const [state, formAction, pending] = useActionState<VioResult, FormData>(publishPenaltyMapping, {});
   return <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
     <input type="hidden" name="mapping_id" value={mappingId} />
-    <button className="ax-btn ax-btn--prominent" aria-label={`${s.approveMapping} ${violationCode}`} disabled={pending}>{pending ? s.publishingMapping : s.approveMapping}</button>
+    <button className="btn btn-primary btn-lg btn-touch" aria-label={`${s.approveMapping} ${violationCode}`} disabled={pending}>{pending ? s.publishingMapping : s.approveMapping}</button>
     {state.error ? <span className="ax-validation" role="alert">{state.error}</span> : null}
-    {state.ok ? <span className="ax-lozenge ax-lozenge--success" role="status">✓ {s.mappingPublished}</span> : null}
+    {state.ok ? <span className="badge badge-compliant" role="status">✓ {s.mappingPublished}</span> : null}
   </form>;
 }
 
@@ -178,11 +178,11 @@ export function DeactivateViolationForm({ violationId, violationCode, strings: s
         <input id={fieldId} className="ax-input numeric" type="date" name="active_to" max={new Date().toISOString().slice(0, 10)} required />
       </div>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reason`}>{s.deactivationReason}</label><input id={`${fieldId}-reason`} className="ax-input" name="deactivation_reason" required /></div>
-      <button className="ax-btn ax-btn--subtle" aria-label={`${s.deactivate} ${violationCode}`} disabled={pending}>
+      <button className="btn btn-ghost btn-touch" aria-label={`${s.deactivate} ${violationCode}`} disabled={pending}>
         <span aria-hidden="true">⏻</span> {pending ? s.deactivating : s.deactivate}
       </button>
       {state.error && <span ref={errorRef} tabIndex={-1} className="ax-validation" role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.deactivated}</span>}
+      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.deactivated}</span>}
     </form>
   );
 }

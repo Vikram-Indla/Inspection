@@ -67,7 +67,7 @@ export default async function BulkViolations() {
 
   return (
     <Shell current="/admin/bulk-violations" title={t("admin.bulkvio.title", "Bulk violation issuance")}
-      context={<span className="ax-lozenge ax-lozenge--info">DEC-L</span>}>
+      context={<span className="badge badge-info">DEC-L</span>}>
       {roleError && <div className="ax-banner ax-banner--warning" role="alert"><div>{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>}
       <div className="ax-banner ax-banner--warning">
         <div><strong>{tr("admin.bulkvio.warnTitle", "This issues real, permanent violations.", "هذا يُصدر مخالفات حقيقية ودائمة.")}</strong>{" "}

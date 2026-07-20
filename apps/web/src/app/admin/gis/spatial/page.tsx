@@ -14,7 +14,7 @@ export default async function SpatialPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_SPATIAL_CANVAS, MODES, "off") !== "on") {
     return (
-      <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")} context={<span className="ax-lozenge ax-lozenge--warning">CD-045 · REQ-0087</span>}>
+      <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")} context={<span className="badge badge-warning">CD-045 · REQ-0087</span>}>
         <NotYetBoundary title={t("gis.sp.title", "Spatial canvas")} consequence={t("gis.sp.off", "The spatial canvas is not enabled here. Mapbox provider is held.")}
           seam="FEATURE_SPATIAL_CANVAS=off + Mapbox held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -28,7 +28,7 @@ export default async function SpatialPage() {
   const error = e1 || e2;
   if (error) console.error("[gis spatial] load", error);
   return (
-    <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")} context={<span className="ax-lozenge ax-lozenge--info">CD-045 · REQ-0087..0108</span>}>
+    <Shell current="/admin/gis" title={t("gis.sp.title", "Spatial canvas")} context={<span className="badge badge-info">CD-045 · REQ-0087..0108</span>}>
       <div className="ax-banner"><div><strong>{t("gis.sp.banner.title", "Layers & locations.")}</strong> {t("gis.sp.banner.body", "The authoritative factory pin stays GIS-admin-owned (FND-007); these are additive working layers. Geofence/accuracy use accepted engine_settings.gis values. Mapbox rendering is held.")}</div></div>
       <CreateLayer strings={{
         key: t("gis.sp.key", "Layer key"), label: t("gis.sp.label", "Label"), type: t("gis.sp.type", "Type"),

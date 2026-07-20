@@ -24,7 +24,7 @@ function Node({ node }: { node: TraceNode }) {
       <dt className="ax-overline">{node.label ?? ""}</dt>
       <dd>
         {node.unavailable
-          ? <span className="ax-lozenge ax-lozenge--warning">○ {node.value}</span>
+          ? <span className="badge badge-warning">○ {node.value}</span>
           : node.value}
         <span className="t-caption ax-trace__source">{node.source}</span>
       </dd>

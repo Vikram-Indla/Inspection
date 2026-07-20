@@ -444,12 +444,12 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         <span className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
           <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
           {sync === "failed" && (
-            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => processOutbox(onState)}>{strings.retryNow}</button>
+            <button type="button" className="btn btn-ghost btn-touch" onClick={() => processOutbox(onState)}>{strings.retryNow}</button>
           )}
         </span>
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
           <span className="t-caption numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
-          {!submitted && <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
+          {!submitted && <button type="button" className="btn btn-ghost btn-touch" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
         </span>
       </div>
       {msg && <div className="ax-banner"><div>{msg}</div></div>}
@@ -502,8 +502,8 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
             <div className="ax-conflict__side"><h5>{strings.server}</h5><p>{JSON.stringify(c.server)}</p></div>
           </div>
           <div className="ax-conflict__foot">
-            <button className="ax-btn ax-btn--secondary" onClick={async () => { const it = items.find(i => i.id === c.item_id)!; await local.resolveConflict(c.key); await answer(it, c.local as Answer); }}>{strings.keepMine}</button>
-            <button className="ax-btn" onClick={async () => { setAnswers(a => ({ ...a, [c.item_id]: c.server as Answer })); await local.resolveConflict(c.key); setConflicts(await local.conflicts()); }}>{strings.keepServer}</button>
+            <button className="btn btn-secondary btn-touch" onClick={async () => { const it = items.find(i => i.id === c.item_id)!; await local.resolveConflict(c.key); await answer(it, c.local as Answer); }}>{strings.keepMine}</button>
+            <button className="btn btn-primary btn-touch" onClick={async () => { setAnswers(a => ({ ...a, [c.item_id]: c.server as Answer })); await local.resolveConflict(c.key); setConflicts(await local.conflicts()); }}>{strings.keepServer}</button>
           </div>
         </div>
       ))}
@@ -580,7 +580,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                 <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "baseline" }}>
                   <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{code} · {it.title}</p>
                   {it.clause && <span className="t-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
-                  {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
+                  {conditional && <span className="badge badge-info">{strings.conditionalBadge}</span>}
                 </div>
                 {it.guidance && <p className="t-caption">💡 {strings.guidanceLabel}: {it.guidance}</p>}
                 {/* MVP1-M04-138: separate advisory explanation; it cannot alter the answer/evidence/violation controls below. */}
@@ -656,15 +656,15 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                             <div className="ax-evidence__meta">
                               <span className="numeric">{ev2.captured_at ? ev2.captured_at.slice(0, 16).replace("T", " ") : ""}</span>
                               {archived
-                                ? <span className="ax-lozenge ax-lozenge--warning">{strings.evArchived}</span>
+                                ? <span className="badge badge-warning">{strings.evArchived}</span>
                                 : (
                                   <span className="row" style={{ gap: "var(--ax-space-050)", flexWrap: "wrap" }}>
-                                    <label className="ax-btn ax-btn--subtle" style={{ cursor: "pointer" }}>
+                                    <label className="btn btn-ghost btn-touch" style={{ cursor: "pointer" }}>
                                       {strings.evReplace}
                                       <input type="file" accept={acceptFor(leg?.type ?? "photo")} hidden
                                         onChange={ie => { if (ie.target.files?.length) { attachFiles(it, ie.target.files, ev2.id); ie.target.value = ""; } }} />
                                     </label>
-                                    <button className="ax-btn ax-btn--subtle" onClick={() => setDeleting({ ev: ev2, reason: "" })}>{strings.evDelete}</button>
+                                    <button className="btn btn-ghost btn-touch" onClick={() => setDeleting({ ev: ev2, reason: "" })}>{strings.evDelete}</button>
                                   </span>
                                 )}
                             </div>
@@ -774,8 +774,8 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
               <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
             </div>
             <div className="ax-modal__footer">
-              <button className="ax-btn ax-btn--secondary" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
-              <button className="ax-btn ax-btn--prominent" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
+              <button className="btn btn-secondary btn-touch" onClick={() => setExiting(false)}>{strings.exitCancel}</button>
+              <button className="btn btn-primary btn-lg btn-touch" onClick={() => router.push("/field")}>{strings.exitConfirm}</button>
             </div>
           </div>
         </div>
@@ -793,8 +793,8 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
               </label>
             </div>
             <div className="ax-modal__footer">
-              <button className="ax-btn ax-btn--secondary" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
-              <button className="ax-btn ax-btn--prominent" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
+              <button className="btn btn-secondary btn-touch" onClick={() => setDeleting(null)}>{strings.evDeleteCancel}</button>
+              <button className="btn btn-primary btn-lg btn-touch" aria-disabled={!deleting.reason.trim()} onClick={confirmDelete}>{strings.evDeleteConfirm}</button>
             </div>
           </div>
         </div>

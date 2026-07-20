@@ -145,8 +145,8 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await step(/1 ·/).click();
   await step(/2 ·/).click();
   await step(/3 ·/).click();
-  // Execution-mode "eligible" badges also use .ax-lozenge--success now — match text directly.
-  await expect(page.locator(".ax-lozenge--success", { hasText: "inside fence" })).toBeVisible();
+  // Execution-mode "eligible" badges also use .ax-lozenge--success, .badge-compliant now — match text directly.
+  await expect(page.locator(".ax-lozenge--success, .badge-compliant", { hasText: "inside fence" })).toBeVisible();
 
   // M04-045 release certification — queue a comment-only arrival record through
   // the real IndexedDB outbox, then prove the live replay persisted the visit

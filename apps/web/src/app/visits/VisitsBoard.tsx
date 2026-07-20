@@ -381,7 +381,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <div className="t-caption">{strings.spineWindow}: <span className="numeric">{fmt(activeVisit.windowStart)}</span></div>
               <div className="t-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
             </div>
-            <a className="ax-btn ax-btn--subtle" href={`/visits/${activeVisit.id}`}
+            <a className="btn btn-ghost btn-touch" href={`/visits/${activeVisit.id}`}
               aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</a>
           </div>
         )}
@@ -437,7 +437,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           <option value="window_desc">{strings.sortWindowDesc}</option>
           <option value="factory">{strings.sortFactory}</option>
         </select>
-        {hasFilter && <button type="button" className="ax-btn ax-btn--subtle" onClick={clearFilters}>{strings.clearFilters}</button>}
+        {hasFilter && <button type="button" className="btn btn-ghost btn-touch" onClick={clearFilters}>{strings.clearFilters}</button>}
       </div>
 
       {/* M02-007/011/031-034 — bulk action bar over the selection */}
@@ -445,7 +445,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
           <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
             <h4 style={{ margin: 0 }}>{strings.bulkHeading} · {strings.selectedCount.replace("{n}", String(selected.size))}</h4>
-            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
+            <button type="button" className="btn btn-ghost btn-touch" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
           </div>
 
           {/* CD-026 — eligibility preview: verified now, re-checked at submit */}
@@ -458,7 +458,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <span className="t-caption">{strings.eligEdit}: <strong>{elig.samePlan ? eligLine(elig.publishNew) : "—"}</strong></span>
             </div>
             <span className="t-caption">{strings.eligVerified}</span>
-            {!elig.samePlan && <span className="ax-lozenge ax-lozenge--warning">{strings.eligSamePlanBlocked}</span>}
+            {!elig.samePlan && <span className="badge badge-warning">{strings.eligSamePlanBlocked}</span>}
           </div>
 
           <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
@@ -468,20 +468,20 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                 <input id="bulk-window-start" className="ax-input numeric" type="datetime-local" name="window_start" /></div>
               <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-end">{strings.bulkWindowEnd}</label>
                 <input id="bulk-window-end" className="ax-input numeric" type="datetime-local" name="window_end" /></div>
-              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkRescheduleBtn}</button>
+              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkRescheduleBtn}</button>
             </form>
             <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="row" style={{ alignItems: "flex-end" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
                 <select id="bulk-inspector" className="ax-select" name="inspector_id"><option value="">{strings.selectOption}</option>
                   {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
-              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkReassignBtn}</button>
+              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkReassignBtn}</button>
             </form>
             <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="row" style={{ alignItems: "flex-end" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
                 <input id="bulk-cancel-reason" className="ax-input" name="reason" placeholder={strings.bulkCancelPlaceholder} /></div>
-              <button className="ax-btn ax-btn--danger" disabled={busy}>{strings.bulkCancelBtn}</button>
+              <button className="btn btn-danger btn-touch" disabled={busy}>{strings.bulkCancelBtn}</button>
             </form>
             <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
@@ -498,7 +498,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               </label>
               {/* HANDOFF_BLOCKED_GUARD — cross-Plan bulk edit has no server enforcement,
                   so it is disabled (not faked as safe) when the selection spans Plans. */}
-              <button className="ax-btn ax-btn--secondary" disabled={busy || !elig.samePlan}
+              <button className="btn btn-secondary btn-touch" disabled={busy || !elig.samePlan}
                 title={!elig.samePlan ? strings.eligSamePlanBlocked : undefined}>{strings.bulkEditBtn}</button>
             </form>
           </div>
@@ -528,9 +528,9 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
           <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>
             <strong>{verbLabel[result!.verb as BulkVerb] ?? ""}</strong>
-            {nApplied > 0 && <span className="ax-lozenge ax-lozenge--success">{strings.ledgerSummaryApplied.replace("{n}", String(nApplied))}</span>}
-            {nBlocked > 0 && <span className="ax-lozenge ax-lozenge--warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
-            {nNoNotif > 0 && <span className="ax-lozenge ax-lozenge--warning">{strings.ledgerSummaryNoNotif.replace("{n}", String(nNoNotif))}</span>}
+            {nApplied > 0 && <span className="badge badge-compliant">{strings.ledgerSummaryApplied.replace("{n}", String(nApplied))}</span>}
+            {nBlocked > 0 && <span className="badge badge-warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
+            {nNoNotif > 0 && <span className="badge badge-warning">{strings.ledgerSummaryNoNotif.replace("{n}", String(nNoNotif))}</span>}
           </div>
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr>
@@ -613,7 +613,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         <span className="t-caption numeric">
           {strings.showing.replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}
         </span>
-        {nextLimit !== null && <a className="ax-btn ax-btn--subtle" href={`/visits?limit=${nextLimit}`}>{strings.loadMore}</a>}
+        {nextLimit !== null && <a className="btn btn-ghost btn-touch" href={`/visits?limit=${nextLimit}`}>{strings.loadMore}</a>}
       </div>
     </div>
   );

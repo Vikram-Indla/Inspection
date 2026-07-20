@@ -38,9 +38,9 @@ export default function IdentityDossier({
       <div>
         <strong style={{ fontSize: "var(--ax-font-size-150)" }}>{factory.name}</strong>
         {factory.grade === "exact"
-          ? <span className="ax-lozenge ax-lozenge--success" style={{ marginInlineStart: 8 }}>{strings.exactBadge}</span>
-          : <span className="ax-lozenge ax-lozenge--warning" style={{ marginInlineStart: 8 }}>{strings.similarBadge}</span>}
-        {factory.degraded && <span className="ax-lozenge ax-lozenge--critical" style={{ marginInlineStart: 8 }}>{strings.degradedBadge}</span>}
+          ? <span className="badge badge-compliant" style={{ marginInlineStart: 8 }}>{strings.exactBadge}</span>
+          : <span className="badge badge-warning" style={{ marginInlineStart: 8 }}>{strings.similarBadge}</span>}
+        {factory.degraded && <span className="badge badge-critical" style={{ marginInlineStart: 8 }}>{strings.degradedBadge}</span>}
         <p className="t-caption">{factory.grade === "exact" ? strings.exactRule : strings.similarRule}</p>
       </div>
 
@@ -88,7 +88,7 @@ export default function IdentityDossier({
 
       <p className="t-caption">{strings.riskContext}: {factory.risk_band ?? strings.riskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</p>
 
-      <a href={`/factories/${factory.id}`} target="_blank" rel="noopener noreferrer" className="ax-btn ax-btn--secondary">{strings.factory360}</a>
+      <a href={`/factories/${factory.id}`} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-touch">{strings.factory360}</a>
     </div>
   );
 }

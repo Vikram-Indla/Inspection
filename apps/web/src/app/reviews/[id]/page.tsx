@@ -264,7 +264,7 @@ const panelStrings: WorkspaceDecisionStrings = {
   };
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
-      context={<><span className="ax-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="ax-lozenge ax-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="ax-btn ax-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report →")}</a></>}>
+      context={<><span className="ax-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="badge badge-warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="btn btn-secondary btn-touch" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report →")}</a></>}>
       <div className="ax-banner ax-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version (M06-012).")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">
@@ -281,7 +281,7 @@ const panelStrings: WorkspaceDecisionStrings = {
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h4>
             {(ins.violations as unknown as { violation_codes: { code: string; title: string; level: string }; mapping_version: string }[]).map((v, i) => (
-              <p key={i}><span className="ax-lozenge ax-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="ax-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
+              <p key={i}><span className="badge badge-critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="ax-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
             ))}
             {(ins.action_forms as unknown as { owner_name: string; due_at: string; status: string; required_correction: string }[]).map((a, i) => (
               <p key={i} className="t-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {new Date(a.due_at).toISOString().slice(0, 10)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>

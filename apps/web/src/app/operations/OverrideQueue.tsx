@@ -70,7 +70,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
                   <strong>{row.factory_name ?? row.visit_id.slice(0, 8)}</strong>
                   <p className="t-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
                 </div>
-                <span className="ax-lozenge ax-lozenge--warning">{strings.expires}: {stamp(row.expires_at)} UTC</span>
+                <span className="badge badge-warning">{strings.expires}: {stamp(row.expires_at)} UTC</span>
               </div>
               <p style={{ marginBlock: "var(--ax-space-150)" }}>{row.explanation}</p>
               <div className="row t-caption" style={{ gap: 12, flexWrap: "wrap" }}>
@@ -90,7 +90,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
                   <span className="ax-field__label">{strings.rejectReason}</span>
                   <input className="ax-input" value={rejection[row.id] ?? ""} onChange={e => setRejection(v => ({ ...v, [row.id]: e.target.value }))} />
                 </label>
-                <button className="ax-btn ax-btn--secondary" disabled={pending} onClick={() => decide(row, "rejected")}>{strings.reject}</button>
+                <button className="btn btn-secondary btn-touch" disabled={pending} onClick={() => decide(row, "rejected")}>{strings.reject}</button>
                 <button className="ax-btn ax-btn--field" disabled={pending} onClick={() => decide(row, "approved")}>{strings.approve}</button>
               </div>
               {message[row.id] && <p className="t-caption" role="status" style={{ marginBlockStart: 8 }}>{pending ? strings.deciding : message[row.id]}</p>}

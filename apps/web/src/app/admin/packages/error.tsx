@@ -14,7 +14,7 @@ export default function PackageError({ error, reset }: { error: Error & { digest
         <div>
           <h2>{copy.title}</h2>
           <p>{copy.body}</p>
-          <button type="button" className="ax-btn ax-btn--prominent" onClick={reset}>{copy.retry}</button>
+          <button type="button" className="btn btn-primary btn-lg btn-touch" onClick={reset}>{copy.retry}</button>
         </div>
       </div>
     </main>

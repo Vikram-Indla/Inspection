@@ -21,7 +21,7 @@ export default function DecideForm({ id, strings }: { id: string; strings: Decid
         <textarea className="ax-textarea" name="decision_reason" rows={2} placeholder={strings.reasonPlaceholder} />
       </label>
       {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
-      <button type="submit" className="ax-btn ax-btn--prominent" aria-disabled={pending}>{pending ? strings.recording : strings.submit}</button>
+      <button type="submit" className="btn btn-primary btn-lg btn-touch" aria-disabled={pending}>{pending ? strings.recording : strings.submit}</button>
     </form>
   );
 }

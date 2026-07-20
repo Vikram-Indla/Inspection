@@ -17,7 +17,7 @@ export default function ScheduleForm({ visitId, strings }: { visitId: string; st
         <input className="ax-input numeric" type="datetime-local" name="appointment_at" id="schedule-appointment" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="schedule-rep-name">{strings.repName}</label>
         <input className="ax-input" name="rep_name" id="schedule-rep-name" placeholder={strings.repNamePh} required /></div>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.working : strings.submit}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.working : strings.submit}</button>
       {state.error && <div className="ax-banner ax-banner--critical" role="alert" style={{ flexBasis: "100%" }}><div>{state.error}</div></div>}
       {state.ok && <div className="ax-banner ax-banner--success" style={{ flexBasis: "100%" }}><div>{state.ok}</div></div>}
     </form>

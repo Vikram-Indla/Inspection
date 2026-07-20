@@ -169,7 +169,7 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
                   </div>
                 </div>
                 {error && <div className="ax-banner ax-banner--critical" role="alert">{error}</div>}
-                <button className="ax-btn ax-btn--prominent lg-submit" type="submit" disabled={busy}>
+                <button className="btn btn-primary btn-lg lg-submit btn-touch" type="submit" disabled={busy}>
                   {busy ? s.signingIn : s.signIn}
                 </button>
                 <button type="button" className="lg-linkbtn" onClick={() => { setError(null); setView("forgot"); }}>
@@ -196,7 +196,7 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
                   {emailFormatError && <p id="email-err" className="ax-field__error">{emailFormatError}</p>}
                 </div>
                 {error && <div className="ax-banner ax-banner--critical" role="alert">{error}</div>}
-                <button className="ax-btn ax-btn--prominent lg-submit" type="submit" disabled={busy} aria-busy={busy}>
+                <button className="btn btn-primary btn-lg lg-submit btn-touch" type="submit" disabled={busy} aria-busy={busy}>
                   {busy ? s.forgotSending : s.forgotSend}
                 </button>
                 <button type="button" className="lg-linkbtn" onClick={() => { setError(null); setEmailFormatError(null); setView("signin"); }}>

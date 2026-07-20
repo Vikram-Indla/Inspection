@@ -87,8 +87,8 @@ export default function RiskForm({
 
       <div className="rk-sum" role="status" aria-live="polite">
         {sumOk
-          ? <span className="ax-lozenge ax-lozenge--success">{labels.sumOk}</span>
-          : <span className="ax-lozenge ax-lozenge--critical">{labels.sumBad.replace("{sum}", sum.toFixed(2))}</span>}
+          ? <span className="badge badge-compliant">{labels.sumOk}</span>
+          : <span className="badge badge-critical">{labels.sumBad.replace("{sum}", sum.toFixed(2))}</span>}
       </div>
 
       <h4>{labels.bandsTitle}</h4>
@@ -111,8 +111,8 @@ export default function RiskForm({
       <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <p className="t-caption numeric">{labels.lastUpdated} {updatedAt ? new Date(updatedAt).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
         <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-          {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
-          <button className="ax-btn ax-btn--prominent" disabled={pending || !sumOk} aria-disabled={!sumOk}>
+          {state.ok && !pending && <span className="badge badge-compliant">{labels.saved}</span>}
+          <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !sumOk} aria-disabled={!sumOk}>
             {pending ? labels.saving : labels.save}
           </button>
         </span>

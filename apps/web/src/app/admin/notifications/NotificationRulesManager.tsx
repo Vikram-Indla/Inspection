@@ -78,7 +78,7 @@ function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]
         <textarea name="template" required rows={2} placeholder="e.g. Review decision recorded: {decision}" />
       </label>
       <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-        <button type="submit" className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? l.creating : l.create}</button>
+        <button type="submit" className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? l.creating : l.create}</button>
         <Msg state={state} />
       </div>
     </form>
@@ -94,7 +94,7 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
     return (
       <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
         <form action={pubAction}><input type="hidden" name="rule_id" value={row.id} />
-          <button type="submit" className="ax-btn" disabled={pubPending}>{pubPending ? l.publishing : l.publish}</button>
+          <button type="submit" className="btn btn-primary btn-touch" disabled={pubPending}>{pubPending ? l.publishing : l.publish}</button>
         </form>
         <Msg state={pubState} />
       </div>
@@ -104,13 +104,13 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
     return (
       <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
         <form action={testAction}><input type="hidden" name="rule_id" value={row.id} />
-          <button type="submit" className="ax-btn" disabled={testPending}>{testPending ? l.testing : l.test}</button>
+          <button type="submit" className="btn btn-primary btn-touch" disabled={testPending}>{testPending ? l.testing : l.test}</button>
         </form>
         <Msg state={testState} />
         <form action={deactAction} className="row" style={{ gap: "var(--ax-space-100)" }}>
           <input type="hidden" name="rule_id" value={row.id} />
           <input type="text" name="deactivation_reason" placeholder={l.deactivationReason} required />
-          <button type="submit" className="ax-btn" disabled={deactPending}>{deactPending ? l.deactivating : l.deactivate}</button>
+          <button type="submit" className="btn btn-primary btn-touch" disabled={deactPending}>{deactPending ? l.deactivating : l.deactivate}</button>
         </form>
         <Msg state={deactState} />
       </div>
@@ -139,7 +139,7 @@ export default function NotificationRulesManager({ rows, roles, l }: { rows: Not
               <tr key={r.id}>
                 <td className="numeric">{r.event_key}</td>
                 <td>{r.channel}</td>
-                <td>{r.recipient_role || <span className="ax-lozenge ax-lozenge--warning">{l.missingRecipient}</span>}</td>
+                <td>{r.recipient_role || <span className="badge badge-warning">{l.missingRecipient}</span>}</td>
                 <td>{r.sla_minutes ? `${r.sla_minutes}m → ${r.escalation_role}` : "—"}</td>
                 <td><span className={`ax-lozenge ${r.status === "published" ? "ax-lozenge--success" : r.status === "deactivated" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
                   {r.status === "published" ? l.statusPublished : r.status === "deactivated" ? l.statusDeactivated : l.statusDraft}

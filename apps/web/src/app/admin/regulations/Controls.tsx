@@ -96,9 +96,9 @@ export function NewRegulationForm({ strings: s }: { strings: RegStrings }) {
         <input id="reg-effective" className="ax-input numeric" type="date" name="effective_from" required /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="reg-version">{s.versionLabel}</label>
         <input id="reg-version" className="ax-input numeric" name="version_label" defaultValue="v1" required /></div>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.creating : s.create}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
+      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
     </form>
   );
 }
@@ -117,9 +117,9 @@ export function AddClauseForm({ regulationId, strings: s }: { regulationId: stri
           <input id={`cl-title-${regulationId}`} className="ax-input" name="title" required /></div>
         <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor={`cl-src-${regulationId}`}>{s.legalSource}</label>
           <input id={`cl-src-${regulationId}`} className="ax-input" name="legal_source" placeholder={s.legalSourcePlaceholder} /></div>
-        <button className="ax-btn" disabled={pending}>{pending ? s.adding : s.addClause}</button>
+        <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.adding : s.addClause}</button>
         {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-        {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {s.added}</span>}
+        {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.added}</span>}
       </div>
       <p className="t-caption" style={{ margin: 0 }}><span aria-hidden="true">ⓘ</span> {s.clauseNotAudited}</p>
     </form>
@@ -133,7 +133,7 @@ export function PublishRegulation({ regulationId, strings: s }: { regulationId: 
   return (
     <form action={formAction} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
       <input type="hidden" name="regulation_id" value={regulationId} />
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.publishing : s.publish}</button>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.publishing : s.publish}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
     </form>
   );
@@ -154,10 +154,10 @@ export function EditRegulationDraft({ regulation, strings: s }: {
           <input id={`reg-edit-auth-${regulation.id}`} className="ax-input" name="issuing_authority" defaultValue={regulation.issuingAuthority ?? ""} /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor={`reg-edit-effective-${regulation.id}`}>{s.effectiveFrom}</label>
           <input id={`reg-edit-effective-${regulation.id}`} className="ax-input numeric" type="date" name="effective_from" defaultValue={regulation.effectiveFrom?.slice(0, 10) ?? ""} /></div>
-        <button className="ax-btn" disabled={pending}>{pending ? s.savingDraft : s.saveDraft}</button>
+        <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.savingDraft : s.saveDraft}</button>
       </div>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.draftSaved}</span>}
+      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓ </span>{s.draftSaved}</span>}
     </form>
   );
 }
@@ -169,10 +169,10 @@ export function AddRegulationAttachment({ regulationId, strings: s }: { regulati
       <input type="hidden" name="regulation_id" value={regulationId} />
       <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
         <div className="ax-field" style={{ flex: 1, minInlineSize: 260 }}><label className="ax-field__label" htmlFor={`att-file-${regulationId}`}>{s.attachmentName}</label><input id={`att-file-${regulationId}`} className="ax-input" type="file" name="file" required /></div>
-        <button className="ax-btn" disabled={pending}>{pending ? s.addingAttachment : s.addAttachment}</button>
+        <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.addingAttachment : s.addAttachment}</button>
       </div>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.attachmentAdded}</span>}
+      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓ </span>{s.attachmentAdded}</span>}
     </form>
   );
 }
@@ -183,9 +183,9 @@ export function DeactivateRegulation({ regulationId, strings: s }: { regulationI
     <form action={formAction} className="stack" style={{ gap: "var(--ax-space-100)", alignItems: "flex-start" }}>
       <input type="hidden" name="regulation_id" value={regulationId} />
       <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><textarea className="ax-input" name="deactivation_reason" required /></label>
-      <button className="ax-btn ax-btn--subtle" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>
+      <button className="btn btn-ghost btn-touch" disabled={pending}>{pending ? s.deactivating : s.deactivate}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert"><span aria-hidden="true">✕ </span>{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓ </span>{s.deactivated}</span>}
+      {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓ </span>{s.deactivated}</span>}
     </form>
   );
 }
@@ -232,7 +232,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
         <div className="stack" style={{ gap: "2px", minInlineSize: 180 }}>
           <span className="ax-overline">{s.railClauses}</span>
           {clausesUnknown ? (
-            <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {s.railClausesUnknown}</span>
+            <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {s.railClausesUnknown}</span>
           ) : noClauses ? (
             <span className="t-caption"><span aria-hidden="true">○</span> {s.railClausesZero}</span>
           ) : (
@@ -246,7 +246,7 @@ function ImpactRail({ r, s }: { r: RegRowLite; s: RegStrings }) {
         <div className="stack" style={{ gap: "2px", minInlineSize: 180 }}>
           <span className="ax-overline">{s.railItems}</span>
           {itemsUnknown ? (
-            <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {s.railItemsUnknown}</span>
+            <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {s.railItemsUnknown}</span>
           ) : noItems ? (
             <span className="t-caption"><span aria-hidden="true">○</span> {s.railItemsZero}</span>
           ) : (
@@ -334,7 +334,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
                 <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
                   <StatusChip status={r.status} s={s} />
                   {/* Logical detail mode — same route, ?id= query param (CD-006). */}
-                  <a className="ax-btn ax-btn--secondary ax-link" href={`/admin/regulations/${encodeURIComponent(r.id)}`}>
+                  <a className="btn btn-secondary ax-link btn-touch" href={`/admin/regulations/${encodeURIComponent(r.id)}`}>
                     {s.openDossier}
                   </a>
                 </div>

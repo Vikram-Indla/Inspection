@@ -38,7 +38,7 @@ export default async function RiskStudio() {
 
   return (
     <Shell current="/admin/risk" title={t("admin.risk.title", "Risk Engine configuration")}
-      context={<><span className="ax-lozenge ax-lozenge--info">SCR-ADM-060 · ENG-04</span><span className="ax-version">{data?.version_label}</span></>}>
+      context={<><span className="badge badge-info">SCR-ADM-060 · ENG-04</span><span className="ax-version">{data?.version_label}</span></>}>
       <div className="ax-banner"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 foundation scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live configuration in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be reproducible from stored inputs + this version (EV-004). Writes require the risk_owner role; RLS rejects everyone else. Every save lands in the immutable audit trail.")}</div></div>
 
       {!data && (
