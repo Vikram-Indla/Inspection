@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { decideGeoOverride } from "./actions";
 import EmptyState from "@/components/EmptyState";
+import { formatDateTime } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 export type GeoOverrideQueueRow = {
   id: string;
@@ -33,9 +35,9 @@ export type OverrideQueueStrings = {
   decided: string; failure: string;
 };
 
-const stamp = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 
-export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueueRow[]; strings: OverrideQueueStrings }) {
+export default function OverrideQueue({ rows, strings, locale }: { rows: GeoOverrideQueueRow[]; strings: OverrideQueueStrings; locale: Locale }) {
+  const stamp = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const router = useRouter();
   const [rejection, setRejection] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<Record<string, string>>({});
@@ -70,11 +72,11 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
                   <strong>{row.factory_name ?? row.visit_id.slice(0, 8)}</strong>
                   <p className="ax-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
                 </div>
-                <span className="ax-lozenge ax-lozenge--warning">{strings.expires}: {stamp(row.expires_at)} UTC</span>
+                <span className="ax-lozenge ax-lozenge--warning">{strings.expires}: {stamp(row.expires_at)}</span>
               </div>
               <p style={{ marginBlock: "var(--ax-space-150)" }}>{row.explanation}</p>
               <div className="ax-row ax-caption" style={{ gap: 12, flexWrap: "wrap" }}>
-                <span>{strings.captured}: <span className="ax-numeric">{stamp(row.device_occurred_at)} UTC</span></span>
+                <span>{strings.captured}: <span className="ax-numeric">{stamp(row.device_occurred_at)}</span></span>
                 <span className="ax-numeric">{row.observed_lat.toFixed(6)}, {row.observed_lng.toFixed(6)}</span>
                 <span>{strings.accuracy}: <span className="ax-numeric">±{Number(row.accuracy_m).toFixed(1)} m</span></span>
                 <span>{strings.distance}: <span className="ax-numeric">{Number(row.distance_m).toFixed(0)} m</span></span>

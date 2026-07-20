@@ -22,7 +22,7 @@ const toArr = (v: string | string[] | undefined): string[] => (v == null ? [] : 
 
 export default async function BulkPlanning({ searchParams }: { searchParams: Promise<{ ct?: string; cf?: string | string[]; co?: string | string[]; cv?: string | string[]; combine?: string }> }) {
   const sp = await searchParams;
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
 
   // RBAC-007 — Visit Planning (bulk targeting + its P02 review step) is a
@@ -271,6 +271,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
         denominator={denominator} eligible={factories.length} oldestSyncedAt={oldestSyncedAt} missingSync={missingSync} ledgerStrings={ledgerStrings}
         distributions={distributions} distStrings={distStrings}
         factories={factories as never} bulkFormStrings={strings}
+        locale={locale}
       />
     </Shell>
   );

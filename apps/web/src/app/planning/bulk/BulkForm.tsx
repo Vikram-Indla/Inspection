@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { formatDate } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 // CD-021 (SCR-WEB-110) — evidence table + persistent selection (frames 1a/1d).
 // This screen is TARGETING only: which factories, with the provenance to trust
@@ -38,8 +40,8 @@ const PAGE_SIZE = 25;
 const SEL_KEY = "cd021-bulk-selection";
 const dupOf = (f: F) => f.visits.some(v => ["draft", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
 
-export default function BulkForm({ factories, strings, focusedField, focusedValue }: {
-  factories: F[]; strings: BulkFormStrings; focusedField?: string | null; focusedValue?: string | null;
+export default function BulkForm({ factories, strings, focusedField, focusedValue, locale }: {
+  factories: F[]; strings: BulkFormStrings; focusedField?: string | null; focusedValue?: string | null; locale: Locale;
 }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [q, setQ] = useState("");
@@ -83,7 +85,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   const byBand = countBy(f => f.risk_band ?? "—");
   const byRegion = countBy(f => f.region ?? "—");
 
-  const provenance = (f: F) => f.source_synced_at ? strings.provSynced.replace("{d}", new Date(f.source_synced_at).toISOString().slice(0, 10)) : strings.provNoSync;
+  const provenance = (f: F) => f.source_synced_at ? strings.provSynced.replace("{d}", formatDate(f.source_synced_at, locale === "ar" ? "ar" : "en")) : strings.provNoSync;
   const dataQuality = (f: F) => {
     const flags: { label: string; kind: string }[] = [];
     if (f.official_lat == null || f.official_lng == null) flags.push({ label: strings.dqNoLocation, kind: "critical" });

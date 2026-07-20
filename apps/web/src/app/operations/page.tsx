@@ -478,7 +478,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       </div>
       <p className="ax-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
 
-      <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} />
+      <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} locale={locale} />
 
       {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>
