@@ -213,7 +213,7 @@ export default async function Field() {
     <Shell current="/field" title={t("field.assignments.title", "My assignments")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("field.assignments.context", "Assigned to you")}</span>}>
       {/* padding-block-end keeps content clear of the fixed bottom tab bar */}
-      <div className="ax-field-page">
+      <div className="ax-field-page" data-density="field">
         <ContextualAiPanel
           surface="inspector_daily_briefing"
           title={t("field.dashboard.ai.title", "My daily inspection briefing")}

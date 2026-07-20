@@ -21,6 +21,8 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 
 | 2026-07-20 | PR8 Inspection+signature+data (new components) | InspectionCard/FindingCard/ComplianceScore/DueDate/EvidenceCard/EvidenceStack/ReviewPanel/AuditTrail/StatusSpine/CommandPalette + KPICard/MetricStrip/Timeline/DescriptionList | unchanged | none | StatusSpine 13-stage lifecycle; EvidenceStack surfaces provenance; ReviewPanel reject-gated-on-reason |
 
+| 2026-07-20 | PR9 Field/iPad (slice) | field/page.tsx root gets data-density="field" (52px controls, 15px body) | unchanged | factory-360 field root untouched (do_not_touch) | full field taskbar/offline-alert/card-list rebuild + iPad matrices need runtime build |
+
 ## PR2 notes
 - Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
   imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.
