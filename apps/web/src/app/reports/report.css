@@ -19,7 +19,11 @@
 .rp-head__ar { font-family: var(--ax-font-arabic); direction: rtl; }
 .rp-title { font: var(--ax-text-title); color: var(--ax-color-primary-strong); }
 
-.rp-section { break-inside: avoid; display: flex; flex-direction: column; gap: var(--ax-space-150); }
+/* V2 print spec: a chapter/section is allowed to continue across pages — only
+   the signature block (below) is an atomic keep-together. Forcing every
+   section to avoid a page break produced large forced blank gaps on a
+   report with many items. */
+.rp-section { display: flex; flex-direction: column; gap: var(--ax-space-150); }
 .rp-section > h3 { font: var(--ax-text-subheading); color: var(--ax-color-primary-strong); border-block-end: 1px solid var(--ax-color-border); padding-block-end: var(--ax-space-050); }
 
 .rp-kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--ax-space-150) var(--ax-space-300); }
@@ -27,11 +31,14 @@
 .rp-kv dd { font: var(--ax-text-body-strong); }
 
 .rp-table { inline-size: 100%; border-collapse: collapse; font: var(--ax-text-caption); }
+.rp-table thead { display: table-header-group; } /* explicit repeat-on-page-break, belt-and-suspenders with UA default */
 .rp-table th { text-align: start; font: var(--ax-text-micro); color: var(--ax-color-text-secondary); letter-spacing: .01em; border-block-end: 1.5px solid var(--ax-color-border-strong); padding: var(--ax-space-100); }
 .rp-table td { border-block-end: 1px solid var(--ax-color-border); padding: var(--ax-space-100); vertical-align: top; }
-.rp-table tr { break-inside: avoid; }
+.rp-table tr { break-inside: avoid; } /* an atomic ROW never splits across a page; the table itself flows freely */
 
-.rp-sig { display: flex; gap: var(--ax-space-400); align-items: flex-end; flex-wrap: wrap; }
+/* V2 print spec: the signature block is the ONE atomic keep-together on the
+   whole document — a signature must never be separated from its line/name. */
+.rp-sig { display: flex; gap: var(--ax-space-400); align-items: flex-end; flex-wrap: wrap; break-inside: avoid; }
 .rp-sig__img { max-inline-size: 260px; max-block-size: 110px; border-block-end: 1px solid var(--ax-color-border-strong); background: var(--ax-color-surface); }
 .rp-sig__line { min-inline-size: 220px; border-block-end: 1px solid var(--ax-color-border-strong); padding-block-end: var(--ax-space-300); }
 
@@ -40,7 +47,22 @@
 @media print {
   @page { size: A4; margin: 12mm; }
   .no-print { display: none !important; }
-  .rp-page { background: var(--ax-color-surface); padding: 0; min-block-size: auto; }
-  .rp-doc { box-shadow: none; max-inline-size: none; padding: 0; }
+  /* V2 print spec: grayscale-safe #111/#555/#999 ladder, never the dark-theme
+     palette — a reviewer may have the app in dark mode when they print/export
+     to PDF; the official document must not inherit that. Scoped to .rp-page
+     so it can't leak into any other on-screen content. */
+  .rp-page {
+    --ax-color-text: var(--ax-color-print-text);
+    --ax-color-surface: var(--ax-color-print-surface);
+    --ax-color-canvas: var(--ax-color-print-surface);
+    --ax-color-border: var(--ax-color-print-border);
+    --ax-color-border-strong: var(--ax-color-print-border);
+    --ax-color-text-secondary: #555555;
+    --ax-color-primary-strong: #111111;
+    --ax-color-inverse-text: #FFFFFF;
+    background: var(--ax-color-print-surface); padding: 0; min-block-size: auto;
+  }
+  .rp-doc { box-shadow: none; max-inline-size: none; padding: 0; background: var(--ax-color-print-surface); color: var(--ax-color-print-text); }
   .rp-doc a { text-decoration: none; color: inherit; }
+  .rp-head__mark { background: #111111; }
 }
