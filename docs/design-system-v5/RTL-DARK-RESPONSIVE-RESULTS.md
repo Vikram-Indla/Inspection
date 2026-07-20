@@ -24,7 +24,8 @@ Captured with `apps/web/scripts/capture-v5-evidence.mjs` — a standalone Playwr
 | 15 | dashboard-320px | ops | 320×900 | 400%-zoom-equivalent narrow viewport reflow |
 | 17 | dashboard-1280 | ops | 1280×900 | Intermediate desktop breakpoint |
 | 18 | dashboard-1024-tablet | ops | 1024×900 | Compact-desktop/tablet breakpoint |
-| 16 | **report-print-preview** | ops | 1000×1400, print media emulated | The official inspection report, real submitted data, `page.emulateMedia({media:"print"})`. Confirms Wave 8's print-CSS fixes live: grayscale-safe palette regardless of the session's on-screen theme, bilingual Ministry header, glyph+word compliance status (a green "مطابق" chip with a checkmark, not a color-only signal), Riyadh-formatted dates throughout, and a signature block at the foot of the document. |
+| 16 | **report-print-preview** | ops | 1000×1400, print media emulated | The official inspection report, real submitted data, `page.emulateMedia({media:"print"})`. Re-captured after the Wave 8 follow-up (5-layer content-model grouping) — confirms live: grayscale-safe palette regardless of the session's on-screen theme, bilingual Ministry header, glyph+word compliance status (a green "مطابق" chip with a checkmark, not a color-only signal), Riyadh-formatted dates throughout, the 5 layer headings (Identity and outcome / Findings and compliance / Violations and corrective actions / Evidence, versions and decisions / Acknowledgement and signatures), and a signature block at the foot of the document. |
+| 16a | **report-screen-layers** | ops | 1000×1400, screen (light) | Same live submitted inspection, on-screen (not print) view — confirms the 5 layer headings render correctly on-screen too, not only in print media, and that no chapter content/logic changed. |
 
 ## What this confirms, live, not by construction
 - Dark-theme primary is genuinely green in the running app (screenshot 13), not just in `tokens.css` source.
