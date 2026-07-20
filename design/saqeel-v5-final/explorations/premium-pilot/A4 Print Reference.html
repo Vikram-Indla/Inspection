@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="design_doc_mode" content="canvas">
+<title>Saqeel Premium — A4 print reference</title>
+<link rel="stylesheet" href="../../styles.css">
+<link rel="stylesheet" href="pilot.css">
+<style>
+.a4{position:absolute;width:794px;height:1123px;background:#fff;color:#111;box-shadow:0 16px 44px rgba(0,0,0,.4);font:400 12.5px/18px var(--ax-font-sans);display:flex;flex-direction:column}
+.a4 .m{padding:34px 45px 0;flex:1;display:flex;flex-direction:column;gap:16px;overflow:hidden}
+.rh{display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid #555;padding:16px 45px 10px;font:400 11px/15px var(--ax-font-sans);color:#333}
+.rh .lk{display:flex;gap:10px;align-items:center}.rh img{width:26px;height:26px;filter:grayscale(1)}
+.rh b{font:600 12px/16px var(--ax-font-sans);color:#111}
+.rf{border-top:1px solid #999;margin:0 45px;padding:8px 0 26px;display:flex;justify-content:space-between;font:400 10.5px/14px var(--ax-font-sans);color:#555}
+.pt{width:100%;border-collapse:collapse;font:400 11.5px/16px var(--ax-font-sans)}
+.pt th{text-align:left;font:600 11px/15px var(--ax-font-sans);color:#111;border-bottom:1.5px solid #555;padding:6px 8px 6px 0}
+.pt td{border-bottom:1px solid #999;padding:6px 8px 6px 0;vertical-align:top}
+.pchip{display:inline-block;border:1px solid #555;border-radius:0;padding:1px 6px;font:600 10px/14px var(--ax-font-sans);white-space:nowrap}
+.ph3{margin:0;font:500 15px/20px var(--ax-font-sans);border-top:2px solid #111;padding-top:6px}
+.pnum{font-feature-settings:"tnum" 1;font-variant-numeric:tabular-nums}
+.cont{font:italic 10.5px/14px var(--ax-font-sans);color:#555}
+.callout{position:absolute;background:#17453A;color:#C9EEDD;font:400 12px/17px var(--ax-font-sans);padding:8px 12px;border-radius:6px;max-width:250px}
+.callout::before{content:"";position:absolute;top:50%;inset-inline-start:-6px;border:6px solid transparent;border-inline-end-color:#17453A;border-inline-start:0;transform:translateY(-50%)}
+</style>
+</head>
+<body>
+
+<div class="panel" style="left:40px;top:40px;width:4460px">
+<h2>A4 print reference — official report, print renderer (shared by A1 and A2; grayscale-safe; texture omitted)</h2>
+<p style="margin:0">Five pages of the INS‑9F2A41C7 composition per SAQEEL-PREMIUM-PRINT-SPEC: 12mm margins, repeating 18mm ministry header and reference footer with page numbers; <b>no chapter-level <span class="mono">break-inside:avoid</span></b> — page 2→3 shows a findings table continuing across the break with its header repeated and a "continued" label; signatures are the only kept-together atomic block; status prints as bordered glyph+word (survives monochrome); collapsed screen disclosures print fully expanded (all 48 items, full sha256 + paths with <span class="mono">overflow-wrap:anywhere</span>); interactive chrome (.no-print) is omitted. Green annotations point at each demonstrated rule.</p>
+</div>
+
+<!-- P1 -->
+<div class="a4" style="left:40px;top:330px">
+<div class="rh"><span class="lk"><img src="../../assets/saqeel-prism.svg" alt=""><span><b>Kingdom of Saudi Arabia · Ministry of Industry and Mineral Resources</b><br>Saqeel Inspection Platform — official inspection report · <span lang="ar" dir="rtl">وزارة الصناعة والثروة المعدنية</span></span></span><span class="pnum">INS‑9F2A41C7 · immutable v3</span></div>
+<div class="m">
+  <div>
+    <h2 style="margin:0;font:500 22px/28px var(--ax-font-sans)">Inspection report — Gulf Steel Works</h2>
+    <p class="pnum" style="margin:4px 0 0;color:#555">INS‑9F2A41C7 · immutable v3 · review approved · generated 20 Jul 2026, 14:05 (Riyadh)</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pchip">✓ REVIEW APPROVED</span><span class="pchip">▲ RISK HIGH · 78</span><span class="pchip">◔ 1 ACTION OVERDUE 14 DAYS</span><span class="pchip">⎘ IMMUTABLE v3</span></div>
+  <h3 class="ph3">01 · Official identity and executive outcome</h3>
+  <div class="pnum" style="display:grid;grid-template-columns:1fr 1fr;gap:8px 32px">
+    <span><b>Establishment</b> — Gulf Steel Works · FTY‑00318</span><span><b>Commercial registration</b> — 7010334821</span>
+    <span><b>Industrial license</b> — IL‑44‑002917</span><span><b>Region / city</b> — Riyadh · Second Industrial City</span>
+    <span><b>Visit window</b> — From 17 Jul 2026, 08:00 to 16:00 (Riyadh)</span><span><b>Inspector</b> — Mohammed Al‑Qahtani</span>
+    <span><b>Package (locked)</b> — PKG‑PER‑01 · Periodic industrial safety v3</span><span><b>Submitted</b> — 18 Jul 2026, 11:40 (Riyadh)</span>
+  </div>
+  <p style="margin:0;font:400 13px/19px var(--ax-font-sans)"><b>Outcome.</b> 41 of 48 checklist items compliant. Two violations under the fire‑safety chapter; three corrective actions, one 14 days overdue. The Level‑2 decision on immutable v3 is approved; this document is valid for official use.</p>
+  <h3 class="ph3">02 · Inspection findings and compliance</h3>
+  <p class="pnum" style="margin:0">Compliant 41 · Non‑compliant 4 · Not applicable 2 · Unanswered 1 — distribution printed with numeric labels per segment (no color reliance).</p>
+  <table class="pt">
+    <thead><tr><th style="width:42%">Item — Chapter 01 · General provisions (8 items)</th><th>Response</th><th>Inspector note</th><th>Violation</th><th style="text-align:right">Evidence</th></tr></thead>
+    <tbody>
+      <tr><td><b class="pnum">GP‑01</b> Valid industrial license displayed</td><td><span class="pchip">✓ COMPLIANT</span></td><td>—</td><td>—</td><td class="pnum" style="text-align:right">0</td></tr>
+      <tr><td><b class="pnum">GP‑02</b> Site plan matches licensed activity</td><td><span class="pchip">✓ COMPLIANT</span></td><td>—</td><td>—</td><td class="pnum" style="text-align:right">1</td></tr>
+      <tr><td><b class="pnum">GP‑03</b> Responsible manager designated</td><td><span class="pchip">✓ COMPLIANT</span></td><td>—</td><td>—</td><td class="pnum" style="text-align:right">0</td></tr>
+    </tbody>
+  </table>
+  <p class="cont">Chapter 01 continues on page 2 (rows 4–8) — no forced blank space; the table splits at row level.</p>
+</div>
+<div class="rf"><span>INS‑9F2A41C7 · Generated 20 Jul 2026, 14:05 (Riyadh) · M04‑215 · M06‑018 · DEC‑009 · ENG‑12</span><span class="pnum">Page 1 of 5</span></div>
+</div>
+<div class="callout" style="left:864px;top:400px">Running header repeats every page: lockup, bilingual ministry line, report ref + immutable version.</div>
+<div class="callout" style="left:864px;top:560px">Status prints as bordered glyph+word chips — meaning survives grayscale.</div>
+<div class="callout" style="left:864px;top:1300px">Chapter table splits at ROW level (no chapter-wide break-inside:avoid).</div>
+
+<!-- P2 -->
+<div class="a4" style="left:1180px;top:330px">
+<div class="rh"><span class="lk"><img src="../../assets/saqeel-prism.svg" alt=""><span><b>Kingdom of Saudi Arabia · Ministry of Industry and Mineral Resources</b><br>Saqeel Inspection Platform — official inspection report</span></span><span class="pnum">INS‑9F2A41C7 · immutable v3</span></div>
+<div class="m">
+  <table class="pt">
+    <thead><tr><th style="width:42%">Item — Chapter 01 · General provisions <span class="cont">(continued)</span></th><th>Response</th><th>Inspector note</th><th>Violation</th><th style="text-align:right">Evidence</th></tr></thead>
+    <tbody>
+      <tr><td><b class="pnum">GP‑04</b> Records retention per regulation</td><td><span class="pchip">✓ COMPLIANT</span></td><td>—</td><td>—</td><td class="pnum" style="text-align:right">0</td></tr>
+      <tr><td><b class="pnum">GP‑05</b> Worker safety induction records</td><td><span class="pchip">✓ COMPLIANT</span></td><td>Sampled 12 files.</td><td>—</td><td class="pnum" style="text-align:right">1</td></tr>
+      <tr><td colspan="5" class="cont">… rows GP‑06 – GP‑08 …</td></tr>
+    </tbody>
+  </table>
+  <table class="pt">
+    <thead><tr><th style="width:42%">Item — Chapter 02 · Fire safety (12 items)</th><th>Response</th><th>Inspector note</th><th>Violation</th><th style="text-align:right">Evidence</th></tr></thead>
+    <tbody>
+      <tr><td><b class="pnum">FS‑04</b> Emergency exits unobstructed and signed</td><td><span class="pchip">▲ NON‑COMPLIANT</span></td><td>East hall exit blocked by palletized coil stock; secondary route signage detached — long notes wrap, never clipped, including extended Arabic: <span lang="ar" dir="rtl">مخرج الصالة الشرقية مسدود بمخزون لفائف مُكدَّس ولوحة المسار الثانوي منزوعة.</span></td><td class="pnum">VIO‑FS‑104</td><td class="pnum" style="text-align:right">3</td></tr>
+      <tr><td><b class="pnum">FS‑07</b> Fire extinguishers inspected within period</td><td><span class="pchip">▲ NON‑COMPLIANT</span></td><td class="pnum">6 of 22 units past inspection date.</td><td class="pnum">VIO‑FS‑104</td><td class="pnum" style="text-align:right">2</td></tr>
+      <tr><td><b class="pnum">FS‑09</b> Hot‑work permit log maintained</td><td><span class="pchip">✓ COMPLIANT</span></td><td>—</td><td>—</td><td class="pnum" style="text-align:right">1</td></tr>
+      <tr><td><b class="pnum">FS‑11</b> Fire‑pump weekly test log</td><td><span class="pchip">◌ UNANSWERED</span></td><td>—</td><td>—</td><td class="pnum" style="text-align:right">0</td></tr>
+    </tbody>
+  </table>
+  <p class="cont">Chapter 02 continues on page 3 with repeated table header — screen collapses compliant items; print includes every item of all 6 chapters.</p>
+</div>
+<div class="rf"><span>INS‑9F2A41C7 · Generated 20 Jul 2026, 14:05 (Riyadh) · M04‑215 · M06‑018 · DEC‑009 · ENG‑12</span><span class="pnum">Page 2 of 5</span></div>
+</div>
+<div class="callout" style="left:2004px;top:430px">thead repeats via table-header-group; continued chapters carry a "(continued)" label.</div>
+<div class="callout" style="left:2004px;top:760px">Long EN + AR notes wrap inside the cell (overflow-wrap) — no clipping, no overflow.</div>
+
+<!-- P3 -->
+<div class="a4" style="left:2320px;top:330px">
+<div class="rh"><span class="lk"><img src="../../assets/saqeel-prism.svg" alt=""><span><b>Kingdom of Saudi Arabia · Ministry of Industry and Mineral Resources</b><br>Saqeel Inspection Platform — official inspection report</span></span><span class="pnum">INS‑9F2A41C7 · immutable v3</span></div>
+<div class="m">
+  <p class="cont" style="margin:0">… chapters 03–06 print in full (36 further items) …</p>
+  <h3 class="ph3">03 · Violations and corrective actions</h3>
+  <table class="pt">
+    <thead><tr><th>Violation</th><th>Severity</th><th style="width:26%">Legal basis · penalty</th><th>Corrective action · owner</th><th style="text-align:right">Due</th><th>State</th></tr></thead>
+    <tbody>
+      <tr><td><b class="pnum">VIO‑FS‑104</b> Obstructed emergency egress<br><span class="cont pnum">Items FS‑04, FS‑07 · mapping v2026‑02</span></td><td>■ Major</td><td>Industrial Safety Reg. art. 14(2) · PEN‑FS‑21 · notice issued</td><td>Clear egress routes; re‑inspect extinguishers — Site HSE manager</td><td class="pnum" style="text-align:right">06 Jul 2026</td><td><span class="pchip">◔ OVERDUE 14 DAYS</span></td></tr>
+      <tr><td><b class="pnum">VIO‑EQ‑221</b> Pressure‑vessel certificate lapsed<br><span class="cont pnum">Item EQ‑12 · mapping v2026‑02</span></td><td>▤ Moderate</td><td>Equipment Safety Reg. art. 9 · PEN‑EQ‑08 · informational</td><td>Renew certification — Plant engineer</td><td class="pnum" style="text-align:right">12 Aug 2026</td><td><span class="pchip">DUE 23 DAYS</span></td></tr>
+      <tr><td colspan="3" class="cont">Documentation update —</td><td>Update evacuation plan drawings — Facility administrator</td><td class="pnum" style="text-align:right">28 Jul 2026</td><td><span class="pchip">✓ COMPLETE</span></td></tr>
+    </tbody>
+  </table>
+  <h3 class="ph3">04 · Evidence, versions and decisions</h3>
+  <table class="pt">
+    <thead><tr><th>Stored file (full path)</th><th>Type</th><th>Item</th><th style="text-align:right">Captured (Riyadh)</th><th>Integrity sha256</th></tr></thead>
+    <tbody>
+      <tr><td class="pnum" style="overflow-wrap:anywhere">evidence/ins‑9f2a41c7/fs04‑01.jpg</td><td>Photo</td><td class="pnum">FS‑04</td><td class="pnum" style="text-align:right">17 Jul 2026, 09:47</td><td class="pnum" style="overflow-wrap:anywhere">9f2ac41d88be7a02c6d1…e41 ✓</td></tr>
+      <tr><td class="pnum" style="overflow-wrap:anywhere">evidence/ins‑9f2a41c7/fs07‑01.jpg</td><td>Photo</td><td class="pnum">FS‑07</td><td class="pnum" style="text-align:right">17 Jul 2026, 10:15</td><td class="pnum" style="overflow-wrap:anywhere">b83fd02a91cc4e17aa20…7c9 ✓</td></tr>
+      <tr><td colspan="5" class="cont">… all 9 evidence rows print with full paths and hashes (screen keeps them behind the custody disclosure) …</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="rf"><span>INS‑9F2A41C7 · Generated 20 Jul 2026, 14:05 (Riyadh) · M04‑215 · M06‑018 · DEC‑009 · ENG‑12</span><span class="pnum">Page 3 of 5</span></div>
+</div>
+<div class="callout" style="left:3144px;top:560px">Severity uses shape+word (■ Major / ▤ Moderate) — distinct in monochrome.</div>
+<div class="callout" style="left:3144px;top:980px">Full paths + sha256 restored in print; wrapped anywhere, copy-exact.</div>
+
+<!-- P4 -->
+<div class="a4" style="left:3460px;top:330px">
+<div class="rh"><span class="lk"><img src="../../assets/saqeel-prism.svg" alt=""><span><b>Kingdom of Saudi Arabia · Ministry of Industry and Mineral Resources</b><br>Saqeel Inspection Platform — official inspection report</span></span><span class="pnum">INS‑9F2A41C7 · immutable v3</span></div>
+<div class="m">
+  <table class="pt">
+    <thead><tr><th>Record timeline (chronological, append‑only)</th><th>Actor · role</th><th>Version</th><th style="text-align:right">Timestamp (Riyadh)</th></tr></thead>
+    <tbody>
+      <tr><td><b>Approved</b> — decision of record</td><td>Lina Al‑Harbi · Reviewer L2</td><td class="pnum">v3</td><td class="pnum" style="text-align:right">20 Jul 2026, 10:12</td></tr>
+      <tr><td><b>Submitted v3</b> — acknowledged &amp; signed</td><td>M. Al‑Qahtani · Inspector</td><td class="pnum">v3</td><td class="pnum" style="text-align:right">18 Jul 2026, 11:40</td></tr>
+      <tr><td><b>Returned v2</b> — sections: fire safety · "Evidence missing for FS‑07."</td><td>L. Al‑Harbi · Reviewer L2</td><td class="pnum">v2</td><td class="pnum" style="text-align:right">16 Jul 2026, 15:03</td></tr>
+      <tr><td><b>Submitted v1</b></td><td>M. Al‑Qahtani · Inspector</td><td class="pnum">v1</td><td class="pnum" style="text-align:right">14 Jul 2026, 13:20</td></tr>
+    </tbody>
+  </table>
+  <div style="flex:1"></div>
+  <p class="cont" style="margin:0">Signature block requires 40mm — insufficient space remains on this page, so the block moves intact to page 5 (kept-together atomic block; the only break-inside:avoid in the document).</p>
+</div>
+<div class="rf"><span>INS‑9F2A41C7 · Generated 20 Jul 2026, 14:05 (Riyadh) · M04‑215 · M06‑018 · DEC‑009 · ENG‑12</span><span class="pnum">Page 4 of 5</span></div>
+</div>
+<div class="callout" style="left:4284px;top:1150px">Signatures never split awkwardly: &lt;40mm left → whole block pushes to page 5.</div>
+
+<!-- P5 -->
+<div class="a4" style="left:3460px;top:1560px">
+<div class="rh"><span class="lk"><img src="../../assets/saqeel-prism.svg" alt=""><span><b>Kingdom of Saudi Arabia · Ministry of Industry and Mineral Resources</b><br>Saqeel Inspection Platform — official inspection report</span></span><span class="pnum">INS‑9F2A41C7 · immutable v3</span></div>
+<div class="m">
+  <h3 class="ph3">05 · Acknowledgement, signatures and legal record</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:8px">
+    <div><b>Factory representative</b><br>Khalid Al‑Mutairi — Operations director<br><div style="height:52px;border-bottom:1px solid #555;display:flex;align-items:flex-end;color:#555;font-style:italic;padding-bottom:4px">signature on file — SIGNED</div><span class="pnum" style="color:#555">18 Jul 2026, 11:38 (Riyadh)</span></div>
+    <div><b>Inspector</b><br>Mohammed Al‑Qahtani<br><div style="height:52px;border-bottom:1px solid #555"></div><span class="pnum" style="color:#555">Submitted 18 Jul 2026, 11:40 (Riyadh)</span></div>
+  </div>
+  <p style="margin:8px 0 0;color:#333">Sections 01–05 render the immutable v3 submission snapshot; establishment identity is live reference data (M04‑215). Report generated <span class="pnum">20 Jul 2026, 14:05 (Riyadh)</span> · data refreshed <span class="pnum">14:02</span>. A recorded Level‑2 decision is immutable (M06‑009); every session action is audited (ENG‑12).</p>
+</div>
+<div class="rf"><span>INS‑9F2A41C7 · Generated 20 Jul 2026, 14:05 (Riyadh) · M04‑215 · M06‑018 · DEC‑009 · ENG‑12</span><span class="pnum">Page 5 of 5</span></div>
+</div>
+
+</body>
+</html>

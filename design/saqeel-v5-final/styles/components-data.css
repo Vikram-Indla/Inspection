@@ -1,0 +1,43 @@
+/* ==================================================== ENTERPRISE: DATA TABLE
+   Canonical density, sticky header, bulk selection, row actions, per-row
+   bulk outcomes (P03 failure control), empty/error/loading states.          */
+.ax-tablewrap { overflow-x: auto; border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); }
+.ax-table { border-collapse: collapse; inline-size: 100%; font: var(--ax-text-body); }
+.ax-table th {
+  text-align: start; font: var(--ax-text-micro); letter-spacing: .01em;
+  color: var(--ax-color-text-secondary); background: var(--ax-color-surface-sunken);
+  padding-block: var(--ax-space-100); padding-inline: var(--ax-space-200);
+  border-block-end: 1px solid var(--ax-color-border);
+  position: sticky; inset-block-start: 0;
+}
+.ax-table th[aria-sort] { cursor: pointer; }
+.ax-table th[aria-sort="ascending"]::after { content: " ↑"; }
+.ax-table th[aria-sort="descending"]::after { content: " ↓"; }
+.ax-table td { padding-block: var(--ax-space-150); padding-inline: var(--ax-space-200); border-block-end: 1px solid var(--ax-color-border); vertical-align: middle; }
+@media (max-width: 640px) {
+  .cd-compare-table { table-layout: fixed; min-inline-size: 0; }
+  .cd-compare-table th, .cd-compare-table td {
+    min-inline-size: 0;
+    padding-inline: var(--ax-space-050);
+    overflow-wrap: anywhere;
+  }
+  .cd-compare-table .ax-lozenge {
+    max-inline-size: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+.ax-table tbody tr:last-child td { border-block-end: 0; }
+.ax-table tbody tr:hover { background: var(--ax-color-neutral-tint); }
+.ax-table tbody tr[aria-selected="true"] { background: var(--ax-color-primary-tint); }
+.ax-table tbody tr.is-row-failed { background: var(--ax-color-critical-tint); }
+.ax-table .ax-td-num { text-align: end; font-variant-numeric: tabular-nums; }
+
+.ax-bulkbar {
+  display: flex; align-items: center; gap: var(--ax-space-200);
+  background: var(--ax-color-text); color: var(--ax-color-inverse-text);
+  border-radius: var(--ax-radius-standard); padding-block: var(--ax-space-100); padding-inline: var(--ax-space-200);
+  font: var(--ax-text-body-strong);
+}
+.ax-bulkbar .ax-btn--secondary { background: transparent; color: var(--ax-color-inverse-text); border-color: color-mix(in srgb, var(--ax-color-surface) 40%, transparent); }
+

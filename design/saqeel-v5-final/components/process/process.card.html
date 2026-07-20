@@ -1,0 +1,26 @@
+<!-- @dsCard group="Components" viewport="700x430" name="Process & audit" subtitle="Stepper, timeline, validation, conflict resolver, diff" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>html,body{margin:0}body{font:var(--ax-text-body);color:var(--ax-color-text);background:var(--ax-color-surface);padding:16px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Stepper, Timeline, Breadcrumb, ValidationSummary, ConflictResolver, DiffText } = window.SaqeelDesignSystem_49c57d;
+function Card(){ return (<div className="ax-stack">
+    <Breadcrumb items={[{label:"Factories",href:"#"},{label:"Gulf Steel Works",href:"#"},{label:"Visit VIS-2026-004821"}]}/>
+    <Stepper steps={[{label:"Criteria",state:"done"},{label:"Targets",state:"done"},{label:"Schedule",state:"active"},{label:"Review"},{label:"Publish",state:"blocked"}]}/>
+    <ValidationSummary title="2 blockers before submission" blockers={[{label:"Fire safety Q4 unanswered",href:"#"},{label:"Evidence missing for seizure record"}]}/>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,alignItems:"start"}}>
+      <div className="ax-surface" style={{padding:"var(--ax-space-200)"}}>
+        <Timeline items={[
+          {actor:"l.alharbi",action:"approved the report",version:"v3",time:"2026-07-18 14:02",key:true},
+          {actor:"m.qahtani",action:"submitted for review",version:"v3",time:"2026-07-18 11:40"},
+          {actor:"system",action:"geofence check-in verified",time:"2026-07-17 09:31",detail:"Within 150 m of official pin"}]}/>
+        <p style={{margin:"8px 0 0",font:"var(--ax-text-caption)",color:"var(--ax-color-text-secondary)"}}>Threshold: <DiffText type="del">30 days</DiffText> <DiffText>14 days</DiffText></p>
+      </div>
+      <ConflictResolver local={<p style={{margin:0}}>Answer: <strong>Fail</strong><br/>14:02 on device</p>} server={<p style={{margin:0}}>Answer: <strong>Pass</strong><br/>13:58 by m.qahtani</p>}/>
+    </div>
+  </div>); }
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>

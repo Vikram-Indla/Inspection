@@ -1,0 +1,19 @@
+# Saqeel V4.1 — closure report
+STATUS: SAQEEL DESIGN SYSTEM V4.1 CLOSED — READY FOR IMPLEMENTATION REVIEW, APPLICATION NOT YET IMPLEMENTED
+
+| Closure item | Result |
+|---|---|
+| 1 Entry point V2-authoritative | readme.md + SKILL.md rewritten (dark=green, radius 6, texture policy, density ladder, layered CSS); explorations/premium-pilot/ declared archived provenance |
+| 2 Control-boundary contrast | Dark token corrected #5C6670 (2.90:1, FAILED) → **#6B7680 (3.65:1 vs #191D22, 3.90:1 vs #101317)**; applied to inputs/select/textarea, secondary buttons, pagination, segmented boundary, search, command chrome. Matrix: SAQEEL-V4.1-CONTRAST-MATRIX.json |
+| 3 React a11y contracts | Tabs (roving tabindex, RTL arrows, Home/End, panels) + RouteTabs (links, no tab roles); Modal (labelledby/describedby, close, Esc, trap, restore); Drawer (modal/non-modal, labeled, restore); Pagination (localized names); DataTable (sort buttons + aria-sort, caption, rowLabel identity names, indeterminate select-all); Field (auto id/for/describedby/invalid/errormessage); SearchInput (single SVG icon); Button (aria-busy, danger-subtle + compact/field size types, disabledReason) |
+| 4 Self-contained package | PARTIAL — all 21 pattern/reference/evidence pages + guideline cards are dependency-free static HTML (offline-safe). Component specimen cards and the UI kit load React/Babel from unpkg (the interactive-preview runtime of this authoring environment). See SAQEEL-V4.1-OFFLINE-PREVIEW-CHECK.md |
+| 5 Layered CSS | astryx.css physically split into styles/ (foundations, components-core/status/overlays/feedback/navigation/data/process/domain, utilities, legacy-features) + canonical styles/print.css; styles.css is the compiled-order entry. Map: SAQEEL-V4.1-CSS-LAYER-MAP.md |
+| 6 Canonical V2 APIs | 14 new components in components/patterns2/: PageHeader, CommandHeader, StatusRail, MetricStrip, StatusChip, TonalField, RecordRow, ControlGroup, DateTime, DateRange, Signature, ReportHeader, ReportFooter, FieldActionBar, AdminFilterToolbar (+ existing EvidenceCard/Timeline). API matrix: SAQEEL-V4.1-COMPONENT-API-MATRIX.md |
+| 7 Density | .ax-density-compact now = 40px standard actions; 36px is opt-in via .ax-btn--compact / size="compact" — no blanket override |
+| 8 Brand vs information | --ax-color-link (#175CD3 / #78AEDA) + .ax-link; all 21 pattern pages' links switched to info blue; green reserved for brand/principal/selected/verified |
+| 9 V1 contradictions | KpiCard → 28/32 metric, flat; TypeCards deprecated for lists (RecordRow); loading shown as alternate state of the same action in core.card.html; Button.d.ts includes danger-subtle; bundle regenerates from sources at end of turn |
+| 10 Responsive/RTL/dark proof | patterns/evidence/responsive.html (1440/1024/768/390 + iPad 1194/834/507 live iframes); patterns/evidence/dark.html (?theme=dark on gallery + one page per channel); native-dark review-workspace; true-AR pages: inspector-checklist-ar, approval-queue-ar + RTL Reference (report R1, workspace R2). Remaining AR counterparts (visit planning, template editor, acknowledgement) listed as implementation-phase items |
+| 11 Report/print canonical | styles/print.css (A4, thead repeat, atomic-only breaks, grayscale chips, orphans/widows) + ReportHeader/ReportFooter/Signature components; pilot print spec remains provenance |
+| 12 Ungoverned content | 🖼/🎞/📷 emoji replaced with stroke SVGs across all patterns; links governed; Space Grotesk retained under documented frozen-contract exception (deprecation map); dates already Riyadh-formatted; bdi added in AR pages + DateTime/DateRange components |
+
+Known remaining items (implementation phase): CDN-free specimen runtime, full AR counterpart set, real 400% zoom/keyboard/screen-reader runs, print fixtures 1/20/100/300.

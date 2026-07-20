@@ -1,0 +1,53 @@
+/* ===================================================== CORE: FEEDBACK STATES
+   The 12 mandatory screen states (Astryx pack; screen catalogue `states`).   */
+.ax-skeleton {
+  border-radius: var(--ax-radius-small);
+  background: linear-gradient(90deg, var(--ax-color-neutral-tint) 25%, var(--ax-color-neutral-weak) 50%, var(--ax-color-neutral-tint) 75%);
+  background-size: 200% 100%; animation: ax-shimmer 1.4s linear infinite;
+  min-block-size: 14px;
+}
+@keyframes ax-shimmer { to { background-position: -200% 0; } }
+
+.ax-state {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: var(--ax-space-100); padding: var(--ax-space-600) var(--ax-space-300);
+  color: var(--ax-color-text-secondary);
+}
+.ax-state__glyph { font-size: 28px; line-height: 1; }
+.ax-state h4 { color: var(--ax-color-text); }
+.ax-state--inline { padding: var(--ax-space-300); }
+
+/* Stale / degraded chrome — stale data never presented as live (FND-013;
+   Ops rule M08-019; ERR-OPS-001) */
+.ax-freshness { display: inline-flex; align-items: center; gap: 6px; font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.ax-freshness::before { content: "●"; font-size: 9px; color: var(--ax-color-success); }
+.ax-freshness--stale::before { color: var(--ax-color-warning); }
+.ax-freshness--dead::before { color: var(--ax-color-critical); }
+.is-stale { position: relative; }
+.is-stale::after {
+  content: "STALE — last verified value shown"; position: absolute; inset-inline-end: var(--ax-space-100); inset-block-start: var(--ax-space-100);
+  font: var(--ax-text-micro); letter-spacing: .05em; padding: 2px 8px;
+  background: var(--ax-color-warning-tint); color: var(--ax-color-warning-strong);
+  border: 1px solid color-mix(in srgb, var(--ax-color-warning) 45%, var(--ax-color-border));
+  border-radius: var(--ax-radius-small);
+}
+
+/* Widget frame — per-widget fault isolation (MVP1-FND-012; EV-010) */
+.ax-widget { display: flex; flex-direction: column; min-block-size: 160px; }
+.ax-widget__head { display: flex; align-items: center; justify-content: space-between; gap: var(--ax-space-100); padding: var(--ax-space-150) var(--ax-space-200); border-block-end: 1px solid var(--ax-color-border); }
+.ax-widget__body { flex: 1; padding: var(--ax-space-200); }
+.ax-widget.is-failed .ax-widget__body { display: none; }
+.ax-widget__fallback { display: none; }
+.ax-widget.is-failed .ax-widget__fallback { display: flex; }
+
+/* Offline / sync indicator — persistent shell chrome on iPad (iPad spec §4):
+   offline / pending / syncing / synced / conflict / failed always visible.  */
+.ax-sync { display: inline-flex; align-items: center; gap: var(--ax-space-100); font: var(--ax-text-caption); font-weight: 600; padding-block: var(--ax-space-050); padding-inline: var(--ax-space-150); border-radius: var(--ax-radius-full); border: 1px solid var(--ax-color-border); background: var(--ax-color-surface); }
+.ax-sync::before { font-size: 11px; }
+.ax-sync--synced   { color: var(--ax-color-success-strong); }  .ax-sync--synced::before { content: "✓"; }
+.ax-sync--offline  { color: var(--ax-color-text); background: var(--ax-color-neutral-weak); } .ax-sync--offline::before { content: "⛔"; }
+.ax-sync--pending  { color: var(--ax-color-warning-strong); }  .ax-sync--pending::before { content: "⏳"; }
+.ax-sync--syncing  { color: var(--ax-color-primary-strong); }  .ax-sync--syncing::before { content: "⟳"; animation: ax-spin 1.2s linear infinite; display:inline-block; }
+.ax-sync--conflict { color: var(--ax-color-critical-strong); background: var(--ax-color-critical-tint); border-color: color-mix(in srgb, var(--ax-color-critical) 40%, var(--ax-color-border)); } .ax-sync--conflict::before { content: "⚠"; }
+.ax-sync--failed   { color: var(--ax-color-critical-strong); } .ax-sync--failed::before { content: "✕"; }
+

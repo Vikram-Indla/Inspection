@@ -1,0 +1,23 @@
+<!-- @dsCard group="Components" viewport="700x330" name="Overlays" subtitle="Menu, tooltip, modal, drawer" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>html,body{margin:0}body{font:var(--ax-text-body);color:var(--ax-color-text);background:var(--ax-color-surface);padding:16px}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const { Menu, Tooltip, Button, Icon } = window.SaqeelDesignSystem_49c57d;
+function Card(){ return (<div className="ax-row" style={{alignItems:"flex-start",gap:24}}>
+    <Menu items={[{label:"Reassign inspector",icon:<Icon name="access" size={18}/>},{label:"View audit trail",icon:<Icon name="review" size={18}/>},{label:"Publish",disabled:true,disabledReason:"Maker-checker (RBAC-002)"},{label:"Cancel visit",danger:true,icon:<Icon name="close" size={18}/>}]}/>
+    <div className="ax-stack" style={{flex:1}}>
+      <div className="ax-row"><Tooltip tip="Requires publish permission"><Button variant="secondary">Publish</Button></Tooltip></div>
+      <div className="ax-modal" role="dialog" style={{inlineSize:"100%"}}>
+        <div className="ax-modal__header"><h3 style={{margin:0,font:"var(--ax-text-heading)"}}>Cancel visit VIS-2026-004821?</h3></div>
+        <div className="ax-modal__body"><p style={{margin:0}}>The assigned inspector is notified and the slot returns to planning. This action is audited (ENG-12).</p>
+        <label className="ax-field"><span className="ax-field__label">Reason (mandatory)</span><textarea className="ax-textarea" placeholder="State the reason"></textarea></label></div>
+        <div className="ax-modal__footer"><Button variant="secondary">Keep visit</Button><Button variant="danger">Cancel visit</Button></div>
+      </div>
+    </div>
+  </div>); }
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>
