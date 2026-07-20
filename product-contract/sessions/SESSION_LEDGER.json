@@ -4047,9 +4047,52 @@
       "commit_sha": "a92dd9f49e7df50af606ed16881c09954161c528",
       "next_task": "Prompt 02 controlled staging deployment and functional verification from the pushed Factory 360 branch.",
       "resume_prompt": "Read CURRENT_STATE Update 104, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml and evidence/TASK-FACTORY-360-COMPLETE-010.md. Reconcile migration history before remote DDL; configure only approved Senaei values; run authenticated staging and preserve every blocked-external disposition until evidenced."
+    },
+    {
+      "session_id": "2026-07-20-factory-360-industry-shared-gap-013",
+      "started_at": "2026-07-20",
+      "ended_at": "2026-07-20",
+      "branch": "codex/industry-shared-factory360-gap-013",
+      "task_id": "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013",
+      "gate": "G11 Factory 360 integration hardening",
+      "requirements": ["F360-ISH-REQ-001..018"],
+      "acceptance_ids": ["F360-ISH-AC-001..018", "ISH-API-001..011"],
+      "screens": ["SCR-WEB-400", "connected P01/P03/P04/P08/P10/P11 consumers"],
+      "engines": ["dedicated fail-closed Industry Shared provider", "existing Factory 360 and Senaei engines preserved"],
+      "files_changed": [
+        "server-only Industry Shared endpoint registry, client and Factory 360 adapter",
+        "focused Industry Shared static contract",
+        "endpoint-contract, stub-retirement and acceptance ledgers",
+        "Factory 360 task, change approval, decision, queue, current-state and evidence records"
+      ],
+      "tests": [
+        "typecheck PASS",
+        "production build PASS",
+        "Industry Shared focused static contract 4/4 PASS",
+        "protected static inventory 135 PASS / 4 intentional provider skips / 0 failed",
+        "YAML/CSV/JSON/diff validation PASS"
+      ],
+      "evidence": [
+        "product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md",
+        "product-contract/factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv",
+        "product-contract/factory-360/industry-shared/FACTORY360_STUB_RETIREMENT_MATRIX.csv",
+        "product-contract/factory-360/industry-shared/F360_INDUSTRY_SHARED_ACCEPTANCE_LEDGER.csv"
+      ],
+      "decisions": [
+        "DEC-027 filed for API authority, workforce precedence, privacy/retention, activity authority and plant-cardinality conflict handling",
+        "No method, auth, field, privacy, fixture or source-precedence value was inferred",
+        "All eleven endpoint leads and all stub retirements remain blocked external"
+      ],
+      "blockers": [
+        "Authenticated beta Industry Shared session or sanitized developer contracts for ISH-API-001..011",
+        "Sponsor privacy/masking/retention decisions if person-level contact, delegation or workforce fields exist"
+      ],
+      "commit_sha": "65a4db2c80482318ba617e0439424f9e5966c020",
+      "next_task": "Capture and verify one complete Industry Shared endpoint contract, then implement its parser, canonical mapping, negative paths and controlled runtime evidence.",
+      "resume_prompt": "Read CURRENT_STATE Update 105, execution/CURRENT_SLICE.yaml, factory-360/FACTORY_360_EXECUTION_STATE.yaml, factory-360/industry-shared/INDUSTRY_SHARED_ENDPOINT_CONTRACT_LEDGER.csv and evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md. Work on codex/industry-shared-factory360-gap-013. Sign in to https://beta-backoffice.industry.sa first. Verify one endpoint completely before enabling network I/O; do not infer methods, auth, fields, privacy, retention, authority or plant cardinality."
     }
   ],
-  "last_session": "2026-07-20-factory-360-complete-010",
+  "last_session": "2026-07-20-factory-360-industry-shared-gap-013",
   "rules": {
     "append_only": true,
     "required_fields": [

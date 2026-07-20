@@ -4,7 +4,7 @@ stop_state: AWAITING_AUTHENTICATED_BETA_INDUSTRY_SHARED_CONTRACT_CAPTURE
 canonical_repository_path: /Users/vikramindla/Developer/Inspection
 authorized_worktree_path: /Users/vikramindla/Developer/Inspection/.local-inputs/worktrees/industry-shared-factory360-gap-013
 current_branch: codex/industry-shared-factory360-gap-013
-current_commit: db52854647fa9b4ca8fac362dfecd4ecc7ccf704
+current_commit: 65a4db2c80482318ba617e0439424f9e5966c020
 base_branch: codex/factory-360-complete-010
 base_commit: db52854647fa9b4ca8fac362dfecd4ecc7ccf704
 active_chunk: "Industry Shared contract gate and fail-closed provider boundary"
