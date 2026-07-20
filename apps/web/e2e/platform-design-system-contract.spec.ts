@@ -67,8 +67,8 @@ test.describe("Platform-wide government design-system contract", () => {
     const tokens = read("src/app/tokens.css");
     const css = read("src/app/astryx.css");
     const login = read("src/app/login/login.css");
-    expect(tokens).toContain("--ax-radius-input: 12px");
-    expect(tokens).toContain("--ax-text-input:   400 16px/24px var(--ax-font-input)");
+    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)"); // SAQEEL: inputs 3px (frozen 12px retired)
+    expect(tokens).toContain("--ax-text-input:        400 14px/1.5 var(--font-body)"); // SAQEEL body input, IBM Plex Sans
     expect(css).toContain("border-radius: var(--ax-radius-input)");
     expect(login).toContain("lg-atlas");
     expect(css).not.toContain("--ax-color-prism-magenta");
