@@ -279,7 +279,8 @@ export default function ShellClient({
     return (
       <Link key={item.id} className={className} aria-label={collapsed ? item.label : undefined}
         aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
-        href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled" data-next-spa="true">
+        href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled"
+        data-next-spa="true" prefetch={false}>
         <span className="ax-nav-icon"><Icon name={item.icon} /></span>
         <span className="ax-nav-label">{item.label}</span>
       </Link>
@@ -362,14 +363,14 @@ export default function ShellClient({
                   {searchOpen && query.trim().length >= 2 && (
                     <div id="shell-global-search-results" className="ax-shell-search__results" role="listbox" aria-label={strings.searchResults}>
                       {navigationResults.map(item => (
-                        <Link role="option" key={`nav-${item.id}`} href={item.href} onClick={closeAfterNavigate} data-next-spa="true">
+                        <Link role="option" key={`nav-${item.id}`} href={item.href} onClick={closeAfterNavigate} data-next-spa="true" prefetch={false}>
                           <Icon name={item.icon} /><span><strong>{item.label}</strong><small>{strings.navigation}</small></span>
                         </Link>
                       ))}
                       {globalResults.map(item => (
                         // F360IPAD-ENTRY-001 — on the inspector field channel, CR/license/plant
                         // search opens the field-native Factory 360 instead of the web dossier.
-                        <Link role="option" key={`${item.type}-${item.id}`} href={current?.startsWith("/field") && item.href.startsWith("/factories/cr/") ? item.href.replace("/factories/cr/", "/field/factory-360/") : item.href} onClick={closeAfterNavigate} data-next-spa="true">
+                        <Link role="option" key={`${item.type}-${item.id}`} href={current?.startsWith("/field") && item.href.startsWith("/factories/cr/") ? item.href.replace("/factories/cr/", "/field/factory-360/") : item.href} onClick={closeAfterNavigate} data-next-spa="true" prefetch={false}>
                           <Icon name={item.type === "factory" ? "factory" : item.type === "visit" ? "visits" : "inspect"} />
                           <span><strong>{item.label}</strong><small>{item.detail}</small></span>
                         </Link>
@@ -412,7 +413,7 @@ export default function ShellClient({
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               <NotificationBell strings={bellStrings} />
-              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true">
+              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="insights" />
               </Link>
               <div ref={accountRef} className="ax-shell-account">
