@@ -23,9 +23,11 @@ h2 { font: var(--ax-text-title); margin: 0; }
 h3 { font: var(--ax-text-heading); margin: 0; }
 h4 { font: var(--ax-text-subheading); margin: 0; }
 p  { margin: 0; }
-a.ax-link { color: var(--ax-color-primary); text-decoration: none; border-radius: var(--ax-space-050); }
+/* V2: links are information (blue), never brand — brand green stays scarce
+   and reserved for the principal action, or it stops meaning anything. */
+a.ax-link { color: var(--ax-color-link); text-decoration: none; border-radius: var(--ax-space-050); }
 a.ax-link:not(.ax-btn) { text-decoration: underline; text-underline-offset: .18em; text-decoration-thickness: .08em; }
-a.ax-link:hover { text-decoration: underline; color: var(--ax-color-primary-hover); }
+a.ax-link:hover { text-decoration: underline; color: color-mix(in srgb, var(--ax-color-link) 80%, var(--ax-color-text)); }
 a.ax-link:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
 .ax-inline-target {
   display: inline-flex;
@@ -869,17 +871,6 @@ button.ax-shell-scope { cursor: pointer; }
 .ax-flow__node.is-terminal { border-style: double; }
 .ax-flow__node.is-error { border-color: var(--ax-color-critical); }
 .ax-flow__edge { position: absolute; font: var(--ax-text-micro); color: var(--ax-color-text-secondary); background: var(--ax-color-surface); padding: 1px 6px; border-radius: var(--ax-radius-small); border: 1px solid var(--ax-color-border); }
-
-/* V2 density scope — opt-in wrapper so admin/compact surfaces can adopt the
-   36/40px control ladder without rewriting every shared component call site.
-   Web/iPad default (44/48/52px) is unaffected unless a page wraps in this. */
-.ax-density-admin .ax-btn:not(.ax-btn--prominent):not(.ax-btn--field):not(.ax-btn--icon) { min-height: var(--ax-control-height-admin); }
-.ax-density-admin .ax-btn--icon { inline-size: var(--ax-control-height-admin); }
-.ax-density-admin .ax-input:not(.ax-field--field .ax-input),
-.ax-density-admin .ax-select:not(.ax-field--field .ax-select),
-.ax-density-admin .ax-textarea { min-height: var(--ax-control-height-admin); }
-.ax-density-compact .ax-btn:not(.ax-btn--prominent):not(.ax-btn--field):not(.ax-btn--icon) { min-height: var(--ax-control-height-compact); }
-.ax-density-compact .ax-input, .ax-density-compact .ax-select { min-height: var(--ax-control-height-compact); }
 
 /* ============================================================ UTILITIES    */
 .ax-stack { display: flex; flex-direction: column; gap: var(--ax-space-200); }

@@ -253,7 +253,7 @@ export default function ShellClient({
     <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}`}>
       <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
       <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
-      <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
+      <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav ax-texture-chrome" aria-label={strings.primary}>
         <div className="ax-shell__brand">
           <img className="ax-shell__brand-mark" src="/saqeel-prism.svg" alt="" />
           <span className="ax-shell__brand-lockup">
@@ -302,7 +302,7 @@ export default function ShellClient({
       </nav>
 
       <main id="main-content" className="ax-shell__main" tabIndex={-1}>
-        <header className="ax-pagehead">
+        <header className="ax-pagehead ax-texture-chrome">
           <div className="ax-pagehead__topbar">
             <button ref={menuRef} className="ax-topbar-icon ax-shell__menu" type="button" aria-label={strings.openMenu}
               aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
