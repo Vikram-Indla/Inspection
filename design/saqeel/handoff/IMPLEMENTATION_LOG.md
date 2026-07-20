@@ -13,6 +13,8 @@ Never push/merge main. PR-per-step per CLAUDE_CODE_IMPLEMENTATION_PROMPT §3.
 
 | 2026-07-20 | PR4 Feedback layer (new components) | new `feedback/*` (Alert[+immutable]/Toast/Modal/Drawer/Tooltip/Menu/EmptyState/SyncIndicator/DiffView) + UserMenu | unchanged | none | SyncIndicator 6-state + DiffView onKeep conflict-resolution ported |
 
+| 2026-07-20 | PR5 Forms (new components) | new Combobox/DateRangePicker/StatusSelector/Accordion/ChecklistQuestion | unchanged | none | multi-select chips + ARIA combobox; checklist compliant/violation/na |
+
 ## PR2 notes
 - Vendored `design/saqeel/components.css` → `apps/web/src/app/saqeel-components.css`,
   imported after astryx.css in layout.tsx. Consumes SAQEEL tokens only.

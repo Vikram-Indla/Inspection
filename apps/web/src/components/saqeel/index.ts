@@ -29,3 +29,9 @@ export { Menu, type MenuProps, type MenuItem } from "./feedback/Menu";
 export { EmptyState, type EmptyStateProps } from "./feedback/EmptyState";
 export { SyncIndicator, type SyncIndicatorProps, type SyncState } from "./feedback/SyncIndicator";
 export { DiffView, type DiffViewProps, type DiffRow } from "./feedback/DiffView";
+// PR5 — forms
+export { Combobox, type ComboboxProps } from "./inputs/Combobox";
+export { DateRangePicker, type DateRangePickerProps } from "./inputs/DateRangePicker";
+export { StatusSelector, type StatusSelectorProps } from "./inputs/StatusSelector";
+export { Accordion, type AccordionProps, type AccordionSection } from "./data/Accordion";
+export { ChecklistQuestion, type ChecklistQuestionProps } from "./inspection/ChecklistQuestion";
