@@ -1,68 +1,49 @@
 schema_version: "1.2"
-task_id: "TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015"
-gate: "G11 Factory 360 cross-provider consumption reconciliation"
-title: "Reconcile iPad Factory 360 with the accepted cross-provider structural contract through one shared server projection"
-status: "RECONCILED_AWAITING_SPONSOR_ACCEPTANCE"
+task_id: "TASK-FACTORY-360-STAGING-RUNTIME-CLOSURE-016"
+gate: "G11 Factory 360 controlled staging runtime closure"
+title: "Independent staging verification and closure of merged Factory 360 Web, Inspector iPad and cross-provider structural-contract work"
+status: "PRE_FLIGHT_IN_PROGRESS"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-branch: "codex/factory360-ipad-api-contract-consumption-015"
+branch: "codex/factory360-staging-runtime-closure-016"
 
-baseline_sha: "594fd87b24a848c4e6426b11b03339bcf057d43c"
-merged_api_contract_sha: "ede6628fb711aa003f42293ff97ddcf212189f77"
-merge_commit: "9edd34e"
-original_ipad_impl_sha: "218131cf323337459f69ad59a75f37c5b2ed7538"
-merged_ipad_pr35_commit: "0a2cb4c1172e32fd48c98429de84da99f91df9a2"
+baseline_sha: "d53e09f7ee4018bf2046e36d95fe45df355b11a2"
+web_impl_sha: "a92dd9f49e7df50af606ed16881c09954161c528"
+web_evidence_sha: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
+ipad_impl_sha: "218131cf323337459f69ad59a75f37c5b2ed7538"
+ipad_pr: "PR #35"
+cross_provider_contract_sha: "ede6628fb711aa003f42293ff97ddcf212189f77"
+web_ipad_reconciliation_accepted_sha: "1f177158229d9632fb61280dde39f93ee1824f67"
+web_ipad_reconciliation_pr: "PR #36"
+web_ipad_reconciliation_merge_sha: "e0363bc09d7bf73d46ca975c772a108f6cd833c0"
+
+staging_project: "iiozvqntawxfwbgffzqu"
 
 slice_history:
+  - "TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 (slice-history/CURRENT_SLICE_FACTORY_360_IPAD_API_CONTRACT_CONSUMPTION_015_backup_2026-07-20.yaml)"
   - "TASK-FACTORY-360-IPAD-011 (slice-history/CURRENT_SLICE_FACTORY_360_IPAD_011_record_2026-07-20.yaml)"
   - "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014 (slice-history/CURRENT_SLICE_CROSS_PROVIDER_CONTRACT_014_backup_2026-07-20.yaml)"
   - "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013 (slice-history/CURRENT_SLICE_INDUSTRY_SHARED_GAP_013_BACKUP_2026-07-20.yaml)"
 
 objective: >-
-  Web and iPad consume the accepted cross-provider structure through ONE shared
-  server-side Factory 360 projection. External structural contracts -> server-only
-  typed adapters -> canonical mapping + source resolution -> shared dossier loader
-  -> Web + iPad -> permission-filtered offline snapshot. The iPad never calls a
-  provider directly.
+  Verify the merged Factory 360 runtime end to end on approved staging
+  (project iiozvqntawxfwbgffzqu): Web, Inspector iPad, shared canonical
+  projection, Web/iPad parity, permission-filtered offline snapshot v2,
+  original Inspection API structural consumption boundary, Industry Shared
+  fail-closed behaviour, external submission BLOCKED_TRIGGER_DECISION
+  boundary, and existing Inspector workflow non-regression. This is behaviour
+  and structural-consumption proof, not business-data cleanup.
 
-requirement_ids:
-  - "F360-XPC-MAP-0001..0438 (438-field mapping ledger)"
-  - "F360 source precedence matrix (5 groups)"
-  - "Web/iPad consumption matrix (provider_client_allowed=no)"
-  - "Industry Shared 11 endpoints fail-closed (INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED)"
-  - "External submission BLOCKED_TRIGGER_DECISION"
+scope_exclusions:
+  - "Do not mark Industry Shared contracts complete."
+  - "Do not mark the external submission trigger resolved."
+  - "Do not redesign the product, restart API-contract discovery, bulk-import Senaei data, modify production, or activate external inspection forwarding."
 
-acceptance_ids:
-  - "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014 static contract (5 tests)"
-  - "Factory 360 iPad parity + non-regression contract (9 tests)"
-  - "10 direct-provider negative proofs"
+open_decisions:
+  - "Undocumented Senaei domains remain BLOCKED_EXTERNAL with SENAEI_API_CONTRACT_NOT_SUPPLIED; no endpoints or values may be invented."
+  - "External submission forwarding remains BLOCKED_TRIGGER_DECISION pending sponsor-approved trigger."
+  - "J06-J12 (iPad/field + offline device journeys) marked NOT_REACHABLE_WITH_REASON: no iPad simulator/physical device wired into this session's tools; require a separate device-equipped pass."
+  - "Native-Arabic human review remains a separate human evidence gate per the task spec unless an authorized native reviewer becomes available."
+  - "Supabase MCP connector in this session is bound to an unrelated project (catalyst-prod, INACTIVE); staging DB access for iiozvqntawxfwbgffzqu uses the Management API with the keychain-held PAT (supabase-pat), the repo's established mechanism (see product-contract/CURRENT_STATE.md history, e.g. UPDATE 38/41)."
 
-integration:
-  - "apps/web/src/lib/factory360/cross-provider-contract.ts (accepted types + reconcileFact)"
-  - "apps/web/src/lib/factory360/canonical-projection.ts (NEW; server-only; builds projection from dossier; Industry Shared fail-closed)"
-  - "apps/web/src/lib/factory360/dossier.ts (loadFactory360Dossier now returns canonical projection)"
-  - "iPad /field/factory-360/[id] consumes canonical roles + discrepancy states (additive section)"
-  - "offline snapshot v2: canonical/source/discrepancy summary; backward-compatible; mim-field-f360-v1 namespace unchanged"
-
-do_not_touch:
-  - "Do not call external providers from iPad; no bearer token on device."
-  - "Do not add a second provider model, compliance calc, source precedence, or 438-field mapping."
-  - "Industry Shared remains fail-closed; retire no stub."
-  - "External Submit Inspection stays BLOCKED_TRIGGER_DECISION (no forwarding)."
-  - "Do not touch mim-field-v1 or the inspection response/evidence outbox (lib/offline.ts unchanged)."
-  - "Do not merge into setup/Inspection; do not deploy; no remote DDL."
-
-evidence:
-  - "typecheck 0; production build PASS."
-  - "Full static suite 149 passed / 4 skipped / 0 failed (playwright.static.config.ts)."
-  - "10/10 negative proofs; git diff --check clean; delta secret scan clean."
-
-exit_condition: >-
-  Web and iPad consume one shared projection carrying source-labelled canonical
-  facts and discrepancy states; Industry Shared fail-closed and external
-  submission blocked are preserved; offline snapshot extended backward-compatibly;
-  all negative proofs and static contracts pass; branch pushed, not merged.
-
-open_blockers:
-  - "Live authenticated staging runtime and port-bound browser journeys remain runtime-pending (no staging deploy this pass)."
-  - "Industry Shared and undocumented Senaei domains remain BLOCKED_EXTERNAL until verified contracts are supplied."
+pacing: "Checkpoint after pre-flight before any DDL apply, deploy action, or live browser journey execution (sponsor direction 2026-07-20)."
