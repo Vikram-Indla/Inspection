@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 import DecisionPanel, { type WorkspaceDecisionStrings } from "./DecisionPanel";
 import StartReview, { type StartReviewStrings } from "./StartReview";
@@ -13,7 +14,8 @@ export const dynamic = "force-dynamic";
 
 export default async function ReviewWorkspace({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;  // inspection id
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const lang = locale === "ar" ? "ar" : "en";
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError) {
@@ -126,7 +128,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   const scopeReview = decidedReturns.length ? decidedReturns[decidedReturns.length - 1] : null;
   const returnedScope = scopeReview?.returned_sections ?? null;
   const scopeLabel = scopeReview
-    ? `${(returnedScope ?? []).join(", ")} · ${scopeReview.decided_at ? new Date(scopeReview.decided_at).toISOString().slice(0, 10) : "—"}`
+    ? `${(returnedScope ?? []).join(", ")} · ${scopeReview.decided_at ? formatDate(scopeReview.decided_at, lang) : "—"}`
     : null;
 
   type ItemRow = { id: string; code: string; title: string; regulation_clauses: { clause_ref: string; legal_source: string | null } | { clause_ref: string; legal_source: string | null }[] | null };
@@ -284,7 +286,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               <p key={i}><span className="ax-lozenge ax-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="ax-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
             ))}
             {(ins.action_forms as unknown as { owner_name: string; due_at: string; status: string; required_correction: string }[]).map((a, i) => (
-              <p key={i} className="ax-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {new Date(a.due_at).toISOString().slice(0, 10)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
+              <p key={i} className="ax-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {formatDate(a.due_at, lang)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
             ))}
             {(ins.evidence as unknown as { storage_path: string; content_sha256: string | null }[]).map((e, i) => (
               <p key={i} className="ax-caption ax-numeric" style={{ marginBlockStart: 8 }}>📎 {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
@@ -338,7 +340,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
                 <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h4>
                 <p>
-                  <strong>{ack.name ?? "—"}</strong> · <span className="ax-numeric">{(ack.signed_at ?? ack.ts) ? new Date(ack.signed_at ?? ack.ts!).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
+                  <strong>{ack.name ?? "—"}</strong> · <span className="ax-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
                   {" "}<span className="ax-version">v{latest.version_number}</span>
                 </p>
                 {ack.signature_data_url
@@ -373,7 +375,7 @@ const panelStrings: WorkspaceDecisionStrings = {
               <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail (ENG-12)")}</h4>
               {(trail ?? []).map(ev => (
                 <p key={ev.id} className="ax-caption" style={{ marginBlockStart: 4 }}>
-                  <span className="ax-numeric">{new Date(ev.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</span>
+                  <span className="ax-numeric">{formatDateTime(ev.occurred_at, lang)}</span>
                   {" · "}<strong>{t(`enum.audit.${ev.object_type}`, ev.object_type.replace(/_/g, " "))}</strong>
                   {" · "}{t(`enum.audit.${ev.action}`, ev.action.replace(/_/g, " ").toLowerCase())}
                 </p>

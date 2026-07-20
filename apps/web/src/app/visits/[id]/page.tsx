@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import ActionBar, { type ActionBarStrings } from "./ActionBar";
 import Attachments, { type AttachmentRow, type AttachmentsStrings } from "./Attachments";
 import NotesEditor, { type NotesStrings } from "./NotesEditor";
@@ -16,7 +17,7 @@ const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", retur
 export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
   const { created } = await searchParams;
   const { id } = await params;
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   // ENG-05 — inspector pool; user_roles embed on profiles is ambiguous, disambiguate via !user_roles_user_id_fkey
   const { data: inspRows } = await sb.from("profiles")
@@ -134,7 +135,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   // CD-027 — Dual-State Ribbon: five never-collapsed domains, each with the
   // latest VERIFIED event + its source + the allowed-action boundary + a history
   // anchor. Boundaries are derived from the same guards the server actions enforce.
-  const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
+  const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const preStart = !insp || insp.status === "not_started";
   const canManage = v.planning_status === "published" && v.operational_state === "new";
   const canReassign = ["published", "returned"].includes(v.planning_status) && preStart;
@@ -205,7 +206,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       <div className="ax-grid-2">
         <div id="config" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
-          <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="ax-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
+          <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="ax-numeric">{fmt(v.window_start)} → {fmt(v.window_end)}</span></p>
           <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="ax-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360 →")}</a></p>
         </div>
         <div id="inspection" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
@@ -214,7 +215,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             <div className="ax-stack" style={{ gap: 8 }}>
               <span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${insp.status}`, insp.status.replace(/_/g, " "))}</span>
               {insp.submission_versions.sort((a, b) => a.version_number - b.version_number).map(s => (
-                <p key={s.version_number} className="ax-numeric"><span className="ax-version">v{s.version_number}</span> {new Date(s.submitted_at).toISOString().slice(0, 16).replace("T", " ")} · {t("visit.detail.immutable", "immutable")}</p>
+                <p key={s.version_number} className="ax-numeric"><span className="ax-version">v{s.version_number}</span> {fmt(s.submitted_at)} · {t("visit.detail.immutable", "immutable")}</p>
               ))}
               {insp.reviews.map((r, i) => (
                 <p key={i} className="ax-caption">{t("visit.detail.reviewPrefix", "review:")} {r.decision ? t(`enum.${r.decision}`, r.decision) : t(`enum.${r.status}`, r.status.replace(/_/g, " "))}{r.returned_sections ? ` · ${t("visit.detail.returnedSections", "returned")} ${r.returned_sections.join(",")}` : ""}</p>
@@ -232,8 +233,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           <p>
             <span className="ax-lozenge ax-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
             <span className="ax-numeric">{plan.id.slice(0, 8)}</span> · {t("visit.detail.planCreatedBy", "created by")} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
-            <span className="ax-numeric">{new Date(plan.created_at).toISOString().slice(0, 16).replace("T", " ")}</span>
-            {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="ax-numeric">{new Date(plan.published_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
+            <span className="ax-numeric">{fmt(plan.created_at)}</span>
+            {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="ax-numeric">{fmt(plan.published_at)}</span></>}
             {" "}· <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
           </p>
         ) : (
@@ -265,7 +266,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           {journeys.flatMap(j => j.geo_events.map(g => (
             <li key={g.occurred_at} className={g.kind === "checkin" ? "is-key" : undefined}>
               <div><strong>{t(`enum.${g.kind}`, g.kind)}</strong> · ±{g.accuracy_m} m {g.geofence_result && <span className="ax-lozenge ax-lozenge--success">{t(`enum.${g.geofence_result}`, g.geofence_result)}</span>}<br />
-                <span className="ax-timeline__meta ax-numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")} · gis {g.gis_version}</span></div>
+                <span className="ax-timeline__meta ax-numeric">{fmt(g.occurred_at)} · gis {g.gis_version}</span></div>
             </li>
           )))}
           {journeys.length === 0 && <p className="ax-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
@@ -277,7 +278,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           {(auditRows ?? []).map(a => (
             <li key={a.id}>
               <div><strong>{t(`enum.audit.${a.action}`, a.action)}</strong> · {a.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", a.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}<br />
-                <span className="ax-timeline__meta ax-numeric">{new Date(a.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
+                <span className="ax-timeline__meta ax-numeric">{fmt(a.occurred_at)}</span></div>
             </li>
           ))}
           {(auditRows ?? []).length === 0 && <p className="ax-caption">{t("visit.detail.noAudit", "No audited changes yet, or you don't have audit-read access.")}</p>}

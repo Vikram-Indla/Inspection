@@ -2,6 +2,7 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import {
   AddDocumentForm, AddMaterialForm, AddProductForm, AddRepresentativeForm, ToggleRepActive,
   type AddDocumentStrings, type AddMaterialStrings, type AddProductStrings,
@@ -125,8 +126,11 @@ export default async function Factory360({ params, searchParams }: { params: Pro
   }));
   const bandTone = f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success";
   const riskTone = f.risk_band === "high" ? "cd-risk-high" : f.risk_band === "medium" ? "cd-risk-medium" : "cd-risk-low";
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10); // ISO string comparison against DB valid_to — not display text
   const soon = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
+  const lang = locale === "ar" ? "ar" : "en";
+  const dt = (value: string | number | null | undefined) => value ? formatDateTime(value, lang) : "—";
+  const d10 = (value: string | number | null | undefined) => value ? formatDate(value, lang) : "—";
   const enumLabel = (value: string) => t(`enum.${value}`, value.replace(/_/g, " "));
   const docTypeLabel = (value: string) => t(`enum.${value}`, DOC_TYPE_LABEL[value] ?? value);
   const retry = t("f360.err.retry", "retry");
@@ -239,7 +243,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
       context={<>
         <span className="ax-lozenge ax-lozenge--info">SB11</span>
         <span className={`ax-lozenge ${bandTone}`}>{f.risk_band ? enumLabel(f.risk_band) : "—"} · {f.risk_score}</span>
-        <span className="ax-freshness">{t("f360.meta.source", "source")} {f.source} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
+        <span className="ax-freshness">{t("f360.meta.source", "source")} {f.source} · {t("f360.meta.synced", "synced")} {f.source_synced_at ? dt(f.source_synced_at) : "—"}</span>
       </>}>
 
       {/* الاجراءات quick action (Figma J-21) — the other three (إنشاء رصد حادث /
@@ -268,7 +272,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
 
           <div className="ax-surface cd-fresh">
             <span className="cd-fresh__g" aria-hidden="true">⏱</span>
-            <span>{t("f360.meta.source", "source")} <strong>{f.source}</strong> · {t("f360.meta.synced", "synced")} <bdi className="cd-idv">{f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</bdi></span>
+            <span>{t("f360.meta.source", "source")} <strong>{f.source}</strong> · {t("f360.meta.synced", "synced")} <bdi className="cd-idv">{f.source_synced_at ? dt(f.source_synced_at) : "—"}</bdi></span>
           </div>
 
           <div className="ax-surface cd-riskcard">
@@ -276,7 +280,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             <span className={`cd-riskscore ${riskTone}`}>{f.risk_score}</span>
             <p>{t("f360.risk.band", "band")} <strong>{f.risk_band ? enumLabel(f.risk_band) : "—"}</strong> · <span className="ax-version">{f.risk_version}</span></p>
             <p className="ax-caption">{t("f360.risk.desc", "Recomputable from stored normalized inputs + this version; every calculation is retained.")}</p>
-            <p className="ax-caption ax-numeric">{t("f360.risk.recalculated", "last recalculated")} {f.risk_calculated_at ? new Date(f.risk_calculated_at).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
+            <p className="ax-caption ax-numeric">{t("f360.risk.recalculated", "last recalculated")} {f.risk_calculated_at ? dt(f.risk_calculated_at) : "—"}</p>
             {driverEntries.length ? <ul className="ax-caption">{driverEntries.map(([key, raw]) => {
               const d = typeof raw === "object" ? raw : {};
               return <li key={key}>{key.replace(/_/g, " ")}: {d.value ?? "—"} × {d.weight ?? "—"} = {d.contribution ?? "—"}</li>;
@@ -313,7 +317,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             {locationEvents.length ? <div className="ax-tablewrap"><table className="ax-table">
               <thead><tr><th scope="col">{t("common.when", "When")}</th><th scope="col">{t("common.kind", "Kind")}</th><th scope="col">{t("f360.geo.actual", "Observed coordinates")}</th><th scope="col">{t("f360.geo.mismatch", "Mismatch / reason")}</th><th scope="col">{t("common.visit", "Visit")}</th></tr></thead>
               <tbody>{locationEvents.map(e => <tr key={e.id}>
-                <td className="ax-numeric">{new Date(e.occurredAt).toISOString().slice(0, 16).replace("T", " ")}</td>
+                <td className="ax-numeric">{dt(e.occurredAt)}</td>
                 <td><span className={`ax-lozenge ${e.kind === "override" ? "ax-lozenge--critical" : "ax-lozenge--info"}`}>{enumLabel(e.kind)}</span></td>
                 <td className="ax-numeric"><bdi>{e.lat.toFixed(6)}, {e.lng.toFixed(6)}</bdi></td>
                 <td>{e.kind === "override" ? <strong>{e.overrideReason ?? t("f360.geo.overrideNoReason", "override reason unavailable")}</strong> : "—"}</td>
@@ -344,7 +348,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                 const drivers = s.drivers as Record<string, { value?: number; contribution?: number } | string>;
                 const entries = Object.entries(drivers).filter(([key]) => !key.startsWith("_"));
                 return <tr key={s.id}>
-                  <td className="ax-numeric">{new Date(s.calculated_at).toISOString().slice(0, 16).replace("T", " ")}</td>
+                  <td className="ax-numeric">{dt(s.calculated_at)}</td>
                   <td className="ax-numeric"><strong>{s.score}</strong></td><td>{enumLabel(s.band)}</td><td><span className="ax-version">{s.model_version}</span></td>
                   <td className="ax-caption">{entries.length ? entries.map(([key, raw]) => {
                     const d = typeof raw === "object" ? raw : {};
@@ -375,7 +379,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                   const ins = v.inspections;
                   return (
                     <li key={v.id} className="cd-tl">
-                      <span className="cd-tl__when ax-numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</span>
+                      <span className="cd-tl__when ax-numeric">{d10(v.window_start)}</span>
                       <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-visit">◉</span><span className="cd-tl__line" /></span>
                       <div className="cd-tl__card">
                         <div className="cd-tl__head"><span className="cd-tl__kind">{enumLabel(v.visit_type)}</span><span className="cd-tl__title">{t("f360.hist.th.visit", "Visit")} <a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></span></div>
@@ -390,7 +394,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                               <p className="cd-tl__src">{t("f360.tl.violations", "findings")} {ins.violations.map(x => <span key={x.violation_codes.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>)}</p>
                             )}
                             {canSeeSensitiveHistory && ins.action_forms.length > 0 && (
-                              <p className="cd-tl__src">{t("f360.hist.th.actions", "Actions")} {ins.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ")}</p>
+                              <p className="cd-tl__src">{t("f360.hist.th.actions", "Actions")} {ins.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? d10(a.due_at) : "—"}`).join("; ")}</p>
                             )}
                             {canSeeSensitiveHistory && ins.reviews.filter(r => r.decision).length > 0 && (
                               <p className="cd-tl__src">{t("f360.hist.th.review", "Review")} {ins.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : "ax-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>{r.decision ? enumLabel(r.decision) : null}</span>)}</p>
@@ -405,24 +409,24 @@ export default async function Factory360({ params, searchParams }: { params: Pro
             )}
             <ol className="cd-timeline" style={{ marginBlockStart: sortedVisits.length === 0 ? 0 : "var(--ax-space-100)" }}>
               {f.source_synced_at && <li className="cd-tl" key="source-sync">
-                <span className="cd-tl__when ax-numeric">{new Date(f.source_synced_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__when ax-numeric">{d10(f.source_synced_at)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">↻</span></span>
                 <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.sourceSync", "Source registry synced")}</span><span>{f.source}</span></div>
               </li>}
               {(riskHistory ?? []).map(s => <li className="cd-tl" key={`risk-${s.id}`}>
-                <span className="cd-tl__when ax-numeric">{new Date(s.calculated_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__when ax-numeric">{d10(s.calculated_at)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-risk">◆</span></span>
                 <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.riskUpdated", "Score updated")}</span>
                   <span>{s.score} · {enumLabel(s.band)} · <span className="ax-version">{s.model_version}</span></span></div>
               </li>)}
               {(penaltyRows ?? []).map(p => <li className="cd-tl" key={`penalty-${p.id}`}>
-                <span className="cd-tl__when ax-numeric">{new Date(p.issued_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__when ax-numeric">{d10(p.issued_at)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-risk">§</span></span>
                 <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.penaltyIssued", "Penalty issued")}</span>
                   <span>{p.notice_number} · {enumLabel(p.status)}</span></div>
               </li>)}
               {(evidenceRows ?? []).map(e => <li className="cd-tl" key={`evidence-${e.id}`}>
-                <span className="cd-tl__when ax-numeric">{new Date(e.captured_at).toISOString().slice(0, 10)}</span>
+                <span className="cd-tl__when ax-numeric">{d10(e.captured_at)}</span>
                 <span className="cd-tl__spine" aria-hidden="true"><span className="cd-tl__dot is-location">●</span></span>
                 <div className="cd-tl__card"><span className="cd-tl__kind">{t("f360.tl.evidenceCaptured", "Evidence captured")}</span>
                   <span>{enumLabel(e.evidence_type)} · {enumLabel(e.linked_type)}</span></div>
@@ -446,7 +450,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                     return (
                       <tr key={v.id}>
                         <td><a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a> <span className="ax-caption">{enumLabel(v.visit_type)}</span></td>
-                        <td className="ax-td-num ax-numeric">{new Date(v.window_start).toISOString().slice(0, 10)}</td>
+                        <td className="ax-td-num ax-numeric">{d10(v.window_start)}</td>
                         <td><span className="ax-lozenge ax-lozenge--plan">{enumLabel(v.planning_status)}</span></td>
                         <td><span className="ax-lozenge ax-lozenge--ops">{enumLabel(v.operational_state)}</span></td>
                         <td>{ins ? <span className="ax-lozenge ax-lozenge--info">{enumLabel(ins.status)}</span> : <span className="ax-caption">—</span>}</td>
@@ -455,7 +459,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                           {ins && ins.submission_versions.length > 0 && <a className="ax-link" href={`/reports/inspection/${ins.id}`}>{t("f360.hist.report", "report")}</a>}
                         </td>
                         <td>{canSeeSensitiveHistory ? ins?.violations.map(x => <span key={x.violation_codes.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.violation_codes.code}</span>) : <span className="ax-caption">restricted</span>}</td>
-                        <td className="ax-caption">{canSeeSensitiveHistory ? ins?.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? new Date(a.due_at).toISOString().slice(0, 10) : "—"}`).join("; ") : "restricted"}</td>
+                        <td className="ax-caption">{canSeeSensitiveHistory ? ins?.action_forms.map(a => `${enumLabel(a.status)} · ${a.owner_name} · ${t("f360.hist.due", "due")} ${a.due_at ? d10(a.due_at) : "—"}`).join("; ") : "restricted"}</td>
                         <td>{canSeeSensitiveHistory ? ins?.reviews.filter(r => r.decision).map((r, i) => <span key={i} className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : "ax-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>{r.decision ? enumLabel(r.decision) : null}</span>) : <span className="ax-caption">restricted</span>}</td>
                       </tr>
                     );
@@ -615,7 +619,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
               </>
             )}
             <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-200)" }}>
-              {t("f360.wf.sourceOwned", "Source-owned figures (registry sync), like identity — displayed only, never edited here.")} {t("f360.meta.synced", "synced")} {f.source_synced_at ? new Date(f.source_synced_at).toISOString().slice(0, 16).replace("T", " ") : "—"}
+              {t("f360.wf.sourceOwned", "Source-owned figures (registry sync), like identity — displayed only, never edited here.")} {t("f360.meta.synced", "synced")} {f.source_synced_at ? dt(f.source_synced_at) : "—"}
             </p>
           </section>
         </div>
