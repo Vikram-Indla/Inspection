@@ -1,11 +1,22 @@
-# Print Results — Saqeel V5.1 (this session)
+# Print Results — Saqeel V5.1
 
-Wave 8 (official report and print rebuild) was not started this session, with one exception: `apps/web/src/app/reports/inspection/[id]/page.tsx`'s `dt()`/`d10()` helpers were converted from raw `toISOString().slice()` to the governed `formatDate`/`formatDateTime` (Wave 3).
+## Done and verified this session
+`apps/web/src/app/reports/report.css` was audited against `design/saqeel-v5-final/v2/SAQEEL-V2-REPORT-PRINT-SPEC.md` and three real gaps were fixed (see commit `420f3f8`):
+1. `.rp-section` no longer forces `break-inside: avoid` on every chapter — chapters flow across pages now, per spec. Only `.rp-sig` (the signature block) is an atomic keep-together, also per spec.
+2. `.rp-table thead { display: table-header-group }` added so column headers repeat on every printed page.
+3. `@media print` now scopes a token override to `.rp-page` so the report always prints in the grayscale-safe `--ax-color-print-*` palette (`#111111`/`#FFFFFF`/`#555555`), regardless of whether the viewer's browser session is in dark mode. Before this fix, printing from a dark-mode session would have produced a dark-background PDF.
 
-## Not done
-- No fixture tests (1/20/100/300 items, no-violations, many-violations, long-Arabic-notes, missing-signature, multiple-versions, invalid-approval) were run.
-- No print-preview screenshot was captured.
-- The existing `apps/web/src/app/reports/report.css` (46 lines) and `components/PrintReport.tsx` were not audited against the V5.1 report/print spec (`design/saqeel-v5-final/v2/SAQEEL-V2-REPORT-PRINT-SPEC.md`) this session.
-- The DEF-WF-006 invalid-approval block and immutable-snapshot-vs-live-reference distinction were not re-verified — they were not touched, so should be unaffected, but that is an assumption, not a checked fact.
+`apps/web/src/app/reports/inspection/[id]/page.tsx`'s `dt()`/`d10()` date helpers were converted to the governed Riyadh date service earlier (Wave 3, commit `cb0cdf0`).
 
-This is real, tracked open work — see FINAL-IMPLEMENTATION-REPORT.md "Remaining risks" item 3.
+`tsc --noEmit` clean, guardrail clean, `verify-dates.mjs` 17/17, full `next build` clean.
+
+## Known, documented limitation (not silently dropped)
+The spec asks for page numbers + report reference in a running footer. Native browser print — this app's sanctioned PDF path, per `components/PrintReport.tsx`'s own comment — does not support CSS Paged Media page-number generated content (`@page { @bottom-center: counter(page) }`) in any major browser engine without a polyfill (Paged.js/Prince/WeasyPrint), none of which are in this stack. Browsers' own print dialogs add a page-number header/footer by default, but that's OS/browser chrome the app doesn't control, and users can disable it. No non-functional CSS was added that would look like a fix without doing anything — this is recorded as a platform constraint, not solved by this branch.
+
+## Still not done
+- No fixture tests (1/20/100/300 items, no-violations, many-violations, long-Arabic-notes, missing-signature, multiple-versions, invalid-approval) were run — no test data/harness for these exists in this repo yet.
+- No print-preview screenshot was captured (no browser automation with print-emulation credentials available in this environment).
+- The DEF-WF-006 invalid-approval block and immutable-snapshot-vs-live-reference distinction were not touched by this session's CSS-only changes, and were not independently re-verified beyond that.
+- The 5-layer content-model rebuild described in the spec (identity/outcome, findings/compliance, violations/corrective-actions, evidence/versions/decisions/lineage, acknowledgement/signatures/legal-footer as five distinct governed layers with two renderers) was not attempted — the existing single-page-with-sections structure was kept and its print CSS corrected, not restructured. Restructuring the content model of a legal document is exactly the kind of change that needs its own dedicated pass with real test coverage, not a CSS-conformance sweep.
+
+See FINAL-IMPLEMENTATION-REPORT.md "Remaining risks" for how this fits into the overall branch status.
