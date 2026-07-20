@@ -20,8 +20,8 @@ test.describe("CD-041..043 virtual backend verification gate", () => {
   });
 
   test("the room cannot advance a session from a display name or a client-only OTP result", () => {
-    const actions = SRC("src/app/virtual/[id]/actions.ts");
-    const room = SRC("src/app/virtual/[id]/Room.tsx");
+    const actions = SRC("src/app/(app)/virtual/[id]/actions.ts");
+    const room = SRC("src/app/(app)/virtual/[id]/Room.tsx");
     expect(actions).toMatch(/sb\.rpc\("vs_mark_session_verified"/);
     expect(actions).toMatch(/p_participant: participant_id/);
     expect(actions).not.toMatch(/update\(\{ state: "verified" \}\)/);

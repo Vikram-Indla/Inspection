@@ -2,16 +2,21 @@
 
 ## TASK-G11-REMEDIATION-PERFORMANCE-001 — 2026-07-20
 
-- Immediate visual acknowledgement: **PASS_MEASURED** — six representative
-  warm-route p75 values are 61–71 ms against the <=100 ms target.
-- Completed-navigation progress state: **PASS_VERIFIED** at `496ed0c`; exact-current
-  navigation is ignored and completed route changes clear `aria-busy`.
-- Useful-content performance: **FAIL** — representative warm p75 remains
-  859–8,897 ms against the <=500 ms target.
-- Database optimization/runtime certification: **BLOCKED** — migration is
-  unapplied; the current Supabase connector identity cannot read project metadata,
-  migration history, advisors or catalog indexes.
-- Overall G11 performance verdict: **FAIL**. No release acceptance is granted.
+- Pass-4 pinned union: **PASS_VERIFIED** — `7994cc6` and `e8ffeaa` are both
+  ancestors of audited merge `a4805cc` (base `186c42e`).
+- Immediate visual acknowledgement: **PASS_MEASURED** — prior definitive p75
+  remains 61–71 ms against the <=100 ms target; persistent-shell progress clears.
+- Application/source gates: **PASS** — typecheck/build; protected static 155 pass,
+  4 intentional provider skips, 0 fail; production benchmark 90/90 plus 30/30
+  responsive/throttled samples.
+- Useful-content performance: **FAIL** — final warm p75 1019–4175 ms against
+  <=500 ms; cold p75 1809–4501 ms against <=900 ms.
+- Responsive geometry: **PASS_MEASURED** — `/field` horizontal overflow p75 0 px
+  in iPad portrait, landscape and slow-4G portrait; timing still fails.
+- Database optimization/runtime certification: **BLOCKED** — no authorized
+  Pass-4 database session/EXPLAIN; Tier-C migration remains source-only.
+- Overall G11 performance verdict: **FAIL_AWAITING_SPONSOR_ACCEPTANCE**. No
+  release acceptance, merge or deployment is granted.
 - Exact evidence: `../evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md` and
   `../../docs/performance/`.
 

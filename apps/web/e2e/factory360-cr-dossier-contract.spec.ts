@@ -5,7 +5,7 @@ import { calculateApprovedCompliance } from "../src/lib/factory360/compliance";
 
 const webRoot = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8");
-const PAGE = "src/app/factories/cr/[id]/page.tsx";
+const PAGE = "src/app/(app)/factories/cr/[id]/page.tsx";
 // The CR-centred projection (queries + derivation) was extracted into the shared
 // dossier loader so Web and iPad render one projection. Query/select/derivation
 // assertions therefore check page + loader combined; rendering assertions stay
@@ -29,13 +29,13 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
   test("uses the governed CR -> license -> plant hierarchy and keeps legacy links compatible", () => {
     const page = read(PAGE);
     const src = page + read(LOADER);
-    const list = read("src/app/factories/page.tsx");
-    const legacy = read("src/app/factories/[id]/page.tsx");
+    const list = read("src/app/(app)/factories/page.tsx");
+    const legacy = read("src/app/(app)/factories/[id]/page.tsx");
     expect(src).toContain('from("commercial_registrations")');
     expect(src).toContain('from("industrial_licenses")');
     expect(src).toContain('from("plant_addresses")');
     expect(page).toContain('aria-current={row.id === selected?.id ? "page" : undefined}');
-    expect(list).toContain('dossier_href: crByFactory.has(row.id)');
+    expect(list).toContain('dossier_href: commercialRegistrationId ? `/factories/cr/${commercialRegistrationId}` : `/factories/${row.id}`');
     expect(list).toContain('`/factories/${row.id}`');
     expect(legacy).toContain('from("industrial_licenses")');
     expect(legacy).toContain('redirect(`/factories/cr/${normalizedLicense.commercial_registration_id}?license=${normalizedLicense.id}`)');
@@ -88,7 +88,7 @@ test.describe("TASK-FACTORY-360-COMPLETE-010 CR-centred dossier contract", () =>
 
   test("uses a responsive internal three-column layout and RTL-safe identity semantics", () => {
     const page = read(PAGE);
-    const css = read("src/app/factories/cr/[id]/factory360.module.css");
+    const css = read("src/app/(app)/factories/cr/[id]/factory360.module.css");
     expect(css).toContain("grid-template-columns: 224px minmax(0, 1fr) 296px");
     expect(css).toContain("@media (max-width: 1179px)");
     expect(css).toContain("@media (max-width: 799px)");

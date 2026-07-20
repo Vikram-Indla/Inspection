@@ -1,5 +1,11 @@
 # Inspection Platform performance post-mortem
 
+## Pass-4 integration update (2026-07-20)
+
+Pass 4 unioned both remediation lines, made the authenticated shell genuinely persistent, added short-lived user-keyed role caching, narrowed/streamed the Dashboard and inspection workspace, and prepared RLS-invoker grouped/search RPCs. The corrected production harness completed 90/90 desktop transitions plus 30/30 responsive/throttled transitions with zero failed samples. Same-harness overlap improved materially (Dashboard warm p75 74.5%, Factories 32.6%, Planning 47.6%), but every representative route still misses §9 useful-content targets. G11 remains FAIL.
+
+Remaining dependency: authorized staging database access. Pass 4 could not capture `EXPLAIN (ANALYZE, BUFFERS)` for already-applied Tier-A indexes/RLS helpers, and the new Tier-C migration remains source-only. Required evidence is the migration state, before/after plans, measured database contribution, identical benchmark rerun and owner acceptance. Application fallback paths preserve current behavior until the migration is applied. Recommended owner: governed Supabase operator with G11 QA.
+
 ## Outcome
 
 The platform’s perceived “full page load” was a combination of document-style internal anchors, route RSC responses withheld until server data completed, and a shared Shell that began its own auth/RBAC/reference waterfall only after page work. The remediation makes every shell-contained same-origin navigation client-routed, adds truthful immediate progress, overlaps Shell/page work, deduplicates request-local auth/locale/client creation, and removes three route-specific sequential reads.

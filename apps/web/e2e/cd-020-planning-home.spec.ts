@@ -31,12 +31,12 @@ test.describe("CD-020 planning home", () => {
   });
 
   test("source contract uses locked packages, fail-closed reads and neutral errors", () => {
-    const home = readFileSync(join(process.cwd(), "src/app/planning/page.tsx"), "utf8");
+    const home = readFileSync(join(process.cwd(), "src/app/(app)/planning/page.tsx"), "utf8");
     expect(home).toContain('.in("status", ["published", "locked"])');
     expect(home).toContain("packageError || draftsError");
     expect(home).toContain('aria-disabled="true"');
-    const register = readFileSync(join(process.cwd(), "src/app/planning/plans/page.tsx"), "utf8");
-    const drill = readFileSync(join(process.cwd(), "src/app/planning/plans/[id]/page.tsx"), "utf8");
+    const register = readFileSync(join(process.cwd(), "src/app/(app)/planning/plans/page.tsx"), "utf8");
+    const drill = readFileSync(join(process.cwd(), "src/app/(app)/planning/plans/[id]/page.tsx"), "utf8");
     expect(register).not.toContain("{error.message}");
     expect(drill).not.toContain("pErr?.message ?? kErr?.message");
   });

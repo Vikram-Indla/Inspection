@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 
+type GlobalSearchType = "commercial_registration" | "industrial_license" | "plant" | "factory" | "visit" | "inspection";
+
 // TASK-WEB-COMPLIANCE-SHARED-SHELL-001 · CMP-REQ-SHELL-002
 // This endpoint performs ordinary authenticated SELECTs. Supabase RLS is the
 // result boundary; the shell never uses an elevated client or bypass query.
@@ -13,6 +15,26 @@ export async function GET(request: Request) {
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
   if (authError || !user) return NextResponse.json({ results: [] }, { status: 401 });
+
+  // K-011 — one RLS-preserving SQL union replaces twelve leading-wildcard
+  // requests after the additive migration is present. The migration function
+  // is SECURITY INVOKER; no service role or tenant bypass is involved.
+  const { data: consolidated, error: consolidatedError } = await sb.rpc("shell_global_search", {
+    p_query: q,
+    p_limit: 12,
+  });
+  if (!consolidatedError) {
+    const results = ((consolidated ?? []) as {
+      id: string; result_type: GlobalSearchType; label: string; detail: string; href: string;
+    }[]).map(row => ({
+      id: row.id,
+      type: row.result_type,
+      label: row.label,
+      detail: row.detail,
+      href: row.href,
+    }));
+    return NextResponse.json({ results, degraded: false });
+  }
 
   const pattern = `%${q}%`;
   // F360-BR-001..003 · F360 search contract. Each source is queried
@@ -94,6 +116,6 @@ export async function GET(request: Request) {
     };
   });
 
-  const failed = [crNumber.error, crUnified.error, crNameEn.error, crNameAr.error, licenseNumber.error, plantNumber.error, factoryName.error, factoryCode.error, factoryCr.error, factoryLicense.error, visitRead.error, inspectionRead.error].filter(Boolean).length;
+  const failed = [consolidatedError, crNumber.error, crUnified.error, crNameEn.error, crNameAr.error, licenseNumber.error, plantNumber.error, factoryName.error, factoryCode.error, factoryCr.error, factoryLicense.error, visitRead.error, inspectionRead.error].filter(Boolean).length;
   return NextResponse.json({ results: [...commercialRegistrations, ...licenses, ...factories, ...visits, ...inspections].slice(0, 12), degraded: failed > 0 });
 }

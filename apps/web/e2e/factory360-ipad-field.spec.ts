@@ -6,13 +6,13 @@ import { calculateApprovedCompliance } from "../src/lib/factory360/compliance";
 const webRoot = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8");
 
-const IPAD = "src/app/field/factory-360/[id]/page.tsx";
-const WEB = "src/app/factories/cr/[id]/page.tsx";
+const IPAD = "src/app/(app)/field/factory-360/[id]/page.tsx";
+const WEB = "src/app/(app)/factories/cr/[id]/page.tsx";
 const LOADER = "src/lib/factory360/dossier.ts";
 const OFFLINE = "src/lib/factory360/offline-snapshot.ts";
 const SNAP_ROUTE = "src/app/api/field/factory-360/snapshot/route.ts";
-const RESOLVER = "src/app/field/factory-360/page.tsx";
-const ISLAND = "src/app/field/factory-360/[id]/Factory360Offline.tsx";
+const RESOLVER = "src/app/(app)/field/factory-360/page.tsx";
+const ISLAND = "src/app/(app)/field/factory-360/[id]/Factory360Offline.tsx";
 
 // TASK-FACTORY-360-IPAD-011 — Web/iPad Factory 360 parity + non-regression
 // contract. Static assertions that both platforms render from ONE shared
@@ -95,7 +95,7 @@ test.describe("Factory 360 iPad parity + non-regression contract", () => {
   });
 
   test("assigned visit exposes a Factory 360 entry carrying its license and return context", () => {
-    const visit = read("src/app/field/[visitId]/page.tsx");
+    const visit = read("src/app/(app)/field/[visitId]/page.tsx");
     expect(visit).toContain("/field/factory-360?");
     expect(visit).toContain("return=");
   });

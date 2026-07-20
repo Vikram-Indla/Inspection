@@ -15,10 +15,10 @@ import { storageStatePath } from "./personas";
 // data is environment-dependent, so per-row classification is asserted against
 // the component's own source logic; live navigation asserts structure + a11y.
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
-const CMP = "src/app/reviews/[id]/VersionCompare.tsx";
-const PAGE = "src/app/reviews/[id]/page.tsx";
-const LOADING = "src/app/reviews/[id]/loading.tsx";
-const STALE = "src/app/reviews/[id]/stale-check.ts";
+const CMP = "src/app/(app)/reviews/[id]/VersionCompare.tsx";
+const PAGE = "src/app/(app)/reviews/[id]/page.tsx";
+const LOADING = "src/app/(app)/reviews/[id]/loading.tsx";
+const STALE = "src/app/(app)/reviews/[id]/stale-check.ts";
 const RBAC = "../../supabase/migrations/20260715160000_cd030_review_scope_rbac.sql";
 
 // Open the first workspace from the queue; skip the test if the env has no rows.

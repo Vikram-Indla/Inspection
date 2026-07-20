@@ -1,31 +1,27 @@
-# Inspection performance remediation handover
+# Inspection Pass-4 integration handover
 
-- Task: TASK-G11-REMEDIATION-PERFORMANCE-001
-- Gate: G11 hardening; acceptance remains FAIL due useful-content p75 and unapplied DB work.
-- Branch: perf/p0-navigation-remediation--codex-pass
-- Latest verified source commit: `496ed0c` (completed-navigation progress guard)
-- Starting commit: 186c42e64c137c3404539c7a54dfd3b9bb60dc55
-- Scope: shared navigation/Shell plus Dashboard, Operations, Factory registry, Planning, Reviews, AI Suggestions.
-- Do not touch: main, factory setup slice, auth/RLS/RBAC/tenant semantics, workflow transitions, immutable submissions.
+- Task: `TASK-G11-REMEDIATION-PERFORMANCE-001`
+- Gate: G11 hardening
+- Branch: `perf/p0-navigation-remediation`
+- Integration merge: `a4805cc`
+- Sources: Line A `7994cc6`; Line B `e8ffeaa`; common base `186c42e`
+- PR base: `setup/Inspection`; never merge or deploy without sponsor acceptance
+- Final state: `AWAITING_SPONSOR_G11_PERFORMANCE_ACCEPTANCE` with technical verdict FAIL
 
-## Next operator
+## Delivered
 
-1. Link the governed Supabase project; inspect remote migration history.
-2. Review the migration, run DB advisors, apply through the approved deployment path, and verify each index.
-3. Capture EXPLAIN ANALYZE for the Reviews graph, open action forms, override evidence, Dashboard aggregates.
-4. Rerun `apps/web/playwright.performance.config.ts` with 5 cold/10 warm; do not overwrite the committed baseline.
-5. If Reviews/Dashboard still miss targets, propose governed pagination/summary projections with acceptance impact called out.
-6. Resolve the Dashboard entity-search test timeout and run the full G10/G11 regression inventory before release certification.
+The branch preserves both prior remediation lines and adds the Pass-3 Tier B/C application work: persistent authenticated route-group shell; user-keyed 30-second role cache with tag invalidation API; inferred dynamic rendering; view-specific, date-bounded and streamed Dashboard work; package/referenced-code-scoped inspection workspace with batched signed URLs; and RLS-invoker grouped-dashboard/global-search RPC source with trigram indexes and safe application fallbacks.
 
-The current Supabase connector identity cannot read the governed project; all
-four read-only probes returned a permission denial. Obtain authorized project
-access rather than retrying or bypassing that boundary.
+Tier-A navigation, read-path RPC removal, loading states, RLS initplan and hot indexes from the prior line remain present. Signed URLs are batched but deliberately not persisted across users: a cross-request bearer-URL cache without a governed revocation contract would weaken access boundaries.
 
-## Truth boundary
+## Acceptance truth
 
-No remote schema was changed. The shared performance branch was verified as a
-fast-forward and pushed through handoff commit `a3250c6`; `setup/Inspection` and
-`main` were not modified. No claim is made that <=500 ms useful-content
-acceptance passed.
+Typecheck/build/static gates pass. The final desktop run is 90/90 with zero failed samples. Useful-content acceptance does not pass: warm p75 ranges 1019–4175 ms and cold p75 1809–4501 ms. Responsive overflow passes at 0 px, but iPad field timing remains over target. Database `EXPLAIN` evidence and React commit counts remain unavailable and are not claimed.
 
-The perf/p0-navigation-remediation branch has been pushed to origin and is ready for the next controlled agent pass.
+## Required sponsor/operator follow-up
+
+1. Review the PR without merging.
+2. In an approved staging database, review/apply the source-only Tier-C migration and capture before/after `EXPLAIN (ANALYZE, BUFFERS)` for every Tier-A/Tier-C index and both RLS-invoker RPCs.
+3. Rerun the identical production harness. Do not overwrite `results/baseline.json`.
+4. If §9 still fails, profile the remaining Reviews/Operations/Dashboard server work and authorize any data-contract change separately.
+5. Do not claim G11 PASS until every P0/P1 criterion is evidenced and the sponsor accepts the measured residuals.

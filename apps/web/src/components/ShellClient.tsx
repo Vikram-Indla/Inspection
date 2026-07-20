@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import NotificationBell, { type BellStrings } from "@/components/NotificationBell";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -88,13 +88,9 @@ function defaultDateRange() {
 }
 
 export default function ShellClient({
-  current, title, context, topbar, children, groups, strings, bellStrings,
+  children, groups, strings, bellStrings,
   locale, languageHref, languageLabel, languageLang, email, roles, regions,
 }: {
-  current: string;
-  title: string;
-  context?: ReactNode;
-  topbar?: ReactNode;
   children: ReactNode;
   groups: ShellClientNavGroup[];
   strings: ShellClientStrings;
@@ -108,6 +104,7 @@ export default function ShellClient({
   regions: string[];
 }) {
   const router = useRouter();
+  const current = usePathname() || "/";
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -135,9 +132,9 @@ export default function ShellClient({
     setRegionScope(params.get("region") ?? "");
   }, []);
 
-  // The server Shell supplies a new current route once App Router navigation
-  // completes. Clear the immediate acknowledgement so a preserved client shell
-  // cannot remain busy after the destination has rendered.
+  // The persistent route-group layout survives navigation. Pathname changes
+  // only after the destination commits, so this clears acknowledgement without
+  // relying on a page-owned Shell prop (K-001 / K-006).
   useEffect(() => {
     setPendingHref(null);
   }, [current]);
@@ -350,8 +347,7 @@ export default function ShellClient({
               aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
             </button>
-            {topbar ?? (
-              <div className="ax-shell-controls">
+            <div className="ax-shell-controls">
                 <div className="ax-shell-search">
                   <span className="ax-shell-search__icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -410,8 +406,7 @@ export default function ShellClient({
                     {regions.map(region => <option value={region} key={region}>{region}</option>)}
                   </select>
                 </label>
-              </div>
-            )}
+            </div>
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               <NotificationBell strings={bellStrings} />
@@ -439,11 +434,8 @@ export default function ShellClient({
               </div>
             </div>
           </div>
-          <div className="ax-pagehead__row">
-            <div className="ax-pagehead__context"><h2>{title}</h2>{context}</div>
-          </div>
         </header>
-        <div className="ax-content">{children}</div>
+        {children}
       </main>
     </div>
   );

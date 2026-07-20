@@ -7,10 +7,10 @@ const src = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 test.describe("CD-006..011 admin backend foundation", () => {
   test("all configuration mutations use the common fail-closed write guard", () => {
     for (const path of [
-      "src/app/admin/regulations/actions.ts",
-      "src/app/admin/items/actions.ts",
-      "src/app/admin/packages/actions.ts",
-      "src/app/admin/violations/actions.ts",
+      "src/app/(app)/admin/regulations/actions.ts",
+      "src/app/(app)/admin/items/actions.ts",
+      "src/app/(app)/admin/packages/actions.ts",
+      "src/app/(app)/admin/violations/actions.ts",
     ]) {
       const content = src(path);
       expect(content).toContain('from "@/lib/admin-configuration"');
@@ -37,7 +37,7 @@ test.describe("CD-006..011 admin backend foundation", () => {
   });
 
   test("regulation publishing validates clause consumers and the database protects published records", () => {
-    const actions = src("src/app/admin/regulations/actions.ts");
+    const actions = src("src/app/(app)/admin/regulations/actions.ts");
     const auditMigration = src("../../supabase/migrations/20260715173000_admin_configuration_audit.sql");
     const authorityMigration = src("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
     expect(actions).toContain('sb.rpc("publish_regulation"');

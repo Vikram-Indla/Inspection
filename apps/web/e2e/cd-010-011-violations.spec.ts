@@ -18,9 +18,9 @@ import { storageStatePath } from "./personas";
 // (DSG-CODE-001 / DEC-012), exactly as CD-004 did.
 const EVIDENCE_DIR = evidenceDirectory("cd-010-011-violations-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
-const PAGE = SRC("src/app/admin/violations/page.tsx");
-const CONTROLS = SRC("src/app/admin/violations/Controls.tsx");
-const ACTIONS = SRC("src/app/admin/violations/actions.ts");
+const PAGE = SRC("src/app/(app)/admin/violations/page.tsx");
+const CONTROLS = SRC("src/app/(app)/admin/violations/Controls.tsx");
+const ACTIONS = SRC("src/app/(app)/admin/violations/actions.ts");
 const COMPLETION_MIGRATION = SRC("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");
 
 // Reviewer is explicitly admitted by the SCR-ADM-040 route boundary but is not a
@@ -242,7 +242,7 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
   });
 
   test("the contract route /admin/penalties is NOT created as a live URL", () => {
-    expect(existsSync(join(process.cwd(), "src/app/admin/penalties"))).toBe(false);
+    expect(existsSync(join(process.cwd(), "src/app/(app)/admin/penalties"))).toBe(false);
   });
 
   test("authoritative violation and penalty fields are enabled without blocked targets", () => {
@@ -251,8 +251,8 @@ test.describe("CD-010/011 wiring (DEC-012): derivation, one-to-one, no-invention
   });
 
   test("loading/error/no-op semantics and focus-safe validation are present", () => {
-    const loading = SRC("src/app/admin/violations/loading.tsx");
-    const error = SRC("src/app/admin/violations/error.tsx");
+    const loading = SRC("src/app/(app)/admin/violations/loading.tsx");
+    const error = SRC("src/app/(app)/admin/violations/error.tsx");
     expect(loading).toContain('aria-busy="true"');
     expect(error).toContain("No zero-count or healthy-state claim has been made.");
     expect(CONTROLS).toContain('querySelector<HTMLElement>(":invalid")');

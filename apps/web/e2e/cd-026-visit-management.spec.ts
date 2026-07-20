@@ -108,7 +108,7 @@ test.describe("CD-026 a11y / RTL / responsive (DSG-A11Y-001)", () => {
 // cannot be exercised read-only (they require mutating live data).
 test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
   test("actions return a structured per-item ledger and never surface raw provider text", () => {
-    const actions = SRC("src/app/visits/actions.ts");
+    const actions = SRC("src/app/(app)/visits/actions.ts");
     // Structured per-item outcome array (id + outcome enum), not a string banner.
     expect(actions).toContain("export type ItemResult = { id: string; outcome: OutcomeCode };");
     expect(actions).toContain("items: ItemResult[]");
@@ -124,7 +124,7 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
   });
 
   test("the board renders a per-item ledger, never a green banner for a mixed result", () => {
-    const board = SRC("src/app/visits/VisitsBoard.tsx");
+    const board = SRC("src/app/(app)/visits/VisitsBoard.tsx");
     // Partial/failed → single role=alert; all-applied → role=status. No blanket success banner.
     expect(board).toContain('role={anyProblem ? "alert" : "status"}');
     expect(board).toContain("const anyProblem = nBlocked > 0 || nNoNotif > 0");
@@ -142,7 +142,7 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     // DEC-012 CODEX_AUDIT_CD-026 F1/F2 regression guard: page/calendar/workload
     // load-error branches must NOT interpolate error.message into the DOM; the raw
     // provider text is logged server-side only.
-    for (const p of ["src/app/visits/page.tsx", "src/app/visits/calendar/page.tsx", "src/app/visits/workload/page.tsx"]) {
+    for (const p of ["src/app/(app)/visits/page.tsx", "src/app/(app)/visits/calendar/page.tsx", "src/app/(app)/visits/workload/page.tsx"]) {
       const src = SRC(p);
       // JSX `{error.message}` leaks to the DOM; template `${error.message}` (server-side
       // console.error) does not. Match the former only: `{error.message}` NOT preceded by `$`.
@@ -159,7 +159,7 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     // (supabase/migrations/0025_scheduled_visit_expiry.sql, 15-min cadence), so the
     // per-request RPC was removed. This contract now proves the new ownership shape:
     // pages document the cron owner and must not re-introduce the inline RPC.
-    for (const p of ["src/app/visits/page.tsx", "src/app/visits/calendar/page.tsx", "src/app/visits/workload/page.tsx"]) {
+    for (const p of ["src/app/(app)/visits/page.tsx", "src/app/(app)/visits/calendar/page.tsx", "src/app/(app)/visits/workload/page.tsx"]) {
       const src = SRC(p);
       expect(src, `${p} must document the cron-owned expiry sweep`).toContain("expire_lapsed_visits_scheduled");
       expect(src, `${p} must not call the expiry RPC per request`).not.toContain('rpc("expire_lapsed_visits")');
@@ -171,9 +171,9 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
   });
 
   test("the Map lens uses the delivered governed route", () => {
-    const page = SRC("src/app/visits/page.tsx");
+    const page = SRC("src/app/(app)/visits/page.tsx");
     expect(page).toContain('href="/visits/map"');
-    const mapRoute = readFileSync(join(process.cwd(), "src/app/visits/map/page.tsx"), "utf8");
+    const mapRoute = readFileSync(join(process.cwd(), "src/app/(app)/visits/map/page.tsx"), "utf8");
     expect(mapRoute).toContain('from("geo_events")');
     expect(mapRoute).toContain("official_lat");
   });

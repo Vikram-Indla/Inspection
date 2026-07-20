@@ -1,0 +1,89 @@
+{
+  "generated_at": "2026-07-20T21:16:46.282Z",
+  "base_url": "http://127.0.0.1:3100",
+  "build": "production (next build && next start)",
+  "viewport_profile": "ipad-landscape",
+  "network_profile": "normal",
+  "runs_file": "/Users/vikramindla/Developer/Inspection/.worktrees/perf-codex/docs/performance/results/runs-ipad-landscape.jsonl",
+  "total_runs": 10,
+  "failed_runs": 0,
+  "failures": [],
+  "routes": {
+    "/field": {
+      "warm": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2024,
+          "p75": 2071,
+          "p95": 2125
+        },
+        "ttfb_ms": {
+          "median": 448,
+          "p75": 464,
+          "p95": 2963
+        },
+        "dcl_ms": {
+          "median": 1321,
+          "p75": 1330,
+          "p95": 3743
+        },
+        "load_ms": {
+          "median": 1322,
+          "p75": 1331,
+          "p95": 3744
+        },
+        "fcp_ms": {
+          "median": 492,
+          "p75": 512,
+          "p95": 3004
+        },
+        "lcp_ms": {
+          "median": 3452,
+          "p75": 3508,
+          "p95": 5868
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 3,
+          "p75": 3,
+          "p95": 4
+        },
+        "bytes": {
+          "median": 62606,
+          "p75": 62606,
+          "p95": 62607
+        },
+        "heap_mb": {
+          "median": 27.4,
+          "p75": 42.3,
+          "p95": 47.5
+        },
+        "horizontal_overflow_px": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    }
+  }
+}

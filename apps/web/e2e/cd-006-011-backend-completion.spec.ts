@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { answerRequired, computeBlockers, conditionContext, computeHealthScore, evidenceLeg, isVisible, scoreExcluded, type Item } from "../src/app/field/inspection/[id]/runtime";
+import { answerRequired, computeBlockers, conditionContext, computeHealthScore, evidenceLeg, isVisible, scoreExcluded, type Item } from "../src/app/(app)/field/inspection/[id]/runtime";
 
 const source = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 const baseItem = (response_model: Item["response_model"]): Item => ({
@@ -11,7 +11,7 @@ const baseItem = (response_model: Item["response_model"]): Item => ({
 
 test.describe("CD-006..011 backend completion", () => {
   test("M09-001 supports effective date, draft edit, governed deactivation, and attachment metadata", () => {
-    const actions = source("src/app/admin/regulations/actions.ts");
+    const actions = source("src/app/(app)/admin/regulations/actions.ts");
     const migration = source("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");
     expect(actions).toContain("updateRegulationDraft");
     expect(actions).toContain("deactivateRegulation");
@@ -28,7 +28,7 @@ test.describe("CD-006..011 backend completion", () => {
   });
 
   test("regulation publish validates mapped clauses, maker-checker provenance, and no-op failure", () => {
-    const actions = source("src/app/admin/regulations/actions.ts");
+    const actions = source("src/app/(app)/admin/regulations/actions.ts");
     const authoritative = source("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
     expect(actions).toContain('sb.rpc("publish_regulation"');
     expect(actions).toContain("every clause must map to an inspection item");
@@ -39,11 +39,11 @@ test.describe("CD-006..011 backend completion", () => {
 
   test("authoritative M09 contract closes versioning, templates, relationship rules, outcomes and frozen dependencies", () => {
     const migration = source("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
-    const packages = source("src/app/admin/packages/actions.ts");
-    const items = source("src/app/admin/items/actions.ts");
-    const violations = source("src/app/admin/violations/actions.ts");
-    const templates = source("src/app/admin/templates/actions.ts");
-    const field = source("src/app/field/inspection/[id]/page.tsx");
+    const packages = source("src/app/(app)/admin/packages/actions.ts");
+    const items = source("src/app/(app)/admin/items/actions.ts");
+    const violations = source("src/app/(app)/admin/violations/actions.ts");
+    const templates = source("src/app/(app)/admin/templates/actions.ts");
+    const field = source("src/app/(app)/field/inspection/[id]/page.tsx");
     const report = source("src/app/reports/inspection/[id]/page.tsx");
     for (const token of [
       "configuration_templates", "inspection_item_versions", "corrective_action", "grace_period_days",
@@ -64,7 +64,7 @@ test.describe("CD-006..011 backend completion", () => {
   });
 
   test("M09-005 exposes all four accepted evidence types without free-form policy values", () => {
-    const actions = source("src/app/admin/items/actions.ts");
+    const actions = source("src/app/(app)/admin/items/actions.ts");
     for (const type of ["photo", "video", "document", "comment"]) {
       expect(actions).toContain(`type: "${type}"`);
     }
@@ -117,9 +117,9 @@ test.describe("CD-006..011 backend completion", () => {
 
   test("CD-007/CD-010 usage previews, scoped audit, and violation deactivation are wired", () => {
     const migration = source("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");
-    const itemActions = source("src/app/admin/items/actions.ts");
-    const regulationActions = source("src/app/admin/regulations/actions.ts");
-    const violationActions = source("src/app/admin/violations/actions.ts");
+    const itemActions = source("src/app/(app)/admin/items/actions.ts");
+    const regulationActions = source("src/app/(app)/admin/regulations/actions.ts");
+    const violationActions = source("src/app/(app)/admin/violations/actions.ts");
     expect(migration).toContain("inspection_item_usage");
     expect(migration).toContain("violation_code_usage");
     expect(migration).toContain("admin_configuration_audit");
@@ -153,7 +153,7 @@ test.describe("CD-006..011 backend completion", () => {
   });
 
   test("CD-008/CD-009 publish validation rejects invalid condition grammar", () => {
-    const actions = source("src/app/admin/packages/actions.ts");
+    const actions = source("src/app/(app)/admin/packages/actions.ts");
     const migration = source("../../supabase/migrations/20260715200000_cd006_011_backend_completion.sql");
     const relationshipHardening = source("../../supabase/migrations/20260716210000_m09_relationship_contract_hardening.sql");
     expect(actions).toContain("conditional requirement has no visibility rule");
@@ -172,18 +172,18 @@ test.describe("CD-006..011 backend completion", () => {
     expect(relationshipHardening).toContain("circular visible_when chain");
     expect(relationshipHardening).toContain("evidence type is not accepted");
     expect(relationshipHardening).toContain("before insert or update of response_model");
-    expect(source("src/app/field/inspection/[id]/page.tsx")).toContain("frozenDefinition.item_snapshot");
-    expect(source("src/app/field/inspection/[id]/page.tsx")).toContain("companionSnapshot");
+    expect(source("src/app/(app)/field/inspection/[id]/page.tsx")).toContain("frozenDefinition.item_snapshot");
+    expect(source("src/app/(app)/field/inspection/[id]/page.tsx")).toContain("companionSnapshot");
   });
 
   test("every CD-006..011 admin localization key has a guarded ui_strings source", () => {
     const adminFiles = [
-      "src/app/admin/regulations/page.tsx", "src/app/admin/regulations/Controls.tsx",
-      "src/app/admin/items/page.tsx", "src/app/admin/items/Controls.tsx",
-      "src/app/admin/packages/page.tsx", "src/app/admin/packages/DraftEditor.tsx",
-      "src/app/admin/packages/PackagePreview.tsx", "src/app/admin/packages/PublishControls.tsx",
-      "src/app/admin/packages/ImpactPanel.tsx", "src/app/admin/violations/page.tsx",
-      "src/app/admin/violations/Controls.tsx",
+      "src/app/(app)/admin/regulations/page.tsx", "src/app/(app)/admin/regulations/Controls.tsx",
+      "src/app/(app)/admin/items/page.tsx", "src/app/(app)/admin/items/Controls.tsx",
+      "src/app/(app)/admin/packages/page.tsx", "src/app/(app)/admin/packages/DraftEditor.tsx",
+      "src/app/(app)/admin/packages/PackagePreview.tsx", "src/app/(app)/admin/packages/PublishControls.tsx",
+      "src/app/(app)/admin/packages/ImpactPanel.tsx", "src/app/(app)/admin/violations/page.tsx",
+      "src/app/(app)/admin/violations/Controls.tsx",
       "src/components/AdminRouteBoundary.tsx",
     ];
     const migrationDir = join(process.cwd(), "../../supabase/migrations");

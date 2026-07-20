@@ -3,11 +3,11 @@ items:
   - task_id: "TASK-G11-REMEDIATION-PERFORMANCE-001"
     gate: "G11 Hardening — platform navigation performance remediation"
     priority: "P0"
-    status: "IMPLEMENTED_MEASURED_ACCEPTANCE_FAIL_DB_VALIDATION_BLOCKED"
-    owner: "Codex implementation and QA + governed Supabase operator"
-    blocked_by: ["Linked governed Supabase project and migration history", "Query-plan/advisor evidence", "Dashboard entity-search regression resolution", "Full protected regression"]
+    status: "PASS4_PR_READY_AWAITING_SPONSOR_G11_PERFORMANCE_ACCEPTANCE"
+    owner: "Sponsor acceptance authority + governed Supabase operator"
+    blocked_by: ["Sponsor disposition of failed Section 9 timings", "Authorized staging EXPLAIN and Tier-C migration validation", "React commit evidence if a profiled build is approved"]
     blocks: ["G11 navigation-performance acceptance", "Any claim that routine useful-content navigation meets <=500 ms p75"]
-    note: "App-side remediation at f2b86c4 plus progress-state negative-path fix 496ed0c: visual acknowledgment now 61–71 ms p75; warm p75 improves 12.6–36.6% on five routes but Operations is flat and all six representative routes still miss useful-content acceptance. Post-audit typecheck/build, 16/16 protected shell contracts and a six-route reduced production check pass. Supabase connector read access is denied. Obtain governed project access, apply/verify the forward index migration through an approved path, profile Reviews/Dashboard/Operations, then rerun the committed 90-transition benchmark."
+    note: "Pass 4 unioned pinned 7994cc6 + e8ffeaa at a4805cc and implemented the remaining persistent-shell, role-cache, bounded/streamed Dashboard, scoped inspection and source-only search/grouped-RPC work. Typecheck/build pass; protected static 155 pass/4 intentional skips/0 fail; desktop 90/90 and responsive/throttled 30/30 have zero failed samples. Section 9 still fails: warm p75 1019–4175 ms, cold 1809–4501 ms. Responsive overflow p75 is 0 px. No Pass-4 remote DDL or EXPLAIN was authorized; Tier-C migration remains source-only. Open PR only; no merge/deploy."
   - task_id: "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
     gate: "G11 Factory 360 integration hardening"
     priority: "P0"

@@ -10,7 +10,7 @@ import { storageStatePath } from "./personas";
 // additionally checked at the source/route boundary because
 // no deterministic writer-owned draft is guaranteed in shared live seed data.
 const EVIDENCE_DIR = join(process.cwd(), "../../product-contract/evidence/screens/cd-008-009-packages-v2");
-const PKG = (path: string) => readFileSync(join(process.cwd(), "src/app/admin/packages", path), "utf8");
+const PKG = (path: string) => readFileSync(join(process.cwd(), "src/app/(app)/admin/packages", path), "utf8");
 const SRC = (path: string) => readFileSync(join(process.cwd(), path), "utf8");
 
 test.use({ storageState: storageStatePath("admin") });

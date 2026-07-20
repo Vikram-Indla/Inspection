@@ -106,28 +106,28 @@ test.describe("CD-028 queue — unauthorized (leg 11)", () => {
 // live data.
 test.describe("CD-028 resolved backend legs — source truth", () => {
   test("leg 5/10 — opening /reviews/:id no longer mutates on render; start is explicit", () => {
-    const ws = SRC("src/app/reviews/[id]/page.tsx");
+    const ws = SRC("src/app/(app)/reviews/[id]/page.tsx");
     // render no longer inserts a review or transitions the inspection
     expect(ws).not.toMatch(/from\("reviews"\)\s*\.insert/);
     expect(ws).toContain("opening is read-only");
     expect(ws).toContain("StartReview");
-    const actions = SRC("src/app/reviews/[id]/actions.ts");
+    const actions = SRC("src/app/(app)/reviews/[id]/actions.ts");
     expect(actions).toContain("export async function startReview");
     expect(actions).toMatch(/from\("reviews"\)\.insert/);
     expect(actions).toMatch(/status: "under_review"/);
-    const start = SRC("src/app/reviews/[id]/StartReview.tsx");
+    const start = SRC("src/app/(app)/reviews/[id]/StartReview.tsx");
     expect(start).not.toMatch(/window\.location\.reload|setTimeout|router\.refresh/);
     expect(actions).toContain("redirect(`/reviews/${inspection_id}/started?review=${created.id}`)");
-    const bridge = SRC("src/app/reviews/[id]/started/page.tsx");
+    const bridge = SRC("src/app/(app)/reviews/[id]/started/page.tsx");
     expect(bridge).toContain("redirect(`/reviews/${id}${query}`)");
     // the queue module carries no decision form (scan-first)
-    const queue = SRC("src/app/reviews/DecisionPanel.tsx");
+    const queue = SRC("src/app/(app)/reviews/DecisionPanel.tsx");
     expect(queue).not.toContain('name="decision"');
     expect(queue).not.toContain('name="reason"');
   });
 
   test("leg 3b — the queue derives the four readiness facts from RLS-scoped reads", () => {
-    const list = SRC("src/app/reviews/page.tsx");
+    const list = SRC("src/app/(app)/reviews/page.tsx");
     // readiness sources are actually joined / queried
     expect(list).toContain("acknowledgement");
     expect(list).toContain("evidence(id)");
@@ -139,7 +139,7 @@ test.describe("CD-028 resolved backend legs — source truth", () => {
   });
 
   test("discoverability fix — the queue surfaces submitted inspections with no reviews row yet", () => {
-    const list = SRC("src/app/reviews/page.tsx");
+    const list = SRC("src/app/(app)/reviews/page.tsx");
     // a second, inspections-first query covers the set no reviews-based query can see
     expect(list).toMatch(/from\("inspections"\)/);
     expect(list).toContain('.eq("status", "submitted")');
@@ -151,7 +151,7 @@ test.describe("CD-028 resolved backend legs — source truth", () => {
     const migration = SRC("../../supabase/migrations/20260715130000_cd028_one_open_review_per_version.sql");
     expect(migration).toContain("reviews_one_open_per_version");
     expect(migration).toMatch(/where decided_at is null/i);
-    const actions = SRC("src/app/reviews/[id]/actions.ts");
+    const actions = SRC("src/app/(app)/reviews/[id]/actions.ts");
     expect(actions).toContain('error?.code === "23505"');
   });
 });

@@ -1,5 +1,28 @@
 # Current State
 
+## 2026-07-20 UPDATE 113 — G11 performance Pass-4 union complete; acceptance still FAIL
+
+`TASK-G11-REMEDIATION-PERFORMANCE-001` Pass 4 is complete on
+`perf/p0-navigation-remediation`: pinned Line A `7994cc6` and Line B `e8ffeaa`
+(base `186c42e`) are unioned at audited merge `a4805cc`, preserving both
+remediation lines. Tier B/C application work adds a persistent authenticated
+route-group shell, short-lived user-keyed/tag-invalidatable role cache,
+view-specific bounded/streamed Dashboard, scoped inspection catalogue with
+batched signed URLs, and source-only RLS-invoker grouped/search RPC migration.
+No remote DDL, deployment, canonical merge or `main` modification occurred.
+
+Gates: typecheck PASS; production build PASS; protected static 155 passed / 4
+intentional provider skips / 0 failed; final production benchmark 90/90 plus
+30/30 iPad/throttled samples, zero failures. Responsive overflow p75 is 0 px.
+Acceptance remains **FAIL_AWAITING_SPONSOR_ACCEPTANCE**: warm useful-content p75
+is 1019–4175 ms (target <=500), cold p75 1809–4501 ms (target <=900), and iPad
+field p75 2071–2356 ms. No authorized database session was available for
+required EXPLAIN evidence; Tier-C DDL is unapplied and fallbacks remain active.
+React commit counts are unavailable in the optimized production build and are
+not claimed. Evidence is under `docs/performance/` and
+`product-contract/evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md`. Status:
+`AWAITING_SPONSOR_G11_PERFORMANCE_ACCEPTANCE`.
+
 ## 2026-07-20 UPDATE 110 — Factory 360 iPad × cross-provider reconciliation SPONSOR-ACCEPTED & MERGED
 
 `TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015` accepted (SHA `1f17715`) and

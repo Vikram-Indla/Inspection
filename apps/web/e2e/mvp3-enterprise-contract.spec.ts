@@ -7,8 +7,8 @@ const migration = fs.readFileSync(path.join(root, "supabase/migrations/202607181
 const master = fs.readFileSync(path.join(root, "product-contract/mvp3/MVP3_84_ROW_MASTER_REGISTER.csv"), "utf8");
 const reconciliation = fs.readFileSync(path.join(root, "product-contract/mvp3/MVP3_84_ROW_COVERAGE_RECONCILIATION_R2.csv"), "utf8");
 const sequence = fs.readFileSync(path.join(root, "product-contract/mvp3/MVP3_MODULE_BUILD_SEQUENCE.csv"), "utf8");
-const aiActions = fs.readFileSync(path.join(root, "apps/web/src/app/ai/suggestions/actions.ts"), "utf8");
-const aiDockets = fs.readFileSync(path.join(root, "apps/web/src/app/ai/suggestions/AiDockets.tsx"), "utf8");
+const aiActions = fs.readFileSync(path.join(root, "apps/web/src/app/(app)/ai/suggestions/actions.ts"), "utf8");
+const aiDockets = fs.readFileSync(path.join(root, "apps/web/src/app/(app)/ai/suggestions/AiDockets.tsx"), "utf8");
 
 function requirementIds(csv: string) {
   return [...csv.matchAll(/MVP2-REQ-\d{4}/g)].map(x => x[0]);
@@ -92,27 +92,27 @@ test.describe("MVP3 exact control and enterprise foundation", () => {
 
   test("mounts the missing MVP3 control-plane routes and preserves extended MVP1/MVP2 routes", () => {
     const routes = [
-      "apps/web/src/app/admin/integrations/page.tsx",
-      "apps/web/src/app/admin/operations/page.tsx",
-      "apps/web/src/app/admin/security-access/page.tsx",
-      "apps/web/src/app/admin/devices/page.tsx",
-      "apps/web/src/app/enforcement/page.tsx",
-      "apps/web/src/app/admin/workflows/page.tsx",
-      "apps/web/src/app/admin/packages/page.tsx",
-      "apps/web/src/app/admin/risk/page.tsx",
-      "apps/web/src/app/admin/audit/page.tsx",
-      "apps/web/src/app/admin/gis/page.tsx",
-      "apps/web/src/app/dashboard/page.tsx",
-      "apps/web/src/app/portal/page.tsx",
-      "apps/web/src/app/ai/suggestions/page.tsx",
-      "apps/web/src/app/committee/page.tsx",
+      "apps/web/src/app/(app)/admin/integrations/page.tsx",
+      "apps/web/src/app/(app)/admin/operations/page.tsx",
+      "apps/web/src/app/(app)/admin/security-access/page.tsx",
+      "apps/web/src/app/(app)/admin/devices/page.tsx",
+      "apps/web/src/app/(app)/enforcement/page.tsx",
+      "apps/web/src/app/(app)/admin/workflows/page.tsx",
+      "apps/web/src/app/(app)/admin/packages/page.tsx",
+      "apps/web/src/app/(app)/admin/risk/page.tsx",
+      "apps/web/src/app/(app)/admin/audit/page.tsx",
+      "apps/web/src/app/(app)/admin/gis/page.tsx",
+      "apps/web/src/app/(app)/dashboard/page.tsx",
+      "apps/web/src/app/(app)/portal/page.tsx",
+      "apps/web/src/app/(app)/ai/suggestions/page.tsx",
+      "apps/web/src/app/(app)/committee/page.tsx",
     ];
     for (const route of routes) expect(fs.existsSync(path.join(root, route)), route).toBe(true);
   });
 
   test("ships reviewed Arabic fallbacks for every additive MVP3 control-plane key", () => {
     const pages = ["integrations", "operations", "security-access", "devices"]
-      .map(name => fs.readFileSync(path.join(root, `apps/web/src/app/admin/${name}/page.tsx`), "utf8"))
+      .map(name => fs.readFileSync(path.join(root, `apps/web/src/app/(app)/admin/${name}/page.tsx`), "utf8"))
       .join("\n");
     const i18n = fs.readFileSync(path.join(root, "apps/web/src/lib/i18n.ts"), "utf8");
     const keys = [...pages.matchAll(/t\("(mvp3\.[^"]+)"/g)].map(match => match[1]);

@@ -19,8 +19,8 @@ import { storageStatePath } from "./personas";
 // live navigation proves structure + a11y against whatever the environment
 // has actually seeded.
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
-const PAGE = "src/app/factories/[id]/page.tsx";
-const LOADING = "src/app/factories/[id]/loading.tsx";
+const PAGE = "src/app/(app)/factories/[id]/page.tsx";
+const LOADING = "src/app/(app)/factories/[id]/loading.tsx";
 
 async function openFirstFactory(page: Page): Promise<boolean> {
   await page.goto("/factories");
@@ -53,7 +53,7 @@ test.describe("CD-031 source truth — governed risk/spatial wiring, masking, is
     const src = SRC(PAGE);
     expect(src).toMatch(/FactorySpatialMap/);
     expect(src).toMatch(/from\("geo_events"\)/);
-    const map = SRC("src/app/factories/[id]/FactorySpatialMap.tsx");
+    const map = SRC("src/app/(app)/factories/[id]/FactorySpatialMap.tsx");
     expect(map).toMatch(/Industrial-license official location/);
     expect(map).toMatch(/overrideReason/);
     expect(map).not.toMatch(/Polygon|boundary_polygon/);
@@ -84,7 +84,7 @@ test.describe("CD-031 source truth — governed risk/spatial wiring, masking, is
     expect(src).toMatch(/mapFactoryError\(pErr, "load"\)/);
     expect(src).toMatch(/mapFactoryError\(mErr, "load"\)/);
     expect(src).not.toMatch(/\{[drpm]Err\.message\}/);
-    const actions = SRC("src/app/factories/[id]/actions.ts");
+    const actions = SRC("src/app/(app)/factories/[id]/actions.ts");
     expect(actions).toMatch(/mapFactoryError\(error, "update"\)/);
     expect(actions).not.toMatch(/return \{ error: error\.message \}/);
   });

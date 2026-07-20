@@ -17,7 +17,7 @@ import { storageStatePath } from "./personas";
 // code layer — matching the CD-025/026 read-only + wiring-proof convention.
 const EVIDENCE_DIR = evidenceDirectory("cd-027-visit-detail-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
-const ID = "src/app/visits/[id]";
+const ID = "src/app/(app)/visits/[id]";
 
 test.use({ storageState: storageStatePath("planner") });
 

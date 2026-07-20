@@ -106,9 +106,9 @@ test.describe("CD-005/006 a11y / RTL / responsive (DSG-A11Y-001)", () => {
 // DSG-CODE-001 / DEC-012 — code-layer proof of the closures that cannot be forced live.
 test.describe("CD-005/006 wiring (DEC-012): governed lifecycle, distinct states and genuine blockers", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
-  const page = SRC("src/app/admin/regulations/page.tsx");
-  const controls = SRC("src/app/admin/regulations/Controls.tsx");
-  const actions = SRC("src/app/admin/regulations/actions.ts");
+  const page = SRC("src/app/(app)/admin/regulations/page.tsx");
+  const controls = SRC("src/app/(app)/admin/regulations/Controls.tsx");
+  const actions = SRC("src/app/(app)/admin/regulations/actions.ts");
 
   test("verified-zero and unavailable/unknown are DISTINCT — a failed read never renders zero", () => {
     // Empty = read succeeded, genuinely zero.
@@ -150,7 +150,7 @@ test.describe("CD-005/006 wiring (DEC-012): governed lifecycle, distinct states 
   test("writes are gated to writers in the UI and the dedicated detail route exists", () => {
     expect(page).toContain('roles.has("compliance_admin") || roles.has("form_admin")');
     expect(page).toContain("{isWriter ? <NewRegulationForm");
-    expect(existsSync(join(process.cwd(), "src/app/admin/regulations/[id]/page.tsx"))).toBe(true);
+    expect(existsSync(join(process.cwd(), "src/app/(app)/admin/regulations/[id]/page.tsx"))).toBe(true);
   });
 
   test("no bare colours — only ax design tokens (GLOBAL COLOR LAW)", () => {

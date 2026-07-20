@@ -8,8 +8,8 @@ const read = (relative: string) => fs.readFileSync(path.join(root, relative), "u
 
 test.describe("TASK-G11 remaining-requirements backend contracts", () => {
   test("M02-039 has a real visit map route with factory and authorized inspector positions", () => {
-    const page = read("src/app/visits/map/page.tsx");
-    const map = read("src/app/visits/map/VisitMap.tsx");
+    const page = read("src/app/(app)/visits/map/page.tsx");
+    const map = read("src/app/(app)/visits/map/VisitMap.tsx");
     expect(page).toContain('from("geo_events")');
     expect(page).toContain("official_lat");
     expect(map).toContain("latest inspector position");
@@ -17,7 +17,7 @@ test.describe("TASK-G11 remaining-requirements backend contracts", () => {
   });
 
   test("M04 field journey captures device, provider ETA, override and arrival evidence", () => {
-    const startup = read("src/app/field/[visitId]/Startup.tsx");
+    const startup = read("src/app/(app)/field/[visitId]/Startup.tsx");
     const route = read("src/app/api/routing/eta/route.ts");
     const offline = read("src/lib/offline.ts");
     expect(startup).toContain("device_info: capturedDevice");
@@ -38,7 +38,7 @@ test.describe("TASK-G11 remaining-requirements backend contracts", () => {
 
   test("M07 schema is source-owned, role-scoped and risk history is reproducible", () => {
     const migration = read("../../supabase/migrations/20260716210000_remaining_requirements_backend.sql");
-    const dossier = read("src/app/factories/[id]/page.tsx");
+    const dossier = read("src/app/(app)/factories/[id]/page.tsx");
     expect(migration).toContain("license_issue_date date");
     expect(migration).toContain("cr_owner_details text");
     expect(migration).toContain("create table if not exists factory_risk_snapshots");

@@ -1,5 +1,7 @@
 # Phase-3 Implementation Status (Kimi, branch `improved`)
 
+> Pass-4 supersession: the integration branch completed the items this Line-A record marked deferred. K-001 now uses the authenticated `(app)` route-group layout; K-002 explicit route flags were removed while auth/cookies continue to infer dynamic rendering; K-003 has view-specific bounded reads, streaming and a source-only grouped RPC; K-015/K-016 are scoped and signed in one batch; K-011 has a source-only RLS-invoker union RPC/trigram migration. Definitive status and evidence are in `inspection-p0-register.md` and `inspection-before-after-results.md`. The historical Line-A rationale below is retained as provenance, not current status.
+
 Date: 2026-07-21. Validation: `npm run typecheck` ✅, `npm run build` ✅ (production, Next 15.5.20).
 
 ## Implemented (priority order from the programme brief)

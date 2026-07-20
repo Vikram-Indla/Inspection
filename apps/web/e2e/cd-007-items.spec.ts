@@ -131,9 +131,9 @@ test.describe("CD-007 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
 // blocked legs, no invented audit/usage/guard).
 test.describe("CD-007 wiring (DEC-012): completed authoring, usage and scoped audit", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
-  const page = SRC("src/app/admin/items/page.tsx");
-  const actions = SRC("src/app/admin/items/actions.ts");
-  const controls = SRC("src/app/admin/items/Controls.tsx");
+  const page = SRC("src/app/(app)/admin/items/page.tsx");
+  const actions = SRC("src/app/(app)/admin/items/actions.ts");
+  const controls = SRC("src/app/(app)/admin/items/Controls.tsx");
 
   test("S04 duplicate code surfaces the proven UNIQUE-constraint fact (23505), not a generic failure", () => {
     // createItem detects Postgres unique_violation and surfaces a specific message;

@@ -16,7 +16,7 @@ import EmptyState from "@/components/EmptyState";
 import Pagination from "@/components/Pagination"; // FNS-011 shared client-side pager
 import dynamic from "next/dynamic";
 import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
-import { markNotificationRead, requestVisitReschedule, type FieldActionResult } from "@/app/field/actions";
+import { markNotificationRead, requestVisitReschedule, type FieldActionResult } from "@/app/(app)/field/actions";
 
 // Mapbox is browser-only — dynamic import with ssr:false (GeoMap canon).
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {

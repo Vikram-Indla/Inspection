@@ -13,7 +13,8 @@
 //   node e2e/perf/benchmark.mjs warm-detail --cycles 10        # visits list -> first detail link
 //   node e2e/perf/benchmark.mjs aggregate                      # baseline.json + CSV + evidence pruning
 //
-// Env: BASE_URL (default http://127.0.0.1:3100), RESULTS_DIR (default docs/performance/results).
+// Env: BASE_URL (default http://127.0.0.1:3100), RESULTS_DIR (default docs/performance/results),
+// RESULTS_LABEL (default baseline; use final for a remediation run without overwriting baseline evidence).
 
 import { chromium } from "@playwright/test";
 import { mkdirSync, readFileSync, writeFileSync, appendFileSync, existsSync } from "node:fs";
@@ -25,9 +26,18 @@ const WEB_ROOT = join(__dirname, "..", "..");
 const REPO_ROOT = join(WEB_ROOT, "..", "..");
 const BASE_URL = process.env.BASE_URL ?? "http://127.0.0.1:3100";
 const RESULTS_DIR = process.env.RESULTS_DIR ?? join(REPO_ROOT, "docs", "performance", "results");
+const RESULTS_LABEL = process.env.RESULTS_LABEL ?? "baseline";
+const VIEWPORT_PROFILE = process.env.VIEWPORT_PROFILE ?? "desktop";
+const NETWORK_PROFILE = process.env.NETWORK_PROFILE ?? "normal";
+const VIEWPORTS = {
+  desktop: { width: 1366, height: 900, isMobile: false, hasTouch: false },
+  "ipad-portrait": { width: 810, height: 1080, isMobile: true, hasTouch: true },
+  "ipad-landscape": { width: 1080, height: 810, isMobile: true, hasTouch: true },
+};
+const ACTIVE_VIEWPORT = VIEWPORTS[VIEWPORT_PROFILE] ?? VIEWPORTS.desktop;
 const EVIDENCE_DIR = join(REPO_ROOT, "docs", "performance", "evidence");
 const AUTH_DIR = join(__dirname, ".auth");
-const RUNS_FILE = join(RESULTS_DIR, "runs-baseline.jsonl");
+const RUNS_FILE = join(RESULTS_DIR, `runs-${RESULTS_LABEL}.jsonl`);
 
 // Seeded demo personas — same credentials as e2e/personas.ts (already in-repo).
 const PERSONAS = {
@@ -80,6 +90,15 @@ const INIT_SCRIPT = `
 async function attachNetwork(page) {
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Network.enable");
+  if (NETWORK_PROFILE === "slow-4g") {
+    await cdp.send("Network.emulateNetworkConditions", {
+      offline: false,
+      latency: 150,
+      downloadThroughput: (1.6 * 1024 * 1024) / 8,
+      uploadThroughput: (750 * 1024) / 8,
+      connectionType: "cellular4g",
+    });
+  }
   const state = { inflight: new Map(), done: [], bytes: 0 };
   cdp.on("Network.requestWillBeSent", (ev) => {
     state.inflight.set(ev.requestId, { url: ev.request.url, ts: ev.timestamp, wall: ev.wallTime });
@@ -106,9 +125,19 @@ async function attachNetwork(page) {
 // Wait until network is quiet (no inflight for `quietMs`) or timeout.
 async function waitSettled(state, quietMs = 500, timeoutMs = 30000) {
   const t0 = Date.now();
-  let quietSince = state.inflight.size === 0 ? Date.now() : null;
+  // Mapbox telemetry/session beacons and realtime sockets are deliberately
+  // long-lived. They do not gate useful route content and must not force every
+  // navigation to consume the 30-second safety timeout.
+  const blocksUsefulContent = ({ url }) => !(
+    url.startsWith("blob:")
+    || /\/events\/v2(?:\?|$)/.test(url)
+    || /\/map-sessions\/v1(?:\?|$)/.test(url)
+    || /\/realtime\/v1\/websocket/.test(url)
+  );
+  const blockingCount = () => [...state.inflight.values()].filter(blocksUsefulContent).length;
+  let quietSince = blockingCount() === 0 ? Date.now() : null;
   while (Date.now() - t0 < timeoutMs) {
-    if (state.inflight.size === 0) {
+    if (blockingCount() === 0) {
       if (quietSince === null) quietSince = Date.now();
       if (Date.now() - quietSince >= quietMs) return true;
     } else {
@@ -116,6 +145,8 @@ async function waitSettled(state, quietMs = 500, timeoutMs = 30000) {
     }
     await new Promise((r) => setTimeout(r, 50));
   }
+  const blockers = [...state.inflight.values()].filter(blocksUsefulContent).map(({ url }) => url);
+  console.error(`network settle timeout; blocking URLs: ${JSON.stringify(blockers)}`);
   return false;
 }
 
@@ -131,6 +162,7 @@ async function snapshot(page, state, markIndex) {
       paints: window.__perf ? window.__perf.paints.map((p) => ({ ...p })) : [],
       lcp: window.__perf ? [...window.__perf.lcp] : [],
       longtasks: window.__perf ? window.__perf.longtasks.map((t) => ({ ...t })) : [],
+      overflow: Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth),
     };
   });
   return {
@@ -142,6 +174,7 @@ async function snapshot(page, state, markIndex) {
     lcp_ms: nav.lcp.length ? Math.max(...nav.lcp) : null,
     longtasks: nav.longtasks.slice(markIndex.longtasks),
     heap_mb: nav.heap ? +(nav.heap / 1048576).toFixed(1) : null,
+    horizontal_overflow_px: nav.overflow,
     requests: state.done.slice(markIndex.requests),
     bytes: state.bytes - markIndex.bytes,
   };
@@ -152,6 +185,8 @@ function summarize(record, snap, wallMs, extra) {
   return {
     ts: new Date().toISOString(),
     ...extra,
+    viewport_profile: VIEWPORT_PROFILE,
+    network_profile: NETWORK_PROFILE,
     nav_ms: Math.round(wallMs),
     ttfb_ms: snap.ttfb_ms != null ? Math.round(snap.ttfb_ms) : null,
     dcl_ms: snap.dcl_ms != null ? Math.round(snap.dcl_ms) : null,
@@ -164,6 +199,7 @@ function summarize(record, snap, wallMs, extra) {
     request_count: snap.requests.length,
     bytes: snap.bytes,
     heap_mb: snap.heap_mb,
+    horizontal_overflow_px: snap.horizontal_overflow_px,
     supabase_calls: supa.length,
     supabase_ms_total: Math.round(supa.reduce((a, r) => a + r.ms, 0)),
     supabase_ms_max: supa.length ? Math.round(Math.max(...supa.map((r) => r.ms))) : null,
@@ -174,10 +210,22 @@ function appendRun(record) {
   appendFileSync(RUNS_FILE, JSON.stringify(record) + "\n");
 }
 
+function evidenceUrl(raw) {
+  try {
+    const url = new URL(raw);
+    for (const key of ["access_token", "apikey", "token", "signature"]) url.searchParams.delete(key);
+    return `${url.pathname}${url.search}`.slice(0, 160);
+  } catch {
+    return raw.startsWith("blob:") ? "blob:[worker]" : "[unparseable-url]";
+  }
+}
+
 async function newContext(browser, personaKey) {
   return browser.newContext({
     storageState: join(AUTH_DIR, `${personaKey}.json`),
-    viewport: { width: 1366, height: 900 },
+    viewport: { width: ACTIVE_VIEWPORT.width, height: ACTIVE_VIEWPORT.height },
+    isMobile: ACTIVE_VIEWPORT.isMobile,
+    hasTouch: ACTIVE_VIEWPORT.hasTouch,
     locale: "en-US",
   });
 }
@@ -268,7 +316,7 @@ async function cmdCold(browser, route, { saveEvidence = false } = {}) {
       if (saveEvidence && cycle === 1) {
         const name = route.replace(/[^\w]+/g, "_");
         writeFileSync(join(EVIDENCE_DIR, `${name}-requests.json`), JSON.stringify(snap.requests.map((r) => ({
-          url: r.url.replace(/^https?:\/\/[^/]+/, "").slice(0, 160),
+          url: evidenceUrl(r.url),
           ms: Math.round(r.ms), bytes: r.bytes, supabase: r.supabase, failed: r.failed,
         })), null, 1));
       }
@@ -309,7 +357,12 @@ async function cmdWarm(browser, route) {
       let method = "link-click";
       const link = page.locator(`nav a[href="${route}"]`).first();
       if ((await link.count()) > 0) {
-        await link.click();
+        if (ACTIVE_VIEWPORT.isMobile || !(await link.isVisible())) {
+          method = "responsive-link-click";
+          await link.evaluate((element) => element.click());
+        } else {
+          await link.click();
+        }
       } else {
         method = "in-context-goto";
         await page.goto(`${BASE_URL}${route}`, { waitUntil: "load" });
@@ -323,7 +376,7 @@ async function cmdWarm(browser, route) {
     }
   } catch (e) {
     appendRun({ ts: new Date().toISOString(), mode: "warm", route, persona: personaKey, error: e.message.split("\n")[0] });
-    console.error(`warm ${route} FAILED: ${e.message.split("\n")[0]}`);
+    console.error(`warm ${route} FAILED: ${process.env.BENCHMARK_DEBUG ? e.stack : e.message.split("\n")[0]}`);
   }
   await ctx.close();
 }
@@ -384,7 +437,7 @@ function cmdAggregate() {
     (groups[key] ??= []).push(r);
   }
   const summary = {};
-  const metricKeys = ["nav_ms", "ttfb_ms", "dcl_ms", "load_ms", "fcp_ms", "lcp_ms", "longtask_count", "longtask_ms", "request_count", "bytes", "heap_mb", "supabase_calls", "supabase_ms_total", "supabase_ms_max"];
+  const metricKeys = ["nav_ms", "ttfb_ms", "dcl_ms", "load_ms", "fcp_ms", "lcp_ms", "longtask_count", "longtask_ms", "request_count", "bytes", "heap_mb", "horizontal_overflow_px", "supabase_calls", "supabase_ms_total", "supabase_ms_max"];
   for (const [key, list] of Object.entries(groups)) {
     const [mode, route] = key.split("|");
     const entry = { n: list.length, errors: errs.filter((e) => e.mode === mode && e.route === route).length };
@@ -400,21 +453,24 @@ function cmdAggregate() {
     generated_at: new Date().toISOString(),
     base_url: BASE_URL,
     build: "production (next build && next start)",
+    viewport_profile: VIEWPORT_PROFILE,
+    network_profile: NETWORK_PROFILE,
     runs_file: RUNS_FILE,
     total_runs: runs.length,
     failed_runs: errs.length,
     failures: errs.map((e) => ({ mode: e.mode, route: e.route, cycle: e.cycle, error: e.error })),
     routes: summary,
   };
-  writeFileSync(join(RESULTS_DIR, "baseline.json"), JSON.stringify(out, null, 2));
+  writeFileSync(join(RESULTS_DIR, `${RESULTS_LABEL}.json`), JSON.stringify(out, null, 2));
   // CSV: one row per individual run
-  const header = ["mode", "route", "cycle", "persona", "method", "nav_ms", "ttfb_ms", "dcl_ms", "load_ms", "fp_ms", "fcp_ms", "lcp_ms", "longtask_count", "longtask_ms", "request_count", "bytes", "heap_mb", "supabase_calls", "supabase_ms_total", "supabase_ms_max", "error"];
+  const header = ["mode", "route", "cycle", "persona", "method", "viewport_profile", "network_profile", "nav_ms", "ttfb_ms", "dcl_ms", "load_ms", "fp_ms", "fcp_ms", "lcp_ms", "longtask_count", "longtask_ms", "request_count", "bytes", "heap_mb", "horizontal_overflow_px", "supabase_calls", "supabase_ms_total", "supabase_ms_max", "error"];
   const lines = [header.join(",")];
   for (const r of runs) {
     lines.push(header.map((h) => (r[h] ?? "")).join(","));
   }
-  writeFileSync(join(RESULTS_DIR, "route-results-baseline.csv"), lines.join("\n"));
-  console.log(`aggregated ${runs.length} runs (${errs.length} failed) -> baseline.json + route-results-baseline.csv`);
+  const routeResultsName = RESULTS_LABEL === "final" ? "route-results.csv" : `route-results-${RESULTS_LABEL}.csv`;
+  writeFileSync(join(RESULTS_DIR, routeResultsName), lines.join("\n"));
+  console.log(`aggregated ${runs.length} runs (${errs.length} failed) -> ${RESULTS_LABEL}.json + ${routeResultsName}`);
   for (const [route, modes] of Object.entries(summary)) {
     for (const [mode, e] of Object.entries(modes)) {
       console.log(`  ${route} [${mode}] n=${e.n} nav median=${e.nav_ms?.median} p75=${e.nav_ms?.p75} p95=${e.nav_ms?.p95}`);

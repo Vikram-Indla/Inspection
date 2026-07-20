@@ -5,8 +5,8 @@ import path from "node:path";
 const SRC = (p: string) => fs.readFileSync(path.resolve(__dirname, "..", p), "utf8");
 
 test("OCR journey begins at accountable evidence capture, not a detached upload", () => {
-  const page = SRC("src/app/evidence-ocr/page.tsx");
-  const review = SRC("src/app/evidence-ocr/OcrReview.tsx");
+  const page = SRC("src/app/(app)/evidence-ocr/page.tsx");
+  const review = SRC("src/app/(app)/evidence-ocr/OcrReview.tsx");
   expect(page).toContain('not("storage_path", "is", null)');
   expect(page).toContain("How to use evidence text extraction");
   expect(page).toContain('href="/field"');

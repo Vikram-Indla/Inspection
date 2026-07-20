@@ -3,6 +3,25 @@
 Task: TASK-G11-REMEDIATION-PERFORMANCE-001  
 Classification reflects demonstrated evidence only. “Confirmed” is the pre-remediation finding; the disposition column says whether this pass remediated it.
 
+## Pass-4 K-item closure
+
+| K item | Pass-4 status | Evidence / remaining boundary |
+|---|---|---|
+| K-001 persistent shell | IMPLEMENTED_VERIFIED | `app/(app)/layout.tsx`; authenticated chrome persists; 6/6 Pass-4 contracts and protected suite pass. |
+| K-002 blanket `force-dynamic` | REMOVED_WHERE_REDUNDANT | Route group contains no explicit force; cookie/auth dependencies still correctly make authenticated output dynamic in the production build. |
+| K-003 dashboard full-data render | IMPLEMENTED_SOURCE / RUNTIME_PARTIAL | View-specific bounded reads, Suspense streaming and grouped RPC fallback. Final Dashboard warm p75 2701 ms: §9 FAIL; grouped RPC awaits migration. |
+| K-004 repeated role reads | IMPLEMENTED_VERIFIED | `unstable_cache` is keyed by user id, 30-second TTL, user tag invalidator. Current Access UI is read-only; future role writers must call invalidation. RLS remains authoritative. |
+| K-006/K-007 document navigation | IMPLEMENTED_VERIFIED | Next Link/router paths from both lines preserved; persistent route progress clears on destination commit. |
+| K-009 expiry RPC on reads | IMPLEMENTED_VERIFIED | Removed from read paths; governed 15-minute pg_cron cadence retained. |
+| K-011 global search fan-out | SOURCE_READY / DB_BLOCKED | One SECURITY INVOKER union RPC plus trigram indexes; authenticated RLS-preserving fallback remains until migration. No EXPLAIN available. |
+| K-013 hot indexes | APPLIED_PRIOR_PASS / PLAN_EVIDENCE_BLOCKED | Both Tier-A migration families retained, including operational-state source reconciliation. Pass-4 database access/EXPLAIN unavailable. |
+| K-014 RLS initplan | APPLIED_PRIOR_PASS / PLAN_EVIDENCE_BLOCKED | `(select auth.uid())` helpers retained; identical predicates. Pass-4 plan/result-set proof unavailable. |
+| K-015/K-016 inspection catalogue/signed URLs | IMPLEMENTED_WITH_SECURITY_BOUNDARY | Items and violation codes are package/reference scoped; signed URLs are one batched request. Cross-user bearer-URL persistence is deliberately not introduced without a revocation contract. |
+| K-017 route feedback | IMPLEMENTED_VERIFIED | Existing loading states and immediate progress preserved; prior measured visual acknowledgement 61–71 ms p75 passes. |
+| Tier-C responsive evidence | MEASURED_FAIL_TIMING | iPad portrait/landscape overflow p75 0 px; warm p75 2073/2071 ms. Slow-4G portrait p75 2356 ms. |
+
+Overall disposition: app/source gates pass; §9 useful-content and database-plan evidence fail. Status is `AWAITING_SPONSOR_G11_PERFORMANCE_ACCEPTANCE`, not G11 PASS.
+
 ## Contractual P0-01..60 crosswalk
 
 | ID | Investigation | Classification | Disposition/evidence |

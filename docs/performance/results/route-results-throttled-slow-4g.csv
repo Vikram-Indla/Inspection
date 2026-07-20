@@ -1,0 +1,11 @@
+mode,route,cycle,persona,method,viewport_profile,network_profile,nav_ms,ttfb_ms,dcl_ms,load_ms,fp_ms,fcp_ms,lcp_ms,longtask_count,longtask_ms,request_count,bytes,heap_mb,horizontal_overflow_px,supabase_calls,supabase_ms_total,supabase_ms_max,error
+warm,/field,1,inspector,responsive-link-click,ipad-portrait,slow-4g,2356,440,3078,3924,1548,1548,7268,0,0,3,62605,31.9,0,0,0,,
+warm,/field,2,inspector,responsive-link-click,ipad-portrait,slow-4g,4783,459,1317,1318,500,500,6216,0,0,3,62604,10.4,0,0,0,,
+warm,/field,3,inspector,responsive-link-click,ipad-portrait,slow-4g,2384,456,1308,1308,484,484,3784,0,0,3,62604,18,0,0,0,,
+warm,/field,4,inspector,responsive-link-click,ipad-portrait,slow-4g,2283,440,1320,1320,472,472,3732,0,0,3,62606,29,0,0,0,,
+warm,/field,5,inspector,responsive-link-click,ipad-portrait,slow-4g,2335,451,1319,1319,492,492,3640,0,0,3,62607,46.6,0,0,0,,
+warm,/field,6,inspector,responsive-link-click,ipad-portrait,slow-4g,2338,448,1307,1308,492,492,3736,0,0,3,62608,17.6,0,0,0,,
+warm,/field,7,inspector,responsive-link-click,ipad-portrait,slow-4g,2294,451,1304,1304,480,480,3720,0,0,3,62606,36.3,0,0,0,,
+warm,/field,8,inspector,responsive-link-click,ipad-portrait,slow-4g,2292,524,1392,1393,556,556,3812,0,0,3,62605,8.1,0,0,0,,
+warm,/field,9,inspector,responsive-link-click,ipad-portrait,slow-4g,2340,503,1316,1317,552,552,3760,0,0,3,62605,17.5,0,0,0,,
+warm,/field,10,inspector,responsive-link-click,ipad-portrait,slow-4g,2330,2948,3696,3696,2984,2984,6124,0,0,3,62606,28,0,0,0,,

@@ -265,8 +265,8 @@ test.describe("CD-022 authorization boundary", () => {
 });
 
 test("CD-022 publish and duplicate reads fail closed behind the shared atomic boundary", () => {
-  const action = readFileSync(join(process.cwd(), "src/app/planning/single/actions.ts"), "utf8");
-  const duplicate = readFileSync(join(process.cwd(), "src/app/planning/single/duplicate.ts"), "utf8");
+  const action = readFileSync(join(process.cwd(), "src/app/(app)/planning/single/actions.ts"), "utf8");
+  const duplicate = readFileSync(join(process.cwd(), "src/app/(app)/planning/single/duplicate.ts"), "utf8");
   const migration = readFileSync(join(process.cwd(), "../..", "supabase/migrations/20260714091727_planning_publish_guards.sql"), "utf8");
   expect(action).toContain('sb.rpc("publish_single_visit"');
   expect(action).not.toContain('.from("visit_plans").insert');

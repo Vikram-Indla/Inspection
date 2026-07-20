@@ -4,22 +4,18 @@ import { getShellRegions, getUserRoles } from "@/lib/persona";
 import { useT } from "@/lib/i18n";
 import { getServerUser } from "@/lib/supabase-server";
 import { buildShellNavigation } from "@/lib/shell-navigation";
-import { shellScopeForRoute } from "@/lib/shell-navigation";
 import ShellClient, { type ShellClientStrings } from "@/components/ShellClient";
 import { type BellStrings } from "@/components/NotificationBell";
 
-const loadShellData = cache(async (current: string) => {
+const loadShellData = cache(async () => {
   const [{ t, locale }, { data: { user } }] = await Promise.all([
     useT(),
     getServerUser(),
   ]);
   if (!user) return { t, locale, user, roles: [] as string[], regions: [] as string[] };
-  const needsRegions = shellScopeForRoute(current).region;
   const [{ data: roleRows }, regionRead] = await Promise.all([
     getUserRoles(user.id),
-    needsRegions
-      ? getShellRegions()
-      : Promise.resolve({ data: [] as { region: string | null }[], error: null }),
+    getShellRegions(),
   ]);
   const roles = Array.from(new Set((roleRows ?? []).map(row => row.role_key))).sort();
   const regions = regionRead.error
@@ -28,15 +24,17 @@ const loadShellData = cache(async (current: string) => {
   return { t, locale, user, roles, regions };
 });
 
-/** Start shell/auth/RBAC/reference reads while the route loads its own data. */
+/**
+ * Compatibility no-op for the three pages that used to start per-page shell
+ * reads. K-001 moved those reads into the persistent `(app)` layout; starting
+ * them from a page again would defeat that boundary.
+ */
 export function preloadShell(current: string) {
-  void loadShellData(current);
+  void current;
 }
 
-export default async function Shell({ current, children, title, context, topbar }: {
-  current: string; children: ReactNode; title: string; context?: ReactNode; topbar?: ReactNode;
-}) {
-  const { t, locale, user, roles, regions } = await loadShellData(current);
+export async function AppShell({ children }: { children: ReactNode }) {
+  const { t, locale, user, roles, regions } = await loadShellData();
   if (!user) redirect("/login");
   const groups = buildShellNavigation(roles).map(group => ({
     id: group.id,
@@ -125,10 +123,6 @@ export default async function Shell({ current, children, title, context, topbar 
   const languageHref = locale === "ar" ? "/locale?set=en" : "/locale?set=ar";
   return (
     <ShellClient
-      current={current}
-      title={title}
-      context={context}
-      topbar={topbar}
       groups={groups}
       strings={shellStrings}
       bellStrings={bellStrings}
@@ -142,5 +136,26 @@ export default async function Shell({ current, children, title, context, topbar 
     >
       {children}
     </ShellClient>
+  );
+}
+
+/**
+ * Route-owned header/content frame. The navigation, account controls and bell
+ * now live above the page segment in AppShell, so this component can rerender
+ * per route without remounting the application chrome.
+ */
+export default function Shell({ children, title, context, topbar }: {
+  current: string; children: ReactNode; title: string; context?: ReactNode; topbar?: ReactNode;
+}) {
+  return (
+    <>
+      {topbar ? <div className="ax-pagehead__route-tools">{topbar}</div> : null}
+      <header className="ax-pagehead ax-pagehead--route">
+        <div className="ax-pagehead__row">
+          <div className="ax-pagehead__context"><h2>{title}</h2>{context}</div>
+        </div>
+      </header>
+      <div className="ax-content">{children}</div>
+    </>
   );
 }

@@ -1,0 +1,527 @@
+[
+ {
+  "url": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+  "ms": 10,
+  "bytes": 43148,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/31250b261513219c-s.p.woff2",
+  "ms": 9,
+  "bytes": 13612,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+  "ms": 9,
+  "bytes": 45596,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+  "ms": 11,
+  "bytes": 44580,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+  "ms": 12,
+  "bytes": 13688,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/46d978a299613541-s.p.woff2",
+  "ms": 12,
+  "bytes": 13140,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/4ccb217720945e9f.css",
+  "ms": 13,
+  "bytes": 1685,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/fab26a320de99c5d.css",
+  "ms": 14,
+  "bytes": 997,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+  "ms": 14,
+  "bytes": 19804,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+  "ms": 14,
+  "bytes": 45988,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/0a1126aa60a7fb9d.css",
+  "ms": 15,
+  "bytes": 15024,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+  "ms": 15,
+  "bytes": 22208,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+  "ms": 16,
+  "bytes": 22132,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+  "ms": 16,
+  "bytes": 19464,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+  "ms": 16,
+  "bytes": 20800,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/saqeel-prism.svg",
+  "ms": 9,
+  "bytes": 1147,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/eae037355f033de2-s.p.woff2",
+  "ms": 17,
+  "bytes": 20388,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+  "ms": 17,
+  "bytes": 21468,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+  "ms": 17,
+  "bytes": 13584,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/main-app-1d5c3835239bab32.js",
+  "ms": 17,
+  "bytes": 903,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/layout-cabedf23896a9201.js",
+  "ms": 18,
+  "bytes": 882,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/webpack-1c9d22b1325ccd0b.js",
+  "ms": 18,
+  "bytes": 2824,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/9424-3ea85630fe82ca86.js",
+  "ms": 20,
+  "bytes": 3858,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/4f70f83d-1695539d7f0a95e6.js",
+  "ms": 20,
+  "bytes": 13770,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/2184-0d320d7ac880cba1.js",
+  "ms": 21,
+  "bytes": 46532,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/(app)/operations/page-c288178f0d16dfdd.js",
+  "ms": 22,
+  "bytes": 5284,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/8cbc2f2e-931a1764b4df6b24.js",
+  "ms": 22,
+  "bytes": 54798,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/6490-fec9e17181fcba07.js",
+  "ms": 22,
+  "bytes": 9125,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/2273-fa0d4995b5e74c20.js",
+  "ms": 23,
+  "bytes": 51390,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/auth/v1/.well-known/jwks.json",
+  "ms": 232,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/auth/v1/.well-known/jwks.json",
+  "ms": 293,
+  "bytes": 891,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order",
+  "ms": 42,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+  "ms": 42,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+  "ms": 477,
+  "bytes": 0,
+  "supabase": true,
+  "failed": true
+ },
+ {
+  "url": "/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order",
+  "ms": 477,
+  "bytes": 1852,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/operations",
+  "ms": 6385,
+  "bytes": 334001,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/saqeel-prism.svg",
+  "ms": 3,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/1986.3ab4f29fcd73a19a.js",
+  "ms": 2,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/css/a9803ef1abe0b4ca.css",
+  "ms": 2,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/a50dfa37.7f8a6a16c2c1ce8d.js",
+  "ms": 26,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=",
+  "ms": 0,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M14.5 8.5c-.75 0-1.5.75-1.5 1.5v3h-3c-.75 0",
+  "ms": 0,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23333' viewBox='0 0 29 29'%3E%3Cpath d='M10 13c-.75 0-1.5.75-1.5 1.5S9.25 16 10 16h",
+  "ms": 0,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' fill-rule='evenodd' viewBox='0 0 88 23'%3E%3Cde",
+  "ms": 0,
+  "bytes": 0,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/styles/v1/mapbox/standard?sdk=js-3.25.0",
+  "ms": 33,
+  "bytes": 0,
+  "supabase": false,
+  "failed": true
+ },
+ {
+  "url": "/styles/v1/mapbox/standard?sdk=js-3.25.0",
+  "ms": 265,
+  "bytes": 44481,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/v4/mapbox.mapbox-bathymetry-v2,mapbox.mapbox-streets-v8-lite,mapbox.mapbox-terrain-v3,mapbox.mapbox-models-v1.json?secure=&language=ar",
+  "ms": 60,
+  "bytes": 4339,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/styles/v1/mapbox/standard/00kxhqqddcml91u4n6ur3drf3/iconset.pbf",
+  "ms": 101,
+  "bytes": 75669,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/v4/mapbox.mapbox-3d-events.json?secure=&language=ar",
+  "ms": 151,
+  "bytes": 1461,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/v4/mapbox.mapbox-landmark-pois-v1.json?secure=&language=ar",
+  "ms": 157,
+  "bytes": 1269,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/v4/mapbox.mapbox-3dbuildings-v1.json?secure=&language=ar",
+  "ms": 157,
+  "bytes": 1100,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/v4/mapbox.indoor-v3.json?secure=&language=ar",
+  "ms": 157,
+  "bytes": 1944,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Italic/1536-1791.pbf",
+  "ms": 52,
+  "bytes": 400,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/v4/mapbox.procedural-buildings-v1.json?secure=&language=ar",
+  "ms": 283,
+  "bytes": 1853,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Regular/1536-1791.pbf",
+  "ms": 56,
+  "bytes": 401,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Regular/1792-2047.pbf",
+  "ms": 56,
+  "bytes": 402,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/Arial%20Unicode%20MS%20Regular/1792-2047.pbf",
+  "ms": 56,
+  "bytes": 411,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Bold/1536-1791.pbf",
+  "ms": 56,
+  "bytes": 401,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Medium/1536-1791.pbf",
+  "ms": 56,
+  "bytes": 402,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Regular/8192-8447.pbf",
+  "ms": 76,
+  "bytes": 8055,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/Arial%20Unicode%20MS%20Regular/1536-1791.pbf",
+  "ms": 115,
+  "bytes": 34986,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Regular/0-255.pbf",
+  "ms": 115,
+  "bytes": 38843,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/Arial%20Unicode%20MS%20Bold/1536-1791.pbf",
+  "ms": 115,
+  "bytes": 36326,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/Arial%20Unicode%20MS%20Regular/0-255.pbf",
+  "ms": 119,
+  "bytes": 43490,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/Arial%20Unicode%20MS%20Regular/8192-8447.pbf",
+  "ms": 91,
+  "bytes": 19311,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Regular/768-1023.pbf",
+  "ms": 62,
+  "bytes": 18689,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Italic/0-255.pbf",
+  "ms": 119,
+  "bytes": 45914,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/DIN%20Pro%20Medium/0-255.pbf",
+  "ms": 118,
+  "bytes": 41138,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/Arial%20Unicode%20MS%20Bold/0-255.pbf",
+  "ms": 119,
+  "bytes": 48962,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/fonts/v1/mapbox/Arial%20Unicode%20MS%20Regular/768-1023.pbf",
+  "ms": 65,
+  "bytes": 33542,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/events/v2",
+  "ms": 484,
+  "bytes": 76,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/events/v2",
+  "ms": 433,
+  "bytes": 75,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/events/v2",
+  "ms": 145,
+  "bytes": 75,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/events/v2",
+  "ms": 144,
+  "bytes": 75,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/map-sessions/v1?sku=101a71b3lB92W",
+  "ms": 155,
+  "bytes": 236,
+  "supabase": false,
+  "failed": false
+ }
+]

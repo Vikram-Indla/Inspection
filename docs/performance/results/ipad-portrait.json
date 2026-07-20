@@ -1,0 +1,89 @@
+{
+  "generated_at": "2026-07-20T21:16:46.282Z",
+  "base_url": "http://127.0.0.1:3100",
+  "build": "production (next build && next start)",
+  "viewport_profile": "ipad-portrait",
+  "network_profile": "normal",
+  "runs_file": "/Users/vikramindla/Developer/Inspection/.worktrees/perf-codex/docs/performance/results/runs-ipad-portrait.jsonl",
+  "total_runs": 10,
+  "failed_runs": 0,
+  "failures": [],
+  "routes": {
+    "/field": {
+      "warm": {
+        "n": 10,
+        "errors": 0,
+        "nav_ms": {
+          "median": 2043,
+          "p75": 2073,
+          "p95": 4475
+        },
+        "ttfb_ms": {
+          "median": 467,
+          "p75": 502,
+          "p95": 3249
+        },
+        "dcl_ms": {
+          "median": 1326,
+          "p75": 1364,
+          "p95": 4033
+        },
+        "load_ms": {
+          "median": 1327,
+          "p75": 1364,
+          "p95": 4035
+        },
+        "fcp_ms": {
+          "median": 508,
+          "p75": 528,
+          "p95": 3340
+        },
+        "lcp_ms": {
+          "median": 3492,
+          "p75": 3556,
+          "p95": 6332
+        },
+        "longtask_count": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "longtask_ms": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "request_count": {
+          "median": 3,
+          "p75": 3,
+          "p95": 4
+        },
+        "bytes": {
+          "median": 62606,
+          "p75": 62607,
+          "p95": 62846
+        },
+        "heap_mb": {
+          "median": 26.8,
+          "p75": 42.4,
+          "p95": 48.2
+        },
+        "horizontal_overflow_px": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_calls": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        },
+        "supabase_ms_total": {
+          "median": 0,
+          "p75": 0,
+          "p95": 0
+        }
+      }
+    }
+  }
+}

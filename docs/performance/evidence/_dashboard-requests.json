@@ -7,9 +7,23 @@
   "failed": false
  },
  {
+  "url": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+  "ms": 3,
+  "bytes": 45596,
+  "supabase": false,
+  "failed": false
+ },
+ {
   "url": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
   "ms": 3,
   "bytes": 44580,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/46d978a299613541-s.p.woff2",
+  "ms": 3,
+  "bytes": 13140,
   "supabase": false,
   "failed": false
  },
@@ -21,16 +35,16 @@
   "failed": false
  },
  {
-  "url": "/_next/static/media/0010010bfd451de0-s.p.woff2",
-  "ms": 3,
-  "bytes": 45596,
+  "url": "/_next/static/css/fab26a320de99c5d.css",
+  "ms": 4,
+  "bytes": 997,
   "supabase": false,
   "failed": false
  },
  {
-  "url": "/_next/static/media/46d978a299613541-s.p.woff2",
-  "ms": 3,
-  "bytes": 13140,
+  "url": "/_next/static/css/6090f9d69e9e220a.css",
+  "ms": 4,
+  "bytes": 2701,
   "supabase": false,
   "failed": false
  },
@@ -49,23 +63,23 @@
   "failed": false
  },
  {
-  "url": "/_next/static/css/fab26a320de99c5d.css",
-  "ms": 5,
-  "bytes": 997,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/css/6256c0dbe9cb9edc.css",
-  "ms": 5,
-  "bytes": 2699,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/css/0db30019d733d405.css",
+  "url": "/_next/static/css/0a1126aa60a7fb9d.css",
   "ms": 6,
-  "bytes": 14868,
+  "bytes": 15024,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+  "ms": 6,
+  "bytes": 22208,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+  "ms": 6,
+  "bytes": 22132,
   "supabase": false,
   "failed": false
  },
@@ -84,135 +98,163 @@
   "failed": false
  },
  {
-  "url": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
-  "ms": 7,
-  "bytes": 22208,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
-  "ms": 7,
-  "bytes": 22132,
-  "supabase": false,
-  "failed": false
- },
- {
   "url": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
-  "ms": 8,
+  "ms": 7,
   "bytes": 19464,
   "supabase": false,
   "failed": false
  },
  {
   "url": "/_next/static/media/bd28e874609f6988-s.p.woff2",
-  "ms": 8,
+  "ms": 7,
   "bytes": 20800,
   "supabase": false,
   "failed": false
  },
  {
   "url": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
-  "ms": 8,
+  "ms": 7,
   "bytes": 13584,
   "supabase": false,
   "failed": false
  },
  {
-  "url": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
-  "ms": 9,
-  "bytes": 21468,
-  "supabase": false,
-  "failed": false
- },
- {
   "url": "/_next/static/media/eae037355f033de2-s.p.woff2",
-  "ms": 9,
+  "ms": 7,
   "bytes": 20388,
   "supabase": false,
   "failed": false
  },
  {
-  "url": "/_next/static/chunks/webpack-01f9a4a5da3a3f5c.js",
-  "ms": 9,
-  "bytes": 2830,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/app/layout-68d1478955f5c4cf.js",
-  "ms": 9,
-  "bytes": 884,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/main-app-bef53c53ba363b2d.js",
-  "ms": 9,
-  "bytes": 905,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/1255-d90f22433f14e976.js",
-  "ms": 12,
-  "bytes": 46758,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/4bd1b696-f785427dddbba9fb.js",
-  "ms": 13,
-  "bytes": 54796,
+  "url": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+  "ms": 7,
+  "bytes": 21468,
   "supabase": false,
   "failed": false
  },
  {
   "url": "/saqeel-prism.svg",
-  "ms": 1,
-  "bytes": 0,
+  "ms": 7,
+  "bytes": 1147,
   "supabase": false,
   "failed": false
  },
  {
-  "url": "/_next/static/chunks/2619-3c9e02e22d10480a.js",
-  "ms": 4,
-  "bytes": 0,
+  "url": "/_next/static/chunks/webpack-1c9d22b1325ccd0b.js",
+  "ms": 8,
+  "bytes": 2824,
   "supabase": false,
   "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/main-app-1d5c3835239bab32.js",
+  "ms": 8,
+  "bytes": 903,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/layout-cabedf23896a9201.js",
+  "ms": 8,
+  "bytes": 882,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/9424-3ea85630fe82ca86.js",
+  "ms": 10,
+  "bytes": 3858,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/4f70f83d-1695539d7f0a95e6.js",
+  "ms": 10,
+  "bytes": 13770,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/app/(app)/dashboard/page-fce2ac6ae663871e.js",
+  "ms": 12,
+  "bytes": 1230,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/6490-fec9e17181fcba07.js",
+  "ms": 12,
+  "bytes": 9125,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/2184-0d320d7ac880cba1.js",
+  "ms": 12,
+  "bytes": 46532,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/8cbc2f2e-931a1764b4df6b24.js",
+  "ms": 13,
+  "bytes": 54798,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/_next/static/chunks/2273-fa0d4995b5e74c20.js",
+  "ms": 13,
+  "bytes": 51390,
+  "supabase": false,
+  "failed": false
+ },
+ {
+  "url": "/auth/v1/.well-known/jwks.json",
+  "ms": 169,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/auth/v1/.well-known/jwks.json",
+  "ms": 243,
+  "bytes": 892,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order",
+  "ms": 37,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+  "ms": 50,
+  "bytes": 0,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order",
+  "ms": 473,
+  "bytes": 1851,
+  "supabase": true,
+  "failed": false
+ },
+ {
+  "url": "/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+  "ms": 474,
+  "bytes": 0,
+  "supabase": true,
+  "failed": true
  },
  {
   "url": "/dashboard",
-  "ms": 10595,
-  "bytes": 18429,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/app/dashboard/page-b4e0b42f7bc5e0fa.js",
-  "ms": 5,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/4149-5fd6707709b3cd2a.js",
-  "ms": 5,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/44530001-82096455ede4fd1e.js",
-  "ms": 6,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/5402-b5bb1f141c536c5f.js",
-  "ms": 8,
-  "bytes": 0,
+  "ms": 2223,
+  "bytes": 19009,
   "supabase": false,
   "failed": false
  },
@@ -226,153 +268,6 @@
  {
   "url": "/saqeel-prism.svg",
   "ms": 1,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/reviews?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 16,
-  "bytes": 0,
-  "supabase": false,
-  "failed": true
- },
- {
-  "url": "/planning?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 16,
-  "bytes": 0,
-  "supabase": false,
-  "failed": true
- },
- {
-  "url": "/factories?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 25,
-  "bytes": 0,
-  "supabase": false,
-  "failed": true
- },
- {
-  "url": "/ai/suggestions?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 16,
-  "bytes": 518,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/auth/v1/.well-known/jwks.json",
-  "ms": 146,
-  "bytes": 0,
-  "supabase": true,
-  "failed": false
- },
- {
-  "url": "/auth/v1/.well-known/jwks.json",
-  "ms": 200,
-  "bytes": 891,
-  "supabase": true,
-  "failed": false
- },
- {
-  "url": "/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
-  "ms": 33,
-  "bytes": 0,
-  "supabase": true,
-  "failed": false
- },
- {
-  "url": "/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order",
-  "ms": 33,
-  "bytes": 0,
-  "supabase": true,
-  "failed": false
- },
- {
-  "url": "/operations?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 493,
-  "bytes": 4185,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/field?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 493,
-  "bytes": 0,
-  "supabase": false,
-  "failed": true
- },
- {
-  "url": "/admin/violations?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 477,
-  "bytes": 0,
-  "supabase": false,
-  "failed": true
- },
- {
-  "url": "/_next/static/chunks/app/admin/violations/page-83d6608149e591af.js",
-  "ms": 3,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/app/operations/page-1e4cd56a38198f7d.js",
-  "ms": 3,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/app/field/page-23a4ed7b6c6944f7.js",
-  "ms": 3,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order",
-  "ms": 464,
-  "bytes": 1729,
-  "supabase": true,
-  "failed": false
- },
- {
-  "url": "/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
-  "ms": 465,
-  "bytes": 0,
-  "supabase": true,
-  "failed": true
- },
- {
-  "url": "/admin/regulations?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 921,
-  "bytes": 0,
-  "supabase": false,
-  "failed": true
- },
- {
-  "url": "/admin/compliance-approvals?_rsc=Uj5fJzh3oSqZfPD_",
-  "ms": 920,
-  "bytes": 4489,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/app/admin/compliance-approvals/page-77503822e1d095fc.js",
-  "ms": 3,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/app/admin/regulations/page-7fc9be422e75871b.js",
-  "ms": 3,
-  "bytes": 0,
-  "supabase": false,
-  "failed": false
- },
- {
-  "url": "/_next/static/chunks/1859-de225aa1c2cae48c.js",
-  "ms": 3,
   "bytes": 0,
   "supabase": false,
   "failed": false
