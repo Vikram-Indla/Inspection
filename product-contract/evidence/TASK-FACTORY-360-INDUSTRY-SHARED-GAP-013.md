@@ -19,7 +19,13 @@ not supply verified HTTP methods, authentication, identifier placement, request 
 response schemas, common errors, pagination, privacy handling, or sanitized fixtures.
 
 The beta host redirected to `https://beta-backoffice.industry.sa/login` on the initial
-attempt and the user-requested retry. No authenticated browser session was available.
+attempt and the user-requested retry. After the user authenticated, the Senaei dashboard and
+integration area became available. Authenticated GET method-mismatch probes prove `POST` for
+`ISH-API-001..003`, `ISH-API-008`, and `ISH-API-009`. The HRSD integration UI proves only that
+its visible inquiry form uses POST and requires a text field labelled `HR Factory`; it does not
+prove the `hrsd-labors` API request contract. The plant API path was blocked by the browser
+client, and sensitive contact, delegation, and workforce routes were not exercised with real
+identifiers. No token, cookie, personal payload, stack trace, or framework version was stored.
 No Industry Shared credential variable names or prior repository call sites were found.
 The available sanitized API collection belongs to the separate `/api/inspection` Senaei
 provider family and was not reused as Industry Shared contract authority.
@@ -30,8 +36,9 @@ provider family and was not reused as Industry Shared contract authority.
 - A dedicated server-only Industry Shared provider family is isolated from Senaei.
 - Every lead fails before network I/O with
   `INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`.
-- Method, auth, identifiers, schemas, errors, privacy, retention, masking, and fixture values
-  remain explicit discovery requirements rather than inferred defaults.
+- POST is recorded only for the five endpoints proven by authenticated method-mismatch
+  responses. Auth, identifiers, bodies, schemas, errors, privacy, retention, masking, and
+  fixture values remain explicit discovery requirements rather than inferred defaults.
 - Contact, delegation, GOSI, MHRSD, and NIC workforce domains remain distinct.
 - `F360-BR-002` one Industrial License equals one Plant is preserved; no conflicting provider
   cardinality is normalized without approved change control.
@@ -57,12 +64,14 @@ preconditions are recorded in
 
 ## Blocking evidence and exact continuation
 
-All eleven endpoint contracts remain `BLOCKED_EXTERNAL`. For each endpoint, continuation
-requires an authenticated beta call-site/network trace or sanitized developer contract that
+All eleven endpoint contracts remain `BLOCKED_EXTERNAL`; five now have method-only evidence.
+For each endpoint, continuation requires a sanitized developer contract or an explicitly
+authorized synthetic/test identifier and expected outcome that
 proves method, authentication mechanism, identifiers and validation, request/response/error
 schemas, field types/nullability/cardinality, pagination, bilingual/source metadata,
 authority semantics, privacy/masking/retention, and a synthetic fixture checksum.
 
-Exact next action: sign in to the Industry Shared beta backoffice in Chrome, leave the
-authenticated tab open, and resume this task. The next implementation must verify one endpoint
-end to end before adding a network method, parser, canonical mapping, or migration.
+Exact next action: provide sanitized developer contracts or authorize named synthetic/test
+identifiers and expected outcomes for the POST endpoints. The next implementation must verify
+one endpoint end to end before adding auth, a request body, parser, canonical mapping, or
+migration.

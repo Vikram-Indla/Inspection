@@ -1,5 +1,25 @@
 # Current State
 
+## 2026-07-20 UPDATE 106 — Authenticated beta proves five POST methods only
+
+The authenticated Senaei beta dashboard and its integration area are reachable. Read-only
+method-mismatch probes against the five lowest-risk supplied routes prove `POST` for
+`ISH-API-001..003`, `ISH-API-008`, and `ISH-API-009`. The authenticated HRSD inquiry page
+also exposes one required text field labelled `HR Factory` inside a POST form, but that UI
+does not prove the `hrsd-labors` API body or response. The plant route could not be inspected
+through the browser client, and privacy-sensitive contact, delegation, and workforce routes
+were not queried with real identifiers.
+
+This evidence is deliberately partial. Authentication semantics, identifier placement,
+request bodies, success/error schemas, field authority, pagination, privacy, masking,
+retention, and sanitized fixtures remain unverified for every endpoint. The provider records
+only the five observed POST methods and still blocks all network calls with
+`INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED`; no endpoint is `CONTRACT_VERIFIED`, no stub is
+retired, and no schema or Factory 360 projection changes. The beta host also rendered a verbose
+framework exception page for method mismatch; only the security finding, not stack details or
+versions, is retained. Next evidence must be a sanitized developer contract or explicitly
+authorized synthetic/test identifier with expected outcomes.
+
 ## 2026-07-20 UPDATE 105 — Industry Shared endpoint leads gated fail closed
 
 The sponsor-directed Factory 360 Industry Shared gap slice is source-implemented on the

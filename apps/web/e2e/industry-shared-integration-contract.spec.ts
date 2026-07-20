@@ -7,7 +7,7 @@ const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8")
 const root = "src/lib/integrations/industry-shared";
 
 test.describe("Industry Shared API v2 contract gate", () => {
-  test("records every developer-supplied route once without inventing a method or auth contract", () => {
+  test("records every developer-supplied route once and only the methods evidenced in beta", () => {
     const endpoints = read(`${root}/endpoints.ts`);
     const types = read(`${root}/types.ts`);
     for (const route of [
@@ -24,7 +24,10 @@ test.describe("Industry Shared API v2 contract gate", () => {
       "/shared/api/v2/hrsd-labors",
     ]) expect(endpoints).toContain(route);
     expect((endpoints.match(/\/shared\/api\/v2\/hrsd-labors/g) ?? []).length).toBe(1);
-    expect(types).toContain("readonly method: null");
+    expect(types).toContain('export type IndustrySharedObservedMethod = "POST"');
+    expect(types).toContain("readonly method: IndustrySharedObservedMethod | null");
+    expect((endpoints.match(/, "POST"\)/g) ?? []).length).toBe(5);
+    expect((endpoints.match(/, null\)/g) ?? []).length).toBe(6);
     expect(types).toContain("readonly authContract: null");
     expect(types).toContain("readonly requestContract: null");
     expect(types).toContain("readonly responseContract: null");

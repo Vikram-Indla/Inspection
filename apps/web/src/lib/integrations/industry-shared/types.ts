@@ -13,12 +13,14 @@ export type IndustrySharedEndpointKey =
 
 export type IndustrySharedContractState = "DISCOVERY_REQUIRED" | "CONTRACT_VERIFIED";
 
+export type IndustrySharedObservedMethod = "POST";
+
 export type IndustrySharedEndpointLead = {
   readonly id: `ISH-API-${string}`;
   readonly key: IndustrySharedEndpointKey;
   readonly host: "beta-backoffice.industry.sa";
   readonly path: `/shared/api/v2/${string}`;
-  readonly method: null;
+  readonly method: IndustrySharedObservedMethod | null;
   readonly authContract: null;
   readonly requestContract: null;
   readonly responseContract: null;

@@ -358,5 +358,5 @@ Owner: CD004-EV-003 and CD004-EV-005 are closed. CD004-EV-004 remains blocked be
 | F360-ISH-EV-001..003 | ZIP checksum, endpoint inventory, and 9/9-page rendered specification review | Captured |
 | F360-ISH-EV-004..007 | Permanent endpoint/retirement/acceptance ledgers and server-only fail-closed provider contracts | Captured — source verified |
 | F360-ISH-EV-008..010 | Typecheck, production build, focused 4/4, protected static 135 pass / 4 intentional skips / 0 failed | PASS |
-| F360-ISH-EV-011 | Authenticated beta network/call-site contract capture for `ISH-API-001..011` | BLOCKED — beta login required |
+| F360-ISH-EV-011 | Authenticated beta contract capture for `ISH-API-001..011` | PARTIAL — POST proven for five low-risk routes; auth/body/response/error/privacy/fixture evidence still blocked |
 | F360-ISH-EV-012 | Controlled Industry Shared runtime normalization and stub retirement | NOT RUN — contracts and credentials absent |

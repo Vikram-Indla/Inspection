@@ -1,13 +1,13 @@
 programme: FACTORY_360_INDUSTRY_SHARED_API_GAP_CLOSURE
-status: SOURCE_VERIFIED_BLOCKED_EXTERNAL_BETA_AUTHENTICATION
-stop_state: AWAITING_AUTHENTICATED_BETA_INDUSTRY_SHARED_CONTRACT_CAPTURE
+status: PARTIAL_METHOD_EVIDENCE_CAPTURED_CONTRACTS_STILL_BLOCKED_EXTERNAL
+stop_state: AWAITING_SANITIZED_DEVELOPER_CONTRACTS_OR_AUTHORIZED_TEST_IDENTIFIERS
 canonical_repository_path: /Users/vikramindla/Developer/Inspection
 authorized_worktree_path: /Users/vikramindla/Developer/Inspection/.local-inputs/worktrees/industry-shared-factory360-gap-013
 current_branch: codex/industry-shared-factory360-gap-013
-current_commit: 65a4db2c80482318ba617e0439424f9e5966c020
+current_commit: 4f0a35fd98b514f4f7ce03d738a0689155c1c518
 base_branch: codex/factory-360-complete-010
 base_commit: db52854647fa9b4ca8fac362dfecd4ecc7ccf704
-active_chunk: "Industry Shared contract gate and fail-closed provider boundary"
+active_chunk: "Authenticated Industry Shared contract discovery and fail-closed provider boundary"
 active_agents: []
 ledger:
   authoritative: product-contract/factory-360/FACTORY_360_MASTER_LEDGER.csv
@@ -23,7 +23,8 @@ implementation_completed:
   - "Exact host and eleven developer-supplied paths recorded once in a permanent ledger."
   - "Dedicated server-only Industry Shared provider family isolated from /api/inspection Senaei."
   - "Every unverified endpoint returns INDUSTRY_SHARED_API_CONTRACT_NOT_SUPPLIED."
-  - "No method, authentication, identifier, request field, response field or privacy class is inferred."
+  - "POST is recorded only for ISH-API-001..003 and 008..009 from authenticated beta method-mismatch evidence."
+  - "No authentication, identifier, request field, response field, error schema or privacy class is inferred."
   - "Contacts, delegations and three workforce sources remain distinct and privacy fail closed."
   - "F360-BR-002 one Industrial License equals one Plant remains protected."
 verification:
@@ -35,7 +36,10 @@ verification:
   production_build: PASS
 discovery:
   beta_host: beta-backoffice.industry.sa
-  beta_browser_state: "Login page reachable; no authenticated beta session available."
+  beta_browser_state: "Authenticated Senaei dashboard and integration UI reached. Five low-risk endpoint GET probes returned method-mismatch evidence proving POST. Plant path was blocked by the browser client; sensitive routes were not probed with real identifiers."
+  observed_post_methods: ["ISH-API-001", "ISH-API-002", "ISH-API-003", "ISH-API-008", "ISH-API-009"]
+  hrsd_ui_evidence: "Authenticated HRSD inquiry UI contains one required text field labelled HR Factory and a POST form; this does not prove the hrsd-labors API request contract."
+  beta_security_observation: "Method mismatch renders a verbose framework exception page; no stack details or versions are persisted in evidence."
   secure_environment: "No Industry Shared credential variable names present."
   repository_call_sites: "No Industry Shared endpoint call sites found."
   sanitized_api_collection: "Covers a different /api/inspection provider family and supplies no Industry Shared contract."
@@ -71,6 +75,6 @@ remote_actions:
   ddl_applied: false
   deployed: false
   main_merged: false
-next_exact_action: "Obtain authenticated beta call-site/network evidence or sanitized developer contracts for ISH-API-001..011; verify one endpoint fully before adding a network method, schema parser or canonical migration."
+next_exact_action: "Provide sanitized developer contracts or authorized synthetic/test identifiers and expected outcomes for the POST endpoints; verify one endpoint fully before adding auth, a request body, schema parser or canonical migration."
 evidence: product-contract/evidence/TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013.md
-last_updated_at: "2026-07-20T00:00:00+03:00"
+last_updated_at: "2026-07-20T03:41:08+03:00"

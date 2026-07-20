@@ -341,5 +341,5 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
 - Task: `TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013`; acceptance rows `F360-ISH-AC-001..018`.
 - Source acceptance: provider isolation, exact lead inventory, fail-closed errors, privacy-domain separation, and preservation guards are implemented and verified.
 - Verification: typecheck PASS; production build PASS; focused contract suite 4/4 PASS; protected static inventory 135 PASS / 4 intentional live-provider skips / 0 failed.
-- Functional provider acceptance: **BLOCKED EXTERNAL** for `ISH-API-001..011`. No HTTP method, authentication, identifier, schema, error, privacy, fixture, or API-owner evidence was supplied or observable without beta authentication.
+- Functional provider acceptance: **BLOCKED EXTERNAL** for `ISH-API-001..011`. Authenticated method-mismatch evidence proves POST for `ISH-API-001..003` and `ISH-API-008..009`; authentication, identifiers, bodies, schemas, errors, privacy, fixtures, and API-owner confirmation remain unverified for every endpoint.
 - Retirement rule: no Factory 360 stub or gap may be marked retired until its endpoint contract, sanitized fixture checksum, normalization mapping, negative paths, and controlled runtime evidence are accepted.
