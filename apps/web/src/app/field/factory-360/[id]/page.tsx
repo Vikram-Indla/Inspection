@@ -3,6 +3,7 @@ import FieldTabs from "@/components/FieldTabs";
 import EmptyState from "@/components/EmptyState";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Factory360ExportButton from "@/app/factories/cr/[id]/Factory360ExportButton";
+import Factory360Offline from "./Factory360Offline";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { loadFactory360Dossier, resolveFactory360Permissions, latestSubmission } from "@/lib/factory360/dossier";
@@ -105,6 +106,15 @@ export default async function FieldFactory360({ params, searchParams }: {
             <span><strong>{t("f360.plant", "Plant")}</strong> <bdi className="ax-numeric">{text(selected?.plant_number)}</bdi></span>
             {selected && <span>{label(selected.license_type)} · {label(selected.stage)} · {label(selected.status)}</span>}
           </div>
+          <Factory360Offline crId={cr.id} licenseId={selected?.id ?? null} locale={locale === "ar" ? "ar" : "en"} strings={{
+            live: t("f360.offline.live", "Available offline · cached {ts}"),
+            offline: t("f360.offline.offline", "Offline — showing cached snapshot from {ts} (not live)"),
+            cached: t("f360.offline.cached", "Cached for offline · {ts} (values may be out of date; refresh failed)"),
+            unavailable: t("f360.offline.unavailable", "No offline snapshot cached for this license yet — open while online to cache it."),
+            refreshing: t("f360.offline.refreshing", "Refreshing offline snapshot…"),
+            omitted: t("f360.offline.omitted", "Sections excluded by your permissions:"),
+            gaps: t("f360.offline.gaps", "Integration gaps:"),
+          }} />
         </section>
 
         {/* License selector strip */}

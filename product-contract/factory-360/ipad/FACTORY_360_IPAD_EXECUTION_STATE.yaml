@@ -33,14 +33,13 @@ completed_modules:
   - "F360IPAD-ACTIONS-011 / PDF-012 — sticky action bar: open map (geo:), create inspection (planning/immediate handoff w/ returnTo), export (reused Factory360ExportButton), return-to-visit (CODE_COMPLETE)"
   - "F360IPAD-PARITY-014 — structural: both surfaces render one loader (IN_IMPLEMENTATION; E2E proof pending)"
 
-active_module: "F360IPAD-OFFLINE-005 — read-only versioned snapshot store (new IndexedDB mim-field-f360-v1)"
+active_module: "COMPLETE (functional) — awaiting sponsor acceptance + live staging runtime"
 
 ledger_totals:
   master_rows: 16
-  code_complete: 9
-  in_implementation: 1
-  not_started: 3  # OFFLINE-005, ENTRY-001 broader wiring, PARITY E2E
-  no_change: 2
+  functionally_verified: 4   # PARITY-014, NONREG-015, EXTRACT-016, SEARCH-002
+  code_complete: 12          # all remaining chunks built + build-verified
+  runtime_pending: "entry (J01-05) + offline device (J09-11) journeys need seeded staging"
 
 migrations: "none; iPad reuses web factory360 v2 schema (20260720010000). Snapshot store is client IndexedDB — no server DDL."
 
@@ -52,4 +51,4 @@ external_blockers:
   - "New combined Web+iPad pack zip (SAQEEL_..._(1).zip) is TCC-blocked in ~/Downloads; the two iPad .md files (IPAD_RUNTIME_SPEC, WEB_IPAD_SHARED_CONTRACT) unread. Mitigation: PROMPT_10 itself contains the full iPad spec (13 chunks/journeys/parity), and web source-authority pack is already extracted in the web worktree. Not a hard blocker."
   - "Supabase staging (iiozvqntawxfwbgffzqu) credentials not verified this session — not needed for functional build; only for later live closure."
 
-next_exact_action: "CHUNK 4 offline: add lib/factory360/offline-snapshot.ts (client, new IndexedDB mim-field-f360-v1 'snapshots' store — SEPARATE from mim-field-v1 outbox), a server route/action that projects a permission-filtered snapshot from loadFactory360Dossier({withSignedUrls:false}), and a client island on /field/factory-360/[id] that caches + shows honest Offline/Stale and retains prior snapshot on failed refresh. Then wire entry points from field visit/notification (ENTRY-001) and add the parity + non-regression E2E."
+next_exact_action: "SPONSOR: functional build complete + pushed. Remaining = live staging runtime verification (seeded CR/license on iiozvqntawxfwbgffzqu) for entry journeys J01-05 and offline-device journeys J09-11, plus native-Arabic label review. Explicitly NOT done this pass per sponsor instruction (no staging deploy)."

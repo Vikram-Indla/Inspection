@@ -328,7 +328,9 @@ export default function ShellClient({
                         </Link>
                       ))}
                       {globalResults.map(item => (
-                        <Link role="option" key={`${item.type}-${item.id}`} href={item.href} onClick={closeAfterNavigate}>
+                        // F360IPAD-ENTRY-001 — on the inspector field channel, CR/license/plant
+                        // search opens the field-native Factory 360 instead of the web dossier.
+                        <Link role="option" key={`${item.type}-${item.id}`} href={current?.startsWith("/field") && item.href.startsWith("/factories/cr/") ? item.href.replace("/factories/cr/", "/field/factory-360/") : item.href} onClick={closeAfterNavigate}>
                           <Icon name={item.type === "factory" ? "factory" : item.type === "visit" ? "visits" : "inspect"} />
                           <span><strong>{item.label}</strong><small>{item.detail}</small></span>
                         </Link>

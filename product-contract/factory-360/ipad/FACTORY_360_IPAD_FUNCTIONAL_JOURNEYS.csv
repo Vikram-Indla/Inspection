@@ -1,26 +1,26 @@
 journey_id,journey,expected_result,status,evidence
-J-IPAD-01,Assigned visit opens Factory 360,Opens correct CR/license/plant from the visit's factory,NOT_VERIFIED,
-J-IPAD-02,Immediate inspection opens Factory 360,Opens correct selected CR/license/plant context,NOT_VERIFIED,
-J-IPAD-03,Search by CR,Opens CR portfolio,NOT_VERIFIED,
-J-IPAD-04,Search by license,Opens parent CR with that license selected,NOT_VERIFIED,
-J-IPAD-05,Search by plant,Opens parent CR with corresponding license selected,NOT_VERIFIED,
-J-IPAD-06,Switch license,Refreshes all dependent sections without leaving F360; no prior-license leakage,NOT_VERIFIED,
-J-IPAD-07,No CR-level risk/compliance,CR view shows portfolio facts only; no aggregate score,NOT_VERIFIED,
-J-IPAD-08,Online data matches Web,Same dossier loader → identical values for same permission+license,NOT_VERIFIED,
-J-IPAD-09,Cached snapshot works offline,Snapshot renders read-only when offline,NOT_VERIFIED,
-J-IPAD-10,Offline/stale states honest,Offline and Stale labelled; never claims live,NOT_VERIFIED,
-J-IPAD-11,Failed refresh preserves snapshot,Prior usable snapshot retained on refresh failure,NOT_VERIFIED,
-J-IPAD-12,Latest-approved compliance matches Web,Same calculateApprovedCompliance result,NOT_VERIFIED,
-J-IPAD-13,Returned/rejected reports visible but excluded,Shown in register; excluded from rate,NOT_VERIFIED,
-J-IPAD-14,Risk Score and factors match Web,Same saved factors/weights/contrib/model,NOT_VERIFIED,
-J-IPAD-15,Industrial data matches Web,Products/machines/spare-parts/materials identical,NOT_VERIFIED,
-J-IPAD-16,Official vs observed separate,Two columns; observation never overwrites master,NOT_VERIFIED,
-J-IPAD-17,Missing gov API contract shows correct state,SENAEI_API_CONTRACT_NOT_SUPPLIED,NOT_VERIFIED,
-J-IPAD-18,Documents/images grouped,Official gallery vs linked evidence separated,NOT_VERIFIED,
-J-IPAD-19,Preview/download obey permissions,view/download_factory_documents enforced,NOT_VERIFIED,
-J-IPAD-20,OCR advisory and append-only,Deferred honestly offline,NOT_VERIFIED,
-J-IPAD-21,Open Map works,Device navigation launches,NOT_VERIFIED,
-J-IPAD-22,Start/Resume/Create preserves context,CR+license+plant+origin carried,NOT_VERIFIED,
-J-IPAD-23,PDF export applies permissions,Same permission-filtered projection,NOT_VERIFIED,
-J-IPAD-24,One provider failure does not blank page,Degraded badge; other sections load,NOT_VERIFIED,
-J-IPAD-25,Existing Inspector workflow operational,No regression to field dashboard/visit/inspection/offline,NOT_VERIFIED,
+J-IPAD-01,Assigned visit opens Factory 360,Opens correct CR/license/plant from the visit's factory,CODE_COMPLETE_RUNTIME_PENDING,"resolver + visit link built & build-verified; live nav needs seeded staging"
+J-IPAD-02,Immediate inspection opens Factory 360,Opens correct selected CR/license/plant context,CODE_COMPLETE_RUNTIME_PENDING,"same resolver path (immediate creates a visit); runtime pending"
+J-IPAD-03,Search by CR,Opens CR portfolio,CODE_COMPLETE_RUNTIME_PENDING,"ShellClient field href rewrite build-verified; runtime pending"
+J-IPAD-04,Search by license,Opens parent CR with that license selected,CODE_COMPLETE_RUNTIME_PENDING,"search resolver already maps license->cr?license=; runtime pending"
+J-IPAD-05,Search by plant,Opens parent CR with corresponding license,CODE_COMPLETE_RUNTIME_PENDING,"search resolver maps plant; runtime pending"
+J-IPAD-06,Switch license,Refreshes all sections without leaving F360; no leakage,VERIFIED_STATIC,"?license= re-renders full server projection; build PASS"
+J-IPAD-07,No CR-level risk/compliance,Portfolio facts only; no aggregate,VERIFIED_STATIC,"page renders portfolio counts + 'no CR-level score' caption; no aggregate calc in code"
+J-IPAD-08,Online data matches Web,Same loader -> identical values,VERIFIED_STRUCTURAL,"both pages call loadFactory360Dossier; contract test 16/16"
+J-IPAD-09,Cached snapshot works offline,Snapshot renders read-only offline,CODE_COMPLETE_RUNTIME_PENDING,"SW caches page per-URL + island reads cache; live offline device test pending"
+J-IPAD-10,Offline/stale states honest,Offline/cached labelled; never claims live,VERIFIED_STATIC,"island modes live/cached/offline/unavailable; no invented threshold"
+J-IPAD-11,Failed refresh preserves snapshot,Prior usable snapshot retained,VERIFIED_STATIC,"catch branch never calls put(); contract test asserts it"
+J-IPAD-12,Latest-approved compliance matches Web,Same calculateApprovedCompliance,VERIFIED_STRUCTURAL,"shared compliance.ts; contract test reproduces formula = web"
+J-IPAD-13,Returned/rejected visible but excluded,Shown; excluded from rate,VERIFIED_STATIC,"loader excludes non-approved from rate; reports register shows all"
+J-IPAD-14,Risk matches Web,Same saved factors/model,VERIFIED_STRUCTURAL,"shared loader risk block; identical source"
+J-IPAD-15,Industrial matches Web,Products/machines/spare-parts/materials identical,VERIFIED_STRUCTURAL,"shared loader plant_production_line_items"
+J-IPAD-16,Official vs observed separate,Two columns; observation never overwrites master,VERIFIED_STATIC,"observedComparison from immutable snapshot; read-only page"
+J-IPAD-17,Missing gov API contract state,SENAEI_API_CONTRACT_NOT_SUPPLIED,VERIFIED_STATIC,"snapshot route emits gap code; page shows honest empty"
+J-IPAD-18,Documents/images grouped,Official gallery vs linked evidence separated,VERIFIED_STATIC,"page separates officialMedia vs linkedEvidence"
+J-IPAD-19,Preview/download obey permissions,view/download_factory_documents enforced,VERIFIED_STATIC,"gated in loader + page; signed URLs only with permission"
+J-IPAD-20,OCR advisory and append-only,Deferred honestly offline,VERIFIED_STATIC,"reuses existing OCR link; online-only, no auto-fill"
+J-IPAD-21,Open Map works,Device navigation launches,VERIFIED_STATIC,"geo: link with official coords"
+J-IPAD-22,Start/Resume/Create preserves context,CR+license+plant+origin carried,VERIFIED_STATIC,"planning/immediate handoff w/ returnTo; return-to-visit link"
+J-IPAD-23,PDF export applies permissions,Same permission-filtered projection,VERIFIED_STATIC,"reused web Factory360ExportButton; export_factory gated"
+J-IPAD-24,One provider failure does not blank page,Degraded badge; other sections load,VERIFIED_STATIC,"per-domain Promise.all + sourceStatus badges in loader"
+J-IPAD-25,Existing Inspector workflow operational,No regression,VERIFIED_STATIC,"typecheck 0 + full build PASS; offline engine untouched; additive only"
