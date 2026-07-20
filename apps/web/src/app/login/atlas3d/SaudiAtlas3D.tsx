@@ -26,7 +26,19 @@ function color(name: string, fallback: string): THREE.Color {
   try { return new THREE.Color(v || fallback); } catch { return new THREE.Color(fallback); }
 }
 
-export default function SaudiAtlas3D({ onInteractingChange }: {
+// Story stage → where the camera settles (geo focus + orbit radius). The
+// lifecycle rail (Map → Dispatch → Arrival → Inspection → Zones) flies the
+// atlas to the relevant place.
+const STAGE_FOCUS: Record<string, { lat: number; lng: number; r: number }> = {
+  plan: { lat: 23.9, lng: 45.0, r: 17 },
+  travel: { lat: 25.6, lng: 47.9, r: 13 },
+  arrive: { lat: 27.0, lng: 49.6, r: 9.5 },
+  inspect: { lat: 27.0, lng: 49.6, r: 8 },
+  review: { lat: 27.3, lng: 41.7, r: 12 },
+  decide: { lat: 23.9, lng: 45.0, r: 16 },
+};
+
+export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activeStage }: {
   locale?: "ar" | "en";
   onInteractingChange?: (on: boolean) => void;
   activeStage?: string;
@@ -34,8 +46,16 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
   onFail?: () => void;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const focusRef = useRef<{ p: [number, number, number]; r: number }>({ p: [0, 0, 0], r: 16 });
 
   useEffect(() => { onInteractingChange?.(false); }, [onInteractingChange]);
+
+  // Stage change → new camera focus (the loop eases toward it).
+  useEffect(() => {
+    const s = (activeStage && STAGE_FOCUS[activeStage]) || STAGE_FOCUS.plan;
+    const [px, pz] = project({ lat: s.lat, lng: s.lng });
+    focusRef.current = { p: [px, 0, -pz], r: s.r };
+  }, [activeStage]);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -89,6 +109,34 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
     type Vehicle = { mesh: THREE.Object3D; curve: THREE.CatmullRomCurve3; speed: number; offset: number };
     let vehicles: Vehicle[] = [];
 
+    const labelsGroup = new THREE.Group();
+    scene.add(labelsGroup);
+
+    // Billboarded text label from a canvas texture (region names). Colour comes
+    // from the DS text token so it reads in both themes.
+    function makeLabel(text: string, ink: THREE.Color): THREE.Sprite {
+      const dpr = 2, fs = 26 * dpr, pad = 10 * dpr;
+      const cv = document.createElement("canvas");
+      let ctx = cv.getContext("2d")!;
+      ctx.font = `600 ${fs}px system-ui, -apple-system, sans-serif`;
+      const w = ctx.measureText(text).width;
+      cv.width = Math.ceil(w + pad * 2);
+      cv.height = Math.ceil(fs + pad * 2);
+      ctx = cv.getContext("2d")!;
+      ctx.font = `600 ${fs}px system-ui, -apple-system, sans-serif`;
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.direction = locale === "ar" ? "rtl" : "ltr";
+      ctx.fillStyle = "#" + ink.getHexString();
+      ctx.fillText(text, cv.width / 2, cv.height / 2);
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 4;
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false }));
+      const scale = 0.0055;
+      sp.scale.set(cv.width * scale, cv.height * scale, 1);
+      return sp;
+    }
+
     // Build / rebuild palette-dependent look. Called on mount + theme flip.
     let outline: [number, number][] | null = null;
     function applyTheme() {
@@ -113,15 +161,19 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
       for (let i = 1; i < outline.length; i++) shape.lineTo(outline[i][0], outline[i][1]);
       shape.closePath();
 
-      const top = new THREE.ShapeGeometry(shape, 20);
+      const top = new THREE.ShapeGeometry(shape, 24);
       const pos = top.attributes.position;
       const colors = new Float32Array(pos.count * 3);
       const tmp = new THREE.Color();
       for (let i = 0; i < pos.count; i++) {
-        const region = REGIONS[nearestRegionIndex(pos.getX(i), pos.getY(i))];
-        tmp.copy(sand).lerp(status[region.status], 0.4);
+        const x = pos.getX(i), y = pos.getY(i);
+        const region = REGIONS[nearestRegionIndex(x, y)];
+        tmp.copy(sand).lerp(status[region.status], 0.5);
         colors[i * 3] = tmp.r; colors[i * 3 + 1] = tmp.g; colors[i * 3 + 2] = tmp.b;
+        // Subtle deterministic dune relief (local z → world Y after rotation).
+        pos.setZ(i, 0.05 * Math.sin(x * 1.5) * Math.cos(y * 1.7) + 0.03 * Math.sin((x + y) * 0.8));
       }
+      pos.needsUpdate = true;
       top.setAttribute("color", new THREE.BufferAttribute(colors, 3));
       top.computeVertexNormals();
       const slab = new THREE.ExtrudeGeometry(shape, { depth: 0.3, bevelEnabled: false });
@@ -151,7 +203,7 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
       for (const f of FACILITIES) {
         const st = status[f.status];
         const cluster = new THREE.Group();
-        cluster.position.copy(worldPos(f.at, 0.02));
+        cluster.position.copy(worldPos(f.at, 0.1));
         const pad = new THREE.Mesh(padGeo, padMat); cluster.add(pad);
         const t1 = new THREE.Mesh(tankGeo, emissive(st, 0.35)); t1.position.set(-0.13, 0.16, 0.05); cluster.add(t1);
         const t2 = new THREE.Mesh(tankGeo, emissive(st, 0.35)); t2.position.set(0.10, 0.16, -0.08); t2.scale.y = 0.8; cluster.add(t2);
@@ -162,19 +214,23 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
         overlayGroup.add(cluster);
       }
 
-      // Region markers — a lit dot at each of the 13 capitals so the zones read
-      // as distinct places (labels come next stage).
+      // Region markers + name labels — the 13 zones read as distinct places.
+      labelsGroup.clear();
+      const labelInk = color("--text-primary", d ? "#f5f6f7" : "#1a1d1f");
       for (const r of REGIONS) {
         const c = status[r.status];
         const dot = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10),
           new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: d ? 1.1 : 0.35 }));
-        dot.position.copy(worldPos(r.capital, 0.06));
+        dot.position.copy(worldPos(r.capital, 0.14));
         overlayGroup.add(dot);
+        const label = makeLabel(r[locale], labelInk);
+        label.position.copy(worldPos(r.capital, 0.5));
+        labelsGroup.add(label);
       }
 
       // Winding routes (Catmull-Rom) + a vehicle gliding along each.
       for (const route of ROUTES) {
-        const curve = new THREE.CatmullRomCurve3(route.points.map(p => worldPos(p, 0.1)), false, "catmullrom", 0.5);
+        const curve = new THREE.CatmullRomCurve3(route.points.map(p => worldPos(p, 0.16)), false, "catmullrom", 0.5);
         const col = status[route.status];
         const tube = new THREE.Mesh(
           new THREE.TubeGeometry(curve, 90, 0.028, 6, false),
@@ -232,6 +288,8 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
     let raf = 0;
     const start = performance.now();
     const fwd = new THREE.Vector3();
+    const focusTarget = new THREE.Vector3();
+    const offset = new THREE.Vector3();
     const loop = () => {
       const t = (performance.now() - start) / 1000;
       for (const v of vehicles) {
@@ -240,6 +298,15 @@ export default function SaudiAtlas3D({ onInteractingChange }: {
         v.curve.getTangentAt(u, fwd);
         v.mesh.lookAt(fwd.add(v.mesh.position));
       }
+      // Ease camera toward the active stage's focus (target + orbit radius).
+      const f = focusRef.current;
+      focusTarget.set(f.p[0], f.p[1], f.p[2]);
+      controls.target.lerp(focusTarget, 0.035);
+      offset.copy(camera.position).sub(controls.target);
+      const r = offset.length();
+      offset.setLength(r + (f.r - r) * 0.035);
+      camera.position.copy(controls.target).add(offset);
+
       controls.update();
       renderer.render(scene, camera);
       raf = requestAnimationFrame(loop);
