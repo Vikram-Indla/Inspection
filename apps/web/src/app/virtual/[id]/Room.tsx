@@ -334,7 +334,7 @@ export default function Room({ session, strings: t, rev }: { session: S; strings
               <form action={next.action} className={`cd-primaryzone ${next.blocked ? "is-blocked" : "is-ready"}`}>
                 <input type="hidden" name="session_id" value={session.id} />
                 <input type="hidden" name="rev" value={rev} />
-                <button className="ax-btn ax-btn--prominent ax-btn--field cd-primary" disabled={next.blocked || next.pending || offline}>
+                <button className="btn btn-primary btn-field cd-primary" disabled={next.blocked || next.pending || offline}>
                   {next.pending ? t.working : next.label}
                 </button>
                 {next.blocked ? <p className="cd-sub cd-warn" role="status">{next.why}</p> : <p className="cd-sub">{next.sub}</p>}

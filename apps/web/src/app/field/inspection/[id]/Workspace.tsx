@@ -614,11 +614,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                       <input className="ax-input" type="date" value={val?.date ?? ""} onChange={e => e.target.value && answer(it, { value: e.target.value, date: e.target.value })} />
                     </label>
                   ) : (it.response_model.responses ?? []).map(r => (
-                    <button key={r} className="ax-btn ax-btn--field" style={{ background: val?.value === r ? (r === "non_compliant" ? "var(--ax-color-critical)" : "var(--ax-color-primary)") : "var(--ax-color-surface)", color: val?.value === r ? "var(--ax-color-inverse-text)" : "var(--ax-color-text)", border: "1.5px solid var(--ax-color-border)" }}
+                    <button key={r} className="btn btn-primary btn-field" style={{ background: val?.value === r ? (r === "non_compliant" ? "var(--ax-color-critical)" : "var(--ax-color-primary)") : "var(--ax-color-surface)", color: val?.value === r ? "var(--ax-color-inverse-text)" : "var(--ax-color-text)", border: "1.5px solid var(--ax-color-border)" }}
                       onClick={() => answer(it, { value: r })}>{strings.enumLabels[r] ?? r.replace(/_/g, " ")}</button>
                   ))}
                   {leg?.applies && leg.type !== "comment" && (
-                    <label className="ax-btn ax-btn--field ax-btn--secondary" style={{ cursor: "pointer" }}>
+                    <label className="btn btn-secondary btn-field" style={{ cursor: "pointer" }}>
                       {val?.value === "non_compliant" && leg.mandatory ? strings.mandatoryPhoto : (leg.type === "document" ? strings.evAddDoc : strings.evAdd)}
                       <input type="file" accept={acceptFor(leg.type)} multiple hidden onChange={e => { if (e.target.files?.length) { attachFiles(it, e.target.files); e.target.value = ""; } }} />
                     </label>
@@ -629,7 +629,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                         <span className="ax-field__label">{strings.noteLabel}</span>
                         <textarea className="ax-input" value={commentDrafts[it.id] ?? ""} onChange={e => setCommentDrafts(current => ({ ...current, [it.id]: e.target.value }))} />
                       </label>
-                      <button type="button" className="ax-btn ax-btn--field ax-btn--secondary" disabled={!commentDrafts[it.id]?.trim()} onClick={() => attachComment(it)}>{strings.evAdd}</button>
+                      <button type="button" className="btn btn-secondary btn-field" disabled={!commentDrafts[it.id]?.trim()} onClick={() => attachComment(it)}>{strings.evAdd}</button>
                     </span>
                   )}
                   {leg?.applies && leg.mandatory && (
@@ -749,7 +749,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         <div className="row" style={{ justifyContent: "flex-end", alignItems: "center", gap: "var(--ax-space-200)" }}>
           {/* Readiness evaluation (M04-204): submit stays clickable so refusal + grouped blockers surface on tap */}
           <span className="t-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
-          <button className="ax-btn ax-btn--prominent ax-btn--field" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
+          <button className="btn btn-primary btn-field" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
         </div>
       )}
       {/* DEC-009 — acknowledgement signature gate; the dataURL rides in the queued submit op */}

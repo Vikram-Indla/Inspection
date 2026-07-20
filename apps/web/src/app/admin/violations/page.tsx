@@ -261,11 +261,11 @@ export default async function Violations({
   const modeTabs = (
     <div className="ax-segmented" role="tablist" aria-label={t("admin.viol.mode.label", "Catalogue view")}>
       <a role="tab" aria-selected={!penaltyMode} aria-current={!penaltyMode ? "page" : undefined}
-        className={`ax-btn ${!penaltyMode ? "ax-btn--prominent" : "ax-btn--subtle"} ax-link`} href="/admin/violations">
+        className={`btn btn-touch ax-link ${!penaltyMode ? "btn-primary btn-lg" : "btn-ghost"}`} href="/admin/violations">
         {t("admin.viol.mode.catalogue", "Violation catalogue")}
       </a>
       <a role="tab" aria-selected={penaltyMode} aria-current={penaltyMode ? "page" : undefined}
-        className={`ax-btn ${penaltyMode ? "ax-btn--prominent" : "ax-btn--subtle"} ax-link`} href="/admin/violations?mode=penalty">
+        className={`btn btn-touch ax-link ${penaltyMode ? "btn-primary btn-lg" : "btn-ghost"}`} href="/admin/violations?mode=penalty">
         {t("admin.viol.mode.penalty", "Penalty mapping")}
       </a>
     </div>

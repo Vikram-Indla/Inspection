@@ -44,7 +44,7 @@ export default function AuditReplayWorkspace(props: Props) {
       <label className="ax-field"><span className="ax-field__label">{L.search}</span><input className="ax-input" name="q" defaultValue={props.query}/></label>
       <input type="hidden" name="view" value={props.mode}/><button className="btn btn-primary btn-lg btn-touch" type="submit">{L.apply}</button>
     </form>
-    <nav className="ar-modes" aria-label={L.modesLabel}>{modes.map(([id,label]) => <a key={id} className={`ax-btn ${props.mode === id ? "ax-btn--prominent" : "ax-btn--secondary"}`} aria-current={props.mode === id ? "page" : undefined} href={`?view=${id}&case=${encodeURIComponent(props.caseRef)}&q=${encodeURIComponent(props.query)}`}>{label}</a>)}</nav>
+    <nav className="ar-modes" aria-label={L.modesLabel}>{modes.map(([id,label]) => <a key={id} className={`btn btn-touch ${props.mode === id ? "btn-primary btn-lg" : "btn-secondary"}`} aria-current={props.mode === id ? "page" : undefined} href={`?view=${id}&case=${encodeURIComponent(props.caseRef)}&q=${encodeURIComponent(props.query)}`}>{label}</a>)}</nav>
     {props.partialScope && <div className="ax-banner" role="status"><div><strong>{L.partialScopeTag}</strong> {L.partial}</div></div>}
     {props.semanticUnavailable && <div className="ax-banner ax-banner--warning" role="status"><div><strong>{L.degradedTag}</strong> {L.degraded}</div></div>}
     {props.historyTruncated && <div className="ax-banner ax-banner--warning" role="status"><div>{L.partialHistory}</div></div>}

@@ -878,12 +878,12 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         </div>
       )}
       <div className="row">
-        <button className="ax-btn ax-btn--field" onClick={downloadPackage} disabled={cached}>{strings.step1}</button>
-        <button className="ax-btn ax-btn--field" onClick={startJourney} disabled={!cached || !!journeyId || busy}>{strings.step2}</button>
-        <button className="ax-btn ax-btn--field" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none"}>{strings.step3}</button>
+        <button className="btn btn-primary btn-field" onClick={downloadPackage} disabled={cached}>{strings.step1}</button>
+        <button className="btn btn-primary btn-field" onClick={startJourney} disabled={!cached || !!journeyId || busy}>{strings.step2}</button>
+        <button className="btn btn-primary btn-field" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none"}>{strings.step3}</button>
         {existing && existing.status !== "not_started"
-          ? <a className="ax-btn ax-btn--field ax-btn--prominent" href={`/field/inspection/${existing.id}`}>{strings.resume}</a>
-          : <button className="ax-btn ax-btn--field ax-btn--prominent" onClick={startInspection} disabled={!checkedIn || busy || !repPresent || !locConfirmed}>{strings.step4}</button>}
+          ? <a className="btn btn-primary btn-field" href={`/field/inspection/${existing.id}`}>{strings.resume}</a>
+          : <button className="btn btn-primary btn-field" onClick={startInspection} disabled={!checkedIn || busy || !repPresent || !locConfirmed}>{strings.step4}</button>}
       </div>
       {/* ENG-06 / FLD-GEO-005 — manual exception record while the journey is active */}
       {journeyId && (

@@ -106,7 +106,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                             <input className="ax-input" type="date" disabled aria-disabled />
                           </label>
                         ) : it.responses.map(r => (
-                          <span key={r} className="ax-btn ax-btn--field" aria-disabled style={{ background: "var(--ax-color-surface)", color: "var(--ax-color-text)", border: "1.5px solid var(--ax-color-border)", cursor: "default", opacity: 0.9 }}>
+                          <span key={r} className="btn btn-primary btn-field" aria-disabled style={{ background: "var(--ax-color-surface)", color: "var(--ax-color-text)", border: "1.5px solid var(--ax-color-border)", cursor: "default", opacity: 0.9 }}>
                             {s.enumLabels[r] ?? r.replace(/_/g, " ")}
                           </span>
                         ))}

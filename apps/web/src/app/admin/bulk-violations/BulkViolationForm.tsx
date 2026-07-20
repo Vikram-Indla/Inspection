@@ -113,7 +113,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
         </section>
       )}
 
-      <button type="submit" className="ax-btn ax-btn--prominent ax-btn--field" aria-disabled={!canSubmit} disabled={!canSubmit}>
+      <button type="submit" className="btn btn-primary btn-field" aria-disabled={!canSubmit} disabled={!canSubmit}>
         {pending ? strings.submitting : strings.submit}
       </button>
     </form>

@@ -91,7 +91,7 @@ export default function OverrideQueue({ rows, strings }: { rows: GeoOverrideQueu
                   <input className="ax-input" value={rejection[row.id] ?? ""} onChange={e => setRejection(v => ({ ...v, [row.id]: e.target.value }))} />
                 </label>
                 <button className="btn btn-secondary btn-touch" disabled={pending} onClick={() => decide(row, "rejected")}>{strings.reject}</button>
-                <button className="ax-btn ax-btn--field" disabled={pending} onClick={() => decide(row, "approved")}>{strings.approve}</button>
+                <button className="btn btn-primary btn-field" disabled={pending} onClick={() => decide(row, "approved")}>{strings.approve}</button>
               </div>
               {message[row.id] && <p className="t-caption" role="status" style={{ marginBlockStart: 8 }}>{pending ? strings.deciding : message[row.id]}</p>}
             </div>

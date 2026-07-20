@@ -281,7 +281,7 @@ export default async function FieldFactory360({ params, searchParams }: {
 
         {/* Sticky field action bar */}
         <div className={`panel ${styles.actionBar}`} role="group" aria-label={t("common.actions", "Actions")}>
-          {factoryId && (factory?.official_lat != null) && <a className="ax-btn ax-btn--field" href={`geo:${factory.official_lat},${factory.official_lng}?q=${factory.official_lat},${factory.official_lng}(${encodeURIComponent(factory.name)})`}>{t("f360.actions.openMap", "Open map")}</a>}
+          {factoryId && (factory?.official_lat != null) && <a className="btn btn-primary btn-field" href={`geo:${factory.official_lat},${factory.official_lng}?q=${factory.official_lat},${factory.official_lng}(${encodeURIComponent(factory.name)})`}>{t("f360.actions.openMap", "Open map")}</a>}
           {permissions["create_inspection"] && factoryId && <a className="btn btn-primary btn-lg btn-touch" href={`/planning/immediate?factory=${factoryId}&cr=${cr.id}&license=${selected?.id ?? ""}&returnTo=${encodeURIComponent(withLicense(selected?.id))}`}>{t("f360.actions.createInspection", "Create inspection")}</a>}
           {permissions["export_factory"] && <Factory360ExportButton label={t("f360.actions.exportPdf", "Export / share PDF")} />}
           {safeReturn && <a className="btn btn-ghost btn-touch" href={safeReturn}>{t("f360.actions.return", "Return to visit")}</a>}
