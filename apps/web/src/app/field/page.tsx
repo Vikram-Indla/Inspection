@@ -233,11 +233,11 @@ export default async function Field() {
         <details className="ax-field-performance">
           <summary>{t("field.dashboard.performanceOverview", "Performance overview")}</summary>
           <div className="ax-field-performance__body">
-            <div className="ax-kpi-row">
+            <div className="ax-mstrip">
               {kpis.map(([label, value]) => (
-                <div key={label} className="ax-surface ax-kpi">
-                  <span className="ax-caption">{label}</span>
-                  <span className="ax-kpi__value ax-numeric">{value}</span>
+                <div key={label}>
+                  <div className="ax-mstrip__label">{label}</div>
+                  <div className="ax-mstrip__value ax-numeric">{value}</div>
                 </div>
               ))}
             </div>

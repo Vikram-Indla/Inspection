@@ -90,11 +90,11 @@ export default async function Localization() {
         </div>
       ) : (
         <>
-          <div className="ax-kpi-row">
-            <div className="ax-kpi"><span className="ax-kpi__value ax-numeric">{total}</span>{t("l10n.kpi.total", "Total keys")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value ax-numeric">{translated}</span>{t("l10n.kpi.translated", "Translated (AR)")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value ax-numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value ax-numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
+          <div className="ax-mstrip">
+            <div><div className="ax-mstrip__value ax-numeric">{total}</div><div className="ax-mstrip__label">{t("l10n.kpi.total", "Total keys")}</div></div>
+            <div><div className="ax-mstrip__value ax-numeric">{translated}</div><div className="ax-mstrip__label">{t("l10n.kpi.translated", "Translated (AR)")}</div></div>
+            <div><div className="ax-mstrip__value ax-numeric">{reviewed}</div><div className="ax-mstrip__label">{t("l10n.kpi.reviewed", "Reviewed")}</div></div>
+            <div><div className="ax-mstrip__value ax-numeric">{coverage}%</div><div className="ax-mstrip__label">{t("l10n.kpi.coverage", "Coverage")}</div></div>
           </div>
           <Manager rows={rows} labels={labels} />
         </>

@@ -470,10 +470,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       )}
 
       {/* KPI cards — visits by operational_state (all planning statuses; FND-002) */}
-      <div className="ax-kpi-row">
+      <div className="ax-mstrip">
         {states.map(s => (
-          <div key={s} className="ax-surface ax-kpi"><span className="ax-overline">{enumLabel(s)}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s]}</span></div>
+          <div key={s}><div className="ax-mstrip__label">{enumLabel(s)}</div>
+            <div className="ax-mstrip__value ax-numeric">{counts[s]}</div></div>
         ))}
       </div>
       <p className="ax-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>

@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { IconFactory } from "@/app/icons";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -591,24 +592,27 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           <section id="workforce" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("f360.wf.heading", "Workforce & indicators — read-only from source (M07-008/009)")}</h4>
             {f.employees_total == null && f.capital_invested == null && f.production_capacity_note == null ? (
-              <div className="ax-state ax-state--inline"><span className="ax-state__glyph">🏭</span>
+              <div className="ax-state ax-state--inline"><span className="ax-state__glyph" aria-hidden="true"><IconFactory size={28} /></span>
                 <h4>{t("f360.wf.empty.title", "No workforce or indicator data synced")}</h4>
                 <p className="ax-caption">{t("f360.wf.empty.desc", "These figures arrive from the source registry sync; they are not editable here.")}</p></div>
             ) : (
               <>
-                <div className="ax-kpi-row">
-                  <div className="ax-surface ax-kpi">
-                    <span className="ax-caption">{t("f360.wf.employeesTotal", "Employees — total")}</span>
-                    <span className="ax-kpi__value">{f.employees_total != null ? num.format(f.employees_total) : "—"}</span>
+                {/* V2: metric strip (rules, not boxed KPI cards) — these are ordinary
+                    figures, not the one page-defining number, so they use the 28/32
+                    metric scale via .ax-mstrip__value, not display-scale .ax-kpi__value. */}
+                <div className="ax-mstrip">
+                  <div>
+                    <div className="ax-mstrip__label">{t("f360.wf.employeesTotal", "Employees — total")}</div>
+                    <div className="ax-mstrip__value ax-numeric">{f.employees_total != null ? num.format(f.employees_total) : "—"}</div>
                   </div>
-                  <div className="ax-surface ax-kpi">
-                    <span className="ax-caption">{t("f360.wf.employeesSaudi", "Employees — Saudi")}</span>
-                    <span className="ax-kpi__value">{f.employees_saudi != null ? num.format(f.employees_saudi) : "—"}</span>
-                    {saudization != null && <span className="ax-kpi__delta">{t("f360.wf.saudization", "Saudization")} {num.format(saudization)}%</span>}
+                  <div>
+                    <div className="ax-mstrip__label">{t("f360.wf.employeesSaudi", "Employees — Saudi")}</div>
+                    <div className="ax-mstrip__value ax-numeric">{f.employees_saudi != null ? num.format(f.employees_saudi) : "—"}</div>
+                    {saudization != null && <div className="ax-mstrip__sub">{t("f360.wf.saudization", "Saudization")} {num.format(saudization)}%</div>}
                   </div>
-                  <div className="ax-surface ax-kpi">
-                    <span className="ax-caption">{t("f360.wf.capital", "Capital invested (SAR)")}</span>
-                    <span className="ax-kpi__value">{f.capital_invested != null ? num.format(f.capital_invested) : "—"}</span>
+                  <div>
+                    <div className="ax-mstrip__label">{t("f360.wf.capital", "Capital invested (SAR)")}</div>
+                    <div className="ax-mstrip__value ax-numeric">{f.capital_invested != null ? num.format(f.capital_invested) : "—"}</div>
                   </div>
                 </div>
                 {f.production_capacity_note && (

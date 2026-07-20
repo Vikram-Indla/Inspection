@@ -41,11 +41,11 @@ export default async function PlanRegister() {
   return (
     <Shell current="/planning" title={t("plan.register.title", "Plan register")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
-      <div className="ax-kpi-row">
+      <div className="ax-mstrip">
         {["draft", "published", "returned", "cancelled"].map(s => (
-          <div key={s} className="ax-surface ax-kpi">
-            <span className="ax-overline">{t(`enum.${s}`, s)}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s] ?? 0}</span>
+          <div key={s}>
+            <div className="ax-mstrip__label">{t(`enum.${s}`, s)}</div>
+            <div className="ax-mstrip__value ax-numeric">{counts[s] ?? 0}</div>
           </div>
         ))}
       </div>
