@@ -56,10 +56,26 @@ status_detail: >
   iPad/Apple-Pencil hardware verification — needs a provisioned physical
   device or device-lab service, not obtainable by further code changes) and
   DEC-028 (print-fixture synthesis for many-violations/long-notes/
-  20-100-300-item checklists — the only path to synthesizing them is a raw
-  insert into the immutable submission_versions table, forbidden by
-  scope_forbidden's "immutable-version rules" clause and by CLAUDE.md
-  directly, or a new checklist-package catalogue entry outside
-  scope_allowed). Branch stays unmerged pending the separate independent
-  visual-acceptance review and explicit sponsor merge approval this CC
-  already requires, plus sponsor resolution of DEC-027/DEC-028.
+  20-100-300-item checklists — attempted via the real canonical submit UI,
+  not a raw insert; the attempt surfaced DEC-029, a genuine platform-wide
+  DB bug, not a scope/governance boundary). Branch stays unmerged pending
+  the separate independent visual-acceptance review and explicit sponsor
+  merge approval this CC already requires, plus sponsor resolution of
+  DEC-027/DEC-028/DEC-029.
+scope_note_on_dec_029: >
+  DEC-029 (submission_versions insert trigger fails on a missing/miscast
+  Postgres digest() call) is a pre-existing platform defect discovered
+  while investigating DEC-028, not a defect introduced by or within this
+  CC's scope, and it does not invalidate this CC's own evidence. It blocks
+  exactly one action: writing a NEW submission_versions row (clicking
+  Submit on an in-progress inspection). It has no effect on viewing,
+  reviewing, printing, or navigating any EXISTING/historical inspection —
+  which is what nearly all of this CC's 26 real screenshots and the full
+  axe-core accessibility audit actually exercised, against real live data
+  already in the database. The report/print work (including the 5-layer
+  grouping), admin/operations/planning/dashboard surfaces, and field-home/
+  touch-target evidence are all validated end-to-end against pre-existing
+  data; none of that required a new submission to occur. DEC-029 is a real,
+  separate, higher-priority defect worth fixing on its own merits — but it
+  is not evidence that this CC's presentation-layer work is unvalidated or
+  incomplete.
