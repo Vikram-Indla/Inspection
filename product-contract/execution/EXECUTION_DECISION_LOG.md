@@ -3,6 +3,7 @@
 - Task: TASK-EXECUTION-MODULE-001 (G11 Execution module canonical reconciliation)
 - Authority: SAQEEL-EXE-CANONICAL-PLAN v1.0 (2026-07-21)
 - Phase: 1 — shared contracts (migration `supabase/migrations/20260721090000_execution_canonical_contracts.sql`, `apps/web/src/lib/execution/*`)
+- Phase: 2A — admin execution control plane (`apps/web/src/app/admin/execution/*`, migration `supabase/migrations/20260721100000_execution_admin_audit.sql`)
 
 ## D-001 — Daily-cap counting semantics
 
@@ -28,3 +29,16 @@
 - Legacy roles are untouched and act as compatibility aliases: guards evaluate capabilities; role→capability resolution goes through `role_capabilities`.
 - Catalogue tables are RLS-enabled, SELECT-only for authenticated; no write policies for app roles in Phase 1 — the governed grant/revoke UI is a later phase.
 - `apps/web/src/lib/execution/capabilities.ts` mirrors the seed mapping for UI affordance only; the server RPC + RLS remain authoritative, and menu visibility is never authorization.
+
+## D-004 — engine_settings writes stay direct-but-audited (no maker-checker)
+
+- Phase 2A (`/admin/execution`) writes governed engine keys directly from capability-gated server actions: caller verified, `has_capability` RPC per section, payload validation, read-modify-write of only the governed keys, `version_label` bump + `updated_by`, and an `audit_events` row (`object_type 'engine_settings'`, `action 'execution_config_update'`, `requirement_refs ['EXE-ADMIN']`, before/after of the governed keys only).
+- Maker-checker is deliberately NOT added to `engine_settings`: the platform precedent (`/admin/risk`, SCR-ADM-060) is a direct audited write, and the `engine_write` RLS policy (0002_rbac_audit.sql) already scopes updates to the admin role set. Layering a request/approval flow on top would change existing RLS and lifecycle semantics for every engine row, not just execution. Revisit if the sponsor requires dual control on configuration.
+- Row-level audit: `engine_settings` already carries `trg_audit_engine_settings` from 0002_rbac_audit.sql; migration `20260721100000_execution_admin_audit.sql` verifies and idempotently re-attaches it if drifted. The `capabilities`/`role_capabilities` catalogues get NO row trigger: the original `audit_row_change` (0002) dereferences `new.id`, which fails on id-less tables; only the later hardened redefinition tolerates them. Catalogue grant/revoke is a later-phase governed flow; app-level `audit_events` rows are the record for this phase. (`audit_events.object_id` is `uuid`, so engine names travel inside before/after state rather than a fabricated uuid.)
+
+## D-005 — offline retry/autosave values left unset (platform default)
+
+- `engine_settings.execution.offline.max_sync_attempts` and `offline.autosave_interval_s` are NOT business-supplied, so Phase 2A ships them unset. Unset is an honest state: the current platform behavior applies and no number is invented.
+- The control plane presents them as optional governed overrides — labelled "platform default" while unset, editable with validated bounds (1–100 attempts; 5–600 seconds) once the business supplies values. When every value is cleared the governed key is removed so absence stays truthful.
+- This is the permitted configurable boundary of SAQEEL-EXE-CANONICAL-PLAN v1.0 §2: administration may govern the values, but their absence must fail closed rather than be fabricated.
+
