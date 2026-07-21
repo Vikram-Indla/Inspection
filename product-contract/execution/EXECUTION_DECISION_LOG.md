@@ -4,6 +4,7 @@
 - Authority: SAQEEL-EXE-CANONICAL-PLAN v1.0 (2026-07-21)
 - Phase: 1 — shared contracts (migration `supabase/migrations/20260721090000_execution_canonical_contracts.sql`, `apps/web/src/lib/execution/*`)
 - Phase: 2A — admin execution control plane (`apps/web/src/app/admin/execution/*`, migration `supabase/migrations/20260721100000_execution_admin_audit.sql`)
+- Phase: 2B — governed role/capability grants (`apps/web/src/app/admin/access/*`, migration `supabase/migrations/20260721110000_execution_access_grants.sql`)
 
 ## D-001 — Daily-cap counting semantics
 
@@ -41,4 +42,13 @@
 - `engine_settings.execution.offline.max_sync_attempts` and `offline.autosave_interval_s` are NOT business-supplied, so Phase 2A ships them unset. Unset is an honest state: the current platform behavior applies and no number is invented.
 - The control plane presents them as optional governed overrides — labelled "platform default" while unset, editable with validated bounds (1–100 attempts; 5–600 seconds) once the business supplies values. When every value is cleared the governed key is removed so absence stays truthful.
 - This is the permitted configurable boundary of SAQEEL-EXE-CANONICAL-PLAN v1.0 §2: administration may govern the values, but their absence must fail closed rather than be fabricated.
+
+## D-006 — grant-only capability overrides; guarded single-authority access changes
+
+- Phase: 2B — governed role/capability grant-revoke (migration `supabase/migrations/20260721110000_execution_access_grants.sql`, `apps/web/src/app/admin/access/*`).
+- **Grant-only overrides in Release 1.** `user_capability_grants` layers positive per-user grants ON TOP of role defaults; `has_capability` is the UNION of `user_roles → role_capabilities` and direct grants. There are deliberately NO negative grants (revoke-override semantics): a user keeps every capability their roles provide, and an override can only add. Revoking role-derived access happens by revoking the role, never by masking it. Negative grants would make the effective-access explainer non-conclusive (a capability could be present-yet-denied) and are deferred until a sponsor-approved contract defines their semantics.
+- **Guards.** Every access RPC carries the self-escalation guard (`p_user` may never equal `auth.uid()` — no granting to or revoking from yourself, stable token `EXE-ACCESS-SELF`) and `admin_revoke_role` additionally carries the sole-security_admin guard (revoking `security_admin` is refused, token `EXE-ACCESS-LAST-SECURITY-ADMIN`, when the target is the last remaining holder of the role). All four RPCs are idempotent: granting an existing grant or revoking an absent one is a no-op success and writes no audit row.
+- **security_admin remains the grant authority.** No new top-level role was created (D-003: capabilities instead of new roles); the four RPCs require `has_role('security_admin')` and both grant tables keep zero direct write policies — the security-definer RPCs are the only write path, so RLS stays authoritative and menu visibility is never authorization.
+- **Audit.** Every actual change appends `audit_events` (`object_type 'user_roles'/'user_capability_grants'`, `object_id null` — the grant key is a composite pair, not a uuid, so it travels in before/after state per the D-004 precedent — `requirement_refs ['EXE-ACCESS']`). `user_roles` row writes are additionally covered by the pre-existing `trg_audit_user_roles` trigger; the app-level rows carry the governed action and requirement traceability.
+- **Maker-checker deferred as a sponsor decision.** An approval workflow beyond the single-security_admin action (dual control for access changes) is a policy decision, not an engineering default — consistent with D-004 for configuration writes. The seams the page previously declared (separation-of-duties, self-escalation guard, approval + audit path) are now realized except the approval step, which stays a disclosed boundary until the sponsor requires it.
 
