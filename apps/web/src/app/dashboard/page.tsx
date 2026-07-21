@@ -18,8 +18,7 @@ import {
   type VisitRow,
 } from "./metrics";
 import {
-  DashboardScope,
-  DashboardTabs,
+  DashboardControls,
   OperationalView,
   SearchResults,
   StrategicView,
@@ -194,13 +193,14 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   };
   const refreshedAt = new Date(nowMs).toISOString().slice(0, 16).replace("T", " ");
   return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
-    context={<span className="badge badge-info">SCR-WEB-500 · DASH-001..016</span>}>
-    {failedSources.length > 0 && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
-    <DashboardTabs locale={locale} view={view} params={currentParams} />
-    <DashboardScope locale={locale} from={scope.fromDate} to={scope.toDate} region={region} refreshedAt={refreshedAt} />
-    <SearchResults locale={locale} query={query} factories={factoriesResult.rows} visits={visitsResult.rows} inspections={inspectionsResult.rows} />
-    {view === "strategic"
-      ? <StrategicView locale={locale} metrics={metrics} group={group} params={currentParams} />
-      : <OperationalView locale={locale} metrics={metrics} />}
+    context={<span className="id-code badge badge-info">SCR-WEB-500 · DASH-001..016</span>}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+      {failedSources.length > 0 && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
+      <DashboardControls locale={locale} view={view} params={currentParams} from={scope.fromDate} to={scope.toDate} region={region} refreshedAt={refreshedAt} partialSources={[]} />
+      <SearchResults locale={locale} query={query} factories={factoriesResult.rows} visits={visitsResult.rows} inspections={inspectionsResult.rows} />
+      {view === "strategic"
+        ? <StrategicView locale={locale} metrics={metrics} group={group} params={currentParams} refreshedAt={refreshedAt} />
+        : <OperationalView locale={locale} metrics={metrics} refreshedAt={refreshedAt} />}
+    </div>
   </Shell>;
 }

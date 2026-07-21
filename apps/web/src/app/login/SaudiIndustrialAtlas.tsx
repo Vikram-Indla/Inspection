@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import L from "leaflet";
 import StoryMapInner, { ATLAS_BOUNDS, type AtlasMapContext } from "./StoryMapInner";
 import {
-  NODES, JOURNEY, STAGE_ORDER,
+  NODES, JOURNEY, STAGE_ORDER, ORIENTATION_CITIES,
   type AtlasNode, type AtlasStageId,
 } from "./saudi-atlas-locations";
 import { buildStructure } from "./saudi-atlas-structures";
@@ -40,6 +40,23 @@ const IMAGE_POSITIONS: Record<string, { x: number; y: number }> = {
   yanbu: { x: 22.0, y: 42.0 },
   jeddah: { x: 20.5, y: 68.0 },
   jazan: { x: 44.0, y: 78.5 },
+};
+
+// Civic orientation labels — text captions only (no icon, no hotspot), fitted
+// onto the raster by least-squares regression of the 9 verified NODES
+// lat/lng → IMAGE_POSITIONS pairs above, then checked by eye against the
+// composition. `ORIENTATION_CITIES` also carries Makkah and Al-Madinah, but
+// those sit almost exactly on the existing unlabeled clock-tower structure
+// here — labelling them would read as identifying that structure as a
+// religious landmark, which this file's own contract (L4 comment above)
+// rejects. Left out until that's a deliberate call, not a fitted side effect.
+const ORIENTATION_LABEL_POSITIONS: Record<string, { x: number; y: number }> = {
+  Tabuk: { x: 14.5, y: 17.2 },
+  Arar: { x: 32.3, y: 2.7 },
+  Sakaka: { x: 29.1, y: 8.5 },
+  "Al-Ahsa": { x: 67.1, y: 37.2 },
+  Abha: { x: 39.0, y: 78.0 },
+  Najran: { x: 45.6, y: 82.5 },
 };
 
 type AtlasZoneId = "north" | "west" | "central" | "east" | "south";
@@ -94,6 +111,25 @@ const ZONE_INTELLIGENCE: Record<AtlasZoneId, {
   south: { x: 56, y: 62, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198 inspections", compliance: "89% compliant", action: "14 follow-ups" },
 };
 
+// Tracks the live `data-theme` attribute ThemeToggle writes on <html>, so the
+// atlas can pick the pixel-aligned light or dark raster with no runtime CSS
+// filter/invert — an instant, flash-free asset swap instead.
+function useAtlasTheme(): "light" | "dark" {
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof document === "undefined") return "dark";
+    return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+  });
+  useEffect(() => {
+    const el = document.documentElement;
+    const read = () => setTheme(el.getAttribute("data-theme") === "light" ? "light" : "dark");
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(el, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+  return theme;
+}
+
 function stageZone(stage: AtlasStageId): AtlasZoneId {
   return stage === "plan" || stage === "decide" ? "central" : "east";
 }
@@ -125,13 +161,40 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
           </g>
         ))}
         {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
-          <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
-            href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-9" y="-18" width="18" height="36" opacity="0" transform="rotate(90)">
+          // A vector glyph, not the photoreal SUV render: at a 27x54 marker
+          // footprint a photoreal top-down photo anti-aliases into an
+          // unreadable blur (verified by simulating the exact browser
+          // downscale). A flat rounded body + windshield + wheel silhouette
+          // stays crisp at any zoom, the way map-pin car icons actually work.
+          <g key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle" opacity="0" transform="rotate(90)">
             <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.88;1"
               dur="6s" begin={`${index * 2.5}s`} fill="remove" />
             <animateMotion path={route.path} rotate="auto" dur="6s" begin={`${index * 2.5}s`} fill="remove"
               calcMode="spline" keyTimes="0;1" keySplines="0.32 0.05 0.2 1" />
-          </image>
+            <rect x="-8" y="-24" width="16" height="48" rx="6"
+              fill="var(--ax-color-primary-hover)" stroke="var(--ax-color-atlas-canvas)" strokeWidth="1" />
+            <rect x="-1" y="-22" width="2" height="44" fill="var(--ax-color-atlas-text)" opacity="0.3" />
+            <rect x="-5" y="-17" width="10" height="13" rx="3" fill="var(--ax-color-atlas-text)" opacity="0.88" />
+            <rect x="-9" y="-20" width="3.5" height="9" rx="1.5" fill="#000" opacity="0.4" />
+            <rect x="5.5" y="-20" width="3.5" height="9" rx="1.5" fill="#000" opacity="0.4" />
+            <rect x="-9" y="10" width="3.5" height="9" rx="1.5" fill="#000" opacity="0.4" />
+            <rect x="5.5" y="10" width="3.5" height="9" rx="1.5" fill="#000" opacity="0.4" />
+          </g>
+        ))}
+        {/* Each drive completes well inside the Dispatch dwell window (6s +
+            stagger, against an 11s stage), then used to just vanish — no
+            visible sign any car had actually reached its site. A small
+            "arrived" check-badge now fades in at the route end and freezes
+            for the rest of the stage, so a resting glance at Dispatch shows
+            some vehicles still moving and others already checked in. */}
+        {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
+          <g key={`arrived-${route.id}`} className="lg-atlas-motion__route-arrived" opacity="0"
+            transform={`translate(${route.end[0]}, ${route.end[1]})`}>
+            <animate attributeName="opacity" values="0;1" begin={`${index * 2.5 + 5.75}s`} dur="0.4s" fill="freeze" />
+            <circle r="7" fill="var(--ax-color-success)" stroke="var(--ax-color-atlas-canvas)" strokeWidth="1.5" />
+            <path d="M-3 0 L-1 2.4 L3.4 -3" fill="none" stroke="var(--ax-color-atlas-canvas)"
+              strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </g>
         ))}
       </svg>
 
@@ -159,11 +222,12 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
 }
 
 function ZoneLiftOverlay({
-  locale, activeZone, lockedZone, onHover, onLock, onClose,
+  locale, activeZone, lockedZone, atlasBase, onHover, onLock, onClose,
 }: {
   locale: "ar" | "en";
   activeZone: AtlasZoneId | null;
   lockedZone: AtlasZoneId | null;
+  atlasBase: string;
   onHover: (zone: AtlasZoneId | null) => void;
   onLock: (zone: AtlasZoneId) => void;
   onClose: () => void;
@@ -197,10 +261,10 @@ function ZoneLiftOverlay({
               className={`lg-zone-lift__slab${isActive ? " is-lifted" : ""}`}>
               <path className="lg-zone-lift__cavity" d={zone.path} aria-hidden="true" />
               <g className="lg-zone-lift__wall" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
-                <image href={`${PUBLIC_SAFE_ATLAS_BASE}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+                <image href={`${atlasBase}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
               </g>
               <g className="lg-zone-lift__terrain" clipPath={`url(#lg-zclip-${zone.id})`} aria-hidden="true">
-                <image href={`${PUBLIC_SAFE_ATLAS_BASE}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
+                <image href={`${atlasBase}.png`} x="0" y="0" width="1000" height="563" preserveAspectRatio="none" />
               </g>
               {/* Keyboard + pointer target. Focus lifts the slab (same info as
                   hover); Enter/Space locks it; Escape restores the resting map. */}
@@ -463,6 +527,8 @@ function PublicSafeImageAtlas({
   const activeZone = lockedZone ?? hoveredZone;
   const activeNode = stageNode(activeStage);
   const shownPosition = shown ? IMAGE_POSITIONS[shown.id] : undefined;
+  const theme = useAtlasTheme();
+  const atlasBase = theme === "light" ? `${PUBLIC_SAFE_ATLAS_BASE}-light` : PUBLIC_SAFE_ATLAS_BASE;
 
   useEffect(() => { onInteractingChange(shown !== null || activeZone !== null); }, [shown, activeZone, onInteractingChange]);
 
@@ -477,14 +543,14 @@ function PublicSafeImageAtlas({
       data-active-stage={activeStage} data-active-zone={stageZone(activeStage)}>
       <div className="lg-atlas-image__plane">
         <picture>
-          <img className="lg-atlas-image__media" src={`${PUBLIC_SAFE_ATLAS_BASE}.png`}
+          <img className="lg-atlas-image__media" src={`${atlasBase}.png`}
             width="1672" height="941" alt="" decoding="async" draggable={false}
             onLoad={() => setReady(true)} onError={onImageError} />
         </picture>
 
         <JourneyOverlay stage={activeStage} locale={locale} />
 
-        <ZoneLiftOverlay locale={locale} activeZone={activeZone} lockedZone={lockedZone}
+        <ZoneLiftOverlay locale={locale} activeZone={activeZone} lockedZone={lockedZone} atlasBase={atlasBase}
           onHover={zone => { if (!lockedZone) setHoveredZone(zone); }}
           onLock={zone => { setLockedZone(current => current === zone ? null : zone); setHoveredZone(zone); }}
           onClose={() => { setLockedZone(null); setHoveredZone(null); }} />
@@ -517,6 +583,18 @@ function PublicSafeImageAtlas({
         <div className={`lg-atlas-image__zones lg-atlas-image__zones--${locale}`} aria-hidden="true">
           {ZONES.map((zone, index) => <span key={zone.en}
             style={{ left: `${zone.x}%`, top: `${zone.y}%`, "--zone-label-order": index } as CSSProperties}>{zone[locale]}</span>)}
+        </div>
+
+        {/* Civic orientation captions only — no icon, no hotspot, no sample
+            state. Positions from ORIENTATION_LABEL_POSITIONS above; cities
+            without a fitted position (Makkah, Al-Madinah) are skipped. */}
+        <div className="lg-atlas-image__orientation" aria-hidden="true">
+          {ORIENTATION_CITIES.filter(city => ORIENTATION_LABEL_POSITIONS[city.name.en]).map(city => {
+            const pos = ORIENTATION_LABEL_POSITIONS[city.name.en];
+            return <span key={city.name.en} style={{ left: `${pos.x}%`, top: `${pos.y}%` } as CSSProperties}>
+              {city.name[locale]}
+            </span>;
+          })}
         </div>
 
       </div>

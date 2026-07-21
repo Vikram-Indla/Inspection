@@ -119,29 +119,29 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
       {open && (
         <div className="ax-popover" role="dialog" aria-label={strings.heading}
           style={{ position: "absolute", insetBlockStart: "calc(100% + 6px)", insetInlineEnd: 0, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
             <strong>{strings.heading}</strong>
-            {unread > 0 && <button className="ax-btn ax-btn--subtle" onClick={markAllRead}>{strings.markAll}</button>}
+            {unread > 0 && <button className="btn btn-ghost btn-touch" onClick={markAllRead}>{strings.markAll}</button>}
           </div>
-          {err && <p className="ax-caption" role="alert">{err}</p>}
-          {rows.length === 0 && <p className="ax-caption">{strings.empty}</p>}
+          {err && <p className="t-caption" role="alert">{err}</p>}
+          {rows.length === 0 && <p className="t-caption">{strings.empty}</p>}
           <div style={{ maxBlockSize: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
             {rows.map(r => (
-              <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-150)", borderInlineStart: isUnread(r) ? "3px solid var(--ax-color-primary)" : "3px solid transparent" }}>
-                <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div key={r.id} className="panel" style={{ padding: "var(--ax-space-150)", borderInlineStart: isUnread(r) ? "3px solid var(--ax-color-primary)" : "3px solid transparent" }}>
+                <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                   <div>
                     <strong style={{ fontWeight: isUnread(r) ? 700 : 500 }}>
                       {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
                       {isUnread(r) && <span className="ax-sr-only"> — {strings.unreadBadge}</span>}
                     </strong>
-                    {detail(r.payload) && <p className="ax-caption ax-numeric" style={{ margin: 0 }}>{detail(r.payload).slice(0, 80)}</p>}
-                    <p className="ax-caption ax-numeric" style={{ margin: 0 }}>
+                    {detail(r.payload) && <p className="t-caption numeric" style={{ margin: 0 }}>{detail(r.payload).slice(0, 80)}</p>}
+                    <p className="t-caption numeric" style={{ margin: 0 }}>
                       {new Date(r.created_at).toISOString().slice(0, 16).replace("T", " ")}
                       {" · "}{strings.channels[r.channel] ?? r.channel}
-                      {r.delivery_state === "not_configured" && <> · <span className="ax-lozenge ax-lozenge--warning">{strings.notConfigured}</span></>}
+                      {r.delivery_state === "not_configured" && <> · <span className="badge badge-warning">{strings.notConfigured}</span></>}
                     </p>
                   </div>
-                  {isUnread(r) && <button className="ax-btn ax-btn--subtle" onClick={() => markRead(r)}>{strings.markRead}</button>}
+                  {isUnread(r) && <button className="btn btn-ghost btn-touch" onClick={() => markRead(r)}>{strings.markRead}</button>}
                 </div>
               </div>
             ))}

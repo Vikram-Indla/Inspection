@@ -356,7 +356,7 @@ export default function ShellClient({
                     <div className="ax-shell-scope__panel">
                       <label>{strings.from}<input type="date" value={dateFrom} onChange={event => setDateFrom(event.target.value)} /></label>
                       <label>{strings.to}<input type="date" value={dateTo} onChange={event => setDateTo(event.target.value)} /></label>
-                      <button type="button" className="ax-btn ax-btn--secondary" onClick={() => replaceScope({ from: dateFrom, to: dateTo })}>{strings.apply}</button>
+                      <button type="button" className="btn btn-secondary btn-touch" onClick={() => replaceScope({ from: dateFrom, to: dateTo })}>{strings.apply}</button>
                     </div>
                   </details>
                 ) : (
@@ -392,7 +392,7 @@ export default function ShellClient({
                 {accountOpen && (
                   <div className="ax-shell-account__menu" role="dialog" aria-label={strings.account}>
                     <strong>{email}</strong>
-                    <span className="ax-caption">{strings.roles}: {roles.join(", ")}</span>
+                    <span className="t-caption">{strings.roles}: {roles.join(", ")}</span>
                     <a href={languageHref} lang={languageLang}>{languageLabel}</a>
                     <a href="/profile">{strings.profileSettings}</a>
                     <a href="/signout">{strings.signOut}</a>

@@ -41,7 +41,7 @@ export default function PackageTypeSelector({ name, options, value, defaultValue
             onChange={() => select(opt.id)}
           />
           <span className="ax-typecard__title">{opt.title}</span>
-          <span className="ax-typecard__meta ax-numeric">{opt.code}</span>
+          <span className="ax-typecard__meta numeric">{opt.code}</span>
         </label>
       ))}
     </div>
