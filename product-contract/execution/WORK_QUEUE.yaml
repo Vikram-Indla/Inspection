@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-EXECUTION-MODULE-001"
+    gate: "G11 Execution module canonical reconciliation"
+    priority: "P0"
+    status: "IN_PROGRESS"
+    owner: "Kimi implementation and QA + Sponsor acceptance authority"
+    blocked_by: ["External provider credentials/contracts", "External submission activation trigger", "Sponsor-only legal/policy values", "Native-Arabic human sign-off"]
+    blocks: ["Execution module sponsor acceptance", "G11/G12 release claim for the execution chain"]
+    note: "One-pass canonical Execution implementation per SAQEEL-EXE-CANONICAL-PLAN v1.0 (2026-07-21) on branch kimi/execution-module-001 from origin/setup/Inspection@235540f4 (re-fetched and recorded 2026-07-21). Additive reconciliation only: preserves /field, mim-field-v1, mim-field-f360-v1, /reviews, /virtual, /visits, Operations Center, Factory 360, Admin surfaces, RLS, append-only audit and immutable versions. Slice: product-contract/execution/CURRENT_SLICE.TASK-EXECUTION-MODULE-001.yaml; preservation ledger: product-contract/execution/EXECUTION_PRESERVATION_LEDGER.csv. Authority pack: apps/web/.planning-pack/kimi-pack/SAQEEL_EXECUTION_KIMI_PACK_2026-07-21."
   - task_id: "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
     gate: "G11 Factory 360 integration hardening"
     priority: "P0"
