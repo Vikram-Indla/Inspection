@@ -243,6 +243,7 @@ export default async function Factory360ByCr({ params, searchParams }: {
             <div className={styles.actions}>
               {factoryId && <a className="ax-btn ax-btn--secondary" href={`/factories/${factoryId}?compat=legacy#location`}>{t("f360.actions.openMap", "Open map")}</a>}
               {permissions["create_inspection"] && factoryId && <a className="ax-btn ax-btn--primary" href={`/planning/immediate?factory=${factoryId}&cr=${cr.id}&license=${selected?.id ?? ""}&returnTo=${encodeURIComponent(`/factories/cr/${cr.id}?license=${selected?.id ?? ""}`)}`}>{t("f360.actions.createInspection", "Create inspection")}</a>}
+              {factoryId && <a className="ax-btn ax-btn--secondary" href={`/planning/single?cr=${encodeURIComponent(cr.cr_number)}&license=${encodeURIComponent(selected?.license_number ?? "")}&plant=${encodeURIComponent(selected?.plant_number ?? "")}&factory=${factoryId}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>}
               {permissions["export_factory"] && <Factory360ExportButton label={t("f360.actions.exportPdf", "Print / Save permitted PDF")} />}
               {!permissions["create_inspection"] && !permissions["export_factory"] && <p className="ax-caption">{t("f360.actions.restricted", "No create-inspection or export action is permitted for your role.")}</p>}
             </div>

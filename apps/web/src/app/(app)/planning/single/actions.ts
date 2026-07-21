@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
+import { getPlanningAccess } from "@/lib/planning/access";
 import { findDuplicateActiveVisits } from "./duplicate";
 import { isPlausibleDate, PLAUSIBLE_DATE_ERROR } from "@/lib/plausible-date";
 
@@ -10,6 +11,11 @@ export type PublishSteps = { plan: StepStatus; visit: StepStatus; assignment: St
 export type PublishResult = { error?: string; steps?: PublishSteps; resumeId?: string };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// source_channel is a provenance label, not an authorization input — accept a
+// bounded machine token and default anything else to the module's own channel.
+const sanitizeSourceChannel = (raw: string) =>
+  /^[a-z0-9][a-z0-9._-]{0,39}$/i.test(raw) ? raw : "planning.single";
 
 // CD-022 — catalogued neutral copy for write-phase failures. Raw Supabase
 // error text must never reach the UI (schema/internal detail leak); the real
@@ -29,14 +35,23 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   }
   if (!user) return { error: "Session expired — sign in again." };
 
-  const factory_id = String(formData.get("factory_id") ?? "");
+  // Targeting identifiers: the Wizard posts the resolved target through
+  // dedicated hidden fields (canonical CR → licence → plant, or the legacy
+  // factory fallback). `factory_id`/`license_number` fall back to the legacy
+  // radio fields so an older rendered form still posts a coherent target.
+  const factory_id = String(formData.get("target_factory_id") ?? "") || String(formData.get("factory_id") ?? "");
   const package_version_id = String(formData.get("package_version_id") ?? "");
   const inspector_id = String(formData.get("inspector_id") ?? "");
   const visit_type = String(formData.get("visit_type") ?? "periodic");
   const window_start = String(formData.get("window_start") ?? "");
   const window_end = String(formData.get("window_end") ?? "");
   const mode = String(formData.get("execution_mode") ?? "physical");
-  const license_number = String(formData.get("license_number") ?? "");
+  const license_number = String(formData.get("target_license_number") ?? "") || String(formData.get("license_number") ?? "");
+  const cr_number = String(formData.get("target_cr_number") ?? "").trim();
+  const canonical_license_number = String(formData.get("target_canonical_license_number") ?? "").trim();
+  const plant_number = String(formData.get("target_plant_number") ?? "").trim();
+  const target_source = String(formData.get("target_source") ?? "") === "canonical" ? "canonical" : "legacy";
+  const source_channel = sanitizeSourceChannel(String(formData.get("source_channel") ?? "").trim());
   const location_confirmed = formData.get("location_confirmed") === "1";
   const plannerLatRaw = String(formData.get("planner_lat") ?? "").trim();
   const plannerLngRaw = String(formData.get("planner_lng") ?? "").trim();
@@ -179,5 +194,175 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     return { error: NEUTRAL_WRITE_ERROR, steps };
   }
 
+  // Canonical targeting metadata (PLN-REQ-023) — publish_single_visit
+  // (migration 20260714091727) has no CR/plant parameter and deliberately
+  // stays unchanged, so the CR/licence/plant targeting is recorded
+  // post-publish: the plan carries the full target in `criteria`, the visit
+  // carries source_channel + a compact internal_reference. A failure here
+  // never blocks the redirect — the visit itself is already atomically
+  // published; the gap is logged server-side.
+  const targetingLicense = canonical_license_number || license_number || null;
+  const internal_reference = [cr_number, targetingLicense, plant_number].filter(Boolean).join("/") || null;
+  const { data: visitRow, error: visitReadError } = await sb.from("visits")
+    .select("visit_plan_id").eq("id", visitId).single();
+  if (visitReadError) {
+    console.error("[CD-022 publishSingleVisit] visit plan lookup failed:", visitReadError.message);
+  }
+  const { error: visitMetaError } = await sb.from("visits")
+    .update({ source_channel, internal_reference }).eq("id", visitId);
+  if (visitMetaError) {
+    console.error("[CD-022 publishSingleVisit] visit targeting metadata write failed:", visitMetaError.message);
+  }
+  if (visitRow?.visit_plan_id) {
+    const { error: planMetaError } = await sb.from("visit_plans")
+      .update({
+        source_channel,
+        criteria: {
+          target: {
+            factory_id,
+            cr_number: cr_number || null,
+            license_number: targetingLicense,
+            plant_number: plant_number || null,
+            source: target_source,
+          },
+        },
+      })
+      .eq("id", visitRow.visit_plan_id);
+    if (planMetaError) {
+      console.error("[CD-022 publishSingleVisit] plan targeting metadata write failed:", planMetaError.message);
+    }
+  }
+
   redirect(`/visits/${visitId}`);
+}
+
+// ---------------------------------------------------------------------------
+// saveSingleDraft (PLN-REQ-020/022) — persist the Single Planning wizard as a
+// draft visit_plan (method 'single', status 'draft') and return its stable
+// plan_reference. No notification, no publish, no status transition: drafts
+// are working state only. The publish path consumes a draft later through
+// p_resume_plan_id (which requires status 'draft' and no visits — exactly
+// what this action produces).
+//
+// Draft payload contract (read back by /planning/single?plan=<id>):
+//   target: resolved factory + CR/licence/plant identifiers + source
+//   config: every configurable wizard field, verbatim
+//   handoff: source_channel the draft was started from
+// Fail-closed: capability (planning.edit_draft / planning.create) is checked
+// via getPlanningAccess; RLS remains the final boundary either way.
+export type SingleDraftInput = {
+  planId?: string;
+  sourceChannel?: string;
+  target: {
+    factoryId: string;
+    factoryName: string;
+    crNumber: string | null;
+    licenseNumber: string | null;
+    canonicalLicenseNumber: string | null;
+    plantNumber: string | null;
+    source: "canonical" | "legacy";
+  };
+  config: {
+    visitType?: string;
+    packageVersionId?: string;
+    executionMode?: string;
+    windowStart?: string;
+    windowEnd?: string;
+    inspectorId?: string;
+    notes?: string;
+    plannerLat?: string;
+    plannerLng?: string;
+  };
+};
+export type DraftSaveResult = { error?: string; planId?: string; planReference?: string; version?: number };
+
+export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSaveResult> {
+  const sb = await supabaseServer();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError) {
+    console.error("[PLN saveSingleDraft] auth read failed:", authError.message);
+    return { error: "read" };
+  }
+  if (!user) return { error: "session" };
+  const access = await getPlanningAccess(sb, ["planning.edit_draft", "planning.create"]);
+  if (access.error || !access.can("planning.edit_draft")) {
+    if (access.error) console.error("[PLN saveSingleDraft] access resolution failed");
+    return { error: "denied" };
+  }
+  if (!input?.target || !UUID.test(input.target.factoryId)) return { error: "target" };
+
+  const sourceChannel = sanitizeSourceChannel((input.sourceChannel ?? "").trim());
+  const emptyToNull = (v: string | undefined) => (v != null && v.trim() !== "" ? v.trim() : null);
+  const criteriaTarget = {
+    factory_id: input.target.factoryId,
+    cr_number: emptyToNull(input.target.crNumber ?? undefined),
+    license_number: emptyToNull(input.target.canonicalLicenseNumber ?? undefined) ?? emptyToNull(input.target.licenseNumber ?? undefined),
+    plant_number: emptyToNull(input.target.plantNumber ?? undefined),
+    source: input.target.source === "canonical" ? "canonical" : "legacy",
+  };
+  const draftPayload = {
+    target: {
+      factory_id: input.target.factoryId,
+      factory_name: input.target.factoryName,
+      cr_number: criteriaTarget.cr_number,
+      license_number: emptyToNull(input.target.licenseNumber ?? undefined),
+      canonical_license_number: criteriaTarget.license_number,
+      plant_number: criteriaTarget.plant_number,
+      source: criteriaTarget.source,
+    },
+    config: {
+      visit_type: emptyToNull(input.config?.visitType),
+      package_version_id: emptyToNull(input.config?.packageVersionId),
+      execution_mode: emptyToNull(input.config?.executionMode),
+      window_start: emptyToNull(input.config?.windowStart),
+      window_end: emptyToNull(input.config?.windowEnd),
+      inspector_id: emptyToNull(input.config?.inspectorId),
+      notes: emptyToNull(input.config?.notes),
+      planner_lat: emptyToNull(input.config?.plannerLat),
+      planner_lng: emptyToNull(input.config?.plannerLng),
+    },
+    handoff: { source_channel: sourceChannel },
+  };
+
+  if (input.planId && UUID.test(input.planId)) {
+    // Upsert path: only an own, active, still-draft single plan may be
+    // overwritten; the version check makes concurrent saves fail closed
+    // instead of last-write-wins.
+    const { data: current, error: currentError } = await sb.from("visit_plans")
+      .select("id, draft_version")
+      .eq("id", input.planId).eq("created_by", user.id)
+      .eq("method", "single").eq("status", "draft").is("archived_at", null)
+      .maybeSingle();
+    if (currentError) {
+      console.error("[PLN saveSingleDraft] draft read failed:", currentError.message);
+      return { error: "read" };
+    }
+    if (!current) return { error: "unavailable" };
+    const { data, error } = await sb.from("visit_plans")
+      .update({ draft_payload: draftPayload, draft_version: (current.draft_version ?? 0) + 1, source_channel: sourceChannel })
+      .eq("id", current.id).eq("draft_version", current.draft_version ?? 0)
+      .select("id, plan_reference, draft_version").single();
+    if (error) {
+      console.error("[PLN saveSingleDraft] draft update failed:", error.message);
+      return { error: "write" };
+    }
+    return { planId: data.id, planReference: data.plan_reference, version: data.draft_version };
+  }
+
+  const { data, error } = await sb.from("visit_plans")
+    .insert({
+      method: "single",
+      status: "draft",
+      created_by: user.id,
+      draft_payload: draftPayload,
+      draft_version: 1,
+      source_channel: sourceChannel,
+      criteria: { target: criteriaTarget },
+    })
+    .select("id, plan_reference, draft_version").single();
+  if (error) {
+    console.error("[PLN saveSingleDraft] draft insert failed:", error.message);
+    return { error: "write" };
+  }
+  return { planId: data.id, planReference: data.plan_reference, version: data.draft_version };
 }

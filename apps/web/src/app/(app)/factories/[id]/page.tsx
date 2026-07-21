@@ -245,7 +245,8 @@ export default async function Factory360({ params, searchParams }: { params: Pro
           عرض مرفقات المحاضر / عرض تقرير التحديات) have no built feature to link to
           yet (incident/challenge concepts don't exist — see reconciliation J-12/J-19);
           only wiring the one real, existing action rather than fabricating dead links. */}
-      <div className="ax-row" style={{ justifyContent: "flex-end", marginBlockEnd: "var(--ax-space-200)" }}>
+      <div className="ax-row" style={{ justifyContent: "flex-end", marginBlockEnd: "var(--ax-space-200)", gap: "var(--ax-space-100)" }}>
+        <a className="ax-btn ax-btn--secondary" href={`/planning/single?factory=${f.id}&cr=${encodeURIComponent(f.cr_number ?? "")}&license=${encodeURIComponent(f.license_number ?? "")}&source=factory360`}>{t("f360.actions.planSingle", "Plan single visit")}</a>
         <a className="ax-btn ax-btn--secondary" href={`/planning/immediate?factory=${f.id}`}>{t("f360.actions.startPlan", "Start inspection plan")}</a>
       </div>
 
