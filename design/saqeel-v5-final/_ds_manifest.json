@@ -1,0 +1,1560 @@
+{
+  "namespace": "SaqeelDesignSystem_49c57d",
+  "components": [
+    {
+      "name": "Accordion",
+      "sourcePath": "components/core/Accordion.jsx"
+    },
+    {
+      "name": "Button",
+      "sourcePath": "components/core/Button.jsx"
+    },
+    {
+      "name": "Checkbox",
+      "sourcePath": "components/core/Checkbox.jsx"
+    },
+    {
+      "name": "Field",
+      "sourcePath": "components/core/Field.jsx"
+    },
+    {
+      "name": "Input",
+      "sourcePath": "components/core/Input.jsx"
+    },
+    {
+      "name": "Pagination",
+      "sourcePath": "components/core/Pagination.jsx"
+    },
+    {
+      "name": "Radio",
+      "sourcePath": "components/core/Radio.jsx"
+    },
+    {
+      "name": "SearchInput",
+      "sourcePath": "components/core/SearchInput.jsx"
+    },
+    {
+      "name": "Segmented",
+      "sourcePath": "components/core/Segmented.jsx"
+    },
+    {
+      "name": "Select",
+      "sourcePath": "components/core/Select.jsx"
+    },
+    {
+      "name": "SplitButton",
+      "sourcePath": "components/core/SplitButton.jsx"
+    },
+    {
+      "name": "Switch",
+      "sourcePath": "components/core/Switch.jsx"
+    },
+    {
+      "name": "Tabs",
+      "sourcePath": "components/core/Tabs.jsx"
+    },
+    {
+      "name": "RouteTabs",
+      "sourcePath": "components/core/Tabs.jsx"
+    },
+    {
+      "name": "Textarea",
+      "sourcePath": "components/core/Textarea.jsx"
+    },
+    {
+      "name": "TypeCards",
+      "sourcePath": "components/core/TypeCards.jsx"
+    },
+    {
+      "name": "BulkBar",
+      "sourcePath": "components/data/BulkBar.jsx"
+    },
+    {
+      "name": "CommandBar",
+      "sourcePath": "components/data/CommandBar.jsx"
+    },
+    {
+      "name": "DataTable",
+      "sourcePath": "components/data/DataTable.jsx"
+    },
+    {
+      "name": "FilterChip",
+      "sourcePath": "components/data/FilterChip.jsx"
+    },
+    {
+      "name": "KpiCard",
+      "sourcePath": "components/data/KpiCard.jsx"
+    },
+    {
+      "name": "EvidenceCard",
+      "sourcePath": "components/domain/EvidenceCard.jsx"
+    },
+    {
+      "name": "MapPanel",
+      "sourcePath": "components/domain/MapPanel.jsx"
+    },
+    {
+      "name": "RuleRow",
+      "sourcePath": "components/domain/RuleRow.jsx"
+    },
+    {
+      "name": "VisitCard",
+      "sourcePath": "components/domain/VisitCard.jsx"
+    },
+    {
+      "name": "WidgetFrame",
+      "sourcePath": "components/domain/WidgetFrame.jsx"
+    },
+    {
+      "name": "Icon",
+      "sourcePath": "components/icons/Icon.jsx"
+    },
+    {
+      "name": "Drawer",
+      "sourcePath": "components/overlays/Drawer.jsx"
+    },
+    {
+      "name": "Menu",
+      "sourcePath": "components/overlays/Menu.jsx"
+    },
+    {
+      "name": "Modal",
+      "sourcePath": "components/overlays/Modal.jsx"
+    },
+    {
+      "name": "Tooltip",
+      "sourcePath": "components/overlays/Tooltip.jsx"
+    },
+    {
+      "name": "AdminFilterToolbar",
+      "sourcePath": "components/patterns2/AdminFilterToolbar.jsx"
+    },
+    {
+      "name": "CommandHeader",
+      "sourcePath": "components/patterns2/CommandHeader.jsx"
+    },
+    {
+      "name": "ControlGroup",
+      "sourcePath": "components/patterns2/ControlGroup.jsx"
+    },
+    {
+      "name": "DateRange",
+      "sourcePath": "components/patterns2/DateRange.jsx"
+    },
+    {
+      "name": "DateTime",
+      "sourcePath": "components/patterns2/DateTime.jsx"
+    },
+    {
+      "name": "FieldActionBar",
+      "sourcePath": "components/patterns2/FieldActionBar.jsx"
+    },
+    {
+      "name": "MetricStrip",
+      "sourcePath": "components/patterns2/MetricStrip.jsx"
+    },
+    {
+      "name": "PageHeader",
+      "sourcePath": "components/patterns2/PageHeader.jsx"
+    },
+    {
+      "name": "RecordRow",
+      "sourcePath": "components/patterns2/RecordRow.jsx"
+    },
+    {
+      "name": "ReportFooter",
+      "sourcePath": "components/patterns2/ReportFooter.jsx"
+    },
+    {
+      "name": "ReportHeader",
+      "sourcePath": "components/patterns2/ReportHeader.jsx"
+    },
+    {
+      "name": "Signature",
+      "sourcePath": "components/patterns2/Signature.jsx"
+    },
+    {
+      "name": "StatusChip",
+      "sourcePath": "components/patterns2/StatusChip.jsx"
+    },
+    {
+      "name": "StatusRail",
+      "sourcePath": "components/patterns2/StatusRail.jsx"
+    },
+    {
+      "name": "TonalField",
+      "sourcePath": "components/patterns2/TonalField.jsx"
+    },
+    {
+      "name": "Breadcrumb",
+      "sourcePath": "components/process/Breadcrumb.jsx"
+    },
+    {
+      "name": "ConflictResolver",
+      "sourcePath": "components/process/ConflictResolver.jsx"
+    },
+    {
+      "name": "DiffText",
+      "sourcePath": "components/process/DiffText.jsx"
+    },
+    {
+      "name": "Stepper",
+      "sourcePath": "components/process/Stepper.jsx"
+    },
+    {
+      "name": "Timeline",
+      "sourcePath": "components/process/Timeline.jsx"
+    },
+    {
+      "name": "ValidationSummary",
+      "sourcePath": "components/process/ValidationSummary.jsx"
+    },
+    {
+      "name": "Avatar",
+      "sourcePath": "components/status/Avatar.jsx"
+    },
+    {
+      "name": "Badge",
+      "sourcePath": "components/status/Badge.jsx"
+    },
+    {
+      "name": "Banner",
+      "sourcePath": "components/status/Banner.jsx"
+    },
+    {
+      "name": "Freshness",
+      "sourcePath": "components/status/Freshness.jsx"
+    },
+    {
+      "name": "Lozenge",
+      "sourcePath": "components/status/Lozenge.jsx"
+    },
+    {
+      "name": "Skeleton",
+      "sourcePath": "components/status/Skeleton.jsx"
+    },
+    {
+      "name": "StateCard",
+      "sourcePath": "components/status/StateCard.jsx"
+    },
+    {
+      "name": "SyncChip",
+      "sourcePath": "components/status/SyncChip.jsx"
+    },
+    {
+      "name": "Toast",
+      "sourcePath": "components/status/Toast.jsx"
+    },
+    {
+      "name": "VersionBadge",
+      "sourcePath": "components/status/VersionBadge.jsx"
+    }
+  ],
+  "startingPoints": [
+    {
+      "name": "KpiCard",
+      "path": "components/data/KpiCard.jsx",
+      "previewPath": "components/data/data.card.html",
+      "kind": "component",
+      "section": "Data",
+      "subtitle": "Traceable KPI value",
+      "viewport": "700x180"
+    },
+    {
+      "name": "VisitCard",
+      "path": "components/domain/VisitCard.jsx",
+      "previewPath": "components/domain/domain.card.html",
+      "kind": "component",
+      "section": "Domain",
+      "subtitle": "iPad visit card",
+      "viewport": "700x260"
+    },
+    {
+      "name": "Button",
+      "path": "components/core/Button.jsx",
+      "previewPath": "components/core/core.card.html",
+      "kind": "component",
+      "section": "Primitives",
+      "subtitle": "Primary action control",
+      "viewport": "700x150"
+    },
+    {
+      "name": "Icon",
+      "path": "components/icons/Icon.jsx",
+      "previewPath": "components/icons/icons.card.html",
+      "kind": "component",
+      "section": "Primitives",
+      "subtitle": "Production stroke icon set",
+      "viewport": "700x150"
+    },
+    {
+      "name": "Lozenge",
+      "path": "components/status/Lozenge.jsx",
+      "previewPath": "components/status/status.card.html",
+      "kind": "component",
+      "section": "Primitives",
+      "subtitle": "Five-domain status system",
+      "viewport": "700x150"
+    },
+    {
+      "name": "SyncChip",
+      "path": "components/status/SyncChip.jsx",
+      "previewPath": "components/status/status.card.html",
+      "kind": "component",
+      "section": "Primitives",
+      "subtitle": "6-state offline sync chip",
+      "viewport": "700x150"
+    },
+    {
+      "name": "web",
+      "path": "ui_kits/web/index.html",
+      "previewPath": "ui_kits/web/index.html",
+      "kind": "screen",
+      "section": "Screens",
+      "subtitle": "Authenticated web app (shell + 3 screens)",
+      "viewport": "1440x860"
+    }
+  ],
+  "cards": [
+    {
+      "path": "guidelines/brand-logo.html",
+      "group": "Brand",
+      "viewport": "700x190",
+      "subtitle": "Prism mark + Arabic wordmark \u0635\u0642\u064a\u0644 / \u0635\u0646\u0627\u0639\u064a",
+      "name": "Saqeel prism & lockup"
+    },
+    {
+      "path": "guidelines/brand-photography.html",
+      "group": "Brand",
+      "viewport": "700x210",
+      "subtitle": "Industrial night scenes \u2014 public/login surfaces only",
+      "name": "Photography"
+    },
+    {
+      "path": "guidelines/status-glyphs.html",
+      "group": "Brand",
+      "viewport": "700x170",
+      "subtitle": "Five state domains \u2014 glyph + label, never color alone",
+      "name": "Status glyph system"
+    },
+    {
+      "path": "guidelines/colors-atlas.html",
+      "group": "Colors",
+      "viewport": "700x150",
+      "subtitle": "Cinematic login scene palette \u2014 always dark, never re-lit",
+      "name": "Atlas (fixed)"
+    },
+    {
+      "path": "guidelines/colors-dark.html",
+      "group": "Colors",
+      "viewport": "700x150",
+      "subtitle": "'First-class",
+      "name": "Dark theme"
+    },
+    {
+      "path": "guidelines/colors-primary.html",
+      "group": "Colors",
+      "viewport": "700x150",
+      "subtitle": "Astryx green, light-first surfaces",
+      "name": "Primary & canvas"
+    },
+    {
+      "path": "guidelines/colors-semantic.html",
+      "group": "Colors",
+      "viewport": "700x180",
+      "subtitle": "Success, warning, critical, info \u2014 base + tint pairs",
+      "name": "Semantic"
+    },
+    {
+      "path": "guidelines/colors-text-neutral.html",
+      "group": "Colors",
+      "viewport": "700x150",
+      "subtitle": "Text, secondary, borders, sunken surfaces",
+      "name": "Text & neutrals"
+    },
+    {
+      "path": "components/core/core.card.html",
+      "group": "Components",
+      "viewport": "700x430",
+      "subtitle": "Redesigned specimen \u2014 one principal action, gated danger, labeled loading, grouped fields; containers 17 \u2192 9",
+      "name": "Core controls (V2)"
+    },
+    {
+      "path": "components/data/data.card.html",
+      "group": "Components",
+      "viewport": "700x430",
+      "subtitle": "KPI cards, command bar, table, bulk bar",
+      "name": "Data"
+    },
+    {
+      "path": "components/domain/domain.card.html",
+      "group": "Components",
+      "viewport": "700x430",
+      "subtitle": "Visit card, evidence, map, rule builder, widget frame",
+      "name": "Domain widgets"
+    },
+    {
+      "path": "components/icons/icons.card.html",
+      "group": "Components",
+      "viewport": "700x190",
+      "subtitle": "Production stroke set \u2014 24px grid, 1.8 stroke, currentColor",
+      "name": "Icons"
+    },
+    {
+      "path": "components/overlays/overlays.card.html",
+      "group": "Components",
+      "viewport": "700x330",
+      "subtitle": "Menu, tooltip, modal, drawer",
+      "name": "Overlays"
+    },
+    {
+      "path": "components/patterns2/patterns2.card.html",
+      "group": "Components",
+      "viewport": "700x430",
+      "subtitle": "StatusRail, MetricStrip, chips, RecordRow, ControlGroup, DateTime/Range, Signature, report header/footer, taskbar, toolbars",
+      "name": "V2 pattern components"
+    },
+    {
+      "path": "components/process/process.card.html",
+      "group": "Components",
+      "viewport": "700x430",
+      "subtitle": "Stepper, timeline, validation, conflict resolver, diff",
+      "name": "Process & audit"
+    },
+    {
+      "path": "components/status/status.card.html",
+      "group": "Components",
+      "viewport": "700x330",
+      "subtitle": "Lozenges, sync chips, banners, toasts, states",
+      "name": "Status & feedback"
+    },
+    {
+      "path": "guidelines/controls.html",
+      "group": "Spacing & Shape",
+      "viewport": "700x170",
+      "subtitle": "44 / 48 / 52px heights \u00b7 universal focus ring",
+      "name": "Control metrics & focus"
+    },
+    {
+      "path": "guidelines/radius-elevation.html",
+      "group": "Spacing & Shape",
+      "viewport": "700x190",
+      "subtitle": "Nearly flat: borders carry hierarchy; only overlays float",
+      "name": "Radius & elevation"
+    },
+    {
+      "path": "guidelines/spacing.html",
+      "group": "Spacing & Shape",
+      "viewport": "700x170",
+      "subtitle": "4px base \u00b7 rhythm 8/12/16/24/32/48",
+      "name": "Spacing"
+    },
+    {
+      "path": "guidelines/type-bilingual.html",
+      "group": "Type",
+      "viewport": "700x170",
+      "subtitle": "One family both scripts; RTL via logical properties",
+      "name": "Bilingual EN/AR"
+    },
+    {
+      "path": "guidelines/type-scale.html",
+      "group": "Type",
+      "viewport": "700x330",
+      "subtitle": "IBM Plex Sans Arabic \u2014 weight 500 headings, 16px body minimum",
+      "name": "Semantic scale"
+    },
+    {
+      "path": "guidelines/type-special.html",
+      "group": "Type",
+      "viewport": "700x170",
+      "subtitle": "Space Grotesk inputs only; JetBrains Mono for identifiers",
+      "name": "Input & mono voices"
+    },
+    {
+      "path": "patterns/admin/approval-queue-ar.html",
+      "group": "V2 Admin",
+      "viewport": "1440x760",
+      "subtitle": "True RTL admin queue \u2014 flipped table alignment, bdi identifiers",
+      "name": "\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0627\u0639\u062a\u0645\u0627\u062f \u2014 \u0639\u0631\u0628\u064a RTL"
+    },
+    {
+      "path": "patterns/admin/approval-queue.html",
+      "group": "V2 Admin",
+      "viewport": "1440x760",
+      "subtitle": "Compact density 36/40px \u00b7 maker-checker queue \u00b7 flat sections, no card grid",
+      "name": "Approval queue (V2)"
+    },
+    {
+      "path": "patterns/admin/permissions.html",
+      "group": "V2 Admin",
+      "viewport": "1440x680",
+      "subtitle": "Frozen RBAC matrix \u2014 read-only cells with RLS provenance",
+      "name": "Roles & permissions (V2)"
+    },
+    {
+      "path": "patterns/admin/rule-builder.html",
+      "group": "V2 Admin",
+      "viewport": "1440x680",
+      "subtitle": "AND/OR criteria rows, governed weights, live preview count",
+      "name": "Risk rule builder (V2)"
+    },
+    {
+      "path": "patterns/admin/template-editor.html",
+      "group": "V2 Admin",
+      "viewport": "1440x800",
+      "subtitle": "Checklist editor \u2014 draft banner, section tree, item editor, compact density",
+      "name": "Package designer (V2)"
+    },
+    {
+      "path": "patterns/admin/version-comparison.html",
+      "group": "V2 Admin",
+      "viewport": "1440x680",
+      "subtitle": "v3 \u2192 v4 diff \u2014 ins/del marks, side-by-side, audit anchor",
+      "name": "Version comparison (V2)"
+    },
+    {
+      "path": "patterns/admin/workflow-designer.html",
+      "group": "V2 Admin",
+      "viewport": "1440x720",
+      "subtitle": "States, guarded transitions, terminal nodes \u2014 dot-grid canvas + properties",
+      "name": "Workflow designer (V2)"
+    },
+    {
+      "path": "patterns/gallery.html",
+      "group": "V2 Admin",
+      "viewport": "1440x920",
+      "subtitle": "Every core control in every state \u2014 visual-regression specimen sheet",
+      "name": "State & regression gallery (V2)"
+    },
+    {
+      "path": "patterns/evidence/dark.html",
+      "group": "V2 Evidence",
+      "viewport": "1440x900",
+      "subtitle": "Gallery + one page per channel via ?theme=dark \u2014 green primary, 3:1 boundaries",
+      "name": "Dark-mode evidence"
+    },
+    {
+      "path": "patterns/evidence/responsive.html",
+      "group": "V2 Evidence",
+      "viewport": "1440x900",
+      "subtitle": "Visit planning at 1440 / 1024 / 768 / 390 \u2014 live iframes, same page",
+      "name": "Responsive evidence"
+    },
+    {
+      "path": "patterns/ipad/acknowledgement.html",
+      "group": "V2 iPad",
+      "viewport": "1194x834",
+      "subtitle": "Signature capture + validation-clear + immutable submit confirmation",
+      "name": "Acknowledgement & submit (V2)"
+    },
+    {
+      "path": "patterns/ipad/evidence-annotation.html",
+      "group": "V2 iPad",
+      "viewport": "1194x834",
+      "subtitle": "Capture + annotate \u2014 Pencil tools, item linkage, custody at capture",
+      "name": "Evidence annotation (V2)"
+    },
+    {
+      "path": "patterns/ipad/inspector-checklist-ar.html",
+      "group": "V2 iPad",
+      "viewport": "1194x834",
+      "subtitle": "True RTL field checklist \u2014 bdi-isolated IDs, 52px targets",
+      "name": "\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u062a\u0641\u062a\u064a\u0634 \u2014 \u0639\u0631\u0628\u064a RTL"
+    },
+    {
+      "path": "patterns/ipad/inspector-checklist.html",
+      "group": "V2 iPad",
+      "viewport": "1194x834",
+      "subtitle": "Field density: 52px targets \u00b7 persistent sync \u00b7 inline evidence \u00b7 bottom taskbar",
+      "name": "Inspector checklist (V2)"
+    },
+    {
+      "path": "patterns/ipad/inspector-home.html",
+      "group": "V2 iPad",
+      "viewport": "1194x834",
+      "subtitle": "Today's route \u2014 visit cards, sync always visible, 52px targets",
+      "name": "Inspector home (V2)"
+    },
+    {
+      "path": "patterns/ipad/offline-recovery.html",
+      "group": "V2 iPad",
+      "viewport": "1194x834",
+      "subtitle": "Outbox, calm offline chrome, explicit conflict resolution",
+      "name": "Offline & sync recovery (V2)"
+    },
+    {
+      "path": "patterns/ipad/previsit-readiness.html",
+      "group": "V2 iPad",
+      "viewport": "1194x834",
+      "subtitle": "Readiness checklist \u2014 blockers named exactly, start gated",
+      "name": "Pre-visit readiness (V2)"
+    },
+    {
+      "path": "patterns/ipad/violation-flow.html",
+      "group": "V2 iPad",
+      "viewport": "1194x834",
+      "subtitle": "From a failed item \u2014 governed code picker, mapping version locked",
+      "name": "Record violation (V2)"
+    },
+    {
+      "path": "patterns/web/dashboard.html",
+      "group": "V2 Web",
+      "viewport": "1440x880",
+      "subtitle": "Command board: alert rail, metric strip, tonal fields \u2014 no KPI card grid",
+      "name": "Operational dashboard (V2)"
+    },
+    {
+      "path": "patterns/web/factory-dossier.html",
+      "group": "V2 Web",
+      "viewport": "1440x860",
+      "subtitle": "Identity + compliance record + visit history \u2014 rules and tonal fields, contextual panel",
+      "name": "Factory 360 dossier (V2)"
+    },
+    {
+      "path": "patterns/web/report-reading.html",
+      "group": "V2 Web",
+      "viewport": "1440x900",
+      "subtitle": "A1 editorial renderer \u2014 five layers, numbered rules, responsive (no fixed A4 sheet on screen)",
+      "name": "Report reading (V2)"
+    },
+    {
+      "path": "patterns/web/review-workspace.html",
+      "group": "V2 Web",
+      "viewport": "1440x880",
+      "subtitle": "B2 command direction in dark theme \u2014 green primary, issue queue, sticky governed decision bar",
+      "name": "Review workspace (V2 \u00b7 dark)"
+    },
+    {
+      "path": "patterns/web/visit-planning.html",
+      "group": "V2 Web",
+      "viewport": "1440x900",
+      "subtitle": "Hybrid shell + command bar \u00b7 1 principal action \u00b7 fieldset groups \u00b7 flat table \u2014 bounded containers: 11, all classified",
+      "name": "Visit planning (V2)"
+    },
+    {
+      "path": "ui_kits/web/index-ar.html",
+      "group": "Web App",
+      "viewport": "1440x860",
+      "subtitle": "Same shell natively mirrored via dir=rtl + logical properties",
+      "name": "Saqeel web app \u2014 \u0639\u0631\u0628\u064a RTL"
+    },
+    {
+      "path": "ui_kits/web/index.html",
+      "group": "Web App",
+      "viewport": "1440x860",
+      "subtitle": "Shell + dashboard, visits, Level-2 review \u2014 click-through",
+      "name": "Saqeel web app"
+    }
+  ],
+  "templates": [],
+  "hasThumbnailHtml": true,
+  "globalCssPaths": [
+    "tokens/fonts.css",
+    "tokens/tokens.css",
+    "styles/foundations.css",
+    "styles/components-core.css",
+    "styles/components-status.css",
+    "styles/components-overlays.css",
+    "styles/components-feedback.css",
+    "styles/components-navigation.css",
+    "styles/components-data.css",
+    "styles/components-process.css",
+    "styles/components-domain.css",
+    "styles/utilities.css",
+    "styles/legacy-features.css",
+    "tokens/v2-components.css",
+    "styles/print.css",
+    "styles.css"
+  ],
+  "tokens": [
+    {
+      "name": "--ax-color-primary",
+      "value": "#176B52",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-primary-hover",
+      "value": "#125541",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-canvas",
+      "value": "#F5F7F8",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-surface",
+      "value": "#FFFFFF",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-text",
+      "value": "var(--ax-color-print-text)",
+      "kind": "font",
+      "definedIn": "styles/print.css"
+    },
+    {
+      "name": "--ax-color-text-secondary",
+      "value": "#49545E",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-border",
+      "value": "var(--ax-color-print-border)",
+      "kind": "color",
+      "definedIn": "styles/print.css"
+    },
+    {
+      "name": "--ax-color-border-control",
+      "value": "#7A8894",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-link",
+      "value": "#175CD3",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-success",
+      "value": "#18794E",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-warning",
+      "value": "#8A5A00",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-critical",
+      "value": "#B42318",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-info",
+      "value": "#175CD3",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-shadow-base",
+      "value": "#18212A",
+      "kind": "shadow",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-inverse-text",
+      "value": "#FFFFFF",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-primary",
+      "value": "#64C2A1",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-primary-hover",
+      "value": "#7FD0B3",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-canvas",
+      "value": "#101317",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-surface",
+      "value": "#191D22",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-text",
+      "value": "#F1F4F6",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-text-secondary",
+      "value": "#ABB4BD",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-border",
+      "value": "#353C44",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-border-control",
+      "value": "#6B7680",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-link",
+      "value": "#78AEDA",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-success",
+      "value": "#55B885",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-warning",
+      "value": "#D4A84F",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-critical",
+      "value": "#E17770",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-info",
+      "value": "#78AEDA",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-shadow-base",
+      "value": "#000000",
+      "kind": "shadow",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-inverse-text",
+      "value": "#101317",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css",
+      "scope": ":root[data-theme=\"dark\"]"
+    },
+    {
+      "name": "--ax-color-atlas-canvas",
+      "value": "#050A18",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-atlas-surface",
+      "value": "#0E1428",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-atlas-text",
+      "value": "#F6F2FF",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-atlas-muted",
+      "value": "#B5AEC9",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-atlas-border",
+      "value": "#34285F",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-prism-magenta",
+      "value": "#D946EF",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-on-critical",
+      "value": "#FFFFFF",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-print-text",
+      "value": "#111111",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-print-surface",
+      "value": "#FFFFFF",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-print-border",
+      "value": "#555555",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-primary-tint",
+      "value": "color-mix(in srgb, var(--ax-color-primary) 14%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-primary-weak",
+      "value": "color-mix(in srgb, var(--ax-color-primary) 28%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-primary-strong",
+      "value": "color-mix(in srgb, var(--ax-color-primary) 72%, var(--ax-color-text))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-success-tint",
+      "value": "color-mix(in srgb, var(--ax-color-success) 14%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-success-strong",
+      "value": "color-mix(in srgb, var(--ax-color-success) 78%, var(--ax-color-text))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-warning-tint",
+      "value": "color-mix(in srgb, var(--ax-color-warning) 16%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-warning-strong",
+      "value": "color-mix(in srgb, var(--ax-color-warning) 78%, var(--ax-color-text))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-critical-tint",
+      "value": "color-mix(in srgb, var(--ax-color-critical) 14%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-critical-strong",
+      "value": "color-mix(in srgb, var(--ax-color-critical) 80%, var(--ax-color-text))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-info-tint",
+      "value": "color-mix(in srgb, var(--ax-color-info) 14%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-info-strong",
+      "value": "color-mix(in srgb, var(--ax-color-info) 82%, var(--ax-color-text))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-neutral-tint",
+      "value": "color-mix(in srgb, var(--ax-color-text-secondary) 10%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-neutral-weak",
+      "value": "color-mix(in srgb, var(--ax-color-text-secondary) 20%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-border-strong",
+      "value": "color-mix(in srgb, var(--ax-color-text-secondary) 45%, var(--ax-color-border))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-text-disabled",
+      "value": "color-mix(in srgb, var(--ax-color-text-secondary) 55%, var(--ax-color-surface))",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-surface-sunken",
+      "value": "color-mix(in srgb, var(--ax-color-canvas) 60%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-surface-raised",
+      "value": "color-mix(in srgb, var(--ax-color-text) 5%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-overlay",
+      "value": "color-mix(in srgb, var(--ax-color-shadow-base) 60%, transparent)",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-font-sans",
+      "value": "var(--font-plex-arabic, \"IBM Plex Sans Arabic\"), -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial, sans-serif",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-font-arabic",
+      "value": "var(--font-plex-arabic, \"IBM Plex Sans Arabic\"), \"Geeza Pro\", \"Segoe UI\", Tahoma, sans-serif",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-font-mono",
+      "value": "var(--font-jbmono, \"JetBrains Mono\"), ui-monospace, \"SF Mono\", \"Cascadia Mono\", Menlo, monospace",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-font-input",
+      "value": "var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-display",
+      "value": "500 32px/40px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-title",
+      "value": "500 24px/32px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-heading",
+      "value": "500 19px/28px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-subheading",
+      "value": "500 16px/24px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-body",
+      "value": "400 16px/24px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-body-strong",
+      "value": "600 16px/24px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-field",
+      "value": "400 17px/26px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-caption",
+      "value": "400 14px/20px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-micro",
+      "value": "500 12px/16px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-metric",
+      "value": "500 28px/32px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-label",
+      "value": "500 14px/20px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-action",
+      "value": "500 14px/20px var(--ax-font-sans)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-input",
+      "value": "400 16px/24px var(--ax-font-input)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-text-input-field",
+      "value": "400 17px/26px var(--ax-font-input)",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-numeric-features",
+      "value": "\"tnum\" 1, \"lnum\" 1",
+      "kind": "font",
+      "definedIn": "tokens/tokens.css",
+      "annotation": "font"
+    },
+    {
+      "name": "--ax-space-050",
+      "value": "4px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-space-100",
+      "value": "8px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-space-150",
+      "value": "12px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-space-200",
+      "value": "16px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-space-250",
+      "value": "20px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-space-300",
+      "value": "24px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-space-400",
+      "value": "32px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-space-600",
+      "value": "48px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-radius-small",
+      "value": "4px",
+      "kind": "radius",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-radius-standard",
+      "value": "6px",
+      "kind": "radius",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-radius-large",
+      "value": "8px",
+      "kind": "radius",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-radius-full",
+      "value": "999px",
+      "kind": "radius",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-radius-input",
+      "value": "6px",
+      "kind": "radius",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-shadow-raised",
+      "value": "none",
+      "kind": "shadow",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-shadow-overlay",
+      "value": "0 12px 28px color-mix(in srgb, var(--ax-color-shadow-base) 22%, transparent)",
+      "kind": "shadow",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-control-height-compact",
+      "value": "36px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-control-height-admin",
+      "value": "40px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-control-height",
+      "value": "44px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-control-height-prominent",
+      "value": "48px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-control-height-field",
+      "value": "52px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-focus-ring",
+      "value": "0 0 0 2px var(--ax-color-canvas), 0 0 0 4px var(--ax-color-primary)",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-offset-sticky-top",
+      "value": "72px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-offset-sticky-bottom",
+      "value": "96px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-color-surface-field",
+      "value": "color-mix(in srgb, var(--ax-color-text-secondary) 6%, var(--ax-color-surface))",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-motion-fast",
+      "value": "120ms cubic-bezier(.2,0,0,1)",
+      "kind": "other",
+      "definedIn": "tokens/tokens.css",
+      "annotation": "other"
+    },
+    {
+      "name": "--ax-motion-standard",
+      "value": "200ms cubic-bezier(.2,0,0,1)",
+      "kind": "other",
+      "definedIn": "tokens/tokens.css",
+      "annotation": "other"
+    },
+    {
+      "name": "--ax-grid-desktop-max",
+      "value": "1440px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-grid-gutter",
+      "value": "var(--ax-space-300)",
+      "kind": "color",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-shell-nav-width",
+      "value": "248px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-shell-panel-width",
+      "value": "360px",
+      "kind": "spacing",
+      "definedIn": "tokens/tokens.css"
+    },
+    {
+      "name": "--ax-z-sticky",
+      "value": "10",
+      "kind": "other",
+      "definedIn": "tokens/tokens.css",
+      "annotation": "other"
+    },
+    {
+      "name": "--ax-z-drawer",
+      "value": "40",
+      "kind": "other",
+      "definedIn": "tokens/tokens.css",
+      "annotation": "other"
+    },
+    {
+      "name": "--ax-z-modal",
+      "value": "50",
+      "kind": "other",
+      "definedIn": "tokens/tokens.css",
+      "annotation": "other"
+    },
+    {
+      "name": "--ax-z-toast",
+      "value": "60",
+      "kind": "other",
+      "definedIn": "tokens/tokens.css",
+      "annotation": "other"
+    },
+    {
+      "name": "--ax-z-tooltip",
+      "value": "70",
+      "kind": "other",
+      "definedIn": "tokens/tokens.css",
+      "annotation": "other"
+    },
+    {
+      "name": "--ax-control-height",
+      "value": "var(--ax-control-height-admin)",
+      "kind": "color",
+      "definedIn": "tokens/v2-components.css",
+      "scope": ".ax-density-compact"
+    },
+    {
+      "name": "--ax-control-height-admin",
+      "value": "var(--ax-control-height-field)",
+      "kind": "color",
+      "definedIn": "tokens/v2-components.css",
+      "scope": ".ax-density-field"
+    }
+  ],
+  "themes": [
+    {
+      "selector": ":root[data-theme=\"dark\"]",
+      "label": "Root Dark"
+    },
+    {
+      "selector": ".ax-density-compact",
+      "label": "Ax Density Compact"
+    },
+    {
+      "selector": ".ax-density-field",
+      "label": "Ax Density Field"
+    }
+  ],
+  "fonts": [
+    {
+      "family": "IBM Plex Sans Arabic",
+      "weight": "400",
+      "style": "normal",
+      "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-latin-400.woff2"
+      ]
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "weight": "500",
+      "style": "normal",
+      "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-latin-500.woff2"
+      ]
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "weight": "600",
+      "style": "normal",
+      "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-latin-600.woff2"
+      ]
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "weight": "700",
+      "style": "normal",
+      "unicodeRange": "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-latin-700.woff2"
+      ]
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "weight": "400",
+      "style": "normal",
+      "unicodeRange": "U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-arabic-400.woff2"
+      ]
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "weight": "500",
+      "style": "normal",
+      "unicodeRange": "U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-arabic-500.woff2"
+      ]
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "weight": "600",
+      "style": "normal",
+      "unicodeRange": "U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-arabic-600.woff2"
+      ]
+    },
+    {
+      "family": "IBM Plex Sans Arabic",
+      "weight": "700",
+      "style": "normal",
+      "unicodeRange": "U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-arabic-700.woff2"
+      ]
+    },
+    {
+      "family": "Space Grotesk",
+      "weight": "400",
+      "style": "normal",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/space-grotesk/space-grotesk-latin-400.woff2"
+      ]
+    },
+    {
+      "family": "Space Grotesk",
+      "weight": "500",
+      "style": "normal",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/space-grotesk/space-grotesk-latin-500.woff2"
+      ]
+    },
+    {
+      "family": "Space Grotesk",
+      "weight": "600",
+      "style": "normal",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/space-grotesk/space-grotesk-latin-600.woff2"
+      ]
+    },
+    {
+      "family": "Space Grotesk",
+      "weight": "700",
+      "style": "normal",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/space-grotesk/space-grotesk-latin-700.woff2"
+      ]
+    },
+    {
+      "family": "JetBrains Mono",
+      "weight": "400",
+      "style": "normal",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/jetbrains-mono/jetbrains-mono-latin-400.woff2"
+      ]
+    },
+    {
+      "family": "JetBrains Mono",
+      "weight": "500",
+      "style": "normal",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/jetbrains-mono/jetbrains-mono-latin-500.woff2"
+      ]
+    },
+    {
+      "family": "JetBrains Mono",
+      "weight": "700",
+      "style": "normal",
+      "cssPath": "tokens/fonts.css",
+      "files": [
+        "assets/fonts/jetbrains-mono/jetbrains-mono-latin-700.woff2"
+      ]
+    }
+  ],
+  "brandFonts": [
+    {
+      "family": "IBM Plex Sans Arabic",
+      "status": "unreferenced",
+      "tokens": [],
+      "path": "tokens/fonts.css"
+    },
+    {
+      "family": "Space Grotesk",
+      "status": "unreferenced",
+      "tokens": [],
+      "path": "tokens/fonts.css"
+    },
+    {
+      "family": "JetBrains Mono",
+      "status": "unreferenced",
+      "tokens": [],
+      "path": "tokens/fonts.css"
+    }
+  ],
+  "source": "Saqeel Design System V5.1 final baseline; canonical sources are styles.css + layered styles/ + components/"
+}

@@ -5,6 +5,7 @@ import {
   type NotifRuleResult,
 } from "./actions";
 import EmptyState from "@/components/EmptyState";
+import { IconBell } from "@/app/icons";
 
 export type NotificationRuleRow = {
   id: string;
@@ -127,7 +128,7 @@ export default function NotificationRulesManager({ rows, roles, l }: { rows: Not
       </section>
 
       {rows.length === 0 ? (
-        <EmptyState glyph="🔔" title={l.emptyTitle} body={l.emptyBody} role="status" />
+        <EmptyState icon={<IconBell size={28} />} title={l.emptyTitle} body={l.emptyBody} role="status" />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>

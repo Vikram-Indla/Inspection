@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { IconLightbulb } from "@/app/icons";
 
 // M09-028 — "Preview" renders a package version EXACTLY as the inspector will
 // see it in the field workspace: sections in order, each item with its response
@@ -97,7 +98,7 @@ export default function PackagePreview({ sections, actionForms, itemMap, strings
                         {!it.scoringEnabled && <span className="ax-lozenge ax-lozenge--info">{s.scoringDisabled}</span>}
                       </div>
                       {it.conditional && <p className="ax-caption">{s.conditionalWhen} <code>{it.conditional}</code></p>}
-                      {it.guidance && <p className="ax-caption">💡 {s.guidanceLabel}: {it.guidance}</p>}
+                      {it.guidance && <p className="ax-caption"><IconLightbulb size={16} /> {s.guidanceLabel}: {it.guidance}</p>}
 
                       <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
                         {it.isDate ? (

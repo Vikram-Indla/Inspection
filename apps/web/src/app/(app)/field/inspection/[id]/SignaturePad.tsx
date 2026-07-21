@@ -4,6 +4,7 @@
 // rides inside submission_versions.acknowledgement, so it is stored with the
 // immutable version and survives offline queueing unchanged.
 import { useEffect, useRef, useState } from "react";
+import Modal from "@/components/Modal";
 
 export type SignaturePadStrings = {
   title: string; hint: string;
@@ -81,33 +82,34 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
   }
 
   return (
-    <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.title}>
-      <div className="ax-modal" style={{ inlineSize: "min(560px, 100%)" }}>
-        <div className="ax-modal__header"><h3>{strings.title}</h3></div>
-        <div className="ax-modal__body">
-          <p className="ax-caption">{strings.hint}</p>
-          <label className="ax-field">
-            <span className="ax-field__label">{strings.nameLabel}<span className="ax-req">*</span></span>
-            <input className="ax-input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
-          </label>
-          <canvas
-            ref={canvasRef}
-            onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-            style={{
-              inlineSize: "100%", blockSize: 180, touchAction: "none", cursor: "crosshair",
-              background: "var(--ax-color-surface-sunken)",
-              border: "1.5px dashed var(--ax-color-border-strong)",
-              borderRadius: "var(--ax-radius-standard)",
-            }}
-          />
-          {err && <p className="ax-field__error">{err}</p>}
-        </div>
-        <div className="ax-modal__footer">
-          <button className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clear}</button>
-          <button className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
-          <button className="ax-btn ax-btn--prominent" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
-        </div>
-      </div>
-    </div>
+    <Modal
+      open
+      onClose={onCancel}
+      titleId="signature-title"
+      title={strings.title}
+      closeLabel={strings.cancel}
+      footer={<>
+        <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clear}</button>
+        <button type="button" className="ax-btn ax-btn--secondary" onClick={onCancel}>{strings.cancel}</button>
+        <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!hasInk || !name.trim()} onClick={confirm}>{strings.confirm}</button>
+      </>}
+    >
+      <p className="ax-caption">{strings.hint}</p>
+      <label className="ax-field">
+        <span className="ax-field__label">{strings.nameLabel}<span className="ax-req">*</span></span>
+        <input className="ax-input" value={name} placeholder={strings.namePlaceholder} onChange={e => { setName(e.target.value); setErr(null); }} />
+      </label>
+      <canvas
+        ref={canvasRef}
+        onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
+        style={{
+          inlineSize: "100%", blockSize: 180, touchAction: "none", cursor: "crosshair",
+          background: "var(--ax-color-surface-sunken)",
+          border: "1.5px dashed var(--ax-color-border-strong)",
+          borderRadius: "var(--ax-radius-standard)",
+        }}
+      />
+      {err && <p className="ax-field__error">{err}</p>}
+    </Modal>
   );
 }

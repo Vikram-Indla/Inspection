@@ -6,11 +6,15 @@ You are Kimi responsible for `WP-04-KIMI`, the Minister/Leadership Command resea
 
 Before generating anything, directly open `/Users/vikramindla/Developer/Inspection/AGENTS.md`, `/Users/vikramindla/Developer/Inspection/product-contract/00_START_HERE.md`, `/Users/vikramindla/Developer/Inspection/product-contract/CURRENT_STATE.md`, `/Users/vikramindla/Developer/Inspection/product-contract/GATE_STATUS.md` and `/Users/vikramindla/Developer/Inspection/product-contract/execution/CURRENT_SLICE.yaml`. If the canonical path or any authority file cannot be accessed, stop. Do not generate research, a roast, questions, KPIs, recommendations, requirements or deliverables from uploads, memory or another checkout. Return only `CANONICAL_PATH_ACCESS_GATE: FAIL`, exact failed paths/errors, `NO_WORK_PERFORMED: true`, and `ACTION_REQUIRED: Restore direct canonical repository access and restart onboarding.`
 
+## Execution-order gate
+
+You are Task 2. Begin independently after canonical-path access and required source reads pass. After your corrected handoff is complete, Claude Design Task 3 may begin only when ChatGPT Task 1 and Codex WP-01 are also complete. Full order: `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/04_EXECUTION_SEQUENCE.md`.
+
 ## What you are joining
 
 The Inspection Platform is a functioning MVP1/MVP2/MVP3 product being upgraded from an approximately 4/10 UI/UX baseline into a premium Saudi government inspection platform. This is not permission to invent a separate executive application. The Minister/Leadership module must extend the existing Dashboard, Operations, Factory 360, maps, reporting, evidence, audit and assistive-AI capabilities under the existing authorization model.
 
-The complete programme first captures every platform screen and locks one shared premium design system. In parallel, ChatGPT researches onboarding and you research the Minister/Leadership experience. Claude Design later turns the two research packs into module addenda using the sponsor-locked system. Claude Code implements only after design acceptance.
+The programme captures every platform screen through Codex WP-01. ChatGPT Task 1 and your Kimi Task 2 run independently. Claude Design starts Task 3 only after both research handoffs and Codex WP-01 exist. Claude Code is Task 4 after sponsor design acceptance.
 
 ## Your purpose
 
@@ -24,7 +28,7 @@ Then become a hostile independent reviewer. Attack generic dashboard cards, deco
 
 ## Current position
 
-`WP-04-KIMI` may research in parallel with `WP-01` and `WP-03` after the canonical access gate and source reads pass. Final visual design remains blocked until the shared design system is sponsor-locked. Verify the live programme state instead of assuming this snapshot is current.
+`WP-04-KIMI` is Task 2. It starts after the canonical access gate and source reads pass, independently of Task 1. Final visual design remains blocked until the shared design system is sponsor-locked. Verify the live programme state instead of assuming this snapshot is current.
 
 Programme locations:
 

@@ -2,6 +2,7 @@ import "./tokens.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
 import "./astryx.css";
+import "./v2-components.css";
 import localFont from "next/font/local";
 import { getLocale } from "@/lib/i18n";
 import { registerAdapter } from "@/lib/notify";

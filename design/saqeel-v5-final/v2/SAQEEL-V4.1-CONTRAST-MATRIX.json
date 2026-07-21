@@ -1,0 +1,112 @@
+{
+  "generated": "2026-07-20",
+  "standard": "WCAG 2.2 AA (1.4.3 text 4.5:1, 1.4.11 non-text 3:1)",
+  "pairs": [
+    {
+      "fg": "#7A8894",
+      "bg": "#FFFFFF",
+      "ratio": 3.64,
+      "use": "control boundary \u00b7 light surface",
+      "pass": true
+    },
+    {
+      "fg": "#7A8894",
+      "bg": "#F5F7F8",
+      "ratio": 3.38,
+      "use": "control boundary \u00b7 light canvas",
+      "pass": true
+    },
+    {
+      "fg": "#6B7680",
+      "bg": "#191D22",
+      "ratio": 3.65,
+      "use": "control boundary \u00b7 dark surface (replaces #5C6670 @2.90 FAIL)",
+      "pass": true
+    },
+    {
+      "fg": "#6B7680",
+      "bg": "#101317",
+      "ratio": 4.02,
+      "use": "control boundary \u00b7 dark canvas",
+      "pass": true
+    },
+    {
+      "fg": "#64C2A1",
+      "bg": "#101317",
+      "ratio": 8.67,
+      "use": "dark primary on canvas",
+      "pass": true
+    },
+    {
+      "fg": "#64C2A1",
+      "bg": "#191D22",
+      "ratio": 7.88,
+      "use": "dark primary on surface",
+      "pass": true
+    },
+    {
+      "fg": "#101317",
+      "bg": "#64C2A1",
+      "ratio": 8.67,
+      "use": "inverse text on dark primary",
+      "pass": true
+    },
+    {
+      "fg": "#FFFFFF",
+      "bg": "#176B52",
+      "ratio": 6.44,
+      "use": "inverse text on light primary",
+      "pass": true
+    },
+    {
+      "fg": "#1B242C",
+      "bg": "#FFFFFF",
+      "ratio": 15.31,
+      "use": "light body text",
+      "pass": true
+    },
+    {
+      "fg": "#49545E",
+      "bg": "#FFFFFF",
+      "ratio": 7.34,
+      "use": "light secondary text",
+      "pass": true
+    },
+    {
+      "fg": "#F1F4F6",
+      "bg": "#191D22",
+      "ratio": 14.7,
+      "use": "dark body text",
+      "pass": true
+    },
+    {
+      "fg": "#175CD3",
+      "bg": "#FFFFFF",
+      "ratio": 5.94,
+      "use": "link \u00b7 light",
+      "pass": true
+    },
+    {
+      "fg": "#78AEDA",
+      "bg": "#191D22",
+      "ratio": 6.51,
+      "use": "link \u00b7 dark",
+      "pass": true
+    },
+    {
+      "fg": "#D6DDE2",
+      "bg": "#FFFFFF",
+      "ratio": 1.37,
+      "use": "DECORATIVE rule only \u2014 never a control boundary",
+      "pass": "decorative"
+    },
+    {
+      "fg": "#353C44",
+      "bg": "#191D22",
+      "ratio": 1.53,
+      "use": "DECORATIVE rule only (dark)",
+      "pass": "decorative"
+    }
+  ],
+  "note": "Derived tints (color-mix) must be re-measured at build with computed values; chips pair *-tint backgrounds with *-strong text (all strong mixes \u22654.5:1 by construction \u2014 verify with axe)."
+}

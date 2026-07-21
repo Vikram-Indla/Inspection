@@ -1,0 +1,14 @@
+/* SAQEEL V4.1 — canonical print layer (official report). One governed content model, A4 renderer. */
+@media print {
+  @page { size: A4; margin: 12mm; }
+  :root { --ax-color-text: var(--ax-color-print-text); --ax-color-border: var(--ax-color-print-border); }
+  .no-print, .ax-texture-chrome, nav, .ax-statusrail, .ax-field-taskbar { display: none !important; }
+  body { background: #fff !important; color: #111; }
+  table { border-collapse: collapse; }
+  thead { display: table-header-group; } /* headers repeat on every page */
+  tr, .ax-sig-block, .ax-timeline li { break-inside: avoid; } /* atomic blocks ONLY — never whole chapters/sections */
+  .ax-chip, .ax-lozenge { border: 1px solid #555 !important; background: #fff !important; color: #111 !important; border-radius: 0 !important; } /* grayscale-safe glyph+word */
+  a { color: inherit; text-decoration: none; }
+  .ax-numeric, td, th { overflow-wrap: anywhere; } /* long IDs, hashes, paths never overflow */
+  p { orphans: 2; widows: 2; }
+}

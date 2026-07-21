@@ -1,0 +1,11 @@
+/* ============================================================ UTILITIES    */
+.ax-stack { display: flex; flex-direction: column; gap: var(--ax-space-200); }
+.ax-row { display: flex; align-items: center; gap: var(--ax-space-150); flex-wrap: wrap; }
+.ax-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--ax-space-300); }
+.ax-sr-only { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+[hidden] { display: none !important; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

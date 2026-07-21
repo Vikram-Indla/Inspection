@@ -5,7 +5,12 @@
  * already-resolved strings, matching the existing server-component convention.
  */
 type EmptyStateProps = {
-  glyph: string;
+  /** V2: pass an SVG <Icon> from @/app/icons, e.g. icon={<IconFolder />}. */
+  icon?: React.ReactNode;
+  /** @deprecated pass `icon` (an SVG Icon) instead — a raw glyph string is
+   *  the V1 emoji-as-icon pattern (Saqeel V5.1 guardrail). Kept optional so
+   *  call sites can migrate incrementally; still renders if `icon` is absent. */
+  glyph?: string;
   title: React.ReactNode;
   body?: React.ReactNode;
   inline?: boolean;
@@ -15,10 +20,10 @@ type EmptyStateProps = {
   ariaBusy?: boolean;           // used on loading (not just empty) variants of this same markup
 };
 
-export default function EmptyState({ glyph, title, body, inline, bare, children, role, ariaBusy }: EmptyStateProps) {
+export default function EmptyState({ icon, glyph, title, body, inline, bare, children, role, ariaBusy }: EmptyStateProps) {
   const inner = (
     <div className={inline ? "ax-state ax-state--inline" : "ax-state"} role={role} aria-busy={ariaBusy}>
-      <span className="ax-state__glyph" aria-hidden="true">{glyph}</span>
+      <span className="ax-state__glyph" aria-hidden="true">{icon ?? glyph}</span>
       <h4>{title}</h4>
       {body ? <p className="ax-caption">{body}</p> : null}
       {children}

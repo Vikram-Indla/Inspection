@@ -1,0 +1,15 @@
+const React = window.React;
+if (!React) throw new Error("React global is required before loading the Saqeel design-system bundle.");
+export default React;
+export const Children = React.Children;
+export const Fragment = React.Fragment;
+export const cloneElement = React.cloneElement;
+export const createElement = React.createElement;
+export const forwardRef = React.forwardRef;
+export const isValidElement = React.isValidElement;
+export const useCallback = React.useCallback;
+export const useEffect = React.useEffect;
+export const useId = React.useId;
+export const useMemo = React.useMemo;
+export const useRef = React.useRef;
+export const useState = React.useState;

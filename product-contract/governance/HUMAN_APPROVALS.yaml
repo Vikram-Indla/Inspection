@@ -232,6 +232,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-20"
     change_ref: "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml#CC-G11-REMEDIATION-PERFORMANCE-001"
+  - gate: "saqeel-v5-implementation-approval"
+    decision: "APPROVED — sponsor ran the Saqeel Design System through five review cycles in ChatGPT (V1 component critique, V4 readiness review, V4.1 closure prompt, V5.1 final correction pass) and directed 'use the Claude Code prompt as-is with the V5.1 design-system package. No additional Claude Design iteration.' Sponsor supplied Saqeel_Design_System_V5_1_Final.zip and Claude_Code_Saqeel_V5_Implementation_Master_Prompt.txt directly and confirmed, via explicit choice, to open a new change control and a dedicated feature branch rather than pause TASK-FACTORY-360-COMPLETE-010. Authorizes migrating tokens/components/CSS architecture/date formatting to V5.1 across web, iPad, admin, and reports on feature/saqeel-v5-implementation. Does not authorize schema/RLS/workflow/calculation change, invented policy values, or any merge to setup/Inspection or main; does not affect TASK-FACTORY-360-COMPLETE-010, which continues unchanged on its own branch."
+    approver: "Vikram Indla"
+    date: "2026-07-20"
+    change_ref: "product-contract/governance/CC-SAQEEL-V5-IMPLEMENTATION-001.yaml"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

@@ -10,6 +10,7 @@ import EligibilityLedger, { type LedgerStrings } from "./EligibilityLedger";
 import DistributionPanels, { type Distribution, type DistributionStrings } from "./DistributionPanels";
 import BulkForm, { type BulkFormStrings } from "./BulkForm";
 import type { GroupNode } from "./criteria";
+import type { Locale } from "@/lib/i18n";
 
 type LeafInfo = { pathKey: string; field: string; value: string };
 
@@ -17,7 +18,7 @@ export default function TargetingLensClient({
   initialTree, fieldOptions, matchCount, criteriaStrings, contributions, leafInfo,
   denominator, eligible, oldestSyncedAt, missingSync, ledgerStrings,
   distributions, distStrings,
-  factories, bulkFormStrings,
+  factories, bulkFormStrings, locale,
 }: {
   initialTree: GroupNode;
   fieldOptions: Record<string, string[]>;
@@ -34,6 +35,7 @@ export default function TargetingLensClient({
   distStrings: DistributionStrings;
   factories: never;
   bulkFormStrings: BulkFormStrings;
+  locale: Locale;
 }) {
   const [focusedPath, setFocusedPath] = useState<string | null>(null);
   const focusedLeaf = focusedPath ? leafInfo.find(l => l.pathKey === focusedPath) ?? null : null;
@@ -44,11 +46,11 @@ export default function TargetingLensClient({
       <CriteriaBuilder initialTree={initialTree} fieldOptions={fieldOptions} matchCount={matchCount} strings={criteriaStrings}
         contributions={contributions} focusedPath={focusedPath} onFocus={setFocusedPath} />
       <EligibilityLedger denominator={denominator} eligible={eligible} oldestSyncedAt={oldestSyncedAt} missingSync={missingSync}
-        strings={ledgerStrings} focusedCount={focusedCount} focusedLabel={focusedLeaf ? `${focusedLeaf.field}: ${focusedLeaf.value}` : null} />
+        strings={ledgerStrings} focusedCount={focusedCount} focusedLabel={focusedLeaf ? `${focusedLeaf.field}: ${focusedLeaf.value}` : null} locale={locale} />
       <DistributionPanels distributions={distributions} strings={distStrings}
         focusedField={focusedLeaf?.field} focusedValue={focusedLeaf?.value} />
       <BulkForm factories={factories} strings={bulkFormStrings}
-        focusedField={focusedLeaf?.field} focusedValue={focusedLeaf?.value} />
+        focusedField={focusedLeaf?.field} focusedValue={focusedLeaf?.value} locale={locale} />
     </>
   );
 }

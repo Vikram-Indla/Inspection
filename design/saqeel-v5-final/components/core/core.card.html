@@ -1,0 +1,40 @@
+<!-- @dsCard group="Components" viewport="700x430" name="Core controls (V2)" subtitle="Redesigned specimen — one principal action, gated danger, labeled loading, grouped fields; containers 17 → 9" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>html,body{margin:0}body{font:var(--ax-text-body);color:var(--ax-color-text);background:var(--ax-color-surface);padding:16px}</style></head>
+<body><div id="root"></div>
+<script type="text/babel">
+const { Button, Field, Input, Select, Checkbox, Radio, Switch, Segmented, Tabs, Icon } = window.SaqeelDesignSystem_49c57d;
+function Card(){ return <div className="ax-stack">
+  <div className="ax-row">
+    <Button>Publish version</Button>
+    <Button variant="secondary">Cancel</Button>
+    <Button variant="subtle">View audit</Button>
+    <Button variant="secondary" icon={<Icon name="menu" size={18}/>} aria-label="More actions" title="More actions — Delete draft lives here, not in the toolbar"/>
+    </div>
+  <div className="ax-row"><span style={{font:"var(--ax-text-caption)",color:"var(--ax-color-text-secondary)"}}>Loading is an alternate state of the SAME principal action:</span><Button loading>Publishing version…</Button></div>
+  <p style={{margin:0,font:"var(--ax-text-caption)",color:"var(--ax-color-text-secondary)"}}>One principal action per zone · destructive entry via overflow (solid danger only in the confirmation dialog) · loading keeps its label · disabled actions must state a reason.</p>
+  <div style={{display:"flex",gap:16,alignItems:"flex-end",flexWrap:"wrap"}}>
+    <Field label="Commercial registration" hint="10 digits" style={{inlineSize:200}}><Input placeholder="70XXXXXXXX" style={{fontFeatureSettings:'"tnum" 1'}}/></Field>
+    <Field label="Region" style={{inlineSize:180}}><Select options={["All regions","Riyadh","Jeddah","Dammam"]}/></Field>
+    <Field label="Visit date" error="Visit date must be today or later." invalid style={{inlineSize:170}}><Input defaultValue="1 Jul 2026"/></Field>
+  </div>
+  <div style={{display:"flex",gap:40,flexWrap:"wrap"}}>
+    <fieldset className="ax-fieldset"><legend>Planning mode</legend><div className="ax-row"><Radio name="m" label="Bulk" defaultChecked/><Radio name="m" label="Single"/></div></fieldset>
+    <fieldset className="ax-fieldset"><legend>Factory scope</legend><Checkbox label="Include suspended factories" defaultChecked/></fieldset>
+    <fieldset className="ax-fieldset"><legend>Notifications</legend><Switch label="Notify assignees when the visit is created" defaultChecked/></fieldset>
+  </div>
+  <div className="ax-row" style={{justifyContent:"space-between"}}>
+    <fieldset className="ax-fieldset"><legend>View</legend><Segmented options={["Board","Table","Map"]} defaultValue="Table"/></fieldset>
+    <div style={{flex:1,maxWidth:420}}><Tabs tabs={["Overview","Evidence","Audit trail"]} defaultValue="Overview"/></div>
+  </div>
+  <div>
+    <button className="ax-recordrow" type="button" aria-selected="true"><strong>Visit report</strong><span className="ax-chip ax-chip--lock">v3</span><span className="ax-chip ax-chip--ok">Published</span><span className="ax-recordrow__meta" style={{marginInlineStart:"auto"}}>18 Jul 2026</span></button>
+    <button className="ax-recordrow" type="button"><strong>Chemical clearance</strong><span className="ax-chip ax-chip--lock">v1</span><span className="ax-chip ax-chip--ok">Published</span><span className="ax-recordrow__meta" style={{marginInlineStart:"auto"}}>02 Jun 2026</span></button>
+  </div>
+</div>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Card/>);
+</script></body></html>

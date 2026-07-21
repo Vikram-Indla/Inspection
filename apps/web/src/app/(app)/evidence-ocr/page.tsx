@@ -5,6 +5,7 @@ import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import EmptyState from "@/components/EmptyState";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { OcrRowView, type OcrRow, type OcrStrings } from "./OcrReview";
+import { IconSearch } from "@/app/icons";
 
 // TASK-MVP2-OCR-001. Advisory OCR review — extracted text helps a human read
 // a photo faster, never auto-fills any authoritative field. Flag-gated OFF by
@@ -62,7 +63,7 @@ export default async function EvidenceOcrPage() {
       </section>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("ocr.error", "Couldn’t load evidence. Nothing changed.")}</strong></div></div>}
       {!error && rows.length === 0 && (
-        <EmptyState glyph="🔎" title={t("ocr.empty.title", "No evidence in scope")}
+        <EmptyState icon={<IconSearch size={28} />} title={t("ocr.empty.title", "No evidence in scope")}
           body={t("ocr.empty.body", "Only stored photos and documents appear here. First attach evidence to a checklist item in a field inspection; empty may also mean none are in your scope (RLS).")} />
       )}
       {rows.map((row) => <OcrRowView key={row.id} row={row} strings={strings} />)}

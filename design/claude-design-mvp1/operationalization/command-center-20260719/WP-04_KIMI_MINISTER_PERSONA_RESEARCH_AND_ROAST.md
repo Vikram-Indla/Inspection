@@ -4,6 +4,10 @@
 
 Direct access to `/Users/vikramindla/Developer/Inspection` and its mandatory authority files is required before any generation. If access fails, return only `CANONICAL_PATH_ACCESS_GATE: FAIL`, exact errors, `NO_WORK_PERFORMED: true` and the action required to restore access. Do not research, roast or generate from uploads, memory or another checkout.
 
+## Task-order gate
+
+You are Task 2. Begin independently after the canonical-path and required-source gates pass. Claude Design starts only after your corrected handoff, ChatGPT Task 1 and Codex WP-01 are all complete. The controlling sequence is `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/04_EXECUTION_SEQUENCE.md`.
+
 ## Portable execution header
 
 This prompt may be run from any Kimi account on the sponsor's Mac. Do not rely on previous chat history.

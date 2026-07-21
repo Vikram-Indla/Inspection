@@ -6,6 +6,10 @@ You are ChatGPT responsible for `WP-03`, the Inspection Platform onboarding, Per
 
 Before generating anything, directly open `/Users/vikramindla/Developer/Inspection/AGENTS.md`, `/Users/vikramindla/Developer/Inspection/product-contract/00_START_HERE.md`, `/Users/vikramindla/Developer/Inspection/product-contract/CURRENT_STATE.md`, `/Users/vikramindla/Developer/Inspection/product-contract/GATE_STATUS.md` and `/Users/vikramindla/Developer/Inspection/product-contract/execution/CURRENT_SLICE.yaml`. If the canonical path or any authority file cannot be accessed, stop. Do not generate research, storylines, scripts, recommendations, module requirements or deliverables from uploads, memory or chat context. Return only `CANONICAL_PATH_ACCESS_GATE: FAIL`, exact failed paths/errors, `NO_WORK_PERFORMED: true`, and `ACTION_REQUIRED: Restore direct canonical repository access and restart onboarding.`
 
+## Execution-order gate
+
+You are Task 1. After direct canonical-path access and required source reads pass, complete WP-03 and return its structured handoff. Your handoff is the gate for Kimi Task 2. Claude Design does not start until Kimi Task 2 and Codex WP-01 are also complete. Full order: `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/04_EXECUTION_SEQUENCE.md`.
+
 ## What you are joining
 
 The Inspection Platform is already implemented across MVP1/MVP2/MVP3. The sponsor's concern is that people do not understand how the platform works and the present experience is only approximately 4/10 from a UI/UX perspective. The broader programme is capturing every screen, identifying extensive per-screen issues, locking one premium Saudi design system, designing new modules and then implementing accepted changes.
@@ -14,7 +18,7 @@ The complete product storyline is `Plan → Prepare → Inspect → Prove → De
 
 ## Programme sequence and your place
 
-Codex `WP-01` captures the full current application and designs the shared-system requirements. Claude Design `WP-02` produces five golden screens and the shared design system. Separately and in parallel, you own `WP-03`: research and specify the onboarding, Persona Academy, real-character video and learning system. Kimi owns the Minister/Leadership research. After the sponsor locks the shared system, Claude Design converts both research packs into code-ready module designs. Claude Code implements only after sponsor acceptance.
+Codex WP-01 independently captures the full current application and produces the shared-system evidence. You own Task 1: WP-03 research and specification for onboarding, Persona Academy, real-character video and learning. Kimi Task 2 runs independently. Claude Design Task 3 starts only after your handoff, Kimi's corrected handoff and WP-01 all exist. Claude Code Task 4 implements only after sponsor acceptance.
 
 You are not producing generic training content. You must create the product architecture and complete content system that Claude Design can use without rediscovering intent.
 
@@ -28,7 +32,7 @@ Required outputs are the onboarding PRD, persona content matrix, four-hour story
 
 ## Current position
 
-`WP-03` may proceed in parallel with screenshot work only after the canonical access gate and source reads pass. It does not wait for design-system approval to conduct research, but its final Claude Design composition must explicitly wait for the sponsor-locked shared system. Verify live programme status before work.
+`WP-03` is the first external task. It may proceed alongside Codex screenshot work after the canonical access gate and source reads pass. It does not wait for design-system approval to conduct research, but its final Claude Design composition must explicitly wait for the sponsor-locked shared system. Verify live programme status before work.
 
 The implemented platform is being upgraded into a premium Saudi government inspection experience. Your role is to define the content, product storyline, four-hour demonstration, persona learning journeys, real-character production plan and code-ready Claude Design input. You do not implement code or produce final screens before the shared design-system lock.
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getUserRoles } from "@/lib/persona";
 import Shell from "@/components/Shell";
+import { IconSearch } from "@/app/icons";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import ActionForm from "../ActionForm";
 import {
@@ -9,6 +9,8 @@ import {
   returnComplianceRequest, reviseComplianceRequest, submitComplianceRequest,
   updateComplianceRequestDraft,
 } from "../actions";
+
+export const dynamic = "force-dynamic";
 
 type RequestRow = {
   id: string; request_number: string; title: string; description: string | null; request_type: string;
@@ -43,7 +45,7 @@ export default async function ComplianceRequestWorkspace({ params, searchParams 
     sb.from("compliance_request_component_dependencies").select("id,revision_number,parent_component_id,child_component_id").eq("request_id", id),
     sb.from("compliance_request_decisions").select("id,revision_number,component_id,decision,comments,decided_by,decided_at").eq("request_id", id).order("decided_at", { ascending: false }),
     sb.from("compliance_request_publications").select("id,revision_number,component_id,published_at,version_id").eq("request_id", id).order("published_at", { ascending: false }),
-    user ? getUserRoles(user.id) : Promise.resolve({ data: [], error: null }),
+    user ? sb.from("user_roles").select("role_key").eq("user_id", user.id) : Promise.resolve({ data: [], error: null }),
   ]);
   const readFailed = [requestRead.error, revisionRead.error, componentRead.error, dependencyRead.error, decisionRead.error, publicationRead.error, roleRead.error].some(Boolean);
   const request = requestRead.data as RequestRow | null;
@@ -64,7 +66,7 @@ export default async function ComplianceRequestWorkspace({ params, searchParams 
   );
   if (!request) return (
     <Shell current={shellCurrent} title="Compliance Configuration Request">
-      <div className="ax-surface"><div className="ax-state" role="status"><span className="ax-state__glyph" aria-hidden="true">🔎</span><h4>Request not found or outside your scope</h4><p className="ax-caption">No request was found within your access. No configuration content was loaded.</p><Link className="ax-link" href="/admin/compliance-requests">Return to list</Link></div></div>
+      <div className="ax-surface"><div className="ax-state" role="status"><span className="ax-state__glyph" aria-hidden="true"><IconSearch size={20} /></span><h4>Request not found or outside your scope</h4><p className="ax-caption">The RLS-scoped read returned no request. No configuration content was loaded.</p><Link className="ax-link" href="/admin/compliance-requests">Return to register</Link></div></div>
     </Shell>
   );
 
@@ -78,7 +80,7 @@ export default async function ComplianceRequestWorkspace({ params, searchParams 
   return (
     <Shell current={shellCurrent} title={`${request.request_number} — ${request.title}`}
       context={<><span className={`ax-lozenge ccr-status ccr-status--${request.status}`}>{label(request.status)}</span><span className="ax-caption">Revision {request.current_revision} · Correlation <bdi>{request.correlation_id}</bdi></span></>}>
-      <p className="ax-caption"><Link className="ax-link" href={fromQueue ? "/admin/compliance-approvals" : "/admin/compliance-requests"}>← {fromQueue ? "Awaiting Approval" : "Request register"}</Link></p>
+      <p className="ax-caption"><Link className="ax-link" href={fromQueue ? "/admin/compliance-approvals" : "/admin/compliance-requests"}>← {fromQueue ? "Compliance Approval Queue" : "Request register"}</Link></p>
 
       {request.return_reason ? <div className="ax-banner ax-banner--warning" role="alert"><strong>Return or rejection reason:</strong> {request.return_reason}</div> : null}
       {!isOwner && !canReview ? <div className="ax-banner" role="note"><strong>Read-only.</strong> Your role can inspect this governed request but cannot change or decide it.</div> : null}

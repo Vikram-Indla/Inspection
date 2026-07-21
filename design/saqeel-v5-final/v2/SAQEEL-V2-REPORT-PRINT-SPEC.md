@@ -1,0 +1,2 @@
+# Saqeel V2 — report & print
+Canonical spec = explorations/premium-pilot/SAQEEL-PREMIUM-PRINT-SPEC.md + A4 Print Reference.html (5 annotated pages). V2 confirms: one governed content model, responsive screen + A4 renderers; no chapter break-inside:avoid; thead repeats; signature block is the only atomic keep-together; grayscale glyph+word status; texture omitted; print ladder #111/#555/#999; page numbers + report ref in running footer; Arabic print verified in RTL Reference.

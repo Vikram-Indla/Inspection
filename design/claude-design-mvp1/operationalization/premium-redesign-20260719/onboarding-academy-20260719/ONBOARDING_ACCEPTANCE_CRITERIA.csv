@@ -1,0 +1,41 @@
+ac_id,area,criterion,verification_method,truth_class,source_ref
+OB-AC-001,Authorization,Selecting any Academy persona never changes the viewer's role scope session or RLS context,negative test: open every persona space as each of the 13 roles and assert unchanged auth token and permissions,IMPLEMENTED constraint,REC-017;MASTER_PLAN s11
+OB-AC-002,Authorization,No Academy surface offers role switching impersonation or demo-role tokens,design + code review of CD-PREM-02 outputs,IMPLEMENTED constraint,MASTER_PLAN s3
+OB-AC-003,Placement,Side panel exposes one Learn-the-platform destination listing governed personas with human-readable names and job outcomes,UI inspection against side panel spec,PROPOSAL,MASTER_PLAN s11
+OB-AC-004,Persona coverage,All 13 launch personas have CH DAY SCOPE JMAP content rows and at least one TASK reachable from their space,matrix audit vs PERSONA_ACADEMY_CONTENT_MATRIX.csv,PROPOSAL,content matrix
+OB-AC-005,Persona truth,Every SCOPE card derives only from implemented RBAC truth with zero speculative permissions,cross-check each card against role guards quoted in CURRENT_STATE and RLS policies,IMPLEMENTED constraint,CURRENT_STATE roles
+OB-AC-006,Held personas,Committee Enforcement and Integration Admin spaces remain HELD until governance confirms role binding; held state is visible not silent,governance record + UI shows held disposition,SPONSOR_DECISION,PRD s5.2
+OB-AC-007,Minister,Minister/Leadership content binds to the existing leadership boundary; no new role name enters runtime code or auth,code + design review,IMPLEMENTED constraint,REC-024
+OB-AC-008,Route binding,Every TASK and demo chapter names a real route from the 59-route scope and a real state; zero orphan references,automated diff of content matrix + traceability csv vs FULL_59_ROUTE_SCREENSHOT_SCOPE.csv,PROPOSAL,traceability csv
+OB-AC-009,Version binding,Every published content item records content_version product commit release tag and capture date,content register audit,PROPOSAL,BIBLE s9
+OB-AC-010,Accessibility,Every video ships closed captions in AR and EN,player + asset audit,MEDIA_DEP,BIBLE s4
+OB-AC-011,Accessibility,Every video ships a downloadable AR and EN transcript,asset audit,MEDIA_DEP,BIBLE s4
+OB-AC-012,Accessibility,Every video ships an audio description track or AD-integrated narration,asset audit,MEDIA_DEP,BIBLE s4
+OB-AC-013,Accessibility,Every video has a poster fallback that renders when media is unavailable,asset + offline test,MEDIA_DEP,BIBLE s4
+OB-AC-014,Accessibility,Reduced-motion alternative exists for every motion asset and is honored by prefers-reduced-motion,browser test,MEDIA_DEP,BIBLE s4
+OB-AC-015,Accessibility,No Academy media autoplays with audio anywhere,browser test on every embed point,IMPLEMENTED constraint,REC-020
+OB-AC-016,Accessibility,Player controls are keyboard operable and RTL-correct in Arabic,keyboard + RTL audit,MEDIA_DEP,BIBLE s4
+OB-AC-017,Language,Every content item exists in EN and AR with true RTL layout parity,bilingual audit,PROPOSAL,PRD s3.5
+OB-AC-018,Language,All Arabic scripts and UI strings pass qualified native Arabic review before publish,human review register,SPONSOR_DECISION (human gate),CURRENT_SLICE open_decisions
+OB-AC-019,Truth,No content claims live GPS live video delivered notifications PKI signature SSO AI answers or MDM where the provider is fail-closed,truth-label audit against provider register,IMPLEMENTED constraint,GATE_STATUS;CURRENT_STATE
+OB-AC-020,Demo,The four-hour storyline demonstrates all six phases sequentially without skipping governed journeys,dry-run walkthrough with chapter checklist,PROPOSAL,REC-023;STORYLINE s2
+OB-AC-021,Demo,Every storyline chapter maps to real routes and states listed in the traceability csv,automated cross-check,PROPOSAL,STORYLINE s2
+OB-AC-022,Demo,Projected-movement truth is spoken aloud in C09 C21 and any frame showing operations movement,script audit + recording review,IMPLEMENTED constraint,design truth labels
+OB-AC-023,Demo,Virtual chapter shows the provider-pending room and never fakes video,recording review,PROVIDER_DEP,RTE-026 safety note
+OB-AC-024,Demo,Immutability negative demo (edit attempt on submitted version fails) is included in C13,recording review,IMPLEMENTED,STORYLINE C13
+OB-AC-025,Demo,The 30-minute cut ends with the pending-truth slate covering fail-closed providers and open gates,script audit,IMPLEMENTED constraint,STORYLINE s3
+OB-AC-026,Demo,The 10-minute cut includes the what-is-not-live-yet segment,script audit,IMPLEMENTED constraint,STORYLINE s4
+OB-AC-027,Demo,Demonstrations run on privacy-safe fixture data with server-gated credentials never shown,recording review,IMPLEMENTED constraint,RTE-057 safety note
+OB-AC-028,Inspector journey,All 8 stages (assignment/prep route-geofence physical virtual evidence offline-sync-conflict submission return-correction) exist as content with route+state binding,matrix audit,PROPOSAL,PRD s7.1
+OB-AC-029,Inspector journey,Geo-override teaching states one attempt 30-minute-or-close expiry ops-only decision self-decision blocked,script audit vs CURRENT_STATE,IMPLEMENTED,request_geo_override truth
+OB-AC-030,Inspector journey,Offline teaching shows queued replay and surfaced conflict; never silent overwrite,script audit + offline drill reference,IMPLEMENTED,offline drill evidence
+OB-AC-031,Leadership chapter,Covers map/list truth metrics provenance freshness AI-not-enabled uncertainty and unavailable states with zero fabricated answers,script audit,IMPLEMENTED+PROVIDER_DEP,PRD s7.2
+OB-AC-032,Media,Every factory-floor frame passes HSE PPE review; violations are P0 reshoots,HSE sign-off sheet per cut,MEDIA_DEP,RIGHTS_BRIEF s3
+OB-AC-033,Media,Every talent and location has a signed release with recorded expiry; expiry forces unpublish,rights register audit,MEDIA_DEP,RIGHTS_BRIEF s4
+OB-AC-034,Media,Ministry emblem and Vision 2030 marks appear only with written brand authorization,rights register audit,SPONSOR_DECISION,RIGHTS_BRIEF s4
+OB-AC-035,Media,All screen frames come from the real product at a named commit on fixture data; no composited fake features,shot-to-item mapping audit,IMPLEMENTED constraint,BIBLE s2
+OB-AC-036,Versioning,Route or state changes in a release set STALE on affected items and release notes list impacted item IDs,release checklist audit,PROPOSAL,BIBLE s7/s9
+OB-AC-037,Analytics,Only completion revisit and drop-off are collected; no numeric adoption targets exist without sponsor approval,analytics config review,SPONSOR_DECISION,PRD s9
+OB-AC-038,Governance,No deliverable in this pack edits the programme ledger acceptance ledger or any frozen product-contract artifact,git diff audit of the delivery commit,IMPLEMENTED constraint,AGENTS.md hard rules
+OB-AC-039,Traceability,Every persona journey route accessibility requirement AR/EN need and media state is traceable to a row in the matrix traceability or acceptance csv,completeness audit across the three csvs,PROPOSAL,completion standard
+OB-AC-040,Handoff,Task 1 handoff YAML lists every open verification item and every Claude Design input need as an independent workstream output (no dependency asserted on Kimi Task 2),handoff review,PROPOSAL,CHATGPT_TASK_01_HANDOFF.yaml

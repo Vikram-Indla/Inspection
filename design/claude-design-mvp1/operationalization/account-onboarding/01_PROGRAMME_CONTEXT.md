@@ -27,10 +27,11 @@ Create a complete, source-backed premium KSA Inspection Platform UI/UX revamp ov
 
 ## Current command-centre status
 
-- Ready in parallel: `WP-01`, `WP-03`, `WP-04`.
-- `WP-02` waits for the complete WP-01 input pack.
-- `WP-05` and `WP-06` wait for the sponsor-approved design-system lock plus their research packs.
-- `WP-07` waits for sponsor-accepted module designs and implementation authority.
-- `WP-08` waits for the design-system lock and accepted per-screen finding rows.
+- Codex WP-01 may capture the platform independently.
+- Task 1: ChatGPT completes WP-03 onboarding research.
+- Task 2: Kimi independently completes WP-04-KIMI after canonical access and source reads.
+- Task 3: Claude Design waits for WP-01 plus both research handoffs, then creates/locks the shared system and designs module addenda.
+- Task 4: Claude Code waits for sponsor-accepted module designs and exact implementation authority.
+- WP-08 waits for the design-system lock and accepted per-screen finding rows.
 
 This command-centre status does not supersede the product contract or current repository slice. The joining agent must reconcile both and stop on conflict.

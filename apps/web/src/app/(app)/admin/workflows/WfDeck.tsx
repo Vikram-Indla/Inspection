@@ -53,7 +53,7 @@ export function WfDeck({ payload, strings }: Props) {
         <div className="ax-row" style={{ justifyContent: "space-between" }}>
           <h4 style={{ margin: 0 }}>{strings.ledgerTitle}</h4>
           <span className={`ax-lozenge ${validation.ok ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
-            {validation.ok ? `✓ ${strings.passed}` : `⛔ ${strings.failed}`}
+            {validation.ok ? `✓ ${strings.passed}` : strings.failed}
           </span>
         </div>
         <ul style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
@@ -84,7 +84,7 @@ export function WfDeck({ payload, strings }: Props) {
                 className={`ax-lozenge ${selectedState === s.key ? "ax-lozenge--info" : ""}`}
                 style={{ cursor: "pointer" }}
               >
-                {s.initial ? "▶ " : ""}{s.key}{s.terminal ? " ⛔" : ""}
+                {s.initial ? "▶ " : ""}{s.key}
               </button>
               {idx < def.states.length - 1 && <span aria-hidden="true">→</span>}
             </li>
@@ -93,7 +93,7 @@ export function WfDeck({ payload, strings }: Props) {
         <p className="ax-caption">
           {def.states.filter((s) => s.initial).map((s) => `▶ ${s.key} ${strings.initial}`).join(" · ")}
           {" · "}
-          {def.states.filter((s) => s.terminal).map((s) => `⛔ ${s.key} ${strings.terminal}`).join(" · ")}
+          {def.states.filter((s) => s.terminal).map((s) => `${s.key} ${strings.terminal}`).join(" · ")}
         </p>
       </section>
 

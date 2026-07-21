@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import EmptyState from "@/components/EmptyState";
+import { IconChart } from "@/app/icons";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import { RiskModelsBoard, type RiskModelRow, type RiskStrings } from "./RiskModels";
 
@@ -41,7 +42,7 @@ export default async function RiskModelsPage() {
       <div className="ax-banner"><div><strong>{t("risk.wb.banner.title", "Governed draft layer.")}</strong> {t("risk.wb.banner.body", "Drafts validate weights-sum and bands (parity with Risk Studio) and publish through maker-checker; published versions are immutable. No policy value is set here that the accepted structure does not require.")}</div></div>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("risk.wb.error", "Couldn’t load risk models. Nothing changed.")}</strong></div></div>}
       {!error && (rows ?? []).length === 0 && (
-        <EmptyState glyph="📊" title={t("risk.wb.empty.title", "No risk model drafts")}
+        <EmptyState icon={<IconChart size={28} />} title={t("risk.wb.empty.title", "No risk model drafts")}
           body={t("risk.wb.empty.body", "Create a draft to compose a governed risk model. Empty may also mean none are in your scope (RLS).")} />
       )}
       <RiskModelsBoard rows={(rows ?? []) as RiskModelRow[]} strings={strings} />

@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { getUserRoles } from "@/lib/persona";
 import EmptyState from "@/components/EmptyState";
+import { IconBlocked, IconEye, IconFolder } from "@/app/icons";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
@@ -35,7 +36,7 @@ export default async function EnforcementRecommendations() {
   if (!isReader) {
     return (
       <Shell current="/admin/enforcement-recommendations" title={t("admin.enf.rec.title", "Enforcement recommendations")}>
-        <EmptyState glyph="⛔" title={tr("admin.enf.rec.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState icon={<IconBlocked size={28} />} title={tr("admin.enf.rec.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("admin.enf.rec.unauthorized.body", "This queue is available to Inspector, Planner, Ops, Compliance Admin, Auditor, Reviewer and Leadership roles.", "هذه القائمة متاحة لأدوار المفتش والمخطط والعمليات ومسؤول الامتثال والمدقق والمراجع والقيادة.")} />
       </Shell>
     );
@@ -55,7 +56,7 @@ export default async function EnforcementRecommendations() {
 
   const readOnlyBanner = !isDecider ? (
     <div className="ax-banner" role="note">
-      <strong><span aria-hidden="true">👁</span> {tr("admin.enf.rec.readonly.title", "Read-only for your role", "للعرض فقط بحسب دورك")}</strong>{" "}
+      <strong><IconEye size={16} /> {tr("admin.enf.rec.readonly.title", "Read-only for your role", "للعرض فقط بحسب دورك")}</strong>{" "}
       {tr("admin.enf.rec.readonly.body", "You can view the recommendation queue; deciding requires an Operations or Compliance Admin role, enforced by row-level security.", "يمكنك عرض قائمة التوصيات؛ يتطلب اتخاذ القرار دور العمليات أو مسؤول الامتثال، ويُفرض ذلك عبر أمان مستوى الصف.")}
     </div>
   ) : null;
@@ -76,7 +77,7 @@ export default async function EnforcementRecommendations() {
       <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
         <h3>{tr("admin.enf.rec.pending", "Pending recommendations", "التوصيات المعلقة")}</h3>
         {!rows.length && !pendingError ? (
-          <EmptyState glyph="🗂️" title={tr("admin.enf.rec.empty", "No pending recommendations", "لا توجد توصيات معلقة")} inline />
+          <EmptyState icon={<IconFolder size={28} />} title={tr("admin.enf.rec.empty", "No pending recommendations", "لا توجد توصيات معلقة")} inline />
         ) : rows.map(row => (
           <div key={row.id} className="ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
             <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>

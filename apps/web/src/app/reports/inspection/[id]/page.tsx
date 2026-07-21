@@ -1,6 +1,7 @@
 import "../../report.css";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import PrintReport from "@/components/PrintReport";
 
 export const dynamic = "force-dynamic";
@@ -27,12 +28,15 @@ type Ack = { name?: string; signed?: boolean; ts?: string; signed_at?: string; s
 type Sub = { id: string; version_number: number; snapshot: Snapshot; acknowledgement: Ack | null; submitted_at: string; profiles: { full_name: string } | null };
 type Rev = { status: string; decision: string | null; decision_reason: string | null; returned_sections: string[] | null; decided_at: string | null; submission_version_id: string; profiles: { full_name: string } | null };
 
-const dt = (s: string | null | undefined) => s ? new Date(s).toISOString().slice(0, 16).replace("T", " ") : "—";
-const d10 = (s: string | null | undefined) => s ? new Date(s).toISOString().slice(0, 10) : "—";
-
 export default async function InspectionReport({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  // Governed Riyadh/Gregorian formatting (lib/dates) — the previous
+  // toISOString().slice() raw-UTC formatting was neither Riyadh-local nor
+  // locale-aware, and wasn't legible on an official document (SR-EV-001).
+  const lang = locale === "ar" ? "ar" : "en";
+  const dt = (s: string | null | undefined) => s ? formatDateTime(s, lang) : "—";
+  const d10 = (s: string | null | undefined) => s ? formatDate(s, lang) : "—";
   const sb = await supabaseServer();
   const [{ data: ins, error }, { data: itemRows }] = await Promise.all([
     sb.from("inspections").select(`id, status, context,
@@ -87,7 +91,7 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
   // now also enforced at the DB layer by trg_guard_approved_requires_submission).
   const approvedWithoutVersion = ins.status === "approved" && !latest;
   const displayStatus = approvedWithoutVersion
-    ? t("report.integrityBlocked.status", "approval invalid — no final submitted version")
+    ? t("report.integrityBlocked.status", "approval invalid — no immutable version")
     : enumL(ins.status);
   const strings = {
     print: t("report.print", "Print / Save as PDF"),
@@ -121,191 +125,206 @@ export default async function InspectionReport({ params }: { params: Promise<{ i
 
         {approvedWithoutVersion ? (
           <div className="ax-banner ax-banner--critical no-print" role="alert"><div>
-            <strong>{t("report.integrityBlocked.title", "Data-integrity defect — invalid approval")}</strong> {t("report.integrityBlocked.body", "This inspection is recorded as approved but has no final submitted version on file. The approval is not valid and must not be relied on as an official decision until a final submitted version exists (DEF-WF-006).")}
+            <strong>{t("report.integrityBlocked.title", "Data-integrity defect — invalid approval")}</strong> {t("report.integrityBlocked.body", "This inspection is recorded as approved but has no immutable submitted version on file. The approval is not valid and must not be relied on as an official decision until an immutable submission exists (DEF-WF-006).")}
           </div></div>
         ) : !latest && (
           <div className="ax-banner ax-banner--warning no-print"><div>
-            <strong>{t("report.notSubmitted.title", "No final submitted version yet.")}</strong> {t("report.notSubmitted.body", "The official report is generated from the submitted version snapshot; identity and configuration below are live records (M04-215).")}
+            <strong>{t("report.notSubmitted.title", "No immutable submission yet.")}</strong> {t("report.notSubmitted.body", "The official report is generated from the submitted version snapshot; identity and configuration below are live records (M04-215).")}
           </div></div>
         )}
 
-        {/* 1 · Factory identity */}
-        <section className="rp-section">
-          <h3>{t("report.factory.heading", "Factory identity")}</h3>
-          <dl className="rp-kv">
-            <div><dt>{t("report.factory.name", "Establishment")}</dt><dd>{f.name}</dd></div>
-            <div><dt>{t("report.factory.code", "Factory code")}</dt><dd className="ax-numeric">{f.factory_code ?? "—"}</dd></div>
-            <div><dt>{t("report.factory.cr", "Commercial registration")}</dt><dd className="ax-numeric">{f.cr_number ?? "—"}</dd></div>
-            <div><dt>{t("report.factory.license", "Industrial license")}</dt><dd className="ax-numeric">{f.license_number ?? "—"}</dd></div>
-            <div><dt>{t("report.factory.location", "Region / city")}</dt><dd>{f.region ?? "—"} · {f.city ?? "—"}</dd></div>
-            <div><dt>{t("report.factory.activity", "Activity class")}</dt><dd>{f.activity_class ?? "—"}</dd></div>
-            <div><dt>{t("report.factory.risk", "Risk band")}</dt><dd>{enumL(f.risk_band)} · <span className="ax-numeric">{f.risk_score ?? "—"}</span></dd></div>
-          </dl>
-        </section>
+        {/* Layer 1 · Identity & outcome — factory identity + visit configuration */}
+        <section className="rp-layer" aria-labelledby="rp-layer-1">
+          <h2 id="rp-layer-1" className="rp-layer__heading">{t("report.layer1.heading", "Identity and outcome")}</h2>
 
-        {/* 2 · Visit configuration + locked package version */}
-        <section className="rp-section">
-          <h3>{t("report.visit.heading", "Visit configuration")}</h3>
-          <dl className="rp-kv">
-            <div><dt>{t("report.visit.id", "Visit")}</dt><dd className="ax-numeric">{v.id.slice(0, 8)}</dd></div>
-            <div><dt>{t("report.visit.type", "Type / mode")}</dt><dd>{enumL(v.visit_type)} · {enumL(v.execution_mode)}</dd></div>
-            <div><dt>{t("report.visit.window", "Window")}</dt><dd className="ax-numeric">{dt(v.window_start)} → {dt(v.window_end)}</dd></div>
-            <div><dt>{t("report.visit.state", "Lifecycle")}</dt><dd>{enumL(v.planning_status)} · {enumL(v.operational_state)}</dd></div>
-            <div><dt>{t("report.visit.inspector", "Assigned inspector")}</dt><dd>{inspector}</dd></div>
-            <div><dt>{t("report.visit.package", "Checklist package (locked)")}</dt><dd>{pkg.packages.code} · {pkg.packages.title} <span className="ax-version">{pkg.version_label}</span></dd></div>
-          </dl>
-        </section>
-
-        {/* 3 · Per-item responses from the immutable snapshot */}
-        {latest && (
           <section className="rp-section">
-            <h3>{t("report.items.heading", "Checklist responses — final v{n}").replace("{n}", String(latest.version_number))}</h3>
-            {sections.map(s => (
-              <div key={s.key} className="rp-section">
-                <strong>{s.title}</strong>
-                <table className="rp-table">
-                  <thead><tr>
-                    <th scope="col">{t("report.items.th.item", "Item")}</th>
-                    <th scope="col">{t("report.items.th.response", "Response")}</th>
-                    <th scope="col">{t("report.items.th.note", "Inspector note")}</th>
-                    <th scope="col">{t("report.items.th.violation", "Violation")}</th>
-                    <th scope="col" className="ax-td-num">{t("report.items.th.evidence", "Evidence")}</th>
-                  </tr></thead>
-                  <tbody>
-                    {(s.items ?? []).map(code => {
-                      const ans = snap.answers?.[code];
-                      const itemVios = vioByItem[code] ?? [];
-                      return (
-                        <tr key={code}>
-                          <td><strong className="ax-numeric">{code}</strong> {titleByCode[code] ?? ""}</td>
-                          <td>{ans ? <span className={`ax-lozenge ${ans === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{enumL(ans)}</span> : <span className="ax-caption">{t("report.items.notApplicable", "not answered / not applicable")}</span>}</td>
-                          <td>{snap.notes?.[code] ?? "—"}{snap.dates?.[code] ? <span className="ax-caption ax-numeric"> · {snap.dates[code]}</span> : null}</td>
-                          <td>{itemVios.length ? itemVios.map(x => <span key={x.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.code}{x.level ? ` · ${enumL(x.level)}` : ""}</span>) : "—"}</td>
-                          <td className="ax-td-num ax-numeric">{snap.evidence?.by_item?.[code] ?? 0}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+            <h3>{t("report.factory.heading", "Factory identity")}</h3>
+            <dl className="rp-kv">
+              <div><dt>{t("report.factory.name", "Establishment")}</dt><dd>{f.name}</dd></div>
+              <div><dt>{t("report.factory.code", "Factory code")}</dt><dd className="ax-numeric">{f.factory_code ?? "—"}</dd></div>
+              <div><dt>{t("report.factory.cr", "Commercial registration")}</dt><dd className="ax-numeric">{f.cr_number ?? "—"}</dd></div>
+              <div><dt>{t("report.factory.license", "Industrial license")}</dt><dd className="ax-numeric">{f.license_number ?? "—"}</dd></div>
+              <div><dt>{t("report.factory.location", "Region / city")}</dt><dd>{f.region ?? "—"} · {f.city ?? "—"}</dd></div>
+              <div><dt>{t("report.factory.activity", "Activity class")}</dt><dd>{f.activity_class ?? "—"}</dd></div>
+              <div><dt>{t("report.factory.risk", "Risk band")}</dt><dd>{enumL(f.risk_band)} · <span className="ax-numeric">{f.risk_score ?? "—"}</span></dd></div>
+            </dl>
+          </section>
+
+          <section className="rp-section">
+            <h3>{t("report.visit.heading", "Visit configuration")}</h3>
+            <dl className="rp-kv">
+              <div><dt>{t("report.visit.id", "Visit")}</dt><dd className="ax-numeric">{v.id.slice(0, 8)}</dd></div>
+              <div><dt>{t("report.visit.type", "Type / mode")}</dt><dd>{enumL(v.visit_type)} · {enumL(v.execution_mode)}</dd></div>
+              <div><dt>{t("report.visit.window", "Window")}</dt><dd className="ax-numeric">{dt(v.window_start)} → {dt(v.window_end)}</dd></div>
+              <div><dt>{t("report.visit.state", "Lifecycle")}</dt><dd>{enumL(v.planning_status)} · {enumL(v.operational_state)}</dd></div>
+              <div><dt>{t("report.visit.inspector", "Assigned inspector")}</dt><dd>{inspector}</dd></div>
+              <div><dt>{t("report.visit.package", "Checklist package (locked)")}</dt><dd>{pkg.packages.code} · {pkg.packages.title} <span className="ax-version">{pkg.version_label}</span></dd></div>
+            </dl>
+          </section>
+        </section>
+
+        {/* Layer 2 · Findings & compliance — per-item responses from the immutable snapshot */}
+        <section className="rp-layer" aria-labelledby="rp-layer-2">
+          <h2 id="rp-layer-2" className="rp-layer__heading">{t("report.layer2.heading", "Findings and compliance")}</h2>
+          {latest && (
+            <section className="rp-section">
+              <h3>{t("report.items.heading", "Checklist responses — immutable v{n}").replace("{n}", String(latest.version_number))}</h3>
+              {sections.map(s => (
+                <div key={s.key} className="rp-section">
+                  <strong>{s.title}</strong>
+                  <table className="rp-table">
+                    <thead><tr>
+                      <th scope="col">{t("report.items.th.item", "Item")}</th>
+                      <th scope="col">{t("report.items.th.response", "Response")}</th>
+                      <th scope="col">{t("report.items.th.note", "Inspector note")}</th>
+                      <th scope="col">{t("report.items.th.violation", "Violation")}</th>
+                      <th scope="col" className="ax-td-num">{t("report.items.th.evidence", "Evidence")}</th>
+                    </tr></thead>
+                    <tbody>
+                      {(s.items ?? []).map(code => {
+                        const ans = snap.answers?.[code];
+                        const itemVios = vioByItem[code] ?? [];
+                        return (
+                          <tr key={code}>
+                            <td><strong className="ax-numeric">{code}</strong> {titleByCode[code] ?? ""}</td>
+                            <td>{ans ? <span className={`ax-lozenge ${ans === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{enumL(ans)}</span> : <span className="ax-caption">{t("report.items.notApplicable", "not answered / not applicable")}</span>}</td>
+                            <td>{snap.notes?.[code] ?? "—"}{snap.dates?.[code] ? <span className="ax-caption ax-numeric"> · {snap.dates[code]}</span> : null}</td>
+                            <td>{itemVios.length ? itemVios.map(x => <span key={x.code} className="ax-lozenge ax-lozenge--critical" style={{ marginInlineEnd: 4 }}>{x.code}{x.level ? ` · ${enumL(x.level)}` : ""}</span>) : "—"}</td>
+                            <td className="ax-td-num ax-numeric">{snap.evidence?.by_item?.[code] ?? 0}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </section>
+          )}
+        </section>
+
+        {/* Layer 3 · Violations & corrective actions */}
+        <section className="rp-layer" aria-labelledby="rp-layer-3">
+          <h2 id="rp-layer-3" className="rp-layer__heading">{t("report.layer3.heading", "Violations and corrective actions")}</h2>
+
+          <section className="rp-section">
+            <h3>{t("report.vio.heading", "Violations and penalty references")}</h3>
+            {(snap.violations?.length ?? vios.length) === 0 ? <p className="ax-caption">{t("report.vio.none", "No violations recorded for this inspection.")}</p> : (
+              <table className="rp-table">
+                <thead><tr><th scope="col">{t("report.vio.th.code", "Code")}</th><th scope="col">{t("report.vio.th.title", "Title")}</th><th scope="col">{t("report.vio.th.level", "Severity")}</th><th scope="col">{t("report.vio.th.penalty", "Penalty ref · legal basis")}</th><th scope="col">{t("report.vio.th.mapping", "Mapping version")}</th></tr></thead>
+                <tbody>
+                  {(snap.violations ?? vios.map(x => {
+                    const pm = Array.isArray(x.violation_codes.penalty_mappings) ? x.violation_codes.penalty_mappings[0] : x.violation_codes.penalty_mappings;
+                    return { item: "", code: x.violation_codes.code, title: x.violation_codes.title, level: x.violation_codes.level, penalty_ref: pm?.penalty_ref ?? null, legal_basis: pm?.legal_basis ?? null, mapping_version: x.mapping_version };
+                  })).map((x, i) => {
+                    const notice = penaltyNotices.find(p => p.mapping_snapshot?.mapping_version === x.mapping_version);
+                    return (
+                      <tr key={i}>
+                        <td><strong>{x.code}</strong></td>
+                        <td>{x.title ?? "—"}</td>
+                        <td>{enumL(x.level)}</td>
+                        <td>{x.penalty_ref ? `${x.penalty_ref} · ${x.legal_basis ?? "—"} · ${enumL(notice?.status ?? "informational")}` : "—"}</td>
+                        <td className="ax-numeric">{x.mapping_version}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </section>
+
+          <section className="rp-section">
+            <h3>{t("report.af.heading", "Corrective action forms")}</h3>
+            {forms.length === 0 ? <p className="ax-caption">{t("report.af.none", "No action forms required.")}</p> : (
+              <table className="rp-table">
+                <thead><tr><th scope="col">{t("report.af.th.type", "Form")}</th><th scope="col">{t("report.af.th.correction", "Required correction")}</th><th scope="col">{t("report.af.th.owner", "Owner")}</th><th scope="col" className="ax-td-num">{t("report.af.th.due", "Due")}</th><th scope="col">{t("report.af.th.status", "Status")}</th></tr></thead>
+                <tbody>
+                  {forms.map((a, i) => (
+                    <tr key={i}>
+                      <td>{a.form_type}</td>
+                      <td>{a.required_correction ?? "—"}</td>
+                      <td>{a.owner_name ?? "—"}{a.owner_role ? ` · ${a.owner_role}` : ""}</td>
+                      <td className="ax-td-num ax-numeric">{d10(a.due_at)}</td>
+                      <td><span className={`ax-lozenge ${a.status === "complete" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{enumL(a.status)}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </section>
+
+        {/* Layer 4 · Evidence, versions, decisions & lineage */}
+        <section className="rp-layer" aria-labelledby="rp-layer-4">
+          <h2 id="rp-layer-4" className="rp-layer__heading">{t("report.layer4.heading", "Evidence, versions and decisions")}</h2>
+
+          <section className="rp-section">
+            <h3>{t("report.ev.heading", "Evidence manifest")}</h3>
+            {evd.length === 0 ? <p className="ax-caption">{t("report.ev.none", "No evidence attached.")}</p> : (
+              <table className="rp-table">
+                <thead><tr><th scope="col">{t("report.ev.th.file", "Stored file")}</th><th scope="col">{t("report.ev.th.type", "Type")}</th><th scope="col" className="ax-td-num">{t("report.ev.th.captured", "Captured")}</th><th scope="col">{t("report.ev.th.sha", "Integrity (sha256)")}</th></tr></thead>
+                <tbody>
+                  {evd.map((e, i) => (
+                    <tr key={i}>
+                      <td className="ax-numeric">{e.storage_path}</td>
+                      <td>{enumL(e.evidence_type)}</td>
+                      <td className="ax-td-num ax-numeric">{dt(e.captured_at)}</td>
+                      <td className="ax-numeric">{e.content_sha256 ? `${e.content_sha256.slice(0, 16)}…` : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+
+          <section className="rp-section">
+            <h3>{t("report.hist.heading", "Submission versions and review decisions")}</h3>
+            <table className="rp-table">
+              <thead><tr><th scope="col">{t("report.hist.th.version", "Version")}</th><th scope="col" className="ax-td-num">{t("report.hist.th.submitted", "Submitted")}</th><th scope="col">{t("report.hist.th.by", "By")}</th><th scope="col">{t("report.hist.th.ack", "Acknowledgement")}</th></tr></thead>
+              <tbody>
+                {subs.length === 0 && <tr><td colSpan={4} className="ax-caption">{t("report.hist.none", "No submitted versions yet.")}</td></tr>}
+                {subs.map(s => (
+                  <tr key={s.id}>
+                    <td><span className="ax-version">v{s.version_number}</span> {t("report.hist.immutable", "immutable")}</td>
+                    <td className="ax-td-num ax-numeric">{dt(s.submitted_at)}</td>
+                    <td>{s.profiles?.full_name ?? "—"}</td>
+                    <td>{s.acknowledgement?.name ?? "—"}{s.acknowledgement?.signature_data_url ? ` · ${t("report.hist.signed", "signed")}` : ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {reviews.length === 0 ? <p className="ax-caption">{t("report.rev.none", "No review decision recorded yet.")}</p> : reviews.map((r, i) => (
+              <p key={i}>
+                <span className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : r.decision === "reject" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{enumL(r.decision)}</span>{" "}
+                <span className="ax-version">v{versionByReview(r.submission_version_id) ?? "—"}</span>{" "}
+                {r.profiles?.full_name ?? "—"} · <span className="ax-numeric">{dt(r.decided_at)}</span>
+                {r.decision_reason ? <> — {r.decision_reason}</> : null}
+                {r.returned_sections?.length ? <span className="ax-caption"> · {t("report.rev.sections", "returned sections:")} {r.returned_sections.join(", ")}</span> : null}
+              </p>
             ))}
           </section>
-        )}
-
-        {/* 4 · Violations & penalties (immutable submission/config snapshots) */}
-        <section className="rp-section">
-          <h3>{t("report.vio.heading", "Violations and penalty references")}</h3>
-          {(snap.violations?.length ?? vios.length) === 0 ? <p className="ax-caption">{t("report.vio.none", "No violations recorded for this inspection.")}</p> : (
-            <table className="rp-table">
-              <thead><tr><th scope="col">{t("report.vio.th.code", "Code")}</th><th scope="col">{t("report.vio.th.title", "Title")}</th><th scope="col">{t("report.vio.th.level", "Severity")}</th><th scope="col">{t("report.vio.th.penalty", "Penalty ref · legal basis")}</th><th scope="col">{t("report.vio.th.mapping", "Mapping version")}</th></tr></thead>
-              <tbody>
-                {(snap.violations ?? vios.map(x => {
-                  const pm = Array.isArray(x.violation_codes.penalty_mappings) ? x.violation_codes.penalty_mappings[0] : x.violation_codes.penalty_mappings;
-                  return { item: "", code: x.violation_codes.code, title: x.violation_codes.title, level: x.violation_codes.level, penalty_ref: pm?.penalty_ref ?? null, legal_basis: pm?.legal_basis ?? null, mapping_version: x.mapping_version };
-                })).map((x, i) => {
-                  const notice = penaltyNotices.find(p => p.mapping_snapshot?.mapping_version === x.mapping_version);
-                  return (
-                    <tr key={i}>
-                      <td><strong>{x.code}</strong></td>
-                      <td>{x.title ?? "—"}</td>
-                      <td>{enumL(x.level)}</td>
-                      <td>{x.penalty_ref ? `${x.penalty_ref} · ${x.legal_basis ?? "—"} · ${enumL(notice?.status ?? "informational")}` : "—"}</td>
-                      <td className="ax-numeric">{x.mapping_version}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
         </section>
 
-        {/* 5 · Corrective action forms */}
-        <section className="rp-section">
-          <h3>{t("report.af.heading", "Corrective action forms")}</h3>
-          {forms.length === 0 ? <p className="ax-caption">{t("report.af.none", "No action forms required.")}</p> : (
-            <table className="rp-table">
-              <thead><tr><th scope="col">{t("report.af.th.type", "Form")}</th><th scope="col">{t("report.af.th.correction", "Required correction")}</th><th scope="col">{t("report.af.th.owner", "Owner")}</th><th scope="col" className="ax-td-num">{t("report.af.th.due", "Due")}</th><th scope="col">{t("report.af.th.status", "Status")}</th></tr></thead>
-              <tbody>
-                {forms.map((a, i) => (
-                  <tr key={i}>
-                    <td>{a.form_type}</td>
-                    <td>{a.required_correction ?? "—"}</td>
-                    <td>{a.owner_name ?? "—"}{a.owner_role ? ` · ${a.owner_role}` : ""}</td>
-                    <td className="ax-td-num ax-numeric">{d10(a.due_at)}</td>
-                    <td><span className={`ax-lozenge ${a.status === "complete" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{enumL(a.status)}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </section>
-
-        {/* 6 · Evidence manifest (custody: sha256 at sync, ENG-07) */}
-        <section className="rp-section">
-          <h3>{t("report.ev.heading", "Evidence manifest")}</h3>
-          {evd.length === 0 ? <p className="ax-caption">{t("report.ev.none", "No evidence attached.")}</p> : (
-            <table className="rp-table">
-              <thead><tr><th scope="col">{t("report.ev.th.file", "Stored file")}</th><th scope="col">{t("report.ev.th.type", "Type")}</th><th scope="col" className="ax-td-num">{t("report.ev.th.captured", "Captured")}</th><th scope="col">{t("report.ev.th.sha", "Integrity (sha256)")}</th></tr></thead>
-              <tbody>
-                {evd.map((e, i) => (
-                  <tr key={i}>
-                    <td className="ax-numeric">{e.storage_path}</td>
-                    <td>{enumL(e.evidence_type)}</td>
-                    <td className="ax-td-num ax-numeric">{dt(e.captured_at)}</td>
-                    <td className="ax-numeric">{e.content_sha256 ? `${e.content_sha256.slice(0, 16)}…` : "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </section>
-
-        {/* 7 · Submission versions + review decisions */}
-        <section className="rp-section">
-          <h3>{t("report.hist.heading", "Submission versions and review decisions")}</h3>
-          <table className="rp-table">
-            <thead><tr><th scope="col">{t("report.hist.th.version", "Version")}</th><th scope="col" className="ax-td-num">{t("report.hist.th.submitted", "Submitted")}</th><th scope="col">{t("report.hist.th.by", "By")}</th><th scope="col">{t("report.hist.th.ack", "Acknowledgement")}</th></tr></thead>
-            <tbody>
-              {subs.length === 0 && <tr><td colSpan={4} className="ax-caption">{t("report.hist.none", "No submitted versions yet.")}</td></tr>}
-              {subs.map(s => (
-                <tr key={s.id}>
-                  <td><span className="ax-version">v{s.version_number}</span> {t("report.hist.immutable", "final")}</td>
-                  <td className="ax-td-num ax-numeric">{dt(s.submitted_at)}</td>
-                  <td>{s.profiles?.full_name ?? "—"}</td>
-                  <td>{s.acknowledgement?.name ?? "—"}{s.acknowledgement?.signature_data_url ? ` · ${t("report.hist.signed", "signed")}` : ""}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {reviews.length === 0 ? <p className="ax-caption">{t("report.rev.none", "No review decision recorded yet.")}</p> : reviews.map((r, i) => (
-            <p key={i}>
-              <span className={`ax-lozenge ${r.decision === "approve" ? "ax-lozenge--success" : r.decision === "reject" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{enumL(r.decision)}</span>{" "}
-              <span className="ax-version">v{versionByReview(r.submission_version_id) ?? "—"}</span>{" "}
-              {r.profiles?.full_name ?? "—"} · <span className="ax-numeric">{dt(r.decided_at)}</span>
-              {r.decision_reason ? <> — {r.decision_reason}</> : null}
-              {r.returned_sections?.length ? <span className="ax-caption"> · {t("report.rev.sections", "returned sections:")} {r.returned_sections.join(", ")}</span> : null}
-            </p>
-          ))}
-        </section>
-
-        {/* 8 · Signatures (DEC-009) */}
-        <section className="rp-section">
-          <h3>{t("report.sig.heading", "Acknowledgement and signatures")}</h3>
-          <div className="rp-sig">
-            <div>
-              <dl className="rp-kv"><div><dt>{t("report.sig.rep", "Factory representative")}</dt><dd>{ack?.name ?? "—"}</dd></div></dl>
-              {ack?.signature_data_url
-                // eslint-disable-next-line @next/next/no-img-element
-                ? <img className="rp-sig__img" src={ack.signature_data_url} alt={t("report.sig.alt", "Representative signature")} />
-                : <div className="rp-sig__line" aria-hidden="true" />}
-              <p className="ax-caption ax-numeric">{dt(ack?.signed_at ?? ack?.ts)}</p>
+        {/* Layer 5 · Acknowledgement, signatures & legal footer */}
+        <section className="rp-layer" aria-labelledby="rp-layer-5">
+          <h2 id="rp-layer-5" className="rp-layer__heading">{t("report.layer5.heading", "Acknowledgement and signatures")}</h2>
+          <section className="rp-section">
+            <h3>{t("report.sig.heading", "Acknowledgement and signatures")}</h3>
+            <div className="rp-sig">
+              <div>
+                <dl className="rp-kv"><div><dt>{t("report.sig.rep", "Factory representative")}</dt><dd>{ack?.name ?? "—"}</dd></div></dl>
+                {ack?.signature_data_url
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img className="rp-sig__img" src={ack.signature_data_url} alt={t("report.sig.alt", "Representative signature")} />
+                  : <div className="rp-sig__line" aria-hidden="true" />}
+                <p className="ax-caption ax-numeric">{dt(ack?.signed_at ?? ack?.ts)}</p>
+              </div>
+              <div>
+                <dl className="rp-kv"><div><dt>{t("report.sig.inspector", "Inspector")}</dt><dd>{inspector}</dd></div></dl>
+                <div className="rp-sig__line" aria-hidden="true" />
+                <p className="ax-caption ax-numeric">{dt(latest?.submitted_at)}</p>
+              </div>
             </div>
-            <div>
-              <dl className="rp-kv"><div><dt>{t("report.sig.inspector", "Inspector")}</dt><dd>{inspector}</dd></div></dl>
-              <div className="rp-sig__line" aria-hidden="true" />
-              <p className="ax-caption ax-numeric">{dt(latest?.submitted_at)}</p>
-            </div>
-          </div>
+          </section>
         </section>
 
         <footer className="rp-foot">

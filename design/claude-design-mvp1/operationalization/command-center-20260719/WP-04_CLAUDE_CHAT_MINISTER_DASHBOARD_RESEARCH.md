@@ -1,5 +1,7 @@
 # WP-04 — Claude Chat: Minister/Leadership Dashboard, Map and AI Module
 
+> **SUPERSEDED — DO NOT ASSIGN.** The Minister/Leadership research task is now `WP-04-KIMI`, controlled by `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/WP-04_KIMI_MINISTER_PERSONA_RESEARCH_AND_ROAST.md`. Kimi Task 2 is independent of ChatGPT Task 1, as defined in `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/04_EXECUTION_SEQUENCE.md`.
+
 ## Portable execution header — mandatory on every account
 
 Run this prompt from any Claude Chat account on the same Mac. Do not rely on chat history.

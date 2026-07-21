@@ -18,37 +18,34 @@ routes:
     executable_packages:
       - id: "WP-03"
         prompt: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/WP-03_CHATGPT_ONBOARDING_VIDEO_MODULE_RESEARCH.md"
-        gate: "source uploads or connected sources required"
+        gate: "Task 1; requires canonical-path access and source reads"
   CLAUDE_CHAT:
-    default_role: "Minister/Leadership dashboard, map/list and governed AI research"
-    executable_packages:
-      - id: "WP-04"
-        prompt: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/WP-04_CLAUDE_CHAT_MINISTER_DASHBOARD_RESEARCH.md"
-        gate: "source uploads or connected sources required"
+    status: "SUPERSEDED"
+    default_role: "No current assignment; Kimi owns Minister/Leadership research as Task 2."
   KIMI:
     default_role: "Minister/Leadership module research, adversarial roast and corrected Claude Design brief"
     executable_packages:
       - id: "WP-04-KIMI"
         prompt: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/WP-04_KIMI_MINISTER_PERSONA_RESEARCH_AND_ROAST.md"
-        gate: "source uploads or connected sources required; no final design before shared design-system lock"
+        gate: "Task 2; requires canonical-path access and source reads; no final design before shared design-system lock"
   CLAUDE_DESIGN:
     default_role: "code-ready governed design; never implementation or self-approval"
     executable_packages:
       - id: "WP-02"
         prompt: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/WP-02_CLAUDE_DESIGN_SHARED_DESIGN_SYSTEM_GATE.md"
-        gate: "requires complete WP-01 evidence/input pack"
+        gate: "Task 3; requires complete WP-01 evidence/input pack, Task 1 ChatGPT handoff and Task 2 Kimi corrected handoff"
       - id: "WP-05"
         prompt: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/WP-05_CLAUDE_DESIGN_ONBOARDING_MODULE.md"
-        gate: "requires sponsor-approved design-system lock and complete WP-03 research"
+        gate: "Task 3B; requires sponsor-approved design-system lock and complete Task 1 ChatGPT research"
       - id: "WP-06"
         prompt: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/WP-06_CLAUDE_DESIGN_MINISTER_MODULE.md"
-        gate: "requires sponsor-approved design-system lock and complete WP-04 research"
+        gate: "Task 3B; requires sponsor-approved design-system lock and complete Task 2 Kimi research"
   CLAUDE_CODE:
     default_role: "controlled module implementation and evidence"
     executable_packages:
       - id: "WP-07"
         prompt: "/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/command-center-20260719/WP-07_CLAUDE_CODE_IMPLEMENT_ONBOARDING_AND_MINISTER.md"
-        gate: "requires design-system lock, accepted WP-05/WP-06 designs and exact implementation slice authority"
+        gate: "Task 4; requires sponsor-locked design system, accepted WP-05/WP-06 designs and exact implementation slice authority"
 
 rules:
   - "Hard stop: no agent may generate anything unless /Users/vikramindla/Developer/Inspection and its mandatory authority files are directly accessible."

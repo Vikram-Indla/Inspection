@@ -10,6 +10,7 @@ import {
   type RegResult,
 } from "./actions";
 import EmptyState from "@/components/EmptyState";
+import { IconSearch } from "@/app/icons";
 
 // SCR-ADM-010 (CD-005) + SCR-ADM-011 (CD-006) — client controls consume
 // server-built strings only (SB19). Colour comes exclusively from ax tokens/classes;
@@ -318,7 +319,7 @@ export function RegulationRegister({ rows, strings: s }: { rows: RegRowLite[]; s
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState glyph="🔍" title={s.filteredEmptyTitle} body={s.filteredEmptyBody} inline role="status" />
+        <EmptyState icon={<IconSearch size={28} />} title={s.filteredEmptyTitle} body={s.filteredEmptyBody} inline role="status" />
       ) : (
         <ul className="ax-stack" style={{ gap: "var(--ax-space-200)", listStyle: "none", margin: 0, padding: 0 }}>
           {filtered.map(r => (

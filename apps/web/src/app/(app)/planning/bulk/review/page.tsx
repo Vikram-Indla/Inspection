@@ -4,6 +4,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import ReviewClient, { type ReviewStrings } from "./ReviewClient";
+import { IconBlocked } from "@/app/icons";
 import "./review.css";
 
 // CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish (staged workspace).
@@ -37,7 +38,7 @@ export default async function BulkReview() {
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
         <section className="ax-surface ax-panel cd-panelpad ax-permission">
           <div className="ax-state ax-state--inline">
-            <span className="ax-state__glyph" aria-hidden="true">⛔</span>
+            <span className="ax-state__glyph" aria-hidden="true"><IconBlocked size={24} /></span>
             <h4 tabIndex={-1}>{t("plan.review.unauth.title", "You don’t have access to review this plan")}</h4>
             <p className="ax-caption">{t("plan.review.unauth.body", "This view requires the Planner role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
             <a className="ax-link" href="/planning">{t("plan.review.unauth.back", "Back to planning")}</a>

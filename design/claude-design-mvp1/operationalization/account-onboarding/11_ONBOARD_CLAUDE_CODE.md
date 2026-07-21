@@ -6,6 +6,12 @@ You are Claude Code joining the MIM Inspection Platform on the sponsor's Mac. Th
 
 Before generating anything, verify direct read access to `/Users/vikramindla/Developer/Inspection`, its `.git` worktree, `AGENTS.md`, `product-contract/00_START_HERE.md`, `product-contract/CURRENT_STATE.md`, `product-contract/GATE_STATUS.md` and `product-contract/execution/CURRENT_SLICE.yaml`. If any check fails, stop immediately. Do not use the retired checkout or produce research, plans, code, tests, recommendations or handoffs. Return only `CANONICAL_PATH_ACCESS_GATE: FAIL`, exact failed paths/errors, `NO_WORK_PERFORMED: true`, and `ACTION_REQUIRED: Restore direct canonical repository access and restart onboarding.`
 
+## Execution-order gate
+
+You are Task 4. Do not generate or implement until Claude Design Task 3 has completed the shared-system lock and both module addenda have sponsor acceptance, and an exact implementation slice/change-control authority exists. Full order: `/Users/vikramindla/Developer/Inspection/design/claude-design-mvp1/operationalization/account-onboarding/04_EXECUTION_SEQUENCE.md`.
+
+If any prerequisite is absent, return `WAITING_ON_GATE` and do no implementation.
+
 ## What you are joining
 
 The platform is an implemented MVP1/MVP2/MVP3 Inspection product governed by a versioned contract, 478 mandatory MVP1 requirements, acceptance records and evidence. The current programme is not rebuilding functionality blindly: it is capturing the full application, locking a premium KSA design system, researching two major modules, designing them through Claude Design and implementing only accepted outputs.
@@ -32,7 +38,7 @@ Use non-overlapping agents for code, tests and evidence when useful, but keep on
 
 ## Current position
 
-The expected initial position is that research and screenshot work can proceed while design and implementation remain gated. Verify live status from the canonical repository. The existence of a design file is not sponsor acceptance, and the existence of a prompt is not implementation authority.
+The expected initial position is ChatGPT Task 1, Kimi Task 2 and Claude Design Task 3 before you. Verify live status from the canonical repository. The existence of a design file is not sponsor acceptance, and the existence of a prompt is not implementation authority.
 
 Read in order:
 

@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n";
 import VisitsBoard, { type VisitRow, type VisitsBoardStrings } from "./VisitsBoard";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import EmptyState from "@/components/EmptyState";
+import { IconCalendar } from "@/app/icons";
 
 const PAGE_STEP = 100;   // M02-020 — raised from the old 50 cap; load-more grows by this step
 const PAGE_MAX = 1000;
@@ -22,7 +23,7 @@ type Joined = {
 export default async function Visits({ searchParams }: { searchParams: Promise<{ limit?: string }> }) {
   const sp = await searchParams;
   const limit = Math.min(Math.max(Number.parseInt(sp.limit ?? "", 10) || PAGE_STEP, PAGE_STEP), PAGE_MAX);
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
   // (0025, every 15 min, unscoped); boards render display-level 'expired' for
@@ -213,14 +214,14 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
       </div>
       <ContextualAiPanel surface="visit_management_summary" title={t("visit.ai.title", "Visit management summary")} description={t("visit.ai.description", "Advisory summary of the visits currently in your authorized scope. It cannot change a visit, assignment, state or campaign.")} context={JSON.stringify({ scope: "visit-management" })} evidenceRefs={["MVP1-M02-001", "MVP1-M02-002", "MVP1-M02-017", "MVP1-M02-035", "SCR-WEB-200"]} generateLabel={t("visit.ai.generate", "Generate operational summary")} unavailableLabel={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")} evidenceLabel={t("visit.ai.evidence", "Source references")} advisoryLabel={t("visit.ai.advisory", "Advisory only · human decides")} reviewLabel={t("visit.ai.review", "Review or reject this advisory")} />
       {rows.length === 0 ? (
-        <EmptyState glyph="🗓" title={t("visit.list.empty", "No visits in your scope")}
+        <EmptyState icon={<IconCalendar size={28} />} title={t("visit.list.empty", "No visits in your scope")}
           body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
           <Link className="ax-btn" href="/planning" prefetch={false}>{t("visit.list.createPlan", "Create a plan")}</Link>
         </EmptyState>
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}
           regionOptions={regionOptions} cityOptions={cityOptions}
-          total={total} limit={limit} nextLimit={nextLimit} strings={strings} />
+          total={total} limit={limit} nextLimit={nextLimit} strings={strings} locale={locale} />
       )}
     </Shell>
   );

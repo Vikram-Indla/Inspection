@@ -275,7 +275,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             </p>
           </div>
         </div>
-        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} />
+        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} />
       </div>
     </Shell>
   );

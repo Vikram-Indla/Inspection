@@ -1,0 +1,22 @@
+<!-- @dsCard group="V2 Admin" viewport="1440x720" name="Workflow designer (V2)" subtitle="States, guarded transitions, terminal nodes — dot-grid canvas + properties" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Saqeel V2 — Workflow designer</title><link rel="stylesheet" href="../../styles.css"><style>html,body{margin:0}body{background:var(--ax-color-canvas);color:var(--ax-color-text);font:var(--ax-text-body)}a{color:var(--ax-color-link)}a:hover{text-decoration:underline}h1{margin:0;font:500 22px/28px var(--ax-font-sans)}h2{margin:0;font:500 16px/24px var(--ax-font-sans)}</style><script>if(location.search.indexOf("theme=dark")>-1)document.documentElement.setAttribute("data-theme","dark");if(location.search.indexOf("dir=rtl")>-1)document.documentElement.setAttribute("dir","rtl");</script></head><body class="ax-density-compact">
+<header class="ax-texture-chrome" style="display:flex;align-items:center;gap:20px;height:56px;padding:0 28px;background-color:var(--ax-color-surface);border-bottom:1px solid var(--ax-color-border-control)"><img src="../../assets/saqeel-prism.svg" width="24" height="24" alt="Saqeel"><b lang="ar" style="font:600 16px/1 var(--ax-font-arabic)">صقيل</b><span style="font:400 13px/1 var(--ax-font-sans);color:var(--ax-color-text-secondary);border-inline-start:1px solid var(--ax-color-border);padding-inline-start:12px">Admin · Workflow designer</span><span style="flex:1"></span><span style="font:400 13px/1 var(--ax-font-sans);color:var(--ax-color-text-secondary)">Maker‑checker enforced (RBAC‑002)</span><span class="ax-avatar">LA</span></header>
+<main style="padding:20px 28px;display:grid;grid-template-columns:1fr 340px;gap:24px;max-width:1440px;align-items:start">
+<div><div class="ax-row" style="justify-content:space-between;margin-bottom:12px"><h1>Inspection lifecycle <span class="ax-chip ax-chip--lock">v2 published</span></h1><div class="ax-row"><button class="ax-btn ax-btn--secondary" type="button">Simulate</button><button class="ax-btn" type="button">New draft</button></div></div>
+<div class="ax-flow" style="min-block-size:460px">
+<div class="ax-flow__node is-initial" style="inset-inline-start:40px;inset-block-start:40px">Draft</div>
+<span class="ax-flow__edge" style="inset-inline-start:150px;inset-block-start:52px">submit · guard: all items answered</span>
+<div class="ax-flow__node" style="inset-inline-start:420px;inset-block-start:40px">Submitted <span class="ax-chip ax-chip--lock" style="margin-inline-start:6px">immutable</span></div>
+<span class="ax-flow__edge" style="inset-inline-start:480px;inset-block-start:130px">L2 decision · guard: reviewer ≠ inspector</span>
+<div class="ax-flow__node" style="inset-inline-start:280px;inset-block-start:200px">Returned</div>
+<div class="ax-flow__node is-terminal" style="inset-inline-start:620px;inset-block-start:200px">Approved</div>
+<div class="ax-flow__node is-error" style="inset-inline-start:620px;inset-block-start:300px">Rejected</div>
+<span class="ax-flow__edge" style="inset-inline-start:200px;inset-block-start:290px">resubmit → creates new version (M06‑009)</span>
+</div></div>
+<aside class="ax-field-tonal" aria-label="Transition properties" style="display:flex;flex-direction:column;gap:12px">
+<h2>Transition — Submitted → Approved</h2>
+<label class="ax-field" style="max-inline-size:none"><span class="ax-field__label">Guard</span><select class="ax-select"><option>Reviewer role is L2 AND reviewer ≠ inspector</option></select></label>
+<label class="ax-field" style="max-inline-size:none"><span class="ax-field__label">Side effects</span><select class="ax-select"><option>Lock decision · notify inspector · start SLA close</option></select></label>
+<fieldset class="ax-fieldset"><legend>On failure</legend><label class="ax-choice ax-check"><input type="radio" name="f" checked><span>Block with named reason (ERR‑SUB‑001)</span></label><label class="ax-choice ax-check"><input type="radio" name="f"><span>Queue for retry</span></label></fieldset>
+<p style="margin:0;font:var(--ax-text-caption);color:var(--ax-color-text-secondary)">Transitions are enforced by DB triggers — the designer edits configuration, not code.</p>
+</aside></main></body></html>

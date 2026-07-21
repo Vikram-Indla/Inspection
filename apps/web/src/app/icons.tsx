@@ -147,3 +147,175 @@ export function IconLink({ size = 20, className }: IconProps) {
     </svg>
   );
 }
+
+export function IconClose({ size = 16, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
+
+// V2 empty-state / status icon set — replaces the raw pictographic emoji
+// glyphs (blocked, search, document, calendar, folder, map, globe, bell,
+// lightbulb, scroll, list, chart, shuffle, robot, user, package, layers,
+// satellite, pin, paperclip) previously used across EmptyState `icon` props.
+export function IconBlocked({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <circle cx="12" cy="12" r="9" /><path d="m5.5 5.5 13 13" />
+    </svg>
+  );
+}
+
+export function IconSearch({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
+    </svg>
+  );
+}
+
+export function IconDocument({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M6 3h8l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" /><path d="M14 3v4h4" /><path d="M8 13h8M8 17h8" />
+    </svg>
+  );
+}
+
+export function IconCalendar({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <rect x="3.5" y="5" width="17" height="16" rx="2" /><path d="M8 3v4M16 3v4M3.5 10h17" />
+    </svg>
+  );
+}
+
+export function IconFolder({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M3.5 6.5a1 1 0 0 1 1-1H10l2 2.5h7.5a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1Z" />
+    </svg>
+  );
+}
+
+export function IconMap({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="m9 4-5.5 2v14L9 18l6 2 5.5-2V4L15 6 9 4Z" /><path d="M9 4v14M15 6v14" />
+    </svg>
+  );
+}
+
+export function IconGlobe({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z" />
+    </svg>
+  );
+}
+
+export function IconBell({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" />
+    </svg>
+  );
+}
+
+export function IconLightbulb({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M9 18h6M10 21h4" /><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.3 1 2.1h5c0-.8.4-1.6 1-2.1A6 6 0 0 0 12 3Z" />
+    </svg>
+  );
+}
+
+export function IconScroll({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M6 4h11a2 2 0 0 1 2 2v13a1 1 0 0 1-1.6.8L14 17l-3.4 2.8A1 1 0 0 1 9 19V6a2 2 0 0 0-2-2Z" /><path d="M6 4a2 2 0 0 0-2 2v3h5" />
+    </svg>
+  );
+}
+
+export function IconList({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M8 6h12M8 12h12M8 18h12" /><circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" /><circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function IconChart({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M4 20V10M12 20V4M20 20v-6" />
+    </svg>
+  );
+}
+
+export function IconShuffle({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M3 6h4l10 12h4M3 18h4l3.2-3.8M14.8 8.6 17 6h4" /><path d="m18 3 3 3-3 3M18 21l3-3-3-3" />
+    </svg>
+  );
+}
+
+export function IconRobot({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <rect x="4" y="9" width="16" height="11" rx="2" /><path d="M12 5v4M9 3.5h6" /><circle cx="9" cy="14.5" r="1.2" fill="currentColor" stroke="none" /><circle cx="15" cy="14.5" r="1.2" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function IconUser({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <circle cx="12" cy="8" r="4" /><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6" />
+    </svg>
+  );
+}
+
+export function IconPackage({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="m3.5 8 8.5-4 8.5 4-8.5 4-8.5-4Z" /><path d="M3.5 8v9l8.5 4 8.5-4V8M12 12v9" />
+    </svg>
+  );
+}
+
+export function IconLayers({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 13 9 5 9-5" />
+    </svg>
+  );
+}
+
+export function IconSatellite({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="m8 3 4 4-4 4-4-4 4-4Z" /><path d="m12 7 9 9-4 4-9-9 4-4Z" /><path d="M4 20l2.5-2.5" />
+    </svg>
+  );
+}
+
+export function IconPin({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M12 21s-7-6.3-7-11a7 7 0 0 1 14 0c0 4.7-7 11-7 11Z" /><circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
+export function IconPaperclip({ size = 22, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M17.5 8 9 16.5a3.5 3.5 0 1 1-5-5L12.5 3a2.5 2.5 0 0 1 3.5 3.5L8.5 14a1.5 1.5 0 0 1-2-2l6-6" />
+    </svg>
+  );
+}

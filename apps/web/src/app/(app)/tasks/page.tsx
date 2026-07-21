@@ -7,6 +7,7 @@ import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
 import { canManageTask, type TaskStatus } from "@/lib/workflow/tasks";
 import { TaskRow, type TaskBoardStrings, type TaskRowData } from "./TaskBoard";
+import { IconFolder } from "@/app/icons";
 
 // TASK-MVP2-M2-02-WORKFLOW-STUDIO-002 · MVP2-REQ-0032 · CD-043 /tasks workspace.
 // Feature-flagged OFF by default (FEATURE_TASKS_WORKSPACE). When off, the surface
@@ -86,7 +87,7 @@ export default async function TasksPage() {
         </div></div>
       )}
       {!error && tasks.length === 0 && (
-        <EmptyState glyph="🗂️" title={t("tasks.empty.title", "No tasks in your scope")}
+        <EmptyState icon={<IconFolder size={28} />} title={t("tasks.empty.title", "No tasks in your scope")}
           body={t("tasks.empty.body", "Tasks appear here when assigned within your branch or sector. An empty list may mean none exist, or none are in your scope (RLS).")} />
       )}
       {tasks.map((task) => <TaskRow key={task.id} task={task} strings={strings} />)}

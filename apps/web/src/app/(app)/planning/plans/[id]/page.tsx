@@ -1,7 +1,9 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
+import { IconCalendar } from "@/app/icons";
 
 // FIX WAVE F4 — M02-017: plan drill-down listing every child visit with its
 // assignment; M02-036: per-plan progress calculation (completed / published /
@@ -19,11 +21,11 @@ type ChildVisit = {
   inspections: { status: string } | null; // TO-ONE embed — object or null
 };
 
-const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 
 export default async function PlanDrilldown({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const sb = await supabaseServer();
   // M02-016 expiry is owned by pg_cron sweep expire_lapsed_visits_scheduled
   // (0025, every 15 min, unscoped); boards render display-level 'expired' for
@@ -113,7 +115,7 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
 
       {/* M02-017 — child visits with assignments */}
       {visits.length === 0 ? (
-        <EmptyState glyph="🗓" title={t("plan.drill.noChildren", "No child visits under this plan")}
+        <EmptyState icon={<IconCalendar size={28} />} title={t("plan.drill.noChildren", "No child visits under this plan")}
           body={t("plan.drill.noChildrenDesc", "Visits are attached at plan creation; immediate visits never carry a plan (M01-050).")} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">

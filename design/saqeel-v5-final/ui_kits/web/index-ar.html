@@ -1,0 +1,123 @@
+<!-- @dsCard group="Web App" viewport="1440x860" name="Saqeel web app — عربي RTL" subtitle="Same shell natively mirrored via dir=rtl + logical properties" -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>صقيل — تطبيق الويب</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>html,body{margin:0}a{color:var(--ax-color-primary-hover)}a:hover{color:var(--ax-color-primary)}</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { Icon, KpiCard, WidgetFrame, DataTable, Lozenge, Freshness, Banner, CommandBar, SearchInput, FilterChip, Button, Segmented } = window.SaqeelDesignSystem_49c57d;
+const NAV = [
+  { id: "work", label: "العمل", items: [
+    { id: "dashboard", label: "لوحة المعلومات", icon: "dashboard" },
+    { id: "planning", label: "التخطيط", icon: "calendar" },
+    { id: "visits", label: "الزيارات", icon: "visits" },
+    { id: "reviews", label: "المراجعات", icon: "review" },
+  ]},
+  { id: "records", label: "السجلات", items: [
+    { id: "factories", label: "المصنع 360", icon: "factory" },
+    { id: "operations", label: "العمليات", icon: "radar" },
+    { id: "virtual", label: "الافتراضي", icon: "virtual" },
+  ]},
+  { id: "govern", label: "الحوكمة", items: [
+    { id: "admin", label: "الإدارة", icon: "admin" },
+    { id: "enforcement", label: "الإنفاذ", icon: "enforcement", disabled: true, reason: "يتطلب دور الإنفاذ (RBAC-011)" },
+  ]},
+];
+function App() {
+  return <div className="ax-shell">
+    <nav className="ax-shell__nav" aria-label="التنقل الرئيسي">
+      <div className="ax-shell__brand">
+        <img className="ax-shell__brand-mark" src="../../assets/saqeel-prism.svg" alt="" />
+        <span className="ax-shell__brand-lockup">
+          <span className="ax-shell__brand-wordmark" lang="ar">صقيل</span>
+          <span className="ax-shell__brand-sub" lang="ar">صناعي</span>
+        </span>
+      </div>
+      <div className="ax-shell__groups">
+        {NAV.map(group => <section className="ax-nav-group" key={group.id}>
+          <button className="ax-nav-group__trigger" type="button" aria-expanded="true">
+            <span className="ax-nav-label">{group.label}</span>
+            <svg className="ax-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg>
+          </button>
+          <div>
+            {group.items.map(item => item.disabled ?
+              <span key={item.id} className="ax-nav-item is-disabled" role="link" aria-disabled="true" title={item.label + " — " + item.reason} tabIndex={0}>
+                <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+                <span className="ax-nav-label">{item.label}</span>
+                <span className="ax-nav-lock" aria-hidden="true"><Icon name="lock" size={16} /></span>
+              </span> :
+              <a key={item.id} className="ax-nav-item" href="#" onClick={e => e.preventDefault()} aria-current={item.id === "dashboard" ? "page" : undefined}>
+                <span className="ax-nav-icon"><Icon name={item.icon} /></span>
+                <span className="ax-nav-label">{item.label}</span>
+              </a>)}
+          </div>
+        </section>)}
+      </div>
+    </nav>
+    <main className="ax-shell__main">
+      <header className="ax-pagehead">
+        <div className="ax-pagehead__topbar">
+          <div className="ax-shell-controls">
+            <div className="ax-shell-search">
+              <span className="ax-shell-search__icon" aria-hidden="true"><Icon name="search" size={18} /></span>
+              <input type="search" placeholder="ابحث عن سجل تجاري، رخصة، مصنع…" aria-label="بحث" />
+            </div>
+            <button className="ax-shell-scope" type="button"><Icon name="calendar" size={17} /><span>آخر 30 يومًا</span></button>
+          </div>
+          <div className="ax-pagehead__actions">
+            <button className="ax-topbar-icon" type="button" aria-label="اقتراحات الذكاء الاصطناعي"><Icon name="insights" /></button>
+            <span className="ax-notification"><button className="ax-notification__trigger" type="button" aria-label="الإشعارات"><Icon name="notify" /><span className="ax-notification__badge">3</span></button></span>
+            <div className="ax-shell-account">
+              <button className="ax-shell-account__trigger" type="button">
+                <span className="ax-shell-account__avatar" aria-hidden="true">لع</span>
+                <span className="ax-shell-account__identity"><strong>لينا العتيبي</strong><small>مخطِّطة · مراجعة مستوى ٢</small></span>
+                <svg className="ax-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="ax-pagehead__row">
+          <div className="ax-pagehead__context"><h2 style={{ margin: 0, font: "var(--ax-text-title)" }}>لوحة المعلومات</h2></div>
+        </div>
+      </header>
+      <div className="ax-content">
+        <Banner tone="warning" title="اتفاقية مستوى الخدمة في خطر.">٤ زيارات مستحقة خلال ٢٤ ساعة.</Banner>
+        <div className="ax-kpi-row">
+          <KpiCard label="الزيارات المنشورة" value="1,284" delta="+12 هذا الأسبوع" deltaDirection="up" trace={{ label: "عرض السجلات" }} />
+          <KpiCard label="الالتزام بالمواعيد" value="98.2%" delta="−0.4 نقطة" deltaDirection="down" />
+          <KpiCard label="بانتظار المراجعة" value="47" />
+          <KpiCard label="تعارضات غير متزامنة" value="2" />
+        </div>
+        <CommandBar end={<Button>تخطيط الزيارات</Button>}>
+          <SearchInput placeholder="ابحث عن زيارة أو مصنع…" />
+          <FilterChip active>المنطقة: الرياض ✕</FilterChip>
+          <FilterChip>+ إضافة عامل تصفية</FilterChip>
+          <Segmented options={["جدول", "لوحة", "خريطة"]} defaultValue="جدول" />
+        </CommandBar>
+        <DataTable columns={[
+          { key: "id", label: "الزيارة", render: r => <span style={{ fontFamily: "var(--ax-font-mono)", fontSize: 14, direction: "ltr", unicodeBidi: "embed" }}>{r.id}</span> },
+          { key: "name", label: "المصنع" },
+          { key: "type", label: "النوع" },
+          { key: "plan", label: "حالة التخطيط", render: r => <Lozenge domain="plan" tone={r.tone}>{r.plan}</Lozenge> },
+          { key: "review", label: "المراجعة", render: r => r.review ? <Lozenge domain="review" tone={r.rtone}>{r.review}</Lozenge> : "—" }]}
+          rows={[
+            { id: "VIS-2026-004821", name: "أعمال الخليج للصلب", type: "دورية · ميدانية", plan: "منشورة", tone: "success", review: "بانتظار المراجعة", rtone: "info" },
+            { id: "VIS-2026-004818", name: "الأمل للبلاستيك", type: "متابعة · ميدانية", plan: "مُسندة", tone: "info" },
+            { id: "VIS-2026-004816", name: "نجد للصناعات الغذائية", type: "دورية · افتراضية", plan: "منشورة", tone: "success", review: "معتمدة", rtone: "success" }]} />
+      </div>
+    </main>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

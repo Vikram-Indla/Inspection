@@ -3,6 +3,7 @@ import { getUserRoles } from "@/lib/persona";
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 import {
   NewRegulationForm,
@@ -15,6 +16,7 @@ import {
   type RegStrings,
   type RegRowLite,
 } from "./Controls";
+import { IconDocument, IconEye, IconLock, IconScroll, IconSearch } from "@/app/icons";
 
 // SCR-ADM-010 (CD-005 Regulation Library) + SCR-ADM-011 (CD-006 Regulation Detail).
 // The contract route /admin/regulations/:id is NOT implemented; the detail dossier is a
@@ -163,7 +165,7 @@ export default async function Regulations({
     invalidNoClauses: t("admin.reg.r1.invalid.noClauses", "draft with no clauses — incomplete; publishing it would be meaningless"),
   };
 
-  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const readAt = formatDateTime(Date.now(), locale === "ar" ? "ar" : "en");
   const readAtNode: ReactNode = (() => {
     const tmpl = t("admin.reg.r1.readAt", "read at {time} — not refreshed since; no staleness verdict exists, the age is shown");
     const [before, after] = tmpl.split("{time}");
@@ -202,7 +204,7 @@ export default async function Regulations({
     <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div>
   ) : !isWriter ? (
     <div className="ax-banner" role="note">
-      <strong><span aria-hidden="true">👁</span> {isReviewer
+      <strong><IconEye size={16} /> {isReviewer
         ? t("admin.reg.r1.readonly.reviewer.title", "Reviewer — read-only")
         : t("admin.reg.r1.readonly.title", "Read-only for your role")}</strong>{" "}
       {t("admin.reg.r1.readonly.body", "You can view configuration; creating, adding clauses, and publishing require a Compliance or Form Admin role and are enforced by row-level security. The route guard and database permissions are independent controls.")}
@@ -254,7 +256,7 @@ export default async function Regulations({
         </p>
 
         {regsError ? null : !reg ? (
-          <EmptyState role="status" glyph="🔎" title={t("admin.reg.r1.detail.notFound.title", "Regulation not found")}
+          <EmptyState role="status" icon={<IconSearch size={28} />} title={t("admin.reg.r1.detail.notFound.title", "Regulation not found")}
             body={t("admin.reg.r1.detail.notFound.body", "The read succeeded but no regulation has this identifier. It may have been removed.")} />
         ) : (
           <>
@@ -304,7 +306,7 @@ export default async function Regulations({
               {clauses.length === 0 ? (
                 // S03 EMPTY — no clauses: invite, never "complete/mapped"
                 <div className="ax-state ax-state--inline" role="status">
-                  <span className="ax-state__glyph" aria-hidden="true">📄</span>
+                  <span className="ax-state__glyph" aria-hidden="true"><IconDocument size={20} /></span>
                   <h4>{t("admin.reg.r1.detail.clauses.empty.title", "No clauses yet")}</h4>
                   <p className="ax-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below — the read succeeded, it is genuinely empty.")}</p>
                 </div>
@@ -382,11 +384,11 @@ export default async function Regulations({
                   </div>
                 ) : reg.status === "published" ? (
                   <div className="ax-banner ax-banner--immutable" role="note">
-                    <strong><span aria-hidden="true">🔒</span> {t("admin.reg.r1.detail.published.title", "Published — immutable at the database")}</strong>{" "}
+                    <strong><IconLock size={16} /> {t("admin.reg.r1.detail.published.title", "Published — immutable at the database")}</strong>{" "}
                     {t("admin.reg.r1.detail.published.body", "Published regulation content is immutable at the database boundary. Create a draft with the same code and a new version label to publish a governed successor; the prior version is then deactivated and linked automatically.")}
                     <DeactivateRegulation regulationId={reg.id} strings={strings} />
                   </div>
-                ) : <div className="ax-banner ax-banner--immutable" role="note"><strong><span aria-hidden="true">🔒</span> {t("admin.reg.deactivated.readonly", "Deactivated — read-only")}</strong></div>}
+                ) : <div className="ax-banner ax-banner--immutable" role="note"><strong><IconLock size={16} /> {t("admin.reg.deactivated.readonly", "Deactivated — read-only")}</strong></div>}
               </section>
             ) : null}
 
@@ -444,7 +446,7 @@ export default async function Regulations({
 
       {regsError ? null : rows.length === 0 ? (
         // S03 EMPTY — verified zero (read succeeded, genuinely no regulations)
-        <EmptyState role="status" glyph="📜" title={t("admin.reg.r1.empty.title", "No regulations configured")}
+        <EmptyState role="status" icon={<IconScroll size={28} />} title={t("admin.reg.r1.empty.title", "No regulations configured")}
           body={isWriter
             ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the list is genuinely empty. Create the first regulation above (MVP1-M09-001: regulations are the parents of inspection items).")
             : t("admin.reg.r1.empty.body", "The read succeeded — the list is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")} />

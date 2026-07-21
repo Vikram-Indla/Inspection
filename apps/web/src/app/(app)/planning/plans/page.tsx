@@ -1,6 +1,7 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 
 // FIX WAVE F4 — M02-035: plan register. Every visit plan (bulk/single) with
@@ -16,10 +17,10 @@ type PlanRow = {
   visits: { count: number }[];
 };
 
-const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 
 export default async function PlanRegister() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const sb = await supabaseServer();
   const { data, error } = await sb.from("visit_plans")
     .select("id, method, status, created_at, published_at, profiles(full_name), visits(count)")
@@ -39,11 +40,11 @@ export default async function PlanRegister() {
   return (
     <Shell current="/planning" title={t("plan.register.title", "Visit plans")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("plan.register.context", "M02-035 · every plan with child-visit progress")}</span>}>
-      <div className="ax-kpi-row">
+      <div className="ax-mstrip">
         {["draft", "published", "returned", "cancelled"].map(s => (
-          <div key={s} className="ax-surface ax-kpi">
-            <span className="ax-overline">{t(`enum.${s}`, s)}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s] ?? 0}</span>
+          <div key={s}>
+            <div className="ax-mstrip__label">{t(`enum.${s}`, s)}</div>
+            <div className="ax-mstrip__value ax-numeric">{counts[s] ?? 0}</div>
           </div>
         ))}
       </div>

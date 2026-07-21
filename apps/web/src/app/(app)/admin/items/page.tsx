@@ -2,7 +2,9 @@ import Shell from "@/components/Shell";
 import { getUserRoles } from "@/lib/persona";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
+import { IconEye, IconList } from "@/app/icons";
 import {
   NewItemForm,
   EditItemForm,
@@ -65,7 +67,7 @@ export default async function Items({
     return { id: c.id, label: `${reg?.code ?? "?"} §${c.clause_ref} — ${c.title ?? ""}` };
   });
 
-  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const readAt = formatDateTime(Date.now(), locale === "ar" ? "ar" : "en");
   const rows = items ?? [];
   const { data: { user } } = await getServerUser();
   const { data: roleRows, error: roleError } = user
@@ -226,7 +228,7 @@ export default async function Items({
         </div>
       )}
 
-      {roleError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="ax-banner" role="note"><strong><span aria-hidden="true">👁 </span>{t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can inspect item semantics, usage and runtime previews. Creating or changing active state requires Compliance or Form Admin and is enforced by the server guard and RLS.")}</div>}
+      {roleError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div> : !isWriter && <div className="ax-banner" role="note"><strong><IconEye size={16} /> {t("admin.items.r2.readonly.title", "Read-only catalogue")}</strong>{" "}{t("admin.items.r2.readonly.body", "Your role can inspect item semantics, usage and runtime previews. Creating or changing active state requires Compliance or Form Admin and is enforced by the server guard and RLS.")}</div>}
 
       <nav className="cmp-library-tabs" aria-label="Inspection Rules">
         <a className="ax-btn ax-btn--secondary ax-link" href="/admin/regulations">Regulations</a>
@@ -262,7 +264,7 @@ export default async function Items({
       {/* S03 empty — read succeeded and the catalogue is genuinely empty (never
           confused with unavailable, which is the error banner above). */}
       {!error && rows.length === 0 && (
-        <EmptyState glyph="🧾" title={t("admin.items.r2.empty.title", "No inspection items configured")}
+        <EmptyState icon={<IconList size={28} />} title={t("admin.items.r2.empty.title", "No inspection items configured")}
           body={t("admin.items.r2.empty.body", "Items belong to regulation clauses and are reused across packages (M09-002). Add the first item above.")} />
       )}
 

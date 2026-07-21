@@ -1,8 +1,10 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import Room, { type RoomStrings } from "./Room";
 import EmptyState from "@/components/EmptyState";
+import { IconShieldCheck } from "@/app/icons";
 
 type TimelineEvent = { event: string; at: string; actor?: string | null; detail?: Record<string, unknown> | null };
 
@@ -13,14 +15,15 @@ const STATE_TONE: Record<string, string> = {
 
 export default async function VirtualRoom({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const dLang = locale === "ar" ? "ar" : "en";
   const sb = await supabaseServer();
   const { data: s } = await sb.from("virtual_sessions")
     .select("id, state, appointment_at, timeline, visit_id, visits(factories(name, factory_code, cr_number), package_versions(id, version_label, packages(code)), inspections(id, status)), virtual_participants(id, display_name, role, joined_at, verified_at)")
     .eq("id", id).single();
   if (!s) {
     return <Shell current="/virtual" title={t("virtual.room.notFoundTitle", "Session not found")}>
-      <EmptyState glyph="🛡" title={t("virtual.room.notFound", "Wrong appointment or out of scope")}
+      <EmptyState icon={<IconShieldCheck size={28} />} title={t("virtual.room.notFound", "Wrong appointment or out of scope")}
         body={t("virtual.room.notFoundDesc", "Access denied safely; attempt audited (SCR-VIR-700 failure state).")} />
     </Shell>;
   }
@@ -167,7 +170,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
   return (
     <Shell current="/virtual" title={t("virtual.room.title", "Virtual room — {factory}").replace("{factory}", (s.visits as unknown as { factories: { name: string } }).factories.name)}
       context={<>
-        <span className="ax-numeric ax-caption">{new Date(s.appointment_at).toISOString().slice(0, 16).replace("T", " ")}</span>
+        <span className="ax-numeric ax-caption">{formatDateTime(s.appointment_at, dLang)}</span>
         <span className={`ax-lozenge ax-lozenge--virtual ${STATE_TONE[s.state] ?? "ax-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span>
       </>}>
       <Room session={s as never} strings={strings} rev={rev} />
@@ -176,7 +179,7 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
         {timeline.length === 0 && <p className="ax-caption">{t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close.")}</p>}
         {timeline.map((ev, i) => (
           <p key={i} className="ax-caption" style={{ marginBlockStart: 4 }}>
-            <span className="ax-numeric">{ev.at ? new Date(ev.at).toISOString().slice(0, 16).replace("T", " ") : "—"}</span>
+            <span className="ax-numeric">{ev.at ? formatDateTime(ev.at, dLang) : "—"}</span>
             {" · "}<strong>{eventLabels[ev.event] ?? ev.event.replace(/_/g, " ")}</strong>
             {ev.detail?.participant ? ` · ${String(ev.detail.participant)}` : ""}
             {ev.detail?.reason ? ` · ${String(ev.detail.reason)}` : ""}

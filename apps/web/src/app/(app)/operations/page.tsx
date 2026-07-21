@@ -1,6 +1,7 @@
 import Shell, { preloadShell } from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDate, formatDateTime } from "@/lib/dates";
 import {
   ActionFormControls, MarkNotificationHandled,
   type ActionFormControlsStrings, type MarkHandledStrings,
@@ -8,6 +9,7 @@ import {
 import { MonitoringTable, RegionCityFilter, type MonitoringStrings } from "./Monitoring";
 import OpsMap, { type OpsPin, type OpsMapStrings } from "./OpsMap";
 import EmptyState from "@/components/EmptyState";
+import { IconMap, IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
 import OverrideQueue, { type GeoOverrideQueueRow, type OverrideQueueStrings } from "./OverrideQueue";
 import type { MonitorRow } from "./actions";
@@ -160,7 +162,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const sp = await searchParams;
   const region = typeof sp.region === "string" ? sp.region : "";
   const city = typeof sp.city === "string" ? sp.city : "";
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   // Materialize elapsed requests before composing the actionable queue. The
   // decision RPC also checks expiry inside its transaction.
@@ -405,7 +407,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         : `${t("ops.sla.reminder", "Reminder")} ${f.pct}%`;
 
   // ---------- M08-017 CSV export — three tables, region/city scope honored ----------
-  const fmtTs = (ms: number) => new Date(ms).toISOString().slice(0, 16).replace("T", " ");
+  const fmtTs = (ms: number) => formatDateTime(ms, locale === "ar" ? "ar" : "en");
   const exportStrings: OpsExportStrings = {
     heading: t("ops.export.heading", "Export CSV (M08-017):"),
     scopeNote: t("ops.export.scopeNote", "reflects the current region/city scope · UTF-8 BOM for Arabic"),
@@ -468,15 +470,15 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       )}
 
       {/* KPI cards — visits by operational_state (all planning statuses; FND-002) */}
-      <div className="ax-kpi-row">
+      <div className="ax-mstrip">
         {states.map(s => (
-          <div key={s} className="ax-surface ax-kpi"><span className="ax-overline">{enumLabel(s)}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s]}</span></div>
+          <div key={s}><div className="ax-mstrip__label">{enumLabel(s)}</div>
+            <div className="ax-mstrip__value ax-numeric">{counts[s]}</div></div>
         ))}
       </div>
       <p className="ax-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
 
-      <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} />
+      <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} locale={locale} />
 
       {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>
@@ -495,7 +497,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
         </div>
         {pins.length === 0 ? (
-          <EmptyState bare glyph="🗺" title={t("ops.map.empty.title", "No mappable factories in scope")}
+          <EmptyState bare icon={<IconMap size={28} />} title={t("ops.map.empty.title", "No mappable factories in scope")}
             body={t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006).")} />
         ) : (
           <OpsMap pins={pins} strings={mapStrings} />
@@ -527,7 +529,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                       ? <a className="ax-link" href={`/factories/${f.visit.factories.id}`}>{f.visit.factories.name}</a>
                       : "—"}</td>
                     <td><span className="ax-lozenge ax-lozenge--ops">{enumLabel(f.visit.operational_state)}</span></td>
-                    <td><span className="ax-numeric">{new Date(f.deadlineMs).toISOString().slice(0, 16).replace("T", " ")}</span></td>
+                    <td><span className="ax-numeric">{fmtTs(f.deadlineMs)}</span></td>
                     <td><span className={`ax-lozenge ${f.kind === "reminder" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{slaKindLabel(f)}</span></td>
                     <td>{f.escalation
                       ? <span className={`ax-lozenge ${f.escalation === "L2" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{f.escalation}</span>
@@ -566,7 +568,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                         {a.inspections?.visit_id && <a className="ax-link ax-caption" href={`/visits/${a.inspections.visit_id}`}>{visitWord} {a.inspections.visit_id.slice(0, 8)}</a>}</td>
                       <td>{a.owner_name ?? "—"}{a.owner_role && <span className="ax-caption"> · {a.owner_role}</span>}</td>
                       <td>{a.due_at
-                        ? <span className={overdue ? "ax-lozenge ax-lozenge--critical" : "ax-numeric"}>{new Date(a.due_at).toISOString().slice(0, 10)}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
+                        ? <span className={overdue ? "ax-lozenge ax-lozenge--critical" : "ax-numeric"}>{formatDate(a.due_at, locale === "ar" ? "ar" : "en")}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
                         : "—"}</td>
                       <td>{a.is_blocking ? <span className="ax-lozenge ax-lozenge--critical">{t("ops.actions.blocking", "blocking")}</span> : <span className="ax-lozenge">{t("ops.actions.advisory", "advisory")}</span>}</td>
                       <td><span className={`ax-lozenge ${a.status === "acknowledged" ? "ax-lozenge--info" : "ax-lozenge--warning"}`}>{enumLabel(a.status)}</span></td>
@@ -608,7 +610,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
             {scopedGeo.length === 0 ? (
-              <EmptyState bare glyph="📍" title={t("ops.geo.empty.title", "No location events yet")}
+              <EmptyState bare icon={<IconPin size={28} />} title={t("ops.geo.empty.title", "No location events yet")}
                 body={t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")} />
             ) : (
               <ul className="ax-timeline">{scopedGeo.slice(0, 10).map(g => (
@@ -616,7 +618,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                   <div><strong>{enumLabel(g.kind)}</strong> ±{g.accuracy_m}m{" "}
                     {g.geofence_result && <span className={`ax-lozenge ${g.geofence_result === "inside" ? "ax-lozenge--success" : g.geofence_result === "override" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{enumLabel(g.geofence_result)}</span>}{" "}
                     <a className="ax-link ax-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />
-                    <span className="ax-timeline__meta ax-numeric">{new Date(g.occurred_at).toISOString().slice(0, 19).replace("T", " ")}</span></div>
+                    <span className="ax-timeline__meta ax-numeric">{fmtTs(new Date(g.occurred_at).getTime())}</span></div>
                 </li>
               ))}</ul>
             )}
@@ -626,7 +628,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
             <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
             {notifs.length === 0 ? (
-              <EmptyState bare glyph="🔔" title={t("ops.notifs.empty.title", "No notifications")}
+              <EmptyState bare icon={<IconBell size={28} />} title={t("ops.notifs.empty.title", "No notifications")}
                 body={t("ops.notifs.empty.desc", "Event-keyed messages queue here as workflow events fire (REF-014).")} />
             ) : (
               <div className="ax-tablewrap"><table className="ax-table">
@@ -636,7 +638,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                     <td><span className="ax-lozenge ax-lozenge--info">{n.event_key}</span></td>
                     <td className="ax-caption">{n.channel}</td>
                     <td><span className={`ax-lozenge ${NOTIF_TONE[n.delivery_state] ?? ""}`}>{enumLabel(n.delivery_state)}</span></td>
-                    <td><span className="ax-numeric">{new Date(n.created_at).toISOString().slice(5, 16).replace("T", " ")}</span></td>
+                    <td><span className="ax-numeric">{fmtTs(new Date(n.created_at).getTime())}</span></td>
                     <td>{n.delivery_state !== "handled" && <MarkNotificationHandled notificationId={n.id} strings={markHandledStrings} />}</td>
                   </tr>
                 ))}</tbody>

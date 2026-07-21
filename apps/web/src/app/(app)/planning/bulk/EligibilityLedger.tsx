@@ -6,6 +6,8 @@
 // we show the actual oldest sync time and how many rows are missing it. We do
 // NOT classify "stale" — no governed staleness threshold exists in
 // engine_settings, and inventing one is prohibited.
+import { formatDateTime } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 export type LedgerStrings = {
   heading: string;
@@ -19,20 +21,21 @@ export type LedgerStrings = {
 };
 
 export default function EligibilityLedger({
-  denominator, eligible, oldestSyncedAt, missingSync, strings, focusedCount, focusedLabel,
+  denominator, eligible, oldestSyncedAt, missingSync, strings, focusedCount, focusedLabel, locale,
 }: {
   denominator: number;
   eligible: number;
   oldestSyncedAt: string | null;
   missingSync: number;
   strings: LedgerStrings;
+  locale: Locale;
   focusedCount?: number | null;
   focusedLabel?: string | null;
 }) {
   const excluded = Math.max(0, denominator - eligible);
   // Factual relative age — no threshold styling.
   const freshnessLabel = oldestSyncedAt
-    ? new Date(oldestSyncedAt).toISOString().slice(0, 16).replace("T", " ")
+    ? formatDateTime(oldestSyncedAt, locale === "ar" ? "ar" : "en")
     : strings.freshnessNever;
 
   return (

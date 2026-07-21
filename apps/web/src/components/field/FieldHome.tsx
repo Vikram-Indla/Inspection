@@ -11,6 +11,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { formatDateTime } from "@/lib/dates";
+import { IconCalendar, IconSearch } from "@/app/icons";
 import { useActionState } from "react";
 import EmptyState from "@/components/EmptyState";
 import Pagination from "@/components/Pagination"; // FNS-011 shared client-side pager
@@ -104,21 +106,27 @@ function visitHref(v: FieldVisit): string {
     : `/field/${v.id}`;
 }
 
-function fmtWindow(iso: string): string {
-  return new Date(iso).toISOString().slice(0, 16).replace("T", " ");
+function fmtWindow(iso: string, locale: string): string {
+  return formatDateTime(iso, locale === "ar" ? "ar" : "en");
 }
+
 
 // FNS-010 — the card carries a persistent, keyboard-operable selected state
 // (mirrors the VisitsBoard continuity spine: a button drives the highlight via
 // aria-pressed, an adjacent link preserves direct navigation). Selecting never
 // navigates; the Details link is the navigation affordance, so tap-to-open is
 // preserved for keyboard and pointer users alike.
-function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings; selected: boolean; onSelect: (id: string) => void; onDragStart: (id: string) => void }) {
+function VisitCard({ v, s, strings, selected, onSelect, onDragStart, locale }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings; selected: boolean; onSelect: (id: string) => void; onDragStart: (id: string) => void; locale: string }) {
   const accent = s.tone === "critical" ? "var(--ax-color-critical)"
     : s.tone === "warning" ? "var(--ax-color-warning)"
     : "var(--ax-color-primary)";
   return (
-    <div className="ax-surface ax-panel" aria-selected={selected} draggable={s.key !== "expired" && s.key !== "approved"}
+    // V2 a11y fix: aria-selected is only a valid ARIA attribute on elements
+    // with a role that supports it (option/row/tab/gridcell/etc) — axe
+    // flagged it here as unsupported on a plain div. The inner button's
+    // aria-pressed (below) already correctly communicates the selected
+    // state; this outer attribute was redundant as well as invalid.
+    <div className="ax-surface ax-panel" draggable={s.key !== "expired" && s.key !== "approved"}
       onDragStart={() => onDragStart(v.id)}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", color: "inherit", borderInlineStart: `4px solid ${accent}`,
         outline: selected ? "var(--ax-focus-ring)" : undefined, outlineOffset: selected ? "-2px" : undefined }}>
@@ -136,11 +144,11 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: Fiel
         </span>
       </div>
       <span className="ax-caption ax-numeric">
-        {fmtWindow(v.windowStart)} · {v.visitType} · {v.executionMode.replace(/_/g, " ")} · {v.city}
+        {fmtWindow(v.windowStart, locale)} · {v.visitType} · {v.executionMode.replace(/_/g, " ")} · {v.city}
       </span>
       {(s.key === "expired" || s.key === "overdue") && (
         <span className="ax-caption" style={{ color: s.key === "expired" ? "var(--ax-color-critical)" : "var(--ax-color-warning-strong)" }}>
-          {strings.windowEnds.replace("{date}", fmtWindow(v.windowEnd))}
+          {strings.windowEnds.replace("{date}", fmtWindow(v.windowEnd, locale))}
         </span>
       )}
       <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
@@ -153,7 +161,7 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart }: { v: Fiel
 }
 
 // M03-001 — one inbox row: unread dot + mark-read (server action, RLS-scoped).
-function InboxRow({ n, strings }: { n: FieldNotification; strings: FieldHomeStrings }) {
+function InboxRow({ n, strings, locale }: { n: FieldNotification; strings: FieldHomeStrings; locale: string }) {
   const [state, formAction, pending] = useActionState<FieldActionResult, FormData>(markNotificationRead, {});
   const read = !n.unread || !!state.ok;
   return (
@@ -164,7 +172,7 @@ function InboxRow({ n, strings }: { n: FieldNotification; strings: FieldHomeStri
           {n.label}{!read && <span className="ax-sr-only"> — {strings.unreadBadge}</span>}
         </span>
         {n.detail && <span className="ax-caption">{n.detail}</span>}
-        <span className="ax-caption ax-numeric">{fmtWindow(n.createdAt)}</span>
+        <span className="ax-caption ax-numeric">{fmtWindow(n.createdAt, locale)}</span>
         {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
       </div>
       {!read && (
@@ -249,7 +257,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         id: v.id,
         lat: v.lat as number,
         lng: v.lng as number,
-        label: `${v.factoryName} · ${fmtWindow(v.windowStart)}`,
+        label: `${v.factoryName} · ${fmtWindow(v.windowStart, locale)}`,
         tone: (s.key === "expired" ? "high" : s.key === "overdue" ? "medium" : "neutral") as GeoTone,
       })),
     [filtered]);
@@ -294,7 +302,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
           <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.heading}</h3>
           {/* M03-003 — view switch */}
-          <div className="ax-segmented" role="group" aria-label={strings.viewSwitchAria}>
+          <div className="ax-segmented ax-segmented--field" role="group" aria-label={strings.viewSwitchAria}>
             {([["list", strings.viewList], ["calendar", strings.viewCalendar], ["map", strings.viewMap]] as [ViewKey, string][]).map(([k, label]) => (
               <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
             ))}
@@ -337,16 +345,16 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         </div>
 
         {visits.length === 0 && (
-          <EmptyState glyph="🗓" title={strings.emptyTitle} body={strings.emptyBody} />
+          <EmptyState icon={<IconCalendar size={28} />} title={strings.emptyTitle} body={strings.emptyBody} />
         )}
         {visits.length > 0 && filtered.length === 0 && (
-          <EmptyState glyph="🔍" title={strings.noMatch} inline />
+          <EmptyState icon={<IconSearch size={28} />} title={strings.noMatch} inline />
         )}
 
         {view === "list" && filtered.length > 0 && (
           <>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)" }}>
-              {pageSlice.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
+              {pageSlice.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} locale={locale} />)}
             </div>
             <Pagination page={clampedPage} pageCount={pageCount} onChange={setPage}
               prevLabel={strings.paginationPrev} nextLabel={strings.paginationNext}
@@ -364,7 +372,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
                   {draggedId && <span className="ax-caption">{rescheduleBusy ? "…" : strings.rescheduleHint}</span>}
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
-                  {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} />)}
+                  {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} locale={locale} />)}
                 </div>
               </div>
             ))}
@@ -394,7 +402,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         {notifications.length === 0
           ? <span className="ax-caption">{strings.inboxEmpty}</span>
           : <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-              {notifications.map(n => <InboxRow key={n.id} n={n} strings={strings} />)}
+              {notifications.map(n => <InboxRow key={n.id} n={n} strings={strings} locale={locale} />)}
             </ul>}
       </section>
     </div>

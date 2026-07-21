@@ -16,15 +16,14 @@ Every work-package prompt in this folder now contains its own complete absolute-
 
 Ready to start in parallel:
 
-- `WP-01` Codex — screenshots, per-screen UI/UX findings and design-system requirements.
-- `WP-03` ChatGPT — onboarding, video and Persona Academy research pack.
-- `WP-04` Claude Chat — Minister/Leadership dashboard, map/list and AI research pack.
+- `WP-01` Codex — independent screenshots, per-screen UI/UX findings and design-system requirements.
+- Task 1: `WP-03` ChatGPT — onboarding, video and Persona Academy research pack.
 
 Waiting:
 
-- `WP-02` Claude Design waits for WP-01 evidence.
-- `WP-05` and `WP-06` wait for sponsor-approved `DESIGN_SYSTEM_LOCK.yaml`.
-- `WP-07` waits for accepted onboarding and Minister designs.
+- Task 2: `WP-04-KIMI` Kimi runs independently after canonical access and source reads.
+- Task 3: Claude Design waits for WP-01, Task 1 and Task 2.
+- Task 4: `WP-07` waits for sponsor-approved shared system and accepted onboarding/Minister designs.
 - `WP-08` waits for the design-system lock.
 
 ## Universal resume prompt for a local Codex or Claude Code account

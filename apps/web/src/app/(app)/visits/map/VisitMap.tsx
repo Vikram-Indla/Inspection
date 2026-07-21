@@ -3,6 +3,8 @@ import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import type { GeoMarkerData } from "@/components/GeoMap";
 import EmptyState from "@/components/EmptyState";
+import { formatDateTime } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
@@ -28,7 +30,7 @@ const DEFAULT_STRINGS: VisitMapStrings = {
   unavailableScope: "Unavailable under current scope", latestLocation: "latest location",
 };
 
-export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS }: { visits: MappedVisit[]; strings?: VisitMapStrings }) {
+export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS, locale = "en" }: { visits: MappedVisit[]; strings?: VisitMapStrings; locale?: Locale }) {
   const regions = useMemo(() => [...new Set(visits.map(v => v.region).filter(Boolean))].sort(), [visits]);
   const [region, setRegion] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -38,7 +40,7 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS }: { vis
       label: `${v.factoryName} · ${v.city} · ${v.operationalState.replace(/_/g, " ")}` },
     ...(v.inspectorLat != null && v.inspectorLng != null ? [{
       id: `inspector:${v.id}`, lat: v.inspectorLat, lng: v.inspectorLng, tone: "medium" as const,
-      label: `${v.inspectorName || s.assignedInspector} · ${v.inspectorAt ? new Date(v.inspectorAt).toISOString().slice(0, 16).replace("T", " ") : s.latestLocation}`,
+      label: `${v.inspectorName || s.assignedInspector} · ${v.inspectorAt ? formatDateTime(v.inspectorAt, locale === "ar" ? "ar" : "en") : s.latestLocation}`,
     }] : []),
   ]);
   const selectedVisitId = selectedId?.split(":")[1] ?? null;
@@ -73,7 +75,7 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS }: { vis
           <td><a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></td>
           <td><a className="ax-link" href={`/factories/${v.factoryId}`}>{v.factoryName}</a></td>
           <td>{v.region} · {v.city}</td>
-          <td>{v.inspectorLat == null ? s.unavailableScope : `${v.inspectorName || s.inspectorFallback} · ${v.inspectorAt ? new Date(v.inspectorAt).toISOString().slice(0, 16).replace("T", " ") : "—"}`}</td>
+          <td>{v.inspectorLat == null ? s.unavailableScope : `${v.inspectorName || s.inspectorFallback} · ${v.inspectorAt ? formatDateTime(v.inspectorAt, locale === "ar" ? "ar" : "en") : "—"}`}</td>
           <td><span className="ax-lozenge ax-lozenge--ops">{v.operationalState.replace(/_/g, " ")}</span></td>
         </tr>)}</tbody>
       </table></div>

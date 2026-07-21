@@ -5,6 +5,7 @@ import { resolveFeatureFlag } from "@/lib/providers/env-gate";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
 import { OpenCase } from "./OpenCase";
+import { IconFolder } from "@/app/icons";
 
 // TASK-MVP2-M2-10-CASE-SPINE-001 · MVP2-REQ-0114..0119 · CD-046 (case_spine_v1).
 const MODES = ["off", "on"] as const;
@@ -35,7 +36,7 @@ export default async function CasesPage() {
       }} />
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("cases.error", "Couldn’t load cases. Nothing changed.")}</strong></div></div>}
       {!error && (rows ?? []).length === 0 && (
-        <EmptyState glyph="🗂️" title={t("cases.empty.title", "No cases in your scope")}
+        <EmptyState icon={<IconFolder size={28} />} title={t("cases.empty.title", "No cases in your scope")}
           body={t("cases.empty.body", "Cases open from a review, violation or inspection. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(rows ?? []).map((c) => (

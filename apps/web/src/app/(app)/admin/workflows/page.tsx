@@ -1,15 +1,19 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/dates";
 import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
+import { IconShuffle } from "@/app/icons";
 import { ProposeDraftForm, DraftPayloadEditor, ApprovePublish, type WfStrings } from "./Controls";
 import { WfDeck, type WfDeckStrings } from "./WfDeck";
+
+export const dynamic = "force-dynamic";
 
 type Transition = { id: string; from: string; to: string; actor: string; guard: string; side_effects?: string[]; terminal?: boolean };
 
 export default async function Workflows() {
-  const { t } = await useT();
+  const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   const { data: wfs, error } = await sb.from("config_versions")
@@ -49,18 +53,18 @@ export default async function Workflows() {
     none: t("admin.wf.deck.none", "—"),
   };
   return (
-    <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow Settings")}
+    <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow configuration")}
       context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-050/051 · ENG-03</span>}>
       <div className="ax-banner"><div>
         <strong>{t("admin.wf.banner.title", "Governed change only.")}</strong> {t("admin.wf.banner.before", "Runtime evaluates transitions against the published version — no status bypass (RBAC-003). Changes flow draft → distinct-approver publish (RBAC-002 maker-checker, enforced by a DB constraint on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions are immutable. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and are not editable here.")}
       </div></div>
       {error && (
         <div className="ax-banner ax-banner--critical"><div>
-          <strong>{t("admin.wf.error.title", "Couldn’t load workflow settings. Nothing was changed. Try again.")}</strong>
+          <strong>{t("admin.wf.error.title", "Couldn’t load workflow configuration. Nothing was changed. Try again.")}</strong>
         </div></div>
       )}
       {!error && (wfs ?? []).length === 0 && (
-        <EmptyState glyph="🔀" title={t("admin.wf.empty.title", "No workflow settings published")}
+        <EmptyState icon={<IconShuffle size={28} />} title={t("admin.wf.empty.title", "No workflow configuration published")}
           body={t("admin.wf.empty.body", "Workflow state machines are versioned config (ENG-03).")} />
       )}
       {(wfs ?? []).map(w => {
@@ -78,7 +82,7 @@ export default async function Workflows() {
                 {w.status === "draft" && !isOwnDraft && <ApprovePublish versionId={w.id} strings={strings} />}
                 {isOwnDraft && (
                   <span className="ax-lozenge ax-lozenge--warning" title={t("admin.wf.sod.desc", "You proposed this draft (the maker). A different checker must approve it — separation of duties is enforced by a DB constraint.")}>
-                    ⛔ {t("admin.wf.sod.title", "You proposed this — a distinct checker must approve")}
+                    {t("admin.wf.sod.title", "You proposed this — a distinct checker must approve")}
                   </span>
                 )}
               </div>
@@ -87,7 +91,7 @@ export default async function Workflows() {
             {/* Approval chain — maker → checker, straight from config_versions (RBAC-002) */}
             <p className="ax-caption">
               {t("admin.wf.chain.proposed", "Proposed by")} <strong>{nameOf(w.created_by) ?? "—"}</strong>
-              {w.created_at && <> · <span className="ax-numeric">{new Date(w.created_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
+              {w.created_at && <> · <span className="ax-numeric">{formatDateTime(w.created_at, locale === "ar" ? "ar" : "en")}</span></>}
               {" → "}
               {w.approved_by
                 ? <>{t("admin.wf.chain.approved", "approved by")} <strong>{nameOf(w.approved_by)}</strong> <span className="ax-lozenge ax-lozenge--success">{t("admin.wf.chain.distinct", "distinct approver")}</span></>

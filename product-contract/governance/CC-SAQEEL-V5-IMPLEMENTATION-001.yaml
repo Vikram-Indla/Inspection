@@ -1,0 +1,81 @@
+schema_version: "1.0"
+change_id: "CC-SAQEEL-V5-IMPLEMENTATION-001"
+title: "Saqeel Design System V5.1 — canonical migration of application presentation layer"
+requestor: "Claude Design (external, via Vikram Indla) / Claude Code on behalf of Vikram Indla"
+approver: "Vikram Indla"
+approval_source: "In-session sponsor direction, 2026-07-20: 'This is a last iteration... we need to apply' / 'use the Claude Code prompt as-is with the V5.1 design-system package' / AskUserQuestion selection 'Open new CC + branch for Saqeel V5.1'"
+authorization: >
+  Sponsor approval authorizes migrating the application's visual/presentation
+  layer (tokens, shared components, CSS architecture, dates/typography/density
+  formatting) to the approved Saqeel Design System V5.1 package. It authorizes
+  no new product capability, workflow, calculation, status, permission, data
+  field, or persona, and no change to Supabase schema, RLS, triggers, or
+  governed calculations merely to facilitate the redesign.
+business_reason: >
+  V1 presentation was assessed (component-level critique, this session) as
+  visually inconsistent with a premium brand target: generic blue dark-theme
+  primary, oversized/ambiguous action hierarchy, 12px capsule inputs, low
+  contrast control borders, incomplete a11y (tabs/modal/drawer/table), and
+  UTC-sliced dates instead of Riyadh-correct formatting. V5.1 closes these
+  defects at the design-system source (tokens/components/patterns) after four
+  prior review cycles (V1 critique → V4 readiness review → V4.1 closure → V5.1
+  final correction pass) rejected earlier versions as not implementation-ready.
+scope_allowed:
+  - "Migrate design/saqeel-v5-final/ tokens into the production token source (color, radius, density, typography, date-format tokens)."
+  - "Refactor production CSS into the layered architecture described in design/saqeel-v5-final/v2/."
+  - "Migrate/upgrade shared production components (Button, Field, Tabs, Modal, Drawer, DataTable, etc.) to the V5.1 component contract, reusing existing components where possible."
+  - "Introduce one governed Riyadh-timezone date/time formatting service and replace user-facing UTC ISO-slice formatting with it."
+  - "Apply V5.1 visual/density/accessibility treatment across web, iPad/field, admin, and report/print surfaces on a dedicated feature branch."
+  - "Add lint/CI guardrails against V1 regressions (12px radius, transparent loading labels, tab-role route links, raw hex, emoji-as-icon, permanent filled danger toolbar actions)."
+scope_forbidden:
+  - "Any change to Supabase schema, migrations, RLS, triggers, workflow-state transitions, permission checks, SLA/risk calculations, or immutable-version rules."
+  - "Any invented policy value, provider, threshold, legal rule, or Arabic-scope decision not already in the product contract."
+  - "Push, merge, or modification of setup/Inspection or main; work stays on feature/saqeel-v5-implementation until separately reviewed."
+  - "Marking any route/page complete without runtime evidence (build+test pass, browser screenshots of the running app, not reference HTML)."
+  - "Pausing or altering TASK-FACTORY-360-COMPLETE-010 or its branch/state — that task continues unaffected on its own branch."
+decision_owner: "Vikram Indla"
+effective_date: "2026-07-20"
+completion_rule: >
+  feature/saqeel-v5-implementation contains the migrated tokens/components/
+  pages, build and tests pass, docs/design-system-v5/FINAL-IMPLEMENTATION-REPORT.md
+  is recorded with the required screenshot evidence, and the branch is left
+  unmerged pending a separate independent visual-acceptance review and explicit
+  sponsor merge approval.
+status: "IMPLEMENTED_PER_COMPLETION_RULE — 2 OPEN DECISIONS FILED, NEITHER BLOCKS THIS CC's STATED completion_rule"
+status_detail: >
+  All 8 waves (tokens/guardrails, components, date service, shell, operations,
+  field, admin, report/print incl. 5-layer grouping) are implemented on
+  feature/saqeel-v5-implementation, verified (tsc clean, guardrail 0/305,
+  17/17 date checks, build clean, axe 0 violations/10 routes, real
+  authenticated screenshots, real seeded-data print fixtures, live
+  DEF-WF-006 trigger test, touch-emulation geometry check), and recorded in
+  docs/design-system-v5/FINAL-IMPLEMENTATION-REPORT.md — satisfying this
+  CC's completion_rule as written. Two items exceed what this CC's
+  scope_allowed/scope_forbidden permit closing outright and are filed as
+  open decisions rather than silently dropped or fabricated: DEC-030 (real
+  iPad/Apple-Pencil hardware verification — needs a provisioned physical
+  device or device-lab service, not obtainable by further code changes) and
+  DEC-031 (print-fixture synthesis for many-violations/long-notes/
+  20-100-300-item checklists — attempted via the real canonical submit UI,
+  not a raw insert; the attempt surfaced DEC-032, a genuine platform-wide
+  DB bug, not a scope/governance boundary). Branch stays unmerged pending
+  the separate independent visual-acceptance review and explicit sponsor
+  merge approval this CC already requires, plus sponsor resolution of
+  DEC-030/DEC-031/DEC-032.
+scope_note_on_dec_032: >
+  DEC-032 (submission_versions insert trigger fails on a missing/miscast
+  Postgres digest() call) is a pre-existing platform defect discovered
+  while investigating DEC-031, not a defect introduced by or within this
+  CC's scope, and it does not invalidate this CC's own evidence. It blocks
+  exactly one action: writing a NEW submission_versions row (clicking
+  Submit on an in-progress inspection). It has no effect on viewing,
+  reviewing, printing, or navigating any EXISTING/historical inspection —
+  which is what nearly all of this CC's 26 real screenshots and the full
+  axe-core accessibility audit actually exercised, against real live data
+  already in the database. The report/print work (including the 5-layer
+  grouping), admin/operations/planning/dashboard surfaces, and field-home/
+  touch-target evidence are all validated end-to-end against pre-existing
+  data; none of that required a new submission to occur. DEC-032 is a real,
+  separate, higher-priority defect worth fixing on its own merits — but it
+  is not evidence that this CC's presentation-layer work is unvalidated or
+  incomplete.

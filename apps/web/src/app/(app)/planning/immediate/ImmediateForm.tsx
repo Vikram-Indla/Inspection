@@ -8,6 +8,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import { formatDate } from "@/lib/dates";
 import PackageTypeSelector from "@/components/PackageTypeSelector";
 import { createImmediateVisit, type ImmResult } from "./actions";
 import AuthorityBar, { type Chip } from "./AuthorityBar";
@@ -218,7 +219,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
                   <div className="ax-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
                     {factory.license_number && <> · {strings.previewLicense} <bdi>{factory.license_number}</bdi></>}
                     {" · "}{strings.previewRegion} <bdi>{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</bdi></div>
-                  <div className="ax-caption">{strings.previewFreshness}: {factory.source_synced_at ? <bdi>{new Date(factory.source_synced_at).toISOString().slice(0, 10)}</bdi> : strings.previewFreshnessNever}
+                  <div className="ax-caption">{strings.previewFreshness}: {factory.source_synced_at ? <bdi>{formatDate(factory.source_synced_at, locale)}</bdi> : strings.previewFreshnessNever}
                     {" · "}{strings.previewRisk}: {factory.risk_band ?? strings.previewRiskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</div>
                 </div>
               )}

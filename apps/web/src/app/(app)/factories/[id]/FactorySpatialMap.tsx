@@ -1,6 +1,8 @@
 "use client";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData } from "@/components/GeoMap";
+import { formatDateTime } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
@@ -13,15 +15,15 @@ export type FactorySpatialMapStrings = {
   officialPin: string; observedArrival: string; gpsOverride: string; noLocations: string;
 };
 
-export default function FactorySpatialMap({ officialLat, officialLng, geofenceRadius, events, strings: s }: {
+export default function FactorySpatialMap({ officialLat, officialLng, geofenceRadius, events, strings: s, locale }: {
   officialLat: number; officialLng: number; geofenceRadius: number | null; events: FactoryLocationEvent[];
-  strings: FactorySpatialMapStrings;
+  strings: FactorySpatialMapStrings; locale: Locale;
 }) {
   const markers: GeoMarkerData[] = [
     { id: "official", lat: officialLat, lng: officialLng, label: "Industrial-license official location", tone: "neutral", radiusM: geofenceRadius ?? undefined },
     ...events.slice(0, 50).map(e => ({
       id: e.id, lat: e.lat, lng: e.lng,
-      label: `${e.kind.replace(/_/g, " ")} · ${new Date(e.occurredAt).toISOString().slice(0, 16).replace("T", " ")}${e.overrideReason ? ` · ${e.overrideReason}` : ""}`,
+      label: `${e.kind.replace(/_/g, " ")} · ${formatDateTime(e.occurredAt, locale === "ar" ? "ar" : "en")}${e.overrideReason ? ` · ${e.overrideReason}` : ""}`,
       tone: (e.kind === "override" ? "high" : e.kind === "checkin" || e.kind === "arrival" ? "low" : "medium") as GeoMarkerData["tone"],
     })),
   ];

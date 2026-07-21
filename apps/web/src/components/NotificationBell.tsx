@@ -6,6 +6,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
+import { formatDateTime } from "@/lib/dates";
+import type { Locale } from "@/lib/i18n";
 
 export type BellStrings = {
   label: string;            // accessible name for the toggle
@@ -46,7 +48,7 @@ function BellIcon() {
   );
 }
 
-export default function NotificationBell({ strings }: { strings: BellStrings }) {
+export default function NotificationBell({ strings, locale }: { strings: BellStrings; locale: Locale }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [unreadTotal, setUnreadTotal] = useState(0);
   const [open, setOpen] = useState(false);
@@ -157,7 +159,7 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
                     </strong>
                     {detail(r.payload) && <p className="ax-caption ax-numeric" style={{ margin: 0 }}>{detail(r.payload).slice(0, 80)}</p>}
                     <p className="ax-caption ax-numeric" style={{ margin: 0 }}>
-                      {new Date(r.created_at).toISOString().slice(0, 16).replace("T", " ")}
+                      {formatDateTime(r.created_at, locale === "ar" ? "ar" : "en")}
                       {" · "}{strings.channels[r.channel] ?? r.channel}
                       {r.delivery_state === "not_configured" && <> · <span className="ax-lozenge ax-lozenge--warning">{strings.notConfigured}</span></>}
                     </p>

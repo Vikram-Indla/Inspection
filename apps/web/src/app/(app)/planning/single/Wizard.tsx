@@ -3,6 +3,7 @@ import { useActionState, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { publishSingleVisit, type PublishResult } from "./actions";
 import IdentityDossier from "./IdentityDossier";
+import type { Locale } from "@/lib/i18n";
 
 // CD-022 — a search result graded by RULE, never scored. EXACT = governed
 // identifier equality only. SIMILAR_NAME = the name matched, identifiers
@@ -50,8 +51,8 @@ export type WizardStrings = {
   riskBands: Record<string, string>;
 };
 
-export default function Wizard({ query, results, registryUnavailable, packages, inspectors, strings, virtualEligible }: {
-  query: string; results: GradedFactory[]; registryUnavailable: boolean; packages: Pkg[]; inspectors: Insp[]; strings: WizardStrings; virtualEligible: boolean;
+export default function Wizard({ query, results, registryUnavailable, packages, inspectors, strings, virtualEligible, locale }: {
+  query: string; results: GradedFactory[]; registryUnavailable: boolean; packages: Pkg[]; inspectors: Insp[]; strings: WizardStrings; virtualEligible: boolean; locale: Locale;
 }) {
   const [state, formAction, pending] = useActionState<PublishResult, FormData>(publishSingleVisit, {});
   const router = useRouter();
@@ -187,7 +188,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
                 </label>
                 {factoryId === f.id && (
                   <div style={{ marginBlockStart: "var(--ax-space-150)" }}>
-                    <IdentityDossier factory={f} plannerLat={plannerLat} plannerLng={plannerLng} strings={strings} />
+                    <IdentityDossier factory={f} plannerLat={plannerLat} plannerLng={plannerLng} strings={strings} locale={locale} />
                   </div>
                 )}
               </li>

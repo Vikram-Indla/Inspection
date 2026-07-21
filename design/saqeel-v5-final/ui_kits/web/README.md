@@ -1,0 +1,4 @@
+# Saqeel web app UI kit
+Click-through recreation of the authenticated web channel (Planning & Review): grouped role-scoped sidebar (`ax-shell`), sticky topbar with global search/scopes/account, and three screens — Dashboard (KPIs + fault-isolated widgets), Visits (command bar, filters, bulk selection, per-row failure), Level-2 Review (immutable decision flow + audit drawer).
+Source of truth: `apps/web/src/components/ShellClient.tsx`, `app/dashboard/DashboardView.tsx`, `app/visits/VisitsBoard.tsx`, `app/reviews/*` in Vikram-Indla/Inspection.
+Interactions are cosmetic; all styling comes from `tokens/astryx.css` and components from the compiled bundle.
