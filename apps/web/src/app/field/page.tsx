@@ -463,6 +463,12 @@ export default async function Field() {
                   <dd><em className="ax-caption">{t("field.selected.healthUnavailable", "Not scored (separate engine)")}</em></dd>
                   <dt>{t("field.selected.riskScore", "Risk Score")}</dt>
                   <dd>{selected.factories.risk_band ? `${selected.factories.risk_band}${selected.factories.risk_score != null ? " · " + selected.factories.risk_score : ""}` : "—"}</dd>
+                  {packData?.packageLabel && (
+                    <>
+                      <dt>{t("field.selected.package", "Package")}</dt>
+                      <dd><span className="ax-numeric">{packData.packageLabel}</span>{packData.packageStatus ? ` · ${packData.packageStatus}` : ""}</dd>
+                    </>
+                  )}
                 </dl>
                 <div className="ax-row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)", flexWrap: "wrap" }}>
                   {packData && <PreInspectionPackSheet data={packData} moduleClasses={{ packChipRow: styles.packChipRow, packReadiness: styles.packReadiness, packFooter: styles.packFooter, packBlocked: styles.packBlocked }} strings={{
