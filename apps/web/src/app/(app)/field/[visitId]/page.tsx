@@ -20,8 +20,12 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   const { created } = await searchParams;
   const { t, locale } = await useT();
   const sb = await supabaseServer();
+  // NB: visits.execution_date (20260721090000) is deliberately NOT in this
+  // unconditional select — while the migration is unapplied the column is
+  // absent and the whole read would 400, rendering "Visit not found". The
+  // Pre-Execution panel reads it tolerantly via the preparation row below.
   const { data: v } = await sb.from("visits")
-    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, operational_state, package_version_id, execution_date, planner_lat, planner_lng, immediate_creator_role, visit_location_source, factories(name, name_is_system_generated, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m, is_temporary, source), package_versions(id, version_label, definition, packages(code, title)), inspections(id, status, started_at)")
+    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, operational_state, package_version_id, planner_lat, planner_lng, immediate_creator_role, visit_location_source, factories(name, name_is_system_generated, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m, is_temporary, source), package_versions(id, version_label, definition, packages(code, title)), inspections(id, status, started_at)")
     .eq("id", visitId).single();
   const { data: engines } = await sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "otp", "field"]);
   // Phase 3B — governed execution config (visit_modes for the Pre-Execution
