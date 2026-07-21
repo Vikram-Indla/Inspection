@@ -15,12 +15,15 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
     expect(shell).toContain("useState(false)");
     expect(shell).toContain('localStorage.getItem("saqeel-shell-collapsed") === "1"');
     expect(shell).toContain('localStorage.setItem("saqeel-shell-collapsed", next ? "1" : "0")');
-    expect(nav.map(group => group.id)).toEqual(["overview", "operations", "compliance", "insights", "administration"]);
-    expect(nav.find(group => group.id === "operations")?.items).toEqual(expect.arrayContaining([
+    // TASK-WEB-CHANNEL-ACCESS-GATE-001 (change-control): the Inspector is an
+    // iPad-channel persona (rbac_matrix.csv RBAC-009/010), redirected off the
+    // web portal. The shared shell now exposes only the field channel to it —
+    // just Execution, and no Administration group (not even locked).
+    expect(nav.map(group => group.id)).toEqual(["operations"]);
+    expect(nav.find(group => group.id === "operations")?.items).toEqual([
       expect.objectContaining({ href: "/field", labelEn: "Execution", labelAr: "التنفيذ", enabled: true }),
-    ]));
-    expect(nav.find(group => group.id === "administration")?.items).toHaveLength(7);
-    expect(nav.find(group => group.id === "administration")?.items.every(item => !item.enabled)).toBe(true);
+    ]);
+    expect(nav.find(group => group.id === "administration")).toBeUndefined();
   });
 
   test("UIU-ISP-AC-007..011 field task bar is labelled, restrained and touch sized", () => {

@@ -1,21 +1,32 @@
 import { test, expect } from "@playwright/test";
-import { buildShellNavigation, isShellRouteCurrent, shellScopeForRoute } from "../src/lib/shell-navigation";
+import { buildShellNavigation, isShellRouteCurrent, shellScopeForRoute, isFieldOnlyPersona } from "../src/lib/shell-navigation";
+import { homeForRoles } from "../src/lib/role-home";
 import { storageStatePath } from "./personas";
 
 const itemsFor = (roles: string[]) => buildShellNavigation(roles).flatMap(group => group.items);
 const enabledHrefsFor = (roles: string[]) => itemsFor(roles).filter(item => item.enabled).map(item => item.href);
+// The shared business catalogue = the "business"-visibility destinations, which
+// every web persona receives identically. (Enabled-href equality is not a valid
+// cross-persona check: advanced admin items such as ops enforcement tools are
+// role-specific additions on top of this shared set.)
+const businessHrefsFor = (roles: string[]) =>
+  itemsFor(roles).filter(item => item.visibility === "business" && item.enabled).map(item => item.href);
+const businessHrefs = ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews", "/admin/regulations", "/admin/compliance-approvals", "/admin/violations", "/ai/suggestions"];
 
 test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
-  const businessHrefs = ["/dashboard", "/operations", "/factories", "/planning", "/field", "/reviews", "/admin/regulations", "/admin", "/admin/violations", "/ai/suggestions"];
-
-  test("every non-admin persona receives the same enabled business catalogue and seven locked admin entries", () => {
-    for (const role of ["planner", "inspector", "reviewer", "ops", "leadership"]) {
+  // TASK-WEB-CHANNEL-ACCESS-GATE-001 (change-control of CMP-REQ-SHELL-001..003):
+  // the identical-shell contract is scoped to WEB-channel business personas.
+  // The Inspector is an iPad-channel persona (rbac_matrix.csv RBAC-009/010) and
+  // is redirected off the web portal, so it no longer receives the web nav or a
+  // locked Administration group. See the "field channel" describe block below.
+  test("every WEB business persona receives the same business catalogue and seven locked admin entries", () => {
+    for (const role of ["planner", "reviewer", "ops", "leadership"]) {
       const groups = buildShellNavigation([role]);
       expect(groups.map(group => group.id)).toEqual(["overview", "operations", "compliance", "insights", "administration"]);
-      expect(enabledHrefsFor([role])).toEqual(businessHrefs);
+      expect(businessHrefsFor([role])).toEqual(businessHrefs);
       const adminItems = groups.find(group => group.id === "administration")!.items;
-      expect(adminItems).toHaveLength(7);
-      expect(adminItems.every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
+      expect(adminItems.filter(item => item.visibility === "admin-primary")).toHaveLength(7);
+      expect(adminItems.filter(item => item.visibility === "admin-primary").every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
     }
   });
 
@@ -46,6 +57,39 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
     expect(shellScopeForRoute("/dashboard")).toEqual({ date: true, region: true });
     expect(shellScopeForRoute("/operations")).toEqual({ date: false, region: true });
     expect(shellScopeForRoute("/planning")).toEqual({ date: false, region: false });
+  });
+});
+
+test.describe("TASK-WEB-CHANNEL-ACCESS-GATE-001 field channel (rbac_matrix.csv RBAC-009/010)", () => {
+  test("a field-only Inspector sees only the field channel — no web catalogue, no admin group", () => {
+    const groups = buildShellNavigation(["inspector"]);
+    // Only groups that still carry a field-channel destination survive.
+    expect(groups.map(group => group.id)).toEqual(["operations"]);
+    expect(enabledHrefsFor(["inspector"])).toEqual(["/field"]);
+    // The Administration group is dropped entirely — not even a locked entry.
+    expect(groups.find(group => group.id === "administration")).toBeUndefined();
+    // No web-portal destinations leak into the shared chrome.
+    const hrefs = itemsFor(["inspector"]).map(item => item.href);
+    for (const web of ["/dashboard", "/operations", "/factories", "/planning", "/reviews", "/admin/regulations", "/admin", "/ai/suggestions"]) {
+      expect(hrefs).not.toContain(web);
+    }
+  });
+
+  test("an operational grant wins: a multi-role Inspector+Planner keeps the full web catalogue", () => {
+    expect(isFieldOnlyPersona(["inspector", "planner"])).toBe(false);
+    expect(businessHrefsFor(["inspector", "planner"])).toEqual(businessHrefs);
+    expect(buildShellNavigation(["inspector", "planner"]).find(group => group.id === "administration")).toBeDefined();
+  });
+
+  test("field-only detection is precise and never locks out web or no-role sessions", () => {
+    expect(isFieldOnlyPersona(["inspector"])).toBe(true);
+    expect(isFieldOnlyPersona(["planner"])).toBe(false);
+    expect(isFieldOnlyPersona(["security_admin"])).toBe(false);
+    expect(isFieldOnlyPersona([])).toBe(false); // no roles → not field-only → gate must not redirect
+  });
+
+  test("the Inspector field home matches the channel-gate redirect target", () => {
+    expect(homeForRoles(["inspector"])).toBe("/field");
   });
 });
 

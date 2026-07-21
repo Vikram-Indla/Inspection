@@ -13,7 +13,13 @@ export async function middleware(request: NextRequest) {
     request.cookies.set("login_locale", loginLocale);
     request.cookies.set("locale", loginLocale);
   }
-  let response = NextResponse.next({ request });
+  // Expose the resolved pathname to Server Components so the authenticated
+  // (app) layout can enforce channel access (TASK-WEB-CHANNEL-ACCESS-GATE-001)
+  // without a second routing lookup. No auth/DB work is added here — the
+  // channel decision reuses the layout's already-cached role read.
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -22,7 +28,7 @@ export async function middleware(request: NextRequest) {
         getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet: { name: string; value: string; options?: object }[]) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
+          response = NextResponse.next({ request: { headers: requestHeaders } });
           cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },
