@@ -1,0 +1,22 @@
+# Session Handoff
+
+- Session ID: `2026-07-21-repository-consolidation-001`
+- Date/time: 2026-07-21 Asia/Riyadh
+- Gate: repository administration during G11 hardening
+- Task ID: `TASK-REPOSITORY-CONSOLIDATION-20260721`
+- Branch: `codex/repository-consolidation-20260721`
+- Starting commit: `235540f4` (`origin/setup/Inspection`)
+- Ending source commit: `b600e66` before this handoff record
+- Requirements: none added or changed; all inherited MVP1/MVP2/Factory 360/Execution/Performance contracts preserved
+- Acceptance IDs: N/A — repository administration; no product acceptance row upgraded
+- Screens: all merged Web/iPad route sources; no new screen acceptance claimed
+- Engines: Git refs/worktrees/stashes, Next.js App Router, TypeScript
+- Files changed: integrated branch histories; reconciled route-group imports and locale props; governance/evidence/handoff records
+- Database/API changes: source histories were integrated; no remote DDL, deployment, provider activation or shared-data mutation occurred
+- Tests run: typecheck PASS; production build PASS; date checks 17/17 PASS; diff/management-key scan PASS; design-system guardrail reports 89 inherited findings
+- Evidence captured: `product-contract/evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md`; verified local safety bundles and untracked-pack archive outside Git
+- Decisions made: canonical route keeps later governed runtime plus later approved Saqeel presentation; incomplete Planning WIP is archived, not merged; unsafe environment/config experiment is excluded; existing product blockers remain unchanged
+- Open blockers: final branch/worktree/stash cleanup and remote convergence at the time this record is authored; inherited G11/provider/policy/sponsor/release blockers
+- Regression result: compile and production build PASS; no product certification is inferred from repository convergence
+- Exact next task: verify both canonical remote branches resolve to one commit and resume the authoritative current G11 slice from that commit
+- Ready-to-paste resume prompt: Read `product-contract/00_START_HERE.md`, `CURRENT_STATE.md` UPDATE 117, `execution/CURRENT_SLICE.yaml`, and `evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md`. Confirm `main` and `setup/Inspection` point to the same canonical commit with one clean worktree and no stale stash/branch refs. Resume the current G11 task without changing existing acceptance or external-provider blockers.

@@ -408,3 +408,9 @@ synthetic beta licence and expected result for `POST /shared/api/v2/license-info
 | SLR-EV-014 | Final one-unison screenshot/video manifest | PASS 2/2 — `${INSPECTION_DOCS_ROOT}/MANIFESTS/SAQEEL_LOGIN_ONE_UNISON_004.json` |
 | SLR-EV-015 | Borderless event-statement source/runtime proof and refreshed light/dark/responsive frames | PASS — event background transparent, border 0px, shadow none; functional 27/27 and refreshed visual 2/2 |
 | SLR-EV-016 | Sponsor-directed quieter event typography | PASS — 13px/18px weight 500 statement; 9px/13px weight 600 marker; typecheck/build and focused 3/3 |
+
+## Repository consolidation — 2026-07-21
+
+| ID | Evidence | Status |
+|---|---|---|
+| REPO-CONSOLIDATION-EV-001 | Branch/worktree/stash inventory, conflict-resolution record, compile/build/date/diff/management-key verification | CAPTURED — `TASK-REPOSITORY-CONSOLIDATION-20260721.md`; no product acceptance upgrade |

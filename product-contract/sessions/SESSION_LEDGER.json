@@ -4643,9 +4643,29 @@
       "commit_sha": "fe4cf0e",
       "next_task": "Sponsor reviews the Pass-4 PR without merging; governed staging operator captures plans and validates Tier-C DDL, then QA repeats the identical benchmark.",
       "resume_prompt": "Read CURRENT_STATE Update 113, docs/performance/inspection-agent-handover.md and product-contract/evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md. Review the open PR without merging. Do not apply remote DDL without separate approved staging authority. Do not claim G11 PASS while Section 9 or required EXPLAIN evidence is failed or missing."
+    },
+    {
+      "session_id": "2026-07-21-repository-consolidation-001",
+      "started_at": "2026-07-21",
+      "ended_at": "2026-07-21",
+      "branch": "codex/repository-consolidation-20260721",
+      "task_id": "TASK-REPOSITORY-CONSOLIDATION-20260721",
+      "gate": "Repository administration during G11 hardening",
+      "requirements": ["No product requirement added or changed; preserve all inherited contracts"],
+      "acceptance_ids": ["N/A — repository administration; no product acceptance upgraded"],
+      "screens": ["All integrated Web/iPad route sources; no new screen acceptance claimed"],
+      "engines": ["Git refs/worktrees/stashes", "Next.js App Router", "TypeScript"],
+      "files_changed": ["integrated branch histories", "route-group imports and locale component contracts", "repository consolidation evidence and handoff controls"],
+      "tests": ["typecheck PASS", "production build PASS", "Riyadh date checks 17/17 PASS", "diff and management-key scans PASS", "design-system guardrail reports 89 inherited findings"],
+      "evidence": ["product-contract/evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md", "verified local recovery bundles outside Git", "verified local untracked implementation-pack archive outside Git"],
+      "decisions": ["Keep later governed runtime and later approved Saqeel presentation", "Archive but do not merge incomplete Planning WIP", "Exclude unsafe environment/config experiment", "Do not change inherited product acceptance or blockers"],
+      "blockers": ["Final remote ref/worktree/stash cleanup at handoff authoring time", "Inherited G11/provider/policy/sponsor/release blockers"],
+      "commit_sha": "b600e66 (validated source before handoff record)",
+      "next_task": "Verify main and setup/Inspection resolve to one canonical commit, then resume the authoritative current G11 slice.",
+      "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md UPDATE 117, execution/CURRENT_SLICE.yaml, and evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md. Confirm main and setup/Inspection point to the same canonical commit with one clean worktree and no stale stash/branch refs. Resume the current G11 task without changing existing acceptance or external-provider blockers."
     }
   ],
-  "last_session": "2026-07-20-g11-performance-pass4-integration",
+  "last_session": "2026-07-21-repository-consolidation-001",
   "rules": {
     "append_only": true,
     "required_fields": [

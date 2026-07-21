@@ -405,4 +405,12 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
 - Verification: typecheck PASS; production build PASS; focused contract suite 4/4 PASS; protected static inventory 135 PASS / 4 intentional live-provider skips / 0 failed.
 - Functional provider acceptance: **BLOCKED EXTERNAL** for `ISH-API-001..011`. Authenticated method-mismatch evidence proves POST for `ISH-API-001..003` and `ISH-API-008..009`; authentication, identifiers, bodies, schemas, errors, privacy, fixtures, and API-owner confirmation remain unverified for every endpoint.
 - Retirement rule: no Factory 360 stub or gap may be marked retired until its endpoint contract, sanitized fixture checksum, normalization mapping, negative paths, and controlled runtime evidence are accepted.
+
+## Repository consolidation — 2026-07-21
+
+- Task: `TASK-REPOSITORY-CONSOLIDATION-20260721`.
+- Acceptance effect: **NONE**. Repository convergence does not upgrade, close,
+  waive or reinterpret any product acceptance row.
+- Existing G11, provider, policy, sponsor, Arabic/human-review and release
+  blockers remain authoritative after branch convergence.
 - Checkpoint: sponsor-approved push readiness PASS; all endpoints remain `DISCOVERY_REQUIRED`, provider network calls remain absent, sensitive domains remain separate, zero stubs are retired, and no canonical migration or Factory 360 projection changed. Stop state: `AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT`.

@@ -1296,3 +1296,21 @@ occurred.
 - 2026-07-20 UPDATE 111 (TASK-G11-REMEDIATION-PERFORMANCE-001 — APP-SIDE REMEDIATION MEASURED, G11 ACCEPTANCE FAIL): independent production-build profiling captured 90 baseline and 90 final authenticated route samples across Dashboard, Operations, Factory 360, Planning, Reviews and AI Suggestions. Root causes confirmed: raw/document-style internal navigation, a sequential shared-Shell auth/RBAC/reference waterfall, duplicate request-local Supabase/locale/auth work, and heavy/unindexed route data shapes. Commit `f2b86c4` adds same-origin client routing with accessible immediate progress, preserves native Next Link prefetch, overlaps and request-deduplicates Shell/page reads, skips unused region/audit data, parallelizes Reviews discovery, folds Factory licence lookup into its relationship read, and supplies a forward-only index migration. Final visual acknowledgement is 61–71 ms p75 (PASS <=100 ms); warm p75 improves 12.6% Dashboard, 21.0% Factories, 36.4% Planning, 25.3% Reviews and 36.6% AI, while Operations is flat. Useful-content acceptance remains FAIL: 859–8,897 ms p75 versus <=500 ms; Operations still logs `action_forms` and override-evidence statement timeouts. The checkout is not Supabase-linked, so no remote DDL, advisor or EXPLAIN claim is made. Typecheck/build PASS; definitive performance 90/90; corrected focused regression 23/23; negative auth passed; before/after desktop/iPad/theme visual capture passed. Full mutation-heavy regression and one Dashboard entity-search timeout remain open. Evidence: `docs/performance/` and the external binary root indexed at `docs/performance/evidence/INDEX.md`. No main modification, merge or deployment occurred.
 
 - 2026-07-20 UPDATE 112 (TASK-G11-REMEDIATION-PERFORMANCE-001 — PROGRESS NEGATIVE PATH CLOSED; G11 STILL FAIL): an independent continuation found that the new immediate progress state could remain busy when the already-current navigation item was clicked because no route transition followed. Commit `496ed0c` ignores an exact-current URL and clears pending state when the server Shell supplies the completed route. Typecheck and production build PASS; protected shell/design contracts pass 16/16; a reduced production benchmark passes 1/1 across six warm representative transitions and proves no progress indicator remains after useful content renders. The run intentionally does not replace the definitive 90-sample timing evidence. Operations reproduced the existing override-evidence statement timeout. Read-only Supabase connector probes for project metadata, migrations, performance advisors and catalog indexes were all permission-denied; no remote SQL or DDL was executed. Useful-content p75, query-plan evidence, migration application, the Dashboard search timeout and full protected regression remain open, so the gate verdict remains FAIL. The verified commits and handoff were fast-forward-pushed to `origin/perf/p0-navigation-remediation` through `a3250c6`; `setup/Inspection` and `main` remain unchanged.
+
+## 2026-07-21 UPDATE 117 — Repository histories consolidated and validated
+
+`TASK-REPOSITORY-CONSOLIDATION-20260721` reconciled the active local and remote
+development lines onto one source route from `origin/setup/Inspection`. Later
+governed runtime behavior, route grouping, Factory 360/Execution/Planning and
+performance work were preserved alongside the later approved Saqeel visual and
+login work. Conflict resolution retained both governance histories and removed
+duplicate old route locations; colliding V5 decision IDs were reassigned to
+`DEC-030..032` without changing their substance. Unsafe local environment/config
+experiments, generated output, modified binary evidence and an incomplete
+uncommitted Planning rewrite were not merged; they were preserved only in local
+recovery artifacts outside Git. Validation at source commit `b600e66`:
+typecheck PASS, production build PASS, Riyadh date checks 17/17 PASS, diff and
+management-key scans PASS. The V5 design guardrail still reports 89 inherited
+findings; none were hidden or allowlisted. This administration task changes no
+product acceptance: the active G11 performance verdict and every existing
+provider, policy, sponsor, human-review and release blocker remain unchanged.

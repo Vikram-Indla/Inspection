@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-REPOSITORY-CONSOLIDATION-20260721"
+    gate: "Repository administration during G11 hardening"
+    priority: "P0"
+    status: "SOURCE_CONSOLIDATED_VALIDATED_AWAITING_FINAL_REMOTE_REF_CLEANUP"
+    owner: "Codex repository administration"
+    blocked_by: []
+    blocks: ["Single-route remote convergence"]
+    note: "Compatible branch histories are integrated and source commit b600e66 passes typecheck/build/date/diff/management-key checks. Unsafe local config and incomplete Planning WIP are archived outside the canonical route. Final worktree/stash/branch deletion and remote ref convergence remain before this item can be closed; no product acceptance changes."
   - task_id: "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001"
     gate: "G11 controlled public-access UI hardening"
     priority: "P0"
