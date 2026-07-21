@@ -6,7 +6,7 @@ import {
 import { KPI_DEFINITIONS, kpiDefinition } from "../src/lib/dashboard-kpi/registry";
 import { buildInspectorKpiProjection } from "../src/lib/dashboard-kpi/inspector-projection";
 import { buildDashboardKpiProjection } from "../src/lib/dashboard-kpi/projection";
-import { buildDashboardMetrics } from "../src/app/dashboard/metrics";
+import { buildDashboardMetrics } from "../src/app/(app)/dashboard/metrics";
 import type { MetricScope } from "../src/lib/dashboard-kpi/contract";
 
 // Pure unit/contract tests for the shared KPI foundation. No browser — imports

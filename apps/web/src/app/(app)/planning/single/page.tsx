@@ -207,7 +207,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   return (
     <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}
       context={<span className="ax-lozenge ax-lozenge--info">{t("plan.single.context", "SCR-WEB-120 · identity confidence lens")}</span>}>
-      <Wizard query={q} results={graded} registryUnavailable={registryUnavailable} packages={(pkgs ?? []) as never} inspectors={inspectors} strings={strings} virtualEligible={virtualEligible} />
+      <Wizard query={q} results={graded} registryUnavailable={registryUnavailable} packages={(pkgs ?? []) as never} inspectors={inspectors} strings={strings} virtualEligible={virtualEligible} locale={locale === "ar" ? "ar" : "en"} />
     </Shell>
   );
 }

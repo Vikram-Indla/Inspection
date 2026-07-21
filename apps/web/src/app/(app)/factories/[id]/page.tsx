@@ -294,7 +294,7 @@ export default async function Factory360({ params, searchParams }: { params: Pro
                   observedArrival: t("f360.geo.legend.arrival", "observed arrival"),
                   gpsOverride: t("f360.geo.legend.override", "GPS override"),
                   noLocations: t("f360.geo.legend.empty", "No observed inspection locations are recorded in your authorized scope."),
-                }} />
+                }} locale={locale === "ar" ? "ar" : "en"} />
               : <div className="cd-mapph"><span className="cd-mapph__t">{t("f360.geo.noOfficial", "Official coordinates are unavailable from the source.")}</span></div>}
           </div>
         </aside>

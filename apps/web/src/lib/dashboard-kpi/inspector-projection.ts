@@ -10,7 +10,7 @@
 //
 // Pure: `nowMs` is injected, no I/O. Unit-tested in dashboard-kpi-contract.spec.
 
-import { isInScope, riyadhTodayScope } from "@/app/dashboard/metrics";
+import { isInScope, riyadhTodayScope } from "@/app/(app)/dashboard/metrics";
 import { countChecklistCompliance, type CompliesResponse } from "./checklist-compliance";
 import { kpiDefinition, type KpiDefinition } from "./registry";
 import type { DashboardKpiProjection, MetricScope, SharedMetric } from "./contract";

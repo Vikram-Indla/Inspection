@@ -409,7 +409,7 @@ export default function ShellClient({
             </div>
             <div className="ax-pagehead__actions">
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
-              <NotificationBell strings={bellStrings} />
+              <NotificationBell strings={bellStrings} locale={locale} />
               <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="insights" />
               </Link>

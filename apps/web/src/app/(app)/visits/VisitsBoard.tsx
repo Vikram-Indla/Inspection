@@ -171,7 +171,7 @@ type AllowedKey = "editable" | "locked" | "final" | "expired";
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 const EMPTY: ActionResult = {};
 
-export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings }: {
+export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings, locale }: {
   rows: VisitRow[];
   inspectors: Inspector[];
   typeOptions: { value: string; label: string }[];
@@ -182,7 +182,9 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   limit: number;
   nextLimit: number | null;
   strings: VisitsBoardStrings;
+  locale: "ar" | "en";
 }) {
+  void locale;
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
   const [type, setType] = useState("");

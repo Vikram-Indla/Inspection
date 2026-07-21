@@ -7,7 +7,7 @@
 // The server-only loader (loader.ts) is responsible for fetching rows and
 // calling buildDashboardMetrics; this file only shapes the contract.
 
-import type { buildDashboardMetrics } from "@/app/dashboard/metrics";
+import type { buildDashboardMetrics } from "@/app/(app)/dashboard/metrics";
 import { COMPLIANCE_EXCLUSIONS } from "./checklist-compliance";
 import { KPI_DEFINITIONS, type KpiDefinition } from "./registry";
 import type {
