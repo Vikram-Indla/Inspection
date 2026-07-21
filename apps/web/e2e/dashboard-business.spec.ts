@@ -81,10 +81,10 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.getByRole("heading", { name: "Dashboard", exact: true })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Strategic View" })).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByText("Target not configured", { exact: true })).toBeVisible();
-    await expect(page.getByText("National compliance rate", { exact: true })).toBeVisible();
-    await expect(page.getByText(/Last 30 days/)).toBeVisible();
-    await expect(page.getByText(/No generated recommendation or forecast/)).toBeVisible();
+    await expect(page.getByText("Not configured").first()).toBeVisible();
+    await expect(page.getByText("Compliance rate trend", { exact: true })).toBeVisible();
+    await expect(page.getByText(/Asia\/Riyadh/)).toBeVisible();
+    await expect(page.getByText(/no generated narrative or forecast/i)).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Primary navigation" }).getByRole("link", { name: "Operations Center" })).toHaveAttribute("href", "/operations");
     await page.screenshot({ path: join(EVIDENCE_DIR, "strategic-en-dark-desktop.png"), fullPage: true });
     await page.evaluate(() => localStorage.setItem("saqeel-theme", "light"));
@@ -97,12 +97,12 @@ test.describe("TASK-WEB-DASHBOARD-002 runtime", () => {
     await page.getByRole("tab", { name: "Operational View" }).click();
     await expect(page).toHaveURL(/view=operational/);
     await expect(page.getByRole("tab", { name: "Operational View" })).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByText("Today's planned visits", { exact: true })).toBeVisible();
-    await expect(page.getByText("SLA breach rate", { exact: true })).toBeVisible();
-    await expect(page.getByText(/relative, not absolute capacity/i)).toBeVisible();
+    await expect(page.getByText("Today planned", { exact: true })).toBeVisible();
+    await expect(page.getByText("SLA breach", { exact: true })).toBeVisible();
+    await expect(page.getByText(/No capacity threshold/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: "Alert source coverage" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Planning-to-review operational timeline" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /GPS override records/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Live activity" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /GPS overrides/ })).toBeVisible();
     await page.screenshot({ path: join(EVIDENCE_DIR, "operational-en-dark-desktop.png"), fullPage: true });
   });
 
