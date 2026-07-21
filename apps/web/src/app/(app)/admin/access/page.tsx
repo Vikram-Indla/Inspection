@@ -4,6 +4,7 @@ import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import { logProviderError } from "@/lib/neutral-error";
 import AccessManager, { type UserAccess } from "./AccessManager";
+import RoleCapabilityPanel from "./RoleCapabilityPanel";
 
 // TASK-EXECUTION-MODULE-001 · Phase 2B — governed role/capability grants.
 // The roster below stays read-only and exactly as before. For security_admin
@@ -39,6 +40,15 @@ export default async function Access() {
     : { data: false, error: null };
   if (gateError) logProviderError("admin access security_admin gate", gateError);
   const canManage = isSecurityAdmin === true;
+
+  // M9 / PLN-REQ-004 — the role-capability editor gates on the PLANNING
+  // capability admin.access.manage (explicit-grant-only, seeded to
+  // security_admin), checked independently of the legacy has_role gate above.
+  const { data: canManageAccessCaps, error: capGateError } = user
+    ? await sb.rpc("has_planning_capability", { p_capability: "admin.access.manage" })
+    : { data: false, error: null };
+  if (capGateError) logProviderError("admin access admin.access.manage gate", capGateError);
+  const canManageRoleCaps = canManageAccessCaps === true;
 
   let access: UserAccess[] = [];
   let capabilityCatalogue: CapabilityRow[] = [];
@@ -88,6 +98,22 @@ export default async function Access() {
           .sort((a, b) => a.capabilityKey.localeCompare(b.capabilityKey)),
       };
     });
+  }
+
+  // M9 — role capability (role_permissions) editor data: the governed
+  // permission catalogue plus every current role→permission grant. Read is
+  // authenticated-wide by RLS; writes stay behind the server-action guards.
+  let permissionCatalogue: { permission_key: string; title: string; description: string }[] = [];
+  let rolePermissionGrants: { role_key: string; permission_key: string; granted_at: string }[] = [];
+  if (canManageRoleCaps) {
+    const [permsRes, grantsRes] = await Promise.all([
+      sb.from("permissions").select("permission_key, title, description").order("permission_key"),
+      sb.from("role_permissions").select("role_key, permission_key, granted_at").order("role_key").order("permission_key"),
+    ]);
+    if (permsRes.error) logProviderError("admin access permissions read", permsRes.error);
+    if (grantsRes.error) logProviderError("admin access role_permissions read", grantsRes.error);
+    permissionCatalogue = (permsRes.data ?? []) as typeof permissionCatalogue;
+    rolePermissionGrants = (grantsRes.data ?? []) as typeof rolePermissionGrants;
   }
 
   return (
@@ -145,6 +171,29 @@ export default async function Access() {
             effectNote: t("admin.access.manage.effectNote", "Role and capability changes take effect on the target's next request. Nothing is applied silently: every change is confirmed here and recorded in the activity log with the actor, before/after state and requirement reference EXE-ACCESS."),
             working: t("admin.access.manage.working", "Applying…"),
             saved: t("admin.access.manage.saved", "saved — effective on the user's next request"),
+          }}
+        />
+      )}
+
+      {canManageRoleCaps && user && (
+        <RoleCapabilityPanel
+          roles={((roles ?? []) as RoleRow[]).map(r => ({ roleKey: r.role_key, title: r.title, isAdmin: r.is_admin }))}
+          permissions={permissionCatalogue.map(p => ({ permissionKey: p.permission_key, title: p.title, description: p.description }))}
+          grants={rolePermissionGrants.map(g => ({ roleKey: g.role_key, permissionKey: g.permission_key, grantedAt: g.granted_at }))}
+          labels={{
+            panelTitle: t("admin.access.rolecaps.title", "Role capabilities (governed permission map)"),
+            panelIntro: t("admin.access.rolecaps.intro", "Grant or revoke a capability for an entire role. The self-escalation guard blocks granting, to a role you hold, any capability you lack — and admin.access.manage can never be granted to or revoked from a role you hold. RLS (security_admin) remains the write authority."),
+            selectRole: t("admin.access.rolecaps.selectRole", "Select a role"),
+            grantedTitle: t("admin.access.rolecaps.granted", "Granted capabilities"),
+            noGrants: t("admin.access.rolecaps.none", "This role currently has no capability grants."),
+            revoke: t("admin.access.manage.revoke", "Revoke"),
+            grantCapability: t("admin.access.rolecaps.grant", "Grant capability to role"),
+            confirmRevoke: t("admin.access.rolecaps.confirmRevoke", "Revoke “{permission}” from every user with role “{role}”? The change takes effect on their next request."),
+            confirmGrantSod: t("admin.access.rolecaps.confirmGrantSod", "Grant the separation-of-duties capability admin.access.manage to role “{role}”? Any holder of that role could then change access."),
+            confirm: t("admin.access.manage.confirm", "Confirm"),
+            cancel: t("common.cancel", "Cancel"),
+            working: t("admin.access.manage.working", "Applying…"),
+            auditNote: t("admin.access.rolecaps.auditNote", "Audit note: user_roles changes are recorded by the existing audit trigger; role_permissions audit coverage is migration 20260722120000 (authored, pending apply)."),
           }}
         />
       )}
