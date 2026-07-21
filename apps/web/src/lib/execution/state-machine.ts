@@ -15,7 +15,7 @@
 // legacy values (inspections.status free text; operational_state enum values
 // 'prepared' … 'submitted'). These pure projections translate stored values
 // into the canonical vocabulary; no destructive rewrite ever happens. The
-// migration `20260721090000_execution_canonical_contracts.sql` mirrors the
+// migration `20260721093000_execution_canonical_contracts.sql` mirrors the
 // lifecycle projection in SQL — keep both mappings in lockstep.
 
 /** Tier 1 — Planning-owned visit status (stored enum values, canonical). */

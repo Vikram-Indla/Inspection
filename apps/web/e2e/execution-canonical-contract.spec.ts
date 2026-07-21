@@ -8,7 +8,7 @@ const read = (file: string) => fs.readFileSync(path.join(repoRoot, file), "utf8"
 const exists = (file: string) => fs.existsSync(path.join(repoRoot, file));
 
 test.describe("TASK-EXECUTION-MODULE-001 Phase 1 canonical contracts", () => {
-  const migrationPath = "supabase/migrations/20260721090000_execution_canonical_contracts.sql";
+  const migrationPath = "supabase/migrations/20260721093000_execution_canonical_contracts.sql";
 
   test("migration exists with the lifecycle projection, capability seeds and shared services", () => {
     expect(exists(migrationPath)).toBeTruthy();

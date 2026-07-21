@@ -2,7 +2,7 @@
 // SAQEEL-EXE-CANONICAL-PLAN v1.0 §7/§8/§10.
 //
 // Typed wrappers over the readiness RPCs from migration
-// `20260721120000_execution_preparation.sql`. The RPCs are the single write
+// `20260721121000_execution_preparation.sql`. The RPCs are the single write
 // path: they re-check assignment + execution.prepare, validate the Execution
 // Date (window / not-past / shared daily-cap with self-exclusion), mode
 // eligibility, package resolution and the fail-closed form_config composition
