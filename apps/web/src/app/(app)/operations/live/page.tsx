@@ -3,6 +3,7 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import LiveOps, { type LiveOpsStrings } from "./LiveOps";
 import type { LiveFactory, LiveRegion, LiveInspector, RagBand } from "./types";
+import { bandOf, posture } from "../region-posture";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
 
 // SCR-WEB-500 (live prototype) — the national "FlightRadar" operations view.
@@ -25,13 +26,6 @@ type VisitRow = {
   assignments: { profiles: { full_name: string } | null }[] | null;
 };
 
-const BAND: Record<string, RagBand> = { high: "high", medium: "medium", low: "low" };
-function bandFromScore(score: number | null): RagBand {
-  if (score == null) return "low";
-  if (score >= 67) return "high";
-  if (score >= 34) return "medium";
-  return "low";
-}
 // Deterministic 0..1 from a string — a stable phase/direction per inspector so
 // the projected routes fan out instead of marching in lockstep.
 function hash01(s: string): number {
@@ -67,7 +61,7 @@ export default async function LiveOperations() {
   const factories: LiveFactory[] = factoryRows.map(f => ({
     id: `f:${f.id}`, rawId: f.id, name: f.name, region: f.region, city: f.city,
     lat: Number(f.official_lat), lng: Number(f.official_lng),
-    band: f.risk_band && BAND[f.risk_band] ? BAND[f.risk_band] : bandFromScore(f.risk_score),
+    band: bandOf(f.risk_band, f.risk_score),
     riskScore: f.risk_score,
   }));
 
@@ -82,17 +76,11 @@ export default async function LiveOperations() {
     const lng = fs.reduce((a, f) => a + f.lng, 0) / fs.length;
     const scores = fs.map(f => f.riskScore).filter((n): n is number => n != null);
     const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null;
-    const high = fs.filter(f => f.band === "high").length;
-    // posture: high if a quarter of the region is high-band or avg risk is high;
-    // medium if any elevated presence; else low.
-    const posture: RagBand =
-      high / fs.length >= 0.25 || (avg ?? 0) >= 60 ? "high"
-        : high > 0 || fs.some(f => f.band === "medium") || (avg ?? 0) >= 33 ? "medium"
-          : "low";
     return {
       id: name, name, lat, lng,
       radiusM: Math.min(180000, 70000 + fs.length * 14000),
-      posture, factories: fs.length, avgRisk: avg == null ? null : Math.round(avg),
+      posture: posture(fs.map(f => ({ band: f.band, score: f.riskScore }))),
+      factories: fs.length, avgRisk: avg == null ? null : Math.round(avg),
     };
   });
 
