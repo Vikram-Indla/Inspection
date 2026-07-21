@@ -7,7 +7,7 @@ items:
     owner: "Codex repository administration"
     blocked_by: []
     blocks: []
-    note: "Compatible branch histories are integrated and source commit b600e66 passes typecheck/build/date/diff/management-key checks. Unsafe local config and incomplete Planning WIP are archived outside the canonical route. Remote main and setup/Inspection converged, all stale remote/local branches and linked worktrees were removed, and all stashes were cleared after a verified final all-refs bundle was captured. No product acceptance changes."
+    note: "Re-audit completed 2026-07-21 under explicit sponsor direction: approved Web channel access, the Planning CR/licence/plant resolver and handoffs, and Execution Phase 3A/3B were merged into main. Typecheck/build pass and the combined Execution/shared-shell source contracts pass 43/43. Planning and Execution remain product work areas, but no longer require separate Git streams; main is the single source route. Merged worktrees/branches and the superseded setup/Inspection branch are to be removed after the final main push and remote-default change. No product acceptance changes."
   - task_id: "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001"
     gate: "G11 controlled public-access UI hardening"
     priority: "P0"
@@ -23,7 +23,7 @@ items:
     owner: "Kimi implementation and QA + Sponsor acceptance authority"
     blocked_by: ["External provider credentials/contracts", "External submission activation trigger", "Sponsor-only legal/policy values", "Native-Arabic human sign-off"]
     blocks: ["Execution module sponsor acceptance", "G11/G12 release claim for the execution chain"]
-    note: "One-pass canonical Execution implementation per SAQEEL-EXE-CANONICAL-PLAN v1.0 (2026-07-21) on branch kimi/execution-module-001 from origin/setup/Inspection@235540f4 (re-fetched and recorded 2026-07-21). Additive reconciliation only: preserves /field, mim-field-v1, mim-field-f360-v1, /reviews, /virtual, /visits, Operations Center, Factory 360, Admin surfaces, RLS, append-only audit and immutable versions. Slice: product-contract/execution/CURRENT_SLICE.TASK-EXECUTION-MODULE-001.yaml; preservation ledger: product-contract/execution/EXECUTION_PRESERVATION_LEDGER.csv. Authority pack: apps/web/.planning-pack/kimi-pack/SAQEEL_EXECUTION_KIMI_PACK_2026-07-21."
+    note: "One-pass canonical Execution implementation per SAQEEL-EXE-CANONICAL-PLAN v1.0 (2026-07-21), now integrated into main through Phase 3B. Additive reconciliation preserves /field, mim-field-v1, mim-field-f360-v1, /reviews, /virtual, /visits, Operations Center, Factory 360, Admin surfaces, RLS, append-only audit and immutable versions. Combined Execution/shared-shell source contracts pass 43/43; typecheck/build pass. The former kimi/execution-module-001 branch is merged and no longer an active source route. Slice: product-contract/execution/CURRENT_SLICE.TASK-EXECUTION-MODULE-001.yaml; preservation ledger: product-contract/execution/EXECUTION_PRESERVATION_LEDGER.csv. External authority inputs were kept outside Git."
   - task_id: "TASK-G11-REMEDIATION-PERFORMANCE-001"
     gate: "G11 Hardening — platform navigation performance remediation"
     priority: "P0"

@@ -12,3 +12,13 @@
 - Known inherited check: `npm run check:design-system-v5` reports 89 pre-existing repository-wide guardrail findings. They are not reclassified or silently allowlisted by this repository-administration task.
 - Product status: G11 performance acceptance and all existing provider, policy, sponsor, human-language, runtime and release blockers remain unchanged.
 - Cleanup result: remote `main` and `setup/Inspection` converged; nine stale remote branches, twenty-four stale local branches, all linked worktrees, and six stashes were removed after final recovery capture.
+
+## Direct-main re-audit
+
+- Sponsor direction: use `main` directly as the sole Git source route; Planning and Execution are product tasks, not long-lived branch streams.
+- Newly integrated histories: approved Web channel access (`3bc1acb0`), Planning resolver/handoffs (`b4389529`, `562bf1b5`), and Execution Phase 3A/3B (`04b55593`, `c8c52acd`).
+- Merge commits: `48420a5b`, `1fec2cb0`, and `33c76eed`.
+- Post-merge correction commit: `f532056b` aligns source-contract tests with the canonical `(app)` route group and current accepted tokens.
+- Verification: typecheck PASS; production build PASS; Execution/shared-shell source contracts 43/43 PASS.
+- Recovery: `/private/tmp/Inspection-pre-direct-main-integration-20260721.bundle` was created and verified before integration. External untracked Planning inputs were moved to `/private/tmp/Inspection-planning-authority-pack-untracked-20260721`; neither archive is committed.
+- Acceptance boundary: Planning live/runtime acceptance and Execution sponsor/release acceptance remain unchanged and open where already recorded.

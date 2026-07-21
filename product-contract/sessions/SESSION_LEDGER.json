@@ -4663,9 +4663,29 @@
       "commit_sha": "b600e66 (validated source before handoff record)",
       "next_task": "Resume the authoritative current G11 slice from the converged canonical commit.",
       "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md UPDATE 117, execution/CURRENT_SLICE.yaml, and evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md. Repository convergence is complete: main and setup/Inspection share one canonical commit, one clean worktree remains, and stale stash/branch refs are absent. Resume the current G11 task without changing existing acceptance or external-provider blockers."
+    },
+    {
+      "session_id": "2026-07-21-repository-consolidation-002",
+      "started_at": "2026-07-21",
+      "ended_at": "2026-07-21",
+      "branch": "main",
+      "task_id": "TASK-REPOSITORY-CONSOLIDATION-20260721",
+      "gate": "G11 repository administration and source-route consolidation",
+      "requirements": ["Preserve inherited Planning, Execution, Web channel, audit, offline and immutable-version contracts; no product requirement changed"],
+      "acceptance_ids": ["N/A — repository administration; no product acceptance upgraded"],
+      "screens": ["Planning single visit", "Factory 360 handoffs", "Field pre-execution", "Shared Web/field shell"],
+      "engines": ["Git refs/worktrees/stashes", "Next.js App Router", "TypeScript", "Execution readiness services"],
+      "files_changed": ["Merged approved Web access, Planning resolver/handoffs and Execution Phase 3A/3B", "Canonical route-group contract tests", "Repository evidence and handoff controls"],
+      "tests": ["typecheck PASS", "production build PASS", "combined Execution/shared-shell source contracts 43/43 PASS"],
+      "evidence": ["product-contract/evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md", "verified pre-integration recovery bundle outside Git"],
+      "decisions": ["main is the sole source route", "Planning and Execution continue on main without long-lived branches", "External authority packs remain outside Git"],
+      "blockers": ["Inherited Planning live/runtime acceptance", "Execution provider, policy, native-Arabic, sponsor and release boundaries"],
+      "commit_sha": "f532056b (validated source before handoff record)",
+      "next_task": "Continue the sponsor-selected Planning or Execution slice directly on main with scoped verification and evidence.",
+      "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md UPDATE 118, execution/CURRENT_SLICE.yaml, and evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md. Work directly on main; do not create a long-lived Planning or Execution branch unless the sponsor explicitly changes this policy. Preserve all existing acceptance and provider/policy blockers."
     }
   ],
-  "last_session": "2026-07-21-repository-consolidation-001",
+  "last_session": "2026-07-21-repository-consolidation-002",
   "rules": {
     "append_only": true,
     "required_fields": [

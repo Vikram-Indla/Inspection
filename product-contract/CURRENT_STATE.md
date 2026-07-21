@@ -1319,3 +1319,23 @@ branches and twenty-four stale local branches were deleted, all linked
 worktrees were removed, and six stashes were cleared only after their exact refs
 were captured in a verified final all-refs bundle. The canonical checkout is
 `setup/Inspection`; local and remote `main` point to the same commit.
+
+## 2026-07-21 UPDATE 118 — Direct-main source route established
+
+The sponsor explicitly replaced the prior dual-branch route with `main` as the
+single source of truth. A fresh ref/worktree/stash audit found three later
+development lines: approved Web channel access, Planning CR/licence/plant
+resolution with Factory 360 handoffs and draft resume, and Execution Phase
+3A/3B readiness/pre-execution work. All three histories were merged into
+`main`; the route-group conflicts in Planning were resolved by preserving the
+new functional resolver while retaining the canonical `(app)` layout, locale
+contract and Saqeel design tokens. Stale source-contract paths were updated to
+the same canonical route group. Verification at source commit `f532056b`:
+typecheck PASS, production build PASS, and combined Execution/shared-shell
+source contracts 43/43 PASS. A verified pre-integration recovery bundle exists
+outside Git, and untracked external Planning inputs were moved outside the
+repository rather than committed. Planning and Execution remain active product
+work areas on `main`; this consolidation does not upgrade their runtime,
+sponsor or release acceptance. After the final push, merged feature worktrees
+and branches plus the superseded `setup/Inspection` branch are removed and the
+remote default is changed to `main`.
