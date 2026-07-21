@@ -187,7 +187,12 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
   const foundFactoryIds = new Set(factories.map(f => f.id));
   const missingFactoryIds = clean.filter(id => !foundFactoryIds.has(id));
   const packages: ReviewPackage[] = (pkgs ?? []).map(p => ({ id: p.id, version_label: p.version_label, code: (p.packages as unknown as { code: string }).code }));
-  const inspectors: ReviewInspector[] = (inspRows ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
+  // M7 — the embedded profiles join is NULL for personas the profiles_self RLS
+  // policy does not cover (e.g. the Reviewer: business_staff with planning
+  // capabilities but no planner role). A null join must never 500 the whole
+  // selection load; fall back to the language-neutral id prefix, exactly the
+  // pattern the conflict copy already uses for unnameable inspectors.
+  const inspectors: ReviewInspector[] = (inspRows ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string } | null)?.full_name ?? r.user_id.slice(0, 8) }));
 
   // CD-024 — selection-time overlap evidence. When the caller supplies the
   // shared inspection window we run the SAME overlap query publish uses over the
