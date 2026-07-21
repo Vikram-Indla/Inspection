@@ -8,10 +8,10 @@ import { storageStatePath } from "./personas";
 // cannot safely mutate. The live checks only inspect the workspace and never
 // submit a decision.
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
-const ACTIONS = "src/app/reviews/[id]/actions.ts";
-const PAGE = "src/app/reviews/[id]/page.tsx";
-const PANEL = "src/app/reviews/[id]/DecisionPanel.tsx";
-const TRACE = "src/app/reviews/[id]/FindingTraceChain.tsx";
+const ACTIONS = "src/app/(app)/reviews/[id]/actions.ts";
+const PAGE = "src/app/(app)/reviews/[id]/page.tsx";
+const PANEL = "src/app/(app)/reviews/[id]/DecisionPanel.tsx";
+const TRACE = "src/app/(app)/reviews/[id]/FindingTraceChain.tsx";
 
 test.describe("CD-029 server wiring — integrity guards", () => {
   test("leg 3 — startReview binds version to inspection and latest submission", () => {

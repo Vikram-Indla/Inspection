@@ -1,5 +1,19 @@
 # Evidence Status
 
+## TASK-G11-REMEDIATION-PERFORMANCE-001 — 2026-07-20
+
+| ID | Evidence | Status |
+|---|---|---|
+| PERF-EV-001 | Baseline production benchmark, 90 authenticated samples | Captured — PASS dataset |
+| PERF-EV-002 | Final production benchmark, 90 authenticated samples | Captured — PASS dataset; acceptance targets still FAIL |
+| PERF-EV-003 | Route inventory and mandatory P0/investigation register | Captured |
+| PERF-EV-004 | Typecheck, production build and protected regression | Captured — PASS with documented full-suite gap |
+| PERF-EV-005 | Desktop/iPad/theme screenshots and traces | Captured externally; indexed in Git |
+| PERF-EV-006 | Completed-navigation progress negative path at `496ed0c` | Captured — typecheck/build, 16/16 source contracts and reduced six-route production run PASS |
+| PERF-EV-007 | Remote migration, advisors and EXPLAIN/query plans | BLOCKED — connector permission denied; no remote DDL |
+
+Exact record: `TASK-G11-REMEDIATION-PERFORMANCE-001.md`.
+
 ## TASK-WEB-COMPLIANCE-REQUEST-ENGINE-002 — 2026-07-19
 
 | ID | Evidence | Status |

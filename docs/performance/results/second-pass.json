@@ -1,0 +1,2741 @@
+{
+  "schemaVersion": "1.0",
+  "taskId": "TASK-G11-REMEDIATION-PERFORMANCE-001",
+  "capturedAt": "2026-07-20T15:45:47.160Z",
+  "build": "next-production",
+  "coldRuns": 1,
+  "warmRuns": 3,
+  "targets": [
+    {
+      "route": "/dashboard",
+      "title": "Dashboard",
+      "persona": "ops",
+      "navHref": "/dashboard"
+    },
+    {
+      "route": "/operations",
+      "title": "Operations Center",
+      "persona": "ops",
+      "navHref": "/operations"
+    },
+    {
+      "route": "/factories",
+      "title": "Factory 360",
+      "persona": "ops",
+      "navHref": "/factories"
+    },
+    {
+      "route": "/planning",
+      "title": "Visit planning",
+      "persona": "ops",
+      "navHref": "/planning"
+    },
+    {
+      "route": "/reviews",
+      "title": "Level 2 review queue",
+      "persona": "ops",
+      "navHref": "/reviews"
+    },
+    {
+      "route": "/ai/suggestions",
+      "title": "Assistive AI dockets",
+      "persona": "ops",
+      "navHref": "/ai/suggestions"
+    }
+  ],
+  "samples": [
+    {
+      "route": "/dashboard",
+      "mode": "cold",
+      "elapsedMs": 6473,
+      "firstDomResponseMs": null,
+      "requestCount": 29,
+      "transferredBytes": 505117,
+      "decodedBytes": 1134050,
+      "apiMs": 0,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+          "duration": 1.5999999046325684,
+          "transferSize": 45596,
+          "decodedBodySize": 45296,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/31250b261513219c-s.p.woff2",
+          "duration": 1.8000000715255737,
+          "transferSize": 13612,
+          "decodedBodySize": 13312,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+          "duration": 1.899999976158142,
+          "transferSize": 43148,
+          "decodedBodySize": 42848,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/46d978a299613541-s.p.woff2",
+          "duration": 2.399999976158142,
+          "transferSize": 13140,
+          "decodedBodySize": 12840,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+          "duration": 2.100000023841858,
+          "transferSize": 44580,
+          "decodedBodySize": 44280,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+          "duration": 3.700000047683716,
+          "transferSize": 13688,
+          "decodedBodySize": 13388,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+          "duration": 4.700000047683716,
+          "transferSize": 19804,
+          "decodedBodySize": 19504,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+          "duration": 4.5,
+          "transferSize": 45988,
+          "decodedBodySize": 45688,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+          "duration": 5,
+          "transferSize": 22208,
+          "decodedBodySize": 21908,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+          "duration": 4.799999952316284,
+          "transferSize": 22132,
+          "decodedBodySize": 21832,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+          "duration": 5.600000023841858,
+          "transferSize": 19464,
+          "decodedBodySize": 19164,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+          "duration": 5.799999952316284,
+          "transferSize": 20800,
+          "decodedBodySize": 20500,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+          "duration": 5.899999976158142,
+          "transferSize": 13584,
+          "decodedBodySize": 13284,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+          "duration": 6.100000023841858,
+          "transferSize": 21468,
+          "decodedBodySize": 21168,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/eae037355f033de2-s.p.woff2",
+          "duration": 6.199999928474426,
+          "transferSize": 20388,
+          "decodedBodySize": 20088,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/4ccb217720945e9f.css",
+          "duration": 3.1999999284744263,
+          "transferSize": 1603,
+          "decodedBodySize": 4789,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/0a1126aa60a7fb9d.css",
+          "duration": 4.899999976158142,
+          "transferSize": 14940,
+          "decodedBodySize": 99136,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/fab26a320de99c5d.css",
+          "duration": 3.600000023841858,
+          "transferSize": 916,
+          "decodedBodySize": 3170,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/6256c0dbe9cb9edc.css",
+          "duration": 3.700000047683716,
+          "transferSize": 2617,
+          "decodedBodySize": 10489,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/main-app-1d5c3835239bab32.js",
+          "duration": 7.100000023841858,
+          "transferSize": 856,
+          "decodedBodySize": 556,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/layout-cabedf23896a9201.js",
+          "duration": 7.400000095367432,
+          "transferSize": 787,
+          "decodedBodySize": 1056,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/webpack-0479df2f48c5a151.js",
+          "duration": 7.300000071525574,
+          "transferSize": 2727,
+          "decodedBodySize": 5048,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/2184-0d320d7ac880cba1.js",
+          "duration": 9.700000047683716,
+          "transferSize": 46410,
+          "decodedBodySize": 173343,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8cbc2f2e-931a1764b4df6b24.js",
+          "duration": 10.200000047683716,
+          "transferSize": 54661,
+          "decodedBodySize": 173020,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/4f70f83d-1695539d7f0a95e6.js",
+          "duration": 4.199999928474426,
+          "transferSize": 0,
+          "decodedBodySize": 62956,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2273-fa0d4995b5e74c20.js",
+          "duration": 8.100000023841858,
+          "transferSize": 0,
+          "decodedBodySize": 183406,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/9424-4427de633e14375b.js",
+          "duration": 3.700000047683716,
+          "transferSize": 0,
+          "decodedBodySize": 8708,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/dashboard/page-f260231e730c4180.js",
+          "duration": 4.100000023841858,
+          "transferSize": 0,
+          "decodedBodySize": 1897,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/6490-38610b8f1f56cf11.js",
+          "duration": 4.5,
+          "transferSize": 0,
+          "decodedBodySize": 31376,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/dashboard",
+      "mode": "warm",
+      "elapsedMs": 6928,
+      "firstDomResponseMs": 2.100000023841858,
+      "requestCount": 11,
+      "transferredBytes": 19390,
+      "decodedBytes": 78254,
+      "apiMs": 1101.3000001907349,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/auth/v1/.well-known/jwks.json",
+          "duration": 193.90000009536743,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 453.90000009536743,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 453.5,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 15,
+          "transferSize": 6285,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 13.899999976158142,
+          "transferSize": 3725,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 15.399999976158142,
+          "transferSize": 449,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 16.5,
+          "transferSize": 5199,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 9,
+          "transferSize": 3181,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 1,
+          "transferSize": 551,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/dashboard/page-f260231e730c4180.js",
+          "duration": 4.099999904632568,
+          "transferSize": 0,
+          "decodedBodySize": 1897,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/css/6256c0dbe9cb9edc.css",
+          "duration": 2.5,
+          "transferSize": 0,
+          "decodedBodySize": 10489,
+          "initiatorType": "link"
+        }
+      ]
+    },
+    {
+      "route": "/dashboard",
+      "mode": "warm",
+      "elapsedMs": 6908,
+      "firstDomResponseMs": 60,
+      "requestCount": 12,
+      "transferredBytes": 0,
+      "decodedBytes": 78254,
+      "apiMs": 1729.6999999284744,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 435.10000002384186,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 450.89999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 1.7000000476837158,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 1.399999976158142,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 1.5,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 1.8000000715255737,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 1.899999976158142,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 2,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/dashboard/page-f260231e730c4180.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 1897,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/css/6256c0dbe9cb9edc.css",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 10489,
+          "initiatorType": "link"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 422,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 421.6999999284744,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        }
+      ]
+    },
+    {
+      "route": "/dashboard",
+      "mode": "warm",
+      "elapsedMs": 6913,
+      "firstDomResponseMs": 68.59999990463257,
+      "requestCount": 10,
+      "transferredBytes": 0,
+      "decodedBytes": 78254,
+      "apiMs": 856.6000001430511,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 438.40000009536743,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 418.2000000476837,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/dashboard/page-f260231e730c4180.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 1897,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/css/6256c0dbe9cb9edc.css",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 10489,
+          "initiatorType": "link"
+        }
+      ]
+    },
+    {
+      "route": "/operations",
+      "mode": "cold",
+      "elapsedMs": 5764,
+      "firstDomResponseMs": null,
+      "requestCount": 28,
+      "transferredBytes": 585266,
+      "decodedBytes": 1137833,
+      "apiMs": 0,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+          "duration": 2.6999999284744263,
+          "transferSize": 45596,
+          "decodedBodySize": 45296,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/31250b261513219c-s.p.woff2",
+          "duration": 3.399999976158142,
+          "transferSize": 13612,
+          "decodedBodySize": 13312,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+          "duration": 4.600000023841858,
+          "transferSize": 13688,
+          "decodedBodySize": 13388,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/46d978a299613541-s.p.woff2",
+          "duration": 4,
+          "transferSize": 13140,
+          "decodedBodySize": 12840,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+          "duration": 3.299999952316284,
+          "transferSize": 43148,
+          "decodedBodySize": 42848,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+          "duration": 3.899999976158142,
+          "transferSize": 44580,
+          "decodedBodySize": 44280,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+          "duration": 4.899999976158142,
+          "transferSize": 45988,
+          "decodedBodySize": 45688,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+          "duration": 5.5,
+          "transferSize": 19804,
+          "decodedBodySize": 19504,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+          "duration": 6.199999928474426,
+          "transferSize": 22208,
+          "decodedBodySize": 21908,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+          "duration": 6.5,
+          "transferSize": 22132,
+          "decodedBodySize": 21832,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+          "duration": 6.899999976158142,
+          "transferSize": 19464,
+          "decodedBodySize": 19164,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+          "duration": 7.399999976158142,
+          "transferSize": 20800,
+          "decodedBodySize": 20500,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+          "duration": 7.799999952316284,
+          "transferSize": 13584,
+          "decodedBodySize": 13284,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+          "duration": 8,
+          "transferSize": 21468,
+          "decodedBodySize": 21168,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/4ccb217720945e9f.css",
+          "duration": 5.200000047683716,
+          "transferSize": 1603,
+          "decodedBodySize": 4789,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/fab26a320de99c5d.css",
+          "duration": 5.800000071525574,
+          "transferSize": 916,
+          "decodedBodySize": 3170,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/0a1126aa60a7fb9d.css",
+          "duration": 6.5,
+          "transferSize": 14940,
+          "decodedBodySize": 99136,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/eae037355f033de2-s.p.woff2",
+          "duration": 8,
+          "transferSize": 20388,
+          "decodedBodySize": 20088,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/main-app-1d5c3835239bab32.js",
+          "duration": 8.899999976158142,
+          "transferSize": 856,
+          "decodedBodySize": 556,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/layout-cabedf23896a9201.js",
+          "duration": 9.199999928474426,
+          "transferSize": 787,
+          "decodedBodySize": 1056,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/webpack-0479df2f48c5a151.js",
+          "duration": 9,
+          "transferSize": 2727,
+          "decodedBodySize": 5048,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/2184-0d320d7ac880cba1.js",
+          "duration": 12.899999976158142,
+          "transferSize": 46410,
+          "decodedBodySize": 173343,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8cbc2f2e-931a1764b4df6b24.js",
+          "duration": 14.100000023841858,
+          "transferSize": 54661,
+          "decodedBodySize": 173020,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/9424-4427de633e14375b.js",
+          "duration": 10.699999928474426,
+          "transferSize": 3751,
+          "decodedBodySize": 8708,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/4f70f83d-1695539d7f0a95e6.js",
+          "duration": 11,
+          "transferSize": 13673,
+          "decodedBodySize": 62956,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 12.199999928474426,
+          "transferSize": 5199,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/6490-38610b8f1f56cf11.js",
+          "duration": 12.099999904632568,
+          "transferSize": 8889,
+          "decodedBodySize": 31376,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2273-fa0d4995b5e74c20.js",
+          "duration": 14.199999928474426,
+          "transferSize": 51254,
+          "decodedBodySize": 183406,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/operations",
+      "mode": "warm",
+      "elapsedMs": 842,
+      "firstDomResponseMs": 53.89999997615814,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 65868,
+      "apiMs": 1170.5000001192093,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/auth/v1/.well-known/jwks.json",
+          "duration": 202.30000007152557,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 484.3000000715256,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 483.89999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 4,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 3.399999976158142,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 2.600000023841858,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 2,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 2,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 1.7000000476837158,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/operations",
+      "mode": "warm",
+      "elapsedMs": 857,
+      "firstDomResponseMs": 64.10000002384186,
+      "requestCount": 8,
+      "transferredBytes": 0,
+      "decodedBytes": 65868,
+      "apiMs": 870,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 448.10000002384186,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 421.89999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/operations",
+      "mode": "warm",
+      "elapsedMs": 858,
+      "firstDomResponseMs": 71.89999997615814,
+      "requestCount": 8,
+      "transferredBytes": 0,
+      "decodedBytes": 65868,
+      "apiMs": 983.2999999523163,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 489.60000002384186,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 493.6999999284744,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/factories",
+      "mode": "cold",
+      "elapsedMs": 1808,
+      "firstDomResponseMs": null,
+      "requestCount": 28,
+      "transferredBytes": 502500,
+      "decodedBytes": 1125890,
+      "apiMs": 0,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+          "duration": 1.600000023841858,
+          "transferSize": 45596,
+          "decodedBodySize": 45296,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/31250b261513219c-s.p.woff2",
+          "duration": 1.5999999046325684,
+          "transferSize": 13612,
+          "decodedBodySize": 13312,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/46d978a299613541-s.p.woff2",
+          "duration": 2.4000000953674316,
+          "transferSize": 13140,
+          "decodedBodySize": 12840,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+          "duration": 1.9000000953674316,
+          "transferSize": 43148,
+          "decodedBodySize": 42848,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+          "duration": 2,
+          "transferSize": 44580,
+          "decodedBodySize": 44280,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+          "duration": 3.200000047683716,
+          "transferSize": 13688,
+          "decodedBodySize": 13388,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+          "duration": 3.5,
+          "transferSize": 45988,
+          "decodedBodySize": 45688,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+          "duration": 3.899999976158142,
+          "transferSize": 19804,
+          "decodedBodySize": 19504,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+          "duration": 4,
+          "transferSize": 22208,
+          "decodedBodySize": 21908,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+          "duration": 4.399999976158142,
+          "transferSize": 19464,
+          "decodedBodySize": 19164,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+          "duration": 4.399999976158142,
+          "transferSize": 22132,
+          "decodedBodySize": 21832,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+          "duration": 5,
+          "transferSize": 20800,
+          "decodedBodySize": 20500,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+          "duration": 4.899999976158142,
+          "transferSize": 13584,
+          "decodedBodySize": 13284,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+          "duration": 5.299999952316284,
+          "transferSize": 21468,
+          "decodedBodySize": 21168,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/eae037355f033de2-s.p.woff2",
+          "duration": 5.399999976158142,
+          "transferSize": 20388,
+          "decodedBodySize": 20088,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/4ccb217720945e9f.css",
+          "duration": 3,
+          "transferSize": 1603,
+          "decodedBodySize": 4789,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/fab26a320de99c5d.css",
+          "duration": 3.0999999046325684,
+          "transferSize": 916,
+          "decodedBodySize": 3170,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/0a1126aa60a7fb9d.css",
+          "duration": 4.5,
+          "transferSize": 14940,
+          "decodedBodySize": 99136,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/webpack-0479df2f48c5a151.js",
+          "duration": 6.799999952316284,
+          "transferSize": 2727,
+          "decodedBodySize": 5048,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/main-app-1d5c3835239bab32.js",
+          "duration": 6.600000023841858,
+          "transferSize": 856,
+          "decodedBodySize": 556,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/layout-cabedf23896a9201.js",
+          "duration": 6.800000071525574,
+          "transferSize": 787,
+          "decodedBodySize": 1056,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2184-0d320d7ac880cba1.js",
+          "duration": 9.400000095367432,
+          "transferSize": 46410,
+          "decodedBodySize": 173343,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8cbc2f2e-931a1764b4df6b24.js",
+          "duration": 10,
+          "transferSize": 54661,
+          "decodedBodySize": 173020,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/4f70f83d-1695539d7f0a95e6.js",
+          "duration": 4,
+          "transferSize": 0,
+          "decodedBodySize": 62956,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2273-fa0d4995b5e74c20.js",
+          "duration": 6.700000047683716,
+          "transferSize": 0,
+          "decodedBodySize": 183406,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/6490-38610b8f1f56cf11.js",
+          "duration": 2.899999976158142,
+          "transferSize": 0,
+          "decodedBodySize": 31376,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/9424-4427de633e14375b.js",
+          "duration": 3,
+          "transferSize": 0,
+          "decodedBodySize": 8708,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/factories/page-3fb4fcec8b524ad6.js",
+          "duration": 3,
+          "transferSize": 0,
+          "decodedBodySize": 4226,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/factories",
+      "mode": "warm",
+      "elapsedMs": 1879,
+      "firstDomResponseMs": 52.5,
+      "requestCount": 10,
+      "transferredBytes": 0,
+      "decodedBytes": 70094,
+      "apiMs": 1232.2000000476837,
+      "longTasks": [
+        54
+      ],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/auth/v1/.well-known/jwks.json",
+          "duration": 271.3000000715256,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 480.7999999523163,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 480.10000002384186,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 6,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 5.100000023841858,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 4.899999976158142,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 5.899999976158142,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 4.699999928474426,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 4.299999952316284,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/factories/page-3fb4fcec8b524ad6.js",
+          "duration": 3.5999999046325684,
+          "transferSize": 0,
+          "decodedBodySize": 4226,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/factories",
+      "mode": "warm",
+      "elapsedMs": 1874,
+      "firstDomResponseMs": 59.200000047683716,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 70094,
+      "apiMs": 867.3999999761581,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 433.39999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 434,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/factories/page-3fb4fcec8b524ad6.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 4226,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/factories",
+      "mode": "warm",
+      "elapsedMs": 1858,
+      "firstDomResponseMs": 42.09999990463257,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 70094,
+      "apiMs": 919.5999999046326,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 453.89999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 465.6999999284744,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/factories/page-3fb4fcec8b524ad6.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 4226,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/planning",
+      "mode": "cold",
+      "elapsedMs": 492,
+      "firstDomResponseMs": null,
+      "requestCount": 28,
+      "transferredBytes": 580705,
+      "decodedBytes": 1122002,
+      "apiMs": 0,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+          "duration": 3.100000023841858,
+          "transferSize": 45596,
+          "decodedBodySize": 45296,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/31250b261513219c-s.p.woff2",
+          "duration": 3.899999976158142,
+          "transferSize": 13612,
+          "decodedBodySize": 13312,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+          "duration": 4.199999928474426,
+          "transferSize": 43148,
+          "decodedBodySize": 42848,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+          "duration": 5.100000023841858,
+          "transferSize": 44580,
+          "decodedBodySize": 44280,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/46d978a299613541-s.p.woff2",
+          "duration": 5.600000023841858,
+          "transferSize": 13140,
+          "decodedBodySize": 12840,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+          "duration": 6.700000047683716,
+          "transferSize": 13688,
+          "decodedBodySize": 13388,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+          "duration": 8.200000047683716,
+          "transferSize": 19804,
+          "decodedBodySize": 19504,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+          "duration": 7.700000047683716,
+          "transferSize": 45988,
+          "decodedBodySize": 45688,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+          "duration": 10,
+          "transferSize": 22132,
+          "decodedBodySize": 21832,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+          "duration": 10,
+          "transferSize": 22208,
+          "decodedBodySize": 21908,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+          "duration": 10.799999952316284,
+          "transferSize": 19464,
+          "decodedBodySize": 19164,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+          "duration": 10.799999952316284,
+          "transferSize": 20800,
+          "decodedBodySize": 20500,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+          "duration": 11,
+          "transferSize": 13584,
+          "decodedBodySize": 13284,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+          "duration": 11.399999976158142,
+          "transferSize": 21468,
+          "decodedBodySize": 21168,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/4ccb217720945e9f.css",
+          "duration": 7,
+          "transferSize": 1603,
+          "decodedBodySize": 4789,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/0a1126aa60a7fb9d.css",
+          "duration": 10.300000071525574,
+          "transferSize": 14940,
+          "decodedBodySize": 99136,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/eae037355f033de2-s.p.woff2",
+          "duration": 11.300000071525574,
+          "transferSize": 20388,
+          "decodedBodySize": 20088,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/fab26a320de99c5d.css",
+          "duration": 8.399999976158142,
+          "transferSize": 916,
+          "decodedBodySize": 3170,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/webpack-0479df2f48c5a151.js",
+          "duration": 14.5,
+          "transferSize": 2727,
+          "decodedBodySize": 5048,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/8cbc2f2e-931a1764b4df6b24.js",
+          "duration": 18.899999976158142,
+          "transferSize": 54661,
+          "decodedBodySize": 173020,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/main-app-1d5c3835239bab32.js",
+          "duration": 13.799999952316284,
+          "transferSize": 856,
+          "decodedBodySize": 556,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/layout-cabedf23896a9201.js",
+          "duration": 14.5,
+          "transferSize": 787,
+          "decodedBodySize": 1056,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/4f70f83d-1695539d7f0a95e6.js",
+          "duration": 15.799999952316284,
+          "transferSize": 13673,
+          "decodedBodySize": 62956,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/9424-4427de633e14375b.js",
+          "duration": 16.59999990463257,
+          "transferSize": 3751,
+          "decodedBodySize": 8708,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2184-0d320d7ac880cba1.js",
+          "duration": 18.199999928474426,
+          "transferSize": 46410,
+          "decodedBodySize": 173343,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2273-fa0d4995b5e74c20.js",
+          "duration": 19.899999976158142,
+          "transferSize": 51254,
+          "decodedBodySize": 183406,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/planning/page-e4f5ba069733b873.js",
+          "duration": 16.90000009536743,
+          "transferSize": 638,
+          "decodedBodySize": 338,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/6490-38610b8f1f56cf11.js",
+          "duration": 16.800000071525574,
+          "transferSize": 8889,
+          "decodedBodySize": 31376,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/planning",
+      "mode": "warm",
+      "elapsedMs": 864,
+      "firstDomResponseMs": 54.10000002384186,
+      "requestCount": 10,
+      "transferredBytes": 0,
+      "decodedBytes": 66206,
+      "apiMs": 1189.5,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/auth/v1/.well-known/jwks.json",
+          "duration": 261.39999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 469.2000000476837,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 458.89999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 5,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 4.399999976158142,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 5.600000023841858,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 2.5,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 2.700000047683716,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 2.3000000715255737,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/planning/page-e4f5ba069733b873.js",
+          "duration": 1.600000023841858,
+          "transferSize": 0,
+          "decodedBodySize": 338,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/planning",
+      "mode": "warm",
+      "elapsedMs": 854,
+      "firstDomResponseMs": 66.60000002384186,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 66206,
+      "apiMs": 844.1999999284744,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 431.1999999284744,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 413,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/planning/page-e4f5ba069733b873.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 338,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/planning",
+      "mode": "warm",
+      "elapsedMs": 855,
+      "firstDomResponseMs": 0.20000004768371582,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 66206,
+      "apiMs": 880.0999999046326,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 440.1999999284744,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 439.89999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/planning/page-e4f5ba069733b873.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 338,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/reviews",
+      "mode": "cold",
+      "elapsedMs": 8377,
+      "firstDomResponseMs": null,
+      "requestCount": 28,
+      "transferredBytes": 582414,
+      "decodedBytes": 1128674,
+      "apiMs": 0,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "/_next/static/media/31250b261513219c-s.p.woff2",
+          "duration": 3,
+          "transferSize": 13612,
+          "decodedBodySize": 13312,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+          "duration": 3.5999999046325684,
+          "transferSize": 45596,
+          "decodedBodySize": 45296,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+          "duration": 3.200000047683716,
+          "transferSize": 44580,
+          "decodedBodySize": 44280,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/46d978a299613541-s.p.woff2",
+          "duration": 3.700000047683716,
+          "transferSize": 13140,
+          "decodedBodySize": 12840,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+          "duration": 3.5,
+          "transferSize": 43148,
+          "decodedBodySize": 42848,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+          "duration": 5,
+          "transferSize": 13688,
+          "decodedBodySize": 13388,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+          "duration": 5.100000023841858,
+          "transferSize": 45988,
+          "decodedBodySize": 45688,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+          "duration": 6,
+          "transferSize": 19804,
+          "decodedBodySize": 19504,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+          "duration": 6.399999976158142,
+          "transferSize": 22208,
+          "decodedBodySize": 21908,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+          "duration": 6.899999976158142,
+          "transferSize": 22132,
+          "decodedBodySize": 21832,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+          "duration": 6.799999952316284,
+          "transferSize": 19464,
+          "decodedBodySize": 19164,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+          "duration": 6.799999952316284,
+          "transferSize": 20800,
+          "decodedBodySize": 20500,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+          "duration": 7.100000023841858,
+          "transferSize": 13584,
+          "decodedBodySize": 13284,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+          "duration": 7.399999976158142,
+          "transferSize": 21468,
+          "decodedBodySize": 21168,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/eae037355f033de2-s.p.woff2",
+          "duration": 7.600000023841858,
+          "transferSize": 20388,
+          "decodedBodySize": 20088,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/4ccb217720945e9f.css",
+          "duration": 4.299999952316284,
+          "transferSize": 1603,
+          "decodedBodySize": 4789,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/fab26a320de99c5d.css",
+          "duration": 5,
+          "transferSize": 916,
+          "decodedBodySize": 3170,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/0a1126aa60a7fb9d.css",
+          "duration": 6.399999976158142,
+          "transferSize": 14940,
+          "decodedBodySize": 99136,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/main-app-1d5c3835239bab32.js",
+          "duration": 7.699999928474426,
+          "transferSize": 856,
+          "decodedBodySize": 556,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/webpack-0479df2f48c5a151.js",
+          "duration": 8,
+          "transferSize": 2727,
+          "decodedBodySize": 5048,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/app/layout-cabedf23896a9201.js",
+          "duration": 8.100000023841858,
+          "transferSize": 787,
+          "decodedBodySize": 1056,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2184-0d320d7ac880cba1.js",
+          "duration": 10.899999976158142,
+          "transferSize": 46410,
+          "decodedBodySize": 173343,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8cbc2f2e-931a1764b4df6b24.js",
+          "duration": 12,
+          "transferSize": 54661,
+          "decodedBodySize": 173020,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/9424-4427de633e14375b.js",
+          "duration": 9.299999952316284,
+          "transferSize": 3751,
+          "decodedBodySize": 8708,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/4f70f83d-1695539d7f0a95e6.js",
+          "duration": 8.799999952316284,
+          "transferSize": 13673,
+          "decodedBodySize": 62956,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/6490-38610b8f1f56cf11.js",
+          "duration": 9.599999904632568,
+          "transferSize": 8889,
+          "decodedBodySize": 31376,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/reviews/page-476d3d11a38b4be1.js",
+          "duration": 10,
+          "transferSize": 2347,
+          "decodedBodySize": 7010,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2273-fa0d4995b5e74c20.js",
+          "duration": 12.399999976158142,
+          "transferSize": 51254,
+          "decodedBodySize": 183406,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/reviews",
+      "mode": "warm",
+      "elapsedMs": 8427,
+      "firstDomResponseMs": 53.799999952316284,
+      "requestCount": 10,
+      "transferredBytes": 0,
+      "decodedBytes": 72878,
+      "apiMs": 1096.2999999523163,
+      "longTasks": [
+        76
+      ],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/auth/v1/.well-known/jwks.json",
+          "duration": 184.89999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 456,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 455.39999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 5,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 5.5,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 7.100000023841858,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 6.099999904632568,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 7.799999952316284,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 3.200000047683716,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/reviews/page-476d3d11a38b4be1.js",
+          "duration": 4.799999952316284,
+          "transferSize": 0,
+          "decodedBodySize": 7010,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/reviews",
+      "mode": "warm",
+      "elapsedMs": 8400,
+      "firstDomResponseMs": 58.199999928474426,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 72878,
+      "apiMs": 863.3999999761581,
+      "longTasks": [
+        63
+      ],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 431.5,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 431.89999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/reviews/page-476d3d11a38b4be1.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 7010,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/reviews",
+      "mode": "warm",
+      "elapsedMs": 8422,
+      "firstDomResponseMs": 0.20000004768371582,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 72878,
+      "apiMs": 856,
+      "longTasks": [
+        61
+      ],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 428.09999990463257,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 427.90000009536743,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/reviews/page-476d3d11a38b4be1.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 7010,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/ai/suggestions",
+      "mode": "cold",
+      "elapsedMs": 604,
+      "firstDomResponseMs": null,
+      "requestCount": 28,
+      "transferredBytes": 582090,
+      "decodedBytes": 1128965,
+      "apiMs": 0,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "/_next/static/media/0010010bfd451de0-s.p.woff2",
+          "duration": 3,
+          "transferSize": 45596,
+          "decodedBodySize": 45296,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/31250b261513219c-s.p.woff2",
+          "duration": 3.6999999284744263,
+          "transferSize": 13612,
+          "decodedBodySize": 13312,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/38ca8bfd780ae6be-s.p.woff2",
+          "duration": 4.099999904632568,
+          "transferSize": 43148,
+          "decodedBodySize": 42848,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/46d978a299613541-s.p.woff2",
+          "duration": 4.800000071525574,
+          "transferSize": 13140,
+          "decodedBodySize": 12840,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/3de711fd864e0bd8-s.p.woff2",
+          "duration": 4.100000023841858,
+          "transferSize": 44580,
+          "decodedBodySize": 44280,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5977941da3f6f441-s.p.woff2",
+          "duration": 5.300000071525574,
+          "transferSize": 13688,
+          "decodedBodySize": 13388,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/5cb8243e7203141c-s.p.woff2",
+          "duration": 6.200000047683716,
+          "transferSize": 45988,
+          "decodedBodySize": 45688,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/7b6a1bb2d463380b-s.p.woff2",
+          "duration": 7.100000023841858,
+          "transferSize": 19804,
+          "decodedBodySize": 19504,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/9545a3d1fceacf5c-s.p.woff2",
+          "duration": 7.600000023841858,
+          "transferSize": 22208,
+          "decodedBodySize": 21908,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/af2e87f5d61b5665-s.p.woff2",
+          "duration": 8.200000047683716,
+          "transferSize": 22132,
+          "decodedBodySize": 21832,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/b6806de131f5bf32-s.p.woff2",
+          "duration": 8.699999928474426,
+          "transferSize": 19464,
+          "decodedBodySize": 19164,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/bd28e874609f6988-s.p.woff2",
+          "duration": 8.899999976158142,
+          "transferSize": 20800,
+          "decodedBodySize": 20500,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/d7cc7ee67b2a053c-s.p.woff2",
+          "duration": 9,
+          "transferSize": 13584,
+          "decodedBodySize": 13284,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/db9d659a1acad1e2-s.p.woff2",
+          "duration": 9.399999976158142,
+          "transferSize": 21468,
+          "decodedBodySize": 21168,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/media/eae037355f033de2-s.p.woff2",
+          "duration": 9.600000023841858,
+          "transferSize": 20388,
+          "decodedBodySize": 20088,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/4ccb217720945e9f.css",
+          "duration": 6.299999952316284,
+          "transferSize": 1603,
+          "decodedBodySize": 4789,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/fab26a320de99c5d.css",
+          "duration": 6.800000071525574,
+          "transferSize": 916,
+          "decodedBodySize": 3170,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/css/0a1126aa60a7fb9d.css",
+          "duration": 7.800000071525574,
+          "transferSize": 14940,
+          "decodedBodySize": 99136,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/webpack-0479df2f48c5a151.js",
+          "duration": 10.399999976158142,
+          "transferSize": 2727,
+          "decodedBodySize": 5048,
+          "initiatorType": "link"
+        },
+        {
+          "name": "/_next/static/chunks/main-app-1d5c3835239bab32.js",
+          "duration": 10.100000023841858,
+          "transferSize": 856,
+          "decodedBodySize": 556,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/layout-cabedf23896a9201.js",
+          "duration": 10.5,
+          "transferSize": 787,
+          "decodedBodySize": 1056,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/4f70f83d-1695539d7f0a95e6.js",
+          "duration": 12,
+          "transferSize": 13673,
+          "decodedBodySize": 62956,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2184-0d320d7ac880cba1.js",
+          "duration": 13.600000023841858,
+          "transferSize": 46410,
+          "decodedBodySize": 173343,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8cbc2f2e-931a1764b4df6b24.js",
+          "duration": 14.900000095367432,
+          "transferSize": 54661,
+          "decodedBodySize": 173020,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/9424-4427de633e14375b.js",
+          "duration": 12.100000023841858,
+          "transferSize": 3751,
+          "decodedBodySize": 8708,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/2273-fa0d4995b5e74c20.js",
+          "duration": 15.300000071525574,
+          "transferSize": 51254,
+          "decodedBodySize": 183406,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/6490-38610b8f1f56cf11.js",
+          "duration": 12.200000047683716,
+          "transferSize": 8889,
+          "decodedBodySize": 31376,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/ai/suggestions/page-d4500f6a83e7ffd1.js",
+          "duration": 13.100000023841858,
+          "transferSize": 2023,
+          "decodedBodySize": 7301,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/ai/suggestions",
+      "mode": "warm",
+      "elapsedMs": 860,
+      "firstDomResponseMs": 50,
+      "requestCount": 10,
+      "transferredBytes": 0,
+      "decodedBytes": 73169,
+      "apiMs": 1146.1999999284744,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/auth/v1/.well-known/jwks.json",
+          "duration": 211.79999995231628,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 464,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 470.39999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 8,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 4.900000095367432,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 4.100000023841858,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 4.5,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 4,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 1.899999976158142,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/ai/suggestions/page-d4500f6a83e7ffd1.js",
+          "duration": 3.299999952316284,
+          "transferSize": 0,
+          "decodedBodySize": 7301,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/ai/suggestions",
+      "mode": "warm",
+      "elapsedMs": 847,
+      "firstDomResponseMs": 59.299999952316284,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 73169,
+      "apiMs": 840.7999999523163,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 418.39999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 422.39999997615814,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/ai/suggestions/page-d4500f6a83e7ffd1.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 7301,
+          "initiatorType": "script"
+        }
+      ]
+    },
+    {
+      "route": "/ai/suggestions",
+      "mode": "warm",
+      "elapsedMs": 829,
+      "firstDomResponseMs": 42.800000071525574,
+      "requestCount": 9,
+      "transferredBytes": 0,
+      "decodedBytes": 73169,
+      "apiMs": 844.6000001430511,
+      "longTasks": [],
+      "resources": [
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id%2Cevent_key%2Cpayload%2Cchannel%2Cdelivery_state%2Cread_at%2Ccreated_at&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&order=created_at.desc&limit=15",
+          "duration": 422.40000009536743,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "https://iiozvqntawxfwbgffzqu.supabase.co/rest/v1/notifications?select=id&recipient=eq.38fd1ad1-ec82-4d62-8da4-a3231271753a&read_at=is.null&delivery_state=not.in.%28read%2Chandled%29",
+          "duration": 422.2000000476837,
+          "transferSize": 0,
+          "decodedBodySize": 0,
+          "initiatorType": "fetch"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/violations/page-5a3ca312da28c46d.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 13653,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/8730-c07ab6ce80a108eb.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16065,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/regulations/page-82f554700ac60547.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 149,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/field/page-78bb34d86801929b.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 19581,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/admin/compliance-approvals/page-bdbbee8fce4c1657.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 251,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/operations/page-85124da977625baa.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 16169,
+          "initiatorType": "script"
+        },
+        {
+          "name": "/_next/static/chunks/app/ai/suggestions/page-d4500f6a83e7ffd1.js",
+          "duration": 0,
+          "transferSize": 0,
+          "decodedBodySize": 7301,
+          "initiatorType": "script"
+        }
+      ]
+    }
+  ]
+}

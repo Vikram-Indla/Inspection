@@ -10,10 +10,10 @@ const readWeb = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf
 const readRepo = (file: string) => fs.readFileSync(path.join(repoRoot, file), "utf8");
 
 test.describe("Prompt 04 Compliance Approval Queue contract", () => {
-  const queue = readWeb("src/app/admin/compliance-approvals/page.tsx");
-  const layout = readWeb("src/app/admin/compliance-approvals/layout.tsx");
-  const workspace = readWeb("src/app/admin/compliance-requests/[id]/page.tsx");
-  const actions = readWeb("src/app/admin/compliance-requests/actions.ts");
+  const queue = readWeb("src/app/(app)/admin/compliance-approvals/page.tsx");
+  const layout = readWeb("src/app/(app)/admin/compliance-approvals/layout.tsx");
+  const workspace = readWeb("src/app/(app)/admin/compliance-requests/[id]/page.tsx");
+  const actions = readWeb("src/app/(app)/admin/compliance-requests/actions.ts");
   const navigation = readWeb("src/lib/shell-navigation.ts");
   const migration = readRepo("supabase/migrations/20260719213000_compliance_configuration_request_engine.sql");
 
@@ -59,7 +59,7 @@ test.describe("Prompt 04 Compliance Approval Queue contract", () => {
     expect(queue).not.toMatch(/\.insert\(|\.update\(|\.delete\(|\.rpc\(/);
     expect(queue).toContain("Awaiting Approval unavailable");
     expect(queue).toContain("returned zero eligible maker-checker assignments");
-    expect(readWeb("src/app/admin/compliance-approvals/loading.tsx")).toContain("Loading Awaiting Approval");
-    expect(readWeb("src/app/admin/compliance-approvals/error.tsx")).toContain("no decision was recorded");
+    expect(readWeb("src/app/(app)/admin/compliance-approvals/loading.tsx")).toContain("Loading Compliance Approval Queue");
+    expect(readWeb("src/app/(app)/admin/compliance-approvals/error.tsx")).toContain("no decision was recorded");
   });
 });

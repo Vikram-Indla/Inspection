@@ -14,10 +14,10 @@ const EVIDENCE_DIR = evidenceDirectory("dashboard-kpi-seed");
 
 test.describe("TASK-DASH-KPI-SEED-001", () => {
   test("Operations keeps active journeys visible after planning expiry", () => {
-    const source = readFileSync(join(process.cwd(), "src/app/operations/page.tsx"), "utf8");
+    const source = readFileSync(join(process.cwd(), "src/app/(app)/operations/page.tsx"), "utf8");
     expect(source).toContain('v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)');
     expect(source).toContain("planning_status and operational_state are separate");
-    const refreshSource = readFileSync(join(process.cwd(), "src/app/operations/actions.ts"), "utf8");
+    const refreshSource = readFileSync(join(process.cwd(), "src/app/(app)/operations/actions.ts"), "utf8");
     expect(refreshSource).toContain('select("id, planning_status, operational_state');
     expect(refreshSource).toContain('v.planning_status === "published" || ["on_the_way", "arrived", "executing"].includes(v.operational_state)');
   });

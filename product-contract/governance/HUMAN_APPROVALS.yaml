@@ -203,6 +203,35 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-20"
     change_ref: "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml#CC-DESIGN-DASHBOARD-WEB-IPAD-V5-001"
+  - gate: "G11-REMEDIATION-PERFORMANCE-001"
+    decision: >-
+      APPROVED — sponsor directed a platform-wide P0 navigation-performance
+      post-mortem and remediation programme (one to two second post-auth
+      navigation lag across dashboard, lists, detail, forms, drawers, tables,
+      search, reports, admin, and iPad) run as sequential passes by Codex,
+      Kimi K3, and Claude Code against a supplied master prompt covering 60
+      mandatory diagnostic checks, measured before/after evidence, and
+      protection of existing functionality. The sponsor rejected the
+      prompt's original `improved` branch instruction as it conflicts with
+      this repository's canonical-branch rule, and explicitly approved
+      cutting isolated branch perf/p0-navigation-remediation from
+      setup/Inspection (never main), with one worktree/short-lived branch
+      per agent that fast-forwards back into perf/p0-navigation-remediation
+      at the end of each pass. This authorizes the investigation and
+      remediation work on that isolated branch and its per-agent worktrees,
+      including removable performance instrumentation, docs/performance/*
+      deliverables, and machine-readable results committed to Git, with
+      binary evidence (screenshots, traces) stored outside Git under
+      INSPECTION_DOCS_ROOT per the documentation-storage policy. It does
+      not authorize merging perf/p0-navigation-remediation into
+      setup/Inspection (Pass 4's PR requires a separate future explicit
+      approval before merge), any push or merge to main, weakening
+      authentication/RLS/RBAC/tenant isolation, or any change to the
+      concurrently active TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015
+      branch or files.
+    approver: "Vikram Indla"
+    date: "2026-07-20"
+    change_ref: "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml#CC-G11-REMEDIATION-PERFORMANCE-001"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

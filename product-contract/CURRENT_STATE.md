@@ -72,6 +72,28 @@ Stage Manager, mobile, 320 CSS px and Dispatch frames plus SHA-256 manifest are
 stored under the approved external documentation root. No commit, push, merge,
 deploy, remote DDL, shared-data mutation or unrelated source change occurred.
 Status: `IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_VISUAL_ACCEPTANCE`.
+## 2026-07-20 UPDATE 113 — G11 performance Pass-4 union complete; acceptance still FAIL
+
+`TASK-G11-REMEDIATION-PERFORMANCE-001` Pass 4 is complete on
+`perf/p0-navigation-remediation`: pinned Line A `7994cc6` and Line B `e8ffeaa`
+(base `186c42e`) are unioned at audited merge `a4805cc`, preserving both
+remediation lines. Tier B/C application work adds a persistent authenticated
+route-group shell, short-lived user-keyed/tag-invalidatable role cache,
+view-specific bounded/streamed Dashboard, scoped inspection catalogue with
+batched signed URLs, and source-only RLS-invoker grouped/search RPC migration.
+No remote DDL, deployment, canonical merge or `main` modification occurred.
+
+Gates: typecheck PASS; production build PASS; protected static 155 passed / 4
+intentional provider skips / 0 failed; final production benchmark 90/90 plus
+30/30 iPad/throttled samples, zero failures. Responsive overflow p75 is 0 px.
+Acceptance remains **FAIL_AWAITING_SPONSOR_ACCEPTANCE**: warm useful-content p75
+is 1019–4175 ms (target <=500), cold p75 1809–4501 ms (target <=900), and iPad
+field p75 2071–2356 ms. No authorized database session was available for
+required EXPLAIN evidence; Tier-C DDL is unapplied and fallbacks remain active.
+React commit counts are unavailable in the optimized production build and are
+not claimed. Evidence is under `docs/performance/` and
+`product-contract/evidence/TASK-G11-REMEDIATION-PERFORMANCE-001.md`. Status:
+`AWAITING_SPONSOR_G11_PERFORMANCE_ACCEPTANCE`.
 
 ## 2026-07-20 UPDATE 110 — Factory 360 iPad × cross-provider reconciliation SPONSOR-ACCEPTED & MERGED
 
@@ -1271,3 +1293,6 @@ status semantics, timing, rail and protected atlas behavior are unchanged.
 Typecheck and production build PASS; focused story/structure/responsive checks
 3/3 PASS. Port 3000 serves the refinement; no commit, push, merge or deployment
 occurred.
+- 2026-07-20 UPDATE 111 (TASK-G11-REMEDIATION-PERFORMANCE-001 — APP-SIDE REMEDIATION MEASURED, G11 ACCEPTANCE FAIL): independent production-build profiling captured 90 baseline and 90 final authenticated route samples across Dashboard, Operations, Factory 360, Planning, Reviews and AI Suggestions. Root causes confirmed: raw/document-style internal navigation, a sequential shared-Shell auth/RBAC/reference waterfall, duplicate request-local Supabase/locale/auth work, and heavy/unindexed route data shapes. Commit `f2b86c4` adds same-origin client routing with accessible immediate progress, preserves native Next Link prefetch, overlaps and request-deduplicates Shell/page reads, skips unused region/audit data, parallelizes Reviews discovery, folds Factory licence lookup into its relationship read, and supplies a forward-only index migration. Final visual acknowledgement is 61–71 ms p75 (PASS <=100 ms); warm p75 improves 12.6% Dashboard, 21.0% Factories, 36.4% Planning, 25.3% Reviews and 36.6% AI, while Operations is flat. Useful-content acceptance remains FAIL: 859–8,897 ms p75 versus <=500 ms; Operations still logs `action_forms` and override-evidence statement timeouts. The checkout is not Supabase-linked, so no remote DDL, advisor or EXPLAIN claim is made. Typecheck/build PASS; definitive performance 90/90; corrected focused regression 23/23; negative auth passed; before/after desktop/iPad/theme visual capture passed. Full mutation-heavy regression and one Dashboard entity-search timeout remain open. Evidence: `docs/performance/` and the external binary root indexed at `docs/performance/evidence/INDEX.md`. No main modification, merge or deployment occurred.
+
+- 2026-07-20 UPDATE 112 (TASK-G11-REMEDIATION-PERFORMANCE-001 — PROGRESS NEGATIVE PATH CLOSED; G11 STILL FAIL): an independent continuation found that the new immediate progress state could remain busy when the already-current navigation item was clicked because no route transition followed. Commit `496ed0c` ignores an exact-current URL and clears pending state when the server Shell supplies the completed route. Typecheck and production build PASS; protected shell/design contracts pass 16/16; a reduced production benchmark passes 1/1 across six warm representative transitions and proves no progress indicator remains after useful content renders. The run intentionally does not replace the definitive 90-sample timing evidence. Operations reproduced the existing override-evidence statement timeout. Read-only Supabase connector probes for project metadata, migrations, performance advisors and catalog indexes were all permission-denied; no remote SQL or DDL was executed. Useful-content p75, query-plan evidence, migration application, the Dashboard search timeout and full protected regression remain open, so the gate verdict remains FAIL. The verified commits and handoff were fast-forward-pushed to `origin/perf/p0-navigation-remediation` through `a3250c6`; `setup/Inspection` and `main` remain unchanged.

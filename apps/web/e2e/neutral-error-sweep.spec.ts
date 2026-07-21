@@ -10,9 +10,9 @@ const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 test.describe("neutral provider-error boundary", () => {
   test("admin read surfaces use neutral copy and server diagnostics", () => {
     for (const p of [
-      "src/app/admin/items/page.tsx",
-      "src/app/admin/violations/page.tsx",
-      "src/app/admin/gis/page.tsx",
+      "src/app/(app)/admin/items/page.tsx",
+      "src/app/(app)/admin/violations/page.tsx",
+      "src/app/(app)/admin/gis/page.tsx",
     ]) {
       const src = SRC(p);
       expect(src, `${p} must log provider diagnostics`).toContain("logProviderError");
@@ -22,8 +22,8 @@ test.describe("neutral provider-error boundary", () => {
   });
 
   test("admin publish/draft actions and notification adapter never return raw provider text", () => {
-    const packages = SRC("src/app/admin/packages/actions.ts");
-    const workflows = SRC("src/app/admin/workflows/actions.ts");
+    const packages = SRC("src/app/(app)/admin/packages/actions.ts");
+    const workflows = SRC("src/app/(app)/admin/workflows/actions.ts");
     const notify = SRC("src/lib/notify.ts");
     expect(packages).not.toMatch(/return \{ error: verErr\.message \}/);
     expect(workflows).not.toMatch(/return \{ error: baseError\.message \}/);
@@ -37,10 +37,10 @@ test.describe("neutral provider-error boundary", () => {
   test("field, bell, offline, and virtual-session paths keep provider details diagnostic-only", () => {
     const bell = SRC("src/components/NotificationBell.tsx");
     const offline = SRC("src/lib/offline.ts");
-    const fieldPage = SRC("src/app/field/inspection/[id]/page.tsx");
-    const field = SRC("src/app/field/inspection/[id]/FactoryVerification.tsx");
+    const fieldPage = SRC("src/app/(app)/field/inspection/[id]/page.tsx");
+    const field = SRC("src/app/(app)/field/inspection/[id]/FactoryVerification.tsx");
     const helper = SRC("src/lib/factory-verification.ts");
-    const virtual = SRC("src/app/virtual/[id]/actions.ts");
+    const virtual = SRC("src/app/(app)/virtual/[id]/actions.ts");
     expect(bell).not.toContain("setErr(error.message)");
     expect(offline).not.toMatch(/onState\("failed",\s*String\(/);
     expect(fieldPage).not.toMatch(/checksErr\s*\?\s*checksErr\.message/);

@@ -81,11 +81,11 @@ test.describe("Prompt 02 governed Compliance Configuration Request contract", ()
   });
 
   test("minimum working UI exposes register, create, detail, revision, comparison and honest states", () => {
-    const register = readWeb("src/app/admin/compliance-requests/page.tsx");
-    const create = readWeb("src/app/admin/compliance-requests/new/page.tsx");
-    const detail = readWeb("src/app/admin/compliance-requests/[id]/page.tsx");
-    const actions = readWeb("src/app/admin/compliance-requests/actions.ts");
-    const error = readWeb("src/app/admin/compliance-requests/error.tsx");
+    const register = readWeb("src/app/(app)/admin/compliance-requests/page.tsx");
+    const create = readWeb("src/app/(app)/admin/compliance-requests/new/page.tsx");
+    const detail = readWeb("src/app/(app)/admin/compliance-requests/[id]/page.tsx");
+    const actions = readWeb("src/app/(app)/admin/compliance-requests/actions.ts");
+    const error = readWeb("src/app/(app)/admin/compliance-requests/error.tsx");
     expect(register).toContain("No configuration requests");
     expect(register).toContain("Request register unavailable");
     expect(create).toContain("Create Compliance Configuration Request");

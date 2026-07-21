@@ -38,7 +38,7 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
   });
 
   test("UIU-ISP-AC-012..013 active assignments precede notifications and analytics", () => {
-    const page = read("src/app/field/page.tsx");
+    const page = read("src/app/(app)/field/page.tsx");
     const home = read("src/components/field/FieldHome.tsx");
     expect(page.indexOf("<FieldHome")).toBeGreaterThan(-1);
     expect(page.indexOf("<FieldHome")).toBeLessThan(page.indexOf('<details className="ax-field-performance">'));

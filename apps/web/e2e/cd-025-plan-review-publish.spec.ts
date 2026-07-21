@@ -137,7 +137,7 @@ test.describe("CD-025 a11y / RTL / responsive (DSG-A11Y-001)", () => {
 // DSG-CODE-001 / DEC-012 wiring — code-layer proof of the design-to-live closures
 // that do not require mutating live data.
 test("CD-025 wiring: truthful publisher result, live readiness preview, no invented support path", () => {
-  const actions = SRC("src/app/planning/bulk/actions.ts");
+  const actions = SRC("src/app/(app)/planning/bulk/actions.ts");
   // publish returns the authoritative plan ID (drives the read-only plan link), never a hard redirect
   expect(actions).toContain('sb.rpc("publish_bulk_plan"');
   expect(actions).toContain("return { ok: true, planId:");
@@ -158,7 +158,7 @@ test("CD-025 wiring: truthful publisher result, live readiness preview, no inven
 // scope, which the seed does not deterministically provide, so an e2e click would
 // be flaky. The behavior is data-independent and asserted here instead.
 test("CD-025 S10: scope reduction announces politely and restores focus (DSG-A11Y-001)", () => {
-  const client = SRC("src/app/planning/bulk/review/ReviewClient.tsx");
+  const client = SRC("src/app/(app)/planning/bulk/review/ReviewClient.tsx");
   // a polite live region carries the named-removal + retained-count announcement
   expect(client).toContain('aria-live="polite"');
   expect(client).toContain("s.scopeReduced");
@@ -166,6 +166,6 @@ test("CD-025 S10: scope reduction announces politely and restores focus (DSG-A11
   expect(client).toContain("readinessHeadingRef");
   expect(client).toContain("readinessHeadingRef.current?.focus()");
   // the announcement string is provided from the server component
-  const page = SRC("src/app/planning/bulk/review/page.tsx");
+  const page = SRC("src/app/(app)/planning/bulk/review/page.tsx");
   expect(page).toContain("plan.review.scopeReduced");
 });

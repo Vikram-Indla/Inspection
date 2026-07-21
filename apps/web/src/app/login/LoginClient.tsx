@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { homeForRoles } from "@/lib/role-home";
 import { supabaseBrowser } from "@/lib/supabase";
 import { logAuthEvent } from "@/lib/audit";
 import { IconEye, IconEyeOff, IconShieldCheck } from "../icons";
@@ -101,10 +102,21 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
     // like invalid credentials; never fall through to /launch with no session
     // and leave the user on a silent login page (ERR-AUTH-001).
     if (error || !data.session) { setError(safeSignInError(error ?? new Error("invalid credentials"), s)); return; }
-    // Hard navigation: guarantees the auth cookie is on the request before
-    // /launch renders server-side (router.push races the cookie write).
-    // /launch decides the landing by role — the URL never does.
-    window.location.assign("/launch");
+    // K-005 — resolve the role home client-side and navigate straight to it,
+    // collapsing the old /login -> /launch -> role-home chain by one full
+    // server round trip. Hard navigation is kept (not router.push): it
+    // guarantees the auth cookie is on the request before the destination
+    // renders server-side (router.push races the cookie write). /launch
+    // remains the fallback when the role read itself fails — the URL never
+    // decides the landing.
+    try {
+      const { data: roleRows } = await supabaseBrowser()
+        .from("user_roles").select("role_key").eq("user_id", data.session.user.id);
+      const home = homeForRoles((roleRows ?? []).map(row => row.role_key as string));
+      window.location.assign(home ?? "/launch");
+    } catch {
+      window.location.assign("/launch");
+    }
   }
 
   async function sendReset(e: React.FormEvent) {

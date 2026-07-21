@@ -12,8 +12,8 @@ import {
 
 const ROOT = path.resolve(__dirname, "../../..");
 const migration = fs.readFileSync(path.join(ROOT, "supabase/migrations/20260717150000_mvp2_m2_05_semantic_audit_replay.sql"), "utf8");
-const page = fs.readFileSync(path.join(ROOT, "apps/web/src/app/admin/audit/page.tsx"), "utf8");
-const workspace = fs.readFileSync(path.join(ROOT, "apps/web/src/app/admin/audit/AuditReplayWorkspace.tsx"), "utf8");
+const page = fs.readFileSync(path.join(ROOT, "apps/web/src/app/(app)/admin/audit/page.tsx"), "utf8");
+const workspace = fs.readFileSync(path.join(ROOT, "apps/web/src/app/(app)/admin/audit/AuditReplayWorkspace.tsx"), "utf8");
 const ontologyCsv = fs.readFileSync(path.join(ROOT, "product-contract/mvp2/m2-05/EVENT_ONTOLOGY.csv"), "utf8").trim().split("\n");
 const wiringCsv = fs.readFileSync(path.join(ROOT, "product-contract/mvp2/m2-05/REQUIREMENT_WIRING_MAP.csv"), "utf8").trim().split("\n");
 

@@ -20,3 +20,39 @@ scope_forbidden:
   - "Main/setup modification, merge, push, deployment, remote DDL, secrets, invented policy/provider values or self-approval."
 decision_owner: "Vikram Indla"
 effective_date: "2026-07-20"
+
+cross_provider_contract_014:
+  change_id: "CC-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
+  approver: "Vikram Indla"
+  branch: "codex/industry-shared-factory360-gap-013"
+  authorization: "Establish structural API, field, canonical-mapping, Web/iPad, offline/version, unavailable/error and reconciliation contracts for /api/inspection/* and /shared/api/v2/*; no bulk beta-data migration, live submission, merge, deployment, destructive schema change or credential exposure."
+  effective_date: "2026-07-20"
+
+g11_remediation_performance_001:
+  change_id: "CC-G11-REMEDIATION-PERFORMANCE-001"
+  title: "Platform-wide P0 navigation-performance post-mortem and remediation"
+  requestor: "Vikram Indla"
+  approver: "Vikram Indla"
+  branch: "perf/p0-navigation-remediation"
+  authorization: >
+    Sponsor supplied a master prompt for a controlled multi-agent (Codex, Kimi K3,
+    Claude Code) P0 navigation-performance investigation and remediation programme,
+    rejected the prompt's `improved` branch instruction as conflicting with this
+    repository's canonical-branch rule, and approved cutting an isolated branch
+    from setup/Inspection instead, with sequential per-agent passes on
+    short-lived worktree branches that fast-forward back into the shared branch.
+  scope_allowed:
+    - "Work on perf/p0-navigation-remediation and its per-agent worktree branches (perf/p0-navigation-remediation--codex-pass, --kimi-pass) only."
+    - "Run the 60 mandatory P0 diagnostic checks in docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md and implement evidence-backed fixes."
+    - "Add minimal, removable performance instrumentation; remove it before Pass 4 acceptance where not intended for production."
+    - "Update docs/performance/*.md deliverables and docs/performance/results/*.json|csv."
+    - "Commit and push to origin/perf/p0-navigation-remediation."
+  scope_forbidden:
+    - "Merge, push, or fast-forward main, at any pass, for any reason."
+    - "Merge perf/p0-navigation-remediation into setup/Inspection without a separate future explicit approval (Pass 4 opens a PR only)."
+    - "Weaken authentication, RLS, RBAC, tenant isolation, accessibility, or any accepted product requirement."
+    - "Commit binary evidence (screenshots, videos, traces, bundle-analysis images) to Git — store under INSPECTION_DOCS_ROOT per docs/DOCUMENTATION_STORAGE_POLICY.md."
+    - "Touch TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 files, branch, or worktree, or any other concurrently active task."
+    - "Invent policy values, thresholds, SLAs, or performance budgets not already stated in docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md."
+  decision_owner: "Vikram Indla"
+  effective_date: "2026-07-20"

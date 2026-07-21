@@ -146,7 +146,7 @@ test.describe("CD-004 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
 // DSG-CODE-001 / DEC-012 — code-layer proof of the wiring closures that cannot be
 // forced against live data (per-source failure isolation, verified-zero, blocked legs).
 test.describe("CD-004 wiring (DEC-012): per-source modelling, distinct states, blocked legs stay blocked", () => {
-  const page = SRC("src/app/admin/page.tsx");
+  const page = SRC("src/app/(app)/admin/page.tsx");
 
   test("W04-W08: each of the six reads is modelled independently — no blanket count ?? 0 render", () => {
     // The R1 defect was rendering `count ?? 0` regardless of per-source error. The fix

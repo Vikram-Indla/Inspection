@@ -8,11 +8,11 @@ const webRoot = path.resolve(__dirname, "..");
 const read = (file: string) => fs.readFileSync(path.join(webRoot, file), "utf8");
 
 test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contract", () => {
-  const items = read("src/app/admin/items/page.tsx");
-  const regulations = read("src/app/admin/regulations/page.tsx");
-  const layout = read("src/app/admin/items/layout.tsx");
-  const preview = read("src/app/admin/items/[id]/runtime-preview/page.tsx");
-  const requestCreate = read("src/app/admin/compliance-requests/new/page.tsx");
+  const items = read("src/app/(app)/admin/items/page.tsx");
+  const regulations = read("src/app/(app)/admin/regulations/page.tsx");
+  const layout = read("src/app/(app)/admin/items/layout.tsx");
+  const preview = read("src/app/(app)/admin/items/[id]/runtime-preview/page.tsx");
+  const requestCreate = read("src/app/(app)/admin/compliance-requests/new/page.tsx");
 
   test("unified library exposes regulations, items and governed request handoff", () => {
     for (const page of [items, regulations]) {
@@ -34,8 +34,8 @@ test.describe("Prompt 03 Compliance Library and Inspector Runtime Preview contra
     expect(preview).toContain("Read-only · configuration verification");
     expect(preview).toContain("It does not author, publish, or change the Inspector application");
     expect(preview).not.toMatch(/\.insert\(|\.update\(|\.delete\(|\.rpc\(/);
-    expect(read("src/app/admin/items/[id]/runtime-preview/loading.tsx")).toContain("Loading runtime preview");
-    expect(read("src/app/admin/items/[id]/runtime-preview/error.tsx")).toContain("No configuration has been changed");
+    expect(read("src/app/(app)/admin/items/[id]/runtime-preview/loading.tsx")).toContain("Loading runtime preview");
+    expect(read("src/app/(app)/admin/items/[id]/runtime-preview/error.tsx")).toContain("No configuration has been changed");
   });
 
   test("preview reads exact immutable execution snapshots and version lineage", () => {

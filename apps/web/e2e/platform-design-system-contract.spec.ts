@@ -35,8 +35,8 @@ test.describe("Platform-wide government design-system contract", () => {
       "src/app/login/page.tsx": /login\.css/,
       "src/app/reset/page.tsx": /login\/login\.css/,
       "src/app/reports/inspection/[id]/page.tsx": /report\.css/,
-      "src/app/reviews/[id]/started/page.tsx": /redirect\(`\/reviews\//,
-      "src/app/admin/regulations/[id]/page.tsx": /import Regulations from "\.\.\/page"/,
+      "src/app/(app)/reviews/[id]/started/page.tsx": /redirect\(`\/reviews\//,
+      "src/app/(app)/admin/regulations/[id]/page.tsx": /import Regulations from "\.\.\/page"/,
     };
     const pages = files(appRoot, "page.tsx");
     expect(pages.length).toBeGreaterThanOrEqual(55);
@@ -59,8 +59,8 @@ test.describe("Platform-wide government design-system contract", () => {
     const palette = read("src/lib/map-palette.ts");
     expect(palette).toContain("Government Foundation V1");
     expect(read("src/components/GeoMap.tsx")).toContain('from "@/lib/map-palette"');
-    expect(read("src/app/operations/live/LiveMapInner.tsx")).toContain('from "@/lib/map-palette"');
-    expect(read("src/app/operations/live/LiveMapInner.tsx")).not.toContain("#6941c6");
+    expect(read("src/app/(app)/operations/live/LiveMapInner.tsx")).toContain('from "@/lib/map-palette"');
+    expect(read("src/app/(app)/operations/live/LiveMapInner.tsx")).not.toContain("#6941c6");
   });
 
   test("PDS-AC-017..021 inputs and Atlas retain their approved boundaries", () => {

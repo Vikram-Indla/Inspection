@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 
@@ -16,10 +17,7 @@ export async function requireConfigurationWriter(): Promise<
   const { data: { user }, error: userError } = await getVerifiedUser(sb);
   if (userError || !user) return { ok: false, message: "Your session has ended. Sign in again." };
 
-  const { data: rows, error: rolesError } = await sb
-    .from("user_roles")
-    .select("role_key")
-    .eq("user_id", user.id);
+  const { data: rows, error: rolesError } = await getUserRoles(user.id);
   if (rolesError) {
     console.error("[admin configuration roles]", rolesError.message);
     return { ok: false, message: "Your permissions could not be verified. Try again." };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, type ReactNode } from "react";
-import type { Mvp3ActionState } from "@/app/admin/mvp3-actions";
+import type { Mvp3ActionState } from "@/app/(app)/admin/mvp3-actions";
 
 export default function Mvp3ActionForm({ action, children, submitLabel }: {
   action: (state: Mvp3ActionState, data: FormData) => Promise<Mvp3ActionState>;

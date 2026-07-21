@@ -354,7 +354,7 @@ test.describe("CD-023 authorization and neutral errors", () => {
   });
 
   test("Inspector field handoff never appends raw database error text to the visible log", () => {
-    const startup = readFileSync(join(process.cwd(), "src/app/field/[visitId]/Startup.tsx"), "utf8");
+    const startup = readFileSync(join(process.cwd(), "src/app/(app)/field/[visitId]/Startup.tsx"), "utf8");
     expect(startup).toContain("add(strings.logInspectionCreateFailed)");
     expect(startup).toContain("add(strings.logJourneyBlocked)");
     expect(startup).toContain("add(strings.logCheckinRejected)");
@@ -363,13 +363,13 @@ test.describe("CD-023 authorization and neutral errors", () => {
     expect(startup).toContain("add(strings.logCancelFailed)");
     expect(startup).toContain("add(strings.logReturnFailed)");
     expect(startup).not.toMatch(/add\(fmt\(strings\.(?:logInspectionCreateFailed|logJourneyBlocked|logCheckinRejected|logExceptionFailed|logOpBlocked|logCancelFailed|logReturnFailed)[\s\S]{0,160}(?:error\.message|r\.error)/);
-    const actions = readFileSync(join(process.cwd(), "src/app/field/[visitId]/actions.ts"), "utf8");
+    const actions = readFileSync(join(process.cwd(), "src/app/(app)/field/[visitId]/actions.ts"), "utf8");
     expect(actions).not.toMatch(/return \{ error: error\.message \}/);
   });
 
   test("field calendar drag requests a planner-owned reschedule without moving the visit optimistically", () => {
     const home = readFileSync(join(process.cwd(), "src/components/field/FieldHome.tsx"), "utf8");
-    const actions = readFileSync(join(process.cwd(), "src/app/field/actions.ts"), "utf8");
+    const actions = readFileSync(join(process.cwd(), "src/app/(app)/field/actions.ts"), "utf8");
     expect(home).toContain("requestVisitReschedule");
     expect(home).toContain("draggable={s.key !== \"expired\" && s.key !== \"approved\"}");
     expect(home).toContain("onDrop={() => void dropOnDay(day)}");
@@ -378,7 +378,7 @@ test.describe("CD-023 authorization and neutral errors", () => {
   });
 
   test("arrival handoff renders context cards, journey summary, cancellation and arrival evidence controls", () => {
-    const startup = readFileSync(join(process.cwd(), "src/app/field/[visitId]/Startup.tsx"), "utf8");
+    const startup = readFileSync(join(process.cwd(), "src/app/(app)/field/[visitId]/Startup.tsx"), "utf8");
     expect(startup).toContain("M04-050..054");
     expect(startup).toContain("strings.cardsFactoryTitle");
     expect(startup).toContain("strings.cardsVisitTitle");
@@ -405,7 +405,7 @@ test.describe("CD-023 authorization and neutral errors", () => {
     expect(repair).toContain("alter table evidence add column if not exists evidence_note text");
     expect(offline).toContain('inspection_id: string | null');
     expect(offline).toContain("row.visit_id = op.visit_id; row.inspection_id = null");
-    const workspace = readFileSync(join(process.cwd(), "src/app/field/inspection/[id]/page.tsx"), "utf8");
+    const workspace = readFileSync(join(process.cwd(), "src/app/(app)/field/inspection/[id]/page.tsx"), "utf8");
     expect(workspace).toContain('eq("visit_id", ins.visit_id)');
     expect(workspace).toContain("visitEvidenceRead");
   });

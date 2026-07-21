@@ -60,7 +60,7 @@ test.describe("Government Foundation V1 contract", () => {
 
   test("DSF-AC-019..023 authenticated foundation rejects cinematic styling", () => {
     const css = read("src/app/astryx.css");
-    const dashboard = read("src/app/dashboard/dashboard.module.css");
+    const dashboard = read("src/app/(app)/dashboard/dashboard.module.css");
     const authenticated = cssFiles(path.join(root, "src/app"))
       .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css"))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");

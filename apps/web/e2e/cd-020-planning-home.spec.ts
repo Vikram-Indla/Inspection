@@ -61,7 +61,7 @@ test.describe("CD-020 planning home", () => {
   });
 
   test("source contract uses capability access, drops package gating and keeps neutral errors", () => {
-    const home = readFileSync(join(process.cwd(), "src/app/planning/page.tsx"), "utf8");
+    const home = readFileSync(join(process.cwd(), "src/app/(app)/planning/page.tsx"), "utf8");
     expect(home).toContain("getPlanningAccess");
     expect(home).not.toContain("noPackage");
     const access = readFileSync(join(process.cwd(), "src/lib/planning/access.ts"), "utf8");
@@ -69,10 +69,10 @@ test.describe("CD-020 planning home", () => {
     expect(access).toContain("has_planning_capability");
     const list = readFileSync(join(process.cwd(), "src/lib/planning/visit-list.ts"), "utf8");
     expect(list).toContain('"draft", "validated"');
-    const exporter = readFileSync(join(process.cwd(), "src/app/planning/export-actions.ts"), "utf8");
+    const exporter = readFileSync(join(process.cwd(), "src/app/(app)/planning/export-actions.ts"), "utf8");
     expect(exporter).toContain("planning.export");
-    const register = readFileSync(join(process.cwd(), "src/app/planning/plans/page.tsx"), "utf8");
-    const drill = readFileSync(join(process.cwd(), "src/app/planning/plans/[id]/page.tsx"), "utf8");
+    const register = readFileSync(join(process.cwd(), "src/app/(app)/planning/plans/page.tsx"), "utf8");
+    const drill = readFileSync(join(process.cwd(), "src/app/(app)/planning/plans/[id]/page.tsx"), "utf8");
     expect(register).not.toContain("{error.message}");
     expect(drill).not.toContain("pErr?.message ?? kErr?.message");
   });

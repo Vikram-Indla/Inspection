@@ -41,6 +41,7 @@ test.describe("Prompt 01 shared shell source contract", () => {
   test("topbar contains global search, scopes, theme, notifications, AI and account without sample truth", () => {
     const shell = read("src/components/ShellClient.tsx");
     const server = read("src/components/Shell.tsx");
+    const persona = read("src/lib/persona.ts");
     expect(shell).toContain('type="search" role="combobox"');
     expect(shell).toContain("routeScope.date");
     expect(shell).toContain("routeScope.region");
@@ -48,7 +49,8 @@ test.describe("Prompt 01 shared shell source contract", () => {
     expect(shell).toContain("<NotificationBell");
     expect(shell).toContain('href="/ai/suggestions"');
     expect(shell).toContain("ax-shell-account__trigger");
-    expect(server).toContain('sb.from("factories").select("region")');
+    expect(server).toContain("getShellRegions()");
+    expect(persona).toContain('sb.from("factories").select("region")');
     expect(shell).not.toMatch(/\b(?:85%|92%|98%|1,250)\b/);
     expect(shell).not.toContain("<svg id=\"ksa-boundaries\"");
   });
@@ -66,8 +68,8 @@ test.describe("Prompt 01 shared shell source contract", () => {
 
   test("existing route guards and unavailable states remain authoritative", () => {
     const boundary = read("src/components/AdminRouteBoundary.tsx");
-    const dashboard = read("src/app/dashboard/page.tsx");
-    const ai = read("src/app/ai/suggestions/page.tsx");
+    const dashboard = read("src/app/(app)/dashboard/page.tsx");
+    const ai = read("src/app/(app)/ai/suggestions/page.tsx");
     expect(boundary).toContain("allowedRoles.some(role => roles.has(role))");
     expect(boundary).toContain("No configuration data has been loaded");
     expect(dashboard).toContain("mayViewDashboard");

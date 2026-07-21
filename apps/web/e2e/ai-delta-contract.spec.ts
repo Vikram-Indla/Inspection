@@ -6,7 +6,7 @@ const SRC = (p: string) => fs.readFileSync(path.resolve(__dirname, "..", p), "ut
 
 test.describe("contextual AI delta contract", () => {
   test("planning summary is evidence-linked and cannot publish or select", () => {
-    const page = SRC("src/app/planning/bulk/page.tsx");
+    const page = SRC("src/app/(app)/planning/bulk/page.tsx");
     expect(page).toContain("MVP1-M01-016");
     expect(page).toContain("MVP1-M01-026");
     expect(page).toContain("ContextualAiPanel");
@@ -16,7 +16,7 @@ test.describe("contextual AI delta contract", () => {
   });
 
   test("preparation assistant is present before geofence and cannot gate start", () => {
-    const startup = SRC("src/app/field/[visitId]/Startup.tsx");
+    const startup = SRC("src/app/(app)/field/[visitId]/Startup.tsx");
     expect(startup).toContain("M03-009");
     expect(startup).toContain("ContextualAiPanel");
     expect(startup).toContain("surface=\"preparation_assistant\"");
@@ -39,10 +39,10 @@ test.describe("contextual AI delta contract", () => {
   });
 
   test("item explanation is bound to the locked package and cannot decide an answer", () => {
-    const workspace = SRC("src/app/field/inspection/[id]/Workspace.tsx");
+    const workspace = SRC("src/app/(app)/field/inspection/[id]/Workspace.tsx");
     expect(workspace).toContain("MVP1-M04-138");
     expect(workspace).toContain('surface="inspection_item_explanation"');
-    expect(SRC("src/app/field/inspection/[id]/page.tsx")).toContain("Human decision required");
+    expect(SRC("src/app/(app)/field/inspection/[id]/page.tsx")).toContain("Human decision required");
     const explanationIndex = workspace.indexOf('surface="inspection_item_explanation"');
     const responseControlsIndex = workspace.indexOf("{isDate ? (");
     expect(explanationIndex).toBeGreaterThan(-1);
@@ -58,7 +58,7 @@ test.describe("contextual AI delta contract", () => {
   });
 
   test("factory health and risk explanation uses persisted records only", () => {
-    const factory = SRC("src/app/factories/[id]/page.tsx");
+    const factory = SRC("src/app/(app)/factories/[id]/page.tsx");
     expect(factory).toContain('surface="factory_risk_explanation"');
     expect(factory).toContain("MVP1-M07-014");
     expect(factory).toContain("MVP1-M07-015");
@@ -71,7 +71,7 @@ test.describe("contextual AI delta contract", () => {
   });
 
   test("inspector daily briefing starts in My assignments and has a human review path", () => {
-    const field = SRC("src/app/field/page.tsx");
+    const field = SRC("src/app/(app)/field/page.tsx");
     expect(field).toContain('surface="inspector_daily_briefing"');
     expect(field).toContain("MVP1-M03-001");
     expect(field).toContain("MVP1-M03-003");
@@ -81,7 +81,7 @@ test.describe("contextual AI delta contract", () => {
     expect(action).toContain("Do not invent a route or travel order");
     const panel = SRC("src/components/ContextualAiPanel.tsx");
     expect(panel).toContain("/ai/suggestions#ai-suggestion-");
-    const docket = SRC("src/app/ai/suggestions/AiDockets.tsx");
+    const docket = SRC("src/app/(app)/ai/suggestions/AiDockets.tsx");
     expect(docket).toContain("id={`ai-suggestion-${r.id}`}");
   });
 });

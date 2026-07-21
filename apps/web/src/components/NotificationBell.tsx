@@ -28,6 +28,14 @@ type Row = {
 const POLL_MS = 30_000;
 const isUnread = (r: Row) => !r.read_at && r.delivery_state !== "read" && r.delivery_state !== "handled";
 
+// K-008 — session-scoped result cache. The shell remounts on every client
+// navigation (K-001), which used to re-fire the list query + exact count on
+// each mount. A fresh-enough cached snapshot serves remounts; the 30 s poll
+// and opening the dropdown still hit the database. Marking rows read updates
+// the cache in place so the badge never goes stale between polls.
+let snapshot: { at: number; rows: Row[]; unreadTotal: number; userId: string } | null = null;
+const SNAPSHOT_TTL_MS = POLL_MS;
+
 function BellIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -47,11 +55,17 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
   const wrapRef = useRef<HTMLDivElement>(null);
   const sbRef = useRef(supabaseBrowser());
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (force = false) => {
     const sb = sbRef.current;
     const { data: { user } } = await getVerifiedUser(sb);
     if (!user) { setAuthed(false); return; }
     setAuthed(true);
+    if (!force && snapshot && snapshot.userId === user.id && Date.now() - snapshot.at < SNAPSHOT_TTL_MS) {
+      setErr("");
+      setRows(snapshot.rows);
+      setUnreadTotal(snapshot.unreadTotal);
+      return;
+    }
     const [{ data, error }, { count }] = await Promise.all([
       sb.from("notifications")
         .select("id, event_key, payload, channel, delivery_state, read_at, created_at")
@@ -66,8 +80,11 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
     ]);
     if (error) { setErr(strings.loadError); return; }
     setErr("");
-    setRows((data ?? []) as Row[]);
-    setUnreadTotal(count ?? 0);
+    const rows = (data ?? []) as Row[];
+    const unreadTotal = count ?? 0;
+    snapshot = { at: Date.now(), rows, unreadTotal, userId: user.id };
+    setRows(rows);
+    setUnreadTotal(unreadTotal);
   }, []);
 
   useEffect(() => {
@@ -94,6 +111,10 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
     if (r.delivery_state === "queued") patch.delivery_state = "read";
     const { error } = await sb.from("notifications").update(patch).eq("id", r.id);
     if (error) { setErr(strings.loadError); return; }
+    if (snapshot) {
+      snapshot.rows = snapshot.rows.map(x => x.id === r.id ? { ...x, ...patch } as Row : x);
+      snapshot.unreadTotal = Math.max(0, snapshot.unreadTotal - 1);
+    }
     setRows(rs => rs.map(x => x.id === r.id ? { ...x, ...patch } as Row : x));
     setUnreadTotal(n => Math.max(0, n - 1));
   }
@@ -112,7 +133,7 @@ export default function NotificationBell({ strings }: { strings: BellStrings }) 
   return (
     <div ref={wrapRef} className="ax-notification">
       <button className="ax-notification__trigger" aria-label={strings.label} aria-expanded={open}
-        onClick={() => { setOpen(o => !o); if (!open) load(); }}>
+        onClick={() => { setOpen(o => !o); if (!open) void load(true); }}>
         <BellIcon />
         {unread > 0 && <span className="ax-notification__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
       </button>

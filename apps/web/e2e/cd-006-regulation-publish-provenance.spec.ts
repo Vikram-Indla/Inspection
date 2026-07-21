@@ -21,7 +21,7 @@ test.describe("CD-006 regulation publish — provenance + honest no-op", () => {
     // (atomic, DB-enforced distinct-approver check, raises rather than
     // silently no-opping). Assertions updated to the current layer instead
     // of the superseded client-side pattern.
-    const actions = SRC("src/app/admin/regulations/actions.ts");
+    const actions = SRC("src/app/(app)/admin/regulations/actions.ts");
     const rpc = SRC("../../supabase/migrations/20260715220000_m09_authoritative_contract_completion.sql");
     // WA-01 — provenance columns are written on publish, now inside the RPC.
     expect(rpc).toMatch(/approved_by\s*=\s*auth\.uid\(\)/);

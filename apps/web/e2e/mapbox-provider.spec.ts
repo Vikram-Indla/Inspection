@@ -7,9 +7,9 @@ const app = (...parts: string[]) => join(process.cwd(), ...parts);
 test.describe("TASK-IPAD-MAPBOX-RUNTIME-004", () => {
   test("uses Mapbox as the only authenticated application map renderer across web, Admin and iPad", () => {
     const genericMap = readFileSync(app("src/components/GeoMap.tsx"), "utf8");
-    const liveMap = readFileSync(app("src/app/operations/live/LiveMapInner.tsx"), "utf8");
-    const field = readFileSync(app("src/app/field/[visitId]/Startup.tsx"), "utf8");
-    const admin = readFileSync(app("src/app/admin/gis/GisStudio.tsx"), "utf8");
+    const liveMap = readFileSync(app("src/app/(app)/operations/live/LiveMapInner.tsx"), "utf8");
+    const field = readFileSync(app("src/app/(app)/field/[visitId]/Startup.tsx"), "utf8");
+    const admin = readFileSync(app("src/app/(app)/admin/gis/GisStudio.tsx"), "utf8");
     const publicAtlas = readFileSync(app("src/app/login/StoryMapInner.tsx"), "utf8");
     const packages = readFileSync(app("package.json"), "utf8");
 

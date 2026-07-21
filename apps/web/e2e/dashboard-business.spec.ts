@@ -12,7 +12,7 @@ import {
   type ResponseRow,
   type ReviewRow,
   type VisitRow,
-} from "../src/app/dashboard/metrics";
+} from "../src/app/(app)/dashboard/metrics";
 import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 import { storageStatePath } from "./personas";
 
@@ -31,7 +31,7 @@ async function loginOps(page: import("@playwright/test").Page) {
 
 test.describe("TASK-WEB-DASHBOARD-002 metric truth", () => {
   test("audit timeline query is bounded to scoped dashboard objects", () => {
-    const source = readFileSync(join(process.cwd(), "src/app/dashboard/page.tsx"), "utf8");
+    const source = readFileSync(join(process.cwd(), "src/app/(app)/dashboard/page.tsx"), "utf8");
     expect(source).toContain("collectLatestAudit");
     expect(source).toContain('.in("object_id", ids)');
     expect(source).toContain('.gte("occurred_at"');

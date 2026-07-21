@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { cache } from "react";
 
-export async function supabaseServer() {
+export const supabaseServer = cache(async () => {
   const cookieStore = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,7 +17,7 @@ export async function supabaseServer() {
       },
     }
   );
-}
+});
 
 /**
  * Verify the access token once per server render. Admin route boundaries, pages,
