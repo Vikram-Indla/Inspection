@@ -14,7 +14,8 @@ const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", retur
 export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
   const { created } = await searchParams;
   const { id } = await params;
-  const { t } = await useT();
+  const { t, locale } = await useT();
+  const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
   // ENG-05 — inspector pool; user_roles embed on profiles is ambiguous, disambiguate via !user_roles_user_id_fkey
   const { data: inspRows } = await sb.from("profiles")
@@ -23,8 +24,9 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
   const { data: v, error: vErr } = await sb.from("visits")
     .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, cancellation_reason, notes,
+      immediate_creator_role, source_channel, internal_reference,
       visit_plans(id, method, status, published_at, created_at, profiles(full_name)),
-      factories(id, factory_code, name, cr_number, official_lat, official_lng, risk_band),
+      factories(id, factory_code, name, cr_number, official_lat, official_lng, risk_band, is_temporary, source),
       package_versions(version_label, packages(code)),
       assignments(method, status, profiles(full_name)),
       journey_sessions(id, started_at, geo_events(kind, accuracy_m, geofence_result, gis_version, occurred_at)),
@@ -47,7 +49,11 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         body={t("visit.detail.notFoundDesc", "IDs never change or get reused (FLD-VIS-001).")} />
     </Shell>;
   }
-  const f = v.factories as unknown as { id: string; factory_code: string; name: string; cr_number: string; risk_band: string };
+  const f = v.factories as unknown as { id: string; factory_code: string; name: string; cr_number: string; risk_band: string; is_temporary: boolean; source: string | null };
+  // PLN-REQ-028 — a manual immediate factory is never presented as master data:
+  // the unverified marker rides next to the lifecycle lozenges, and creator
+  // provenance (Planner/Inspector, reason, channel) is surfaced below.
+  const isUnverifiedManual = f.is_temporary && f.source === "immediate_manual";
   // visits->visit_plans is TO-ONE (FK on visits): object or null (null = immediate, M01-050)
   const plan = v.visit_plans as unknown as { id: string; method: string; status: string; published_at: string | null; created_at: string; profiles: { full_name: string } | null } | null;
   const returnReason = v.planning_status === "returned" && typeof v.notes === "string" && v.notes.startsWith("RETURNED: ")
@@ -194,6 +200,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[v.planning_status] ?? ""}`}>{t(`enum.${v.planning_status}`, v.planning_status)}</span>
         <span className="ax-lozenge ax-lozenge--ops">{t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}</span>
         {pkg && <span className="ax-version">{pkg.packages.code} · {pkg.version_label}</span>}
+        {isUnverifiedManual && <span className="ax-lozenge ax-lozenge--warning">{tr("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة")}</span>}
       </>}>
       <CreatedToast created={created}
         registeredMessage={t("visit.detail.createdToast", "Visit created and dispatched.")}
@@ -205,6 +212,16 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
           <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="ax-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
           <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="ax-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360 →")}</a></p>
+          {(v.immediate_creator_role || v.source_channel) && (
+            <p className="ax-caption" style={{ marginBlockStart: 8 }}>
+              {t("visit.detail.immediateProvenance", "Immediate creation:")}{" "}
+              {v.immediate_creator_role === "inspector"
+                ? tr("visit.detail.creatorInspector", "Inspector — self-created", "المفتش — إنشاء ذاتي")
+                : tr("visit.detail.creatorPlanner", "Planner", "المخطط")}
+              {v.internal_reference ? <> · {t("visit.detail.manualReason", "manual reason")} <bdi>{v.internal_reference}</bdi></> : null}
+              {v.source_channel ? <> · <bdi>{v.source_channel}</bdi></> : null}
+            </p>
+          )}
         </div>
         <div id="inspection" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.inspectionVersions", "Inspection & versions")}</h4>

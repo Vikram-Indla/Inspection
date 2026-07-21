@@ -62,6 +62,31 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     .order("requested_at", { ascending: false })
     .limit(1);
   const initialOverride = overrideRows?.[0] ?? null;
+  // TASK-EXECUTION-MODULE-001 · Phase 4B — journey schema probe (D-015). A
+  // tolerant read on the Phase 4A table: while migration 20260721140000 is
+  // not applied the probe fails and Startup keeps the EXACT legacy
+  // direct-insert flow; once applied, the RPC path becomes available.
+  const { error: journeyProbeError } = await sb.from("cancellation_requests").select("id").limit(1);
+  const journeySchemaAvailable = !journeyProbeError;
+  // Latest cancellation request + location corrections for this visit
+  // (requester reads own; ops/planner/leadership read all — RLS is the
+  // authority). Only read when the probe succeeded.
+  let initialCancellation: { id: string; status: string; reason_key: string; requested_at: string; decision_reason: string | null } | null = null;
+  let initialCorrections: { id: string; corrected_lat: number; corrected_lng: number; accuracy_m: number | null; reason: string; source: string; corrected_at: string; capture_context: string }[] = [];
+  if (journeySchemaAvailable) {
+    const { data: cancelRows } = await sb.from("cancellation_requests")
+      .select("id, status, reason_key, requested_at, decision_reason")
+      .eq("visit_id", visitId)
+      .order("requested_at", { ascending: false })
+      .limit(1);
+    initialCancellation = ((cancelRows?.[0] ?? null) as { id: string; status: string; reason_key: string; requested_at: string; decision_reason: string | null } | null);
+    const { data: correctionRows } = await sb.from("visit_location_corrections")
+      .select("id, corrected_lat, corrected_lng, accuracy_m, reason, source, corrected_at, capture_context")
+      .eq("visit_id", visitId)
+      .order("corrected_at", { ascending: false })
+      .limit(5);
+    initialCorrections = (correctionRows ?? []) as unknown as typeof initialCorrections;
+  }
   if (!v) {
     return (
       <Shell current="/field" title={t("field.start.notFoundTitle", "Not found")}>
@@ -396,6 +421,27 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     // Phase 3B — readiness gate + unresolved-package placeholder
     preparationRequired: t("field.start.preparationRequired", "Complete preparation and confirm ready first — package download and journey start unlock after that."),
     packagePending: t("field.start.packagePending", "selected during preparation"),
+    // Phase 4B — journey RPC path (active only when the schema probe succeeds)
+    journeyOverdueWarning: t("field.start.journeyOverdueWarning", "This journey starts after the planned execution date, still inside the visit window. The delay is recorded."),
+    correctionHeading: t("field.start.correctionHeading", "Corrected visit location"),
+    correctionCaption: t("field.start.correctionCaption", "Report the correct on-site location for THIS visit only. The registered factory location and the planned location are never changed — both stay visible below with the correction (append-only record)."),
+    correctionAffordance: t("field.start.correctionAffordance", "Report corrected location"),
+    correctionReason: t("field.start.correctionReason", "Why is the location wrong? — mandatory"),
+    correctionReasonPlaceholder: t("field.start.correctionReasonPlaceholder", "Describe what you found on site…"),
+    correctionEvidence: t("field.start.correctionEvidence", "Photo evidence (optional)"),
+    correctionSubmit: t("field.start.correctionSubmit", "Save corrected location"),
+    correctionCancel: t("common.cancel", "Cancel"),
+    correctionSaved: t("field.start.correctionSaved", "Corrected location recorded — arrival is now checked against it. The original location stays visible."),
+    correctionFailed: locale === "ar"
+      ? "تعذر حفظ الموقع المصحح. تحقق من الاتصال ثم أعد المحاولة."
+      : t("field.start.correctionFailedSafe", "The corrected location could not be saved. Check the connection, then try again."),
+    correctionOriginalLabel: t("field.start.correctionOriginalLabel", "Planned / registered location"),
+    correctionCorrectedLabel: t("field.start.correctionCorrectedLabel", "Corrected on-site location"),
+    correctionMeta: t("field.start.correctionMeta", "recorded {at} · {context} · source {source}"),
+    cancelPendingActive: t("field.start.cancelPendingActive", "Cancellation requested — awaiting Operations decision"),
+    cancelApprovedCopy: t("field.start.cancelApprovedCopy", "Cancellation approved by Operations — this visit is cancelled. Everything captured so far is preserved for audit."),
+    cancelRejectedCopy: t("field.start.cancelRejectedCopy", "Cancellation was rejected by Operations — the visit continues. Reason: {reason}"),
+    logActiveCancelSent: t("field.start.logActiveCancelSent", "Cancellation requested — Operations will decide; the request is idempotent so retries are safe."),
   };
   // Phase 3B — Pre-Execution panel copy (plain language; error codes mapped to
   // governed copy, provider text never reaches the UI).
@@ -519,7 +565,10 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             strings={prepStrings}
           />
         )}
-        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} preparationGated={preparationGated} />
+        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} preparationGated={preparationGated}
+          journeySchemaAvailable={journeySchemaAvailable}
+          initialCancellation={initialCancellation as never}
+          initialCorrections={initialCorrections as never} />
       </div>
     </Shell>
   );

@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "seed:kpi": "node scripts/seed-dashboard-kpis.mjs",
+    "geo:regions": "node scripts/fetch-ksa-regions.mjs",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "check:design-system-v5": "node scripts/check-design-system-v5.mjs",

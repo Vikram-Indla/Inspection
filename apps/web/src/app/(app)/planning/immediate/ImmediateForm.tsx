@@ -5,6 +5,13 @@
 // completion — the same pattern as planning/single/Wizard.tsx, needed
 // because React 19's native form auto-reset writes to the DOM directly and
 // bypasses controlled-input reconciliation on a blocked-create retry.
+//
+// M5 (PLN-REQ-025..028) — manual (unregistered) entry contract:
+// three eligibility legs (permission · visit-type allows · explicit not-found
+// confirmation, all re-verified server-side), required establishment name /
+// region / dependent city / map pin, governed manual-entry reason (Other →
+// comment), conditional contact mobile when factory notification is enabled,
+// and an honest "unverified — pending reconciliation" marker.
 import { useActionState, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { GeoMarkerData } from "@/components/GeoMap";
@@ -22,20 +29,27 @@ type F = {
 type P = { id: string; version_label: string; packages: { code: string; title: string } };
 type I = { user_id: string; full_name: string };
 
+export type VisitTypeOption = { key: string; label: string; manualEntryAllowed: boolean; attachmentRequired: boolean };
+export type ManualReasonOption = { key: string; label: string };
+
 export type ImmediateStrings = {
   identity: string; identityToggleRegistered: string; identityToggleUnregistered: string;
+  manualLockedPermission: string; manualLockedType: string; manualLockedLookups: string; notFoundConfirm: string;
   searchLabel: string; searchPlaceholder: string; searchNoMatch: string; existingFactory: string; selectOption: string;
   previewCr: string; previewLicense: string; previewRegion: string; previewFreshness: string; previewFreshnessNever: string;
   previewRisk: string; previewRiskUnknown: string;
   manualName: string; manualPlaceholder: string; manualCr: string; manualLicense: string;
   manualActivity: string; manualActivityPlaceholder: string; manualRegion: string; manualCity: string; manualCityPlaceholder: string;
+  manualReasonLabel: string; manualReasonComment: string; manualReasonCommentPlaceholder: string;
+  notifyFactory: string; factoryMobile: string; factoryMobilePlaceholder: string;
+  unverifiedBadge: string; attachmentRequiredNote: string;
   temporaryNote: string;
   urgencyReason: string; reasonComplaint: string; reasonIncident: string; reasonReferral: string;
   reasonOther: string; reasonOtherHint: string;
   locationDispatch: string; useOfficialLocation: string; latitude: string; longitude: string;
   locationSourceOfficial: string; locationSourceManual: string; locationSourceNone: string; mapLoading: string;
   packageLabel: string; inspector: string; autoAssign: string;
-  visitType: string; typePeriodic: string; typeFollowUp: string; typeComplaint: string;
+  visitType: string;
   windowStart: string; windowEnd: string; windowHint: string;
   priority: string; priorityPlaceholder: string; notes: string; notesPlaceholder: string;
   consequenceTitle: string; consequenceVisit: string; consequenceAssign: string; consequenceNotify: string; consequenceAudit: string;
@@ -56,27 +70,38 @@ export type ImmediateStrings = {
   enforcementNone: string; enforcementNotes: string; enforcementNotesPlaceholder: string;
 };
 
+// Saudi mobile, configurable-format stand-in: optional +966/0 prefix then 5XXXXXXXX.
+const MOBILE_RE = /^(?:\+?966|0)?5\d{8}$/;
+const normalizeMobile = (v: string) => v.replace(/[\s-]/g, "");
+
 let mapLoadingLabel = "Loading location map";
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
   loading: () => <EmptyState glyph="…" title={mapLoadingLabel} inline bare role="status" ariaBusy />,
 });
 
-export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, hasInspectorPool, actorName, actorMode, locale, strings, initialFactoryId }: {
-  factories: F[]; packages: P[]; inspectors: I[]; regionOptions: string[]; cityOptions: string[]; hasInspectorPool: boolean;
-  actorName: string; actorMode: "planner" | "inspector"; locale: "en" | "ar"; strings: ImmediateStrings; initialFactoryId?: string;
+export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, cityByRegion, hasInspectorPool, actorName, actorMode, locale, manualAllowed, visitTypes, manualReasons, strings, initialFactoryId }: {
+  factories: F[]; packages: P[]; inspectors: I[]; regionOptions: string[]; cityOptions: string[]; cityByRegion: Record<string, string[]>; hasInspectorPool: boolean;
+  actorName: string; actorMode: "planner" | "inspector"; locale: "en" | "ar";
+  manualAllowed: boolean; visitTypes: VisitTypeOption[]; manualReasons: ManualReasonOption[];
+  strings: ImmediateStrings; initialFactoryId?: string;
 }) {
   const [state, formAction, pending] = useActionState<ImmResult, FormData>(createImmediateVisit, {});
 
   const [mode, setMode] = useState<"registered" | "unregistered">("registered");
   const [query, setQuery] = useState("");
   const [factory, setFactory] = useState<F | null>(() => (initialFactoryId ? factories.find(f => f.id === initialFactoryId) ?? null : null));
+  const [notFoundConfirmed, setNotFoundConfirmed] = useState(false);
   const [manualName, setManualName] = useState("");
   const [manualCr, setManualCr] = useState("");
   const [manualLicense, setManualLicense] = useState("");
   const [manualActivity, setManualActivity] = useState("");
   const [manualRegion, setManualRegion] = useState("");
   const [manualCity, setManualCity] = useState("");
+  const [manualReasonKey, setManualReasonKey] = useState("");
+  const [manualReasonComment, setManualReasonComment] = useState("");
+  const [notifyFactory, setNotifyFactory] = useState(false);
+  const [factoryMobile, setFactoryMobile] = useState("");
   const [reason, setReason] = useState("");
   const [enforcementAction, setEnforcementAction] = useState("");
   const [enforcementNotes, setEnforcementNotes] = useState("");
@@ -86,7 +111,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const [locationAt, setLocationAt] = useState("");
   const [packageId, setPackageId] = useState(packages[0]?.id ?? "");
   const [inspectorId, setInspectorId] = useState("auto");
-  const [visitType, setVisitType] = useState("complaint");
+  const [visitType, setVisitType] = useState(visitTypes.find(v => v.manualEntryAllowed)?.key ?? visitTypes[0]?.key ?? "complaint");
   const [windowStart, setWindowStart] = useState("");
   const [windowEnd, setWindowEnd] = useState("");
   const [priority, setPriority] = useState("");
@@ -104,6 +129,20 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   }, [state]);
   mapLoadingLabel = strings.mapLoading;
 
+  // PLN-REQ-025 — all three legs must hold before manual entry is reachable:
+  // permission (manualAllowed), the selected visit type permits unregistered
+  // factories, and the governed reason list loaded. The not-found confirmation
+  // (fourth control) sits inside the manual panel itself.
+  const selectedType = visitTypes.find(v => v.key === visitType);
+  const manualAvailable = manualAllowed && manualReasons.length > 0 && selectedType?.manualEntryAllowed === true;
+  useEffect(() => {
+    if (mode === "unregistered" && !manualAvailable) setMode("registered");
+  }, [manualAvailable, mode]);
+  const manualLockReason = manualAvailable ? null
+    : !manualAllowed ? strings.manualLockedPermission
+      : manualReasons.length === 0 ? strings.manualLockedLookups
+        : strings.manualLockedType;
+
   const ql = query.trim().toLowerCase();
   const shown = ql.length >= 2
     ? factories.filter(f => f.cr_number?.toLowerCase().includes(ql) || (f.license_number ?? "").toLowerCase().includes(ql) || f.name.toLowerCase().includes(ql))
@@ -112,13 +151,22 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const latNum = Number(lat); const lngNum = Number(lng);
   const locationOk = lat !== "" && lng !== "" && Number.isFinite(latNum) && Number.isFinite(lngNum)
     && latNum >= -90 && latNum <= 90 && lngNum >= -180 && lngNum <= 180;
+  // PLN-REQ-026 — manual identity: not-found confirmation + establishment name +
+  // region + city are required; the reason dropdown (Other → comment) and the
+  // conditional contact mobile (required when factory notification is on) too.
+  const manualReasonOk = manualReasonKey !== "" && (manualReasonKey !== "other" || manualReasonComment.trim() !== "");
+  const mobileOk = !notifyFactory || MOBILE_RE.test(normalizeMobile(factoryMobile));
   const identityOk = mode === "registered" ? factory != null
-    : [manualName, manualCr, manualLicense, manualActivity].some(v => v.trim() !== "");
+    : notFoundConfirmed && manualName.trim() !== "" && manualRegion.trim() !== "" && manualCity.trim() !== "" && manualReasonOk && mobileOk;
   const reasonOk = reason !== "" && (reason !== "Other" || notes.trim() !== "");
   const packageOk = packageId !== "";
   const windowOk = actorMode === "inspector"
     || (!!windowStart && !!windowEnd && new Date(windowEnd).getTime() > new Date(windowStart).getTime());
   const inspectorOk = actorMode === "inspector" || hasInspectorPool;
+
+  // Dependent city list (PLN-REQ-026): cities observed under the chosen region,
+  // falling back to the full list when the region is free-typed.
+  const manualCityOptions = (manualRegion && cityByRegion[manualRegion]) || cityOptions;
 
   const useOfficialLocation = () => {
     if (!factory || factory.official_lat == null || factory.official_lng == null) return;
@@ -146,7 +194,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
         : reasonLabel(reason),
     },
     {
-      id: "identity", label: strings.chipIdentityLabel, controlId: mode === "registered" ? "imm-search" : "imm-manual-name",
+      id: "identity", label: strings.chipIdentityLabel, controlId: mode === "registered" ? "imm-search" : "imm-not-found",
       state: (bf === "identity" || !identityOk) ? "blocking" : "satisfied",
       detail: (bf === "identity" || !identityOk) ? strings.chipIdentityBlocked : (mode === "registered" ? strings.chipIdentityRegistered : strings.chipIdentityTemporary),
     },
@@ -193,8 +241,9 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
           <h4>{strings.identity}</h4>
           <div className="ax-segmented" role="group" aria-label={strings.identity}>
             <button type="button" aria-pressed={mode === "registered"} onClick={() => setMode("registered")}>{strings.identityToggleRegistered}</button>
-            <button type="button" aria-pressed={mode === "unregistered"} onClick={() => setMode("unregistered")}>{strings.identityToggleUnregistered}</button>
+            <button type="button" aria-pressed={mode === "unregistered"} disabled={!manualAvailable} onClick={() => setMode("unregistered")}>{strings.identityToggleUnregistered}</button>
           </div>
+          {manualLockReason && <p className="ax-caption" role="note">{manualLockReason}</p>}
 
           {mode === "registered" ? (
             <>
@@ -226,46 +275,87 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             </>
           ) : (
             <>
-              <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-name">{strings.manualName}</label>
-                <input id="imm-manual-name" key={`mn-${resetKey}`} className="ax-input" name="manual_name" value={manualName} onChange={e => setManualName(e.target.value)} placeholder={strings.manualPlaceholder} /></div>
-              <div className="ax-row">
-                <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-region">{strings.manualRegion}</label>
-                  <input id="imm-manual-region" key={`mrg-${resetKey}`} className="ax-input" name="manual_region" list="imm-region-options" value={manualRegion} onChange={e => setManualRegion(e.target.value)} /></div>
-                <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-city">{strings.manualCity}</label>
-                  <input id="imm-manual-city" key={`mci-${resetKey}`} className="ax-input" name="manual_city" list="imm-city-options" value={manualCity} onChange={e => setManualCity(e.target.value)} placeholder={strings.manualCityPlaceholder} /></div>
-              </div>
-              <datalist id="imm-region-options">{regionOptions.map(r => <option key={r} value={r} />)}</datalist>
-              <datalist id="imm-city-options">{cityOptions.map(c => <option key={c} value={c} />)}</datalist>
-              <div className="ax-row">
-                <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-cr">{strings.manualCr}</label>
-                  <input id="imm-manual-cr" key={`mcr-${resetKey}`} className="ax-input ax-numeric" name="manual_cr" value={manualCr} onChange={e => setManualCr(e.target.value)} /></div>
-                <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-license">{strings.manualLicense}</label>
-                  <input id="imm-manual-license" key={`mli-${resetKey}`} className="ax-input ax-numeric" name="manual_license" value={manualLicense} onChange={e => setManualLicense(e.target.value)} /></div>
-              </div>
-              <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-activity">{strings.manualActivity}</label>
-                <input id="imm-manual-activity" key={`mac-${resetKey}`} className="ax-input" name="manual_activity" value={manualActivity} onChange={e => setManualActivity(e.target.value)} placeholder={strings.manualActivityPlaceholder} /></div>
-              <p className="ax-caption">{strings.temporaryNote}</p>
-
-              {/* DEC-F — recommendation only. This inspector never executes the
-                  decision: enforcement_recommendations RLS grants inspector
-                  insert-only; ops/compliance_admin hold the sole update policy. */}
-              <div className="ax-field" style={{ maxInlineSize: "none" }}>
-                <label className="ax-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
-                <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.enforcementHint}</p>
-                <div id="imm-enforcement" className="ax-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
-                  {[["", strings.enforcementNone], ["fine", strings.enforcementFine], ["committee", strings.enforcementCommittee], ["warning", strings.enforcementWarning], ["closure", strings.enforcementClosure]].map(([v, label]) => (
-                    <button key={v} type="button" aria-pressed={enforcementAction === v} onClick={() => setEnforcementAction(v)}>{label}</button>
-                  ))}
+              {/* PLN-REQ-028 — manual entries are never presented as master data. */}
+              <p><span className="ax-lozenge ax-lozenge--warning">{strings.unverifiedBadge}</span></p>
+              {/* PLN-REQ-025 leg 3 — explicit not-found confirmation gates every
+                  manual field (and the server re-checks it before the RPC). */}
+              <label className="ax-check">
+                <input type="checkbox" id="imm-not-found" name="not_found_confirmed" value="yes"
+                  checked={notFoundConfirmed} onChange={e => setNotFoundConfirmed(e.target.checked)} />
+                <span>{strings.notFoundConfirm}</span>
+              </label>
+              <fieldset disabled={!notFoundConfirmed} style={{ border: 0, padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", minInlineSize: 0 }}>
+                <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-name">{strings.manualName}</label>
+                  <input id="imm-manual-name" key={`mn-${resetKey}`} className="ax-input" name="manual_name" value={manualName} onChange={e => setManualName(e.target.value)} placeholder={strings.manualPlaceholder} /></div>
+                <div className="ax-row">
+                  <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-region">{strings.manualRegion}</label>
+                    <input id="imm-manual-region" key={`mrg-${resetKey}`} className="ax-input" name="manual_region" list="imm-region-options" value={manualRegion} onChange={e => { setManualRegion(e.target.value); setManualCity(""); }} /></div>
+                  <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-city">{strings.manualCity}</label>
+                    <input id="imm-manual-city" key={`mci-${resetKey}`} className="ax-input" name="manual_city" list="imm-city-options" value={manualCity} onChange={e => setManualCity(e.target.value)} placeholder={strings.manualCityPlaceholder} /></div>
                 </div>
-              </div>
-              <input type="hidden" name="enforcement_action" value={enforcementAction} key={`ea-${resetKey}`} />
-              {enforcementAction !== "" && (
-                <label className="ax-field" style={{ maxInlineSize: "none" }}>
-                  <span className="ax-field__label">{strings.enforcementNotes}</span>
-                  <textarea className="ax-textarea" name="enforcement_notes" rows={2} value={enforcementNotes}
-                    onChange={e => setEnforcementNotes(e.target.value)} placeholder={strings.enforcementNotesPlaceholder} />
+                <datalist id="imm-region-options">{regionOptions.map(r => <option key={r} value={r} />)}</datalist>
+                <datalist id="imm-city-options">{manualCityOptions.map(c => <option key={c} value={c} />)}</datalist>
+                <div className="ax-row">
+                  <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-cr">{strings.manualCr}</label>
+                    <input id="imm-manual-cr" key={`mcr-${resetKey}`} className="ax-input ax-numeric" name="manual_cr" value={manualCr} onChange={e => setManualCr(e.target.value)} /></div>
+                  <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-license">{strings.manualLicense}</label>
+                    <input id="imm-manual-license" key={`mli-${resetKey}`} className="ax-input ax-numeric" name="manual_license" value={manualLicense} onChange={e => setManualLicense(e.target.value)} /></div>
+                </div>
+                <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-activity">{strings.manualActivity}</label>
+                  <input id="imm-manual-activity" key={`mac-${resetKey}`} className="ax-input" name="manual_activity" value={manualActivity} onChange={e => setManualActivity(e.target.value)} placeholder={strings.manualActivityPlaceholder} /></div>
+                {/* PLN-REQ-027 — governed reason lookup (not free text); Other
+                    requires a comment, matching the lookup label. */}
+                <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-reason">{strings.manualReasonLabel}</label>
+                  <select id="imm-manual-reason" key={`mrs-${resetKey}`} className="ax-select" value={manualReasonKey} onChange={e => setManualReasonKey(e.target.value)}>
+                    <option value="">{strings.selectOption}</option>
+                    {manualReasons.map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
+                  </select></div>
+                {manualReasonKey === "other" && (
+                  <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-reason-comment">{strings.manualReasonComment}</label>
+                    <input id="imm-manual-reason-comment" key={`mrc-${resetKey}`} className="ax-input" value={manualReasonComment} onChange={e => setManualReasonComment(e.target.value)} placeholder={strings.manualReasonCommentPlaceholder} /></div>
+                )}
+                {/* Conditional contact mobile — required only when factory
+                    notification is enabled (PLN-REQ-026). */}
+                <label className="ax-check">
+                  <input type="checkbox" id="imm-notify-factory" checked={notifyFactory} onChange={e => setNotifyFactory(e.target.checked)} />
+                  <span>{strings.notifyFactory}</span>
                 </label>
-              )}
+                {notifyFactory && (
+                  <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-factory-mobile">{strings.factoryMobile}</label>
+                    <input id="imm-factory-mobile" key={`fmb-${resetKey}`} className="ax-input ax-numeric" value={factoryMobile} onChange={e => setFactoryMobile(e.target.value)} placeholder={strings.factoryMobilePlaceholder} dir="ltr" /></div>
+                )}
+                {selectedType?.attachmentRequired && (
+                  <div className="ax-banner ax-banner--info"><div>{strings.attachmentRequiredNote}</div></div>
+                )}
+                <p className="ax-caption">{strings.temporaryNote}</p>
+
+                {/* DEC-F — recommendation only. This inspector never executes the
+                    decision: enforcement_recommendations RLS grants inspector
+                    insert-only; ops/compliance_admin hold the sole update policy. */}
+                <div className="ax-field" style={{ maxInlineSize: "none" }}>
+                  <label className="ax-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
+                  <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.enforcementHint}</p>
+                  <div id="imm-enforcement" className="ax-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
+                    {[["", strings.enforcementNone], ["fine", strings.enforcementFine], ["committee", strings.enforcementCommittee], ["warning", strings.enforcementWarning], ["closure", strings.enforcementClosure]].map(([v, label]) => (
+                      <button key={v} type="button" aria-pressed={enforcementAction === v} onClick={() => setEnforcementAction(v)}>{label}</button>
+                    ))}
+                  </div>
+                </div>
+                <input type="hidden" name="enforcement_action" value={enforcementAction} key={`ea-${resetKey}`} />
+                {enforcementAction !== "" && (
+                  <label className="ax-field" style={{ maxInlineSize: "none" }}>
+                    <span className="ax-field__label">{strings.enforcementNotes}</span>
+                    <textarea className="ax-textarea" name="enforcement_notes" rows={2} value={enforcementNotes}
+                      onChange={e => setEnforcementNotes(e.target.value)} placeholder={strings.enforcementNotesPlaceholder} />
+                  </label>
+                )}
+              </fieldset>
+              {/* Manual-entry metadata rides outside the disabled fieldset so it
+                  still submits once the confirmation is checked. */}
+              <input type="hidden" name="manual_reason_key" value={manualReasonKey} />
+              <input type="hidden" name="manual_reason_comment" value={manualReasonComment} />
+              <input type="hidden" name="notify_factory" value={notifyFactory ? "yes" : ""} />
+              <input type="hidden" name="factory_mobile" value={notifyFactory ? normalizeMobile(factoryMobile) : ""} />
             </>
           )}
 
@@ -282,9 +372,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
 
           <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-visit-type">{strings.visitType}</label>
             <select id="imm-visit-type" key={`vt-${resetKey}`} className="ax-select" name="visit_type" value={visitType} onChange={e => setVisitType(e.target.value)}>
-              <option value="complaint">{strings.typeComplaint}</option>
-              <option value="follow_up">{strings.typeFollowUp}</option>
-              <option value="periodic">{strings.typePeriodic}</option>
+              {visitTypes.map(v => <option key={v.key} value={v.key}>{v.label}</option>)}
             </select></div>
         </div>
 

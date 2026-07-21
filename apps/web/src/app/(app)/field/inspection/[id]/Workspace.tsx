@@ -13,6 +13,7 @@ import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/comp
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import Modal from "@/components/Modal";
 import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
+import { requestActiveCancellationAction } from "../../[visitId]/actions";
 
 type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
@@ -33,6 +34,11 @@ type SForm = { id: string; item_id: string | null; violation_id: string | null; 
 type SVio = { id: string; violation_code_id: string };
 type QueuedEvidence = Extract<OutboxOp, { kind: "evidence" }>;
 type EvidenceLimits = Record<string, { formats?: string[]; max_mb?: number }>;
+// Phase 4B — latest active-session cancellation request for the visit (§12).
+export type WorkspaceCancellation = {
+  id: string; status: "pending" | "approved" | "rejected" | "cancelled";
+  reason_key: string; requested_at: string; decision_reason: string | null;
+};
 
 // SB19 — every display string (incl. the sync-state LABEL map) is built
 // server-side with t() and passed as props; offline logic is untouched.
@@ -47,6 +53,11 @@ export type WorkspaceStrings = {
   autoViolation: string; plusActionForm: string; plusPhoto: string;
   evidenceQueued: string; blockers: string; submitting: string; queuedOffline: string; retryNow: string;
   exitBtn: string; exitTitle: string; exitSavedSynced: string; exitSavedLocal: string; exitConfirm: string; exitCancel: string;
+  // Phase 4B — active-session cancellation request (§12; Operations decides)
+  cancelHeading: string; cancelCaption: string; cancelSelectReason: string;
+  cancelCommentPlaceholder: string; cancelSubmit: string; cancelPending: string;
+  cancelApprovedTitle: string; cancelApprovedBody: string;
+  cancelRejected: string; cancelFailed: string; cancelReasonsMissing: string;
   enumLabels: { [k: string]: string };
   // — Slice E2 runtime depth —
   progress: string;
@@ -77,10 +88,12 @@ export type WorkspaceStrings = {
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 const acceptFor = (type: string) => type === "document" ? ".pdf,application/pdf" : type === "video" ? "video/*" : "image/*";
 
-export default function Workspace({ inspection, items, serverResponses, serverEvidence, serverForms, serverViolations, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale }: {
+export default function Workspace({ inspection, items, serverResponses, serverEvidence, serverForms, serverViolations, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, cancellation, cancelReasons, journeySchemaAvailable }: {
   inspection: Ins; items: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverViolations: SVio[];
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
   evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null; locale: "en" | "ar";
+  // Phase 4B — active-session cancellation (inert unless the schema probe passed)
+  cancellation?: WorkspaceCancellation | null; cancelReasons?: { key: string; label: string }[]; journeySchemaAvailable?: boolean;
 }) {
   const router = useRouter();
   const [sync, setSync] = useState("synced" as SyncState);
@@ -103,6 +116,46 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   const [validation, setValidation] = useState(null as SectionBlockers[] | null);
   const [signing, setSigning] = useState(false);
   const [submitted, setSubmitted] = useState(inspection.status === "submitted");
+  // Phase 4B / D-016 — active-session cancellation is NON-BLOCKING until
+  // Operations decides: a pending request shows a banner while the inspector
+  // keeps working; only an approval locks the workspace read-only (terminal).
+  const [cancelState, setCancelState] = useState<WorkspaceCancellation | null>(cancellation ?? null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelComment, setCancelComment] = useState("");
+  const [cancelBusy, setCancelBusy] = useState(false);
+  const cancelIdemRef = useRef(null as string | null);
+  const cancelApproved = cancelState?.status === "approved";
+  const cancelPending = cancelState?.status === "pending";
+  useEffect(() => { setCancelState(cancellation ?? null); }, [cancellation]);
+  useEffect(() => {
+    if (!cancelPending) return;
+    const timer = window.setInterval(() => router.refresh(), 15_000);
+    return () => window.clearInterval(timer);
+  }, [cancelPending, router]);
+
+  // §12 — the inspector files a request; Operations decides. Idempotency key
+  // is stable across retries inside this mounted workspace.
+  async function requestCancellation() {
+    if (!cancelReason || !journeySchemaAvailable) return;
+    if (cancelReason === "other" && !cancelComment.trim()) return;
+    if (!cancelIdemRef.current) cancelIdemRef.current = crypto.randomUUID();
+    setCancelBusy(true);
+    try {
+      const r = await requestActiveCancellationAction({
+        visitId: inspection.visit_id,
+        reasonKey: cancelReason,
+        comment: cancelComment.trim() || null,
+        idempotencyKey: cancelIdemRef.current,
+      });
+      if (r.error || !r.request) { setMsg(strings.cancelFailed); return; }
+      setCancelState({
+        id: r.request.id, status: r.request.status, reason_key: r.request.reason_key,
+        requested_at: r.request.requested_at, decision_reason: r.request.decision_reason,
+      });
+      setExiting(false);
+      router.refresh();
+    } finally { setCancelBusy(false); }
+  }
   const codeById = useMemo(() => Object.fromEntries(Object.values(vioConfig).map(c => [c.id, c.code])), [vioConfig]);
   const [vioIds, setVioIds] = useState(() => {
     const m: { [code: string]: string } = {};
@@ -514,6 +567,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         return lastReturn ? <div className="ax-banner ax-banner--warning"><div><strong>{fmt(strings.returnedScope, { sections: lastReturn.returned_sections!.join(", ") })}</strong> {lastReturn.decision_reason} · {strings.returnedNote}</div></div> : null;
       })()}
       {submitted && <div className="ax-banner ax-banner--immutable"><div><strong>{strings.submittedTitle}</strong> {strings.submittedBody}</div></div>}
+      {/* Phase 4B / D-016 — approved cancellation: terminal, read-only lock;
+          pending: non-blocking banner, the inspector keeps working (§12). */}
+      {cancelApproved && <div className="ax-banner ax-banner--immutable" role="status"><div><strong>{strings.cancelApprovedTitle}</strong> {strings.cancelApprovedBody}</div></div>}
+      {cancelPending && <div className="ax-banner ax-banner--warning" role="status"><div>{strings.cancelPending}</div></div>}
+      {cancelState?.status === "rejected" && <div className="ax-banner ax-banner--warning" role="status"><div>{fmt(strings.cancelRejected, { reason: cancelState.decision_reason ?? "—" })}</div></div>}
 
       {/* Live summary — answered / pending / compliant / non-compliant / violations / evidence (M04-149) */}
       {!submitted && (
@@ -528,6 +586,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         </div>
       )}
 
+      {/* Phase 4B / D-016 — once Operations approves the cancellation the whole
+          editing region stays visible but inert (read-only lock): a disabled
+          fieldset disables every descendant control without touching the
+          engine's rendering. */}
+      <fieldset disabled={cancelApproved} style={{ display: "contents" }}>
       {/* Site conditions — flags feeding conditional.visible_when (M04-119); persisted on the inspection row */}
       {!submitted && flags.length > 0 && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
@@ -754,6 +817,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
           <button className="ax-btn ax-btn--prominent ax-btn--field" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
         </div>
       )}
+      </fieldset>
       {/* DEC-009 — acknowledgement signature gate; the dataURL rides in the queued submit op */}
       {signing && !submitted && (
         <SignaturePad strings={strings.sig} onCancel={() => setSigning(false)} onConfirm={finalizeSubmit} />
@@ -782,6 +846,31 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
           </>}
         >
           <p>{sync === "synced" ? strings.exitSavedSynced : strings.exitSavedLocal}</p>
+          {/* Phase 4B / plan §12 — request cancellation from the active session.
+              Non-blocking until Operations decides; the workspace locks only on
+              approval (D-016). Rendered only when the journey schema probe
+              passed — pre-migration there is no active-session cancel path. */}
+          {journeySchemaAvailable && !cancelApproved && (
+            cancelPending ? (
+              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-200)" }}>{strings.cancelPending}</p>
+            ) : (cancelReasons ?? []).length === 0 ? (
+              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-200)" }}>{strings.cancelReasonsMissing}</p>
+            ) : (
+              <div className="ax-stack" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)", borderBlockStart: "1px solid var(--ax-color-border)", paddingBlockStart: "var(--ax-space-200)" }}>
+                <strong>{strings.cancelHeading}</strong>
+                <p className="ax-caption">{strings.cancelCaption}</p>
+                <label className="ax-field"><span className="ax-field__label">{strings.cancelSelectReason}</span>
+                  <select className="ax-select" value={cancelReason} onChange={e => setCancelReason(e.target.value)}>
+                    <option value="">—</option>
+                    {(cancelReasons ?? []).map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
+                  </select>
+                </label>
+                <textarea className="ax-textarea" rows={2} value={cancelComment} onChange={e => setCancelComment(e.target.value)} placeholder={strings.cancelCommentPlaceholder} />
+                <button type="button" className="ax-btn ax-btn--danger" onClick={requestCancellation}
+                  disabled={cancelBusy || !cancelReason || (cancelReason === "other" && !cancelComment.trim())}>{strings.cancelSubmit}</button>
+              </div>
+            )
+          )}
         </Modal>
       )}
       {/* M04-164 — soft delete requires a reason; the update is captured by the evidence audit trigger */}

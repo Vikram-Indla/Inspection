@@ -1,9 +1,9 @@
 import Shell from "@/components/Shell";
-import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
-import ImmediateForm, { type ImmediateStrings } from "./ImmediateForm";
+import { getPlanningAccess } from "@/lib/planning/access";
+import ImmediateForm, { type ImmediateStrings, type ManualReasonOption, type VisitTypeOption } from "./ImmediateForm";
 import EmptyState from "@/components/EmptyState";
 import Link from "next/link";
 
@@ -13,6 +13,8 @@ import Link from "next/link";
 const distinct = (rows: { [k: string]: unknown }[], key: string) =>
   [...new Set(rows.map(r => r[key]).filter((v): v is string => typeof v === "string" && v.length > 0))].sort();
 
+type LookupRow = { kind: string; key: string; label_en: string; label_ar: string | null; metadata: Record<string, unknown> | null };
+
 export default async function Immediate({ searchParams }: { searchParams: Promise<{ factory?: string; cr?: string; license?: string; returnTo?: string }> }) {
   const { factory: initialFactoryId, cr: sourceCrId, license: sourceLicenseId, returnTo } = await searchParams;
   const safeReturnTo = returnTo?.startsWith("/factories/cr/") ? returnTo : null;
@@ -21,33 +23,43 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
 
-  // The governed route catalogue and MVP1-M01-043 authorize Planner and
-  // Inspector. The two paths remain distinct: Planner reviews/windows/assigns;
-  // Inspector self-assigns and starts immediately (M01-047/048/051/052).
-  const { data: myRoles } = user
-    ? await getUserRoles(user.id)
-    : { data: [] as { role_key: string }[] };
-  const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
-  const isInspector = (myRoles ?? []).some(r => r.role_key === "inspector");
-  const actorMode: "planner" | "inspector" = isPlanner ? "planner" : "inspector";
-
-  if (!isPlanner && !isInspector) {
+  // PLN-REQ-025 — capability-gated entry (M5 reconciliation). The canonical
+  // planning access model resolves the session class plus explicit grants;
+  // planning.create.immediate is the page capability. Fail closed: any
+  // resolution error is a denial, never a permissive default.
+  const access = await getPlanningAccess(sb, ["planning.create.immediate", "planning.manual_factory"]);
+  if (!user || access.error !== null || !access.can("planning.create.immediate")) {
     return (
       <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}>
         <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
-          body={tr("plan.imm.unauthorized.body", "Create an urgent visit (SCR-WEB-130) is available to Planner and Inspector roles only.", "إنشاء زيارة عاجلة (SCR-WEB-130) متاح لدوري المخطط والمفتش فقط.")} />
+          body={tr("plan.imm.unauthorized.body", "Create an urgent visit (SCR-WEB-130) requires the immediate-visit capability (Planner / Inspector).", "إنشاء زيارة عاجلة (SCR-WEB-130) يتطلب صلاحية الزيارة الفورية (المخطط / المفتش).")} />
       </Shell>
     );
   }
 
+  // Planner reviews/windows/assigns; Inspector self-assigns and starts
+  // immediately (M01-047/048/051/052). Class decides the path, not a role list.
+  const actorMode: "planner" | "inspector" = access.accessClass === "inspector" ? "inspector" : "planner";
+  // Manual (unregistered) entry — three eligibility legs, all re-verified
+  // server-side in actions.ts: (1) permission, (2) visit type permits it,
+  // (3) explicit not-found confirmation. Inspector manual entry is the M01-045
+  // immediate exception (covered by planning.create.immediate); business staff
+  // need the explicit high-impact planning.manual_factory grant.
+  const manualAllowed = access.accessClass === "inspector"
+    ? access.can("planning.create.immediate")
+    : access.can("planning.manual_factory");
+
   const today = new Date().toISOString().slice(0, 10);
   const FACTORY_COLUMNS = "id, name, factory_code, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, source_synced_at";
-  const [{ data: factories }, { data: pkgs }, { data: inspRows }, { data: myProfile }] = await Promise.all([
+  const [{ data: factories }, { data: pkgs }, { data: inspRows }, { data: myProfile }, { data: lookupRows, error: lookupError }] = await Promise.all([
     sb.from("factories").select(FACTORY_COLUMNS).eq("is_temporary", false).order("name"),
     sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
-    sb.from("profiles").select("full_name").eq("user_id", user!.id).single(),
+    sb.from("profiles").select("full_name").eq("user_id", user.id).single(),
+    // PLN-REQ-026/027 — governed reference data: per-type manual eligibility +
+    // the manual-entry reason dropdown. Read-only; admins amend via configure_lookups.
+    sb.from("planning_lookups").select("kind, key, label_en, label_ar, metadata").in("kind", ["visit_type", "manual_entry_reason"]).eq("is_active", true).order("sort_order"),
   ]);
   // Bug: the factories list is capped at PostgREST's default 1000-row page,
   // so a Factory 360 "Create inspection" deep link can pass a factory that
@@ -65,11 +77,46 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   const factoryRows = factoryList as unknown as { [k: string]: unknown }[];
   const regionOptions = distinct(factoryRows, "region");
   const cityOptions = distinct(factoryRows, "city");
+  // Region → cities map for the manual-entry dependent city dropdown (PLN-REQ-026).
+  const cityByRegion: Record<string, string[]> = {};
+  for (const row of factoryRows) {
+    const region = row.region; const city = row.city;
+    if (typeof region === "string" && region && typeof city === "string" && city) {
+      (cityByRegion[region] ??= []).includes(city) || cityByRegion[region].push(city);
+    }
+  }
+  for (const region of Object.keys(cityByRegion)) cityByRegion[region].sort();
+
+  // Fail closed on reference-data failure: manual entry becomes unavailable
+  // (no reason list, no per-type eligibility) while the registered path keeps
+  // working with the three known visit types. Logged, never silent.
+  if (lookupError) console.error("[CD-023 planning_lookups]", lookupError.message);
+  const lookups = (lookupRows ?? []) as LookupRow[];
+  const lookupLabel = (r: LookupRow) => locale === "ar" && r.label_ar ? r.label_ar : r.label_en;
+  const visitTypes: VisitTypeOption[] = !lookupError && lookups.some(r => r.kind === "visit_type")
+    ? lookups.filter(r => r.kind === "visit_type").map(r => ({
+      key: r.key,
+      label: t(`enum.${r.key}`, lookupLabel(r)),
+      manualEntryAllowed: r.metadata?.manual_entry_allowed === true,
+      attachmentRequired: r.metadata?.attachment_required === true,
+    }))
+    : [
+      { key: "periodic", label: t("enum.periodic", "Periodic compliance"), manualEntryAllowed: false, attachmentRequired: false },
+      { key: "follow_up", label: t("enum.follow_up", "Follow-up"), manualEntryAllowed: false, attachmentRequired: false },
+      { key: "complaint", label: t("enum.complaint", "Complaint"), manualEntryAllowed: false, attachmentRequired: false },
+    ];
+  const manualReasons: ManualReasonOption[] = lookupError ? [] : lookups
+    .filter(r => r.kind === "manual_entry_reason")
+    .map(r => ({ key: r.key, label: lookupLabel(r) }));
 
   const strings: ImmediateStrings = {
     identity: t("plan.imm.identity", "Identity — registered or minimum manual (M01-044/045)"),
     identityToggleRegistered: t("plan.imm.identityToggleRegistered", "Registered factory"),
     identityToggleUnregistered: t("plan.imm.identityToggleUnregistered", "Unregistered / temporary"),
+    manualLockedPermission: tr("plan.imm.manualLockedPermission", "Manual entry requires the manual-factory permission.", "الإدخال اليدوي يتطلب صلاحية المصنع اليدوي."),
+    manualLockedType: tr("plan.imm.manualLockedType", "The selected visit type does not allow unregistered factories.", "نوع الزيارة المحدد لا يسمح بالمصانع غير المسجلة."),
+    manualLockedLookups: tr("plan.imm.manualLockedLookups", "Manual entry is unavailable — reference data could not be loaded.", "الإدخال اليدوي غير متاح — تعذر تحميل البيانات المرجعية."),
+    notFoundConfirm: tr("plan.imm.notFoundConfirm", "I confirm this factory was not found in the registered factory list (M01-045)", "أؤكد أن هذا المصنع غير موجود في قائمة المصانع المسجلة (M01-045)"),
     searchLabel: t("plan.imm.searchLabel", "Search registered factories — CR or Industrial License (M01-044)"),
     searchPlaceholder: t("plan.imm.searchPlaceholder", "CR number, Industrial License or name"),
     searchNoMatch: t("plan.imm.searchNoMatch", "No registered factory matches — switch to Unregistered / temporary below (M01-045)."),
@@ -82,15 +129,23 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     previewFreshnessNever: t("plan.imm.previewFreshnessNever", "no sync record"),
     previewRisk: t("plan.imm.previewRisk", "Risk (advisory)"),
     previewRiskUnknown: t("plan.imm.previewRiskUnknown", "unknown"),
-    manualName: tr("plan.imm.manualNameOptional", "Factory name (optional)", "اسم المصنع (اختياري)"),
+    manualName: tr("plan.imm.manualName", "Establishment name *", "اسم المنشأة *"),
     manualPlaceholder: t("plan.imm.manualPlaceholder", "As observed / reported — becomes a flagged temporary entity"),
-    manualCr: t("plan.imm.manualCr", "CR number (optional)"),
-    manualLicense: t("plan.imm.manualLicense", "Industrial License (optional)"),
+    manualCr: t("plan.imm.manualCr", "CR number (if available)"),
+    manualLicense: t("plan.imm.manualLicense", "Industrial License (optional — unverified)"),
     manualActivity: t("plan.imm.manualActivity", "Business activity (optional)"),
     manualActivityPlaceholder: t("plan.imm.manualActivityPlaceholder", "Any available business information — stored with the temporary entity"),
-    manualRegion: tr("plan.imm.manualRegionOptional", "Region (optional)", "المنطقة (اختيارية)"),
-    manualCity: tr("plan.imm.manualCityOptional", "City (optional)", "المدينة (اختيارية)"),
-    manualCityPlaceholder: t("plan.imm.manualCityPlaceholder", "City name"),
+    manualRegion: tr("plan.imm.manualRegion", "Region *", "المنطقة *"),
+    manualCity: tr("plan.imm.manualCity", "City *", "المدينة *"),
+    manualCityPlaceholder: t("plan.imm.manualCityPlaceholder", "City under the selected region"),
+    manualReasonLabel: tr("plan.imm.manualReasonLabel", "Manual entry reason *", "سبب الإدخال اليدوي *"),
+    manualReasonComment: tr("plan.imm.manualReasonComment", "Reason comment * (required for Other)", "تعليق السبب * (مطلوب عند اختيار «أخرى»)"),
+    manualReasonCommentPlaceholder: tr("plan.imm.manualReasonCommentPlaceholder", "Explain why a non-registered factory is used", "اشرح سبب استخدام مصنع غير مسجل"),
+    notifyFactory: tr("plan.imm.notifyFactory", "Notify the factory (requires a contact mobile)", "إشعار المصنع (يتطلب جوال تواصل)"),
+    factoryMobile: tr("plan.imm.factoryMobile", "Contact mobile *", "جوال التواصل *"),
+    factoryMobilePlaceholder: t("plan.imm.factoryMobilePlaceholder", "05XXXXXXXX"),
+    unverifiedBadge: tr("plan.imm.unverifiedBadge", "Unverified manual entry — pending reconciliation", "إدخال يدوي غير موثّق — بانتظار المطابقة"),
+    attachmentRequiredNote: tr("plan.imm.attachmentRequiredNote", "Supporting evidence is required for this visit type — attach it on the visit record after creation.", "الأدلة الداعمة مطلوبة لهذا النوع من الزيارات — أرفقها في سجل الزيارة بعد الإنشاء."),
     temporaryNote: t("plan.imm.temporaryNote", "This creates a flagged temporary entity pending Factory list reconciliation — no reconciliation queue surface exists yet (HANDOFF_BLOCKED); the flag alone is recorded."),
     urgencyReason: t("plan.imm.urgencyReason", "Urgency reason *"),
     reasonComplaint: t("plan.imm.reasonComplaint", "Complaint received"),
@@ -110,9 +165,6 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
     inspector: t("plan.imm.inspector", "Inspector — auto-assign or pick (M01-048)"),
     autoAssign: t("plan.imm.autoAssign", "Auto-assign — first available inspector (M01-048)"),
     visitType: t("plan.imm.visitType", "Visit type (M01-047)"),
-    typePeriodic: t("enum.periodic", "Periodic compliance"),
-    typeFollowUp: t("enum.follow_up", "Follow-up"),
-    typeComplaint: t("enum.complaint", "Complaint"),
     windowStart: t("plan.imm.windowStart", "Window start"),
     windowEnd: t("plan.imm.windowEnd", "Window end"),
     windowHint: tr("plan.imm.windowHintExplicit", "Required for Planner-created Immediate Visits; end must be after start (M01-047)", "مطلوبة للزيارة الفورية التي ينشئها المخطط؛ يجب أن تكون النهاية بعد البداية (M01-047)"),
@@ -190,10 +242,14 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
         inspectors={inspectors}
         regionOptions={regionOptions}
         cityOptions={cityOptions}
+        cityByRegion={cityByRegion}
         hasInspectorPool={inspectors.length > 0}
         actorName={myProfile?.full_name ?? ""}
         actorMode={actorMode}
         locale={locale}
+        manualAllowed={manualAllowed}
+        visitTypes={visitTypes}
+        manualReasons={manualReasons}
         initialFactoryId={initialFactoryId}
         strings={strings}
       />

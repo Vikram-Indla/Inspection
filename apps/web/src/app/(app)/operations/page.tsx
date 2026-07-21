@@ -12,6 +12,7 @@ import EmptyState from "@/components/EmptyState";
 import { IconMap, IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
 import OverrideQueue, { type GeoOverrideQueueRow, type OverrideQueueStrings } from "./OverrideQueue";
+import CancellationQueue, { type CancellationQueueRow, type CancellationQueueStrings } from "./CancellationQueue";
 import type { MonitorRow } from "./actions";
 import type { GeoTone } from "@/components/GeoMap";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
@@ -203,7 +204,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       .order("id", { ascending: true })
       .range(from, to) as unknown as PromiseLike<PostgrestPage<FactoryRow>>),
     // ENG-06/ENG-09 configuration — geofence default + SLA thresholds
-    sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "sla"]),
+    // (+ engine_settings.field for governed cancellation reason labels, 0020)
+    sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "sla", "field"]),
     // M08-006 — high-risk factory board (ENG-04 output, top scores)
     sb.from("factories")
       .select("id, name, region, city, official_lat, official_lng, geofence_radius_m, risk_score, risk_band, activity_class")
@@ -271,6 +273,61 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     factory_name: row.visits?.factories?.name ?? null,
     inspector_name: row.visits?.assignments?.[0]?.profiles?.full_name ?? null,
   }));
+
+  // Governed cancellation reason labels (engine_settings.field, 0020 seed) —
+  // labels are configuration data, localized from the config itself.
+  const fieldCfg = (engines.find(e => e.engine === "field")?.settings ?? {}) as
+    { cancellation_reasons?: { key: string; en: string; ar?: string }[] };
+  const fieldCfgReasons = (fieldCfg.cancellation_reasons ?? []).map(r => ({
+    key: r.key, label: (locale === "ar" && r.ar) ? r.ar : r.en,
+  }));
+
+  // TASK-EXECUTION-MODULE-001 · Phase 4B — active-session cancellation queue
+  // (plan §12). Tolerant read: while migration 20260721140000 is unapplied the
+  // probe fails and the queue simply renders empty — the page never breaks.
+  type CancellationReqRow = {
+    id: string; visit_id: string; phase: string; reason_key: string; comment: string | null;
+    evidence_id: string | null; requested_at: string;
+    visits: { factories: { name: string } | null; assignments: { profiles: { full_name: string } | null }[] | null } | null;
+  };
+  let cancellationQueueRows: CancellationQueueRow[] = [];
+  {
+    const { data: cancelRows, error: cancelError } = await sb.from("cancellation_requests")
+      .select("id, visit_id, phase, reason_key, comment, evidence_id, requested_at, visits(factories(name), assignments(profiles(full_name)))")
+      .eq("status", "pending")
+      .order("requested_at", { ascending: true });
+    if (cancelError) {
+      // Expected pre-migration (table absent) — degrade silently to an empty queue.
+      if (!cancelError.message.includes("cancellation_requests")) {
+        console.error(`[operations] cancellation queue read failed: ${cancelError.message}`);
+        loadErrors.push("cancellation requests");
+      }
+    } else {
+      const rows = (cancelRows ?? []) as unknown as CancellationReqRow[];
+      const reasonLabels = new Map<string, string>();
+      for (const r of fieldCfgReasons) reasonLabels.set(r.key, r.label);
+      const evidenceIds = rows.map(r => r.evidence_id).filter((v): v is string => !!v);
+      const cancelEvidenceUrls = new Map<string, string>();
+      if (evidenceIds.length > 0) {
+        const { data: cancelEvidence } = await sb.from("evidence")
+          .select("id, storage_path").in("id", evidenceIds);
+        await Promise.all(((cancelEvidence ?? []) as { id: string; storage_path: string | null }[])
+          .filter(evidence => !!evidence.storage_path)
+          .map(async evidence => {
+            const { data: signed } = await sb.storage.from("evidence").createSignedUrl(evidence.storage_path!, 600);
+            if (signed?.signedUrl) cancelEvidenceUrls.set(evidence.id, signed.signedUrl);
+          }));
+      }
+      cancellationQueueRows = rows.map(row => ({
+        id: row.id, visit_id: row.visit_id, phase: row.phase,
+        reason_label: reasonLabels.get(row.reason_key) ?? row.reason_key,
+        comment: row.comment, requested_at: row.requested_at,
+        factory_name: row.visits?.factories?.name ?? null,
+        inspector_name: row.visits?.assignments?.[0]?.profiles?.full_name ?? null,
+        evidence_url: row.evidence_id ? cancelEvidenceUrls.get(row.evidence_id) ?? null : null,
+      }));
+    }
+  }
 
   const gisConf = (engines.find(e => e.engine === "gis")?.settings ?? {}) as { geofence_default_radius_m?: number };
   const slaConf = (engines.find(e => e.engine === "sla")?.settings ?? {}) as SlaConf;
@@ -400,6 +457,24 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     deciding: t("ops.override.deciding", "Saving decision…"), decided: t("ops.override.decided", "Decision saved and the queue will refresh."),
     failure: t("ops.override.failure", "The decision could not be saved. Nothing changed."),
   };
+  const cancellationQueueStrings: CancellationQueueStrings = {
+    heading: t("ops.cancellation.heading", "Cancellation requests"),
+    caption: t("ops.cancellation.caption", "Active-session cancellation requests from inspectors. Approval is terminal: the visit is cancelled, captured responses, evidence and location history are preserved for audit, and the assignment is freed. The requester cannot decide their own request."),
+    emptyTitle: t("ops.cancellation.empty.title", "No cancellation requests pending"),
+    emptyDesc: t("ops.cancellation.empty.desc", "Cancellation requests filed during a journey or inspection appear here for Operations review."),
+    factory: t("ops.cancellation.factory", "Factory"), inspector: t("ops.cancellation.inspector", "Inspector"),
+    phase: t("ops.cancellation.phase", "Phase"), requested: t("ops.cancellation.requested", "Requested"),
+    evidence: t("ops.cancellation.evidence", "Evidence"), viewEvidence: t("ops.cancellation.viewEvidence", "View"),
+    approve: t("ops.cancellation.approve", "Approve cancellation"), reject: t("ops.cancellation.reject", "Reject"),
+    rejectReason: t("ops.cancellation.rejectReason", "Rejection reason (mandatory to reject)"),
+    confirmTitle: t("ops.cancellation.confirmTitle", "Approve this cancellation?"),
+    confirmBody: t("ops.cancellation.confirmBody", "This is terminal: the visit is cancelled and cannot be reopened. Everything captured so far is preserved for audit."),
+    confirmApprove: t("ops.cancellation.confirmApprove", "Confirm — cancel the visit"),
+    confirmBack: t("ops.cancellation.confirmBack", "Back"),
+    deciding: t("ops.cancellation.deciding", "Saving decision…"),
+    decided: t("ops.cancellation.decided", "Decision saved and the queue will refresh."),
+    failure: t("ops.cancellation.failure", "The decision could not be saved. Nothing changed."),
+  };
 
   const slaKindLabel = (f: SlaFlag) =>
     f.kind === "overdue_start" ? t("ops.sla.overdueStart", "Overdue to start")
@@ -479,6 +554,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       <p className="ax-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
 
       <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} locale={locale} />
+      <CancellationQueue rows={cancellationQueueRows} strings={cancellationQueueStrings} locale={locale} />
 
       {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>

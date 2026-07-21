@@ -10,6 +10,14 @@ import { login, rest, must } from "./live-rest";
 // Runtime contract: migration 0027 must be present on the linked development
 // project. Every direct write uses the acting persona JWT, so RLS and immutable
 // audit triggers are exercised rather than bypassed.
+//
+// M5 (PLN-REQ-025..028): manual (unregistered) entry now requires the three
+// eligibility legs (permission · visit-type metadata · explicit not-found
+// confirmation) plus establishment name / region / city / pin / governed
+// reason. Staging config exercised here: visit_type complaint has
+// metadata.manual_entry_allowed=true (periodic/follow_up false) and the
+// planner role holds planning.manual_factory; ops holds create.immediate but
+// not manual_factory; admin holds neither.
 const EVIDENCE_DIR = evidenceDirectory("immediate-v2");
 test.beforeAll(() => mkdirSync(EVIDENCE_DIR, { recursive: true }));
 
@@ -69,12 +77,28 @@ async function openEnglish(page: Page) {
   await page.goto("/planning/immediate");
 }
 
-async function fillManualCore(page: Page, activity: string) {
+// M5 manual contract (PLN-REQ-025/026): confirm not-found, then establishment
+// name + region + city + governed reason before anything else. The default
+// visit type (complaint) permits manual entry on staging.
+async function fillManualCore(page: Page, name: string, opts: { activity?: string; skipLocation?: boolean; reasonKey?: string } = {}) {
   await page.getByRole("button", { name: /Unregistered \/ temporary/i }).click();
-  await page.locator("#imm-manual-activity").fill(activity);
+  await page.locator("#imm-not-found").check();
+  await page.locator("#imm-manual-name").fill(name);
+  await page.locator("#imm-manual-region").fill("Riyadh");
+  await page.locator("#imm-manual-city").fill("Riyadh");
+  await page.locator("#imm-manual-reason").selectOption(opts.reasonKey ?? "not_found_in_registry");
+  await page.locator("#imm-manual-activity").fill(opts.activity ?? `${name} activity`);
   await page.getByRole("button", { name: /Complaint received/i }).click();
-  await page.locator("#imm-lat").fill("24.7136");
-  await page.locator("#imm-lng").fill("46.6753");
+  if (!opts.skipLocation) {
+    await page.locator("#imm-lat").fill("24.7136");
+    await page.locator("#imm-lng").fill("46.6753");
+  }
+}
+
+async function fillPlannerWindow(page: Page, minDays = 500) {
+  const start = new Date(Date.now() + (minDays + Math.floor(Math.random() * 5000)) * 86400e3);
+  await page.locator("#imm-window-start").fill(start.toISOString().slice(0, 16));
+  await page.locator("#imm-window-end").fill(new Date(start.getTime() + 3600e3).toISOString().slice(0, 16));
 }
 
 test.describe("CD-023 Planner UI and atomic persistence", () => {
@@ -91,8 +115,7 @@ test.describe("CD-023 Planner UI and atomic persistence", () => {
 
   test("accepted urgency values include Other only with Notes justification", async ({ page }) => {
     await openEnglish(page);
-    await page.getByRole("button", { name: /Unregistered \/ temporary/i }).click();
-    await page.locator("#imm-manual-activity").fill("Other-reason activity " + Date.now());
+    await fillManualCore(page, "Other-reason factory " + Date.now(), { activity: "Other-reason activity " + Date.now(), skipLocation: true });
     for (const label of ["Complaint received", "Incident / accident report", "Referral from authority", "Other"]) {
       await expect(page.getByRole("button", { name: label, exact: true })).toBeVisible();
     }
@@ -100,9 +123,7 @@ test.describe("CD-023 Planner UI and atomic persistence", () => {
     await expect(page.getByText(/Justify “Other” in Notes/i)).toBeVisible();
     await page.locator("#imm-lat").fill("24.7136");
     await page.locator("#imm-lng").fill("46.6753");
-    const start = new Date(Date.now() + (7000 + Math.floor(Math.random() * 5000)) * 86400e3);
-    await page.locator("#imm-window-start").fill(start.toISOString().slice(0, 16));
-    await page.locator("#imm-window-end").fill(new Date(start.getTime() + 3600e3).toISOString().slice(0, 16));
+    await fillPlannerWindow(page, 7000);
     await page.getByText(/reviewed the mandatory information/i).click();
     await page.getByRole("button", { name: /Create & dispatch/i }).click();
     await expect(page.getByRole("alert").filter({ hasText: /Justify the “Other” urgency reason/i })).toBeVisible();
@@ -111,12 +132,8 @@ test.describe("CD-023 Planner UI and atomic persistence", () => {
 
   test("blank coordinates are rejected server-side and entered work is preserved (M01-046)", async ({ page }) => {
     await openEnglish(page);
-    await page.getByRole("button", { name: /Unregistered \/ temporary/i }).click();
-    await page.locator("#imm-manual-activity").fill("Preserved metal activity");
-    await page.getByRole("button", { name: /Complaint received/i }).click();
-    const start = new Date(Date.now() + 200 * 86400e3);
-    await page.locator("#imm-window-start").fill(start.toISOString().slice(0, 16));
-    await page.locator("#imm-window-end").fill(new Date(start.getTime() + 3600e3).toISOString().slice(0, 16));
+    await fillManualCore(page, "Preserved factory " + Date.now(), { activity: "Preserved metal activity", skipLocation: true });
+    await fillPlannerWindow(page, 200);
     await page.getByText(/reviewed the mandatory information/i).click();
     await page.getByRole("button", { name: /Create & dispatch/i }).click();
     await expect(page.getByRole("alert").filter({ hasText: /valid visit location/i })).toBeVisible();
@@ -125,31 +142,86 @@ test.describe("CD-023 Planner UI and atomic persistence", () => {
     await expect(page.locator("body")).not.toContainText(/PGRST|violates row-level|duplicate key/i);
   });
 
-  test("minimum manual identity may omit name/CR/license; location stays on Visit and every write is audited", async ({ page }) => {
+  test("manual identity fields stay locked until the not-found confirmation (PLN-REQ-025)", async ({ page }) => {
     await openEnglish(page);
-    const activity = `Activity-only ${Date.now()}`;
-    await fillManualCore(page, activity);
-    const start = new Date(Date.now() + (500 + Math.floor(Math.random() * 5000)) * 86400e3);
-    await page.locator("#imm-window-start").fill(start.toISOString().slice(0, 16));
-    await page.locator("#imm-window-end").fill(new Date(start.getTime() + 3600e3).toISOString().slice(0, 16));
+    await page.getByRole("button", { name: /Unregistered \/ temporary/i }).click();
+    await expect(page.locator("#imm-manual-name")).toBeDisabled();
+    await expect(page.locator("#imm-manual-reason")).toBeDisabled();
+    await page.locator("#imm-not-found").check();
+    await expect(page.locator("#imm-manual-name")).toBeEnabled();
+    await expect(page.locator("#imm-manual-reason")).toBeEnabled();
+  });
+
+  test("a visit type that disallows manual entry locks the unregistered path with an honest reason (PLN-REQ-025)", async ({ page }) => {
+    await openEnglish(page);
+    // Staging: complaint permits manual entry, periodic does not.
+    await expect(page.getByRole("button", { name: /Unregistered \/ temporary/i })).toBeEnabled();
+    await page.locator("#imm-visit-type").selectOption("periodic");
+    await expect(page.getByRole("button", { name: /Unregistered \/ temporary/i })).toBeDisabled();
+    await expect(page.getByText(/does not allow unregistered factories/i)).toBeVisible();
+    await page.locator("#imm-visit-type").selectOption("complaint");
+    await expect(page.getByRole("button", { name: /Unregistered \/ temporary/i })).toBeEnabled();
+  });
+
+  test("manual creation requires establishment name, region and city (PLN-REQ-026)", async ({ page }) => {
+    await openEnglish(page);
+    await page.getByRole("button", { name: /Unregistered \/ temporary/i }).click();
+    await page.locator("#imm-not-found").check();
+    // Name deliberately omitted — the server must block with the neutral contract error.
+    await page.locator("#imm-manual-region").fill("Riyadh");
+    await page.locator("#imm-manual-city").fill("Riyadh");
+    await page.locator("#imm-manual-reason").selectOption("not_found_in_registry");
+    await page.getByRole("button", { name: /Complaint received/i }).click();
+    await page.locator("#imm-lat").fill("24.7136");
+    await page.locator("#imm-lng").fill("46.6753");
+    await fillPlannerWindow(page);
+    await page.getByText(/reviewed the mandatory information/i).click();
+    await page.getByRole("button", { name: /Create & dispatch/i }).click();
+    await expect(page.getByRole("alert").filter({ hasText: /establishment name, region and city/i })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(/PGRST|violates row-level|duplicate key/i);
+  });
+
+  test("manual reason “Other” requires a comment (PLN-REQ-027)", async ({ page }) => {
+    await openEnglish(page);
+    await fillManualCore(page, `Other-reason ${Date.now()}`, { reasonKey: "other" });
+    await fillPlannerWindow(page);
+    await page.getByText(/reviewed the mandatory information/i).click();
+    await page.getByRole("button", { name: /Create & dispatch/i }).click();
+    await expect(page.getByRole("alert").filter({ hasText: /comment for the “Other” manual entry reason/i })).toBeVisible();
+  });
+
+  test("manual creation stores reason provenance, location event and unverified badge; every write is audited (PLN-REQ-025..028)", async ({ page }) => {
+    await openEnglish(page);
+    const name = `Manual ${Date.now()}`;
+    await fillManualCore(page, name);
+    await fillPlannerWindow(page);
     await page.getByText(/reviewed the mandatory information/i).click();
     await page.getByRole("button", { name: /Create & dispatch/i }).click();
     await page.waitForURL(/\/visits\/[0-9a-f-]+/, { timeout: 15_000 });
 
-    const visitId = page.url().split("/visits/")[1];
+    // PLN-REQ-028 — the unverified marker is visible on the visit record.
+    await expect(page.getByText(/Unverified manual entry — pending reconciliation/i)).toBeVisible();
+
+    const visitId = page.url().split("/visits/")[1].split(/[?&]/)[0];
     const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
-    const [visit] = must(await rest("GET", `visits?id=eq.${visitId}&select=id,visit_plan_id,factory_id,planner_lat,planner_lng,visit_location_source,immediate_creator_role,creation_request_id`, planner.jwt), "visit");
+    const [visit] = must(await rest("GET", `visits?id=eq.${visitId}&select=id,visit_plan_id,factory_id,planner_lat,planner_lng,visit_location_source,immediate_creator_role,creation_request_id,source_channel,internal_reference`, planner.jwt), "visit");
     expect(visit.visit_plan_id).toBeNull();
     expect(visit.planner_lat).toBe(24.7136);
     expect(visit.planner_lng).toBe(46.6753);
     expect(visit.visit_location_source).toBe("manual");
     expect(visit.immediate_creator_role).toBe("planner");
-    const [factory] = must(await rest("GET", `factories?id=eq.${visit.factory_id}&select=id,name,name_is_system_generated,activity_class,official_lat,official_lng,is_temporary`, planner.jwt), "factory");
-    expect(factory.name).toMatch(/^Unregistered factory /);
-    expect(factory.name_is_system_generated).toBe(true);
-    expect(factory.activity_class).toBe(activity);
+    expect(visit.source_channel).toBe("planning.immediate.manual");
+    expect(visit.internal_reference).toBe("not_found_in_registry");
+    const [factory] = must(await rest("GET", `factories?id=eq.${visit.factory_id}&select=id,name,name_is_system_generated,activity_class,official_lat,official_lng,is_temporary,source`, planner.jwt), "factory");
+    expect(factory.name).toBe(name);
+    expect(factory.name_is_system_generated).toBe(false);
+    expect(factory.is_temporary).toBe(true);
+    expect(factory.source).toBe("immediate_manual");
     expect(factory.official_lat).toBeNull();
     expect(factory.official_lng).toBeNull();
+    const [locationEvent] = must(await rest("GET", `visit_location_events?visit_id=eq.${visitId}&select=source,lat,lng`, planner.jwt), "manual location event");
+    expect(locationEvent.source).toBe("Planner");
+    expect(Number(locationEvent.lat)).toBeCloseTo(24.7136, 5);
     const [assignment] = must(await rest("GET", `assignments?visit_id=eq.${visitId}&select=id,inspector_id,method,candidates`, planner.jwt), "assignment");
     expect(assignment.inspector_id).toBeTruthy();
     const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
@@ -325,10 +397,10 @@ test.describe("CD-023 Inspector-created Immediate Visit", () => {
     await openEnglish(page);
     await expect(page.locator("#imm-window-start")).toHaveCount(0);
     await expect(page.locator("#imm-inspector")).toHaveCount(0);
-    await fillManualCore(page, `Inspector activity ${Date.now()}`);
+    await fillManualCore(page, `Inspector factory ${Date.now()}`);
     await page.getByRole("button", { name: /Create & start inspection/i }).click();
     await page.waitForURL(/\/field\/[0-9a-f-]+/, { timeout: 15_000 });
-    const visitId = page.url().split("/field/")[1];
+    const visitId = page.url().split("/field/")[1].split(/[?&]/)[0];
     const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
     const [visit] = must(await rest("GET", `visits?id=eq.${visitId}&select=id,planning_status,window_start,window_end,planner_lat,planner_lng,visit_location_source,immediate_creator_role,creation_request_id`, inspector.jwt), "inspector visit");
     expect(visit.immediate_creator_role).toBe("inspector");
@@ -343,9 +415,41 @@ test.describe("CD-023 Inspector-created Immediate Visit", () => {
   });
 });
 
+test.describe("CD-023 Operations access boundary (PLN-REQ-025)", () => {
+  test.use({ storageState: storageStatePath("ops") });
+
+  test("operations staff open the page, manual entry stays locked and creation remains RPC-gated", async ({ page }) => {
+    await openEnglish(page);
+    // ops holds planning.create.immediate (page capability) but not the
+    // high-impact planning.manual_factory grant → manual toggle locked.
+    await expect(page.getByRole("button", { name: /Unregistered \/ temporary/i })).toBeDisabled();
+    await expect(page.getByText(/requires the manual-factory permission/i)).toBeVisible();
+    // The registered path renders; creation itself stays RPC-gated (the RPC
+    // only serves planner/inspector roles — documented asymmetry).
+    await page.locator("#imm-existing").selectOption({ index: 1 });
+    await page.getByRole("button", { name: /Complaint received/i }).click();
+    await page.locator("#imm-lat").fill("24.7136");
+    await page.locator("#imm-lng").fill("46.6753");
+    await fillPlannerWindow(page);
+    await page.getByText(/reviewed the mandatory information/i).click();
+    await page.getByRole("button", { name: /Create & dispatch/i }).click();
+    await expect(page.getByRole("alert").filter({ hasText: /not authorized/i })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(/PGRST|violates row-level|duplicate key/i);
+  });
+});
+
 test.describe("CD-023 authorization and neutral errors", () => {
   test("a non-Planner/non-Inspector cannot open the Immediate Visit form", async ({ browser }) => {
     const context = await browser.newContext({ storageState: storageStatePath("reviewer") });
+    const page = await context.newPage();
+    await openEnglish(page);
+    await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
+    await expect(page.locator("#imm-search")).toHaveCount(0);
+    await context.close();
+  });
+
+  test("an admin without the immediate-visit capability cannot open the form", async ({ browser }) => {
+    const context = await browser.newContext({ storageState: storageStatePath("admin") });
     const page = await context.newPage();
     await openEnglish(page);
     await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
@@ -425,7 +529,8 @@ test.describe("CD-023 accessibility, localization and visual matrix", () => {
     await expect(group).toContainText("اختر سببًا للاستعجال");
     await expect(group).toContainText("أدخل هوية المصنع");
     await expect(group).not.toContainText("select an urgency reason");
-    await expect(page.locator(".ax-sr-only[role=alert]")).toContainText(/يحظر الإنشاء/);
+    // Stale-locator fix (M5): fe4cf0e2 renamed the live region to `sr-only`.
+    await expect(page.locator(".sr-only[role=alert]")).toContainText(/يحظر الإنشاء/);
   });
 
   test("dark/light × EN/AR × desktop/narrow evidence has no horizontal overflow", async ({ page }) => {

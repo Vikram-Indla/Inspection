@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
+import { decideActiveCancellation as decideActiveCancellationRpc } from "@/lib/execution";
 
 export type OpsResult = { error?: string; ok?: boolean };
 
@@ -165,5 +166,38 @@ export async function decideGeoOverride(_: OpsResult, formData: FormData): Promi
   // "Saving decision…" even after the atomic RPC committed. The client owns a
   // short post-acknowledgement refresh; field pages are dynamic and read the
   // approved state on their next refresh/navigation.
+  return { ok: true };
+}
+
+// TASK-EXECUTION-MODULE-001 · Phase 4B — active-session cancellation decision
+// queue (plan §12). Only the database RPC may decide: it enforces
+// operations.approve_active_cancel, requester/decider separation, mandatory
+// rejection reason and idempotent replay in one transaction. Approval is
+// terminal — the visit is cancelled and every captured response/evidence/geo
+// row is PRESERVED; this action never updates visits or requests directly.
+export async function decideActiveCancellation(_: OpsResult, formData: FormData): Promise<OpsResult> {
+  const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { error: "Session expired — sign in again." };
+
+  const requestId = String(formData.get("request_id") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  const reason = String(formData.get("decision_reason") ?? "").trim();
+  if (!requestId || !["approve", "reject"].includes(decision)) return { error: "Invalid cancellation decision." };
+  if (decision === "reject" && !reason) return { error: "A rejection reason is mandatory." };
+
+  const r = await decideActiveCancellationRpc(sb, {
+    requestId,
+    decision: decision as "approve" | "reject",
+    reason: reason || null,
+  });
+  if (r.error) {
+    // Self-decide and already-decided tokens map to neutral copy; detailed
+    // diagnostics stay server-side (the database already refused the write).
+    if (r.error === "CANCEL_SELF_DECIDE") return { error: "You cannot decide your own cancellation request." };
+    if (r.error === "CANCEL_ALREADY_DECIDED") return { error: "This request was already decided — the queue will refresh." };
+    if (r.error === "CANCEL_REJECTION_REASON_REQUIRED") return { error: "A rejection reason is mandatory." };
+    return { error: "The cancellation could not be decided. It may be outside your Operations scope or no longer pending." };
+  }
   return { ok: true };
 }
