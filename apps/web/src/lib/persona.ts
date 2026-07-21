@@ -37,5 +37,19 @@ export async function invalidateUserRoles(userId: string) {
 // (CMP-REQ-SHELL-002).
 export const getShellRegions = cache(async () => {
   const sb = await supabaseServer();
-  return sb.from("factories").select("region").not("region", "is", null).limit(1000);
+  // Distinct region labels for the shell scope control. On a live project
+  // `factories` exceeds 1000 rows (1290+ on staging), so a single
+  // `.limit(1000)` page silently drops every region whose rows sort past that
+  // first page — e.g. the high-UUID "Verification Fixtures" seed. Page through
+  // all non-null region rows (region column only) and dedupe so the scope
+  // dropdown is complete regardless of table size.
+  const pageSize = 1000;
+  const seen = new Set<string>();
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await sb.from("factories").select("region").not("region", "is", null).range(from, from + pageSize - 1);
+    if (error) return { data: null, error };
+    for (const row of data ?? []) if (row.region) seen.add(row.region);
+    if (!data || data.length < pageSize) break;
+  }
+  return { data: [...seen].map(region => ({ region })), error: null };
 });
