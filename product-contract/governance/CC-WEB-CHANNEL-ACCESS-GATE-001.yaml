@@ -1,0 +1,85 @@
+schema_version: "1.0"
+change_id: "CC-WEB-CHANNEL-ACCESS-GATE-001"
+title: "Enforce Inspector as an iPad-channel persona: redirect off the web portal and remove web/admin nav from the shared shell"
+requestor: "Claude Code on behalf of Vikram Indla"
+approver: "Vikram Indla"
+approval_source: >
+  In-session sponsor direction (2026-07-21): 'new branch, do A+B together' and
+  'A+B via change-control'. This authorizes the code change AND the amendment of
+  the two accepted contracts named below.
+status: "APPROVED_AND_IMPLEMENTED"
+effective_date: "2026-07-21"
+effective_version: "feat/web-channel-access-gate (worktree ../Inspection-web-access)"
+task_id: "TASK-WEB-CHANNEL-ACCESS-GATE-001"
+related_decision: "See CC-AC-0001-PLANNING-METHOD-ROLE-ROUTING-001 / DEC-025 (same Inspector channel-reachability theme)."
+
+business_reason: >
+  A user with role Inspector was reaching the web portal (screenshot: web
+  Factory 360 SCR-WEB-400) and seeing the Administration group. Two authoritative
+  contracts disagreed on whether this is correct:
+    (1) rbac_matrix.csv and personas.yaml place Inspector on the iPad / Virtual
+        channel only (RBAC-009 Assigned Visits, RBAC-010 Inspection Draft, both
+        channel = iPad). Inspector appears in zero web-channel rows; Factory 360
+        web (RBAC-013) is Leadership-only.
+    (2) TASK-WEB-COMPLIANCE-SHARED-SHELL-001 (CMP-REQ-SHELL-001..003) gave every
+        business persona an identical shared shell, admin locked-not-hidden,
+        with RLS as the real boundary — which necessarily renders web + locked
+        admin chrome to Inspector.
+  Root cause in code: channel was never modelled. middleware only checked
+  authenticated-vs-not; buildShellNavigation filtered by role only, with
+  Inspector inside the web `businessRoles`; nothing enforced role-home
+  (inspector -> /field) after login. The sponsor ruled the rbac_matrix channel
+  is authoritative and scoped the identical-shell contract to WEB-channel
+  personas only.
+
+decision: >
+  Inspector is a field (iPad) channel persona. On the web it is redirected to
+  its field home (/field), which renders responsively as the iPad view. The
+  shared shell exposes only the field channel to a field-only persona: Execution
+  only, and no Administration group (not even a locked one). Multi-role accounts
+  that also hold a web/admin role keep the full web experience (operational
+  grant wins), consistent with role-home.ts precedence.
+
+affected_requirements:
+  - "rbac_matrix.csv RBAC-009, RBAC-010 (Inspector = iPad) — now ENFORCED in code (previously unenforced)."
+  - "rbac_matrix.csv RBAC-013 (Factory 360 web = Leadership) — Inspector can no longer reach it."
+  - "personas.yaml: Inspector channel = iPad / Virtual — now enforced."
+
+amended_contracts:
+  - contract: "TASK-WEB-COMPLIANCE-SHARED-SHELL-001 (CMP-REQ-SHELL-001..003)"
+    change: >
+      The 'identical shell for every business persona' guarantee is re-scoped to
+      WEB-channel business personas (planner, reviewer, ops, leadership + admin
+      families). Field-only personas are out of scope of the identical-shell rule.
+  - contract: "UIU-ISP-AC-001..006 (inspector-shell-uplift)"
+    change: >
+      The assertion that Inspector receives the full 5-group nav with 7 locked
+      admin entries is replaced: a field-only Inspector receives the operations
+      group with Execution only and no Administration group. The collapse-
+      preference behaviour (saqeel-shell-collapsed) is unchanged.
+
+affected_screens_apps_apis:
+  - "apps/web/middleware.ts — sets x-pathname request header (no auth/DB work added)."
+  - "apps/web/src/app/(app)/layout.tsx — channel gate: field-only persona on a non-/field path -> redirect(homeForRoles ?? '/field'). Reuses cache()-wrapped getServerUser + getUserRoles already read by the shared Shell; zero extra round-trip."
+  - "apps/web/src/lib/shell-navigation.ts — FIELD_CHANNEL_ROLE_KEYS, isFieldOnlyPersona(); businessRoles excludes Inspector; Execution tagged channels:['web','field']; field-only users receive field items only and empty groups are dropped."
+
+fields_states_permissions:
+  - "No requirement, field, permission, workflow state, or audit event is invented, weakened, or removed."
+  - "RLS, route guards, and AdminRouteBoundary remain the write/read authority (defense-in-depth). This change only removes chrome that the persona's channel never granted."
+
+mvp_impact: "MVP1. Access-correctness fix; no scope expansion."
+
+regression_impact:
+  - "typecheck: 0 errors."
+  - "production build: PASS (0 errors, 0 warnings)."
+  - "Static source-contract suite: PASS 165 / FAIL 14 / SKIP 4 — identical to the pre-change baseline's 14 pre-existing failures (stale (app)-group paths, terminology, design-foundation; none introduced by this change)."
+  - "New field-channel contract tests added to e2e/shell-navigation.spec.ts (TASK-WEB-CHANNEL-ACCESS-GATE-001 describe) and amended e2e/inspector-shell-uplift.spec.ts UIU-ISP-AC-001..006."
+  - "Not yet verified: live authenticated runtime redirect on staging (no Supabase session in the authoring environment). Browser pass on staging is the remaining closure."
+
+decision_owner: "Vikram Indla"
+completion_rule: >
+  This record documents an approved, implemented change. It closes when the
+  branch feat/web-channel-access-gate is reviewed and a live authenticated
+  staging pass confirms: (a) an Inspector-only session is redirected off web
+  routes to /field, and (b) the /field shared shell shows Execution only with
+  no Administration group.

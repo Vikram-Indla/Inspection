@@ -19,6 +19,18 @@ export const BUSINESS_ROLE_KEYS = [
   "leadership",
 ] as const;
 
+// TASK-WEB-CHANNEL-ACCESS-GATE-001 · rbac_matrix.csv channel column.
+// Field-channel personas (RBAC-009/010: Inspector = iPad) never receive the
+// web portal or admin chrome. A user is "field-only" when every granted role
+// belongs to this set. Multi-role accounts that also hold a web/admin role
+// keep the full web experience — an operational grant always wins.
+export const FIELD_CHANNEL_ROLE_KEYS = ["inspector"] as const;
+
+export function isFieldOnlyPersona(roleKeys: readonly string[]): boolean {
+  return roleKeys.length > 0
+    && roleKeys.every(role => (FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role));
+}
+
 export type ShellIcon =
   | "dashboard" | "radar" | "factory" | "calendar" | "visits"
   | "inspect" | "virtual" | "review" | "admin" | "library"
@@ -37,6 +49,9 @@ export type ShellNavItemDefinition = {
   roles: readonly string[];
   businessTab: string;
   visibility: Visibility;
+  // Channels that may see this destination in the shared chrome. Absent = web
+  // only. A field-only persona sees exactly the items marked "field".
+  channels?: readonly ("web" | "field")[];
   parentId?: string;
   parentLabelKey?: string;
   parentLabelEn?: string;
@@ -63,7 +78,12 @@ export type BuiltShellNavGroup = Omit<ShellNavGroupDefinition, "items"> & {
 };
 
 const adminRoles = ADMIN_ROLE_KEYS as readonly string[];
-const businessRoles = [...BUSINESS_ROLE_KEYS, ...ADMIN_ROLE_KEYS] as readonly string[];
+// Web-portal business roles exclude the field-only Inspector (RBAC-009/010).
+// Inspector reaches Execution through the field channel, not the web nav.
+const businessRoles = [
+  ...BUSINESS_ROLE_KEYS.filter(role => !(FIELD_CHANNEL_ROLE_KEYS as readonly string[]).includes(role)),
+  ...ADMIN_ROLE_KEYS,
+] as readonly string[];
 const primaryAdmin = (
   item: Omit<ShellNavItemDefinition, "visibility">,
 ): ShellNavItemDefinition => ({ ...item, visibility: "admin-primary" });
@@ -90,7 +110,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelAr: "العمليات",
     items: [
       { id: "planning", labelKey: "nav.planning", labelEn: "Planning", labelAr: "التخطيط", href: "/planning", icon: "calendar", roles: businessRoles, businessTab: "Planning", visibility: "business" },
-      { id: "inspection-execution", labelKey: "shell.nav.execution", labelEn: "Execution", labelAr: "التنفيذ", href: "/field", icon: "inspect", roles: businessRoles, businessTab: "Inspection / Execution", visibility: "business", parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
+      { id: "inspection-execution", labelKey: "shell.nav.execution", labelEn: "Execution", labelAr: "التنفيذ", href: "/field", icon: "inspect", roles: businessRoles, businessTab: "Inspection / Execution", visibility: "business", channels: ["web", "field"], parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
       { id: "inspection-review", labelKey: "nav.reviews", labelEn: "Review & Approval", labelAr: "المراجعة والاعتماد", href: "/reviews", icon: "review", roles: businessRoles, businessTab: "Inspection / Review & Approval", visibility: "business", parentId: "inspection", parentLabelKey: "shell.nav.inspection", parentLabelEn: "Inspection", parentLabelAr: "التفتيش" },
     ],
   },
@@ -150,9 +170,13 @@ export function isAdminPersona(roleKeys: readonly string[]) {
 
 export function buildShellNavigation(roleKeys: readonly string[]): BuiltShellNavGroup[] {
   const roles = new Set(roleKeys);
+  // Field-only personas get the field channel only: no web-portal destinations,
+  // no admin group (not even a locked one). Web/admin personas are unaffected.
+  const fieldOnly = isFieldOnlyPersona(roleKeys);
   return SHELL_NAVIGATION.map(group => ({
     ...group,
     items: group.items.flatMap(item => {
+      if (fieldOnly && !(item.channels ?? ["web"]).includes("field")) return [];
       const allowed = item.roles.some(role => roles.has(role));
       if (item.visibility === "admin-advanced" && !allowed) return [];
       return [{
@@ -165,7 +189,7 @@ export function buildShellNavigation(roleKeys: readonly string[]): BuiltShellNav
         } : {}),
       }];
     }),
-  }));
+  })).filter(group => group.items.length > 0);
 }
 
 export function isShellRouteCurrent(current: string, href: string) {
