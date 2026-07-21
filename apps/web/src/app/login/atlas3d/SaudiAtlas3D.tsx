@@ -109,6 +109,12 @@ export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activ
     type Vehicle = { mesh: THREE.Object3D; curve: THREE.CatmullRomCurve3; speed: number; offset: number };
     let vehicles: Vehicle[] = [];
 
+    // a11y — honour reduced motion (DS requirement): no auto-rotate, vehicles
+    // hold position; orbit stays interactive.
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    const facilityMeshes: THREE.Group[] = [];   // hover-pick targets
+    const labelSprites: THREE.Sprite[] = [];     // for distance fade
+
     const labelsGroup = new THREE.Group();
     scene.add(labelsGroup);
 
@@ -132,7 +138,7 @@ export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activ
       const tex = new THREE.CanvasTexture(cv);
       tex.anisotropy = 4;
       const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false }));
-      const scale = 0.0055;
+      const scale = 0.0046;
       sp.scale.set(cv.width * scale, cv.height * scale, 1);
       return sp;
     }
@@ -194,28 +200,52 @@ export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activ
         new THREE.MeshStandardMaterial({ color: c, roughness: 0.55, metalness: 0.1,
           emissive: c.clone().multiplyScalar(d ? k : 0), emissiveIntensity: d ? 1 : 0 });
 
-      // Facilities — small low-poly industrial clusters, status-coloured, on a
-      // sand pad so they read as built structures, never as terrain.
-      const tankGeo = new THREE.CylinderGeometry(0.11, 0.11, 0.26, 12);
-      const stackGeo = new THREE.BoxGeometry(0.1, 0.5, 0.1);
+      // Facilities — status-coloured low-poly clusters, varied by kind so the
+      // skyline reads (refinery tall+stacked, port wide+crane, tower slim,
+      // plant mid). On a sand pad; registered as a hover-pick target.
       const padGeo = new THREE.CylinderGeometry(0.34, 0.36, 0.05, 18);
       const padMat = new THREE.MeshStandardMaterial({ color: sandEdge, roughness: 1 });
+      const tankGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.24, 12);
+      facilityMeshes.length = 0;
       for (const f of FACILITIES) {
         const st = status[f.status];
+        const mat = () => emissive(st, 0.4);
         const cluster = new THREE.Group();
         cluster.position.copy(worldPos(f.at, 0.1));
-        const pad = new THREE.Mesh(padGeo, padMat); cluster.add(pad);
-        const t1 = new THREE.Mesh(tankGeo, emissive(st, 0.35)); t1.position.set(-0.13, 0.16, 0.05); cluster.add(t1);
-        const t2 = new THREE.Mesh(tankGeo, emissive(st, 0.35)); t2.position.set(0.10, 0.16, -0.08); t2.scale.y = 0.8; cluster.add(t2);
-        const stack = new THREE.Mesh(stackGeo, emissive(st, 0.5)); stack.position.set(0.02, 0.28, 0.12); cluster.add(stack);
+        cluster.add(new THREE.Mesh(padGeo, padMat));
+        const add = (geo: THREE.BufferGeometry, x: number, y: number, z: number, sy = 1) => {
+          const m = new THREE.Mesh(geo, mat()); m.position.set(x, y, z); m.scale.y = sy; cluster.add(m);
+        };
+        if (f.kind === "tower") {
+          add(new THREE.BoxGeometry(0.12, 0.72, 0.12), 0, 0.38, 0);
+          add(new THREE.BoxGeometry(0.08, 0.46, 0.08), 0.16, 0.25, 0.06);
+          add(new THREE.BoxGeometry(0.08, 0.34, 0.08), -0.14, 0.19, -0.05);
+        } else if (f.kind === "port") {
+          add(tankGeo, -0.14, 0.14, 0.06);
+          add(tankGeo, 0.06, 0.12, -0.08, 0.8);
+          add(new THREE.BoxGeometry(0.42, 0.06, 0.14), 0.02, 0.05, 0.15);
+          add(new THREE.BoxGeometry(0.05, 0.42, 0.05), 0.2, 0.25, 0.15);
+        } else if (f.kind === "refinery") {
+          add(tankGeo, -0.16, 0.14, 0.05);
+          add(tankGeo, 0.02, 0.14, -0.1);
+          add(tankGeo, 0.16, 0.12, 0.08, 0.85);
+          add(new THREE.BoxGeometry(0.08, 0.62, 0.08), 0.05, 0.34, 0.14);
+        } else {
+          add(tankGeo, -0.12, 0.14, 0.05);
+          add(tankGeo, 0.1, 0.12, -0.06, 0.8);
+          add(new THREE.BoxGeometry(0.22, 0.18, 0.22), 0, 0.12, 0);
+        }
         const tip = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 10),
           new THREE.MeshStandardMaterial({ color: st, emissive: st, emissiveIntensity: d ? 1.4 : 0.5 }));
-        tip.position.set(0.02, 0.55, 0.12); cluster.add(tip);
+        tip.position.set(0.05, f.kind === "tower" ? 0.78 : 0.6, 0.1); cluster.add(tip);
+        cluster.userData = { name: f[locale] };
         overlayGroup.add(cluster);
+        facilityMeshes.push(cluster);
       }
 
       // Region markers + name labels — the 13 zones read as distinct places.
       labelsGroup.clear();
+      labelSprites.length = 0;
       const labelInk = color("--text-primary", d ? "#f5f6f7" : "#1a1d1f");
       for (const r of REGIONS) {
         const c = status[r.status];
@@ -226,6 +256,7 @@ export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activ
         const label = makeLabel(r[locale], labelInk);
         label.position.copy(worldPos(r.capital, 0.5));
         labelsGroup.add(label);
+        labelSprites.push(label);
       }
 
       // Winding routes (Catmull-Rom) + a vehicle gliding along each.
@@ -280,10 +311,34 @@ export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activ
     const mo = new MutationObserver(() => applyTheme());
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
-    // Subtle idle auto-rotate; pauses while the user is dragging.
-    controls.autoRotate = true;
+    // Subtle idle auto-rotate; off under reduced motion; pauses on drag.
+    controls.autoRotate = !reduceMotion;
     controls.autoRotateSpeed = 0.35;
     controls.addEventListener("start", () => { controls.autoRotate = false; });
+
+    // Hover-pick facilities: lift + brighten the hovered cluster, pause the
+    // idle rotation while pointing at one.
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    let pointerInside = false;
+    let hovered: THREE.Group | null = null;
+    const onMove = (e: PointerEvent) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      pointerInside = true;
+    };
+    const onLeave = () => { pointerInside = false; };
+    renderer.domElement.addEventListener("pointermove", onMove);
+    renderer.domElement.addEventListener("pointerleave", onLeave);
+    const setHover = (cluster: THREE.Group | null) => {
+      if (hovered === cluster) return;
+      if (hovered) hovered.scale.setScalar(1);
+      hovered = cluster;
+      if (hovered) hovered.scale.setScalar(1.22);
+      onInteractingChange?.(!!hovered);
+      if (!reduceMotion) controls.autoRotate = !hovered;
+    };
 
     let raf = 0;
     const start = performance.now();
@@ -293,7 +348,7 @@ export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activ
     const loop = () => {
       const t = (performance.now() - start) / 1000;
       for (const v of vehicles) {
-        const u = (t * v.speed + v.offset) % 1;
+        const u = reduceMotion ? v.offset : (t * v.speed + v.offset) % 1;
         v.mesh.position.copy(v.curve.getPointAt(u));
         v.curve.getTangentAt(u, fwd);
         v.mesh.lookAt(fwd.add(v.mesh.position));
@@ -307,6 +362,22 @@ export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activ
       offset.setLength(r + (f.r - r) * 0.035);
       camera.position.copy(controls.target).add(offset);
 
+      // Distance-fade the region labels so far ones don't clutter.
+      for (const sp of labelSprites) {
+        (sp.material as THREE.SpriteMaterial).opacity =
+          THREE.MathUtils.clamp(1.7 - camera.position.distanceTo(sp.position) / 15, 0.12, 1);
+      }
+
+      // Hover pick.
+      if (pointerInside && facilityMeshes.length) {
+        raycaster.setFromCamera(pointer, camera);
+        const hit = raycaster.intersectObjects(facilityMeshes, true)[0];
+        let cluster: THREE.Group | null = null;
+        let o: THREE.Object3D | null = hit ? hit.object : null;
+        while (o) { if (facilityMeshes.includes(o as THREE.Group)) { cluster = o as THREE.Group; break; } o = o.parent; }
+        setHover(cluster);
+      } else setHover(null);
+
       controls.update();
       renderer.render(scene, camera);
       raf = requestAnimationFrame(loop);
@@ -316,6 +387,8 @@ export default function SaudiAtlas3D({ onInteractingChange, locale = "ar", activ
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
+      renderer.domElement.removeEventListener("pointermove", onMove);
+      renderer.domElement.removeEventListener("pointerleave", onLeave);
       ro.disconnect(); mo.disconnect(); controls.dispose();
       renderer.dispose();
       if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
