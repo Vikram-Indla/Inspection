@@ -222,6 +222,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     draftSaveFailed: t("plan.review.draftSaveFailed", "The draft could not be saved. Your working state is unchanged — you can retry or continue without saving."),
     draftBanner: t("plan.review.draftBanner", "Resumed from draft {ref} — saved working state; readiness is re-checked live."),
     draftUnavailable: t("plan.review.draftUnavailable", "The referenced draft could not be loaded — it may have been published, archived or created by someone else. Falling back to the browser-held selection."),
+    discardDraft: t("plan.review.discardDraft", "Discard draft"),
 
     // CD-024 — Assignment Evidence Ledger + per-row evidence cells
     evTitle: t("plan.review.ev.title", "Assignment evidence ledger"),

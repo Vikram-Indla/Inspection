@@ -20,6 +20,8 @@
 //     error neutralisation change.
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
+import { getReasonOptions, recordLifecycleEvent, validateReason } from "@/lib/planning/lifecycle";
 
 export type BulkVerb = "reschedule" | "reassign" | "cancel" | "edit";
 
@@ -44,6 +46,8 @@ export type ItemResult = { id: string; outcome: OutcomeCode };
 export type FormErrorCode =
   | "select_one"
   | "reason_required"
+  | "reasons_unavailable"
+  | "session"
   | "window_required"
   | "window_invalid"
   | "window_order"
@@ -67,27 +71,44 @@ function logProvider(verb: BulkVerb, id: string, message: string) {
   console.error(`[visits.bulk.${verb}] ${id}: ${message}`);
 }
 
-// M02-011/034 — bulk cancel: one mandatory reason; only rows still
-// published/new cancel (same guard as cancelVisit); inspectors notified.
+// M02-011/034 + M8 — bulk cancel: one mandatory GOVERNED reason key (active
+// planning_lookups cancellation_reason; 'other' requires comments — validated
+// once up front, PLN-CON-011); only rows still published/new cancel (same
+// guard as cancelVisit); inspectors notified; every cancelled row appends a
+// lifecycle 'cancel' event with its prior inspector/window snapshot. The
+// per-item ledger never turns a lifecycle-stream write failure into a false
+// "applied": a committed cancel whose event could not be written is reported
+// as applied_no_notification (committed-with-a-gap), never as a clean apply.
 export async function bulkCancelVisits(_: ActionResult, fd: FormData): Promise<ActionResult> {
   const sb = await supabaseServer();
+  const { data: { user } } = await getVerifiedUser(sb);
+  if (!user) return { verb: "cancel", formErrorCode: "session" };
   const ids = selectedIds(fd);
-  const reason = String(fd.get("reason") ?? "").trim();
+  const reasonKey = String(fd.get("reason_key") ?? "").trim();
+  const comments = String(fd.get("comments") ?? "").trim();
   if (ids.length === 0) return { verb: "cancel", formErrorCode: "select_one" };
-  if (!reason) return { verb: "cancel", formErrorCode: "reason_required" };
+  const { options, error: optErr } = await getReasonOptions(sb, "cancellation_reason");
+  if (optErr) return { verb: "cancel", formErrorCode: "reasons_unavailable" };
+  if (validateReason(options, reasonKey, comments, "cancellation")) return { verb: "cancel", formErrorCode: "reason_required" };
   const items: ItemResult[] = [];
   for (const id of ids) {
+    const { data: v0 } = await sb.from("visits").select("window_start, window_end").eq("id", id).maybeSingle();
+    const { data: asg0 } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
     const { data: updated, error } = await sb.from("visits")
-      .update({ planning_status: "cancelled", cancellation_reason: reason })
+      .update({ planning_status: "cancelled", cancellation_reason: reasonKey })
       .eq("id", id).eq("planning_status", "published").eq("operational_state", "new")
       .select("id");
     if (error) { logProvider("cancel", id, error.message); items.push({ id, outcome: "error" }); continue; }
     if (!updated?.length) { items.push({ id, outcome: "blocked_not_publishable" }); continue; }
-    const { data: asg } = await sb.from("assignments").select("inspector_id").eq("visit_id", id).maybeSingle();
-    if (asg?.inspector_id) {
+    const evErr = await recordLifecycleEvent(sb, {
+      visitId: id, eventType: "cancel", reasonKey, comments, actor: user.id,
+      previous: { planning_status: "published", inspector_id: asg0?.inspector_id ?? null, window_start: v0?.window_start ?? null, window_end: v0?.window_end ?? null },
+    });
+    if (evErr) { items.push({ id, outcome: "applied_no_notification" }); continue; }
+    if (asg0?.inspector_id) {
       const { error: nErr } = await sb.from("notifications").insert({
-        event_key: "visit_cancelled", recipient: asg.inspector_id,
-        payload: { visit_id: id, reason, bulk: true }, channel: "push",
+        event_key: "visit_cancelled", recipient: asg0.inspector_id,
+        payload: { visit_id: id, reason: reasonKey, bulk: true }, channel: "push",
       });
       if (nErr) { logProvider("cancel", id, `notify: ${nErr.message}`); items.push({ id, outcome: "applied_no_notification" }); continue; }
     }

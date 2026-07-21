@@ -20,6 +20,7 @@ import {
   type OverlapEvidence, type SourceState, type BulkDraft, type EligibilityReason, type LookupOption,
 } from "../actions";
 import EvidenceLedger, { type LedgerFocus, type EvidenceLedgerStrings } from "./EvidenceLedger";
+import DiscardDraftButton from "../../DiscardDraftButton";
 import { IconLock } from "@/app/icons";
 
 const SEL_KEY = "cd021-bulk-selection";
@@ -74,7 +75,7 @@ export type ReviewStrings = {
   reasonDup: string; reasonScope: string; reasonLocation: string; reasonInspector: string;
   ackRequired: string; ackLabel: string;
   saveDraft: string; savingDraft: string; draftSaved: string; draftSaveFailed: string;
-  draftBanner: string; draftUnavailable: string;
+  draftBanner: string; draftUnavailable: string; discardDraft: string;
   // CD-024 — Assignment Evidence Ledger + per-row evidence cells
   evTitle: string; evLead: string; evReview: string;
   ecInPool: string; ecOverlaps: string; ecSkills: string; ecAuto: string;
@@ -530,6 +531,11 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         {initialDraft && (
           <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }} role="status">
             <span className="ax-lozenge ax-lozenge--info">{interp(s.draftBanner, { ref: initialDraft.planReference })}</span>
+            {/* M8 / PLN-CON-018 — discard the resumed draft (never-published);
+                distinct from cancelling a published visit. */}
+            {" "}
+            <DiscardDraftButton planId={initialDraft.planId} label={s.discardDraft}
+              discardAria={`${s.discardDraft} — ${initialDraft.planReference}`} />
           </p>
         )}
         {draftUnavailable && (

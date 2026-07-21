@@ -1,5 +1,6 @@
 "use client";
 import EmptyState from "@/components/EmptyState";
+import type { ReasonOption } from "@/lib/planning/lifecycle";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).
 // M02-003/021: search by Visit ID / Factory / CR / Industrial License / Inspector
 //              — client filter over the loaded server page (RLS-scoped rows).
@@ -91,6 +92,7 @@ export type VisitsBoardStrings = {
   bulkReassignBtn: string;
   selectOption: string;
   bulkCancelReason: string;
+  bulkCancelComments: string;
   bulkCancelPlaceholder: string;
   bulkCancelBtn: string;
   bulkEditType: string; bulkEditNotes: string; bulkEditNotesPlaceholder: string; bulkEditSetNotes: string; bulkEditBtn: string;
@@ -145,6 +147,8 @@ export type VisitsBoardStrings = {
   // CD-026 — neutral pre-flight validation
   errSelectOne: string;
   errReasonRequired: string;
+  errReasonsUnavailable: string;
+  errSession: string;
   errWindowRequired: string;
   errWindowInvalid: string;
   errWindowOrder: string;
@@ -171,13 +175,15 @@ type AllowedKey = "editable" | "locked" | "final" | "expired";
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 const EMPTY: ActionResult = {};
 
-export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings, locale }: {
+export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, cancelReasons, total, limit, nextLimit, strings, locale }: {
   rows: VisitRow[];
   inspectors: Inspector[];
   typeOptions: { value: string; label: string }[];
   modeOptions: { value: string; label: string }[];
   regionOptions: { value: string; label: string }[];
   cityOptions: { value: string; label: string }[];
+  /** M8 — governed cancellation reason options (planning_lookups). */
+  cancelReasons: ReasonOption[];
   total: number;
   limit: number;
   nextLimit: number | null;
@@ -323,6 +329,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
     switch (result?.formErrorCode) {
       case "select_one": return strings.errSelectOne;
       case "reason_required": return strings.errReasonRequired;
+      case "reasons_unavailable": return strings.errReasonsUnavailable;
+      case "session": return strings.errSession;
       case "window_required": return strings.errWindowRequired;
       case "window_invalid": return strings.errWindowInvalid;
       case "window_order": return strings.errWindowOrder;
@@ -479,10 +487,18 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                   {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkReassignBtn}</button>
             </form>
-            <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="row" style={{ alignItems: "flex-end" }}>
+            <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
+              {/* M8 / PLN-CON-011 — governed cancellation reason (active lookup
+                  keys only); comments mandatory when the reason is Other
+                  (server-enforced). */}
               <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
-                <input id="bulk-cancel-reason" className="ax-input" name="reason" placeholder={strings.bulkCancelPlaceholder} /></div>
+                <select id="bulk-cancel-reason" className="ax-select" name="reason_key" required>
+                  <option value="">{strings.selectOption}</option>
+                  {cancelReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
+                </select></div>
+              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-cancel-comments">{strings.bulkCancelComments}</label>
+                <input id="bulk-cancel-comments" className="ax-input" name="comments" placeholder={strings.bulkCancelPlaceholder} /></div>
               <button className="btn btn-danger btn-touch" disabled={busy}>{strings.bulkCancelBtn}</button>
             </form>
             <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
