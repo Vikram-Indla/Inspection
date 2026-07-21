@@ -4659,10 +4659,10 @@
       "tests": ["typecheck PASS", "production build PASS", "Riyadh date checks 17/17 PASS", "diff and management-key scans PASS", "design-system guardrail reports 89 inherited findings"],
       "evidence": ["product-contract/evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md", "verified local recovery bundles outside Git", "verified local untracked implementation-pack archive outside Git"],
       "decisions": ["Keep later governed runtime and later approved Saqeel presentation", "Archive but do not merge incomplete Planning WIP", "Exclude unsafe environment/config experiment", "Do not change inherited product acceptance or blockers"],
-      "blockers": ["Final remote ref/worktree/stash cleanup at handoff authoring time", "Inherited G11/provider/policy/sponsor/release blockers"],
+      "blockers": ["Inherited G11/provider/policy/sponsor/release blockers; repository convergence complete"],
       "commit_sha": "b600e66 (validated source before handoff record)",
-      "next_task": "Verify main and setup/Inspection resolve to one canonical commit, then resume the authoritative current G11 slice.",
-      "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md UPDATE 117, execution/CURRENT_SLICE.yaml, and evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md. Confirm main and setup/Inspection point to the same canonical commit with one clean worktree and no stale stash/branch refs. Resume the current G11 task without changing existing acceptance or external-provider blockers."
+      "next_task": "Resume the authoritative current G11 slice from the converged canonical commit.",
+      "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md UPDATE 117, execution/CURRENT_SLICE.yaml, and evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md. Repository convergence is complete: main and setup/Inspection share one canonical commit, one clean worktree remains, and stale stash/branch refs are absent. Resume the current G11 task without changing existing acceptance or external-provider blockers."
     }
   ],
   "last_session": "2026-07-21-repository-consolidation-001",

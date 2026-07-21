@@ -1314,3 +1314,8 @@ management-key scans PASS. The V5 design guardrail still reports 89 inherited
 findings; none were hidden or allowlisted. This administration task changes no
 product acceptance: the active G11 performance verdict and every existing
 provider, policy, sponsor, human-review and release blocker remain unchanged.
+Remote `main` and `setup/Inspection` were then converged, nine stale remote
+branches and twenty-four stale local branches were deleted, all linked
+worktrees were removed, and six stashes were cleared only after their exact refs
+were captured in a verified final all-refs bundle. The canonical checkout is
+`setup/Inspection`; local and remote `main` point to the same commit.

@@ -16,7 +16,7 @@
 - Tests run: typecheck PASS; production build PASS; date checks 17/17 PASS; diff/management-key scan PASS; design-system guardrail reports 89 inherited findings
 - Evidence captured: `product-contract/evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md`; verified local safety bundles and untracked-pack archive outside Git
 - Decisions made: canonical route keeps later governed runtime plus later approved Saqeel presentation; incomplete Planning WIP is archived, not merged; unsafe environment/config experiment is excluded; existing product blockers remain unchanged
-- Open blockers: final branch/worktree/stash cleanup and remote convergence at the time this record is authored; inherited G11/provider/policy/sponsor/release blockers
+- Open blockers: inherited G11/provider/policy/sponsor/release blockers only; repository convergence itself is complete
 - Regression result: compile and production build PASS; no product certification is inferred from repository convergence
-- Exact next task: verify both canonical remote branches resolve to one commit and resume the authoritative current G11 slice from that commit
-- Ready-to-paste resume prompt: Read `product-contract/00_START_HERE.md`, `CURRENT_STATE.md` UPDATE 117, `execution/CURRENT_SLICE.yaml`, and `evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md`. Confirm `main` and `setup/Inspection` point to the same canonical commit with one clean worktree and no stale stash/branch refs. Resume the current G11 task without changing existing acceptance or external-provider blockers.
+- Exact next task: resume the authoritative current G11 slice from the converged canonical commit
+- Ready-to-paste resume prompt: Read `product-contract/00_START_HERE.md`, `CURRENT_STATE.md` UPDATE 117, `execution/CURRENT_SLICE.yaml`, and `evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md`. Repository convergence is complete: `main` and `setup/Inspection` share one canonical commit, one clean worktree remains, and stale stash/branch refs are absent. Resume the current G11 task without changing existing acceptance or external-provider blockers.
