@@ -4,6 +4,14 @@
 // one SECURITY INVOKER transaction, RLS enforced, request-id idempotent and
 // append-only audited. This action only normalizes form input and maps stable
 // blocker codes to neutral localized copy; raw database errors never reach UI.
+//
+// M5 (PLN-REQ-025..028) — manual (unregistered) entry: the three eligibility
+// legs (permission · visit-type metadata · explicit not-found confirmation),
+// the required manual field contract, the governed reason and the conditional
+// contact mobile are all RE-VERIFIED here, fail-closed, before the RPC runs.
+// The RPC itself is unchanged (21 params, no manual-reason/mobile surface), so
+// reason/provenance/mobile are recorded additively after creation — every
+// post-create write is best-effort and logged, never undoing a committed visit.
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
@@ -50,6 +58,14 @@ const COPY = {
     no_inspector_available: "No eligible inspector is available in this window (M01-048).",
     concurrent_conflict: "The record changed during creation. Your entries are preserved; review and try again.",
     invalid_request: "The creation request is invalid. Refresh this page and try again.",
+    manual_permission_denied: "Manual factory entry is not permitted for your role.",
+    manual_lookups_unavailable: "Manual entry reference data is unavailable right now; manual creation is blocked.",
+    manual_type_not_allowed: "The selected visit type does not allow unregistered factory entry.",
+    manual_confirm_required: "Confirm that the factory was not found in the registered list before manual entry (M01-045).",
+    manual_identity_incomplete: "Enter the establishment name, region and city for the manual factory.",
+    manual_reason_required: "Select the manual entry reason.",
+    manual_reason_comment_required: "Add a comment for the “Other” manual entry reason.",
+    manual_mobile_invalid: "Enter a valid contact mobile, or turn off factory notification.",
     system: "The Immediate Visit could not be created. Your entries are preserved; try again.",
   },
   ar: {
@@ -74,6 +90,14 @@ const COPY = {
     no_inspector_available: "لا يوجد مفتش مؤهل متاح في هذه النافذة (M01-048).",
     concurrent_conflict: "تغير السجل أثناء الإنشاء. تم الاحتفاظ بمدخلاتك؛ راجعها وأعد المحاولة.",
     invalid_request: "طلب الإنشاء غير صالح. حدّث الصفحة وأعد المحاولة.",
+    manual_permission_denied: "الإدخال اليدوي للمصنع غير مصرح لدورك.",
+    manual_lookups_unavailable: "البيانات المرجعية للإدخال اليدوي غير متاحة حاليًا؛ الإنشاء اليدوي محظور.",
+    manual_type_not_allowed: "نوع الزيارة المحدد لا يسمح بإدخال مصنع غير مسجل.",
+    manual_confirm_required: "أكّد أن المصنع غير موجود في القائمة المسجلة قبل الإدخال اليدوي (M01-045).",
+    manual_identity_incomplete: "أدخل اسم المنشأة والمنطقة والمدينة للمصنع اليدوي.",
+    manual_reason_required: "اختر سبب الإدخال اليدوي.",
+    manual_reason_comment_required: "أضف تعليقًا لسبب الإدخال اليدوي «أخرى».",
+    manual_mobile_invalid: "أدخل جوال تواصل صالحًا، أو أوقف إشعار المصنع.",
     system: "تعذر إنشاء الزيارة الفورية. تم الاحتفاظ بمدخلاتك؛ أعد المحاولة.",
   },
 } as const;
@@ -85,6 +109,7 @@ const URGENCY_REASONS = new Set([
   "Referral from authority",
   "Other",
 ]);
+const MOBILE_RE = /^(?:\+?966|0)?5\d{8}$/;
 const text = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 const nullable = (value: string) => value || null;
 const coordinate = (value: string) => value === "" ? null : Number(value);
@@ -129,6 +154,64 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
   const packageId = text(formData, "package_version_id");
   const existingFactoryId = text(formData, "existing_factory_id");
   const inspectorId = text(formData, "inspector_id");
+  const isManual = !UUID.test(existingFactoryId);
+
+  // PLN-REQ-025/026/027 — manual-entry contract, re-verified server-side
+  // (client controls are advisory; the page can be bypassed). Fail closed on
+  // every leg; capability/lookup errors are logged, never treated as grants.
+  let manualReasonKey = "";
+  let manualReasonComment = "";
+  let notifyFactory = false;
+  let factoryMobile = "";
+  if (isManual) {
+    // Leg 1 — permission. Inspector manual entry is the M01-045 immediate
+    // exception (planning.create.immediate); business staff need the explicit
+    // high-impact planning.manual_factory grant.
+    const capability = actorMode === "inspector" ? "planning.create.immediate" : "planning.manual_factory";
+    const { data: allowed, error: capError } = await sb.rpc("has_planning_capability", { p_capability: capability });
+    if (capError || allowed !== true) {
+      // eslint-disable-next-line no-console
+      if (capError) console.error("[M5 manual capability]", capError.message);
+      return { error: copy.manual_permission_denied, errorCode: "manual_permission_denied", blockingField: "identity" };
+    }
+    const { data: lookups, error: lookupError } = await sb.from("planning_lookups")
+      .select("kind, key, metadata").in("kind", ["visit_type", "manual_entry_reason"]).eq("is_active", true);
+    if (lookupError || !lookups) {
+      // eslint-disable-next-line no-console
+      console.error("[M5 manual lookups]", lookupError?.message ?? "no rows");
+      return { error: copy.manual_lookups_unavailable, errorCode: "manual_lookups_unavailable", blockingField: "identity" };
+    }
+    // Leg 2 — the selected visit type permits unregistered factories.
+    const typeRow = lookups.find(r => r.kind === "visit_type" && r.key === text(formData, "visit_type"));
+    if ((typeRow?.metadata as Record<string, unknown> | undefined)?.manual_entry_allowed !== true) {
+      return { error: copy.manual_type_not_allowed, errorCode: "manual_type_not_allowed", blockingField: "visit_type" };
+    }
+    // Leg 3 — explicit not-found confirmation.
+    if (text(formData, "not_found_confirmed") !== "yes") {
+      return { error: copy.manual_confirm_required, errorCode: "manual_confirm_required", blockingField: "identity" };
+    }
+    // Required manual identity: establishment name, region, city.
+    if (!text(formData, "manual_name") || !text(formData, "manual_region") || !text(formData, "manual_city")) {
+      return { error: copy.manual_identity_incomplete, errorCode: "manual_identity_incomplete", blockingField: "identity" };
+    }
+    // Governed manual-entry reason; Other requires a comment.
+    manualReasonKey = text(formData, "manual_reason_key");
+    const reasonKeys = new Set(lookups.filter(r => r.kind === "manual_entry_reason").map(r => r.key));
+    if (!reasonKeys.has(manualReasonKey)) {
+      return { error: copy.manual_reason_required, errorCode: "manual_reason_required", blockingField: "identity" };
+    }
+    manualReasonComment = text(formData, "manual_reason_comment");
+    if (manualReasonKey === "other" && !manualReasonComment) {
+      return { error: copy.manual_reason_comment_required, errorCode: "manual_reason_comment_required", blockingField: "identity" };
+    }
+    // Conditional contact mobile — required when factory notification is on.
+    notifyFactory = text(formData, "notify_factory") === "yes";
+    factoryMobile = text(formData, "factory_mobile").replace(/[\s-]/g, "");
+    if (notifyFactory && !MOBILE_RE.test(factoryMobile)) {
+      return { error: copy.manual_mobile_invalid, errorCode: "manual_mobile_invalid", blockingField: "identity" };
+    }
+  }
+
   const { data, error } = await sb.rpc("create_immediate_visit", {
     p_request_id: requestId,
     p_actor_mode: actorMode,
@@ -165,15 +248,55 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
     return { error: copy[code], errorCode: code, blockingField: result.field };
   }
 
+  const { data: visitRow } = await sb.from("visits").select("factory_id").eq("id", result.visit_id).maybeSingle();
+
+  // PLN-REQ-027/028 — manual-entry provenance. The RPC has no manual-reason /
+  // mobile surface (kept unchanged), so these are recorded additively AFTER the
+  // committed creation. Every write below is best-effort: a failure is logged
+  // and never undoes or masks the created visit. Known RLS boundaries:
+  // visit_location_events insert needs planning.correct_location/manage (an
+  // inspector creator fails → logged); factory_representatives insert needs
+  // planner/ops/compliance_admin (an inspector creator fails → logged).
+  if (isManual) {
+    const { error: provError } = await sb.from("visits").update({
+      source_channel: "planning.immediate.manual",
+      internal_reference: manualReasonComment ? `${manualReasonKey}: ${manualReasonComment}` : manualReasonKey,
+    }).eq("id", result.visit_id);
+    // eslint-disable-next-line no-console
+    if (provError) console.error("[M5 manual provenance]", provError.message);
+
+    const { error: locError } = await sb.from("visit_location_events").insert({
+      visit_id: result.visit_id,
+      lat,
+      lng,
+      source: actorMode === "inspector" ? "Inspector" : "Planner",
+      actor: user.id,
+      note: "manual entry pin (immediate)",
+    });
+    // eslint-disable-next-line no-console
+    if (locError) console.error("[M5 manual location event]", locError.message);
+
+    if (notifyFactory && factoryMobile && visitRow?.factory_id) {
+      const { error: repError } = await sb.from("factory_representatives").insert({
+        factory_id: visitRow.factory_id,
+        full_name: text(formData, "manual_name"),
+        role_title: "Manual-entry contact",
+        phone: factoryMobile,
+        is_primary: false,
+        active: true,
+      });
+      // eslint-disable-next-line no-console
+      if (repError) console.error("[M5 manual factory contact]", repError.message);
+    }
+  }
+
   // DEC-F — inspector recommendation only, best-effort and non-blocking: the
   // visit/factory are already created and real above; a failure recording the
   // recommendation must never undo or block that success (create_immediate_visit
   // already committed). Ops/compliance_admin makes the actual decision later
   // (enforcement_recommendations RLS — inspector has no update policy on it).
   const recommendedAction = text(formData, "enforcement_action");
-  const isUnregistered = !UUID.test(existingFactoryId);
-  if (isUnregistered && ["fine", "committee", "warning", "closure"].includes(recommendedAction)) {
-    const { data: visitRow } = await sb.from("visits").select("factory_id").eq("id", result.visit_id).maybeSingle();
+  if (isManual && ["fine", "committee", "warning", "closure"].includes(recommendedAction)) {
     if (visitRow?.factory_id) {
       const { error: recError } = await sb.from("enforcement_recommendations").insert({
         factory_id: visitRow.factory_id,
@@ -187,7 +310,7 @@ export async function createImmediateVisit(_: ImmResult, formData: FormData): Pr
     }
   }
 
-  const createdParam = isUnregistered ? "unregistered" : "1";
+  const createdParam = isManual ? "unregistered" : "1";
   if (result.actor_mode === "inspector") redirect(`/field/${result.visit_id}?created=${createdParam}`);
   redirect(`/visits/${result.visit_id}?created=${createdParam}`);
 }
