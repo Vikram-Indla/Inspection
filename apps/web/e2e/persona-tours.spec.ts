@@ -12,6 +12,9 @@ test.describe("planner tour (web channel)", () => {
   test("lands on /planning; all three planning methods reachable", async ({ page }) => {
     await page.goto("/launch");
     await page.waitForURL(/\/planning/);
+    // CD-020 convergence: /planning is now the list-first landing; the Create
+    // Visit action reveals the three preserved method routes.
+    await page.getByRole("button", { name: "Create Visit" }).click();
     for (const href of ["/planning/single", "/planning/bulk", "/planning/immediate"]) {
       await expect(page.locator(`a[href="${href}"]`).first()).toBeVisible();
     }
