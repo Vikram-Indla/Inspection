@@ -25,7 +25,37 @@ export type Answer = { value?: string; note?: string; date?: string };
 export type FormDef = { key: string; title: string; blocking?: boolean; fields: string[] };
 export type FormDraft = { [field: string]: string };
 export type Section = { key: string; title: string; items?: string[] };
-export type VioConfig = { id: string; code: string; title: string; level: string; penalty_ref: string | null; legal_basis: string | null; mapping_version: string | null };
+export type VioConfig = { id: string; code: string; title: string; level: string; penalty_ref: string | null; legal_basis: string | null; mapping_version: string | null; penalty_conflict?: boolean };
+
+// Phase 5 (§15/§18/§20) — per-visit item lifecycle. Keyed by item id; a state
+// is ACTIVE while reverted_at is null (the page maps reverted_at → active).
+export type ItemState = { state: "added" | "deselected"; reason: string | null; active: boolean };
+export type ItemStates = Record<string, ItemState>;
+
+/** Synthetic section key for inspector-added items not in the frozen package. */
+export const ADDED_SECTION_KEY = "__added";
+
+/**
+ * Effective item scope (§15): snapshot default items MINUS actively deselected
+ * PLUS actively added (dedupe — an added item already in the snapshot is a
+ * no-op). Added items land in one synthetic "Added items" section because the
+ * frozen definition only references items by code inside section lists; no
+ * item→section mapping metadata exists outside those lists.
+ */
+export function effectiveSections(sections: Section[], imap: Record<string, Item>, itemStates: ItemStates, addedTitle = "Added items"): Section[] {
+  const isDeselected = (it: Item | undefined) => !!it && !!itemStates[it.id]?.active && itemStates[it.id]?.state === "deselected";
+  const base = sections.map(s => ({ ...s, items: (s.items ?? []).filter(c => !isDeselected(imap[c])) }));
+  const inSnapshot = new Set(sections.flatMap(s => s.items ?? []));
+  const byId = new Map(Object.values(imap).map(it => [it.id, it]));
+  const added: string[] = [];
+  for (const [itemId, st] of Object.entries(itemStates)) {
+    if (!st.active || st.state !== "added") continue;
+    const it = byId.get(itemId);
+    if (!it || inSnapshot.has(it.code) || added.includes(it.code)) continue;  // no-op against snapshot, no duplicates
+    added.push(it.code);
+  }
+  return added.length ? [...base, { key: ADDED_SECTION_KEY, title: addedTitle, items: added }] : base;
+}
 
 /** Parse 'key=value' from response_model.conditional.visible_when. */
 export function parseCondition(m: ResponseModel): { key: string; value: string } | null {
@@ -70,11 +100,24 @@ export function scoreExcluded(item: Item, value: string | undefined): boolean {
   return ex.includes(value);
 }
 
-/** Weighted compliance score; unanswered, N/A/excluded and scoring-disabled items never enter the denominator. */
-export function computeHealthScore(items: Item[], answers: Record<string, Answer>, ctx: Record<string, string>): number | null {
-  let earned = 0;
-  let possible = 0;
+/**
+ * Preliminary Compliance Rate (canonical plan §20, D-019 — EXACT):
+ *   Compliant answered SCORED items / total answered SCORED items × 100.
+ * An item is SCORED when response_model.scoring_enabled !== false, its
+ * score_weight is positive (non-scoring items carry no weight), the answered
+ * value is not score-excluded (scoreExcluded — na handling), and the value's
+ * mapping result is compliant/non_compliant. Unanswered items leave BOTH the
+ * numerator and the denominator; actively deselected items never participate
+ * (§15); Form-Level Questions (definition section.questions — string_id-keyed,
+ * never item codes), admin fields (section.fields) and Action Form questions
+ * (action_forms defs) are structurally excluded because they never appear in
+ * the item set. Returns null while no scored item is answered.
+ */
+export function computePreliminaryCompliance(items: Item[], answers: Record<string, Answer>, ctx: Record<string, string>, itemStates?: ItemStates): number | null {
+  let compliant = 0;
+  let answeredScored = 0;
   for (const item of items) {
+    if (itemStates && itemStates[item.id]?.active && itemStates[item.id]?.state === "deselected") continue;
     if (!isVisible(item, ctx)) continue;
     const value = answers[item.id]?.value;
     if (!value || scoreExcluded(item, value)) continue;
@@ -82,10 +125,15 @@ export function computeHealthScore(items: Item[], answers: Record<string, Answer
     if (result !== "compliant" && result !== "non_compliant") continue;
     const weight = item.score_weight ?? 0;
     if (!(weight > 0)) continue;
-    possible += weight;
-    if (result === "compliant") earned += weight;
+    answeredScored += 1;
+    if (result === "compliant") compliant += 1;
   }
-  return possible > 0 ? Math.round((earned / possible) * 1000) / 10 : null;
+  return answeredScored > 0 ? Math.round((compliant / answeredScored) * 1000) / 10 : null;
+}
+
+/** Preserved export (D-019): now the canonical §20 Preliminary Compliance Rate. */
+export function computeHealthScore(items: Item[], answers: Record<string, Answer>, ctx: Record<string, string>, itemStates?: ItemStates): number | null {
+  return computePreliminaryCompliance(items, answers, ctx, itemStates);
 }
 
 /** Required/optional/conditional submission semantics (M09-018/021/022). */
@@ -119,8 +167,10 @@ export function formComplete(def: FormDef, draft: FormDraft | undefined): boolea
 }
 
 export type SectionProgress = { key: string; title: string; total: number; answered: number; pct: number };
-export function sectionProgress(sections: Section[], imap: Record<string, Item>, answers: Record<string, Answer>, ctx: Record<string, string>): SectionProgress[] {
-  return sections.map(s => {
+export function sectionProgress(sections: Section[], imap: Record<string, Item>, answers: Record<string, Answer>, ctx: Record<string, string>, itemStates?: ItemStates): SectionProgress[] {
+  // §20 — progress over the ACTIVE scope: deselected excluded, added included immediately.
+  const eff = itemStates ? effectiveSections(sections, imap, itemStates) : sections;
+  return eff.map(s => {
     const vis = (s.items ?? []).map(c => imap[c]).filter((it): it is Item => !!it && isVisible(it, ctx));
     const answered = vis.filter(it => !!answers[it.id]?.value).length;
     return { key: s.key, title: s.title, total: vis.length, answered, pct: vis.length ? Math.round(100 * answered / vis.length) : 100 };
@@ -128,9 +178,10 @@ export function sectionProgress(sections: Section[], imap: Record<string, Item>,
 }
 
 export type Summary = { answered: number; pending: number; compliant: number; nonCompliant: number; violations: number; evidence: number };
-export function summarize(sections: Section[], imap: Record<string, Item>, answers: Record<string, Answer>, ctx: Record<string, string>, evidenceCount: number): Summary {
+export function summarize(sections: Section[], imap: Record<string, Item>, answers: Record<string, Answer>, ctx: Record<string, string>, evidenceCount: number, itemStates?: ItemStates): Summary {
+  const eff = itemStates ? effectiveSections(sections, imap, itemStates) : sections;
   let answered = 0, pending = 0, compliant = 0, nonCompliant = 0, violations = 0;
-  for (const s of sections) for (const c of s.items ?? []) {
+  for (const s of eff) for (const c of s.items ?? []) {
     const it = imap[c]; if (!it || !isVisible(it, ctx)) continue;
     const v = answers[it.id]?.value;
     if (!v) { pending++; continue; }
@@ -160,10 +211,13 @@ export type SectionBlockers = { key: string; title: string; unanswered: string[]
 export function computeBlockers(
   sections: Section[], imap: Record<string, Item>, answers: Record<string, Answer>,
   ctx: Record<string, string>, evidencePerItem: Record<string, Record<string, number>>,
-  formDrafts: Record<string, FormDraft>, defs: FormDef[],
+  formDrafts: Record<string, FormDraft>, defs: FormDef[], itemStates?: ItemStates,
 ): SectionBlockers[] {
+  // §15/§20 — deselected items require nothing; added items are fully required
+  // per their own rules (effective scope, same as progress).
+  const eff = itemStates ? effectiveSections(sections, imap, itemStates) : sections;
   const out: SectionBlockers[] = [];
-  for (const s of sections) {
+  for (const s of eff) {
     const g: SectionBlockers = { key: s.key, title: s.title, unanswered: [], evidence: [], forms: [] };
     for (const c of s.items ?? []) {
       const it = imap[c]; if (!it || !isVisible(it, ctx)) continue;

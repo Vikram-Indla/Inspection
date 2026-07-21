@@ -41,12 +41,25 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       .select("id, code, title, response_model, evidence_rule, score_excluded_on, score_weight, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)")
       .in("code", packageCodes)
     : Promise.resolve({ data: [] as ItemRow[], error: null });
+  // Phase 5 (§15) — the COMPLETE downloaded active item library powers the
+  // inspector's additional-item selection; the configured set above stays the
+  // frozen default scope. Same column projection, active items only.
+  const libraryRead = sb.from("inspection_items")
+    .select("id, code, title, response_model, evidence_rule, score_excluded_on, score_weight, guidance_en, guidance_ar, regulation_clauses(clause_ref, legal_source)")
+    .eq("active", true);
+  // Phase 5 (§18, D-018) — violation invalidation columns land in migration
+  // 20260721150000; read tolerantly so the page degrades pre-migration.
+  const violationsFull = await sb.from("violations").select("id, violation_code_id, invalidated_at, invalidated_by, invalidate_reason").eq("inspection_id", id);
+  const violationsRead = violationsFull.error
+    ? await sb.from("violations").select("id, violation_code_id").eq("inspection_id", id)
+    : violationsFull;
 
-  const [{ data: itemRows }, { data: resp }, { data: ev }, { data: vios }, { data: engines }] = await Promise.all([
+  const [{ data: itemRows }, { data: libraryRows }, { data: resp }, { data: ev }, { data: vios }, { data: engines }] = await Promise.all([
     itemRead,
+    libraryRead,
     sb.from("checklist_responses").select("item_id, response, updated_at").eq("inspection_id", id),
     sb.from("evidence").select("id, linked_type, linked_id, evidence_type, storage_path, captured_at").eq("inspection_id", id),
-    sb.from("violations").select("id, violation_code_id").eq("inspection_id", id),
+    Promise.resolve(violationsRead),
     sb.from("engine_settings").select("engine, settings").in("engine", ["evidence", "sla", "field"]),
   ]);
   // Tolerant fetches for columns landing in migrations 0015/0020 (context,
@@ -57,6 +70,14 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     sb.from("action_forms").select("id, item_id, violation_id, form_type, owner_name, owner_role, due_at, required_correction, status").eq("inspection_id", id),
     sb.from("inspections").select("inspection_no").eq("id", id).maybeSingle(),
     sb.from("evidence").select("id, archived_at, superseded_by, deleted_at").eq("inspection_id", id),
+  ]);
+  // Phase 5 (§15/§18) — tolerant reads for migration 20260721150000 objects:
+  // per-visit item lifecycle rows, and published action_form configuration
+  // templates for the manual "Add action form" affordance (§18). A missing
+  // table degrades the feature instead of killing the page.
+  const [{ data: itemStateRows }, { data: actionTemplateRows }] = await Promise.all([
+    sb.from("inspection_item_states").select("item_id, state, reason, reverted_at").eq("inspection_id", id),
+    sb.from("configuration_templates").select("id, template_key, title_en, title_ar").eq("template_type", "action_form").eq("status", "published"),
   ]);
   // Arrival/cancellation evidence is captured before an inspection exists and
   // is therefore anchored to visit_id. Read it back into the inspection
@@ -163,6 +184,18 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     clause: clauseRelation ? { clause_ref: clauseRelation.clause_ref, legal_source: clauseRelation.legal_source } : null,
   });
   });
+  // Phase 5 (§15) — full active item library for the additional-item panel
+  // (the workspace dedupes against the effective scope).
+  const library: Item[] = ((libraryRows ?? []) as unknown as ItemRow[]).map(r => {
+    const clauseRelation = Array.isArray(r.regulation_clauses) ? r.regulation_clauses[0] : r.regulation_clauses;
+    return ({
+    id: r.id, code: r.code, title: r.title,
+    response_model: r.response_model, evidence_rule: r.evidence_rule,
+    score_excluded_on: r.score_excluded_on, score_weight: r.score_weight,
+    guidance: (locale === "ar" && r.guidance_ar) ? r.guidance_ar : r.guidance_en,
+    clause: clauseRelation ? { clause_ref: clauseRelation.clause_ref, legal_source: clauseRelation.legal_source } : null,
+  });
+  });
   // Compliance configuration for the violation auto-display panel (M04-142/143/144).
   const vioConfig = {} as Record<string, VioConfig>;
   const referencedViolationCodes = [...new Set(configuredRows.flatMap(row =>
@@ -184,6 +217,17 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     .map(row => [row.dependency_key, row.snapshot]));
   const configuredViolations = { ...liveViolationConfig, ...companionViolations, ...(frozenDefinition.violation_snapshot ?? {}) };
   for (const v of Object.values(configuredViolations)) {
+    // Phase 5 (§18, D-018) — penalty singularity, fail closed: exactly ONE
+    // configured penalty mapping is allowed per violation code (Phase 1,
+    // enforced by penalty_mappings.violation_code_id UNIQUE). If MORE THAN ONE
+    // active mapping ever shows up (defense-in-depth — the unique constraint
+    // should make this impossible), the violation renders WITHOUT a penalty
+    // and mapping_version is nulled so the workspace refuses to create the
+    // candidate. The first row is NEVER silently picked on conflict.
+    if (Array.isArray(v.penalty_mappings) && v.penalty_mappings.length > 1) {
+      vioConfig[v.code] = { id: v.id, code: v.code, title: v.title, level: v.level, penalty_ref: null, legal_basis: null, mapping_version: null, penalty_conflict: true };
+      continue;
+    }
     const pm = Array.isArray(v.penalty_mappings) ? v.penalty_mappings[0] : v.penalty_mappings;
     vioConfig[v.code] = { id: v.id, code: v.code, title: v.title, level: v.level, penalty_ref: pm?.penalty_ref ?? null, legal_basis: pm?.legal_basis ?? null, mapping_version: pm?.mapping_version ?? null };
   }
@@ -397,6 +441,33 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     vioPenalty: t("field.ws.vio.penalty", "Penalty {ref} · {basis}"),
     vioLevel: t("field.ws.vio.level", "Severity {level}"),
     vioAction: t("field.ws.vio.action", "Corrective action: {status}"),
+    vioInvalidated: t("field.ws.vio.invalidated", "Invalidated — the answer changed back to compliant. Kept for audit; no penalty or action is due from this candidate."),
+    vioPenaltyConflict: t("field.ws.vio.penaltyConflict", "Penalty mapping unavailable — configuration conflict"),
+    // — Phase 5 item lifecycle (§15) —
+    libTitle: t("field.ws.lib.title", "Item library"),
+    libHint: t("field.ws.lib.hint", "Add items from the active library to this visit. Added items count toward progress and compliance immediately and follow their own response and evidence rules."),
+    libAdd: t("field.ws.lib.add", "Add"),
+    libEmpty: t("field.ws.lib.empty", "Every active library item is already in scope."),
+    libAddedGroup: t("field.ws.lib.addedGroup", "Added items"),
+    libAddedMsg: t("field.ws.lib.addedMsg", "{code} added to this visit"),
+    deselectBtn: t("field.ws.deselect.btn", "Deselect"),
+    deselectTitle: t("field.ws.deselect.title", "Deselect {code}"),
+    deselectReason: t("field.ws.deselect.reason", "Reason"),
+    deselectReasonPh: t("field.ws.deselect.reasonPh", "Why is this item not applicable to this visit? — mandatory, kept in the audit trail"),
+    deselectConfirm: t("field.ws.deselect.confirm", "Deselect with reason"),
+    deselectCancel: t("field.ws.deselect.cancel", "Cancel"),
+    deselectNeedsReason: t("field.ws.deselect.needsReason", "A deselection reason is mandatory"),
+    deselectedTitle: t("field.ws.deselected.title", "Deselected ({n})"),
+    deselectedAudit: t("field.ws.deselected.audit", "Deselected items stay in the audit trail with their reason. They need no answer or evidence, create no violation, and are excluded from the compliance rate."),
+    restoreBtn: t("field.ws.restore.btn", "Restore"),
+    restoredMsg: t("field.ws.restore.msg", "{code} restored to this visit"),
+    // — Phase 5 manual action forms (§18) —
+    afAddTitle: t("field.ws.af.addTitle", "Action forms"),
+    afAddHint: t("field.ws.af.addHint", "Included is not completed: an added form stays open until its mandatory fields are filled and it is completed separately."),
+    afAddPick: t("field.ws.af.addPick", "Published action form template"),
+    afAddBtn: t("field.ws.af.addBtn", "Add action form"),
+    afAddedMsg: t("field.ws.af.addedMsg", "Action form added — it is open, not completed"),
+    afNone: t("field.ws.af.none", "No published action form templates available."),
     valTitle: t("field.ws.val.title", "Validation issues (grouped by section)"),
     valUnanswered: t("field.ws.val.unanswered", "Unanswered: {items}"),
     valEvidence: t("field.ws.val.evidence", "Mandatory evidence missing: {items}"),
@@ -484,6 +555,12 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         serverEvidence={(ev ?? []) as never}
         serverForms={(afRows ?? []) as never}
         serverViolations={(vios ?? []) as never}
+        serverItemStates={(itemStateRows ?? []) as never}
+        library={library}
+        actionTemplates={((actionTemplateRows ?? []) as { id: string; template_key: string; title_en: string; title_ar: string }[]).map(row => ({
+          id: row.id, key: row.template_key,
+          title: (locale === "ar" && row.title_ar) ? row.title_ar : row.title_en,
+        }))}
         serverContext={(ctxRow as { context?: Record<string, string> } | null)?.context ?? {}}
         vioConfig={vioConfig}
         evidenceLimits={settings.evidence ?? {}}

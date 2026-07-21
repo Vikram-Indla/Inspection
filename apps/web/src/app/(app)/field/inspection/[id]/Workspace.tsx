@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { local, processOutbox, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
-  type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section,
+  type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
   isVisible, contextFlags, conditionContext, scoreExcluded, computeHealthScore, evidenceLeg, formRequired, formComplete,
-  sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers,
+  sectionProgress, summarize, impliedViolations, computeBlockers, type SectionBlockers, effectiveSections, ADDED_SECTION_KEY,
 } from "./runtime";
 import SignaturePad, { type SignaturePadStrings, type SignatureAck } from "./SignaturePad";
 import ImageAnnotator, { compressImageFile, type AnnotatorStrings } from "@/components/ImageAnnotator";
@@ -15,7 +15,7 @@ import Modal from "@/components/Modal";
 import { IconLock, IconLightbulb, IconDocument, IconVideo } from "@/app/icons";
 import { requestActiveCancellationAction } from "../../[visitId]/actions";
 
-type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
+type Ins = { id: string; status: string; visit_id: string; package_versions: { definition: { sections: Section[]; action_forms?: FormDef[]; item_snapshot?: Record<string, unknown>; item_rules?: Record<string, { requirement?: "required" | "optional" | "conditional" }> } }; submission_versions?: { version_number: number }[]; reviews?: { returned_sections: string[] | null; decision_reason: string | null; decided_at: string | null }[] };
 type SResp = { item_id: string; response: Answer | null; updated_at: string };
 type SEv = {
   id: string; linked_type: string; linked_id: string; evidence_type: string;
@@ -31,7 +31,11 @@ export type WorkspacePanel = {
 };
 export type PrevComparison = { label: string; date: string | null; answers: Record<string, string>; evidence: Record<string, number> };
 type SForm = { id: string; item_id: string | null; violation_id: string | null; form_type: string; owner_name: string | null; owner_role: string | null; due_at: string | null; required_correction: string | null; status: string };
-type SVio = { id: string; violation_code_id: string };
+type SVio = { id: string; violation_code_id: string; invalidated_at?: string | null; invalidate_reason?: string | null };
+// Phase 5 (§15) — per-visit item lifecycle row from inspection_item_states.
+type SItemState = { item_id: string; state: "added" | "deselected"; reason: string | null; reverted_at: string | null };
+// Phase 5 (§18) — published action_form configuration template for manual add.
+type ActionTemplate = { id: string; key: string; title: string };
 type QueuedEvidence = Extract<OutboxOp, { kind: "evidence" }>;
 type EvidenceLimits = Record<string, { formats?: string[]; max_mb?: number }>;
 // Phase 4B — latest active-session cancellation request for the visit (§12).
@@ -70,6 +74,14 @@ export type WorkspaceStrings = {
   evAdd: string; evAddDoc: string; evCount: string; evRequired: string; evQueuedAlt: string; evTooLarge: string; evBadFormat: string;
   afBlocking: string; afComplete: string; afIncomplete: string; afSaved: string; afFieldLabels: { [k: string]: string };
   vioTitle: string; vioNone: string; vioPenalty: string; vioLevel: string; vioAction: string;
+  vioInvalidated: string; vioPenaltyConflict: string;
+  // — Phase 5 item lifecycle (§15) —
+  libTitle: string; libHint: string; libAdd: string; libEmpty: string; libAddedGroup: string; libAddedMsg: string;
+  deselectBtn: string; deselectTitle: string; deselectReason: string; deselectReasonPh: string;
+  deselectConfirm: string; deselectCancel: string; deselectNeedsReason: string;
+  deselectedTitle: string; deselectedAudit: string; restoreBtn: string; restoredMsg: string;
+  // — Phase 5 manual action forms (§18) —
+  afAddTitle: string; afAddHint: string; afAddPick: string; afAddBtn: string; afAddedMsg: string; afNone: string;
   valTitle: string; valUnanswered: string; valEvidence: string; valForms: string;
   ready: string; notReady: string;
   sig: SignaturePadStrings;
@@ -88,8 +100,9 @@ export type WorkspaceStrings = {
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 const acceptFor = (type: string) => type === "document" ? ".pdf,application/pdf" : type === "video" ? "video/*" : "image/*";
 
-export default function Workspace({ inspection, items, serverResponses, serverEvidence, serverForms, serverViolations, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, cancellation, cancelReasons, journeySchemaAvailable }: {
-  inspection: Ins; items: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverViolations: SVio[];
+export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, cancellation, cancelReasons, journeySchemaAvailable }: {
+  inspection: Ins; items: Item[]; library: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverViolations: SVio[];
+  serverItemStates: SItemState[]; actionTemplates: ActionTemplate[];
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
   evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null; locale: "en" | "ar";
   // Phase 4B — active-session cancellation (inert unless the schema probe passed)
@@ -159,24 +172,61 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
   const codeById = useMemo(() => Object.fromEntries(Object.values(vioConfig).map(c => [c.id, c.code])), [vioConfig]);
   const [vioIds, setVioIds] = useState(() => {
     const m: { [code: string]: string } = {};
-    for (const v of serverViolations) { const code = codeById[v.violation_code_id]; if (code) m[code] = v.id; }
+    for (const v of serverViolations) { if (v.invalidated_at) continue; const code = codeById[v.violation_code_id]; if (code) m[code] = v.id; }
     return m;
   });
+  // Phase 5 (§18, D-018) — invalidated candidates stay VISIBLE with state
+  // (audit preserved, never deleted). Seeded from server rows + this session.
+  const [invalidatedVios, setInvalidatedVios] = useState(() => {
+    const m: Record<string, boolean> = {};
+    for (const v of serverViolations) { if (!v.invalidated_at) continue; const code = codeById[v.violation_code_id]; if (code) m[code] = true; }
+    return m;
+  });
+  // Phase 5 (§15, D-017) — per-visit item lifecycle (added / deselected +
+  // pre-submit restore). A state is ACTIVE while reverted_at is null.
+  const [itemStates, setItemStates] = useState(() => Object.fromEntries(
+    serverItemStates.map(r => [r.item_id, { state: r.state, reason: r.reason, active: r.reverted_at == null }]),
+  ) as ItemStates);
+  const [deselecting, setDeselecting] = useState(null as { item: Item; reason: string } | null);
+  // Phase 5 (§18) — manually added action forms (offline-pending ones ride a
+  // durable draft until the reconnect flush inserts them).
+  const [manualForms, setManualForms] = useState([] as { id: string; form_type: string; title: string; status: string }[]);
+  const [afPick, setAfPick] = useState("");
   const baseline = useMemo(() => Object.fromEntries(serverResponses.map(r => [r.item_id, r.updated_at])), [serverResponses]);
   const imap = useMemo(() => Object.fromEntries(items.map(i => [i.code, i])), [items]);
+  // Effective-scope item map: frozen configured items + the full active library
+  // (added items resolve against the library). Configured rows win on conflict.
+  const allMap = useMemo(() => ({ ...Object.fromEntries(library.map(i => [i.code, i])), ...imap }), [library, imap]);
   const sections = inspection.package_versions.definition.sections.filter(s => { return !!s.items?.length; });
+  const itemRules = inspection.package_versions.definition.item_rules ?? {};
   const formDefs = useMemo(() => inspection.package_versions.definition.action_forms ?? [], [inspection]);
-  const sectionItems = useMemo(() => sections.flatMap(s => s.items ?? []).map(c => imap[c]).filter((i): i is Item => !!i),
+  // §15/§20 — effective scope: snapshot MINUS actively deselected PLUS added
+  // (added land in the synthetic "Added items" section; no item→section
+  // metadata exists outside the frozen section code lists).
+  const displaySections = useMemo(
+    () => effectiveSections(sections, allMap, itemStates, strings.libAddedGroup),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [imap]);
+    [allMap, itemStates, strings.libAddedGroup]);
+  const sectionItems = useMemo(() => displaySections.flatMap(s => s.items ?? []).map(c => allMap[c]).filter((i): i is Item => !!i),
+    [displaySections, allMap]);
   const flags = useMemo(() => contextFlags(sectionItems), [sectionItems]);
+  // §15 — deselect affordance: OPTIONAL items only (response_model.requirement,
+  // else the frozen item_rules; metadata absent → fail closed as required,
+  // same rule as D-007). Inspector-ADDED items can always be removed again.
+  const canDeselect = useCallback((it: Item) => {
+    if (itemStates[it.id]?.active && itemStates[it.id]?.state === "added") return true;
+    const requirement = it.response_model.requirement ?? itemRules[it.code]?.requirement ?? "required";
+    return requirement === "optional";
+  }, [itemStates, itemRules]);
 
   // Latest-state mirrors so async pushes and the reconnect flush never act on stale closures.
   const answersRef = useRef(answers); answersRef.current = answers;
   const ctxRef = useRef(ctx); ctxRef.current = ctx;
   const formsRef = useRef(forms); formsRef.current = forms;
   const vioIdsRef = useRef(vioIds); vioIdsRef.current = vioIds;
-  const pending = useRef({ ctx: false, forms: new Set(), vios: new Set() } as { ctx: boolean; forms: Set<string>; vios: Set<string> });
+  const itemStatesRef = useRef(itemStates); itemStatesRef.current = itemStates;
+  const manualFormsRef = useRef(manualForms); manualFormsRef.current = manualForms;
+  const pending = useRef({ ctx: false, forms: new Set(), vios: new Set(), manual: [] as { id: string; form_type: string; title: string }[] } as { ctx: boolean; forms: Set<string>; vios: Set<string>; manual: { id: string; form_type: string; title: string }[] });
   const flushRef = useRef(() => {});
   // F2 — durable media pendings (replace-archive M04-163 · soft delete M04-164);
   // persisted as local drafts so they survive reload while offline.
@@ -188,6 +238,15 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         const k = String(r.k);
         if (k === `${inspection.id}:__arch`) pendingArch.current = (r.v as typeof pendingArch.current) ?? [];
         if (k === `${inspection.id}:__del`) pendingDel.current = (r.v as typeof pendingDel.current) ?? [];
+        if (k === `${inspection.id}:__manual_forms`) {
+          pending.current.manual = (r.v as typeof pending.current.manual) ?? [];
+          if (pending.current.manual.length) {
+            setManualForms(f => {
+              const have = new Set(f.map(x => x.id));
+              return [...f, ...pending.current.manual.filter(m => !have.has(m.id)).map(m => ({ ...m, status: "open" }))];
+            });
+          }
+        }
       }
       if (pendingArch.current.length || pendingDel.current.length) {
         setEvState(s => {
@@ -242,13 +301,83 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     if (!cfg?.mapping_version) return null;                 // no accepted penalty mapping → never invent one
     if (!navigator.onLine) { pending.current.vios.add(code); return null; }
     const sb = supabaseBrowser();
-    const { data: existing, error: existingError } = await sb.from("violations").select("id").eq("inspection_id", inspection.id).eq("violation_code_id", cfg.id).maybeSingle();
-    if (existingError) { console.error("[field workspace violation read]", existingError.message); setMsg(strings.saveFailed); pending.current.vios.add(code); return null; }
+    // Phase 5 (§18, D-018) — reuse only the ACTIVE candidate; an invalidated
+    // row stays in audit and a fresh candidate is created on re-trigger.
+    // Tolerant: pre-migration the invalidated_at column is missing → fall back
+    // to the unfiltered read (exactly the pre-Phase-5 behavior).
+    let existing: { id: string } | null = null;
+    {
+      const r = await sb.from("violations").select("id").eq("inspection_id", inspection.id).eq("violation_code_id", cfg.id).is("invalidated_at", null).maybeSingle();
+      if (r.error) {
+        const fallback = await sb.from("violations").select("id").eq("inspection_id", inspection.id).eq("violation_code_id", cfg.id).maybeSingle();
+        if (fallback.error) { console.error("[field workspace violation read]", fallback.error.message); setMsg(strings.saveFailed); pending.current.vios.add(code); return null; }
+        existing = fallback.data;
+      } else existing = r.data;
+    }
     if (existing?.id) { setVioIds(m => ({ ...m, [code]: existing.id })); pending.current.vios.delete(code); return existing.id; }
     const { data, error } = await sb.from("violations").insert({ inspection_id: inspection.id, violation_code_id: cfg.id, mapping_version: cfg.mapping_version }).select("id").single();
     if (error) { console.error("[field workspace violation]", error.message); setMsg(strings.saveFailed); pending.current.vios.add(code); return null; }
     setVioIds(m => ({ ...m, [code]: data.id })); pending.current.vios.delete(code);
     return data.id;
+  }
+  /** Phase 5 (§18, D-018) — response flipped back to Compliant: INVALIDATE the
+   *  active candidate (never delete). The outbox op replays after the response
+   *  op (FIFO) and the replay also cancels open trigger-generated action forms
+   *  LINKED to the candidate; package-included forms are never touched. */
+  async function invalidateViolation(code: string) {
+    const vid = vioIdsRef.current[code] ?? null;
+    if (!vid && !invalidatedVios[code] && !pending.current.vios.has(code)) return;  // nothing active to invalidate
+    pending.current.vios.delete(code);
+    setVioIds(m => { const n = { ...m }; delete n[code]; return n; });
+    setInvalidatedVios(m => ({ ...m, [code]: true }));
+    await local.enqueue({
+      kind: "violation_invalidate", inspection_id: inspection.id,
+      violation_id: vid, violation_code_id: vid ? null : (vioConfig[code]?.id ?? null),
+      reason: "Response changed to compliant", queued_at: new Date().toISOString(),
+    });
+    processOutbox(onState);
+  }
+  /** Phase 5 (§15, D-017) — one op kind covers add / deselect / restore: the
+   *  payload is the DESIRED final row, upserted on (inspection_id, item_id). */
+  async function pushItemState(item: Item, state: "added" | "deselected", reason: string | null, reverted: boolean) {
+    const reverted_at = reverted ? new Date().toISOString() : null;
+    setItemStates(m => ({ ...m, [item.id]: { state, reason, active: !reverted } }));
+    await local.enqueue({ kind: "item_state", inspection_id: inspection.id, item_id: item.id, state, reason, reverted_at, queued_at: new Date().toISOString() });
+    processOutbox(onState);
+  }
+  async function confirmDeselect() {
+    if (!deselecting) return;
+    const reason = deselecting.reason.trim();
+    if (!reason) { setMsg(strings.deselectNeedsReason); return; }
+    const item = deselecting.item;
+    setDeselecting(null);
+    await pushItemState(item, "deselected", reason, false);
+  }
+  /** Phase 5 (§18) — manual action form from a published configuration
+   *  template: included ≠ completed. Client-generated id keeps the insert
+   *  replay-safe; offline adds ride a durable draft until the flush. */
+  async function addManualForm() {
+    const tpl = actionTemplates.find(t2 => t2.id === afPick);
+    if (!tpl) return;
+    if (manualFormsRef.current.some(f => f.form_type === tpl.key) || serverForms.some(f => !f.item_id && f.form_type === tpl.key)) return;  // no duplicates
+    const row = { id: crypto.randomUUID(), form_type: tpl.key, title: tpl.title, status: "open" };
+    setManualForms(f => [...f, row]);
+    setAfPick("");
+    setMsg(strings.afAddedMsg);
+    if (!navigator.onLine) {
+      pending.current.manual.push({ id: row.id, form_type: row.form_type, title: row.title });
+      await local.saveDraft(inspection.id, "__manual_forms", pending.current.manual);
+      return;
+    }
+    const { error } = await supabaseBrowser().from("action_forms").insert({
+      id: row.id, inspection_id: inspection.id, item_id: null, violation_id: null,
+      form_type: row.form_type, status: "open",
+    });
+    if (error) {
+      console.error("[field workspace manual action form]", error.message); setMsg(strings.saveFailed);
+      pending.current.manual.push({ id: row.id, form_type: row.form_type, title: row.title });
+      await local.saveDraft(inspection.id, "__manual_forms", pending.current.manual);
+    }
   }
   async function pushForm(item: Item, def: FormDef) {
     const draft = formsRef.current[item.id] ?? {};
@@ -310,10 +439,26 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       const def = formRequired(item, answersRef.current[itemId]?.value, formDefs);
       if (def) pushForm(item, def);
     }
+    // Phase 5 (§18) — replay queued manual action-form adds (id-keyed inserts).
+    if (pending.current.manual.length) {
+      const rest: typeof pending.current.manual = [];
+      (async () => {
+        for (const m of pending.current.manual) {
+          const { error } = await supabaseBrowser().from("action_forms").insert({
+            id: m.id, inspection_id: inspection.id, item_id: null, violation_id: null,
+            form_type: m.form_type, status: "open",
+          });
+          if (error && !String(error.message).includes("duplicate")) { console.error("[field workspace manual action form flush]", error.message); rest.push(m); }
+        }
+        pending.current.manual = rest;
+        await local.saveDraft(inspection.id, "__manual_forms", rest);
+      })();
+    }
     flushMedia();
   };
 
   async function answer(item: Item, patch: Answer) {
+    const prevValue = answersRef.current[item.id]?.value;
     const next = { ...answersRef.current[item.id], ...patch };
     setAnswers(a => ({ ...a, [item.id]: next }));                        // instant local state
     await local.saveDraft(inspection.id, item.id, next);                 // durable draft (autosave — FND-005)
@@ -326,6 +471,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
       setMsg(fmt(strings.autoViolation, { code: item.code, violation: nc.violation, actionForm: nc.action_form ? strings.plusActionForm : "", photo: item.evidence_rule?.mandatory ? strings.plusPhoto : "" }));
       ensureViolation(nc.violation);                                     // runtime violation record (M04-142)
     }
+    // Phase 5 (§18, D-018) — the response moved AWAY from a violation-mapped
+    // value: invalidate (never delete) the active candidate that this response
+    // triggered, and re-evaluate its dependent trigger-generated action forms.
+    const prevViolation = prevValue && prevValue !== next.value ? item.response_model.mapping?.[prevValue]?.violation : undefined;
+    if (prevViolation && prevViolation !== nc?.violation) invalidateViolation(prevViolation);
     const def = formRequired(item, next.value, formDefs);                // instantiate blocking form (M04-172)
     if (def && !formsRef.current[item.id]) {
       const seeded = { due_at: new Date(Date.now() + actionDueDays * 86400000).toISOString().slice(0, 10) };  // DEC-003 default
@@ -437,19 +587,39 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     return m;
   }, [activeEvidence, queuedEv]);
   const runtimeCtx = conditionContext(sectionItems, answers, ctx);
-  const progress = sectionProgress(sections, imap, answers, runtimeCtx);
+  // §15/§20 — every runtime view runs over the ACTIVE scope (deselected
+  // excluded, added included immediately) via the itemStates-aware signatures.
+  const progress = sectionProgress(sections, allMap, answers, runtimeCtx, itemStates);
   const totals = progress.reduce((t, p) => ({ a: t.a + p.answered, b: t.b + p.total }), { a: 0, b: 0 });
   const overallPct = totals.b ? Math.round(100 * totals.a / totals.b) : 100;
-  const summary = summarize(sections, imap, answers, runtimeCtx, activeEvidence.length + queuedEv.length);
-  const healthScore = computeHealthScore(sectionItems, answers, runtimeCtx);
+  const summary = summarize(sections, allMap, answers, runtimeCtx, activeEvidence.length + queuedEv.length, itemStates);
+  const healthScore = computeHealthScore(sectionItems, answers, runtimeCtx, itemStates);
   const implied = impliedViolations(sectionItems, answers, runtimeCtx, vioConfig);
-  const liveBlockers = computeBlockers(sections, imap, answers, runtimeCtx, evidencePerItem, forms, formDefs);
+  const liveBlockers = computeBlockers(sections, allMap, answers, runtimeCtx, evidencePerItem, forms, formDefs, itemStates);
   const blockCount = liveBlockers.reduce((n, g) => n + g.unanswered.length + g.evidence.length + g.forms.length, 0);
+  // §15 — actively deselected items stay visible in a collapsed audit list
+  // with their reason; restore is available before submit.
+  const deselectedItems = useMemo(() => Object.entries(itemStates)
+    .filter(([, st]) => st.active && st.state === "deselected")
+    .map(([itemId, st]) => {
+      const it = Object.values(allMap).find(x => x.id === itemId);
+      return it ? { item: it, reason: st.reason } : null;
+    })
+    .filter((x): x is { item: Item; reason: string | null } => !!x), [itemStates, allMap]);
+  // §15 — library candidates: active library items NOT in the effective set
+  // (deselected snapshot items are restored, not re-added, so they stay out).
+  const libraryCandidates = useMemo(() => {
+    const effectiveCodes = new Set(displaySections.flatMap(s => s.items ?? []));
+    return library.filter(it => !effectiveCodes.has(it.code));
+  }, [library, displaySections]);
+  // §18 — invalidated candidates kept visible with state (audit preserved).
+  const invalidatedList = useMemo(() => Object.keys(invalidatedVios).filter(c => invalidatedVios[c])
+    .map(code => ({ code, config: vioConfig[code] ?? null })), [invalidatedVios, vioConfig]);
 
   async function submit() {
     // Full readiness re-validation: answers + mandatory evidence + blocking forms (M04-199/204/208).
     const submitCtx = conditionContext(sectionItems, answersRef.current, ctxRef.current);
-    const blockers = computeBlockers(sections, imap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs);
+    const blockers = computeBlockers(sections, allMap, answersRef.current, submitCtx, evidencePerItem, formsRef.current, formDefs, itemStatesRef.current);
     if (blockers.length) {
       setValidation(blockers);
       const missing = blockers.flatMap(b => b.unanswered);
@@ -464,7 +634,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
     setSigning(false);
     const key = crypto.randomUUID();
     const nextVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)) + 1;
-    const byCode = (id: string) => items.find(i => i.id === id)?.code ?? id;
+    const byCode = (id: string) => (items.find(i => i.id === id) ?? library.find(i => i.id === id))?.code ?? id;
     const snapshot = {
       // answers stays code→value (shape consumed by the review screen); depth lands in sibling keys.
       answers: Object.fromEntries(Object.entries(answers).filter(([, v]) => !!v.value).map(([id, v]) => [byCode(id), v.value!])),
@@ -477,12 +647,16 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         mapping_version: v.config?.mapping_version ?? null,
       })),
       action_forms: Object.entries(forms).map(([itemId, draft]) => {
-        const item = items.find(i => i.id === itemId);
+        const item = items.find(i => i.id === itemId) ?? library.find(i => i.id === itemId);
         if (!item) return null;
         const def = formRequired(item, answers[itemId]?.value, formDefs);
         return def ? { item: item.code, form_type: def.key, ...draft, status: formComplete(def, draft) ? "complete" : "open" } : null;
       }).filter(Boolean),
       health_score: healthScore,
+      // §15/§18 — lifecycle facts ride the final version: deselected items and
+      // invalidated candidates stay auditable in the immutable snapshot too.
+      item_states: Object.fromEntries(Object.entries(itemStatesRef.current).map(([stateId, st]) => [byCode(stateId), { state: st.state, reason: st.reason, active: st.active }])),
+      invalidated_violations: Object.keys(invalidatedVios).filter(c => invalidatedVios[c]),
       evidence: { total: activeEvidence.length + queuedEv.length, by_item_and_type: Object.fromEntries(Object.entries(evidencePerItem).map(([id, counts]) => [byCode(id), counts])) },
       submitted_offline: !navigator.onLine,
     };
@@ -610,7 +784,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         </div>
       )}
 
-      {!submitted && sections.map(s => {
+      {!submitted && displaySections.map(s => {
         if (inspection.status === "returned") {
           const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
           if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
@@ -629,7 +803,7 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
             <div style={{ blockSize: 4, borderRadius: 2, inlineSize: `${sp.pct}%`, background: "var(--ax-color-primary)" }} />
           </div>
           {(s.items ?? []).map(code => {
-            const it = imap[code]; if (!it) return null;
+            const it = allMap[code]; if (!it) return null;
             if (!isVisible(it, runtimeCtx)) return null;                 // item-answer + site conditional visibility (M04-119/M09-021)
             const val = answers[it.id];
             const isDate = (it.response_model.responses ?? []).includes("value_date");
@@ -646,6 +820,11 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
                   <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{code} · {it.title}</p>
                   {it.clause && <span className="ax-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
                   {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
+                  {itemStates[it.id]?.active && itemStates[it.id]?.state === "added" && <span className="ax-lozenge ax-lozenge--info">{strings.libAddedGroup}</span>}
+                  {/* §15 — optional/added items only; mandatory items never show this (fail closed like D-007) */}
+                  {canDeselect(it) && (
+                    <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setDeselecting({ item: it, reason: "" })}>{strings.deselectBtn}</button>
+                  )}
                 </div>
                 {it.guidance && <p className="ax-caption"><IconLightbulb size={16} /> {strings.guidanceLabel}: {it.guidance}</p>}
                 {/* MVP1-M04-138: separate advisory explanation; it cannot alter the answer/evidence/violation controls below. */}
@@ -774,19 +953,123 @@ export default function Workspace({ inspection, items, serverResponses, serverEv
         </div>
       );})}
 
+      {/* §15 — item library: add active library items not in the effective set.
+          Under a reviewer return the whole panel locks (added items have no
+          frozen section to match against the return scope — fail closed). */}
+      {!submitted && inspection.status !== "returned" && (
+        <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+          <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>{strings.libTitle}</summary>
+          <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.libHint}</p>
+          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+            {libraryCandidates.length === 0 ? <p className="ax-caption">{strings.libEmpty}</p> : libraryCandidates.map(it => (
+              <div key={it.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-150)" }}>
+                <span style={{ font: "var(--ax-text-field)" }}>{it.code} · {it.title}</span>
+                <button type="button" className="ax-btn ax-btn--secondary" onClick={() => { pushItemState(it, "added", null, false); setMsg(fmt(strings.libAddedMsg, { code: it.code })); }}>{strings.libAdd}</button>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+
+      {/* §15 — deselected items stay in the audit trail with their reason;
+          restore is available before submit (returned scope permitting). */}
+      {!submitted && deselectedItems.length > 0 && (
+        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+          <h4>{fmt(strings.deselectedTitle, { n: deselectedItems.length })}</h4>
+          <p className="ax-caption">{strings.deselectedAudit}</p>
+          {deselectedItems.map(({ item, reason }) => {
+            const homeKey = sections.find(s2 => (s2.items ?? []).includes(item.code))?.key ?? ADDED_SECTION_KEY;
+            const lr = inspection.status === "returned"
+              ? (inspection.reviews ?? []).filter(r => !!r.decided_at && !!r.returned_sections).slice(-1)[0]
+              : null;
+            const restoreLocked = inspection.status === "returned" && !lr?.returned_sections?.includes(homeKey);
+            return (
+              <div key={item.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-150)" }}>
+                <span className="ax-caption"><strong>{item.code}</strong> · {item.title} — {reason}</span>
+                {!restoreLocked && (
+                  <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { pushItemState(item, "deselected", reason, true); setMsg(fmt(strings.restoredMsg, { code: item.code })); }}>{strings.restoreBtn}</button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* §18 — action forms: package-included & trigger-generated render per
+          item above; here the inspector adds published configuration templates
+          manually. Included ≠ completed: new rows stay open. */}
+      {!submitted && (
+        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+          <h4>{strings.afAddTitle}</h4>
+          <p className="ax-caption">{strings.afAddHint}</p>
+          <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+            <label className="ax-field">
+              <span className="ax-field__label">{strings.afAddPick}</span>
+              <select className="ax-select" value={afPick} onChange={e => setAfPick(e.target.value)}>
+                <option value="">—</option>
+                {actionTemplates.map(t2 => <option key={t2.id} value={t2.id}>{t2.title}</option>)}
+              </select>
+            </label>
+            <button type="button" className="ax-btn ax-btn--secondary" disabled={!afPick} onClick={addManualForm}>{strings.afAddBtn}</button>
+          </div>
+          {actionTemplates.length === 0 && <p className="ax-caption">{strings.afNone}</p>}
+          {manualForms.map(f => (
+            <div key={f.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ font: "var(--ax-text-field)" }}>{f.title}</span>
+              <span className="ax-lozenge ax-lozenge--warning">{f.status}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* §15 — deselection dialog: reason mandatory, plain copy, audited. */}
+      {deselecting && !submitted && (
+        <Modal
+          open
+          onClose={() => setDeselecting(null)}
+          titleId="item-deselect-title"
+          title={fmt(strings.deselectTitle, { code: deselecting.item.code })}
+          closeLabel={strings.deselectCancel}
+          maxWidth="480px"
+          footer={<>
+            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setDeselecting(null)}>{strings.deselectCancel}</button>
+            <button type="button" className="ax-btn ax-btn--prominent" aria-disabled={!deselecting.reason.trim()} onClick={confirmDeselect}>{strings.deselectConfirm}</button>
+          </>}
+        >
+          <label className="ax-field">
+            <span className="ax-field__label">{strings.deselectReason}<span className="ax-req">*</span></span>
+            <textarea className="ax-textarea" rows={2} placeholder={strings.deselectReasonPh} value={deselecting.reason}
+              onChange={e => setDeselecting(d => d ? { ...d, reason: e.target.value } : d)} />
+          </label>
+        </Modal>
+      )}
+
       {/* Violation auto-display — config-driven, non-overridable (M04-142/143/144) */}
       {!submitted && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
           <h4>{strings.vioTitle}</h4>
-          {implied.length === 0 ? <p className="ax-caption">{strings.vioNone}</p> : implied.map(v => (
+          {implied.length === 0 && invalidatedList.length === 0 ? <p className="ax-caption">{strings.vioNone}</p> : implied.map(v => (
             <div key={`${v.itemCode}-${v.code}`} className="ax-banner ax-banner--critical">
               <div>
                 <strong>{v.code}</strong> · {v.config?.title ?? ""} · {fmt(strings.vioLevel, { level: v.config?.level ?? "" })} · {v.itemCode}
-                {v.config?.penalty_ref ? <> · {fmt(strings.vioPenalty, { ref: v.config.penalty_ref, basis: v.config.legal_basis ?? "" })}</> : null}
+                {/* §18 / D-018 — penalty singularity fail-closed: a configuration
+                    conflict renders the violation WITHOUT a penalty, honestly. */}
+                {v.config?.penalty_conflict ? <> · {strings.vioPenaltyConflict}</>
+                  : v.config?.penalty_ref ? <> · {fmt(strings.vioPenalty, { ref: v.config.penalty_ref, basis: v.config.legal_basis ?? "" })}</> : null}
                 {v.actionFormKey ? (() => {
                   const d = formDefs.find(x => x.key === v.actionFormKey);
                   return d ? <> · {fmt(strings.vioAction, { status: formComplete(d, forms[v.itemId]) ? strings.afComplete : strings.afIncomplete })}</> : null;
                 })() : null}
+              </div>
+            </div>
+          ))}
+          {/* §18 / D-018 — invalidated candidates stay visible with state
+              (audit preserved; never deleted). */}
+          {invalidatedList.map(v => (
+            <div key={`invalidated-${v.code}`} className="ax-banner" data-state="invalidated">
+              <div>
+                <strong>{v.code}</strong> · {v.config?.title ?? ""} · {fmt(strings.vioLevel, { level: v.config?.level ?? "" })}
+                {" · "}{strings.vioInvalidated}
               </div>
             </div>
           ))}

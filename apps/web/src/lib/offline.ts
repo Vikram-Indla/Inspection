@@ -23,7 +23,15 @@ export type OutboxOp =
   // TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — the request is replayed
   // only after its visit-linked photo evidence, if required, has synced. The
   // server derives all GPS/time facts from checkin_event_id, not this payload.
-  | { kind: "geo_override_request"; request_id: string; visit_id: string; journey_id: string; checkin_event_id: string; reason_key: string; explanation: string; safety_security_exception: boolean; queued_at: string };
+  | { kind: "geo_override_request"; request_id: string; visit_id: string; journey_id: string; checkin_event_id: string; reason_key: string; explanation: string; safety_security_exception: boolean; queued_at: string }
+  // Phase 5 (§15, D-017) — per-visit item lifecycle. Upsert on
+  // (inspection_id, item_id) with the DESIRED final row (reverted_at set =
+  // restored before submit), so replays and re-deselects stay idempotent.
+  | { kind: "item_state"; inspection_id: string; item_id: string; state: "added" | "deselected"; reason: string | null; reverted_at: string | null; queued_at: string }
+  // Phase 5 (§18, D-018) — invalidate (never delete) the ACTIVE violation
+  // candidate when its triggering response flipped back to Compliant. Replays
+  // after the response op it follows (FIFO); a missing candidate is a no-op.
+  | { kind: "violation_invalidate"; inspection_id: string; violation_id: string | null; violation_code_id: string | null; reason: string; queued_at: string };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
 export type CachedRouteEstimate = {
   etaMinutes: number;
@@ -174,6 +182,48 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
           p_safety_security_exception: op.safety_security_exception,
         });
         if (error) throw error;
+      } else if (op.kind === "item_state") {
+        // §15 / D-017 — upsert on (inspection_id, item_id) carrying the desired
+        // final row, so FIFO replays of add → deselect → restore converge.
+        // Pre-migration the table is missing: the op stays queued (honest).
+        const { error } = await sb.from("inspection_item_states").upsert({
+          inspection_id: op.inspection_id, item_id: op.item_id,
+          state: op.state, reason: op.reason, reverted_at: op.reverted_at,
+        }, { onConflict: "inspection_id,item_id" });
+        if (error) throw error;
+      } else if (op.kind === "violation_invalidate") {
+        // §18 / D-018 — invalidate, never delete. Targets the row by id when
+        // known, else the ACTIVE candidate for (inspection, code). Zero
+        // affected rows is a legitimate no-op (the candidate never synced).
+        // The guard trigger (20260721150000) narrows the update to the three
+        // invalidation columns; the audit trigger records before/after.
+        const { data: { user } } = await getVerifiedUser(sb);
+        const stamp = { invalidated_at: new Date().toISOString(), invalidated_by: user?.id ?? null, invalidate_reason: op.reason };
+        let vid = op.violation_id;
+        if (vid) {
+          const { error } = await sb.from("violations").update(stamp).eq("id", vid);
+          if (error) throw error;
+        } else if (op.violation_code_id) {
+          const { error } = await sb.from("violations").update(stamp)
+            .eq("inspection_id", op.inspection_id).eq("violation_code_id", op.violation_code_id)
+            .is("invalidated_at", null);
+          if (error) throw error;
+          const { data: justInvalidated } = await sb.from("violations").select("id")
+            .eq("inspection_id", op.inspection_id).eq("violation_code_id", op.violation_code_id)
+            .not("invalidated_at", "is", null).limit(1).maybeSingle();
+          vid = justInvalidated?.id ?? null;
+        }
+        // Dependent trigger-generated action forms are re-evaluated here
+        // (D-018): open forms LINKED to the invalidated candidate are closed
+        // with status 'cancelled' (action_forms.status is free text — no enum
+        // forbids it). Package-included forms (violation_id null) are NEVER
+        // touched. A missing column (pre-migration) surfaces as an error and
+        // the op stays queued — honest, no silent skip.
+        if (vid) {
+          const { error } = await sb.from("action_forms").update({ status: "cancelled" })
+            .eq("violation_id", vid).eq("status", "open");
+          if (error) throw error;
+        }
       }
       await local.remove(key);
     } catch (e) {
