@@ -3,15 +3,18 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { evidenceDirectory } from "./evidence-path";
 import { storageStatePath, PERSONAS } from "./personas";
+import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 import { login, rest, must } from "./live-rest";
 
 // CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
 // Acceptance: DSG-020 (complete plan/child visits/blockers/notifications/atomic
 // publication), DSG-A11Y-001, DSG-CODE-001. Requirements: M01-009/010/029/030/031,
 // M02-012, FND-001/003/004/011/013, RBAC-007.
-// Tests are READ-ONLY — publish is never clicked (it mutates live data); atomic
-// all-or-nothing publication is proven at the DB layer + the guarded RPC. Runtime
-// evidence is supplementary to the functional assertions (.claude/rules/tests.md).
+// The M1–M6 describes are READ-ONLY — publish is never clicked; atomic
+// all-or-nothing publication is proven at the DB layer + the guarded RPC. The
+// M7 describe below IS mutating by design (real publishes against throwaway
+// factories with far-future windows). Runtime evidence is supplementary to the
+// functional assertions (.claude/rules/tests.md).
 const EVIDENCE_DIR = evidenceDirectory("cd-025-plan-review-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
 // M6 — bare /planning/bulk no longer match-alls (at least one criterion
@@ -232,5 +235,181 @@ test.describe("M6 — eligibility partition and eligible-subset acknowledgement"
     await expect(page.getByText(/could not be loaded/i)).toBeVisible();
     await expect(page.getByText(/No factories selected/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Publish/i })).toHaveCount(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// M7 — optional zero-many packages (PLN-CON-003), accepted-subset publish
+// (PLN-CON-007), capability-gated publish + lookups-driven config.
+// Mutating tests use dedicated throwaway factories PER TEST (publish marks a
+// factory with an active visit forever) and far-future windows so the single
+// staging Inspector is never double-booked. The capability-gate + NULL-package
+// tests require migration 20260721180000 (applied to staging).
+test.describe("M7 — optional packages, accepted-subset publish, capability gate", () => {
+  let plannerJwt: string;
+  let plannerUserId: string;
+  const fac: Record<string, { id: string; name: string }> = {};
+
+  test.beforeAll(async () => {
+    const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+    plannerJwt = planner.jwt;
+    plannerUserId = planner.userId;
+    const suffix = `${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    // One factory per publishing/asserting test (a publish marks it forever):
+    //   warn → zero-package warning · multi → multi-package publish
+    //   raceA → authoritative re-check drop · rev → reviewer publish
+    //   zero → zero-package publish
+    // NOTE: staging has exactly ONE Inspector, so a two-row plan in one shared
+    // window can never arm (autoNeeded > freePool). The accepted-subset path is
+    // therefore exercised as a single-row race (below); a mixed kept+dropped
+    // subset needs ≥2 Inspectors and is a documented staging-data gap.
+    for (const [i, key] of ["warn", "multi", "raceA", "rev", "zero"].entries()) {
+      fac[key] = must(await rest("POST", "factories", plannerJwt, {
+        factory_code: `CD025-M7-${key.toUpperCase()}-${suffix}`, name: `CD025 M7 ${key} ${suffix}`,
+        cr_number: `CR-M7-${key}-${suffix}`, region: "Riyadh", city: "Riyadh",
+        official_lat: 24.76 + i / 100, official_lng: 46.73 + i / 100,
+      }), `M7 factory ${key}`)[0];
+    }
+  });
+
+  async function stageReview(page: import("@playwright/test").Page, ids: string[]) {
+    await page.addInitScript(sel => { sessionStorage.setItem("cd021-bulk-selection", JSON.stringify(sel)); }, ids);
+    await page.goto("/planning/bulk/review");
+    const dayOffset = 6000 + Math.floor(Math.random() * 20000);
+    const start = new Date(Date.now() + dayOffset * 86400e3).toISOString().slice(0, 16);
+    const end = new Date(Date.now() + dayOffset * 86400e3 + 3600e3).toISOString().slice(0, 16);
+    const dt = page.locator('input[type="datetime-local"]');
+    await dt.nth(0).fill(start);
+    await dt.nth(1).fill(end);
+  }
+  async function uncheckAllPackages(page: import("@playwright/test").Page) {
+    const boxes = page.locator('input[type="checkbox"][value]');
+    await expect(boxes.first()).toBeVisible();
+    for (const box of await boxes.all()) {
+      if (await box.isChecked()) await box.uncheck();
+    }
+  }
+  async function latestBulkPlan() {
+    return (must(await rest("GET", `visit_plans?created_by=eq.${plannerUserId}&method=eq.bulk&order=created_at.desc&limit=1&select=id,status`, plannerJwt), "latest bulk plan"))[0];
+  }
+
+  test("zero packages is an honest warning, not a blocker; preparation hint is shown (PLN-CON-003)", async ({ page }) => {
+    await stageReview(page, [fac.warn.id]);
+    await uncheckAllPackages(page);
+    await expect(page.getByText(/chooses an eligible checklist during preparation/i).first()).toBeVisible();
+    // The readiness rail names it as a WARNING; publish is NOT gated by it.
+    await expect(page.getByText(/No inspection checklist selected/i)).toBeVisible({ timeout: 15000 });
+    const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
+    await expect(publish).toBeEnabled({ timeout: 15000 });
+    await expect(publish).toContainText(/create 1 /);
+  });
+
+  test("every selected package lands on visit_packages with an immutable snapshot", async ({ page }) => {
+    await stageReview(page, [fac.multi.id]);
+    // Check EVERY rendered package checkbox (DOM-driven: staging currently has
+    // exactly one effective package; the assertions scale up automatically
+    // when more are seeded). Default = first package already checked.
+    const boxes = page.locator('input[type="checkbox"][value]');
+    await expect(boxes.first()).toBeVisible();
+    const expectedIds: string[] = [];
+    for (const box of await boxes.all()) {
+      expectedIds.push((await box.getAttribute("value"))!);
+      if (!(await box.isChecked())) await box.check();
+    }
+    expect(expectedIds.length).toBeGreaterThan(0);
+    // Governed priority flows through the lookups-driven selector.
+    await page.getByLabel(/^Priority$/i).selectOption("high");
+    const publish = page.getByRole("button", { name: /Publish plan and create/i });
+    await expect(publish).toBeEnabled({ timeout: 15000 });
+    await publish.click();
+    await expect(page.getByText("Plan published", { exact: true })).toBeVisible({ timeout: 30000 });
+
+    const plan = await latestBulkPlan();
+    expect(plan.status).toBe("published");
+    const visits = must(await rest("GET", `visits?visit_plan_id=eq.${plan.id}&select=id,package_version_id,priority,factory_id`, plannerJwt), "plan visits");
+    expect(visits).toHaveLength(1);
+    expect(visits[0].factory_id).toBe(fac.multi.id);
+    expect(visits[0].package_version_id).toBe(expectedIds[0]); // first = primary (backward compat)
+    expect(visits[0].priority).toBe("high");
+    const links = must(await rest("GET", `visit_packages?visit_id=eq.${visits[0].id}&select=package_version_id,snapshot,added_by`, plannerJwt), "visit_packages links");
+    expect(links).toHaveLength(expectedIds.length);
+    expect(links.map((l: { package_version_id: string }) => l.package_version_id).sort()).toEqual([...expectedIds].sort());
+    for (const l of links) {
+      expect(l.snapshot.package_version_id).toBe(l.package_version_id);
+      expect(l.snapshot.code).toBeTruthy();
+      expect(l.snapshot.status).toMatch(/published|locked/);
+      expect(l.snapshot.captured_at).toBeTruthy();
+    }
+  });
+
+  test("authoritative publish re-check: a row that turns ineligible at publish is dropped and NAMED (PLN-CON-007)", async ({ page }) => {
+    // Single-row variant of the accepted-subset race: staging has exactly one
+    // Inspector, so a two-row plan in one shared window can never arm. The
+    // same server path is exercised — the publish-time partition re-computes
+    // eligibility, drops the row the client believed eligible, and names it.
+    await stageReview(page, [fac.raceA.id]);
+    // Wait until the preview finds the row eligible and publish is armed.
+    const publish = page.getByRole("button", { name: /Publish plan and create 1 /i });
+    await expect(publish).toBeEnabled({ timeout: 15000 });
+    // NOW raceA gains an active periodic visit — between the preview and the
+    // commit. The client cannot know; the server partition must drop it.
+    const racePlan = must(await rest("POST", "visit_plans", plannerJwt, { method: "single", status: "draft", created_by: plannerUserId }), "race plan")[0];
+    must(await rest("POST", "visits", plannerJwt, {
+      visit_plan_id: racePlan.id, factory_id: fac.raceA.id, visit_type: "periodic",
+      execution_mode: "physical", planning_status: "draft",
+      window_start: new Date(Date.now() + 9000 * 86400e3).toISOString(),
+      window_end: new Date(Date.now() + 9000 * 86400e3 + 3600e3).toISOString(),
+    }), "race visit");
+    await publish.click();
+    // The authoritative re-check drops the only row and names it with its
+    // reason; NOTHING commits (no RPC call, no plan, no extra visit).
+    await expect(page.getByText(/Every selected row is ineligible at the authoritative re-check/i)).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText(new RegExp(fac.raceA.name.slice(0, 20)))).toBeVisible();
+    await expect(page.getByText(/duplicate_active_visit/i)).toBeVisible();
+    const visits = must(await rest("GET", `visits?factory_id=eq.${fac.raceA.id}&select=id,planning_status`, plannerJwt), "raceA visits");
+    expect(visits).toHaveLength(1); // only the sacrificial REST-created draft
+  });
+
+  test("reviewer persona (publish capability, no planner role) publishes (migration 20260721180000)", async ({ browser }) => {
+    // Sign the reviewer in through the real /login UI instead of replaying
+    // playwright/.auth/reviewer.json: refresh-token rotation makes a replayed
+    // state intermittently land on /login, while the UI journey is exactly
+    // what auth.setup proves for every persona.
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto("/login");
+    await waitForCredentialsForm(page);
+    await page.locator("#email").fill(PERSONAS.reviewer.email);
+    await page.locator("#pw").fill(PERSONAS.reviewer.password);
+    await submitCredentials(page);
+    await page.waitForURL(url => url.pathname.startsWith(PERSONAS.reviewer.home), { timeout: 40_000 });
+    // Fresh sessions default to Arabic; pin English like auth.setup does so
+    // the governed copy matchers below stay deterministic.
+    const origin = new URL(page.url()).origin;
+    await context.addCookies([
+      { name: "locale", value: "en", url: origin },
+      { name: "login_locale", value: "en", url: origin },
+    ]);
+    await stageReview(page, [fac.rev.id]);
+    const publish = page.getByRole("button", { name: /Publish plan and create/i });
+    await expect(publish).toBeEnabled({ timeout: 15000 });
+    await publish.click();
+    await expect(page.getByText("Plan published", { exact: true })).toBeVisible({ timeout: 30000 });
+    await context.close();
+  });
+
+  test("zero-package publish proceeds (RPC NULL package, migration 20260721180000)", async ({ page }) => {
+    await stageReview(page, [fac.zero.id]);
+    await uncheckAllPackages(page);
+    const publish = page.getByRole("button", { name: /Publish plan and create/i });
+    await expect(publish).toBeEnabled({ timeout: 15000 });
+    await publish.click();
+    await expect(page.getByText("Plan published", { exact: true })).toBeVisible({ timeout: 30000 });
+    const plan = await latestBulkPlan();
+    const visits = must(await rest("GET", `visits?visit_plan_id=eq.${plan.id}&select=id,package_version_id`, plannerJwt), "zero-package visits");
+    expect(visits).toHaveLength(1);
+    expect(visits[0].package_version_id).toBeNull();
+    const links = must(await rest("GET", `visit_packages?visit_id=eq.${visits[0].id}`, plannerJwt), "zero-package links");
+    expect(links).toHaveLength(0);
   });
 });
