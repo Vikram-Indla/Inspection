@@ -79,6 +79,7 @@ const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" 
   duplicate:     { cls: "critical",    glyph: "▣", fix: "remove" },
   overlap:       { cls: "critical",    glyph: "◆", fix: "focusRow" },
   coverage:      { cls: "warning",     glyph: "▲", fix: "focusWindow" },
+  capacity:      { cls: "critical",    glyph: "▲", fix: "focusWindow" },
   nopackage:     { cls: "critical",    glyph: "⟳", fix: "none" },
   packageInvalid:{ cls: "critical",    glyph: "⟳", fix: "review" },
   nopool:        { cls: "critical",    glyph: "●", fix: "none" },

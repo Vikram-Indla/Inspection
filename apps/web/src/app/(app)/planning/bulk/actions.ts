@@ -2,6 +2,7 @@
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { isPlausibleDate } from "@/lib/plausible-date";
+import { getWindowCapacity } from "@/lib/execution";
 
 // CD-025 (SCR-WEB-150 / P03): publish no longer hard-redirects. It returns the
 // authoritative result so the review workspace can render the success state
@@ -17,7 +18,7 @@ export type BulkResult = { error?: string; ok?: boolean; planId?: string };
 // source of truth. Kinds mirror STATE_MATRIX_CD-025 (dup/overlap/coverage/
 // nopackage/packageInvalid/nopool/source failures).
 export type BlockerKind =
-  | "duplicate" | "overlap" | "coverage"
+  | "duplicate" | "overlap" | "coverage" | "capacity"
   | "nopackage" | "packageInvalid" | "nopool"
   | "configMissing" | "windowImplausible" | "srcFactory" | "srcPackage" | "srcInspector" | "srcDuplicate";
 export type Blocker = { kind: BlockerKind; targets?: string[] };
@@ -313,6 +314,16 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   if (error) {
     // Log the real cause server-side; return catalogued neutral copy only.
     console.error("[CD-021] publish_bulk_plan failed:", error.message, error.code);
+    // TASK-EXECUTION-MODULE-001 · D-009 — the publish RPC evaluated the shared
+    // window capacity and found no selectable day for an assigned inspector.
+    // Governed blocker copy in the same style as the blockers above; the
+    // all-or-nothing rollback guarantee is stated exactly like the neutral copy.
+    if (error.message?.includes("EXE-CAPACITY-WINDOW-FULL")) {
+      return {
+        error: "Publishing failed — no day in the window has remaining daily capacity for an assigned inspector. " +
+          "Nothing was published. Widen the window or choose different assignments and try again (EXE-CAPACITY-WINDOW-FULL).",
+      };
+    }
     return { error: NEUTRAL_PUBLISH_ERROR };
   }
   // CD-025: the guarded publisher returns the new plan ID. Capture it so the
@@ -416,6 +427,24 @@ export async function validateBulkPlan(input: {
     }
   }
   if (overlapTargets.size) blockers.push({ kind: "overlap", targets: [...overlapTargets] });
+
+  // D-009 — daily-cap preview for manual picks, from the SAME shared window
+  // capacity service publish evaluates atomically. Best-effort: an unreadable
+  // service (older schema) adds no blocker here — publish re-checks and its
+  // EXE-CAPACITY-WINDOW-FULL failure is mapped at submit.
+  if (windowOk && manualPicks.length) {
+    const capped = new Set<string>();
+    for (const insp of [...perInspector.keys()]) {
+      const cap = await getWindowCapacity(sb, insp, input.window_start.slice(0, 10), input.window_end.slice(0, 10));
+      if (cap.capacity && !cap.capacity.has_availability) capped.add(insp);
+    }
+    if (capped.size) {
+      blockers.push({
+        kind: "capacity",
+        targets: manualPicks.filter(([, insp]) => capped.has(insp)).map(([fid]) => label(fid)),
+      });
+    }
+  }
 
   // coverage: automatic visits each need a distinct Inspector free across the
   // shared window; manual picks consume their Inspector too.

@@ -176,6 +176,16 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   if (publishError || !visitId) {
     console.error("[CD-022 publishSingleVisit] atomic publish failed:", publishError?.message, publishError?.code);
     steps.plan = "failed";
+    // TASK-EXECUTION-MODULE-001 · D-009 — the publish RPC evaluated the shared
+    // window capacity and found no selectable day. Surface it as a governed
+    // blocker in the same style as the validation blockers above (plain copy,
+    // stable token), not as the generic neutral write failure.
+    if (publishError?.message?.includes("EXE-CAPACITY-WINDOW-FULL")) {
+      return {
+        error: "No day in this window has remaining daily capacity for the assigned inspector — pick another inspector or a different window (EXE-CAPACITY-WINDOW-FULL)",
+        steps,
+      };
+    }
     return { error: NEUTRAL_WRITE_ERROR, steps };
   }
 
