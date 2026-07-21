@@ -143,17 +143,17 @@ textarea.input { height: auto; min-height: 72px; padding-block: var(--space-2); 
 .id-code { font-family: var(--font-mono); font-size: var(--type-mono-size); color: var(--text-secondary); direction: ltr; unicode-bidi: embed; font-variant-numeric: tabular-nums; }
 
 /* ══ Cards & panels ═══════════════════════════════════════════ */
-.panel { background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); }
+.panel { background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); box-shadow: var(--shadow-xs); }
 .panel-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-block-end: var(--border-w) solid var(--border-subtle); }
 .panel-title { font-size: var(--type-heading-size); font-weight: 600; }
 .panel-body { padding: var(--space-4); }
-.kpi { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4); background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); min-inline-size: 0; }
+.kpi { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4); background: var(--surface-primary); border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); min-inline-size: 0; box-shadow: var(--shadow-xs); }
 .kpi-label { font-size: var(--type-label-size); font-weight: 500; color: var(--text-secondary); }
 .kpi-value { font-size: var(--type-metric-size); line-height: var(--type-metric-lh); font-weight: 700; font-variant-numeric: tabular-nums; }
 .kpi-delta { font-size: var(--type-meta-size); display: flex; align-items: center; gap: 4px; }
 .kpi-delta.up { color: var(--status-compliant-text); }
 .kpi-delta.down { color: var(--status-critical-text); }
-.metric-strip { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); background: var(--surface-primary); overflow: hidden; }
+.metric-strip { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: var(--border-w) solid var(--border-subtle); border-radius: var(--radius-md); background: var(--surface-primary); overflow: hidden; box-shadow: var(--shadow-xs); }
 .metric-strip > * { padding: var(--space-3) var(--space-4); border-inline-start: var(--border-w) solid var(--border-subtle); }
 .metric-strip > *:first-child { border-inline-start: 0; }
 
