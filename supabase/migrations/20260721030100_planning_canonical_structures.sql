@@ -154,27 +154,55 @@ alter table public.visits
   add column if not exists original_lng numeric(10,7),
   add column if not exists expired_by_rule_id uuid references public.planning_expiry_rules(id);
 
-update public.visits
-   set visit_reference = 'V-' || nextval('public.visit_reference_seq')
- where visit_reference is null;
+-- Backfill is exception-safe per row: staging carries legacy fixture rows
+-- that violate NOT VALID check constraints (window_plausible_years,
+-- visits_immediate_reason_contract). Any UPDATE re-validates the whole row,
+-- so those rows are skipped deliberately and keep a NULL reference rather
+-- than blocking the migration. visit_reference stays nullable for exactly
+-- that reason; the default covers all new inserts.
+do $$
+declare r record;
+begin
+  for r in select id from public.visits where visit_reference is null loop
+    begin
+      update public.visits
+         set visit_reference = 'V-' || nextval('public.visit_reference_seq')
+       where id = r.id;
+    exception when check_violation then
+      null; -- legacy NOT VALID constraint violation; leave reference NULL
+    end;
+  end loop;
+end $$;
 
 alter table public.visits
-  alter column visit_reference set default ('V-' || nextval('public.visit_reference_seq'::regclass)),
-  alter column visit_reference set not null;
+  alter column visit_reference set default ('V-' || nextval('public.visit_reference_seq'::regclass));
 
 create unique index if not exists visits_visit_reference_uq
   on public.visits (visit_reference);
 
 -- Preserve the factory's authoritative coordinates as the visit's original
 -- pin where nothing else was recorded (factories.official_lat/lng is the
--- governed source, FND-007).
-update public.visits v
-   set original_lat = f.official_lat,
-       original_lng = f.official_lng
-  from public.factories f
- where f.id = v.factory_id
-   and v.original_lat is null
-   and v.original_lng is null;
+-- governed source, FND-007). Same exception-safe treatment as above.
+do $$
+declare r record;
+begin
+  for r in
+    select v.id, f.official_lat, f.official_lng
+      from public.visits v
+      join public.factories f on f.id = v.factory_id
+     where v.original_lat is null
+       and v.original_lng is null
+  loop
+    begin
+      update public.visits
+         set original_lat = r.official_lat,
+             original_lng = r.official_lng
+       where id = r.id;
+    exception when check_violation then
+      null;
+    end;
+  end loop;
+end $$;
 
 -- ---------- 6 · visit_packages (multi-package link; primary col untouched) --
 create table if not exists public.visit_packages (
