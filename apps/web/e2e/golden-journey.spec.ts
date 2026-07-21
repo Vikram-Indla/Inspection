@@ -141,6 +141,29 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   // Startup: four steps, enabled strictly in order (SB05)
   await page.goto(`/field/${visitId}`);
   const step = (re: RegExp) => page.getByRole("button", { name: re });
+
+  // READINESS LEG (TASK-EXECUTION-MODULE-001 Phase 3B, D-010) — depends on
+  // migrations 20260721120000 (readiness RPCs) and 20260721130000 (journey
+  // readiness guard) being applied to the test database. While they are NOT
+  // applied remotely the preparation panel never renders (the page detects
+  // the missing readiness schema and serves the legacy flow), so this leg is
+  // conditional and every later assertion keeps validating the old flow. Once
+  // applied, readiness is mandatory — EXE-READY-REQUIRED guards journey start
+  // server-side — so this leg saves + confirms the preparation BEFORE any
+  // package download or journey start, exactly like a real inspector.
+  const prepPanel = page.getByTestId("pre-execution-panel");
+  if (await prepPanel.count()) {
+    await expect(prepPanel).toBeVisible();
+    // Pick the first available in-window day (days at cap render disabled).
+    await prepPanel.getByTestId("prep-day-available").first().click();
+    await prepPanel.getByTestId("prep-save").click();
+    await expect(prepPanel.getByTestId("prep-status")).toContainText("Preparation saved", { timeout: 15_000 });
+    await prepPanel.getByTestId("prep-confirm").click();
+    await expect(page.getByTestId("pre-execution-ready")).toBeVisible({ timeout: 15_000 });
+    // Journey controls unlock only after readiness is confirmed.
+    await expect(step(/1 ·/)).toBeEnabled();
+  }
+
   await expect(step(/2 ·/)).toBeDisabled();
   await step(/1 ·/).click();
   await step(/2 ·/).click();

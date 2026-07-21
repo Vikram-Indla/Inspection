@@ -38,6 +38,8 @@ export type StartupStrings = {
   arrivalEvidenceHeading: string; arrivalEvidenceCaption: string; arrivalPhoto: string; arrivalComment: string; arrivalSave: string; arrivalSaved: string; arrivalRequired: string;
   arrivalEvidenceNote: string; arrivalEvidenceFile: string; arrivalEvidenceSubmit: string; arrivalEvidenceQueued: string; arrivalEvidenceMissing: string;
   aiTitle: string; aiDescription: string; aiGenerate: string; aiUnavailable: string; aiEvidence: string; aiAdvisory: string;
+  // Phase 3B — readiness gate (download/journey locked pre-Ready, reason shown)
+  preparationRequired: string; packagePending: string;
 };
 
 // Module-level label so the dynamic() loading component (defined outside the
@@ -50,14 +52,16 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   loading: () => <EmptyState glyph="…" title={mapLoadingLabel} inline bare role="status" ariaBusy />,
 });
 
-type Insp = { id: string; status: string };
+type Insp = { id: string; status: string; started_at: string | null };
 type V = { id: string; window_start: string; window_end: string; execution_mode: string;
   visit_type: string; priority: string | null; notes: string | null; planning_status: string;
   dispatch_lat: number; dispatch_lng: number; dispatch_source: "official" | "planned";
   factories: { name: string; factory_code: string | null; city: string | null; region: string | null;
     cr_number: string | null; license_number: string | null;
     official_lat: number; official_lng: number; geofence_radius_m: number | null };
-  package_versions: { id: string; version_label: string; definition: unknown; packages: { code: string } };
+  // Nullable: Planning may leave the package unresolved until preparation
+  // (Phase 3B); the server backfills it once a preparation resolves one.
+  package_versions: { id: string; version_label: string; definition: unknown; packages: { code: string } } | null;
   // visits -> inspections is TO-ONE; array tolerated defensively (server normalizes)
   inspections: Insp[] | Insp | null };
 type Reason = { key: string; label: string };
@@ -81,7 +85,7 @@ function distM(a: [number, number], b: [number, number]) {
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 
-export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion, locale }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string; locale: Locale }) {
+export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion, locale, preparationGated }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string; locale: Locale; preparationGated?: boolean }) {
   const dLang = locale === "ar" ? "ar" : "en";
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
@@ -205,6 +209,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   }
 
   async function downloadPackage() {
+    if (!visit.package_versions) return; // unresolved package — preparation resolves it first (Phase 3B)
     await local.cachePackage(`visit:${visit.id}`, visit.package_versions);
     setCached(true); add(fmt(strings.logCached, { version: visit.package_versions.version_label }));
   }
@@ -638,26 +643,67 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
       }).eq("id", journeyId);
       if (!pErr) add(strings.logPrestartSaved);
     }
-    const { data, error } = await sb.from("inspections").insert({
-      visit_id: visit.id, status: "in_progress", package_version_id: visit.package_versions.id, started_at: new Date().toISOString(),
-    }).select().single();
-    if (error) {
-      // Provider/constraint details stay in diagnostics; field users receive
-      // stable localized recovery guidance, never raw database text.
+    // D-011 — confirm_visit_ready may already have created the inspections row
+    // at Ready (started_at NULL, D-008). Reuse it: the journey/session start
+    // owns started_at and sets it only when still null (idempotent on the
+    // visits -> inspections unique key); an existing value is never clobbered.
+    let inspectionId: string;
+    const { data: existingRow, error: findError } = await sb.from("inspections")
+      .select("id, started_at").eq("visit_id", visit.id).maybeSingle();
+    if (findError) {
       // eslint-disable-next-line no-console
-      console.error("[field start inspection]", error);
+      console.error("[field start inspection lookup]", findError);
       add(strings.logInspectionCreateFailed);
       setBusy(false);
       return;
     }
+    if (existingRow) {
+      if (!existingRow.started_at) {
+        const { error: startError } = await sb.from("inspections")
+          .update({ started_at: new Date().toISOString() })
+          .eq("id", existingRow.id).is("started_at", null);
+        if (startError) {
+          // eslint-disable-next-line no-console
+          console.error("[field start inspection reuse]", startError);
+          add(strings.logInspectionCreateFailed);
+          setBusy(false);
+          return;
+        }
+      }
+      inspectionId = existingRow.id;
+    } else {
+      if (!visit.package_versions) {
+        // No resolved package (preparation incomplete) — cannot start.
+        add(strings.logInspectionCreateFailed);
+        setBusy(false);
+        return;
+      }
+      const { data, error } = await sb.from("inspections").insert({
+        visit_id: visit.id, status: "in_progress", package_version_id: visit.package_versions.id, started_at: new Date().toISOString(),
+      }).select().single();
+      if (error || !data) {
+        // Provider/constraint details stay in diagnostics; field users receive
+        // stable localized recovery guidance, never raw database text.
+        // eslint-disable-next-line no-console
+        console.error("[field start inspection]", error);
+        add(strings.logInspectionCreateFailed);
+        setBusy(false);
+        return;
+      }
+      inspectionId = data.id;
+    }
     await opTransition("executing");                                  // M04-055 · STM-OPS leg 3
-    await local.cachePackage(data.id, visit.package_versions);  // key by inspection for the workspace
-    router.push(`/field/inspection/${data.id}`);
+    await local.cachePackage(inspectionId, visit.package_versions);  // key by inspection for the workspace
+    router.push(`/field/inspection/${inspectionId}`);
   }
   // visits -> inspections is TO-ONE (object | null); arrays tolerated defensively.
   const existing = Array.isArray(visit.inspections) ? visit.inspections[0] : (visit.inspections ?? undefined);
   const arrivalDetected = !!live && live.d <= arrivalRadius;          // M04-037 arrival auto-detect
-  const started = !!existing && existing.status !== "not_started";
+  // Phase 3B / D-008: the inspections row may exist from Ready with started_at
+  // NULL — "started" (resume affordance, pre-start card hidden) requires the
+  // actual start marker, identical to the pre-Phase-3B shape where the row
+  // only existed after Start Inspection.
+  const started = !!existing && existing.status !== "not_started" && existing.started_at != null;
   // M04-026 — travelled vs initial distance-to-factory from the first fix; clamped 0–100.
   const remainingD = checkedIn ? 0 : live?.d ?? null;
   const progress = initialD != null && initialD > 0 && remainingD != null
@@ -686,7 +732,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.readiness}</h4>
         <div className="ax-stack" style={{ gap: 8 }}>
           <div className="adm-check adm-check--pass" style={{ display: "flex", gap: 8 }}>✓ {strings.window} {formatDateTime(visit.window_start, dLang)} → {formatTime(visit.window_end, dLang)}</div>
-          <div style={{ display: "flex", gap: 8 }}>{cached ? "✓" : "○"} {strings.packageLine} {visit.package_versions.packages.code} · {visit.package_versions.version_label} {cached && strings.packageCached}</div>
+          <div style={{ display: "flex", gap: 8 }}>{cached ? "✓" : "○"} {strings.packageLine} {visit.package_versions ? `${visit.package_versions.packages.code} · ${visit.package_versions.version_label}` : strings.packagePending} {cached && strings.packageCached}</div>
           <div style={{ display: "flex", gap: 8 }}>{journeyId ? "✓" : "○"} {strings.journeySession}</div>
           <div style={{ display: "flex", gap: 8 }}>{deviceInfo ? "✓" : "○"} {strings.deviceInfo}{deviceInfo ? ` · ${deviceInfo.os_version} · app ${deviceInfo.app_version}` : ""}</div>
           <div style={{ display: "flex", gap: 8 }}>{telemetryCount > 0 ? "✓" : "○"} {fmt(strings.telemetryRow, { s: telemetryS, n: telemetryCount })}</div>
@@ -725,7 +771,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         surface="preparation_assistant"
         title={strings.aiTitle}
         description={strings.aiDescription}
-        context={JSON.stringify({ visit_id: visit.id, factory: visit.factories.factory_code, package: visit.package_versions.version_label })}
+        context={JSON.stringify({ visit_id: visit.id, factory: visit.factories.factory_code, package: visit.package_versions?.version_label ?? null })}
         targetRef={visit.id}
         evidenceRefs={["AC-0107", "M03-009", "SCR-IPAD-610", `VISIT-${visit.id}`]}
         generateLabel={strings.aiGenerate}
@@ -838,7 +884,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
                 <dt>{strings.lblType}</dt><dd>{visit.visit_type}</dd>
                 <dt>{strings.lblMode}</dt><dd>{visit.execution_mode}</dd>
                 <dt>{strings.lblWindow}</dt><dd>{formatDateTime(visit.window_start, dLang)} → {formatTime(visit.window_end, dLang)}</dd>
-                <dt>{strings.lblPackage}</dt><dd>{visit.package_versions.packages.code} · {visit.package_versions.version_label}</dd>
+                <dt>{strings.lblPackage}</dt><dd>{visit.package_versions ? `${visit.package_versions.packages.code} · ${visit.package_versions.version_label}` : strings.packagePending}</dd>
                 <dt>{strings.lblPriority}</dt><dd>{visit.priority ?? "—"}</dd>
                 <dt>{strings.lblPlanningStatus}</dt><dd>{visit.planning_status}</dd>
                 <dt>{strings.lblPlannerNotes}</dt><dd>{visit.notes ?? "—"}</dd>
@@ -865,7 +911,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         </section>
       )}
       {/* M03-010 — mandatory pre-start confirmations, persisted to journey_sessions.prestart */}
-      {checkedIn && !existing && (
+      {checkedIn && !started && (
         <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.prestartHeading}</h4>
           <div className="ax-stack" style={{ gap: 8 }}>
@@ -880,12 +926,17 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           </div>
         </div>
       )}
+      {/* Phase 3B — readiness gate: package download and journey start stay
+          locked (never hidden) until the preparation is confirmed Ready. */}
+      {preparationGated && (
+        <div className="ax-banner ax-banner--warning" role="status" data-testid="readiness-gate-reason"><div>{strings.preparationRequired}</div></div>
+      )}
       <div className="ax-row">
-        <button className="ax-btn ax-btn--field" onClick={downloadPackage} disabled={cached}>{strings.step1}</button>
-        <button className="ax-btn ax-btn--field" onClick={startJourney} disabled={!cached || !!journeyId || busy}>{strings.step2}</button>
+        <button className="ax-btn ax-btn--field" onClick={downloadPackage} disabled={cached || !!preparationGated || !visit.package_versions}>{strings.step1}</button>
+        <button className="ax-btn ax-btn--field" onClick={startJourney} disabled={!cached || !!journeyId || busy || !!preparationGated}>{strings.step2}</button>
         <button className="ax-btn ax-btn--field" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none"}>{strings.step3}</button>
-        {existing && existing.status !== "not_started"
-          ? <a className="ax-btn ax-btn--field ax-btn--prominent" href={`/field/inspection/${existing.id}`}>{strings.resume}</a>
+        {started
+          ? <a className="ax-btn ax-btn--field ax-btn--prominent" href={`/field/inspection/${existing!.id}`}>{strings.resume}</a>
           : <button className="ax-btn ax-btn--field ax-btn--prominent" onClick={startInspection} disabled={!checkedIn || busy || !repPresent || !locConfirmed}>{strings.step4}</button>}
       </div>
       {/* ENG-06 / FLD-GEO-005 — manual exception record while the journey is active */}

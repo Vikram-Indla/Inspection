@@ -212,6 +212,7 @@ export default async function BulkReview() {
       duplicate: { title: t("plan.review.bl.dup.t", "Active periodic visit already exists — cannot create a duplicate"), detail: t("plan.review.bl.dup.d", "{targets}") },
       overlap: { title: t("plan.review.bl.ov.t", "Inspector is already booked in this window"), detail: t("plan.review.bl.ov.d", "{targets}") },
       coverage: { title: t("plan.review.bl.cov.t", "{n} visits have no eligible Inspector available in the window"), detail: t("plan.review.bl.cov.d", "Widen the window or assign an Inspector manually.") },
+      capacity: { title: t("plan.review.bl.cap.t", "No day in the window has remaining daily capacity for the assigned Inspector"), detail: t("plan.review.bl.cap.d", "{targets}") },
       nopackage: { title: t("plan.review.bl.nopkg.t", "No active or locked inspection checklist is available"), detail: t("plan.review.bl.nopkg.d", "Cannot reference an unpublished version — this is a legitimate empty state.") },
       packageInvalid: { title: t("plan.review.bl.pkginv.t", "Selected inspection checklist is no longer active at the authoritative check"), detail: t("plan.review.bl.pkginv.d", "Revalidate and choose a currently active version before publishing.") },
       nopool: { title: t("plan.review.bl.nopool.t", "No Inspector exists in the Inspector role pool"), detail: t("plan.review.bl.nopool.d", "Automatic assignment cannot be derived — a legitimate empty pool, not a source failure.") },

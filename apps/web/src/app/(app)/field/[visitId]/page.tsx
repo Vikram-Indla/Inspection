@@ -2,6 +2,15 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Startup, { type StartupStrings } from "./Startup";
+import PreExecution, {
+  type ActionFormTemplate,
+  type ModeRule,
+  type PreExecutionStrings,
+  type PreparationDay,
+  type PreparationDraft,
+  type PreparationPackage,
+} from "./PreExecution";
+import { getWindowCapacity } from "@/lib/execution";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import packageInfo from "../../../../../package.json";
@@ -12,9 +21,13 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   const { t, locale } = await useT();
   const sb = await supabaseServer();
   const { data: v } = await sb.from("visits")
-    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, planner_lat, planner_lng, immediate_creator_role, visit_location_source, factories(name, name_is_system_generated, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m), package_versions(id, version_label, definition, packages(code)), inspections(id, status)")
+    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, operational_state, package_version_id, execution_date, planner_lat, planner_lng, immediate_creator_role, visit_location_source, factories(name, name_is_system_generated, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m), package_versions(id, version_label, definition, packages(code, title)), inspections(id, status, started_at)")
     .eq("id", visitId).single();
   const { data: engines } = await sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "otp", "field"]);
+  // Phase 3B — governed execution config (visit_modes for the Pre-Execution
+  // panel). Separate tolerant read: a pending migration degrades to "modes
+  // disabled" instead of breaking the whole page.
+  const { data: execEngineRow } = await sb.from("engine_settings").select("settings").eq("engine", "execution").maybeSingle();
   const gis = engines?.find(e => e.engine === "gis")?.settings ?? {};
   const otpConfigured = !!engines?.find(e => e.engine === "otp");
   // M04-057 — governed cancellation reasons (engine_settings.field, 0020 seed).
@@ -57,6 +70,94 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
       </Shell>
     );
   }
+  // TASK-EXECUTION-MODULE-001 · Phase 3B — Pre-Execution readiness data.
+  // Tolerant reads: while the readiness schema (20260721120000) is not applied
+  // the preparation read fails and the page serves the legacy startup flow
+  // (no panel, no gate) instead of breaking the visit.
+  const { data: assignment } = await sb.from("assignments")
+    .select("inspector_id").eq("visit_id", visitId).limit(1).maybeSingle();
+  const { data: prepRow, error: prepError } = await sb.from("visit_preparations")
+    .select("visit_id, preparation_version, execution_date, confirmed_mode, package_version_id, form_config, confirmed_ready_at")
+    .eq("visit_id", visitId).maybeSingle();
+  const preparationAvailable = !prepError;
+  let snapshot: { preparation_version: number; checksum: string; package_version_id?: string; definition?: unknown } | null = null;
+  if (preparationAvailable && prepRow?.confirmed_ready_at) {
+    const { data: snap } = await sb.from("visit_package_snapshots")
+      .select("preparation_version, checksum, package_version_id, definition")
+      .eq("visit_id", visitId)
+      .order("preparation_version", { ascending: false }).limit(1).maybeSingle();
+    snapshot = snap ?? null;
+  }
+  // Per-day daily-cap availability across the visit window (the SAME shared
+  // counting service Planning publish evaluates, D-009).
+  const windowStartDate = String(v.window_start).slice(0, 10);
+  const windowEndDate = String(v.window_end).slice(0, 10);
+  const todayDate = new Date().toISOString().slice(0, 10);
+  let capacityByDate: Map<string, number> | null = null;
+  let capacityNote: "ok" | "unavailable" | "truncated" = "unavailable";
+  if (preparationAvailable && assignment?.inspector_id) {
+    const cap = await getWindowCapacity(sb, assignment.inspector_id as string, windowStartDate, windowEndDate);
+    if (cap.capacity) {
+      capacityByDate = new Map(cap.capacity.days.map(d => [d.date, d.remaining]));
+      capacityNote = cap.capacity.truncated ? "truncated" : "ok";
+    }
+  }
+  const preparationDays: PreparationDay[] = [];
+  {
+    const start = Date.parse(`${windowStartDate}T00:00:00Z`);
+    const end = Date.parse(`${windowEndDate}T00:00:00Z`);
+    // Bounded to 62 days, mirroring the RPC scan cap (truncated flag above).
+    for (let ms = start, i = 0; ms <= end && i < 62; ms += 86_400_000, i++) {
+      const iso = new Date(ms).toISOString().slice(0, 10);
+      preparationDays.push({ date: iso, label: iso, remaining: capacityByDate?.get(iso) ?? null, past: iso < todayDate });
+    }
+  }
+  // Package summaries with D-007 optionality metadata extracted server-side:
+  // a section is removable ONLY when the definition explicitly marks it
+  // optional/removable and not mandatory; when no optionality metadata exists
+  // at all the panel shows honest copy and no removal affordance.
+  type DefSection = { key?: string; title_en?: string; title_ar?: string; title?: string; optional?: boolean; removable?: boolean; mandatory?: boolean };
+  const summarizePackage = (row: { id: string; version_label: string; definition: unknown; packages: { code: string; title?: string | null } | null }): PreparationPackage => {
+    const def = (row.definition ?? {}) as { sections?: DefSection[]; action_forms?: { template_id?: string; id?: string }[] };
+    const raw = Array.isArray(def.sections) ? def.sections : [];
+    const hasOptionalityMetadata = raw.some(sec => typeof sec?.optional === "boolean" || typeof sec?.removable === "boolean" || typeof sec?.mandatory === "boolean");
+    return {
+      id: row.id,
+      code: row.packages?.code ?? "",
+      title: row.packages?.title ?? row.packages?.code ?? "",
+      versionLabel: row.version_label,
+      sections: raw.map((sec, i) => ({
+        key: String(sec?.key ?? `section_${i}`),
+        title: (locale === "ar" && sec?.title_ar) ? sec.title_ar : (sec?.title_en ?? sec?.title ?? String(sec?.key ?? `Section ${i + 1}`)),
+        removable: (sec?.optional === true || sec?.removable === true) && sec?.mandatory !== true,
+      })),
+      hasOptionalityMetadata,
+      actionFormTemplateIds: (Array.isArray(def.action_forms) ? def.action_forms : [])
+        .map(af => String(af?.template_id ?? af?.id ?? "")).filter(Boolean),
+      hasSections: raw.length > 0,
+    };
+  };
+  const plannedPackageRow = v.package_versions as unknown as { id: string; version_label: string; definition: unknown; packages: { code: string; title?: string | null } | null } | null;
+  const plannedPackage = plannedPackageRow ? summarizePackage(plannedPackageRow) : null;
+  // Eligible published package versions — loaded only when Planning left the
+  // package unresolved (zero-or-more resolution, plan §7).
+  let packageOptionRows: { id: string; version_label: string; definition: unknown; packages: { code: string; title?: string | null } | null }[] = [];
+  if (!plannedPackageRow) {
+    const { data: pkgRows } = await sb.from("package_versions")
+      .select("id, version_label, definition, packages(code, title)")
+      .eq("status", "published").order("published_at", { ascending: false }).limit(50);
+    packageOptionRows = (pkgRows ?? []) as unknown as typeof packageOptionRows;
+  }
+  const packageOptions = packageOptionRows.map(summarizePackage);
+  // Published Action Form configuration templates the inspector may add.
+  const { data: actionFormRows } = await sb.from("configuration_templates")
+    .select("id, title_en, title_ar, version_label")
+    .eq("template_type", "action_form").eq("status", "published").limit(100);
+  const actionFormTemplates: ActionFormTemplate[] = (actionFormRows ?? []).map(r => ({
+    id: r.id as string,
+    title: (locale === "ar" && (r.title_ar as string)) ? (r.title_ar as string) : (r.title_en as string),
+    versionLabel: r.version_label as string,
+  }));
   const factory = v.factories as unknown as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null };
   const factoryName = factory.name_is_system_generated ? t("field.start.unregisteredFactory", "Unregistered factory") : factory.name;
   // F360IPAD-ENTRY-001 — assigned visit opens the iPad Factory 360 with the
@@ -73,12 +174,26 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   // visits -> inspections is TO-ONE (object | null) — normalize defensively so
   // the client never regresses on the array/object shape.
   const rawInspections = v.inspections as unknown;
+  // Phase 3B — Startup caches the package for offline use. When Planning left
+  // the package unresolved and the inspector resolved it during preparation,
+  // hand Startup that same version; once Ready, the frozen snapshot definition
+  // (form_config applied) is what gets cached — the Ready contract is the
+  // package the inspection runs against.
+  const effectivePackageId = plannedPackageRow
+    ? null
+    : ((prepRow?.package_version_id as string | null) ?? (snapshot?.package_version_id as string | null) ?? null);
+  const effectivePackageBase = plannedPackageRow
+    ?? (effectivePackageId ? packageOptionRows.find(r => r.id === effectivePackageId) ?? null : null);
+  const effectivePackageRow = effectivePackageBase
+    ? (snapshot?.definition ? { ...effectivePackageBase, definition: snapshot.definition } : effectivePackageBase)
+    : null;
   const vNorm = {
     ...v,
     dispatch_lat: dispatchLat,
     dispatch_lng: dispatchLng,
     dispatch_source: dispatchSource,
     factories: { ...(v.factories as object), name: factoryName },
+    package_versions: effectivePackageRow,
     inspections: Array.isArray(rawInspections) ? (rawInspections[0] ?? null) : rawInspections ?? null,
   };
   // M03-011 — execution-mode eligibility evaluated from engine configuration + master data,
@@ -86,6 +201,44 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   // virtual requires the OTP engine to be configured for identity verification (0009).
   const physicalEligible = dispatchLat != null && dispatchLng != null;
   const virtualEligible = otpConfigured;
+  // Phase 3B — governed visit-mode rules for the Pre-Execution panel:
+  // engine_settings.execution.visit_modes decides availability AND the legacy
+  // inputs must hold (coordinates for physical, OTP engine for virtual).
+  // self_assessment is release-gated off and never offered.
+  const execCfg = (execEngineRow?.settings ?? {}) as { visit_modes?: Record<string, { enabled?: boolean }> };
+  const visitModes = execCfg.visit_modes ?? {};
+  const modeRules: { physical: ModeRule; virtual: ModeRule } = {
+    physical: {
+      enabled: visitModes.physical?.enabled === true && physicalEligible,
+      reason: visitModes.physical?.enabled !== true
+        ? t("field.prep.modeOffConfig", "Turned off by configuration")
+        : !physicalEligible ? t("field.prep.modeNeedsCoords", "Physical needs a planner or official factory location") : null,
+    },
+    virtual: {
+      enabled: visitModes.virtual?.enabled === true && virtualEligible,
+      reason: visitModes.virtual?.enabled !== true
+        ? t("field.prep.modeOffConfig", "Turned off by configuration")
+        : !virtualEligible ? t("field.prep.modeNeedsOtp", "Virtual needs the OTP identity-verification engine") : null,
+    },
+  };
+  const prepFormConfig = (prepRow?.form_config ?? {}) as { removed_optional_section_keys?: unknown; added_action_form_template_ids?: unknown; notify_factory?: unknown };
+  const preparationDraft: PreparationDraft | null = prepRow ? {
+    executionDate: (prepRow.execution_date as string | null) ?? null,
+    confirmedMode: prepRow.confirmed_mode === "virtual" ? "virtual" : prepRow.confirmed_mode === "physical" ? "physical" : null,
+    packageVersionId: (prepRow.package_version_id as string | null) ?? null,
+    removedSectionKeys: Array.isArray(prepFormConfig.removed_optional_section_keys) ? prepFormConfig.removed_optional_section_keys.map(String) : [],
+    addedTemplateIds: Array.isArray(prepFormConfig.added_action_form_template_ids) ? prepFormConfig.added_action_form_template_ids.map(String) : [],
+    notifyFactory: prepFormConfig.notify_factory === true,
+  } : null;
+  // The readiness gate applies only while the visit is pre-journey. The
+  // inspections row may exist from Ready (started_at NULL, D-008) — actual
+  // start is marked by started_at. Post-journey states keep the legacy flow.
+  const normalizedInspection = vNorm.inspections as { id: string; status: string; started_at: string | null } | null;
+  const inspectionStarted = !!normalizedInspection && normalizedInspection.status !== "not_started" && normalizedInspection.started_at != null;
+  const opState = String(v.operational_state ?? "new");
+  const visitReady = preparationAvailable && !!prepRow?.confirmed_ready_at && opState === "prepared";
+  const showPreparation = preparationAvailable && !inspectionStarted && (opState === "new" || opState === "prepared");
+  const preparationGated = showPreparation && !visitReady;
   const strings: StartupStrings = {
     mapLoading: t("field.start.mapLoading", "Loading geofence map"),
     readiness: t("field.start.readiness", "Readiness (SCR-IPAD-610)"),
@@ -240,6 +393,70 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     aiUnavailable: t("field.start.aiUnavailable", "AI provider unavailable or offline — nothing was generated or changed."),
     aiEvidence: t("field.start.aiEvidence", "Source evidence"),
     aiAdvisory: t("field.start.aiAdvisory", "Advisory only · human decides"),
+    // Phase 3B — readiness gate + unresolved-package placeholder
+    preparationRequired: t("field.start.preparationRequired", "Complete preparation and confirm ready first — package download and journey start unlock after that."),
+    packagePending: t("field.start.packagePending", "selected during preparation"),
+  };
+  // Phase 3B — Pre-Execution panel copy (plain language; error codes mapped to
+  // governed copy, provider text never reaches the UI).
+  const prepStrings: PreExecutionStrings = {
+    heading: t("field.prep.heading", "Preparation — get ready for execution"),
+    contextHeading: t("field.prep.contextHeading", "Visit and factory"),
+    lblFactory: t("field.prep.lblFactory", "Factory"),
+    lblVisitType: t("field.prep.lblVisitType", "Visit type"),
+    lblWindow: t("field.prep.lblWindow", "Window"),
+    lblPriority: t("field.prep.lblPriority", "Priority"),
+    dateHeading: t("field.prep.dateHeading", "Execution date"),
+    dateCaption: t("field.prep.dateCaption", "Pick a day inside the visit window. Days at your daily visit limit are marked as fully booked."),
+    dayLeft: t("field.prep.dayLeft", "{n} left"),
+    dayFull: t("field.prep.dayFull", "Fully booked"),
+    availabilityUnknown: t("field.prep.availabilityUnknown", "Daily availability could not be loaded — the server re-checks it when you save."),
+    truncatedNote: t("field.prep.truncatedNote", "This window is long — availability is shown for the first 62 days."),
+    modeHeading: t("field.prep.modeHeading", "Visit mode"),
+    plannedChip: t("field.prep.plannedChip", "planned by Planning"),
+    physical: t("enum.physical", "physical"),
+    virtual: t("enum.virtual", "virtual"),
+    modeOffConfig: t("field.prep.modeOffConfig", "Turned off by configuration"),
+    packageHeading: t("field.prep.packageHeading", "Inspection package"),
+    packageByPlanning: t("field.prep.packageByPlanning", "selected by Planning"),
+    packageChoose: t("field.prep.packageChoose", "Planning did not select a package for this visit — choose one of the published packages below."),
+    packageNoSections: t("field.prep.packageNoSections", "no inspection sections — not selectable"),
+    sectionsCount: t("field.prep.sectionsCount", "{n} sections"),
+    formsHeading: t("field.prep.formsHeading", "Forms and Action Forms for this visit"),
+    removeLabel: t("field.prep.removeLabel", "Remove for this visit"),
+    optionalChip: t("field.prep.optionalChip", "optional"),
+    noRemovableCopy: t("field.prep.noRemovableCopy", "This package does not mark any section as removable, so nothing can be removed. Mandatory content stays mandatory."),
+    addedFormsLabel: t("field.prep.addedFormsLabel", "Add Action Forms for this visit"),
+    noTemplatesCopy: t("field.prep.noTemplatesCopy", "No published Action Form templates are available to add."),
+    notifyFactory: t("field.prep.notifyFactory", "Notify the factory about this visit"),
+    save: t("field.prep.save", "Save preparation"),
+    saved: t("field.prep.saved", "Preparation saved — nothing else changed. Confirm ready when you are done."),
+    confirm: t("field.prep.confirm", "Confirm ready for execution"),
+    readyTitle: t("field.prep.readyTitle", "Ready for execution"),
+    readySnapshot: t("field.prep.readySnapshot", "Package snapshot v{n} · checksum {checksum}"),
+    reopen: t("field.prep.reopen", "Change preparation"),
+    reopenCaption: t("field.prep.reopenCaption", "Returns the visit to New — you will need to confirm ready again before the journey can start."),
+    working: t("field.prep.working", "Working…"),
+    genericError: t("field.prep.genericError", "The change could not be saved. Nothing was changed. Try again."),
+    errors: {
+      READINESS_DENIED: t("field.prep.err.denied", "Only the assigned inspector can prepare this visit."),
+      READINESS_VISIT_STATE: t("field.prep.err.visitState", "This visit is not in a state that allows preparation."),
+      READINESS_DATE_OUTSIDE_WINDOW: t("field.prep.err.dateWindow", "That date is outside the visit window."),
+      READINESS_DATE_IN_PAST: t("field.prep.err.datePast", "That date is in the past."),
+      READINESS_DAY_AT_CAPACITY: t("field.prep.err.capacity", "That day is fully booked for you — pick another day."),
+      READINESS_MODE_INELIGIBLE: t("field.prep.err.mode", "That visit mode is not available for this visit."),
+      READINESS_PACKAGE_REQUIRED: t("field.prep.err.pkgRequired", "Choose a package before confirming ready."),
+      READINESS_PACKAGE_INELIGIBLE: t("field.prep.err.pkgIneligible", "That package is not available."),
+      READINESS_SECTION_NOT_REMOVABLE: t("field.prep.err.mandatory", "Only sections marked optional in the package can be removed."),
+      READINESS_DUPLICATE: t("field.prep.err.duplicate", "Duplicate entries are not allowed."),
+      READINESS_CONFIG_INVALID: t("field.prep.err.config", "The form configuration is invalid."),
+      READINESS_ACTION_FORM_INELIGIBLE: t("field.prep.err.form", "That Action Form is not available."),
+      READINESS_REOPEN_REQUIRED: t("field.prep.err.reopenRequired", "Use Change preparation before editing a ready visit."),
+      READINESS_LOCKED_AFTER_JOURNEY_START: t("field.prep.err.locked", "Preparation is locked once the journey has started."),
+      READINESS_REOPEN_BLOCKED_BY_WORK: t("field.prep.err.workCaptured", "Change preparation is no longer possible — inspection work already exists."),
+      READINESS_INCOMPLETE: t("field.prep.err.incomplete", "Pick the execution date, confirm the mode and resolve the package before confirming ready."),
+      READINESS_WINDOW_INVALID: t("field.prep.err.window", "The visit window is invalid."),
+    },
   };
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (
@@ -275,7 +492,34 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             </p>
           </div>
         </div>
-        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} />
+        {/* Phase 3B — Pre-Execution panel above the startup steps. While the
+            readiness contract is incomplete, package download and journey
+            start stay locked inside Startup (preparationGated) with the
+            reason visible — never hidden. */}
+        {showPreparation && (
+          <PreExecution
+            visitId={v.id}
+            ready={visitReady}
+            snapshot={snapshot ? { preparation_version: snapshot.preparation_version, checksum: snapshot.checksum } : null}
+            context={{
+              factoryName,
+              factoryCode: (v.factories as unknown as { factory_code: string | null }).factory_code,
+              visitType: v.visit_type,
+              priority: v.priority,
+              windowLabel: `${windowStartDate} → ${windowEndDate}`,
+            }}
+            days={preparationDays}
+            capacityNote={capacityNote}
+            plannedMode={v.execution_mode === "virtual" ? "virtual" : "physical"}
+            modeRules={modeRules}
+            plannedPackage={plannedPackage}
+            packageOptions={packageOptions}
+            actionFormTemplates={actionFormTemplates}
+            draft={preparationDraft}
+            strings={prepStrings}
+          />
+        )}
+        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} preparationGated={preparationGated} />
       </div>
     </Shell>
   );

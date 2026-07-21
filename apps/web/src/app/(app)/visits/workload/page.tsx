@@ -7,9 +7,10 @@ import EmptyState from "@/components/EmptyState";
 // FIX WAVE F4 — M02-018/037: inspector workload & capacity view. Aggregates
 // assignments → published visit windows into per-inspector active-visit counts
 // by week (KSA weeks, Sunday-first per ENG-09 calendar), with a relative
-// utilization bar. No capacity threshold exists in engine_settings, so
-// utilization is displayed RELATIVE to the busiest inspector-week — the page
-// says so explicitly instead of inventing a policy value (CLAUDE.md hard rule).
+// utilization bar. TASK-EXECUTION-MODULE-001 (D-001): a governed daily visit
+// cap now exists (engine_settings.execution.daily_visit_cap, default 10) — the
+// page displays it as configured context while the weekly bars stay RELATIVE
+// to the busiest inspector-week (weekly capacity is not a governed value).
 
 const DAY_MS = 86_400_000;
 const WEEKS = 6;
@@ -29,6 +30,12 @@ export default async function Workload() {
   const { data, error } = await sb.from("assignments")
     .select("inspector_id, profiles(full_name), visits(id, planning_status, operational_state, window_start, window_end)")
     .limit(2000);
+  // D-001 — the governed daily visit cap (engine_settings.execution), shown as
+  // configured context next to the relative weekly utilization. Default 10
+  // matches the server-side counting service when the setting is absent.
+  const { data: execEngine } = await sb.from("engine_settings").select("settings").eq("engine", "execution").maybeSingle();
+  const execSettings = (execEngine?.settings ?? {}) as { daily_visit_cap?: unknown };
+  const dailyCap = typeof execSettings.daily_visit_cap === "number" && execSettings.daily_visit_cap > 0 ? execSettings.daily_visit_cap : 10;
   if (error) {
     // CD-026 query-degraded — neutralise provider error (log server-side only).
     console.error(`[visits.workload] load failed: ${error.message}`);
@@ -125,7 +132,9 @@ export default async function Workload() {
             </tbody>
           </table></div>
           <p className="t-caption">
-            {t("visit.load.relativeNote", "Utilization is relative to the busiest inspector — no capacity threshold is configured in engine_settings (ENG-05), so no absolute capacity is invented. Weeks start Sunday (ENG-09 calendar).")}
+            {t("visit.load.dailyCap", "Daily visit limit: {n} (configured).").replace("{n}", String(dailyCap))}
+            {" "}
+            {t("visit.load.relativeNote", "Utilization is relative to the busiest inspector — weekly counts are compared, not capped. Weeks start Sunday (ENG-09 calendar).")}
           </p>
         </div>
       )}
