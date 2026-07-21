@@ -1,7 +1,7 @@
-import Shell, { preloadShell } from "@/components/Shell";
+import Shell from "@/components/Shell";
 import { useT } from "@/lib/i18n";
-import { getServerUser, supabaseServer } from "@/lib/supabase-server";
-import { getUserRoles } from "@/lib/persona";
+import { supabaseServer } from "@/lib/supabase-server";
+import { getVerifiedUser } from "@/lib/verified-user";
 import { redirect } from "next/navigation";
 import {
   buildDashboardMetrics,
@@ -18,15 +18,17 @@ import {
   type VisitRow,
 } from "./metrics";
 import {
-  DashboardScope,
-  DashboardTabs,
+  CommandHeader,
   OperationalView,
   SearchResults,
   StrategicView,
 } from "./DashboardView";
+import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
+import { resolveDashboardPolicyVersion } from "@/lib/dashboard-kpi/loader";
+import type { MetricScope } from "@/lib/dashboard-kpi/contract";
 import { BUSINESS_ROLE_KEYS } from "@/lib/shell-navigation";
-import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
 
 type PageError = { message: string };
 type RowPage<T> = { data: T[] | null; error: PageError | null };
@@ -75,7 +77,6 @@ type SearchParams = {
 };
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  preloadShell("/dashboard");
   const params = await searchParams;
   const { locale } = await useT();
   const text = (en: string, ar: string) => locale === "ar" ? ar : en;
@@ -90,79 +91,52 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     : "region";
   const sb = await supabaseServer();
 
-  // K-003 — DB-side bounds. buildDashboardMetrics only counts rows dated inside
-  // the current scope or the immediately-previous comparison window
-  // (previousScope in metrics.ts), plus "today" for the today's-visits card.
-  // Rows older than bound on every relevant date are provably uncounted, so
-  // the full-table scans become window scans. Open inspections are always
-  // loaded (they can enter scope at any time); factories stay unbounded
-  // (reference data for search/region filters).
-  const prevScopeFromMs = scope.fromMs - (scope.toMs - scope.fromMs + 1);
-  const boundIso = new Date(Math.min(prevScopeFromMs, today.fromMs)).toISOString();
-
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
   // The Dashboard is a shared Command destination for every non-admin persona
   // (business direction 2026-07-16); admin-only users are redirected. Data is
   // still RLS-scoped per persona (RBAC-001..014).
-  const { data: { user } } = await getServerUser();
+  const { data: { user } } = await getVerifiedUser(sb);
   if (!user) redirect("/login");
-  const { data: dashboardRoles, error: roleError } = await getUserRoles(user.id);
+  const { data: dashboardRoles, error: roleError } = await sb
+    .from("user_roles")
+    .select("role_key")
+    .eq("user_id", user.id);
   const businessRoles = BUSINESS_ROLE_KEYS as readonly string[];
   const mayViewDashboard = !roleError && (dashboardRoles ?? []).some(row => businessRoles.includes(row.role_key));
   if (!mayViewDashboard) redirect("/launch");
 
-  const strategic = view === "strategic";
-  const searching = query.trim().length > 0;
-  const empty = <T,>() => Promise.resolve({ rows: [] as T[], failed: false });
-  const currentParams: Record<string, string> = {
-    view, group, q: query, from: scope.fromDate, to: scope.toDate, region,
-  };
-  const refreshedAt = new Date(nowMs).toISOString().slice(0, 16).replace("T", " ");
-
-  // K-003 Tier C — each perspective fetches only the source families it can
-  // render. Search explicitly opts entity sources back in. All selected reads
-  // remain date-bound and RLS-scoped; no dashboard formula changes.
-  const dataPromise = Promise.all([
-    (!strategic || searching) ? collect<VisitRow>((from, to) => sb.from("visits").select(`
+  const [visitsResult, inspectionsResult, reviewsResult, responsesResult, violationsResult, geoResult, factoriesResult, slaResult] = await Promise.all([
+    collect<VisitRow>((from, to) => sb.from("visits").select(`
       id, planning_status, operational_state, window_start, window_end, priority, cancellation_reason, created_at,
-      factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary),
+      factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m),
       assignments(inspector_id, profiles(full_name))
-    `).or(`window_start.gte.${boundIso},created_at.gte.${boundIso}`).range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>) : empty<VisitRow>(),
+    `).range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>),
     collect<InspectionRow>((from, to) => sb.from("inspections").select(`
       id, visit_id, status, started_at, submitted_at,
       visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
-    `).or(`submitted_at.gte.${boundIso},started_at.gte.${boundIso},status.eq.not_started,status.eq.in_progress`).range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>),
+    `).range(from, to) as unknown as PromiseLike<RowPage<InspectionRow>>),
     collect<ReviewRow>((from, to) => sb.from("reviews").select(`
       id, inspection_id, status, decision, decided_at,
-      inspections!inner(submitted_at, visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary)))
-    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>),
-    strategic ? collect<ResponseRow>((from, to) => sb.from("checklist_responses").select(`
+      inspections(submitted_at, visits(window_start, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary)))
+    `).range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>),
+    collect<ResponseRow>((from, to) => sb.from("checklist_responses").select(`
       inspection_id, is_complete, response,
-      inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
+      inspections(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
       inspection_items(regulation_clauses(regulations(title, issuing_authority)))
-    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>) : empty<ResponseRow>(),
-    strategic ? collect<ViolationRow>((from, to) => sb.from("violations").select(`
+    `).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>),
+    collect<ViolationRow>((from, to) => sb.from("violations").select(`
       id, inspection_id,
-      inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
+      inspections(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
       violation_codes(title, level, regulation_clauses(regulations(title, issuing_authority)))
-    `).gte("inspections.submitted_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<ViolationRow>>) : empty<ViolationRow>(),
-    !strategic ? collect<GeoRow>((from, to) => sb.from("geo_events").select(`
+    `).range(from, to) as unknown as PromiseLike<RowPage<ViolationRow>>),
+    collect<GeoRow>((from, to) => sb.from("geo_events").select(`
       id, visit_id, kind, geofence_result, override_reason, occurred_at, observed_lat, observed_lng,
       visits(planner_lat, planner_lng, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
-    `).gte("occurred_at", boundIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>) : empty<GeoRow>(),
-    (strategic || searching) ? collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>) : empty<FactoryRef>(),
-    !strategic ? sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle() : Promise.resolve({ data: null, error: null }),
-    sb.rpc("dashboard_grouped_metrics", {
-      p_from: new Date(scope.fromMs).toISOString(),
-      p_to: new Date(scope.toMs).toISOString(),
-      p_previous_from: new Date(prevScopeFromMs).toISOString(),
-      p_region: region || null,
-    }),
+    `).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
+    collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
+    sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
   ]);
-
-  async function DashboardDataSections() {
-    const [visitsResult, inspectionsResult, reviewsResult, responsesResult, violationsResult, geoResult, factoriesResult, slaResult, groupedResult] = await dataPromise;
 
   const auditObjectIds = [
     ...visitsResult.rows.map(row => row.id),
@@ -170,17 +144,13 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     ...reviewsResult.rows.map(row => row.id),
     ...violationsResult.rows.map(row => row.id),
   ];
-  // The audit timeline exists only in Operational View. Strategic navigation
-  // must not wait for a query whose result it cannot render.
-  const auditResult = view === "operational"
-    ? await collectLatestAudit(auditObjectIds, ids => sb.from("audit_events")
-      .select("id, object_type, object_id, action, requirement_refs, occurred_at")
-      .in("object_id", ids)
-      .gte("occurred_at", new Date(scope.fromMs).toISOString())
-      .lte("occurred_at", new Date(scope.toMs).toISOString())
-      .order("occurred_at", { ascending: false })
-      .limit(12) as unknown as PromiseLike<RowPage<AuditRow>>)
-    : { rows: [] as AuditRow[], failed: false };
+  const auditResult = await collectLatestAudit(auditObjectIds, ids => sb.from("audit_events")
+    .select("id, object_type, object_id, action, requirement_refs, occurred_at")
+    .in("object_id", ids)
+    .gte("occurred_at", new Date(scope.fromMs).toISOString())
+    .lte("occurred_at", new Date(scope.toMs).toISOString())
+    .order("occurred_at", { ascending: false })
+    .limit(12) as unknown as PromiseLike<RowPage<AuditRow>>);
 
   const failedSources = [
     visitsResult.failed && text("visits", "الزيارات"),
@@ -209,43 +179,52 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     region,
     nowMs,
   });
-  const grouped = groupedResult.data as null | {
-    completed_inspections: number; compliant: number; non_compliant: number;
-    violations: number; previous_violations: number;
-    violation_by_regulation: { label: string; value: number }[];
-    planned_visits: number; completed_visits: number; cancelled_visits: number; active_field: number;
+  // Consume the shared KPI contract: resolve the published policy version and
+  // build the SharedMetric projection server-side. Presentation renders these
+  // records — it never recomputes a formula (hard rule, CODEX 01/02).
+  const policy = await resolveDashboardPolicyVersion(sb);
+  const metricScope: MetricScope = {
+    fromMs: scope.fromMs,
+    toMs: scope.toMs,
+    fromDate: scope.fromDate,
+    toDate: scope.toDate,
+    timezone: "Asia/Riyadh",
+    region: region || null,
+    filters: query ? { q: query } : {},
   };
-  if (grouped) {
-    metrics.strategic.completedInspections = Number(grouped.completed_inspections);
-    metrics.strategic.compliant = Number(grouped.compliant);
-    metrics.strategic.nonCompliant = Number(grouped.non_compliant);
-    metrics.strategic.answeredForCompliance = Number(grouped.compliant) + Number(grouped.non_compliant);
-    metrics.strategic.complianceRate = metrics.strategic.answeredForCompliance
-      ? Math.round((metrics.strategic.compliant / metrics.strategic.answeredForCompliance) * 100)
-      : null;
-    metrics.strategic.previousViolations = Number(grouped.previous_violations);
-    metrics.strategic.violationDelta = Number(grouped.violations) - Number(grouped.previous_violations);
-    metrics.strategic.violationByRegulation = grouped.violation_by_regulation ?? [];
-    metrics.operational.planned = Number(grouped.planned_visits);
-    metrics.operational.completed = Number(grouped.completed_visits);
-    metrics.operational.cancelled = Number(grouped.cancelled_visits);
-    metrics.operational.activeField = Number(grouped.active_field);
+  const refreshedAtIso = new Date(nowMs).toISOString();
+  const projection = buildDashboardKpiProjection(metrics, {
+    scope: metricScope,
+    policyVersionId: policy.policyVersionId,
+    refreshedAt: refreshedAtIso,
+    generatedAtMs: nowMs,
+    failedSources: [...failedSources, ...policy.failedSources],
+  });
+
+  // Governed factory coordinates for the operational live canvas (official pins
+  // only — never synthetic). Keyed by factory id.
+  const factoryCoords = new Map<string, { lat: number; lng: number; radiusM: number | null }>();
+  for (const f of factoriesResult.rows) {
+    if (f.official_lat != null && f.official_lng != null) {
+      factoryCoords.set(f.id, { lat: Number(f.official_lat), lng: Number(f.official_lng), radiusM: f.geofence_radius_m ?? null });
+    }
   }
-    return <>
-      {failedSources.length > 0 && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
-      <SearchResults locale={locale} query={query} factories={factoriesResult.rows} visits={visitsResult.rows} inspections={inspectionsResult.rows} />
-      {view === "strategic"
-        ? <StrategicView locale={locale} metrics={metrics} group={group} params={currentParams} />
-        : <OperationalView locale={locale} metrics={metrics} />}
-    </>;
-  }
+
+  const currentParams: Record<string, string> = {
+    view, group, q: query, from: scope.fromDate, to: scope.toDate, region,
+  };
+  const refreshedAt = new Date(nowMs).toISOString().slice(11, 16);
+  const regions = Array.from(new Set(factoriesResult.rows.map(f => f.region).filter((r): r is string => !!r))).sort();
+  const partialSources = Array.from(new Set([...failedSources, ...projection.failedSources]));
 
   return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
     context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-500 · DASH-001..016</span>}>
-    <DashboardTabs locale={locale} view={view} params={currentParams} />
-    <DashboardScope locale={locale} from={scope.fromDate} to={scope.toDate} region={region} refreshedAt={refreshedAt} />
-    <Suspense fallback={<div className="ax-surface" aria-busy="true" role="status"><span className="ax-skeleton" />{text("Loading dashboard data…", "جارٍ تحميل بيانات لوحة القيادة…")}</div>}>
-      <DashboardDataSections />
-    </Suspense>
+    <CommandHeader locale={locale} view={view} params={currentParams}
+      from={scope.fromDate} to={scope.toDate} region={region} regions={regions} query={query}
+      refreshedAt={refreshedAt} policyVersionId={policy.policyVersionId} partialSources={partialSources} />
+    <SearchResults locale={locale} query={query} factories={factoriesResult.rows} visits={visitsResult.rows} inspections={inspectionsResult.rows} />
+    {view === "strategic"
+      ? <StrategicView locale={locale} metrics={metrics} projection={projection} factories={factoriesResult.rows} group={group} params={currentParams} />
+      : <OperationalView locale={locale} metrics={metrics} projection={projection} factoryCoords={factoryCoords} />}
   </Shell>;
 }

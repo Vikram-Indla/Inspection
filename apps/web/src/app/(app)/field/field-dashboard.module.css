@@ -1,0 +1,140 @@
+/* SAQEEL iPad field dashboard — presentation only (CODEX 03).
+   Field-density, logical/RTL, light + composed dark. Colors: --ax-* tokens
+   ONLY (design-token governance MVP1-FND-010); no raw values here.
+   This module styles the field-native shell (top context, mission rail,
+   metric strip, map/list/calendar workspace + selected-visit pane, action
+   bar). It carries NO KPI math and NO data — the shared projection owns that. */
+
+/* ---- shell ---------------------------------------------------------------- */
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-200);
+}
+
+/* ---- field top context ---------------------------------------------------- */
+.topContext {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-space-200);
+  flex-wrap: wrap;
+  padding: var(--ax-space-200) var(--ax-space-300);
+  background: var(--ax-color-surface);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius-large);
+}
+.topContext__title { font: var(--ax-text-body-strong); }
+.topContext__meta { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.grow { flex: 1 1 auto; }
+
+/* ---- mission + status rail ------------------------------------------------ */
+.missionRail {
+  display: flex;
+  align-items: center;
+  gap: var(--ax-space-200);
+  flex-wrap: wrap;
+  padding-inline: var(--ax-space-100);
+}
+.mission { font: var(--ax-text-subheading); font-weight: 600; }
+.exc {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ax-space-100);
+  font: var(--ax-text-caption);
+  font-weight: 600;
+  padding-block: var(--ax-space-050);
+  padding-inline: var(--ax-space-150);
+  border-radius: var(--ax-radius-full);
+  border: 1px solid var(--ax-color-border);
+  background: var(--ax-color-surface);
+  color: var(--ax-color-text-secondary);
+}
+.exc__mark { inline-size: 8px; block-size: 8px; border-radius: var(--ax-radius-full); background: currentColor; flex: none; }
+.exc--warning { color: var(--ax-color-warning-strong); border-color: var(--ax-color-warning); background: var(--ax-color-warning-tint); }
+.exc--pending { color: var(--ax-color-info); border-color: var(--ax-color-info); background: var(--ax-color-info-tint); }
+.exc--critical { color: var(--ax-color-critical-strong); border-color: var(--ax-color-critical); background: var(--ax-color-critical-tint); }
+.exc--success { color: var(--ax-color-success-strong); border-color: var(--ax-color-success); background: var(--ax-color-success-tint); }
+
+/* ---- metric strip --------------------------------------------------------- */
+.metricStrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--ax-space-200);
+}
+@media (max-width: 900px) { .metricStrip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-050);
+  padding: var(--ax-space-200) var(--ax-space-250);
+  background: var(--ax-color-surface);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius-large);
+  min-block-size: 84px;
+}
+.metric__label { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+.metric__value { font: var(--ax-text-display); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.metric__value--warning { color: var(--ax-color-warning-strong); }
+.metric__delta { font: var(--ax-text-micro); color: var(--ax-color-text-secondary); }
+.metric__blocked { font: var(--ax-text-body-strong); color: var(--ax-color-text-secondary); }
+
+/* ---- workspace: map/list/calendar + selected visit pane ------------------- */
+.workspace {
+  display: grid;
+  grid-template-columns: 1.9fr 1fr; /* landscape ≈ 65% / 35% (CODEX real-map contract) */
+  gap: var(--ax-space-300);
+  align-items: start;
+}
+/* Portrait / narrow (Split View, Stage Manager): stack, workspace first. */
+@media (max-width: 1024px) { .workspace { grid-template-columns: 1fr; } }
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ax-space-200);
+  min-inline-size: 0;
+}
+.selectedCard { border-inline-start: 3px solid var(--ax-color-critical); }
+.selectedCard--warning { border-inline-start-color: var(--ax-color-warning); }
+.selectedCard--neutral { border-inline-start-color: var(--ax-color-primary); }
+
+.desc {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--ax-space-100) var(--ax-space-200);
+  font: var(--ax-text-caption);
+  margin: 0;
+}
+.desc dt { color: var(--ax-color-text-secondary); }
+.desc dd { margin: 0; }
+
+/* separate approval vs compliance (P0: distinct metrics) */
+.perfSplit { display: flex; gap: var(--ax-space-200); align-items: stretch; }
+.perfSplit__col { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.perfSplit__rule { inline-size: 1px; background: var(--ax-color-border); }
+.perfSplit__value { font: var(--ax-text-heading); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ---- field action bar ----------------------------------------------------- */
+.actionBar {
+  position: sticky;
+  inset-block-end: calc(var(--ax-shell-panel-width, 0px) * 0); /* keep in-flow */
+  display: flex;
+  align-items: center;
+  gap: var(--ax-space-200);
+  flex-wrap: wrap;
+  padding: var(--ax-space-200) var(--ax-space-300);
+  background: var(--ax-color-surface);
+  border: 1px solid var(--ax-color-border);
+  border-radius: var(--ax-radius-large);
+}
+.actionBar__meta { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
+
+/* ---- pack sheet ----------------------------------------------------------- */
+.packChipRow { display: flex; gap: var(--ax-space-150); align-items: center; flex-wrap: wrap; padding: var(--ax-space-200) var(--ax-space-300); border-block-end: 1px solid var(--ax-color-border); }
+.packReadiness { padding: var(--ax-space-300); border-block-start: 1px solid var(--ax-color-border); }
+.packFooter { display: flex; gap: var(--ax-space-200); padding: var(--ax-space-250) var(--ax-space-300); border-block-start: 1px solid var(--ax-color-border); }
+.packBlocked { color: var(--ax-color-critical-strong); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .shell *, .shell *::before, .shell *::after { transition: none !important; animation: none !important; }
+}
