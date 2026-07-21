@@ -12,9 +12,9 @@ const exists = (file: string) => fs.existsSync(path.join(repoRoot, file));
 
 test.describe("TASK-EXECUTION-MODULE-001 Phase 2B governed access grants", () => {
   const migrationPath = "supabase/migrations/20260721110000_execution_access_grants.sql";
-  const pagePath = "apps/web/src/app/admin/access/page.tsx";
-  const actionsPath = "apps/web/src/app/admin/access/actions.ts";
-  const managerPath = "apps/web/src/app/admin/access/AccessManager.tsx";
+  const pagePath = "apps/web/src/app/(app)/admin/access/page.tsx";
+  const actionsPath = "apps/web/src/app/(app)/admin/access/actions.ts";
+  const managerPath = "apps/web/src/app/(app)/admin/access/AccessManager.tsx";
 
   test("migration creates user_capability_grants with least-privilege RLS", () => {
     expect(exists(migrationPath)).toBeTruthy();
@@ -110,9 +110,9 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 2B governed access grants", () =>
     // Non-security_admin viewers keep the read-only roster note.
     expect(page).toContain("This screen is read-only.");
     // NotYetBoundary is fully retired from the access route.
-    const accessDir = path.join(repoRoot, "apps/web/src/app/admin/access");
+    const accessDir = path.join(repoRoot, "apps/web/src/app/(app)/admin/access");
     for (const file of fs.readdirSync(accessDir)) {
-      expect(read(`apps/web/src/app/admin/access/${file}`), `${file} still references NotYetBoundary`).not.toContain("NotYetBoundary");
+      expect(read(`apps/web/src/app/(app)/admin/access/${file}`), `${file} still references NotYetBoundary`).not.toContain("NotYetBoundary");
     }
   });
 

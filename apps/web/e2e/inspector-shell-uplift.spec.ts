@@ -58,9 +58,10 @@ test.describe("Inspector shell foundation and sponsor-corrected shared business 
     expect(tabs).toContain('aria-current={active === "dashboard" ? "page" : undefined}');
     expect(tabs).toContain("<Icon d={GLYPHS.next} />");
     expect(css).toContain("inset-inline: 0");
-    expect(css).toContain("var(--ax-focus-ring)");
-    expect(tokens).toContain("--ax-radius-input: 12px");
-    expect(tokens).toContain("--ax-text-input:   400 16px/24px var(--ax-font-input)");
+    expect(css).toContain("var(--focus-ring)");
+    expect(tokens).toContain("--radius-sm: 3px");
+    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)");
+    expect(tokens).toContain("--ax-text-input:        400 14px/1.5 var(--font-body)");
     expect(login).toContain("lg-atlas");
   });
 

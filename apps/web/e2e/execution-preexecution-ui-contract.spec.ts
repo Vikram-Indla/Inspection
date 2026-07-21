@@ -10,10 +10,10 @@ const repoRoot = path.resolve(webRoot, "../..");
 const read = (file: string) => fs.readFileSync(path.join(repoRoot, file), "utf8");
 const exists = (file: string) => fs.existsSync(path.join(repoRoot, file));
 
-const pagePath = "apps/web/src/app/field/[visitId]/page.tsx";
-const panelPath = "apps/web/src/app/field/[visitId]/PreExecution.tsx";
-const actionsPath = "apps/web/src/app/field/[visitId]/preparation-actions.ts";
-const startupPath = "apps/web/src/app/field/[visitId]/Startup.tsx";
+const pagePath = "apps/web/src/app/(app)/field/[visitId]/page.tsx";
+const panelPath = "apps/web/src/app/(app)/field/[visitId]/PreExecution.tsx";
+const actionsPath = "apps/web/src/app/(app)/field/[visitId]/preparation-actions.ts";
+const startupPath = "apps/web/src/app/(app)/field/[visitId]/Startup.tsx";
 const guardMigrationPath = "supabase/migrations/20260721130000_execution_journey_readiness_guard.sql";
 
 test.describe("TASK-EXECUTION-MODULE-001 Phase 3B pre-execution UI", () => {
@@ -89,18 +89,18 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 3B pre-execution UI", () => {
   });
 
   test("planning publish maps EXE-CAPACITY-WINDOW-FULL to the neutral blocker pattern", () => {
-    const single = read("apps/web/src/app/planning/single/actions.ts");
+    const single = read("apps/web/src/app/(app)/planning/single/actions.ts");
     expect(single).toContain("EXE-CAPACITY-WINDOW-FULL");
-    const bulk = read("apps/web/src/app/planning/bulk/actions.ts");
+    const bulk = read("apps/web/src/app/(app)/planning/bulk/actions.ts");
     expect(bulk).toContain("EXE-CAPACITY-WINDOW-FULL");
     expect(bulk).toContain('"capacity"');
     expect(bulk).toContain("getWindowCapacity");
-    const reviewMeta = read("apps/web/src/app/planning/bulk/review/ReviewClient.tsx");
+    const reviewMeta = read("apps/web/src/app/(app)/planning/bulk/review/ReviewClient.tsx");
     expect(reviewMeta).toContain("capacity:");
   });
 
   test("workload page surfaces the configured daily cap from engine_settings.execution", () => {
-    const workload = read("apps/web/src/app/visits/workload/page.tsx");
+    const workload = read("apps/web/src/app/(app)/visits/workload/page.tsx");
     expect(workload).toContain('engine_settings');
     expect(workload).toContain('"execution"');
     expect(workload).toContain("daily_visit_cap");
