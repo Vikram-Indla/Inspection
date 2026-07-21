@@ -14,6 +14,11 @@ import { STORY_SCENE_ORDER, type AtlasStageId } from "./saudi-atlas-locations";
 import { createAtlasTimeline, type AtlasTimeline } from "./saudi-atlas-motion";
 import type { DossierStrings } from "./SaudiAtlasDossier";
 
+// The art-directed raster atlas (real rendered POIs, inspectors, SUVs, glowing
+// coastline, elevated relief, zone-lift interaction) is the beauty. The
+// hand-built low-poly three.js scene (atlas3d/SaudiAtlas3D) could free-orbit
+// but downgraded the art, so it is parked; a true 3D asset would come from the
+// design team's render, not primitives.
 const Atlas = dynamic(() => import("./SaudiIndustrialAtlas"), { ssr: false });
 
 export type StoryStrings = {

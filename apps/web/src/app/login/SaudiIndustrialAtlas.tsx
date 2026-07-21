@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import L from "leaflet";
 import StoryMapInner, { ATLAS_BOUNDS, type AtlasMapContext } from "./StoryMapInner";
 import {
-  NODES, JOURNEY, STAGE_ORDER, ORIENTATION_CITIES,
+  NODES, JOURNEY, STAGE_ORDER,
   type AtlasNode, type AtlasStageId,
 } from "./saudi-atlas-locations";
 import { buildStructure } from "./saudi-atlas-structures";
@@ -25,7 +25,35 @@ import SaudiAtlasDossier, { type DossierStrings } from "./SaudiAtlasDossier";
 // Uniform factory footprint — small enough to shrink-to-fit the dense Eastern
 // cluster without clipping; matches the 140×112 structure viewBox aspect.
 const FACTORY_W = 58, FACTORY_H = 46;
-const PUBLIC_SAFE_ATLAS_BASE = "/brand/saudi-atlas/inspection-atlas-scene-base-v2";
+// Theme-specific renders of the SAME scene (same 1672×941 framing, camera and
+// facility geometry). Every hotspot %, zone-lift clip and route is authored
+// against this shared grid, so swapping the raster by theme keeps them pixel-
+// aligned. Dark = native cinematic render; light = daylight/mineral render.
+const ATLAS_BASE_DARK = "/brand/saudi-atlas/inspection-atlas-scene-base-v2";
+const ATLAS_BASE_LIGHT = "/brand/saudi-atlas/inspection-atlas-scene-light-v1";
+const PUBLIC_SAFE_ATLAS_BASE = ATLAS_BASE_DARK;
+
+// Live theme resolution so the atlas swaps its render on theme flip with no
+// reload. Mirrors StoryMapInner.isDark() and observes data-theme changes.
+function resolveDark(): boolean {
+  if (typeof document === "undefined") return true;
+  const attr = document.documentElement.getAttribute("data-theme");
+  if (attr === "light") return false;
+  if (attr === "dark") return true;
+  return !window.matchMedia?.("(prefers-color-scheme: light)").matches;
+}
+function useAtlasBase(): string {
+  const [dark, setDark] = useState(resolveDark);
+  useEffect(() => {
+    const sync = () => setDark(resolveDark());
+    const obs = new MutationObserver(sync);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    const mq = window.matchMedia?.("(prefers-color-scheme: light)");
+    mq?.addEventListener?.("change", sync);
+    return () => { obs.disconnect(); mq?.removeEventListener?.("change", sync); };
+  }, []);
+  return dark ? ATLAS_BASE_DARK : ATLAS_BASE_LIGHT;
+}
 
 // Normalized positions over the approved 1672×941 public-safe composition.
 // They are interaction anchors only; the visible geography remains in the
@@ -40,23 +68,6 @@ const IMAGE_POSITIONS: Record<string, { x: number; y: number }> = {
   yanbu: { x: 22.0, y: 42.0 },
   jeddah: { x: 20.5, y: 68.0 },
   jazan: { x: 44.0, y: 78.5 },
-};
-
-// Civic orientation labels — text captions only (no icon, no hotspot), fitted
-// onto the raster by least-squares regression of the 9 verified NODES
-// lat/lng → IMAGE_POSITIONS pairs above, then checked by eye against the
-// composition. `ORIENTATION_CITIES` also carries Makkah and Al-Madinah, but
-// those sit almost exactly on the existing unlabeled clock-tower structure
-// here — labelling them would read as identifying that structure as a
-// religious landmark, which this file's own contract (L4 comment above)
-// rejects. Left out until that's a deliberate call, not a fitted side effect.
-const ORIENTATION_LABEL_POSITIONS: Record<string, { x: number; y: number }> = {
-  Tabuk: { x: 14.5, y: 17.2 },
-  Arar: { x: 32.3, y: 2.7 },
-  Sakaka: { x: 29.1, y: 8.5 },
-  "Al-Ahsa": { x: 67.1, y: 37.2 },
-  Abha: { x: 39.0, y: 78.0 },
-  Najran: { x: 45.6, y: 82.5 },
 };
 
 type AtlasZoneId = "north" | "west" | "central" | "east" | "south";
@@ -111,25 +122,6 @@ const ZONE_INTELLIGENCE: Record<AtlasZoneId, {
   south: { x: 56, y: 62, en: "Southern zone", ar: "المنطقة الجنوبية", inspections: "198 inspections", compliance: "89% compliant", action: "14 follow-ups" },
 };
 
-// Tracks the live `data-theme` attribute ThemeToggle writes on <html>, so the
-// atlas can pick the pixel-aligned light or dark raster with no runtime CSS
-// filter/invert — an instant, flash-free asset swap instead.
-function useAtlasTheme(): "light" | "dark" {
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof document === "undefined") return "dark";
-    return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
-  });
-  useEffect(() => {
-    const el = document.documentElement;
-    const read = () => setTheme(el.getAttribute("data-theme") === "light" ? "light" : "dark");
-    read();
-    const observer = new MutationObserver(read);
-    observer.observe(el, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => observer.disconnect();
-  }, []);
-  return theme;
-}
-
 function stageZone(stage: AtlasStageId): AtlasZoneId {
   return stage === "plan" || stage === "decide" ? "central" : "east";
 }
@@ -161,40 +153,13 @@ function JourneyOverlay({ stage, locale }: { stage: AtlasStageId; locale: "ar" |
           </g>
         ))}
         {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
-          // A vector glyph, not the photoreal SUV render: at a 27x54 marker
-          // footprint a photoreal top-down photo anti-aliases into an
-          // unreadable blur (verified by simulating the exact browser
-          // downscale). A flat rounded body + windshield + wheel silhouette
-          // stays crisp at any zoom, the way map-pin car icons actually work.
-          <g key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle" opacity="0" transform="rotate(90)">
+          <image key={`vehicle-${route.id}`} className="lg-atlas-motion__route-vehicle"
+            href="/brand/saudi-atlas/inspection-suv-topdown-v1.png" x="-13.5" y="-27" width="27" height="54" opacity="0" transform="rotate(90)">
             <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.88;1"
               dur="6s" begin={`${index * 2.5}s`} fill="remove" />
             <animateMotion path={route.path} rotate="auto" dur="6s" begin={`${index * 2.5}s`} fill="remove"
               calcMode="spline" keyTimes="0;1" keySplines="0.32 0.05 0.2 1" />
-            <rect x="-8" y="-24" width="16" height="48" rx="6"
-              fill="var(--ax-color-primary-hover)" stroke="var(--ax-color-atlas-canvas)" strokeWidth="1" />
-            <rect x="-1" y="-22" width="2" height="44" fill="var(--ax-color-atlas-text)" opacity="0.3" />
-            <rect x="-5" y="-17" width="10" height="13" rx="3" fill="var(--ax-color-atlas-text)" opacity="0.88" />
-            <rect x="-9" y="-20" width="3.5" height="9" rx="1.5" fill="#000" opacity="0.4" />
-            <rect x="5.5" y="-20" width="3.5" height="9" rx="1.5" fill="#000" opacity="0.4" />
-            <rect x="-9" y="10" width="3.5" height="9" rx="1.5" fill="#000" opacity="0.4" />
-            <rect x="5.5" y="10" width="3.5" height="9" rx="1.5" fill="#000" opacity="0.4" />
-          </g>
-        ))}
-        {/* Each drive completes well inside the Dispatch dwell window (6s +
-            stagger, against an 11s stage), then used to just vanish — no
-            visible sign any car had actually reached its site. A small
-            "arrived" check-badge now fades in at the route end and freezes
-            for the rest of the stage, so a resting glance at Dispatch shows
-            some vehicles still moving and others already checked in. */}
-        {stage === "travel" && DISPATCH_ROUTES.map((route, index) => (
-          <g key={`arrived-${route.id}`} className="lg-atlas-motion__route-arrived" opacity="0"
-            transform={`translate(${route.end[0]}, ${route.end[1]})`}>
-            <animate attributeName="opacity" values="0;1" begin={`${index * 2.5 + 5.75}s`} dur="0.4s" fill="freeze" />
-            <circle r="7" fill="var(--ax-color-success)" stroke="var(--ax-color-atlas-canvas)" strokeWidth="1.5" />
-            <path d="M-3 0 L-1 2.4 L3.4 -3" fill="none" stroke="var(--ax-color-atlas-canvas)"
-              strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-          </g>
+          </image>
         ))}
       </svg>
 
@@ -522,13 +487,12 @@ function PublicSafeImageAtlas({
   const [hoveredZone, setHoveredZone] = useState<AtlasZoneId | null>(null);
   const [lockedZone, setLockedZone] = useState<AtlasZoneId | null>(null);
   const [ready, setReady] = useState(false);
+  const atlasBase = useAtlasBase();
   const refs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const shown = locked ?? hover;
   const activeZone = lockedZone ?? hoveredZone;
   const activeNode = stageNode(activeStage);
   const shownPosition = shown ? IMAGE_POSITIONS[shown.id] : undefined;
-  const theme = useAtlasTheme();
-  const atlasBase = theme === "light" ? `${PUBLIC_SAFE_ATLAS_BASE}-light` : PUBLIC_SAFE_ATLAS_BASE;
 
   useEffect(() => { onInteractingChange(shown !== null || activeZone !== null); }, [shown, activeZone, onInteractingChange]);
 
@@ -543,7 +507,7 @@ function PublicSafeImageAtlas({
       data-active-stage={activeStage} data-active-zone={stageZone(activeStage)}>
       <div className="lg-atlas-image__plane">
         <picture>
-          <img className="lg-atlas-image__media" src={`${atlasBase}.png`}
+          <img className="lg-atlas-image__media" src={`${atlasBase}.png`} key={atlasBase}
             width="1672" height="941" alt="" decoding="async" draggable={false}
             onLoad={() => setReady(true)} onError={onImageError} />
         </picture>
@@ -583,18 +547,6 @@ function PublicSafeImageAtlas({
         <div className={`lg-atlas-image__zones lg-atlas-image__zones--${locale}`} aria-hidden="true">
           {ZONES.map((zone, index) => <span key={zone.en}
             style={{ left: `${zone.x}%`, top: `${zone.y}%`, "--zone-label-order": index } as CSSProperties}>{zone[locale]}</span>)}
-        </div>
-
-        {/* Civic orientation captions only — no icon, no hotspot, no sample
-            state. Positions from ORIENTATION_LABEL_POSITIONS above; cities
-            without a fitted position (Makkah, Al-Madinah) are skipped. */}
-        <div className="lg-atlas-image__orientation" aria-hidden="true">
-          {ORIENTATION_CITIES.filter(city => ORIENTATION_LABEL_POSITIONS[city.name.en]).map(city => {
-            const pos = ORIENTATION_LABEL_POSITIONS[city.name.en];
-            return <span key={city.name.en} style={{ left: `${pos.x}%`, top: `${pos.y}%` } as CSSProperties}>
-              {city.name[locale]}
-            </span>;
-          })}
         </div>
 
       </div>

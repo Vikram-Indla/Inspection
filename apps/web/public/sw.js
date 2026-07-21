@@ -1,7 +1,7 @@
 /* MIM Field — app-shell service worker (FND-005: field app survives offline).
    Static assets: cache-first. Navigations: network-first, fallback to cached shell.
    Data writes are NOT handled here — the IndexedDB outbox owns them (idempotent replay). */
-const SHELL = "saqeel-shell-v4";
+const SHELL = "saqeel-shell-v5";
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(SHELL).then((c) => c.addAll(["/field", "/manifest.json", "/saqeel-prism.svg"])));
   self.skipWaiting();
@@ -47,11 +47,14 @@ self.addEventListener("fetch", (e) => {
     return;
   }
   if (e.request.mode === "navigate") {
-    // Offline fallback to the cached field shell applies to field routes only —
-    // public pages (/, /login) must never silently render the field app.
+    // Offline support (cache the navigation, fall back to it when offline)
+    // applies to the field app ONLY. Public pages (/, /login) are network-only:
+    // the SW must never write them to the cache and never serve them from it,
+    // or a stale public page (e.g. a pre-redesign /login) survives every code
+    // change and reappears on each load. Let those navigations pass through
+    // untouched so the network is always the source of truth.
+    if (!url.pathname.startsWith("/field")) return;
     e.respondWith(fetch(e.request).then((r) => { caches.open(SHELL).then((c) => c.put(e.request, r.clone())); return r; })
-      .catch(async () => (await caches.match(e.request))
-        ?? (url.pathname.startsWith("/field") ? await caches.match("/field") : undefined)
-        ?? Response.error()));
+      .catch(async () => (await caches.match(e.request)) ?? (await caches.match("/field")) ?? Response.error()));
   }
 });
