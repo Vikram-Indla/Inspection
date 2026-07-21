@@ -67,7 +67,7 @@ test("offline answers queue locally, replay once on reconnect, offline submit ne
     await q.getByRole("button", { name: /^compliant$/i }).click();
     await expect(q).toHaveClass(/is-answered/);
   }
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
+  await page.getByRole("button", { name: "Review & submit — final version" }).click();
   // DEC-009 acknowledgement gate — offline submit still requires a signature.
   await signAndConfirm(page);
   // Never claims "submitted" while unsynced — the queued message is explicit.

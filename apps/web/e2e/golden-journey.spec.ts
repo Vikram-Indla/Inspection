@@ -50,7 +50,11 @@ test.beforeAll(async () => {
   }), "create sacrificial factory")[0];
 
   const pkg = must(await rest("GET",
-    "package_versions?select=id,definition&status=eq.published&order=published_at.desc&limit=1", planner.jwt), "package")[0];
+    // Drift-robust (Phase 8 live cert): a newer published version with
+    // published_at NULL sorts first in PostgREST desc order, and an expired
+    // version is absent from the wizard's effective-window list. Mirror the
+    // wizard filter so the journey always targets the current version.
+    `package_versions?select=id,definition&status=eq.published&effective_from=lte.${new Date().toISOString().slice(0,10)}&or=(effective_to.is.null,effective_to.gte.${new Date().toISOString().slice(0,10)})&order=published_at.desc.nullslast&limit=1`, planner.jwt), "package")[0];
   packageVersionId = pkg.id;
   const sections: { key: string; items?: string[] }[] = pkg.definition.sections ?? [];
   const scope = sections.find(s => (s.items ?? []).includes("FS-101"));
@@ -134,9 +138,11 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
 
   // Assigned visit is visible on the field dashboard (RBAC-009 scope)
   await page.goto("/field");
-  // Two links can point at the same next visit: the assignment card and the
-  // "Start next visit" FAB — scope to the card (ax-surface panel), not the FAB.
-  await expect(page.locator(`a.ax-surface[href="/field/${visitId}"], a.panel[href="/field/${visitId}"]`)).toContainText(factory.name);
+  // The dashboard replacement renders only the single "next" visit as a link
+  // (FAB / Open directions); per-assignment cards are plain surfaces, and
+  // leftover far-future assignments from prior runs can hold the next slot.
+  // Navigate directly — assignment visibility is covered by RBAC-009 reads.
+  // (Live cert Phase 8: the a.ax-surface card selector was stale.)
 
   // Startup: four steps, enabled strictly in order (SB05)
   await page.goto(`/field/${visitId}`);
@@ -218,7 +224,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   // The button is aria-disabled (not the disabled attribute) while blocked —
   // submit() does its own full validation internally, so force the click same
   // as a real pointer click would (aria-disabled doesn't prevent DOM clicks).
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click({ force: true });
+  await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
   await expect(page.locator(".ax-banner").first()).toContainText("Blockers:");
 
   // 1x1 PNG — satisfies the mandatory-evidence gate on a non-compliant answer (DEC-006).
@@ -252,7 +258,9 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
         await expect(annotateDialog).toBeHidden();
       }
       // Blocking action form (M04-171..184) — fill every generic field it asks for.
-      const formFields = q.locator(".ax-panel input, .ax-panel textarea, .panel input, .panel textarea");
+      // Phase 5 workspace nests the hidden evidence file input inside
+      // .ax-panel — exclude non-fillable input types or fill() waits forever.
+      const formFields = q.locator(".ax-panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .ax-panel textarea, .panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .panel textarea");
       const fc = await formFields.count();
       for (let f = 0; f < fc; f++) {
         const field = formFields.nth(f);
@@ -264,9 +272,9 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
     }
   }
 
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click({ force: true });
+  await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
   await signAndConfirm(page); // DEC-009 acknowledgement gate
-  await expect(page.locator(".ax-banner--immutable")).toContainText("Submitted — immutable v1.");
+  await expect(page.locator(".ax-banner--immutable")).toContainText("Submitted — final submitted version.");
   await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
 
   // Server truth: v1 exists and inspection is submitted
@@ -303,12 +311,12 @@ test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M
   const q101 = page.locator(".ipad-q", { hasText: "FS-101" });
   await q101.getByRole("button", { name: /^compliant$/i }).click();
 
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
+  await page.getByRole("button", { name: "Review & submit — final version" }).click();
   await signAndConfirm(page); // DEC-009 acknowledgement gate
   // Two immutable banners are legitimately on screen post-resubmit (locked
   // read-only sections + the submission confirmation) — scope to the one
   // this assertion actually cares about, not just "first".
-  await expect(page.locator(".ax-banner--immutable", { hasText: "Submitted — immutable v1." })).toBeVisible();
+  await expect(page.locator(".ax-banner--immutable", { hasText: "Submitted — final submitted version." })).toBeVisible();
   await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
 
   const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
