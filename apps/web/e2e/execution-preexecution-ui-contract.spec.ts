@@ -43,8 +43,8 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 3B pre-execution UI", () => {
     expect(startup).toContain("preparationGated");
     expect(startup).toContain("readiness-gate-reason");
     expect(startup).toContain("preparationRequired");
-    expect(startup).toContain("disabled={cached || !!preparationGated || !visit.package_versions}");
-    expect(startup).toContain("disabled={!cached || !!journeyId || busy || !!preparationGated}");
+    expect(startup).toContain("disabled={cached || !!preparationGated || !visit.package_versions || cancelApproved}");
+    expect(startup).toContain("disabled={!cached || !!journeyId || busy || !!preparationGated || cancelApproved}");
     // D-011 — Start Inspection reuses the Ready-created inspections row:
     // select-first, set started_at only when null, insert stays idempotent on
     // the visits -> inspections unique key.

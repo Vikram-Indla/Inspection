@@ -9,7 +9,7 @@ import { getFieldDeviceMetadata } from "@/lib/field-device";
 import { formatDateTime, formatTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import type { GeoMarkerData } from "@/components/GeoMap";
-import { transitionOperationalState, requestVisitCancellation, requestVisitReturn } from "./actions";
+import { transitionOperationalState, requestVisitCancellation, requestVisitReturn, startJourneyAction, confirmArrivalAction, requestActiveCancellationAction, correctVisitLocationAction } from "./actions";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import EmptyState from "@/components/EmptyState";
 
@@ -40,6 +40,13 @@ export type StartupStrings = {
   aiTitle: string; aiDescription: string; aiGenerate: string; aiUnavailable: string; aiEvidence: string; aiAdvisory: string;
   // Phase 3B — readiness gate (download/journey locked pre-Ready, reason shown)
   preparationRequired: string; packagePending: string;
+  // Phase 4B — journey RPC path (used only when the server schema probe passed)
+  journeyOverdueWarning: string;
+  correctionHeading: string; correctionCaption: string; correctionAffordance: string;
+  correctionReason: string; correctionReasonPlaceholder: string; correctionEvidence: string;
+  correctionSubmit: string; correctionCancel: string; correctionSaved: string; correctionFailed: string;
+  correctionOriginalLabel: string; correctionCorrectedLabel: string; correctionMeta: string;
+  cancelPendingActive: string; cancelApprovedCopy: string; cancelRejectedCopy: string; logActiveCancelSent: string;
 };
 
 // Module-level label so the dynamic() loading component (defined outside the
@@ -55,6 +62,7 @@ const GeoMap = dynamic(() => import("@/components/GeoMap"), {
 type Insp = { id: string; status: string; started_at: string | null };
 type V = { id: string; window_start: string; window_end: string; execution_mode: string;
   visit_type: string; priority: string | null; notes: string | null; planning_status: string;
+  operational_state: string;
   dispatch_lat: number; dispatch_lng: number; dispatch_source: "official" | "planned";
   factories: { name: string; factory_code: string | null; city: string | null; region: string | null;
     cr_number: string | null; license_number: string | null;
@@ -85,7 +93,17 @@ function distM(a: [number, number], b: [number, number]) {
 
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 
-export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion, locale, preparationGated }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string; locale: Locale; preparationGated?: boolean }) {
+// Phase 4B — server-provided journey-schema state (probe + latest request/corrections).
+type ActiveCancellation = {
+  id: string; status: "pending" | "approved" | "rejected" | "cancelled";
+  reason_key: string; requested_at: string; decision_reason: string | null;
+};
+type LocationCorrectionView = {
+  id: string; corrected_lat: number; corrected_lng: number; accuracy_m: number | null;
+  reason: string; source: string; corrected_at: string; capture_context: string;
+};
+
+export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion, locale, preparationGated, journeySchemaAvailable, initialCancellation, initialCorrections }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string; locale: Locale; preparationGated?: boolean; journeySchemaAvailable?: boolean; initialCancellation?: ActiveCancellation | null; initialCorrections?: LocationCorrectionView[] }) {
   const dLang = locale === "ar" ? "ar" : "en";
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
@@ -128,6 +146,15 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const [journeyStartedAt, setJourneyStartedAt] = useState<string | null>(null);
   const [arrivalAt, setArrivalAt] = useState<string | null>(null);
   const [distanceTravelledM, setDistanceTravelledM] = useState(0);
+  // Phase 4B — journey RPC path state (inert unless the schema probe passed)
+  const [overdueWarning, setOverdueWarning] = useState(false);
+  const [corrections, setCorrections] = useState<LocationCorrectionView[]>(initialCorrections ?? []);
+  const [activeCancel, setActiveCancel] = useState<ActiveCancellation | null>(initialCancellation ?? null);
+  const [showCorrection, setShowCorrection] = useState(false);
+  const [correctionReason, setCorrectionReason] = useState("");
+  const [correctionFile, setCorrectionFile] = useState(null as File | null);
+  // Idempotency key persists in component state so retries reuse it (§12).
+  const cancelIdemRef = useRef(null as string | null);
   const maxAcc = gis.gps_accuracy_checkin_max_m ?? 25;
   // SB20 — per-factory geofence override, else ENG-06 engine default.
   const fence = visit.factories.geofence_radius_m ?? gis.geofence_default_radius_m ?? 150;
@@ -197,6 +224,18 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     window.addEventListener("online", retry);
     return () => window.removeEventListener("online", retry);
   }, [overrideState, router]);
+
+  // Phase 4B — server-rendered cancellation state is authoritative after an
+  // Operations decision; a bounded refresh while pending mirrors the override
+  // pattern. The inspector never decides anything locally.
+  useEffect(() => {
+    setActiveCancel(initialCancellation ?? null);
+  }, [initialCancellation]);
+  useEffect(() => {
+    if (activeCancel?.status !== "pending") return;
+    const timer = window.setInterval(() => router.refresh(), 15_000);
+    return () => window.clearInterval(timer);
+  }, [activeCancel?.status, router]);
 
   // STM-OPS — guarded server-action transition (guard = set_operational_state RPC, 0015)
   async function opTransition(next: "on_the_way" | "arrived" | "executing"): Promise<boolean> {
@@ -278,9 +317,43 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
 
   async function startJourney() {
     setBusy(true);
+    const capturedDevice = captureDeviceInfo();
+    // Phase 4B / D-015 — when the journey schema probe succeeded, start_journey
+    // is the single atomic start path (plan §11): it validates readiness,
+    // window, package integrity, location and device, flips the visit
+    // On the Way and records the first telemetry point in ONE transaction.
+    // Multiple clicks/retries return the existing journey (reused: true).
+    if (journeySchemaAvailable) {
+      const fix = posRef.current ?? lastFixRef.current;
+      const r = await startJourneyAction({
+        visitId: visit.id,
+        device: {
+          device_id: capturedDevice.device_id,
+          device_os_version: capturedDevice.os_version,
+          application_version: capturedDevice.app_version,
+          network: navigator.onLine ? "online" : "offline",
+          gps: fix ? { lat: fix.lat, lng: fix.lng, accuracy_m: fix.acc } : null,
+          device_occurred_at: new Date().toISOString(),
+        },
+      });
+      setBusy(false);
+      if (r.error || !r.journey) {
+        // Neutral codes only (JOURNEY_* / NEUTRAL_WRITE_ERROR) — no state change.
+        add(strings.logJourneyBlocked);
+        return;
+      }
+      setDeviceInfo(capturedDevice);
+      setJourneyId(r.journey.journey_id);                    // reused journeys are success (idempotent)
+      setJourneyStartedAt(new Date().toISOString());
+      if (r.journey.overdue) setOverdueWarning(true);        // overdue-inside-window: warn, proceed
+      add(strings.logJourneyStarted);
+      return; // operational_state on_the_way was set atomically by the RPC (D-012)
+    }
+    // LEGACY FALLBACK (pre-migration, D-015) — direct journey_sessions insert,
+    // byte-for-byte the pre-Phase-4B behavior; removed once the migration is
+    // applied everywhere.
     const sb = supabaseBrowser();
     const { data: { user } } = await getVerifiedUser(sb);
-    const capturedDevice = captureDeviceInfo();
     const { data, error } = await sb.from("journey_sessions")
       .insert({
         visit_id: visit.id, inspector_id: user!.id, device_started_at: new Date().toISOString(),
@@ -415,6 +488,60 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     const { lat, lng, acc } = fix;
     const d = distM([lat, lng], dispatchPoint);
     if (acc > maxAcc) { add(fmt(strings.logAccuracyBlocked, { acc: acc.toFixed(0), max: maxAcc })); setBusy(false); return; }
+    // Phase 4B / plan §13 — server-validated arrival when the schema probe
+    // passed and the device is online. confirm_arrival enforces the accuracy
+    // gate, evaluates the fence against the EFFECTIVE target (latest
+    // correction, else registered/planning) and, when inside, records the
+    // arrival event + stops tracking + flips the visit Arrived atomically.
+    // When outside, NOTHING mutates server-side (notice only).
+    if (journeySchemaAvailable && navigator.onLine) {
+      const observedAt = new Date().toISOString();
+      const r = await confirmArrivalAction({
+        visitId: visit.id, observedLat: lat, observedLng: lng, accuracyM: acc,
+        device: { device_id: deviceInfo?.device_id ?? captureDeviceInfo().device_id, device_occurred_at: observedAt },
+      });
+      if (r.error) {
+        setBusy(false);
+        if (r.error === "ARRIVAL_ACCURACY") add(fmt(strings.logAccuracyBlocked, { acc: acc.toFixed(0), max: maxAcc }));
+        else add(strings.logCheckinRejected);
+        return;
+      }
+      if (r.result?.result === "inside") {
+        setBusy(false);
+        setCheckin({ lat, lng, acc, d, inside: true });
+        setArrivalEventId(r.result.arrival_event_id ?? null);
+        setCheckedIn(true); setArrivalAt(observedAt);
+        add(fmt(strings.logInside, { d: d.toFixed(0), acc: acc.toFixed(1) }));
+        return; // arrival event + journey 'arrived' + op state were set atomically by the RPC
+      }
+      // OUTSIDE (EXE-ARRIVAL-OUTSIDE notice) — record the immutable outside
+      // observation so the governed Operations override flow keeps its
+      // check-in anchor; the panel then offers retry / override / the new
+      // location-correction path.
+      const sbRpc = supabaseBrowser();
+      const outsideEventId = crypto.randomUUID();
+      const { data: outsideCheckin, error: outsideError } = await sbRpc.from("geo_events").insert({
+        id: outsideEventId, journey_id: journeyId, visit_id: visit.id, kind: "checkin",
+        observed_lat: lat, observed_lng: lng, accuracy_m: acc,
+        altitude_m: fix.alt ?? null, device_occurred_at: observedAt,
+        geofence_result: "outside", gis_version: "v1-accepted-2026-07-11",
+        device_id: deviceInfo?.device_id ?? "field-pwa",
+        source: "confirm_arrival_outside",
+      }).select("id").single();
+      setBusy(false);
+      if (outsideError || !outsideCheckin) {
+        // eslint-disable-next-line no-console
+        console.error("[field check-in]", outsideError);
+        add(strings.logCheckinRejected);
+        return;
+      }
+      setCheckin({ lat, lng, acc, d, inside: false });
+      setPendingOverride({ lat, lng, acc, d, checkinEventId: outsideCheckin.id });
+      add(fmt(strings.logOutside, { d: (r.result?.distance_m ?? d).toFixed(0), fence }));
+      return;
+    }
+    // LEGACY FALLBACK (pre-migration, D-015) — client-side geofence verdict +
+    // direct geo_events writes, byte-for-byte the pre-Phase-4B behavior.
     const inside = d <= fence;
     setCheckin({ lat, lng, acc, d, inside }); // SB20 — plot observed position on the map card
     const sb = supabaseBrowser();
@@ -611,6 +738,90 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
     } finally { setBusy(false); }
   }
 
+  // Phase 4B / plan §13 — corrected visit location (append-only; applies to
+  // THIS visit only, original + corrected stay visible). Optional photo rides
+  // the existing evidence outbox first so custody is durable before the RPC
+  // references it — same ordering rule as the geo-override flow.
+  async function submitCorrection() {
+    const reason = correctionReason.trim();
+    if (!reason || !navigator.onLine) { if (!navigator.onLine) add(strings.correctionFailed); return; }
+    const fix = posRef.current ?? lastFixRef.current
+      ?? (checkin ? { lat: checkin.lat, lng: checkin.lng, acc: checkin.acc, alt: null, speed: null, heading: null, d: checkin.d } : null);
+    if (!fix) { add(strings.logGpsFallback); return; }
+    setBusy(true);
+    try {
+      let evidenceId: string | null = null;
+      if (correctionFile) {
+        const correctionRef = crypto.randomUUID();
+        const capturedAt = new Date().toISOString();
+        const b64 = btoa(String.fromCharCode(...new Uint8Array(await correctionFile.arrayBuffer())));
+        const sha = await sha256b64(b64);
+        await local.enqueue({
+          kind: "evidence", inspection_id: null, visit_id: visit.id,
+          linked_type: "location_correction", linked_id: correctionRef, evidence_type: "photo",
+          name: `location-correction-${correctionRef}-${correctionFile.name}`,
+          mime: correctionFile.type || "image/jpeg", data_b64: b64,
+          captured_at: capturedAt, sha256: sha, queued_at: capturedAt,
+        });
+        await processOutbox(() => { /* failure stays queued; correction proceeds without the link */ });
+        const { data: evRow } = await supabaseBrowser().from("evidence")
+          .select("id").eq("linked_type", "location_correction").eq("linked_id", correctionRef).maybeSingle();
+        evidenceId = evRow?.id ?? null;
+      }
+      const r = await correctVisitLocationAction({
+        visitId: visit.id, lat: fix.lat, lng: fix.lng, accuracyM: fix.acc,
+        reason, evidenceId, captureContext: "online",
+      });
+      if (r.error || !r.correction) { add(strings.correctionFailed); return; }
+      setCorrections(c => [{
+        id: r.correction!.id, corrected_lat: r.correction!.corrected_lat, corrected_lng: r.correction!.corrected_lng,
+        accuracy_m: r.correction!.accuracy_m, reason: r.correction!.reason, source: r.correction!.source,
+        corrected_at: r.correction!.corrected_at, capture_context: r.correction!.capture_context,
+      }, ...c]);
+      setShowCorrection(false); setCorrectionReason(""); setCorrectionFile(null);
+      add(strings.correctionSaved);
+    } finally { setBusy(false); }
+  }
+
+  // Phase 4B / plan §12 — active-session cancellation REQUEST (on_the_way /
+  // arrived). The inspector never cancels directly; Operations decides. The
+  // idempotency key is stable across retries inside this mounted component.
+  async function submitActiveCancellation() {
+    if (!cancelReason) return;
+    if (cancelReason === "other" && !cancelComment.trim()) return; // server enforces too
+    if (!cancelIdemRef.current) cancelIdemRef.current = crypto.randomUUID();
+    setBusy(true);
+    try {
+      let evidenceId: string | null = null;
+      if (cancelFile) {
+        const capturedAt = new Date().toISOString();
+        const b64 = btoa(String.fromCharCode(...new Uint8Array(await cancelFile.arrayBuffer())));
+        const sha = await sha256b64(b64);
+        await local.enqueue({
+          kind: "evidence", inspection_id: null, visit_id: visit.id,
+          linked_type: "cancellation_request", linked_id: cancelIdemRef.current, evidence_type: "photo",
+          name: `cancellation-${cancelIdemRef.current}-${cancelFile.name}`,
+          mime: cancelFile.type || "image/jpeg", data_b64: b64,
+          captured_at: capturedAt, sha256: sha, queued_at: capturedAt,
+        });
+        await processOutbox(() => { /* failure stays queued; request proceeds without the link */ });
+        const { data: evRow } = await supabaseBrowser().from("evidence")
+          .select("id").eq("linked_type", "cancellation_request").eq("linked_id", cancelIdemRef.current).maybeSingle();
+        evidenceId = evRow?.id ?? null;
+      }
+      const r = await requestActiveCancellationAction({
+        visitId: visit.id, reasonKey: cancelReason, comment: cancelComment.trim() || null,
+        evidenceId, idempotencyKey: cancelIdemRef.current,
+      });
+      if (r.error || !r.request) { add(strings.logCancelFailed); return; }
+      setActiveCancel({
+        id: r.request.id, status: r.request.status, reason_key: r.request.reason_key,
+        requested_at: r.request.requested_at, decision_reason: r.request.decision_reason,
+      });
+      add(strings.logActiveCancelSent);
+    } finally { setBusy(false); }
+  }
+
   // F3 · M03-006 — inspector return for blocked visits: assignment -> returned,
   // visit flagged return_requested, planner notified (request_visit_return, 0020).
   async function submitReturn() {
@@ -629,6 +840,9 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   async function startInspection() {
     // M04-056 — a requested cancellation stops the transition to execution
     if (cancelRequested) { add(fmt(strings.logStartBlocked, { error: strings.cancelRequestedChip })); return; }
+    // Phase 4B — the active-session request holds the same gate until Operations decides.
+    if (activeCancel?.status === "pending") { add(fmt(strings.logStartBlocked, { error: strings.cancelPendingActive })); return; }
+    if (activeCancel?.status === "approved") { add(fmt(strings.logStartBlocked, { error: strings.cancelApprovedCopy })); return; }
     if (returnRequested) { add(fmt(strings.logStartBlocked, { error: strings.returnRequestedChip })); return; }
     if (gis.arrival_evidence_required && !arrivalEvidenceSaved) { add(fmt(strings.logStartBlocked, { error: strings.arrivalRequired })); return; }
     // M03-010 — mandatory pre-start confirmations (rep present + location confirmed)
@@ -726,8 +940,24 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const journeyDurationM = journeyStartedAt
     ? Math.max(0, Math.round(((new Date(arrivalAt ?? new Date().toISOString()).getTime() - new Date(journeyStartedAt).getTime()) / 60000)))
     : null;
+  // Phase 4B — active-session cancellation phase split (§12): pre-start keeps
+  // the flag flow; on_the_way/arrived file the Operations-decided request.
+  const cancelApproved = activeCancel?.status === "approved";
+  const activeCancellationPhase = !!journeySchemaAvailable && ["on_the_way", "arrived"].includes(visit.operational_state);
+  const latestCorrection = corrections[0] ?? null;
   return (
     <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+      {/* Phase 4B — overdue-inside-window warning (start proceeds; delay is recorded) */}
+      {overdueWarning && (
+        <div className="ax-banner ax-banner--warning" role="status"><div>{strings.journeyOverdueWarning}</div></div>
+      )}
+      {/* Phase 4B — Operations approved the active-session cancellation: terminal, captured data preserved */}
+      {cancelApproved && (
+        <div className="ax-banner ax-banner--immutable" role="status"><div>{strings.cancelApprovedCopy}</div></div>
+      )}
+      {activeCancel?.status === "rejected" && (
+        <div className="ax-banner ax-banner--warning" role="status"><div>{fmt(strings.cancelRejectedCopy, { reason: activeCancel.decision_reason ?? "—" })}</div></div>
+      )}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="field-device-readiness">
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.readiness}</h4>
         <div className="ax-stack" style={{ gap: 8 }}>
@@ -804,6 +1034,54 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           {fmt(strings.fenceCaption, { fence, source: visit.factories.geofence_radius_m != null ? strings.factoryOverride : strings.engineDefault, acc: maxAcc })}{!checkin && ` ${strings.positionHint}`}
         </p>
       </div>
+      {/* Phase 4B / plan §13 — original vs corrected location, side by side.
+          The correction never overwrites the planned/registered coordinates;
+          both stay visible with source and capture context. */}
+      {journeySchemaAvailable && latestCorrection && (
+        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="location-correction-display">
+          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.correctionHeading}</h4>
+          <div className="ax-grid-2">
+            <div className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+              <span className="ax-caption">{strings.correctionOriginalLabel}</span>
+              <div className="ax-numeric">{visit.dispatch_lat.toFixed(6)}, {visit.dispatch_lng.toFixed(6)}</div>
+              <span className="ax-caption">{visit.dispatch_source === "official" ? strings.officialLabel.replace("{name}", visit.factories.name) : strings.plannedLabel.replace("{name}", visit.factories.name)}</span>
+            </div>
+            <div className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+              <span className="ax-caption">{strings.correctionCorrectedLabel}</span>
+              <div className="ax-numeric">{Number(latestCorrection.corrected_lat).toFixed(6)}, {Number(latestCorrection.corrected_lng).toFixed(6)}{latestCorrection.accuracy_m != null ? ` · ±${Number(latestCorrection.accuracy_m).toFixed(1)}m` : ""}</div>
+              <span className="ax-caption">{latestCorrection.reason}</span><br />
+              <span className="ax-caption ax-numeric">{fmt(strings.correctionMeta, { at: formatDateTime(latestCorrection.corrected_at, dLang), context: latestCorrection.capture_context, source: latestCorrection.source })}</span>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Phase 4B / plan §13 — explicit correction affordance while the journey
+          is active (also reachable from the outside-fence panel below). */}
+      {journeySchemaAvailable && journeyId && !checkedIn && !cancelApproved && (
+        !showCorrection ? (
+          <div className="ax-row">
+            <button className="ax-btn ax-btn--subtle" onClick={() => setShowCorrection(true)} disabled={busy}>{strings.correctionAffordance}</button>
+          </div>
+        ) : (
+          <div className="ax-surface" role="dialog" aria-modal="false" aria-labelledby="location-correction-heading"
+            style={{ padding: "var(--ax-space-300)" }} data-testid="location-correction-panel">
+            <h4 id="location-correction-heading" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.correctionHeading}</h4>
+            <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.correctionCaption}</p>
+            <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+              <label className="ax-field"><span className="ax-field__label">{strings.correctionReason}</span>
+                <textarea className="ax-textarea" rows={2} value={correctionReason} onChange={e => setCorrectionReason(e.target.value)} placeholder={strings.correctionReasonPlaceholder} />
+              </label>
+              <label className="ax-field"><span className="ax-field__label">{strings.correctionEvidence}</span>
+                <input className="ax-input" type="file" accept="image/*" onChange={e => setCorrectionFile(e.target.files?.[0] ?? null)} />
+              </label>
+              <div className="ax-row" style={{ justifyContent: "flex-end", gap: 8 }}>
+                <button className="ax-btn ax-btn--subtle" onClick={() => { setShowCorrection(false); setCorrectionReason(""); setCorrectionFile(null); }}>{strings.correctionCancel}</button>
+                <button className="ax-btn ax-btn--field" onClick={submitCorrection} disabled={busy || !correctionReason.trim()}>{strings.correctionSubmit}</button>
+              </div>
+            </div>
+          </div>
+        )
+      )}
       {pendingOverride && !checkedIn && (
         <div className="ax-surface" role="dialog" aria-modal="false" aria-labelledby="gps-override-heading"
           style={{ padding: "var(--ax-space-300)", borderColor: "var(--ax-color-critical)" }}>
@@ -830,6 +1108,9 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
             <span>{strings.overrideSafetyException}</span>
           </label>
           <div className="ax-row" style={{ justifyContent: "flex-end", gap: 8 }}>
+            {journeySchemaAvailable && (
+              <button className="ax-btn ax-btn--subtle" onClick={() => { setPendingOverride(null); setShowCorrection(true); }}>{strings.correctionAffordance}</button>
+            )}
             <button className="ax-btn ax-btn--subtle" onClick={() => { setPendingOverride(null); setOverrideReason(""); setOverrideReasonKey(""); setOverrideFile(null); setOverrideSafetyException(false); }}>{strings.overrideCancel}</button>
             <button className="ax-btn ax-btn--danger" onClick={requestGpsOverride}
               disabled={busy || !overrideReasonKey || !overrideReason.trim() || (!overrideSafetyException && !overrideFile)}>{strings.overrideConfirm}</button>
@@ -932,12 +1213,12 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         <div className="ax-banner ax-banner--warning" role="status" data-testid="readiness-gate-reason"><div>{strings.preparationRequired}</div></div>
       )}
       <div className="ax-row">
-        <button className="ax-btn ax-btn--field" onClick={downloadPackage} disabled={cached || !!preparationGated || !visit.package_versions}>{strings.step1}</button>
-        <button className="ax-btn ax-btn--field" onClick={startJourney} disabled={!cached || !!journeyId || busy || !!preparationGated}>{strings.step2}</button>
-        <button className="ax-btn ax-btn--field" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none"}>{strings.step3}</button>
-        {started
+        <button className="ax-btn ax-btn--field" onClick={downloadPackage} disabled={cached || !!preparationGated || !visit.package_versions || cancelApproved}>{strings.step1}</button>
+        <button className="ax-btn ax-btn--field" onClick={startJourney} disabled={!cached || !!journeyId || busy || !!preparationGated || cancelApproved}>{strings.step2}</button>
+        <button className="ax-btn ax-btn--field" onClick={checkIn} disabled={!journeyId || checkedIn || busy || overrideState !== "none" || cancelApproved}>{strings.step3}</button>
+        {started && !cancelApproved
           ? <a className="ax-btn ax-btn--field ax-btn--prominent" href={`/field/inspection/${existing!.id}`}>{strings.resume}</a>
-          : <button className="ax-btn ax-btn--field ax-btn--prominent" onClick={startInspection} disabled={!checkedIn || busy || !repPresent || !locConfirmed}>{strings.step4}</button>}
+          : <button className="ax-btn ax-btn--field ax-btn--prominent" onClick={startInspection} disabled={!checkedIn || busy || !repPresent || !locConfirmed || cancelApproved}>{strings.step4}</button>}
       </div>
       {/* ENG-06 / FLD-GEO-005 — manual exception record while the journey is active */}
       {journeyId && (
@@ -950,11 +1231,24 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           </div>
         </div>
       )}
-      {/* F3 M04-056/057/058 cancellation REQUEST (RBAC: planner/ops own the actual cancel). */}
+      {/* F3 M04-056/057/058 cancellation REQUEST (RBAC: planner/ops own the actual cancel).
+          Phase 4B / plan §12 — phase split: pre-start (new/prepared) keeps the
+          request_visit_cancellation flag flow; once on_the_way/arrived (and the
+          journey schema probe passed) the request goes to Operations via
+          request_active_cancellation and stays pending until decided. */}
       <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.cancelHeading}</h4>
         <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.cancelCaption}</p>
-        {cancelRequested ? (
+        {cancelApproved ? (
+          <span className="ax-lozenge ax-lozenge--critical">{strings.cancelApprovedCopy}</span>
+        ) : activeCancellationPhase && activeCancel?.status === "pending" ? (
+          <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+            <span className="ax-lozenge ax-lozenge--warning">{strings.cancelPendingActive}</span>
+            <span className="ax-caption ax-numeric">
+              {(reasons.find(r => r.key === activeCancel.reason_key)?.label ?? activeCancel.reason_key)} · {formatDateTime(activeCancel.requested_at, dLang)}
+            </span>
+          </div>
+        ) : cancelRequested ? (
           <span className="ax-lozenge ax-lozenge--warning">{strings.cancelRequestedChip}</span>
         ) : reasons.length === 0 ? (
           <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{strings.cancelReasonsMissing}</p>
@@ -971,7 +1265,9 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
               <input className="ax-input" type="file" accept="image/*" onChange={e => setCancelFile(e.target.files?.[0] ?? null)} />
             </label>
             <div className="ax-row" style={{ justifyContent: "flex-end" }}>
-              <button className="ax-btn ax-btn--danger" onClick={submitCancellation} disabled={busy || !cancelReason}>{strings.cancelSubmit}</button>
+              <button className="ax-btn ax-btn--danger"
+                onClick={activeCancellationPhase ? submitActiveCancellation : submitCancellation}
+                disabled={busy || !cancelReason || (activeCancellationPhase && cancelReason === "other" && !cancelComment.trim())}>{strings.cancelSubmit}</button>
             </div>
           </div>
         )}

@@ -47,7 +47,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     sb.from("checklist_responses").select("item_id, response, updated_at").eq("inspection_id", id),
     sb.from("evidence").select("id, linked_type, linked_id, evidence_type, storage_path, captured_at").eq("inspection_id", id),
     sb.from("violations").select("id, violation_code_id").eq("inspection_id", id),
-    sb.from("engine_settings").select("engine, settings").in("engine", ["evidence", "sla"]),
+    sb.from("engine_settings").select("engine, settings").in("engine", ["evidence", "sla", "field"]),
   ]);
   // Tolerant fetches for columns landing in migrations 0015/0020 (context,
   // action_forms.item_id, inspection_no, evidence lifecycle): a missing column
@@ -70,6 +70,28 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     // eslint-disable-next-line no-console
     console.error("[field inspection visit evidence]", visitEvidenceRead.error.message);
   }
+  // TASK-EXECUTION-MODULE-001 · Phase 4B — journey schema probe (D-015) +
+  // latest active-session cancellation request for this visit. While migration
+  // 20260721140000 is not applied the probe fails and the workspace has no
+  // active-session cancel path (exactly the pre-Phase-4B behavior).
+  const { error: journeyProbeError } = await sb.from("cancellation_requests").select("id").limit(1);
+  const journeySchemaAvailable = !journeyProbeError;
+  let cancellation: { id: string; status: string; reason_key: string; requested_at: string; decision_reason: string | null } | null = null;
+  if (journeySchemaAvailable && ins.visit_id) {
+    const { data: cancelRows } = await sb.from("cancellation_requests")
+      .select("id, status, reason_key, requested_at, decision_reason")
+      .eq("visit_id", ins.visit_id)
+      .order("requested_at", { ascending: false })
+      .limit(1);
+    cancellation = ((cancelRows?.[0] ?? null) as { id: string; status: string; reason_key: string; requested_at: string; decision_reason: string | null } | null);
+  }
+  // Governed cancellation reasons (engine_settings.field, 0020 seed) — labels
+  // localized from the configuration itself, same rule as the startup page.
+  const fieldEngine = (engines ?? []).find(e => e.engine === "field")?.settings as
+    { cancellation_reasons?: { key: string; en: string; ar?: string }[] } | undefined;
+  const cancelReasons = (fieldEngine?.cancellation_reasons ?? []).map(r => ({
+    key: r.key, label: (locale === "ar" && r.ar) ? r.ar : r.en,
+  }));
   // Merge lifecycle columns (0020) into the evidence rows the client sees.
   const evLife = Object.fromEntries(((evMeta ?? []) as { id: string; archived_at: string | null; superseded_by: string | null; deleted_at: string | null }[]).map(m => [m.id, m]));
   const evidenceRows = ([
@@ -319,6 +341,18 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     exitSavedLocal: t("field.ws.exitSavedLocal", "All your answers are saved on this device and will sync automatically once you're back online. You can safely continue later from My Tasks."),
     exitConfirm: t("field.ws.exitConfirm", "Exit to My Tasks"),
     exitCancel: t("field.ws.exitCancel", "Stay"),
+    // Phase 4B — active-session cancellation request (§12)
+    cancelHeading: t("field.ws.cancel.heading", "Request cancellation"),
+    cancelCaption: t("field.ws.cancel.caption", "Cancellation is a request: Operations decides. You can keep working until a decision arrives — nothing is deleted either way."),
+    cancelSelectReason: t("field.ws.cancel.selectReason", "Select cancellation reason — mandatory"),
+    cancelCommentPlaceholder: t("field.ws.cancel.commentPlaceholder", "Comments (mandatory for reason “Other”)"),
+    cancelSubmit: t("field.ws.cancel.submit", "Request cancellation"),
+    cancelPending: t("field.ws.cancel.pending", "Cancellation requested — awaiting Operations decision. You can keep working."),
+    cancelApprovedTitle: t("field.ws.cancel.approvedTitle", "Cancellation approved by Operations."),
+    cancelApprovedBody: t("field.ws.cancel.approvedBody", "This visit is cancelled and the workspace is now read-only. Everything captured is preserved for audit."),
+    cancelRejected: t("field.ws.cancel.rejected", "Cancellation was rejected by Operations — the visit continues. Reason: {reason}"),
+    cancelFailed: t("field.ws.cancel.failed", "The cancellation request could not be sent. Check the connection, then try again."),
+    cancelReasonsMissing: t("field.ws.cancel.reasonsMissing", "Cancellation reasons unavailable — engine_settings.field not seeded yet (0020 pending)."),
     enumLabels,
     // — Slice E2 runtime depth —
     progress: t("field.ws.progress", "{pct}% complete"),
@@ -460,6 +494,9 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         panel={panel}
         inspectionNo={inspectionNo}
         locale={locale === "ar" ? "ar" : "en"}
+        cancellation={cancellation as never}
+        cancelReasons={cancelReasons}
+        journeySchemaAvailable={journeySchemaAvailable}
       />
     </Shell>
   );
