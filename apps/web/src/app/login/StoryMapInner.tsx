@@ -13,6 +13,7 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ORIENTATION_CITIES } from "./saudi-atlas-locations";
+import { loadKsaRegions, regionRingsLatLng, type KsaRegionCollection } from "@/lib/ksa-regions";
 
 // KSA framing bounds (also the SVGOverlay anchor for the Layer-2 terrain slab).
 export const ATLAS_BOUNDS: L.LatLngBoundsExpression = [[15.8, 34.4], [32.4, 56.0]];
@@ -53,6 +54,7 @@ export default function StoryMapInner({ locale, onReady, onFail }: {
   const elRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const ringsRef = useRef<[number, number][][] | null>(null);
+  const regionsRef = useRef<KsaRegionCollection | null>(null);
 
   useEffect(() => {
     let disposed = false;
@@ -104,6 +106,18 @@ export default function StoryMapInner({ locale, onReady, onFail }: {
       rings.forEach(r => L.polyline([...r, r[0]], {
         color: tokens.primary, weight: 1.5, opacity: 0.75, interactive: false,
       }).addTo(map));
+
+      // Internal first-level region borders from the canonical source
+      // (@/lib/ksa-regions), thinner and fainter than the national outline so
+      // the Kingdom shape still reads first. Non-fatal: a failed fetch simply
+      // omits this layer and never blocks the atlas or sign-in.
+      try {
+        const regions = regionsRef.current ?? (regionsRef.current = await loadKsaRegions());
+        if (!disposed) regions.features.forEach(feature =>
+          regionRingsLatLng(feature).forEach(ring => L.polyline([...ring, ring[0]], {
+            color: tokens.primary, weight: 0.75, opacity: 0.4, dashArray: "3 3", interactive: false,
+          }).addTo(map)));
+      } catch { /* region layer is optional; never blocks the atlas or sign-in */ }
 
       // Civic orientation labels (Layer 1 context; non-industrial, no metrics).
       ORIENTATION_CITIES.forEach(c => {

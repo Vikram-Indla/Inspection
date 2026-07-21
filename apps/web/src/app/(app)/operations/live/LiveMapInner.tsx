@@ -8,6 +8,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import type { LiveFactory, LiveRegion, LiveInspector, RagBand } from "./types";
 import { MAP_PALETTE } from "@/lib/map-palette";
+import { loadKsaRegions, resolveRegionId, type KsaRegionCollection } from "@/lib/ksa-regions";
 
 const KSA_CENTER: [number, number] = [24.2, 45.1];
 const KSA_ZOOM = 6;
@@ -24,16 +25,23 @@ const GLYPH: Record<RagBand, string> = { high: "▲", medium: "◆", low: "●" 
 function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
 function heading(from: [number, number], to: [number, number]) { return (Math.atan2(to[1] - from[1], to[0] - from[0]) * 180) / Math.PI + 90; }
 
-function ring(lat: number, lng: number, radiusM: number): [number, number][] {
-  const earth = 6_378_137, d = radiusM / earth, latR = lat * Math.PI / 180, lngR = lng * Math.PI / 180;
-  const points: [number, number][] = [];
-  for (let bearing = 0; bearing <= 360; bearing += 8) {
-    const theta = bearing * Math.PI / 180;
-    const nextLat = Math.asin(Math.sin(latR) * Math.cos(d) + Math.cos(latR) * Math.sin(d) * Math.cos(theta));
-    const nextLng = lngR + Math.atan2(Math.sin(theta) * Math.sin(d) * Math.cos(latR), Math.cos(d) - Math.sin(latR) * Math.sin(nextLat));
-    points.push([nextLng * 180 / Math.PI, nextLat * 180 / Math.PI]);
+// Real region posture polygons: join each server region (by name) onto the
+// canonical KSA boundary from @/lib/ksa-regions and carry its aggregate band.
+// Regions that fail to resolve are simply omitted — no fabricated geometry.
+function regionPolygons(regions: LiveRegion[], canonical: KsaRegionCollection | null): GeoJSON.FeatureCollection {
+  if (!canonical) return { type: "FeatureCollection", features: [] };
+  const bandById = new Map<string, RagBand>();
+  for (const region of regions) {
+    const id = resolveRegionId(region.name);
+    if (id) bandById.set(id, region.posture);
   }
-  return points;
+  return {
+    type: "FeatureCollection",
+    features: canonical.features.flatMap(feature => {
+      const band = bandById.get(feature.properties.id);
+      return band ? [{ ...feature, properties: { id: feature.properties.id, band } }] : [];
+    }),
+  };
 }
 
 function projected(inspectors: LiveInspector[], tick: number, reduce: boolean) {
@@ -45,16 +53,14 @@ function projected(inspectors: LiveInspector[], tick: number, reduce: boolean) {
   });
 }
 
-function updateSources(map: mapboxgl.Map, factories: LiveFactory[], regions: LiveRegion[], moving: ReturnType<typeof projected>) {
+const setSource = (map: mapboxgl.Map, id: string, data: GeoJSON.FeatureCollection) =>
+  (map.getSource(id) as mapboxgl.GeoJSONSource | undefined)?.setData(data);
+
+// Tick-driven: factories, moving inspectors and their projected routes.
+function updateSources(map: mapboxgl.Map, factories: LiveFactory[], moving: ReturnType<typeof projected>) {
   const factoryData: GeoJSON.FeatureCollection<GeoJSON.Point> = { type: "FeatureCollection", features: factories.map(factory => ({
     type: "Feature", properties: { id: factory.id, rawId: factory.rawId, name: factory.name, context: factory.city ?? factory.region ?? "", band: factory.band, glyph: GLYPH[factory.band] },
     geometry: { type: "Point", coordinates: [factory.lng, factory.lat] },
-  })) };
-  const regionData: GeoJSON.FeatureCollection<GeoJSON.Polygon> = { type: "FeatureCollection", features: regions.map(region => ({
-    type: "Feature", properties: { id: region.id, band: region.posture }, geometry: { type: "Polygon", coordinates: [ring(region.lat, region.lng, region.radiusM)] },
-  })) };
-  const regionLabels: GeoJSON.FeatureCollection<GeoJSON.Point> = { type: "FeatureCollection", features: regions.map(region => ({
-    type: "Feature", properties: { label: `${GLYPH[region.posture]} ${region.name.toUpperCase()}`, band: region.posture }, geometry: { type: "Point", coordinates: [region.lng, region.lat] },
   })) };
   const inspectorData: GeoJSON.FeatureCollection<GeoJSON.Point> = { type: "FeatureCollection", features: moving.map(({ ins, pos, heading: bearing, fraction }) => ({
     type: "Feature", properties: { factoryId: ins.factoryId, inspector: ins.inspector, state: ins.stateLabel, factory: ins.factoryName, eta: Math.max(1, Math.round((1 - fraction) * ins.etaMin)), bearing },
@@ -63,8 +69,15 @@ function updateSources(map: mapboxgl.Map, factories: LiveFactory[], regions: Liv
   const routeData: GeoJSON.FeatureCollection<GeoJSON.LineString> = { type: "FeatureCollection", features: moving.flatMap(({ ins, pos }) => ins.state !== "on_the_way" ? [] : [{
     type: "Feature" as const, properties: {}, geometry: { type: "LineString" as const, coordinates: [[ins.originLng, ins.originLat], [pos[1], pos[0]]] },
   }]) };
-  const set = (id: string, data: GeoJSON.FeatureCollection) => (map.getSource(id) as mapboxgl.GeoJSONSource | undefined)?.setData(data);
-  set(FACTORY_SOURCE, factoryData); set(REGION_SOURCE, regionData); set(REGION_LABEL_SOURCE, regionLabels); set(INSPECTOR_SOURCE, inspectorData); set(ROUTE_SOURCE, routeData);
+  setSource(map, FACTORY_SOURCE, factoryData); setSource(map, INSPECTOR_SOURCE, inspectorData); setSource(map, ROUTE_SOURCE, routeData);
+}
+
+// Region-change-driven (NOT per tick): real posture polygons + centroid labels.
+function updateRegions(map: mapboxgl.Map, regions: LiveRegion[], canonical: KsaRegionCollection | null) {
+  const regionLabels: GeoJSON.FeatureCollection<GeoJSON.Point> = { type: "FeatureCollection", features: regions.map(region => ({
+    type: "Feature", properties: { label: `${GLYPH[region.posture]} ${region.name.toUpperCase()}`, band: region.posture }, geometry: { type: "Point", coordinates: [region.lng, region.lat] },
+  })) };
+  setSource(map, REGION_SOURCE, regionPolygons(regions, canonical)); setSource(map, REGION_LABEL_SOURCE, regionLabels);
 }
 
 function installLayers(map: mapboxgl.Map) {
@@ -87,6 +100,7 @@ export default function LiveMapInner({ factories, regions, inspectors, selectedI
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const canonicalRef = useRef<KsaRegionCollection | null>(null);
   const latest = useRef({ factories, regions, inspectors, selectedId, onSelect, tick: 0, reduce: false });
   const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const [tick, setTick] = useState(0);
@@ -107,7 +121,8 @@ export default function LiveMapInner({ factories, regions, inspectors, selectedI
     const onLoad = () => {
       installLayers(map);
       const next = latest.current;
-      updateSources(map, next.factories, next.regions, projected(next.inspectors, next.tick, next.reduce));
+      updateSources(map, next.factories, projected(next.inspectors, next.tick, next.reduce));
+      updateRegions(map, next.regions, canonicalRef.current);
       map.on("click", FACTORY_LAYER, event => {
         const feature = event.features?.[0];
         const id = String(feature?.properties?.id ?? "");
@@ -129,8 +144,26 @@ export default function LiveMapInner({ factories, regions, inspectors, selectedI
   useEffect(() => {
     const map = mapRef.current;
     if (!map?.isStyleLoaded()) return;
-    updateSources(map, factories, regions, projected(inspectors, tick, reduce));
-  }, [factories, inspectors, regions, reduce, tick]);
+    updateSources(map, factories, projected(inspectors, tick, reduce));
+  }, [factories, inspectors, reduce, tick]);
+
+  // Canonical region boundaries load once; re-join whenever the posture set
+  // changes. Not tick-driven — the polygons are static, only the band updates.
+  useEffect(() => {
+    let alive = true;
+    loadKsaRegions().then(collection => {
+      if (!alive) return;
+      canonicalRef.current = collection;
+      const map = mapRef.current;
+      if (map?.isStyleLoaded()) updateRegions(map, latest.current.regions, collection);
+    }).catch(() => { /* region layer optional; the ops map renders without it */ });
+    return () => { alive = false; };
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map?.isStyleLoaded()) updateRegions(map, regions, canonicalRef.current);
+  }, [regions]);
 
   if (!token || failed) return <div className="ax-state" role="status" data-map-provider="mapbox-unavailable"><span className="ax-state__glyph">⌖</span><h4>{s.unavailable}</h4><p className="t-caption">{s.notConfigured}</p></div>;
   return <div ref={containerRef} aria-label={s.ariaLabel} data-map-provider="mapbox" style={{ blockSize: "100%", inlineSize: "100%", background: "var(--ax-color-canvas)" }} />;

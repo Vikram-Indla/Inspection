@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { MAP_PALETTE } from "@/lib/map-palette";
+import { loadKsaRegions } from "@/lib/ksa-regions";
 
 export type GeoTone = "high" | "medium" | "low" | "neutral";
 
@@ -25,7 +26,21 @@ export type GeoFocus = { lat: number; lng: number; zoom?: number };
 const MARKER_SOURCE = "inspection-markers";
 const FENCE_SOURCE = "inspection-geofences";
 const MARKER_LAYER = "inspection-markers-circle";
+const REGION_SOURCE = "ksa-regions";
 const TONE: Record<GeoTone, { fill: string; stroke: string }> = MAP_PALETTE;
+
+// Canonical KSA region boundaries as a faint reference layer, drawn once under
+// the markers/fences. Sourced from @/lib/ksa-regions (single canonical source).
+function installRegions(map: mapboxgl.Map) {
+  if (map.getSource(REGION_SOURCE)) return;
+  loadKsaRegions().then(regions => {
+    if (!map.getStyle() || map.getSource(REGION_SOURCE)) return;
+    map.addSource(REGION_SOURCE, { type: "geojson", data: regions });
+    map.addLayer({ id: "ksa-regions-line", type: "line", source: REGION_SOURCE, slot: "bottom", paint: {
+      "line-color": MAP_PALETTE.neutral.stroke, "line-width": 0.75, "line-opacity": 0.35, "line-dasharray": [3, 3],
+    } });
+  }).catch(() => { /* reference layer is optional; the map renders without it */ });
+}
 
 type Props = {
   center: [number, number];
@@ -38,6 +53,8 @@ type Props = {
   onRadiusChange?: (id: string, radiusM: number) => void;
   interactive?: boolean;
   ariaLabel?: string;
+  /** Draw the canonical KSA region boundary reference layer (default true). */
+  showRegions?: boolean;
 };
 
 type RenderData = Pick<Props, "center" | "zoom" | "markers" | "selectedId" | "focus">;
@@ -116,7 +133,7 @@ function sync(map: mapboxgl.Map, data: RenderData, initial = false) {
 
 function locale() { return document.documentElement.lang === "ar" ? "ar" : "en"; }
 
-export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map" }: Props) {
+export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map", showRegions = true }: Props) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -144,6 +161,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
     mapRef.current = map;
     if (interactive) map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
     const onLoad = () => {
+      if (showRegions) installRegions(map);
       sync(map, latest.current, true);
       map.on("click", MARKER_LAYER, event => {
         const feature = event.features?.[0];
@@ -172,7 +190,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
     };
     map.on("load", onLoad); map.on("error", onError);
     return () => { map.off("load", onLoad); map.off("error", onError); map.remove(); mapRef.current = null; };
-  }, [interactive, mapLocale, token]);
+  }, [interactive, mapLocale, showRegions, token]);
 
   useEffect(() => { if (mapRef.current?.isStyleLoaded()) sync(mapRef.current, latest.current); }, [center, focus, markers, selectedId, zoom]);
   useEffect(() => { mapRef.current?.setLanguage(mapLocale); }, [mapLocale]);
