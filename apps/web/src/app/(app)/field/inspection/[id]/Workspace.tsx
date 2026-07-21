@@ -20,6 +20,8 @@ type SResp = { item_id: string; response: Answer | null; updated_at: string };
 type SEv = {
   id: string; linked_type: string; linked_id: string; evidence_type: string;
   storage_path?: string | null; captured_at?: string | null;
+  // Phase 6 — sha rides the submission evidence manifest (compared by id+sha, D-020).
+  content_sha256?: string | null;
   // lifecycle columns land in migration 0020 — optional so the page degrades pre-migration
   archived_at?: string | null; superseded_by?: string | null; deleted_at?: string | null;
 };
@@ -633,8 +635,48 @@ export default function Workspace({ inspection, items, library, serverResponses,
   async function finalizeSubmit(ack: SignatureAck) {
     setSigning(false);
     const key = crypto.randomUUID();
-    const nextVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)) + 1;
+    // Phase 6 (D-020): version_number is SERVER-authoritative on the RPC path
+    // (submit_inspection computes max+1 under a row lock). This client-side
+    // number is computed ONLY as the legacy-fallback payload for
+    // pre-20260721160000 servers and for the optimistic queue message.
+    const legacyVersion = Math.max(0, ...(inspection.submission_versions ?? []).map(s => s.version_number)) + 1;
     const byCode = (id: string) => (items.find(i => i.id === id) ?? library.find(i => i.id === id))?.code ?? id;
+    // Phase 6 (§21/§22, D-020/D-022) — the snapshot carries the frozen
+    // contract the server enforces: per-section comparable sub-objects
+    // (returned-scope byte-equality), the section membership map (legacy prior
+    // versions are sliced with it server-side), and the mandatory-evidence set
+    // resolved from the frozen evidence rules at this response state.
+    const section_items: Record<string, string[]> = {};
+    const sectionSlices: Record<string, { answers: Record<string, string>; notes: Record<string, string>; dates: Record<string, string>; evidence: { id: string; sha: string | null }[] }> = {};
+    const evidence_required: string[] = [];
+    for (const s of displaySections) {
+      const codes = (s.items ?? []).filter(c => !!allMap[c]);
+      section_items[s.key] = codes;
+      const slice: { answers: Record<string, string>; notes: Record<string, string>; dates: Record<string, string>; evidence: { id: string; sha: string | null }[] } = { answers: {}, notes: {}, dates: {}, evidence: [] };
+      const itemIds = new Set<string>();
+      for (const c of codes) {
+        const it = allMap[c];
+        itemIds.add(it.id);
+        const a = answers[it.id];
+        if (a?.value) slice.answers[c] = a.value;
+        if (a?.note) slice.notes[c] = a.note;
+        if (a?.date) slice.dates[c] = a.date;
+      }
+      // Evidence manifest entries travel as {id, sha} — compared by id+sha,
+      // never URLs (D-020). Queued (unsynced) evidence has no server id yet;
+      // the server's EXE-SUBMIT-EVIDENCE-PENDING precondition covers it.
+      slice.evidence = activeEvidence
+        .filter(e => e.linked_type === "item" && itemIds.has(e.linked_id))
+        .map(e => ({ id: e.id, sha: e.content_sha256 ?? null }))
+        .sort((a, b) => a.id.localeCompare(b.id));
+      sectionSlices[s.key] = slice;
+    }
+    const submitRuntimeCtx = conditionContext(sectionItems, answers, ctx);
+    for (const it of sectionItems) {
+      if (!isVisible(it, submitRuntimeCtx)) continue;
+      const leg = evidenceLeg(it, answers[it.id]?.value);
+      if (leg?.applies && leg.mandatory) evidence_required.push(it.id);
+    }
     const snapshot = {
       // answers stays code→value (shape consumed by the review screen); depth lands in sibling keys.
       answers: Object.fromEntries(Object.entries(answers).filter(([, v]) => !!v.value).map(([id, v]) => [byCode(id), v.value!])),
@@ -658,12 +700,20 @@ export default function Workspace({ inspection, items, library, serverResponses,
       item_states: Object.fromEntries(Object.entries(itemStatesRef.current).map(([stateId, st]) => [byCode(stateId), { state: st.state, reason: st.reason, active: st.active }])),
       invalidated_violations: Object.keys(invalidatedVios).filter(c => invalidatedVios[c]),
       evidence: { total: activeEvidence.length + queuedEv.length, by_item_and_type: Object.fromEntries(Object.entries(evidencePerItem).map(([id, counts]) => [byCode(id), counts])) },
+      // Phase 6 — frozen submission contract enforced server-side (§21/§22).
+      sections: sectionSlices,
+      section_items,
+      evidence_required,
       submitted_offline: !navigator.onLine,
     };
-    await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: nextVersion, snapshot, idempotency_key: key, acknowledgement: { name: ack.name, signed: true, ts: ack.signed_at, signed_at: ack.signed_at, signature_data_url: ack.signature_data_url }, queued_at: new Date().toISOString() });
+    await local.enqueue({ kind: "submit", inspection_id: inspection.id, version_number: legacyVersion, snapshot, idempotency_key: key, acknowledgement: { name: ack.name, signed: true, ts: ack.signed_at, signed_at: ack.signed_at, signature_data_url: ack.signature_data_url }, queued_at: new Date().toISOString() });
     setSubmitted(true);
-    setMsg(navigator.onLine ? fmt(strings.submitting, { v: nextVersion }) : strings.queuedOffline);
-    processOutbox(onState);
+    setMsg(navigator.onLine ? fmt(strings.submitting, { v: legacyVersion }) : strings.queuedOffline);
+    // After a successful RPC submit, local state follows the SERVER-assigned
+    // version number (D-020); the legacy fallback never reports one back.
+    processOutbox(onState, (inspectionId, info) => {
+      if (inspectionId === inspection.id) setMsg(fmt(strings.submitting, { v: info.version_number }));
+    });
   }
 
   const tone = sync === "synced" ? "ax-sync--synced" : sync === "offline" ? "ax-sync--offline" : sync === "syncing" ? "ax-sync--syncing" : sync === "conflict" ? "ax-sync--conflict" : sync === "failed" ? "ax-sync--failed" : "ax-sync--pending";

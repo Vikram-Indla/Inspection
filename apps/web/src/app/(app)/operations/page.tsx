@@ -17,6 +17,7 @@ import CancellationQueue, { type CancellationQueueRow, type CancellationQueueStr
 import type { MonitorRow } from "./actions";
 import type { GeoTone } from "@/components/GeoMap";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
+import { computeResubmissionFlags, type ResubmissionSource } from "./sla";
 
 // SCR-WEB-500 — Operations Center (SB12, M08). Read legs + write legs
 // (acknowledge/close corrective actions; mark notifications handled) +
@@ -330,6 +331,41 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     }
   }
 
+  // TASK-EXECUTION-MODULE-001 · Phase 6 — resubmission SLA over RETURNED
+  // inspections (plan §22, D-022). Display-only, same pattern as the review
+  // queue SLA: deadline = latest decided Return + resubmission_business_days
+  // working days from the configured calendar; no escalation writes.
+  type ReturnedRow = {
+    id: string; visit_id: string;
+    reviews: { decision: string | null; decided_at: string | null }[] | null;
+    visits: { factories: { name: string; region: string | null; city: string | null } | null } | null;
+  };
+  let resubmissionSources: ResubmissionSource[] = [];
+  {
+    const { data: returnedRows, error: returnedError } = await sb.from("inspections")
+      .select("id, visit_id, reviews(decision, decided_at), visits(factories(name, region, city))")
+      .eq("status", "returned");
+    if (returnedError) {
+      console.error(`[operations] returned-inspection SLA read failed: ${returnedError.message}`);
+      loadErrors.push("resubmission deadlines");
+    } else {
+      resubmissionSources = ((returnedRows ?? []) as unknown as ReturnedRow[])
+        .map(row => {
+          const decided = (row.reviews ?? [])
+            .filter(r => r.decision === "return" && !!r.decided_at)
+            .map(r => r.decided_at!)
+            .sort()
+            .pop();
+          if (!decided) return null;
+          const f = row.visits?.factories ?? null;
+          if (region && f?.region !== region) return null;
+          if (city && f?.city !== city) return null;
+          return { inspection_id: row.id, visit_id: row.visit_id, factory_name: f?.name ?? null, returned_at: decided };
+        })
+        .filter((x): x is ResubmissionSource => !!x);
+    }
+  }
+
   const gisConf = (engines.find(e => e.engine === "gis")?.settings ?? {}) as { geofence_default_radius_m?: number };
   const slaConf = (engines.find(e => e.engine === "sla")?.settings ?? {}) as SlaConf;
 
@@ -359,6 +395,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
   // ---------- ENG-09 SLA watch: engine thresholds vs live visit windows ----------
   const slaFlags = computeSlaFlags(monitored, slaConf, now);
+  // Phase 6 (§22, D-022) — resubmission deadlines for returned inspections
+  // (display-only). Absent config → honest "SLA unavailable", never invented.
+  const resubSlaAvailable = typeof slaConf.resubmission_business_days === "number";
+  const resubFlags = computeResubmissionFlags(resubmissionSources, slaConf, now);
 
   // ---------- M08-002 KSA map pins ----------
   const scopedFactories = factories.filter(f =>
@@ -617,6 +657,30 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                     <td>{f.escalation
                       ? <span className={`ax-lozenge ${f.escalation === "L2" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{f.escalation}</span>
                       : <span className="ax-caption">—</span>}</td>
+                  </tr>
+                ))}</tbody>
+              </table></div>
+            )}
+            {/* Phase 6 (§22, D-022) — resubmission SLA for returned inspections.
+                Display-only flag, consistent with the review SLA: no escalation
+                writes; absent config surfaces honestly as unavailable. */}
+            <h5 style={{ marginBlock: "var(--ax-space-200) var(--ax-space-150)" }}>{t("ops.sla.resubHeading", "Resubmission deadlines (returned inspections)")}</h5>
+            {!resubSlaAvailable ? (
+              <p className="ax-caption">{t("ops.sla.resubUnavailable", "SLA unavailable — engine_settings.sla.resubmission_business_days is not configured.")}</p>
+            ) : resubFlags.length === 0 ? (
+              <p className="ax-caption">{t("ops.sla.resubEmpty", "No returned inspections awaiting resubmission in scope.")}</p>
+            ) : (
+              <div className="ax-tablewrap"><table className="ax-table">
+                <thead><tr><th scope="col">{t("ops.sla.resub.th.inspection", "Inspection")}</th><th scope="col">{t("ops.sla.th.factory", "Factory")}</th><th scope="col">{t("ops.sla.resub.th.returned", "Returned")}</th><th scope="col">{t("ops.sla.resub.th.due", "Resubmission due")}</th><th scope="col">{t("ops.sla.th.sla", "Deadline status")}</th></tr></thead>
+                <tbody>{resubFlags.map(f => (
+                  <tr key={f.inspection_id}>
+                    <td><a className="ax-link" href={`/reviews/${f.inspection_id}`}>{f.inspection_id.slice(0, 8)}</a></td>
+                    <td>{f.factory_name ?? "—"}</td>
+                    <td><span className="ax-numeric">{fmtTs(Date.parse(f.returned_at))}</span></td>
+                    <td><span className="ax-numeric">{fmtTs(f.deadlineMs)}</span></td>
+                    <td><span className={`ax-lozenge ${f.overdue ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
+                      {f.overdue ? t("ops.sla.resubOverdue", "Resubmission overdue") : t("ops.sla.resubDue", "Resubmission pending")}
+                    </span></td>
                   </tr>
                 ))}</tbody>
               </table></div>

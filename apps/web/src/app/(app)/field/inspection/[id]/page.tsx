@@ -58,7 +58,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
     itemRead,
     libraryRead,
     sb.from("checklist_responses").select("item_id, response, updated_at").eq("inspection_id", id),
-    sb.from("evidence").select("id, linked_type, linked_id, evidence_type, storage_path, captured_at").eq("inspection_id", id),
+    sb.from("evidence").select("id, linked_type, linked_id, evidence_type, storage_path, captured_at, content_sha256").eq("inspection_id", id),
     Promise.resolve(violationsRead),
     sb.from("engine_settings").select("engine, settings").in("engine", ["evidence", "sla", "field"]),
   ]);
@@ -116,7 +116,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   // Merge lifecycle columns (0020) into the evidence rows the client sees.
   const evLife = Object.fromEntries(((evMeta ?? []) as { id: string; archived_at: string | null; superseded_by: string | null; deleted_at: string | null }[]).map(m => [m.id, m]));
   const evidenceRows = ([
-    ...((ev ?? []) as { id: string; linked_type: string; linked_id: string; evidence_type: string; storage_path: string | null; captured_at: string | null }[]),
+    ...((ev ?? []) as { id: string; linked_type: string; linked_id: string; evidence_type: string; storage_path: string | null; captured_at: string | null; content_sha256: string | null }[]),
     ...((visitEvidenceRead.data ?? []) as { id: string; linked_type: string; linked_id: string; evidence_type: string; storage_path: string | null; captured_at: string | null }[]),
   ].filter((row, index, all) => all.findIndex(candidate => candidate.id === row.id) === index))
     .map(e => ({ ...e, ...(evLife[e.id] ?? {}) }));
