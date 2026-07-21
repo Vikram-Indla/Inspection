@@ -88,6 +88,8 @@ export type DashboardSla = {
   calendar?: { days?: string; tz?: string };
 };
 
+import { countChecklistCompliance } from "@/lib/dashboard-kpi/checklist-compliance";
+
 export type DateScope = { fromMs: number; toMs: number };
 
 const RIYADH_OFFSET_MS = 3 * 60 * 60 * 1000;
@@ -208,9 +210,12 @@ export function buildDashboardMetrics(input: {
   const completedInspections = scopedInspections.length;
 
   const scopedResponses = responses.filter(r => scopedInspectionIds.has(r.inspection_id) && r.is_complete);
-  const compliant = scopedResponses.filter(r => r.response?.value === "compliant").length;
-  const nonCompliant = scopedResponses.filter(r => r.response?.value === "non_compliant").length;
-  const answeredForCompliance = compliant + nonCompliant;
+  // Canonical shared checklist-compliance calculation (same definition the iPad
+  // dashboard uses). Excludes na/unknown/incomplete; approval outcome is not compliance.
+  const complianceCounts = countChecklistCompliance(scopedResponses);
+  const compliant = complianceCounts.compliant;
+  const nonCompliant = complianceCounts.nonCompliant;
+  const answeredForCompliance = complianceCounts.eligible;
 
   const latest = latestReviews(reviews);
   const approvedInspectionIds = new Set(
