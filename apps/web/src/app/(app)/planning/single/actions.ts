@@ -40,7 +40,14 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   // factory fallback). `factory_id`/`license_number` fall back to the legacy
   // radio fields so an older rendered form still posts a coherent target.
   const factory_id = String(formData.get("target_factory_id") ?? "") || String(formData.get("factory_id") ?? "");
-  const package_version_id = String(formData.get("package_version_id") ?? "");
+  // M7 / PLN-CON-003 — Report Package is OPTIONAL during planning, zero-or-more.
+  // The Wizard posts one `package_version_id` field per checked package; the
+  // first selection remains the primary (visits.package_version_id, backward
+  // compat) and EVERY selection is linked with an immutable snapshot after the
+  // atomic publish. Zero selections is honest: the inspector chooses an
+  // eligible package during preparation.
+  const package_version_ids = [...new Set(formData.getAll("package_version_id").map(String))]
+    .filter(id => UUID.test(id)).slice(0, 20);
   const inspector_id = String(formData.get("inspector_id") ?? "");
   const visit_type = String(formData.get("visit_type") ?? "periodic");
   const window_start = String(formData.get("window_start") ?? "");
@@ -109,17 +116,21 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     }
   }
   if (!location_confirmed) blockers.push("Location must be confirmed on the map before publish (M01-038)");
-  if (!package_version_id) blockers.push("No active inspection checklist selected (ERR-PUB-001)");
-  if (package_version_id) {
+  // M7 — zero packages is allowed (preparation-time choice); a selection is
+  // validated: every chosen version must still be active.
+  let packageRows: { id: string; version_label: string; status: string; packages: { code: string; title: string } | null }[] = [];
+  if (package_version_ids.length) {
     const today = new Date().toISOString().slice(0, 10);
-    const { data: packageVersion, error: packageError } = await sb.from("package_versions")
-      .select("id").eq("id", package_version_id).in("status", ["published", "locked"])
-      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).maybeSingle();
+    const { data: pvs, error: packageError } = await sb.from("package_versions")
+      .select("id, version_label, status, packages(code, title)").in("id", package_version_ids)
+      .in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
     if (packageError) {
       console.error("[CD-022 publishSingleVisit] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
     }
-    if (!packageVersion) blockers.push("No active inspection checklist selected (ERR-PUB-001)");
+    packageRows = (pvs ?? []) as unknown as typeof packageRows;
+    if (packageRows.length !== package_version_ids.length) blockers.push("A selected inspection checklist is no longer active (ERR-PUB-001)");
   }
   // M01-040 — either a manual inspector or the auto-assign option ("auto") is required.
   const autoAssign = inspector_id === "auto";
@@ -175,7 +186,7 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   // assignment, audit and notification together on any failure.
   const { data: visitId, error: publishError } = await sb.rpc("publish_single_visit", {
     p_factory_id: factory_id,
-    p_package_version_id: package_version_id,
+    p_package_version_id: package_version_ids[0] ?? null,
     p_inspector_id: autoAssign ? null : inspector_id,
     p_visit_type: visit_type,
     p_execution_mode: mode,
@@ -243,6 +254,33 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
     }
   }
 
+  // M7 / PLN-CON-003 — link EVERY selected package with an immutable snapshot
+  // (the primary already sits on visits.package_version_id via the RPC). Zero
+  // selections → zero rows; preparation chooses the package later. Best-effort
+  // + logged: the visit is already atomically published, so a snapshot gap
+  // never blocks the redirect.
+  if (packageRows.length) {
+    const capturedAt = new Date().toISOString();
+    const { error: pkgLinkError } = await sb.from("visit_packages").insert(
+      packageRows.map(pv => ({
+        visit_id: visitId,
+        package_version_id: pv.id,
+        added_by: user.id,
+        snapshot: {
+          package_version_id: pv.id,
+          code: pv.packages?.code ?? null,
+          title: pv.packages?.title ?? null,
+          version_label: pv.version_label,
+          status: pv.status,
+          captured_at: capturedAt,
+        },
+      })),
+    );
+    if (pkgLinkError) {
+      console.error("[CD-022 publishSingleVisit] visit_packages snapshot write failed:", pkgLinkError.message);
+    }
+  }
+
   redirect(`/visits/${visitId}`);
 }
 
@@ -275,6 +313,9 @@ export type SingleDraftInput = {
   config: {
     visitType?: string;
     packageVersionId?: string;
+    /** M7 — zero-many package selections; persisted as an array (the legacy
+        singular field keeps the first/primary for older readers). */
+    packageVersionIds?: string[];
     executionMode?: string;
     windowStart?: string;
     windowEnd?: string;
@@ -322,7 +363,10 @@ export async function saveSingleDraft(input: SingleDraftInput): Promise<DraftSav
     },
     config: {
       visit_type: emptyToNull(input.config?.visitType),
-      package_version_id: emptyToNull(input.config?.packageVersionId),
+      package_version_id: emptyToNull(input.config?.packageVersionId)
+        ?? (input.config?.packageVersionIds ?? []).filter(id => UUID.test(id))[0]
+        ?? null,
+      package_version_ids: (input.config?.packageVersionIds ?? []).filter(id => UUID.test(id)).slice(0, 20),
       execution_mode: emptyToNull(input.config?.executionMode),
       window_start: emptyToNull(input.config?.windowStart),
       window_end: emptyToNull(input.config?.windowEnd),

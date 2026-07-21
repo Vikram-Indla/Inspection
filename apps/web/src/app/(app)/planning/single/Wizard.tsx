@@ -34,7 +34,7 @@ export type GradedFactory = {
 // verbatim from visit_plans.draft_payload; the location-confirmation gate is
 // deliberately NOT restored — the planner re-confirms explicitly (M01-038).
 export type DraftConfig = {
-  visitType?: string; packageVersionId?: string; executionMode?: string;
+  visitType?: string; packageVersionId?: string; packageVersionIds?: string[]; executionMode?: string;
   windowStart?: string; windowEnd?: string; inspectorId?: string;
   notes?: string; plannerLat?: string; plannerLng?: string; licenseNumber?: string;
 };
@@ -78,7 +78,7 @@ export type WizardStrings = {
   freshnessLabel: string; freshnessNever: string; factory360: string;
   configStep: string;
   visitType: string; typePeriodic: string; typeFollowUp: string; typeComplaint: string;
-  packageLabel: string; mode: string; modePhysical: string; modeVirtual: string; modeIneligible: string;
+  packageLabel: string; packageOptionalHint: string; mode: string; modePhysical: string; modeVirtual: string; modeIneligible: string;
   windowStart: string; windowEnd: string; inspector: string; selectOption: string; autoAssign: string;
   notes: string; notesPlaceholder: string;
   readinessTitle: string; readyIdentity: string; readyLicense: string; readyLocation: string; readyInspector: string;
@@ -124,7 +124,11 @@ export default function Wizard({
   // work. React-owned state survives the same re-render fine, which is why every
   // field below is lifted into state rather than left as a bare DOM value.
   const [visitType, setVisitType] = useState(draftConfig.visitType ?? "periodic");
-  const [packageVersionId, setPackageVersionId] = useState(draftConfig.packageVersionId ?? (packages[0]?.id ?? ""));
+  // M7 — zero-or-more packages (checkbox list). The first checked version is
+  // the primary; none checked is an honest preparation-time choice.
+  const [packageIds, setPackageIds] = useState<string[]>(
+    draftConfig.packageVersionIds ?? (draftConfig.packageVersionId ? [draftConfig.packageVersionId] : (packages[0] ? [packages[0].id] : []))
+  );
   const [windowStart, setWindowStart] = useState(draftConfig.windowStart ?? "");
   const [windowEnd, setWindowEnd] = useState(draftConfig.windowEnd ?? "");
   const [licenseNumber, setLicenseNumber] = useState(draftConfig.licenseNumber ?? "");
@@ -256,7 +260,7 @@ export default function Wizard({
       },
       config: {
         visitType,
-        packageVersionId,
+        packageVersionIds: packageIds,
         executionMode,
         windowStart,
         windowEnd,
@@ -474,10 +478,24 @@ export default function Wizard({
               <select key={resetKey} className="ax-select" name="visit_type" id="wizard-visit-type" value={visitType} onChange={e => setVisitType(e.target.value)}>
                 <option value="periodic">{strings.typePeriodic}</option><option value="follow_up">{strings.typeFollowUp}</option><option value="complaint">{strings.typeComplaint}</option>
               </select></div>
-            <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-package">{strings.packageLabel}</label>
-              <select key={resetKey} className="ax-select" name="package_version_id" id="wizard-package" value={packageVersionId} onChange={e => setPackageVersionId(e.target.value)}>
-                {packages.map(p => <option key={p.id} value={p.id}>{p.packages.code} · {p.version_label}</option>)}
-              </select></div>
+            <fieldset className="ax-field" style={{ border: 0, padding: 0, margin: 0 }}>
+              <legend className="ax-field__label" style={{ padding: 0 }}>{strings.packageLabel}</legend>
+              <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+                {packages.map(p => (
+                  <label key={`${resetKey}-${p.id}`} className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+                    <input type="checkbox" name="package_version_id" value={p.id}
+                      checked={packageIds.includes(p.id)}
+                      onChange={e => setPackageIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
+                    <span>{p.packages.code} · {p.version_label}</span>
+                  </label>
+                ))}
+              </div>
+              {packageIds.length === 0 && (
+                <p className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--ax-space-100)" }}>
+                  {strings.packageOptionalHint}
+                </p>
+              )}
+            </fieldset>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-mode">{strings.mode}</label>
               <select key={resetKey} className="ax-select" name="execution_mode" id="wizard-mode" value={executionMode} onChange={e => setExecutionMode(e.target.value as "physical" | "virtual")}>
                 <option value="physical" disabled={!physicalEligible}>{strings.modePhysical}{!physicalEligible ? ` — ${strings.modeIneligible}` : ""}</option>

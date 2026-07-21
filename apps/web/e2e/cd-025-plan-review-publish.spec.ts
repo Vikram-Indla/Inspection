@@ -220,7 +220,7 @@ test.describe("M6 — eligibility partition and eligible-subset acknowledgement"
     await expect(page.getByText(/are ineligible/i).first()).toBeVisible({ timeout: 15000 });
     await expect(publish).toBeDisabled();
     // …and acknowledging proceeds with the eligible subset only (1 row here).
-    await page.getByRole("checkbox").check();
+    await page.getByRole("checkbox", { name: /Proceed with the .* eligible/i }).check();
     await expect(publish).toBeEnabled({ timeout: 15000 });
     await expect(publish).toContainText(/create 1 /);
     await page.screenshot({ path: join(EVIDENCE_DIR, "eligibility-ack.png"), fullPage: true });

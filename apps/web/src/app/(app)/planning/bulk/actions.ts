@@ -37,6 +37,9 @@ export type EligibilityCounts = {
 };
 export type ValidateResult = {
   blockers: Blocker[];
+  /** M7 / PLN-CON-003 — non-blocking honesty (e.g. zero packages selected:
+      preparation chooses later). Warnings never gate publish. */
+  warnings: Blocker[];
   selected: number; retained: number; dup: number; manual: number; auto: number;
   committable: boolean;
   rows: EligibilityRow[];
@@ -242,7 +245,12 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   let factoryIds = [...new Set(formData.getAll("factory_id").map(String))]
     .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
     .slice(0, 500);
-  const package_version_id = String(formData.get("package_version_id") ?? "");
+  // M7 / PLN-CON-003 — zero-or-more packages; the first checked version stays
+  // the primary (visits.package_version_id via the RPC), every selection is
+  // linked with a snapshot after the atomic publish. Zero selections is an
+  // honest preparation-time choice, not a blocker.
+  const package_version_ids = [...new Set(formData.getAll("package_version_id").map(String))]
+    .filter(id => UUID_RE.test(id)).slice(0, 20);
   const window_start = String(formData.get("window_start") ?? "");
   const window_end = String(formData.get("window_end") ?? "");
   const visit_type = String(formData.get("visit_type") ?? "periodic");
@@ -259,21 +267,25 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const blockers: string[] = [];
   if (factoryIds.length === 0) blockers.push("No factories selected — only selected targets proceed (M01-005)");
   if (visit_type !== "periodic") blockers.push("Visit type is not supported by this planning method (FLD-PLAN-003)");
-  if (!package_version_id) blockers.push("No active inspection checklist (ERR-PUB-001)");
   const startMs = Date.parse(window_start);
   const endMs = Date.parse(window_end);
   if (!window_start || !window_end || !Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) blockers.push("Invalid window (FLD-PLAN-005)");
   else if (!isPlausibleDate(window_start) || !isPlausibleDate(window_end)) blockers.push("Window date is outside the plausible range (DEF-DATA-005)");
-  if (package_version_id) {
+  // M7 — zero packages allowed; every SELECTED version must still be active
+  // (rows kept for the post-publish snapshot links).
+  let packageRows: { id: string; version_label: string; status: string; packages: { code: string; title: string } | null }[] = [];
+  if (package_version_ids.length) {
     const today = new Date().toISOString().slice(0, 10);
-    const { data: packageVersion, error: packageError } = await sb.from("package_versions")
-      .select("id").eq("id", package_version_id).in("status", ["published", "locked"])
-      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).maybeSingle();
+    const { data: pvs, error: packageError } = await sb.from("package_versions")
+      .select("id, version_label, status, packages(code, title)").in("id", package_version_ids)
+      .in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
     if (packageError) {
       console.error("[CD-021 publishBulkPlan] package verification failed:", packageError.message);
       return { error: NEUTRAL_READ_ERROR };
     }
-    if (!packageVersion) blockers.push("No active inspection checklist (ERR-PUB-001)");
+    packageRows = (pvs ?? []) as unknown as typeof packageRows;
+    if (packageRows.length !== package_version_ids.length) blockers.push("A selected inspection checklist is no longer active (ERR-PUB-001)");
   }
   // per-row duplicate check (P01: duplicates flagged; conflicts listed, skip allowed)
   // M6 — 'validated' included: it is an internal active state, not a terminal one.
@@ -343,7 +355,7 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   for (const [fid, insp] of picks) manual[fid] = insp;
   const { data: planId, error } = await sb.rpc("publish_bulk_plan", {
     p_factory_ids: factoryIds,
-    p_package_version_id: package_version_id,
+    p_package_version_id: package_version_ids[0] ?? null,
     p_window_start: window_start,
     p_window_end: window_end,
     p_visit_type: visit_type,
@@ -366,6 +378,39 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     }
     return { error: NEUTRAL_PUBLISH_ERROR };
   }
+  // M7 / PLN-CON-003 — link EVERY selected package to EVERY created visit with
+  // an immutable snapshot (the primary already sits on each visit's
+  // package_version_id via the RPC). Zero selections → zero rows; preparation
+  // chooses packages later. Best-effort + logged: the plan is already
+  // atomically published, so a snapshot gap never turns success into failure.
+  if (packageRows.length && typeof planId === "string") {
+    const { data: planVisits, error: visitsReadError } = await sb.from("visits")
+      .select("id").eq("visit_plan_id", planId);
+    if (visitsReadError) {
+      console.error("[CD-021 publishBulkPlan] plan visits read for package links failed:", visitsReadError.message);
+    } else {
+      const capturedAt = new Date().toISOString();
+      const rows = (planVisits ?? []).flatMap(v => packageRows.map(pv => ({
+        visit_id: v.id as string,
+        package_version_id: pv.id,
+        added_by: user.id,
+        snapshot: {
+          package_version_id: pv.id,
+          code: pv.packages?.code ?? null,
+          title: pv.packages?.title ?? null,
+          version_label: pv.version_label,
+          status: pv.status,
+          captured_at: capturedAt,
+        },
+      })));
+      if (rows.length) {
+        const { error: pkgLinkError } = await sb.from("visit_packages").insert(rows);
+        if (pkgLinkError) {
+          console.error("[CD-021 publishBulkPlan] visit_packages snapshot write failed:", pkgLinkError.message);
+        }
+      }
+    }
+  }
   // CD-025: the guarded publisher returns the new plan ID. Capture it so the
   // success state can offer the optional read-only plan link (S26). The plan ID
   // is only surfaced when actually returned; otherwise the link is omitted.
@@ -381,7 +426,8 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
 // source-unavailable blockers (fail-closed, never a false "empty").
 export async function validateBulkPlan(input: {
   ids: string[];
-  package_version_id: string;
+  /** M7 — zero-many packages; empty = preparation chooses later (warning). */
+  package_version_ids: string[];
   window_start: string;
   window_end: string;
   visit_type: string;
@@ -397,11 +443,12 @@ export async function validateBulkPlan(input: {
     throw new Error("planning.create.bulk capability required");
   }
   const blockers: Blocker[] = [];
+  const warnings: Blocker[] = [];
   const ids = [...new Set((input.ids ?? []).map(String))].filter(id => UUID_RE.test(id)).slice(0, 500);
   const selected = ids.length;
   const done = (r: Partial<ValidateResult>): ValidateResult =>
     ({
-      blockers, selected, retained: 0, dup: 0, manual: 0, auto: 0, committable: false,
+      blockers, warnings, selected, retained: 0, dup: 0, manual: 0, auto: 0, committable: false,
       rows: [], ledger: { total: selected, eligible: 0, ineligible: selected, toCreate: 0, missingLocation: 0, activeConflicts: 0, manualOverrideRequired: 0 },
       ...r,
     });
@@ -416,16 +463,20 @@ export async function validateBulkPlan(input: {
   if (!windowOk || visit_type !== "periodic") blockers.push({ kind: "configMissing" });
   else if (!isPlausibleDate(input.window_start) || !isPlausibleDate(input.window_end)) blockers.push({ kind: "windowImplausible" });
 
-  // package
-  if (!input.package_version_id) {
-    blockers.push({ kind: "nopackage" });
+  // M7 / PLN-CON-003 — packages are zero-or-more. Zero selected is a WARNING
+  // (the inspector chooses an eligible package during preparation), never a
+  // hard blocker. A chosen version that is no longer active stays a hard
+  // blocker — silently dropping a deliberate selection would be dishonest.
+  const packageIds = [...new Set((input.package_version_ids ?? []).map(String))].filter(id => UUID_RE.test(id)).slice(0, 20);
+  if (packageIds.length === 0) {
+    warnings.push({ kind: "nopackage" });
   } else {
     const today = new Date().toISOString().slice(0, 10);
-    const { data: pv, error } = await sb.from("package_versions")
-      .select("id").eq("id", input.package_version_id).in("status", ["published", "locked"])
-      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`).maybeSingle();
+    const { data: pvs, error } = await sb.from("package_versions")
+      .select("id").in("id", packageIds).in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
     if (error) { console.error("[CD-025 validate] package:", error.message); blockers.push({ kind: "srcPackage" }); }
-    else if (!pv) blockers.push({ kind: "packageInvalid" });
+    else if ((pvs ?? []).length !== packageIds.length) blockers.push({ kind: "packageInvalid" });
   }
 
   // factory existence + display names for blocker targets (+ official location
@@ -545,7 +596,7 @@ export async function validateBulkPlan(input: {
   };
 
   const committable = retained > 0 && blockers.length === 0;
-  return { blockers, selected, retained, dup: dupSet.size, manual, auto, committable, rows, ledger };
+  return { blockers, warnings, selected, retained, dup: dupSet.size, manual, auto, committable, rows, ledger };
 }
 
 // ---------------------------------------------------------------------------
@@ -561,6 +612,8 @@ export async function validateBulkPlan(input: {
 export type BulkDraftConfig = {
   picks?: Record<string, string>;
   package_version_id?: string;
+  /** M7 — zero-many package selections (array wins over the legacy singular). */
+  package_version_ids?: string[];
   window_start?: string;
   window_end?: string;
   notes?: string;
@@ -610,11 +663,14 @@ export async function saveBulkDraft(input: BulkDraftInput): Promise<BulkDraftRes
   for (const [fid, insp] of Object.entries(input.config?.picks ?? {})) {
     if (UUID_RE.test(fid) && UUID_RE.test(insp) && selection.includes(fid)) picks[fid] = insp;
   }
+  const packageIds = (input.config?.package_version_ids ?? (input.config?.package_version_id ? [input.config.package_version_id] : []))
+    .filter(id => UUID_RE.test(id)).slice(0, 20);
   const draftPayload = {
     selection,
     config: {
       picks,
-      package_version_id: cleanText(input.config?.package_version_id),
+      package_version_id: packageIds[0] ?? null,
+      package_version_ids: packageIds,
       window_start: cleanText(input.config?.window_start),
       window_end: cleanText(input.config?.window_end),
       notes: cleanText(input.config?.notes),
@@ -673,7 +729,8 @@ export type BulkDraft = {
   selection: string[];
   config: {
     picks: Record<string, string>;
-    package_version_id: string;
+    /** M7 — zero-many packages; empty array = none selected (preparation hint). */
+    package_version_ids: string[];
     window_start: string;
     window_end: string;
     notes: string;
@@ -708,7 +765,7 @@ export async function loadBulkDraft(planId: string): Promise<BulkDraftLoadResult
   if (!data) return { error: "unavailable" };
   const payload = (data.draft_payload ?? {}) as {
     selection?: unknown;
-    config?: { picks?: unknown; package_version_id?: unknown; window_start?: unknown; window_end?: unknown; notes?: unknown };
+    config?: { picks?: unknown; package_version_id?: unknown; package_version_ids?: unknown; window_start?: unknown; window_end?: unknown; notes?: unknown };
     acknowledged?: unknown;
   };
   const selection = (Array.isArray(payload.selection) ? payload.selection : [])
@@ -718,6 +775,11 @@ export async function loadBulkDraft(planId: string): Promise<BulkDraftLoadResult
   for (const [fid, insp] of Object.entries(rawPicks)) {
     if (UUID_RE.test(fid) && typeof insp === "string" && UUID_RE.test(insp)) picks[fid] = insp;
   }
+  // M7 — array wins; legacy singular drafts hydrate as a one-element selection.
+  const packageIds = Array.isArray(payload.config?.package_version_ids)
+    ? (payload.config.package_version_ids as unknown[]).map(String).filter(id => UUID_RE.test(id)).slice(0, 20)
+    : (typeof payload.config?.package_version_id === "string" && UUID_RE.test(payload.config.package_version_id)
+        ? [payload.config.package_version_id] : []);
   const tree = (data.criteria as { tree?: unknown } | null)?.tree;
   return {
     draft: {
@@ -728,7 +790,7 @@ export async function loadBulkDraft(planId: string): Promise<BulkDraftLoadResult
       selection,
       config: {
         picks,
-        package_version_id: typeof payload.config?.package_version_id === "string" ? payload.config.package_version_id : "",
+        package_version_ids: packageIds,
         window_start: typeof payload.config?.window_start === "string" ? payload.config.window_start : "",
         window_end: typeof payload.config?.window_end === "string" ? payload.config.window_end : "",
         notes: typeof payload.config?.notes === "string" ? payload.config.notes : "",

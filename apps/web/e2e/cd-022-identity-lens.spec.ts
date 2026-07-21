@@ -198,7 +198,6 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('input[name="planner_lat"]').fill("24.73");
     await page.locator('input[name="planner_lng"]').fill("46.7");
     await page.locator('input[name="location_confirmed"]').check();
-    await page.locator('select[name="package_version_id"]').selectOption({ index: 0 });
     const dayOffset = 6000 + Math.floor(Math.random() * 20000);
     const start = new Date(Date.now() + dayOffset * 86400e3).toISOString().slice(0, 16);
     const end = new Date(Date.now() + dayOffset * 86400e3 + 3600e3).toISOString().slice(0, 16);
@@ -258,7 +257,6 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('input[name="planner_lat"]').fill("24.71");
     await page.locator('input[name="planner_lng"]').fill("46.68");
     await page.locator('input[name="location_confirmed"]').check();
-    await page.locator('select[name="package_version_id"]').selectOption({ index: 0 });
     const dayOffset = 2000 + Math.floor(Math.random() * 20000);
     const start = new Date(Date.now() + dayOffset * 86400e3).toISOString().slice(0, 16);
     const end = new Date(Date.now() + dayOffset * 86400e3 + 3600e3).toISOString().slice(0, 16);
@@ -279,7 +277,6 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('input[name="location_confirmed"]').check();
     await page.locator('textarea[name="notes"]').fill("Preserved planner note");
     // Leave inspector unselected — the M01-040 blocker.
-    await page.locator('select[name="package_version_id"]').selectOption({ index: 0 });
     const dayOffset = 3000 + Math.floor(Math.random() * 20000);
     const start = new Date(Date.now() + dayOffset * 86400e3).toISOString().slice(0, 16);
     const end = new Date(Date.now() + dayOffset * 86400e3 + 3600e3).toISOString().slice(0, 16);
@@ -311,7 +308,6 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('input[name="planner_lat"]').fill("24.72");
     await page.locator('input[name="planner_lng"]').fill("46.69");
     await page.locator('input[name="location_confirmed"]').check();
-    await page.locator('select[name="package_version_id"]').selectOption({ index: 0 });
     const dayOffset = 4000 + Math.floor(Math.random() * 20000);
     const start = new Date(Date.now() + dayOffset * 86400e3).toISOString().slice(0, 16);
     const end = new Date(Date.now() + dayOffset * 86400e3 + 3600e3).toISOString().slice(0, 16);
@@ -339,7 +335,6 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('input[name="planner_lat"]').fill("24.72");
     await page.locator('input[name="planner_lng"]').fill("46.69");
     await page.locator('input[name="location_confirmed"]').check();
-    await page.locator('select[name="package_version_id"]').selectOption({ index: 0 });
     await page.locator('input[name="window_start"]').fill(start);
     await page.locator('input[name="window_end"]').fill(end);
     await page.locator('select[name="inspector_id"]').selectOption("auto");
@@ -363,7 +358,7 @@ test.describe("CD-022 graded identity search", () => {
     await page.locator('input[name="planner_lng"]').fill("46.6753");
     await page.locator('input[name="location_confirmed"]').focus();
     await page.keyboard.press("Space");
-    await expect(page.locator('select[name="package_version_id"]')).toBeVisible();
+    await expect(page.locator('input[name="package_version_id"][type="checkbox"]').first()).toBeVisible();
   });
 
   test("dark/light × EN/AR × desktop/narrow evidence has no horizontal overflow", async ({ page }) => {
@@ -389,9 +384,14 @@ test.describe("CD-022 graded identity search", () => {
 test.describe("CD-022 authorization boundary", () => {
   test.use({ storageState: storageStatePath("inspector") });
 
-  test("inspector class sees the unauthorized state, not the identity search UI (planning.create.single denied)", async ({ page }) => {
+  test("field-channel inspector is redirected to the field home (RBAC-009/010 channel contract)", async ({ page }) => {
+    // M6 middleware resurrection: the layout channel gate now receives the real
+    // path (x-pathname) and redirects field-only personas off every web-portal
+    // route except /planning/immediate. The governed inspector denial for
+    // /planning/single is therefore the channel redirect, not the in-page
+    // denial copy (same contract the cd-021 bulk-route test asserts).
     await page.goto("/planning/single");
-    await expect(page.getByText(/authorized role required|يلزم دور مصرح له/i)).toBeVisible();
+    await expect(page).toHaveURL(/\/field/);
     await expect(page.getByPlaceholder(/CR number|Industrial License/i)).toHaveCount(0);
   });
 });

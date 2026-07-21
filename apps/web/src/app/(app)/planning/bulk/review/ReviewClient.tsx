@@ -32,6 +32,8 @@ export type ReviewStrings = {
   // context
   method: string; freshnessPrefix: string; selected: string; retained: string; visits: string;
   assignments: string; manual: string; auto: string; packageLabel: string; visitType: string;
+  /** M7 — zero-many packages: preparation hint, ledger zero-state and count. */
+  packageHint: string; packageNone: string; packageCount: string;
   typePeriodic: string; mode: string; physical: string; window: string; scope: string;
   // config
   configTitle: string; windowStart: string; windowEnd: string; notes: string; notesPlaceholder: string;
@@ -87,7 +89,7 @@ const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" 
   overlap:       { cls: "critical",    glyph: "◆", fix: "focusRow" },
   coverage:      { cls: "warning",     glyph: "▲", fix: "focusWindow" },
   capacity:      { cls: "critical",    glyph: "▲", fix: "focusWindow" },
-  nopackage:     { cls: "critical",    glyph: "⟳", fix: "none" },
+  nopackage:     { cls: "warning",     glyph: "⟳", fix: "none" },
   packageInvalid:{ cls: "critical",    glyph: "⟳", fix: "review" },
   nopool:        { cls: "critical",    glyph: "●", fix: "none" },
   configMissing: { cls: "warning",     glyph: "▲", fix: "focusWindow" },
@@ -108,7 +110,8 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   const [allIds, setAllIds] = useState<string[]>([]);
   const [removedDups, setRemovedDups] = useState(false);
   const [picks, setPicks] = useState<Record<string, string>>({});
-  const [pkgId, setPkgId] = useState("");
+  // M7 — zero-or-more packages; empty = preparation chooses later (warning).
+  const [pkgIds, setPkgIds] = useState<string[]>([]);
   const [windowStart, setWindowStart] = useState("");
   const [windowEnd, setWindowEnd] = useState("");
   const [notes, setNotes] = useState("");
@@ -149,7 +152,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       const ids = initialDraft.selection;
       setAllIds(ids);
       setPicks(initialDraft.config.picks);
-      if (initialDraft.config.package_version_id) setPkgId(initialDraft.config.package_version_id);
+      if (initialDraft.config.package_version_ids.length) setPkgIds(initialDraft.config.package_version_ids);
       setWindowStart(initialDraft.config.window_start);
       setWindowEnd(initialDraft.config.window_end);
       setNotes(initialDraft.config.notes);
@@ -167,8 +170,16 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // default to the first available published/locked package
-  useEffect(() => { if (data?.packages.length && !pkgId) setPkgId(data.packages[0].id); }, [data, pkgId]);
+  // Default to the first available published/locked package — ONCE. A draft
+  // resume or an explicit deselect-all is a deliberate zero-package choice
+  // (M7: preparation chooses later) and must never be overridden.
+  const pkgTouched = useRef(!!initialDraft);
+  useEffect(() => {
+    if (!pkgTouched.current && data?.packages.length && pkgIds.length === 0) {
+      setPkgIds([data.packages[0].id]);
+      pkgTouched.current = true;
+    }
+  }, [data, pkgIds, initialDraft]);
 
   const dupIds = useMemo(() => new Set((data?.factories ?? []).filter(f => f.dup).map(f => f.id)), [data]);
   const nonDupIds = useMemo(() => allIds.filter(id => !dupIds.has(id)), [allIds, dupIds]);
@@ -181,7 +192,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       const seq = ++validateSeq.current;
       startValidate(() => {
         validateBulkPlan({
-          ids: workingIds, package_version_id: pkgId,
+          ids: workingIds, package_version_ids: pkgIds,
           window_start: windowStart, window_end: windowEnd,
           visit_type: "periodic", picks,
         })
@@ -191,7 +202,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     }, 250);
     return () => clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, workingIds.join(","), pkgId, windowStart, windowEnd, JSON.stringify(picks)]);
+  }, [data, workingIds.join(","), pkgIds.join(","), windowStart, windowEnd, JSON.stringify(picks)]);
 
   // ---- CD-024 selection-time overlap evidence (loadBulkSelection with window) ----
   // Feeds the per-row evidence cells and the Assignment Evidence Ledger from the
@@ -318,7 +329,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           </div>
         </div>
         <div className="ax-row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
-          <form action={formAction}>{hiddenPublishFields(workingIds, pkgId, windowStart, windowEnd, notes, picks)}
+          <form action={formAction}>{hiddenPublishFields(workingIds, pkgIds, windowStart, windowEnd, notes, picks)}
             <button className="ax-btn ax-btn--prominent">{s.tryAgain}</button></form>
           <a className="ax-btn ax-btn--secondary" href="/planning/bulk">{s.backConfig}</a>
         </div>
@@ -396,7 +407,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         planId: draftMeta?.planId,
         criteriaTree: initialDraft?.criteriaTree ?? undefined,
         selection: workingIds,
-        config: { picks, package_version_id: pkgId, window_start: windowStart, window_end: windowEnd, notes },
+        config: { picks, package_version_ids: pkgIds, window_start: windowStart, window_end: windowEnd, notes },
         validation: v ?? undefined,
         acknowledged,
       });
@@ -412,7 +423,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
 
   // ---- CD-024 evidence derivations ----
   const windowSet = !!windowStart && !!windowEnd && Number.isFinite(Date.parse(windowStart)) && Number.isFinite(Date.parse(windowEnd)) && Date.parse(windowEnd) > Date.parse(windowStart);
-  const packagePublished = !!pkgId && (data?.packages ?? []).some(p => p.id === pkgId);
+  const packagePublished = pkgIds.length > 0 && pkgIds.every(id => (data?.packages ?? []).some(p => p.id === id));
   const overlapSource: SourceState = evidence?.overlapSource ?? "not-evaluated";
   const fmtWin = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? iso : d.toLocaleString([], { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }); };
   const overlapFor = (inspectorId: string) => (evidence?.overlaps ?? []).find(o => o.inspector_id === inspectorId);
@@ -509,9 +520,19 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           <div><dt>{s.assignments}</dt><dd>{manual} {s.manual} · {auto} {s.auto}</dd></div>
           <div><dt>{s.visitType}</dt><dd>{s.typePeriodic} · {s.physical}</dd></div>
           <div><dt>{s.packageLabel}</dt><dd>
-            <select className="ax-select" name="package_version_id" aria-label={s.packageLabel} value={pkgId} onChange={e => setPkgId(e.target.value)}>
-              {data!.packages.map(p => <option key={p.id} value={p.id}>{p.code} · {p.version_label}</option>)}
-            </select></dd></div>
+            <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }} role="group" aria-label={s.packageLabel}>
+              {data!.packages.map(p => (
+                <label key={p.id} className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+                  <input type="checkbox" value={p.id} checked={pkgIds.includes(p.id)}
+                    onChange={e => setPkgIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
+                  <span>{p.code} · {p.version_label}</span>
+                </label>
+              ))}
+            </div>
+            {pkgIds.length === 0 && (
+              <p className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--ax-space-100)" }}>{s.packageHint}</p>
+            )}
+          </dd></div>
           <div><dt>{s.window}</dt><dd className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
             <input ref={windowRef} className="ax-input cd-mono" name="window_start" type="datetime-local" aria-label={s.windowStart} value={windowStart} onChange={e => setWindowStart(e.target.value)} />
             <span aria-hidden="true">→</span>
@@ -555,6 +576,16 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           <div className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
             <span className="ax-lozenge ax-lozenge--success">{s.readyTag}</span>
             <strong>{s.clearAll}</strong>
+          </div>
+        )}
+        {/* M7 — non-blocking warnings (e.g. zero packages: preparation chooses
+            later). Honest, visible, never gating publish. */}
+        {!validating && (v?.warnings?.length ?? 0) > 0 && (
+          <div className="ax-banner ax-banner--warning" role="status" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            {v!.warnings.map((w, i) => {
+              const { title, detail } = blockerCopy(w);
+              return <p key={w.kind + i} style={{ margin: 0 }}><strong>{title}</strong>{detail ? <> — {detail}</> : null}</p>;
+            })}
           </div>
         )}
       </section>
@@ -668,7 +699,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           </div>
           <div className="cd-lgroup">
             <div className="cd-lgroup__head">2 · {s.gRef}</div>
-            <div className="cd-lrow">{mark("ok")}<div className="cd-lrow__body"><div className="cd-lrow__v">{data!.packages.find(p => p.id === pkgId)?.code ?? s.packageLabel} · {data!.packages.find(p => p.id === pkgId)?.version_label ?? ""}</div><div className="cd-lrow__d">{s.rTypeD}</div></div></div>
+            <div className="cd-lrow">{mark(pkgIds.length ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{pkgIds.length ? interp(s.packageCount, { n: pkgIds.length }) + " · " + pkgIds.map(id => data!.packages.find(p => p.id === id)?.code ?? id.slice(0, 8)).join(" · ") : s.packageNone}</div><div className="cd-lrow__d">{pkgIds.length ? s.rTypeD : s.packageHint}</div></div></div>
             <div className="cd-lrow">{mark("ok")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.rType}</div><div className="cd-lrow__d">{s.rTypeD}</div></div></div>
             <div className="cd-lrow">{mark(windowStart && windowEnd ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.rWin}</div><div className="cd-lrow__d">{s.rWinD}</div></div></div>
             <div className="cd-lrow">{mark("ok")}<div className="cd-lrow__body"><div className="cd-lrow__v">{interp(s.rMethod, { manual, auto })}</div><div className="cd-lrow__d">{s.rMethodD}</div></div></div>
@@ -690,7 +721,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
 
       {/* ---- corrections & publish action ---- */}
       <form action={formAction} className="cd-actionbar" id="cd-publish" aria-label={s.correctH}>
-        {hiddenPublishFields(publishIds, pkgId, windowStart, windowEnd, notes, picks)}
+        {hiddenPublishFields(publishIds, pkgIds, windowStart, windowEnd, notes, picks)}
         <div className="cd-sectionhead" style={{ margin: 0 }}><h3>{s.correctH}</h3></div>
         <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
           <a className="ax-link" href="/planning/bulk">{s.backConfig}</a>
@@ -738,10 +769,12 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
 
 // Hidden fields carrying the retained working set into the publish server action.
 // Only non-excluded factory ids are submitted; the server + RPC re-validate.
-function hiddenPublishFields(ids: string[], pkgId: string, ws: string, we: string, notes: string, picks: Record<string, string>) {
+// M7 — one package_version_id field per checked package (zero fields = zero
+// packages, an allowed preparation-time choice).
+function hiddenPublishFields(ids: string[], pkgIds: string[], ws: string, we: string, notes: string, picks: Record<string, string>) {
   return (
     <>
-      <input type="hidden" name="package_version_id" value={pkgId} />
+      {pkgIds.map(id => <input key={`p-${id}`} type="hidden" name="package_version_id" value={id} />)}
       <input type="hidden" name="window_start" value={ws} />
       <input type="hidden" name="window_end" value={we} />
       <input type="hidden" name="visit_type" value="periodic" />
