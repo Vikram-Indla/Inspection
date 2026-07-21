@@ -26,7 +26,7 @@ export type IncidentFormStrings = {
 export function IncidentReportForm({ strings: s }: { strings: IncidentFormStrings }) {
   const [state, action, pending] = useActionState<IncidentResult, FormData>(createIncidentReport, {});
   return (
-    <form action={action} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <form action={action} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-establishment-code">{s.establishmentCode}</label><input className="ax-input" name="establishment_code" id="ir-establishment-code" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-cr-number">{s.commercialRegistrationNumber}</label><input className="ax-input" name="commercial_registration_number" id="ir-cr-number" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-report-source">{s.reportSource}</label><input className="ax-input" name="report_source" id="ir-report-source" /></div>
@@ -37,10 +37,10 @@ export function IncidentReportForm({ strings: s }: { strings: IncidentFormString
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-incident-type">{s.incidentType}</label><input className="ax-input" name="incident_type" id="ir-incident-type" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-resulting-damage">{s.resultingDamage}</label><textarea className="ax-textarea" name="resulting_damage" id="ir-resulting-damage" /></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="ir-description">{s.preliminaryIncidentDescription}</label><textarea className="ax-textarea" name="preliminary_incident_description" id="ir-description" /></div>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? s.submitting : s.submit}</button>
-        {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-        {state.ok && <span className="ax-lozenge ax-lozenge--success">{s.created}</span>}
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+        <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.submitting : s.submit}</button>
+        {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.ok && <span className="badge badge-compliant">{s.created}</span>}
       </div>
     </form>
   );

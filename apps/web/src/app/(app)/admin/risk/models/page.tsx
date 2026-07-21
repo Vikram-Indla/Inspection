@@ -16,7 +16,7 @@ export default async function RiskModelsPage() {
   if (!enabled) {
     return (
       <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}
-        context={<span className="ax-lozenge ax-lozenge--warning">CD-032 · MVP2-REQ-0005</span>}>
+        context={<span className="badge badge-warning">CD-032 · MVP2-REQ-0005</span>}>
         <NotYetBoundary title={t("risk.wb.title", "Risk model workbench")}
           consequence={t("risk.wb.off", "The governed risk-model draft layer is not enabled here; live risk config is still edited on the Risk Studio.")}
           seam="FEATURE_RISK_WORKBENCH=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
@@ -38,7 +38,7 @@ export default async function RiskModelsPage() {
   };
   return (
     <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}
-      context={<span className="ax-lozenge ax-lozenge--info">CD-032 · MVP2-REQ-0005..0012</span>}>
+      context={<span className="badge badge-info">CD-032 · MVP2-REQ-0005..0012</span>}>
       <div className="ax-banner"><div><strong>{t("risk.wb.banner.title", "Governed draft layer.")}</strong> {t("risk.wb.banner.body", "Drafts validate weights-sum and bands (parity with Risk Studio) and publish through maker-checker; published versions are immutable. No policy value is set here that the accepted structure does not require.")}</div></div>
       {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("risk.wb.error", "Couldn’t load risk models. Nothing changed.")}</strong></div></div>}
       {!error && (rows ?? []).length === 0 && (

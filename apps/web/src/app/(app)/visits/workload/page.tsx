@@ -76,23 +76,23 @@ export default async function Workload() {
 
   return (
     <Shell current="/visits" title={t("visit.load.title", "Inspector workload")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("visit.load.context", "M02-018/037 · assignments × published windows")}</span>}>
-      <div className="ax-row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
-        <a className="ax-btn ax-btn--subtle" href="/visits">{t("visit.views.list", "List")}</a>
-        <a className="ax-btn ax-btn--subtle" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
-        <a className="ax-btn ax-btn--secondary" aria-current="page" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
+      context={<span className="badge badge-info">{t("visit.load.context", "M02-018/037 · assignments × published windows")}</span>}>
+      <div className="row" role="group" aria-label={t("visit.views.aria", "Visit management views")}>
+        <a className="btn btn-ghost btn-touch" href="/visits">{t("visit.views.list", "List")}</a>
+        <a className="btn btn-ghost btn-touch" href="/visits/calendar">{t("visit.views.calendar", "Calendar")}</a>
+        <a className="btn btn-secondary btn-touch" aria-current="page" href="/visits/workload">{t("visit.views.workload", "Workload")}</a>
       </div>
       {inspectors.length === 0 ? (
         <EmptyState glyph="◫" title={t("visit.load.empty", "No active assigned load")}
           body={t("visit.load.emptyDesc", "Published, not-yet-submitted visits with an assignment appear here grouped by inspector and week (M02-018).")} />
       ) : (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
           <h4 style={{ margin: 0 }}>{t("visit.load.heading", "Active visits per inspector per week (M02-018)")}</h4>
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr>
               <th scope="col">{t("visit.load.colInspector", "Inspector")}</th>
               {weekStarts.map((ms, i) => (
-                <th scope="col" key={ms} className="ax-td-num"><span className="ax-numeric">{weekLabel(ms)}</span>{i === 0 && <> · {t("visit.load.thisWeek", "this week")}</>}</th>
+                <th scope="col" key={ms} className="ax-td-num"><span className="numeric">{weekLabel(ms)}</span>{i === 0 && <> · {t("visit.load.thisWeek", "this week")}</>}</th>
               ))}
               <th scope="col" className="ax-td-num">{t("visit.load.colLater", "Later")}</th>
               <th scope="col" className="ax-td-num">{t("visit.load.colTotal", "Active total")}</th>
@@ -104,27 +104,27 @@ export default async function Workload() {
                   <td><strong>{a.name}</strong></td>
                   {a.weeks.map((n, i) => (
                     <td key={i} className="ax-td-num">
-                      <span className="ax-numeric" style={n === maxCell && n > 0 ? { color: "var(--ax-color-warning-strong)", fontWeight: 600 } : undefined}>{n}</span>
+                      <span className="numeric" style={n === maxCell && n > 0 ? { color: "var(--ax-color-warning-strong)", fontWeight: 600 } : undefined}>{n}</span>
                       <div aria-hidden="true" style={{ blockSize: 4, marginBlockStart: 2, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-neutral-tint)" }}>
                         <div style={{ blockSize: 4, borderRadius: "var(--ax-radius-full)", inlineSize: `${(n / maxCell) * 100}%`, background: "var(--ax-color-primary)" }} />
                       </div>
                     </td>
                   ))}
-                  <td className="ax-td-num ax-numeric">{a.beyond}</td>
-                  <td className="ax-td-num ax-numeric"><strong>{a.total}</strong></td>
+                  <td className="ax-td-num numeric">{a.beyond}</td>
+                  <td className="ax-td-num numeric"><strong>{a.total}</strong></td>
                   <td>
-                    <div className="ax-row" style={{ alignItems: "center", gap: "var(--ax-space-100)" }}>
+                    <div className="row" style={{ alignItems: "center", gap: "var(--ax-space-100)" }}>
                       <div style={{ flex: 1, blockSize: 8, borderRadius: "var(--ax-radius-full)", background: "var(--ax-color-neutral-tint)" }}>
                         <div style={{ blockSize: 8, borderRadius: "var(--ax-radius-full)", inlineSize: `${Math.round((a.total / maxTotal) * 100)}%`, background: "var(--ax-color-info)" }} />
                       </div>
-                      <span className="ax-caption ax-numeric">{Math.round((a.total / maxTotal) * 100)}%</span>
+                      <span className="t-caption numeric">{Math.round((a.total / maxTotal) * 100)}%</span>
                     </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table></div>
-          <p className="ax-caption">
+          <p className="t-caption">
             {t("visit.load.relativeNote", "Utilization is relative to the busiest inspector — no capacity threshold is configured in engine_settings (ENG-05), so no absolute capacity is invented. Weeks start Sunday (ENG-09 calendar).")}
           </p>
         </div>

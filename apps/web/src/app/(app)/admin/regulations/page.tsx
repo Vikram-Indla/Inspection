@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
-import { getUserRoles } from "@/lib/persona";
 import Shell from "@/components/Shell";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import { formatDateTime } from "@/lib/dates";
 import EmptyState from "@/components/EmptyState";
 import {
   NewRegulationForm,
@@ -16,7 +14,6 @@ import {
   type RegStrings,
   type RegRowLite,
 } from "./Controls";
-import { IconDocument, IconEye, IconLock, IconScroll, IconSearch } from "@/app/icons";
 
 // SCR-ADM-010 (CD-005 Regulation Library) + SCR-ADM-011 (CD-006 Regulation Detail).
 // The contract route /admin/regulations/:id is NOT implemented; the detail dossier is a
@@ -32,6 +29,8 @@ import { IconDocument, IconEye, IconLock, IconScroll, IconSearch } from "@/app/i
 // attachment custody, deactivation, route guarding and object-scoped audit are wired to
 // the completion migration. Version lineage and publish dependency validation are shown
 // from the authoritative regulation, clause and item records.
+export const dynamic = "force-dynamic";
+
 type RawItem = { id: string; code: string | null };
 type RawClause = {
   id: string;
@@ -91,7 +90,7 @@ export default async function Regulations({
   // Route layout restricts module visibility; writes remain independently RLS-gated.
   const { data: { user } } = await getServerUser();
   const { data: roleRows, error: roleError } = user
-    ? await getUserRoles(user.id)
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = new Set((roleRows ?? []).map(r => r.role_key));
   const isWriter = roles.has("compliance_admin") || roles.has("form_admin");
@@ -148,7 +147,7 @@ export default async function Regulations({
     statusPublished: t("admin.reg.r1.status.published", "Published"),
     statusDraft: t("admin.reg.r1.status.draft", "Draft"),
     statusDeactivated: t("admin.reg.r1.status.deactivated", "Deactivated"),
-    openDossier: t("admin.reg.r1.openDossier", "Open record"),
+    openDossier: t("admin.reg.r1.openDossier", "Open dossier"),
     filteredEmptyTitle: t("admin.reg.r1.filteredEmpty.title", "No regulations match"),
     filteredEmptyBody: t("admin.reg.r1.filteredEmpty.body", "The register itself is not empty — clear the search or lifecycle filter."),
     createdAtLabel: t("admin.reg.r1.createdAt", "created"),
@@ -165,37 +164,37 @@ export default async function Regulations({
     invalidNoClauses: t("admin.reg.r1.invalid.noClauses", "draft with no clauses — incomplete; publishing it would be meaningless"),
   };
 
-  const readAt = formatDateTime(Date.now(), locale === "ar" ? "ar" : "en");
+  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
   const readAtNode: ReactNode = (() => {
     const tmpl = t("admin.reg.r1.readAt", "read at {time} — not refreshed since; no staleness verdict exists, the age is shown");
     const [before, after] = tmpl.split("{time}");
     return (
       <>
         {before}
-        <bdi dir="ltr" className="ax-numeric">{readAt}</bdi>
+        <bdi dir="ltr" className="numeric">{readAt}</bdi>
         {after ?? ""}
       </>
     );
   })();
 
-  const title = t("admin.reg.r1.title", "Inspection Rules — regulation register");
+  const title = t("admin.reg.r1.title", "Compliance Library — regulation register");
   const context = (
-    <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
-      <span className="ax-lozenge ax-lozenge--info">SCR-ADM-010/011</span>
+    <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+      <span className="badge badge-info">SCR-ADM-010/011</span>
       <a className="ax-link" href="/admin/compliance-requests">
         {t("admin.reg.requests", "Configuration Requests")}
       </a>
-      <span role="status" aria-live="polite" className="ax-caption">{readAtNode}</span>
+      <span role="status" aria-live="polite" className="t-caption">{readAtNode}</span>
       {regsError ? (
-        <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {t("admin.reg.r1.degraded.chip", "register unavailable")}</span>
+        <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {t("admin.reg.r1.degraded.chip", "register unavailable")}</span>
       ) : null}
     </span>
   );
   const libraryTabs = (
-    <nav className="cmp-library-tabs" aria-label="Inspection Rules">
-      <a className="ax-btn ax-btn--prominent" href="/admin/regulations" aria-current="page">Regulations</a>
-      <a className="ax-btn ax-btn--secondary ax-link" href="/admin/items">Inspection Items</a>
-      {isWriter ? <a className="ax-btn ax-btn--secondary ax-link" href="/admin/compliance-requests/new">Create governed request</a> : null}
+    <nav className="cmp-library-tabs" aria-label="Compliance Library">
+      <a className="btn btn-primary btn-lg btn-touch" href="/admin/regulations" aria-current="page">Regulations</a>
+      <a className="btn btn-secondary ax-link btn-touch" href="/admin/items">Inspection Items</a>
+      {isWriter ? <a className="btn btn-secondary ax-link btn-touch" href="/admin/compliance-requests/new">Create governed request</a> : null}
     </nav>
   );
 
@@ -204,7 +203,7 @@ export default async function Regulations({
     <div className="ax-banner ax-banner--warning" role="alert"><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div>
   ) : !isWriter ? (
     <div className="ax-banner" role="note">
-      <strong><IconEye size={16} /> {isReviewer
+      <strong><span aria-hidden="true">👁</span> {isReviewer
         ? t("admin.reg.r1.readonly.reviewer.title", "Reviewer — read-only")
         : t("admin.reg.r1.readonly.title", "Read-only for your role")}</strong>{" "}
       {t("admin.reg.r1.readonly.body", "You can view configuration; creating, adding clauses, and publishing require a Compliance or Form Admin role and are enforced by row-level security. The route guard and database permissions are independent controls.")}
@@ -251,27 +250,27 @@ export default async function Regulations({
         {readOnlyBanner}
         {libraryTabs}
 
-        <p className="ax-caption" style={{ margin: 0 }}>
+        <p className="t-caption" style={{ margin: 0 }}>
           <a className="ax-link" href="/admin/regulations">← {t("admin.reg.r1.backToRegister", "Back to register")}</a>
         </p>
 
         {regsError ? null : !reg ? (
-          <EmptyState role="status" icon={<IconSearch size={28} />} title={t("admin.reg.r1.detail.notFound.title", "Regulation not found")}
+          <EmptyState role="status" glyph="🔎" title={t("admin.reg.r1.detail.notFound.title", "Regulation not found")}
             body={t("admin.reg.r1.detail.notFound.body", "The read succeeded but no regulation has this identifier. It may have been removed.")} />
         ) : (
           <>
             {/* Dossier header */}
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-dossier-h">
-              <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
-                <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+            <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-dossier-h">
+              <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                   <h2 id="reg-dossier-h" style={{ margin: 0 }}>
-                    <span className="ax-numeric"><bdi dir="ltr">{reg.code}</bdi></span> — {reg.title}
+                    <span className="numeric"><bdi dir="ltr">{reg.code}</bdi></span> — {reg.title}
                   </h2>
-                  <p className="ax-caption" style={{ margin: 0 }}>
+                  <p className="t-caption" style={{ margin: 0 }}>
                     {reg.issuing_authority || "—"}
-                    {reg.created_at ? <> · {strings.createdAtLabel} <bdi dir="ltr" className="ax-numeric">{reg.created_at.slice(0, 10)}</bdi></> : null}
-                    {reg.effective_from ? <> · {strings.effectiveFrom} <bdi dir="ltr" className="ax-numeric">{reg.effective_from.slice(0, 10)}</bdi></> : null}
-                    <> · {strings.versionLabel} <bdi dir="ltr" className="ax-numeric">{reg.version_label}</bdi></>
+                    {reg.created_at ? <> · {strings.createdAtLabel} <bdi dir="ltr" className="numeric">{reg.created_at.slice(0, 10)}</bdi></> : null}
+                    {reg.effective_from ? <> · {strings.effectiveFrom} <bdi dir="ltr" className="numeric">{reg.effective_from.slice(0, 10)}</bdi></> : null}
+                    <> · {strings.versionLabel} <bdi dir="ltr" className="numeric">{reg.version_label}</bdi></>
                   </p>
                 </div>
                 <span className={`ax-lozenge ${reg.status === "published" ? "ax-lozenge--success" : reg.status === "deactivated" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
@@ -279,36 +278,36 @@ export default async function Regulations({
                   {reg.status === "published" ? strings.statusPublished : reg.status === "deactivated" ? t("admin.reg.status.deactivated", "Deactivated") : strings.statusDraft}
                 </span>
               </div>
-              <p className="ax-caption" style={{ margin: 0 }}>
-                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Regulation-row changes are audit-tracked by the generic trigger. Clause additions on this record are audit-tracked too (trg_audit_regulation_clauses).")}
+              <p className="t-caption" style={{ margin: 0 }}>
+                <span aria-hidden="true">ⓘ</span> {t("admin.reg.r1.detail.auditNote", "Regulation-row changes are audit-tracked by the generic trigger. Clause additions on this dossier are audit-tracked too (trg_audit_regulation_clauses).")}
               </p>
             </section>
 
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-attachments-h">
+            <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-attachments-h">
               <h3 id="reg-attachments-h" style={{ margin: 0 }}>{t("admin.reg.attachments.heading", "Source attachments")}</h3>
               {attachments.length === 0 ? (
-                <p className="ax-caption" role="status">{t("admin.reg.attachments.empty", "No attachment metadata recorded — verified zero.")}</p>
+                <p className="t-caption" role="status">{t("admin.reg.attachments.empty", "No attachment metadata recorded — verified zero.")}</p>
               ) : (
-                <ul className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
+                <ul className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                   {attachments.map(a => <li key={a.id}>
                     {attachmentUrls[a.id] ? <a className="ax-link" href={attachmentUrls[a.id]} target="_blank" rel="noreferrer"><strong>{a.file_name}</strong></a> : <strong>{a.file_name}</strong>}
-                    {a.media_type ? ` · ${a.media_type}` : ""}{a.sha256 ? <> · <bdi dir="ltr" className="ax-numeric">SHA-256 {a.sha256.slice(0, 12)}…</bdi></> : null}
+                    {a.media_type ? ` · ${a.media_type}` : ""}{a.sha256 ? <> · <bdi dir="ltr" className="numeric">SHA-256 {a.sha256.slice(0, 12)}…</bdi></> : null}
                   </li>)}
                 </ul>
               )}
               {isWriter && reg.status === "draft" ? <AddRegulationAttachment regulationId={reg.id} strings={strings} /> : null}
-              <p className="ax-caption" style={{ margin: 0 }}>{t("admin.reg.attachments.truth", "Files are uploaded to governed private storage, checksummed, and retrieved through short-lived signed links.")}</p>
+              <p className="t-caption" style={{ margin: 0 }}>{t("admin.reg.attachments.truth", "Files are uploaded to governed private storage, checksummed, and retrieved through short-lived signed links.")}</p>
             </section>
 
             {/* Clause navigator + clause→item dependency rail */}
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-clauses-h">
+            <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-clauses-h">
               <h3 id="reg-clauses-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.clauses.heading", "Clauses & mapped inspection items")}</h3>
               {clauses.length === 0 ? (
                 // S03 EMPTY — no clauses: invite, never "complete/mapped"
                 <div className="ax-state ax-state--inline" role="status">
-                  <span className="ax-state__glyph" aria-hidden="true"><IconDocument size={20} /></span>
+                  <span className="ax-state__glyph" aria-hidden="true">📄</span>
                   <h4>{t("admin.reg.r1.detail.clauses.empty.title", "No clauses yet")}</h4>
-                  <p className="ax-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below — the read succeeded, it is genuinely empty.")}</p>
+                  <p className="t-caption">{t("admin.reg.r1.detail.clauses.empty.body", "This regulation has no clauses. Add the first clause below — the read succeeded, it is genuinely empty.")}</p>
                 </div>
               ) : (
                 <div className="ax-tablewrap">
@@ -327,18 +326,18 @@ export default async function Regulations({
                         const items = Array.isArray(c.inspection_items) ? c.inspection_items : null;
                         return (
                           <tr key={c.id}>
-                            <td className="ax-numeric"><strong><bdi dir="ltr">§{c.clause_ref ?? "—"}</bdi></strong></td>
+                            <td className="numeric"><strong><bdi dir="ltr">§{c.clause_ref ?? "—"}</bdi></strong></td>
                             <td>{c.title ?? "—"}</td>
-                            <td className="ax-caption">{c.applicability ?? "—"}</td>
-                            <td className="ax-caption">{c.legal_source ?? "—"}</td>
+                            <td className="t-caption">{c.applicability ?? "—"}</td>
+                            <td className="t-caption">{c.legal_source ?? "—"}</td>
                             <td>
                               {items === null ? (
-                                <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">⚠</span> {strings.railItemsUnknown}</span>
+                                <span className="badge badge-warning"><span aria-hidden="true">⚠</span> {strings.railItemsUnknown}</span>
                               ) : items.length === 0 ? (
-                                <span className="ax-caption"><span aria-hidden="true">○</span> {strings.railItemsZero}</span>
+                                <span className="t-caption"><span aria-hidden="true">○</span> {strings.railItemsZero}</span>
                               ) : (
                                 items.map(i => (
-                                  <span key={i.id} className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 6 }}>
+                                  <span key={i.id} className="badge badge-info" style={{ marginInlineEnd: 6 }}>
                                     <bdi dir="ltr">{i.code}</bdi>
                                   </span>
                                 ))
@@ -351,14 +350,14 @@ export default async function Regulations({
                   </table>
                 </div>
               )}
-              <p className="ax-caption" style={{ margin: 0 }}>
+              <p className="t-caption" style={{ margin: 0 }}>
                 <span aria-hidden="true">✓</span> {t("admin.reg.r1.detail.beyond", "Publish dependency gate is evaluated from the authoritative clause-to-item mappings shown above. Package versions freeze the referenced item snapshots at publication.")}
               </p>
             </section>
 
             {/* Writer actions — proven legs only */}
             {isWriter ? (
-              <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }} aria-labelledby="reg-actions-h">
+              <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }} aria-labelledby="reg-actions-h">
                 <h3 id="reg-actions-h" style={{ margin: 0 }}>{t("admin.reg.r1.detail.actions.heading", "Author & publish")}</h3>
 
                 {reg.status === "draft" ? <>
@@ -368,10 +367,10 @@ export default async function Regulations({
 
                 {/* S04: the action performs the same mapped-clause validation shown here. */}
                 {reg.status === "draft" ? (
-                  <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
-                    <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
+                  <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
+                    <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
                       <PublishRegulation regulationId={reg.id} strings={strings} />
-                      <span className="ax-caption">{t("admin.reg.r1.detail.publish.direct", "Publish validates that at least one clause exists and every clause maps to an inspection item. Maker-checker rejects self-approval, and a successful transition is audited.")}</span>
+                      <span className="t-caption">{t("admin.reg.r1.detail.publish.direct", "Publish validates that at least one clause exists and every clause maps to an inspection item. Maker-checker rejects self-approval, and a successful transition is audited.")}</span>
                     </div>
                     <div className={`ax-banner ${unmappedClauses > 0 || clauses.length === 0 ? "ax-banner--warning" : ""}`} role={unmappedClauses > 0 || clauses.length === 0 ? "alert" : "status"}>
                       <strong><span aria-hidden="true">{unmappedClauses > 0 || clauses.length === 0 ? "⚠" : "✓"}</span> {t("admin.reg.r1.detail.validation.title", "Publish readiness")}</strong>{" "}
@@ -384,30 +383,30 @@ export default async function Regulations({
                   </div>
                 ) : reg.status === "published" ? (
                   <div className="ax-banner ax-banner--immutable" role="note">
-                    <strong><IconLock size={16} /> {t("admin.reg.r1.detail.published.title", "Published — immutable at the database")}</strong>{" "}
+                    <strong><span aria-hidden="true">🔒</span> {t("admin.reg.r1.detail.published.title", "Published — immutable at the database")}</strong>{" "}
                     {t("admin.reg.r1.detail.published.body", "Published regulation content is immutable at the database boundary. Create a draft with the same code and a new version label to publish a governed successor; the prior version is then deactivated and linked automatically.")}
                     <DeactivateRegulation regulationId={reg.id} strings={strings} />
                   </div>
-                ) : <div className="ax-banner ax-banner--immutable" role="note"><strong><IconLock size={16} /> {t("admin.reg.deactivated.readonly", "Deactivated — read-only")}</strong></div>}
+                ) : <div className="ax-banner ax-banner--immutable" role="note"><strong><span aria-hidden="true">🔒</span> {t("admin.reg.deactivated.readonly", "Deactivated — read-only")}</strong></div>}
               </section>
             ) : null}
 
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-audit-h">
+            <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-audit-h">
               <h3 id="reg-audit-h" style={{ margin: 0 }}>{t("admin.reg.audit.heading", "Configuration audit timeline")}</h3>
-              {!isWriter ? <p className="ax-caption">{t("admin.reg.audit.readonly", "The scoped author timeline is available to configuration writers; this read-only persona is not granted that RPC.")}</p>
+              {!isWriter ? <p className="t-caption">{t("admin.reg.audit.readonly", "The scoped author timeline is available to configuration writers; this read-only persona is not granted that RPC.")}</p>
                 : auditError ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.reg.audit.error", "The audit timeline is unavailable. Reload to retry; no empty-history claim is made.")}</div>
-                : auditEvents.length === 0 ? <p className="ax-caption" role="status">{t("admin.reg.audit.empty", "No scoped audit events returned — verified zero.")}</p>
-                : <ol className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="ax-numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
+                : auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.reg.audit.empty", "No scoped audit events returned — verified zero.")}</p>
+                : <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </section>
 
-            <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-lineage-h">
-              <h3 id="reg-lineage-h" style={{ margin: 0 }}>{t("admin.reg.lineage.heading", "Version history")}</h3>
-              <ol className="ax-stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
+            <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="reg-lineage-h">
+              <h3 id="reg-lineage-h" style={{ margin: 0 }}>{t("admin.reg.lineage.heading", "Version lineage")}</h3>
+              <ol className="stack" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                 {lineage.map(version => <li key={version.id}>
-                  <a className="ax-link" href={`/admin/regulations?id=${encodeURIComponent(version.id)}`}><bdi dir="ltr" className="ax-numeric">{version.version_label}</bdi></a>
-                  {" · "}{version.status}{version.effective_from ? <> · <bdi dir="ltr" className="ax-numeric">{version.effective_from.slice(0, 10)}</bdi></> : null}
+                  <a className="ax-link" href={`/admin/regulations?id=${encodeURIComponent(version.id)}`}><bdi dir="ltr" className="numeric">{version.version_label}</bdi></a>
+                  {" · "}{version.status}{version.effective_from ? <> · <bdi dir="ltr" className="numeric">{version.effective_from.slice(0, 10)}</bdi></> : null}
                   {version.supersedes_id ? <> · {t("admin.reg.lineage.successor", "governed successor")}</> : null}
-                  {version.deactivation_reason ? <div className="ax-caption">{version.deactivation_reason}</div> : null}
+                  {version.deactivation_reason ? <div className="t-caption">{version.deactivation_reason}</div> : null}
                 </li>)}
               </ol>
             </section>
@@ -440,16 +439,16 @@ export default async function Regulations({
       {readOnlyBanner}
       {libraryTabs}
 
-      {isWriter ? <div className="ax-banner ax-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct regulation controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; these Inspection Rules remain the published source of truth.</div> : null}
+      {isWriter ? <div className="ax-banner ax-banner--warning" role="note"><strong>Legacy compatibility authoring.</strong>{" "}Direct regulation controls remain temporarily available for continuity. New or modified governed configuration should begin in a Compliance Configuration Request; this library remains the published source of truth.</div> : null}
 
       {isWriter ? <NewRegulationForm strings={strings} /> : null}
 
       {regsError ? null : rows.length === 0 ? (
         // S03 EMPTY — verified zero (read succeeded, genuinely no regulations)
-        <EmptyState role="status" icon={<IconScroll size={28} />} title={t("admin.reg.r1.empty.title", "No regulations configured")}
+        <EmptyState role="status" glyph="📜" title={t("admin.reg.r1.empty.title", "No regulations configured")}
           body={isWriter
-            ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the list is genuinely empty. Create the first regulation above (MVP1-M09-001: regulations are the parents of inspection items).")
-            : t("admin.reg.r1.empty.body", "The read succeeded — the list is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
+            ? t("admin.reg.r1.empty.body.writer", "The read succeeded — the library is genuinely empty. Create the first regulation above (MVP1-M09-001: regulations are the parents of inspection items).")
+            : t("admin.reg.r1.empty.body", "The read succeeded — the library is genuinely empty (MVP1-M09-001: regulations are the parents of inspection items).")} />
       ) : (
         <RegulationRegister rows={lite} strings={strings} />
       )}

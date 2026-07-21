@@ -1,0 +1,2 @@
+# IPAD_VISUAL_QA_MATRIX
+Per screen × (landscape, portrait) × (EN, AR) × (light, dark): targets ≥44px · no horizontal body scroll (except intentional grid h-scroll) · field taskbar reachable · offline chrome present on field surfaces · type ≥15px body at field density · map markers legible · drawer gestures don't conflict with map pan · sticky headers stay ≤2 layers. Record: screen · mode · check · pass/fail.

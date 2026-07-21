@@ -18,8 +18,8 @@ export default function ActionForm({ action, children, className, redirectOnCrea
   return (
     <form action={formAction} className={className} aria-busy={pending}>
       {children}
-      {state.error ? <p className="ax-caption ccr-error" role="alert">{state.error}</p> : null}
-      {state.ok && !state.requestId ? <p className="ax-caption ccr-success" role="status">Saved.</p> : null}
+      {state.error ? <p className="t-caption ccr-error" role="alert">{state.error}</p> : null}
+      {state.ok && !state.requestId ? <p className="t-caption ccr-success" role="status">Saved.</p> : null}
     </form>
   );
 }

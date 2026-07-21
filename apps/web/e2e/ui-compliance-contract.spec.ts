@@ -26,8 +26,8 @@ test.describe("UI compliance release guard", () => {
     const tokens = read("src/app/tokens.css");
     const css = read("src/app/astryx.css");
     const login = read("src/app/login/login.css");
-    expect(tokens).toContain("--ax-radius-input: 12px");
-    expect(tokens).toContain("--ax-text-input:   400 16px/24px var(--ax-font-input)");
+    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)"); // SAQEEL: inputs 3px (frozen 12px retired)
+    expect(tokens).toContain("--ax-text-input:        400 14px/1.5 var(--font-body)"); // SAQEEL body input
     expect(css).not.toContain("--ax-color-prism-magenta");
     expect(login).toContain("lg-atlas");
   });
@@ -44,7 +44,7 @@ test.describe("UI compliance release guard", () => {
     expect(visits).toContain('id="visit-filter-from"');
     expect(visits).toContain('htmlFor="visit-filter-to"');
     expect(visits).toContain('id="visit-filter-to"');
-    expect(visits).toContain('ax-link ax-caption ax-inline-target');
+    expect(visits).toContain('ax-link t-caption ax-inline-target'); // SAQEEL: t-caption replaces ax-caption
     expect(factories).toContain('htmlFor="factory-region-filter"');
     expect(factories).toContain('id="factory-region-filter"');
   });

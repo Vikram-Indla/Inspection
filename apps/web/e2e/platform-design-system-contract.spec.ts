@@ -67,16 +67,18 @@ test.describe("Platform-wide government design-system contract", () => {
     const tokens = read("src/app/tokens.css");
     const css = read("src/app/astryx.css");
     const login = read("src/app/login/login.css");
-    expect(tokens).toContain("--ax-radius-input: 12px");
-    expect(tokens).toContain("--ax-text-input:   400 16px/24px var(--ax-font-input)");
+    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)"); // SAQEEL: inputs 3px (frozen 12px retired)
+    expect(tokens).toContain("--ax-text-input:        400 14px/1.5 var(--font-body)"); // SAQEEL body input, IBM Plex Sans
     expect(css).toContain("border-radius: var(--ax-radius-input)");
     expect(login).toContain("lg-atlas");
     expect(css).not.toContain("--ax-color-prism-magenta");
   });
 
   test("PDS-AC-022..025 authenticated CSS remains institutional and token-driven", () => {
+    // Page/module CSS only — the SAQEEL DS component sheet is a design-system
+    // layer (peer to tokens.css), not a page, and is excluded like login.css.
     const authenticated = files(appRoot, ".css")
-      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css"))
+      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css") && !file.endsWith("saqeel-components.css"))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
     expect(authenticated).not.toMatch(/font-style:\s*italic/);
     expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);

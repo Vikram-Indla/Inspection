@@ -25,7 +25,7 @@ export default async function AdminRouteBoundary({ allowedRoles, children }: { a
       <EmptyState icon={<IconShieldCheck size={28} />} role="alert"
         title={t("admin.unauthorized.heading", "This control-plane module is outside your role")}
         body={t("admin.unauthorized.body", "No configuration data has been loaded. Return to your assigned workspace or ask an administrator for the required role.")}>
-        <a className="ax-btn ax-btn--secondary ax-link" href="/launch">{t("admin.unauthorized.return", "Return to my workspace")}</a>
+        <a className="btn btn-secondary ax-link btn-touch" href="/launch">{t("admin.unauthorized.return", "Return to my workspace")}</a>
       </EmptyState>
     </Shell>
   );

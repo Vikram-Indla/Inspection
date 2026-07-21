@@ -1,12 +1,9 @@
 import Shell from "@/components/Shell";
-import { getUserRoles } from "@/lib/persona";
 import { getServerUser, supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import { formatDate, formatDateTime } from "@/lib/dates";
 import { NewViolationForm, AddMappingForm, PublishMappingForm, PublishViolationForm, DeactivateViolationForm, type ClauseOption, type VioStrings } from "./Controls";
 import { getViolationUsage, type ViolationUsage } from "./actions";
 import EmptyState from "@/components/EmptyState";
-import { IconBlocked, IconLock } from "@/app/icons";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
 // CD-010 (SCR-ADM-040 · Violation Catalogue) + CD-011 (SCR-ADM-041 · Penalty
@@ -30,6 +27,8 @@ import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 //
 // Category, applicability, governed version lineage, trigger trace and penalty
 // lifecycle fields consume the authoritative completion migration.
+export const dynamic = "force-dynamic";
+
 const WRITER_ROLES = new Set(["compliance_admin", "form_admin"]);
 
 type Lifecycle = "active" | "future" | "deactivated";
@@ -91,8 +90,7 @@ export default async function Violations({
 }) {
   const sp = await searchParams;
   const penaltyMode = sp.mode === "penalty";
-  const { t, locale } = await useT();
-  const lang = locale === "ar" ? "ar" : "en";
+  const { t } = await useT();
   const sb = await supabaseServer();
 
   const [{ data: codesRaw, error }, { data: clauses, error: clauseError }, templateRead, itemTraceRead] = await Promise.all([
@@ -111,7 +109,7 @@ export default async function Violations({
   // Reflect RLS in the UI; the route layout separately restricts module visibility.
   const { data: { user } } = await getServerUser();
   const { data: roleRows, error: roleError } = user
-    ? await getUserRoles(user.id)
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[], error: null };
   const roles = (roleRows ?? []).map(r => r.role_key);
   const canWrite = roles.some(r => WRITER_ROLES.has(r));
@@ -120,7 +118,7 @@ export default async function Violations({
   const templateChoices = (templateRead.data ?? []).map(template => ({ id: template.id, label: `${template.template_key} · ${template.version_label} — ${template.title_en}` }));
   const itemTraces = (itemTraceRead.data ?? []) as Array<{ code: string; title: string; response_model: { mapping?: Record<string, { violation?: string }> } | null }>;
   const today = new Date().toISOString().slice(0, 10);
-  const readAt = formatDateTime(Date.now(), lang);
+  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
 
   const clauseOptions: ClauseOption[] = (clauses ?? []).map(c => {
     const reg = c.regulations as unknown as { code: string } | null;
@@ -207,7 +205,7 @@ export default async function Violations({
   // Severity = glyph + word + colour (never colour alone). The "word" is the
   // schema level label (L1/L2/L3); no invented severity noun.
   function severityChip(level: string) {
-    const glyph = level === "L1" ? <IconBlocked size={16} /> : level === "L2" ? "▲" : "◆";
+    const glyph = level === "L1" ? "⛔" : level === "L2" ? "▲" : "◆";
     const cls =
       level === "L1" ? "ax-lozenge ax-lozenge--critical"
       : level === "L2" ? "ax-lozenge ax-lozenge--warning"
@@ -215,7 +213,7 @@ export default async function Violations({
     return (
       <span className={cls}>
         <span aria-hidden="true">{glyph}</span>{" "}
-        {t("admin.viol.severity", "severity")} <span className="ax-numeric">{level}</span>
+        {t("admin.viol.severity", "severity")} <span className="numeric">{level}</span>
       </span>
     );
   }
@@ -236,23 +234,23 @@ export default async function Violations({
 
   function auditSummary(events: AuditEvent[] | null | undefined, label: string) {
     if (events === undefined) {
-      return <span className="ax-caption"><IconLock size={16} /> {t("admin.viol.audit.writerOnly", "Audit history is available to configuration writers.")}</span>;
+      return <span className="t-caption"><span aria-hidden="true">🔒</span> {t("admin.viol.audit.writerOnly", "Audit history is available to configuration writers.")}</span>;
     }
     if (events === null) {
-      return <span className="ax-caption"><span aria-hidden="true">⚠</span> {t("admin.viol.audit.unavailable", "Audit history unavailable — no zero-event claim was made.")}</span>;
+      return <span className="t-caption"><span aria-hidden="true">⚠</span> {t("admin.viol.audit.unavailable", "Audit history unavailable — no zero-event claim was made.")}</span>;
     }
     if (events.length === 0) {
-      return <span className="ax-caption"><span aria-hidden="true">○</span> {t("admin.viol.audit.empty", "No audit events returned for this object.")}</span>;
+      return <span className="t-caption"><span aria-hidden="true">○</span> {t("admin.viol.audit.empty", "No audit events returned for this object.")}</span>;
     }
     return (
-      <details className="ax-caption">
+      <details className="t-caption">
         <summary><span aria-hidden="true">✓</span> {label}: <strong>{events.length}</strong></summary>
-        <ol className="ax-stack" style={{ gap: "var(--ax-space-050)", marginBlockEnd: 0 }}>
+        <ol className="stack" style={{ gap: "var(--ax-space-050)", marginBlockEnd: 0 }}>
           {events.map(event => (
             <li key={event.id}>
-              <span className="ax-numeric">{event.action}</span>{" · "}
-              <bdi dir="ltr" className="ax-numeric">{formatDateTime(event.occurred_at, lang)}</bdi>
-              {event.actor ? <> · {t("admin.viol.audit.actor", "actor")} <bdi dir="ltr" className="ax-numeric">{event.actor}</bdi></> : null}
+              <span className="numeric">{event.action}</span>{" · "}
+              <bdi dir="ltr" className="numeric">{new Date(event.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</bdi>
+              {event.actor ? <> · {t("admin.viol.audit.actor", "actor")} <bdi dir="ltr" className="numeric">{event.actor}</bdi></> : null}
             </li>
           ))}
         </ol>
@@ -262,17 +260,12 @@ export default async function Violations({
 
   const modeTabs = (
     <div className="ax-segmented" role="tablist" aria-label={t("admin.viol.mode.label", "Catalogue view")}>
-      {/* V2 a11y fix: .ax-link forces the information-blue text color (Wave 4);
-          combined with .ax-btn--prominent's green fill that produced a
-          blue-on-green combination axe flagged as insufficient contrast.
-          .ax-btn already removes the underline/link styling .ax-link existed
-          for here, so it was redundant even before that regression. */}
       <a role="tab" aria-selected={!penaltyMode} aria-current={!penaltyMode ? "page" : undefined}
-        className={`ax-btn ${!penaltyMode ? "ax-btn--prominent" : "ax-btn--subtle"}`} href="/admin/violations">
+        className={`btn btn-touch ax-link ${!penaltyMode ? "btn-primary btn-lg" : "btn-ghost"}`} href="/admin/violations">
         {t("admin.viol.mode.catalogue", "Violation catalogue")}
       </a>
       <a role="tab" aria-selected={penaltyMode} aria-current={penaltyMode ? "page" : undefined}
-        className={`ax-btn ${penaltyMode ? "ax-btn--prominent" : "ax-btn--subtle"}`} href="/admin/violations?mode=penalty">
+        className={`btn btn-touch ax-link ${penaltyMode ? "btn-primary btn-lg" : "btn-ghost"}`} href="/admin/violations?mode=penalty">
         {t("admin.viol.mode.penalty", "Penalty mapping")}
       </a>
     </div>
@@ -284,14 +277,14 @@ export default async function Violations({
 
   return (
     <Shell current="/admin/violations" title={title}
-      context={<span className="ax-lozenge ax-lozenge--info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
+      context={<span className="badge badge-info">{penaltyMode ? "SCR-ADM-041 · ENG-08" : "SCR-ADM-040 · ENG-08"}</span>}>
 
       {modeTabs}
 
       {/* S07 STALE — a read fact with no invented duration or SLA. */}
-      <p className="ax-caption" role="status" aria-live="polite">
+      <p className="t-caption" role="status" aria-live="polite">
         {t("admin.viol.readAt", "Read at")}{" "}
-        <bdi dir="ltr" className="ax-numeric">{readAt}</bdi>{" · "}
+        <bdi dir="ltr" className="numeric">{readAt}</bdi>{" · "}
         {t("admin.viol.stale", "data may have changed since — reopen to refresh (no staleness verdict exists).")}
       </p>
 
@@ -313,9 +306,9 @@ export default async function Violations({
       {roleError && !error ? (
         <div className="ax-banner ax-banner--warning" role="alert"><div><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>
       ) : !canWrite && !error && (
-        <div className="ax-surface ax-permission" style={{ padding: "var(--ax-space-300)" }}>
-          <p className="ax-caption" style={{ margin: 0 }}>
-            <IconLock size={16} />{" "}
+        <div className="panel ax-permission" style={{ padding: "var(--ax-space-300)" }}>
+          <p className="t-caption" style={{ margin: 0 }}>
+            <span aria-hidden="true">🔒</span>{" "}
             {t("admin.viol.readonly", "Read-only view — configuration writes require the compliance-admin or form-admin role (RLS). Route visibility does not grant write authority.")}
           </p>
         </div>
@@ -325,14 +318,14 @@ export default async function Violations({
         /* ============ CD-011 · Penalty mapping mode ============ */
         <>
           {/* Signature — Mapping Validation Lens: exactly the four proven checks. */}
-          <section className="ax-surface ax-stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+          <section className="panel stack" aria-labelledby="pen-lens-h" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
             <h3 id="pen-lens-h" style={{ margin: 0 }}>{t("admin.viol.lens.title", "Mapping Validation Lens")}</h3>
-            <p className="ax-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping validates legal basis, lifecycle, type, optional amount, timing, repeat policy, and an optional immutable template reference. No value is inferred or invented.")}</p>
-            <ul className="ax-stack" style={{ gap: "var(--ax-space-050)", margin: 0, paddingInlineStart: "var(--ax-space-200)" }}>
-              <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c1", "The violation is not already mapped (one mapping per violation).")}</li>
-              <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c2", "A second mapping is rejected by the database unique constraint.")}</li>
-              <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c3", "Legal basis is present before create (never invented).")}</li>
-              <li className="ax-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c4", "Range and repeat presets are governed tokens, not amounts.")}</li>
+            <p className="t-caption" style={{ margin: 0 }}>{t("admin.viol.lens.intro", "Creating a mapping validates legal basis, lifecycle, type, optional amount, timing, repeat policy, and an optional immutable template reference. No value is inferred or invented.")}</p>
+            <ul className="stack" style={{ gap: "var(--ax-space-050)", margin: 0, paddingInlineStart: "var(--ax-space-200)" }}>
+              <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c1", "The violation is not already mapped (one mapping per violation).")}</li>
+              <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c2", "A second mapping is rejected by the database unique constraint.")}</li>
+              <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c3", "Legal basis is present before create (never invented).")}</li>
+              <li className="t-caption"><span aria-hidden="true">✓</span> {t("admin.viol.lens.proven", "Proven rule")} — {t("admin.viol.lens.c4", "Range and repeat presets are governed tokens, not amounts.")}</li>
             </ul>
           </section>
 
@@ -351,49 +344,49 @@ export default async function Violations({
             const lc = deriveLifecycle(v.active_from, v.active_to, today);
             const evidence = evidenceById.get(v.id);
             return (
-              <div key={v.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
+              <div key={v.id} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
                 {/* Column 1 — violation */}
-                <div className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 200, flex: "1 1 200px" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 200, flex: "1 1 200px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.violation", "Violation")}</span>
-                  <strong><span className="ax-numeric">{v.code}</span> — {v.title}</strong>
-                  <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+                  <strong><span className="numeric">{v.code}</span> — {v.title}</strong>
+                  <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
                   </div>
                 </div>
                 {/* Column 2 — lens status */}
-                <div className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 180, flex: "1 1 180px" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 180, flex: "1 1 180px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.lens", "Validation lens")}</span>
                   {activeMapping
-                    ? <span className="ax-lozenge ax-lozenge--success" role="status"><span aria-hidden="true">✓</span> {t("admin.viol.lens.mapped", "one active mapping; one-to-one satisfied")}</span>
+                    ? <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {t("admin.viol.lens.mapped", "one active mapping; one-to-one satisfied")}</span>
                     : draft
-                    ? <span className="ax-lozenge ax-lozenge--warning" role="status"><span aria-hidden="true">◷</span> {t("admin.viol.lens.draft", "draft awaiting a distinct approver")}</span>
-                    : <span className="ax-lozenge ax-lozenge--warning" role="status"><span aria-hidden="true">○</span> {t("admin.viol.lens.unmapped", "no mapping yet — one is required")}</span>}
+                    ? <span className="badge badge-warning" role="status"><span aria-hidden="true">◷</span> {t("admin.viol.lens.draft", "draft awaiting a distinct approver")}</span>
+                    : <span className="badge badge-warning" role="status"><span aria-hidden="true">○</span> {t("admin.viol.lens.unmapped", "no mapping yet — one is required")}</span>}
                 </div>
                 {/* Column 3 — mapping record or create form */}
-                <div className="ax-stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 260, flex: "2 1 260px" }}>
+                <div className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 260, flex: "2 1 260px" }}>
                   <span className="ax-overline">{t("admin.viol.penalty.col.record", "Penalty mapping record")}</span>
                   {pm ? (
-                    <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
-                      <span>{t("admin.viol.penalty", "Penalty")} <strong className="ax-numeric">{pm.penalty_ref}</strong></span>
-                      <span className="ax-caption">{t("admin.viol.map.legalBasis", "Legal basis")}: <bdi dir="ltr">{pm.legal_basis}</bdi></span>
-                      <span className="ax-caption">
-                        {t("admin.viol.map.penaltyRange", "Range preset")}: <span className="ax-numeric">{pm.penalty_range?.schedule ?? t("admin.viol.map.rangeNone", "None")}</span>
+                    <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
+                      <span>{t("admin.viol.penalty", "Penalty")} <strong className="numeric">{pm.penalty_ref}</strong></span>
+                      <span className="t-caption">{t("admin.viol.map.legalBasis", "Legal basis")}: <bdi dir="ltr">{pm.legal_basis}</bdi></span>
+                      <span className="t-caption">
+                        {t("admin.viol.map.penaltyRange", "Range preset")}: <span className="numeric">{pm.penalty_range?.schedule ?? t("admin.viol.map.rangeNone", "None")}</span>
                         {" · "}
-                        {t("admin.viol.map.repeatRule", "Repeat-rule preset")}: <span className="ax-numeric">{pm.repeat_rule?.repeat_12mo ?? t("admin.viol.map.repeatNone", "None")}</span>
+                        {t("admin.viol.map.repeatRule", "Repeat-rule preset")}: <span className="numeric">{pm.repeat_rule?.repeat_12mo ?? t("admin.viol.map.repeatNone", "None")}</span>
                       </span>
-                      <span className="ax-caption">
+                      <span className="t-caption">
                         <span className="ax-version">{pm.mapping_version}</span>{" "}
                         {pm.status} · {pm.effective_from ?? "—"}{pm.effective_to ? ` → ${pm.effective_to}` : ""}
                       </span>
-                      <span className="ax-caption">{strings.penaltyType}: {pm.penalty_type}{pm.amount !== null ? <> · {strings.amount}: <bdi dir="ltr" className="ax-numeric">{pm.amount}</bdi></> : null}{pm.grace_period_days !== null ? <> · {strings.gracePeriod}: {pm.grace_period_days}</> : null}{pm.due_period_days !== null ? <> · {strings.duePeriod}: {pm.due_period_days}</> : null}</span>
+                      <span className="t-caption">{strings.penaltyType}: {pm.penalty_type}{pm.amount !== null ? <> · {strings.amount}: <bdi dir="ltr" className="numeric">{pm.amount}</bdi></> : null}{pm.grace_period_days !== null ? <> · {strings.gracePeriod}: {pm.grace_period_days}</> : null}{pm.due_period_days !== null ? <> · {strings.duePeriod}: {pm.due_period_days}</> : null}</span>
                       {draft && canWrite ? <PublishMappingForm mappingId={draft.id} violationCode={v.code} strings={strings} /> : null}
                       {auditSummary(evidence?.mappingAudit, t("admin.viol.audit.mapping", "Mapping audit events"))}
                     </div>
                   ) : canWrite ? (
                     <AddMappingForm violationId={v.id} violationCode={v.code} templates={templateChoices} strings={strings} />
                   ) : (
-                    <span className="ax-caption">{t("admin.viol.penalty.readonly", "Unmapped — a compliance/form admin can add the mapping.")}</span>
+                    <span className="t-caption">{t("admin.viol.penalty.readonly", "Unmapped — a compliance/form admin can add the mapping.")}</span>
                   )}
                   {canWrite && !draft && pm ? <AddMappingForm violationId={v.id} violationCode={v.code} templates={templateChoices} strings={strings} /> : null}
                 </div>
@@ -401,7 +394,7 @@ export default async function Violations({
             );
           })}
 
-          <p className="ax-caption">{t("admin.viol.penalty.footer", "One violation = one penalty (M09-004) — the database rejects a second mapping. Presets are governed tokens, never monetary or legal values. The contract route /admin/penalties is not a live URL; this is its logical mode.")}</p>
+          <p className="t-caption">{t("admin.viol.penalty.footer", "One violation = one penalty (M09-004) — the database rejects a second mapping. Presets are governed tokens, never monetary or legal values. The contract route /admin/penalties is not a live URL; this is its logical mode.")}</p>
         </>
       ) : (
         /* ============ CD-010 · Violation catalogue mode ============ */
@@ -428,51 +421,51 @@ export default async function Violations({
             const lc = deriveLifecycle(v.active_from, v.active_to, today);
             const evidence = evidenceById.get(v.id);
             return (
-              <div key={v.id} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-                <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
-                  <h3><span className="ax-numeric">{v.code}</span> — {v.title}</h3>
-                  <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+              <div key={v.id} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+                <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+                  <h3><span className="numeric">{v.code}</span> — {v.title}</h3>
+                  <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
                     {severityChip(v.level)}
                     {lifecycleChip(lc)}
                     {pm
-                      ? <span className="ax-lozenge ax-lozenge--success"><span aria-hidden="true">✓</span> {t("admin.viol.mapped", "penalty mapped")}</span>
-                      : <span className="ax-lozenge ax-lozenge--warning"><span aria-hidden="true">○</span> {t("admin.viol.unmapped", "unmapped")}</span>}
+                      ? <span className="badge badge-compliant"><span aria-hidden="true">✓</span> {t("admin.viol.mapped", "penalty mapped")}</span>
+                      : <span className="badge badge-warning"><span aria-hidden="true">○</span> {t("admin.viol.unmapped", "unmapped")}</span>}
                   </div>
                 </div>
                 {/* Clause-link trace only — legal basis lives on the penalty mapping, not here. */}
-                <p className="ax-caption ax-trace">
+                <p className="t-caption ax-trace">
                   <span className="ax-overline">{t("admin.viol.trace", "Legal trace")}:</span>{" "}
                   {rc ? <bdi dir="ltr">{rc.regulations?.code ?? "?"} §{rc.clause_ref}</bdi> : t("admin.viol.noAnchor", "No clause anchor")}
                 </p>
-                <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
-                  <span className="ax-lozenge ax-lozenge--info">v{v.configuration_version}</span>
-                  {v.category && <span className="ax-lozenge ax-lozenge--info">{v.category}</span>}
-                  {v.applicability && <span className="ax-caption">{v.applicability}</span>}
+                <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+                  <span className="badge badge-info">v{v.configuration_version}</span>
+                  {v.category && <span className="badge badge-info">{v.category}</span>}
+                  {v.applicability && <span className="t-caption">{v.applicability}</span>}
                 </div>
-                <p className="ax-caption"><strong>{t("admin.viol.corrective", "Corrective action")}:</strong> {v.corrective_action ?? "—"}{v.grace_period_days !== null ? <> · {t("admin.viol.grace", "Grace period")}: {v.grace_period_days} {t("admin.days", "days")}</> : null}</p>
+                <p className="t-caption"><strong>{t("admin.viol.corrective", "Corrective action")}:</strong> {v.corrective_action ?? "—"}{v.grace_period_days !== null ? <> · {t("admin.viol.grace", "Grace period")}: {v.grace_period_days} {t("admin.days", "days")}</> : null}</p>
                 {(() => {
                   const traces = itemTraces.filter(item => Object.values(item.response_model?.mapping ?? {}).some(mapping => mapping.violation === v.code));
-                  return <details className="ax-caption"><summary>{t("admin.viol.triggerTrace", "Trigger trace")} · {traces.length} {t("admin.items", "item(s)")}</summary>{traces.length ? <ul>{traces.map(item => <li key={item.code}><bdi dir="ltr">{item.code}</bdi> — {item.title}</li>)}</ul> : <p>{t("admin.viol.noTriggers", "No item response mapping currently references this code.")}</p>}</details>;
+                  return <details className="t-caption"><summary>{t("admin.viol.triggerTrace", "Trigger trace")} · {traces.length} {t("admin.items", "item(s)")}</summary>{traces.length ? <ul>{traces.map(item => <li key={item.code}><bdi dir="ltr">{item.code}</bdi> — {item.title}</li>)}</ul> : <p>{t("admin.viol.noTriggers", "No item response mapping currently references this code.")}</p>}</details>;
                 })()}
-                <details className="ax-caption"><summary>{t("admin.viol.versionHistory", "Version history")}</summary><ol>{codes.filter(candidate => candidate.code === v.code).sort((a, b) => a.configuration_version - b.configuration_version).map(version => <li key={version.id}>v{version.configuration_version} · {version.status} · {version.active_from ?? "—"}{version.deactivation_reason ? ` · ${version.deactivation_reason}` : ""}</li>)}</ol></details>
+                <details className="t-caption"><summary>{t("admin.viol.versionHistory", "Version history")}</summary><ol>{codes.filter(candidate => candidate.code === v.code).sort((a, b) => a.configuration_version - b.configuration_version).map(version => <li key={version.id}>v{version.configuration_version} · {version.status} · {version.active_from ?? "—"}{version.deactivation_reason ? ` · ${version.deactivation_reason}` : ""}</li>)}</ol></details>
                 {/* Explicit derivation — never a stored status enum. */}
-                <p className="ax-caption">
+                <p className="t-caption">
                   {t("admin.viol.derived", "Lifecycle derived from active-from")}{" "}
-                  <bdi dir="ltr" className="ax-numeric">{v.active_from ?? "—"}</bdi>
-                  {v.active_to ? <> / {t("admin.viol.to", "active-to")} <bdi dir="ltr" className="ax-numeric">{v.active_to}</bdi></> : null}
+                  <bdi dir="ltr" className="numeric">{v.active_from ?? "—"}</bdi>
+                  {v.active_to ? <> / {t("admin.viol.to", "active-to")} <bdi dir="ltr" className="numeric">{v.active_to}</bdi></> : null}
                   {" "}{t("admin.viol.asOf", "as of today")}{" "}
-                  <bdi dir="ltr" className="ax-numeric">{formatDate(today, lang)}</bdi>.
+                  <bdi dir="ltr" className="numeric">{today}</bdi>.
                 </p>
-                <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }} aria-label={t("admin.viol.usage.heading", "Usage and audit") }>
+                <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }} aria-label={t("admin.viol.usage.heading", "Usage and audit") }>
                   {evidence?.usage ? (
-                    <span className="ax-caption" data-usage-state="available">
+                    <span className="t-caption" data-usage-state="available">
                       <span aria-hidden="true">↗</span> {t("admin.viol.usage.items", "Item references")}: <strong>{evidence.usage.item_count}</strong>{" · "}
                       {t("admin.viol.usage.runtime", "Runtime references")}: <strong>{evidence.usage.runtime_count}</strong>
                     </span>
                   ) : canWrite ? (
-                    <span className="ax-caption" data-usage-state="unavailable"><span aria-hidden="true">⚠</span> {t("admin.viol.usage.unavailable", "Usage unavailable — no zero-count claim was made.")}</span>
+                    <span className="t-caption" data-usage-state="unavailable"><span aria-hidden="true">⚠</span> {t("admin.viol.usage.unavailable", "Usage unavailable — no zero-count claim was made.")}</span>
                   ) : (
-                    <span className="ax-caption" data-usage-state="restricted"><IconLock size={16} /> {t("admin.viol.usage.writerOnly", "Usage counts are available to configuration writers.")}</span>
+                    <span className="t-caption" data-usage-state="restricted"><span aria-hidden="true">🔒</span> {t("admin.viol.usage.writerOnly", "Usage counts are available to configuration writers.")}</span>
                   )}
                   {auditSummary(evidence?.codeAudit, t("admin.viol.audit.code", "Violation audit events"))}
                 </div>
@@ -484,7 +477,7 @@ export default async function Violations({
             );
           })}
 
-          <p className="ax-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one (M09-003/026). Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and its row changes are audit-tracked (trg_audit_violation_codes).")}</p>
+          <p className="t-caption">{t("admin.viol.footer", "Violations generate automatically from configured responses; the inspector can never type or override one (M09-003/026). Legal basis belongs to the penalty mapping, not the code row. Config violation_codes is distinct from runtime violations, and its row changes are audit-tracked (trg_audit_violation_codes).")}</p>
         </>
       )}
     </Shell>

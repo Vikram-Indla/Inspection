@@ -1,0 +1,2 @@
+# IPAD_OFFLINE_AND_SYNC
+See ../patterns/OFFLINE_AND_SYNC.md — iPad additions: offline Alert pinned in field pages; queued-count pill in taskbar; sync runs on reconnect with syncing pill; conflicts surface as critical Alert + DiffView on next open; never block field data entry on connectivity.

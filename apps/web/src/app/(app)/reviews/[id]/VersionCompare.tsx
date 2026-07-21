@@ -127,7 +127,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
   const categories: Category[] = ["unexpected", "expected", "unavailable", "unchanged"];
 
   return (
-    <div className="ax-surface cd-version-compare" style={{ padding: "var(--ax-space-300)" }}>
+    <div className="panel cd-version-compare" style={{ padding: "var(--ax-space-300)" }}>
       <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.heading}</h4>
 
       {staleAt != null && (
@@ -136,7 +136,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
             <strong>{strings.staleTitle ?? "A newer version was submitted."}</strong>{" "}
             {(strings.staleBody ?? "Version v{n} arrived while you had this open — refresh before relying on this comparison.").replace("{n}", String(staleAt))}
             {" "}
-            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => router.refresh()}>
+            <button type="button" className="btn btn-ghost btn-touch" onClick={() => router.refresh()}>
               {strings.staleRefresh ?? "Refresh"}
             </button>
           </div>
@@ -144,7 +144,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       )}
 
       {/* Version selectors — explicit from/to. Default latest vs prior. */}
-      <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
+      <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
         <div className="ax-field" style={{ maxInlineSize: 220 }}>
           <label className="ax-field__label" htmlFor="cmp-from">{strings.from}</label>
           <select id="cmp-from" className="ax-select" value={fromN ?? ""} onChange={e => setFromN(e.target.value === "" ? undefined : Number(e.target.value))}>
@@ -160,7 +160,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       </div>
 
       {/* Returned-scope authority — always stated; never inferred from the diff. */}
-      <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+      <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
         {scopeKnown
           ? strings.scopeSource.replace("{label}", scopeLabel ?? "—")
           : strings.noScope}
@@ -168,7 +168,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
 
       {/* Navigation-only is a property of the whole surface — stated even in the
           no-prior state where there is no rail to scroll. */}
-      <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.navHint}</p>
+      <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.navHint}</p>
 
       {fromN === undefined ? (
         <div className="ax-banner" role="status"><div>{strings.noPrior}</div></div>
@@ -186,31 +186,31 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
           ) : null}
 
           {/* Tamper-evident Scope Rail — keyboard disclosure list, non-color glyphs. */}
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlock: "var(--ax-space-200)" }} aria-label={strings.heading}>
+          <div className="stack" style={{ gap: "var(--ax-space-100)", marginBlock: "var(--ax-space-200)" }} aria-label={strings.heading}>
             {categories.map(cat => {
               const items = rows.filter(r => r.category === cat && (cat === "unchanged" ? true : r.changed));
               if (cat !== "unchanged" && items.length === 0 && counts[cat] === 0 && !(cat === "unavailable" && !scopeKnown)) return null;
               const label = cat === "expected" ? strings.catExpected : cat === "unexpected" ? strings.catUnexpected : cat === "unchanged" ? strings.catUnchanged : strings.catUnavailable;
               const panelId = `cmp-cat-${cat}`;
               return (
-                <div key={cat} className="ax-surface" style={{ padding: "var(--ax-space-150)" }}>
-                  <button type="button" className="ax-btn ax-btn--subtle" aria-expanded={open[cat]} aria-controls={panelId}
+                <div key={cat} className="panel" style={{ padding: "var(--ax-space-150)" }}>
+                  <button type="button" className="btn btn-ghost btn-touch" aria-expanded={open[cat]} aria-controls={panelId}
                     onClick={() => setOpen(o => ({ ...o, [cat]: !o[cat] }))}
                     style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--ax-space-150)" }}>
                     <span className={LOZ[cat]} aria-hidden="true">{GLYPH[cat]}</span>
                     <span>{label}</span>
-                    <span className="ax-numeric" style={{ marginInlineStart: "auto" }}>{cat === "unchanged" ? counts.unchanged : items.length}</span>
+                    <span className="numeric" style={{ marginInlineStart: "auto" }}>{cat === "unchanged" ? counts.unchanged : items.length}</span>
                   </button>
                   {open[cat] && (
                     <ul id={panelId} style={{ listStyle: "none", margin: 0, padding: "var(--ax-space-100) 0 0", display: "flex", flexDirection: "column", gap: 2 }}>
                       {items.length === 0
-                        ? <li className="ax-caption">{cat === "unavailable" && !scopeKnown ? strings.noScope : "—"}</li>
+                        ? <li className="t-caption">{cat === "unavailable" && !scopeKnown ? strings.noScope : "—"}</li>
                         : items.map(r => (
                           <li key={r.key}>
-                            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => goToRow(r.key)}
+                            <button type="button" className="btn btn-ghost btn-touch" onClick={() => goToRow(r.key)}
                               style={{ inlineSize: "100%", justifyContent: "flex-start", gap: "var(--ax-space-150)" }}>
-                              <span className="ax-numeric">{r.key}</span>
-                              {r.section && <span className="ax-caption">{r.section.title}</span>}
+                              <span className="numeric">{r.key}</span>
+                              {r.section && <span className="t-caption">{r.section.title}</span>}
                             </button>
                           </li>
                         ))}
@@ -237,8 +237,8 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
                 <tr key={r.key} id={`cmp-${r.key}`} data-changed={r.changed ? "true" : "false"} tabIndex={-1}
                   ref={el => { rowRefs.current[r.key] = el; }}
                   style={r.category === "unexpected" ? { borderInlineStart: "4px solid var(--ax-color-critical)" } : undefined}>
-                  <td><strong className="ax-numeric">{r.key}</strong></td>
-                  <td>{r.section ? r.section.title : <span className="ax-lozenge ax-lozenge--warning" aria-hidden="false">{GLYPH.unavailable} {strings.catUnavailable}</span>}</td>
+                  <td><strong className="numeric">{r.key}</strong></td>
+                  <td>{r.section ? r.section.title : <span className="badge badge-warning" aria-hidden="false">{GLYPH.unavailable} {strings.catUnavailable}</span>}</td>
                   <td>{r.prev != null ? (strings.enumLabels[r.prev] ?? r.prev) : "—"}</td>
                   <td>{r.latest != null ? (strings.enumLabels[r.latest] ?? r.latest) : "—"}</td>
                   <td><span className={LOZ[r.category]}><span aria-hidden="true">{GLYPH[r.category]}</span>{" "}{
@@ -252,12 +252,12 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       )}
 
       {/* Explicitly unavailable comparison categories — never rendered as "unchanged". */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)" }}>
         <p className="ax-overline" style={{ marginBlockEnd: 8 }}>{strings.unavailableHeading}</p>
-        <p className="ax-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
-        <p className="ax-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
-        <p className="ax-caption"><span className="ax-lozenge ax-lozenge--warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>
-        <p className="ax-caption" style={{ marginBlockStart: 8 }}>{strings.unavailNote}</p>
+        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
+        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
+        <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>
+        <p className="t-caption" style={{ marginBlockStart: 8 }}>{strings.unavailNote}</p>
       </div>
     </div>
   );

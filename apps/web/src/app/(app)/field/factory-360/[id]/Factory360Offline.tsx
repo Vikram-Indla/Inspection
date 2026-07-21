@@ -82,8 +82,8 @@ export default function Factory360Offline({ crId, licenseId, strings, locale }: 
   return (
     <div className={`ax-sync ${mode === "live" ? "ax-sync--synced" : mode === "unavailable" ? "ax-sync--offline" : "ax-sync--offline"}`} role="status" aria-live="polite">
       <span className={`ax-lozenge ${tone}`}>{message}</span>
-      {snapshot && snapshot.sectionsOmitted.length > 0 && <span className="ax-caption"> · {strings.omitted} {snapshot.sectionsOmitted.join(", ")}</span>}
-      {snapshot && snapshot.providerGaps.length > 0 && <span className="ax-caption"> · {strings.gaps} {snapshot.providerGaps.join(", ")}</span>}
+      {snapshot && snapshot.sectionsOmitted.length > 0 && <span className="t-caption"> · {strings.omitted} {snapshot.sectionsOmitted.join(", ")}</span>}
+      {snapshot && snapshot.providerGaps.length > 0 && <span className="t-caption"> · {strings.gaps} {snapshot.providerGaps.join(", ")}</span>}
     </div>
   );
 }

@@ -35,11 +35,11 @@ export type AttachmentsStrings = {
 function RemoveButton({ attachmentId, visitId, name, strings }: { attachmentId: string; visitId: string; name: string; strings: AttachmentsStrings }) {
   const [state, act, pending] = useActionState<ActionResult, FormData>(removeVisitAttachment, {});
   return (
-    <form action={act} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+    <form action={act} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
       <input type="hidden" name="attachment_id" value={attachmentId} />
       <input type="hidden" name="visit_id" value={visitId} />
-      <button className="ax-btn ax-btn--subtle" disabled={pending} aria-label={strings.removeAria.replace("{name}", name)}>{strings.remove}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      <button className="btn btn-ghost btn-touch" disabled={pending} aria-label={strings.removeAria.replace("{name}", name)}>{strings.remove}</button>
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
     </form>
   );
 }
@@ -51,10 +51,10 @@ export default function Attachments({ visitId, rows, strings }: {
 }) {
   const [up, upAct, upPending] = useActionState<ActionResult, FormData>(uploadVisitAttachment, {});
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
       {rows.length === 0 ? (
-        <p className="ax-caption">{strings.empty}</p>
+        <p className="t-caption">{strings.empty}</p>
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
@@ -65,14 +65,14 @@ export default function Attachments({ visitId, rows, strings }: {
             {rows.map(a => (
               <tr key={a.id}>
                 <td><strong>{a.name}</strong></td>
-                <td className="ax-caption">{a.mime}</td>
-                <td className="ax-td-num ax-numeric">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
+                <td className="t-caption">{a.mime}</td>
+                <td className="ax-td-num numeric">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
                 <td>{a.uploadedBy}</td>
                 <td>
-                  <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+                  <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
                     {a.url
-                      ? <a className="ax-btn ax-btn--subtle" href={a.url} download={a.name}>{strings.download}</a>
-                      : <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="status">{a.urlError ?? strings.urlFailed}</span>}
+                      ? <a className="btn btn-ghost btn-touch" href={a.url} download={a.name}>{strings.download}</a>
+                      : <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="status">{a.urlError ?? strings.urlFailed}</span>}
                     <RemoveButton attachmentId={a.id} visitId={visitId} name={a.name} strings={strings} />
                   </div>
                 </td>
@@ -81,13 +81,13 @@ export default function Attachments({ visitId, rows, strings }: {
           </tbody>
         </table></div>
       )}
-      <form action={upAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      <form action={upAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <input type="hidden" name="visit_id" value={visitId} />
         <div className="ax-field" style={{ maxInlineSize: 340 }}>
           <label className="ax-field__label" htmlFor="visit-attachment-file">{strings.fileLabel}</label>
           <input className="ax-input" type="file" name="file" id="visit-attachment-file" required />
         </div>
-        <button className="ax-btn ax-btn--secondary" disabled={upPending}>{upPending ? strings.uploading : strings.uploadBtn}</button>
+        <button className="btn btn-secondary btn-touch" disabled={upPending}>{upPending ? strings.uploading : strings.uploadBtn}</button>
       </form>
       {up.error && <div className="ax-banner ax-banner--critical"><div>{up.error}</div></div>}
       {up.ok && <div className="ax-banner ax-banner--success"><div>{up.ok}</div></div>}

@@ -50,7 +50,7 @@ test.describe("CD-004 configuration evidence spine (ADM-QG-04/07, CD004-QG-02)",
     await page.goto("/admin");
     // Live reads succeed → verified state on the read-backed rows; no source failed
     // header lozenge, and no static 'live database' success verdict anywhere.
-    await expect(page.locator(".ax-lozenge--success").first()).toContainText(/read verified/i);
+    await expect(page.locator(".ax-lozenge--success, .badge-compliant").first()).toContainText(/read verified/i);
     await expect(page.getByText(/live database/i)).toHaveCount(0);
     // Header states a read fact, never a platform-health verdict.
     await expect(page.getByText(/page read/i)).toBeVisible();
@@ -104,7 +104,7 @@ test.describe("CD-004 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", () =
 
   test("primary action targets are at least 44px (spec §10)", async ({ page }) => {
     await page.goto("/admin");
-    const links = page.locator("table.ax-table a.ax-btn, nav a.ax-btn");
+    const links = page.locator("table.ax-table a.ax-btn, table.ax-table a.btn, nav a.ax-btn, nav a.btn");
     const n = await links.count();
     expect(n).toBeGreaterThan(0);
     for (let i = 0; i < n; i++) {

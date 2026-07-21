@@ -1,10 +1,7 @@
 import { supabaseServer } from "@/lib/supabase-server";
-import { useT } from "@/lib/i18n";
-import { formatDate } from "@/lib/dates";
 import { logConfigurationReadFailure } from "@/lib/admin-configuration";
 import { PublishRegulation, type RegStrings } from "./Controls";
 import EmptyState from "@/components/EmptyState";
-import { IconScroll } from "@/app/icons";
 
 // SCR-ADM-011 — regulation detail dossier: a logical mode of /admin/regulations
 // (?regulation=<id>), not a dedicated route (no route guard is proven — CD-006
@@ -46,8 +43,6 @@ export default async function RegulationDetail({
   strings: DetailStrings;
   t: (key: string, en: string) => string;
 }) {
-  const { locale } = await useT();
-  const dLang = locale === "ar" ? "ar" : "en";
   const sb = await supabaseServer();
   const { data: reg, error } = await sb.from("regulations")
     .select("id, code, title, issuing_authority, status, created_at, created_by, approved_by, published_at, regulation_clauses(id, clause_ref, title, applicability, legal_source, inspection_items(id, code, title))")
@@ -64,8 +59,8 @@ export default async function RegulationDetail({
   }
   if (!reg) {
     return (
-      <EmptyState icon={<IconScroll size={28} />} title={s.notFoundTitle} body={s.notFoundBody}>
-        <a className="ax-btn ax-btn--subtle" href="/admin/regulations">{s.backToList}</a>
+      <EmptyState glyph="📜" title={s.notFoundTitle} body={s.notFoundBody}>
+        <a className="btn btn-ghost btn-touch" href="/admin/regulations">{s.backToList}</a>
       </EmptyState>
     );
   }
@@ -83,10 +78,10 @@ export default async function RegulationDetail({
   const unmapped = clauses.filter(c => !(c.inspection_items ?? []).length);
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+      <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{reg.code} — {reg.title}</h3>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)" }}>
           <span className={`ax-lozenge ${reg.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${reg.status}`, String(reg.status).replace(/_/g, " "))}</span>
           {reg.status === "draft" && <PublishRegulation regulationId={reg.id} strings={s} />}
         </div>
@@ -104,12 +99,12 @@ export default async function RegulationDetail({
 
       {/* Metadata + maker-checker evidence */}
       <dl className="ax-grid-2" style={{ rowGap: "var(--ax-space-100)" }}>
-        <div><dt className="ax-caption">{s.issuingAuthority}</dt><dd><bdi>{reg.issuing_authority || "—"}</bdi></dd></div>
-        <div><dt className="ax-caption">{s.metaCreated}</dt><dd><bdi>{formatDate(reg.created_at, dLang)}</bdi></dd></div>
-        <div><dt className="ax-caption">{s.metaCreatedBy}</dt><dd><bdi>{nameOf(reg.created_by)}</bdi></dd></div>
-        <div><dt className="ax-caption">{s.metaApprovedBy}</dt><dd><bdi>{reg.approved_by ? nameOf(reg.approved_by) : s.neverApproved}</bdi></dd></div>
+        <div><dt className="t-caption">{s.issuingAuthority}</dt><dd><bdi>{reg.issuing_authority || "—"}</bdi></dd></div>
+        <div><dt className="t-caption">{s.metaCreated}</dt><dd><bdi>{new Date(reg.created_at).toISOString().slice(0, 10)}</bdi></dd></div>
+        <div><dt className="t-caption">{s.metaCreatedBy}</dt><dd><bdi>{nameOf(reg.created_by)}</bdi></dd></div>
+        <div><dt className="t-caption">{s.metaApprovedBy}</dt><dd><bdi>{reg.approved_by ? nameOf(reg.approved_by) : s.neverApproved}</bdi></dd></div>
         {reg.published_at && (
-          <div><dt className="ax-caption">{s.metaPublishedAt}</dt><dd><bdi>{formatDate(reg.published_at, dLang)}</bdi></dd></div>
+          <div><dt className="t-caption">{s.metaPublishedAt}</dt><dd><bdi>{new Date(reg.published_at).toISOString().slice(0, 10)}</bdi></dd></div>
         )}
       </dl>
 
@@ -125,16 +120,16 @@ export default async function RegulationDetail({
               const items = c.inspection_items ?? [];
               return (
                 <tr key={c.id}>
-                  <td className="ax-numeric"><strong>§{c.clause_ref}</strong></td>
+                  <td className="numeric"><strong>§{c.clause_ref}</strong></td>
                   <td>{c.title}</td>
                   <td><bdi>{c.legal_source || "—"}</bdi></td>
                   <td>
                     {items.length > 0 ? (
-                      <span className="ax-caption ax-numeric">{s.mappedCount.replace("{n}", String(items.length))}: {items.map(i => (
-                        <span key={i.id} className="ax-lozenge ax-lozenge--info" style={{ marginInlineEnd: 6 }}>{i.code}</span>
+                      <span className="t-caption numeric">{s.mappedCount.replace("{n}", String(items.length))}: {items.map(i => (
+                        <span key={i.id} className="badge badge-info" style={{ marginInlineEnd: 6 }}>{i.code}</span>
                       ))}</span>
                     ) : (
-                      <span className="ax-lozenge ax-lozenge--warning">{s.unmappedTag}</span>
+                      <span className="badge badge-warning">{s.unmappedTag}</span>
                     )}
                   </td>
                 </tr>
@@ -145,14 +140,14 @@ export default async function RegulationDetail({
       </div>
 
       {/* Downstream unproven legs — disclosed, not faked as working controls */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-        <div><strong className="ax-caption">{s.auditTitle}</strong><p className="ax-caption">{s.auditBody}</p></div>
-        <div><strong className="ax-caption">{s.lineageTitle}</strong><p className="ax-caption">{s.lineageBody}</p></div>
-        <div><strong className="ax-caption">{s.dependencyEngineTitle}</strong><p className="ax-caption">{s.dependencyEngineBody}</p></div>
-        <div><strong className="ax-caption">{s.routeGuardTitle}</strong><p className="ax-caption">{s.routeGuardBody}</p></div>
+      <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+        <div><strong className="t-caption">{s.auditTitle}</strong><p className="t-caption">{s.auditBody}</p></div>
+        <div><strong className="t-caption">{s.lineageTitle}</strong><p className="t-caption">{s.lineageBody}</p></div>
+        <div><strong className="t-caption">{s.dependencyEngineTitle}</strong><p className="t-caption">{s.dependencyEngineBody}</p></div>
+        <div><strong className="t-caption">{s.routeGuardTitle}</strong><p className="t-caption">{s.routeGuardBody}</p></div>
       </div>
 
-      <a className="ax-btn ax-btn--subtle" href="/admin/regulations">{s.backToList}</a>
+      <a className="btn btn-ghost btn-touch" href="/admin/regulations">{s.backToList}</a>
     </div>
   );
 }

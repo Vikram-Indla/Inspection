@@ -47,7 +47,7 @@ export function RegionCityFilter({ region, city, regions, cities, strings: s }: 
     router.replace(q ? `/operations?${q}` : "/operations");
   };
   return (
-    <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="monitoring-region">{s.regionLabel}</label>
         {/* changing region resets city — the city list is region-scoped server-side */}
         <select className="ax-select" id="monitoring-region" style={{ maxInlineSize: 220 }} value={region}
@@ -98,7 +98,7 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
   const label = (v: string) => enumLabels[v] ?? v.replace(/_/g, " ");
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
       {err && <div className="ax-banner ax-banner--critical" role="alert"><div>{err}</div></div>}
       {rows.length === 0 ? (
         <EmptyState icon={<IconSatellite size={28} />} title={s.emptyTitle} body={s.emptyDesc} bare />
@@ -114,15 +114,15 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
               <td><span className={`ax-lozenge ax-lozenge--ops ${v.operational_state === "executing" ? "ax-lozenge--success" : ""}`}>{label(v.operational_state)}</span></td>
               <td>{v.geofence
                 ? <span className={`ax-lozenge ${GEOFENCE_TONE[v.geofence] ?? "ax-lozenge--critical"}`}>{label(v.geofence)}</span>
-                : <span className="ax-caption">—</span>}</td>
+                : <span className="t-caption">—</span>}</td>
               <td>{v.inspector ?? "—"}</td>
             </tr>
           ))}</tbody>
         </table></div>
       )}
-      <p className="ax-caption">
+      <p className="t-caption">
         {pending ? s.refreshing : `${s.refreshedAt} `}
-        {!pending && at && <span className="ax-numeric">{at.slice(11, 19)}</span>}
+        {!pending && at && <span className="numeric">{at.slice(11, 19)}</span>}
         {" · "}{s.autoNote}
       </p>
     </div>

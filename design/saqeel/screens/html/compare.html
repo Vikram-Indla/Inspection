@@ -1,0 +1,15 @@
+<!-- @dsCard group="Screens" viewport="1440x1000" subtitle="Four-mode parity — same screen, EN/AR × light/dark" name="Four-mode comparison" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>body{padding:24px;background:var(--surface-canvas)}
+.gridc{display:grid;grid-template-columns:1fr 1fr;gap:20px}</style></head><body>
+<div class="stack" style="gap:18px;max-width:1500px;margin:auto">
+<div><h2 class="t-page-title">Four-mode parity — inspection register</h2><p class="t-meta">One product in every mode: English LTR / Arabic RTL × light / dark. Approve only when all four feel like the same product.</p></div>
+<div class="gridc">
+<div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="t-label">English · Light</span><div style="border:1px solid var(--border-strong);border-radius:4px;overflow:hidden;aspect-ratio:1440/900;position:relative"><iframe src="register.html" style="width:1440px;height:900px;border:0;transform-origin:top left;position:absolute;inset-inline-start:0;top:0" class="fit"></iframe></div></div>
+<div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="t-label">English · Dark</span><div style="border:1px solid var(--border-strong);border-radius:4px;overflow:hidden;aspect-ratio:1440/900;position:relative"><iframe src="register-dark.html" style="width:1440px;height:900px;border:0;transform-origin:top left;position:absolute;inset-inline-start:0;top:0" class="fit"></iframe></div></div>
+<div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="t-label">Arabic · Light (RTL)</span><div style="border:1px solid var(--border-strong);border-radius:4px;overflow:hidden;aspect-ratio:1440/900;position:relative"><iframe src="register-ar.html" style="width:1440px;height:900px;border:0;transform-origin:top left;position:absolute;inset-inline-start:0;top:0" class="fit"></iframe></div></div>
+<div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="t-label">Arabic · Dark (RTL)</span><div style="border:1px solid var(--border-strong);border-radius:4px;overflow:hidden;aspect-ratio:1440/900;position:relative"><iframe src="register-ar-dark.html" style="width:1440px;height:900px;border:0;transform-origin:top left;position:absolute;inset-inline-start:0;top:0" class="fit"></iframe></div></div>
+</div></div>
+<script>
+function fit(){document.querySelectorAll('.fit').forEach(f=>{const w=f.parentElement.clientWidth;f.style.transform='scale('+(w/1440)+')';});}
+addEventListener('resize',fit);fit();setTimeout(fit,300);
+</script></body></html>

@@ -1,0 +1,18 @@
+<!-- @dsCard group="Components" viewport="700x300" subtitle="Markers, clusters, floating panels, legend, zoom — untinted basemap" name="Map components" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>body{padding:0;margin:0}</style></head><body>
+<div style="position:relative;height:300px;background:
+repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(120,130,125,.13) 40px),
+repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(120,130,125,.13) 40px),
+linear-gradient(120deg,#e8ebe4,#eef0ea 60%,#e3e9e6);overflow:hidden">
+<svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 700 300" preserveAspectRatio="none"><path d="M0 190 C120 170 200 220 320 200 S 560 150 700 175" fill="none" stroke="#c8d2cc" stroke-width="14" opacity=".7"/><path d="M240 0 C250 90 230 180 260 300" fill="none" stroke="#d4dcd6" stroke-width="9" opacity=".7"/><path d="M420 40 l150 40 20 90 -120 30 -70 -60 z" fill="rgba(17,92,68,.10)" stroke="#115c44" stroke-width="1.5" stroke-dasharray="4 3"/></svg>
+<div class="map-panel row" style="position:absolute;top:10px;left:50%;transform:translateX(-50%);padding:4px;gap:4px"><input class="input" placeholder="Search zones or facilities" style="height:28px;width:220px;border-color:transparent;background:transparent"><button class="btn btn-secondary btn-sm">Filters</button></div>
+<div class="map-panel" style="position:absolute;top:56px;left:10px;width:170px;padding:10px" >
+<div class="t-label" style="margin-bottom:6px">Legend</div>
+<div class="stack" style="gap:5px"><div class="map-legend-row"><span class="swatch" style="background:var(--status-critical)"></span>Critical finding</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-warning)"></span>Due soon</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-compliant)"></span>Compliant</div><div class="map-legend-row"><span class="swatch" style="background:var(--status-info)"></span>Vehicle</div></div></div>
+<span class="map-marker" style="background:var(--status-critical);position:absolute;top:120px;left:300px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+<span class="map-marker" style="background:var(--status-compliant);position:absolute;top:190px;left:420px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg></span>
+<span class="map-marker" style="background:var(--status-info);position:absolute;top:150px;left:520px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17V8h9l4 4h3v5M6 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0m8 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0"/></svg></span>
+<span class="map-cluster" style="position:absolute;top:90px;left:580px">24</span>
+<div class="map-panel" style="position:absolute;bottom:10px;right:10px;display:flex;flex-direction:column;padding:2px;gap:2px"><button class="btn btn-ghost btn-sm btn-icon">+</button><button class="btn btn-ghost btn-sm btn-icon">−</button></div>
+</div>
+</body></html>

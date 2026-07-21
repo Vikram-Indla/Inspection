@@ -45,36 +45,36 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
   const hasAvailable = status === "published" || status === "returned";
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
+    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
 
       {/* ── ZONE: AVAILABLE NOW ────────────────────────────────── */}
       <div className="ax-actionzone">
-        <p className="ax-actionzone__label ax-caption">{strings.zoneAvailable}</p>
-        <div className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+        <p className="ax-actionzone__label t-caption">{strings.zoneAvailable}</p>
+        <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
           {status === "published" && (
-            <form action={retAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={retAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
               <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="visit-return-reason">{strings.returnReason}</label>
                 <input className="ax-input" name="reason" id="visit-return-reason" placeholder={strings.returnPlaceholder} /></div>
-              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.returnBtn}</button>
+              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.returnBtn}</button>
             </form>
           )}
           {status === "returned" && (
             <form action={repAct}><input type="hidden" name="visit_id" value={visitId} />
-              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.republishBtn}</button></form>
+              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.republishBtn}</button></form>
           )}
           {canReassign && (
-            <form action={reaAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={reaAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
               <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reassign-inspector">{strings.reassignTo}</label>
                 <select className="ax-select" name="inspector_id" id="visit-reassign-inspector"><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
-              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.reassignBtn}</button>
+              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.reassignBtn}</button>
             </form>
           )}
           {canManage && (
             <>
-              <form action={vtAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+              <form action={vtAct} className="row" style={{ alignItems: "flex-end" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
                 <div className="ax-field" style={{ maxInlineSize: 200 }}><label className="ax-field__label" htmlFor="visit-type-select">{strings.visitTypeLabel}</label>
                   <select className="ax-select" name="visit_type" id="visit-type-select" defaultValue={visitType}>
@@ -82,40 +82,40 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
                     <option value="follow_up">{strings.typeFollowUp}</option>
                     <option value="complaint">{strings.typeComplaint}</option>
                   </select></div>
-                <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.visitTypeBtn}</button>
+                <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.visitTypeBtn}</button>
               </form>
-              <form action={rscAct} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+              <form action={rscAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
                 <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
-                  <input className="ax-input ax-numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
+                  <input className="ax-input numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
                 <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
-                  <input className="ax-input ax-numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
-                <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.rescheduleBtn}</button>
+                  <input className="ax-input numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
+                <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.rescheduleBtn}</button>
               </form>
-              <form action={canAct} className="ax-row" style={{ alignItems: "flex-end" }}>
+              <form action={canAct} className="row" style={{ alignItems: "flex-end" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
                 <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="visit-cancel-reason">{strings.cancelReason}</label>
                   <input className="ax-input" name="reason" id="visit-cancel-reason" placeholder={strings.cancelPlaceholder} /></div>
-                <button className="ax-btn ax-btn--danger" disabled={busy}>{strings.cancelBtn}</button>
+                <button className="btn btn-danger btn-touch" disabled={busy}>{strings.cancelBtn}</button>
               </form>
             </>
           )}
-          {!hasAvailable && <p className="ax-caption">{strings.noneAvailable}</p>}
+          {!hasAvailable && <p className="t-caption">{strings.noneAvailable}</p>}
         </div>
       </div>
 
       {/* ── ZONE: DISABLED, WITH WHY ───────────────────────────── */}
       {(scheduleBlocked || reassignBlocked) && (
         <div className="ax-actionzone">
-          <p className="ax-actionzone__label ax-caption">{strings.zoneBlocked}</p>
-          <ul className="ax-stack" style={{ gap: "var(--ax-space-100)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
+          <p className="ax-actionzone__label t-caption">{strings.zoneBlocked}</p>
+          <ul className="stack" style={{ gap: "var(--ax-space-100)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
             {scheduleBlocked && (
-              <li><span className="ax-lozenge ax-lozenge--warning">{strings.cancelBtn} · {strings.rescheduleBtn} · {strings.visitTypeBtn}</span>{" "}
-                <span className="ax-caption">{strings.scheduleLockedWhy.replace("{state}", opStateLabel)}</span></li>
+              <li><span className="badge badge-warning">{strings.cancelBtn} · {strings.rescheduleBtn} · {strings.visitTypeBtn}</span>{" "}
+                <span className="t-caption">{strings.scheduleLockedWhy.replace("{state}", opStateLabel)}</span></li>
             )}
             {reassignBlocked && (
-              <li><span className="ax-lozenge ax-lozenge--warning">{strings.reassignBtn}</span>{" "}
-                <span className="ax-caption">{strings.reassignLockedWhy.replace("{state}", opStateLabel)}</span></li>
+              <li><span className="badge badge-warning">{strings.reassignBtn}</span>{" "}
+                <span className="t-caption">{strings.reassignLockedWhy.replace("{state}", opStateLabel)}</span></li>
             )}
           </ul>
         </div>
@@ -124,8 +124,8 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
       {/* ── ZONE: UNAVAILABLE (final lifecycle state) ──────────── */}
       {isFinal && (
         <div className="ax-actionzone">
-          <p className="ax-actionzone__label ax-caption">{strings.zoneUnavailable}</p>
-          <span className="ax-lozenge">{strings.finalState}</span>
+          <p className="ax-actionzone__label t-caption">{strings.zoneUnavailable}</p>
+          <span className="badge">{strings.finalState}</span>
         </div>
       )}
 

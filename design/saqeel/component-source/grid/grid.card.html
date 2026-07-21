@@ -1,0 +1,15 @@
+<!-- @dsCard group="Components" viewport="700x330" subtitle="Flagship grid — toolbar, bulk bar, pinned ID, statuses, footer" name="Inspection Data Grid" -->
+<!DOCTYPE html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css"><style>body{padding:12px}</style></head><body>
+<div class="table-wrap">
+<div class="grid-toolbar"><span class="input-affix" style="width:220px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" placeholder="Search register" style="height:28px"></span><button class="btn btn-secondary btn-sm">Filters</button><button class="btn btn-secondary btn-sm">Saved views</button><div class="grow"></div><div class="seg"><button class="seg-opt" aria-pressed="true">Comfortable</button><button class="seg-opt">Compact</button></div><button class="btn btn-secondary btn-sm">Export</button></div>
+<div class="bulk-bar"><span style="font-weight:600">2 selected</span><button class="btn btn-secondary btn-sm">Assign</button><button class="btn btn-secondary btn-sm">Change due date</button></div>
+<table class="table"><thead><tr><th style="width:34px"><label class="check"><input type="checkbox" id="ha"></label></th><th>Inspection ▲</th><th>Facility</th><th>Inspector</th><th>Status</th><th style="text-align:end">Due</th></tr></thead><tbody>
+<tr class="is-selected"><td><label class="check"><input type="checkbox" checked></label></td><td><span class="id-code">INS-2026-004821</span></td><td class="cell-trunc">Al Noor Food Processing</td><td>A. Al-Zahrani</td><td><span class="badge badge-pending"><i class="dot"></i>Pending</span></td><td class="cell-num">24 Jul</td></tr>
+<tr class="is-selected"><td><label class="check"><input type="checkbox" checked></label></td><td><span class="id-code">INS-2026-004819</span></td><td class="cell-trunc">Riyadh Steel Fabrication Co.</td><td>S. Al-Qahtani</td><td><span class="badge badge-critical"><i class="dot"></i>Critical</span></td><td class="cell-num" style="color:var(--status-critical-text)">Overdue 2d</td></tr>
+<tr><td><label class="check"><input type="checkbox"></label></td><td><span class="id-code">INS-2026-004815</span></td><td class="cell-trunc">Golden Dates Packing House</td><td>M. Al-Otaibi</td><td><span class="badge badge-compliant"><i class="dot"></i>Compliant</span></td><td class="cell-num">—</td></tr>
+<tr><td><label class="check"><input type="checkbox"></label></td><td><span class="id-code">INS-2026-004812</span></td><td class="cell-trunc">Eastern Cold Storage</td><td>Unassigned</td><td><span class="badge badge-draft"><i class="dot"></i>Draft</span></td><td class="cell-num">28 Jul</td></tr>
+</tbody></table>
+<div class="grid-footer"><span>2,084 records</span><nav class="pagination"><button class="page-btn">‹</button><span class="t-meta">1 / 42</span><button class="page-btn">›</button></nav></div>
+</div>
+<script>document.getElementById('ha').indeterminate=true</script>
+</body></html>

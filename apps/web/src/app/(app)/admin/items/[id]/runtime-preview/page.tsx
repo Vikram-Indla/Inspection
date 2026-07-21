@@ -1,6 +1,5 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
-import { IconSearch } from "@/app/icons";
 import type { ReactNode } from "react";
 
 export const dynamic = "force-dynamic";
@@ -61,7 +60,7 @@ export default async function InspectorRuntimePreview({
   const item = rawItem as unknown as Item | null;
 
   if (itemError || !item) {
-    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="ax-surface"><div className="ax-state" role="alert"><span className="ax-state__glyph" aria-hidden="true"><IconSearch size={20} /></span><h4>{itemError ? "Preview unavailable" : "Inspection item not found"}</h4><p className="ax-caption">{itemError ? "The configuration read failed. Retry without assuming the item is absent." : "The read succeeded, but no item has this identifier."}</p><a className="ax-link" href="/admin/items">Back to Compliance Library</a></div></div></Shell>;
+    return <Shell current="/admin/items" title="Inspector Runtime Preview"><div className="panel"><div className="ax-state" role="alert"><span className="ax-state__glyph" aria-hidden="true">🔎</span><h4>{itemError ? "Preview unavailable" : "Inspection item not found"}</h4><p className="t-caption">{itemError ? "The configuration read failed. Retry without assuming the item is absent." : "The read succeeded, but no item has this identifier."}</p><a className="ax-link" href="/admin/items">Back to Compliance Library</a></div></div></Shell>;
   }
 
   const [{ data: rawUses, error: useError }, { data: legacyVersions }, { data: governedVersions }] = await Promise.all([
@@ -109,25 +108,25 @@ export default async function InspectorRuntimePreview({
   ].filter(Boolean) as string[];
 
   return (
-    <Shell current="/admin/items" title="Inspector Runtime Preview" context={<span className="ax-lozenge ax-lozenge--info">Read-only · configuration verification</span>}>
-      <nav className="cmp-library-tabs" aria-label="Compliance Library"><a className="ax-btn ax-btn--secondary ax-link" href="/admin/regulations">Regulations</a><a className="ax-btn ax-btn--prominent" href="/admin/items" aria-current="page">Inspection Items</a></nav>
+    <Shell current="/admin/items" title="Inspector Runtime Preview" context={<span className="badge badge-info">Read-only · configuration verification</span>}>
+      <nav className="cmp-library-tabs" aria-label="Compliance Library"><a className="btn btn-secondary ax-link btn-touch" href="/admin/regulations">Regulations</a><a className="btn btn-primary btn-lg btn-touch" href="/admin/items" aria-current="page">Inspection Items</a></nav>
       <div className="ax-banner" role="note"><strong>Control-plane preview only.</strong> This page reads approved Compliance configuration and immutable package snapshots. It does not author, publish, or change the Inspector application.</div>
       {useError ? <div className="ax-banner ax-banner--warning" role="alert"><strong>Package usage unavailable.</strong> Exact runtime placement is unknown; the item itself is shown from the live library.</div> : null}
 
-      <section className="ax-surface cmp-runtime-head" aria-labelledby="runtime-item-heading">
-        <div><p className="ax-caption ax-numeric"><bdi dir="ltr">{item.code}</bdi></p><h2 id="runtime-item-heading">{item.title}</h2><p>{textValue(source.guidance_en) ?? item.guidance_en ?? "No inspector guidance configured."}</p></div>
+      <section className="panel cmp-runtime-head" aria-labelledby="runtime-item-heading">
+        <div><p className="t-caption numeric"><bdi dir="ltr">{item.code}</bdi></p><h2 id="runtime-item-heading">{item.title}</h2><p>{textValue(source.guidance_en) ?? item.guidance_en ?? "No inspector guidance configured."}</p></div>
         <span className={`ax-lozenge ${item.active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{item.active ? "Operational" : "Inactive"}</span>
       </section>
 
-      {uses.length > 0 ? <form className="ax-surface cmp-runtime-selector" method="get"><label className="ax-field"><span className="ax-field__label">Published package/version context</span><select className="ax-select" name="package_version" defaultValue={selectedUse?.package_version_id}>{uses.map(use => <option key={use.package_version_id} value={use.package_version_id}>{use.package_versions?.packages?.code ?? "Package"} · {use.package_versions?.version_label ?? "version unknown"} · {use.package_versions?.status ?? "status unknown"}</option>)}</select></label><button className="ax-btn ax-btn--secondary" type="submit">Preview exact version</button></form> : null}
+      {uses.length > 0 ? <form className="panel cmp-runtime-selector" method="get"><label className="ax-field"><span className="ax-field__label">Published package/version context</span><select className="ax-select" name="package_version" defaultValue={selectedUse?.package_version_id}>{uses.map(use => <option key={use.package_version_id} value={use.package_version_id}>{use.package_versions?.packages?.code ?? "Package"} · {use.package_versions?.version_label ?? "version unknown"} · {use.package_versions?.status ?? "status unknown"}</option>)}</select></label><button className="btn btn-secondary btn-touch" type="submit">Preview exact version</button></form> : null}
 
-      <section className="ax-surface cmp-runtime-card" aria-labelledby="runtime-config-heading"><h3 id="runtime-config-heading">Published execution configuration</h3><dl className="cmp-runtime-facts">
+      <section className="panel cmp-runtime-card" aria-labelledby="runtime-config-heading"><h3 id="runtime-config-heading">Published execution configuration</h3><dl className="cmp-runtime-facts">
         <Fact label="Regulation">{item.regulation_clauses?.regulations ? `${item.regulation_clauses.regulations.code} — ${item.regulation_clauses.regulations.title}` : "Not configured"}</Fact>
         <Fact label="Regulation version">{show(item.regulation_clauses?.regulations?.version_label)}</Fact>
         <Fact label="Inspection Section">{show(textValue(section?.name) ?? textValue(section?.title))}</Fact>
         <Fact label="Clause">{show(item.regulation_clauses?.clause_ref)}</Fact>
         <Fact label="Response Type">{show(responseModel.type)}</Fact>
-        <Fact label="Response Values and evaluation mapping"><span className="cmp-runtime-values">{responses.length ? responses.map(value => <span className="ax-lozenge" key={value}>{value} → {show(objectValue(mapping[value.toLowerCase().replaceAll(" ", "_")]).result)}</span>) : "Not configured"}</span></Fact>
+        <Fact label="Response Values and evaluation mapping"><span className="cmp-runtime-values">{responses.length ? responses.map(value => <span className="badge" key={value}>{value} → {show(objectValue(mapping[value.toLowerCase().replaceAll(" ", "_")]).result)}</span>) : "Not configured"}</span></Fact>
         <Fact label="Mandatory status">{mandatory === null ? "Not configured" : boolLabel(mandatory)}</Fact>
         <Fact label="Evidence requirement">{boolLabel(evidenceRule.mandatory)}</Fact>
         <Fact label="Acceptable Evidence Types">{evidenceTypes.length ? evidenceTypes.join(", ") : "Not configured"}</Fact>
@@ -136,16 +135,16 @@ export default async function InspectorRuntimePreview({
         <Fact label="Exact effective version">{selectedUse ? `${selectedUse.package_versions?.version_label ?? "unknown"} · item configuration ${show(source.configuration_version)} · effective ${show(selectedUse.package_versions?.effective_from)}` : `Live item configuration ${item.configuration_version} (not a frozen execution snapshot)`}</Fact>
       </dl></section>
 
-      <section className="ax-surface cmp-runtime-card" aria-labelledby="runtime-enforcement-heading"><h3 id="runtime-enforcement-heading">Downstream enforcement context</h3><dl className="cmp-runtime-facts">
+      <section className="panel cmp-runtime-card" aria-labelledby="runtime-enforcement-heading"><h3 id="runtime-enforcement-heading">Downstream enforcement context</h3><dl className="cmp-runtime-facts">
         <Fact label="Non-Compliant Trigger Response">{violationRef ? `Non-Compliant → ${violationRef}` : "Not configured"}</Fact>
         <Fact label="Linked Violation">{violation ? `${violation.code} — ${violation.title} · ${violation.level}` : "Not resolved"}</Fact>
         <Fact label="Linked Penalty configuration (read-only)">{violation?.penalty_mappings?.length ? violation.penalty_mappings.map(p => `${p.penalty_ref} · ${p.penalty_type ?? "type not configured"} · version ${p.mapping_version}`).join("; ") : "Not configured"}</Fact>
         <Fact label="Application timing">Penalty is context only at response selection; final application follows Inspection Review and Enforcement.</Fact>
       </dl></section>
 
-      <section className="ax-surface cmp-runtime-card" aria-labelledby="runtime-history-heading"><h3 id="runtime-history-heading">Immutable version lineage</h3>{(legacyVersions?.length ?? 0) + (governedVersions?.length ?? 0) === 0 ? <p className="ax-caption">No historical version rows are available. Current configuration is not represented as historical evidence.</p> : <ul className="ccr-history">{(governedVersions ?? []).map(v => <li key={v.id}><strong>Governed version {v.version_number}</strong><span>{v.published_at} · correlation {v.correlation_id}</span></li>)}{(legacyVersions ?? []).map(v => <li key={`${v.configuration_version}-${v.recorded_at}`}><strong>Legacy configuration {v.configuration_version}</strong><span>{v.recorded_at}</span></li>)}</ul>}</section>
+      <section className="panel cmp-runtime-card" aria-labelledby="runtime-history-heading"><h3 id="runtime-history-heading">Immutable version lineage</h3>{(legacyVersions?.length ?? 0) + (governedVersions?.length ?? 0) === 0 ? <p className="t-caption">No historical version rows are available. Current configuration is not represented as historical evidence.</p> : <ul className="ccr-history">{(governedVersions ?? []).map(v => <li key={v.id}><strong>Governed version {v.version_number}</strong><span>{v.published_at} · correlation {v.correlation_id}</span></li>)}{(legacyVersions ?? []).map(v => <li key={`${v.configuration_version}-${v.recorded_at}`}><strong>Legacy configuration {v.configuration_version}</strong><span>{v.recorded_at}</span></li>)}</ul>}</section>
 
-      {gaps.length ? <section className="ax-surface cmp-runtime-card cmp-runtime-gaps" aria-labelledby="runtime-gaps-heading"><h3 id="runtime-gaps-heading">INSPECTOR_RUNTIME_INTEGRATION_GAP</h3><p className="ax-caption">These gaps require separate controlled change only if runtime consumption must be extended. No Inspector change is made here.</p><ol>{gaps.map((gap, index) => <li key={gap}><strong>CMP-REQ-LIB-{String(index + 1).padStart(3, "0")}</strong> — {gap}<br /><span className="ax-caption">Affected runtime route/component: existing Inspection Execution item renderer · Required integration: consume the missing published field · Regression risk: execution rendering/evaluation · Separate slice: Yes</span></li>)}</ol></section> : <div className="ax-banner ax-banner--success" role="status"><strong>No visible runtime-consumption gap detected</strong> for this selected published package snapshot.</div>}
+      {gaps.length ? <section className="panel cmp-runtime-card cmp-runtime-gaps" aria-labelledby="runtime-gaps-heading"><h3 id="runtime-gaps-heading">INSPECTOR_RUNTIME_INTEGRATION_GAP</h3><p className="t-caption">These gaps require separate controlled change only if runtime consumption must be extended. No Inspector change is made here.</p><ol>{gaps.map((gap, index) => <li key={gap}><strong>CMP-REQ-LIB-{String(index + 1).padStart(3, "0")}</strong> — {gap}<br /><span className="t-caption">Affected runtime route/component: existing Inspection Execution item renderer · Required integration: consume the missing published field · Regression risk: execution rendering/evaluation · Separate slice: Yes</span></li>)}</ol></section> : <div className="ax-banner ax-banner--success" role="status"><strong>No visible runtime-consumption gap detected</strong> for this selected published package snapshot.</div>}
     </Shell>
   );
 }

@@ -1,0 +1,316 @@
+/* SAQEEL Inspection — compiled token sheet (fonts + colors + typography + layout). Generated from tokens/*.css — edit those, not this. */
+
+/* ─── tokens/fonts.css ─── */
+/* Inspection — webfonts. IBM Plex Sans (Latin), IBM Plex Sans Arabic, IBM Plex Mono (identifiers only). */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ─── tokens/colors.css ─── */
+/* Inspection — semantic color tokens.
+   Light mode is the default (:root). Dark mode is intentionally composed
+   under [data-theme="dark"] — charcoal layers, not an inversion.
+   Rule: components consume SEMANTIC tokens only (--surface-*, --text-*,
+   --action-*, --status-*). The raw ramps exist for token maintenance. */
+
+:root {
+  color-scheme: light;
+
+  /* ── Surfaces ───────────────────────────────────────────── */
+  --surface-canvas:    #f4f3f0;  /* warm neutral application ground */
+  --surface-primary:   #ffffff;  /* cards, panels, tables */
+  --surface-secondary: #faf9f7;  /* grouped regions, table headers */
+  --surface-sunken:    #edece8;  /* wells, code, read-only fields */
+  --surface-raised:    #ffffff;  /* popovers, menus (pairs with --shadow-md) */
+  --surface-overlay:   rgba(21, 23, 26, 0.44);   /* modal backdrop */
+
+  /* ── Navigation (deep graphite in both themes) ──────────── */
+  --nav-bg:            #1f2328;
+  --nav-bg-hover:      #2a2f35;
+  --nav-bg-selected:   #17352b;  /* emerald-tinted graphite */
+  --nav-border:        #32373d;
+  --nav-text:          #b9bec4;
+  --nav-text-active:   #f5f6f7;
+  --nav-indicator:     #35b285;  /* selected-item edge mark */
+
+  /* ── Text ───────────────────────────────────────────────── */
+  --text-primary:   #1a1d1f;
+  --text-secondary: #4c5258;
+  --text-muted:     #71787e;
+  --text-disabled:  #a4aab0;
+  --text-inverse:   #f5f6f7;
+  --text-on-action: #ffffff;
+  --text-link:      #0e5b43;
+
+  /* ── Borders & focus ────────────────────────────────────── */
+  --border-subtle:  #e6e3dd;
+  --border-strong:  #c8c4bc;
+  --border-input:   #b4b0a8;
+  --focus-ring:     #12674c;
+
+  /* ── Primary action — restrained emerald ───────────────── */
+  --action-primary:         #115c44;
+  --action-primary-hover:   #0d4c38;
+  --action-primary-pressed: #0a3e2d;
+  --accent-soft:            #e3efe9;  /* selected rows, soft chips */
+  --accent-soft-hover:      #d4e7dd;
+  --accent-text:            #0b4a36;  /* text on --accent-soft */
+
+  /* ── Destructive action ─────────────────────────────────── */
+  --action-danger:         #b3261e;
+  --action-danger-hover:   #991f18;
+  --action-danger-pressed: #801913;
+
+  /* ── Status semantics (base / soft fill / text-on-soft) ─── */
+  --status-critical:      #b3261e; --status-critical-soft:  #f8e6e4; --status-critical-text:  #8c1d17;
+  --status-major:         #c2410c; --status-major-soft:     #faeadd; --status-major-text:     #9a3412;
+  --status-warning:       #b45309; --status-warning-soft:   #f8efd6; --status-warning-text:   #8a4207;
+  --status-compliant:     #1a7a4f; --status-compliant-soft: #e2f0e7; --status-compliant-text: #14603e;
+  --status-info:          #25619a; --status-info-soft:      #e5edf5; --status-info-text:      #1d4d7c;
+  --status-pending:       #5b6472; --status-pending-soft:   #e9ebee; --status-pending-text:   #454d59;
+  --status-draft:         #6f6a5f; --status-draft-soft:     #edeae2; --status-draft-text:     #565248;
+  --status-onhold:        #8f6b2e; --status-onhold-soft:    #f2ecdc; --status-onhold-text:    #6f5324;
+  --status-completed:     #256d5f; --status-completed-soft: #e0eeeb; --status-completed-text: #1b544a;
+  --status-disabled:      #a4aab0; --status-disabled-soft:  #efeeea; --status-disabled-text:  #71787e;
+
+  /* ── Charts (categorical, desaturated; 1 = the accent) ── */
+  --chart-1: #115c44; --chart-2: #4a7396; --chart-3: #b08334;
+  --chart-4: #6b7280; --chart-5: #8a5f8f; --chart-6: #3f8d84;
+  --chart-grid: #e6e3dd; --chart-label: #71787e;
+
+  /* ── Evidence semantics ── */
+  --evidence-verified: var(--status-compliant);
+  --evidence-verified-soft: var(--status-compliant-soft);
+  --evidence-pending: var(--status-pending);
+  --evidence-rejected: var(--status-critical);
+
+  /* ── Map ────────────────────────────────────────────────── */
+  --map-panel: rgba(255, 255, 255, 0.96); /* controls floating on the map */
+  --map-control-surface: var(--map-panel);
+  --map-zone-fill: rgba(17, 92, 68, 0.10);
+  --map-zone-stroke: #115c44;
+
+  /* ── Elevation (minimal — fine borders do most of the work) ─ */
+  --shadow-xs: 0 1px 2px rgba(26, 29, 31, 0.06);
+  --shadow-sm: 0 1px 3px rgba(26, 29, 31, 0.10);
+  --shadow-md: 0 4px 14px rgba(26, 29, 31, 0.13);
+  --shadow-lg: 0 12px 32px rgba(26, 29, 31, 0.18);
+
+  /* ── Raw neutral ramp (maintenance only — do not use in components) ─ */
+  --neutral-100: #f7f6f4; --neutral-200: #edece8; --neutral-300: #dcdad4;
+  --neutral-400: #c8c4bc; --neutral-500: #a4aab0; --neutral-600: #71787e;
+  --neutral-700: #4c5258; --neutral-800: #2c3136; --neutral-900: #1a1d1f;
+  --emerald-100: #e3efe9; --emerald-300: #8fcbb2; --emerald-500: #2e9e77;
+  --emerald-700: #115c44; --emerald-900: #0b3a2a;
+}
+
+/* ═══ Dark mode — layered charcoal, composed on its own terms ═══ */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-canvas:    #17191d;
+  --surface-primary:   #1e2126;
+  --surface-secondary: #23262c;
+  --surface-sunken:    #131518;
+  --surface-raised:    #282c33;
+  --surface-overlay:   rgba(8, 9, 11, 0.62);
+
+  --nav-bg:            #131519;
+  --nav-bg-hover:      #1d2025;
+  --nav-bg-selected:   #16342a;
+  --nav-border:        #262a30;
+  --nav-text:          #a8adb4;
+  --nav-text-active:   #f2f4f5;
+  --nav-indicator:     #3fbd8d;
+
+  --text-primary:   #e8eaec;
+  --text-secondary: #b1b6bc;
+  --text-muted:     #82888f;
+  --text-disabled:  #565c63;
+  --text-inverse:   #1a1d1f;
+  --text-on-action: #08120e;
+  --text-link:      #57c49a;
+
+  --border-subtle:  #2c3036;
+  --border-strong:  #43484f;
+  --border-input:   #4c525a;
+  --focus-ring:     #3fae83;
+
+  --action-primary:         #2e9e77;
+  --action-primary-hover:   #38b086;
+  --action-primary-pressed: #47c095;
+  --accent-soft:            #1c352c;
+  --accent-soft-hover:      #234135;
+  --accent-text:            #7fd4b2;
+
+  --action-danger:         #d5554c;
+  --action-danger-hover:   #de6c64;
+  --action-danger-pressed: #e5847d;
+
+  --status-critical:      #e0655c; --status-critical-soft:  #3a201e; --status-critical-text:  #f0a29b;
+  --status-major:         #e0763c; --status-major-soft:     #392318; --status-major-text:     #f0ab84;
+  --status-warning:       #d9982e; --status-warning-soft:   #372a14; --status-warning-text:   #ecc27b;
+  --status-compliant:     #47b381; --status-compliant-soft: #1c3529; --status-compliant-text: #8ed4b3;
+  --status-info:          #5b96d1; --status-info-soft:      #1d2b3b; --status-info-text:      #9dc2e8;
+  --status-pending:       #8b95a4; --status-pending-soft:   #262b33; --status-pending-text:   #b9c1cc;
+  --status-draft:         #a29a88; --status-draft-soft:     #2b2822; --status-draft-text:     #c9c2b3;
+  --status-onhold:        #c09a52; --status-onhold-soft:    #322817; --status-onhold-text:    #dcc08a;
+  --status-completed:     #4aa896; --status-completed-soft: #1b322e; --status-completed-text: #90cec2;
+  --status-disabled:      #565c63; --status-disabled-soft:  #22262b; --status-disabled-text:  #82888f;
+
+  --chart-1: #3aa87d; --chart-2: #6c96bd; --chart-3: #cfa14e;
+  --chart-4: #8b93a0; --chart-5: #a985ae; --chart-6: #5cab9f;
+  --chart-grid: #2c3036; --chart-label: #82888f;
+
+  --map-panel: rgba(30, 33, 38, 0.96);
+  --map-control-surface: var(--map-panel);
+  --map-zone-fill: rgba(63, 189, 141, 0.12);
+  --map-zone-stroke: #3fbd8d;
+
+  /* Elevation on dark = edge + ambient darkness, never glow */
+  --shadow-xs: 0 0 0 1px rgba(0,0,0,0.28), 0 1px 2px rgba(0,0,0,0.30);
+  --shadow-sm: 0 0 0 1px rgba(0,0,0,0.30), 0 2px 5px rgba(0,0,0,0.36);
+  --shadow-md: 0 0 0 1px rgba(0,0,0,0.34), 0 6px 18px rgba(0,0,0,0.44);
+  --shadow-lg: 0 0 0 1px rgba(0,0,0,0.38), 0 16px 40px rgba(0,0,0,0.55);
+}
+
+/* ─── tokens/typography.css ─── */
+/* Inspection — typography.
+   English: IBM Plex Sans. Arabic: IBM Plex Sans Arabic.
+   IBM Plex Mono ONLY for machine identifiers (inspection IDs, permit
+   numbers, coordinates, asset numbers, reference codes).
+   Weights: 400 content · 500 labels/controls · 600 headings/key values
+   · 700 hero metrics only. */
+
+:root {
+  --font-body:    "IBM Plex Sans", "IBM Plex Sans Arabic", -apple-system, "Segoe UI", sans-serif;
+  --font-heading: var(--font-body);
+  --font-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Role scale — size / line-height / weight */
+  --type-display-size: 28px;      --type-display-lh: 1.25; --type-display-w: 600;
+  --type-page-title-size: 22px;   --type-page-title-lh: 1.3;  --type-page-title-w: 600;
+  --type-section-size: 17px;      --type-section-lh: 1.35; --type-section-w: 600;
+  --type-heading-size: 14px;      --type-heading-lh: 1.4;  --type-heading-w: 600;
+  --type-body-lg-size: 15px;      --type-body-lg-lh: 1.55;
+  --type-body-size: 14px;         --type-body-lh: 1.5;
+  --type-compact-size: 13px;      --type-compact-lh: 1.45;
+  --type-table-size: 13px;        --type-table-lh: 1.4;
+  --type-label-size: 12px;        --type-label-lh: 1.35; --type-label-w: 500;
+  --type-button-size: 13px;       --type-button-w: 500;
+  --type-meta-size: 12px;         --type-meta-lh: 1.4;
+  --type-caption-size: 11.5px;    --type-caption-lh: 1.4;
+  --type-metric-size: 30px;       --type-metric-lh: 1.15; --type-metric-w: 700;
+  --type-mono-size: 12.5px;
+}
+
+/* Arabic-first metrics: same stack, Arabic leads; Plex Arabic needs
+   slightly taller leading and never letter-spacing. */
+[dir="rtl"], [lang="ar"] {
+  --font-body: "IBM Plex Sans Arabic", "IBM Plex Sans", -apple-system, "Segoe UI", sans-serif;
+  --type-body-lh: 1.65; --type-body-lg-lh: 1.7; --type-compact-lh: 1.6;
+  --type-table-lh: 1.55; --type-display-lh: 1.4; --type-page-title-lh: 1.45;
+  --type-section-lh: 1.5;
+}
+[dir="rtl"] { letter-spacing: 0 !important; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-lh);
+  font-weight: 400;
+  color: var(--text-primary);
+  background: var(--surface-canvas);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); margin: 0; }
+h1 { font-size: var(--type-display-size);    line-height: var(--type-display-lh);    font-weight: var(--type-display-w); }
+h2 { font-size: var(--type-page-title-size); line-height: var(--type-page-title-lh); font-weight: var(--type-page-title-w); }
+h3 { font-size: var(--type-section-size);    line-height: var(--type-section-lh);    font-weight: var(--type-section-w); }
+h4 { font-size: var(--type-heading-size);    line-height: var(--type-heading-lh);    font-weight: var(--type-heading-w); }
+p  { margin: 0 0 var(--space-3); }
+a  { color: var(--text-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Type utility roles */
+.t-display    { font-size: var(--type-display-size); line-height: var(--type-display-lh); font-weight: 600; }
+.t-page-title { font-size: var(--type-page-title-size); line-height: var(--type-page-title-lh); font-weight: 600; }
+.t-section    { font-size: var(--type-section-size); line-height: var(--type-section-lh); font-weight: 600; }
+.t-heading    { font-size: var(--type-heading-size); line-height: var(--type-heading-lh); font-weight: 600; }
+.t-body-lg    { font-size: var(--type-body-lg-size); line-height: var(--type-body-lg-lh); }
+.t-body       { font-size: var(--type-body-size); line-height: var(--type-body-lh); }
+.t-compact    { font-size: var(--type-compact-size); line-height: var(--type-compact-lh); }
+.t-label      { font-size: var(--type-label-size); line-height: var(--type-label-lh); font-weight: 500; color: var(--text-secondary); }
+.t-meta       { font-size: var(--type-meta-size); line-height: var(--type-meta-lh); color: var(--text-muted); }
+.t-caption    { font-size: var(--type-caption-size); line-height: var(--type-caption-lh); color: var(--text-muted); }
+.t-metric     { font-size: var(--type-metric-size); line-height: var(--type-metric-lh); font-weight: 700; font-variant-numeric: tabular-nums; }
+.t-mono       { font-family: var(--font-mono); font-size: var(--type-mono-size); letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+[dir="rtl"] .t-mono { letter-spacing: 0 !important; direction: ltr; unicode-bidi: embed; } /* identifiers stay LTR inside RTL text */
+
+::selection { background: var(--accent-soft-hover); color: var(--text-primary); }
+
+/* ─── tokens/layout.css ─── */
+/* Inspection — spacing, radius, borders, elevation names, motion, density, z.
+   4px base scale. Radii are small on purpose: this is an operational tool. */
+
+:root {
+  --space-0: 0; --space-1: 4px; --space-2: 8px; --space-3: 12px;
+  --space-4: 16px; --space-5: 20px; --space-6: 24px; --space-8: 32px;
+  --space-10: 40px; --space-12: 48px;
+
+  --radius-xs: 2px;   /* checkboxes, badges */
+  --radius-sm: 3px;   /* buttons, inputs, chips */
+  --radius-md: 4px;   /* cards, panels, popovers */
+  --radius-lg: 6px;   /* modals, drawers */
+  --radius-full: 999px; /* avatars, map markers, dots */
+
+  --border-w: 1px;
+
+  /* Motion — quick and functional; no decorative animation */
+  --motion-fast: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 260ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Density & control metrics (comfortable default) */
+  --control-h-sm: 28px;
+  --control-h-md: 32px;
+  --control-h-lg: 40px;
+  --row-h: 44px;          /* data-grid comfortable row */
+  --row-h-compact: 34px;
+  --touch-target: 44px;   /* minimum on field/tablet surfaces */
+
+  /* Layout */
+  --sidebar-w: 248px;
+  --sidebar-w-collapsed: 60px;
+  --topbar-h: 52px;
+  --page-pad: var(--space-6);
+
+  /* Z scale */
+  --z-sticky: 20; --z-drawer: 40; --z-modal: 50; --z-popover: 60;
+  --z-toast: 70; --z-tooltip: 80;
+
+  /* Breakpoints (reference values — use in media queries)
+     --bp-tablet: 1024px; --bp-compact: 768px; */
+}
+
+/* Field profile — iPad/touch field work: every control is a touch target. */
+[data-density="field"] {
+  --control-h-sm: 40px; --control-h-md: 44px; --control-h-lg: 52px;
+  --row-h: 52px; --page-pad: var(--space-4);
+  --type-body-size: 15px; --type-compact-size: 14px; --type-table-size: 14px;
+  --type-button-size: 14px; --type-label-size: 13px;
+}
+
+[data-density="compact"] {
+  --control-h-sm: 24px; --control-h-md: 28px; --control-h-lg: 36px;
+  --row-h: 34px; --page-pad: var(--space-4);
+  --type-body-size: 13px; --type-table-size: 12.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-fast: 0ms; --motion-base: 0ms; --motion-slow: 0ms; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }

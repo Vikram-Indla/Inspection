@@ -9,8 +9,6 @@
 // There is no draft/approval step: a successful save is effective immediately.
 import { useMemo, useState, useActionState } from "react";
 import { saveRiskSettings } from "./actions";
-import { formatDateTime } from "@/lib/dates";
-import type { Locale } from "@/lib/i18n";
 
 // Factor names are resolved to strings on the server — a function prop cannot
 // cross the server→client boundary (Next throws at render).
@@ -41,14 +39,12 @@ export default function RiskForm({
   medMax: initialMed,
   updatedAt,
   labels,
-  locale,
 }: {
   factors: Factor[];
   lowMax: number;
   medMax: number;
   updatedAt: string | null;
   labels: RiskLabels;
-  locale: Locale;
 }) {
   const [weights, setWeights] = useState<Record<string, number>>(
     Object.fromEntries(initialFactors.map(f => [f.key, f.weight])),
@@ -70,7 +66,7 @@ export default function RiskForm({
   const maxWeight = Math.max(0.0001, ...Object.values(weights).map(w => (Number.isFinite(w) ? w : 0)));
 
   return (
-    <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", maxInlineSize: 720 }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", maxInlineSize: 720 }}>
       <h4>{labels.factorsTitle}</h4>
       {initialFactors.map(f => {
         const w = weights[f.key] ?? 0;
@@ -79,7 +75,7 @@ export default function RiskForm({
           <div key={f.key} className="rk-driver">
             <div className="rk-driver__name"><b>{f.name}</b></div>
             <input
-              className="ax-input ax-numeric rk-w" id={f.key} name={f.key} type="number" step="0.05" min="0" max="1"
+              className="ax-input numeric rk-w" id={f.key} name={f.key} type="number" step="0.05" min="0" max="1"
               value={Number.isFinite(w) ? w : ""}
               onChange={e => setWeights(prev => ({ ...prev, [f.key]: parseFloat(e.target.value) }))}
               style={{ maxInlineSize: 110 }} aria-label={f.name}
@@ -91,17 +87,17 @@ export default function RiskForm({
 
       <div className="rk-sum" role="status" aria-live="polite">
         {sumOk
-          ? <span className="ax-lozenge ax-lozenge--success">{labels.sumOk}</span>
-          : <span className="ax-lozenge ax-lozenge--critical">{labels.sumBad.replace("{sum}", sum.toFixed(2))}</span>}
+          ? <span className="badge badge-compliant">{labels.sumOk}</span>
+          : <span className="badge badge-critical">{labels.sumBad.replace("{sum}", sum.toFixed(2))}</span>}
       </div>
 
       <h4>{labels.bandsTitle}</h4>
-      <div className="ax-row">
+      <div className="row">
         <div className="ax-field"><label className="ax-field__label" htmlFor="low_max">{labels.lowEnds}</label>
-          <input className="ax-input ax-numeric" id="low_max" name="low_max" type="number" value={lowMax}
+          <input className="ax-input numeric" id="low_max" name="low_max" type="number" value={lowMax}
             onChange={e => setLowMax(parseInt(e.target.value, 10))} /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="med_max">{labels.mediumEnds}</label>
-          <input className="ax-input ax-numeric" id="med_max" name="med_max" type="number" value={medMax}
+          <input className="ax-input numeric" id="med_max" name="med_max" type="number" value={medMax}
             onChange={e => setMedMax(parseInt(e.target.value, 10))} /></div>
         <div className="ax-field"><label className="ax-field__label" htmlFor="risk-high-band">{labels.high}</label>
           <input className="ax-input" id="risk-high-band" value={`${(Number.isFinite(medMax) ? medMax : 0) + 1}–100`} readOnly /></div>
@@ -112,17 +108,17 @@ export default function RiskForm({
         <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--ax-color-critical)" }} />{labels.bandHigh} {medMax + 1}–100</span>
       </div>
 
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
-        <p className="ax-caption ax-numeric">{labels.lastUpdated} {updatedAt ? formatDateTime(updatedAt, locale === "ar" ? "ar" : "en") : "—"}</p>
-        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-          {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
-          <button className="ax-btn ax-btn--prominent" disabled={pending || !sumOk} aria-disabled={!sumOk}>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+        <p className="t-caption numeric">{labels.lastUpdated} {updatedAt ? new Date(updatedAt).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
+        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+          {state.ok && !pending && <span className="badge badge-compliant">{labels.saved}</span>}
+          <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !sumOk} aria-disabled={!sumOk}>
             {pending ? labels.saving : labels.save}
           </button>
         </span>
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)" }}>{state.error}</p>}
-      <p className="ax-caption">{labels.savedNote}</p>
+      {state.error && <p className="t-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)" }}>{state.error}</p>}
+      <p className="t-caption">{labels.savedNote}</p>
     </form>
   );
 }

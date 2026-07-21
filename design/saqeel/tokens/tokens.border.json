@@ -1,0 +1,15 @@
+{
+  "border": {
+    "width": 1
+  },
+  "light": {
+    "subtle": "#e6e3dd",
+    "strong": "#c8c4bc",
+    "input": "#b4b0a8"
+  },
+  "dark": {
+    "subtle": "#2c3036",
+    "strong": "#43484f",
+    "input": "#4c525a"
+  }
+}

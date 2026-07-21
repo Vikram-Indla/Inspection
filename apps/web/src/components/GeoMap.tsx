@@ -181,7 +181,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
     const ar = mapLocale === "ar";
     return <div className="ax-state ax-state--inline" role="status" style={{ blockSize: height, inlineSize: "100%" }} data-map-provider="mapbox-unavailable">
       <span className="ax-state__glyph">⌖</span><h4>{ar ? "خدمة الخريطة غير متاحة" : "Map service unavailable"}</h4>
-      <p className="ax-caption">{ar ? "لم يتم تكوين خدمة Mapbox لهذه البيئة." : "Mapbox is not configured for this environment."}</p>
+      <p className="t-caption">{ar ? "لم يتم تكوين خدمة Mapbox لهذه البيئة." : "Mapbox is not configured for this environment."}</p>
     </div>;
   }
   return <div ref={containerRef} aria-label={ariaLabel} data-map-provider="mapbox" style={{ blockSize: height, inlineSize: "100%" }} />;

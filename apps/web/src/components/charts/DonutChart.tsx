@@ -20,7 +20,7 @@ export default function DonutChart({ data, title, centerLabel, emptyLabel = "No 
 }) {
   const total = data.reduce((s, d) => s + d.value, 0);
   if (data.length === 0 || total === 0) {
-    return <p className="ax-caption" role="status">{emptyLabel}</p>;
+    return <p className="t-caption" role="status">{emptyLabel}</p>;
   }
   let cumulative = 0;
   const arcs = data.filter(d => d.value > 0).map(d => {
@@ -41,7 +41,7 @@ export default function DonutChart({ data, title, centerLabel, emptyLabel = "No 
               stroke={TONE_VAR[a.tone]} pathLength={100}
               strokeDasharray={`${a.pct} ${100 - a.pct}`} strokeDashoffset={a.offset} />
           ))}
-          <text x="60" y="57" textAnchor="middle" className="ax-numeric"
+          <text x="60" y="57" textAnchor="middle" className="numeric"
             style={{ font: "var(--ax-text-title)", fontSize: 22, fontWeight: 600, fill: "var(--ax-color-text)", fontVariantNumeric: "tabular-nums lining-nums" }}>
             {total}
           </text>
@@ -53,10 +53,10 @@ export default function DonutChart({ data, title, centerLabel, emptyLabel = "No 
       </div>
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
         {data.map((d, i) => (
-          <li key={`${d.label}-${i}`} className="ax-caption" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+          <li key={`${d.label}-${i}`} className="t-caption" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
             <span aria-hidden style={{ inlineSize: 10, blockSize: 10, borderRadius: 3, background: TONE_VAR[d.tone], flexShrink: 0 }} />
             <span>{d.label}</span>
-            <span className="ax-numeric" style={{ marginInlineStart: "auto", fontWeight: 600, color: "var(--ax-color-text)" }}>{d.value}</span>
+            <span className="numeric" style={{ marginInlineStart: "auto", fontWeight: 600, color: "var(--ax-color-text)" }}>{d.value}</span>
           </li>
         ))}
       </ul>

@@ -41,8 +41,8 @@ const fmt = (t: string, vars: Record<string, string | number>) => t.replace(/\{(
 function CodeList({ label, codes, tone }: { label: string; codes: string[]; tone: string }) {
   if (codes.length === 0) return null;
   return (
-    <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", alignItems: "baseline" }}>
-      <span className="ax-caption">{label}</span>
+    <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", alignItems: "baseline" }}>
+      <span className="t-caption">{label}</span>
       {codes.map(c => <span key={c} className={`ax-lozenge ${tone}`}>{c}</span>)}
     </div>
   );
@@ -58,41 +58,41 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
       <h4 style={{ font: "var(--ax-text-body-strong)", margin: 0 }}>{s.title}</h4>
 
       {/* 1 · in-flight items pinned to prior published versions */}
-      <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <span className="ax-field__label">{s.pinnedTitle}</span>
         {pinned == null ? (
-          <p className="ax-caption" role="status"><span aria-hidden="true">⚠ </span>{s.pinnedUnavailable}</p>
+          <p className="t-caption" role="status"><span aria-hidden="true">⚠ </span>{s.pinnedUnavailable}</p>
         ) : (pinned.active_visits + pinned.active_inspections === 0) ? (
-          <p className="ax-caption" role="status"><span aria-hidden="true">✓ </span>{s.pinnedNone}</p>
+          <p className="t-caption" role="status"><span aria-hidden="true">✓ </span>{s.pinnedNone}</p>
         ) : (
           <>
-            <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
-              <span className="ax-lozenge ax-lozenge--warning">{fmt(s.pinnedVisits, { n: pinned.active_visits })}</span>
-              <span className="ax-lozenge ax-lozenge--warning">{fmt(s.pinnedInspections, { n: pinned.active_inspections })}</span>
+            <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+              <span className="badge badge-warning">{fmt(s.pinnedVisits, { n: pinned.active_visits })}</span>
+              <span className="badge badge-warning">{fmt(s.pinnedInspections, { n: pinned.active_inspections })}</span>
             </div>
             {pinned.prior.length > 0 && (
-              <ul className="ax-caption" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
+              <ul className="t-caption" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
                 <li style={{ listStyle: "none", marginInlineStart: "calc(-1 * var(--ax-space-300))" }}>{s.priorLead}</li>
                 {pinned.prior.map(p => (
                   <li key={p.label}>{fmt(s.priorLine, { label: p.label, visits: p.visits, inspections: p.inspections })}</li>
                 ))}
               </ul>
             )}
-            <p className="ax-caption">{s.pinnedHint}</p>
+            <p className="t-caption">{s.pinnedHint}</p>
           </>
         )}
       </div>
 
       {/* 2 · other published packages sharing these items */}
-      <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <span className="ax-field__label">{s.refTitle}</span>
         {referencing.length === 0 ? (
-          <p className="ax-caption">{s.refNone}</p>
+          <p className="t-caption">{s.refNone}</p>
         ) : (
-          <ul className="ax-caption" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
+          <ul className="t-caption" style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)" }}>
             {referencing.map(r => (
               <li key={`${r.code}-${r.label}`}>
-                <strong>{r.code}</strong> {r.title} <span className="ax-numeric">({r.label})</span> — {fmt(s.refShares, { n: r.sharedItems.length })}: {r.sharedItems.join(", ")}
+                <strong>{r.code}</strong> {r.title} <span className="numeric">({r.label})</span> — {fmt(s.refShares, { n: r.sharedItems.length })}: {r.sharedItems.join(", ")}
               </li>
             ))}
           </ul>
@@ -100,15 +100,15 @@ export default function ImpactPanel({ data, strings: s }: { data: ImpactData; st
       </div>
 
       {/* 3 · definition diff vs currently-published version */}
-      <div className="ax-stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <div className="stack" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
         <span className="ax-field__label">{s.diffTitle}</span>
         {(() => {
-          if (diff == null) return <p className="ax-caption">{s.diffNoBaseline}</p>;
-          if (diff.isCurrentPublished) return <p className="ax-caption">{s.diffIsCurrent}</p>;
+          if (diff == null) return <p className="t-caption">{s.diffNoBaseline}</p>;
+          if (diff.isCurrentPublished) return <p className="t-caption">{s.diffIsCurrent}</p>;
           return (
             <>
-              <p className="ax-caption">{fmt(s.diffVsCurrent, { label: diff.comparedLabel ?? "" })}</p>
-              {diffEmpty ? <p className="ax-caption">{s.noChanges}</p> : (
+              <p className="t-caption">{fmt(s.diffVsCurrent, { label: diff.comparedLabel ?? "" })}</p>
+              {diffEmpty ? <p className="t-caption">{s.noChanges}</p> : (
                 <>
                   <CodeList label={s.added} codes={diff.added} tone="ax-lozenge--success" />
                   <CodeList label={s.removed} codes={diff.removed} tone="ax-lozenge--critical" />

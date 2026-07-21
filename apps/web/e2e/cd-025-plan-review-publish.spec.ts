@@ -53,9 +53,9 @@ test.describe("CD-025 review workspace (DSG-020)", () => {
     // Readiness must resolve to a truthful, definite state — ready OR blocked —
     // and never remain a false "ready" while checking (no optimistic success).
     const readiness = page.locator(".cd-ready");
-    await expect(readiness.locator(".ax-lozenge--success, .ax-lozenge--critical")).toBeVisible({ timeout: 15000 });
+    await expect(readiness.locator(".ax-lozenge--success, .badge-compliant, .ax-lozenge--critical, .badge-critical")).toBeVisible({ timeout: 15000 });
     // Publish reflects that state: enabled iff readiness is clear.
-    const ready = await readiness.locator(".ax-lozenge--success").count();
+    const ready = await readiness.locator(".ax-lozenge--success, .badge-compliant").count();
     const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
     if (ready) await expect(publish).toBeEnabled();
     else await expect(publish).toBeDisabled();

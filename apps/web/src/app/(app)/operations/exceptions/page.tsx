@@ -14,7 +14,7 @@ export default async function ExceptionsPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_EXCEPTION_BOARD, MODES, "off") !== "on") {
     return (
-      <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="ax-lozenge ax-lozenge--warning">CD-047 · REQ-0120</span>}>
+      <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-warning">CD-047 · REQ-0120</span>}>
         <NotYetBoundary title={t("exc.title", "Exception board")} consequence={t("exc.off", "The operations exception board is not enabled here.")}
           seam="FEATURE_EXCEPTION_BOARD=off" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -32,16 +32,16 @@ export default async function ExceptionsPage() {
   const groups = groupExceptions(sources);
   const invariantOk = groupCountEqualsSource(sources); // must be true — no synthetic rows
   return (
-    <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="ax-lozenge ax-lozenge--info">CD-047 · REQ-0120,0124</span>}>
+    <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-info">CD-047 · REQ-0120,0124</span>}>
       <div className="ax-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows).")} {invariantOk ? "✓" : "⚠"}</div></div>
       {sources.length === 0 && (
         <EmptyState glyph="✅" title={t("exc.empty.title", "No open exceptions in scope")}
           body={t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope (RLS).")} />
       )}
       {groups.map((g) => (
-        <div key={g.category} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
-            <h3>{g.category.replace(/_/g, " ")}</h3><span className="ax-lozenge ax-lozenge--warning ax-numeric">{g.count}</span>
+        <div key={g.category} className="panel" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
+            <h3>{g.category.replace(/_/g, " ")}</h3><span className="badge badge-warning numeric">{g.count}</span>
           </div>
         </div>
       ))}

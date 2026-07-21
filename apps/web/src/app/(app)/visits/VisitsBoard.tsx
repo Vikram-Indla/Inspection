@@ -1,9 +1,5 @@
 "use client";
-import Link from "next/link";
 import EmptyState from "@/components/EmptyState";
-import { formatDateTime } from "@/lib/dates";
-import type { Locale } from "@/lib/i18n";
-import { IconSearch } from "@/app/icons";
 // W2/P2 — Visit Management board (SCR-WEB-200/210).
 // M02-003/021: search by Visit ID / Factory / CR / Industrial License / Inspector
 //              — client filter over the loaded server page (RLS-scoped rows).
@@ -172,9 +168,10 @@ const OUTCOME_TONE: Record<OutcomeCode, string> = {
 type SortKey = "window_asc" | "window_desc" | "factory";
 type AllowedKey = "editable" | "locked" | "final" | "expired";
 
+const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 const EMPTY: ActionResult = {};
 
-export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings, locale }: {
+export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, total, limit, nextLimit, strings }: {
   rows: VisitRow[];
   inspectors: Inspector[];
   typeOptions: { value: string; label: string }[];
@@ -185,9 +182,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   limit: number;
   nextLimit: number | null;
   strings: VisitsBoardStrings;
-  locale: Locale;
 }) {
-  const fmt = (iso: string) => formatDateTime(iso, locale === "ar" ? "ar" : "en");
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
   const [type, setType] = useState("");
@@ -357,37 +352,37 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       {/* CD-026 — Selected Visit Continuity Spine (signature pattern). One stable
           selected identity + state + allowed-action context, carried in-session. */}
-      <section className="ax-surface" aria-label={strings.spineHeading}
+      <section className="panel" aria-label={strings.spineHeading}
         style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
           <span className="ax-overline">{strings.spineHeading}</span>
           {activeVisit && (
             <span className={`ax-lozenge ${allowedTone[allowedKey(activeVisit)]}`}>{allowedLabel[allowedKey(activeVisit)]}</span>
           )}
         </div>
         {!activeVisit ? (
-          <p className="ax-caption" style={{ margin: 0 }}>{strings.spineEmpty}</p>
+          <p className="t-caption" style={{ margin: 0 }}>{strings.spineEmpty}</p>
         ) : (
-          <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
             <div style={{ minInlineSize: 200 }}>
-              <div className="ax-numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
-                {activeVisit.planId && <span className="ax-caption ax-numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
+              <div className="numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
+                {activeVisit.planId && <span className="t-caption numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
               </div>
-              <div className="ax-caption">{activeVisit.factoryName}{(activeVisit.crNumber || activeVisit.licenseNumber) && <> · <span className="ax-numeric">{[activeVisit.crNumber, activeVisit.licenseNumber].filter(Boolean).join(" · ")}</span></>}</div>
-              <div className="ax-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
+              <div className="t-caption">{activeVisit.factoryName}{(activeVisit.crNumber || activeVisit.licenseNumber) && <> · <span className="numeric">{[activeVisit.crNumber, activeVisit.licenseNumber].filter(Boolean).join(" · ")}</span></>}</div>
+              <div className="t-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
             </div>
             <div style={{ minInlineSize: 180 }}>
-              <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+              <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
                 <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[effectiveStatus(activeVisit)] ?? ""}`}>
                   {effectiveStatus(activeVisit) === "expired" && activeVisit.planningStatus === "published" ? strings.expiredLabel : activeVisit.planningLabel}
                 </span>
                 <span className="ax-lozenge ax-lozenge--ops">{activeVisit.opsLabel}</span>
               </div>
-              <div className="ax-caption">{strings.spineWindow}: <span className="ax-numeric">{fmt(activeVisit.windowStart)}</span></div>
-              <div className="ax-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
+              <div className="t-caption">{strings.spineWindow}: <span className="numeric">{fmt(activeVisit.windowStart)}</span></div>
+              <div className="t-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
             </div>
-            <Link className="ax-btn ax-btn--subtle" href={`/visits/${activeVisit.id}`} prefetch={false}
-              aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</Link>
+            <a className="btn btn-ghost btn-touch" href={`/visits/${activeVisit.id}`}
+              aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</a>
           </div>
         )}
       </section>
@@ -395,18 +390,18 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       {/* M02-002 — KPI tiles double as status filters */}
       <div className="ax-kpi-row" role="group" aria-label={strings.kpiFilterHint}>
         {["draft", "published", "returned", "cancelled", "expired"].map(s => (
-          <button key={s} type="button" className="ax-surface ax-kpi"
+          <button key={s} type="button" className="panel ax-kpi"
             aria-pressed={status === s}
             onClick={() => setStatus(status === s ? "" : s)}
             style={{ cursor: "pointer", textAlign: "start", boxShadow: status === s ? "var(--ax-focus-ring)" : undefined }}>
             <span className="ax-overline">{strings.statusLabels[s] ?? s}</span>
-            <span className="ax-kpi__value ax-numeric">{counts[s] ?? 0}</span>
+            <span className="ax-kpi__value numeric">{counts[s] ?? 0}</span>
           </button>
         ))}
       </div>
 
       {/* M02-003/004 — search + filters + sort */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
         <input className="ax-input" style={{ inlineSize: 260 }} value={q} onChange={e => setQ(e.target.value)}
           placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} />
         <select className="ax-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
@@ -431,64 +426,64 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         </select>
         <div className="ax-field" style={{ maxInlineSize: 170 }}>
           <label className="ax-field__label" htmlFor="visit-filter-from">{strings.fromDate}</label>
-          <input id="visit-filter-from" className="ax-input ax-numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
+          <input id="visit-filter-from" className="ax-input numeric" type="date" value={from} onChange={e => setFrom(e.target.value)} />
         </div>
         <div className="ax-field" style={{ maxInlineSize: 170 }}>
           <label className="ax-field__label" htmlFor="visit-filter-to">{strings.toDate}</label>
-          <input id="visit-filter-to" className="ax-input ax-numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
+          <input id="visit-filter-to" className="ax-input numeric" type="date" value={to} onChange={e => setTo(e.target.value)} />
         </div>
         <select className="ax-select" value={sort} onChange={e => setSort(e.target.value as SortKey)} aria-label={strings.sortAria}>
           <option value="window_asc">{strings.sortWindowAsc}</option>
           <option value="window_desc">{strings.sortWindowDesc}</option>
           <option value="factory">{strings.sortFactory}</option>
         </select>
-        {hasFilter && <button type="button" className="ax-btn ax-btn--subtle" onClick={clearFilters}>{strings.clearFilters}</button>}
+        {hasFilter && <button type="button" className="btn btn-ghost btn-touch" onClick={clearFilters}>{strings.clearFilters}</button>}
       </div>
 
       {/* M02-007/011/031-034 — bulk action bar over the selection */}
       {selected.size > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+          <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
             <h4 style={{ margin: 0 }}>{strings.bulkHeading} · {strings.selectedCount.replace("{n}", String(selected.size))}</h4>
-            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
+            <button type="button" className="btn btn-ghost btn-touch" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
           </div>
 
           {/* CD-026 — eligibility preview: verified now, re-checked at submit */}
           <div className="ax-state ax-state--inline" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-050)", alignItems: "flex-start" }}>
             <span className="ax-overline">{strings.eligHeading}</span>
-            <div className="ax-row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
-              <span className="ax-caption">{strings.eligReschedule}: <strong>{eligLine(elig.publishNew)}</strong></span>
-              <span className="ax-caption">{strings.eligCancel}: <strong>{eligLine(elig.publishNew)}</strong></span>
-              <span className="ax-caption">{strings.eligReassign}: <strong>{eligLine(elig.notStarted)}</strong></span>
-              <span className="ax-caption">{strings.eligEdit}: <strong>{elig.samePlan ? eligLine(elig.publishNew) : "—"}</strong></span>
+            <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+              <span className="t-caption">{strings.eligReschedule}: <strong>{eligLine(elig.publishNew)}</strong></span>
+              <span className="t-caption">{strings.eligCancel}: <strong>{eligLine(elig.publishNew)}</strong></span>
+              <span className="t-caption">{strings.eligReassign}: <strong>{eligLine(elig.notStarted)}</strong></span>
+              <span className="t-caption">{strings.eligEdit}: <strong>{elig.samePlan ? eligLine(elig.publishNew) : "—"}</strong></span>
             </div>
-            <span className="ax-caption">{strings.eligVerified}</span>
-            {!elig.samePlan && <span className="ax-lozenge ax-lozenge--warning">{strings.eligSamePlanBlocked}</span>}
+            <span className="t-caption">{strings.eligVerified}</span>
+            {!elig.samePlan && <span className="badge badge-warning">{strings.eligSamePlanBlocked}</span>}
           </div>
 
-          <div className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
-            <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+          <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+            <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
-                <input id="bulk-window-start" className="ax-input ax-numeric" type="datetime-local" name="window_start" /></div>
+                <input id="bulk-window-start" className="ax-input numeric" type="datetime-local" name="window_start" /></div>
               <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-end">{strings.bulkWindowEnd}</label>
-                <input id="bulk-window-end" className="ax-input ax-numeric" type="datetime-local" name="window_end" /></div>
-              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkRescheduleBtn}</button>
+                <input id="bulk-window-end" className="ax-input numeric" type="datetime-local" name="window_end" /></div>
+              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkRescheduleBtn}</button>
             </form>
-            <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={reaAct} onSubmit={() => setLastVerb("reassign")} className="row" style={{ alignItems: "flex-end" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="bulk-inspector">{strings.bulkReassignTo}</label>
                 <select id="bulk-inspector" className="ax-select" name="inspector_id"><option value="">{strings.selectOption}</option>
                   {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
-              <button className="ax-btn ax-btn--secondary" disabled={busy}>{strings.bulkReassignBtn}</button>
+              <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.bulkReassignBtn}</button>
             </form>
-            <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="ax-row" style={{ alignItems: "flex-end" }}>
+            <form action={canAct} onSubmit={() => setLastVerb("cancel")} className="row" style={{ alignItems: "flex-end" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="bulk-cancel-reason">{strings.bulkCancelReason}</label>
                 <input id="bulk-cancel-reason" className="ax-input" name="reason" placeholder={strings.bulkCancelPlaceholder} /></div>
-              <button className="ax-btn ax-btn--danger" disabled={busy}>{strings.bulkCancelBtn}</button>
+              <button className="btn btn-danger btn-touch" disabled={busy}>{strings.bulkCancelBtn}</button>
             </form>
-            <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="ax-row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
+            <form action={edtAct} onSubmit={() => setLastVerb("edit")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 180 }}><label className="ax-field__label" htmlFor="bulk-visit-type">{strings.bulkEditType}</label>
                 <select id="bulk-visit-type" className="ax-select" name="visit_type"><option value="">{strings.selectOption}</option>
@@ -503,7 +498,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               </label>
               {/* HANDOFF_BLOCKED_GUARD — cross-Plan bulk edit has no server enforcement,
                   so it is disabled (not faked as safe) when the selection spans Plans. */}
-              <button className="ax-btn ax-btn--secondary" disabled={busy || !elig.samePlan}
+              <button className="btn btn-secondary btn-touch" disabled={busy || !elig.samePlan}
                 title={!elig.samePlan ? strings.eligSamePlanBlocked : undefined}>{strings.bulkEditBtn}</button>
             </form>
           </div>
@@ -528,14 +523,14 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           mixed result. Partial/failed → role=alert; all-applied → role=status. */}
       {!pending && hasLedger && (
         <div ref={summaryRef} tabIndex={-1}
-          className={`ax-surface ${anyProblem ? "ax-banner--critical" : ""}`}
+          className={`panel ${anyProblem ? "ax-banner--critical" : ""}`}
           role={anyProblem ? "alert" : "status"} aria-live="polite"
           style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-          <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>
+          <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>
             <strong>{verbLabel[result!.verb as BulkVerb] ?? ""}</strong>
-            {nApplied > 0 && <span className="ax-lozenge ax-lozenge--success">{strings.ledgerSummaryApplied.replace("{n}", String(nApplied))}</span>}
-            {nBlocked > 0 && <span className="ax-lozenge ax-lozenge--warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
-            {nNoNotif > 0 && <span className="ax-lozenge ax-lozenge--warning">{strings.ledgerSummaryNoNotif.replace("{n}", String(nNoNotif))}</span>}
+            {nApplied > 0 && <span className="badge badge-compliant">{strings.ledgerSummaryApplied.replace("{n}", String(nApplied))}</span>}
+            {nBlocked > 0 && <span className="badge badge-warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
+            {nNoNotif > 0 && <span className="badge badge-warning">{strings.ledgerSummaryNoNotif.replace("{n}", String(nNoNotif))}</span>}
           </div>
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr>
@@ -547,25 +542,25 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             <tbody>
               {ledger.map(item => (
                 <tr key={item.id}>
-                  <td className="ax-numeric"><strong>{item.id.slice(0, 8)}</strong></td>
+                  <td className="numeric"><strong>{item.id.slice(0, 8)}</strong></td>
                   <td><span className={`ax-lozenge ${OUTCOME_TONE[item.outcome]}`}>
                     {item.outcome === "applied" ? strings.outcomeApplied
                       : item.outcome === "applied_no_notification" ? strings.ledgerShortNoNotif
                       : item.outcome === "error" ? strings.ledgerShortError
                       : strings.ledgerShortBlocked}
                   </span></td>
-                  <td className="ax-caption">{outcomeText[item.outcome]}</td>
-                  <td><Link className="ax-link ax-caption" href={`/visits/${item.id}`} prefetch={false}>{strings.ledgerOpen}</Link></td>
+                  <td className="t-caption">{outcomeText[item.outcome]}</td>
+                  <td><a className="ax-link t-caption" href={`/visits/${item.id}`}>{strings.ledgerOpen}</a></td>
                 </tr>
               ))}
             </tbody>
           </table></div>
-          {nBlocked > 0 && <span className="ax-caption">{strings.ledgerRetrySafe}</span>}
+          {nBlocked > 0 && <span className="t-caption">{strings.ledgerRetrySafe}</span>}
         </div>
       )}
 
       {filtered.length === 0 ? (
-        <EmptyState icon={<IconSearch size={28} />} title={strings.noMatch} />
+        <EmptyState glyph="🔍" title={strings.noMatch} />
       ) : (
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
@@ -583,21 +578,21 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                   style={isActive ? { outline: "var(--ax-focus-ring)", outlineOffset: "-2px" } : undefined}>
                   <td><input type="checkbox" checked={selected.has(v.id)} onChange={() => toggleOne(v.id)}
                     aria-label={strings.selectRowAria.replace("{id}", v.id.slice(0, 8))} /></td>
-                  <td className="ax-numeric">
+                  <td className="numeric">
                     {/* Button drives the continuity spine (keyboard-accessible);
                         the adjacent link preserves direct navigation to detail. */}
                     <button type="button" className="ax-link ax-inline-target" onClick={() => setActiveId(v.id)} aria-pressed={isActive}
                       aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
                       <strong>{v.id.slice(0, 8)}</strong>
                     </button>
-                    {" "}<Link className="ax-link ax-caption ax-inline-target" href={`/visits/${v.id}`} prefetch={false}
-                      aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</Link>
+                    {" "}<a className="ax-link t-caption ax-inline-target" href={`/visits/${v.id}`}
+                      aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</a>
                     {v.planId && (
-                      <><br /><span className="ax-caption ax-numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
+                      <><br /><span className="t-caption numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
                     )}
                   </td>
                   <td>{v.factoryName}{(v.crNumber || v.licenseNumber) && (
-                    <><br /><span className="ax-caption ax-numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
+                    <><br /><span className="t-caption numeric">{[v.crNumber, v.licenseNumber].filter(Boolean).join(" · ")}</span></>
                   )}</td>
                   <td>{v.typeLabel} · {v.modeLabel}</td>
                   <td><span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[eff] ?? ""}`}>
@@ -605,7 +600,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                   </span></td>
                   <td><span className="ax-lozenge ax-lozenge--ops">{v.opsLabel}</span></td>
                   <td>{v.inspectorName || "—"}</td>
-                  <td className="ax-td-num ax-numeric">{fmt(v.windowStart)}</td>
+                  <td className="ax-td-num numeric">{fmt(v.windowStart)}</td>
                 </tr>
               );
             })}
@@ -614,11 +609,11 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       )}
 
       {/* M02-020 — count display + load-more raises the server page cap */}
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
-        <span className="ax-caption ax-numeric">
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
+        <span className="t-caption numeric">
           {strings.showing.replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}
         </span>
-        {nextLimit !== null && <Link className="ax-btn ax-btn--subtle" href={`/visits?limit=${nextLimit}`} prefetch={false}>{strings.loadMore}</Link>}
+        {nextLimit !== null && <a className="btn btn-ghost btn-touch" href={`/visits?limit=${nextLimit}`}>{strings.loadMore}</a>}
       </div>
     </div>
   );

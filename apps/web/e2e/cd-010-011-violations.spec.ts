@@ -51,7 +51,7 @@ test.describe("CD-010 catalogue mode — populated, trace, derived lifecycle (AC
     await expect(page.getByText(/severity/i).first()).toBeVisible();
     await expect(page.getByText("L1").first()).toBeVisible();
     // Derived lifecycle: seed active_from 2026-07-10, no active_to → active as of today.
-    await expect(page.locator(".ax-lozenge--success").filter({ hasText: /active/i }).first()).toBeVisible();
+    await expect(page.locator(".ax-lozenge--success, .badge-compliant").filter({ hasText: /active/i }).first()).toBeVisible();
     // Explicit derivation statement — never a stored status enum.
     await expect(page.getByText(/Lifecycle derived from active-from/i).first()).toBeVisible();
     await expect(page.getByText(/as of today/i).first()).toBeVisible();
@@ -134,7 +134,7 @@ test.describe("CD-010/011 a11y / RTL / dark-light / responsive (DSG-A11Y-001)", 
   test("mode-tab targets are at least 44px (spec §10)", async ({ page }) => {
     await page.goto("/admin/violations");
     await expect(page.getByRole("tablist", { name: /Catalogue view/i })).toBeVisible();
-    const links = page.locator(".ax-segmented a.ax-btn");
+    const links = page.locator(".ax-segmented a.ax-btn, .ax-segmented a.btn");
     // The App Router streams a loading boundary before the server component.
     // Wait on the final tablist rather than sampling a locator count while the
     // previous streamed tree is being replaced.

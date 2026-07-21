@@ -25,7 +25,7 @@ export default async function TasksPage() {
   if (!enabled) {
     return (
       <Shell current="/tasks" title={t("tasks.title", "Task workspace")}
-        context={<span className="ax-lozenge ax-lozenge--warning">CD-043 · MVP2-REQ-0032</span>}>
+        context={<span className="badge badge-warning">CD-043 · MVP2-REQ-0032</span>}>
         <NotYetBoundary
           title={t("tasks.off.title", "Task workspace")}
           consequence={t("tasks.off.body", "The governed task workspace is not enabled in this environment, so assignments cannot be managed here yet. Task assignment still occurs through the workflow engine.")}
@@ -77,7 +77,7 @@ export default async function TasksPage() {
 
   return (
     <Shell current="/tasks" title={t("tasks.title", "Task workspace")}
-      context={<span className="ax-lozenge ax-lozenge--info">CD-043 · MVP2-REQ-0032</span>}>
+      context={<span className="badge badge-info">CD-043 · MVP2-REQ-0032</span>}>
       <div className="ax-banner"><div>
         <strong>{t("tasks.banner.title", "Governed task management.")}</strong> {t("tasks.banner.body", "Reassignment and status changes require a manager role in scope and a reason; every change is audited. You see only tasks in your scope (RLS).")}
       </div></div>

@@ -7,6 +7,8 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Manager, { type Labels, type UiString } from "./Manager";
 
+export const dynamic = "force-dynamic";
+
 export default async function Localization() {
   const { t, locale } = await useT();
   const sb = await supabaseServer();
@@ -73,10 +75,10 @@ export default async function Localization() {
   };
 
   return (
-    <Shell current="/admin/localization" title={t("l10n.title", "Language & Translations")}
+    <Shell current="/admin/localization" title={t("l10n.title", "Localization")}
       context={
-        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-          <span className="ax-lozenge ax-lozenge--info">SCR-ADM-100 · SB19</span>
+        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+          <span className="badge badge-info">SCR-ADM-100 · SB19</span>
           {locale === "ar"
             ? <a className="ax-link" href="/locale?set=en">English</a>
             : <a className="ax-link" href="/locale?set=ar" lang="ar">العربية</a>}
@@ -84,15 +86,15 @@ export default async function Localization() {
       }>
       {error ? (
         <div className="ax-banner ax-banner--critical" role="alert">
-          {t("l10n.error.load", "Could not load the translation dictionary. Nothing was changed. Try again.")}
+          {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
         </div>
       ) : (
         <>
-          <div className="ax-mstrip">
-            <div><div className="ax-mstrip__value ax-numeric">{total}</div><div className="ax-mstrip__label">{t("l10n.kpi.total", "Total keys")}</div></div>
-            <div><div className="ax-mstrip__value ax-numeric">{translated}</div><div className="ax-mstrip__label">{t("l10n.kpi.translated", "Translated (AR)")}</div></div>
-            <div><div className="ax-mstrip__value ax-numeric">{reviewed}</div><div className="ax-mstrip__label">{t("l10n.kpi.reviewed", "Reviewed")}</div></div>
-            <div><div className="ax-mstrip__value ax-numeric">{coverage}%</div><div className="ax-mstrip__label">{t("l10n.kpi.coverage", "Coverage")}</div></div>
+          <div className="ax-kpi-row">
+            <div className="ax-kpi"><span className="ax-kpi__value numeric">{total}</span>{t("l10n.kpi.total", "Total keys")}</div>
+            <div className="ax-kpi"><span className="ax-kpi__value numeric">{translated}</span>{t("l10n.kpi.translated", "Translated (AR)")}</div>
+            <div className="ax-kpi"><span className="ax-kpi__value numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
+            <div className="ax-kpi"><span className="ax-kpi__value numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
           </div>
           <Manager rows={rows} labels={labels} />
         </>

@@ -1,0 +1,12 @@
+{
+  "light": {
+    "controlSurface": "rgba(255,255,255,0.96)",
+    "zoneFill": "rgba(17,92,68,0.10)",
+    "zoneStroke": "#115c44"
+  },
+  "dark": {
+    "controlSurface": "rgba(30,33,38,0.96)",
+    "zoneFill": "rgba(63,189,141,0.12)",
+    "zoneStroke": "#3fbd8d"
+  }
+}

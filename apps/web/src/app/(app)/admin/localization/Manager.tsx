@@ -8,7 +8,6 @@ import {
   type L10nResult, type SyncResult, type Revision,
 } from "./actions";
 import EmptyState from "@/components/EmptyState";
-import { IconGlobe, IconSearch } from "@/app/icons";
 
 export type UiString = {
   key: string;
@@ -103,10 +102,10 @@ function PhText({ text, errTokens }: { text: string; errTokens: Set<string> }) {
 }
 
 function StatusLozenge({ row, labels }: { row: UiString; labels: Labels }) {
-  if (row.orphaned) return <span className="ax-lozenge">{labels.statusOrphaned}</span>;
-  if (missingAr(row)) return <span className="ax-lozenge ax-lozenge--critical">{labels.statusMissing}</span>;
-  if (row.status === "reviewed") return <span className="ax-lozenge ax-lozenge--success">{labels.statusReviewed}</span>;
-  return <span className="ax-lozenge ax-lozenge--warning">{labels.statusDraft}</span>;
+  if (row.orphaned) return <span className="badge">{labels.statusOrphaned}</span>;
+  if (missingAr(row)) return <span className="badge badge-critical">{labels.statusMissing}</span>;
+  if (row.status === "reviewed") return <span className="badge badge-compliant">{labels.statusReviewed}</span>;
+  return <span className="badge badge-warning">{labels.statusDraft}</span>;
 }
 
 // Trigger-written history: last few revisions with restore (restore itself
@@ -134,24 +133,24 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
       </button>
       {open && (
         <div style={{ marginBlockStart: "var(--ax-space-100)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-          {loading && <span className="ax-caption">{labels.historyLoading}</span>}
-          {err && <span className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{err}</span>}
-          {revs !== null && revs.length === 0 && <span className="ax-caption">{labels.historyEmpty}</span>}
+          {loading && <span className="t-caption">{labels.historyLoading}</span>}
+          {err && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{err}</span>}
+          {revs !== null && revs.length === 0 && <span className="t-caption">{labels.historyEmpty}</span>}
           {(revs ?? []).map(r => (
-            <div key={r.id} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "baseline", flexWrap: "wrap", borderBlockStart: "1px dashed var(--ax-color-border)", paddingBlockStart: "var(--ax-space-100)" }}>
-              <span className="ax-caption ax-numeric">{r.changed_at.slice(0, 16).replace("T", " ")} · {r.change_source} · {r.status}</span>
+            <div key={r.id} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "baseline", flexWrap: "wrap", borderBlockStart: "1px dashed var(--ax-color-border)", paddingBlockStart: "var(--ax-space-100)" }}>
+              <span className="t-caption numeric">{r.changed_at.slice(0, 16).replace("T", " ")} · {r.change_source} · {r.status}</span>
               <span dir="rtl" lang="ar" style={{ font: "var(--ax-text-caption)" }}>{r.ar ?? "—"}</span>
               <form action={restAction}>
                 <input type="hidden" name="key" value={row.key} />
                 <input type="hidden" name="revision_id" value={r.id} />
-                <button className="ax-btn" style={{ paddingBlock: 2, font: "var(--ax-text-caption)" }} disabled={restPending}>
+                <button className="btn btn-primary btn-touch" style={{ paddingBlock: 2, font: "var(--ax-text-caption)" }} disabled={restPending}>
                   {restPending ? labels.restoring : labels.restore}
                 </button>
               </form>
             </div>
           ))}
-          {restState.ok && <span className="ax-lozenge ax-lozenge--success">{labels.restored}</span>}
-          {restState.error && <span className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{restState.error}</span>}
+          {restState.ok && <span className="badge badge-compliant">{labels.restored}</span>}
+          {restState.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{restState.error}</span>}
         </div>
       )}
     </div>
@@ -161,14 +160,14 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
 function SyncButton({ labels }: { labels: Labels }) {
   const [state, formAction, pending] = useActionState<SyncResult, FormData>(syncFromCode, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.syncing : labels.sync}</button>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? labels.syncing : labels.sync}</button>
       {state.report && !pending && (
-        <span className="ax-caption">
-          {labels.syncReport} <span className="ax-numeric">+{state.report.added.length}</span> · EN Δ <span className="ax-numeric">{state.report.enChanged.length}</span> · ⌀ <span className="ax-numeric">{state.report.orphaned.length}</span> · ↻ <span className="ax-numeric">{state.report.revived.length}</span>
+        <span className="t-caption">
+          {labels.syncReport} <span className="numeric">+{state.report.added.length}</span> · EN Δ <span className="numeric">{state.report.enChanged.length}</span> · ⌀ <span className="numeric">{state.report.orphaned.length}</span> · ↻ <span className="numeric">{state.report.revived.length}</span>
         </span>
       )}
-      {state.error && <span className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
+      {state.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
     </form>
   );
 }
@@ -198,12 +197,12 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
       {/* Arabic — inline edit + Save (returns to draft). */}
       <div className="lz-cell" dir="rtl">
         <span className="lz-key" dir="ltr">AR</span>
-        <form action={saveAction} className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", inlineSize: "100%" }}>
+        <form action={saveAction} className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", inlineSize: "100%" }}>
           <input type="hidden" name="key" value={row.key} />
           <input className="ax-input lz-ar" name="ar" dir="rtl" lang="ar" value={ar} onChange={e => setAr(e.target.value)}
             placeholder="—" aria-label={`${labels.colAr}: ${row.key}`} style={{ flex: 1, minInlineSize: 160 }} />
-          <button className="ax-btn" disabled={savePending || phErr} aria-disabled={phErr}>{savePending ? labels.saving : labels.save}</button>
-          {saveState.ok && !savePending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
+          <button className="btn btn-primary btn-touch" disabled={savePending || phErr} aria-disabled={phErr}>{savePending ? labels.saving : labels.save}</button>
+          {saveState.ok && !savePending && <span className="badge badge-compliant">{labels.saved}</span>}
         </form>
         {arLonger && <span className="lz-risk">↔ {labels.riskLong}</span>}
         {phErr && <span className="lz-risk lz-risk--critical" role="alert">✕ {labels.placeholderErr.replace("{token}", `{{${missing[0]}}}`)}</span>}
@@ -217,7 +216,7 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
           <div className="lz-actions">
             <form action={revAction}>
               <input type="hidden" name="key" value={row.key} />
-              <button className="ax-btn ax-btn--secondary" disabled={revPending}>{revPending ? labels.marking : labels.markReviewed}</button>
+              <button className="btn btn-secondary btn-touch" disabled={revPending}>{revPending ? labels.marking : labels.markReviewed}</button>
             </form>
           </div>
         )}
@@ -231,19 +230,19 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
 function AddKeyForm({ labels }: { labels: Labels }) {
   const [state, formAction, pending] = useActionState<L10nResult, FormData>(addKey, {});
   return (
-    <form action={formAction} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div style={{ inlineSize: "100%" }}><strong>{labels.addTitle}</strong></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="l10n-add-key">{labels.addKeyField}</label>
-        <input className="ax-input ax-numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
+        <input className="ax-input numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="l10n-add-en">{labels.addEnField}</label>
         <input className="ax-input" name="en" id="l10n-add-en" required /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="l10n-add-ar">{labels.addArField}</label>
         <input className="ax-input" name="ar" id="l10n-add-ar" dir="rtl" lang="ar" /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor="l10n-add-context">{labels.addContextField}</label>
         <input className="ax-input" name="context" id="l10n-add-context" placeholder="SCR-ADM-100" /></div>
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.adding : labels.addBtn}</button>
-      {state.error && <span className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
-      {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.added}</span>}
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? labels.adding : labels.addBtn}</button>
+      {state.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
+      {state.ok && !pending && <span className="badge badge-compliant">{labels.added}</span>}
     </form>
   );
 }
@@ -285,8 +284,8 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
   if (rows.length === 0) {
     return (
       <>
-        <EmptyState icon={<IconGlobe size={28} />} title={labels.emptyTitle}
-          body={<>{labels.emptyBody} <span className="ax-numeric">scripts/i18n_coverage.py</span></>} />
+        <EmptyState glyph="🌐" title={labels.emptyTitle}
+          body={<>{labels.emptyBody} <span className="numeric">scripts/i18n_coverage.py</span></>} />
         <AddKeyForm labels={labels} />
       </>
     );
@@ -294,7 +293,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
 
   return (
     <>
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-200) var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
         <input className="ax-input" value={query} onChange={e => setQuery(e.target.value)}
           placeholder={labels.searchPlaceholder} aria-label={labels.searchPlaceholder} style={{ flex: 1, minInlineSize: 220 }} />
         <select className="ax-select" value={filter} onChange={e => setFilter(e.target.value as Filter)} aria-label={labels.colStatus}>
@@ -304,13 +303,13 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
           <option value="missing-ar">{labels.filterMissing}</option>
           <option value="orphaned">{labels.filterOrphaned}</option>
         </select>
-        <button className="ax-btn" type="button" onClick={() => exportCsv(filtered)}>{labels.exportCsv}</button>
+        <button className="btn btn-primary btn-touch" type="button" onClick={() => exportCsv(filtered)}>{labels.exportCsv}</button>
         <SyncButton labels={labels} />
-        <span className="ax-caption">{labels.showing} <span className="ax-numeric">{filtered.length}/{rows.length}</span> · {labels.importNote}</span>
+        <span className="t-caption">{labels.showing} <span className="numeric">{filtered.length}/{rows.length}</span> · {labels.importNote}</span>
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState icon={<IconSearch size={28} />} title={labels.noMatchTitle} body={labels.noMatchBody} />
+        <EmptyState glyph="🔍" title={labels.noMatchTitle} body={labels.noMatchBody} />
       ) : (
         <div className="lz-list">
           {filtered.map(r => <Row key={r.key} row={r} labels={labels} />)}

@@ -85,7 +85,7 @@ export default function CriteriaBuilder({
     const isEmpty = c.value.trim() === "";
     const isFocused = focusedPath === key;
     return (
-    <li role="treeitem" aria-label={strings.conditionItem} className="ax-row"
+    <li role="treeitem" aria-label={strings.conditionItem} className="row"
       style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
       <div className="ax-field" style={{ maxInlineSize: 180 }}>
         <label className="ax-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
@@ -110,16 +110,16 @@ export default function CriteriaBuilder({
         </datalist>
       </div>
       {contribution != null && (
-        <button type="button" className="ax-btn ax-btn--subtle ax-numeric" aria-pressed={isFocused}
+        <button type="button" className="btn btn-ghost numeric btn-touch" aria-pressed={isFocused}
           onClick={() => onFocus?.(isFocused ? null : key)}
           aria-label={(isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution)))}
           style={isFocused ? { borderColor: "var(--ax-color-primary)", fontWeight: 600 } : undefined}>
           {contribution}
         </button>
       )}
-      <button type="button" className="ax-btn ax-btn--subtle" onClick={() => move(parentPath, idx, -1)} disabled={idx === 0} aria-label={strings.moveUp}>↑</button>
-      <button type="button" className="ax-btn ax-btn--subtle" onClick={() => move(parentPath, idx, 1)} disabled={idx === count - 1} aria-label={strings.moveDown}>↓</button>
-      <button type="button" className="ax-btn ax-btn--subtle" onClick={() => removeAt(parentPath, idx)}>{strings.remove}</button>
+      <button type="button" className="btn btn-ghost btn-touch" onClick={() => move(parentPath, idx, -1)} disabled={idx === 0} aria-label={strings.moveUp}>↑</button>
+      <button type="button" className="btn btn-ghost btn-touch" onClick={() => move(parentPath, idx, 1)} disabled={idx === count - 1} aria-label={strings.moveDown}>↓</button>
+      <button type="button" className="btn btn-ghost btn-touch" onClick={() => removeAt(parentPath, idx)}>{strings.remove}</button>
     </li>
     );
   };
@@ -127,7 +127,7 @@ export default function CriteriaBuilder({
   const renderGroup = (g: GroupNode, path: number[]): React.ReactNode => (
     <li role="treeitem" aria-label={strings.groupItem}
       style={{ listStyle: "none", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ alignItems: "flex-end", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+      <div className="row" style={{ alignItems: "flex-end", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
         <div className="ax-field" style={{ maxInlineSize: 220 }}>
           <label className="ax-field__label" htmlFor={`crit-combine-${path.length ? pathKey(path) : "root"}`}>{strings.combineLabel}</label>
           <select className="ax-select" id={`crit-combine-${path.length ? pathKey(path) : "root"}`} value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
@@ -136,7 +136,7 @@ export default function CriteriaBuilder({
           </select>
         </div>
         {path.length > 0 && (
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])}>{strings.removeGroup}</button>
+          <button type="button" className="btn btn-ghost btn-touch" onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])}>{strings.removeGroup}</button>
         )}
       </div>
       <ul role="group" style={{ listStyle: "none", margin: "var(--ax-space-150) 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
@@ -146,15 +146,15 @@ export default function CriteriaBuilder({
             : <span key={i}>{renderGroup(child, [...path, i])}</span>
         )}
       </ul>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={() => addCond(path)}>{strings.addCondition}</button>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={() => addGroup(path)}>{strings.addGroup}</button>
+      <div className="row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
+        <button type="button" className="btn btn-secondary btn-touch" onClick={() => addCond(path)}>{strings.addCondition}</button>
+        <button type="button" className="btn btn-ghost btn-touch" onClick={() => addGroup(path)}>{strings.addGroup}</button>
       </div>
     </li>
   );
 
   return (
-    <form method="get" action="/planning/bulk" className="ax-surface"
+    <form method="get" action="/planning/bulk" className="panel"
       onSubmit={e => { if (invalid.length > 0) { e.preventDefault(); setShowInvalid(true); } }}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
@@ -168,12 +168,12 @@ export default function CriteriaBuilder({
           <p>{strings.invalidBody.replace("{n}", String(invalid.length))}</p>
         </div>
       )}
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
-        <button className="ax-btn ax-btn--prominent">{strings.apply}</button>
-        <a className="ax-btn ax-btn--subtle" href="/planning/bulk">{strings.clear}</a>
-        <span className="ax-caption ax-numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
+      <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+        <button className="btn btn-primary btn-lg btn-touch">{strings.apply}</button>
+        <a className="btn btn-ghost btn-touch" href="/planning/bulk">{strings.clear}</a>
+        <span className="t-caption numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>
       </div>
-      <p className="ax-caption">{strings.hint}</p>
+      <p className="t-caption">{strings.hint}</p>
     </form>
   );
 }

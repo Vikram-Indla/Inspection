@@ -2,7 +2,9 @@ import "./tokens.css";
 import PwaRegister from "@/components/PwaRegister";
 import ThemeScript from "@/components/ThemeScript";
 import "./astryx.css";
-import "./v2-components.css";
+// SAQEEL Inspection Design System v1.0 component layer (new components consume
+// this; supersedes .ax-* families as consumers migrate — Astryx removed at PR12).
+import "./saqeel-components.css";
 import localFont from "next/font/local";
 import { getLocale } from "@/lib/i18n";
 import { registerAdapter } from "@/lib/notify";

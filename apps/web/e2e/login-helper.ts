@@ -11,5 +11,5 @@ export async function waitForCredentialsForm(page: Page) {
 // (id + class) instead of by button label, which would need to match
 // whichever language rendered.
 export async function submitCredentials(page: Page) {
-  await page.locator("form:has(#email) button.ax-btn--prominent").click();
+  await page.locator("form:has(#email) button.ax-btn--prominent, form:has(#email) button.btn-primary.btn-lg").click();
 }

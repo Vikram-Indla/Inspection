@@ -135,7 +135,7 @@ test.describe.serial("CD-043 session-boundary states — driven", () => {
       await page.goto(`/virtual/${sessionId}`);
 
       const primary = page.locator("#vir-actionzone .cd-primary");
-      const closeBtn = page.locator(".cd-closebox button.ax-btn--danger");
+      const closeBtn = page.locator(".cd-closebox button.ax-btn--danger, .cd-closebox button.btn-danger");
       await expect(primary).toBeEnabled(); // online baseline
 
       await context.setOffline(true);
@@ -167,7 +167,7 @@ test.describe.serial("CD-043 session-boundary states — driven", () => {
 
       // Attempt the close with the now-stale rev.
       await page.locator(".cd-closebox input[name=reason]").fill("attempt on stale view");
-      await page.locator(".cd-closebox button.ax-btn--danger").click();
+      await page.locator(".cd-closebox button.ax-btn--danger, .cd-closebox button.btn-danger").click();
 
       // NEGATIVE + UI — the stale banner appears with a reload affordance…
       const stale = page.locator(".ax-banner--warning", { hasText: "This session changed" });

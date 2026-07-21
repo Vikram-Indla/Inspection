@@ -31,7 +31,7 @@ export default function LaunchError({ reset }: { error: Error & { digest?: strin
       body={c.body}
       actions={
         <>
-          <button type="button" className="ax-btn ax-btn--prominent lg-submit" onClick={reset}>{c.retry}</button>
+          <button type="button" className="btn btn-primary btn-lg lg-submit btn-touch" onClick={reset}>{c.retry}</button>
           <a className="lg-linkbtn" href="/signout">{c.signOut}</a>
         </>
       }

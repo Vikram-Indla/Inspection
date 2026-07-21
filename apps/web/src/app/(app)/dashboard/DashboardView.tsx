@@ -1,235 +1,161 @@
-// SAQEEL Web Dashboard — approved-design composition (server component).
-//
-// Presentation only. Every KPI value comes from the shared dashboard-kpi
-// projection (SharedMetric[]); this file never recomputes a formula. Blocked
-// metrics are rendered honestly (Not configured / Unavailable / Decision
-// required) via dashboard-format. All previously-reachable dashboard content is
-// preserved and re-placed into the new hierarchy — see
-// .implementation-pack/06_ACCEPTANCE preservation ledger.
-
 import type { ReactNode } from "react";
-import type { GeoTone } from "@/components/GeoMap";
-import { findMetric, type DashboardKpiProjection, type SharedMetric } from "@/lib/dashboard-kpi/contract";
-import {
-  buildMethodology,
-  metricDisplay,
-  metricTitle,
-  type Locale,
-  type MetricDisplay,
-  type MethodologyEntry,
-} from "./dashboard-format";
-import {
-  complianceBreakdown,
-  formatDuration,
-  type FactoryRef,
-  type GeoRow,
-  type ResponseRow,
-  type ReviewRow,
-  type VisitRow,
-} from "./metrics";
-import MetricStrip, { type MetricStripStrings } from "./MetricStrip";
-import DecisionCanvas, {
-  type CanvasLayer,
-  type CanvasMarker,
-  type CanvasRankRow,
-  type DecisionCanvasStrings,
-} from "./DecisionCanvas";
-import OpsMap, { type OpsMapStrings, type OpsPin } from "../operations/OpsMap";
+import type { FactoryRef, GeoRow, ReviewRow, ResponseRow, VisitRow } from "./metrics";
+import { complianceBreakdown, formatDuration } from "./metrics";
+import KpiGrid, { type Kpi, type Methodology } from "./KpiGrid";
 import styles from "./dashboard.module.css";
 
+type Locale = "en" | "ar";
 type DashboardMetrics = ReturnType<typeof import("./metrics").buildDashboardMetrics>;
-const copy = (locale: Locale, en: string, ar: string) => (locale === "ar" ? ar : en);
 
-// ---------------------------------------------------------------- shared bits
+const copy = (locale: Locale, en: string, ar: string) => locale === "ar" ? ar : en;
+
 function paramsHref(current: Record<string, string>, patch: Record<string, string>) {
   const params = new URLSearchParams({ ...current, ...patch });
   for (const [key, value] of [...params.entries()]) if (!value) params.delete(key);
   return `/dashboard?${params.toString()}`;
 }
 
-function Bars({ rows, empty, suffix = "" }: { rows: { label: string; value: number }[]; empty: string; suffix?: string }) {
-  if (!rows.length) return <div className={styles.empty} role="status">{empty}</div>;
-  const max = Math.max(1, ...rows.map((row) => row.value));
-  return <div className={styles.bars}>{rows.slice(0, 8).map((row) => (
-    <div className={styles.barRow} key={row.label}>
-      <span className={styles.barLabel} title={row.label}>{row.label}</span>
-      <span className={styles.track} aria-hidden="true"><span className={styles.fill} style={{ inlineSize: `${Math.max(3, (row.value / max) * 100)}%` }} /></span>
-      <strong className={styles.barValue}>{row.value}{suffix}</strong>
-    </div>
-  ))}</div>;
-}
-
-function ExcChip({ tone, children }: { tone: string; children: ReactNode }) {
-  return <span className={`${styles.exc} ${styles[`tone_${tone}`]}`}><span className={styles.excMark} aria-hidden="true" />{children}</span>;
-}
-
-function Panel({ title, meta, children, accent }: { title: ReactNode; meta?: ReactNode; children: ReactNode; accent?: boolean }) {
-  return <section className={`${styles.panel}${accent ? ` ${styles.panelAccent}` : ""}`}>
-    <div className={styles.panelHeader}><h3 className={styles.panelTitle}>{title}</h3>{meta && <span className={styles.idCode}>{meta}</span>}</div>
-    <div className={styles.panelBody}>{children}</div>
-  </section>;
-}
-
-function BlockedPanel({ title, note, cta, ctaHref }: { title: string; note: string; cta?: string; ctaHref?: string }) {
-  return <section className={`${styles.panel} ${styles.blockedPanel}`}>
-    <div className={styles.blockedGlyph} aria-hidden="true">◫</div>
-    <h3 className={styles.blockedTitle}>{title}</h3>
-    <p className={styles.detail}>{note}</p>
-    {cta && ctaHref && <a className={`${styles.btn} ${styles.btnSecondary}`} href={ctaHref}>{cta}</a>}
-  </section>;
-}
-
-// ---------------------------------------------------------------- tone helpers
-function complianceTone(rate: number | null): GeoTone {
-  if (rate == null) return "neutral";
-  if (rate >= 85) return "low";
-  if (rate >= 75) return "medium";
-  return "high";
-}
-function riskTone(band: string | null | undefined): GeoTone {
-  if (band === "high") return "high";
-  if (band === "medium") return "medium";
-  if (band === "low") return "low";
-  return "neutral";
-}
-function rankTone(rate: number | null): CanvasRankRow["tone"] {
-  if (rate == null) return "neutral";
-  if (rate >= 85) return "success";
-  if (rate >= 75) return "warning";
-  return "critical";
-}
-
-// ---------------------------------------------------------------- command header
-export function CommandHeader({ locale, view, params, from, to, region, regions, query, refreshedAt, policyVersionId, partialSources }: {
-  locale: Locale; view: "strategic" | "operational"; params: Record<string, string>;
-  from: string; to: string; region: string; regions: string[]; query: string;
-  refreshedAt: string; policyVersionId: string | null; partialSources: string[];
+/** Titled surface panel using the shared component layer (`.panel`). */
+function Panel({ title, meta, children, style, className }: {
+  title?: ReactNode; meta?: ReactNode; children: ReactNode; style?: React.CSSProperties; className?: string;
 }) {
-  return <header className={styles.command}>
-    <nav className={styles.seg} role="tablist" aria-label={copy(locale, "Dashboard perspective", "منظور لوحة القيادة")} style={{ margin: "var(--ax-space-100) var(--ax-space-200) 0" }}>
-      <a id="dashboard-tab-strategic" className={styles.segOpt} role="tab" aria-controls="dashboard-panel" aria-selected={view === "strategic"} href={paramsHref(params, { view: "strategic" })}>{copy(locale, "Strategic View", "المنظور الاستراتيجي")}</a>
-      <a id="dashboard-tab-operational" className={styles.segOpt} role="tab" aria-controls="dashboard-panel" aria-selected={view === "operational"} href={paramsHref(params, { view: "operational" })}>{copy(locale, "Operational View", "المنظور التشغيلي")}</a>
-    </nav>
-    <form action="/dashboard" method="get" className={styles.commandRow} role="search" aria-label={copy(locale, "Search and filter dashboard", "البحث وتصفية لوحة القيادة")}>
-      <input type="hidden" name="view" value={view} /><input type="hidden" name="group" value={params.group ?? "region"} />
-      <div className={styles.commandSearch}>
-        <span className={styles.searchIcon} aria-hidden="true">⌕</span>
-        <input className={styles.searchInput} type="search" name="q" defaultValue={query} aria-label={copy(locale, "Search factories, visits and inspections", "البحث في المصانع والزيارات والتفتيشات")} placeholder={copy(locale, "Search CR, factory, visit…", "ابحث في السجل التجاري، المصنع، الزيارة…")} />
-      </div>
-      <details className={styles.dateWrap}>
-        <summary className={`${styles.btn} ${styles.btnSecondary}`}>◫ {from} → {to}</summary>
-        <div className={styles.datePanel}>
-          <label>{copy(locale, "From", "من")}<input type="date" name="from" defaultValue={from} /></label>
-          <label>{copy(locale, "To", "إلى")}<input type="date" name="to" defaultValue={to} /></label>
-        </div>
-      </details>
-      <select className={styles.regionSelect} name="region" defaultValue={region} aria-label={copy(locale, "Region", "المنطقة")}>
-        <option value="">{copy(locale, "All regions", "جميع المناطق")}</option>
-        {regions.map((value) => <option key={value} value={value}>{value}</option>)}
-      </select>
-      <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">{copy(locale, "Apply", "تطبيق")}</button>
-      <span className={styles.grow} />
-      <span className={`${styles.badge} ${partialSources.length ? styles.tone_warning : styles.tone_success}`}>
-        <span className={styles.dot} aria-hidden="true" />
-        {partialSources.length
-          ? copy(locale, `${partialSources.length} source partial`, `${partialSources.length} مصدر جزئي`)
-          : copy(locale, `Live · refreshed ${refreshedAt}`, `مباشر · تم التحديث ${refreshedAt}`)}
-      </span>
-    </form>
-    <div className={styles.scopeLine} role="status">
-      <span className={styles.idCode}>
-        {copy(locale, `Scope: ${from} → ${to} · Asia/Riyadh · ${policyVersionId ? `policy ${policyVersionId.slice(0, 8)}` : "no effective policy"} · ${region || "all regions"} · RLS scoped`,
-          `النطاق: ${from} → ${to} · آسيا/الرياض · ${policyVersionId ? `السياسة ${policyVersionId.slice(0, 8)}` : "لا توجد سياسة فعّالة"} · ${region || "جميع المناطق"} · مقيّد حسب الصلاحيات`)}
-      </span>
-      <span className={styles.grow} />
-      {partialSources.length > 0 && <ExcChip tone="warning">{copy(locale, "Partial:", "جزئي:")} {partialSources.join(" · ")}</ExcChip>}
+  return <div className={`panel${className ? ` ${className}` : ""}`} style={style}>
+    {(title || meta) && <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "10px" }}>
+      {title && <span className="panel-title" style={{ fontSize: "13.5px" }}>{title}</span>}
+      {meta && <span className="id-code" style={{ fontSize: "10.5px", color: "var(--text-muted)" }}>{meta}</span>}
+    </div>}
+    {children}
+  </div>;
+}
+
+/** Horizontal bars driven only by real record counts. */
+function Bars({ rows, empty, suffix = "" }: { rows: { label: string; value: number; tone?: string }[]; empty: string; suffix?: string }) {
+  if (!rows.length) return <div className="empty" role="status" style={{ padding: "18px 0" }}><p>{empty}</p></div>;
+  const max = Math.max(1, ...rows.map(row => row.value));
+  return <div style={{ marginBlockStart: "14px", display: "flex", flexDirection: "column", gap: "8px" }}>
+    {rows.slice(0, 8).map(row => <div className="row" style={{ gap: "10px" }} key={row.label}>
+      <span style={{ width: "140px", fontSize: "12px", color: "var(--text-secondary)" }} title={row.label}>{row.label}</span>
+      <div className="progress grow"><i style={{ inlineSize: `${Math.max(3, (row.value / max) * 100)}%`, ...(row.tone ? { background: `var(--status-${row.tone})` } : {}) }} /></div>
+      <span className="id-code" style={{ fontSize: "11px", color: "var(--text-muted)" }}>{row.value}{suffix}</span>
+    </div>)}
+  </div>;
+}
+
+/* ── Controls: view toggle + governed scope readout ─────────────── */
+export function DashboardControls({ locale, view, params, from, to, region, refreshedAt, partialSources }: {
+  locale: Locale; view: "strategic" | "operational"; params: Record<string, string>;
+  from: string; to: string; region: string; refreshedAt: string; partialSources: string[];
+}) {
+  const seg = (id: "strategic" | "operational", label: string) =>
+    <a className="seg-opt" role="tab" aria-selected={view === id} aria-pressed={view === id}
+      id={`dashboard-tab-${id}`} aria-controls={`dashboard-${id}`} href={paramsHref(params, { view: id })}>{label}</a>;
+  return <div className="panel" style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div className="seg" role="tablist" aria-label={copy(locale, "Dashboard perspective", "منظور لوحة القيادة")} style={{ alignSelf: "flex-start" }}>
+      {seg("strategic", copy(locale, "Strategic View", "المنظور الاستراتيجي"))}
+      {seg("operational", copy(locale, "Operational View", "المنظور التشغيلي"))}
     </div>
-  </header>;
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", borderBlockStart: "1px solid var(--border-subtle)", paddingBlockStart: "10px" }} role="status">
+      <span className="id-code" style={{ fontSize: "11px", color: "var(--text-muted)" }}>
+        {copy(locale, `Scope: ${from} → ${to} · Asia/Riyadh · ${region || "all regions"} · RLS scoped`, `النطاق: ${from} → ${to} · آسيا/الرياض · ${region || "جميع المناطق"} · مقيّد حسب الصلاحيات`)}
+      </span>
+      <span className="grow" />
+      <span className="badge badge-compliant"><span className="dot" />{copy(locale, `Live · refreshed ${refreshedAt}`, `مباشر · تم التحديث ${refreshedAt}`)}</span>
+      {partialSources.length > 0 && <span className="badge badge-warning"><span className="dot" />{copy(locale, `${partialSources.length} source partial: ${partialSources.join(", ")}`, `${partialSources.length} مصدر جزئي: ${partialSources.join("، ")}`)}</span>}
+    </div>
+  </div>;
 }
 
-// ---------------------------------------------------------------- metric strip prep
-function stripFor(projection: DashboardKpiProjection, ids: string[], locale: Locale) {
-  const metrics: MetricDisplay[] = [];
-  const methodology: Record<string, MethodologyEntry> = {};
-  for (const id of ids) {
-    const m = findMetric(projection, id);
-    if (!m) continue;
-    metrics.push(metricDisplay(m, locale));
-    methodology[id] = buildMethodology(m, locale);
-  }
-  return { metrics, methodology };
-}
-function stripStrings(locale: Locale): MetricStripStrings {
-  return {
-    methodology: copy(locale, "ⓘ Methodology", "ⓘ المنهجية"),
-    why: copy(locale, "ⓘ Why", "ⓘ لماذا"),
-    close: copy(locale, "Close", "إغلاق"),
-    advisory: copy(locale, "Advisory only · traceable", "استشاري فقط · قابل للتتبع"),
-    blockedTitle: copy(locale, "Blocked", "محجوب"),
-    drillFallback: copy(locale, "Open records", "فتح السجلات"),
-  };
-}
-
-// ---------------------------------------------------------------- STRATEGIC
-export function StrategicView({ locale, metrics, projection, factories, group, params }: {
-  locale: Locale; metrics: DashboardMetrics; projection: DashboardKpiProjection; factories: FactoryRef[];
-  group: "region" | "city" | "sector" | "authority"; params: Record<string, string>;
+/* ── Strategic view ─────────────────────────────────────────────── */
+export function StrategicView({ locale, metrics, group, params, refreshedAt }: {
+  locale: Locale; metrics: DashboardMetrics; group: "region" | "city" | "sector" | "authority"; params: Record<string, string>; refreshedAt: string;
 }) {
   const s = metrics.strategic;
   const unknown = copy(locale, "Not recorded", "غير مسجل");
-  const regionBreakdown = complianceBreakdown(s.scopedResponses as ResponseRow[], "region", unknown);
-  const regionRate = new Map(regionBreakdown.map((r) => [r.label, r.rate]));
-  const strip = stripFor(projection, ["STR-KPI-001", "STR-KPI-011", "STR-KPI-005", "STR-KPI-007"], locale);
+  const fresh = copy(locale, `Live · refreshed ${refreshedAt} · RLS scoped`, `مباشر · تم التحديث ${refreshedAt} · مقيّد حسب الصلاحيات`);
+  const na = copy(locale, "—", "—");
+  const notStored = copy(locale, "Not stored in governed schema", "غير مخزّن في المخطط المعتمد");
 
-  // National Decision Canvas markers — real official coordinates only.
-  const canvasMarkers: CanvasMarker[] = factories
-    .filter((f) => f.official_lat != null && f.official_lng != null)
-    .slice(0, 1200)
-    .map((f) => ({
-      id: f.id,
-      lat: Number(f.official_lat),
-      lng: Number(f.official_lng),
-      label: f.name,
-      region: f.region,
-      href: `/factories/${f.id}`,
-      toneRisk: riskTone(f.risk_band),
-      toneCompliance: complianceTone(f.region ? regionRate.get(f.region) ?? null : null),
-    }));
-  const layers: CanvasLayer[] = [
-    { id: "compliance", label: copy(locale, "Compliance", "الامتثال"), available: regionBreakdown.length > 0 },
-    { id: "risk", label: copy(locale, "Risk band", "نطاق المخاطر"), available: factories.some((f) => f.risk_band) },
+  const method = (m: Partial<Methodology> & { id: string; label: string }): Methodology => ({
+    q: "", value: "", num: "", den: "", excl: "", time: "", formulaV: notStored, policyV: notStored, fresh, drill: "", ...m,
+  });
+
+  const kpis: Kpi[] = [
+    {
+      key: "compliance",
+      label: copy(locale, "National compliance rate", "معدل الامتثال الوطني"),
+      value: s.complianceRate == null ? na : `${s.complianceRate}`,
+      unit: s.complianceRate == null ? undefined : "%",
+      deltaText: copy(locale, `${s.compliant} of ${s.answeredForCompliance} eligible answers`, `${s.compliant} من ${s.answeredForCompliance} إجابة مؤهلة`),
+      method: method({
+        id: "STR-COMP-RATE", label: copy(locale, "National compliance rate", "معدل الامتثال الوطني"),
+        q: copy(locale, "How compliant are answered inspection items?", "ما مدى امتثال بنود التفتيش المجابة؟"),
+        value: s.complianceRate == null ? na : `${s.complianceRate}%`,
+        num: copy(locale, `Compliant answers (${s.compliant})`, `الإجابات الممتثلة (${s.compliant})`),
+        den: copy(locale, `Compliant + non-compliant (${s.answeredForCompliance})`, `الممتثل + غير الممتثل (${s.answeredForCompliance})`),
+        excl: copy(locale, "N/A, unknown and incomplete answers", "غير المنطبق وغير المعروف والإجابات غير المكتملة"),
+        time: copy(locale, `${params.from} → ${params.to} · Asia/Riyadh`, `${params.from} → ${params.to} · آسيا/الرياض`),
+        drill: copy(locale, "Compliance explorer", "مستكشف الامتثال"), drillHref: "/reports",
+      }),
+    },
+    {
+      key: "approval",
+      label: copy(locale, "Inspection approval rate", "معدل اعتماد التفتيش"),
+      value: s.approvalRate == null ? na : `${s.approvalRate}`,
+      unit: s.approvalRate == null ? undefined : "%",
+      deltaText: copy(locale, `${s.approvedScoped} of ${s.completedInspections} submitted`, `${s.approvedScoped} من ${s.completedInspections} مقدمة`),
+      method: method({
+        id: "STR-APPROVAL-RATE", label: copy(locale, "Inspection approval rate", "معدل اعتماد التفتيش"),
+        q: copy(locale, "Are submitted inspections being approved?", "هل يتم اعتماد التفتيشات المقدمة؟"),
+        value: s.approvalRate == null ? na : `${s.approvalRate}%`,
+        num: copy(locale, `Approved scoped inspections (${s.approvedScoped})`, `التفتيشات المعتمدة ضمن النطاق (${s.approvedScoped})`),
+        den: copy(locale, `Submitted scoped inspections (${s.completedInspections})`, `التفتيشات المقدمة ضمن النطاق (${s.completedInspections})`),
+        excl: copy(locale, "Approval ≠ compliance — distinct governed concepts", "الاعتماد ≠ الامتثال — مفهومان معتمدان منفصلان"),
+        time: copy(locale, `${params.from} → ${params.to} · Asia/Riyadh`, `${params.from} → ${params.to} · آسيا/الرياض`),
+        drill: copy(locale, "Review & approval queue", "قائمة المراجعة والاعتماد"), drillHref: "/reviews",
+      }),
+    },
+    {
+      key: "violations",
+      label: copy(locale, "Linked violations", "المخالفات المرتبطة"),
+      value: `${s.scopedViolations.length}`,
+      valueTone: s.scopedViolations.length > 0 ? "critical" : undefined,
+      deltaChip: s.violationDelta !== 0 ? { text: `${s.violationDelta > 0 ? "▲" : "▼"} ${Math.abs(s.violationDelta)}`, dir: s.violationDelta > 0 ? "down" : "up" } : undefined,
+      deltaText: copy(locale, "vs previous equal window", "مقارنة بالفترة السابقة المماثلة"),
+      method: method({
+        id: "STR-VIOL-MOVEMENT", label: copy(locale, "Linked violation movement", "حركة المخالفات المرتبطة"),
+        q: copy(locale, "How did recorded violations move against the previous window?", "كيف تغيرت المخالفات المسجلة مقارنة بالفترة السابقة؟"),
+        value: copy(locale, `${s.scopedViolations.length} current vs ${s.previousViolations} previous`, `${s.scopedViolations.length} حالياً مقابل ${s.previousViolations} سابقاً`),
+        num: copy(locale, "Violations linked to submitted inspections in window", "المخالفات المرتبطة بالتفتيشات المقدمة في الفترة"),
+        den: copy(locale, "n/a (count and window-over-window delta)", "غير منطبق (عدد وفرق فترة مقابل فترة)"),
+        excl: copy(locale, "Uses inspection submission time — violation issuance time is not stored", "يستخدم وقت تقديم التفتيش — وقت إصدار المخالفة غير مخزّن"),
+        time: copy(locale, `${params.from} → ${params.to} · Asia/Riyadh`, `${params.from} → ${params.to} · آسيا/الرياض`),
+        drill: copy(locale, "Enforcement register", "سجل الإنفاذ"), drillHref: "/enforcement",
+      }),
+    },
+    {
+      key: "coverage",
+      label: copy(locale, "Inspection coverage", "تغطية التفتيش"),
+      badge: { text: copy(locale, "Not configured", "غير مهيأ"), tone: "badge-pending" },
+      deltaText: copy(locale, "Needs cycle policy", "يتطلب سياسة الدورة"),
+      method: method({
+        id: "STR-COVERAGE", label: copy(locale, "Inspection coverage", "تغطية التفتيش"),
+        q: copy(locale, "Are we meeting the national inspection target?", "هل نحقق مستهدف التفتيش الوطني؟"),
+        value: copy(locale, "Not configured", "غير مهيأ"),
+        num: copy(locale, "Qualifying completed inspections", "التفتيشات المكتملة المؤهلة"),
+        den: copy(locale, "Eligible factories due in cycle", "المصانع المؤهلة المستحقة في الدورة"),
+        excl: copy(locale, "Requires published eligibility and cycle policy — no value is invented", "يتطلب أهلية ودورة منشورتين — لا يتم اختلاق أي قيمة"),
+        time: copy(locale, "Per published cycle", "حسب الدورة المنشورة"),
+        policyV: copy(locale, "no effective cycle policy", "لا توجد سياسة دورة فعّالة"),
+        fresh: copy(locale, "Unavailable until policy is published", "غير متاح حتى نشر السياسة"),
+        drill: copy(locale, "Admin → inspection-cycle policy", "الإدارة ← سياسة دورة التفتيش"), drillHref: "/admin",
+      }),
+    },
   ];
-  const ranking: CanvasRankRow[] = regionBreakdown
-    .slice()
-    .sort((a, b) => (a.rate ?? 101) - (b.rate ?? 101))
-    .slice(0, 8)
-    .map((r) => ({
-      key: r.label,
-      name: r.label,
-      detail: copy(locale, `${r.compliant}/${r.total} answered`, `${r.compliant}/${r.total} مجاب`),
-      value: r.rate == null ? "—" : `${r.rate}%`,
-      tone: rankTone(r.rate),
-    }));
 
-  const canvasStrings: DecisionCanvasStrings = {
-    panelTitle: copy(locale, "National decision canvas", "لوحة القرار الوطنية"),
-    rankTitle: copy(locale, "Ranked intervention", "التدخل المُرتّب"),
-    syncedToMap: copy(locale, "synced to map", "متزامن مع الخريطة"),
-    provider: copy(locale, "Mapbox GL · shared GeoMap", "Mapbox GL · خريطة مشتركة"),
-    loadingTitle: copy(locale, "Loading map…", "جارٍ تحميل الخريطة…"),
-    loadingBody: copy(locale, "Loading governed factory coordinates.", "جارٍ تحميل إحداثيات المصانع المعتمدة."),
-    emptyTitle: copy(locale, "No mapped factories in scope", "لا توجد مصانع على الخريطة ضمن النطاق"),
-    emptyBody: copy(locale, "No RLS-visible factory in this region carries official coordinates.", "لا يوجد مصنع ظاهر حسب الصلاحيات في هذه المنطقة يحمل إحداثيات رسمية."),
-    legendTitle: copy(locale, "Legend", "المفتاح"),
-    legendHealthy: copy(locale, "≥ 85% healthy", "≥ 85% سليم"),
-    legendAttention: copy(locale, "75–84% attention", "75–84% انتباه"),
-    legendCritical: copy(locale, "< 75% critical", "< 75% حرج"),
-    provenance: copy(locale, "Provenance: official coordinates", "المصدر: الإحداثيات الرسمية"),
-    open: copy(locale, "Open", "فتح"),
-    allRegions: copy(locale, "All regions", "جميع المناطق"),
-    blockedLayer: copy(locale, "Layer source not configured", "مصدر الطبقة غير مهيأ"),
-    selectedFactory: copy(locale, "Selected factory", "المصنع المحدد"),
-  };
+  // Ranked intervention — real region compliance, lowest (worst) first.
+  const regionRows = complianceBreakdown(s.scopedResponses as ResponseRow[], "region", unknown)
+    .slice().sort((a, b) => (a.rate ?? 101) - (b.rate ?? 101));
+  const tone = (rate: number | null) => rate == null ? "info" : rate < 75 ? "critical" : rate < 85 ? "warning" : "compliant";
 
   const dimensions = [
     ["region", copy(locale, "Region", "المنطقة")],
@@ -237,278 +163,270 @@ export function StrategicView({ locale, metrics, projection, factories, group, p
     ["sector", copy(locale, "Sector", "القطاع")],
     ["authority", copy(locale, "Authority", "الجهة")],
   ] as const;
-  const groupBreakdown = complianceBreakdown(s.scopedResponses as ResponseRow[], group, unknown);
+  const breakdown = complianceBreakdown(s.scopedResponses as ResponseRow[], group, unknown);
+  const submittedRemainder = Math.max(0, s.completedInspections - s.approvedScoped);
+  const movementDir = s.violationDelta > 0 ? copy(locale, "increase", "زيادة") : s.violationDelta < 0 ? copy(locale, "decrease", "انخفاض") : copy(locale, "no change", "دون تغيير");
 
-  // Risk-band distribution (Risk engine — explicitly NOT Health Score, which is
-  // unavailable in the live schema; STR-KPI-002 stays blocked).
-  const bandCounts = { high: 0, medium: 0, low: 0, none: 0 };
-  for (const f of factories) {
-    if (f.risk_band === "high") bandCounts.high++;
-    else if (f.risk_band === "medium") bandCounts.medium++;
-    else if (f.risk_band === "low") bandCounts.low++;
-    else bandCounts.none++;
-  }
-  const decisionMix = findMetric(projection, "STR-KPI-004");
-  const violationMetric = findMetric(projection, "STR-KPI-003");
-
-  return <div id="dashboard-panel" role="tabpanel" aria-labelledby="dashboard-tab-strategic" className={styles.view}>
-    {/* STATUS RAIL */}
-    <div className={styles.statusRail}>
-      <ExcChip tone="critical">{copy(locale, `${s.criticalFactories.length} factories need intervention`, `${s.criticalFactories.length} مصانع تتطلب تدخلاً`)}</ExcChip>
-      <ExcChip tone={s.violationDelta > 0 ? "warning" : "success"}>{copy(locale, `Violation movement ${s.violationDelta > 0 ? "+" : ""}${s.violationDelta}`, `حركة المخالفات ${s.violationDelta > 0 ? "+" : ""}${s.violationDelta}`)}</ExcChip>
-      <ExcChip tone="warning">{copy(locale, "Licence exposure: source unavailable", "تعرّض التراخيص: المصدر غير متاح")}</ExcChip>
-      <ExcChip tone="info">{copy(locale, "Coverage & uninspected: policy not configured", "التغطية وغير المفتشة: السياسة غير مهيأة")}</ExcChip>
+  return <div id="dashboard-strategic" role="tabpanel" aria-labelledby="dashboard-tab-strategic" style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+    {/* status rail */}
+    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+      {s.criticalFactories.length > 0 && <span className="exc-chip exc-critical"><span className="exc-mark" />{copy(locale, `${s.criticalFactories.length} factories need intervention`, `${s.criticalFactories.length} مصنعاً يتطلب تدخلاً`)}</span>}
+      {s.violationDelta > 0 && <span className="exc-chip exc-warning"><span className="exc-mark" />{copy(locale, `Linked violations +${s.violationDelta} vs previous window`, `المخالفات المرتبطة +${s.violationDelta} مقارنة بالفترة السابقة`)}</span>}
+      <span className="exc-chip exc-pending"><span className="exc-mark" />{copy(locale, "Coverage & uninspected: policy not configured", "التغطية وغير المفتشة: السياسة غير مهيأة")}</span>
     </div>
 
-    <h2 className={styles.srOnly}>{copy(locale, "Strategic overview", "النظرة الاستراتيجية")}</h2>
+    <KpiGrid kpis={kpis} locale={locale} methodologyLabel={copy(locale, "Methodology", "المنهجية")} />
 
-    {/* METRIC STRIP */}
-    <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
+    {/* decision canvas + ranked intervention */}
+    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px", alignItems: "stretch" }}>
+      <div className="map-panel" style={{ padding: 0, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: "520px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 14px", borderBlockEnd: "1px solid var(--border-subtle)" }}>
+          <span style={{ fontWeight: 600, fontSize: "13px" }}>{copy(locale, "National decision canvas", "لوحة القرار الوطنية")}</span>
+          <span className="grow" />
+          <span className="id-code" style={{ fontSize: "10.5px", color: "var(--text-muted)" }}>Mapbox GL · GeoMap</span>
+        </div>
+        <div style={{ position: "relative", flex: 1, background: "var(--surface-sunken)" }}>
+          <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center", color: "var(--text-muted)", padding: "24px" }}>
+            <div>
+              <div style={{ fontSize: "13px", fontWeight: 500, color: "var(--text-secondary)" }}>{copy(locale, "Live basemap (Mapbox GL / shared GeoMap)", "خريطة أساس مباشرة (Mapbox GL / GeoMap مشتركة)")}</div>
+              <div className="t-caption" style={{ maxWidth: "46ch", marginBlockStart: "6px" }}>{copy(locale, "Region choropleth, factory clusters and provenance-tagged pins. Selection cross-filters the metrics and ranked list. No synthetic roads or routes are drawn.", "تلوين المناطق وتجمعات المصانع ودبابيس موسومة بالمصدر. يقوم التحديد بالتصفية المتقاطعة للمؤشرات والقائمة المرتبة. لا تُرسم طرق أو مسارات مصطنعة.")}</div>
+            </div>
+          </div>
+          <div className="map-panel" style={{ position: "absolute", top: "12px", insetInlineStart: "12px", padding: "10px 12px", width: "180px" }}>
+            <div className="t-label" style={{ marginBlockEnd: "6px" }}>{copy(locale, "Legend · Compliance", "المفتاح · الامتثال")}</div>
+            <div className="stack" style={{ gap: "5px" }}>
+              <div className="map-legend-row"><span className="swatch" style={{ background: "var(--status-compliant)" }} />{copy(locale, "≥ 85% healthy", "≥ 85% سليم")}</div>
+              <div className="map-legend-row"><span className="swatch" style={{ background: "var(--status-warning)" }} />{copy(locale, "75–84% attention", "75–84% انتباه")}</div>
+              <div className="map-legend-row"><span className="swatch" style={{ background: "var(--status-critical)" }} />{copy(locale, "< 75% critical", "< 75% حرج")}</div>
+            </div>
+            <div className="t-caption" style={{ marginBlockStart: "8px" }}>{copy(locale, "Provenance: official · planner · observed", "المصدر: رسمي · مخطِّط · مرصود")}</div>
+          </div>
+          <div style={{ position: "absolute", bottom: "10px", insetInlineEnd: "12px" }}>
+            <span className="id-code" style={{ fontSize: "10px", color: "var(--text-muted)", background: "var(--map-panel)", padding: "3px 8px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-subtle)" }}>© Mapbox © OpenStreetMap</span>
+          </div>
+        </div>
+      </div>
 
-    {/* MAP-LED DECISION CANVAS + RANKED INTERVENTION */}
-    <DecisionCanvas markers={canvasMarkers} layers={layers} ranking={ranking} strings={canvasStrings} />
+      <div className="panel" style={{ padding: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        <div className="panel-header"><div className="panel-title">{copy(locale, "Ranked intervention", "التدخل المرتّب")}</div><span className="id-code" style={{ fontSize: "10.5px", color: "var(--text-muted)" }}>{copy(locale, "by region compliance", "حسب امتثال المنطقة")}</span></div>
+        <div style={{ flex: 1, overflowY: "auto" }}>
+          {regionRows.length ? regionRows.map(row => <div key={row.label} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "11px 16px", borderBlockEnd: "1px solid var(--border-subtle)" }}>
+            <span className={`exc exc-${tone(row.rate)}`}><span className="exc-mark" /></span>
+            <span style={{ flex: 1, minWidth: 0 }}><span style={{ display: "block", fontWeight: 600, fontSize: "13px" }}>{row.label}</span><span className="t-caption">{copy(locale, `${row.compliant}/${row.total} compliant`, `${row.compliant}/${row.total} ممتثل`)}</span></span>
+            <span className="id-code" style={{ fontSize: "12px", color: `var(--status-${tone(row.rate)})` }}>{row.rate == null ? "—" : `${row.rate}%`}</span>
+          </div>) : <div className="empty" style={{ padding: "24px" }} role="status"><p>{copy(locale, "No eligible answers in this scope.", "لا توجد إجابات مؤهلة ضمن هذا النطاق.")}</p></div>}
+        </div>
+      </div>
+    </div>
 
-    {/* ANALYTIC FIELDS */}
-    <div className={styles.analyticGrid}>
-      <Panel title={copy(locale, "Compliance performance explorer", "مستكشف أداء الامتثال")}
-        meta={copy(locale, "one denominator", "مقام واحد")}>
-        <p className={styles.detail}>{copy(locale, "Compliant ÷ (compliant + non-compliant) · N/A excluded. Same eligible-answer denominator across all lenses.", "الممتثل ÷ (الممتثل + غير الممتثل) · مع استبعاد غير المنطبق. نفس مقام الإجابات المؤهلة في كل الزوايا.")}</p>
-        <nav className={styles.dimensions} aria-label={copy(locale, "Group compliance by", "تجميع الامتثال حسب")}>
-          {dimensions.map(([id, label]) => <a key={id} className={styles.dimension} aria-current={group === id} href={paramsHref(params, { group: id })}>{label}</a>)}
+    {/* analytic panels — real data only */}
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "16px" }}>
+      <Panel title={copy(locale, "Compliance explorer", "مستكشف الامتثال")} meta={copy(locale, "one formula · four lenses", "معادلة واحدة · أربع زوايا")}>
+        <div className="t-caption" style={{ marginBlockStart: "2px" }}>{copy(locale, "Compliant ÷ eligible answered · same denominator", "الممتثل ÷ الإجابات المؤهلة · المقام نفسه")}</div>
+        <nav className="seg" aria-label={copy(locale, "Group compliance by", "تجميع الامتثال حسب")} style={{ marginBlockStart: "10px", flexWrap: "wrap" }}>
+          {dimensions.map(([id, label]) => <a key={id} className="seg-opt" aria-pressed={group === id} aria-current={group === id} href={paramsHref(params, { group: id })}>{label}</a>)}
         </nav>
-        <Bars rows={groupBreakdown.map((row) => ({ label: `${row.label} · ${row.compliant}/${row.total}`, value: row.rate ?? 0 }))} empty={copy(locale, "No eligible answers exist in this scope.", "لا توجد إجابات مؤهلة ضمن هذا النطاق.")} suffix="%" />
+        <Bars rows={breakdown.map(row => ({ label: `${row.label} · ${row.compliant}/${row.total}`, value: row.rate ?? 0 }))} empty={copy(locale, "No eligible answers in this scope.", "لا توجد إجابات مؤهلة ضمن هذا النطاق.")} suffix="%" />
       </Panel>
 
-      <Panel title={copy(locale, "Risk-band distribution", "توزيع نطاق المخاطر")} meta={copy(locale, "Risk engine", "محرك المخاطر")}>
-        <p className={styles.detail}>{copy(locale, "Governed Risk band — distinct from Health Score. Health Score distribution (STR-KPI-002) has no source table and stays unavailable.", "نطاق المخاطر المعتمد — يختلف عن درجة الصحة. توزيع درجة الصحة (STR-KPI-002) بلا مصدر ويبقى غير متاح.")}</p>
-        <Bars rows={[
-          { label: copy(locale, "High", "مرتفع"), value: bandCounts.high },
-          { label: copy(locale, "Medium", "متوسط"), value: bandCounts.medium },
-          { label: copy(locale, "Low", "منخفض"), value: bandCounts.low },
-          { label: copy(locale, "Unclassified", "غير مصنّف"), value: bandCounts.none },
-        ]} empty={copy(locale, "No factories in scope.", "لا توجد مصانع ضمن النطاق.")} />
+      <Panel title={copy(locale, "Violations by regulation", "المخالفات حسب اللائحة")} meta={copy(locale, `${s.scopedViolations.length} linked`, `${s.scopedViolations.length} مرتبطة`)}>
+        <div className="t-caption" style={{ marginBlockStart: "2px" }}>{copy(locale, "Count of violations linked to submitted inspections", "عدد المخالفات المرتبطة بالتفتيشات المقدمة")}</div>
+        <Bars rows={s.violationByRegulation.map(row => ({ label: row.label, value: row.value, tone: "critical" }))} empty={copy(locale, "No linked violations in this scope.", "لا توجد مخالفات مرتبطة ضمن هذا النطاق.")} />
       </Panel>
 
-      <Panel title={copy(locale, "Decision mix — Level 2", "مزيج القرار — المستوى الثاني")} meta={metricTitle(decisionMix!, locale) && `${decisionMix?.denominator ?? 0} ${copy(locale, "decided", "قرار")}`}>
-        <p className={styles.detail}>{copy(locale, "Latest L2 outcome per submitted inspection — Approve / Return. This is a decision mix, NOT compliance.", "أحدث نتيجة للمستوى الثاني لكل تفتيش مقدم — اعتماد / إعادة. هذا مزيج قرار وليس امتثالاً.")}</p>
-        <Bars rows={(decisionMix?.breakdown ?? []).map((b) => ({ label: b.labelRef === "approve" ? copy(locale, "Approved", "معتمد") : copy(locale, "Returned", "معاد"), value: b.value }))} empty={copy(locale, "No decided L2 outcomes in scope.", "لا توجد قرارات مستوى ثانٍ ضمن النطاق.")} />
+      <Panel title={copy(locale, "Approval outcomes", "نتائج الاعتماد")} meta={copy(locale, `${s.completedInspections} submitted`, `${s.completedInspections} مقدمة`)}>
+        <div className="t-caption" style={{ marginBlockStart: "2px" }}>{copy(locale, "Approved vs not-yet-approved of submitted inspections", "المعتمدة مقابل غير المعتمدة بعد من التفتيشات المقدمة")}</div>
+        <div style={{ display: "flex", height: "14px", borderRadius: "7px", overflow: "hidden", gap: "2px", marginBlock: "16px 12px" }}>
+          <div style={{ width: `${s.completedInspections ? (s.approvedScoped / s.completedInspections) * 100 : 0}%`, background: "var(--status-compliant)" }} />
+          <div style={{ width: `${s.completedInspections ? (submittedRemainder / s.completedInspections) * 100 : 100}%`, background: "var(--status-warning)" }} />
+        </div>
+        <div style={{ display: "flex", gap: "14px", fontSize: "11.5px", color: "var(--text-secondary)" }}>
+          <span>{copy(locale, "Approved", "معتمدة")} <b>{s.approvedScoped}</b></span>
+          <span>{copy(locale, "Not yet approved", "غير معتمدة بعد")} <b>{submittedRemainder}</b></span>
+        </div>
       </Panel>
 
-      <Panel title={copy(locale, "Violation trend", "اتجاه المخالفات")} meta={copy(locale, "by regulation", "حسب اللائحة")}>
-        <p className={styles.detail}>{copy(locale, "By-regulation counts are live. Time-series by official issue date is decision-required (no violation issue-time column).", "الأعداد حسب اللائحة مباشرة. السلسلة الزمنية حسب تاريخ الإصدار الرسمي تتطلب قراراً (لا يوجد عمود لوقت إصدار المخالفة).")}</p>
-        <Bars rows={(violationMetric?.breakdown ?? []).map((b) => ({ label: b.labelRef, value: b.value }))} empty={copy(locale, "No linked violations in scope.", "لا توجد مخالفات مرتبطة ضمن النطاق.")} />
+      <Panel title={copy(locale, "Violation movement", "حركة المخالفات")} meta={<span style={{ color: s.violationDelta > 0 ? "var(--status-critical-text)" : "var(--text-muted)" }}>{`${s.violationDelta > 0 ? "+" : ""}${s.violationDelta}`}</span>}>
+        <div className="t-caption" style={{ marginBlockStart: "2px" }}>{copy(locale, "Current window versus previous equal window", "الفترة الحالية مقابل الفترة السابقة المماثلة")}</div>
+        <div style={{ display: "flex", gap: "24px", marginBlockStart: "16px" }}>
+          <div><div className="t-metric" style={{ fontSize: "26px" }}>{s.scopedViolations.length}</div><div className="t-caption">{copy(locale, "Current", "الحالية")}</div></div>
+          <div><div className="t-metric" style={{ fontSize: "26px", color: "var(--text-muted)" }}>{s.previousViolations}</div><div className="t-caption">{copy(locale, "Previous", "السابقة")}</div></div>
+          <div style={{ alignSelf: "center" }}><span className={`delta${s.violationDelta !== 0 ? (s.violationDelta > 0 ? " down" : " up") : ""}`}>{movementDir}</span></div>
+        </div>
       </Panel>
-
-      <BlockedPanel title={copy(locale, "Risk-to-attention mismatch — decision required", "عدم تطابق المخاطر والاهتمام — يتطلب قراراً")}
-        note={copy(locale, "Risk snapshots exist, but the snapshot-at-visit-vs-current-band rule and the minimum-denominator benchmark are unresolved governance decisions (DEC-DASH-010). No ratio is invented.", "لقطات المخاطر موجودة، لكن قاعدة اللقطة عند الزيارة مقابل النطاق الحالي والحد الأدنى للمقام قرارات حوكمة غير محسومة (DEC-DASH-010). لا تُختلق أي نسبة.")} />
-
-      <BlockedPanel title={copy(locale, "Checklist items per authority — decision required", "بنود قائمة التحقق حسب الجهة — يتطلب قراراً")}
-        note={copy(locale, "Computable from items → regulation → authority, but whether a reusable item counts once globally or once per package is undecided (DEC-DASH-009).", "قابل للحساب من البنود ← اللائحة ← الجهة، لكن احتساب البند القابل لإعادة الاستخدام مرة واحدة عالمياً أو لكل حزمة غير محسوم (DEC-DASH-009).")} />
     </div>
 
-    {/* NOT-CONFIGURED */}
-    <div className={styles.pairGrid}>
-      <BlockedPanel title={copy(locale, "Inspection coverage — not configured", "تغطية التفتيش — غير مهيأة")}
-        note={copy(locale, "The inspection-cycle policy (eligible factories, frequency, due rule, qualifying completion) must be published in Admin before coverage can be calculated. No value is invented.", "يجب نشر سياسة دورة التفتيش (المصانع المؤهلة، التكرار، قاعدة الاستحقاق، الإنجاز المؤهل) في الإدارة قبل حساب التغطية. لا تُختلق أي قيمة.")}
-        cta={copy(locale, "Open cycle policy →", "فتح سياسة الدورة ←")} ctaHref="/admin" />
-      <BlockedPanel title={copy(locale, "Uninspected factories — not configured", "المصانع غير المفتشة — غير مهيأة")}
-        note={copy(locale, "Requires the published factory-eligibility rules and inspection cycle. Available as soon as the governing policy version is effective.", "يتطلب قواعد أهلية المصنع المنشورة ودورة التفتيش. يصبح متاحاً بمجرد سريان إصدار السياسة الحاكمة.")}
-        cta={copy(locale, "Open eligibility policy →", "فتح سياسة الأهلية ←")} ctaHref="/admin" />
+    {/* not-configured pair — governed empty states */}
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+      <div className="panel empty" style={{ padding: "24px" }}>
+        <div className="empty-title">{copy(locale, "Coverage — not configured", "التغطية — غير مهيأة")}</div>
+        <p>{copy(locale, "Inspection-cycle policy (eligible factories, frequency, due rule, qualifying completion) must be published in Admin before coverage can be calculated. No value is invented.", "يجب نشر سياسة دورة التفتيش (المصانع المؤهلة، التكرار، قاعدة الاستحقاق، الإنجاز المؤهِّل) في الإدارة قبل احتساب التغطية. لا يتم اختلاق أي قيمة.")}</p>
+        <a className="btn btn-secondary btn-sm" href="/admin">{copy(locale, "Open cycle policy →", "فتح سياسة الدورة ←")}</a>
+      </div>
+      <div className="panel empty" style={{ padding: "24px" }}>
+        <div className="empty-title">{copy(locale, "Factories pending annual inspection — not configured", "المصانع بانتظار التفتيش السنوي — غير مهيأة")}</div>
+        <p>{copy(locale, "Requires published factory-eligibility rules and the inspection-year boundary. The schema stores neither, so no substitute count is shown.", "يتطلب قواعد أهلية منشورة وحدود سنة التفتيش. لا يخزّن المخطط أياً منهما، لذلك لا يُعرض عدد بديل.")}</p>
+        <a className="btn btn-secondary btn-sm" href="/admin">{copy(locale, "Open eligibility policy →", "فتح سياسة الأهلية ←")}</a>
+      </div>
     </div>
 
-    {/* STRATEGIC SUMMARY (AI deferred → deterministic evidence signals) */}
-    <Panel accent title={copy(locale, "Strategic summary", "الملخص الاستراتيجي")} meta={copy(locale, "deterministic · AI not configured", "حتمي · الذكاء الاصطناعي غير مهيأ")}>
-      <p className={styles.detail}>{copy(locale, "Evidence-grounded AI summary (STR-KPI-012) is deferred until its source/evidence policy is enabled. Deterministic, record-linked signals are shown instead — no generated narrative or forecast.", "الملخص الذكي المستند إلى الأدلة (STR-KPI-012) مؤجل حتى تفعيل سياسة المصدر/الأدلة. تُعرض بدلاً منه إشارات حتمية مرتبطة بالسجلات — دون سرد أو توقع مولّد.")}</p>
-      <ul className={styles.summaryList}>
-        <li><span className={`${styles.dot} ${styles.tone_critical}`} aria-hidden="true" />{copy(locale, `${s.criticalFactories.length} high-risk or L1-linked factories are visible in this scope.`, `${s.criticalFactories.length} مصانع عالية المخاطر أو مرتبطة بمخالفة L1 ظاهرة ضمن هذا النطاق.`)} <a href="/factories">{copy(locale, "Verify →", "تحقق ←")}</a></li>
-        <li><span className={`${styles.dot} ${styles.tone_warning}`} aria-hidden="true" />{copy(locale, `Recorded violations moved ${s.violationDelta > 0 ? "+" : ""}${s.violationDelta} vs the previous equal window (${s.scopedViolations.length} vs ${s.previousViolations}).`, `تحركت المخالفات المسجلة ${s.violationDelta > 0 ? "+" : ""}${s.violationDelta} مقارنة بالفترة السابقة (${s.scopedViolations.length} مقابل ${s.previousViolations}).`)} <a href="/analytics/violations">{copy(locale, "Verify →", "تحقق ←")}</a></li>
-        <li><span className={`${styles.dot} ${styles.tone_success}`} aria-hidden="true" />{copy(locale, `${s.compliant} compliant of ${s.answeredForCompliance} eligible answers${s.complianceRate == null ? "" : ` (${s.complianceRate}%)`}.`, `${s.compliant} ممتثل من ${s.answeredForCompliance} إجابة مؤهلة${s.complianceRate == null ? "" : ` (${s.complianceRate}%)`}.`)} <a href="/analytics/compliance">{copy(locale, "Verify →", "تحقق ←")}</a></li>
-      </ul>
-    </Panel>
+    {/* advisory summary */}
+    <div className="panel" style={{ borderInlineStart: "3px solid var(--action-primary)", padding: 0, overflow: "hidden" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "14px 18px", borderBlockEnd: "1px solid var(--border-subtle)" }}>
+        <span style={{ fontWeight: 600, fontSize: "13.5px" }}>{copy(locale, "Strategic summary", "الملخص الاستراتيجي")}</span>
+        <span className="badge badge-info" style={{ marginInlineStart: "auto" }}>{copy(locale, "Advisory only · traceable", "استرشادي فقط · قابل للتتبع")}</span>
+      </div>
+      <div>
+        <SummaryRow tone="info" href="#compliance" verify={copy(locale, "Verify records →", "تحقق من السجلات ←")}
+          text={copy(locale, `National compliance rate is ${s.complianceRate == null ? "not computable" : `${s.complianceRate}%`} across ${s.answeredForCompliance} eligible answers.`, `معدل الامتثال الوطني ${s.complianceRate == null ? "غير قابل للحساب" : `${s.complianceRate}%`} عبر ${s.answeredForCompliance} إجابة مؤهلة.`)} />
+        <SummaryRow tone={s.violationDelta > 0 ? "warning" : "compliant"} href="#violations" verify={copy(locale, "Verify records →", "تحقق من السجلات ←")}
+          text={copy(locale, `Linked violations show a ${movementDir} (${s.scopedViolations.length} vs ${s.previousViolations}).`, `تُظهر المخالفات المرتبطة ${movementDir} (${s.scopedViolations.length} مقابل ${s.previousViolations}).`)} />
+        <SummaryRow tone="compliant" href="#decisions" last verify={copy(locale, "Verify records →", "تحقق من السجلات ←")}
+          text={copy(locale, `Approval rate is ${s.approvalRate == null ? "not computable" : `${s.approvalRate}%`} (${s.approvedScoped} of ${s.completedInspections} submitted).`, `معدل الاعتماد ${s.approvalRate == null ? "غير قابل للحساب" : `${s.approvalRate}%`} (${s.approvedScoped} من ${s.completedInspections} مقدمة).`)} />
+      </div>
+    </div>
   </div>;
 }
 
-// ---------------------------------------------------------------- OPERATIONAL
-export function OperationalView({ locale, metrics, projection, factoryCoords }: {
-  locale: Locale; metrics: DashboardMetrics; projection: DashboardKpiProjection;
-  factoryCoords: Map<string, { lat: number; lng: number; radiusM: number | null }>;
-}) {
+function SummaryRow({ tone, text, href, verify, last }: { tone: string; text: string; href: string; verify: string; last?: boolean }) {
+  return <div style={{ display: "flex", gap: "12px", padding: "11px 18px", alignItems: "baseline", ...(last ? {} : { borderBlockEnd: "1px solid var(--border-subtle)" }) }}>
+    <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: `var(--status-${tone})`, flex: "none", position: "relative", top: "5px" }} />
+    <span style={{ flex: 1, fontSize: "13px", lineHeight: 1.55, color: "var(--text-secondary)" }}>{text}</span>
+    <a href={href} style={{ fontSize: "11.5px", fontWeight: 600, whiteSpace: "nowrap" }}>{verify}</a>
+  </div>;
+}
+
+/* ── Operational view ───────────────────────────────────────────── */
+export function OperationalView({ locale, metrics, refreshedAt }: { locale: Locale; metrics: DashboardMetrics; refreshedAt: string }) {
   const o = metrics.operational;
-  const action = copy(locale, "Open", "فتح");
-  const strip = stripFor(projection, ["OPS-KPI-003", "OPS-KPI-002", "OPS-KPI-004", "OPS-KPI-007"], locale);
-  const workloadMax = Math.max(1, ...o.workload.map((row) => row.active));
+  const fresh = copy(locale, `Live · refreshed ${refreshedAt} · RLS scoped`, `مباشر · تم التحديث ${refreshedAt} · مقيّد حسب الصلاحيات`);
+  const method = (m: Partial<Methodology> & { id: string; label: string }): Methodology => ({
+    q: "", value: "", num: "", den: "", excl: "", time: "", formulaV: "—", policyV: "—", fresh, drill: "", ...m,
+  });
 
-  // Operational live canvas — real factory coordinates of scoped visits, toned
-  // by operational_state. No synthetic routes; reuses the Operations Center map.
-  const seen = new Set<string>();
-  const pins: OpsPin[] = [];
-  const toneForState = (state: string): OpsPin["tone"] =>
-    state === "executing" ? "low" : state === "arrived" ? "medium" : state === "on_the_way" ? "neutral" : "neutral";
-  for (const v of [...o.overdueRows, ...o.highPriorityRows, ...o.todayVisits]) {
-    const fid = v.factories?.id;
-    if (!fid || seen.has(v.id)) continue;
-    const c = factoryCoords.get(fid);
-    if (!c) continue;
-    seen.add(v.id);
-    pins.push({ id: `v:${v.id}`, kind: "visit", lat: c.lat, lng: c.lng, label: v.factories?.name ?? v.id.slice(0, 8), tone: toneForState(v.operational_state), radiusM: c.radiusM ?? undefined, href: `/visits/${v.id}` });
-  }
-  const opsMapStrings: OpsMapStrings = {
-    loadingTitle: copy(locale, "Loading operations map…", "جارٍ تحميل خريطة العمليات…"),
-    loadingBody: copy(locale, "Loading governed visit coordinates.", "جارٍ تحميل إحداثيات الزيارات المعتمدة."),
-    open: action,
-    selectHint: copy(locale, "Select a pin to open its visit.", "حدد دبوساً لفتح زيارته."),
-    legendExecuting: copy(locale, "Executing", "قيد التنفيذ"),
-    legendEnRoute: copy(locale, "On the way", "في الطريق"),
-    legendFactory: copy(locale, "Visit", "زيارة"),
-  };
-
-  const alerts = [
-    ...o.overdueRows.map((row: VisitRow) => ({ key: `overdue-${row.id}`, tone: copy(locale, "Critical", "حرج"), label: copy(locale, "Visit window overdue", "نافذة الزيارة متأخرة"), detail: row.factories?.name ?? row.id.slice(0, 8), href: `/visits/${row.id}` })),
-    ...o.overdueReviewRows.map((row: ReviewRow) => ({ key: `review-${row.id}`, tone: copy(locale, "Critical", "حرج"), label: copy(locale, "Review SLA overdue", "مراجعة متجاوزة لاتفاقية الخدمة"), detail: row.inspections?.visits?.factories?.name ?? row.inspection_id.slice(0, 8), href: "/operations" })),
-    ...o.overrides.map((row: GeoRow) => ({ key: `override-${row.id}`, tone: copy(locale, "Warning", "تحذير"), label: copy(locale, "GPS override recorded", "تم تسجيل تجاوز GPS"), detail: row.visits?.factories?.name ?? row.visit_id.slice(0, 8), href: `/visits/${row.visit_id}` })),
-    ...o.cancelledRows.map((row: VisitRow) => ({ key: `cancelled-${row.id}`, tone: copy(locale, "Information", "معلومة"), label: copy(locale, "Visit cancelled", "تم إلغاء الزيارة"), detail: `${row.factories?.name ?? row.id.slice(0, 8)} · ${row.cancellation_reason ?? copy(locale, "reason not recorded", "السبب غير مسجل")}`, href: `/visits/${row.id}` })),
+  const kpis: Kpi[] = [
+    { key: "active", label: copy(locale, "Active field inspections", "التفتيشات الميدانية النشطة"), value: `${o.activeField}`,
+      deltaText: copy(locale, "status = in_progress", "الحالة = in_progress"),
+      method: method({ id: "OPS-ACTIVE-FIELD", label: copy(locale, "Active field inspections", "التفتيشات الميدانية النشطة"), q: copy(locale, "What inspections are active in the field?", "ما التفتيشات النشطة ميدانياً؟"), value: `${o.activeField}`, num: copy(locale, "Inspections with canonical status in_progress", "التفتيشات بحالة معتمدة in_progress"), den: copy(locale, "n/a (count)", "غير منطبق (عدد)"), excl: copy(locale, "Not inferred from workflow status", "غير مستنتج من حالة سير العمل"), drill: copy(locale, "Operations Center", "مركز العمليات"), drillHref: "/operations" }) },
+    { key: "overdue", label: copy(locale, "Overdue planned visits", "الزيارات المخططة المتأخرة"), value: `${o.overdueRows.length}`, valueTone: o.overdueRows.length ? "critical" : undefined,
+      deltaChip: o.slaBreachRate != null ? { text: `${o.slaBreachRate}%`, dir: "down" } : undefined,
+      deltaText: copy(locale, `of ${o.slaEligible} eligible`, `من ${o.slaEligible} مؤهلة`),
+      method: method({ id: "OPS-OVERDUE", label: copy(locale, "Overdue planned visits", "الزيارات المخططة المتأخرة"), q: copy(locale, "Which visit windows have lapsed?", "ما نوافذ الزيارات التي انقضت؟"), value: `${o.overdueRows.length}`, num: copy(locale, "Published non-submitted visits with window end before now", "زيارات منشورة غير مقدمة انتهت نافذتها قبل الآن"), den: copy(locale, `Eligible published visits (${o.slaEligible})`, `الزيارات المنشورة المؤهلة (${o.slaEligible})`), excl: copy(locale, "Submitted or cancelled visits", "الزيارات المقدمة أو الملغاة"), drill: copy(locale, "Operations Center", "مركز العمليات"), drillHref: "/operations" }) },
+    { key: "awaiting", label: copy(locale, "Reports awaiting approval", "التقارير بانتظار الاعتماد"), value: `${o.awaitingRows.length}`,
+      deltaText: copy(locale, "latest review pending / under review", "أحدث مراجعة معلّقة / قيد المراجعة"),
+      method: method({ id: "OPS-AWAITING", label: copy(locale, "Reports awaiting approval", "التقارير بانتظار الاعتماد"), q: copy(locale, "Which reports require review?", "ما التقارير التي تتطلب المراجعة؟"), value: `${o.awaitingRows.length}`, num: copy(locale, "Latest review = pending_review or under_review", "أحدث مراجعة = pending_review أو under_review"), den: copy(locale, "n/a (count, latest state per inspection)", "غير منطبق (عدد، أحدث حالة لكل تفتيش)"), excl: copy(locale, "Superseded historical reviews", "المراجعات التاريخية المتجاوَزة"), drill: copy(locale, "Review queue", "قائمة المراجعة"), drillHref: "/reviews" }) },
+    { key: "gps", label: copy(locale, "GPS override events", "أحداث تجاوز GPS"), value: `${o.overrides.length}`, valueTone: o.overrides.length ? "warning" : undefined,
+      deltaText: copy(locale, "immutable geo events", "أحداث موقع غير قابلة للتغيير"),
+      method: method({ id: "OPS-GPS-OVERRIDE", label: copy(locale, "GPS override events", "أحداث تجاوز GPS"), q: copy(locale, "Which GPS overrides were recorded?", "ما تجاوزات GPS المسجلة؟"), value: `${o.overrides.length}`, num: copy(locale, "Immutable geo events with kind/result = override", "أحداث موقع غير قابلة للتغيير بنوع/نتيجة override"), den: copy(locale, "n/a (count)", "غير منطبق (عدد)"), excl: copy(locale, "Events outside the selected window", "الأحداث خارج الفترة المحددة"), drill: copy(locale, "Operations Center", "مركز العمليات"), drillHref: "/operations" }) },
   ];
 
-  return <div id="dashboard-panel" role="tabpanel" aria-labelledby="dashboard-tab-operational" className={styles.view}>
-    {/* STATUS RAIL */}
-    <div className={styles.statusRail}>
-      <ExcChip tone="critical">{copy(locale, `${o.overdueRows.length} visits overdue`, `${o.overdueRows.length} زيارات متأخرة`)}</ExcChip>
-      <ExcChip tone="warning">{copy(locale, `${o.highPriorityRows.length} high-priority pending`, `${o.highPriorityRows.length} عالية الأولوية معلقة`)}</ExcChip>
-      <ExcChip tone="warning">{copy(locale, `${o.overrides.length} GPS overrides today`, `${o.overrides.length} تجاوزات GPS اليوم`)}</ExcChip>
-      <ExcChip tone="info">{copy(locale, `${o.awaitingRows.length} pending approvals`, `${o.awaitingRows.length} اعتمادات معلقة`)}</ExcChip>
+  const nudges: { tone: string; text: string; action: string; href: string }[] = [];
+  if (o.overdueRows.length) nudges.push({ tone: "critical", text: copy(locale, `${o.overdueRows.length} published visits are past their window.`, `${o.overdueRows.length} زيارات منشورة تجاوزت نافذتها.`), action: copy(locale, "Open", "فتح"), href: "/operations" });
+  if (o.highPriorityRows.length) nudges.push({ tone: "warning", text: copy(locale, `${o.highPriorityRows.length} high-priority visits pending execution.`, `${o.highPriorityRows.length} زيارات عالية الأولوية بانتظار التنفيذ.`), action: copy(locale, "Assign", "إسناد"), href: "/visits" });
+  if (o.awaitingRows.length) nudges.push({ tone: "warning", text: copy(locale, `${o.awaitingRows.length} reports awaiting an L2 decision.`, `${o.awaitingRows.length} تقارير بانتظار قرار المستوى الثاني.`), action: copy(locale, "Review", "مراجعة"), href: "/reviews" });
+
+  const pipeline = [
+    { label: copy(locale, "Active", "نشطة"), value: o.activeField, tone: "info" },
+    { label: copy(locale, "Planned", "مخططة"), value: o.planned, tone: "compliant" },
+    { label: copy(locale, "Awaiting", "بانتظار"), value: o.awaitingRows.length, tone: "warning" },
+    { label: copy(locale, "Returned", "معادة"), value: o.returnedRows.length, tone: "critical" },
+    { label: copy(locale, "Cancelled", "ملغاة"), value: o.cancelled, tone: "disabled" },
+  ];
+  const workloadMax = Math.max(1, ...o.workload.map(row => row.active));
+
+  return <div id="dashboard-operational" role="tabpanel" aria-labelledby="dashboard-tab-operational" style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+      {o.overdueRows.length > 0 && <span className="exc-chip exc-critical"><span className="exc-mark" />{copy(locale, `${o.overdueRows.length} overdue visits`, `${o.overdueRows.length} زيارات متأخرة`)}</span>}
+      {o.highPriorityRows.length > 0 && <span className="exc-chip exc-major"><span className="exc-mark" />{copy(locale, `${o.highPriorityRows.length} high-priority pending`, `${o.highPriorityRows.length} عالية الأولوية معلّقة`)}</span>}
+      {o.overrides.length > 0 && <span className="exc-chip exc-warning"><span className="exc-mark" />{copy(locale, `${o.overrides.length} GPS overrides`, `${o.overrides.length} تجاوزات GPS`)}</span>}
+      {o.awaitingRows.length > 0 && <span className="exc-chip exc-pending"><span className="exc-mark" />{copy(locale, `${o.awaitingRows.length} pending approvals`, `${o.awaitingRows.length} اعتمادات معلّقة`)}</span>}
     </div>
 
-    <h2 className={styles.srOnly}>{copy(locale, "Operational overview", "النظرة التشغيلية")}</h2>
+    <KpiGrid kpis={kpis} locale={locale} methodologyLabel={copy(locale, "Methodology", "المنهجية")} />
 
-    {/* METRIC STRIP */}
-    <MetricStrip metrics={strip.metrics} methodology={strip.methodology} strings={stripStrings(locale)} />
-
-    {/* LIVE CANVAS + LIVE ACTIVITY */}
-    <div className={styles.canvasGrid}>
-      <section className={styles.mapPanel} aria-label={copy(locale, "Live operations", "العمليات المباشرة")}>
-        <div className={styles.mapChrome}>
-          <h3 className={styles.mapTitle}>{copy(locale, "Live operations", "العمليات المباشرة")}</h3>
-          <span className={styles.grow} />
-          <span className={styles.idCode}>{copy(locale, "Mapbox GL · immutable journeys only", "Mapbox GL · رحلات غير قابلة للتغيير فقط")}</span>
+    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "16px" }}>
+      <div className="map-panel" style={{ padding: 0, overflow: "hidden", display: "flex", flexDirection: "column", minHeight: "460px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 14px", borderBlockEnd: "1px solid var(--border-subtle)" }}>
+          <span style={{ fontWeight: 600, fontSize: "13px" }}>{copy(locale, "Live operations", "العمليات المباشرة")}</span>
+          <span className="grow" />
+          <span className="id-code" style={{ fontSize: "10.5px", color: "var(--text-muted)" }}>{copy(locale, "Mapbox GL · live & projected distinct", "Mapbox GL · المباشر والمتوقع منفصلان")}</span>
         </div>
-        <div className={styles.mapScene}>
-          {pins.length ? <OpsMap pins={pins} strings={opsMapStrings} /> : <div className={styles.empty} role="status">{copy(locale, "No scoped visit carries official coordinates in this window.", "لا تحمل أي زيارة ضمن النطاق إحداثيات رسمية في هذه الفترة.")}</div>}
+        <div style={{ position: "relative", flex: 1, background: "var(--surface-sunken)", display: "grid", placeItems: "center", textAlign: "center", color: "var(--text-muted)", padding: "24px" }}>
+          <div>
+            <div style={{ fontSize: "13px", fontWeight: 500, color: "var(--text-secondary)" }}>{copy(locale, "Live inspector & visit layer (Mapbox GL / GeoMap)", "طبقة المفتشين والزيارات المباشرة (Mapbox GL / GeoMap)")}</div>
+            <div className="t-caption" style={{ maxWidth: "44ch", marginBlockStart: "6px" }}>{copy(locale, "Actual immutable journey path only; a planned route appears only when a routing provider returns geometry. Live and projected positions are labelled distinctly.", "مسار الرحلة الفعلي غير القابل للتغيير فقط؛ يظهر المسار المخطط فقط عندما يُرجع مزوّد التوجيه هندسة. تُوسم المواقع المباشرة والمتوقعة بوضوح.")}</div>
+          </div>
         </div>
-      </section>
-      <Panel title={copy(locale, "Live activity", "النشاط المباشر")} meta={copy(locale, "immutable audit", "تدقيق غير قابل للتغيير")}>
-        {o.timeline.length ? <ul className={styles.timeline}>{o.timeline.slice(0, 8).map((row) => (
-          <li key={row.id}><span className={styles.tlDot} aria-hidden="true" /><div><div className={styles.tlTitle}>{row.action}</div><div className={styles.tlMeta}>{row.object_type} · {row.object_id?.slice(0, 8)} · {new Date(row.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</div></div></li>
-        ))}</ul> : <div className={styles.empty} role="status">{copy(locale, "No scoped audit events in the selected window.", "لا توجد أحداث تدقيق ضمن النطاق والفترة المحددين.")}</div>}
-      </Panel>
+      </div>
+      <div className="panel" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="panel-header"><div className="panel-title">{copy(locale, "Live activity", "النشاط المباشر")}</div></div>
+        {o.timeline.length ? <ul className="timeline" style={{ padding: "16px 18px" }}>
+          {o.timeline.slice(0, 8).map(row => <li key={row.id}>
+            <span className="tl-dot" />
+            <div className="tl-title">{row.action}</div>
+            <div className="tl-meta"><span className="id-code">{row.object_type} · {row.object_id?.slice(0, 8)}</span> · {new Date(row.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</div>
+          </li>)}
+        </ul> : <div className="empty" style={{ padding: "24px" }} role="status"><p>{copy(locale, "No scoped audit events in the selected window.", "لا توجد أحداث تدقيق ضمن النطاق والفترة المحددين.")}</p></div>}
+      </div>
     </div>
 
-    {/* PIPELINE / SCHEDULE / NUDGES */}
-    <div className={styles.analyticGrid}>
-      <Panel title={copy(locale, "Visit pipeline", "مسار الزيارات")} meta={copy(locale, "planning states", "حالات التخطيط")}>
-        <div className={styles.pipeline}>
-          <div className={styles.pipeCell}><div className={styles.pipeValue}>{o.planned}</div><div className={styles.detail}>{copy(locale, "Published", "منشورة")}</div></div>
-          <div className={styles.pipeCell}><div className={styles.pipeValue}>{o.completed}</div><div className={styles.detail}>{copy(locale, "Completed", "مكتملة")}</div></div>
-          <div className={styles.pipeCell}><div className={styles.pipeValue}>{o.returnedRows.length}</div><div className={styles.detail}>{copy(locale, "Returned", "معادة")}</div></div>
-          <div className={styles.pipeCell}><div className={styles.pipeValue}>{o.cancelled}</div><div className={styles.detail}>{copy(locale, "Cancelled", "ملغاة")}</div></div>
-        </div>
-      </Panel>
-
-      <Panel title={copy(locale, "Today's schedule load", "حِمل جدول اليوم")} meta={copy(locale, "by inspector · relative", "حسب المفتش · نسبي")}>
-        {o.workload.length ? <div className={styles.bars}>{o.workload.slice(0, 6).map((row) => (
-          <div className={styles.barRow} key={row.id}><span className={styles.barLabel} title={row.name}>{row.name}</span><span className={styles.track} aria-hidden="true"><span className={styles.fill} style={{ inlineSize: `${(row.active / workloadMax) * 100}%` }} /></span><strong className={styles.barValue}>{row.active}</strong></div>
-        ))}</div> : <div className={styles.empty} role="status">{copy(locale, "No assignments are visible in this scope.", "لا توجد إسنادات ظاهرة ضمن هذا النطاق.")}</div>}
-      </Panel>
-
-      <Panel accent title={copy(locale, "Operational priorities", "الأولويات التشغيلية")} meta={copy(locale, "deterministic · AI nudges not configured", "حتمي · تنبيهات الذكاء غير مهيأة")}>
-        <p className={styles.detail}>{copy(locale, "Evidence-grounded AI nudges (OPS-KPI-009) are disabled until the nudge trigger/CTA policy is published. These deterministic priorities open pre-filtered records and never execute an action.", "تنبيهات الذكاء الاصطناعي المستندة للأدلة (OPS-KPI-009) معطلة حتى نشر سياسة المحفّز/الإجراء. تفتح هذه الأولويات الحتمية سجلات مُصفّاة مسبقاً ولا تنفذ أي إجراء.")}</p>
-        <ul className={styles.nudgeList}>
-          <li><span className={`${styles.dot} ${styles.tone_critical}`} aria-hidden="true" /><span>{copy(locale, `${o.overdueRows.length} overdue published visits.`, `${o.overdueRows.length} زيارات منشورة متأخرة.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/operations">{action}</a></li>
-          <li><span className={`${styles.dot} ${styles.tone_warning}`} aria-hidden="true" /><span>{copy(locale, `${o.awaitingRows.length} reports awaiting L2 decision.`, `${o.awaitingRows.length} تقارير بانتظار قرار المستوى الثاني.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/reviews">{action}</a></li>
-          <li><span className={`${styles.dot} ${styles.tone_warning}`} aria-hidden="true" /><span>{copy(locale, `${o.highPriorityRows.length} high-priority visits pending execution.`, `${o.highPriorityRows.length} زيارات عالية الأولوية بانتظار التنفيذ.`)}</span><a className={`${styles.btn} ${styles.btnSecondary} ${styles.btnSm}`} href="/visits">{action}</a></li>
-        </ul>
-      </Panel>
-    </div>
-
-    {/* DETAILED OPERATIONS (preserved scorecard + tables) */}
-    <div className={styles.analyticGrid}>
-      <Panel title={copy(locale, "Selected-window scorecard", "بطاقة أداء الفترة المحددة")} meta="M08-016">
-        <div className={styles.kpiMini}>
-          <div><div className={styles.kpiMiniValue}>{o.todayVisits.length}</div><div className={styles.detail}>{copy(locale, "Today planned", "مخطط اليوم")}</div></div>
-          <div><div className={styles.kpiMiniValue}>{o.todayCompletionRate == null ? "—" : `${o.todayCompletionRate}%`}</div><div className={styles.detail}>{copy(locale, "Today completion", "إنجاز اليوم")}</div></div>
-          <div><div className={styles.kpiMiniValue}>{o.activeField}</div><div className={styles.detail}>{copy(locale, "Active field", "ميداني نشط")}</div></div>
-          <div><div className={styles.kpiMiniValue}>{o.activeInspectors}</div><div className={styles.detail}>{copy(locale, "Active inspectors", "مفتشون نشطون")}</div></div>
-          <div><div className={styles.kpiMiniValue}>{o.slaBreachRate == null ? "—" : `${o.slaBreachRate}%`}</div><div className={styles.detail}>{copy(locale, "SLA breach", "تجاوز الخدمة")}</div></div>
-          <div><div className={styles.kpiMiniValue}>{formatDuration(o.avgDurationMs, locale)}</div><div className={styles.detail}>{copy(locale, "Avg duration", "متوسط المدة")}</div></div>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "16px" }}>
+      <Panel title={copy(locale, "Visit pipeline", "مسار الزيارات")}>
+        <div className="t-caption" style={{ marginBlockStart: "2px" }}>{copy(locale, "Active / Planned / Awaiting / Returned / Cancelled — in scope", "نشطة / مخططة / بانتظار / معادة / ملغاة — ضمن النطاق")}</div>
+        <div style={{ display: "flex", gap: "8px", marginBlockStart: "14px" }}>
+          {pipeline.map(cell => <div key={cell.label} style={{ flex: 1, textAlign: "center", borderTop: `3px solid var(--status-${cell.tone})`, paddingBlockStart: "8px" }}>
+            <div className="t-metric" style={{ fontSize: "22px" }}>{cell.value}</div><div className="t-caption">{cell.label}</div>
+          </div>)}
         </div>
       </Panel>
-      <Panel title={copy(locale, "Cancellation reasons", "أسباب الإلغاء")}>
-        <Bars rows={o.cancellationReasons} empty={copy(locale, "No cancelled visits in the selected window.", "لا توجد زيارات ملغاة في الفترة المحددة.")} />
+
+      <Panel title={copy(locale, "Schedule load by inspector", "حمل الجدول حسب المفتش")}>
+        <div className="t-caption" style={{ marginBlockStart: "2px" }}>{copy(locale, "Active assigned visits · relative, not absolute capacity", "الزيارات النشطة المسندة · نسبي وليس سعة مطلقة")}</div>
+        {o.workload.length ? <div style={{ marginBlockStart: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
+          {o.workload.slice(0, 6).map(row => <div className="row" style={{ gap: "10px" }} key={row.id}>
+            <span style={{ width: "110px", fontSize: "12px", color: "var(--text-secondary)" }} title={row.name}>{row.name}</span>
+            <div className="progress grow"><i style={{ inlineSize: `${(row.active / workloadMax) * 100}%`, ...(row.active >= workloadMax && workloadMax > 1 ? { background: "var(--status-warning)" } : {}) }} /></div>
+            <span className="id-code" style={{ fontSize: "11px", color: row.active ? "var(--text-primary)" : "var(--text-muted)" }}>{row.active}</span>
+          </div>)}
+        </div> : <div className="empty" style={{ padding: "18px 0" }} role="status"><p>{copy(locale, "No assignments visible in this scope.", "لا توجد إسنادات ظاهرة ضمن هذا النطاق.")}</p></div>}
       </Panel>
+
+      <div className="panel" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="panel-header" style={{ borderInlineStart: "3px solid var(--action-primary)" }}><div className="panel-title" style={{ fontSize: "13.5px" }}>{copy(locale, "Operational nudges", "التنبيهات التشغيلية")}</div><span className="badge badge-info">{copy(locale, "record filters, not AI", "تصفية سجلات وليست ذكاءً اصطناعياً")}</span></div>
+        {nudges.length ? <div>
+          {nudges.map((nudge, index) => <div key={index} style={{ display: "flex", gap: "10px", alignItems: "center", padding: "11px 16px", ...(index < nudges.length - 1 ? { borderBlockEnd: "1px solid var(--border-subtle)" } : {}) }}>
+            <span className="dot" style={{ width: "8px", height: "8px", borderRadius: "50%", background: `var(--status-${nudge.tone})` }} />
+            <span style={{ flex: 1, fontSize: "12.5px" }}>{nudge.text}</span>
+            <a className="btn btn-primary btn-sm" href={nudge.href}>{nudge.action}</a>
+          </div>)}
+        </div> : <div className="empty" style={{ padding: "24px" }} role="status"><p>{copy(locale, "No governed nudge condition is active in this scope.", "لا يوجد شرط تنبيه معتمد نشط ضمن هذا النطاق.")}</p></div>}
+      </div>
     </div>
 
-    <div className={styles.pairGrid}>
-      <Panel title={copy(locale, "Deterministic alert board", "لوحة التنبيهات الحتمية")}>
-        {alerts.length ? <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th scope="col">{copy(locale, "Severity", "الشدة")}</th><th scope="col">{copy(locale, "Condition", "الشرط")}</th><th scope="col">{copy(locale, "Object", "العنصر")}</th><th scope="col" /></tr></thead>
-          <tbody>{alerts.slice(0, 12).map((alert) => <tr key={alert.key}><td><strong>{alert.tone}</strong></td><td>{alert.label}</td><td>{alert.detail}</td><td><a className={styles.linkAction} href={alert.href}>{action}</a></td></tr>)}</tbody>
-        </table></div> : <div className={styles.empty} role="status">{copy(locale, "No governed alert condition is active in this scope.", "لا يوجد شرط تنبيه معتمد نشط ضمن هذا النطاق.")}</div>}
-      </Panel>
-      <Panel title={copy(locale, "Alert source coverage", "تغطية مصادر التنبيه")}>
-        <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th scope="col">{copy(locale, "Condition", "الشرط")}</th><th scope="col">{copy(locale, "Runtime state", "حالة التشغيل")}</th></tr></thead>
-          <tbody>
-            <tr><td>{copy(locale, "Missed / overdue visit", "زيارة فائتة / متأخرة")}</td><td>{o.overdueRows.length}</td></tr>
-            <tr><td>{copy(locale, "Cancelled visit", "زيارة ملغاة")}</td><td>{o.cancelledRows.length}</td></tr>
-            <tr><td>{copy(locale, "GPS override", "تجاوز GPS")}</td><td>{o.overrides.length}</td></tr>
-            <tr><td>{copy(locale, "Overdue review", "مراجعة متأخرة")}</td><td>{o.reviewSlaConfigured ? o.overdueReviewRows.length : copy(locale, "SLA not configured", "اتفاقية الخدمة غير مهيأة")}</td></tr>
-            <tr><td>{copy(locale, "Offline inspector", "مفتش غير متصل")}</td><td>{copy(locale, "Unavailable — no presence source", "غير متاح — لا يوجد مصدر حضور")}</td></tr>
-            <tr><td>{copy(locale, "Stuck execution", "تنفيذ متوقف")}</td><td>{copy(locale, "Unavailable — no stuck-duration policy", "غير متاح — لا توجد سياسة مدة التوقف")}</td></tr>
-          </tbody>
-        </table></div>
-      </Panel>
-    </div>
-
-    <div className={styles.pairGrid}>
-      <Panel title={copy(locale, "GPS overrides — planned vs observed", "تجاوزات GPS — المخطط مقابل المرصود")}>
-        {o.overrides.length ? <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th scope="col">{copy(locale, "Visit / factory", "الزيارة / المصنع")}</th><th scope="col">{copy(locale, "Planned", "المخطط")}</th><th scope="col">{copy(locale, "Observed", "المرصود")}</th><th scope="col">{copy(locale, "Reason", "السبب")}</th><th scope="col">{copy(locale, "At", "الوقت")}</th></tr></thead>
-          <tbody>{o.overrides.slice(0, 10).map((row: GeoRow) => <tr key={row.id}>
-            <td><a className={styles.linkAction} href={`/visits/${row.visit_id}`}>{row.visits?.factories?.name ?? row.visit_id.slice(0, 8)}</a></td>
-            <td className={styles.numeric}>{row.visits?.planner_lat != null && row.visits?.planner_lng != null ? `${row.visits.planner_lat}, ${row.visits.planner_lng}` : "—"}</td>
-            <td className={styles.numeric}>{row.observed_lat}, {row.observed_lng}</td>
-            <td>{row.override_reason ?? copy(locale, "Not recorded", "غير مسجل")}</td>
-            <td className={styles.numeric}>{new Date(row.occurred_at).toISOString().slice(0, 16).replace("T", " ")}</td>
-          </tr>)}</tbody>
-        </table></div> : <div className={styles.empty} role="status">{copy(locale, "No GPS overrides in the selected scope.", "لا توجد تجاوزات GPS ضمن النطاق المحدد.")}</div>}
-      </Panel>
-      <Panel title={copy(locale, "Inspector workload — relative", "عبء عمل المفتشين — نسبي")}>
-        <p className={styles.detail}>{copy(locale, "No capacity threshold or presence timeout is configured. Bars compare active assigned visits only.", "لا توجد عتبة سعة أو مهلة حضور مهيأة. تقارن الأشرطة الزيارات النشطة المسندة فقط.")}</p>
-        {o.workload.length ? <div className={styles.tableWrap}><table className={styles.table}>
-          <thead><tr><th scope="col">{copy(locale, "Inspector", "المفتش")}</th><th scope="col">{copy(locale, "Assigned", "المسند")}</th><th scope="col">{copy(locale, "Active", "النشط")}</th><th scope="col">{copy(locale, "Completed", "المكتمل")}</th><th scope="col">{copy(locale, "Overdue", "المتأخر")}</th></tr></thead>
-          <tbody>{o.workload.slice(0, 10).map((row) => <tr key={row.id}><td><strong>{row.name}</strong></td><td className={styles.numeric}>{row.assigned}</td><td className={styles.numeric}>{row.active}</td><td className={styles.numeric}>{row.completed}</td><td className={styles.numeric}>{row.overdue}</td></tr>)}</tbody>
-        </table></div> : <div className={styles.empty} role="status">{copy(locale, "No assignments are visible in this scope.", "لا توجد إسنادات ظاهرة ضمن هذا النطاق.")}</div>}
-      </Panel>
+    <div className="t-caption" style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+      <span aria-hidden="true">≠AI</span>
+      {copy(locale, `Average execution duration in scope: ${formatDuration(o.avgDurationMs, locale)}. All panels are deterministic record filters, not AI recommendations.`, `متوسط مدة التنفيذ ضمن النطاق: ${formatDuration(o.avgDurationMs, locale)}. جميع اللوحات تصفية سجلات حتمية وليست توصيات ذكاء اصطناعي.`)}
     </div>
   </div>;
 }
 
-// ---------------------------------------------------------------- SEARCH (preserved)
+/* ── Global search results (unchanged surface) ──────────────────── */
 export function SearchResults({ locale, query, factories, visits, inspections }: {
   locale: Locale; query: string; factories: FactoryRef[]; visits: VisitRow[]; inspections: { id: string; visits: { factories: FactoryRef | null } | null }[];
 }) {
   const needle = query.trim().toLocaleLowerCase(locale);
   if (!needle) return null;
-  const has = (...values: (string | null | undefined)[]) => values.some((value) => value?.toLocaleLowerCase(locale).includes(needle));
-  const f = factories.filter((row) => has(row.name, row.factory_code, row.region, row.city)).slice(0, 6);
-  const v = visits.filter((row) => has(row.id, row.factories?.name, row.factories?.factory_code)).slice(0, 6);
-  const i = inspections.filter((row) => has(row.id, row.visits?.factories?.name, row.visits?.factories?.factory_code)).slice(0, 6);
+  const has = (...values: (string | null | undefined)[]) => values.some(value => value?.toLocaleLowerCase(locale).includes(needle));
+  const f = factories.filter(row => has(row.name, row.factory_code, row.region, row.city)).slice(0, 6);
+  const v = visits.filter(row => has(row.id, row.factories?.name, row.factories?.factory_code)).slice(0, 6);
+  const i = inspections.filter(row => has(row.id, row.visits?.factories?.name, row.visits?.factories?.factory_code)).slice(0, 6);
   const total = f.length + v.length + i.length;
   return <section className={styles.results} aria-labelledby="dashboard-search-results">
     <h3 id="dashboard-search-results">{copy(locale, `Search results for “${query}”`, `نتائج البحث عن «${query}»`)}</h3>
     {!total ? <p role="status">{copy(locale, "No RLS-visible factory, visit or inspection matched.", "لا يوجد مصنع أو زيارة أو تفتيش ظاهر حسب الصلاحيات يطابق البحث.")}</p> : <div className={styles.resultGrid}>
-      <div className={styles.resultGroup}><h4>{copy(locale, "Factories", "المصانع")}</h4>{f.length ? f.map((row) => <a className={styles.result} href={`/factories/${row.id}`} key={row.id}><strong>{row.name}</strong><br /><span className={styles.detail}>{row.factory_code ?? "—"} · {[row.region, row.city].filter(Boolean).join(" · ")}</span></a>) : <span className={styles.detail}>—</span>}</div>
-      <div className={styles.resultGroup}><h4>{copy(locale, "Visits", "الزيارات")}</h4>{v.length ? v.map((row) => <a className={styles.result} href={`/visits/${row.id}`} key={row.id}><strong>{row.factories?.name ?? row.id.slice(0, 8)}</strong><br /><span className={styles.detail}>{row.id.slice(0, 8)} · {row.operational_state}</span></a>) : <span className={styles.detail}>—</span>}</div>
-      <div className={styles.resultGroup}><h4>{copy(locale, "Inspections", "التفتيشات")}</h4>{i.length ? i.map((row) => <a className={styles.result} href={`/reports/inspection/${row.id}`} key={row.id}><strong>{row.visits?.factories?.name ?? row.id.slice(0, 8)}</strong><br /><span className={styles.detail}>{row.id.slice(0, 8)}</span></a>) : <span className={styles.detail}>—</span>}</div>
+      <div className={styles.resultGroup}><h4>{copy(locale, "Factories", "المصانع")}</h4>{f.length ? f.map(row => <a className={styles.result} href={`/factories/${row.id}`} key={row.id}><strong>{row.name}</strong><br /><span className={styles.detail}>{row.factory_code ?? "—"} · {[row.region, row.city].filter(Boolean).join(" · ")}</span></a>) : <span className={styles.detail}>—</span>}</div>
+      <div className={styles.resultGroup}><h4>{copy(locale, "Visits", "الزيارات")}</h4>{v.length ? v.map(row => <a className={styles.result} href={`/visits/${row.id}`} key={row.id}><strong>{row.factories?.name ?? row.id.slice(0, 8)}</strong><br /><span className={styles.detail}>{row.id.slice(0, 8)} · {row.operational_state}</span></a>) : <span className={styles.detail}>—</span>}</div>
+      <div className={styles.resultGroup}><h4>{copy(locale, "Inspections", "التفتيشات")}</h4>{i.length ? i.map(row => <a className={styles.result} href={`/reports/inspection/${row.id}`} key={row.id}><strong>{row.visits?.factories?.name ?? row.id.slice(0, 8)}</strong><br /><span className={styles.detail}>{row.id.slice(0, 8)}</span></a>) : <span className={styles.detail}>—</span>}</div>
     </div>}
   </section>;
 }

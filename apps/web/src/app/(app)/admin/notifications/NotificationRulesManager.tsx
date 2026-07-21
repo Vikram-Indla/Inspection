@@ -38,15 +38,15 @@ const EVENT_KEYS = ["assignment", "reschedule", "review_decision", "virtual_clos
 const CHANNELS = ["inapp", "push", "sms", "email"];
 
 function Msg({ state }: { state: NotifRuleResult }) {
-  if (state.error) return <p className="ax-caption" role="alert" style={{ color: "var(--ax-fg-critical, inherit)" }}>{state.error}</p>;
-  if (state.notice) return <p className="ax-caption" role="status">{state.notice}</p>;
+  if (state.error) return <p className="t-caption" role="alert" style={{ color: "var(--ax-fg-critical, inherit)" }}>{state.error}</p>;
+  if (state.notice) return <p className="t-caption" role="status">{state.notice}</p>;
   return null;
 }
 
 function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]; l: Labels }) {
   const [state, action, pending] = useActionState<NotifRuleResult, FormData>(createNotificationRule, {});
   return (
-    <form action={action} className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+    <form action={action} className="stack" style={{ gap: "var(--ax-space-150)" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--ax-space-150)" }}>
         <label className="ax-field"><span>{l.eventKey}</span>
           <select name="event_key" required defaultValue="">
@@ -78,8 +78,8 @@ function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]
       <label className="ax-field"><span>{l.template}</span>
         <textarea name="template" required rows={2} placeholder="e.g. Review decision recorded: {decision}" />
       </label>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-        <button type="submit" className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? l.creating : l.create}</button>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+        <button type="submit" className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? l.creating : l.create}</button>
         <Msg state={state} />
       </div>
     </form>
@@ -93,9 +93,9 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
 
   if (row.status === "draft") {
     return (
-      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
         <form action={pubAction}><input type="hidden" name="rule_id" value={row.id} />
-          <button type="submit" className="ax-btn" disabled={pubPending}>{pubPending ? l.publishing : l.publish}</button>
+          <button type="submit" className="btn btn-primary btn-touch" disabled={pubPending}>{pubPending ? l.publishing : l.publish}</button>
         </form>
         <Msg state={pubState} />
       </div>
@@ -103,27 +103,27 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
   }
   if (row.status === "published") {
     return (
-      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
         <form action={testAction}><input type="hidden" name="rule_id" value={row.id} />
-          <button type="submit" className="ax-btn" disabled={testPending}>{testPending ? l.testing : l.test}</button>
+          <button type="submit" className="btn btn-primary btn-touch" disabled={testPending}>{testPending ? l.testing : l.test}</button>
         </form>
         <Msg state={testState} />
-        <form action={deactAction} className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
+        <form action={deactAction} className="row" style={{ gap: "var(--ax-space-100)" }}>
           <input type="hidden" name="rule_id" value={row.id} />
           <input type="text" name="deactivation_reason" placeholder={l.deactivationReason} required />
-          <button type="submit" className="ax-btn" disabled={deactPending}>{deactPending ? l.deactivating : l.deactivate}</button>
+          <button type="submit" className="btn btn-primary btn-touch" disabled={deactPending}>{deactPending ? l.deactivating : l.deactivate}</button>
         </form>
         <Msg state={deactState} />
       </div>
     );
   }
-  return <span className="ax-caption">{row.deactivation_reason ?? "—"}</span>;
+  return <span className="t-caption">{row.deactivation_reason ?? "—"}</span>;
 }
 
 export default function NotificationRulesManager({ rows, roles, l }: { rows: NotificationRuleRow[]; roles: { role_key: string; title: string }[]; l: Labels }) {
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
-      <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
+      <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
         <CreateForm roles={roles} l={l} />
       </section>
 
@@ -138,14 +138,14 @@ export default function NotificationRulesManager({ rows, roles, l }: { rows: Not
           <tbody>
             {rows.map(r => (
               <tr key={r.id}>
-                <td className="ax-numeric">{r.event_key}</td>
+                <td className="numeric">{r.event_key}</td>
                 <td>{r.channel}</td>
-                <td>{r.recipient_role || <span className="ax-lozenge ax-lozenge--warning">{l.missingRecipient}</span>}</td>
+                <td>{r.recipient_role || <span className="badge badge-warning">{l.missingRecipient}</span>}</td>
                 <td>{r.sla_minutes ? `${r.sla_minutes}m → ${r.escalation_role}` : "—"}</td>
                 <td><span className={`ax-lozenge ${r.status === "published" ? "ax-lozenge--success" : r.status === "deactivated" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
                   {r.status === "published" ? l.statusPublished : r.status === "deactivated" ? l.statusDeactivated : l.statusDraft}
                 </span></td>
-                <td className="ax-numeric">{r.version_label}</td>
+                <td className="numeric">{r.version_label}</td>
                 <td><RowActions row={r} l={l} /></td>
               </tr>
             ))}

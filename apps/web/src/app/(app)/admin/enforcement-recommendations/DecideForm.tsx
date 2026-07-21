@@ -10,9 +10,9 @@ export default function DecideForm({ id, strings }: { id: string; strings: Decid
   const [state, formAction, pending] = useActionState<DecideResult, FormData>(decideEnforcementRecommendation, {});
   const [decision, setDecision] = useState<"approved" | "rejected">("approved");
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-150)" }}>
       <input type="hidden" name="id" value={id} />
-      <div className="ax-row">
+      <div className="row">
         <label className="ax-choice"><input type="radio" name="decision" value="approved" checked={decision === "approved"} onChange={() => setDecision("approved")} /> {strings.approve}</label>
         <label className="ax-choice"><input type="radio" name="decision" value="rejected" checked={decision === "rejected"} onChange={() => setDecision("rejected")} /> {strings.reject}</label>
       </div>
@@ -21,7 +21,7 @@ export default function DecideForm({ id, strings }: { id: string; strings: Decid
         <textarea className="ax-textarea" name="decision_reason" rows={2} placeholder={strings.reasonPlaceholder} />
       </label>
       {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
-      <button type="submit" className="ax-btn ax-btn--prominent" aria-disabled={pending}>{pending ? strings.recording : strings.submit}</button>
+      <button type="submit" className="btn btn-primary btn-lg btn-touch" aria-disabled={pending}>{pending ? strings.recording : strings.submit}</button>
     </form>
   );
 }

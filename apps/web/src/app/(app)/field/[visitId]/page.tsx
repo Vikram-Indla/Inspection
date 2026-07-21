@@ -244,33 +244,33 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   const modeWord = (m: string) => m === "virtual" ? t("enum.virtual", "virtual") : t("enum.physical", "physical");
   return (
     <Shell current="/field" title={t("field.start.title", "Startup — {name}").replace("{name}", factoryName)}
-      context={<span className="ax-lozenge ax-lozenge--info">SCR-IPAD-610/620</span>}>
+      context={<span className="badge badge-info">SCR-IPAD-610/620</span>}>
       <CreatedToast created={created}
         registeredMessage={t("field.start.createdToast", "Visit created and dispatched.")}
         unregisteredMessage={t("field.start.createdToastUnregistered", "Unregistered establishment recorded and visit dispatched.")} />
-      <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
-        {factory360Href && <a className="ax-btn ax-btn--subtle" href={factory360Href}>{t("field.start.openFactory360", "Open Factory 360")}</a>}
+      <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
+        {factory360Href && <a className="btn btn-ghost btn-touch" href={factory360Href}>{t("field.start.openFactory360", "Open Factory 360")}</a>}
         {/* M03-011 — execution-mode eligibility from engine rules, with the why */}
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("field.start.eligibilityHeading", "Execution mode eligibility (M03-011)")}</h4>
-          <div className="ax-stack" style={{ gap: 8 }}>
-            <div className="ax-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <div className="stack" style={{ gap: 8 }}>
+            <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span className={`ax-lozenge ${physicalEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
                 {physicalEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
               <span>{dispatchSource === "official"
                 ? t("field.start.physicalRule", "Physical — using GIS-verified official coordinates for geofence arrival (M04-004 · ENG-06)")
                 : t("field.start.physicalImmediateRule", "Physical Immediate Visit — using the location confirmed with the visit (M01-046); factory master coordinates remain unchanged (FND-007)")}</span>
-              {v.execution_mode !== "virtual" && <span className="ax-lozenge ax-lozenge--info">{t("field.start.plannedMode", "planned mode")}</span>}
+              {v.execution_mode !== "virtual" && <span className="badge badge-info">{t("field.start.plannedMode", "planned mode")}</span>}
             </div>
-            <div className="ax-row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               <span className={`ax-lozenge ${virtualEligible ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
                 {virtualEligible ? t("field.start.eligible", "eligible") : t("field.start.notEligible", "not eligible")}
               </span>
               <span>{t("field.start.virtualRule", "Virtual — requires OTP identity-verification engine configured (ENG · REF-011)")}</span>
-              {v.execution_mode === "virtual" && <span className="ax-lozenge ax-lozenge--info">{t("field.start.plannedMode", "planned mode")}</span>}
+              {v.execution_mode === "virtual" && <span className="badge badge-info">{t("field.start.plannedMode", "planned mode")}</span>}
             </div>
-            <p className="ax-caption">
+            <p className="t-caption">
               {t("field.start.eligibilityCaption", "This visit is planned as {mode}. Eligibility is evaluated from engine configuration and factory master data — not selectable here.").replace("{mode}", modeWord(v.execution_mode))}
             </p>
           </div>

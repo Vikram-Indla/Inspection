@@ -5,6 +5,8 @@ import GisStudio, { type GisFactory, type GisSettings, type GisStrings } from ".
 import EmptyState from "@/components/EmptyState";
 import { logProviderError, NEUTRAL_LOAD_ERROR } from "@/lib/neutral-error";
 
+export const dynamic = "force-dynamic";
+
 // SCR-ADM-070 — GIS Studio (ENG-06 governed values · SB20 geofencing map · ENG-08)
 // All copy flows through t() (SB19) — English in code, Arabic from ui_strings.
 export default async function GisStudioPage() {
@@ -69,9 +71,9 @@ export default async function GisStudioPage() {
   };
 
   return (
-    <Shell current="/admin/gis" title={t("gis.title", "Map Settings — geofencing")}
-      context={<><span className="ax-lozenge ax-lozenge--info">SCR-ADM-070 · ENG-06 · SB20</span><span className="ax-version">{engRes.data?.version_label}</span></>}>
-      <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <Shell current="/admin/gis" title={t("gis.title", "GIS Studio — geofencing")}
+      context={<><span className="badge badge-info">SCR-ADM-070 · ENG-06 · SB20</span><span className="ax-version">{engRes.data?.version_label}</span></>}>
+      <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
         <div className="ax-banner"><div><strong>{t("gis.banner.title", "GIS Studio.")}</strong> {t("gis.banner.body", "These governed values stamp every geo event (config version recorded with each check-in — EV-005). Official coordinates remain GIS-Admin-owned; field observation never overwrites them (FND-007). Per-factory geofence radii (SB20) are edited on the map below.")}</div></div>
 
         {err && (
@@ -82,7 +84,7 @@ export default async function GisStudioPage() {
 
         {!err && factories.length === 0 && (
           <EmptyState glyph="◎" title={t("gis.empty.title", "No factories registered")}
-            body={t("gis.empty.body", "The factory list is empty — geofences appear here once factories are synced (FND-007).")} />
+            body={t("gis.empty.body", "The factory registry is empty — geofences appear here once factories are synced (FND-007).")} />
         )}
 
         {!err && factories.length > 0 && (
@@ -92,7 +94,7 @@ export default async function GisStudioPage() {
         {!err && (
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr><th scope="col">{t("gis.settings.setting", "Setting")}</th><th scope="col">{t("gis.settings.value", "Value")}</th><th scope="col">{t("gis.settings.contract", "Contract")}</th></tr></thead>
-            <tbody>{settingsRows.map(([k, v, c]) => <tr key={k}><td><strong>{k}</strong></td><td className="ax-numeric" dir="ltr">{v}</td><td className="ax-caption">{c}</td></tr>)}</tbody>
+            <tbody>{settingsRows.map(([k, v, c]) => <tr key={k}><td><strong>{k}</strong></td><td className="numeric" dir="ltr">{v}</td><td className="t-caption">{c}</td></tr>)}</tbody>
           </table></div>
         )}
       </div>

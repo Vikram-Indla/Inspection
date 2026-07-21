@@ -153,16 +153,16 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
   );
 
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-300)" }}>
       <input type="hidden" name="resume_visit_plan_id" value={state.resumeId ?? ""} />
 
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.findFactory}</h4>
         <span className="ax-search"><input className="ax-input" placeholder={strings.searchPlaceholder} value={queryInput} onChange={e => setQueryInput(e.target.value)} /></span>
         {searching && registryUnavailable && (
           <div className="ax-banner ax-banner--critical" role="alert" style={{ marginBlockStart: "var(--ax-space-150)" }}>
             <div>{strings.registryUnavailable}</div>
-            <button type="button" className="ax-btn ax-btn--secondary" onClick={() => router.refresh()}>{strings.retry}</button>
+            <button type="button" className="btn btn-secondary btn-touch" onClick={() => router.refresh()}>{strings.retry}</button>
           </div>
         )}
         {searching && !registryUnavailable && results.length === 0 && (
@@ -183,7 +183,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
                   <span className={`ax-lozenge ${f.grade === "exact" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>
                     {f.grade === "exact" ? strings.exactBadge : strings.similarBadge}
                   </span>
-                  {f.degraded && <span className="ax-lozenge ax-lozenge--critical">{strings.degradedBadge}</span>}
+                  {f.degraded && <span className="badge badge-critical">{strings.degradedBadge}</span>}
                   <span><strong>{f.name}</strong> · <bdi>{f.cr_number ?? "—"}</bdi>{f.license_number ? <> · <bdi>{f.license_number}</bdi></> : null}</span>
                 </label>
                 {factoryId === f.id && (
@@ -198,15 +198,15 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
       </div>
 
       {factory && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.licenseStep}</h4>
           {factory.license_number ? (
             <>
-              <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseSelect}</p>
+              <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseSelect}</p>
               <label className="ax-choice" style={{ display: "flex" }}>
                 <input key={resetKey} type="radio" name="license_number" value={factory.license_number} required
                   checked={licenseNumber === factory.license_number} onChange={() => setLicenseNumber(factory.license_number as string)} />
-                <span><strong className="ax-numeric">{factory.license_number}</strong> · {strings.licenseLabel} · {factory.name}</span>
+                <span><strong className="numeric">{factory.license_number}</strong> · {strings.licenseLabel} · {factory.name}</span>
               </label>
             </>
           ) : (
@@ -215,16 +215,16 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
         </div>
       )}
       {factory && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.locationStep}</h4>
           {!hasOfficial && (
             <div className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-150)" }}><div>{strings.noOfficialPin}</div></div>
           )}
-          <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lat">{strings.plannerLat}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
+              <input key={resetKey} className="ax-input numeric" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lng">{strings.plannerLng}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="planner_lng" id="wizard-planner-lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
+              <input key={resetKey} className="ax-input numeric" name="planner_lng" id="wizard-planner-lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
           </div>
           <label className="ax-choice" style={{ display: "flex", marginBlockStart: "var(--ax-space-150)" }}>
             <input key={resetKey} type="checkbox" name="location_confirmed" value="1" required
@@ -234,7 +234,7 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
         </div>
       )}
       {factory && configUnlocked && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.configStep}</h4>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: "var(--ax-space-200)" }}>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-visit-type">{strings.visitType}</label>
@@ -247,9 +247,9 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
                 <option value="virtual" disabled={!virtualEligible}>{strings.modeVirtual}{!virtualEligible ? ` — ${strings.modeIneligible}` : ""}</option>
               </select></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-window-start">{strings.windowStart}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
+              <input key={resetKey} className="ax-input numeric" name="window_start" id="wizard-window-start" type="datetime-local" required value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-window-end">{strings.windowEnd}</label>
-              <input key={resetKey} className="ax-input ax-numeric" name="window_end" id="wizard-window-end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
+              <input key={resetKey} className="ax-input numeric" name="window_end" id="wizard-window-end" type="datetime-local" required value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
             {/* M01-040 — auto-assign option (availability-checked) beside the manual pick */}
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-inspector">{strings.inspector}</label>
               <select key={resetKey} className="ax-select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
@@ -261,9 +261,9 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
       )}
 
       {factory && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
           <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.readinessTitle}</h4>
-          <div className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+          <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
             <span className={`ax-lozenge ${factory ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{factory ? "✓" : "✕"} {strings.readyIdentity}</span>
             <span className={`ax-lozenge ${licenseOk ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{licenseOk ? "✓" : "✕"} {strings.readyLicense}</span>
             <span className={`ax-lozenge ${locationConfirmed ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{locationConfirmed ? "✓" : "✕"} {strings.readyLocation}</span>
@@ -287,8 +287,8 @@ export default function Wizard({ query, results, registryUnavailable, packages, 
         </div>
       )}
 
-      <div className="ax-row" style={{ justifyContent: "flex-end" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending || !configUnlocked}>
+      <div className="row" style={{ justifyContent: "flex-end" }}>
+        <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !configUnlocked}>
           {pending ? strings.publishing : state.resumeId ? strings.retry : strings.publish}
         </button>
       </div>

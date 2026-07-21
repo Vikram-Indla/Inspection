@@ -104,10 +104,10 @@ test("M2-11 Gemini: generate an AI advisory suggestion, then human-dispose (live
   await page.reload();
   // The exact evidence-cited row is proposed/configured and only a human may
   // dispose it; AI never mutates the decision state itself.
-  const row = page.locator(".ax-surface").filter({ hasText: evidenceRef }).first();
+  const row = page.locator(".ax-surface, .panel").filter({ hasText: evidenceRef }).first();
   await expect(row).toBeVisible();
-  await expect(row.locator(".ax-lozenge", { hasText: "proposed" })).toBeVisible();
-  await expect(row.locator(".ax-lozenge", { hasText: "configured" })).toBeVisible();
+  await expect(row.locator(".ax-lozenge, .badge", { hasText: "proposed" })).toBeVisible();
+  await expect(row.locator(".ax-lozenge, .badge", { hasText: "configured" })).toBeVisible();
   await row.locator('select[name="to"]').selectOption("rejected");
   await row.locator('input[name="reason"]').fill("Regression evidence item completed");
   await row.getByRole("button", { name: /Disposition|Applying/i }).click();
@@ -127,7 +127,7 @@ test("M2-11 governed write: propose an advisory suggestion, then human-dispose i
   await expect(proposeForm.getByText(/^proposed$/i)).toBeVisible();
   await page.reload();
   await expect(page.getByText(text)).toBeVisible();
-  const row = page.locator(".ax-surface").filter({ hasText: text });
+  const row = page.locator(".ax-surface, .panel").filter({ hasText: text });
   await expect(row.getByText("unavailable")).toBeVisible(); // provider held, never auto-actioned
   // human disposition (reject) — mandatory reason
   await row.locator('select[name="to"]').selectOption("rejected");

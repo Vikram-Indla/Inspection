@@ -85,7 +85,7 @@ test.describe("CD-022 graded identity search", () => {
   test("EXACT badge only on governed identifier equality; rule text shown (M01-035)", async ({ page }) => {
     await search(page, exactFactory.cr_number);
     const row = page.locator("li", { hasText: exactFactory.name });
-    await expect(row.locator(".ax-lozenge--success", { hasText: "EXACT" })).toBeVisible();
+    await expect(row.locator(".ax-lozenge--success, .badge-compliant", { hasText: "EXACT" })).toBeVisible();
   });
 
   test("name search is a new leg — SIMILAR NAME always shows the differing identifier", async ({ page }) => {
@@ -94,7 +94,7 @@ test.describe("CD-022 graded identity search", () => {
     // rows while still exercising the name-only SIMILAR NAME path.
     await search(page, similarNameFactory.name);
     const row = page.locator("li", { hasText: similarNameFactory.name });
-    await expect(row.locator(".ax-lozenge--warning", { hasText: "SIMILAR NAME" })).toBeVisible();
+    await expect(row.locator(".ax-lozenge--warning, .badge-warning", { hasText: "SIMILAR NAME" })).toBeVisible();
     await row.locator('input[type="radio"]').check();
     // The dossier always discloses the real (differing) identifier — scope to
     // the dossier region since the compact row label also shows the CR.
@@ -105,8 +105,8 @@ test.describe("CD-022 graded identity search", () => {
   test("DEGRADED flag independent of match grade — missing license/coordinates", async ({ page }) => {
     await search(page, degradedFactory.cr_number);
     const row = page.locator("li", { hasText: degradedFactory.name });
-    await expect(row.locator(".ax-lozenge--success", { hasText: "EXACT" })).toBeVisible();
-    await expect(row.locator(".ax-lozenge--critical", { hasText: "DEGRADED" })).toBeVisible();
+    await expect(row.locator(".ax-lozenge--success, .badge-compliant", { hasText: "EXACT" })).toBeVisible();
+    await expect(row.locator(".ax-lozenge--critical, .badge-critical", { hasText: "DEGRADED" })).toBeVisible();
   });
 
   test("duplicate warning at selection matches the publish-time M02-012 block (parity, not just a UI echo)", async ({ page }) => {

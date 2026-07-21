@@ -18,18 +18,18 @@ export type MarkHandledStrings = {
 export function ActionFormControls({ actionFormId, status, strings }: { actionFormId: string; status: string; strings: ActionFormControlsStrings }) {
   const [state, formAction, pending] = useActionState<OpsResult, FormData>(updateActionFormStatus, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="hidden" name="action_form_id" value={actionFormId} />
       {status === "open" && (
-        <button className="ax-btn" name="next_status" value="acknowledged" disabled={pending}>
+        <button className="btn btn-primary btn-touch" name="next_status" value="acknowledged" disabled={pending}>
           {pending ? "…" : strings.acknowledge}
         </button>
       )}
-      <button className="ax-btn ax-btn--prominent" name="next_status" value="closed" disabled={pending}>
+      <button className="btn btn-primary btn-lg btn-touch" name="next_status" value="closed" disabled={pending}>
         {pending ? "…" : strings.close}
       </button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.updated}</span>}
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.ok && <span className="badge badge-compliant">{strings.updated}</span>}
     </form>
   );
 }
@@ -38,11 +38,11 @@ export function ActionFormControls({ actionFormId, status, strings }: { actionFo
 export function MarkNotificationHandled({ notificationId, strings }: { notificationId: string; strings: MarkHandledStrings }) {
   const [state, formAction, pending] = useActionState<OpsResult, FormData>(markNotificationHandled, {});
   return (
-    <form action={formAction} className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
       <input type="hidden" name="notification_id" value={notificationId} />
-      <button className="ax-btn" disabled={pending}>{pending ? "…" : strings.markHandled}</button>
-      {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
-      {state.ok && <span className="ax-lozenge ax-lozenge--success">{strings.handled}</span>}
+      <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? "…" : strings.markHandled}</button>
+      {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+      {state.ok && <span className="badge badge-compliant">{strings.handled}</span>}
     </form>
   );
 }

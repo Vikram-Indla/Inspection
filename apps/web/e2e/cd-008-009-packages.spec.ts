@@ -35,7 +35,7 @@ test.describe("CD-008 package library — version-led runtime", () => {
     const immutable = page.locator(".ax-banner--immutable:visible").first();
     if (await immutable.count()) await expect(immutable).toContainText(/Published version — immutable/i);
     else {
-      const publishedSummary = page.locator("details.ax-panel > summary").filter({ hasText: /published/i }).first();
+      const publishedSummary = page.locator("details.ax-panel > summary, details.panel > summary").filter({ hasText: /published/i }).first();
       const publishedVersion = publishedSummary.locator("..");
       if (await publishedVersion.getAttribute("open") === null) await publishedSummary.click();
       await expect(publishedVersion.locator(".ax-banner--immutable")).toContainText(/Published version — immutable/i);
@@ -60,7 +60,7 @@ test.describe("CD-009 read-only field projection", () => {
     const preview = page.locator(".ipad-preview").first();
     await expect(preview).toBeVisible();
     await expect(preview.getByText(/read-only/i)).toBeVisible();
-    for (const chip of await preview.locator(".ax-btn--field").all()) await expect(chip).toHaveAttribute("aria-disabled", /.*/);
+    for (const chip of await preview.locator(".ax-btn--field, .btn-field").all()) await expect(chip).toHaveAttribute("aria-disabled", /.*/);
     for (const input of await preview.locator("input, textarea").all()) await expect(input).toBeDisabled();
     await expect(preview.getByRole("button", { name: /simulate|run|calculate|score/i })).toHaveCount(0);
     await page.screenshot({ path: join(EVIDENCE_DIR, "preview-readonly-en-light.png"), fullPage: true });

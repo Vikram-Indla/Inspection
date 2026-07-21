@@ -1,17 +1,14 @@
-// Saqeel logomark — the same magenta-violet polished prism used by the favicon.
+// Canonical SAQEEL brand mark — hexagonal inspection seal with a verification
+// check, per the copied SAQEEL design system (design_system_original/
+// brand_reference/saqeel-inspection-seal.svg). Replaces the retired
+// magenta-violet prism. One token colour (emerald action) drives both
+// themes; the geometry never changes and the seal never mirrors in RTL.
 export default function SaqeelMark({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 48 48" role="img" aria-label="Saqeel" strokeLinejoin="round">
-      <defs>
-        <linearGradient id="saqeel-mark-prism" x1="8" y1="5" x2="40" y2="43" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="var(--ax-color-primary-hover)" />
-          <stop offset="0.52" stopColor="var(--ax-color-prism-magenta)" />
-          <stop offset="1" stopColor="var(--ax-color-primary)" />
-        </linearGradient>
-      </defs>
-      <path d="M24 5 L40 18 L24 43 L8 18 Z" fill="url(#saqeel-mark-prism)" />
-      <path d="M8 18 H40 M24 5 L17 18 L24 43 M24 5 L31 18 L24 43"
-        fill="none" stroke="var(--ax-color-atlas-text)" strokeWidth="1.4" opacity="0.68" />
+    <svg className={className} viewBox="0 0 72 72" role="img" aria-label="Saqeel">
+      <path d="M20 7 L52 7 L68 36 L52 65 L20 65 L4 36 Z" fill="var(--ax-color-primary-hover)" />
+      <path d="M24 37 l8 9 l17 -20" fill="none" stroke="var(--ax-color-inverse-text)"
+        strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

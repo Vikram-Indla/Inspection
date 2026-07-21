@@ -49,26 +49,26 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
   const failedCount = results.filter(r => r.status === "failed").length;
 
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-300)" }}>
       <input type="hidden" name="request_id" value={requestId} />
 
-      <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel stack" style={{ padding: "var(--ax-space-300)" }}>
         <label className="ax-field" style={{ maxInlineSize: "none" }}>
           <span className="ax-field__label">{strings.searchFactoryLabel}</span>
           <input className="ax-input" value={query} onChange={e => setQuery(e.target.value)} placeholder={strings.searchFactoryPlaceholder} />
         </label>
-        <p className="ax-caption ax-numeric">{fmt(strings.selectedCount, { n: selected.size })}</p>
-        <div className="ax-stack" style={{ gap: "var(--ax-space-050)", maxBlockSize: 320, overflow: "auto" }}>
+        <p className="t-caption numeric">{fmt(strings.selectedCount, { n: selected.size })}</p>
+        <div className="stack" style={{ gap: "var(--ax-space-050)", maxBlockSize: 320, overflow: "auto" }}>
           {shown.map(f => (
             <label key={f.id} className="ax-choice" style={{ display: "flex", alignItems: "center" }}>
               <input type="checkbox" name="factory_id" value={f.id} checked={selected.has(f.id)} onChange={() => toggle(f.id)} />
-              <span>{f.name} <span className="ax-caption">{f.factory_code ?? f.cr_number ?? "—"} · {f.city ?? "—"}{f.region ? `, ${f.region}` : ""}</span></span>
+              <span>{f.name} <span className="t-caption">{f.factory_code ?? f.cr_number ?? "—"} · {f.city ?? "—"}{f.region ? `, ${f.region}` : ""}</span></span>
             </label>
           ))}
         </div>
       </section>
 
-      <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel stack" style={{ padding: "var(--ax-space-300)" }}>
         <label className="ax-field" style={{ maxInlineSize: "none" }}>
           <span className="ax-field__label">{strings.violationLabel}</span>
           <select className="ax-select" name="violation_code" value={violationCode} onChange={e => setViolationCode(e.target.value)}>
@@ -83,7 +83,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
       </section>
 
       {selected.size > 0 && chosenViolation && (
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="panel stack" style={{ padding: "var(--ax-space-300)" }}>
           <h4>{strings.previewTitle}</h4>
           <p>{fmt(strings.previewBody, { n: selected.size, level: chosenViolation.level, code: chosenViolation.code, penalty: chosenViolation.penalty_ref ?? "—" })}</p>
           <label className="ax-choice" style={{ display: "flex" }}>
@@ -96,7 +96,7 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
       {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
 
       {results.length > 0 && (
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="panel stack" style={{ padding: "var(--ax-space-300)" }}>
           <h4>{strings.resultsTitle}</h4>
           {failedCount > 0
             ? <div className="ax-banner ax-banner--warning" role="alert"><div>{strings.partialWarning}</div></div>
@@ -104,16 +104,16 @@ export default function BulkViolationForm({ factories, violations, strings }: { 
           <div className="ax-tablewrap"><table className="ax-table"><tbody>
             {results.map(r => (
               <tr key={r.factory_id}>
-                <td className="ax-caption ax-numeric">{r.factory_id}</td>
+                <td className="t-caption numeric">{r.factory_id}</td>
                 <td><span className={`ax-lozenge ${r.status === "success" ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{r.status === "success" ? strings.resultSuccess : strings.resultFailed}</span></td>
-                {r.error_code && <td className="ax-caption">{r.error_code}</td>}
+                {r.error_code && <td className="t-caption">{r.error_code}</td>}
               </tr>
             ))}
           </tbody></table></div>
         </section>
       )}
 
-      <button type="submit" className="ax-btn ax-btn--prominent ax-btn--field" aria-disabled={!canSubmit} disabled={!canSubmit}>
+      <button type="submit" className="btn btn-primary btn-field" aria-disabled={!canSubmit} disabled={!canSubmit}>
         {pending ? strings.submitting : strings.submit}
       </button>
     </form>

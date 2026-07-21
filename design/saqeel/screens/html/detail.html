@@ -1,0 +1,78 @@
+<!-- @dsCard group="Screens" viewport="1440x1050" subtitle="Inspection detail — findings & violations workflow" name="Inspection detail" -->
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../../styles.css"><style>
+html,body{height:100%}
+.app{display:flex;height:100vh;overflow:hidden}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.content{flex:1;overflow:auto;position:relative;padding:var(--page-pad);background:var(--surface-canvas)}
+</style></head><body>
+<div class="app">
+<nav class="sidebar" aria-label="Main">
+<div class="sidebar-brand"><svg viewBox="0 0 24 24" fill="none" stroke="var(--nav-indicator)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg><span class="brand-label">SAQEEL</span></div>
+<div style="flex:1;overflow-y:auto;padding-block:var(--space-2)"><div class="sidebar-group">Operations</div><a class="nav-item" href="dashboard.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg><span class="nav-label">Dashboard</span></a><a class="nav-item" href="register.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 13 2 2 4-4"/></svg><span class="nav-label">Inspections</span><span class="nav-count">128</span></a><a class="nav-item" href="map-command.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3"/><path d="M9 3v15M15 6v15"/></svg><span class="nav-label">Map command</span></a><a class="nav-item is-active" href="detail.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4c4-2 8 2 12 0v10c-4 2-8-2-12 0"/></svg><span class="nav-label">Findings</span><span class="nav-count">24</span></a><div class="sidebar-group">Oversight</div><a class="nav-item" href="review.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7"/><circle cx="12" cy="12" r="3"/></svg><span class="nav-label">Review queue</span><span class="nav-count">9</span></a><a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span class="nav-label">Reports</span></a><a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg><span class="nav-label">Facilities</span></a><a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="nav-label">Settings</span></a></div>
+<div style="padding:var(--space-3);border-block-start:1px solid var(--nav-border)"><span class="user-chip" style="color:var(--nav-text)"><span class="avatar avatar-sm">FH</span><span style="font-size:12px">Faisal Al-Harbi</span></span></div>
+</nav>
+<div class="main">
+<header class="topbar">
+<button class="btn btn-ghost btn-icon" aria-label="Toggle navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+<span class="input-affix grow" style="max-width:400px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="input" type="search" placeholder="Search inspections, permits, facilities"></span>
+<div class="grow"></div>
+<div class="seg"><button class="seg-opt" aria-pressed="true">EN</button><button class="seg-opt">AR</button></div>
+<button class="btn btn-ghost btn-icon" aria-label="Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"/></svg></button>
+<button class="btn btn-ghost btn-icon" aria-label="Notifications" style="position:relative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span style="position:absolute;top:5px;inset-inline-end:5px;width:7px;height:7px;border-radius:50%;background:var(--status-critical)"></span></button>
+<span class="avatar">FH</span>
+</header>
+<main class="content">
+<div class="stack" style="gap:var(--space-4)">
+<nav class="breadcrumb"><a href="register.html">Inspections</a><span class="sep">/</span><a href="register.html">Register</a><span class="sep">/</span><span style="color:var(--text-secondary)">INS-2026-004821</span></nav>
+<div class="page-header">
+<div class="stack" style="gap:4px">
+<h2 class="t-page-title">Al Noor Food Processing — routine inspection</h2>
+<div class="row t-meta" style="flex-wrap:wrap"><span class="id-code">INS-2026-004821</span><span class="badge badge-pending"><i class="dot"></i>Pending review</span><span>Food safety</span><span>·</span><span>Submitted 20 Jul 14:22</span></div>
+</div>
+<div class="row"><button class="btn btn-secondary">Print report</button><button class="btn btn-secondary">Reassign</button><span class="btn-group"><button class="btn btn-primary">Review</button><button class="btn btn-primary btn-icon" aria-label="More outcomes">▾</button></span></div>
+</div>
+<div class="tabs"><button class="tab">Details</button><button class="tab">Checklist<span class="tab-count">52</span></button><button class="tab is-active">Findings<span class="tab-count">4</span></button><button class="tab">Evidence<span class="tab-count">12</span></button><button class="tab">History</button></div>
+<div style="display:grid;grid-template-columns:1.6fr 1fr;gap:var(--space-4);align-items:start">
+<div class="stack" style="gap:var(--space-3)">
+<div class="row" style="justify-content:space-between"><span class="t-heading">Findings & violations</span><button class="btn btn-secondary btn-sm">Add finding</button></div>
+<div class="panel" style="border-inline-start:3px solid var(--status-critical)">
+<div class="panel-header" style="padding-block:8px"><span class="row"><span class="t-label" style="text-transform:uppercase;letter-spacing:.05em">Violation</span><span class="id-code">VIO-2026-0122</span></span><span class="row" style="gap:6px;font-size:12px;font-weight:500;color:var(--status-critical-text)"><span style="display:inline-flex;gap:2px;align-items:flex-end"><i style="width:4px;height:10px;background:var(--status-critical)"></i><i style="width:4px;height:13px;background:var(--status-critical)"></i><i style="width:4px;height:16px;background:var(--status-critical)"></i></span>Critical</span></div>
+<div class="panel-body stack" style="gap:8px;padding-block:10px">
+<div style="font-weight:600">Blocked emergency exit — warehouse B</div>
+<div class="t-compact" style="color:var(--text-secondary)">Pallet racking obstructs the eastern emergency exit. Immediate clearance required; exit signage also unlit.</div>
+<div class="t-caption">Requirement: Civil Defense Code 4.2.1 · Question 4.2</div>
+<div class="row" style="gap:8px;flex-wrap:wrap"><figure style="margin:0;width:120px"><div style="aspect-ratio:4/3;border:1px solid var(--border-subtle);border-radius:3px;background:var(--surface-sunken);display:grid;place-items:center;color:var(--text-muted)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="12" cy="12" r="3.5"/></svg></div><figcaption class="t-caption" style="margin-block-start:4px">Blocked exit<span style="display:block;color:var(--text-disabled)">13:58 · 24.7136N 46.6753E</span></figcaption></figure><figure style="margin:0;width:120px"><div style="aspect-ratio:4/3;border:1px solid var(--border-subtle);border-radius:3px;background:var(--surface-sunken);display:grid;place-items:center;color:var(--text-muted)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="12" cy="12" r="3.5"/></svg></div><figcaption class="t-caption" style="margin-block-start:4px">Unlit signage<span style="display:block;color:var(--text-disabled)">14:01</span></figcaption></figure><figure style="margin:0;width:120px"><div style="aspect-ratio:4/3;border:1px solid var(--border-subtle);border-radius:3px;background:var(--surface-sunken);display:grid;place-items:center;color:var(--text-muted)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="12" cy="12" r="3.5"/></svg></div><figcaption class="t-caption" style="margin-block-start:4px">Racking detail<span style="display:block;color:var(--text-disabled)">14:03</span></figcaption></figure></div>
+<div class="row"><button class="btn btn-secondary btn-sm">Add corrective action</button><button class="btn btn-ghost btn-sm">Edit</button></div>
+</div></div>
+<div class="panel" style="border-inline-start:3px solid var(--status-major)">
+<div class="panel-header" style="padding-block:8px"><span class="row"><span class="t-label" style="text-transform:uppercase;letter-spacing:.05em">Corrective action</span><span class="id-code">CAP-2026-0087</span></span><span class="badge badge-pending"><i class="dot"></i>Awaiting verification</span></div>
+<div class="panel-body stack" style="gap:8px;padding-block:10px">
+<div style="font-weight:600">Recalibrate cold-room thermometers (rooms 2 and 3)</div>
+<div class="row t-meta" style="gap:16px"><span>Due 28 Jul</span><span>Owner: facility manager</span><span>Linked to VIO-2026-0121</span></div>
+</div></div>
+<div class="panel" style="border-inline-start:3px solid var(--status-warning)">
+<div class="panel-header" style="padding-block:8px"><span class="row"><span class="t-label" style="text-transform:uppercase;letter-spacing:.05em">Finding</span><span class="id-code">FND-2026-0310</span></span><span class="row" style="gap:6px;font-size:12px;font-weight:500;color:var(--status-warning-text)"><span style="display:inline-flex;gap:2px;align-items:flex-end"><i style="width:4px;height:10px;background:var(--status-warning)"></i><i style="width:4px;height:13px;background:var(--border-strong)"></i><i style="width:4px;height:16px;background:var(--border-strong)"></i></span>Minor</span></div>
+<div class="panel-body stack" style="gap:6px;padding-block:10px"><div style="font-weight:600">Staff hygiene records incomplete for June</div><div class="t-caption">Requirement: Food Safety Reg. 7.1.3 · Question 7.4</div></div></div>
+</div>
+<div class="stack" style="gap:var(--space-4)">
+<div class="panel"><div class="panel-body row" style="gap:14px">
+<svg width="64" height="64" role="img" aria-label="Compliance 78%"><circle cx="32" cy="32" r="28" fill="none" stroke="var(--surface-sunken)" stroke-width="5"/><circle cx="32" cy="32" r="28" fill="none" stroke="var(--status-warning)" stroke-width="5" stroke-dasharray="175.9" stroke-dashoffset="38.7" transform="rotate(-90 32 32)"/><text x="50%" y="54%" text-anchor="middle" style="font:600 15px var(--font-body);fill:var(--text-primary)">78%</text></svg>
+<div class="stack" style="gap:4px"><span class="t-label">Compliance score</span><span class="badge badge-warning"><i class="dot"></i>Needs attention</span><span class="t-caption">48 of 52 questions answered</span></div>
+</div></div>
+<div class="panel"><div class="panel-header"><span class="panel-title">Facility</span></div><div class="panel-body">
+<dl class="desc"><dt>Establishment</dt><dd>Al Noor Food Processing</dd><dt>Permit</dt><dd><span class="id-code">PRM-88213</span></dd><dt>Licence expiry</dt><dd>14 Mar 2027</dd><dt>Zone</dt><dd>Industrial Zone 2 — Al Sulay</dd><dt>Coordinates</dt><dd><span class="id-code">24.7136° N, 46.6753° E</span></dd><dt>Contact</dt><dd>+966 11 402 8831</dd></dl>
+</div></div>
+<div class="panel"><div class="panel-header"><span class="panel-title">Assignment</span></div><div class="panel-body stack">
+<span class="user-chip"><span class="avatar">AZ</span><span class="stack" style="gap:0"><span style="font-weight:500">Ahmed Al-Zahrani</span><span class="t-caption">Field inspector · Team Riyadh-3</span></span></span>
+<dl class="desc"><dt>Scheduled</dt><dd>20 Jul 2026, 13:00</dd><dt>Started</dt><dd>13:05</dd><dt>Submitted</dt><dd>14:22</dd></dl>
+</div></div>
+<div class="panel"><div class="panel-header"><span class="panel-title">Audit trail</span></div><div class="panel-body">
+<ol class="timeline" style="margin:0">
+<li><span class="tl-dot is-accent"></span><div class="tl-title">Submitted for review</div><div class="tl-meta">A. Al-Zahrani · 14:22</div></li>
+<li><span class="tl-dot" style="background:var(--status-critical)"></span><div class="tl-title">Critical violation recorded</div><div class="tl-meta">A. Al-Zahrani · 13:58</div></li>
+<li><span class="tl-dot"></span><div class="tl-title">Inspection started on site</div><div class="tl-meta">A. Al-Zahrani · 13:05</div></li>
+<li><span class="tl-dot"></span><div class="tl-title">Assigned</div><div class="tl-meta">Dispatch · 18 Jul 09:40</div></li>
+</ol></div></div>
+</div></div></div></main>
+</div></div></body></html>

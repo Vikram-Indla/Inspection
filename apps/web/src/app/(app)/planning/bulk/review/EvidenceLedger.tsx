@@ -74,7 +74,7 @@ export default function EvidenceLedger({ focus, strings: s }: { focus: LedgerFoc
     return (
       <div className="cd-lgroup" role="group" aria-label={s.noneTitle}>
         <div className="cd-lgroup__head">{s.noneTitle}</div>
-        <p className="ax-caption" style={{ margin: 0 }}>{s.noneBody}</p>
+        <p className="t-caption" style={{ margin: 0 }}>{s.noneBody}</p>
       </div>
     );
   }

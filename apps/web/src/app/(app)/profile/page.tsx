@@ -45,39 +45,39 @@ export default async function ProfileSettings() {
   const languageLabel = locale === "ar" ? "English" : "العربية";
 
   const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="ax-row" style={{ gap: "var(--ax-space-150)", justifyContent: "space-between", padding: "var(--ax-space-100) 0", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
-      <span className="ax-caption">{label}</span>
+    <div className="row" style={{ gap: "var(--ax-space-150)", justifyContent: "space-between", padding: "var(--ax-space-100) 0", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
+      <span className="t-caption">{label}</span>
       <span>{children}</span>
     </div>
   );
 
   return (
     <Shell current="/profile" title={t("profile.title", "Profile settings")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("profile.badge", "My account")}</span>}>
+      context={<span className="badge badge-info">{t("profile.badge", "My account")}</span>}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "var(--ax-space-200)" }}>
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-details-h">
+        <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-details-h">
           <h3 id="profile-details-h" style={{ margin: 0 }}>{t("profile.details.heading", "Personal details")}</h3>
           <Row label={t("profile.details.name", "Name")}><bdi dir="ltr">{profile?.full_name ?? "—"}</bdi></Row>
-          <Row label={t("profile.details.email", "Email")}><bdi dir="ltr" className="ax-numeric">{profile?.email ?? user.email ?? "—"}</bdi></Row>
+          <Row label={t("profile.details.email", "Email")}><bdi dir="ltr" className="numeric">{profile?.email ?? user.email ?? "—"}</bdi></Row>
           <Row label={t("profile.details.region", "Region")}><bdi dir="ltr">{profile?.region ?? "—"}</bdi></Row>
           <Row label={t("profile.details.roles", "Roles")}><bdi dir="ltr">{roles.length ? roles.map(roleLabel).join(", ") : "—"}</bdi></Row>
-          <p className="ax-caption" style={{ margin: 0, marginBlockStart: "var(--ax-space-100)" }}>
+          <p className="t-caption" style={{ margin: 0, marginBlockStart: "var(--ax-space-100)" }}>
             {t("profile.details.editNote", "Personal details, region and roles are governed elsewhere and are not editable from this screen (no self-service identity or role changes).")}
           </p>
         </section>
 
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-appearance-h">
+        <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-appearance-h">
           <h3 id="profile-appearance-h" style={{ margin: 0 }}>{t("profile.appearance.heading", "Language & appearance")}</h3>
           <Row label={t("profile.appearance.languageLabel", "Language")}>
-            <a className="ax-btn ax-btn--subtle" href={languageHref} lang={locale === "ar" ? "en" : "ar"}>{languageLabel}</a>
+            <a className="btn btn-ghost btn-touch" href={languageHref} lang={locale === "ar" ? "en" : "ar"}>{languageLabel}</a>
           </Row>
           <Row label={t("profile.appearance.themeLabel", "Theme")}>
-            <ThemeToggle labels={{ toLight: t("theme.light", "Light mode"), toDark: t("theme.dark", "Dark mode") }} className="ax-btn ax-btn--subtle" />
+            <ThemeToggle labels={{ toLight: t("theme.light", "Light mode"), toDark: t("theme.dark", "Dark mode") }} className="btn btn-ghost btn-touch" />
           </Row>
-          <p className="ax-caption" style={{ margin: 0 }}>{t("profile.appearance.themeNote", "Theme preference is saved to this browser.")}</p>
+          <p className="t-caption" style={{ margin: 0 }}>{t("profile.appearance.themeNote", "Theme preference is saved to this browser.")}</p>
         </section>
 
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-notif-h">
+        <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }} aria-labelledby="profile-notif-h">
           <h3 id="profile-notif-h" style={{ margin: 0 }}>{t("profile.notif.heading", "Notification preferences")}</h3>
           <NotificationPrefsForm
             push={pref?.push_enabled ?? true}
@@ -94,7 +94,7 @@ export default async function ProfileSettings() {
               saved: t("profile.notif.saved", "Saved"),
             }}
           />
-          <p className="ax-caption" style={{ margin: 0 }}>{t("profile.notif.pushOptInNote", "Push notifications require enabling on this device (browser permission + subscription). Toggling the preference above only controls whether push is SENT to devices you've enabled.")}</p>
+          <p className="t-caption" style={{ margin: 0 }}>{t("profile.notif.pushOptInNote", "Push notifications require enabling on this device (browser permission + subscription). Toggling the preference above only controls whether push is SENT to devices you've enabled.")}</p>
           <PushOptIn strings={{
             enable: t("profile.notif.pushEnable", "Enable push on this device"),
             enabling: t("profile.notif.pushEnabling", "Requesting permission…"),
@@ -104,11 +104,11 @@ export default async function ProfileSettings() {
           }} />
         </section>
 
-        <section className="ax-surface ax-stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-session-h">
+        <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-100)" }} aria-labelledby="profile-session-h">
           <h3 id="profile-session-h" style={{ margin: 0 }}>{t("profile.session.heading", "Session & security")}</h3>
-          <Row label={t("profile.session.issued", "Session started")}><bdi dir="ltr" className="ax-numeric">{issuedAt ?? "—"}</bdi></Row>
-          <Row label={t("profile.session.expires", "Session expires")}><bdi dir="ltr" className="ax-numeric">{expiresAt ?? "—"}</bdi></Row>
-          <a className="ax-btn ax-btn--subtle" href="/signout" style={{ alignSelf: "flex-start", marginBlockStart: "var(--ax-space-100)" }}>{t("nav.signout", "Sign out")}</a>
+          <Row label={t("profile.session.issued", "Session started")}><bdi dir="ltr" className="numeric">{issuedAt ?? "—"}</bdi></Row>
+          <Row label={t("profile.session.expires", "Session expires")}><bdi dir="ltr" className="numeric">{expiresAt ?? "—"}</bdi></Row>
+          <a className="btn btn-ghost btn-touch" href="/signout" style={{ alignSelf: "flex-start", marginBlockStart: "var(--ax-space-100)" }}>{t("nav.signout", "Sign out")}</a>
         </section>
       </div>
     </Shell>

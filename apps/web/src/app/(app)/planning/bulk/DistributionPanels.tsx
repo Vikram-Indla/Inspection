@@ -19,27 +19,27 @@ export type DistributionStrings = {
 function Panel({ dist, strings, focusedValue }: { dist: Distribution; strings: DistributionStrings; focusedValue?: string }) {
   const max = Math.max(1, ...dist.buckets.map(b => b.count));
   return (
-    <section className="ax-surface" aria-label={dist.heading}
+    <section className="panel" aria-label={dist.heading}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
         <h4 style={{ margin: 0 }}>{dist.heading}</h4>
-        <span className="ax-caption ax-numeric">{strings.ofDenominator.replace("{n}", String(dist.total))}</span>
+        <span className="t-caption numeric">{strings.ofDenominator.replace("{n}", String(dist.total))}</span>
       </div>
       <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
         {dist.buckets.map(b => {
           const pct = Math.round((b.count / max) * 100);
           const isFocused = focusedValue != null && b.label.toLowerCase() === focusedValue.toLowerCase();
           return (
-            <li key={b.label} className="ax-row"
+            <li key={b.label} className="row"
               style={{ gap: "var(--ax-space-150)", alignItems: "center", outline: isFocused ? "2px solid var(--ax-color-primary)" : undefined, borderRadius: "var(--ax-radius-small)" }}>
               <span style={{ minInlineSize: 120, flexShrink: 0 }}>
-                {b.unknown ? <span className="ax-lozenge ax-lozenge--warning">? {strings.unknown}</span> : <bdi>{b.label}</bdi>}
+                {b.unknown ? <span className="badge badge-warning">? {strings.unknown}</span> : <bdi>{b.label}</bdi>}
               </span>
               <span aria-hidden="true" style={{
                 blockSize: 8, inlineSize: `${pct}%`, minInlineSize: 2,
                 background: "var(--ax-color-primary)", borderRadius: "var(--ax-radius-small)",
               }} />
-              <span className="ax-numeric ax-caption" style={{ marginInlineStart: "auto" }}>{b.count}</span>
+              <span className="numeric t-caption" style={{ marginInlineStart: "auto" }}>{b.count}</span>
             </li>
           );
         })}
@@ -60,7 +60,7 @@ export default function DistributionPanels({ distributions, strings, focusedFiel
       {distributions.map(d => (
         <div key={d.key}>
           <Panel dist={d} strings={strings} focusedValue={d.key === focusedField ? (focusedValue ?? undefined) : undefined} />
-          {d.key === "risk_band" && <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.riskAdvisory}</p>}
+          {d.key === "risk_band" && <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.riskAdvisory}</p>}
         </div>
       ))}
     </section>

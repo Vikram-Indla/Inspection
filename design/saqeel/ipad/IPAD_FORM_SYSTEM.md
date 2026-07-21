@@ -1,0 +1,2 @@
+# IPAD_FORM_SYSTEM
+Long inspection forms on iPad: horizontal Steps header (sticky), one section at a time, section select replaces side nav ≤1023px; 52px controls; per-question evidence/note buttons ≥44px; autosave + offline queue statuses in header; validation summary Alert links scroll to fields; prev/next section footer buttons full-width portrait.

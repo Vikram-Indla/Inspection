@@ -43,8 +43,8 @@ export default function Accordion({ items }: AccordionProps) {
               onClick={() => toggle(item.id)}
             >
               <span>{item.title}</span>
-              <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-                {item.progress ? <span className="ax-accordion__progress ax-numeric">{item.progress}</span> : null}
+              <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+                {item.progress ? <span className="ax-accordion__progress numeric">{item.progress}</span> : null}
                 <IconChevronDown size={16} className="ax-accordion__chevron" />
               </span>
             </button>

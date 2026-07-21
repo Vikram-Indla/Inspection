@@ -22,21 +22,21 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-300)", position: "sticky", insetBlockStart: 16, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
       <h4>{strings.heading}</h4>
       <input type="hidden" name="review_id" value={reviewId} />
-      <div className="ax-row">
+      <div className="row">
         {["approve", "return", "reject"].map(d => (
           <label key={d} className="ax-choice"><input type="radio" name="decision" value={d} checked={decision === d} onChange={() => setDecision(d)} /> {strings.decisions[d] ?? d}</label>
         ))}
       </div>
       {decision === "return" && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-200)" }}>
           <p className="ax-overline" style={{ marginBlockEnd: 8 }}>{strings.returnScopeTitle}</p>
           {sections.map(s => (
             <label key={s.key} className="ax-choice" style={{ display: "flex" }}><input type="checkbox" name="returned_section" value={s.key} /> {s.title}</label>
           ))}
-          <p className="ax-caption">{strings.returnScopeHint}</p>
+          <p className="t-caption">{strings.returnScopeHint}</p>
         </div>
       )}
       <div className="ax-field" style={{ maxInlineSize: "none" }}>
@@ -46,8 +46,8 @@ export default function DecisionPanel({ reviewId, sections, strings }: { reviewI
       {state.error && <div ref={errorRef} tabIndex={-1} className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
       {decision === "approve" && <div className="ax-banner ax-banner--warning"><div><strong>{strings.approveWarnTitle}</strong> {strings.approveWarnBody}</div></div>}
       {decision === "reject" && <div className="ax-banner ax-banner--critical"><div><strong>{strings.rejectWarnTitle}</strong> {strings.rejectWarnBody}</div></div>}
-      <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? strings.recording : strings.confirm.replace("{decision}", strings.decisions[decision] ?? decision)}</button>
-      <p className="ax-caption">{strings.audited}</p>
+      <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.recording : strings.confirm.replace("{decision}", strings.decisions[decision] ?? decision)}</button>
+      <p className="t-caption">{strings.audited}</p>
     </form>
   );
 }

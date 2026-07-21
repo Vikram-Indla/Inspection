@@ -21,7 +21,7 @@ export default function LineChart({ data, title, emptyLabel = "No data", height 
   data: LineDatum[]; title: string; emptyLabel?: string; height?: number;
 }) {
   if (data.length === 0) {
-    return <p className="ax-caption" role="status">{emptyLabel}</p>;
+    return <p className="t-caption" role="status">{emptyLabel}</p>;
   }
   const w = 360, padX = 18, padTop = 18, padBottom = 22;
   const innerH = height - padTop - padBottom;
@@ -47,7 +47,7 @@ export default function LineChart({ data, title, emptyLabel = "No data", height 
           <g key={`${p.label}-${i}`}>
             <circle cx={p.x} cy={p.y} r={3.5} fill="var(--ax-color-surface)"
               stroke="var(--ax-color-primary)" strokeWidth="2" />
-            <text x={p.x} y={p.y - 8} textAnchor="middle" className="ax-numeric" style={VALUE_TEXT}>{p.value}</text>
+            <text x={p.x} y={p.y - 8} textAnchor="middle" className="numeric" style={VALUE_TEXT}>{p.value}</text>
             <text x={p.x} y={height - 6} textAnchor="middle" style={AXIS_TEXT}>{p.label}</text>
           </g>
         ))}

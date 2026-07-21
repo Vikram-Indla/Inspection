@@ -1,6 +1,5 @@
 "use client";
 import { useMemo, useState } from "react";
-import { IconSearch } from "@/app/icons";
 
 // CD-028 / SCR-WEB-300 — Level 2 review queue (scan-first).
 // The queue renders NO decision controls (leg 10): a row opens /reviews/:id,
@@ -96,9 +95,9 @@ function Fingerprint({ r, s }: { r: QueueRow; s: FingerprintStrings }) {
           : <span className={`cd-fpchip cd-fpchip--${r.slaState === "overdue" ? "bad" : "ok"}`}><span className="cd-fpchip__g" aria-hidden="true">{r.slaState === "overdue" ? "▲" : "✓"}</span>{fp.sla}: {r.slaState === "overdue" ? fp.slaOverdue : fp.slaOnTime}</span>}
         <span className={`ax-lozenge ${r.riskBand ? r.riskTone : ""}`}>{fp.risk}: {r.riskBand ? r.riskLabel : fp.unavailable}</span>
         {r.criticalCount > 0
-          ? <span className="ax-lozenge ax-lozenge--critical">{r.criticalCount} {fp.critical}</span>
+          ? <span className="badge badge-critical">{r.criticalCount} {fp.critical}</span>
           : <span className="cd-sub">0 {fp.critical}</span>}
-        {r.priorityLabel && <span className="ax-lozenge ax-lozenge--info">{fp.priority}: {r.priorityLabel}</span>}
+        {r.priorityLabel && <span className="badge badge-info">{fp.priority}: {r.priorityLabel}</span>}
       </div>
       <div className="cd-fp__row">
         <FactChip label={fp.checklist} fact={r.readiness.checklist} valueLabel={factLabel(r.readiness.checklist)} />
@@ -135,12 +134,12 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
   return (
     <div className="cd-queue">
       {/* fingerprint legend — states the contract before the table */}
-      <section className="ax-surface cd-panelpad">
+      <section className="panel cd-panelpad">
         <div className="cd-sectionhead"><h3>{strings.fpTitle}</h3></div>
         <p className="cd-sub">{strings.fpHint}</p>
       </section>
       {/* M06-014/030 — client search + status + risk + overdue-only over the RLS page */}
-      <div className="ax-surface cd-filters">
+      <div className="panel cd-filters">
         <label className="cd-fl cd-fl--search"><span className="cd-fl__k">{strings.searchPlaceholder}</span>
           <input className="ax-input" value={q} onChange={e => setQ(e.target.value)} placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} /></label>
         <label className="cd-fl"><span className="cd-fl__k">{strings.allStatuses}</span>
@@ -154,14 +153,14 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
             {riskOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select></label>
         <label className="cd-choice"><input type="checkbox" checked={overdue} onChange={e => setOverdue(e.target.checked)} /><span>{strings.overdueOnly}</span></label>
-        {hasFilter && <button type="button" className="ax-btn ax-btn--subtle" onClick={clear}>{strings.clearFilters}</button>}
-        <span className="ax-caption ax-numeric" style={{ marginInlineStart: "auto" }}>
+        {hasFilter && <button type="button" className="btn btn-ghost btn-touch" onClick={clear}>{strings.clearFilters}</button>}
+        <span className="t-caption numeric" style={{ marginInlineStart: "auto" }}>
           {strings.showing.replace("{shown}", String(filtered.length)).replace("{total}", String(rows.length))}
         </span>
       </div>
       {filtered.length === 0 ? (
-        <section className="ax-surface cd-panelpad cd-result" role="status">
-          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--neutral" aria-hidden="true"><IconSearch size={24} /></div>
+        <section className="panel cd-panelpad cd-result" role="status">
+          <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--neutral" aria-hidden="true">🔍</div>
             <div className="cd-stack"><h3 tabIndex={-1}>{strings.noMatch}</h3><p>{strings.noMatchBody}</p></div></div>
         </section>
       ) : (
@@ -185,10 +184,10 @@ export function ReviewQueue({ rows, statusOptions, riskOptions, strings }: {
                 </td>
                 <td>{r.inspectorName || "—"}</td>
                 <td className="cd-sub">{r.typeLabel} · {r.modeLabel}</td>
-                <td><span className="ax-version">v{r.versionNumber ?? "—"}</span><div className="cd-sub cd-mono ax-numeric">{r.submittedDisplay}</div></td>
+                <td><span className="ax-version">v{r.versionNumber ?? "—"}</span><div className="cd-sub cd-mono numeric">{r.submittedDisplay}</div></td>
                 <td><Fingerprint r={r} s={strings.fp} /></td>
                 <td><span className={`ax-lozenge ax-lozenge--review ${r.statusTone}`}>{r.statusLabel}</span></td>
-                <td><a className="ax-btn ax-btn--secondary" href={r.href} title={strings.openHint}>{strings.open}</a></td>
+                <td><a className="btn btn-secondary btn-touch" href={r.href} title={strings.openHint}>{strings.open}</a></td>
               </tr>
             ))}
           </tbody>

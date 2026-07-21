@@ -5,8 +5,10 @@ import { NotYetBoundary } from "@/components/NotYetBoundary";
 import EmptyState from "@/components/EmptyState";
 import RiskForm, { type RiskLabels } from "./RiskForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function RiskStudio() {
-  const { t, locale } = await useT();
+  const { t } = await useT();
   const sb = await supabaseServer();
   const { data } = await sb.from("engine_settings").select("settings, version_label, updated_at").eq("engine", "risk").single();
   const s = data?.settings as { factors: { key: string; weight: number }[]; bands: Record<string, number[]> } | undefined;
@@ -35,8 +37,8 @@ export default async function RiskStudio() {
   };
 
   return (
-    <Shell current="/admin/risk" title={t("admin.risk.title", "Risk Settings")}
-      context={<><span className="ax-lozenge ax-lozenge--info">SCR-ADM-060 · ENG-04</span><span className="ax-version">{data?.version_label}</span></>}>
+    <Shell current="/admin/risk" title={t("admin.risk.title", "Risk Engine configuration")}
+      context={<><span className="badge badge-info">SCR-ADM-060 · ENG-04</span><span className="ax-version">{data?.version_label}</span></>}>
       <div className="ax-banner"><div><strong>{t("admin.risk.banner.title", "This is the Risk Studio (MVP1 foundation scope).")}</strong> {t("admin.risk.banner.before", "Weights and bands are live configuration in")} <code>engine_settings</code> {t("admin.risk.banner.after", "— scores must be reproducible from stored inputs + this version (EV-004). Writes require the risk_owner role; RLS rejects everyone else. Every save lands in the immutable audit trail.")}</div></div>
 
       {!data && (
@@ -51,7 +53,6 @@ export default async function RiskStudio() {
           medMax={s.bands?.medium?.[1] ?? 69}
           updatedAt={data.updated_at}
           labels={labels}
-          locale={locale}
         />
       )}
 

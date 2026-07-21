@@ -1,0 +1,2 @@
+# IPAD_MAP_SYSTEM
+Map command on iPad: side queue panel becomes a bottom drawer (peek header + swipe up); floating toolbar centered ≥768px; zoom/locate stack ≥44px targets inline-end-bottom; markers unchanged (26px + keyline reads at arm's length); selected-context panel becomes the bottom drawer content; layer panel opens from a toolbar button instead of persistent.

@@ -36,11 +36,11 @@ export default async function BulkReview() {
   if (!isPlanner) {
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
-        <section className="ax-surface ax-panel cd-panelpad ax-permission">
+        <section className="panel cd-panelpad ax-permission">
           <div className="ax-state ax-state--inline">
             <span className="ax-state__glyph" aria-hidden="true"><IconBlocked size={24} /></span>
             <h4 tabIndex={-1}>{t("plan.review.unauth.title", "You don’t have access to review this plan")}</h4>
-            <p className="ax-caption">{t("plan.review.unauth.body", "This view requires the Planner role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
+            <p className="t-caption">{t("plan.review.unauth.body", "This view requires the Planner role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
             <a className="ax-link" href="/planning">{t("plan.review.unauth.back", "Back to planning")}</a>
           </div>
         </section>
@@ -226,7 +226,7 @@ export default async function BulkReview() {
 
   return (
     <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.review.context", "SCR-WEB-150 · review · publish")}</span>}>
+      context={<span className="badge badge-info">{t("plan.review.context", "SCR-WEB-150 · review · publish")}</span>}>
       <ReviewClient strings={strings} />
     </Shell>
   );

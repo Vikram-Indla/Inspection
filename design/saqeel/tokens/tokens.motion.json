@@ -1,0 +1,8 @@
+{
+  "motion": {
+    "fast": 120,
+    "base": 180,
+    "slow": 260,
+    "ease": "cubic-bezier(0.2,0,0,1)"
+  }
+}

@@ -93,6 +93,7 @@ test("changed inspector chrome reflows, retains 52px targets and exposes focus",
     expect(Math.min(...targets)).toBeGreaterThanOrEqual(52);
     await page.screenshot({ path: path.join(evidenceRoot, frame.file), fullPage: true });
     await page.locator(".ax-field-taskbar__primary").focus();
-    expect(await page.locator(".ax-field-taskbar__primary").evaluate(node => getComputedStyle(node).boxShadow)).not.toBe("none");
+    // SAQEEL focus indicator is a 2px outline (PR 1b: box-shadow ring retired).
+    expect(await page.locator(".ax-field-taskbar__primary").evaluate(node => getComputedStyle(node).outlineWidth)).toBe("2px");
   }
 });

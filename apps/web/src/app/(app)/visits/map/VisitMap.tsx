@@ -50,20 +50,20 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS, locale 
     : markers.length ? [markers[0].lat, markers[0].lng] : [24.7136, 46.6753];
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
         <label className="ax-field" style={{ minInlineSize: 260 }}><span className="ax-field__label">{s.region}</span>
           <select className="ax-select" value={region} onChange={e => { setRegion(e.target.value); setSelectedId(null); }}>
             <option value="">{s.allRegions}</option>
             {regions.map(r => <option key={r} value={r}>{r}</option>)}
           </select>
         </label>
-        <div className="ax-row" style={{ gap: 8 }}>
-          <span className="ax-lozenge ax-lozenge--info">{"● "}{s.factoryVisitLegend}</span>
-          <span className="ax-lozenge ax-lozenge--warning">{"● "}{s.inspectorLegend}</span>
+        <div className="row" style={{ gap: 8 }}>
+          <span className="badge badge-info">{"● "}{s.factoryVisitLegend}</span>
+          <span className="badge badge-warning">{"● "}{s.inspectorLegend}</span>
         </div>
       </div>
-      <div className="ax-surface" style={{ blockSize: 520, overflow: "hidden", padding: 0 }} dir="ltr">
+      <div className="panel" style={{ blockSize: 520, overflow: "hidden", padding: 0 }} dir="ltr">
         {markers.length ? <GeoMap center={center} zoom={region || selected ? 9 : 5} markers={markers}
           selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" /> : (
           <EmptyState glyph="∅" title={s.noneInRegion} bare />

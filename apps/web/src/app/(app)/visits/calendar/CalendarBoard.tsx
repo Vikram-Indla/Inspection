@@ -94,7 +94,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
         font: "var(--ax-text-caption)",
       }}
       title={`${v.factoryName} · ${v.typeLabel} · ${v.planningLabel} · ${v.opsLabel}`}>
-      {withTime && <span className="ax-numeric">{timeOf(v.windowStart)} </span>}{v.factoryName}
+      {withTime && <span className="numeric">{timeOf(v.windowStart)} </span>}{v.factoryName}
     </a>
   );
 
@@ -113,22 +113,22 @@ export default function CalendarBoard({ visits, locale, strings }: {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
         <div className="ax-segmented" role="group" aria-label={strings.viewSwitchAria}>
           {([["day", strings.viewDay], ["week", strings.viewWeek], ["month", strings.viewMonth]] as [ViewKey, string][]).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
           ))}
         </div>
-        <div className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => shift(-1)} aria-label={strings.prev}>‹</button>
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setAnchorMs(utcMidnight(new Date()))}>{strings.today}</button>
-          <button type="button" className="ax-btn ax-btn--subtle" onClick={() => shift(1)} aria-label={strings.next}>›</button>
+        <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+          <button type="button" className="btn btn-ghost btn-touch" onClick={() => shift(-1)} aria-label={strings.prev}>‹</button>
+          <button type="button" className="btn btn-ghost btn-touch" onClick={() => setAnchorMs(utcMidnight(new Date()))}>{strings.today}</button>
+          <button type="button" className="btn btn-ghost btn-touch" onClick={() => shift(1)} aria-label={strings.next}>›</button>
           <strong style={{ marginInlineStart: "var(--ax-space-150)" }}>{heading}</strong>
         </div>
       </div>
 
       {view === "month" && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-200)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
             {weekDays.map(ms => (
               <div key={`h${ms}`} className="ax-overline" style={{ padding: "var(--ax-space-050)", textAlign: "center" }}>{weekdayName.format(new Date(ms))}</div>
@@ -144,10 +144,10 @@ export default function CalendarBoard({ visits, locale, strings }: {
                   background: inMonth(ms) ? "var(--ax-color-surface)" : "var(--ax-color-surface-sunken)",
                   display: "flex", flexDirection: "column", gap: 2, opacity: inMonth(ms) ? 1 : .6,
                 }}>
-                  <span className="ax-caption ax-numeric" style={{ alignSelf: "flex-end" }}>{new Date(ms).getUTCDate()}</span>
+                  <span className="t-caption numeric" style={{ alignSelf: "flex-end" }}>{new Date(ms).getUTCDate()}</span>
                   {list.slice(0, 3).map(v => chip(v, false))}
                   {list.length > 3 && (
-                    <button type="button" className="ax-caption" onClick={() => { setAnchorMs(ms); setView("day"); }}
+                    <button type="button" className="t-caption" onClick={() => { setAnchorMs(ms); setView("day"); }}
                       style={{ border: 0, background: "transparent", cursor: "pointer", textAlign: "start", color: "var(--ax-color-text-secondary)", padding: 0 }}>
                       {strings.moreCount.replace("{n}", String(list.length - 3))}
                     </button>
@@ -160,7 +160,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "week" && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--ax-space-200)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "var(--ax-space-100)" }}>
             {weekDays.map(ms => {
               const k = keyOf(ms);
@@ -182,16 +182,16 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "day" && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-          <span className="ax-caption ax-numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
+        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+          <span className="t-caption numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
           {dayVisits.length === 0 ? (
-            <div className="ax-state ax-state--inline"><p className="ax-caption">{strings.emptyRange}</p></div>
+            <div className="ax-state ax-state--inline"><p className="t-caption">{strings.emptyRange}</p></div>
           ) : dayVisits.map(v => (
-            <a key={v.id} href={`/visits/${v.id}`} className="ax-surface"
+            <a key={v.id} href={`/visits/${v.id}`} className="panel"
               style={{ padding: "var(--ax-space-200)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", textDecoration: "none", color: "inherit", border: "1px solid var(--ax-color-border)" }}>
-              <span className="ax-numeric"><strong>{timeOf(v.windowStart)}</strong> → {timeOf(v.windowEnd)}</span>
+              <span className="numeric"><strong>{timeOf(v.windowStart)}</strong> → {timeOf(v.windowEnd)}</span>
               <strong>{v.factoryName}</strong>
-              <span className="ax-caption">{v.typeLabel}</span>
+              <span className="t-caption">{v.typeLabel}</span>
               <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[v.planningStatus] ?? ""}`}>{v.planningLabel}</span>
               <span className="ax-lozenge ax-lozenge--ops">{v.opsLabel}</span>
             </a>

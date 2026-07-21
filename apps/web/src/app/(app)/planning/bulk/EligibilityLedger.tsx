@@ -39,36 +39,36 @@ export default function EligibilityLedger({
     : strings.freshnessNever;
 
   return (
-    <section className="ax-surface" aria-label={strings.heading}
+    <section className="panel" aria-label={strings.heading}
       style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-400)", alignItems: "flex-end" }}>
       <div>
-        <span className="ax-caption">{strings.denominator}</span>
-        <div className="ax-numeric" aria-live="polite"><strong style={{ font: "var(--ax-text-title)" }}>{denominator}</strong></div>
+        <span className="t-caption">{strings.denominator}</span>
+        <div className="numeric" aria-live="polite"><strong style={{ font: "var(--ax-text-title)" }}>{denominator}</strong></div>
       </div>
       <div>
-        <span className="ax-caption">{strings.eligible}</span>
-        <div className="ax-numeric" aria-live="polite">
-          <span className="ax-lozenge ax-lozenge--success">✓ {eligible}</span>
+        <span className="t-caption">{strings.eligible}</span>
+        <div className="numeric" aria-live="polite">
+          <span className="badge badge-compliant">✓ {eligible}</span>
         </div>
       </div>
       <div>
-        <span className="ax-caption">{strings.excluded}</span>
-        <div className="ax-numeric" aria-live="polite">
-          <span className="ax-lozenge ax-lozenge--info">− {excluded}</span>
+        <span className="t-caption">{strings.excluded}</span>
+        <div className="numeric" aria-live="polite">
+          <span className="badge badge-info">− {excluded}</span>
         </div>
       </div>
       {focusedCount != null && (
         <div role="status" aria-live="polite">
-          <span className="ax-caption">{focusedLabel}</span>
-          <div className="ax-numeric"><span className="ax-lozenge ax-lozenge--info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
+          <span className="t-caption">{focusedLabel}</span>
+          <div className="numeric"><span className="badge badge-info">{strings.focusContribution.replace("{n}", String(focusedCount))}</span></div>
         </div>
       )}
       <div style={{ marginInlineStart: "auto" }}>
-        <span className="ax-caption">{strings.freshness}</span>
-        <div className="ax-freshness ax-numeric">
+        <span className="t-caption">{strings.freshness}</span>
+        <div className="ax-freshness numeric">
           <bdi>{freshnessLabel}</bdi>
           {missingSync > 0 && (
-            <> · <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.freshnessMissing.replace("{n}", String(missingSync))}</span></>
+            <> · <span className="badge badge-warning">⚠ {strings.freshnessMissing.replace("{n}", String(missingSync))}</span></>
           )}
         </div>
       </div>

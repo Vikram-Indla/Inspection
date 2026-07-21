@@ -89,7 +89,7 @@ export default function AuthorityBar({ chips, strings }: { chips: Chip[]; string
           <div><strong>{firstBlocking.label}</strong> — {firstBlocking.detail}</div>
         </div>
       )}
-      <div className="ax-sr-only" role="alert" aria-live="assertive">{announce}</div>
+      <div className="sr-only" role="alert" aria-live="assertive">{announce}</div>
     </div>
   );
 }

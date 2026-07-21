@@ -27,18 +27,18 @@ export default function Repeater<T>({ items, onChange, makeItem, renderItem, add
     onChange([...items, makeItem()]);
   }
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
+    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
       {items.map((item, i) => (
         <div key={i} className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
             <div style={{ flex: 1 }}>{renderItem(item, i, next => update(i, next))}</div>
             {items.length > minItems && (
-              <button type="button" className="ax-btn ax-btn--subtle" style={{ color: "var(--ax-color-critical)" }} onClick={() => remove(i)}>{removeLabel}</button>
+              <button type="button" className="btn btn-ghost btn-touch" style={{ color: "var(--ax-color-critical)" }} onClick={() => remove(i)}>{removeLabel}</button>
             )}
           </div>
         </div>
       ))}
-      <button type="button" className="ax-btn ax-btn--secondary" onClick={add}>{addLabel}</button>
+      <button type="button" className="btn btn-secondary btn-touch" onClick={add}>{addLabel}</button>
     </div>
   );
 }

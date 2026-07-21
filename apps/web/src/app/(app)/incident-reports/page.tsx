@@ -28,7 +28,7 @@ export default async function IncidentReportsPage() {
     <Shell
       current="/incident-reports"
       title={t("figma.establishmentmanagement.em029", "Report an Incident")}
-      context={<span className="ax-lozenge ax-lozenge--info">FNS-033 · J-12</span>}
+      context={<span className="badge badge-info">FNS-033 · J-12</span>}
     >
       <div className="ax-banner">
         <div>
@@ -71,13 +71,13 @@ export default async function IncidentReportsPage() {
         />
       )}
       {(rows ?? []).map((r) => (
-        <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+        <div key={r.id} className="panel" style={{ padding: "var(--ax-space-300)" }}>
+          <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>
               {r.establishment_code ?? "—"}{" "}
-              <span className="ax-caption">{r.incident_type ?? ""}</span>
+              <span className="t-caption">{r.incident_type ?? ""}</span>
             </h3>
-            <span className="ax-lozenge ax-lozenge--info">{r.report_source ?? "—"}</span>
+            <span className="badge badge-info">{r.report_source ?? "—"}</span>
           </div>
         </div>
       ))}

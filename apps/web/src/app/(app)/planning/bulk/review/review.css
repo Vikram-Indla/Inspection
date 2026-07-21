@@ -6,7 +6,7 @@
    RTL-safe throughout (logical properties only). */
 
 /* mono data (codes, CR, IDs, windows) — tabular numerals */
-.cd-mono { font-family: var(--ax-font-mono); font-feature-settings: var(--ax-numeric-features); }
+.cd-mono { font-family: var(--ax-font-mono); font-feature-settings: var(--numeric-features); }
 
 /* section header: title + right-aligned meta */
 .cd-sectionhead {
@@ -26,7 +26,7 @@
 .cd-ctx { padding: var(--ax-space-300); padding-block-start: var(--ax-space-200); }
 .cd-context dt { font: var(--ax-text-micro); letter-spacing: .01em; color: var(--ax-color-text-secondary); margin-block-end: var(--ax-space-050); }
 .cd-context dd { margin: 0; font: var(--ax-text-body); }
-.cd-count { font: var(--ax-text-title); font-feature-settings: var(--ax-numeric-features); line-height: 1.1; }
+.cd-count { font: var(--ax-text-title); font-feature-settings: var(--numeric-features); line-height: 1.1; }
 .cd-count small { font: var(--ax-text-body); color: var(--ax-color-text-secondary); }
 
 /* readiness rail */
@@ -102,7 +102,7 @@
 .cd-result__icon.fail { background: var(--ax-color-critical-tint); color: var(--ax-color-critical-strong); }
 .cd-result__icon.lock { background: var(--ax-color-neutral-tint); color: var(--ax-color-text-secondary); }
 .cd-result h3 { font: var(--ax-text-heading); margin: 0; }
-.cd-result h3:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); border-radius: var(--ax-radius-small); }
+.cd-result h3:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: var(--ax-radius-small); }
 .cd-resultgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--ax-space-200); }
 
 /* handoff-status tag (annotation of an unresolved governance leg) */

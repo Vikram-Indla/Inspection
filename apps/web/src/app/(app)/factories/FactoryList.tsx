@@ -59,7 +59,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
     [factories, region, city, license]);
   return (
     <>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
+      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
         {/* FNS-103/104 — licensed/unlicensed segmentation over the real is_temporary flag */}
         <div className="ax-segmented" role="group" aria-label={strings.licenseGroupAria}>
           {([["", strings.licenseAll], ["licensed", strings.licensed], ["unlicensed", strings.unlicensed]] as [LicenseKey, string][]).map(([k, label]) => (
@@ -77,7 +77,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
             <option value="">{strings.allCities}</option>
             {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select></div>
-        <span className="ax-caption"><span className="ax-numeric">{rows.length}</span> {strings.of} <span className="ax-numeric">{factories.length}</span> {strings.factoriesWord}</span>
+        <span className="t-caption"><span className="numeric">{rows.length}</span> {strings.of} <span className="numeric">{factories.length}</span> {strings.factoriesWord}</span>
       </div>
       {rows.length === 0 ? (
         <EmptyState icon={<IconFactory size={28} />} title={strings.emptyRegionTitle} body={strings.emptyRegionDesc} />
@@ -86,9 +86,9 @@ export default function FactoryList({ factories, strings }: { factories: Factory
           <thead><tr><th scope="col">{strings.thFactory}</th><th scope="col">{strings.thCr}</th><th scope="col">{strings.thRegion}</th><th scope="col">{strings.thCity}</th><th scope="col" className="ax-td-num">{strings.thRisk}</th><th scope="col"></th></tr></thead>
           <tbody>{rows.map(f => (
             <tr key={f.id}>
-              <td><strong>{f.name}</strong> <span className="ax-caption">{f.factory_code}</span></td>
-              <td className="ax-numeric">{f.cr_number}</td>
-              <td><span className="ax-lozenge ax-lozenge--info">{f.region ?? "—"}</span></td>
+              <td><strong>{f.name}</strong> <span className="t-caption">{f.factory_code}</span></td>
+              <td className="numeric">{f.cr_number}</td>
+              <td><span className="badge badge-info">{f.region ?? "—"}</span></td>
               <td>{f.city}</td>
               <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.bandLabels[f.risk_band]) ?? f.risk_band} · {f.risk_score}</span></td>
               <td><a className="ax-link" href={f.dossier_href ?? `/factories/${f.id}`}>{strings.dossier} →</a></td>

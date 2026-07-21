@@ -26,43 +26,52 @@ function contrast(a: string, b: string) {
   return (high + 0.05) / (low + 0.05);
 }
 
-test.describe("Government Foundation V1 contract", () => {
-  test("DSF-AC-001..006 palettes exceed WCAG AA and primary text targets AAA", () => {
-    expect(contrast("#1B242C", "#F5F7F8")).toBeGreaterThanOrEqual(7);
-    expect(contrast("#49545E", "#FFFFFF")).toBeGreaterThanOrEqual(7);
-    expect(contrast("#FFFFFF", "#176B52")).toBeGreaterThanOrEqual(4.5);
-    expect(contrast("#F1F4F6", "#101317")).toBeGreaterThanOrEqual(7);
-    expect(contrast("#ABB4BD", "#191D22")).toBeGreaterThanOrEqual(7);
-    expect(contrast("#101317", "#78AEDA")).toBeGreaterThanOrEqual(7);
-    expect(contrast("#FFFFFF", "#B42318")).toBeGreaterThanOrEqual(4.5);
+test.describe("SAQEEL Inspection Design System v1.0 contract", () => {
+  // SAQEEL supersedes Government Foundation V1 (owner-approved 2026-07-20).
+  test("DSF-AC-001..006 SAQEEL palettes exceed WCAG AA and primary text targets AAA", () => {
+    // Light: text/secondary on canvas & surface reach AAA; primary/critical reach AA.
+    expect(contrast("#1a1d1f", "#f4f3f0")).toBeGreaterThanOrEqual(7);   // --text-primary / --surface-canvas
+    expect(contrast("#4c5258", "#ffffff")).toBeGreaterThanOrEqual(7);   // --text-secondary / --surface-primary
+    expect(contrast("#ffffff", "#115c44")).toBeGreaterThanOrEqual(4.5); // --text-on-action / --action-primary
+    // Dark: text/secondary reach AAA on their surfaces; emerald primary reaches AA.
+    expect(contrast("#e8eaec", "#17191d")).toBeGreaterThanOrEqual(7);   // dark --text-primary / --surface-canvas
+    expect(contrast("#b1b6bc", "#1e2126")).toBeGreaterThanOrEqual(7);   // dark --text-secondary / --surface-primary
+    expect(contrast("#08120e", "#2e9e77")).toBeGreaterThanOrEqual(4.5); // dark --text-on-action / --action-primary (emerald)
+    expect(contrast("#ffffff", "#b3261e")).toBeGreaterThanOrEqual(4.5); // --text-on-action / --status-critical
   });
 
-  test("DSF-AC-007..013 typography is productive and bilingual", () => {
+  test("DSF-AC-007..013 typography is productive and bilingual (IBM Plex)", () => {
     const tokens = read("src/app/tokens.css");
-    expect(tokens).toContain('--ax-font-sans: var(--font-plex-arabic');
-    expect(tokens).toContain("--ax-text-display: 500 32px/40px");
-    expect(tokens).toContain("--ax-text-body:    400 16px/24px");
-    expect(tokens).toContain("--ax-text-field:   400 17px/26px");
-    expect(tokens).toContain("--ax-text-micro:   500 12px/16px var(--ax-font-sans)");
+    expect(tokens).toContain('--font-body:    "IBM Plex Sans"');       // English resolves to IBM Plex Sans
+    expect(tokens).toContain('"IBM Plex Sans Arabic"');                 // Arabic-first stack present
+    expect(tokens).toContain("--type-display-size: 28px;");            // SAQEEL scale supersedes 32px
+    expect(tokens).toContain("--type-body-size: 14px;");              // 14px body supersedes 16px minimum
+    expect(tokens).toContain("--type-table-size: 13px;");             // 13px tables
+    expect(tokens).not.toContain("Space Grotesk");                     // frozen input font retired
+    expect(tokens).not.toContain("JetBrains");                         // JetBrains Mono retired
   });
 
-  test("DSF-AC-014..018 frozen text-box geometry and behavior tokens remain intact", () => {
+  test("DSF-AC-014..018 SAQEEL control geometry (frozen 12px input contract retired)", () => {
     const tokens = read("src/app/tokens.css");
     const css = read("src/app/astryx.css");
-    expect(tokens).toContain("--ax-radius-input: 12px");
-    expect(tokens).toContain("--ax-control-height: 44px");
-    expect(tokens).toContain("--ax-control-height-field: 52px");
-    expect(tokens).toContain("--ax-text-input:   400 16px/24px var(--ax-font-input)");
-    expect(css).toContain("padding-block: var(--ax-space-100); padding-inline: var(--ax-space-150)");
-    expect(css).toContain("border-radius: var(--ax-radius-input)");
+    expect(tokens).toContain("--radius-sm: 3px;");                     // inputs/buttons 3px (was 12px)
+    expect(tokens).toContain("--ax-radius-input:    var(--radius-sm)"); // shim retires 12px input radius
+    expect(tokens).toContain("--control-h-lg: 40px;");                 // comfortable control height
+    expect(tokens).toContain("--type-body-size: 15px;");              // field-density body 15px (data-density=field)
+    expect(css).toContain("border-radius: var(--ax-radius-input)");   // input rule still consumes the (now-3px) token
     expect(css).toContain("resize: vertical");
   });
 
   test("DSF-AC-019..023 authenticated foundation rejects cinematic styling", () => {
     const css = read("src/app/astryx.css");
-    const dashboard = read("src/app/(app)/dashboard/dashboard.module.css");
+    const dashboard = read("src/app/dashboard/dashboard.module.css");
+    // Scan authenticated PAGE/module CSS only. The SAQEEL design-system layer
+    // (tokens.css, the DS component sheet) and the login Atlas are excluded —
+    // they are DS/exception layers, not pages, and legitimately carry SAQEEL DS
+    // internals (uppercase micro-labels, white-on-status marker knobs, the
+    // on-hold severity hatch). Page CSS must still stay institutional.
     const authenticated = cssFiles(path.join(root, "src/app"))
-      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css"))
+      .filter(file => !file.endsWith("tokens.css") && !file.endsWith("login.css") && !file.endsWith("saqeel-components.css"))
       .map(file => fs.readFileSync(file, "utf8")).join("\n");
     expect(authenticated).not.toMatch(/font-style:\s*italic/);
     expect(authenticated).not.toMatch(/text-transform:\s*uppercase/);

@@ -1,10 +1,8 @@
 import type { ReactNode } from "react";
-import { getUserRoles } from "@/lib/persona";
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
-import { formatDate, formatDateTime } from "@/lib/dates";
 import { buildShellNavigation } from "@/lib/shell-navigation";
 
 // CD-004 / SCR-ADM-001 — Approval & Configuration home (Configuration Evidence Spine).
@@ -16,6 +14,8 @@ import { buildShellNavigation } from "@/lib/shell-navigation";
 // module that owns its authorization. Route-guard enforcement (W03), per-source retry
 // (W10) and the proposed provenance/draft-queue reads remain HANDOFF_BLOCKED and are
 // intentionally not implemented here.
+export const dynamic = "force-dynamic";
+
 type Res = { error: unknown; count: number | null };
 const ok = (r: Res) => !r.error;
 
@@ -54,7 +54,7 @@ export default async function AdminHome() {
   // Role scope (W02 pattern): server-rendered roles → the families this user can act in.
   const { data: { user } } = await getVerifiedUser(sb);
   const { data: roleRows } = user
-    ? await getUserRoles(user.id)
+    ? await sb.from("user_roles").select("role_key").eq("user_id", user.id)
     : { data: [] as { role_key: string }[] };
   const roles = Array.from(new Set((roleRows ?? []).map(r => r.role_key))).sort();
   const control = buildShellNavigation(roles).find(g => g.id === "control");
@@ -67,7 +67,7 @@ export default async function AdminHome() {
     ? actFamilies.join(sep)
     : t("admin.overview.r2.scope.none", "none");
 
-  const readAt = formatDateTime(Date.now(), locale === "ar" ? "ar" : "en");
+  const readAt = new Date().toISOString().slice(0, 16).replace("T", " ");
   const engines = enginesRes.data ?? [];
 
   // Read-state chip: glyph + word (never colour-only). "en" carries the count-unit noun;
@@ -90,7 +90,7 @@ export default async function AdminHome() {
     );
   }
   const num = (n: number, unitEn?: string) => (
-    <span className="ax-numeric">
+    <span className="numeric">
       <bdi dir="ltr">{n.toLocaleString("en-US")}</bdi>
       {unitEn && locale === "en" ? ` ${unitEn}` : ""}
     </span>
@@ -102,45 +102,45 @@ export default async function AdminHome() {
     const c = r.count ?? 0;
     if (c === 0) {
       return (
-        <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+        <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
           {chip("verifiedZero")}
-          {emptyHint ? <span className="ax-caption">{emptyHint}</span> : null}
+          {emptyHint ? <span className="t-caption">{emptyHint}</span> : null}
         </div>
       );
     }
     return (
-      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
         {chip("verified")} {num(c, unitEn)}
       </div>
     );
   }
 
-  const familyCompliance = t("admin.overview.r2.family.compliance", "Inspection Rules");
+  const familyCompliance = t("admin.overview.r2.family.compliance", "Compliance Library");
   const familyPackages = t("admin.overview.r2.family.packages", "Packages & Surveys");
-  const familyEnforcement = t("admin.overview.r2.family.enforcement", "Violations & Penalties");
+  const familyEnforcement = t("admin.overview.r2.family.enforcement", "Enforcement Library");
   const familyEngines = t("admin.overview.r2.family.engines", "Engine settings");
-  const familyAudit = t("admin.overview.r2.family.audit", "Activity Log");
+  const familyAudit = t("admin.overview.r2.family.audit", "Audit trail");
   const openTmpl = t("admin.overview.r2.open", "Open {family}");
   const openLink = (family: string, href: string) => (
-    <a className="ax-btn ax-btn--secondary ax-link" href={href} aria-label={`${fill(openTmpl, { family })} — ${family}`}>
+    <a className="btn btn-secondary ax-link btn-touch" href={href} aria-label={`${fill(openTmpl, { family })} — ${family}`}>
       {fill(openTmpl, { family })}
     </a>
   );
 
   const linkOnly = [
     { href: "/admin/items", key: "shell.nav.items", en: "Inspection Items" },
-    { href: "/admin/workflows", key: "shell.nav.workflows", en: "Workflow Settings" },
-    { href: "/admin/risk", key: "shell.nav.risk", en: "Risk Settings" },
-    { href: "/admin/gis", key: "shell.nav.gis", en: "Map Settings" },
+    { href: "/admin/workflows", key: "shell.nav.workflows", en: "Workflow Configuration" },
+    { href: "/admin/risk", key: "shell.nav.risk", en: "Risk Configuration" },
+    { href: "/admin/gis", key: "shell.nav.gis", en: "GIS Configuration" },
     { href: "/admin/access", key: "shell.nav.access", en: "Users & Roles" },
-    { href: "/admin/localization", key: "shell.nav.localization", en: "Language & Translations" },
-    { href: "/admin/audit", key: "shell.nav.audit", en: "Activity Log" },
+    { href: "/admin/localization", key: "shell.nav.localization", en: "Localization" },
+    { href: "/admin/audit", key: "shell.nav.audit", en: "Audit Trail" },
   ];
 
   const readAtNode = withSlot(
     t("admin.overview.r2.readAt", "page read {time} — a source fact not a platform-health verdict"),
     "time",
-    <bdi dir="ltr" className="ax-numeric">{readAt}</bdi>,
+    <bdi dir="ltr" className="numeric">{readAt}</bdi>,
   );
 
   return (
@@ -148,10 +148,10 @@ export default async function AdminHome() {
       current="/admin"
       title={t("admin.overview.r2.title", "Approval & Configuration — overview")}
       context={
-        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
-          <span role="status" aria-live="polite" className="ax-caption">{readAtNode}</span>
+        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+          <span role="status" aria-live="polite" className="t-caption">{readAtNode}</span>
           {failed > 0 ? (
-            <span className="ax-lozenge ax-lozenge--warning">
+            <span className="badge badge-warning">
               <span aria-hidden="true">⚠</span>{" "}
               {fill(t("admin.overview.r2.lozenge.partial", "{n} source unavailable"), { n: failed })}
             </span>
@@ -166,16 +166,16 @@ export default async function AdminHome() {
           {t("admin.overview.r2.totalFailure", "Configuration sources couldn't be read. Nothing shown is current. Your session and navigation still work.")}
         </div>
       ) : failed > 0 ? (
-        <div className="ax-sr-only" role="alert">
+        <div className="sr-only" role="alert">
           {fill(t("admin.overview.r2.lozenge.partial", "{n} source unavailable"), { n: failed })}
         </div>
       ) : null}
 
-      <section className="ax-surface ax-stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-spine-h" style={{ margin: 0 }}>{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</h3>
         <div className="ax-tablewrap">
           <table className="ax-table">
-            <caption className="ax-sr-only">{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</caption>
+            <caption className="sr-only">{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</caption>
             <thead>
               <tr>
                 <th scope="col">{t("admin.overview.r2.col.family", "Family")}</th>
@@ -189,7 +189,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyCompliance}</th>
                 <td>{countCell(regsRes, "regulations", t("admin.overview.r2.empty.compliance", "The library is genuinely empty — the read succeeded. Add the first regulation inside the module."))}</td>
-                <td className="ax-caption">{t("admin.overview.r2.lifecycle.regulations", "per-regulation status lives in the module; no update timestamp is read here")}</td>
+                <td className="t-caption">{t("admin.overview.r2.lifecycle.regulations", "per-regulation status lives in the module; no update timestamp is read here")}</td>
                 <td>{openLink(familyCompliance, "/admin/regulations")}</td>
               </tr>
 
@@ -197,7 +197,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyPackages}</th>
                 <td>
-                  <div className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
+                  <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
                     {ok(pkgsRes) ? (
                       <span>{chip("verified")} {num(pkgsRes.count ?? 0, "published")}</span>
                     ) : chip("unavailable")}
@@ -206,7 +206,7 @@ export default async function AdminHome() {
                     ) : chip("unavailable")}
                   </div>
                 </td>
-                <td className="ax-caption">{t("admin.overview.r2.lifecycle.packages", "draft/published proven · distinct approver enforced · immutable once published")}</td>
+                <td className="t-caption">{t("admin.overview.r2.lifecycle.packages", "draft/published proven · distinct approver enforced · immutable once published")}</td>
                 <td>{openLink(familyPackages, "/admin/packages")}</td>
               </tr>
 
@@ -214,7 +214,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyEnforcement}</th>
                 <td>{countCell(viosRes, "violation codes")}</td>
-                <td className="ax-caption" aria-hidden="true">—</td>
+                <td className="t-caption" aria-hidden="true">—</td>
                 <td>{openLink(familyEnforcement, "/admin/violations")}</td>
               </tr>
 
@@ -225,16 +225,16 @@ export default async function AdminHome() {
                   {!ok(enginesRes) ? chip("unavailable")
                     : engines.length === 0 ? chip("verifiedZero")
                     : (
-                      <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+                      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
                         <span>{chip("verified")} {num(engines.length, "domains")}</span>
-                        <ul className="ax-stack" style={{ gap: "2px", listStyle: "none", margin: 0, padding: 0 }}>
+                        <ul className="stack" style={{ gap: "2px", listStyle: "none", margin: 0, padding: 0 }}>
                           {engines.map(e => (
-                            <li key={e.engine} className="ax-caption">
+                            <li key={e.engine} className="t-caption">
                               <bdi dir="ltr">{e.engine}</bdi>
                               {" · "}
                               <span className="ax-version"><bdi dir="ltr">{e.version_label}</bdi></span>
                               {e.updated_at ? (
-                                <> · <bdi dir="ltr" className="ax-numeric">{formatDate(e.updated_at, locale === "ar" ? "ar" : "en")}</bdi></>
+                                <> · <bdi dir="ltr" className="numeric">{new Date(e.updated_at).toISOString().slice(0, 10)}</bdi></>
                               ) : null}
                             </li>
                           ))}
@@ -242,7 +242,7 @@ export default async function AdminHome() {
                       </div>
                     )}
                 </td>
-                <td className="ax-caption">{t("admin.overview.r2.lifecycle.engines", "direct audited update — timestamp is provenance only")}</td>
+                <td className="t-caption">{t("admin.overview.r2.lifecycle.engines", "direct audited update — timestamp is provenance only")}</td>
                 <td aria-hidden="true">—</td>
               </tr>
 
@@ -250,7 +250,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyAudit}</th>
                 <td>{countCell(auditsRes, "events")}</td>
-                <td className="ax-caption" aria-hidden="true">—</td>
+                <td className="t-caption" aria-hidden="true">—</td>
                 <td>{openLink(familyAudit, "/admin/audit")}</td>
               </tr>
             </tbody>
@@ -258,24 +258,24 @@ export default async function AdminHome() {
         </div>
       </section>
 
-      <nav className="ax-surface ax-stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--ax-space-300)" }}>
+      <nav className="panel stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-links-h" style={{ margin: 0 }}>
           {t("admin.overview.r2.linkOnly.heading", "Families this gateway reads no data for today — links only:")}
         </h3>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
           {linkOnly.map(l => (
-            <a key={l.href} className="ax-btn ax-btn--secondary ax-link" href={l.href}>
+            <a key={l.href} className="btn btn-secondary ax-link btn-touch" href={l.href}>
               {t(l.key, l.en)}
             </a>
           ))}
         </div>
       </nav>
 
-      <section className="ax-surface ax-permission ax-stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel ax-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--ax-space-300)" }}>
         <h3 id="cd004-scope-h" style={{ margin: 0 }}>
           {fill(t("admin.overview.r2.scope.heading", "Your scope — {role}"), { role: roleLabel })}
         </h3>
-        <p className="ax-caption" style={{ margin: 0 }}>
+        <p className="t-caption" style={{ margin: 0 }}>
           {fill(
             t("admin.overview.r2.scope.body", "You can act in {families}. Other families are shown for awareness; visibility grants nothing — every action is authorized inside its module."),
             { families: familiesLabel },
