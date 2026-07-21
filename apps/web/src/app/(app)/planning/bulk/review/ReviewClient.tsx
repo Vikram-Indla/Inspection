@@ -280,6 +280,11 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   if (phase === "empty") {
     return (
       <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
+        {draftUnavailable && (
+          <div className="ax-banner ax-banner--warning" role="alert" style={{ marginBlockEnd: "var(--ax-space-300)" }}>
+            {s.draftUnavailable}
+          </div>
+        )}
         <h3>{s.emptyTitle}</h3>
         <p className="ax-caption">{s.emptyBody}</p>
         <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
