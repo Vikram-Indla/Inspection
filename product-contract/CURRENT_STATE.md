@@ -1,5 +1,78 @@
 # Current State
 
+## 2026-07-20 UPDATE 112 — Saqeel wordmark-protected final override implemented
+
+`TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001` now implements the final consolidated
+wordmark-protected sponsor prompt on `feature/saqeel-login-revamp` from baseline
+`d53e09f`. The repository `SaqeelMark` source is unchanged (SHA-256
+`a9f61abf...bb6cea`) and the sole wordmark remains exactly `صقيل | صناعي`.
+National Single Sign-On, its Arabic equivalent, MIM Directory, Remember me,
+provider separators and reserved secondary-auth space are absent. Credential
+auth, reset anti-enumeration, safe errors, audit and `/launch` routing remain
+unchanged.
+
+Dark mode retains `inspection-atlas-scene-base-v2.png`; light mode uses the new
+dedicated `inspection-atlas-scene-base-v2-light.png`. Both are `1672×941`; edge
+registration resolves to `0px,0px`; main, lifted terrain and sidewall sources
+switch together without a CSS-generated light tint. Non-brand story/zone accents
+use semantic blue/green tokens; the protected prism remains untouched. All five
+stage/zone/camera/route/pause/reset contracts remain frozen; only vehicles are
+exactly 1.5× (`27×54`, `-13.5/-27`; fallback `42×30`).
+
+Verification: typecheck PASS; production build PASS; wordmark-protected 7/7;
+CD-001/reset/negative-auth 19/19; visual/video evidence 2/2 after correcting an
+evidence-only exact-name locator; `git diff --check` PASS; browser console has
+zero application errors; `/login`, dark/light rasters and vehicle asset return
+HTTP 200. External evidence contains 26 PNG frames plus one WebM under
+`saqeel-login-wordmark-protected-002`, with manifest
+`SAQEEL_LOGIN_WORDMARK_PROTECTED_002.json`.
+
+Status: **CONDITIONALLY COMPLETE — AWAITING SPONSOR VISUAL ACCEPTANCE**. Exact
+browser-level 200%/400% zoom remains a manual/browser certification gap (CSS
+viewport-equivalent reflow passes); the package has no lint script or ESLint
+dependency; asset/geography and qualified native-Arabic release checks remain
+human gates. No commit, push, merge, deploy, remote DDL or shared-data mutation.
+
+## 2026-07-20 UPDATE 111 — Saqeel login revamp implemented and verified on isolated branch
+
+`TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001` is implemented on
+`feature/saqeel-login-revamp` from exact `setup/Inspection` baseline `d53e09f`.
+The sponsor reopened CD-001 / SCR-PUB-010 under
+`CC-SAQEEL-LOGIN-REVAMP-001`; the existing performance branch and dirty root
+worktree were not modified.
+
+The accepted five-scene Saudi inspection atlas remains the trademark hero. Its
+zone paths, hover/focus lift amplitude and easing, cavity/wall/terrain geometry,
+click lock, Escape restoration, camera transform and duration, pause/freeze,
+readout content/timing, stage order/timing, route paths, vehicle starts,
+durations and motion spline are source-invariant and runtime-regressed. Broad
+plane/raster saturation, contrast and brightness filters were removed so the
+same approved native scene renders in both themes. Integration now belongs to
+the pearl/graphite shell, smoked stage, precise border, ambient halo and
+pointer-transparent tonal bridge.
+
+Primary route vehicles changed only from `18×36 @ (-9,-18)` to
+`27×54 @ (-13.5,-27)`; the generated fallback changed from `28×20` / `18×12`
+to `42×30` / `27×18`. Every dimension is exactly `1.5×` and every offset stays
+centered on the unchanged route anchor. Desktop and iPad Dispatch evidence
+shows no clipping or material collision.
+
+The form retains Email, Password, Sign In and password reset with the existing
+Supabase credential call, neutral errors, reset anti-enumeration, FND-003 audit
+and `/launch` RBAC routing. Remember me, MIM Directory and extra providers are
+absent. Exactly one National Single Sign-On secondary action is visible; it
+fails closed with an accessible neutral message because `MVP3-HOLD-003` has no
+approved/configured provider. No provider is simulated.
+
+Verification: typecheck PASS; production build PASS; 26 unique focused checks
+PASS across protected CD-001 interaction, CD-002 reset, negative auth, source
+invariants, vehicle scale, theme invariance, Arabic non-mirroring, responsive
+matrix and visual evidence. Eleven English/Arabic, light/dark, desktop, iPad,
+Stage Manager, mobile, 320 CSS px and Dispatch frames plus SHA-256 manifest are
+stored under the approved external documentation root. No commit, push, merge,
+deploy, remote DDL, shared-data mutation or unrelated source change occurred.
+Status: `IMPLEMENTED_VERIFIED_AWAITING_SPONSOR_VISUAL_ACCEPTANCE`.
+
 ## 2026-07-20 UPDATE 110 — Factory 360 iPad × cross-provider reconciliation SPONSOR-ACCEPTED & MERGED
 
 `TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015` accepted (SHA `1f17715`) and
@@ -1139,3 +1212,62 @@ Fresh independent audit completed on canonical `setup/Inspection` at `2f24a7b` a
 - 2026-07-15 UPDATE 49 (CD-031 FACTORY 360 DOSSIER — TASK-SLICE + DESIGN-GATE OVERRIDE, DEC-014): sponsor asked to import and implement CD-031 Factory 360 (r3) from claude_design project 20cb0dce. Two governance stops were raised and explicitly overridden by the sponsor in-chat, recorded as DEC-014: (1) CD-031 is outside the currently authorized TASK-BASELINE-WIRING-AUDIT-001 slice (CD-001..003/CD-020..024 only); (2) the design package itself is `implementation_authorized:false` with a DO-NOT-EXECUTE / BASELINE_REVERIFY_REQUIRED flag. Verified locally before proceeding: `/factories/[id]` already existed as a 7-tab dossier fully wired to real schema, and no risk-driver/coordinate-conflict/boundary-polygon columns exist anywhere in migrations — the design's HANDOFF_BLOCKED assumptions hold against this repo, not just its stale claimed "main" baseline. Restructured the route into a two-column provenance-led dossier (aside: identity/freshness/risk/location; main: sticky section strip + Spatial Case Timeline signature + history/documents/representatives/products/materials/workforce), preserving every existing query and Add*/Toggle control. Added leadership-only representative-contact masking (HANDOFF_BLOCKED_ROLE) and explicit unavailable rows for risk drivers, risk-version history, evidence timeline, map/boundary, and document preview — none fabricated. No invented staleness threshold. Verified: typecheck clean, production build clean, new `apps/web/e2e/cd-031-factory-360.spec.ts` 15/15 PASS (source-truth + live planner persona + Arabic/RTL). Full no-exclusion regression: 178 PASS / 4 FAIL / 3 skipped — all 4 failures are in files this change never touched (admin, planning/bulk/review, dashboard-kpi-seed, golden-journey P5 review-approve timing); two reproduced as flaky on isolated re-run, the other two are pre-existing gaps unrelated to CD-031 (confirmed by touching none of the same files). CD-031 is `IMPLEMENTED_PENDING_CODEX_WIRING_AUDIT` per DEC-012 — the independent Codex wiring audit against `WIRING_MAP_CD-031.csv` (18 legs + 4b/4c) has not run and this is not a self-certified closure. No commit, push, merge, deploy, or `main` modification occurred.
 
 - 2026-07-15 UPDATE 50 (CD-030 NEW-1 ACCESS-REGRESSION FIX): a concurrent session's independent CD-030 R2 audit (`product-contract/evidence/CODEX_AUDIT_CD-030_2026-07-15_R2.md`, finding NEW-1) flagged that the `/reviews/:id` page-level `authorized` check (added earlier the same day) only allowed `reviewer`/`ops`, silently blocking `auditor`/`planner`/`leadership` from a route that RLS (`0002_rbac_audit.sql` `inspections_read`/`subs_read`/`reviews_read`) and the CD-030 design scope itself ("P11 · Reviewer/Auditor", `screen_route_catalogue.csv:26`) explicitly grant read access to — a regression against an accepted permission (CLAUDE.md: never weaken accepted behavior/permission), flagged via a cross-session message while this session was mid-CD-031-work in the same dirty tree. Independently re-verified the claim against the migration and catalogue before acting (not taken on trust). Fixed: `authorized` broadened to `reviewer/ops/auditor/planner/leadership`; a new `canDecide` (`reviewer/ops` only, unchanged from the original narrower check) now gates `DecisionPanel`/`StartReview` so the previously-open RLS `reviews_insert` policy doesn't become a live path for a read-only role to submit a decision; a `{role} · read-only` lozenge renders for non-deciding viewers. Verified: `tsc --noEmit`/`next build` clean; `cd-030-version-comparison`/`cd-029-review-workspace`/`cd-028-review-queue` 30/31 PASS, 1 skip — the single failure (`cd-028` leg 5) reproduces identically with or without this fix and is explained by shared live review data already advanced to `under_review` by earlier same-day test runs (queue's first open-workspace link no longer points at a start/no-open-decision row), not a defect in this change. No commit, push, merge, deploy, or `main` modification occurred.
+
+## 2026-07-20 UPDATE 113 — Saqeel unified login surface correction complete
+
+The sponsor's correction 003 is implemented on `feature/saqeel-login-revamp`
+without changing the protected wordmark, authentication, motion engine, route
+paths/timing, camera or zone geometry. The hero now has one atlas frame with
+absolute event and stage-rail overlays. The public five-cell statistics strip
+and its flow spacing are removed. A 48px atmospheric bridge integrates the full
+registered 1672×941 plane into light/dark host surfaces without independent
+child transforms, geographic distortion or facility crop. Resting zone noise is
+absent and Zones feedback uses semantic blue. Verification: typecheck PASS;
+production build PASS; login/atlas/reset/negative-auth 27/27 PASS; final visual/
+video evidence 2/2 PASS; required 16-state before/after set and annotations are
+recorded in `docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md` and
+external manifest `SAQEEL_LOGIN_UNIFIED_SURFACE_003.json`. Port 3000 serves the
+final production build. Sponsor visual acceptance and the existing manual zoom,
+Arabic, rights/geography and lint-tooling holds remain; no commit, push, merge,
+deployment, remote DDL or shared-data mutation occurred.
+
+## 2026-07-20 UPDATE 114 — Saqeel one-fade / one-unison correction complete
+
+The sponsor rejected the remaining frame-card composition and supplied a strict
+full-height hero contract. The right rail is now the atlas environment itself:
+the frame is absolute at `inset:0`, while title/control, event and stage rail are
+positioned overlays. Top/bottom fades are pointer-inert atmospheric overlays,
+not layout bands. The rail's border, radius, background, blur and shadow are
+removed. Login actions, links, trust icon and story controls share the scoped
+semantic-blue accent; the exact protected prism and `صقيل | صناعي` remain
+unchanged. The overlay-hidden light/dark test leaves one uninterrupted full-
+height atlas canvas. Typecheck/build PASS; protected login/atlas/reset/negative-
+auth regression 27/27 PASS; visual/video evidence 2/2 PASS. Evidence is under
+`saqeel-login-one-unison-004/` with manifest
+`SAQEEL_LOGIN_ONE_UNISON_004.json`. Port 3000 serves the final build. Sponsor
+visual acceptance and existing manual zoom/Arabic/rights/geography/lint holds
+remain; no commit, push, merge, deployment, remote DDL or shared-data mutation
+occurred.
+
+## 2026-07-20 UPDATE 115 — Saqeel event statement correction complete
+
+The sponsor's screenshot-based correction is implemented: the stage event no
+longer renders as an opaque card over the atlas. Background, border, radius,
+blur and box shadow are removed; the compact stage marker and balanced sentence
+render directly in the top atmospheric field with a restrained text shadow.
+Event content/status semantics/timing, the borderless bottom rail, map scene,
+authentication and every protected motion contract remain unchanged. Typecheck
+and production build PASS; protected functional regression 27/27 PASS; refreshed
+visual/video evidence 2/2 PASS under `saqeel-login-one-unison-004/`. Port 3000
+serves the statement treatment. Sponsor visual acceptance remains pending; no
+commit, push, merge, deployment, remote DDL or shared-data mutation occurred.
+
+## 2026-07-20 UPDATE 116 — Saqeel event typography reduced
+
+Sponsor screenshot review found the borderless statement still too large and
+bold. It is now 13px/18px at weight 500 with an 9px/13px weight-600 stage marker
+and slightly softened text colour. Card removal, placement, event content,
+status semantics, timing, rail and protected atlas behavior are unchanged.
+Typecheck and production build PASS; focused story/structure/responsive checks
+3/3 PASS. Port 3000 serves the refinement; no commit, push, merge or deployment
+occurred.

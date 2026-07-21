@@ -373,3 +373,24 @@ Checkpoint addendum: sponsor-approved pre-push secret/PII/artifact scan PASS; pr
 domain-separation, zero-stub-retirement, no-schema/projection-change, typecheck/build, focused
 4/4 and protected 135 pass / 4 intentional skips / 0 failed guards PASS. Awaiting the approved
 synthetic beta licence and expected result for `POST /shared/api/v2/license-info`.
+
+## Saqeel login revamp — 2026-07-20
+
+| ID | Evidence | Status |
+|---|---|---|
+| SLR-EV-001 | Protected motion inventory and source invariants | PASS — `docs/login-revamp/PROTECTED-MOTION-INVENTORY.md`; focused source test |
+| SLR-EV-002 | Exact vehicle `1.5×` dimensions, centered anchors and unchanged route timing | PASS — source/runtime checks |
+| SLR-EV-003 | Protected wordmark + EN/AR × light/dark principal runtime frames | PASS — unchanged source SHA-256 and frames under `${INSPECTION_DOCS_ROOT}/07_TEST_EVIDENCE_AND_SCREENSHOTS/product-contract/evidence/screens/saqeel-login-wordmark-protected-002/` |
+| SLR-EV-004 | iPad landscape/portrait, mobile, exact viewport matrix and 200%/400% equivalent reflow | PASS for automated matrix; exact browser zoom remains human/browser certification |
+| SLR-EV-005 | Every story stage, Dispatch 1.5× vehicles, every zone hover, locked zone and theme switch | PASS — 26 PNG frames plus protected interaction WebM |
+| SLR-EV-006 | CD-002 reset and negative authentication regression | PASS 6/6 |
+| SLR-EV-007 | Typecheck, production build, CD-001 and wordmark-protected suites | PASS — 26/26 functional checks plus 2/2 evidence checks; package has no lint script/dependency |
+| SLR-EV-008 | External screenshot/video SHA-256/size/authority/lifecycle manifest | `${INSPECTION_DOCS_ROOT}/MANIFESTS/SAQEEL_LOGIN_WORDMARK_PROTECTED_002.json` |
+| SLR-EV-009 | Unified-surface correction: required 16-state before/after set plus annotated comparison | PASS — `docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md`; corrected frames under `saqeel-login-unified-surface-003/` |
+| SLR-EV-010 | One-frame/absolute-overlay/no-summary/blue-zone source and runtime checks | PASS — final login/atlas/reset/negative-auth regression 27/27 |
+| SLR-EV-011 | Final corrected screenshot/video capture and external manifest | PASS 2/2 — `${INSPECTION_DOCS_ROOT}/MANIFESTS/SAQEEL_LOGIN_UNIFIED_SURFACE_003.json` |
+| SLR-EV-012 | One-fade structural contract: frame equals full hero; title/event/rail positioned; rail has no card shell | PASS — focused runtime/source assertion in `saqeel-login-revamp.spec.ts` |
+| SLR-EV-013 | Mandatory overlay-hidden canvas proof in light and dark | PASS — `canvas-only-light-desktop.png`, `canvas-only-dark-desktop.png` under `saqeel-login-one-unison-004/` |
+| SLR-EV-014 | Final one-unison screenshot/video manifest | PASS 2/2 — `${INSPECTION_DOCS_ROOT}/MANIFESTS/SAQEEL_LOGIN_ONE_UNISON_004.json` |
+| SLR-EV-015 | Borderless event-statement source/runtime proof and refreshed light/dark/responsive frames | PASS — event background transparent, border 0px, shadow none; functional 27/27 and refreshed visual 2/2 |
+| SLR-EV-016 | Sponsor-directed quieter event typography | PASS — 13px/18px weight 500 statement; 9px/13px weight 600 marker; typecheck/build and focused 3/3 |

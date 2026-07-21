@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001"
+    gate: "G11 controlled public-access UI hardening"
+    priority: "P0"
+    status: "EVENT_STATEMENT_CORRECTION_COMPLETE_AWAITING_SPONSOR_VISUAL_ACCEPTANCE"
+    owner: "Codex implementation and QA + Sponsor visual acceptance authority"
+    blocked_by: ["Exact browser-level 200%/400% zoom certification", "Repository lint command/dependency unavailable", "Qualified native-Arabic release review", "Existing CD-001 asset-rights and official-geography release confirmations"]
+    blocks: ["Saqeel login revamp sponsor visual acceptance"]
+    note: "One-fade/one-unison correction complete on isolated CD-001/SCR-PUB-010 worktree from setup/Inspection d53e09f. Exact repository prism + صقيل | صناعي preserved; the full right rail is one positioned atlas environment; title, event and rail are overlays; the rail card shell and public statistics strip are removed; 48px feather preserves the registered plane without facility crop; login-only accents are unified blue. Overlay-hidden light/dark frames prove no structural bands remain. Typecheck/build PASS; protected functional 27/27 and evidence 2/2 PASS. Awaiting sponsor visual acceptance plus listed zoom/lint/human release checks; no commit/push/merge/deploy."
   - task_id: "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014"
     gate: "G11 Factory 360 integration hardening"
     priority: "P0"

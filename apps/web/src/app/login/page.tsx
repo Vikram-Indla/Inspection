@@ -12,8 +12,9 @@ export const dynamic = "force-dynamic";
 // Review → Decide strip built from the real modules. No persona selector and
 // no live operational intelligence on this public surface — role is resolved
 // server-side by /launch (RBAC-001..014), and the live coverage / risk /
-// inspector-movement view lives behind auth on the Operations Center. Nafath
-// and the gov banner stay retired (DEC-011).
+// inspector-movement view lives behind auth on the Operations Center. External
+// identity remains unavailable under MVP3-HOLD-003 and is not exposed as a
+// public control or simulated authentication path.
 type Locale = "ar" | "en";
 
 async function resolveLocale(): Promise<Locale> {
@@ -40,7 +41,7 @@ export default async function Login() {
     wordmarkFull: "صقيل | صناعي",
     cardTitle: ar ? "تسجيل الدخول" : "Sign in",
     cardSub: ar
-      ? "ادخل بحسابك لمتابعة أعمال التفتيش الصناعي وإدارتها"
+      ? "سجّل الدخول لإدارة وتنفيذ أعمال التفتيش الصناعي."
       : "Access your account to run and manage industrial inspection work",
     idLabel: ar ? "البريد الإلكتروني" : "Email",
     idPlaceholder: "name@mim.gov.sa",
@@ -75,7 +76,7 @@ export default async function Login() {
       ? "إذا كان هناك حساب مرتبط بهذا البريد، فسيصل رابط لإعادة تعيين كلمة المرور. تحقّق من مجلد الرسائل غير المرغوبة أيضًا."
       : "If an account exists for that address, a password-reset link is on its way. Check your spam folder too.",
     back: ar ? "رجوع" : "Back",
-    footTrust: ar ? "كل إجراء داخل جلستك موثَّق ومراجَع" : "Every action inside your session is recorded and reviewable",
+    footTrust: ar ? "يتم تسجيل كل إجراء داخل جلستك ويمكن مراجعته" : "Every action inside your session is recorded and reviewable",
     footSecure: ar ? "اتصال مشفّر" : "Encrypted connection",
     footCopyright: ar
       ? "صقيل — وزارة الصناعة والثروة المعدنية © 2026"
@@ -93,20 +94,6 @@ export default async function Login() {
         : "The Saqeel industrial inspection atlas",
       overline: ar ? "رحلة تفتيش واحدة · من البداية إلى النهاية" : "ONE VISIT · END TO END",
       riyadhLabel: ar ? "الرياض · مسيّجة جغرافيًا" : "RIYADH · GEOFENCED",
-      illustrativeSummary: ar ? "بيانات توضيحية · غير حية · الأقرب في مسار الجولة أولًا" : "Illustrative sample · not live data · nearest on the illustrated route first",
-      zoneStats: ar ? [
-        { zone: "المنطقة الشرقية", inspections: "318", detail: "90% · 62 كم" },
-        { zone: "المنطقة الشمالية", inspections: "264", detail: "91% · 146 كم" },
-        { zone: "المنطقة الغربية", inspections: "247", detail: "89% · 265 كم" },
-        { zone: "المنطقة الجنوبية", inspections: "198", detail: "89% · 394 كم" },
-        { zone: "المنطقة الوسطى", inspections: "221", detail: "92% · 458 كم" },
-      ] : [
-        { zone: "Eastern zone", inspections: "318", detail: "90% · 62 km" },
-        { zone: "Northern zone", inspections: "264", detail: "91% · 146 km" },
-        { zone: "Western zone", inspections: "247", detail: "89% · 265 km" },
-        { zone: "Southern zone", inspections: "198", detail: "89% · 394 km" },
-        { zone: "Central zone", inspections: "221", detail: "92% · 458 km" },
-      ],
       stagesLabel: ar ? "مشاهد قصة التفتيش" : "Inspection story scenes",
       stages: [
         { id: "plan", label: ar ? "الخريطة" : "Map", event: ar ? "خريطة المملكة والمنشآت الصناعية فقط" : "The Kingdom map and industrial sites establish context" },

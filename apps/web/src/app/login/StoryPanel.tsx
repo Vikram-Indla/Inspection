@@ -19,8 +19,6 @@ const Atlas = dynamic(() => import("./SaudiIndustrialAtlas"), { ssr: false });
 export type StoryStrings = {
   title: string;
   overline: string;
-  illustrativeSummary: string;
-  zoneStats: { zone: string; inspections: string; detail: string }[];
   stagesLabel: string;                            // tablist aria-label
   stages: { id: AtlasStageId; label: string; event: string }[];
   dossier: DossierStrings;
@@ -144,14 +142,6 @@ export default function StoryPanel({ strings: s, locale, themeLabels, subdued = 
           </div>
         )}
       </div>
-      {!subdued && !mapFailed && stage === "decide" && (
-        <section className="lg-story__summary" aria-label={s.illustrativeSummary} dir={locale === "ar" ? "rtl" : "ltr"}>
-          <small>{s.illustrativeSummary}</small>
-          {s.zoneStats.map(stat => <div key={stat.zone}>
-            <strong>{stat.inspections}</strong><span>{stat.zone}</span><em>{stat.detail}</em>
-          </div>)}
-        </section>
-      )}
     </aside>
   );
 }
