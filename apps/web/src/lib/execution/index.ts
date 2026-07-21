@@ -4,3 +4,4 @@ export * from "./state-machine";
 export * from "./capabilities";
 export * from "./daily-cap";
 export * from "./readiness";
+export * from "./journey";
