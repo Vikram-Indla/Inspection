@@ -1,101 +1,52 @@
 schema_version: "1.2"
-task_id: "TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001"
-gate: "G11 controlled public-access UI hardening"
-title: "Saqeel login revamp — native atlas integration and protected-motion preservation"
-status: "EVENT_STATEMENT_CORRECTION_COMPLETE_AWAITING_SPONSOR_VISUAL_ACCEPTANCE"
+task_id: "TASK-FACTORY-360-STAGING-RUNTIME-CLOSURE-016"
+gate: "G11 Factory 360 controlled staging runtime closure"
+title: "Independent staging verification and closure of merged Factory 360 Web, Inspector iPad and cross-provider structural-contract work"
+status: "RUNTIME_CLOSURE_COMPLETE_AWAITING_SPONSOR_ACCEPTANCE"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-approval_ref: "HUMAN_APPROVALS.yaml#SAQEEL-LOGIN-REVAMP-001"
-change_control_ref: "CC-SAQEEL-LOGIN-REVAMP-001"
+branch: "codex/factory360-staging-runtime-closure-016"
 
-branch_at_start: "feature/saqeel-login-revamp"
-head_at_start: "d53e09f7ee4018bf2046e36d95fe45df355b11a2"
-process_ids: ["F1 Access"]
-requirement_ids:
-  - "CD-001"
-  - "CD-002 protected reset behavior"
-  - "DEC-011 / SAQEEL-02, SAQEEL-03, SAQEEL-06, SAQEEL-07, SAQEEL-08"
-  - "ERR-AUTH-001"
-  - "FND-003"
-  - "RBAC-001..014"
-  - "SLR-REQ-001..018"
-acceptance_ids: ["SLR-AC-001..018"]
-evidence_ids: ["SLR-EV-001..008"]
-screen_ids: ["SCR-PUB-010"]
-engine_ids:
-  - "Supabase credential authentication"
-  - "FND-003 authentication audit"
-  - "CD-001 Saudi Industrial Atlas motion engine"
-  - "Saqeel theme and bilingual locale persistence"
+baseline_sha: "d53e09f7ee4018bf2046e36d95fe45df355b11a2"
+web_impl_sha: "a92dd9f49e7df50af606ed16881c09954161c528"
+web_evidence_sha: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
+ipad_impl_sha: "218131cf323337459f69ad59a75f37c5b2ed7538"
+ipad_pr: "PR #35"
+cross_provider_contract_sha: "ede6628fb711aa003f42293ff97ddcf212189f77"
+web_ipad_reconciliation_accepted_sha: "1f177158229d9632fb61280dde39f93ee1824f67"
+web_ipad_reconciliation_pr: "PR #36"
+web_ipad_reconciliation_merge_sha: "e0363bc09d7bf73d46ca975c772a108f6cd833c0"
 
-dependencies:
-  - "G8 PASS and broad implementation authorized."
-  - "Sponsor authorization in this Codex task on 2026-07-20."
-  - "Exact setup/Inspection baseline d53e09f7ee4018bf2046e36d95fe45df355b11a2."
-  - "Stakeholder ZIP SHA-256 93ee887a35ac715bb745da4460b13c7fb7556e6418367e09a16610c130bbb6f4."
-  - "Final wordmark-protected override ZIP SHA-256 b960c12719bca2890f7cc86b6be483694fc06e9e33d3ba8e91a6900fcbd3d8af."
-  - "Sponsor unified-surface correction supplied 2026-07-20; layout integration only, with required 16-state evidence."
-  - "Sponsor one-fade/one-unison/one-theme correction supplied 2026-07-20; full-height atlas rail and overlay-hidden test required."
-  - "Existing CD-001 V7 atlas, CD-002 reset behavior and DEC-011 authentication boundary."
+staging_project: "iiozvqntawxfwbgffzqu"
 
-context_files:
-  - "product-contract/governance/DECISIONS_ACCEPTED_2026-07-12_SAQEEL.yaml"
-  - "product-contract/governance/decision_register.csv"
-  - "product-contract/screens/screen_route_catalogue.csv"
-  - "product-contract/acceptance/ACCEPTANCE_STATUS.md"
-  - "product-contract/evidence/EVIDENCE_STATUS.md"
-  - "product-contract/evidence/CD001-V7-EV-001-public-safe-atlas.txt"
-  - "product-contract/evidence/CD001-V7-EV-005-lifecycle-rail.txt"
-  - "product-contract/evidence/CD001-V7-EV-006-stage-theme-prism.txt"
-  - "product-contract/evidence/CD001-V7-EV-007-arabic-rtl.txt"
-  - "product-contract/evidence/CD001-V7-EV-008-design-closure-handoff.txt"
-  - "design/claude-design-mvp1/handoff/CD001_V7_PUBLIC_SAFE_PNG_AMENDMENT.md"
-  - "apps/web/src/app/login/page.tsx"
-  - "apps/web/src/app/login/LoginClient.tsx"
-  - "apps/web/src/app/login/StoryPanel.tsx"
-  - "apps/web/src/app/login/SaudiIndustrialAtlas.tsx"
-  - "apps/web/src/app/login/saudi-atlas-motion.ts"
-  - "apps/web/src/app/login/login.css"
-  - "apps/web/e2e/cd-001-v7-atlas.spec.ts"
-  - "apps/web/e2e/cd-001-v7-visual-evidence.spec.ts"
-  - "apps/web/e2e/cd-002-reset.spec.ts"
-  - "apps/web/e2e/negative-auth.spec.ts"
+slice_history:
+  - "TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 (slice-history/CURRENT_SLICE_FACTORY_360_IPAD_API_CONTRACT_CONSUMPTION_015_backup_2026-07-20.yaml)"
+  - "TASK-FACTORY-360-IPAD-011 (slice-history/CURRENT_SLICE_FACTORY_360_IPAD_011_record_2026-07-20.yaml)"
+  - "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014 (slice-history/CURRENT_SLICE_CROSS_PROVIDER_CONTRACT_014_backup_2026-07-20.yaml)"
+  - "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013 (slice-history/CURRENT_SLICE_INDUSTRY_SHARED_GAP_013_BACKUP_2026-07-20.yaml)"
+
+objective: >-
+  Verify the merged Factory 360 runtime end to end on approved staging
+  (project iiozvqntawxfwbgffzqu): Web, Inspector iPad, shared canonical
+  projection, Web/iPad parity, permission-filtered offline snapshot v2,
+  original Inspection API structural consumption boundary, Industry Shared
+  fail-closed behaviour, external submission BLOCKED_TRIGGER_DECISION
+  boundary, and existing Inspector workflow non-regression. This is behaviour
+  and structural-consumption proof, not business-data cleanup.
+
+scope_exclusions:
+  - "Do not mark Industry Shared contracts complete."
+  - "Do not mark the external submission trigger resolved."
+  - "Do not redesign the product, restart API-contract discovery, bulk-import Senaei data, modify production, or activate external inspection forwarding."
 
 open_decisions:
-  - "MVP3-HOLD-003 remains OPEN internally: no National Single Sign-On provider, tenant, claims or MFA policy is configured. The final sponsor override removes every public SSO control; no authentication path is simulated."
-  - "CD-001 production release still requires asset-rights and official geographic confirmation already recorded by the baseline."
-  - "Qualified native-Arabic review remains a human release gate."
+  - "Undocumented Senaei domains remain BLOCKED_EXTERNAL with SENAEI_API_CONTRACT_NOT_SUPPLIED; no endpoints or values may be invented."
+  - "External submission forwarding remains BLOCKED_TRIGGER_DECISION pending sponsor-approved trigger."
+  - "SUPERSEDED: J06-J12 turned out reachable via the local dev server (127.0.0.1:3000) once corrected off a hosted staging URL to the local target -- the iPad/field surface is a normal browser route, not a separate app. All J01-J15 completed this pass (see evidence file); J06's assigned-visit click-through and J12's live outbox-isolation check were not separately exercised (time-boxed, not blocked)."
+  - "Native-Arabic human review remains a separate human evidence gate; RTL/layout mechanics verified this pass but full AR string coverage is a known pre-existing gap, not fabricated."
+  - "Supabase MCP connector in this session is bound to an unrelated project (catalyst-prod, INACTIVE); staging DB access for iiozvqntawxfwbgffzqu uses the Management API with the keychain-held PAT (supabase-pat), the repo's established mechanism (see product-contract/CURRENT_STATE.md history, e.g. UPDATE 38/41)."
+  - "No package_versions.definition.item_snapshot is populated anywhere on staging (pre-existing environment gap, not introduced by this task) -- Approved inspection compliance reads Not Available for every inspection until frozen scoring authority is seeded; not fixed here as that would mean inventing scoring policy."
+  - "F360 Runtime 016 verification fixture family (1 CR, 2 licences, 2 addresses, 4 production-line items) is permanently retained on staging: plant_production_line_items is one of four tables this same migration made architecturally append-only, and its FK to industrial_licenses blocks deleting the licences/CR/addresses too. See evidence file cleanup register."
+  - "Two defects found and fixed this pass: submission_versions RLS (subs_read) missing planner/ops (migration 20260720020000), and the Web Factory 360 page missing the cross-provider reconciliation section iPad already had (apps/web/src/app/factories/cr/[id]/page.tsx). Both retested live, typecheck/build clean, 34/34 focused e2e green."
 
-do_not_touch:
-  - "Do not change Supabase credential authentication, reset anti-enumeration, error neutralization, audit, routes, redirects or /launch RBAC routing."
-  - "Do not change zone paths, hover lift amplitude/easing/restoration, click target, lock/Escape behavior, camera transform/path, freeze/pause point, reveal content/timing, story stage order/timing or route paths/timing."
-  - "Do not mirror or geographically transform the Saudi atlas in Arabic."
-  - "Do not alter authenticated application pages, workflow, schema, RLS, providers, offline engines or production data."
-  - "Do not commit stakeholder screenshots or the packaged ZIP to Git."
-
-authorized_file_scope:
-  - "Login page components and login-only CSS under apps/web/src/app/login."
-  - "Focused CD-001/CD-002/auth tests and login-revamp evidence harnesses."
-  - "Lightweight protected-motion inventory, acceptance ledger, evidence record and branch-local governance/session records."
-
-required_evidence:
-  - "Protected-motion source inventory and before/after invariant comparison."
-  - "Vehicle dimensions prove exact 1.5× scale with unchanged anchors, paths, starts, durations and easing."
-  - "English/Arabic and light/dark runtime frames."
-  - "Desktop, iPad landscape/portrait, Stage Manager, mobile and 320 CSS px reflow with no horizontal overflow."
-  - "Zone hover/click/lock/Escape, stage rail, route animation and reduced-motion regression."
-  - "Credential positive wiring and negative authentication/reset anti-enumeration regression."
-  - "Typecheck, production build, focused Playwright and protected regression."
-  - "Exact protected SaqeelMark source hash and visible `صقيل | صناعي` lockup."
-  - "Dedicated light/dark raster registration, theme-switch and lifted-source proof."
-  - "Unified-surface before/after proof: removed top/bottom patches and public statistics strip, preserved facility/route/zone registration."
-  - "Overlay-hidden light/dark proof showing the full-height right rail remains one uninterrupted atlas environment."
-
-exit_condition: >-
-  SLR-AC-001..018 are evidenced under the wordmark-protected override; every
-  public SSO/provider control is absent while external identity remains held;
-  dark/native and light/dedicated atlas sources stay registered through normal,
-  lifted and locked states; the only protected-motion change is exact 1.5x
-  vehicle visual scale; authentication and CD-001/CD-002 behavior regress cleanly;
-  evidence and session controls are current; and the isolated branch stops
-  awaiting sponsor visual acceptance plus listed human/tooling release checks.
+pacing: "Checkpoint after pre-flight before any DDL apply, deploy action, or live browser journey execution (sponsor direction 2026-07-20). Superseded 2026-07-20 same day: sponsor authorized continuing through full J01-J15 close-out on the local dev server without further pausing."

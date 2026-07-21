@@ -42,15 +42,28 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   }
 
   const today = new Date().toISOString().slice(0, 10);
+  const FACTORY_COLUMNS = "id, name, factory_code, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, source_synced_at";
   const [{ data: factories }, { data: pkgs }, { data: inspRows }, { data: myProfile }] = await Promise.all([
-    sb.from("factories").select("id, name, factory_code, cr_number, license_number, region, city, risk_band, risk_score, official_lat, official_lng, source_synced_at").eq("is_temporary", false).order("name"),
+    sb.from("factories").select(FACTORY_COLUMNS).eq("is_temporary", false).order("name"),
     sb.from("package_versions").select("id, version_label, packages(code, title)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
     sb.from("profiles").select("full_name").eq("user_id", user!.id).single(),
   ]);
+  // Bug: the factories list is capped at PostgREST's default 1000-row page,
+  // so a Factory 360 "Create inspection" deep link can pass a factory that
+  // sorts outside that page (e.g. staging currently holds 1252 registered
+  // factories) and the Identity step would silently fail to resolve it, even
+  // though initialFactoryId below tries to look it up in the same list. Fetch
+  // it directly when missing rather than dropping the CR/license context the
+  // link carried.
+  let factoryList = factories ?? [];
+  if (initialFactoryId && !factoryList.some(f => f.id === initialFactoryId)) {
+    const { data: linked } = await sb.from("factories").select(FACTORY_COLUMNS).eq("id", initialFactoryId).eq("is_temporary", false).maybeSingle();
+    if (linked) factoryList = [linked, ...factoryList];
+  }
   const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id, full_name: (r.profiles as unknown as { full_name: string }).full_name }));
-  const factoryRows = (factories ?? []) as unknown as { [k: string]: unknown }[];
+  const factoryRows = factoryList as unknown as { [k: string]: unknown }[];
   const regionOptions = distinct(factoryRows, "region");
   const cityOptions = distinct(factoryRows, "city");
 
@@ -173,7 +186,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
       context={<><span className="ax-lozenge ax-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>{sourceCrId && sourceLicenseId ? <span className="ax-lozenge ax-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
       {safeReturnTo ? <p><Link className="ax-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
       <ImmediateForm
-        factories={(factories ?? []) as never}
+        factories={factoryList as never}
         packages={(pkgs ?? []) as never}
         inspectors={inspectors}
         regionOptions={regionOptions}
