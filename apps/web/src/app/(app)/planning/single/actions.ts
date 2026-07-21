@@ -71,15 +71,17 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
 
   // Publish validation gate (M01-041) — exact blockers, work preserved.
   // Unchanged from the prior runtime.
+  // M7 — the publish gate is the planning.publish CAPABILITY, mirroring the
+  // RPC's widened guard (has_role('planner') OR
+  // has_planning_capability('planning.publish') — migration 20260721180000).
+  // Page (planning.create.single), action and RPC now agree.
   const blockers: string[] = [];
-  if (!user.id) blockers.push("Authorized Planner role required (RBAC-007)");
-  const { data: plannerRole, error: plannerRoleError } = await sb.from("user_roles")
-    .select("role_key").eq("user_id", user.id).eq("role_key", "planner").maybeSingle();
-  if (plannerRoleError) {
-    console.error("[CD-022 publishSingleVisit] planner role read failed:", plannerRoleError.message);
+  const access = await getPlanningAccess(sb, ["planning.publish"]);
+  if (access.error) {
+    console.error("[CD-022 publishSingleVisit] access resolution failed");
     return { error: NEUTRAL_READ_ERROR };
   }
-  if (!plannerRole) blockers.push("Authorized Planner role required (RBAC-007)");
+  if (!access.can("planning.publish")) blockers.push("Publishing requires the planning.publish capability (RBAC-007)");
   if (!["periodic", "follow_up", "complaint"].includes(visit_type)) blockers.push("Visit type is not supported (FLD-PLAN-003)");
   if (!["physical", "virtual"].includes(mode)) blockers.push("Execution mode is not supported (M03-011)");
   if (!factory_id) blockers.push("Factory not selected (M01-035)");
@@ -202,6 +204,23 @@ export async function publishSingleVisit(_: PublishResult, formData: FormData): 
   if (publishError || !visitId) {
     console.error("[CD-022 publishSingleVisit] atomic publish failed:", publishError?.message, publishError?.code);
     steps.plan = "failed";
+    // M7 — the in-transaction guards (RPC checks + the 0031 assignments
+    // trigger, SQLSTATE 23505) rejected a conflict that appeared between the
+    // preview and the commit. Name it honestly; the attempt persists nowhere
+    // (rolled back; audit_events is trigger/definer-only — documented gap).
+    if (publishError?.code === "23505" || /duplicate active visit|inspector unavailable|window is no longer available/i.test(publishError?.message ?? "")) {
+      const dupsNow = await findDuplicateActiveVisits(sb, factory_id, visit_type);
+      if (dupsNow.visits.length > 0) {
+        return {
+          error: `A conflicting active visit now exists for this factory/type (M02-012): ${dupsNow.visits[0].id.slice(0, 8)} — nothing was published.`,
+          steps,
+        };
+      }
+      return {
+        error: "The assigned Inspector was just booked on an overlapping visit in this window (M01-029) — nothing was published. Pick another Inspector or window.",
+        steps,
+      };
+    }
     // TASK-EXECUTION-MODULE-001 · D-009 — the publish RPC evaluated the shared
     // window capacity and found no selectable day. Surface it as a governed
     // blocker in the same style as the validation blockers above (plain copy,

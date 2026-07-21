@@ -20,7 +20,7 @@ import "./review.css";
 // falling back to the browser-held selection when no draft is referenced.
 export default async function BulkReview({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
   const { plan: planParam } = await searchParams;
-  const { t } = await useT();
+  const { t, locale } = await useT();
 
   // RBAC-007 / M6 — capability gate (planning.create.bulk), the canonical
   // planning access model instead of a hand-rolled role read. Navigation
@@ -90,6 +90,11 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
     packageHint: t("plan.review.packageHint", "No checklist selected — that is allowed. The inspector chooses an eligible checklist during preparation."),
     packageNone: t("plan.review.packageNone", "No checklist — chosen during preparation"),
     packageCount: t("plan.review.packageCount", "{n} checklist(s)"),
+    priorityLabel: t("plan.review.priority", "Priority"),
+    priorityNone: t("plan.review.priorityNone", "None (default)"),
+    notBulkYet: t("plan.review.notBulkYet", "not yet available for bulk"),
+    droppedH: t("plan.review.droppedH", "{n} row(s) were excluded at the authoritative publish re-check"),
+    droppedD: t("plan.review.droppedD", "These rows became ineligible between the last check and the commit. They were NOT published; everything else committed atomically."),
     visitType: t("plan.bulk.visitType", "Visit type"),
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     mode: t("plan.review.mode", "Mode"),
@@ -270,7 +275,7 @@ export default async function BulkReview({ searchParams }: { searchParams: Promi
   return (
     <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}
       context={<span className="badge badge-info">{t("plan.review.context", "SCR-WEB-150 · review · publish")}</span>}>
-      <ReviewClient strings={strings} initialDraft={initialDraft} draftUnavailable={draftUnavailable} />
+      <ReviewClient strings={strings} initialDraft={initialDraft} draftUnavailable={draftUnavailable} locale={locale} />
     </Shell>
   );
 }

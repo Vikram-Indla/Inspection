@@ -11,7 +11,13 @@ import { parseCt, hasCriteria } from "./criteria";
 // (S26) — the created plan ID drives the optional read-only plan link, and the
 // primary destination stays "Go to visits". A rolled-back publish returns an
 // error and is never presented as success (P03 all-or-nothing).
-export type BulkResult = { error?: string; ok?: boolean; planId?: string };
+export type DroppedRow = { id: string; name: string; reasons: EligibilityReason[] };
+// M7 / PLN-CON-007 — publish commits ONLY the explicitly accepted eligible
+// subset: the action re-computes the M6 eligibility partition for the
+// submitted ids, DROPS rows that became ineligible between preview and commit
+// and names every dropped row in the result ledger (never silently included,
+// never silently dropped). `created` is the committed subset size.
+export type BulkResult = { error?: string; ok?: boolean; planId?: string; dropped?: DroppedRow[]; created?: number };
 
 // CD-025 readiness preview. Structured, locale-neutral blocker KINDS (the review
 // workspace maps each kind to governed bilingual copy) plus recalculated counts.
@@ -65,7 +71,10 @@ export type ReviewPackage = { id: string; version_label: string; code: string };
 // Evidence Ledger can render "not evaluated" and "unavailable" as named absences
 // instead of silently collapsing a failed read into a false zero / "no conflict".
 export type SourceState = "ok" | "failed" | "not-evaluated";
-export type ReviewSources = { factories: SourceState; packages: SourceState; inspectors: SourceState; overlap: SourceState };
+export type ReviewSources = { factories: SourceState; packages: SourceState; inspectors: SourceState; overlap: SourceState; lookups: SourceState };
+// M7 — governed lookup option (planning_lookups); labels ship in both locales,
+// the client picks by document locale with EN fallback.
+export type LookupOption = { key: string; label_en: string; label_ar: string | null };
 // CD-024 — selection-time overlap evidence for one inspector, from the SAME
 // overlap query publishBulkPlan runs at submit (parity is a required test).
 export type OverlapEvidence = {
@@ -87,6 +96,8 @@ export type ReviewData = {
   overlaps?: OverlapEvidence[];
   /** CD-024 — the window the overlap evidence was evaluated against (echoed). */
   window?: { start: string; end: string } | null;
+  /** M7 — governed config options (visit_type / visit_mode / priority). */
+  lookups?: { visitTypes: LookupOption[]; visitModes: LookupOption[]; priorities: LookupOption[] };
 };
 
 type OverlapRow = { inspector_id: string; visits: { id: string; window_start: string; window_end: string; planning_status: string } };
@@ -127,17 +138,21 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
     console.error("[CD-021 loadBulkSelection] access denied or resolution failed");
     return {
       factories: [], packages: [], inspectors: [], unavailable: true,
-      sources: { factories: "failed", packages: "failed", inspectors: "failed", overlap: "not-evaluated" },
+      sources: { factories: "failed", packages: "failed", inspectors: "failed", overlap: "not-evaluated", lookups: "failed" },
     };
   }
   const today = new Date().toISOString().slice(0, 10);
   const clean = [...new Set(ids)].filter(id => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 500);
   if (clean.length === 0) return { factories: [], packages: [], inspectors: [] };
-  const [factoryRead, packageRead, inspectorRead] = await Promise.all([
+  const [factoryRead, packageRead, inspectorRead, lookupRead] = await Promise.all([
     sb.from("factories").select("id, factory_code, name, cr_number, city, region, risk_band, risk_score, visits(planning_status, visit_type)").in("id", clean),
     sb.from("package_versions").select("id, version_label, packages(code)").in("status", ["published", "locked"])
       .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`),
     sb.from("user_roles").select("user_id, profiles!user_roles_user_id_fkey(full_name)").eq("role_key", "inspector"),
+    // M7 — governed config options flow from planning_lookups, not hard-coded
+    // lists; an unreadable lookup source is named "failed", never a false list.
+    sb.from("planning_lookups").select("kind, key, label_en, label_ar, sort_order")
+      .in("kind", ["visit_type", "visit_mode", "priority"]).eq("is_active", true).order("sort_order"),
   ]);
   if (factoryRead.error || packageRead.error || inspectorRead.error) {
     console.error("[CD-021 loadBulkSelection]", factoryRead.error?.message ?? packageRead.error?.message ?? inspectorRead.error?.message);
@@ -151,6 +166,7 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
         packages: packageRead.error ? "failed" : "ok",
         inspectors: inspectorRead.error ? "failed" : "ok",
         overlap: "not-evaluated",
+        lookups: lookupRead.error ? "failed" : "ok",
       },
     };
   }
@@ -181,7 +197,11 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
   const startMs = window ? Date.parse(window.start) : Number.NaN;
   const endMs = window ? Date.parse(window.end) : Number.NaN;
   const windowOk = !!window && !!window.start && !!window.end && Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs;
-  const sources: ReviewSources = { factories: "ok", packages: "ok", inspectors: "ok", overlap: "not-evaluated" };
+  const sources: ReviewSources = { factories: "ok", packages: "ok", inspectors: "ok", overlap: "not-evaluated", lookups: lookupRead.error ? "failed" : "ok" };
+  if (lookupRead.error) console.error("[CD-021 loadBulkSelection] lookups read failed:", lookupRead.error.message);
+  const lookupRows = (lookupRead.data ?? []) as { kind: string; key: string; label_en: string; label_ar: string | null }[];
+  const byKind = (kind: string): LookupOption[] => lookupRows.filter(r => r.kind === kind).map(r => ({ key: r.key, label_en: r.label_en, label_ar: r.label_ar }));
+  const lookups = { visitTypes: byKind("visit_type"), visitModes: byKind("visit_mode"), priorities: byKind("priority") };
   let overlaps: OverlapEvidence[] = [];
   let windowEcho: { start: string; end: string } | null = null;
   if (windowOk) {
@@ -201,7 +221,7 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
       overlaps = [...byInsp.values()];
     }
   }
-  return { factories, packages, inspectors, missingFactoryIds, sources, overlaps, window: windowEcho };
+  return { factories, packages, inspectors, missingFactoryIds, sources, overlaps, window: windowEcho, lookups };
 }
 
 // CD-021: neutral, catalogued failure copy. Raw Supabase/provider error text
@@ -224,24 +244,17 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     return { error: NEUTRAL_READ_ERROR };
   }
   if (!user) return { error: "Session expired." };
-  // M6 — capability check (planning.create.bulk) ahead of the role probe. The
-  // Planner-role read below is KEPT as the in-code mirror of the RPC's own
-  // has_role('planner') guard: a Reviewer persona reaches the review UI with
-  // the capability but publish_bulk_plan still enforces the Planner role
-  // inside its transaction — the asymmetry is documented, not a bypass.
-  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  // M7 — capability gate. The page stages with planning.create.bulk; PUBLISH
+  // requires planning.publish, mirroring the RPC's widened guard
+  // (has_role('planner') OR has_planning_capability('planning.publish') —
+  // migration 20260721180000). Page, action and RPC now agree; the Reviewer
+  // persona (business staff, publish capability, no planner role) publishes.
+  const access = await getPlanningAccess(sb, ["planning.publish"]);
   if (access.error) {
     console.error("[CD-021 publishBulkPlan] access resolution failed");
     return { error: NEUTRAL_READ_ERROR };
   }
-  if (!access.can("planning.create.bulk")) return { error: "Authorized Planner role required (RBAC-007)." };
-  const { data: plannerRole, error: plannerRoleError } = await sb.from("user_roles")
-    .select("role_key").eq("user_id", user.id).eq("role_key", "planner").maybeSingle();
-  if (plannerRoleError) {
-    console.error("[CD-021 publishBulkPlan] planner role read failed:", plannerRoleError.message);
-    return { error: NEUTRAL_READ_ERROR };
-  }
-  if (!plannerRole) return { error: "Authorized Planner role required (RBAC-007)." };
+  if (!access.can("planning.publish")) return { error: "Publishing requires the planning.publish capability (RBAC-007)." };
   let factoryIds = [...new Set(formData.getAll("factory_id").map(String))]
     .filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))
     .slice(0, 500);
@@ -254,9 +267,12 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   const window_start = String(formData.get("window_start") ?? "");
   const window_end = String(formData.get("window_end") ?? "");
   const visit_type = String(formData.get("visit_type") ?? "periodic");
-  const skipDuplicates = formData.get("skip_duplicates") === "1";
   const notesRaw = String(formData.get("notes") ?? "").trim();
   const notes = notesRaw === "" ? null : notesRaw;
+  // M7 — governed priority (planning_lookups kind 'priority'); empty = unset.
+  // publish_bulk_plan has no priority parameter, so it is recorded on the
+  // plan's visits post-commit (best-effort, same pattern as source_channel).
+  const priorityRaw = String(formData.get("priority") ?? "").trim();
   // Manual per-visit inspector picks (M01-029): inspector_<factoryId> = user_id | "" (auto)
   const picks = new Map<string, string>();
   for (const fid of factoryIds) {
@@ -287,23 +303,41 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     packageRows = (pvs ?? []) as unknown as typeof packageRows;
     if (packageRows.length !== package_version_ids.length) blockers.push("A selected inspection checklist is no longer active (ERR-PUB-001)");
   }
-  // per-row duplicate check (P01: duplicates flagged; conflicts listed, skip allowed)
-  // M6 — 'validated' included: it is an internal active state, not a terminal one.
+  // M7 — priority must be a governed active lookup value when supplied.
+  let priority: string | null = null;
+  if (priorityRaw) {
+    const { data: pr, error: prErr } = await sb.from("planning_lookups")
+      .select("key").eq("kind", "priority").eq("is_active", true).eq("key", priorityRaw).maybeSingle();
+    if (prErr) {
+      console.error("[CD-021 publishBulkPlan] priority lookup read failed:", prErr.message);
+      return { error: NEUTRAL_READ_ERROR };
+    }
+    if (!pr) blockers.push("Priority is not a governed value (PLN-CON-003)");
+    else priority = priorityRaw;
+  }
+
+  // M7 / PLN-CON-007 — authoritative publish-time partition. The same four
+  // ineligibility classes the M6 preview computes are re-evaluated for the
+  // SUBMITTED ids; rows that became ineligible between the preview and this
+  // commit are dropped and named in the result ledger. Nothing is silently
+  // included and nothing is silently dropped.
+  const { data: facRows, error: facErr } = await sb.from("factories")
+    .select("id, factory_code, name, official_lat, official_lng").in("id", factoryIds);
+  if (facErr) {
+    console.error("[CD-021 publishBulkPlan] factory partition read failed:", facErr.message);
+    return { error: NEUTRAL_READ_ERROR };
+  }
+  const facById = new Map((facRows ?? []).map(f => [f.id as string, f]));
+  const label = (fid: string) => { const f = facById.get(fid); return f ? `${f.name} (${f.factory_code})` : fid.slice(0, 8); };
+
+  // per-row duplicate check — M6: 'validated' is an internal ACTIVE state.
   const { data: dups, error: duplicateError } = await sb.from("visits").select("factory_id")
     .in("factory_id", factoryIds).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "published", "returned"]);
   if (duplicateError) {
     console.error("[CD-021 publishBulkPlan] duplicate read failed:", duplicateError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
-  const dupSet = new Set((dups ?? []).map(d => d.factory_id));
-  if (dupSet.size) {
-    if (skipDuplicates) {
-      factoryIds = factoryIds.filter(fid => !dupSet.has(fid));
-      if (factoryIds.length === 0) blockers.push("All selected factories have an active duplicate visit — nothing left to publish (M02-012)");
-    } else {
-      blockers.push(`${dupSet.size} selected factories already have an active ${visit_type} visit (M02-012) — deselect them or choose skip`);
-    }
-  }
+  const dupSet = new Set((dups ?? []).map(d => d.factory_id as string));
 
   // inspectors pool (ENG-05 automatic; capacity checks deepen in B7)
   const { data: inspRows, error: inspectorError } = await sb.from("user_roles").select("user_id").eq("role_key", "inspector");
@@ -311,37 +345,42 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     console.error("[CD-021 publishBulkPlan] inspector pool read failed:", inspectorError.message);
     return { error: NEUTRAL_READ_ERROR };
   }
-  const inspectors = (inspRows ?? []).map(r => r.user_id);
+  const inspectors = (inspRows ?? []).map(r => r.user_id as string);
   if (!inspectors.length) blockers.push("No eligible inspector (P02 failure control)");
-
-  // Manual pick validation (M01-029): eligibility + same-window double-booking conflicts.
   const pool = new Set(inspectors);
-  const chosen = [...new Set([...picks.values()])];
-  for (const insp of chosen) {
-    if (!pool.has(insp)) blockers.push(`Selected inspector is not in the eligible inspector pool (M01-029): ${insp.slice(0, 8)}`);
+  // One busy-set read serves BOTH the manual-pick conflict partition and the
+  // automatic-coverage count. Fail closed: an unreadable check blocks
+  // publishing, never "no conflict".
+  const busyInspectors = new Set<string>();
+  if (window_start && window_end) {
+    const overlap = await readOverlappingAssignments(sb, inspectors, window_start, window_end);
+    if (!overlap.ok) return { error: NEUTRAL_READ_ERROR };
+    for (const r of overlap.rows) busyInspectors.add(r.inspector_id);
   }
-  if (chosen.length && window_start && window_end) {
-    // CD-024 — SAME overlap query as loadBulkSelection's selection-time evidence
-    // (readOverlappingAssignments: one query, two call sites; parity is tested).
-    // Fail closed: an unreadable check blocks publishing, never "no conflict".
-    const overlap = await readOverlappingAssignments(sb, chosen, window_start, window_end);
-    if (!overlap.ok) {
-      return { error: NEUTRAL_READ_ERROR };
-    }
-    const conflicts = overlap.rows;
-    if (conflicts.length) {
-      const byInsp = new Map<string, number>();
-      for (const c of conflicts) byInsp.set(c.inspector_id, (byInsp.get(c.inspector_id) ?? 0) + 1);
-      const { data: names, error: namesError } = await sb.from("profiles").select("user_id, full_name").in("user_id", [...byInsp.keys()]);
-      if (namesError) {
-        console.error("[CD-021 publishBulkPlan] inspector name read failed:", namesError.message);
-        return { error: NEUTRAL_READ_ERROR };
-      }
-      const nameOf = new Map((names ?? []).map(n => [n.user_id, n.full_name]));
-      for (const [insp, n] of byInsp) {
-        blockers.push(`${nameOf.get(insp) ?? insp.slice(0, 8)} is already booked on ${n} overlapping visit(s) in this window (M01-029 double-booking)`);
-      }
-    }
+
+  const dropped: DroppedRow[] = [];
+  const kept: string[] = [];
+  for (const fid of factoryIds) {
+    const reasons: EligibilityReason[] = [];
+    const fac = facById.get(fid);
+    const pick = picks.get(fid) ?? "";
+    if (!fac) reasons.push("out_of_scope");
+    if (dupSet.has(fid)) reasons.push("duplicate_active_visit");
+    if (fac && (fac.official_lat == null || fac.official_lng == null)) reasons.push("missing_location");
+    if (pick && (!pool.has(pick) || busyInspectors.has(pick))) reasons.push("inspector_conflict");
+    if (reasons.length) dropped.push({ id: fid, name: label(fid), reasons });
+    else kept.push(fid);
+  }
+  if (factoryIds.length && kept.length === 0) {
+    blockers.push(`Every selected row is ineligible at the authoritative re-check — nothing left to publish: ${dropped.map(d => `${d.name} (${d.reasons.join(", ")})`).join(" · ")}`);
+  }
+  // Manual picks ride with their rows; coverage counts the kept set only.
+  for (const d of dropped) picks.delete(d.id);
+  const manualTaken = new Set([...picks.values()]);
+  const autoNeeded = kept.filter(fid => !picks.has(fid)).length;
+  const freePool = [...pool].filter(i => !busyInspectors.has(i) && !manualTaken.has(i)).length;
+  if (pool.size > 0 && autoNeeded > freePool) {
+    blockers.push(`${autoNeeded - freePool} visit(s) have no eligible Inspector available in this window (M01-029) — widen the window or assign an Inspector manually`);
   }
   if (blockers.length) return { error: blockers.join(" · ") };
 
@@ -351,10 +390,11 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   // whole operation rolls back: no plan, no visits, no half-published state
   // (P03 "partial publish prohibited"). RLS is still enforced because the
   // function runs as the calling planner.
+  // M7 — the RPC commits EXACTLY the accepted eligible subset (kept).
   const manual: Record<string, string> = {};
   for (const [fid, insp] of picks) manual[fid] = insp;
   const { data: planId, error } = await sb.rpc("publish_bulk_plan", {
-    p_factory_ids: factoryIds,
+    p_factory_ids: kept,
     p_package_version_id: package_version_ids[0] ?? null,
     p_window_start: window_start,
     p_window_end: window_end,
@@ -366,6 +406,34 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
   if (error) {
     // Log the real cause server-side; return catalogued neutral copy only.
     console.error("[CD-021] publish_bulk_plan failed:", error.message, error.code);
+    // M7 — the in-transaction guards (RPC checks + the 0031 assignments
+    // trigger, SQLSTATE 23505) rejected a conflict that appeared between the
+    // preview and the commit. Name the conflicting rows honestly. The attempt
+    // itself persists nowhere (the transaction rolled back and audit_events is
+    // trigger/definer-only) — attempted-conflict audit needs a definer RPC
+    // change and is a documented gap.
+    if (error.code === "23505" || /duplicate active visit|inspector unavailable|window is no longer available/i.test(error.message ?? "")) {
+      const parts: string[] = [];
+      const { data: dupsNow } = await sb.from("visits").select("factory_id")
+        .in("factory_id", kept).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "published", "returned"]);
+      if (dupsNow?.length) {
+        parts.push(`active visit conflict: ${[...new Set(dupsNow.map(d => label(d.factory_id as string)))].join(" · ")}`);
+      }
+      const chosenInspectors = [...new Set([...picks.values()])];
+      if (chosenInspectors.length) {
+        const overlapNow = await readOverlappingAssignments(sb, chosenInspectors, window_start, window_end);
+        if (overlapNow.ok && overlapNow.rows.length) {
+          const inspIds = [...new Set(overlapNow.rows.map(r => r.inspector_id))];
+          const { data: names } = await sb.from("profiles").select("user_id, full_name").in("user_id", inspIds);
+          const nameOf = new Map((names ?? []).map(n => [n.user_id as string, n.full_name as string]));
+          parts.push(`inspector window conflict: ${inspIds.map(i => nameOf.get(i) ?? i.slice(0, 8)).join(" · ")}`);
+        }
+      }
+      return {
+        error: "Publishing failed — a conflicting visit or booking appeared at commit and the whole plan rolled back. Nothing was published."
+          + (parts.length ? ` ${parts.join("; ")}.` : ""),
+      };
+    }
     // TASK-EXECUTION-MODULE-001 · D-009 — the publish RPC evaluated the shared
     // window capacity and found no selectable day for an assigned inspector.
     // Governed blocker copy in the same style as the blockers above; the
@@ -411,10 +479,19 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
       }
     }
   }
+  // M7 — governed priority lands on the plan's visits post-commit (the RPC
+  // has no priority parameter; same best-effort pattern as source_channel).
+  if (priority && typeof planId === "string") {
+    const { error: prioError } = await sb.from("visits").update({ priority }).eq("visit_plan_id", planId);
+    if (prioError) {
+      console.error("[CD-021 publishBulkPlan] priority write failed:", prioError.message);
+    }
+  }
   // CD-025: the guarded publisher returns the new plan ID. Capture it so the
   // success state can offer the optional read-only plan link (S26). The plan ID
   // is only surfaced when actually returned; otherwise the link is omitted.
-  return { ok: true, planId: typeof planId === "string" ? planId : undefined };
+  // M7 — dropped rows + committed-subset size ride the result for the ledger.
+  return { ok: true, planId: typeof planId === "string" ? planId : undefined, dropped, created: kept.length };
 }
 
 // CD-025 — ReadinessRail + consequence-ledger preview. Recomputes duplicates,
@@ -617,6 +694,8 @@ export type BulkDraftConfig = {
   window_start?: string;
   window_end?: string;
   notes?: string;
+  /** M7 — governed priority key (planning_lookups); null/empty = unset. */
+  priority?: string;
 };
 export type BulkDraftInput = {
   planId?: string;
@@ -674,6 +753,7 @@ export async function saveBulkDraft(input: BulkDraftInput): Promise<BulkDraftRes
       window_start: cleanText(input.config?.window_start),
       window_end: cleanText(input.config?.window_end),
       notes: cleanText(input.config?.notes),
+      priority: cleanText(input.config?.priority),
     },
     validation: input.validation ?? null,
     acknowledged: input.acknowledged === true,
@@ -734,6 +814,8 @@ export type BulkDraft = {
     window_start: string;
     window_end: string;
     notes: string;
+    /** M7 — governed priority key; "" = unset. */
+    priority: string;
   };
   acknowledged: boolean;
 };
@@ -765,7 +847,7 @@ export async function loadBulkDraft(planId: string): Promise<BulkDraftLoadResult
   if (!data) return { error: "unavailable" };
   const payload = (data.draft_payload ?? {}) as {
     selection?: unknown;
-    config?: { picks?: unknown; package_version_id?: unknown; package_version_ids?: unknown; window_start?: unknown; window_end?: unknown; notes?: unknown };
+    config?: { picks?: unknown; package_version_id?: unknown; package_version_ids?: unknown; window_start?: unknown; window_end?: unknown; notes?: unknown; priority?: unknown };
     acknowledged?: unknown;
   };
   const selection = (Array.isArray(payload.selection) ? payload.selection : [])
@@ -794,6 +876,7 @@ export async function loadBulkDraft(planId: string): Promise<BulkDraftLoadResult
         window_start: typeof payload.config?.window_start === "string" ? payload.config.window_start : "",
         window_end: typeof payload.config?.window_end === "string" ? payload.config.window_end : "",
         notes: typeof payload.config?.notes === "string" ? payload.config.notes : "",
+        priority: typeof payload.config?.priority === "string" ? payload.config.priority : "",
       },
       acknowledged: payload.acknowledged === true,
     },
