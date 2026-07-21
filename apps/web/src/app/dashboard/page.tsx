@@ -88,6 +88,13 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     ? params.group as "region" | "city" | "sector" | "authority"
     : "region";
   const sb = await supabaseServer();
+  // DASH-015 — scope the two highest-cardinality, always-scoped sources at the
+  // database instead of loading all history and filtering in memory.
+  // checklist_responses (one row per checklist item per inspection) and
+  // geo_events are only ever consumed within the selected window and feed no
+  // search surface, so a DB-side bound is behaviour-preserving.
+  const scopeFromIso = new Date(scope.fromMs).toISOString();
+  const scopeToIso = new Date(scope.toMs).toISOString();
 
   // The sidebar is only a usability filter. Enforce the dashboard persona at
   // the route boundary as well so a copied URL cannot grant dashboard access.
@@ -120,9 +127,9 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     `).range(from, to) as unknown as PromiseLike<RowPage<ReviewRow>>),
     collect<ResponseRow>((from, to) => sb.from("checklist_responses").select(`
       inspection_id, is_complete, response,
-      inspections(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
+      inspections!inner(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
       inspection_items(regulation_clauses(regulations(title, issuing_authority)))
-    `).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>),
+    `).gte("inspections.submitted_at", scopeFromIso).lte("inspections.submitted_at", scopeToIso).range(from, to) as unknown as PromiseLike<RowPage<ResponseRow>>),
     collect<ViolationRow>((from, to) => sb.from("violations").select(`
       id, inspection_id,
       inspections(submitted_at, visits(factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))),
@@ -131,7 +138,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     collect<GeoRow>((from, to) => sb.from("geo_events").select(`
       id, visit_id, kind, geofence_result, override_reason, occurred_at, observed_lat, observed_lng,
       visits(planner_lat, planner_lng, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
-    `).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
+    `).gte("occurred_at", scopeFromIso).lte("occurred_at", scopeToIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
     collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
     sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
   ]);
