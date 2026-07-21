@@ -5,6 +5,7 @@
 - Phase: 1 — shared contracts (migration `supabase/migrations/20260721090000_execution_canonical_contracts.sql`, `apps/web/src/lib/execution/*`)
 - Phase: 2A — admin execution control plane (`apps/web/src/app/admin/execution/*`, migration `supabase/migrations/20260721100000_execution_admin_audit.sql`)
 - Phase: 2B — governed role/capability grants (`apps/web/src/app/admin/access/*`, migration `supabase/migrations/20260721110000_execution_access_grants.sql`)
+- Phase: 3A — Pre-Execution readiness backend (migration `supabase/migrations/20260721120000_execution_preparation.sql`, `apps/web/src/lib/execution/readiness.ts`)
 
 ## D-001 — Daily-cap counting semantics
 
@@ -52,3 +53,26 @@
 - **Audit.** Every actual change appends `audit_events` (`object_type 'user_roles'/'user_capability_grants'`, `object_id null` — the grant key is a composite pair, not a uuid, so it travels in before/after state per the D-004 precedent — `requirement_refs ['EXE-ACCESS']`). `user_roles` row writes are additionally covered by the pre-existing `trg_audit_user_roles` trigger; the app-level rows carry the governed action and requirement traceability.
 - **Maker-checker deferred as a sponsor decision.** An approval workflow beyond the single-security_admin action (dual control for access changes) is a policy decision, not an engineering default — consistent with D-004 for configuration writes. The seams the page previously declared (separation-of-duties, self-escalation guard, approval + audit path) are now realized except the approval step, which stays a disclosed boundary until the sponsor requires it.
 
+
+## D-007 — form_config optionality is fail closed
+
+- Phase: 3A — Pre-Execution readiness backend.
+- `visit_preparations.form_config.removed_optional_section_keys` may name ONLY sections the package definition **explicitly** marks removable: a section is removable iff it carries `optional: true` or `removable: true` AND does not carry `mandatory: true`. When the definition has no optionality metadata at all, NO removals are allowed — absent metadata is never read as "removable" (`EXE-PREP-MANDATORY-REMOVAL`).
+- Rationale: the plan makes mandatory Forms/Action Forms unremovable, but the platform's package definitions do not yet carry a universal mandatory/optional vocabulary. Reading "not marked mandatory" as "removable" would fail open and let an inspector strip content Planning never declared optional. Failing closed means removals are impossible until the authoring side explicitly marks a section optional; nothing existing loses behavior because removal is a new Phase 3A capability.
+- The same single validator (`private.execution_validate_form_config`) runs on save AND again on confirm, so a definition drift between save and Ready cannot smuggle an invalid composition into the snapshot. `added_action_form_template_ids` must reference published `configuration_templates` of `template_type 'action_form'`, with no duplicates inside the list or against the definition's own action forms (`EXE-PREP-DUPLICATE`, `EXE-PREP-FORM-INELIGIBLE`).
+
+## D-008 — Ready creates the inspections row pre-journey with started_at NULL
+
+- Phase: 3A — Pre-Execution readiness backend.
+- `confirm_visit_ready` creates the `inspections` row if absent (`status 'in_progress'` → `lifecycle_status 'in_progress'` via the Phase 1 sync trigger; `package_version_id` = the resolved effective version; `started_at` stays NULL). The canonical plan requires Inspection Status In Progress at Ready, while the journey/session start remains the owner of `started_at` — the row existing pre-journey is how both statements hold. The field app's later Start Inspection finds the row already present (visits→inspections is unique per visit) and only sets `started_at`.
+- Reopen (Ready → New) is allowed ONLY pre-journey (`operational_state = 'prepared'`; anything beyond raises `EXE-PREP-JOURNEY-STARTED`) and ONLY while no captured work exists: `started_at` NULL and zero `checklist_responses`/`evidence` rows (`EXE-PREP-WORK-CAPTURED` otherwise). Reopen regresses the inspection to `status 'not_started'` (lifecycle → `new` via the same trigger), resets the assignment to `assigned`, clears `confirmed_ready_at` and stamps `reopened_at`.
+- Snapshot rows are NEVER touched by reopen: each Ready appends a new `visit_package_snapshots` row (`unique (visit_id, preparation_version)`), so the readiness history — including the exact resolved definition + sha256 checksum each Ready froze — stays complete and immutable (guard trigger, no update/delete policies). `visits.execution_date` and the saved draft survive reopen; the next confirm re-validates window/past/capacity at that moment.
+- Idempotency: confirming while already ready returns the latest snapshot row without appending a duplicate; saving after Ready is refused outright (`EXE-PREP-REOPEN-REQUIRED`), so "already ready and nothing changed" is the only replay shape.
+
+## D-009 — Planning publish evaluates the shared window capacity atomically
+
+- Phase: 3A — Pre-Execution readiness backend.
+- `publish_single_visit` and `publish_bulk_plan` (copied from `20260714091727_planning_publish_guards.sql` with every guard, advisory lock, STM-PLAN-001/002 transition, notification and idempotency behavior preserved byte-for-byte) now evaluate `inspector_window_capacity` over the whole visit window for the assigned inspector immediately after assignment creation. When no day in the window has remaining daily capacity, the publish raises `EXE-CAPACITY-WINDOW-FULL` and the entire transaction rolls back — bulk publication can never over-assign a date the inspector later cannot select, because publish and Pre-Execution date selection evaluate the SAME counting rule.
+- The counting rule itself was factored into ONE private SQL helper (`private.execution_daily_used`, plus `private.execution_daily_cap` for the governed cap); `inspector_daily_capacity` keeps its exact Phase 1 signature/contract and is re-expressed over the helper, and `inspector_window_capacity` (per-day `used`/`remaining`, `has_availability`, same planner/ops/self caller guard) is built on it. The cap scan is bounded at 62 days: longer windows evaluate the first 62 days and report `truncated: true`.
+- Known boundary, accepted for Phase 3A: within a single bulk publish, the batch's own visits are still `draft` while the per-assignment checks run, so the hook guards against already-published load (the over-assignment the plan targets) rather than intra-batch stacking; the pre-existing duplicate-active-visit and inspector-unavailable guards continue to prevent the same inspector receiving overlapping visits in one batch.
+- `create_immediate_visit` is deliberately untouched in this phase.
