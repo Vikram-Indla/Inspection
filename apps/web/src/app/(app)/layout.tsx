@@ -35,6 +35,10 @@ async function enforceChannelAccess() {
   const roleKeys = (data ?? []).map(row => row.role_key);
 
   if (isFieldOnlyPersona(roleKeys)) {
+    // M6/CD-023 reconciliation: /planning/immediate is the documented M01-043
+    // exception — inspector-persona immediate creation is preserved. Allow only
+    // that single planning route; every other non-field path still redirects.
+    if (pathname === "/planning/immediate") return;
     redirect(homeForRoles(roleKeys) ?? "/field");
   }
 }

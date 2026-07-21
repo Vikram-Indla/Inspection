@@ -1,17 +1,17 @@
 import Shell from "@/components/Shell";
-import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import EmptyState from "@/components/EmptyState";
 import { collectPostgrestPages, type PostgrestPage } from "@/lib/supabase-pagination";
+import { getPlanningAccess } from "@/lib/planning/access";
 import type { BulkFormStrings } from "./BulkForm";
-import type { CriteriaBuilderStrings } from "./CriteriaBuilder";
+import type { CriteriaBuilderStrings, BuilderField } from "./CriteriaBuilder";
 import type { LedgerStrings } from "./EligibilityLedger";
 import type { Bucket, Distribution, DistributionStrings } from "./DistributionPanels";
 import TargetingLensClient from "./TargetingLensClient";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
-import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey } from "./criteria";
+import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey, FIELD_REGISTRY, type Op } from "./criteria";
 
 type FactoryForCriteria = {
   region: string | null; risk_band: string | null; activity_class: string | null; city: string | null;
@@ -22,30 +22,29 @@ const toArr = (v: string | string[] | undefined): string[] => (v == null ? [] : 
 export default async function BulkPlanning({ searchParams }: { searchParams: Promise<{ ct?: string; cf?: string | string[]; co?: string | string[]; cv?: string | string[]; combine?: string }> }) {
   const sp = await searchParams;
   const { t, locale } = await useT();
+  const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
 
-  // RBAC-007 — Visit Planning (bulk targeting + its P02 review step) is a
-  // Planner-only capability. RLS already blocks the eventual publish write for
-  // any other role, but the read-only targeting UI must not render for them
-  // either (a non-planner authenticated user previously saw the full screen).
+  // RBAC-007 / M6 — capability-gated entry (planning.create.bulk), resolved via
+  // the canonical planning access model (same pattern as /planning/immediate).
+  // Planner AND Reviewer hold the capability; Inspector/Admin do not. Fail
+  // closed: a resolution error is a denial, never a permissive default. RLS
+  // remains the data boundary and publish_bulk_plan re-checks its own role.
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
-  const { data: myRoles, error: rolesError } = user
-    ? await getUserRoles(user.id)
-    : { data: [] as { role_key: string }[], error: null };
-  if (authError || rolesError) {
-    console.error("[CD-021 bulk planning authorization]", authError?.message ?? rolesError?.message);
+  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  if (authError || access.error !== null) {
+    console.error("[CD-021 bulk planning authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
         <div className="ax-banner ax-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
       </Shell>
     );
   }
-  const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
-  if (!isPlanner) {
+  if (!user || !access.can("planning.create.bulk")) {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState glyph="⛔" title={t("plan.bulk.unauthorized.title", "Authorized role required")}
-          body={t("plan.bulk.unauthorized.body", "Plan multiple visits (SCR-WEB-110) is available to the Planner role only.")} />
+        <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+          body={tr("plan.bulk.unauthorized.body", "Plan multiple visits (SCR-WEB-110) requires the bulk-planning capability (Planner / Reviewer).", "تخطيط زيارات متعددة (SCR-WEB-110) يتطلب صلاحية التخطيط الجماعي (المخطط / المراجع).")} />
       </Shell>
     );
   }
@@ -60,6 +59,8 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const tree = ctParsed
     ?? fromFlat(toArr(sp.cf), toArr(sp.co), toArr(sp.cv), sp.combine ?? "and")
     ?? emptyTree();
+  const criteriaApplied = hasCriteria(tree);
+
   // M01-004 — all factories fetched, then the tree evaluated server-side
   // (ALL = every child / ANY = some, nested). No DB-level .eq filters: is-not
   // and ANY combinations aren't simple equality, so evaluation is uniform here.
@@ -82,16 +83,81 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
       </Shell>
     );
   }
-  const everyFactory = (allFactories ?? []) as unknown as (FactoryForCriteria & Record<string, unknown>)[];
-  const factories = hasCriteria(tree)
+
+  // M6 — computed criteria sources: violation counts (violations → inspections
+  // → visits → factory) and the latest inspection date / review outcome per
+  // factory. These are COMPLETE reads aggregated in memory: a factory absent
+  // from violations genuinely has 0 recorded violations (a real zero, not a
+  // fabricated default); a factory with no review has NO outcome (absence,
+  // matches nothing). A failed read fails the page like the factory catalog —
+  // partial history would silently mis-evaluate numeric/date criteria.
+  const [violationsRead, inspectionsRead] = await Promise.all([
+    collectPostgrestPages<Record<string, unknown>>((from, to) => sb
+      .from("violations")
+      .select("id, inspections!inner(visits!inner(factory_id))")
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<Record<string, unknown>>>),
+    collectPostgrestPages<Record<string, unknown>>((from, to) => sb
+      .from("inspections")
+      .select("id, submitted_at, visits!inner(factory_id), reviews(decision)")
+      .order("submitted_at", { ascending: false, nullsFirst: false })
+      .range(from, to) as unknown as PromiseLike<PostgrestPage<Record<string, unknown>>>),
+  ]);
+  if (violationsRead.error || inspectionsRead.error) {
+    console.error("[CD-021] criteria history read failed:", violationsRead.error?.message ?? inspectionsRead.error?.message);
+    return (
+      <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
+        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
+          body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
+      </Shell>
+    );
+  }
+  const violationCountByFactory = new Map<string, number>();
+  for (const row of violationsRead.data ?? []) {
+    const fid = (row as { inspections?: { visits?: { factory_id?: string } } }).inspections?.visits?.factory_id;
+    if (fid) violationCountByFactory.set(fid, (violationCountByFactory.get(fid) ?? 0) + 1);
+  }
+  // inspections arrive newest-first → the first row seen per factory carries
+  // its latest submitted date and (when present) its latest review decision.
+  const lastInspectionByFactory = new Map<string, { date: string | null; outcome: string | null }>();
+  for (const row of inspectionsRead.data ?? []) {
+    const r = row as { submitted_at: string | null; visits?: { factory_id?: string }; reviews?: { decision: string | null }[] };
+    const fid = r.visits?.factory_id;
+    if (!fid || lastInspectionByFactory.has(fid)) continue;
+    const decision = (r.reviews ?? []).map(x => x.decision).find((d): d is string => typeof d === "string" && d.trim() !== "") ?? null;
+    lastInspectionByFactory.set(fid, { date: r.submitted_at, outcome: decision });
+  }
+
+  const everyFactory = ((allFactories ?? []) as unknown as (FactoryForCriteria & Record<string, unknown>)[]).map(f => ({
+    ...f,
+    previous_violation_count: violationCountByFactory.get(String(f.id)) ?? 0,
+    previous_outcome: lastInspectionByFactory.get(String(f.id))?.outcome ?? null,
+    last_inspection_date: lastInspectionByFactory.get(String(f.id))?.date ?? null,
+  }));
+  // M6 — at least one criterion is required (no match-all). An empty/absent
+  // criteria tree yields NO results with an honest banner; the builder still
+  // renders so the planner can compose criteria. The unrestricted-match
+  // capability gap is recorded in PLANNING_IMPLEMENTATION_NOTES (M6).
+  const factories = criteriaApplied
     ? everyFactory.filter(f => evalNode(f as Record<string, unknown>, tree))
-    : everyFactory;
+    : [];
   // Distinct value lists per field (datalist suggestions in the builder).
   const distinct = (key: string) => [...new Set(everyFactory.map(f => (f as Record<string, unknown>)[key]).filter((v): v is string => typeof v === "string" && v.length > 0))].sort();
   const fieldOptions: Record<string, string[]> = {
     region: distinct("region"), risk_band: distinct("risk_band"),
     activity_class: distinct("activity_class"), city: distinct("city"),
+    previous_outcome: distinct("previous_outcome"),
   };
+  // Region → cities map for the dependent city dropdown (a city suggestion
+  // list follows the chosen region instead of offering impossible pairings).
+  const cityByRegion: Record<string, string[]> = {};
+  for (const f of everyFactory) {
+    const region = typeof f.region === "string" && f.region.trim() ? f.region : null;
+    const city = typeof f.city === "string" && f.city.trim() ? f.city : null;
+    if (!region || !city) continue;
+    cityByRegion[region] = cityByRegion[region] ?? [];
+    if (!cityByRegion[region].includes(city)) cityByRegion[region].push(city);
+  }
+  for (const r of Object.keys(cityByRegion)) cityByRegion[r].sort();
 
   // CD-021 — server-side aggregates over the EVALUATED (matched) set only.
   // Pure counts; null/blank values fall into an explicit "unknown" bucket and
@@ -131,7 +197,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   const oldestSyncedAt = syncTimes.length ? syncTimes.reduce((a, b) => (a < b ? a : b)) : null;
   const missingSync = factories.length - syncTimes.length;
   const aiPlanningContext = JSON.stringify({
-    scope: { factories: denominator, eligible: factories.length, criteria_applied: hasCriteria(tree) },
+    scope: { factories: denominator, eligible: factories.length, criteria_applied: criteriaApplied },
     risk_band_counts: riskCounts,
     region_counts: regionCounts,
     oldest_source_sync: oldestSyncedAt,
@@ -149,6 +215,52 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     contributions[pathKey(leaf.path)] = everyFactory.filter(f => evalNode(f as Record<string, unknown>, leaf.node)).length;
   }
   const leafInfo = leafList.map(l => ({ pathKey: pathKey(l.path), field: l.node.field, value: l.node.value }));
+
+  // M6 — the criteria dictionary resolved for the builder: supplied fields with
+  // their per-type operators, then CONTRACT_NOT_SUPPLIED fields (disabled,
+  // with the honest explanation — never silently absent, never evaluated).
+  const fieldLabels: Record<string, string> = {
+    region: t("plan.bulk.criteria.fieldRegion", "Region"),
+    city: t("plan.bulk.criteria.fieldCity", "City"),
+    risk_band: t("plan.bulk.criteria.fieldRiskBand", "Risk band"),
+    activity_class: t("plan.bulk.criteria.fieldActivity", "Activity class"),
+    previous_violation_count: t("plan.bulk.criteria.fieldViolationCount", "Previous violation count"),
+    previous_outcome: t("plan.bulk.criteria.fieldOutcome", "Previous inspection outcome"),
+    last_inspection_date: t("plan.bulk.criteria.fieldLastInspection", "Last inspection date"),
+    sector: t("plan.bulk.criteria.fieldSector", "Sector"),
+    license_stage: t("plan.bulk.criteria.fieldLicenseStage", "Licence stage"),
+    license_status: t("plan.bulk.criteria.fieldLicenseStatus", "Licence status"),
+    product_hs_code: t("plan.bulk.criteria.fieldProductHs", "Product / HS code"),
+    land_provider: t("plan.bulk.criteria.fieldLandProvider", "Land provider"),
+    employee_count: t("plan.bulk.criteria.fieldEmployeeCount", "Employee count"),
+    issuing_authority: t("plan.bulk.criteria.fieldIssuingAuthority", "Issuing authority"),
+  };
+  const opLabels: Record<Op, string> = {
+    eq: t("plan.bulk.criteria.opIs", "is"),
+    neq: t("plan.bulk.criteria.opIsNot", "is not"),
+    contains: t("plan.bulk.criteria.opContains", "contains"),
+    in: t("plan.bulk.criteria.opIn", "is one of"),
+    gt: t("plan.bulk.criteria.opGt", "greater than"),
+    lt: t("plan.bulk.criteria.opLt", "less than"),
+    between: t("plan.bulk.criteria.opBetween", "between"),
+  };
+  const notSuppliedReasons: Record<string, string> = {
+    "plan.bulk.criteria.nsSector": t("plan.bulk.criteria.nsSector", "No governed sector source is populated — this dimension cannot be evaluated and is never treated as blank."),
+    "plan.bulk.criteria.nsLicenseStage": t("plan.bulk.criteria.nsLicenseStage", "Licence stage is ~1% populated in the licence register — too sparse to target against honestly."),
+    "plan.bulk.criteria.nsLicenseStatus": t("plan.bulk.criteria.nsLicenseStatus", "Licence status is ~1% populated in the licence register — too sparse to target against honestly."),
+    "plan.bulk.criteria.nsProductHs": t("plan.bulk.criteria.nsProductHs", "Product / HS codes exist for 4 factories only — not a governed targeting source yet."),
+    "plan.bulk.criteria.nsLandProvider": t("plan.bulk.criteria.nsLandProvider", "No land-provider attribute exists in the governed factory model."),
+    "plan.bulk.criteria.nsEmployeeCount": t("plan.bulk.criteria.nsEmployeeCount", "Employee count is recorded for 4 of 1,339 factories — far below a usable targeting threshold."),
+    "plan.bulk.criteria.nsIssuingAuthority": t("plan.bulk.criteria.nsIssuingAuthority", "Issuing authority is not available as a governed, populated attribute."),
+  };
+  const builderFields: BuilderField[] = FIELD_REGISTRY.map(def => ({
+    key: def.key,
+    label: fieldLabels[def.key] ?? def.key,
+    type: def.type,
+    operators: def.operators.map(op => ({ op, label: opLabels[op] })),
+    supplied: def.supplied,
+    reason: def.notSuppliedKey ? notSuppliedReasons[def.notSuppliedKey] : undefined,
+  }));
 
   const ledgerStrings: LedgerStrings = {
     heading: t("plan.bulk.ledger.heading", "Eligibility ledger"),
@@ -210,6 +322,11 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     selectAllConfirmInputLabel: t("plan.bulk.selectAllConfirmInputLabel", "Type the count to confirm"),
     selectAllConfirmButton: t("plan.bulk.selectAllConfirmButton", "Select all {n}"),
     selectAllConfirmCancel: t("plan.bulk.selectAllConfirmCancel", "Cancel"),
+    saveDraft: t("plan.bulk.saveDraft", "Save draft"),
+    savingDraft: t("plan.bulk.savingDraft", "Saving draft…"),
+    draftSaved: t("plan.bulk.draftSaved", "Draft saved · {ref}"),
+    draftSaveFailed: t("plan.bulk.draftSaveFailed", "The draft could not be saved — your selection is still held in this browser. You can continue to review without a saved draft."),
+    reviewFallback: t("plan.bulk.reviewFallback", "Continue to review without saving"),
   };
   const criteriaStrings: CriteriaBuilderStrings = {
     heading: t("plan.bulk.criteria.heading", "Targeting criteria (M01-003/012/022)"),
@@ -220,12 +337,9 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     opLabel: t("plan.bulk.criteria.opLabel", "Operator"),
     valueLabel: t("plan.bulk.criteria.valueLabel", "Value"),
     valuePlaceholder: t("plan.bulk.criteria.valuePlaceholder", "Type or pick a value"),
-    fieldRegion: t("plan.bulk.criteria.fieldRegion", "Region"),
-    fieldRiskBand: t("plan.bulk.criteria.fieldRiskBand", "Risk band"),
-    fieldActivity: t("plan.bulk.criteria.fieldActivity", "Activity class"),
-    fieldCity: t("plan.bulk.criteria.fieldCity", "City"),
-    opIs: t("plan.bulk.criteria.opIs", "is"),
-    opIsNot: t("plan.bulk.criteria.opIsNot", "is not"),
+    valueToLabel: t("plan.bulk.criteria.valueToLabel", "and"),
+    inHint: t("plan.bulk.criteria.inHint", "Separate values with commas."),
+    notSuppliedTag: t("plan.bulk.criteria.notSuppliedTag", "CONTRACT_NOT_SUPPLIED"),
     addCondition: t("plan.bulk.criteria.addCondition", "Add condition"),
     addGroup: t("plan.bulk.criteria.addGroup", "Add nested group"),
     remove: t("plan.bulk.criteria.remove", "Remove"),
@@ -249,7 +363,13 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
       {ctWasInvalid && (
         <div className="ax-banner ax-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>
           <strong>{t("plan.bulk.invalidCt.title", "Criteria could not be read")}</strong>
-          <p>{t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-PLN-001) and could not be applied. Showing unfiltered results — please rebuild your criteria below.")}</p>
+          <p>{t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-PLN-001) and could not be applied. No results are shown until valid criteria are applied — please rebuild your criteria below.")}</p>
+        </div>
+      )}
+      {!criteriaApplied && !ctWasInvalid && (
+        <div className="ax-banner ax-banner--warning" role="alert" aria-label={tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}>
+          <strong>{tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}</strong>
+          <p>{tr("plan.bulk.noCriteria.body", "Bulk targeting never matches the whole registry by default. Add at least one criterion below to see matching factories; nothing is selected or published without an explicit scope.", "الاستهداف الجماعي لا يطابق السجل بالكامل افتراضيًا. أضف معيارًا واحدًا على الأقل أدناه لعرض المصانع المطابقة؛ لا يتم اختيار أو نشر أي شيء دون نطاق صريح.")}</p>
         </div>
       )}
       {/* MVP1-M01-016 / MVP1-M01-026 · AC-0016 / AC-0026 — contextual planning summary. */}
@@ -270,6 +390,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
         denominator={denominator} eligible={factories.length} oldestSyncedAt={oldestSyncedAt} missingSync={missingSync} ledgerStrings={ledgerStrings}
         distributions={distributions} distStrings={distStrings}
         factories={factories as never} bulkFormStrings={strings} locale={locale === "ar" ? "ar" : "en"}
+        builderFields={builderFields} cityByRegion={cityByRegion}
       />
     </Shell>
   );

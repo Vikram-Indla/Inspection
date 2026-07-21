@@ -3,6 +3,8 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { isPlausibleDate } from "@/lib/plausible-date";
 import { getWindowCapacity } from "@/lib/execution";
+import { getPlanningAccess } from "@/lib/planning/access";
+import { parseCt, hasCriteria } from "./criteria";
 
 // CD-025 (SCR-WEB-150 / P03): publish no longer hard-redirects. It returns the
 // authoritative result so the review workspace can render the success state
@@ -22,10 +24,23 @@ export type BlockerKind =
   | "nopackage" | "packageInvalid" | "nopool"
   | "configMissing" | "windowImplausible" | "srcFactory" | "srcPackage" | "srcInspector" | "srcDuplicate";
 export type Blocker = { kind: BlockerKind; targets?: string[] };
+// M6 — per-row eligibility partition. Every selected row is classified with
+// machine-stable reason codes (the review workspace maps them to governed
+// bilingual copy): the reviewer sees exactly WHICH rows would proceed and WHY
+// the rest would not, before any publish attempt. Reasons are advisory
+// previews; publish_bulk_plan re-validates authoritatively in its transaction.
+export type EligibilityReason = "duplicate_active_visit" | "out_of_scope" | "missing_location" | "inspector_conflict";
+export type EligibilityRow = { id: string; eligible: boolean; reasons: EligibilityReason[] };
+export type EligibilityCounts = {
+  total: number; eligible: number; ineligible: number; toCreate: number;
+  missingLocation: number; activeConflicts: number; manualOverrideRequired: number;
+};
 export type ValidateResult = {
   blockers: Blocker[];
   selected: number; retained: number; dup: number; manual: number; auto: number;
   committable: boolean;
+  rows: EligibilityRow[];
+  ledger: EligibilityCounts;
 };
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -101,6 +116,17 @@ async function readOverlappingAssignments(
 
 export async function loadBulkSelection(ids: string[], window?: { start: string; end: string }): Promise<ReviewData> {
   const sb = await supabaseServer();
+  // M6 — capability gate (planning.create.bulk). The review page gates
+  // server-side too; this is defense-in-depth for the action surface. A
+  // denial fails closed as "unavailable" (never a false empty catalog).
+  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  if (access.error || !access.can("planning.create.bulk")) {
+    console.error("[CD-021 loadBulkSelection] access denied or resolution failed");
+    return {
+      factories: [], packages: [], inspectors: [], unavailable: true,
+      sources: { factories: "failed", packages: "failed", inspectors: "failed", overlap: "not-evaluated" },
+    };
+  }
   const today = new Date().toISOString().slice(0, 10);
   const clean = [...new Set(ids)].filter(id => /^[0-9a-f-]{36}$/i.test(id)).slice(0, 500);
   if (clean.length === 0) return { factories: [], packages: [], inspectors: [] };
@@ -130,7 +156,9 @@ export async function loadBulkSelection(ids: string[], window?: { start: string;
   const inspRows = inspectorRead.data;
   const factories: ReviewFactory[] = (fac ?? []).map(f => {
     const visits = (f as unknown as { visits: { planning_status: string; visit_type: string }[] }).visits ?? [];
-    const dup = visits.some(v => ["draft", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
+    // M6 — 'validated' is an internal ACTIVE plan state: a validated plan still
+    // blocks a duplicate, exactly like draft/published/returned.
+    const dup = visits.some(v => ["draft", "validated", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
     return { id: f.id, factory_code: f.factory_code, name: f.name, cr_number: f.cr_number, city: f.city, region: f.region, risk_band: f.risk_band, risk_score: f.risk_score, dup };
   });
   // A successful RLS read can still return fewer rows than the client-held
@@ -193,6 +221,17 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     return { error: NEUTRAL_READ_ERROR };
   }
   if (!user) return { error: "Session expired." };
+  // M6 — capability check (planning.create.bulk) ahead of the role probe. The
+  // Planner-role read below is KEPT as the in-code mirror of the RPC's own
+  // has_role('planner') guard: a Reviewer persona reaches the review UI with
+  // the capability but publish_bulk_plan still enforces the Planner role
+  // inside its transaction — the asymmetry is documented, not a bypass.
+  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  if (access.error) {
+    console.error("[CD-021 publishBulkPlan] access resolution failed");
+    return { error: NEUTRAL_READ_ERROR };
+  }
+  if (!access.can("planning.create.bulk")) return { error: "Authorized Planner role required (RBAC-007)." };
   const { data: plannerRole, error: plannerRoleError } = await sb.from("user_roles")
     .select("role_key").eq("user_id", user.id).eq("role_key", "planner").maybeSingle();
   if (plannerRoleError) {
@@ -237,8 +276,9 @@ export async function publishBulkPlan(_: BulkResult, formData: FormData): Promis
     if (!packageVersion) blockers.push("No active inspection checklist (ERR-PUB-001)");
   }
   // per-row duplicate check (P01: duplicates flagged; conflicts listed, skip allowed)
+  // M6 — 'validated' included: it is an internal active state, not a terminal one.
   const { data: dups, error: duplicateError } = await sb.from("visits").select("factory_id")
-    .in("factory_id", factoryIds).eq("visit_type", visit_type).in("planning_status", ["draft", "published", "returned"]);
+    .in("factory_id", factoryIds).eq("visit_type", visit_type).in("planning_status", ["draft", "validated", "published", "returned"]);
   if (duplicateError) {
     console.error("[CD-021 publishBulkPlan] duplicate read failed:", duplicateError.message);
     return { error: NEUTRAL_READ_ERROR };
@@ -348,11 +388,23 @@ export async function validateBulkPlan(input: {
   picks: Record<string, string>;
 }): Promise<ValidateResult> {
   const sb = await supabaseServer();
+  // M6 — capability gate (defense-in-depth; the review page gates server-side).
+  // A denial throws: the client keeps its "checking" state and never renders a
+  // false ready — fail-closed with the server-side log carrying the reason.
+  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  if (access.error || !access.can("planning.create.bulk")) {
+    console.error("[CD-025 validate] access denied or resolution failed");
+    throw new Error("planning.create.bulk capability required");
+  }
   const blockers: Blocker[] = [];
   const ids = [...new Set((input.ids ?? []).map(String))].filter(id => UUID_RE.test(id)).slice(0, 500);
   const selected = ids.length;
   const done = (r: Partial<ValidateResult>): ValidateResult =>
-    ({ blockers, selected, retained: 0, dup: 0, manual: 0, auto: 0, committable: false, ...r });
+    ({
+      blockers, selected, retained: 0, dup: 0, manual: 0, auto: 0, committable: false,
+      rows: [], ledger: { total: selected, eligible: 0, ineligible: selected, toCreate: 0, missingLocation: 0, activeConflicts: 0, manualOverrideRequired: 0 },
+      ...r,
+    });
 
   if (selected === 0) { blockers.push({ kind: "configMissing" }); return done({}); }
 
@@ -376,8 +428,9 @@ export async function validateBulkPlan(input: {
     else if (!pv) blockers.push({ kind: "packageInvalid" });
   }
 
-  // factory existence + display names for blocker targets
-  const { data: facRows, error: facErr } = await sb.from("factories").select("id, factory_code, name").in("id", ids);
+  // factory existence + display names for blocker targets (+ official location
+  // for the M6 missing-location eligibility reason)
+  const { data: facRows, error: facErr } = await sb.from("factories").select("id, factory_code, name, official_lat, official_lng").in("id", ids);
   if (facErr) { console.error("[CD-025 validate] factories:", facErr.message); blockers.push({ kind: "srcFactory" }); return done({}); }
   const label = (fid: string) => { const f = (facRows ?? []).find(x => x.id === fid); return f ? `${f.name} (${f.factory_code})` : fid.slice(0, 8); };
 
@@ -404,10 +457,14 @@ export async function validateBulkPlan(input: {
   const auto = Math.max(0, retained - manual);
 
   const overlapTargets = new Set<string>();
+  // M6 — conflict evidence hoisted so the per-row eligibility partition can
+  // reuse exactly what the blocker pass found (one source of truth).
+  const busyInspectors = new Set<string>();
+  const doubleBooked = new Set<string>();
   // same-plan double booking: one Inspector picked for >1 retained visit in the shared window
   const perInspector = new Map<string, string[]>();
   for (const [fid, insp] of manualPicks) perInspector.set(insp, [...(perInspector.get(insp) ?? []), fid]);
-  for (const [, fids] of perInspector) if (fids.length > 1) fids.forEach(fid => overlapTargets.add(label(fid)));
+  for (const [insp, fids] of perInspector) if (fids.length > 1) { doubleBooked.add(insp); fids.forEach(fid => overlapTargets.add(label(fid))); }
 
   if (windowOk && manualPicks.length) {
     const chosen = [...perInspector.keys()];
@@ -422,8 +479,8 @@ export async function validateBulkPlan(input: {
       .gt("visits.window_end", input.window_start);
     if (confErr) { console.error("[CD-025 validate] overlap:", confErr.message); blockers.push({ kind: "srcInspector" }); }
     else {
-      const busy = new Set((conflicts ?? []).map(c => c.inspector_id));
-      for (const [fid, insp] of manualPicks) if (busy.has(insp)) overlapTargets.add(label(fid));
+      for (const c of conflicts ?? []) busyInspectors.add(c.inspector_id);
+      for (const [fid, insp] of manualPicks) if (busyInspectors.has(insp)) overlapTargets.add(label(fid));
     }
   }
   if (overlapTargets.size) blockers.push({ kind: "overlap", targets: [...overlapTargets] });
@@ -463,6 +520,220 @@ export async function validateBulkPlan(input: {
     }
   }
 
+  // M6 — per-row eligibility partition. Every selected row is classified with
+  // stable reason codes; the acknowledgement flow in the review workspace may
+  // then proceed with the eligible subset only, with every excluded row named.
+  const facById = new Map((facRows ?? []).map(f => [f.id, f]));
+  const rows: EligibilityRow[] = ids.map(id => {
+    const reasons: EligibilityReason[] = [];
+    const fac = facById.get(id);
+    if (!fac) reasons.push("out_of_scope");
+    if (dupSet.has(id)) reasons.push("duplicate_active_visit");
+    if (fac && (fac.official_lat == null || fac.official_lng == null)) reasons.push("missing_location");
+    const pick = (input.picks ?? {})[id];
+    if (pick && (!pool.has(pick) || busyInspectors.has(pick) || doubleBooked.has(pick))) reasons.push("inspector_conflict");
+    return { id, eligible: reasons.length === 0, reasons };
+  });
+  const ledger: EligibilityCounts = {
+    total: selected,
+    eligible: rows.filter(r => r.eligible).length,
+    ineligible: rows.filter(r => !r.eligible).length,
+    toCreate: rows.filter(r => r.eligible).length,
+    missingLocation: rows.filter(r => r.reasons.includes("missing_location")).length,
+    activeConflicts: rows.filter(r => r.reasons.includes("duplicate_active_visit") || r.reasons.includes("inspector_conflict")).length,
+    manualOverrideRequired: rows.filter(r => r.reasons.includes("inspector_conflict")).length,
+  };
+
   const committable = retained > 0 && blockers.length === 0;
-  return { blockers, selected, retained, dup: dupSet.size, manual, auto, committable };
+  return { blockers, selected, retained, dup: dupSet.size, manual, auto, committable, rows, ledger };
+}
+
+// ---------------------------------------------------------------------------
+// M6 — persisted bulk drafts (PLN-REQ-020/022 parity with saveSingleDraft).
+// The targeting screen (criteria + selection) and the review workspace
+// (selection + visit configuration + acknowledgement) both persist to ONE
+// draft visit_plan row: method 'bulk', status 'draft', no notification, no
+// publish, no status transition. The review route consumes it via
+// /planning/bulk/review?plan=<id>. Optimistic draft_version compare makes
+// concurrent saves fail closed instead of last-write-wins; only an own,
+// active, still-draft bulk plan may be overwritten. RLS stays the boundary;
+// the capability check (planning.edit_draft) mirrors the single-visit draft.
+export type BulkDraftConfig = {
+  picks?: Record<string, string>;
+  package_version_id?: string;
+  window_start?: string;
+  window_end?: string;
+  notes?: string;
+};
+export type BulkDraftInput = {
+  planId?: string;
+  criteriaTree?: string; // wire-format `ct` payload; absent on review-only saves
+  selection: string[];
+  config?: BulkDraftConfig;
+  validation?: unknown; // last readiness preview snapshot (advisory; re-run on resume)
+  acknowledged?: boolean;
+};
+export type BulkDraftResult = { error?: string; planId?: string; planReference?: string; version?: number };
+
+// source_channel is a provenance label, not an authorization input — bounded
+// machine token, defaulting to this module's own channel (same as single).
+const sanitizeBulkChannel = (raw: string) =>
+  /^[a-z0-9][a-z0-9._-]{0,39}$/i.test(raw) ? raw : "planning.bulk";
+
+export async function saveBulkDraft(input: BulkDraftInput): Promise<BulkDraftResult> {
+  const sb = await supabaseServer();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError) {
+    console.error("[PLN saveBulkDraft] auth read failed:", authError.message);
+    return { error: "read" };
+  }
+  if (!user) return { error: "session" };
+  const access = await getPlanningAccess(sb, ["planning.edit_draft", "planning.create.bulk"]);
+  if (access.error || !access.can("planning.edit_draft")) {
+    if (access.error) console.error("[PLN saveBulkDraft] access resolution failed");
+    return { error: "denied" };
+  }
+
+  const selection = [...new Set((input?.selection ?? []).map(String))]
+    .filter(id => UUID_RE.test(id)).slice(0, 500);
+  if (selection.length === 0) return { error: "selection" };
+  // When a criteria tree is supplied it must parse and contain at least one
+  // usable condition — a draft records a real scope, never a match-all.
+  let treeWire: unknown = null;
+  if (input.criteriaTree != null && input.criteriaTree.trim() !== "") {
+    const parsed = parseCt(input.criteriaTree);
+    if (!parsed || !hasCriteria(parsed)) return { error: "criteria" };
+    treeWire = JSON.parse(input.criteriaTree);
+  }
+  const cleanText = (v: string | undefined) => (v != null && v.trim() !== "" ? v.trim() : null);
+  const picks: Record<string, string> = {};
+  for (const [fid, insp] of Object.entries(input.config?.picks ?? {})) {
+    if (UUID_RE.test(fid) && UUID_RE.test(insp) && selection.includes(fid)) picks[fid] = insp;
+  }
+  const draftPayload = {
+    selection,
+    config: {
+      picks,
+      package_version_id: cleanText(input.config?.package_version_id),
+      window_start: cleanText(input.config?.window_start),
+      window_end: cleanText(input.config?.window_end),
+      notes: cleanText(input.config?.notes),
+    },
+    validation: input.validation ?? null,
+    acknowledged: input.acknowledged === true,
+  };
+  const sourceChannel = sanitizeBulkChannel("planning.bulk");
+
+  if (input.planId && UUID_RE.test(input.planId)) {
+    const { data: current, error: currentError } = await sb.from("visit_plans")
+      .select("id, draft_version")
+      .eq("id", input.planId).eq("created_by", user.id)
+      .eq("method", "bulk").eq("status", "draft").is("archived_at", null)
+      .maybeSingle();
+    if (currentError) {
+      console.error("[PLN saveBulkDraft] draft read failed:", currentError.message);
+      return { error: "read" };
+    }
+    if (!current) return { error: "unavailable" };
+    const { data, error } = await sb.from("visit_plans")
+      .update({ draft_payload: draftPayload, draft_version: (current.draft_version ?? 0) + 1, source_channel: sourceChannel, criteria: { method: "bulk", tree: treeWire } })
+      .eq("id", current.id).eq("draft_version", current.draft_version ?? 0)
+      .select("id, plan_reference, draft_version").single();
+    if (error) {
+      console.error("[PLN saveBulkDraft] draft update failed:", error.message);
+      return { error: "write" };
+    }
+    return { planId: data.id, planReference: data.plan_reference, version: data.draft_version };
+  }
+
+  const { data, error } = await sb.from("visit_plans")
+    .insert({
+      method: "bulk",
+      status: "draft",
+      created_by: user.id,
+      draft_payload: draftPayload,
+      draft_version: 1,
+      source_channel: sourceChannel,
+      criteria: { method: "bulk", tree: treeWire },
+    })
+    .select("id, plan_reference, draft_version").single();
+  if (error) {
+    console.error("[PLN saveBulkDraft] draft insert failed:", error.message);
+    return { error: "write" };
+  }
+  return { planId: data.id, planReference: data.plan_reference, version: data.draft_version };
+}
+
+// Load an own bulk draft for the review-resume route (?plan=<id>). Returns the
+// persisted working state verbatim; every value is re-validated by the normal
+// readiness preview after hydration (the snapshot is never trusted blindly).
+export type BulkDraft = {
+  planId: string; planReference: string; version: number;
+  criteriaTree: string | null;
+  selection: string[];
+  config: {
+    picks: Record<string, string>;
+    package_version_id: string;
+    window_start: string;
+    window_end: string;
+    notes: string;
+  };
+  acknowledged: boolean;
+};
+export type BulkDraftLoadResult = { error?: string; draft?: BulkDraft };
+
+export async function loadBulkDraft(planId: string): Promise<BulkDraftLoadResult> {
+  const sb = await supabaseServer();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError) {
+    console.error("[PLN loadBulkDraft] auth read failed:", authError.message);
+    return { error: "read" };
+  }
+  if (!user) return { error: "session" };
+  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  if (access.error || !access.can("planning.create.bulk")) {
+    if (access.error) console.error("[PLN loadBulkDraft] access resolution failed");
+    return { error: "denied" };
+  }
+  if (!UUID_RE.test(planId)) return { error: "unavailable" };
+  const { data, error } = await sb.from("visit_plans")
+    .select("id, plan_reference, draft_version, criteria, draft_payload")
+    .eq("id", planId).eq("created_by", user.id)
+    .eq("method", "bulk").eq("status", "draft").is("archived_at", null)
+    .maybeSingle();
+  if (error) {
+    console.error("[PLN loadBulkDraft] draft read failed:", error.message);
+    return { error: "read" };
+  }
+  if (!data) return { error: "unavailable" };
+  const payload = (data.draft_payload ?? {}) as {
+    selection?: unknown;
+    config?: { picks?: unknown; package_version_id?: unknown; window_start?: unknown; window_end?: unknown; notes?: unknown };
+    acknowledged?: unknown;
+  };
+  const selection = (Array.isArray(payload.selection) ? payload.selection : [])
+    .map(String).filter(id => UUID_RE.test(id)).slice(0, 500);
+  const rawPicks = (payload.config?.picks ?? {}) as Record<string, unknown>;
+  const picks: Record<string, string> = {};
+  for (const [fid, insp] of Object.entries(rawPicks)) {
+    if (UUID_RE.test(fid) && typeof insp === "string" && UUID_RE.test(insp)) picks[fid] = insp;
+  }
+  const tree = (data.criteria as { tree?: unknown } | null)?.tree;
+  return {
+    draft: {
+      planId: data.id,
+      planReference: data.plan_reference,
+      version: data.draft_version ?? 0,
+      criteriaTree: tree ? JSON.stringify(tree) : null,
+      selection,
+      config: {
+        picks,
+        package_version_id: typeof payload.config?.package_version_id === "string" ? payload.config.package_version_id : "",
+        window_start: typeof payload.config?.window_start === "string" ? payload.config.window_start : "",
+        window_end: typeof payload.config?.window_end === "string" ? payload.config.window_end : "",
+        notes: typeof payload.config?.notes === "string" ? payload.config.notes : "",
+      },
+      acknowledged: payload.acknowledged === true,
+    },
+  };
 }

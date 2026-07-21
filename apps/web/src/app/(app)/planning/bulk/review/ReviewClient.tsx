@@ -15,9 +15,9 @@
 // a rolled-back publish is never presented as success (P03 all-or-nothing).
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
-  publishBulkPlan, loadBulkSelection, validateBulkPlan,
+  publishBulkPlan, loadBulkSelection, validateBulkPlan, saveBulkDraft,
   type BulkResult, type ReviewData, type ValidateResult, type Blocker, type BlockerKind,
-  type OverlapEvidence, type SourceState,
+  type OverlapEvidence, type SourceState, type BulkDraft, type EligibilityReason,
 } from "../actions";
 import EvidenceLedger, { type LedgerFocus, type EvidenceLedgerStrings } from "./EvidenceLedger";
 import { IconLock } from "@/app/icons";
@@ -62,6 +62,13 @@ export type ReviewStrings = {
   successTitle: string; successBody: string; successSub: string;
   sPlan: string; sVisits: string; sAssign: string; sNotif: string;
   goVisits: string; openPlan: string;
+  // M6 — eligibility partition + acknowledgement + persisted drafts
+  eligH: string; eligTotal: string; eligEligible: string; eligIneligible: string;
+  eligToCreate: string; eligMissingLoc: string; eligConflicts: string; eligManualOverride: string;
+  reasonDup: string; reasonScope: string; reasonLocation: string; reasonInspector: string;
+  ackRequired: string; ackLabel: string;
+  saveDraft: string; savingDraft: string; draftSaved: string; draftSaveFailed: string;
+  draftBanner: string; draftUnavailable: string;
   // CD-024 — Assignment Evidence Ledger + per-row evidence cells
   evTitle: string; evLead: string; evReview: string;
   ecInPool: string; ecOverlaps: string; ecSkills: string; ecAuto: string;
@@ -91,7 +98,11 @@ const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" 
   srcDuplicate:  { cls: "unavailable", glyph: "◆", fix: "review" },
 };
 
-export default function ReviewClient({ strings: s }: { strings: ReviewStrings }) {
+export default function ReviewClient({ strings: s, initialDraft, draftUnavailable }: {
+  strings: ReviewStrings;
+  initialDraft?: BulkDraft | null;
+  draftUnavailable?: boolean;
+}) {
   const [state, formAction, pending] = useActionState<BulkResult, FormData>(publishBulkPlan, {});
   const [data, setData] = useState<ReviewData | null>(null);
   const [allIds, setAllIds] = useState<string[]>([]);
@@ -103,6 +114,15 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   const [notes, setNotes] = useState("");
   const [val, setVal] = useState<ValidateResult | null>(null);
   const [freshness, setFreshness] = useState("");
+  // M6 — persisted-draft working state: the acknowledgement choice and the
+  // draft identity (so repeat saves upsert the same visit_plans row).
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [draftMeta, setDraftMeta] = useState<{ planId: string; planReference: string; version: number } | null>(
+    initialDraft ? { planId: initialDraft.planId, planReference: initialDraft.planReference, version: initialDraft.version } : null
+  );
+  const [savingDraft, setSavingDraft] = useState(false);
+  const [draftSaveError, setDraftSaveError] = useState(false);
+  const [draftSavedMsg, setDraftSavedMsg] = useState<string | null>(null);
   const [, startValidate] = useTransition();
   const validateSeq = useRef(0); // guards against stale preview responses resolving out of order
   // CD-024 — selection-time overlap evidence + focused candidate for the ledger
@@ -118,15 +138,33 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   // correction, whose Fix control unmounts on click (WIRING leg 2/4).
   const [announce, setAnnounce] = useState("");
 
-  // ---- load the staged selection (no persistence exists yet) ----
+  // ---- load the staged working set ----
+  // M6 — a persisted draft (?plan=<id>, loaded server-side) is authoritative:
+  // selection, inspector picks, package, window, notes and the acknowledgement
+  // all hydrate from it. The browser-held sessionStorage selection remains the
+  // fallback path when no draft is referenced (legacy targeting hand-off).
   useEffect(() => {
+    setFreshness(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+    if (initialDraft) {
+      const ids = initialDraft.selection;
+      setAllIds(ids);
+      setPicks(initialDraft.config.picks);
+      if (initialDraft.config.package_version_id) setPkgId(initialDraft.config.package_version_id);
+      setWindowStart(initialDraft.config.window_start);
+      setWindowEnd(initialDraft.config.window_end);
+      setNotes(initialDraft.config.notes);
+      setAcknowledged(initialDraft.acknowledged);
+      if (ids.length) loadBulkSelection(ids).then(setData).catch(() => setData({ factories: [], packages: [], inspectors: [], unavailable: true }));
+      else setData({ factories: [], packages: [], inspectors: [] });
+      return;
+    }
     let stored: string[] = [];
     try { stored = JSON.parse(sessionStorage.getItem(SEL_KEY) ?? "[]"); } catch { stored = []; }
     const clean = Array.isArray(stored) ? stored.map(String) : [];
     setAllIds(clean);
-    setFreshness(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
     if (clean.length) loadBulkSelection(clean).then(setData).catch(() => setData({ factories: [], packages: [], inspectors: [], unavailable: true }));
     else setData({ factories: [], packages: [], inspectors: [] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // default to the first available published/locked package
@@ -283,7 +321,10 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     );
   }
   if (phase === "success") {
-    const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(val?.retained ?? "")], [s.sAssign, String(val?.retained ?? "")], [s.sNotif, String(val?.retained ?? "")]];
+    // M6 — the published count is the eligible subset actually submitted
+    // (ledger.toCreate equals working set when no acknowledgement was needed).
+    const created = val?.ledger?.toCreate ?? val?.retained ?? 0;
+    const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(created)], [s.sAssign, String(created)], [s.sNotif, String(created)]];
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
         <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
@@ -314,11 +355,55 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   const v = val;
   const validating = v === null;            // preview not yet resolved — never show a false "ready"
   const blockers = v?.blockers ?? [];
-  const committable = !!v?.committable && !pending;
   const retained = v?.retained ?? nonDupIds.length;
   const manual = v?.manual ?? 0;
   const auto = v?.auto ?? Math.max(0, retained - manual);
   const reasonId = "cd-disabled-reason";
+
+  // ---- M6 eligibility partition + acknowledgement ----
+  // Every selected row is classified server-side (validateBulkPlan rows). Rows
+  // with no blocker-bound ineligibility (e.g. missing official location) still
+  // require the explicit acknowledgement before publish; when acknowledged the
+  // publish submits ONLY the eligible subset, with ineligible rows named.
+  const eligById = new Map((v?.rows ?? []).map(r => [r.id, r]));
+  const eligibleIds = workingIds.filter(id => eligById.get(id)?.eligible === true);
+  const ineligibleIds = workingIds.filter(id => eligById.has(id) && !eligById.get(id)!.eligible);
+  const needsAck = !validating && ineligibleIds.length > 0;
+  // Row-bound blockers (duplicate / overlap) name exactly the rows the
+  // partition excludes; every other blocker kind always blocks publishing.
+  const hardBlockers = blockers.filter(b => b.kind !== "duplicate" && b.kind !== "overlap");
+  const baseReady = !!v?.committable && !needsAck;
+  const ackReady = needsAck && acknowledged && eligibleIds.length > 0 && hardBlockers.length === 0;
+  const committable = (baseReady || ackReady) && !pending;
+  const publishIds = baseReady ? workingIds : eligibleIds;
+  const reasonText = (r: EligibilityReason): string =>
+    r === "duplicate_active_visit" ? s.reasonDup
+      : r === "out_of_scope" ? s.reasonScope
+        : r === "missing_location" ? s.reasonLocation
+          : s.reasonInspector;
+
+  // M6 — persist the current working state as a bulk draft (upserts the same
+  // visit_plans row when this session resumed from or already saved a draft).
+  const onSaveDraft = async () => {
+    setSavingDraft(true); setDraftSaveError(false); setDraftSavedMsg(null);
+    try {
+      const res = await saveBulkDraft({
+        planId: draftMeta?.planId,
+        criteriaTree: initialDraft?.criteriaTree ?? undefined,
+        selection: workingIds,
+        config: { picks, package_version_id: pkgId, window_start: windowStart, window_end: windowEnd, notes },
+        validation: v ?? undefined,
+        acknowledged,
+      });
+      if (res.error || !res.planId) { setDraftSaveError(true); return; }
+      setDraftMeta({ planId: res.planId, planReference: res.planReference ?? "", version: res.version ?? 0 });
+      setDraftSavedMsg(interp(s.draftSaved, { ref: res.planReference ?? "", n: res.version ?? 0 }));
+    } catch {
+      setDraftSaveError(true);
+    } finally {
+      setSavingDraft(false);
+    }
+  };
 
   // ---- CD-024 evidence derivations ----
   const windowSet = !!windowStart && !!windowEnd && Number.isFinite(Date.parse(windowStart)) && Number.isFinite(Date.parse(windowEnd)) && Date.parse(windowEnd) > Date.parse(windowStart);
@@ -402,6 +487,17 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           {freshness && <span className="ax-freshness">{s.freshnessPrefix} {freshness}</span>}
         </div>
         <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }}>{s.stagedBanner}</p>
+        {/* M6 — resumed-draft provenance / failed-draft honesty */}
+        {initialDraft && (
+          <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }} role="status">
+            <span className="ax-lozenge ax-lozenge--info">{interp(s.draftBanner, { ref: initialDraft.planReference })}</span>
+          </p>
+        )}
+        {draftUnavailable && (
+          <div className="ax-banner ax-banner--warning" role="alert" style={{ margin: "0 var(--ax-space-300)" }}>
+            {s.draftUnavailable}
+          </div>
+        )}
         <dl className="cd-context cd-ctx">
           <div><dt>{s.selected} / {s.retained}</dt><dd className="cd-count">{workingIds.length}{workingIds.length !== retained ? <> <small>→</small> {retained}</> : null}</dd></div>
           <div><dt>{s.visits}</dt><dd className="cd-count">{retained}</dd></div>
@@ -458,6 +554,24 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
         )}
       </section>
 
+      {/* ---- M6 eligibility partition (7 counts from the live preview) ---- */}
+      <section className="ax-surface ax-panel cd-panelpad" aria-label={s.eligH}>
+        <div className="cd-sectionhead"><h3>{s.eligH}</h3></div>
+        {validating || !v?.ledger ? (
+          <p className="ax-caption" role="status">{s.loadingNote}</p>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: "var(--ax-space-200)" }}>
+            <div><span className="ax-caption">{s.eligTotal}</span><div className="cd-count">{v.ledger.total}</div></div>
+            <div><span className="ax-caption">{s.eligEligible}</span><div className="cd-count ax-lozenge--success">{v.ledger.eligible}</div></div>
+            <div><span className="ax-caption">{s.eligIneligible}</span><div className="cd-count">{v.ledger.ineligible}</div></div>
+            <div><span className="ax-caption">{s.eligToCreate}</span><div className="cd-count">{v.ledger.toCreate}</div></div>
+            <div><span className="ax-caption">{s.eligMissingLoc}</span><div className="cd-count">{v.ledger.missingLocation}</div></div>
+            <div><span className="ax-caption">{s.eligConflicts}</span><div className="cd-count">{v.ledger.activeConflicts}</div></div>
+            <div><span className="ax-caption">{s.eligManualOverride}</span><div className="cd-count">{v.ledger.manualOverrideRequired}</div></div>
+          </div>
+        )}
+      </section>
+
       {/* ---- targets & proposed visits ---- */}
       <section>
         <div className="cd-sectionhead">
@@ -479,7 +593,16 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
                 <tr key={f.id} className={`cd-obj ${excluded ? "is-removed" : ""}`} data-code={f.factory_code}
                   ref={el => { rowRefs.current[f.id] = el; }} aria-selected={excluded ? true : undefined}
                   onFocus={() => setFocusedId(f.id)}>
-                  <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div></td>
+                  <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div>
+                    {/* M6 — per-row ineligibility reasons from the partition */}
+                    {(eligById.get(f.id)?.reasons.length ?? 0) > 0 && (
+                      <div className="ax-row" style={{ gap: "var(--ax-space-050)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-050)" }}>
+                        {eligById.get(f.id)!.reasons.map(r => (
+                          <span key={r} className="ax-lozenge ax-lozenge--warning">{reasonText(r)}</span>
+                        ))}
+                      </div>
+                    )}
+                  </td>
                   <td>{f.city ?? "—"}</td>
                   <td><span className={`ax-lozenge ${RISK_TONE[f.risk_band ?? ""] ?? ""}`}>{f.risk_band === "high" ? s.riskHigh : f.risk_band === "medium" ? s.riskMedium : f.risk_band === "low" ? s.riskLow : "—"}</span></td>
                   <td>{excluded ? <span className="ax-caption">—</span> : <span className="ax-lozenge ax-lozenge--plan">{s.typePeriodic}</span>}</td>
@@ -562,7 +685,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
 
       {/* ---- corrections & publish action ---- */}
       <form action={formAction} className="cd-actionbar" id="cd-publish" aria-label={s.correctH}>
-        {hiddenPublishFields(workingIds, pkgId, windowStart, windowEnd, notes, picks)}
+        {hiddenPublishFields(publishIds, pkgId, windowStart, windowEnd, notes, picks)}
         <div className="cd-sectionhead" style={{ margin: 0 }}><h3>{s.correctH}</h3></div>
         <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
           <a className="ax-link" href="/planning/bulk">{s.backConfig}</a>
@@ -573,16 +696,34 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           {/* value submitted via the mirrored hidden field so notes survive the source failure form too */}
           <textarea id="cd-notes" className="ax-textarea" rows={2} placeholder={s.notesPlaceholder} value={notes} onChange={e => setNotes(e.target.value)} />
         </div>
+        {/* M6 — eligibility acknowledgement: with ineligible rows present the
+            publish stays disabled until the reviewer explicitly proceeds with
+            the eligible subset only; the choice persists into the draft. */}
+        {needsAck && !validating && (
+          <div className="ax-banner ax-banner--warning" role="alert">
+            <p style={{ marginBlockStart: 0 }}>{interp(s.ackRequired, { n: ineligibleIds.length })}</p>
+            <label className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+              <input type="checkbox" checked={acknowledged} onChange={e => setAcknowledged(e.target.checked)} />
+              <span>{interp(s.ackLabel, { n: eligibleIds.length })}</span>
+            </label>
+          </div>
+        )}
         <p className="ax-caption">{s.willRecheck}</p>
         <div className="cd-actionbar__row">
           <div className="cd-grow">
             {committable
               ? <div className="ax-caption">{s.allClear}</div>
-              : <div className="cd-disabledreason" id={reasonId}>{s.disabledPrefix}{validating ? s.checking : interp(s.blockersN, { n: blockers.length })}</div>}
+              : <div className="cd-disabledreason" id={reasonId}>{s.disabledPrefix}{validating ? s.checking : needsAck && !acknowledged ? interp(s.ackRequired, { n: ineligibleIds.length }) : interp(s.blockersN, { n: blockers.length })}</div>}
+            {draftSavedMsg && <div className="ax-caption" role="status">{draftSavedMsg}</div>}
+            {draftSaveError && <div className="cd-disabledreason" role="alert">{s.draftSaveFailed}</div>}
           </div>
+          <button type="button" className="ax-btn ax-btn--secondary" disabled={savingDraft || workingIds.length === 0}
+            onClick={() => { void onSaveDraft(); }}>
+            {savingDraft ? s.savingDraft : s.saveDraft}
+          </button>
           <button className="ax-btn ax-btn--prominent cd-publishbtn" disabled={!committable}
             aria-describedby={committable ? undefined : reasonId}>
-            {committable ? interp(s.publishReady, { n: retained }) : validating ? s.checking : interp(s.publishBlocked, { n: blockers.length })}
+            {committable ? interp(s.publishReady, { n: baseReady ? retained : eligibleIds.length }) : validating ? s.checking : interp(s.publishBlocked, { n: needsAck && !acknowledged ? ineligibleIds.length : blockers.length })}
           </button>
         </div>
       </form>

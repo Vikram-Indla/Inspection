@@ -1,8 +1,10 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { formatDate } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
 import { IconBlocked } from "@/app/icons";
+import { saveBulkDraft } from "./actions";
 
 // CD-021 (SCR-WEB-110) — evidence table + persistent selection (frames 1a/1d).
 // This screen is TARGETING only: which factories, with the provenance to trust
@@ -35,21 +37,34 @@ export type BulkFormStrings = {
   riskBands: Record<string, string>;
   selectAllConfirmTitle: string; selectAllConfirmBody: string; selectAllConfirmInputLabel: string;
   selectAllConfirmButton: string; selectAllConfirmCancel: string;
+  saveDraft: string; savingDraft: string; draftSaved: string; draftSaveFailed: string; reviewFallback: string;
 };
 
 const PAGE_SIZE = 25;
 const SEL_KEY = "cd021-bulk-selection";
-const dupOf = (f: F) => f.visits.some(v => ["draft", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
+// M6 — hard cap on any bulk selection (matches the server-side 500-row guard).
+const SELECTION_CAP = 500;
+// M6 — 'validated' is an internal ACTIVE plan state: it blocks duplicates
+// exactly like draft/published/returned.
+const dupOf = (f: F) => f.visits.some(v => ["draft", "validated", "published", "returned"].includes(v.planning_status) && v.visit_type === "periodic");
 
-export default function BulkForm({ factories, strings, focusedField, focusedValue, locale }: {
+export default function BulkForm({ factories, strings, focusedField, focusedValue, locale, criteriaTree }: {
   factories: F[]; strings: BulkFormStrings; focusedField?: string | null; focusedValue?: string | null; locale: Locale;
+  criteriaTree: string;
 }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [q, setQ] = useState("");
   const [page, setPage] = useState(0);
   const [invalidDropped, setInvalidDropped] = useState(0);
   const [confirmingSelectAll, setConfirmingSelectAll] = useState(false);
   const [confirmInput, setConfirmInput] = useState("");
+  // M6 — persisted draft state: after a successful save the plan id is held so
+  // subsequent saves (and the review hand-off) upsert the same draft row.
+  const [draftId, setDraftId] = useState<string | null>(null);
+  const [draftRef, setDraftRef] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
   const idSet = useMemo(() => new Set(factories.map(f => f.id)), [factories]);
 
   useEffect(() => {
@@ -73,13 +88,38 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   const clampedPage = Math.min(page, pageCount - 1);
   const pageRows = filtered.slice(clampedPage * PAGE_SIZE, clampedPage * PAGE_SIZE + PAGE_SIZE);
 
-  const toggle = (id: string, on: boolean) => setSelected(s => { const n = new Set(s); if (on) n.add(id); else n.delete(id); return n; });
-  const selectVisible = () => setSelected(s => { const n = new Set(s); for (const f of pageRows) if (!dupOf(f)) n.add(f.id); return n; });
+  const toggle = (id: string, on: boolean) => setSelected(s => { const n = new Set(s); if (on) { if (n.size >= SELECTION_CAP) return n; n.add(id); } else n.delete(id); return n; });
+  const selectVisible = () => setSelected(s => { const n = new Set(s); for (const f of pageRows) { if (n.size >= SELECTION_CAP) break; if (!dupOf(f)) n.add(f.id); } return n; });
   const confirmSelectAllResults = () => {
-    setSelected(s => { const n = new Set(s); for (const f of filtered) if (!dupOf(f)) n.add(f.id); return n; });
+    setSelected(s => { const n = new Set(s); for (const f of filtered) { if (n.size >= SELECTION_CAP) break; if (!dupOf(f)) n.add(f.id); } return n; });
     setConfirmingSelectAll(false); setConfirmInput("");
   };
   const clearSelection = () => setSelected(new Set());
+
+  // M6 — persist the working state as a bulk draft (visit_plans, method 'bulk',
+  // status 'draft'). The review hand-off saves first and lands on
+  // /planning/bulk/review?plan=<id>; when the save fails the planner is told
+  // honestly and can still continue with the browser-held selection.
+  const saveDraft = async (): Promise<{ planId: string; planReference: string } | null> => {
+    setSaving(true); setSaveFailed(false);
+    try {
+      const res = await saveBulkDraft({ planId: draftId ?? undefined, criteriaTree, selection: [...selected] });
+      if (res.error || !res.planId) { setSaveFailed(true); return null; }
+      setDraftId(res.planId);
+      setDraftRef(res.planReference ?? null);
+      return { planId: res.planId, planReference: res.planReference ?? "" };
+    } catch {
+      setSaveFailed(true);
+      return null;
+    } finally {
+      setSaving(false);
+    }
+  };
+  const onSaveDraftClick = () => { void saveDraft(); };
+  const onReviewClick = async () => {
+    const saved = await saveDraft();
+    if (saved) router.push(`/planning/bulk/review?plan=${saved.planId}`);
+  };
 
   const sel = factories.filter(f => selected.has(f.id));
   const countBy = (keyOf: (f: F) => string) => { const o: Record<string, number> = {}; for (const f of sel) { const k = keyOf(f); o[k] = (o[k] ?? 0) + 1; } return o; };
@@ -193,16 +233,30 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
         )}
       </div>
 
-      {/* persistent selection bar — cross-page count + hand-off to the P02 review step */}
+      {/* persistent selection bar — cross-page count + draft + hand-off to the P02 review step */}
       <div className="ax-surface ax-row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--ax-space-200) var(--ax-space-300)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "center" }}>
         <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="ax-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
           {selected.size === 0 && <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.readyNothing}</span>}
           {selected.size > 0 && <button type="button" className="ax-btn ax-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
+          {draftRef && !saveFailed && <span className="ax-caption" role="status">{strings.draftSaved.replace("{ref}", draftRef)}</span>}
         </div>
-        {selected.size > 0
-          ? <a className="ax-btn ax-btn--prominent" href="/planning/bulk/review">{strings.reviewContinue} →</a>
-          : <button type="button" className="ax-btn ax-btn--prominent" disabled>{strings.reviewContinue} →</button>}
+        <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+          {saveFailed && (
+            <>
+              <span className="ax-caption ax-lozenge ax-lozenge--critical" role="alert">{strings.draftSaveFailed}</span>
+              <a className="ax-btn ax-btn--secondary" href="/planning/bulk/review">{strings.reviewFallback} →</a>
+            </>
+          )}
+          {selected.size > 0 && (
+            <button type="button" className="ax-btn ax-btn--secondary" disabled={saving} onClick={onSaveDraftClick}>
+              {saving ? strings.savingDraft : strings.saveDraft}
+            </button>
+          )}
+          {selected.size > 0
+            ? <button type="button" className="ax-btn ax-btn--prominent" disabled={saving} onClick={() => { void onReviewClick(); }}>{strings.reviewContinue} →</button>
+            : <button type="button" className="ax-btn ax-btn--prominent" disabled>{strings.reviewContinue} →</button>}
+        </div>
       </div>
     </div>
   );
