@@ -29,17 +29,48 @@ const MARKER_LAYER = "inspection-markers-circle";
 const REGION_SOURCE = "ksa-regions";
 const TONE: Record<GeoTone, { fill: string; stroke: string }> = MAP_PALETTE;
 
-// Canonical KSA region boundaries as a faint reference layer, drawn once under
-// the markers/fences. Sourced from @/lib/ksa-regions (single canonical source).
-function installRegions(map: mapboxgl.Map) {
-  if (map.getSource(REGION_SOURCE)) return;
+/** Per-region RAG posture keyed by canonical region id (@/lib/ksa-regions). */
+export type RegionPostureMap = Record<string, "high" | "medium" | "low">;
+
+// Colour a region only when a posture is supplied via feature-state; otherwise
+// the fill is fully transparent and just the faint boundary line shows. This
+// keeps a single source/layer whether the caller wants a plain reference layer
+// or a posture choropleth.
+const REGION_FILL_COLOR: mapboxgl.Expression = [
+  "match", ["feature-state", "posture"],
+  "high", MAP_PALETTE.high.fill, "medium", MAP_PALETTE.medium.fill, "low", MAP_PALETTE.low.fill,
+  MAP_PALETTE.neutral.fill,
+];
+const REGION_FILL_OPACITY: mapboxgl.Expression = ["case", ["==", ["feature-state", "posture"], null], 0, 0.14];
+
+// Canonical KSA region boundaries, drawn once under the markers/fences. Sourced
+// from @/lib/ksa-regions (single canonical source). promoteId exposes the
+// region id as the feature id so postures apply via setFeatureState.
+function installRegions(map: mapboxgl.Map, postures?: RegionPostureMap) {
+  if (map.getSource(REGION_SOURCE)) { applyPostures(map, postures); return; }
   loadKsaRegions().then(regions => {
     if (!map.getStyle() || map.getSource(REGION_SOURCE)) return;
-    map.addSource(REGION_SOURCE, { type: "geojson", data: regions });
+    map.addSource(REGION_SOURCE, { type: "geojson", data: regions, promoteId: "id" });
+    map.addLayer({ id: "ksa-regions-fill", type: "fill", source: REGION_SOURCE, slot: "bottom", paint: {
+      "fill-color": REGION_FILL_COLOR, "fill-opacity": REGION_FILL_OPACITY,
+    } });
     map.addLayer({ id: "ksa-regions-line", type: "line", source: REGION_SOURCE, slot: "bottom", paint: {
       "line-color": MAP_PALETTE.neutral.stroke, "line-width": 0.75, "line-opacity": 0.35, "line-dasharray": [3, 3],
     } });
+    applyPostures(map, postures);
   }).catch(() => { /* reference layer is optional; the map renders without it */ });
+}
+
+// Set/clear region feature-state so the choropleth reflects the current
+// postures without rebuilding the source. Regions absent from the map stay
+// transparent (posture = null).
+function applyPostures(map: mapboxgl.Map, postures?: RegionPostureMap) {
+  if (!map.getSource(REGION_SOURCE)) return;
+  map.removeFeatureState({ source: REGION_SOURCE });
+  if (!postures) return;
+  for (const [id, band] of Object.entries(postures)) {
+    map.setFeatureState({ source: REGION_SOURCE, id }, { posture: band });
+  }
 }
 
 type Props = {
@@ -55,6 +86,9 @@ type Props = {
   ariaLabel?: string;
   /** Draw the canonical KSA region boundary reference layer (default true). */
   showRegions?: boolean;
+  /** Colour regions by RAG posture (canonical region id → band). Boundary
+   *  reference layer only when omitted. */
+  regionPostures?: RegionPostureMap;
 };
 
 type RenderData = Pick<Props, "center" | "zoom" | "markers" | "selectedId" | "focus">;
@@ -133,7 +167,7 @@ function sync(map: mapboxgl.Map, data: RenderData, initial = false) {
 
 function locale() { return document.documentElement.lang === "ar" ? "ar" : "en"; }
 
-export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map", showRegions = true }: Props) {
+export default function GeoMap({ center, zoom, markers, height = "100%", selectedId, focus, onMarkerClick, onRadiusChange, interactive = true, ariaLabel = "Mapbox map", showRegions = true, regionPostures }: Props) {
   const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -141,7 +175,9 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
   const selectedRef = useRef(selectedId);
   const markerClickRef = useRef(onMarkerClick);
   const radiusChangeRef = useRef(onRadiusChange);
+  const posturesRef = useRef(regionPostures);
   const suppressRadiusRef = useRef(false);
+  posturesRef.current = regionPostures;
   const [mapLocale, setMapLocale] = useState<"en" | "ar">("en");
   const [failed, setFailed] = useState(false);
   latest.current = { center, zoom, markers, selectedId, focus };
@@ -161,7 +197,7 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
     mapRef.current = map;
     if (interactive) map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "top-right");
     const onLoad = () => {
-      if (showRegions) installRegions(map);
+      if (showRegions) installRegions(map, posturesRef.current);
       sync(map, latest.current, true);
       map.on("click", MARKER_LAYER, event => {
         const feature = event.features?.[0];
@@ -194,6 +230,8 @@ export default function GeoMap({ center, zoom, markers, height = "100%", selecte
 
   useEffect(() => { if (mapRef.current?.isStyleLoaded()) sync(mapRef.current, latest.current); }, [center, focus, markers, selectedId, zoom]);
   useEffect(() => { mapRef.current?.setLanguage(mapLocale); }, [mapLocale]);
+  // Re-colour the region choropleth when postures change (no source rebuild).
+  useEffect(() => { const map = mapRef.current; if (map?.isStyleLoaded()) applyPostures(map, regionPostures); }, [regionPostures]);
 
   if (!token || failed) {
     const ar = mapLocale === "ar";

@@ -8,6 +8,7 @@ import {
 } from "./Controls";
 import { MonitoringTable, RegionCityFilter, type MonitoringStrings } from "./Monitoring";
 import OpsMap, { type OpsPin, type OpsMapStrings } from "./OpsMap";
+import { regionPostures } from "./region-posture";
 import EmptyState from "@/components/EmptyState";
 import { IconMap, IconPin, IconBell } from "@/app/icons";
 import OpsExport, { type ExportDataset, type OpsExportStrings } from "./OpsExport";
@@ -389,6 +390,12 @@ export default async function Operations({ searchParams }: { searchParams: Promi
     });
   }
 
+  // M08-002 — regional inspection posture over the canonical KSA regions, from
+  // the same region/city-scoped factory set that feeds the pins and risk board.
+  const mapRegionPostures = regionPostures(scopedFactories.map(f => ({
+    region: f.region, riskBand: f.risk_band, score: f.risk_score,
+  })));
+
   // ---------- M08-010 filter option lists (region-scoped cities) ----------
   const regions = [...new Set(factories.map(f => f.region).filter((r): r is string => !!r))].sort();
   const cities = [...new Set(factories
@@ -576,7 +583,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           <EmptyState bare icon={<IconMap size={28} />} title={t("ops.map.empty.title", "No mappable factories in scope")}
             body={t("ops.map.empty.desc", "Factories gain map positions when GIS Admin records official coordinates (FLD-FACT-005/006).")} />
         ) : (
-          <OpsMap pins={pins} strings={mapStrings} />
+          <OpsMap pins={pins} regionPostures={mapRegionPostures} strings={mapStrings} />
         )}
       </div>
 

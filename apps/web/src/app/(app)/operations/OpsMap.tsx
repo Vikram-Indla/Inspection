@@ -6,7 +6,7 @@
 // component (same canon as admin/gis/GisStudio.tsx and field/[visitId]).
 import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
-import type { GeoMarkerData, GeoTone } from "@/components/GeoMap";
+import type { GeoMarkerData, GeoTone, RegionPostureMap } from "@/components/GeoMap";
 import EmptyState from "@/components/EmptyState";
 
 export type OpsPin = {
@@ -43,7 +43,7 @@ const KSA_ZOOM = 5;
 // (ChunkLoadError that survives a full dev-server restart).
 const GeoMap = dynamic(() => import("@/components/GeoMap"), { ssr: false });
 
-export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: OpsMapStrings }) {
+export default function OpsMap({ pins, regionPostures, strings: s }: { pins: OpsPin[]; regionPostures?: RegionPostureMap; strings: OpsMapStrings }) {
   const [selectedId, setSelectedId] = useState(null as string | null);
   const selected = pins.find(p => p.id === selectedId) ?? null;
   const markers: GeoMarkerData[] = pins.map(p => ({
@@ -56,7 +56,7 @@ export default function OpsMap({ pins, strings: s }: { pins: OpsPin[]; strings: 
         <Suspense fallback={
           <EmptyState glyph="…" title={s.loadingTitle} body={s.loadingBody} bare role="status" ariaBusy />
         }>
-          <GeoMap center={KSA_CENTER} zoom={KSA_ZOOM} markers={markers}
+          <GeoMap center={KSA_CENTER} zoom={KSA_ZOOM} markers={markers} regionPostures={regionPostures}
             selectedId={selectedId} onMarkerClick={setSelectedId} height="100%" />
         </Suspense>
       </div>
