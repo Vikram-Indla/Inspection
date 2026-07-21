@@ -198,6 +198,11 @@ approvals:
     approver: "Vikram Indla"
     date: "2026-07-20"
     change_ref: "docs/login-revamp/final/UNIFIED_SURFACE_CORRECTION_REPORT.md"
+  - gate: "DESIGN-DASHBOARD-WEB-IPAD-V5-001"
+    decision: "APPROVED (DESIGN ONLY) — sponsor replied 'authorised' to the exact recommendation to activate TASK-DESIGN-DASHBOARD-WEB-IPAD-V5-001 on an isolated codex/ worktree, correct the Web/iPad handoff packs, register unresolved KPI/Admin decisions, and execute two separate Claude Design workstreams. This authorizes design discovery, external design artifacts, branch-local governance/acceptance/evidence pointers and one critique/refinement pass. It does not authorize application source, migrations, runtime/shared-data changes, provider configuration, merge, push, deployment, remote DDL, invented policy values, design self-approval or implementation handoff before sponsor acceptance."
+    approver: "Vikram Indla"
+    date: "2026-07-20"
+    change_ref: "product-contract/governance/ACTIVE_CHANGE_APPROVAL.yaml#CC-DESIGN-DASHBOARD-WEB-IPAD-V5-001"
 rules:
   - "The agent may prepare evidence but may not self-approve a business decision."
   - "G8 requires explicit human authorization before broad implementation."

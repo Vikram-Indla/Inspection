@@ -1,52 +1,103 @@
 schema_version: "1.2"
-task_id: "TASK-FACTORY-360-STAGING-RUNTIME-CLOSURE-016"
-gate: "G11 Factory 360 controlled staging runtime closure"
-title: "Independent staging verification and closure of merged Factory 360 Web, Inspector iPad and cross-provider structural-contract work"
-status: "RUNTIME_CLOSURE_COMPLETE_AWAITING_SPONSOR_ACCEPTANCE"
+task_id: "TASK-DESIGN-DASHBOARD-WEB-IPAD-V5-001"
+gate: "G11 design authority — SAQEEL V5.1 Dashboard/Overview and Admin control plane"
+title: "Produce separate code-ready Web and Inspector iPad dashboard designs from the governed KPI/Admin contract"
+status: "IN_PROGRESS_DESIGN_ONLY"
 enforce_stop_gate: true
-broad_implementation_allowed: true
-branch: "codex/factory360-staging-runtime-closure-016"
+broad_implementation_allowed: false
+branch: "codex/dashboard-design-v5-001"
 
 baseline_sha: "d53e09f7ee4018bf2046e36d95fe45df355b11a2"
-web_impl_sha: "a92dd9f49e7df50af606ed16881c09954161c528"
-web_evidence_sha: "db52854647fa9b4ca8fac362dfecd4ecc7ccf704"
-ipad_impl_sha: "218131cf323337459f69ad59a75f37c5b2ed7538"
-ipad_pr: "PR #35"
-cross_provider_contract_sha: "ede6628fb711aa003f42293ff97ddcf212189f77"
-web_ipad_reconciliation_accepted_sha: "1f177158229d9632fb61280dde39f93ee1824f67"
-web_ipad_reconciliation_pr: "PR #36"
-web_ipad_reconciliation_merge_sha: "e0363bc09d7bf73d46ca975c772a108f6cd833c0"
-
-staging_project: "iiozvqntawxfwbgffzqu"
+sponsor_authorization: "User replied 'authorised' on 2026-07-20 to the exact proposed governed design-only slice."
+source_pack_sha256: "5510c91f9f26fc231385f214a06a85b14b1c37377bb943df66dcf57769f3aa1e"
+source_request_sha256: "f7d053811bb61bee126aa962e8cdd232b8d10993ee127f75d64266a45a3ef8dc"
 
 slice_history:
-  - "TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 (slice-history/CURRENT_SLICE_FACTORY_360_IPAD_API_CONTRACT_CONSUMPTION_015_backup_2026-07-20.yaml)"
-  - "TASK-FACTORY-360-IPAD-011 (slice-history/CURRENT_SLICE_FACTORY_360_IPAD_011_record_2026-07-20.yaml)"
-  - "TASK-FACTORY-360-CROSS-PROVIDER-CONTRACT-014 (slice-history/CURRENT_SLICE_CROSS_PROVIDER_CONTRACT_014_backup_2026-07-20.yaml)"
-  - "TASK-FACTORY-360-INDUSTRY-SHARED-GAP-013 (slice-history/CURRENT_SLICE_INDUSTRY_SHARED_GAP_013_BACKUP_2026-07-20.yaml)"
+  - "TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 (slice-history/CURRENT_SLICE_FACTORY_360_IPAD_API_CONTRACT_CONSUMPTION_015_record_2026-07-20.yaml)"
+  - "TASK-G11-REMEDIATION-PERFORMANCE-001 remains concurrently active in its own branches/worktrees and is not superseded or touched."
+
+internal_slices:
+  - "DDWI-V5-S01-AUTHORITY-AND-ARTIFACT-RECONCILIATION"
+  - "DDWI-V5-S02-SHARED-FOUNDATIONS-MAP-OFFLINE-A11Y"
+  - "DDWI-V5-S03-WEB-DASHBOARD-OPERATIONS-FACTORY360"
+  - "DDWI-V5-S04-IPAD-ASSIGNMENTS-STARTUP"
+  - "DDWI-V5-S05-ADMIN-CONFIGURATION-CONTROL-PLANE"
+  - "DDWI-V5-S06-DESIGN-ACCEPTANCE-AND-HANDOFF"
 
 objective: >-
-  Verify the merged Factory 360 runtime end to end on approved staging
-  (project iiozvqntawxfwbgffzqu): Web, Inspector iPad, shared canonical
-  projection, Web/iPad parity, permission-filtered offline snapshot v2,
-  original Inspection API structural consumption boundary, Industry Shared
-  fail-closed behaviour, external submission BLOCKED_TRIGGER_DECISION
-  boundary, and existing Inspector workflow non-regression. This is behaviour
-  and structural-consumption proof, not business-data cleanup.
+  Reconcile the supplied KPI workbooks, Admin configuration matrix, SAQEEL V5.1
+  design authority, current governed repository behavior and existing dashboard,
+  Operations, Factory 360, Admin and field/iPad implementations; then produce two
+  separate Claude Design workstreams and code-ready non-regression handoffs. This
+  task creates design artifacts only and does not modify application source.
 
-scope_exclusions:
-  - "Do not mark Industry Shared contracts complete."
-  - "Do not mark the external submission trigger resolved."
-  - "Do not redesign the product, restart API-contract discovery, bulk-import Senaei data, modify production, or activate external inspection forwarding."
+process_ids:
+  - "P00 / SB03, SB13, SB18 — Pre-Day-Zero Admin Configuration"
+  - "P04 / SB06 — Inspector Assignments and Startup Pack; P05 handoff only"
+  - "P12 / SB11, SB12 — Dashboard, Factory 360 and Operations"
+
+screen_ids:
+  - "SCR-WEB-400; SCR-WEB-500; dedicated accepted /dashboard view"
+  - "SCR-IPAD-600; SCR-IPAD-610"
+  - "SCR-ADM-001/010/011/020/030/031/040/041/050/051/060/070/080/090"
+
+engine_ids:
+  - "P00: ENG-01/02/03/04/06/08/11/12"
+  - "P04: ENG-02/06/10/11/12"
+  - "P12: ENG-04/06/07/08/09/11/12"
+
+requirement_ids:
+  - "DASH-001..016"
+  - "MVP1-M03-001..015"
+  - "MVP1-M08-001..019"
+  - "MVP1-M09-001..030"
+  - "All workbook rows in dashboard.xlsx, Inspection Project.xlsx and SAQEEL_Dashboard_KPI_Admin_Configuration_Matrix.xlsx"
+
+acceptance_ids:
+  - "DASH-AC-001..016"
+  - "AC-0099..0113; AC-0430..0478"
+  - "DSG-001..014; DSG-026..029; DSG-CMD-001..020"
+  - "FND-ACC-001..015; DSF-AC-001..030"
+  - "SPC-GIS-001..008; SPC-LIVE-001..007; SPC-OFF-001..008; SPC-RT-001..008; SPC-CMD-001..016"
+  - "DSG-A11Y-001; DSG-IPAD-001; scoped SCREEN_STATE_MATRIX rows"
+
+integration:
+  - "design/claude-design-mvp1/00_START_HERE.md and linked authority/journey/system/verification prompts"
+  - "design/claude-design-mvp1/authority/DASHBOARD_BUSINESS_REQUIREMENT_CONTRACT_V1.md"
+  - "apps/web/src/app/dashboard; apps/web/src/app/operations; apps/web/src/app/field; apps/web/src/app/admin"
+  - "apps/web/src/components/GeoMap.tsx; Factory 360 shared Web/iPad projection; separate offline namespaces"
+  - "SAQEEL V5.1 shared Claude Design project and verified sanitized package"
+  - "External design artifacts and binary evidence under INSPECTION_DOCS_ROOT only"
 
 open_decisions:
-  - "Undocumented Senaei domains remain BLOCKED_EXTERNAL with SENAEI_API_CONTRACT_NOT_SUPPLIED; no endpoints or values may be invented."
-  - "External submission forwarding remains BLOCKED_TRIGGER_DECISION pending sponsor-approved trigger."
-  - "SUPERSEDED: J06-J12 turned out reachable via the local dev server (127.0.0.1:3000) once corrected off a hosted staging URL to the local target -- the iPad/field surface is a normal browser route, not a separate app. All J01-J15 completed this pass (see evidence file); J06's assigned-visit click-through and J12's live outbox-isolation check were not separately exercised (time-boxed, not blocked)."
-  - "Native-Arabic human review remains a separate human evidence gate; RTL/layout mechanics verified this pass but full AR string coverage is a known pre-existing gap, not fabricated."
-  - "Supabase MCP connector in this session is bound to an unrelated project (catalyst-prod, INACTIVE); staging DB access for iiozvqntawxfwbgffzqu uses the Management API with the keychain-held PAT (supabase-pat), the repo's established mechanism (see product-contract/CURRENT_STATE.md history, e.g. UPDATE 38/41)."
-  - "No package_versions.definition.item_snapshot is populated anywhere on staging (pre-existing environment gap, not introduced by this task) -- Approved inspection compliance reads Not Available for every inspection until frozen scoring authority is seeded; not fixed here as that would mean inventing scoring policy."
-  - "F360 Runtime 016 verification fixture family (1 CR, 2 licences, 2 addresses, 4 production-line items) is permanently retained on staging: plant_production_line_items is one of four tables this same migration made architecturally append-only, and its FK to industrial_licenses blocks deleting the licences/CR/addresses too. See evidence file cleanup register."
-  - "Two defects found and fixed this pass: submission_versions RLS (subs_read) missing planner/ops (migration 20260720020000), and the Web Factory 360 page missing the cross-provider reconciliation section iPad already had (apps/web/src/app/factories/cr/[id]/page.tsx). Both retested live, typecheck/build clean, 34/34 focused e2e green."
+  - "DEC-028 dashboard KPI/Admin semantics created by this slice; design must show blocked/unavailable states until resolved."
+  - "DEC-001 risk policy; DEC-002 GIS values; DEC-003 SLA calendar; DEC-006 evidence policy; DEC-010 NFR targets; DEC-027 Industry Shared authority/privacy."
+  - "DEC-008 Mapbox provider is resolved, but credentialed runtime, offline packs and licensing/data-residency evidence remain open."
+  - "Native Arabic linguistic/release certification remains a human gate; design must still include EN/AR and RTL."
 
-pacing: "Checkpoint after pre-flight before any DDL apply, deploy action, or live browser journey execution (sponsor direction 2026-07-20). Superseded 2026-07-20 same day: sponsor authorized continuing through full J01-J15 close-out on the local dev server without further pausing."
+do_not_touch:
+  - "No application source, migrations, server actions, RLS/RBAC, route guards, workflow/state/audit/offline engines, provider clients, secrets or runtime/shared data."
+  - "Do not touch performance branches/worktrees/results or Factory 360 task branches/history."
+  - "Do not change accepted formulas, URL ownership, /dashboard versus Operations separation, Mapbox/geofence authority, immutable versions, maker-checker or tenant/data scope."
+  - "Do not merge/push/deploy, modify main/setup, apply remote DDL or commit binary evidence/source workbooks/archives."
+  - "Do not claim live GPS, configured Mapbox runtime, AI findings, unsupported provider data, or invented thresholds/policy values."
+
+evidence:
+  - "DDWI V5 source manifest and artifact reconciliation"
+  - "Authority, component, runtime-consumer, state-coverage and open-decision matrices"
+  - "Separate Web and iPad prompts/packs with verified manifests and checksums stored externally"
+  - "Claude Design output links or exact access blocker evidence"
+  - "Visual evidence register pointing to external EN/AR, light/dark, desktop/iPad and hard-state assets"
+  - "Interaction/guard annotations, counterfactual/quality-ratchet review and implementation handoff"
+
+exit_condition: >-
+  The corrected separate Web and iPad packs reconcile every workbook row and
+  governed repository contract; both Claude Design workstreams are executed or
+  truthfully blocked with evidence; all scoped P0/P1 design acceptance rows are
+  dispositioned; no application code or protected runtime behavior changes; final
+  status is READY_FOR_DESIGN_REVIEW and never self-approved or implementation-authorized.
+
+open_blockers:
+  - "DESIGN_QUALITY_RATCHET_V4.md cannot currently be read because macOS denies access to the approved Desktop documentation root."
+  - "The supplied ZIP is Web-only and must be corrected; required iPad reference/workbook/prompt inputs are absent from that archive."
+  - "DEC-028 sponsor decisions are required before final KPI semantics can be approved."

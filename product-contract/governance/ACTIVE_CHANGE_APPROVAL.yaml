@@ -1,50 +1,22 @@
 schema_version: "1.0"
-change_id: "CC-SAQEEL-LOGIN-REVAMP-001"
-title: "Saqeel login revamp — native atlas integration and protected motion"
+change_id: "CC-DESIGN-DASHBOARD-WEB-IPAD-V5-001"
+title: "SAQEEL V5.1 Web and Inspector iPad Dashboard design authority"
 requestor: "Vikram Indla"
-business_reason: >
-  Improve the public Saqeel sign-in composition while preserving the accepted
-  animated Saudi inspection atlas as the trademark hero, removing broad scene
-  tinting, increasing vehicle legibility and establishing complete bilingual,
-  theme and responsive parity.
-source_evidence:
-  - "Sponsor event-statement correction supplied with three screenshots on 2026-07-20; remove the event card shell and retain statement typography over the atlas."
-  - "Sponsor one-fade/one-unison/one-theme correction supplied on 2026-07-20; requires a full-height positioned atlas scene and overlay-hidden visual proof."
-  - "Sponsor unified-surface correction supplied on 2026-07-20; layout-only override requiring one continuous atlas stage, removal of the public statistics strip and 16-state before/after evidence."
-  - "Wordmark-protected final consolidated prompt supplied in the 2026-07-20 Codex task; it explicitly overrides every earlier Saqeel login prompt."
-  - "SAQEEL_LOGIN_WORDMARK_PROTECTED_CODEX_PACK.zip SHA-256 b960c12719bca2890f7cc86b6be483694fc06e9e33d3ba8e91a6900fcbd3d8af."
-  - "Sponsor acceptance contract supplied in the 2026-07-20 Codex task."
-  - "SAQEEL_LOGIN_REVAMP_CODEX_HANDOFF.zip SHA-256 93ee887a35ac715bb745da4460b13c7fb7556e6418367e09a16610c130bbb6f4."
-  - "Current and proposed light/dark references in the stakeholder package; references are direction only, not replacement HTML."
-affected_scope:
-  requirements: ["CD-001", "CD-002", "DEC-011", "SLR-REQ-001..018"]
-  screens: ["SCR-PUB-010"]
-  fields: ["Email", "Password"]
-  states: ["sign-in", "forgot password", "reset sent", "atlas story stages", "zone hover", "zone locked"]
-  apis: ["Existing Supabase credential and reset calls unchanged; no public SSO control or provider API added"]
-  tests: ["CD-001", "CD-002", "negative auth", "login revamp acceptance", "visual evidence"]
-  storyboards: ["CD-001 five-stage atlas storyboard; timing and sequence unchanged"]
-mvp_impact: "MVP1 public access visual hardening; no MVP2/MVP3 behavior change. MVP3-HOLD-003 remains open."
-regression_impact: "High for protected atlas motion and authentication; requires source invariants plus runtime regression."
-authorization: >
-  Sponsor explicitly replied that this is the authorization and authorized the
-  work on 2026-07-20. Reopen CD-001/SCR-PUB-010 for the supplied acceptance
-  contract, use an isolated branch, preserve authentication and protected map
-  behavior, implement the exact 1.5x vehicle scale, and do not commit, push,
-  merge, deploy or invent an external SSO provider. The later wordmark-protected
-  consolidated prompt is the final sponsor direction and overrides the earlier
-  requirement to render one fail-closed SSO control.
+approver: "Vikram Indla"
+authorization: >-
+  The sponsor replied "authorised" on 2026-07-20 to the exact proposal to activate
+  TASK-DESIGN-DASHBOARD-WEB-IPAD-V5-001 as a governed design-only slice, correct
+  the Web/iPad handoff packs, register unresolved KPI decisions, and execute two
+  separate Claude Design workstreams from an isolated branch/worktree.
 scope_allowed:
-  - "Create feature/saqeel-login-revamp from setup/Inspection d53e09f."
-  - "Edit login-only components/CSS, focused tests, evidence and branch-local governance/session records."
-  - "Remove National Single Sign-On and every secondary-auth wrapper from the public login while MVP3-HOLD-003 remains an internal fail-closed provider hold."
-  - "Add a dedicated pixel-registered light atlas raster and use it for the main plane, lifted terrain and sidewall source."
-  - "Correct the login hero shell to one framed atlas environment with absolute event/rail overlays, a 48px atmospheric bridge, no public statistics strip and restrained blue zone interaction feedback."
-  - "Promote the atlas environment to the full right rail; overlay title/control, event and rail; remove the rail card shell; consolidate login-only accents and capture overlay-hidden light/dark canvas proof."
+  - "Create and use codex/dashboard-design-v5-001 from clean setup/Inspection baseline d53e09f7ee4018bf2046e36d95fe45df355b11a2."
+  - "Update branch-local current-slice, approval, decision, design acceptance, evidence-pointer and session records."
+  - "Read and reconcile supplied workbooks, references, SAQEEL V5.1 authority and current repository behavior."
+  - "Create corrected Web and iPad design packs and binary design outputs under INSPECTION_DOCS_ROOT, with lightweight Git pointers only."
+  - "Use separate Claude Design workstreams and complete one critique/refinement pass."
 scope_forbidden:
-  - "Authentication logic changes, provider invention, production deployment, main/setup modification, merge or push."
-  - "Camera, route, stage timing, zone interaction, geography or scene-material recoloring changes beyond removing broad scene filters."
-  - "Committing stakeholder ZIP/screenshots or unrelated worktree changes."
+  - "Application source, migrations, RLS/RBAC, provider clients, workflow/audit/offline engines or runtime/shared-data mutation."
+  - "Modification of performance or Factory 360 branches/worktrees/history."
+  - "Main/setup modification, merge, push, deployment, remote DDL, secrets, invented policy/provider values or self-approval."
 decision_owner: "Vikram Indla"
-approval: "APPROVED in-session"
-effective_version: "2026-07-20 / feature/saqeel-login-revamp"
+effective_date: "2026-07-20"
