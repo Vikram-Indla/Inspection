@@ -77,7 +77,7 @@ export default function PreExecution(props: {
   visitId: string;
   ready: boolean;
   snapshot: { preparation_version: number; checksum: string } | null;
-  context: { factoryName: string; factoryCode: string | null; visitType: string; priority: string | null; windowLabel: string };
+  context: { factoryName: string; factoryCode: string | null; visitType: string; priority: string | null; windowLabel: string; unverifiedLabel?: string | null };
   days: PreparationDay[];
   capacityNote: "ok" | "unavailable" | "truncated";
   plannedMode: "physical" | "virtual";
@@ -169,6 +169,9 @@ export default function PreExecution(props: {
         <h5 style={{ marginBlockEnd: 4 }}>{s.contextHeading}</h5>
         <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }}>
           <span className="ax-badge">{s.lblFactory}: {props.context.factoryName}{props.context.factoryCode ? ` (${props.context.factoryCode})` : ""}</span>
+          {/* Phase 7 (§24) — unregistered immediate factory identity, existing
+              temporary/unverified marker only (same copy as the visit detail). */}
+          {props.context.unverifiedLabel && <span className="ax-lozenge ax-lozenge--warning">{props.context.unverifiedLabel}</span>}
           <span className="ax-badge">{s.lblVisitType}: {props.context.visitType}</span>
           <span className="ax-badge">{s.lblWindow}: {props.context.windowLabel}</span>
           <span className="ax-badge">{s.lblPriority}: {props.context.priority ?? "—"}</span>

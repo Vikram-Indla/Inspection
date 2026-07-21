@@ -369,7 +369,10 @@ export default async function Operations({ searchParams }: { searchParams: Promi
   const gisConf = (engines.find(e => e.engine === "gis")?.settings ?? {}) as { geofence_default_radius_m?: number };
   const slaConf = (engines.find(e => e.engine === "sla")?.settings ?? {}) as SlaConf;
 
-  const states = ["new", "prepared", "on_the_way", "arrived", "executing", "submitted"] as const;
+  // TASK-EXECUTION-MODULE-001 · Phase 7 (§29) — the bucket list spans the full
+  // canonical stored vocabulary: 'prepared' (≡ Ready for Execution, D-002) and
+  // 'under_review' (Phase 1/6 values) included; display-layer only.
+  const states = ["new", "prepared", "on_the_way", "arrived", "executing", "submitted", "under_review"] as const;
   const counts = Object.fromEntries(states.map(s => [s, visits.filter(v => v.operational_state === s).length]));
   // M08-010 — region/city scope for monitoring + map + SLA watch. An active
   // operational journey remains observable even if its planning window has
@@ -594,7 +597,11 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       {/* KPI cards — visits by operational_state (all planning statuses; FND-002) */}
       <div className="ax-mstrip">
         {states.map(s => (
-          <div key={s}><div className="ax-mstrip__label">{enumLabel(s)}</div>
+          <div key={s}><div className="ax-mstrip__label">{s === "prepared"
+            ? t("ops.kpi.prepared", "Prepared — ready for execution")
+            : s === "under_review"
+              ? t("ops.kpi.underReview", "Under review")
+              : enumLabel(s)}</div>
             <div className="ax-mstrip__value ax-numeric">{counts[s]}</div></div>
         ))}
       </div>

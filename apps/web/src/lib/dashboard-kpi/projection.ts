@@ -108,13 +108,13 @@ export function buildDashboardKpiProjection(
     }
 
     switch (def.metricId) {
-      case "STR-KPI-001": // Compliance rate trend
+      case "STR-KPI-001": // Compliance rate trend (approved-only, matching the headline KPI)
         out.push(
           withValue(metric, {
             value: s.complianceRate,
-            numerator: s.compliant,
-            denominator: s.answeredForCompliance,
-            evidenceRefs: [`checklist_responses:${s.answeredForCompliance}`],
+            numerator: s.approvedCompliant,
+            denominator: s.approvedAnsweredForCompliance,
+            evidenceRefs: [`checklist_responses:${s.approvedAnsweredForCompliance}`],
           }),
         );
         break;

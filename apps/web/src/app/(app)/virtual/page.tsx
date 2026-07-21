@@ -24,6 +24,22 @@ export default async function VirtualList() {
     const s = v.virtual_sessions as unknown;
     return Array.isArray(s) ? s.length === 0 : !s;
   });
+  // TASK-EXECUTION-MODULE-001 · Phase 7 (§23) — readiness hint. Tolerant read:
+  // while the readiness schema (20260721120000) is unapplied the probe fails
+  // and no hint renders (legacy behavior); once available, a published virtual
+  // visit without a confirmed Ready preparation shows a plain read-only hint —
+  // scheduling stays open, the block itself happens at beginRemote (D-023).
+  const readyById = new Map<string, boolean>();
+  if (unscheduled.length > 0) {
+    const { data: prepRows, error: prepProbeError } = await sb.from("visit_preparations")
+      .select("visit_id, confirmed_ready_at")
+      .in("visit_id", unscheduled.map(v => v.id));
+    const readinessAvailable = !prepProbeError;
+    if (readinessAvailable) {
+      const confirmed = new Set((prepRows ?? []).filter(r => r.confirmed_ready_at).map(r => r.visit_id as string));
+      for (const v of unscheduled) readyById.set(v.id, confirmed.has(v.id));
+    }
+  }
   const scheduleStrings: ScheduleFormStrings = {
     appointment: t("virtual.schedule.appointment", "Appointment"),
     repName: t("virtual.schedule.repName", "Factory representative"),
@@ -60,6 +76,9 @@ export default async function VirtualList() {
             <div key={v.id} className="ax-stack" style={{ gap: "var(--ax-space-100)" }}>
               <strong>{(v.factories as unknown as { name: string } | null)?.name}{" "}
                 <span className="ax-caption ax-numeric">{formatDate(v.window_start, dLang)}</span></strong>
+              {readyById.get(v.id) === false && (
+                <span className="ax-caption">{t("virtual.list.preparationRequired", "Preparation required before the session can start")}</span>
+              )}
               <ScheduleForm visitId={v.id} strings={scheduleStrings} />
             </div>
           ))}
