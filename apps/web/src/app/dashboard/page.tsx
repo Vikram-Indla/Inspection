@@ -18,12 +18,14 @@ import {
   type VisitRow,
 } from "./metrics";
 import {
-  DashboardScope,
-  DashboardTabs,
+  CommandHeader,
   OperationalView,
   SearchResults,
   StrategicView,
 } from "./DashboardView";
+import { buildDashboardKpiProjection } from "@/lib/dashboard-kpi/projection";
+import { resolveDashboardPolicyVersion } from "@/lib/dashboard-kpi/loader";
+import type { MetricScope } from "@/lib/dashboard-kpi/contract";
 import { BUSINESS_ROLE_KEYS } from "@/lib/shell-navigation";
 
 export const dynamic = "force-dynamic";
@@ -114,7 +116,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const [visitsResult, inspectionsResult, reviewsResult, responsesResult, violationsResult, geoResult, factoriesResult, slaResult] = await Promise.all([
     collect<VisitRow>((from, to) => sb.from("visits").select(`
       id, planning_status, operational_state, window_start, window_end, priority, cancellation_reason, created_at,
-      factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary),
+      factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m),
       assignments(inspector_id, profiles(full_name))
     `).range(from, to) as unknown as PromiseLike<RowPage<VisitRow>>),
     collect<InspectionRow>((from, to) => sb.from("inspections").select(`
@@ -139,7 +141,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
       id, visit_id, kind, geofence_result, override_reason, occurred_at, observed_lat, observed_lng,
       visits(planner_lat, planner_lng, factories(id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary))
     `).gte("occurred_at", scopeFromIso).lte("occurred_at", scopeToIso).range(from, to) as unknown as PromiseLike<RowPage<GeoRow>>),
-    collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
+    collect<FactoryRef>((from, to) => sb.from("factories").select("id, name, factory_code, region, city, activity_class, risk_score, risk_band, is_temporary, official_lat, official_lng, geofence_radius_m").range(from, to) as unknown as PromiseLike<RowPage<FactoryRef>>),
     sb.from("engine_settings").select("settings").eq("engine", "sla").maybeSingle(),
   ]);
 
@@ -184,23 +186,52 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
     region,
     nowMs,
   });
-  const currentParams: Record<string, string> = {
-    view,
-    group,
-    q: query,
-    from: scope.fromDate,
-    to: scope.toDate,
-    region,
+  // Consume the shared KPI contract: resolve the published policy version and
+  // build the SharedMetric projection server-side. Presentation renders these
+  // records — it never recomputes a formula (hard rule, CODEX 01/02).
+  const policy = await resolveDashboardPolicyVersion(sb);
+  const metricScope: MetricScope = {
+    fromMs: scope.fromMs,
+    toMs: scope.toMs,
+    fromDate: scope.fromDate,
+    toDate: scope.toDate,
+    timezone: "Asia/Riyadh",
+    region: region || null,
+    filters: query ? { q: query } : {},
   };
-  const refreshedAt = new Date(nowMs).toISOString().slice(0, 16).replace("T", " ");
+  const refreshedAtIso = new Date(nowMs).toISOString();
+  const projection = buildDashboardKpiProjection(metrics, {
+    scope: metricScope,
+    policyVersionId: policy.policyVersionId,
+    refreshedAt: refreshedAtIso,
+    generatedAtMs: nowMs,
+    failedSources: [...failedSources, ...policy.failedSources],
+  });
+
+  // Governed factory coordinates for the operational live canvas (official pins
+  // only — never synthetic). Keyed by factory id.
+  const factoryCoords = new Map<string, { lat: number; lng: number; radiusM: number | null }>();
+  for (const f of factoriesResult.rows) {
+    if (f.official_lat != null && f.official_lng != null) {
+      factoryCoords.set(f.id, { lat: Number(f.official_lat), lng: Number(f.official_lng), radiusM: f.geofence_radius_m ?? null });
+    }
+  }
+
+  const currentParams: Record<string, string> = {
+    view, group, q: query, from: scope.fromDate, to: scope.toDate, region,
+  };
+  const refreshedAt = new Date(nowMs).toISOString().slice(11, 16);
+  const regions = Array.from(new Set(factoriesResult.rows.map(f => f.region).filter((r): r is string => !!r))).sort();
+  const partialSources = Array.from(new Set([...failedSources, ...projection.failedSources]));
+
   return <Shell current="/dashboard" title={text("Dashboard", "لوحة القيادة")}
     context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-500 · DASH-001..016</span>}>
-    {failedSources.length > 0 && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{text("Partial dashboard", "لوحة قيادة جزئية")}</strong> — {text("these sources are temporarily unavailable:", "هذه المصادر غير متاحة مؤقتاً:")} {failedSources.join(" · ")}. {text("Other panels remain usable; refresh to retry.", "تظل اللوحات الأخرى قابلة للاستخدام؛ حدّث الصفحة لإعادة المحاولة.")}</div></div>}
-    <DashboardTabs locale={locale} view={view} params={currentParams} />
-    <DashboardScope locale={locale} from={scope.fromDate} to={scope.toDate} region={region} refreshedAt={refreshedAt} />
+    <CommandHeader locale={locale} view={view} params={currentParams}
+      from={scope.fromDate} to={scope.toDate} region={region} regions={regions} query={query}
+      refreshedAt={refreshedAt} policyVersionId={policy.policyVersionId} partialSources={partialSources} />
     <SearchResults locale={locale} query={query} factories={factoriesResult.rows} visits={visitsResult.rows} inspections={inspectionsResult.rows} />
     {view === "strategic"
-      ? <StrategicView locale={locale} metrics={metrics} group={group} params={currentParams} />
-      : <OperationalView locale={locale} metrics={metrics} />}
+      ? <StrategicView locale={locale} metrics={metrics} projection={projection} factories={factoriesResult.rows} group={group} params={currentParams} />
+      : <OperationalView locale={locale} metrics={metrics} projection={projection} factoryCoords={factoryCoords} />}
   </Shell>;
 }

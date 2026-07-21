@@ -8,6 +8,11 @@ export type FactoryRef = {
   risk_score: number | null;
   risk_band: string | null;
   is_temporary: boolean;
+  // Optional governed geography — present only on the top-level factories query
+  // used by the National Decision Canvas. Nested factory sub-selects omit them.
+  official_lat?: number | null;
+  official_lng?: number | null;
+  geofence_radius_m?: number | null;
 };
 
 export type VisitRow = {
