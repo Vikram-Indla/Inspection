@@ -2,7 +2,8 @@ import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { evidenceDirectory } from "./evidence-path";
-import { storageStatePath } from "./personas";
+import { storageStatePath, PERSONAS } from "./personas";
+import { login, rest, must } from "./live-rest";
 
 // CD-025 / SCR-WEB-150 / P03 — Plan Review & Publish workspace.
 // Acceptance: DSG-020 (complete plan/child visits/blockers/notifications/atomic
@@ -13,11 +14,14 @@ import { storageStatePath } from "./personas";
 // evidence is supplementary to the functional assertions (.claude/rules/tests.md).
 const EVIDENCE_DIR = evidenceDirectory("cd-025-plan-review-v1");
 const SRC = (p: string) => readFileSync(join(process.cwd(), p), "utf8");
+// M6 — bare /planning/bulk no longer match-alls (at least one criterion
+// required); stage selections through a full-scope criterion instead.
+const ALL_REGIONS_CT = encodeURIComponent(JSON.stringify({ k: "g", c: "all", n: [{ k: "c", f: "region", o: "neq", v: "__none__" }] }));
 
 test.use({ storageState: storageStatePath("planner") });
 
 async function stageSelection(page: Page, n = 3): Promise<string[]> {
-  await page.goto("/planning/bulk");
+  await page.goto(`/planning/bulk?ct=${ALL_REGIONS_CT}`);
   const hrefs = await page.locator('a[href^="/factories/"]').evaluateAll(
     (els, k) => els.slice(0, k).map(e => (e.getAttribute("href") ?? "").replace("/factories/", "")),
     n,
@@ -168,4 +172,65 @@ test("CD-025 S10: scope reduction announces politely and restores focus (DSG-A11
   // the announcement string is provided from the server component
   const page = SRC("src/app/(app)/planning/bulk/review/page.tsx");
   expect(page).toContain("plan.review.scopeReduced");
+});
+
+// ---------------------------------------------------------------------------
+// M6 — eligibility partition + acknowledgement + draft resume consumption.
+test.describe("M6 — eligibility partition and eligible-subset acknowledgement", () => {
+  test("ledger shows the 7 counts; publish stays gated until the eligible-subset acknowledgement", async ({ page }) => {
+    // Self-contained staging: the single staging inspector is busy on recurring
+    // monthly windows, so any multi-row auto selection hard-blocks on coverage.
+    // Instead stage 2 located factories WITH an active periodic visit (duplicate
+    // rows — excluded from retained; their blocker is bypassed by the ack) plus
+    // 1 located factory with NO active periodic visit (stays eligible), inside a
+    // probe-verified free window (2026-09-10 → 2026-09-20).
+    const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+    const ACTIVE = "visit_type=eq.periodic&planning_status=in.(draft,validated,published,returned)";
+    const dupVisits = must(await rest("GET", `visits?select=factory_id&${ACTIVE}&limit=50`, planner.jwt), "active periodic visits") as { factory_id: string }[];
+    const dupIds = [...new Set(dupVisits.map(v => v.factory_id))];
+    const dupFacs = dupIds.length
+      ? must(await rest("GET", `factories?select=id&id=in.(${dupIds.slice(0, 20).join(",")})&official_lat=not.is.null&official_lng=not.is.null&limit=2`, planner.jwt), "located duplicate factories") as { id: string }[]
+      : [];
+    test.skip(dupFacs.length < 2, "staging lacks located factories with active periodic visits");
+    const candidates = must(await rest("GET", "factories?select=id&official_lat=not.is.null&official_lng=not.is.null&limit=100", planner.jwt), "located factories") as { id: string }[];
+    let clean: string | undefined;
+    for (const c of candidates) {
+      if (dupFacs.some(d => d.id === c.id)) continue;
+      const v = must(await rest("GET", `visits?select=id&factory_id=eq.${c.id}&${ACTIVE}&limit=1`, planner.jwt), "clean-factory probe") as { id: string }[];
+      if (v.length === 0) { clean = c.id; break; }
+    }
+    test.skip(!clean, "staging lacks a located factory without an active periodic visit");
+    const ids = [dupFacs[0].id, dupFacs[1].id, clean!];
+    await page.addInitScript(sel => { sessionStorage.setItem("cd021-bulk-selection", JSON.stringify(sel)); }, ids);
+    await page.goto("/planning/bulk/review");
+    const dt = page.locator('input[type="datetime-local"]');
+    await dt.nth(0).fill("2026-09-10T09:00");
+    await dt.nth(1).fill("2026-09-20T17:00");
+    // The eligibility section renders all 7 partition counts.
+    await expect(page.getByRole("heading", { name: /^Eligibility$/i })).toBeVisible();
+    await expect(page.getByText("Total selected", { exact: true })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("To create", { exact: true })).toBeVisible();
+    await expect(page.getByText("Missing location", { exact: true })).toBeVisible();
+    await expect(page.getByText("Active conflicts", { exact: true })).toBeVisible();
+    await expect(page.getByText("Manual override required", { exact: true })).toBeVisible();
+    // Per-row reasons name the duplicate rows.
+    await expect(page.getByText(/duplicate — active visit/i).first()).toBeVisible();
+    // Publish is gated behind the explicit acknowledgement…
+    const publish = page.getByRole("button", { name: /Publish plan and create|Publish blocked/i });
+    await expect(page.getByText(/are ineligible/i).first()).toBeVisible({ timeout: 15000 });
+    await expect(publish).toBeDisabled();
+    // …and acknowledging proceeds with the eligible subset only (1 row here).
+    await page.getByRole("checkbox").check();
+    await expect(publish).toBeEnabled({ timeout: 15000 });
+    await expect(publish).toContainText(/create 1 /);
+    await page.screenshot({ path: join(EVIDENCE_DIR, "eligibility-ack.png"), fullPage: true });
+  });
+
+  test("an unknown ?plan= id falls back honestly to the browser-held path", async ({ page }) => {
+    await page.addInitScript(() => { sessionStorage.removeItem("cd021-bulk-selection"); });
+    await page.goto("/planning/bulk/review?plan=00000000-0000-4000-8000-000000000000");
+    await expect(page.getByText(/could not be loaded/i)).toBeVisible();
+    await expect(page.getByText(/No factories selected/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Publish/i })).toHaveCount(0);
+  });
 });
