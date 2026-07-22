@@ -8,7 +8,7 @@ source_root: "/Users/vikramindla/Inspection-R0-Control/approved-sources"
 manifest_root: "/Users/vikramindla/Inspection-R0-Control/manifests-corrected"
 source_file_count: 9
 source_unit_count: 7341
-atomic_requirement_count: 2494
+atomic_requirement_count: 2344
 open_decision_count: 12
 conflict_tension_count: 2
 api_endpoint_count: 11
