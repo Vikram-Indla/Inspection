@@ -19,13 +19,14 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 role matrix", () => {
   // The Inspector is an iPad-channel persona (rbac_matrix.csv RBAC-009/010) and
   // is redirected off the web portal, so it no longer receives the web nav or a
   // locked Administration group. See the "field channel" describe block below.
-  test("every WEB business persona receives the same business catalogue and seven locked admin entries", () => {
+  test("every WEB business persona receives the same business catalogue and ten locked admin entries", () => {
     for (const role of ["planner", "reviewer", "ops", "leadership"]) {
       const groups = buildShellNavigation([role]);
       expect(groups.map(group => group.id)).toEqual(["overview", "operations", "compliance", "insights", "administration"]);
       expect(businessHrefsFor([role])).toEqual(businessHrefs);
       const adminItems = groups.find(group => group.id === "administration")!.items;
-      expect(adminItems.filter(item => item.visibility === "admin-primary")).toHaveLength(7);
+      // 7 original + 3 M9 planning control-plane entries (lookups/expiry/status).
+      expect(adminItems.filter(item => item.visibility === "admin-primary")).toHaveLength(10);
       expect(adminItems.filter(item => item.visibility === "admin-primary").every(item => !item.enabled && item.disabledReasonEn === "Administrator access required.")).toBe(true);
     }
   });
@@ -100,17 +101,18 @@ test.describe("TASK-WEB-SHELL-001 responsive and language behavior", () => {
     await page.goto("/locale?set=en");
     await page.goto("/planning");
     const nav = page.getByRole("navigation", { name: "Primary navigation" });
-    await expect(nav.getByRole("link", { name: "Planning" })).toBeVisible();
+    // exact: the M9 "Planning *" admin entries would otherwise substring-match.
+    await expect(nav.getByRole("link", { name: "Planning", exact: true })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Factory 360" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Review & Approval" })).toBeVisible();
     await expect(nav.getByRole("link", { name: "Inspection Rules" })).toBeVisible();
-    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(7);
+    await expect(nav.locator('[data-nav-state="disabled"]')).toHaveCount(10);
     await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).toHaveAttribute("aria-disabled", "true");
     await expect(nav.getByRole("link", { name: /Users.*Administrator access required/ })).not.toHaveAttribute("href");
 
     await page.getByRole("button", { name: "Collapse navigation" }).click();
     await expect(page.locator(".ax-shell")).toHaveClass(/is-collapsed/);
-    await expect(nav.getByRole("link", { name: "Planning" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Planning", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Expand navigation" }).click();
     await expect(page.locator(".ax-shell")).not.toHaveClass(/is-collapsed/);
   });
