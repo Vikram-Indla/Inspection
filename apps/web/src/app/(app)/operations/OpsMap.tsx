@@ -67,7 +67,7 @@ export default function OpsMap({ pins, regionPostures, strings: s }: { pins: Ops
           <span className="badge">{s.legendFactory}</span>
         </span>
         {selected
-          ? <a className="ax-link" href={selected.href}>{s.open} — {selected.label}</a>
+          ? <a className="sq-link" href={selected.href}>{s.open} — {selected.label}</a>
           : <span className="t-caption">{s.selectHint}</span>}
       </div>
     </div>

@@ -39,8 +39,8 @@ export default async function RiskModelsPage() {
   return (
     <Shell current="/admin/risk" title={t("risk.wb.title", "Risk model workbench")}
       context={<span className="badge badge-info">CD-032 · MVP2-REQ-0005..0012</span>}>
-      <div className="ax-banner"><div><strong>{t("risk.wb.banner.title", "Governed draft layer.")}</strong> {t("risk.wb.banner.body", "Drafts validate weights-sum and bands (parity with Risk Studio) and publish through maker-checker; published versions are immutable. No policy value is set here that the accepted structure does not require.")}</div></div>
-      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("risk.wb.error", "Couldn’t load risk models. Nothing changed.")}</strong></div></div>}
+      <div className="sq-banner"><div><strong>{t("risk.wb.banner.title", "Governed draft layer.")}</strong> {t("risk.wb.banner.body", "Drafts validate weights-sum and bands (parity with Risk Studio) and publish through maker-checker; published versions are immutable. No policy value is set here that the accepted structure does not require.")}</div></div>
+      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("risk.wb.error", "Couldn’t load risk models. Nothing changed.")}</strong></div></div>}
       {!error && (rows ?? []).length === 0 && (
         <EmptyState icon={<IconChart size={28} />} title={t("risk.wb.empty.title", "No risk model drafts")}
           body={t("risk.wb.empty.body", "Create a draft to compose a governed risk model. Empty may also mean none are in your scope (RLS).")} />

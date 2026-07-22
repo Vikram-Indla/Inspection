@@ -33,12 +33,12 @@
 .btn-icon { width: var(--control-h-md); padding: 0; }
 .btn-icon.btn-sm { width: var(--control-h-sm); }
 .btn-block { width: 100%; }
-/* Astryx migration: every .ax-btn (any color, unmodified size) carried a
+/* Legacy migration: every .sq-btn (any color, unmodified size) carried a
    universal >=44px touch-safe floor with no "small" variant. Applied
    alongside color/size classes on migrated buttons so that floor survives;
    does not touch the base .btn/.btn-sm sizing used by new SAQEEL components. */
 .btn-touch { min-height: var(--touch-target); }
-/* Astryx migration: .ax-btn--field guaranteed an unconditional 52px iPad/field
+/* Legacy migration: .sq-btn--field guaranteed an unconditional 52px iPad/field
    touch target + readable text, independent of any [data-density] ancestor
    (none of the migrated field-workflow buttons sit under one). 52px matches
    the PR1 shim's --control-h-field pin, not a new invented value. */
@@ -49,13 +49,17 @@
 .btn-group > .btn { border-radius: 0; margin-inline-start: -1px; }
 .btn-group > .btn:first-child { border-start-start-radius: var(--radius-sm); border-end-start-radius: var(--radius-sm); margin-inline-start: 0; }
 .btn-group > .btn:last-child { border-start-end-radius: var(--radius-sm); border-end-end-radius: var(--radius-sm); }
-.btn.is-loading { position: relative; color: transparent !important; pointer-events: none; }
+/* Loading: text label stays visible (V2), spinner sits alongside it. Icon-only
+   buttons have no label, so the glyph is hidden and the spinner is centred. */
+.btn.is-loading { position: relative; pointer-events: none; }
 .btn.is-loading::after {
-  content: ""; position: absolute; width: 14px; height: 14px;
+  content: ""; width: 14px; height: 14px; flex: none;
   border: 2px solid currentColor; border-inline-start-color: transparent;
   border-radius: 50%; animation: insp-spin 0.7s linear infinite;
   color: var(--text-on-action);
 }
+.btn-icon.is-loading { color: transparent !important; }
+.btn-icon.is-loading::after { position: absolute; inset: 0; margin: auto; }
 .btn-secondary.is-loading::after, .btn-ghost.is-loading::after, .btn-tertiary.is-loading::after { color: var(--text-muted); }
 @keyframes insp-spin { to { transform: rotate(360deg); } }
 
@@ -416,7 +420,7 @@ td.rail-td > i { display: block; width: 4px; height: 100%; }
 .filter-chip button { border: 0; background: none; color: inherit; cursor: pointer; padding: 0; font-size: 10px; }
 
 /* ══ SAQEEL TSX port additions (inline styles → classes) ══════ */
-/* Generic numeral-alignment utility (astryx .ax-numeric equivalent) —
+/* Generic numeral-alignment utility (legacy .sq-numeric equivalent) —
    individual components (kpi-value, cell-num, id-code…) set their own
    font-variant-numeric; this is for standalone numeral spans/cells. */
 .numeric { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum" 1, "lnum" 1; }

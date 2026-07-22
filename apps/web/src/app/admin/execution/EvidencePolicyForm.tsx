@@ -48,8 +48,8 @@ export default function EvidencePolicyForm({
 
   return (
     <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-      <div className="ax-tablewrap">
-        <table className="ax-table">
+      <div className="sq-tablewrap">
+        <table className="sq-table">
           <thead>
             <tr>
               <th scope="col">{labels.colType}</th>
@@ -66,14 +66,14 @@ export default function EvidencePolicyForm({
                   <>
                     <td>
                       <input
-                        className="ax-input" name={`${rule.name}_formats`} defaultValue={rule.formats.join(", ")}
+                        className="sq-input" name={`${rule.name}_formats`} defaultValue={rule.formats.join(", ")}
                         aria-label={`${rule.name} ${labels.colFormats}`}
                       />
-                      <p className="ax-caption" style={{ margin: 0 }}>{labels.formatsHint}</p>
+                      <p className="sq-caption" style={{ margin: 0 }}>{labels.formatsHint}</p>
                     </td>
                     <td>
                       <input
-                        className="ax-input ax-numeric" name={`${rule.name}_max_mb`} type="number" min={1} required
+                        className="sq-input sq-numeric" name={`${rule.name}_max_mb`} type="number" min={1} required
                         defaultValue={rule.maxMb ?? ""} style={{ maxInlineSize: 110 }}
                         aria-label={`${rule.name} ${labels.colMaxSize}`}
                       />
@@ -81,19 +81,19 @@ export default function EvidencePolicyForm({
                     <td>
                       {rule.maxMinutes != null ? (
                         <input
-                          className="ax-input ax-numeric" name={`${rule.name}_max_minutes`} type="number" min={1} required
+                          className="sq-input sq-numeric" name={`${rule.name}_max_minutes`} type="number" min={1} required
                           defaultValue={rule.maxMinutes} style={{ maxInlineSize: 110 }}
                           aria-label={`${rule.name} ${labels.colMaxDuration}`}
                         />
                       ) : (
-                        <span className="ax-caption">{labels.notConfigured}</span>
+                        <span className="sq-caption">{labels.notConfigured}</span>
                       )}
                     </td>
                   </>
                 ) : (
                   <td colSpan={3}>
-                    <span className="ax-lozenge ax-lozenge--warning">{labels.notConfigured}</span>{" "}
-                    <span className="ax-caption">{labels.notConfiguredHint}</span>
+                    <span className="sq-lozenge sq-lozenge--warning">{labels.notConfigured}</span>{" "}
+                    <span className="sq-caption">{labels.notConfiguredHint}</span>
                   </td>
                 )}
               </tr>
@@ -103,23 +103,23 @@ export default function EvidencePolicyForm({
       </div>
 
       {retentionYears != null && (
-        <div className="ax-field" style={{ maxInlineSize: 260 }}>
-          <label className="ax-field__label" htmlFor="retention_years">{labels.retentionLabel}</label>
+        <div className="sq-field" style={{ maxInlineSize: 260 }}>
+          <label className="sq-field__label" htmlFor="retention_years">{labels.retentionLabel}</label>
           <input
-            className="ax-input ax-numeric" id="retention_years" name="retention_years"
+            className="sq-input sq-numeric" id="retention_years" name="retention_years"
             type="number" min={1} step={1} required defaultValue={retentionYears}
           />
-          <p className="ax-caption" style={{ margin: 0 }}>{labels.retentionHint}</p>
+          <p className="sq-caption" style={{ margin: 0 }}>{labels.retentionHint}</p>
         </div>
       )}
 
-      <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending}>
+      <div className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
+        <button className="sq-btn sq-btn--prominent" disabled={pending}>
           {pending ? labels.saving : labels.save}
         </button>
-        {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
+        {state.ok && !pending && <span className="sq-lozenge sq-lozenge--success">{labels.saved}</span>}
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
+      {state.error && <p className="sq-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
     </form>
   );
 }

@@ -135,54 +135,54 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   };
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--space-6)" }}>
+    <div className="sq-stack" style={{ gap: "var(--space-6)" }}>
       {invalidDropped > 0 && (
-        <div className="ax-banner ax-banner--warning" role="alertdialog" aria-label={strings.invalidTitle}>
+        <div className="sq-banner sq-banner--warning" role="alertdialog" aria-label={strings.invalidTitle}>
           <div>
             <strong>{strings.invalidTitle}</strong>
             <p>{strings.invalidBody.replace("{n}", String(invalidDropped))}</p>
-            <div className="ax-row" style={{ gap: "var(--space-3)" }}>
-              <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setInvalidDropped(0)}>{strings.invalidKeep}</button>
-              <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { clearSelection(); setInvalidDropped(0); }}>{strings.invalidClear}</button>
+            <div className="sq-row" style={{ gap: "var(--space-3)" }}>
+              <button type="button" className="sq-btn sq-btn--secondary" onClick={() => setInvalidDropped(0)}>{strings.invalidKeep}</button>
+              <button type="button" className="sq-btn sq-btn--subtle" onClick={() => { clearSelection(); setInvalidDropped(0); }}>{strings.invalidClear}</button>
             </div>
           </div>
         </div>
       )}
 
-      <div className="ax-row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "flex-end" }}>
-        <div className="ax-field" style={{ maxInlineSize: 280, flex: 1 }}>
-          <label className="ax-field__label" htmlFor="bulk-filter">{strings.filterLabel}</label>
-          <input id="bulk-filter" className="ax-input" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} placeholder={strings.filterPlaceholder} />
+      <div className="sq-row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "flex-end" }}>
+        <div className="sq-field" style={{ maxInlineSize: 280, flex: 1 }}>
+          <label className="sq-field__label" htmlFor="bulk-filter">{strings.filterLabel}</label>
+          <input id="bulk-filter" className="sq-input" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} placeholder={strings.filterPlaceholder} />
         </div>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={selectVisible}>{strings.selectVisible}</button>
-        <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
-        <span className="ax-caption ax-numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
+        <button type="button" className="sq-btn sq-btn--secondary" onClick={selectVisible}>{strings.selectVisible}</button>
+        <button type="button" className="sq-btn sq-btn--secondary" onClick={() => setConfirmingSelectAll(true)}>{strings.selectAllResults}</button>
+        <span className="sq-caption sq-numeric" role="status" aria-live="polite">{strings.resultsCount.replace("{n}", String(filtered.length))}</span>
       </div>
 
       {confirmingSelectAll && (
-        <div className="ax-banner ax-banner--warning" role="alertdialog" aria-label={strings.selectAllConfirmTitle}>
+        <div className="sq-banner sq-banner--warning" role="alertdialog" aria-label={strings.selectAllConfirmTitle}>
           <div>
             <strong>{strings.selectAllConfirmTitle}</strong>
             <p>{strings.selectAllConfirmBody.replaceAll("{n}", String(filtered.length))}</p>
-            <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "flex-end" }}>
-              <div className="ax-field" style={{ maxInlineSize: 140 }}>
-                <label className="ax-field__label" htmlFor="select-all-confirm-input">{strings.selectAllConfirmInputLabel}</label>
-                <input id="select-all-confirm-input" className="ax-input ax-numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
+            <div className="sq-row" style={{ gap: "var(--space-3)", alignItems: "flex-end" }}>
+              <div className="sq-field" style={{ maxInlineSize: 140 }}>
+                <label className="sq-field__label" htmlFor="select-all-confirm-input">{strings.selectAllConfirmInputLabel}</label>
+                <input id="select-all-confirm-input" className="sq-input sq-numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
               </div>
-              <button type="button" className="ax-btn ax-btn--prominent" disabled={confirmInput.trim() !== String(filtered.length)} onClick={confirmSelectAllResults}>
+              <button type="button" className="sq-btn sq-btn--prominent" disabled={confirmInput.trim() !== String(filtered.length)} onClick={confirmSelectAllResults}>
                 {strings.selectAllConfirmButton.replace("{n}", String(filtered.length))}
               </button>
-              <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>{strings.selectAllConfirmCancel}</button>
+              <button type="button" className="sq-btn sq-btn--subtle" onClick={() => { setConfirmingSelectAll(false); setConfirmInput(""); }}>{strings.selectAllConfirmCancel}</button>
             </div>
           </div>
         </div>
       )}
 
-      <div className="ax-tablewrap"><table className="ax-table">
+      <div className="sq-tablewrap"><table className="sq-table">
         <thead><tr>
           <th scope="col" style={{ inlineSize: 36 }}></th>
           <th scope="col">{strings.colFactory}</th><th scope="col">{strings.colCr}</th><th scope="col">{strings.colCity}</th>
-          <th scope="col" className="ax-td-num">{strings.colRisk}</th><th scope="col">{strings.colEligibility}</th>
+          <th scope="col" className="sq-td-num">{strings.colRisk}</th><th scope="col">{strings.colEligibility}</th>
           <th scope="col">{strings.colProvenance}</th><th scope="col">{strings.colDataQuality}</th>
         </tr></thead>
         <tbody>
@@ -194,68 +194,68 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             return (
               <tr key={f.id} style={isFocused ? { outline: "2px solid var(--action-primary)", outlineOffset: -2 } : undefined}>
                 <td><input type="checkbox" disabled={dup} checked={selected.has(f.id)} onChange={e => toggle(f.id, e.target.checked)} aria-label={strings.selectFactory.replace("{name}", f.name)} /></td>
-                <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="ax-caption ax-numeric"><bdi>{f.factory_code}</bdi></span></td>
-                <td className="ax-numeric"><bdi>{f.cr_number}</bdi></td>
+                <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="sq-caption sq-numeric"><bdi>{f.factory_code}</bdi></span></td>
+                <td className="sq-numeric"><bdi>{f.cr_number}</bdi></td>
                 <td>{f.city ?? "—"}</td>
-                <td className="ax-td-num"><span className={`ax-lozenge ${f.risk_band === "high" ? "ax-lozenge--critical" : f.risk_band === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{(f.risk_band && strings.riskBands[f.risk_band]) ?? "—"} · {f.risk_score ?? "?"}</span></td>
-                <td>{dup ? <span className="ax-lozenge ax-lozenge--critical"><IconBlocked size={16} /> {strings.duplicate}</span> : <span className="ax-lozenge ax-lozenge--success">✓ {strings.eligible}</span>}</td>
-                <td className="ax-caption ax-numeric"><span className="ax-freshness"><bdi>{provenance(f)}</bdi></span></td>
-                <td>{dq.length === 0 ? <span className="ax-caption">{strings.dqComplete}</span> : dq.map(d => <div key={d.label}><span className={`ax-lozenge ax-lozenge--${d.kind}`}>{d.kind === "critical" ? <IconBlocked size={16} /> : "⚠"} {d.label}</span></div>)}</td>
+                <td className="sq-td-num"><span className={`sq-lozenge ${f.risk_band === "high" ? "sq-lozenge--critical" : f.risk_band === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{(f.risk_band && strings.riskBands[f.risk_band]) ?? "—"} · {f.risk_score ?? "?"}</span></td>
+                <td>{dup ? <span className="sq-lozenge sq-lozenge--critical"><IconBlocked size={16} /> {strings.duplicate}</span> : <span className="sq-lozenge sq-lozenge--success">✓ {strings.eligible}</span>}</td>
+                <td className="sq-caption sq-numeric"><span className="sq-freshness"><bdi>{provenance(f)}</bdi></span></td>
+                <td>{dq.length === 0 ? <span className="sq-caption">{strings.dqComplete}</span> : dq.map(d => <div key={d.label}><span className={`sq-lozenge sq-lozenge--${d.kind}`}>{d.kind === "critical" ? <IconBlocked size={16} /> : "⚠"} {d.label}</span></div>)}</td>
               </tr>
             );
           })}
         </tbody>
       </table></div>
-      <p className="ax-caption">{strings.riskAdvisory}</p>
+      <p className="sq-caption">{strings.riskAdvisory}</p>
 
-      <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center", justifyContent: "center" }}>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
-        <span className="ax-caption ax-numeric" role="status" aria-live="polite">
+      <div className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center", justifyContent: "center" }}>
+        <button type="button" className="sq-btn sq-btn--subtle" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
+        <span className="sq-caption sq-numeric" role="status" aria-live="polite">
           {strings.pageStatus.replace("{a}", String(filtered.length === 0 ? 0 : clampedPage * PAGE_SIZE + 1)).replace("{b}", String(Math.min(filtered.length, (clampedPage + 1) * PAGE_SIZE))).replace("{n}", String(filtered.length))}
         </span>
-        <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
+        <button type="button" className="sq-btn sq-btn--subtle" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
       </div>
 
-      <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.summaryTitle}</h4>
-        {sel.length === 0 ? <p className="ax-caption">{strings.summaryEmpty}</p> : (
+        {sel.length === 0 ? <p className="sq-caption">{strings.summaryEmpty}</p> : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "var(--space-4)" }}>
-            <div><span className="ax-caption">{strings.summarySelected}</span><div className="ax-numeric"><strong>{sel.length}</strong></div></div>
-            <div><span className="ax-caption">{strings.summaryByBand}</span>
-              <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
-                {Object.entries(byBand).map(([b, n]) => <span key={b} className={`ax-lozenge ${b === "high" ? "ax-lozenge--critical" : b === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{strings.riskBands[b] ?? b} · {n}</span>)}
+            <div><span className="sq-caption">{strings.summarySelected}</span><div className="sq-numeric"><strong>{sel.length}</strong></div></div>
+            <div><span className="sq-caption">{strings.summaryByBand}</span>
+              <div className="sq-row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
+                {Object.entries(byBand).map(([b, n]) => <span key={b} className={`sq-lozenge ${b === "high" ? "sq-lozenge--critical" : b === "medium" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>{strings.riskBands[b] ?? b} · {n}</span>)}
               </div></div>
-            <div><span className="ax-caption">{strings.summaryByRegion}</span>
-              <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
-                {Object.entries(byRegion).map(([r, n]) => <span key={r} className="ax-lozenge ax-lozenge--info"><bdi>{r}</bdi> · {n}</span>)}
+            <div><span className="sq-caption">{strings.summaryByRegion}</span>
+              <div className="sq-row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
+                {Object.entries(byRegion).map(([r, n]) => <span key={r} className="sq-lozenge sq-lozenge--info"><bdi>{r}</bdi> · {n}</span>)}
               </div></div>
           </div>
         )}
       </div>
 
       {/* persistent selection bar — cross-page count + draft + hand-off to the P02 review step */}
-      <div className="ax-surface ax-row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--space-4) var(--space-6)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "center" }}>
-        <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
-          <strong className="ax-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
-          {selected.size === 0 && <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.readyNothing}</span>}
-          {selected.size > 0 && <button type="button" className="ax-btn ax-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
-          {draftRef && !saveFailed && <span className="ax-caption" role="status">{strings.draftSaved.replace("{ref}", draftRef)}</span>}
+      <div className="sq-surface sq-row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--space-4) var(--space-6)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "center" }}>
+        <div className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+          <strong className="sq-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
+          {selected.size === 0 && <span className="sq-lozenge sq-lozenge--warning">⚠ {strings.readyNothing}</span>}
+          {selected.size > 0 && <button type="button" className="sq-btn sq-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
+          {draftRef && !saveFailed && <span className="sq-caption" role="status">{strings.draftSaved.replace("{ref}", draftRef)}</span>}
         </div>
-        <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
+        <div className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
           {saveFailed && (
             <>
-              <span className="ax-caption ax-lozenge ax-lozenge--critical" role="alert">{strings.draftSaveFailed}</span>
-              <a className="ax-btn ax-btn--secondary" href="/planning/bulk/review">{strings.reviewFallback} →</a>
+              <span className="sq-caption sq-lozenge sq-lozenge--critical" role="alert">{strings.draftSaveFailed}</span>
+              <a className="sq-btn sq-btn--secondary" href="/planning/bulk/review">{strings.reviewFallback} →</a>
             </>
           )}
           {selected.size > 0 && (
-            <button type="button" className="ax-btn ax-btn--secondary" disabled={saving} onClick={onSaveDraftClick}>
+            <button type="button" className="sq-btn sq-btn--secondary" disabled={saving} onClick={onSaveDraftClick}>
               {saving ? strings.savingDraft : strings.saveDraft}
             </button>
           )}
           {selected.size > 0
-            ? <button type="button" className="ax-btn ax-btn--prominent" disabled={saving} onClick={() => { void onReviewClick(); }}>{strings.reviewContinue} →</button>
-            : <button type="button" className="ax-btn ax-btn--prominent" disabled>{strings.reviewContinue} →</button>}
+            ? <button type="button" className="sq-btn sq-btn--prominent" disabled={saving} onClick={() => { void onReviewClick(); }}>{strings.reviewContinue} →</button>
+            : <button type="button" className="sq-btn sq-btn--prominent" disabled>{strings.reviewContinue} →</button>}
         </div>
       </div>
     </div>

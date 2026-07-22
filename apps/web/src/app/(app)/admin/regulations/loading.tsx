@@ -7,7 +7,7 @@ import { useT } from "@/lib/i18n";
 export default async function Loading() {
   const { t } = await useT();
   return (
-    <div className="ax-content stack" style={{ gap: "var(--space-4)" }} role="status" aria-busy="true" aria-live="polite">
+    <div className="sq-content stack" style={{ gap: "var(--space-4)" }} role="status" aria-busy="true" aria-live="polite">
       <span className="sr-only">{t("admin.reg.r1.loading", "Loading regulation register…")}</span>
       <div className="panel" style={{ padding: "var(--space-6)" }}>
         <SkeletonBlock inlineSize="40%" blockSize={20} ariaHidden />

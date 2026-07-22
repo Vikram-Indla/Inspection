@@ -23,9 +23,9 @@ export default function DiscardDraftButton({ planId, label, discardAria }: {
     <span style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)" }}>
       <form action={act}>
         <input type="hidden" name="plan_id" value={planId} />
-        <button className="ax-btn ax-btn--subtle" aria-label={discardAria} disabled={busy}>{label}</button>
+        <button className="sq-btn sq-btn--subtle" aria-label={discardAria} disabled={busy}>{label}</button>
       </form>
-      {state.error && <span className="ax-caption" role="alert">{state.error}</span>}
+      {state.error && <span className="sq-caption" role="alert">{state.error}</span>}
     </span>
   );
 }

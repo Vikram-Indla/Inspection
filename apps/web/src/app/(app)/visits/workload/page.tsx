@@ -41,7 +41,7 @@ export default async function Workload() {
     console.error(`[visits.workload] load failed: ${error.message}`);
     return (
       <Shell current="/visits" title={t("visit.load.title", "Inspector workload")}>
-        <div className="ax-banner ax-banner--critical" role="alert"><div>{t("visit.load.loadErrorNeutral", "Assignments are temporarily unavailable. Please try again.")}</div></div>
+        <div className="sq-banner sq-banner--critical" role="alert"><div>{t("visit.load.loadErrorNeutral", "Assignments are temporarily unavailable. Please try again.")}</div></div>
       </Shell>
     );
   }
@@ -95,14 +95,14 @@ export default async function Workload() {
       ) : (
         <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <h4 style={{ margin: 0 }}>{t("visit.load.heading", "Active visits per inspector per week (M02-018)")}</h4>
-          <div className="ax-tablewrap"><table className="ax-table">
+          <div className="sq-tablewrap"><table className="sq-table">
             <thead><tr>
               <th scope="col">{t("visit.load.colInspector", "Inspector")}</th>
               {weekStarts.map((ms, i) => (
-                <th scope="col" key={ms} className="ax-td-num"><span className="numeric">{weekLabel(ms)}</span>{i === 0 && <> · {t("visit.load.thisWeek", "this week")}</>}</th>
+                <th scope="col" key={ms} className="sq-td-num"><span className="numeric">{weekLabel(ms)}</span>{i === 0 && <> · {t("visit.load.thisWeek", "this week")}</>}</th>
               ))}
-              <th scope="col" className="ax-td-num">{t("visit.load.colLater", "Later")}</th>
-              <th scope="col" className="ax-td-num">{t("visit.load.colTotal", "Active total")}</th>
+              <th scope="col" className="sq-td-num">{t("visit.load.colLater", "Later")}</th>
+              <th scope="col" className="sq-td-num">{t("visit.load.colTotal", "Active total")}</th>
               <th scope="col" style={{ inlineSize: 180 }}>{t("visit.load.colUtilization", "Relative utilization (M02-037)")}</th>
             </tr></thead>
             <tbody>
@@ -110,15 +110,15 @@ export default async function Workload() {
                 <tr key={a.id}>
                   <td><strong>{a.name}</strong></td>
                   {a.weeks.map((n, i) => (
-                    <td key={i} className="ax-td-num">
+                    <td key={i} className="sq-td-num">
                       <span className="numeric" style={n === maxCell && n > 0 ? { color: "var(--status-warning-text)", fontWeight: 600 } : undefined}>{n}</span>
                       <div aria-hidden="true" style={{ blockSize: 4, marginBlockStart: 2, borderRadius: "var(--radius-full)", background: "var(--surface-secondary)" }}>
                         <div style={{ blockSize: 4, borderRadius: "var(--radius-full)", inlineSize: `${(n / maxCell) * 100}%`, background: "var(--action-primary)" }} />
                       </div>
                     </td>
                   ))}
-                  <td className="ax-td-num numeric">{a.beyond}</td>
-                  <td className="ax-td-num numeric"><strong>{a.total}</strong></td>
+                  <td className="sq-td-num numeric">{a.beyond}</td>
+                  <td className="sq-td-num numeric"><strong>{a.total}</strong></td>
                   <td>
                     <div className="row" style={{ alignItems: "center", gap: "var(--space-2)" }}>
                       <div style={{ flex: 1, blockSize: 8, borderRadius: "var(--radius-full)", background: "var(--surface-secondary)" }}>

@@ -65,7 +65,7 @@ export default function EligibilityLedger({
       )}
       <div style={{ marginInlineStart: "auto" }}>
         <span className="t-caption">{strings.freshness}</span>
-        <div className="ax-freshness numeric">
+        <div className="sq-freshness numeric">
           <bdi>{freshnessLabel}</bdi>
           {missingSync > 0 && (
             <> · <span className="badge badge-warning">⚠ {strings.freshnessMissing.replace("{n}", String(missingSync))}</span></>

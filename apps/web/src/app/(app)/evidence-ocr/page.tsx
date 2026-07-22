@@ -51,7 +51,7 @@ export default async function EvidenceOcrPage() {
   };
   return (
     <Shell current="/evidence-ocr" title={t("ocr.title", "Evidence text extraction (OCR)")} context={<span className="badge badge-info">REQ-OCR</span>}>
-      <div className="ax-banner"><div><strong>{t("ocr.banner.title", "Advisory only.")}</strong> {t("ocr.banner.body", "Extracted text helps a human read a photo faster — it is never auto-applied to any authoritative field. Always verify against the source image before acting on it.")}</div></div>
+      <div className="sq-banner"><div><strong>{t("ocr.banner.title", "Advisory only.")}</strong> {t("ocr.banner.body", "Extracted text helps a human read a photo faster — it is never auto-applied to any authoritative field. Always verify against the source image before acting on it.")}</div></div>
       <section className="panel" style={{ padding: "var(--space-6)", marginBlock: "var(--space-6)" }} aria-labelledby="ocr-how-it-works">
         <h3 id="ocr-how-it-works">{t("ocr.journey.title", "How to use evidence text extraction")}</h3>
         <ol style={{ marginBlock: "var(--space-3)", paddingInlineStart: "var(--space-8)" }}>
@@ -61,7 +61,7 @@ export default async function EvidenceOcrPage() {
         </ol>
         <a className="btn btn-secondary btn-touch" href="/field">{t("ocr.journey.openField", "Open field inspections to capture evidence")}</a>
       </section>
-      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("ocr.error", "Couldn’t load evidence. Nothing changed.")}</strong></div></div>}
+      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("ocr.error", "Couldn’t load evidence. Nothing changed.")}</strong></div></div>}
       {!error && rows.length === 0 && (
         <EmptyState icon={<IconSearch size={28} />} title={t("ocr.empty.title", "No evidence in scope")}
           body={t("ocr.empty.body", "Only stored photos and documents appear here. First attach evidence to a checklist item in a field inspection; empty may also mean none are in your scope (RLS).")} />

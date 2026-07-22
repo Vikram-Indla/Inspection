@@ -29,12 +29,12 @@ export default async function CommitteePage() {
   if (error) console.error("[committee] load", error);
   return (
     <Shell current="/committee" title={t("cmte.title", "Committee & signatures")} context={<span className="badge badge-info">CD-049 · REQ-0128..0136</span>}>
-      <div className="ax-banner"><div><strong>{t("cmte.banner.title", "Signature & verification.")}</strong> {t("cmte.banner.body", "Signature and refusal are distinct facts; queued is not delivered. Verification is never “verified” without a provider — PKI/EBDA is held. Acknowledgement is not a signature.")}</div></div>
+      <div className="sq-banner"><div><strong>{t("cmte.banner.title", "Signature & verification.")}</strong> {t("cmte.banner.body", "Signature and refusal are distinct facts; queued is not delivered. Verification is never “verified” without a provider — PKI/EBDA is held. Acknowledgement is not a signature.")}</div></div>
       <RecordSignature strings={{
         record: t("cmte.record", "Record signature act"), recording: t("cmte.recording", "Recording…"),
         recorded: t("cmte.recorded", "recorded"), kind: t("cmte.kind", "Kind"), outcome: t("cmte.outcome", "Outcome"),
       }} />
-      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("cmte.error", "Couldn’t load committee data. Nothing changed.")}</strong></div></div>}
+      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("cmte.error", "Couldn’t load committee data. Nothing changed.")}</strong></div></div>}
       {!error && (acts ?? []).length === 0 && (vers ?? []).length === 0 && (
         <EmptyState glyph="✒️" title={t("cmte.empty.title", "No signature or verification records in scope")}
           body={t("cmte.empty.body", "Records appear here as reports are signed and verifications requested. Empty may also mean none are in your scope (RLS).")} />

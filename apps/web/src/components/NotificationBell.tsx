@@ -154,46 +154,46 @@ export default function NotificationBell({ strings, locale }: { strings: BellStr
     return (cand as string | undefined) ?? "";
   };
   return (
-    <div ref={wrapRef} className="ax-notification">
-      <button className="ax-notification__trigger" aria-label={strings.label} aria-expanded={open}
+    <div ref={wrapRef} className="sq-notification">
+      <button className="sq-notification__trigger" aria-label={strings.label} aria-expanded={open}
         onClick={() => { setOpen(o => !o); if (!open) void load(true); }}>
         <BellIcon />
-        {unread > 0 && <span className="ax-notification__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
+        {unread > 0 && <span className="sq-notification__badge" aria-hidden="true">{unread > 99 ? "99+" : unread}</span>}
       </button>
       {open && (
-        <div className="ax-popover" role="dialog" aria-label={strings.heading}
+        <div className="sq-popover" role="dialog" aria-label={strings.heading}
           style={{ position: "absolute", insetBlockStart: "calc(100% + 6px)", insetInlineEnd: 0, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}>
+          <div className="sq-row" style={{ justifyContent: "space-between" }}>
             <strong>{strings.heading}</strong>
-            {unread > 0 && <button className="ax-btn ax-btn--subtle" onClick={markAllRead}>{strings.markAll}</button>}
+            {unread > 0 && <button className="sq-btn sq-btn--subtle" onClick={markAllRead}>{strings.markAll}</button>}
           </div>
-          {err && <p className="ax-caption" role="alert">{err}</p>}
-          {rows.length === 0 && <p className="ax-caption">{strings.empty}</p>}
+          {err && <p className="sq-caption" role="alert">{err}</p>}
+          {rows.length === 0 && <p className="sq-caption">{strings.empty}</p>}
           <div style={{ maxBlockSize: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
             {rows.map(r => {
               const href = notificationHref(r.event_key, r.payload);
               return (
-              <div key={r.id} className="ax-surface" style={{ padding: "var(--space-3)", borderInlineStart: isUnread(r) ? "3px solid var(--action-primary)" : "3px solid transparent" }}>
-                <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div key={r.id} className="sq-surface" style={{ padding: "var(--space-3)", borderInlineStart: isUnread(r) ? "3px solid var(--action-primary)" : "3px solid transparent" }}>
+                <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                   <div>
                     <strong style={{ fontWeight: isUnread(r) ? 700 : 500 }}>
                       {strings.events[r.event_key] ?? r.event_key.replace(/_/g, " ")}
-                      {isUnread(r) && <span className="ax-sr-only"> — {strings.unreadBadge}</span>}
+                      {isUnread(r) && <span className="sq-sr-only"> — {strings.unreadBadge}</span>}
                     </strong>
-                    {detail(r.payload) && <p className="ax-caption ax-numeric" style={{ margin: 0 }}>{detail(r.payload).slice(0, 80)}</p>}
-                    <p className="ax-caption ax-numeric" style={{ margin: 0 }}>
+                    {detail(r.payload) && <p className="sq-caption sq-numeric" style={{ margin: 0 }}>{detail(r.payload).slice(0, 80)}</p>}
+                    <p className="sq-caption sq-numeric" style={{ margin: 0 }}>
                       {formatDateTime(r.created_at, locale === "ar" ? "ar" : "en")}
                       {" · "}{strings.channels[r.channel] ?? r.channel}
-                      {r.delivery_state === "not_configured" && <> · <span className="ax-lozenge ax-lozenge--warning">{strings.notConfigured}</span></>}
+                      {r.delivery_state === "not_configured" && <> · <span className="sq-lozenge sq-lozenge--warning">{strings.notConfigured}</span></>}
                     </p>
                     {href && (
-                      <Link className="ax-link" href={href} prefetch={false}
+                      <Link className="sq-link" href={href} prefetch={false}
                         onClick={() => { if (isUnread(r)) void markRead(r); }}>
                         {strings.view} →
                       </Link>
                     )}
                   </div>
-                  {isUnread(r) && <button className="ax-btn ax-btn--subtle" onClick={() => markRead(r)}>{strings.markRead}</button>}
+                  {isUnread(r) && <button className="sq-btn sq-btn--subtle" onClick={() => markRead(r)}>{strings.markRead}</button>}
                 </div>
               </div>
               );

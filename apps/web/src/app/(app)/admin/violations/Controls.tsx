@@ -58,29 +58,29 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
   }, [state.error]);
   return (
     <form action={formAction} className="panel" aria-label={s.create} style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-code">{s.code}</label>
-        <input id="new-violation-code" className="ax-input numeric" name="code" placeholder="V-FS-12" required style={{ maxInlineSize: 120 }} /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="new-violation-title">{s.title}</label>
-        <input id="new-violation-title" className="ax-input" name="title" placeholder={s.titlePlaceholder} required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-level">{s.level}</label>
-        <select id="new-violation-level" className="ax-select" name="level" required defaultValue="">
+      <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-code">{s.code}</label>
+        <input id="new-violation-code" className="sq-input numeric" name="code" placeholder="V-FS-12" required style={{ maxInlineSize: 120 }} /></div>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 220 }}><label className="sq-field__label" htmlFor="new-violation-title">{s.title}</label>
+        <input id="new-violation-title" className="sq-input" name="title" placeholder={s.titlePlaceholder} required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-level">{s.level}</label>
+        <select id="new-violation-level" className="sq-select" name="level" required defaultValue="">
           <option value="" disabled>{s.levelPlaceholder}</option>
           <option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option>
         </select></div>
-      <div className="ax-field" style={{ minInlineSize: 200 }}><label className="ax-field__label" htmlFor="new-violation-clause">{s.clause}</label>
-        <select id="new-violation-clause" className="ax-select" name="clause_id" required defaultValue="">
+      <div className="sq-field" style={{ minInlineSize: 200 }}><label className="sq-field__label" htmlFor="new-violation-clause">{s.clause}</label>
+        <select id="new-violation-clause" className="sq-select" name="clause_id" required defaultValue="">
           <option value="" disabled>{s.selectClause}</option>
           {clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
         </select></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-active-from">{s.activeFrom}</label>
-        <input id="new-violation-active-from" className="ax-input numeric" name="active_from" type="date" required /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 240 }}><label className="ax-field__label" htmlFor="new-violation-corrective">{s.correctiveAction}</label><input id="new-violation-corrective" className="ax-input" name="corrective_action" required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-grace">{s.gracePeriod}</label><input id="new-violation-grace" className="ax-input" name="grace_period_days" type="number" min="0" step="1" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-category">{s.category}</label><input id="new-violation-category" className="ax-input" name="category" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-applicability">{s.applicability}</label><input id="new-violation-applicability" className="ax-input" name="applicability" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-version">{s.configurationVersion}</label><input id="new-violation-version" className="ax-input" name="configuration_version" type="number" min="1" step="1" defaultValue="1" required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-active-from">{s.activeFrom}</label>
+        <input id="new-violation-active-from" className="sq-input numeric" name="active_from" type="date" required /></div>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 240 }}><label className="sq-field__label" htmlFor="new-violation-corrective">{s.correctiveAction}</label><input id="new-violation-corrective" className="sq-input" name="corrective_action" required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-grace">{s.gracePeriod}</label><input id="new-violation-grace" className="sq-input" name="grace_period_days" type="number" min="0" step="1" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-category">{s.category}</label><input id="new-violation-category" className="sq-input" name="category" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-applicability">{s.applicability}</label><input id="new-violation-applicability" className="sq-input" name="applicability" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="new-violation-version">{s.configurationVersion}</label><input id="new-violation-version" className="sq-input" name="configuration_version" type="number" min="1" step="1" defaultValue="1" required /></div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.creating : s.create}</button>
-      {state.error && <span ref={errorRef} tabIndex={-1} className="ax-validation" role="alert">{state.error}</span>}
+      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.created}</span>}
     </form>
   );
@@ -117,31 +117,31 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
         </ul>
       </div>
       <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-penalty-ref`}>{s.penaltyRef}</label>
-        <input id={`${baseId}-penalty-ref`} className="ax-input numeric" name="penalty_ref" placeholder="P-042" required style={{ maxInlineSize: 100 }} /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor={`${baseId}-legal-basis`}>{s.legalBasis}</label>
-        <input id={`${baseId}-legal-basis`} className="ax-input" name="legal_basis" placeholder={s.legalBasisPlaceholder} required value={legalBasis} onChange={e => setLegalBasis(e.target.value)} /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-mapping-version`}>{s.mappingVersion}</label>
-        <input id={`${baseId}-mapping-version`} className="ax-input numeric" name="mapping_version" placeholder="v3" required style={{ maxInlineSize: 90 }} /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-effective-from`}>{s.activeFrom}</label>
-        <input id={`${baseId}-effective-from`} className="ax-input numeric" name="effective_from" type="date" required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-range`}>{s.penaltyRange}</label>
-        <select id={`${baseId}-range`} className="ax-select" name="penalty_range_preset" required value={rangePreset} onChange={e => setRangePreset(e.target.value)}>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-penalty-ref`}>{s.penaltyRef}</label>
+        <input id={`${baseId}-penalty-ref`} className="sq-input numeric" name="penalty_ref" placeholder="P-042" required style={{ maxInlineSize: 100 }} /></div>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 200 }}><label className="sq-field__label" htmlFor={`${baseId}-legal-basis`}>{s.legalBasis}</label>
+        <input id={`${baseId}-legal-basis`} className="sq-input" name="legal_basis" placeholder={s.legalBasisPlaceholder} required value={legalBasis} onChange={e => setLegalBasis(e.target.value)} /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-mapping-version`}>{s.mappingVersion}</label>
+        <input id={`${baseId}-mapping-version`} className="sq-input numeric" name="mapping_version" placeholder="v3" required style={{ maxInlineSize: 90 }} /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-effective-from`}>{s.activeFrom}</label>
+        <input id={`${baseId}-effective-from`} className="sq-input numeric" name="effective_from" type="date" required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-range`}>{s.penaltyRange}</label>
+        <select id={`${baseId}-range`} className="sq-select" name="penalty_range_preset" required value={rangePreset} onChange={e => setRangePreset(e.target.value)}>
           <option value="schedule_approved">{s.rangeApproved}</option>
           <option value="none">{s.rangeNone}</option>
         </select></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-repeat`}>{s.repeatRule}</label>
-        <select id={`${baseId}-repeat`} className="ax-select" name="repeat_rule_preset" required value={repeatPreset} onChange={e => setRepeatPreset(e.target.value)}>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-repeat`}>{s.repeatRule}</label>
+        <select id={`${baseId}-repeat`} className="sq-select" name="repeat_rule_preset" required value={repeatPreset} onChange={e => setRepeatPreset(e.target.value)}>
           <option value="escalate_one_level">{s.repeatEscalate}</option>
           <option value="none">{s.repeatNone}</option>
         </select></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-type`}>{s.penaltyType}</label><input id={`${baseId}-type`} className="ax-input" name="penalty_type" required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-amount`}>{s.amount}</label><input id={`${baseId}-amount`} className="ax-input" name="amount" type="number" min="0" step="any" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-grace`}>{s.gracePeriod}</label><input id={`${baseId}-grace`} className="ax-input" name="grace_period_days" type="number" min="0" step="1" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-due`}>{s.duePeriod}</label><input id={`${baseId}-due`} className="ax-input" name="due_period_days" type="number" min="0" step="1" /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-template`}>{s.template}</label><select id={`${baseId}-template`} className="ax-select" name="template_version_id" defaultValue=""><option value="">{s.none}</option>{templates.map(template => <option key={template.id} value={template.id}>{template.label}</option>)}</select></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-type`}>{s.penaltyType}</label><input id={`${baseId}-type`} className="sq-input" name="penalty_type" required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-amount`}>{s.amount}</label><input id={`${baseId}-amount`} className="sq-input" name="amount" type="number" min="0" step="any" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-grace`}>{s.gracePeriod}</label><input id={`${baseId}-grace`} className="sq-input" name="grace_period_days" type="number" min="0" step="1" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-due`}>{s.duePeriod}</label><input id={`${baseId}-due`} className="sq-input" name="due_period_days" type="number" min="0" step="1" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${baseId}-template`}>{s.template}</label><select id={`${baseId}-template`} className="sq-select" name="template_version_id" defaultValue=""><option value="">{s.none}</option>{templates.map(template => <option key={template.id} value={template.id}>{template.label}</option>)}</select></div>
       <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.mapping : `${s.mapTo} ${violationCode}`}</button>
-      {state.error && <span ref={errorRef} tabIndex={-1} className="ax-validation" role="alert">{state.error}</span>}
+      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.mapped}</span>}
       </div>
     </form>
@@ -150,7 +150,7 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
 
 export function PublishViolationForm({ violationId, violationCode, strings: s }: { violationId: string; violationCode: string; strings: VioStrings }) {
   const [state, formAction, pending] = useActionState<VioResult, FormData>(publishViolationCode, {});
-  return <form action={formAction} className="row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="btn btn-primary btn-lg btn-touch" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="ax-validation" role="alert">{state.error}</span>}{state.ok && <span className="badge badge-compliant" role="status">✓ {s.codePublished}</span>}</form>;
+  return <form action={formAction} className="row"><input type="hidden" name="violation_code_id" value={violationId}/><button className="btn btn-primary btn-lg btn-touch" disabled={pending} aria-label={`${s.publishCode} ${violationCode}`}>{pending ? s.publishingCode : s.publishCode}</button>{state.error && <span className="sq-validation" role="alert">{state.error}</span>}{state.ok && <span className="badge badge-compliant" role="status">✓ {s.codePublished}</span>}</form>;
 }
 
 export function PublishMappingForm({ mappingId, violationCode, strings: s }: { mappingId: string; violationCode: string; strings: VioStrings }) {
@@ -158,7 +158,7 @@ export function PublishMappingForm({ mappingId, violationCode, strings: s }: { m
   return <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
     <input type="hidden" name="mapping_id" value={mappingId} />
     <button className="btn btn-primary btn-lg btn-touch" aria-label={`${s.approveMapping} ${violationCode}`} disabled={pending}>{pending ? s.publishingMapping : s.approveMapping}</button>
-    {state.error ? <span className="ax-validation" role="alert">{state.error}</span> : null}
+    {state.error ? <span className="sq-validation" role="alert">{state.error}</span> : null}
     {state.ok ? <span className="badge badge-compliant" role="status">✓ {s.mappingPublished}</span> : null}
   </form>;
 }
@@ -173,15 +173,15 @@ export function DeactivateViolationForm({ violationId, violationCode, strings: s
   return (
     <form action={formAction} className="row" aria-label={`${s.deactivate} ${violationCode}`} style={{ gap: "var(--space-2)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="violation_code_id" value={violationId} />
-      <div className="ax-field">
-        <label className="ax-field__label" htmlFor={fieldId}>{s.activeTo}</label>
-        <input id={fieldId} className="ax-input numeric" type="date" name="active_to" max={new Date().toISOString().slice(0, 10)} required />
+      <div className="sq-field">
+        <label className="sq-field__label" htmlFor={fieldId}>{s.activeTo}</label>
+        <input id={fieldId} className="sq-input numeric" type="date" name="active_to" max={new Date().toISOString().slice(0, 10)} required />
       </div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-reason`}>{s.deactivationReason}</label><input id={`${fieldId}-reason`} className="ax-input" name="deactivation_reason" required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${fieldId}-reason`}>{s.deactivationReason}</label><input id={`${fieldId}-reason`} className="sq-input" name="deactivation_reason" required /></div>
       <button className="btn btn-ghost btn-touch" aria-label={`${s.deactivate} ${violationCode}`} disabled={pending}>
         <span aria-hidden="true">⏻</span> {pending ? s.deactivating : s.deactivate}
       </button>
-      {state.error && <span ref={errorRef} tabIndex={-1} className="ax-validation" role="alert">{state.error}</span>}
+      {state.error && <span ref={errorRef} tabIndex={-1} className="sq-validation" role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {s.deactivated}</span>}
     </form>
   );

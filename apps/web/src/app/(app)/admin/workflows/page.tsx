@@ -53,11 +53,11 @@ export default async function Workflows() {
   return (
     <Shell current="/admin/workflows" title={t("admin.wf.title", "Workflow configuration")}
       context={<span className="badge badge-info">SCR-ADM-050/051 · ENG-03</span>}>
-      <div className="ax-banner"><div>
+      <div className="sq-banner"><div>
         <strong>{t("admin.wf.banner.title", "Governed change only.")}</strong> {t("admin.wf.banner.before", "Runtime evaluates transitions against the published version — no status bypass (RBAC-003). Changes flow draft → distinct-approver publish (RBAC-002 maker-checker, enforced by a DB constraint on")} <code>config_versions</code>{t("admin.wf.banner.mid", "); published versions are immutable. Risk/SLA values live in")} <code>engine_settings</code> {t("admin.wf.banner.after", "and are not editable here.")}
       </div></div>
       {error && (
-        <div className="ax-banner ax-banner--critical"><div>
+        <div className="sq-banner sq-banner--critical"><div>
           <strong>{t("admin.wf.error.title", "Couldn’t load workflow configuration. Nothing was changed. Try again.")}</strong>
         </div></div>
       )}
@@ -74,9 +74,9 @@ export default async function Workflows() {
         return (
           <div key={w.id} className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
             <div className="row" style={{ justifyContent: "space-between" }}>
-              <h3>{t("admin.wf.object", "Object:")} {p.object ?? "—"} <span className="ax-version">{w.version_label}</span></h3>
+              <h3>{t("admin.wf.object", "Object:")} {p.object ?? "—"} <span className="sq-version">{w.version_label}</span></h3>
               <div className="row" style={{ gap: "var(--space-3)" }}>
-                <span className={`ax-lozenge ${w.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${w.status}`, String(w.status).replace(/_/g, " "))}</span>
+                <span className={`sq-lozenge ${w.status === "published" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{t(`enum.${w.status}`, String(w.status).replace(/_/g, " "))}</span>
                 {w.status === "draft" && !isOwnDraft && <ApprovePublish versionId={w.id} strings={strings} />}
                 {isOwnDraft && (
                   <span className="badge badge-warning" title={t("admin.wf.sod.desc", "You proposed this draft (the maker). A different checker must approve it — separation of duties is enforced by a DB constraint.")}>

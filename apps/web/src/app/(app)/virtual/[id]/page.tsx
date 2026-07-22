@@ -9,8 +9,8 @@ import { IconShieldCheck } from "@/app/icons";
 type TimelineEvent = { event: string; at: string; actor?: string | null; detail?: Record<string, unknown> | null };
 
 const STATE_TONE: Record<string, string> = {
-  verified: "ax-lozenge--success", in_progress: "ax-lozenge--success",
-  closed: "ax-lozenge--critical",
+  verified: "sq-lozenge--success", in_progress: "sq-lozenge--success",
+  closed: "sq-lozenge--critical",
 };
 
 export default async function VirtualRoom({ params }: { params: Promise<{ id: string }> }) {
@@ -170,20 +170,20 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
   return (
     <Shell current="/virtual" title={t("virtual.room.title", "Virtual room — {factory}").replace("{factory}", (s.visits as unknown as { factories: { name: string } }).factories.name)}
       context={<>
-        <span className="ax-numeric ax-caption">{formatDateTime(s.appointment_at, dLang)}</span>
-        <span className={`ax-lozenge ax-lozenge--virtual ${STATE_TONE[s.state] ?? "ax-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span>
+        <span className="sq-numeric sq-caption">{formatDateTime(s.appointment_at, dLang)}</span>
+        <span className={`sq-lozenge sq-lozenge--virtual ${STATE_TONE[s.state] ?? "sq-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span>
       </>}>
       <Room session={s as never} strings={strings} rev={rev} />
-      <div className="ax-surface" style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-6)" }}>
+      <div className="sq-surface" style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-6)" }}>
         <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("virtual.room.timelineHeading", "Session timeline (M05-003 · audited)")}</h4>
-        {timeline.length === 0 && <p className="ax-caption">{t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close.")}</p>}
+        {timeline.length === 0 && <p className="sq-caption">{t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close.")}</p>}
         {timeline.map((ev, i) => (
-          <p key={i} className="ax-caption" style={{ marginBlockStart: 4 }}>
-            <span className="ax-numeric">{ev.at ? formatDateTime(ev.at, dLang) : "—"}</span>
+          <p key={i} className="sq-caption" style={{ marginBlockStart: 4 }}>
+            <span className="sq-numeric">{ev.at ? formatDateTime(ev.at, dLang) : "—"}</span>
             {" · "}<strong>{eventLabels[ev.event] ?? ev.event.replace(/_/g, " ")}</strong>
             {ev.detail?.participant ? ` · ${String(ev.detail.participant)}` : ""}
             {ev.detail?.reason ? ` · ${String(ev.detail.reason)}` : ""}
-            {ev.detail?.appointment_at ? <span className="ax-numeric"> · {String(ev.detail.appointment_at).slice(0, 16).replace("T", " ")}</span> : ""}
+            {ev.detail?.appointment_at ? <span className="sq-numeric"> · {String(ev.detail.appointment_at).slice(0, 16).replace("T", " ")}</span> : ""}
           </p>
         ))}
       </div>

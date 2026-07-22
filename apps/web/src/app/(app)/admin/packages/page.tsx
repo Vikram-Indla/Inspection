@@ -297,7 +297,7 @@ export default async function Packages() {
               <p className="t-caption">{t("admin.pkg.overview.body", "Drafts are editable. Publishing runs dependency validation and maker-checker approval; published and locked definitions remain immutable.")}</p>
               <p className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></p>
             </div>
-            <span className={`ax-lozenge ${canWrite ? "ax-lozenge--success" : "ax-lozenge--info"}`}>
+            <span className={`sq-lozenge ${canWrite ? "sq-lozenge--success" : "sq-lozenge--info"}`}>
               <span aria-hidden="true">{canWrite ? "✎ " : "◉ "}</span>
               {canWrite ? t("admin.pkg.writer", "Configuration writer") : t("admin.pkg.reader", "Read-only access")}
             </span>
@@ -305,15 +305,15 @@ export default async function Packages() {
         </section>
 
         {packageUnavailable && (
-          <div className="ax-banner ax-banner--critical" role="alert"><div>
+          <div className="sq-banner sq-banner--critical" role="alert"><div>
             <strong>{t("admin.pkg.error.title", "Couldn’t load the package library.")}</strong>{" "}
             {t("admin.pkg.error.body", NEUTRAL_LOAD_ERROR)}{" "}
-            <a className="ax-link" href="/admin/packages">{t("admin.pkg.retry", "Reload to try again")}</a>.
+            <a className="sq-link" href="/admin/packages">{t("admin.pkg.retry", "Reload to try again")}</a>.
           </div></div>
         )}
 
         {!packageUnavailable && itemBankUnavailable && (
-          <div className="ax-banner ax-banner--warning" role="status"><div>
+          <div className="sq-banner sq-banner--warning" role="status"><div>
             <strong>{t("admin.pkg.itemsUnavailable.title", "Item catalogue unavailable.")}</strong>{" "}
             {t("admin.pkg.itemsUnavailable.body", "Package versions and impact remain visible, but editing and field preview are paused because their item dependency could not be read. This is not an empty catalogue.")}
           </div></div>
@@ -330,8 +330,8 @@ export default async function Packages() {
 
         {!packageUnavailable && pkgs.length === 0 && (
           <section className={`panel ${styles.emptyState}`}>
-            <div className="ax-state">
-              <span className="ax-state__glyph" aria-hidden="true">▦</span>
+            <div className="sq-state">
+              <span className="sq-state__glyph" aria-hidden="true">▦</span>
               <h3>{t("admin.pkg.empty.title", "No packages configured")}</h3>
               <p className="t-caption">{t("admin.pkg.empty.body", "The package read succeeded and returned no rows. Package creation is not exposed by this route, so no unsupported create control is shown.")}</p>
             </div>
@@ -351,9 +351,9 @@ export default async function Packages() {
               </summary>
               <div className={styles.packageBody}>
                 {versions.length === 0 ? (
-                  <div className="ax-state"><span className="ax-state__glyph" aria-hidden="true">□</span><strong>{t("admin.pkg.noVersions", "No versions yet")}</strong></div>
+                  <div className="sq-state"><span className="sq-state__glyph" aria-hidden="true">□</span><strong>{t("admin.pkg.noVersions", "No versions yet")}</strong></div>
                 ) : (
-                  <div className="ax-tablewrap">
+                  <div className="sq-tablewrap">
                     <table className={styles.versionTable}>
                       <caption className="sr-only">{pkg.code} {t("admin.pkg.versions", "versions")}</caption>
                       <thead><tr><th scope="col">{t("admin.pkg.col.version", "Version")}</th><th scope="col">{t("admin.pkg.col.state", "State")}</th><th scope="col">{t("admin.pkg.col.published", "Published")}</th><th scope="col">{t("admin.pkg.col.definition", "Definition")}</th></tr></thead>
@@ -361,8 +361,8 @@ export default async function Packages() {
                         const derivedSuperseded = (version.status === "published" || version.status === "locked") && !!latestPublished && latestPublished.id !== version.id;
                         const itemCount = (version.definition.sections ?? []).reduce((sum, section) => sum + (section.items?.length ?? 0), 0);
                         return <tr key={version.id}>
-                          <td data-label={t("admin.pkg.col.version", "Version")}><bdi dir="ltr" className="ax-version">{version.version_label}</bdi></td>
-                          <td data-label={t("admin.pkg.col.state", "State")}><span className={`ax-lozenge ${version.status === "draft" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}><span aria-hidden="true">{version.status === "draft" ? "✎ " : "✓ "}</span>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>{derivedSuperseded && <span className="t-caption"> · {t("admin.pkg.derivedSuperseded", "older than current publish (derived)")}</span>}</td>
+                          <td data-label={t("admin.pkg.col.version", "Version")}><bdi dir="ltr" className="sq-version">{version.version_label}</bdi></td>
+                          <td data-label={t("admin.pkg.col.state", "State")}><span className={`sq-lozenge ${version.status === "draft" ? "sq-lozenge--warning" : "sq-lozenge--success"}`}><span aria-hidden="true">{version.status === "draft" ? "✎ " : "✓ "}</span>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>{derivedSuperseded && <span className="t-caption"> · {t("admin.pkg.derivedSuperseded", "older than current publish (derived)")}</span>}</td>
                           <td data-label={t("admin.pkg.col.published", "Published")}><bdi dir="ltr">{version.published_at ? version.published_at.slice(0, 10) : "—"}</bdi></td>
                           <td data-label={t("admin.pkg.col.definition", "Definition")}>{version.definition.sections?.length ?? 0} {t("admin.pkg.sections", "section(s)")} · {itemCount} {t("admin.pkg.items", "item(s)")}</td>
                         </tr>;
@@ -380,11 +380,11 @@ export default async function Packages() {
                       <summary>
                         <span className={styles.versionHeading}>
                           <strong><bdi dir="ltr">{version.version_label}</bdi></strong>
-                          <span className={`ax-lozenge ${published ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>
+                          <span className={`sq-lozenge ${published ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{t(`enum.${version.status}`, version.status.replace(/_/g, " "))}</span>
                         </span>
                       </summary>
                       <div className={styles.versionBody}>
-                        {published && <div className="ax-banner ax-banner--immutable"><div>
+                        {published && <div className="sq-banner sq-banner--immutable"><div>
                           <strong><IconLock size={16} /> {t("admin.pkg.immutable.title", "Published version — immutable.")}</strong>{" "}
                           {t("admin.pkg.immutable.body", "The database rejects definition and label edits. Create a new draft to change this package while existing inspections stay pinned to their downloaded version.")}
                         </div></div>}
@@ -418,7 +418,7 @@ export default async function Packages() {
         {!packageUnavailable && <section className={`panel ${styles.governance}`} aria-labelledby="pkg-blockers">
           <h3 id="pkg-blockers" style={{ margin: 0 }}>{t("admin.pkg.blockers.title", "Boundaries kept visible")}</h3>
           <p className="t-caption">{t("admin.pkg.blockers.body", "The designer now authors ordered bilingual sections, package-item policy, action forms, and governed template references. Publish revalidates dependencies and rejects circular conditions. Package footprint/fingerprint metrics and visual simulation remain unclaimed because no approved metric or simulator contract exists.")}</p>
-          <p className="t-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="ax-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
+          <p className="t-caption" role="status">{t("admin.pkg.stale", "Data may have changed since this source read; no freshness threshold is defined.")} <a className="sq-link" href="/admin/packages">{t("admin.pkg.refresh", "Refresh to reconcile")}</a>.</p>
         </section>}
       </div>
     </Shell>

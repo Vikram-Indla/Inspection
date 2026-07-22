@@ -23,8 +23,8 @@ export function ProposeDraftForm({ baseVersionId, baseLabel, strings: s }: { bas
   return (
     <form action={formAction} className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="base_version_id" value={baseVersionId} />
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-version-label`}>{s.newVersionLabel}</label>
-        <input className="ax-input numeric" name="version_label" id={`${fieldId}-version-label`} placeholder={`${baseLabel}-next`} required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${fieldId}-version-label`}>{s.newVersionLabel}</label>
+        <input className="sq-input numeric" name="version_label" id={`${fieldId}-version-label`} placeholder={`${baseLabel}-next`} required /></div>
       <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.proposing : s.propose}</button>
       {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       {state.ok && <span className="badge badge-compliant">{s.draftCreated}</span>}
@@ -39,9 +39,9 @@ export function DraftPayloadEditor({ versionId, payload, strings: s }: { version
   return (
     <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
       <input type="hidden" name="version_id" value={versionId} />
-      <div className="ax-field"><label className="ax-field__label" htmlFor={`${fieldId}-payload`}>{s.payloadLabel}</label>
-        <textarea className="ax-input numeric" name="payload" id={`${fieldId}-payload`} rows={14} defaultValue={JSON.stringify(payload, null, 2)} spellCheck={false} /></div>
-      {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
+      <div className="sq-field"><label className="sq-field__label" htmlFor={`${fieldId}-payload`}>{s.payloadLabel}</label>
+        <textarea className="sq-input numeric" name="payload" id={`${fieldId}-payload`} rows={14} defaultValue={JSON.stringify(payload, null, 2)} spellCheck={false} /></div>
+      {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}
       <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
         {state.ok && <span className="badge badge-compliant">{s.saved}</span>}

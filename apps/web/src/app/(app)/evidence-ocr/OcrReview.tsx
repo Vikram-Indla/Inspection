@@ -24,14 +24,14 @@ export function OcrRowView({ row, strings: s }: { row: OcrRow; strings: OcrStrin
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
           <h3>{row.evidenceType} <span className="t-caption numeric">{row.capturedAt}</span></h3>
-          {row.inspectionId && <a className="ax-link t-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}
+          {row.inspectionId && <a className="sq-link t-caption" href={`/field/inspection/${row.inspectionId}`}>{s.openInspection}</a>}
         </div>
         <form action={action}>
           <input type="hidden" name="evidence_id" value={row.id} />
           <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.extracting : s.extract}</button>
         </form>
       </div>
-      {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
+      {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}
       {shown.status === "unavailable" && <p className="t-caption">{s.unavailable}</p>}
       {shown.status === "no_text_found" && <p className="t-caption">{s.noText}</p>}
       {shown.text && (

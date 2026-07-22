@@ -207,9 +207,9 @@ export default async function Violations({
   function severityChip(level: string) {
     const glyph = level === "L1" ? "⛔" : level === "L2" ? "▲" : "◆";
     const cls =
-      level === "L1" ? "ax-lozenge ax-lozenge--critical"
-      : level === "L2" ? "ax-lozenge ax-lozenge--warning"
-      : "ax-lozenge ax-lozenge--info";
+      level === "L1" ? "sq-lozenge sq-lozenge--critical"
+      : level === "L2" ? "sq-lozenge sq-lozenge--warning"
+      : "sq-lozenge sq-lozenge--info";
     return (
       <span className={cls}>
         <span aria-hidden="true">{glyph}</span>{" "}
@@ -222,9 +222,9 @@ export default async function Violations({
   function lifecycleChip(kind: Lifecycle) {
     const glyph = kind === "active" ? "✓" : kind === "future" ? "◷" : "⏻";
     const cls =
-      kind === "active" ? "ax-lozenge ax-lozenge--success"
-      : kind === "future" ? "ax-lozenge ax-lozenge--info"
-      : "ax-lozenge ax-lozenge--warning";
+      kind === "active" ? "sq-lozenge sq-lozenge--success"
+      : kind === "future" ? "sq-lozenge sq-lozenge--info"
+      : "sq-lozenge sq-lozenge--warning";
     const label =
       kind === "active" ? t("admin.viol.lc.active", "active")
       : kind === "future" ? t("admin.viol.lc.future", "not yet active")
@@ -259,13 +259,13 @@ export default async function Violations({
   }
 
   const modeTabs = (
-    <div className="ax-segmented" role="tablist" aria-label={t("admin.viol.mode.label", "Catalogue view")}>
+    <div className="sq-segmented" role="tablist" aria-label={t("admin.viol.mode.label", "Catalogue view")}>
       <a role="tab" aria-selected={!penaltyMode} aria-current={!penaltyMode ? "page" : undefined}
-        className={`btn btn-touch ax-link ${!penaltyMode ? "btn-primary btn-lg" : "btn-ghost"}`} href="/admin/violations">
+        className={`btn btn-touch sq-link ${!penaltyMode ? "btn-primary btn-lg" : "btn-ghost"}`} href="/admin/violations">
         {t("admin.viol.mode.catalogue", "Violation catalogue")}
       </a>
       <a role="tab" aria-selected={penaltyMode} aria-current={penaltyMode ? "page" : undefined}
-        className={`btn btn-touch ax-link ${penaltyMode ? "btn-primary btn-lg" : "btn-ghost"}`} href="/admin/violations?mode=penalty">
+        className={`btn btn-touch sq-link ${penaltyMode ? "btn-primary btn-lg" : "btn-ghost"}`} href="/admin/violations?mode=penalty">
         {t("admin.viol.mode.penalty", "Penalty mapping")}
       </a>
     </div>
@@ -291,11 +291,11 @@ export default async function Violations({
       {/* S08 DEGRADED / S09 RECOVERY — a failed read is unavailable, never zero;
           recovery offers a return without implying success before the re-read. */}
       {(error || clauseError) && (
-        <div className="ax-banner ax-banner--critical" role="alert">
+        <div className="sq-banner sq-banner--critical" role="alert">
           <div>
             <strong>{t("admin.viol.error.title", "Couldn’t load the violation catalogue.")}</strong>{" "}
             {t("admin.viol.error.body", NEUTRAL_LOAD_ERROR)}{" "}
-            <a className="ax-link" href={penaltyMode ? "/admin/violations?mode=penalty" : "/admin/violations"}>
+            <a className="sq-link" href={penaltyMode ? "/admin/violations?mode=penalty" : "/admin/violations"}>
               {t("admin.viol.error.retry", "Retry")}
             </a>
           </div>
@@ -304,9 +304,9 @@ export default async function Violations({
 
       {/* S05/S06 — allowed reviewer sees a read-only surface; create is hidden. */}
       {roleError && !error ? (
-        <div className="ax-banner ax-banner--warning" role="alert"><div><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>
+        <div className="sq-banner sq-banner--warning" role="alert"><div><strong>{t("admin.permissionsUnavailable.title", "Permissions unavailable")}</strong>{" "}{t("admin.permissionsUnavailable.body", "Your configuration permissions could not be verified. Writes are disabled; retry the page.")}</div></div>
       ) : !canWrite && !error && (
-        <div className="panel ax-permission" style={{ padding: "var(--space-6)" }}>
+        <div className="panel sq-permission" style={{ padding: "var(--space-6)" }}>
           <p className="t-caption" style={{ margin: 0 }}>
             <span aria-hidden="true">🔒</span>{" "}
             {t("admin.viol.readonly", "Read-only view — configuration writes require the compliance-admin or form-admin role (RLS). Route visibility does not grant write authority.")}
@@ -347,7 +347,7 @@ export default async function Violations({
               <div key={v.id} className="panel" style={{ padding: "var(--space-6)", display: "flex", flexWrap: "wrap", gap: "var(--space-6)", alignItems: "flex-start" }}>
                 {/* Column 1 — violation */}
                 <div className="stack" style={{ gap: "var(--space-2)", minInlineSize: 200, flex: "1 1 200px" }}>
-                  <span className="ax-overline">{t("admin.viol.penalty.col.violation", "Violation")}</span>
+                  <span className="sq-overline">{t("admin.viol.penalty.col.violation", "Violation")}</span>
                   <strong><span className="numeric">{v.code}</span> — {v.title}</strong>
                   <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
                     {severityChip(v.level)}
@@ -356,7 +356,7 @@ export default async function Violations({
                 </div>
                 {/* Column 2 — lens status */}
                 <div className="stack" style={{ gap: "var(--space-2)", minInlineSize: 180, flex: "1 1 180px" }}>
-                  <span className="ax-overline">{t("admin.viol.penalty.col.lens", "Validation lens")}</span>
+                  <span className="sq-overline">{t("admin.viol.penalty.col.lens", "Validation lens")}</span>
                   {activeMapping
                     ? <span className="badge badge-compliant" role="status"><span aria-hidden="true">✓</span> {t("admin.viol.lens.mapped", "one active mapping; one-to-one satisfied")}</span>
                     : draft
@@ -365,7 +365,7 @@ export default async function Violations({
                 </div>
                 {/* Column 3 — mapping record or create form */}
                 <div className="stack" style={{ gap: "var(--space-2)", minInlineSize: 260, flex: "2 1 260px" }}>
-                  <span className="ax-overline">{t("admin.viol.penalty.col.record", "Penalty mapping record")}</span>
+                  <span className="sq-overline">{t("admin.viol.penalty.col.record", "Penalty mapping record")}</span>
                   {pm ? (
                     <div className="stack" style={{ gap: "var(--space-1)" }}>
                       <span>{t("admin.viol.penalty", "Penalty")} <strong className="numeric">{pm.penalty_ref}</strong></span>
@@ -376,7 +376,7 @@ export default async function Violations({
                         {t("admin.viol.map.repeatRule", "Repeat-rule preset")}: <span className="numeric">{pm.repeat_rule?.repeat_12mo ?? t("admin.viol.map.repeatNone", "None")}</span>
                       </span>
                       <span className="t-caption">
-                        <span className="ax-version">{pm.mapping_version}</span>{" "}
+                        <span className="sq-version">{pm.mapping_version}</span>{" "}
                         {pm.status} · {pm.effective_from ?? "—"}{pm.effective_to ? ` → ${pm.effective_to}` : ""}
                       </span>
                       <span className="t-caption">{strings.penaltyType}: {pm.penalty_type}{pm.amount !== null ? <> · {strings.amount}: <bdi dir="ltr" className="numeric">{pm.amount}</bdi></> : null}{pm.grace_period_days !== null ? <> · {strings.gracePeriod}: {pm.grace_period_days}</> : null}{pm.due_period_days !== null ? <> · {strings.duePeriod}: {pm.due_period_days}</> : null}</span>
@@ -400,12 +400,12 @@ export default async function Violations({
         /* ============ CD-010 · Violation catalogue mode ============ */
         <>
           {canWrite && clauseError ? (
-            <div className="ax-banner ax-banner--warning" role="alert"><div>
+            <div className="sq-banner sq-banner--warning" role="alert"><div>
               <strong>{t("admin.viol.clausesUnavailable.title", "Regulation clauses are unavailable")}</strong>{" "}
               {t("admin.viol.clausesUnavailable.body", "Violation creation is disabled because its required legal-anchor source could not be read. Retry before authoring.")}
             </div></div>
           ) : canWrite && clauseOptions.length > 0 ? <NewViolationForm clauses={clauseOptions} strings={strings} /> : canWrite ? (
-            <div className="ax-banner" role="status"><div>{t("admin.viol.clausesEmpty", "No regulation clauses exist. Create and publish the legal source before creating a violation code.")}</div></div>
+            <div className="sq-banner" role="status"><div>{t("admin.viol.clausesEmpty", "No regulation clauses exist. Create and publish the legal source before creating a violation code.")}</div></div>
           ) : null}
 
           {/* S03 EMPTY — a genuine empty read, not a fabricated zero. */}
@@ -433,8 +433,8 @@ export default async function Violations({
                   </div>
                 </div>
                 {/* Clause-link trace only — legal basis lives on the penalty mapping, not here. */}
-                <p className="t-caption ax-trace">
-                  <span className="ax-overline">{t("admin.viol.trace", "Legal trace")}:</span>{" "}
+                <p className="t-caption sq-trace">
+                  <span className="sq-overline">{t("admin.viol.trace", "Legal trace")}:</span>{" "}
                   {rc ? <bdi dir="ltr">{rc.regulations?.code ?? "?"} §{rc.clause_ref}</bdi> : t("admin.viol.noAnchor", "No clause anchor")}
                 </p>
                 <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>

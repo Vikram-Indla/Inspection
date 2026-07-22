@@ -128,7 +128,7 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
   }
   return (
     <div>
-      <button type="button" className="ax-link" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "var(--type-caption-font)" }} onClick={toggle} aria-expanded={open}>
+      <button type="button" className="sq-link" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "var(--type-caption-font)" }} onClick={toggle} aria-expanded={open}>
         {labels.history}
       </button>
       {open && (
@@ -199,7 +199,7 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
         <span className="lz-key" dir="ltr">AR</span>
         <form action={saveAction} className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap", inlineSize: "100%" }}>
           <input type="hidden" name="key" value={row.key} />
-          <input className="ax-input lz-ar" name="ar" dir="rtl" lang="ar" value={ar} onChange={e => setAr(e.target.value)}
+          <input className="sq-input lz-ar" name="ar" dir="rtl" lang="ar" value={ar} onChange={e => setAr(e.target.value)}
             placeholder="—" aria-label={`${labels.colAr}: ${row.key}`} style={{ flex: 1, minInlineSize: 160 }} />
           <button className="btn btn-primary btn-touch" disabled={savePending || phErr} aria-disabled={phErr}>{savePending ? labels.saving : labels.save}</button>
           {saveState.ok && !savePending && <span className="badge badge-compliant">{labels.saved}</span>}
@@ -232,14 +232,14 @@ function AddKeyForm({ labels }: { labels: Labels }) {
   return (
     <form action={formAction} className="panel" style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div style={{ inlineSize: "100%" }}><strong>{labels.addTitle}</strong></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="l10n-add-key">{labels.addKeyField}</label>
-        <input className="ax-input numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="l10n-add-en">{labels.addEnField}</label>
-        <input className="ax-input" name="en" id="l10n-add-en" required /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor="l10n-add-ar">{labels.addArField}</label>
-        <input className="ax-input" name="ar" id="l10n-add-ar" dir="rtl" lang="ar" /></div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor="l10n-add-context">{labels.addContextField}</label>
-        <input className="ax-input" name="context" id="l10n-add-context" placeholder="SCR-ADM-100" /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="l10n-add-key">{labels.addKeyField}</label>
+        <input className="sq-input numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 200 }}><label className="sq-field__label" htmlFor="l10n-add-en">{labels.addEnField}</label>
+        <input className="sq-input" name="en" id="l10n-add-en" required /></div>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 200 }}><label className="sq-field__label" htmlFor="l10n-add-ar">{labels.addArField}</label>
+        <input className="sq-input" name="ar" id="l10n-add-ar" dir="rtl" lang="ar" /></div>
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 180 }}><label className="sq-field__label" htmlFor="l10n-add-context">{labels.addContextField}</label>
+        <input className="sq-input" name="context" id="l10n-add-context" placeholder="SCR-ADM-100" /></div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? labels.adding : labels.addBtn}</button>
       {state.error && <span className="t-caption" role="alert" style={{ color: "var(--status-critical)" }}>{state.error}</span>}
       {state.ok && !pending && <span className="badge badge-compliant">{labels.added}</span>}
@@ -294,9 +294,9 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
   return (
     <>
       <div className="panel" style={{ padding: "var(--space-4) var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap" }}>
-        <input className="ax-input" value={query} onChange={e => setQuery(e.target.value)}
+        <input className="sq-input" value={query} onChange={e => setQuery(e.target.value)}
           placeholder={labels.searchPlaceholder} aria-label={labels.searchPlaceholder} style={{ flex: 1, minInlineSize: 220 }} />
-        <select className="ax-select" value={filter} onChange={e => setFilter(e.target.value as Filter)} aria-label={labels.colStatus}>
+        <select className="sq-select" value={filter} onChange={e => setFilter(e.target.value as Filter)} aria-label={labels.colStatus}>
           <option value="all">{labels.filterAll}</option>
           <option value="draft">{labels.filterDraft}</option>
           <option value="reviewed">{labels.filterReviewed}</option>

@@ -17,7 +17,7 @@ export default async function PortalPage() {
   const { t } = await useT();
   if (resolveFeatureFlag(process.env.FEATURE_EXTERNAL_PORTAL, MODES, "off") !== "on") {
     return (
-      <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="ax-lozenge ax-lozenge--warning">CD-044 · REQ-0109</span>}>
+      <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="sq-lozenge sq-lozenge--warning">CD-044 · REQ-0109</span>}>
         <NotYetBoundary title={t("portal.title", "External portal")} consequence={t("portal.off", "The external factory portal is not enabled here. External-representative identity policy is also held.")}
           seam="FEATURE_EXTERNAL_PORTAL=off + external identity policy held" notAvailableLabel={t("tasks.notYet", "Not available yet")} detailLabel={t("common.whyPrereq", "Why / prerequisites")} />
       </Shell>
@@ -33,27 +33,27 @@ export default async function PortalPage() {
   if (error) console.error("[portal] load", error);
   const factoryId = fac?.id ?? null;
   return (
-    <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="ax-lozenge ax-lozenge--info">CD-044 · REQ-0109..0113</span>}>
-      <div className="ax-banner"><div><strong>{t("portal.banner.title", "Internal compliance view.")}</strong> {t("portal.banner.body", "External requests and self-assessments. Only accepted self-assessments emit a risk signal. External-representative identity/MFA is held; this surface is internal and limited to your permitted access.")}</div></div>
+    <Shell current="/portal" title={t("portal.title", "External portal")} context={<span className="sq-lozenge sq-lozenge--info">CD-044 · REQ-0109..0113</span>}>
+      <div className="sq-banner"><div><strong>{t("portal.banner.title", "Internal compliance view.")}</strong> {t("portal.banner.body", "External requests and self-assessments. Only accepted self-assessments emit a risk signal. External-representative identity/MFA is held; this surface is internal and limited to your permitted access.")}</div></div>
       <CreateRequest factoryId={factoryId} strings={{
         type: t("portal.type", "Request type"), subject: t("portal.subject", "Subject"),
         create: t("portal.create", "Create request"), creating: t("portal.creating", "Creating…"),
         created: t("portal.created", "request created"), noFactory: t("portal.noFactory", "No factory in scope."),
       }} />
-      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("portal.error", "Couldn’t load portal data. Nothing changed.")}</strong></div></div>}
+      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("portal.error", "Couldn’t load portal data. Nothing changed.")}</strong></div></div>}
       {!error && (reqs ?? []).length === 0 && (sas ?? []).length === 0 && (
         <EmptyState icon={<IconFactory size={28} />} title={t("portal.empty.title", "No external submissions in scope")}
           body={t("portal.empty.body", "Requests and self-assessments appear here once submitted. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(reqs ?? []).map((r) => (
-        <div key={r.id} className="ax-surface" style={{ padding: "var(--space-6)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="ax-caption">{r.subject ?? ""}</span></h3><span className="ax-lozenge ax-lozenge--info">{r.status}</span></div>
+        <div key={r.id} className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="sq-caption">{r.subject ?? ""}</span></h3><span className="sq-lozenge sq-lozenge--info">{r.status}</span></div>
         </div>
       ))}
       {(sas ?? []).map((a) => (
-        <div key={a.id} className="ax-surface" style={{ padding: "var(--space-6)" }}>
-          <div className="ax-row" style={{ justifyContent: "space-between" }}><h3>{t("portal.sa", "Self-assessment")}</h3>
-            <span className={`ax-lozenge ${a.risk_signal_emitted ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{a.status}</span></div>
+        <div key={a.id} className="sq-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-row" style={{ justifyContent: "space-between" }}><h3>{t("portal.sa", "Self-assessment")}</h3>
+            <span className={`sq-lozenge ${a.risk_signal_emitted ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{a.status}</span></div>
         </div>
       ))}
     </Shell>

@@ -35,7 +35,7 @@ async function login(page) {
   await page.locator("#email").waitFor();
   await page.locator("#email").fill(OPS.email);
   await page.locator("#pw").fill(OPS.password);
-  await page.locator("form:has(#email) button.ax-btn--prominent").click();
+  await page.locator("form:has(#email) button.sq-btn--prominent").click();
   await page.waitForURL(url => url.pathname.startsWith(OPS.home), { timeout: 40_000 }).catch(() => {});
 }
 

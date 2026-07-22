@@ -18,7 +18,7 @@ export default function AccessState({
   body: string;
   identity?: string;      // authenticated user's own email only
   identityLabel?: string;
-  actions: React.ReactNode; // action stack — buttons/links, ≥48px targets (lg-submit/ax-btn)
+  actions: React.ReactNode; // action stack — buttons/links, ≥48px targets (lg-submit/sq-btn)
   dir?: "rtl" | "ltr";
   lang?: string;
 }) {

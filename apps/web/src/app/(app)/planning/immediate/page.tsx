@@ -234,8 +234,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   };
   return (
     <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}
-      context={<><span className="ax-lozenge ax-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>{sourceCrId && sourceLicenseId ? <span className="ax-lozenge ax-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
-      {safeReturnTo ? <p><Link className="ax-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
+      context={<><span className="sq-lozenge sq-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>{sourceCrId && sourceLicenseId ? <span className="sq-lozenge sq-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
+      {safeReturnTo ? <p><Link className="sq-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
       <ImmediateForm
         factories={factoryList as never}
         packages={(pkgs ?? []) as never}

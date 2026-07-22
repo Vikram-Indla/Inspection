@@ -260,18 +260,18 @@ export default function ShellClient({
   }
 
   function renderNavItem(item: ShellClientNavGroup["items"][number], child = false) {
-    const className = `ax-nav-item${child ? " ax-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
+    const className = `sq-nav-item${child ? " sq-nav-item--child" : ""}${item.enabled ? "" : " is-disabled"}`;
     if (!item.enabled) {
       const accessibleLabel = `${item.label}. ${item.disabledReason ?? ""}`.trim();
       return (
         <span key={item.id} className={className} role="link" aria-disabled="true" aria-label={accessibleLabel}
           title={`${item.label} — ${item.disabledReason ?? ""}`.trim()} tabIndex={0} data-nav-state="disabled">
-          <span className="ax-nav-icon"><Icon name={item.icon} /></span>
-          <span className="ax-nav-label">{item.label}</span>
-          <span className="ax-nav-lock" aria-hidden="true">
+          <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+          <span className="sq-nav-label">{item.label}</span>
+          <span className="sq-nav-lock" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
           </span>
-          <span className="ax-sr-only">{item.disabledReason}</span>
+          <span className="sq-sr-only">{item.disabledReason}</span>
         </span>
       );
     }
@@ -280,39 +280,39 @@ export default function ShellClient({
         aria-current={isShellRouteCurrent(current, item.href) ? "page" : undefined}
         href={item.href} title={item.label} onClick={closeAfterNavigate} data-nav-state="enabled"
         data-next-spa="true" prefetch={false}>
-        <span className="ax-nav-icon"><Icon name={item.icon} /></span>
-        <span className="ax-nav-label">{item.label}</span>
+        <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+        <span className="sq-nav-label">{item.label}</span>
       </Link>
     );
   }
 
   return (
-    <div className={`ax-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
+    <div className={`sq-shell${collapsed ? " is-collapsed" : ""}${drawerOpen ? " is-drawer-open" : ""}${pendingHref ? " is-navigating" : ""}`}
       aria-busy={pendingHref ? "true" : undefined} onClickCapture={handleShellNavigation}>
-      {pendingHref ? <div className="ax-route-progress" role="status"><span className="ax-sr-only">{strings.loadingDestination}</span></div> : null}
-      <a className="ax-shell__skip" href="#main-content">{strings.skipToContent}</a>
-      <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
-      <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
-        <div className="ax-shell__brand">
-          <img className="ax-shell__brand-mark" src="/saqeel-prism.svg" alt="" />
-          <span className="ax-shell__brand-lockup">
-            <span className="ax-shell__brand-wordmark" lang="ar">صقيل</span>
-            <span className="ax-shell__brand-sub" lang="ar">صناعي</span>
+      {pendingHref ? <div className="sq-route-progress" role="status"><span className="sq-sr-only">{strings.loadingDestination}</span></div> : null}
+      <a className="sq-shell__skip" href="#main-content">{strings.skipToContent}</a>
+      <button className="sq-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
+      <nav ref={navRef} id="saqeel-primary-nav" className="sq-shell__nav" aria-label={strings.primary}>
+        <div className="sq-shell__brand">
+          <img className="sq-shell__brand-mark" src="/saqeel-prism.svg" alt="" />
+          <span className="sq-shell__brand-lockup">
+            <span className="sq-shell__brand-wordmark" lang="ar">صقيل</span>
+            <span className="sq-shell__brand-sub" lang="ar">صناعي</span>
           </span>
-          <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
+          <button className="sq-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
           </button>
         </div>
 
-        <div className="ax-shell__groups">
+        <div className="sq-shell__groups">
           {groups.map(group => {
             const groupOpen = openGroups[group.id] ?? true;
             return (
-              <section className="ax-nav-group" key={group.id}>
-                <button className="ax-nav-group__trigger" type="button" aria-label={group.label} aria-expanded={groupOpen}
+              <section className="sq-nav-group" key={group.id}>
+                <button className="sq-nav-group__trigger" type="button" aria-label={group.label} aria-expanded={groupOpen}
                   aria-controls={`nav-group-${group.id}`}
                   onClick={() => setOpenGroups(value => ({ ...value, [group.id]: !groupOpen }))}>
-                  <span className="ax-nav-label">{group.label}</span><svg className="ax-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
+                  <span className="sq-nav-label">{group.label}</span><svg className="sq-nav-group__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 <div id={`nav-group-${group.id}`} hidden={!groupOpen}>
                   {group.items.map((item, index) => {
@@ -320,10 +320,10 @@ export default function ShellClient({
                     if (group.items.findIndex(candidate => candidate.parentId === item.parentId) !== index) return null;
                     const children = group.items.filter(candidate => candidate.parentId === item.parentId);
                     return (
-                      <div className="ax-nav-subgroup" role="group" aria-labelledby={`nav-parent-${group.id}-${item.parentId}`} key={item.parentId}>
-                        <div className="ax-nav-subgroup__label" id={`nav-parent-${group.id}-${item.parentId}`}>
-                          <span className="ax-nav-icon"><Icon name={item.icon} /></span>
-                          <span className="ax-nav-label">{item.parentLabel}</span>
+                      <div className="sq-nav-subgroup" role="group" aria-labelledby={`nav-parent-${group.id}-${item.parentId}`} key={item.parentId}>
+                        <div className="sq-nav-subgroup__label" id={`nav-parent-${group.id}-${item.parentId}`}>
+                          <span className="sq-nav-icon"><Icon name={item.icon} /></span>
+                          <span className="sq-nav-label">{item.parentLabel}</span>
                         </div>
                         {children.map(child => renderNavItem(child, true))}
                       </div>
@@ -335,21 +335,21 @@ export default function ShellClient({
           })}
         </div>
 
-        <button className="ax-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18 3 12l6-6M21 19V5" /></svg><span className="ax-nav-label">{collapsed ? strings.expand : strings.collapse}</span>
+        <button className="sq-shell__collapse" type="button" onClick={toggleCollapsed} aria-label={collapsed ? strings.expand : strings.collapse} aria-expanded={!collapsed}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 18 3 12l6-6M21 19V5" /></svg><span className="sq-nav-label">{collapsed ? strings.expand : strings.collapse}</span>
         </button>
       </nav>
 
-      <main id="main-content" className="ax-shell__main" tabIndex={-1}>
-        <header className="ax-pagehead">
-          <div className="ax-pagehead__topbar">
-            <button ref={menuRef} className="ax-topbar-icon ax-shell__menu" type="button" aria-label={strings.openMenu}
+      <main id="main-content" className="sq-shell__main" tabIndex={-1}>
+        <header className="sq-pagehead">
+          <div className="sq-pagehead__topbar">
+            <button ref={menuRef} className="sq-topbar-icon sq-shell__menu" type="button" aria-label={strings.openMenu}
               aria-controls="saqeel-primary-nav" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
             </button>
-            <div className="ax-shell-controls">
-                <div className="ax-shell-search">
-                  <span className="ax-shell-search__icon" aria-hidden="true">
+            <div className="sq-shell-controls">
+                <div className="sq-shell-search">
+                  <span className="sq-shell-search__icon" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                       <circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" />
                     </svg>
@@ -359,7 +359,7 @@ export default function ShellClient({
                     onFocus={() => setSearchOpen(true)} onChange={event => { setQuery(event.target.value); setSearchOpen(true); }}
                     onKeyDown={event => { if (event.key === "Escape") { setSearchOpen(false); setQuery(""); } }} />
                   {searchOpen && query.trim().length >= 2 && (
-                    <div id="shell-global-search-results" className="ax-shell-search__results" role="listbox" aria-label={strings.searchResults}>
+                    <div id="shell-global-search-results" className="sq-shell-search__results" role="listbox" aria-label={strings.searchResults}>
                       {navigationResults.map(item => (
                         <Link role="option" key={`nav-${item.id}`} href={item.href} onClick={closeAfterNavigate} data-next-spa="true" prefetch={false}>
                           <Icon name={item.icon} /><span><strong>{item.label}</strong><small>{strings.navigation}</small></span>
@@ -380,25 +380,25 @@ export default function ShellClient({
                   )}
                 </div>
                 {routeScope.date ? (
-                  <details className="ax-shell-scope ax-shell-scope--date">
+                  <details className="sq-shell-scope sq-shell-scope--date">
                     <summary aria-label={strings.dateScope} title={strings.dateScope}>
                       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
                       <span>{strings.last30Days}</span>
                     </summary>
-                    <div className="ax-shell-scope__panel">
+                    <div className="sq-shell-scope__panel">
                       <label>{strings.from}<input type="date" value={dateFrom} onChange={event => setDateFrom(event.target.value)} /></label>
                       <label>{strings.to}<input type="date" value={dateTo} onChange={event => setDateTo(event.target.value)} /></label>
-                      <button type="button" className="ax-btn ax-btn--secondary" onClick={() => replaceScope({ from: dateFrom, to: dateTo })}>{strings.apply}</button>
+                      <button type="button" className="sq-btn sq-btn--secondary" onClick={() => replaceScope({ from: dateFrom, to: dateTo })}>{strings.apply}</button>
                     </div>
                   </details>
                 ) : (
-                  <button className="ax-shell-scope is-disabled" type="button" disabled title={strings.notApplicable} aria-label={`${strings.dateScope}: ${strings.notApplicable}`}>
+                  <button className="sq-shell-scope is-disabled" type="button" disabled title={strings.notApplicable} aria-label={`${strings.dateScope}: ${strings.notApplicable}`}>
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
                     <span>{strings.last30Days}</span>
                   </button>
                 )}
-                <label className={`ax-shell-scope ax-shell-scope--region${routeScope.region && regions.length ? "" : " is-disabled"}`} title={!routeScope.region ? strings.notApplicable : regions.length ? undefined : strings.searchUnavailable}>
-                  <span className="ax-sr-only">{strings.regionScope}</span>
+                <label className={`sq-shell-scope sq-shell-scope--region${routeScope.region && regions.length ? "" : " is-disabled"}`} title={!routeScope.region ? strings.notApplicable : regions.length ? undefined : strings.searchUnavailable}>
+                  <span className="sq-sr-only">{strings.regionScope}</span>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12z"/><circle cx="12" cy="9" r="2"/></svg>
                   <select aria-label={strings.regionScope} value={regionScope} disabled={!routeScope.region || !regions.length}
                     onChange={event => { setRegionScope(event.target.value); replaceScope({ region: event.target.value }); }}>
@@ -407,23 +407,23 @@ export default function ShellClient({
                   </select>
                 </label>
             </div>
-            <div className="ax-pagehead__actions">
-              <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
+            <div className="sq-pagehead__actions">
+              <ThemeToggle className="sq-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               <NotificationBell strings={bellStrings} locale={locale} />
-              <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
+              <Link className="sq-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
                 <Icon name="insights" />
               </Link>
-              <div ref={accountRef} className="ax-shell-account">
-                <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
+              <div ref={accountRef} className="sq-shell-account">
+                <button className="sq-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}
                   onClick={() => setAccountOpen(value => !value)}>
-                  <span className="ax-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
-                  <span className="ax-shell-account__identity"><strong>{email.split("@")[0]}</strong><small>{roles.join(" · ")}</small></span>
-                  <svg className="ax-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
+                  <span className="sq-shell-account__avatar" aria-hidden="true">{initials(email)}</span>
+                  <span className="sq-shell-account__identity"><strong>{email.split("@")[0]}</strong><small>{roles.join(" · ")}</small></span>
+                  <svg className="sq-shell-account__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
                 </button>
                 {accountOpen && (
-                  <div className="ax-shell-account__menu" role="dialog" aria-label={strings.account}>
+                  <div className="sq-shell-account__menu" role="dialog" aria-label={strings.account}>
                     <strong>{email}</strong>
-                    <span className="ax-caption">{strings.roles}: {roles.join(", ")}</span>
+                    <span className="sq-caption">{strings.roles}: {roles.join(", ")}</span>
                     {/* /locale and /signout are route handlers (cookie/session
                         mutations), so they intentionally stay plain anchors. */}
                     <a href={languageHref} lang={languageLang}>{languageLabel}</a>

@@ -96,7 +96,7 @@ export default async function Field() {
     console.error("[field dashboard reads]", assignmentRead.error?.message ?? notificationRead.error?.message);
     return (
       <Shell current="/field" title={t("field.dashboard.title", "Field dashboard")}>
-        <div className="ax-banner ax-banner--critical" role="alert">{t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+        <div className="sq-banner sq-banner--critical" role="alert">{t("field.dashboard.serviceUnavailable", "Field data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
       </Shell>
     );
   }
@@ -371,9 +371,9 @@ export default async function Field() {
 
   return (
     <Shell current="/field" title={t("field.assignments.title", "My assignments")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("field.assignments.context", "Assigned to you")}</span>}>
-      {/* padding-block-end (ax-field-page) keeps content clear of the fixed bottom tab bar */}
-      <div className={`ax-field-page ${styles.shell}`}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("field.assignments.context", "Assigned to you")}</span>}>
+      {/* padding-block-end (sq-field-page) keeps content clear of the fixed bottom tab bar */}
+      <div className={`sq-field-page ${styles.shell}`}>
 
         {/* FIELD TOP CONTEXT */}
         <header className={styles.topContext}>
@@ -437,30 +437,30 @@ export default async function Field() {
           <div className={styles.pane}>
             {/* Selected / next visit preparation */}
             {selected && selected.factories ? (
-              <section className={`ax-surface ax-panel ${styles.selectedCard} ${riskTone === "warning" ? styles["selectedCard--warning"] : riskTone === "neutral" || riskTone === "success" ? styles["selectedCard--neutral"] : ""}`} style={{ padding: "var(--space-6)" }}>
-                <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <span className={`ax-lozenge ax-lozenge--${riskTone === "critical" ? "critical" : riskTone === "warning" ? "warning" : "ops"}`}>
+              <section className={`sq-surface sq-panel ${styles.selectedCard} ${riskTone === "warning" ? styles["selectedCard--warning"] : riskTone === "neutral" || riskTone === "success" ? styles["selectedCard--neutral"] : ""}`} style={{ padding: "var(--space-6)" }}>
+                <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <span className={`sq-lozenge sq-lozenge--${riskTone === "critical" ? "critical" : riskTone === "warning" ? "warning" : "ops"}`}>
                     {selected.factories.risk_band
                       ? t("field.selected.risk", "Risk: {band}").replace("{band}", selected.factories.risk_band)
                       : t("field.selected.riskUnknown", "Risk not scored")}
                   </span>
-                  <span className="ax-caption ax-numeric">{selected.id.slice(0, 8)}</span>
+                  <span className="sq-caption sq-numeric">{selected.id.slice(0, 8)}</span>
                 </div>
                 <div style={{ font: "var(--type-body-strong)", marginBlockStart: "var(--space-3)" }}>{selected.factories.name}</div>
-                <div className="ax-caption">{selected.visit_type} · {selected.execution_mode.replace(/_/g, " ")}{selected.factories.cr_number ? <> · <span className="ax-numeric">CR {selected.factories.cr_number}</span></> : null}</div>
+                <div className="sq-caption">{selected.visit_type} · {selected.execution_mode.replace(/_/g, " ")}{selected.factories.cr_number ? <> · <span className="sq-numeric">CR {selected.factories.cr_number}</span></> : null}</div>
                 <dl className={styles.desc} style={{ marginBlockStart: "var(--space-4)" }}>
                   <dt>{t("field.selected.health", "Health Score")}</dt>
-                  <dd><em className="ax-caption">{t("field.selected.healthUnavailable", "Not scored (separate engine)")}</em></dd>
+                  <dd><em className="sq-caption">{t("field.selected.healthUnavailable", "Not scored (separate engine)")}</em></dd>
                   <dt>{t("field.selected.riskScore", "Risk Score")}</dt>
                   <dd>{selected.factories.risk_band ? `${selected.factories.risk_band}${selected.factories.risk_score != null ? " · " + selected.factories.risk_score : ""}` : "—"}</dd>
                   {packData?.packageLabel && (
                     <>
                       <dt>{t("field.selected.package", "Package")}</dt>
-                      <dd><span className="ax-numeric">{packData.packageLabel}</span>{packData.packageStatus ? ` · ${packData.packageStatus}` : ""}</dd>
+                      <dd><span className="sq-numeric">{packData.packageLabel}</span>{packData.packageStatus ? ` · ${packData.packageStatus}` : ""}</dd>
                     </>
                   )}
                 </dl>
-                <div className="ax-row" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-4)", flexWrap: "wrap" }}>
+                <div className="sq-row" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-4)", flexWrap: "wrap" }}>
                   {packData && <PreInspectionPackSheet data={packData} moduleClasses={{ packChipRow: styles.packChipRow, packReadiness: styles.packReadiness, packFooter: styles.packFooter, packBlocked: styles.packBlocked }} strings={{
                     openPack: t("field.pack.open", "Open pre-inspection pack"),
                     title: t("field.pack.title", "Pre-inspection pack"),
@@ -496,34 +496,34 @@ export default async function Field() {
                     checkInBlocked: t("field.pack.checkInBlocked", "Check-in — review required"),
                     startupNote: t("field.pack.startupNote", "Opens the governed startup; check-in gates are enforced there."),
                   }} />}
-                  <a className="ax-btn ax-btn--subtle" href={`/field/factory-360?factory=${selected.factories.id}&return=${encodeURIComponent("/field")}`}>{t("field.selected.factory360", "Factory 360")}</a>
+                  <a className="sq-btn sq-btn--subtle" href={`/field/factory-360?factory=${selected.factories.id}&return=${encodeURIComponent("/field")}`}>{t("field.selected.factory360", "Factory 360")}</a>
                 </div>
               </section>
             ) : (
-              <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)" }}>
-                <p className="ax-caption">{t("field.selected.none", "No upcoming visit selected. Pick one from the list, calendar, or map.")}</p>
+              <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)" }}>
+                <p className="sq-caption">{t("field.selected.none", "No upcoming visit selected. Pick one from the list, calendar, or map.")}</p>
               </section>
             )}
 
             {/* Pending attention (returned / draft resume) */}
-            <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-              <div className="ax-overline">{t("field.attention.title", "Pending attention")}</div>
+            <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+              <div className="sq-overline">{t("field.attention.title", "Pending attention")}</div>
               {returnedCount === 0 && draftCount === 0 ? (
-                <span className="ax-caption">{t("field.attention.empty", "Nothing needs attention. Returned inspections and drafts to resume appear here.")}</span>
+                <span className="sq-caption">{t("field.attention.empty", "Nothing needs attention. Returned inspections and drafts to resume appear here.")}</span>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                   {cards.filter(v => v.inspections && (v.inspections.status === "returned" || (v.inspections.reviews ?? []).some(r => r.status === "returned"))).slice(0, 4).map(v => (
-                    <div key={`ret-${v.id}`} className="ax-row" style={{ gap: "var(--space-3)" }}>
+                    <div key={`ret-${v.id}`} className="sq-row" style={{ gap: "var(--space-3)" }}>
                       <span className={`${styles.exc} ${styles["exc--warning"]}`}><span className={styles.exc__mark} /></span>
-                      <span style={{ flex: 1 }} className="ax-caption">{t("field.attention.returned", "Returned")} · {v.factories!.name}</span>
-                      <a className="ax-btn ax-btn--subtle" href={`/field/inspection/${v.inspections!.id}`}>{t("field.attention.resume", "Resume")}</a>
+                      <span style={{ flex: 1 }} className="sq-caption">{t("field.attention.returned", "Returned")} · {v.factories!.name}</span>
+                      <a className="sq-btn sq-btn--subtle" href={`/field/inspection/${v.inspections!.id}`}>{t("field.attention.resume", "Resume")}</a>
                     </div>
                   ))}
                   {cards.filter(v => v.inspections?.status === "in_progress").slice(0, 4).map(v => (
-                    <div key={`draft-${v.id}`} className="ax-row" style={{ gap: "var(--space-3)" }}>
+                    <div key={`draft-${v.id}`} className="sq-row" style={{ gap: "var(--space-3)" }}>
                       <span className={`${styles.exc} ${styles["exc--pending"]}`}><span className={styles.exc__mark} /></span>
-                      <span style={{ flex: 1 }} className="ax-caption">{t("field.attention.draft", "Draft")} · {v.factories!.name}</span>
-                      <a className="ax-btn ax-btn--subtle" href={`/field/inspection/${v.inspections!.id}`}>{t("field.attention.resume", "Resume")}</a>
+                      <span style={{ flex: 1 }} className="sq-caption">{t("field.attention.draft", "Draft")} · {v.factories!.name}</span>
+                      <a className="sq-btn sq-btn--subtle" href={`/field/inspection/${v.inspections!.id}`}>{t("field.attention.resume", "Resume")}</a>
                     </div>
                   ))}
                 </div>
@@ -531,38 +531,38 @@ export default async function Field() {
             </section>
 
             {/* Personal performance — Approval outcomes vs Checklist compliance (SEPARATE, P0) */}
-            <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-              <div className="ax-overline">{t("field.perf.title", "Personal performance")}</div>
+            <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+              <div className="sq-overline">{t("field.perf.title", "Personal performance")}</div>
               <div className={styles.perfSplit}>
                 <div className={styles.perfSplit__col}>
                   <span className={styles.perfSplit__value}>{approvalRate == null ? t("field.metric.na", "N/A") : `${approvalRate}%`}</span>
-                  <span className="ax-caption">{t("field.perf.approval", "Approval outcomes")}</span>
-                  <span className="ax-caption ax-numeric" style={{ font: "var(--type-micro)", color: "var(--text-secondary)" }}>{t("field.perf.approvalFormula", "approved L2 ÷ decided L2")}</span>
-                  <span className="ax-caption ax-numeric">{t("field.perf.mix", "A {a} · R {r} · X {x}").replace("{a}", String(approvalBreak.approve ?? 0)).replace("{r}", String(approvalBreak.return ?? 0)).replace("{x}", String(approvalBreak.reject ?? 0))}</span>
+                  <span className="sq-caption">{t("field.perf.approval", "Approval outcomes")}</span>
+                  <span className="sq-caption sq-numeric" style={{ font: "var(--type-micro)", color: "var(--text-secondary)" }}>{t("field.perf.approvalFormula", "approved L2 ÷ decided L2")}</span>
+                  <span className="sq-caption sq-numeric">{t("field.perf.mix", "A {a} · R {r} · X {x}").replace("{a}", String(approvalBreak.approve ?? 0)).replace("{r}", String(approvalBreak.return ?? 0)).replace("{x}", String(approvalBreak.reject ?? 0))}</span>
                 </div>
                 <div className={styles.perfSplit__rule} />
                 <div className={styles.perfSplit__col}>
                   <span className={styles.perfSplit__value}>{mCompliance?.value == null ? t("field.metric.na", "N/A") : `${mCompliance.value}%`}</span>
-                  <span className="ax-caption">{t("field.perf.compliance", "Checklist compliance")}</span>
-                  <span className="ax-caption ax-numeric" style={{ font: "var(--type-micro)", color: "var(--text-secondary)" }}>{t("field.perf.complianceFormula", "compliant ÷ (compliant + non)")}</span>
-                  <span className="ax-caption ax-numeric">{t("field.perf.complianceDenom", "{c}/{e} eligible").replace("{c}", String(mCompliance?.numerator ?? 0)).replace("{e}", String(mCompliance?.denominator ?? 0))}</span>
+                  <span className="sq-caption">{t("field.perf.compliance", "Checklist compliance")}</span>
+                  <span className="sq-caption sq-numeric" style={{ font: "var(--type-micro)", color: "var(--text-secondary)" }}>{t("field.perf.complianceFormula", "compliant ÷ (compliant + non)")}</span>
+                  <span className="sq-caption sq-numeric">{t("field.perf.complianceDenom", "{c}/{e} eligible").replace("{c}", String(mCompliance?.numerator ?? 0)).replace("{e}", String(mCompliance?.denominator ?? 0))}</span>
                 </div>
               </div>
-              <span className="ax-caption" style={{ color: "var(--text-secondary)" }}>{t("field.perf.distinct", "Distinct metrics — approval is not compliance.")}</span>
+              <span className="sq-caption" style={{ color: "var(--text-secondary)" }}>{t("field.perf.distinct", "Distinct metrics — approval is not compliance.")}</span>
             </section>
           </div>
         </div>
 
         {/* Performance overview + charts (PRESERVED). Review outcomes = decision mix, NOT compliance. */}
-        <details className="ax-field-performance">
+        <details className="sq-field-performance">
           <summary>{t("field.dashboard.performanceOverview", "Performance overview")}</summary>
-          <div className="ax-field-performance__body">
-            <div className="ax-field-performance__charts">
-              <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          <div className="sq-field-performance__body">
+            <div className="sq-field-performance__charts">
+              <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                 <h3 style={{ font: "var(--type-heading-lg)", margin: 0 }}>{t("field.dashboard.visitsByMonth", "Visits by month")}</h3>
                 <BarChart data={visitsByMonth} title={t("field.dashboard.visitsByMonth", "Visits by month")} emptyLabel={noData} />
               </section>
-              <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+              <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                 <h3 style={{ font: "var(--type-heading-lg)", margin: 0 }}>{t("field.dashboard.reviewOutcomes", "Review outcomes")}</h3>
                 <DonutChart
                   data={[
@@ -575,7 +575,7 @@ export default async function Field() {
                   emptyLabel={noData}
                 />
               </section>
-              <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+              <section className="sq-surface sq-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                 <h3 style={{ font: "var(--type-heading-lg)", margin: 0 }}>{t("field.dashboard.submissionsTrend", "Submissions trend")}</h3>
                 <LineChart data={submissionsByMonth} title={t("field.dashboard.submissionsTrend", "Submissions trend")} emptyLabel={noData} />
               </section>
@@ -591,8 +591,8 @@ export default async function Field() {
               : t("field.action.noNext", "No next visit")}
           </span>
           <span className={styles.grow} />
-          {selected && <a className="ax-btn ax-btn--secondary ax-btn--field" href={`/field/${selected.id}`}>{t("field.action.directions", "Open directions")}</a>}
-          <a className="ax-btn ax-btn--prominent ax-btn--field" href={selectedHref}>
+          {selected && <a className="sq-btn sq-btn--secondary sq-btn--field" href={`/field/${selected.id}`}>{t("field.action.directions", "Open directions")}</a>}
+          <a className="sq-btn sq-btn--prominent sq-btn--field" href={selectedHref}>
             {selected?.inspections && selected.inspections.status !== "not_started"
               ? t("field.action.resume", "Resume")
               : t("field.action.start", "Start journey")}

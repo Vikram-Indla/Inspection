@@ -65,10 +65,10 @@ function ReasonListEditor({
   return (
     <fieldset style={{ border: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
       <legend style={{ fontWeight: 600 }}>{title}</legend>
-      <p className="ax-caption" style={{ margin: 0 }}>{hint}</p>
+      <p className="sq-caption" style={{ margin: 0 }}>{hint}</p>
       <input type="hidden" name={name} value={JSON.stringify(rows)} readOnly />
-      <div className="ax-tablewrap">
-        <table className="ax-table">
+      <div className="sq-tablewrap">
+        <table className="sq-table">
           <thead>
             <tr>
               <th scope="col">{labels.colKey}</th>
@@ -84,31 +84,31 @@ function ReasonListEditor({
                 <tr key={`${row.key}-${index}`}>
                   <td>
                     <input
-                      className="ax-input" value={row.key} aria-label={`${labels.colKey} ${index + 1}`}
+                      className="sq-input" value={row.key} aria-label={`${labels.colKey} ${index + 1}`}
                       placeholder={labels.newKeyPlaceholder}
                       onChange={e => update(index, "key", e.target.value)}
                     />
                   </td>
                   <td>
                     <input
-                      className="ax-input" value={row.en} aria-label={`${labels.colEn} ${index + 1}`}
+                      className="sq-input" value={row.en} aria-label={`${labels.colEn} ${index + 1}`}
                       onChange={e => update(index, "en", e.target.value)}
                     />
                   </td>
                   <td>
                     <input
-                      className="ax-input" dir="rtl" value={row.ar} aria-label={`${labels.colAr} ${index + 1}`}
+                      className="sq-input" dir="rtl" value={row.ar} aria-label={`${labels.colAr} ${index + 1}`}
                       onChange={e => update(index, "ar", e.target.value)}
                     />
                   </td>
                   <td>
-                    <span className="ax-row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
-                      <button type="button" className="ax-btn" onClick={() => move(index, -1)} disabled={index === 0} aria-label={`${labels.moveUp} ${row.key}`}>↑</button>
-                      <button type="button" className="ax-btn" onClick={() => move(index, 1)} disabled={index === rows.length - 1} aria-label={`${labels.moveDown} ${row.key}`}>↓</button>
+                    <span className="sq-row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
+                      <button type="button" className="sq-btn" onClick={() => move(index, -1)} disabled={index === 0} aria-label={`${labels.moveUp} ${row.key}`}>↑</button>
+                      <button type="button" className="sq-btn" onClick={() => move(index, 1)} disabled={index === rows.length - 1} aria-label={`${labels.moveDown} ${row.key}`}>↓</button>
                       {isProtected ? (
-                        <span className="ax-lozenge ax-lozenge--info">{labels.protectedReason}</span>
+                        <span className="sq-lozenge sq-lozenge--info">{labels.protectedReason}</span>
                       ) : (
-                        <button type="button" className="ax-btn" onClick={() => onChange(rows.filter((_, i) => i !== index))}>
+                        <button type="button" className="sq-btn" onClick={() => onChange(rows.filter((_, i) => i !== index))}>
                           {labels.remove}
                         </button>
                       )}
@@ -121,7 +121,7 @@ function ReasonListEditor({
         </table>
       </div>
       <div>
-        <button type="button" className="ax-btn" onClick={() => onChange([...rows, { key: "", en: "", ar: "" }])}>
+        <button type="button" className="sq-btn" onClick={() => onChange([...rows, { key: "", en: "", ar: "" }])}>
           {labels.add}
         </button>
       </div>
@@ -165,13 +165,13 @@ export default function ReasonsManager({
         protectedKeys={["safety_security"]}
         labels={labels}
       />
-      <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending}>
+      <div className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
+        <button className="sq-btn sq-btn--prominent" disabled={pending}>
           {pending ? labels.saving : labels.save}
         </button>
-        {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
+        {state.ok && !pending && <span className="sq-lozenge sq-lozenge--success">{labels.saved}</span>}
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
+      {state.error && <p className="sq-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
     </form>
   );
 }

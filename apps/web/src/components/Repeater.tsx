@@ -2,7 +2,7 @@
  * Shared repeater / dynamic-list-item component. Genuine pre-existing frontend
  * gap (DSM-034): grep for "repeater"/"dynamic list" across apps/web/src returned
  * zero matches before this — add/remove-row UI was ad hoc per form. Built from
- * existing ax-panel/ax-btn tokens, no new colors or geometry.
+ * existing sq-panel/sq-btn tokens, no new colors or geometry.
  */
 "use client";
 
@@ -29,7 +29,7 @@ export default function Repeater<T>({ items, onChange, makeItem, renderItem, add
   return (
     <div className="stack" style={{ gap: "var(--space-4)" }}>
       {items.map((item, i) => (
-        <div key={i} className="ax-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
+        <div key={i} className="sq-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
             <div style={{ flex: 1 }}>{renderItem(item, i, next => update(i, next))}</div>
             {items.length > minItems && (

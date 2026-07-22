@@ -154,13 +154,13 @@ export default function Shell({ children, title, context, topbar }: {
 }) {
   return (
     <>
-      {topbar ? <div className="ax-pagehead__route-tools">{topbar}</div> : null}
-      <header className="ax-pagehead ax-pagehead--route">
-        <div className="ax-pagehead__row">
-          <div className="ax-pagehead__context"><h2>{title}</h2>{context}</div>
+      {topbar ? <div className="sq-pagehead__route-tools">{topbar}</div> : null}
+      <header className="sq-pagehead sq-pagehead--route">
+        <div className="sq-pagehead__row">
+          <div className="sq-pagehead__context"><h2>{title}</h2>{context}</div>
         </div>
       </header>
-      <div className="ax-content">{children}</div>
+      <div className="sq-content">{children}</div>
     </>
   );
 }

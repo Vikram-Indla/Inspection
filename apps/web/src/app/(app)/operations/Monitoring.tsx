@@ -31,8 +31,8 @@ export type MonitoringStrings = {
 const REFRESH_MS = 30_000;
 
 const GEOFENCE_TONE: Record<string, string> = {
-  inside: "ax-lozenge--success",
-  override: "ax-lozenge--warning",
+  inside: "sq-lozenge--success",
+  override: "sq-lozenge--warning",
 };
 
 export function RegionCityFilter({ region, city, regions, cities, strings: s }: {
@@ -48,15 +48,15 @@ export function RegionCityFilter({ region, city, regions, cities, strings: s }: 
   };
   return (
     <div className="row" style={{ gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="monitoring-region">{s.regionLabel}</label>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="monitoring-region">{s.regionLabel}</label>
         {/* changing region resets city — the city list is region-scoped server-side */}
-        <select className="ax-select" id="monitoring-region" style={{ maxInlineSize: 220 }} value={region}
+        <select className="sq-select" id="monitoring-region" style={{ maxInlineSize: 220 }} value={region}
           onChange={e => apply(e.target.value, "")} aria-label={s.regionLabel}>
           <option value="">{s.allRegions}</option>
           {regions.map(r => <option key={r} value={r}>{r}</option>)}
         </select></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="monitoring-city">{s.cityLabel}</label>
-        <select className="ax-select" id="monitoring-city" style={{ maxInlineSize: 220 }} value={city}
+      <div className="sq-field"><label className="sq-field__label" htmlFor="monitoring-city">{s.cityLabel}</label>
+        <select className="sq-select" id="monitoring-city" style={{ maxInlineSize: 220 }} value={city}
           onChange={e => apply(region, e.target.value)} aria-label={s.cityLabel}>
           <option value="">{s.allCities}</option>
           {cities.map(c => <option key={c} value={c}>{c}</option>)}
@@ -99,21 +99,21 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
 
   return (
     <div className="stack" style={{ gap: "var(--space-3)" }}>
-      {err && <div className="ax-banner ax-banner--critical" role="alert"><div>{err}</div></div>}
+      {err && <div className="sq-banner sq-banner--critical" role="alert"><div>{err}</div></div>}
       {rows.length === 0 ? (
         <EmptyState icon={<IconSatellite size={28} />} title={s.emptyTitle} body={s.emptyDesc} bare />
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr><th scope="col">{s.thVisit}</th><th scope="col">{s.thFactory}</th><th scope="col">{s.thOperational}</th><th scope="col">{s.thGeofence}</th><th scope="col">{s.thInspector}</th></tr></thead>
           <tbody>{rows.map(v => (
             <tr key={v.id}>
-              <td><a className="ax-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></td>
+              <td><a className="sq-link" href={`/visits/${v.id}`}>{v.id.slice(0, 8)}</a></td>
               <td>{v.factory_id
-                ? <a className="ax-link" href={`/factories/${v.factory_id}`}>{v.factory_name ?? "—"}</a>
+                ? <a className="sq-link" href={`/factories/${v.factory_id}`}>{v.factory_name ?? "—"}</a>
                 : (v.factory_name ?? "—")}</td>
-              <td><span className={`ax-lozenge ax-lozenge--ops ${v.operational_state === "executing" ? "ax-lozenge--success" : ""}`}>{label(v.operational_state)}</span></td>
+              <td><span className={`sq-lozenge sq-lozenge--ops ${v.operational_state === "executing" ? "sq-lozenge--success" : ""}`}>{label(v.operational_state)}</span></td>
               <td>{v.geofence
-                ? <span className={`ax-lozenge ${GEOFENCE_TONE[v.geofence] ?? "ax-lozenge--critical"}`}>{label(v.geofence)}</span>
+                ? <span className={`sq-lozenge ${GEOFENCE_TONE[v.geofence] ?? "sq-lozenge--critical"}`}>{label(v.geofence)}</span>
                 : <span className="t-caption">—</span>}</td>
               <td>{v.inspector ?? "—"}</td>
             </tr>

@@ -1,5 +1,5 @@
 /**
- * Shared skeleton primitives. Extracted from the ax-skeleton divs hand-copied
+ * Shared skeleton primitives. Extracted from the sq-skeleton divs hand-copied
  * across 18 route-level loading.tsx files. Pure presentational, no data/i18n.
  */
 type SkeletonBlockProps = {
@@ -12,7 +12,7 @@ type SkeletonBlockProps = {
 export function SkeletonBlock({ blockSize = 14, inlineSize, style, ariaHidden }: SkeletonBlockProps) {
   // SAQEEL: renders the new `.skeleton` class (design/saqeel components.css).
   // Logical block/inline sizing preserved for RTL; migrates all 18 loading.tsx
-  // consumers off .ax-skeleton with no call-site change.
+  // consumers off .sq-skeleton with no call-site change.
   return <div className="skeleton" style={{ blockSize, inlineSize, ...style }} aria-hidden={ariaHidden} />;
 }
 

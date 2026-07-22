@@ -56,17 +56,17 @@ export default function Attachments({ visitId, rows, strings }: {
       {rows.length === 0 ? (
         <p className="t-caption">{strings.empty}</p>
       ) : (
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col">{strings.colFile}</th><th scope="col">{strings.colType}</th>
-            <th scope="col" className="ax-td-num">{strings.colUploaded}</th><th scope="col">{strings.colBy}</th><th scope="col">{strings.colActions}</th>
+            <th scope="col" className="sq-td-num">{strings.colUploaded}</th><th scope="col">{strings.colBy}</th><th scope="col">{strings.colActions}</th>
           </tr></thead>
           <tbody>
             {rows.map(a => (
               <tr key={a.id}>
                 <td><strong>{a.name}</strong></td>
                 <td className="t-caption">{a.mime}</td>
-                <td className="ax-td-num numeric">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
+                <td className="sq-td-num numeric">{a.uploadedAt.slice(0, 16).replace("T", " ")}</td>
                 <td>{a.uploadedBy}</td>
                 <td>
                   <div className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
@@ -83,14 +83,14 @@ export default function Attachments({ visitId, rows, strings }: {
       )}
       <form action={upAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-3)" }}>
         <input type="hidden" name="visit_id" value={visitId} />
-        <div className="ax-field" style={{ maxInlineSize: 340 }}>
-          <label className="ax-field__label" htmlFor="visit-attachment-file">{strings.fileLabel}</label>
-          <input className="ax-input" type="file" name="file" id="visit-attachment-file" required />
+        <div className="sq-field" style={{ maxInlineSize: 340 }}>
+          <label className="sq-field__label" htmlFor="visit-attachment-file">{strings.fileLabel}</label>
+          <input className="sq-input" type="file" name="file" id="visit-attachment-file" required />
         </div>
         <button className="btn btn-secondary btn-touch" disabled={upPending}>{upPending ? strings.uploading : strings.uploadBtn}</button>
       </form>
-      {up.error && <div className="ax-banner ax-banner--critical"><div>{up.error}</div></div>}
-      {up.ok && <div className="ax-banner ax-banner--success"><div>{up.ok}</div></div>}
+      {up.error && <div className="sq-banner sq-banner--critical"><div>{up.error}</div></div>}
+      {up.ok && <div className="sq-banner sq-banner--success"><div>{up.ok}</div></div>}
     </div>
   );
 }

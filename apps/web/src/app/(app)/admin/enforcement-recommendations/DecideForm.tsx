@@ -13,14 +13,14 @@ export default function DecideForm({ id, strings }: { id: string; strings: Decid
     <form action={formAction} className="stack" style={{ gap: "var(--space-3)" }}>
       <input type="hidden" name="id" value={id} />
       <div className="row">
-        <label className="ax-choice"><input type="radio" name="decision" value="approved" checked={decision === "approved"} onChange={() => setDecision("approved")} /> {strings.approve}</label>
-        <label className="ax-choice"><input type="radio" name="decision" value="rejected" checked={decision === "rejected"} onChange={() => setDecision("rejected")} /> {strings.reject}</label>
+        <label className="sq-choice"><input type="radio" name="decision" value="approved" checked={decision === "approved"} onChange={() => setDecision("approved")} /> {strings.approve}</label>
+        <label className="sq-choice"><input type="radio" name="decision" value="rejected" checked={decision === "rejected"} onChange={() => setDecision("rejected")} /> {strings.reject}</label>
       </div>
-      <label className="ax-field">
-        <span className="ax-field__label">{strings.reasonLabel}</span>
-        <textarea className="ax-textarea" name="decision_reason" rows={2} placeholder={strings.reasonPlaceholder} />
+      <label className="sq-field">
+        <span className="sq-field__label">{strings.reasonLabel}</span>
+        <textarea className="sq-textarea" name="decision_reason" rows={2} placeholder={strings.reasonPlaceholder} />
       </label>
-      {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
+      {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}
       <button type="submit" className="btn btn-primary btn-lg btn-touch" aria-disabled={pending}>{pending ? strings.recording : strings.submit}</button>
     </form>
   );

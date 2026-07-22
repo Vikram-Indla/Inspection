@@ -80,21 +80,21 @@ export default async function Localization() {
         <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           <span className="badge badge-info">SCR-ADM-100 · SB19</span>
           {locale === "ar"
-            ? <a className="ax-link" href="/locale?set=en">English</a>
-            : <a className="ax-link" href="/locale?set=ar" lang="ar">العربية</a>}
+            ? <a className="sq-link" href="/locale?set=en">English</a>
+            : <a className="sq-link" href="/locale?set=ar" lang="ar">العربية</a>}
         </span>
       }>
       {error ? (
-        <div className="ax-banner ax-banner--critical" role="alert">
+        <div className="sq-banner sq-banner--critical" role="alert">
           {t("l10n.error.load", "Could not load the localization dictionary. Nothing was changed. Try again.")}
         </div>
       ) : (
         <>
-          <div className="ax-kpi-row">
-            <div className="ax-kpi"><span className="ax-kpi__value numeric">{total}</span>{t("l10n.kpi.total", "Total keys")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value numeric">{translated}</span>{t("l10n.kpi.translated", "Translated (AR)")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
-            <div className="ax-kpi"><span className="ax-kpi__value numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
+          <div className="sq-kpi-row">
+            <div className="sq-kpi"><span className="sq-kpi__value numeric">{total}</span>{t("l10n.kpi.total", "Total keys")}</div>
+            <div className="sq-kpi"><span className="sq-kpi__value numeric">{translated}</span>{t("l10n.kpi.translated", "Translated (AR)")}</div>
+            <div className="sq-kpi"><span className="sq-kpi__value numeric">{reviewed}</span>{t("l10n.kpi.reviewed", "Reviewed")}</div>
+            <div className="sq-kpi"><span className="sq-kpi__value numeric">{coverage}%</span>{t("l10n.kpi.coverage", "Coverage")}</div>
           </div>
           <Manager rows={rows} labels={labels} />
         </>

@@ -124,12 +124,12 @@ export default async function ExecutionControlPlane() {
       current="/admin/execution"
       title={t("admin.execution.title", "Execution Settings")}
       context={<>
-        <span className="ax-lozenge ax-lozenge--info">EXE-ADMIN · TASK-EXECUTION-MODULE-001</span>
-        {execution?.version_label && <span className="ax-version">{execution.version_label}</span>}
+        <span className="sq-lozenge sq-lozenge--info">EXE-ADMIN · TASK-EXECUTION-MODULE-001</span>
+        {execution?.version_label && <span className="sq-version">{execution.version_label}</span>}
       </>}
     >
-      <div className="ax-stack" style={{ gap: "var(--space-6)" }}>
-        <div className="ax-banner"><div>
+      <div className="sq-stack" style={{ gap: "var(--space-6)" }}>
+        <div className="sq-banner"><div>
           <strong>{t("admin.execution.banner.title", "This is the execution control plane.")}</strong>{" "}
           {t("admin.execution.banner.body", "Each section governs one part of the execution configuration. Every change is checked against your capabilities, written only to the keys that section owns, versioned, and recorded in the activity log. A value that has never been set is shown as unset — nothing is filled in by assumption.")}
         </div></div>
@@ -143,7 +143,7 @@ export default async function ExecutionControlPlane() {
         )}
 
         {canWorkflow && (
-          <section className="ax-surface" style={sectionStyle} aria-labelledby="exec-capacity-h">
+          <section className="sq-surface" style={sectionStyle} aria-labelledby="exec-capacity-h">
             <h3 id="exec-capacity-h" style={{ margin: 0 }}>{t("admin.execution.capacity.title", "Daily capacity & journey")}</h3>
             <CapacityForm
               cap={num(execSettings.daily_visit_cap)}
@@ -158,22 +158,22 @@ export default async function ExecutionControlPlane() {
             <div>
               <b>{t("admin.execution.journey.title", "Journey-start timing policy")}</b>
               {journeyTiming === "inside_visit_window" ? (
-                <p className="ax-caption" style={{ margin: 0 }}>
+                <p className="sq-caption" style={{ margin: 0 }}>
                   {t("admin.execution.journey.insideWindow", "Starting the journey is allowed before or on the Execution Date. Starting after the Execution Date but still inside the visit window records an overdue warning and an activity-log entry. Starting outside the visit window is blocked.")}
                 </p>
               ) : (
-                <p className="ax-caption" style={{ margin: 0 }}>
+                <p className="sq-caption" style={{ margin: 0 }}>
                   {t("admin.execution.journey.notConfigured", "Not configured — journey starts fail closed until a policy is set.")}
                 </p>
               )}
-              <p className="ax-caption" style={{ margin: 0 }}>
+              <p className="sq-caption" style={{ margin: 0 }}>
                 {t("admin.execution.journey.readonly", "This policy is read-only here; it changes only through a governed release decision.")}
               </p>
             </div>
             <div>
-              <span className="ax-lozenge ax-lozenge--info">{t("admin.execution.invariant.label", "Governed invariant")}</span>{" "}
+              <span className="sq-lozenge sq-lozenge--info">{t("admin.execution.invariant.label", "Governed invariant")}</span>{" "}
               <span>{t("admin.execution.invariant.onePenalty", "One penalty per violation (Phase 1)")}</span>{" "}
-              <span className="ax-caption">
+              <span className="sq-caption">
                 {onePenalty
                   ? t("admin.execution.invariant.active", "Active — not editable on this screen.")
                   : t("admin.execution.invariant.unknown", "Not configured on the execution row — treated as unset.")}
@@ -183,7 +183,7 @@ export default async function ExecutionControlPlane() {
         )}
 
         {canModes && (
-          <section className="ax-surface" style={sectionStyle} aria-labelledby="exec-modes-h">
+          <section className="sq-surface" style={sectionStyle} aria-labelledby="exec-modes-h">
             <h3 id="exec-modes-h" style={{ margin: 0 }}>{t("admin.execution.modes.title", "Visit mode eligibility")}</h3>
             <VisitModesForm
               modes={visitModes}
@@ -204,7 +204,7 @@ export default async function ExecutionControlPlane() {
         )}
 
         {canWorkflow && (
-          <section className="ax-surface" style={sectionStyle} aria-labelledby="exec-reasons-h">
+          <section className="sq-surface" style={sectionStyle} aria-labelledby="exec-reasons-h">
             <h3 id="exec-reasons-h" style={{ margin: 0 }}>{t("admin.execution.reasons.title", "Cancellation & exception reasons")}</h3>
             {field ? (
               <ReasonsManager
@@ -231,7 +231,7 @@ export default async function ExecutionControlPlane() {
                 }}
               />
             ) : (
-              <p className="ax-caption" style={{ margin: 0 }}>
+              <p className="sq-caption" style={{ margin: 0 }}>
                 {t("admin.execution.reasons.unavailable", "The field configuration row is not available, so the governed reason lists cannot be shown. Nothing is displayed as a substitute.")}
               </p>
             )}
@@ -239,7 +239,7 @@ export default async function ExecutionControlPlane() {
         )}
 
         {canWorkflow && (
-          <section className="ax-surface" style={sectionStyle} aria-labelledby="exec-gis-h">
+          <section className="sq-surface" style={sectionStyle} aria-labelledby="exec-gis-h">
             <h3 id="exec-gis-h" style={{ margin: 0 }}>{t("admin.execution.gis.title", "Arrival & geofence rules")}</h3>
             {gis ? (
               <>
@@ -264,12 +264,12 @@ export default async function ExecutionControlPlane() {
                     saved: t("admin.execution.saved", "saved — effective immediately"),
                   }}
                 />
-                <p className="ax-caption" style={{ margin: 0 }}>
+                <p className="sq-caption" style={{ margin: 0 }}>
                   {t("admin.execution.gis.perFactory", "Per-factory geofence radius overrides stay in Map Settings (/admin/gis); this screen governs only the shared defaults.")}
                 </p>
               </>
             ) : (
-              <p className="ax-caption" style={{ margin: 0 }}>
+              <p className="sq-caption" style={{ margin: 0 }}>
                 {t("admin.execution.gis.unavailable", "The GIS configuration row is not available, so arrival and geofence rules cannot be shown.")}
               </p>
             )}
@@ -277,7 +277,7 @@ export default async function ExecutionControlPlane() {
         )}
 
         {canEvidence && (
-          <section className="ax-surface" style={sectionStyle} aria-labelledby="exec-evidence-h">
+          <section className="sq-surface" style={sectionStyle} aria-labelledby="exec-evidence-h">
             <h3 id="exec-evidence-h" style={{ margin: 0 }}>{t("admin.execution.evidence.title", "Evidence policy")}</h3>
             {evidence ? (
               <>
@@ -300,16 +300,16 @@ export default async function ExecutionControlPlane() {
                   }}
                 />
                 <div>
-                  <span className="ax-lozenge ax-lozenge--info">{t("admin.execution.invariant.label", "Governed invariant")}</span>{" "}
+                  <span className="sq-lozenge sq-lozenge--info">{t("admin.execution.invariant.label", "Governed invariant")}</span>{" "}
                   <span>{t("admin.execution.evidence.hash", "Integrity hash: sha256 at sync")}</span>{" "}
-                  <span className="ax-caption">{t("admin.execution.evidence.hashNote", "Not editable — every evidence record is hashed when it syncs.")}</span>
+                  <span className="sq-caption">{t("admin.execution.evidence.hashNote", "Not editable — every evidence record is hashed when it syncs.")}</span>
                 </div>
-                <p className="ax-caption" style={{ margin: 0 }}>
+                <p className="sq-caption" style={{ margin: 0 }}>
                   {t("admin.execution.evidence.multiplicity", "Per-item multiplicity bounds (minimum/maximum captures per evidence requirement): not configured — absent bounds are treated as not permitted, never assumed.")}
                 </p>
               </>
             ) : (
-              <p className="ax-caption" style={{ margin: 0 }}>
+              <p className="sq-caption" style={{ margin: 0 }}>
                 {t("admin.execution.evidence.unavailable", "The evidence configuration row is not available, so the evidence policy cannot be shown.")}
               </p>
             )}
@@ -317,7 +317,7 @@ export default async function ExecutionControlPlane() {
         )}
 
         {canOffline && (
-          <section className="ax-surface" style={sectionStyle} aria-labelledby="exec-offline-h">
+          <section className="sq-surface" style={sectionStyle} aria-labelledby="exec-offline-h">
             <h3 id="exec-offline-h" style={{ margin: 0 }}>{t("admin.execution.offline.title", "Offline & sync policy")}</h3>
             <OfflinePolicyForm
               maxSyncAttempts={num(offline.max_sync_attempts)}
@@ -339,9 +339,9 @@ export default async function ExecutionControlPlane() {
         )}
 
         {granted.size > 0 && (
-          <div className="ax-stack" style={{ gap: "var(--space-4)" }}>
+          <div className="sq-stack" style={{ gap: "var(--space-4)" }}>
             <h4 style={{ margin: 0 }}>{t("admin.execution.raw.title", "Stored engine rows")}</h4>
-            <p className="ax-caption" style={{ margin: 0 }}>
+            <p className="sq-caption" style={{ margin: 0 }}>
               {t("admin.execution.raw.hint", "Read-only inspection of the exact stored configuration. The governed forms above are the supported editing path.")}
             </p>
             {execution && <RawJsonDetails engine="execution" json={execution.settings} />}

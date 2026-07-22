@@ -47,10 +47,10 @@ export type VersionCompareStrings = {
 type Category = "expected" | "unexpected" | "unchanged" | "unavailable";
 const GLYPH: Record<Category, string> = { expected: "✔", unexpected: "▲", unchanged: "=", unavailable: "○" };
 const LOZ: Record<Category, string> = {
-  expected: "ax-lozenge ax-lozenge--success",
-  unexpected: "ax-lozenge ax-lozenge--critical",
-  unchanged: "ax-lozenge",
-  unavailable: "ax-lozenge ax-lozenge--warning",
+  expected: "sq-lozenge sq-lozenge--success",
+  unexpected: "sq-lozenge sq-lozenge--critical",
+  unchanged: "sq-lozenge",
+  unavailable: "sq-lozenge sq-lozenge--warning",
 };
 
 export default function VersionCompare({ versions, itemSection, returnedScope, scopeLabel, strings }: {
@@ -131,7 +131,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.heading}</h4>
 
       {staleAt != null && (
-        <div className="ax-banner ax-banner--warning" role="alert" style={{ marginBlockEnd: "var(--space-3)" }}>
+        <div className="sq-banner sq-banner--warning" role="alert" style={{ marginBlockEnd: "var(--space-3)" }}>
           <div>
             <strong>{strings.staleTitle ?? "A newer version was submitted."}</strong>{" "}
             {(strings.staleBody ?? "Version v{n} arrived while you had this open — refresh before relying on this comparison.").replace("{n}", String(staleAt))}
@@ -145,15 +145,15 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
 
       {/* Version selectors — explicit from/to. Default latest vs prior. */}
       <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap", marginBlockEnd: "var(--space-4)" }}>
-        <div className="ax-field" style={{ maxInlineSize: 220 }}>
-          <label className="ax-field__label" htmlFor="cmp-from">{strings.from}</label>
-          <select id="cmp-from" className="ax-select" value={fromN ?? ""} onChange={e => setFromN(e.target.value === "" ? undefined : Number(e.target.value))}>
+        <div className="sq-field" style={{ maxInlineSize: 220 }}>
+          <label className="sq-field__label" htmlFor="cmp-from">{strings.from}</label>
+          <select id="cmp-from" className="sq-select" value={fromN ?? ""} onChange={e => setFromN(e.target.value === "" ? undefined : Number(e.target.value))}>
             {numbers.map(n => <option key={n} value={n}>v{n}</option>)}
           </select>
         </div>
-        <div className="ax-field" style={{ maxInlineSize: 220 }}>
-          <label className="ax-field__label" htmlFor="cmp-to">{strings.to}</label>
-          <select id="cmp-to" className="ax-select" value={toN} onChange={e => setToN(Number(e.target.value))}>
+        <div className="sq-field" style={{ maxInlineSize: 220 }}>
+          <label className="sq-field__label" htmlFor="cmp-to">{strings.to}</label>
+          <select id="cmp-to" className="sq-select" value={toN} onChange={e => setToN(Number(e.target.value))}>
             {numbers.map(n => <option key={n} value={n}>v{n}</option>)}
           </select>
         </div>
@@ -171,16 +171,16 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
       <p className="t-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.navHint}</p>
 
       {fromN === undefined ? (
-        <div className="ax-banner" role="status"><div>{strings.noPrior}</div></div>
+        <div className="sq-banner" role="status"><div>{strings.noPrior}</div></div>
       ) : (
         <>
           {/* One blocking alert for tamper; otherwise a clean status. */}
           {tamper ? (
-            <div className="ax-banner ax-banner--critical" role="alert">
+            <div className="sq-banner sq-banner--critical" role="alert">
               <div><strong>{strings.tamperTitle}</strong> {strings.tamperBody}</div>
             </div>
           ) : scopeKnown && changedRows.length > 0 ? (
-            <div className="ax-banner ax-banner--success" role="status">
+            <div className="sq-banner sq-banner--success" role="status">
               <div><strong>{strings.cleanTitle}</strong> {strings.cleanBody}</div>
             </div>
           ) : null}
@@ -223,9 +223,9 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
 
           {/* Answer diff — stored snapshots, union of keys. Classification column. */}
           {changedRows.length === 0 ? (
-            <div className="ax-banner" role="status"><div>{strings.emptyDiff}</div></div>
+            <div className="sq-banner" role="status"><div>{strings.emptyDiff}</div></div>
           ) : (
-            <div className="ax-tablewrap"><table className="ax-table cd-compare-table">
+            <div className="sq-tablewrap"><table className="sq-table cd-compare-table">
               <thead><tr>
                 <th scope="col">{strings.colItem}</th>
                 <th scope="col">{strings.colSection}</th>
@@ -253,7 +253,7 @@ export default function VersionCompare({ versions, itemSection, returnedScope, s
 
       {/* Explicitly unavailable comparison categories — never rendered as "unchanged". */}
       <div className="panel" style={{ padding: "var(--space-3)", marginBlockStart: "var(--space-4)" }}>
-        <p className="ax-overline" style={{ marginBlockEnd: 8 }}>{strings.unavailableHeading}</p>
+        <p className="sq-overline" style={{ marginBlockEnd: 8 }}>{strings.unavailableHeading}</p>
         <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailEvidence}</p>
         <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailPackage}</p>
         <p className="t-caption"><span className="badge badge-warning" aria-hidden="true">{GLYPH.unavailable}</span> {strings.unavailMetadata}</p>

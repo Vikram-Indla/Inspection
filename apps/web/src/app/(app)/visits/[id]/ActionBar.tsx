@@ -74,19 +74,19 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
 
       {/* ── ZONE: AVAILABLE NOW ────────────────────────────────── */}
-      <div className="ax-actionzone">
-        <p className="ax-actionzone__label t-caption">{strings.zoneAvailable}</p>
+      <div className="sq-actionzone">
+        <p className="sq-actionzone__label t-caption">{strings.zoneAvailable}</p>
         <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-4)" }}>
           {status === "published" && (
             <form action={retAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               <input type="hidden" name="visit_id" value={visitId} />
-              <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="visit-return-reason">{strings.returnReason}</label>
-                <select className="ax-select" name="reason_key" id="visit-return-reason" required>
+              <div className="sq-field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="visit-return-reason">{strings.returnReason}</label>
+                <select className="sq-select" name="reason_key" id="visit-return-reason" required>
                   <option value="">—</option>
                   {returnReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
                 </select></div>
-              <div className="ax-field" style={{ maxInlineSize: 260 }}><label className="ax-field__label" htmlFor="visit-return-comments">{strings.returnComments}</label>
-                <input className="ax-input" name="comments" id="visit-return-comments" placeholder={strings.commentsHint} /></div>
+              <div className="sq-field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-return-comments">{strings.returnComments}</label>
+                <input className="sq-input" name="comments" id="visit-return-comments" placeholder={strings.commentsHint} /></div>
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.returnBtn}</button>
             </form>
           )}
@@ -97,16 +97,16 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
           {canReassign && (
             <form action={reaAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
-              <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reassign-inspector">{strings.reassignTo}</label>
-                <select className="ax-select" name="inspector_id" id="visit-reassign-inspector"><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
+              <div className="sq-field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reassign-inspector">{strings.reassignTo}</label>
+                <select className="sq-select" name="inspector_id" id="visit-reassign-inspector"><option value="">—</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
               <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.reassignBtn}</button>
             </form>
           )}
           {canManage && (
             <form action={vtAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
-              <div className="ax-field" style={{ maxInlineSize: 200 }}><label className="ax-field__label" htmlFor="visit-type-select">{strings.visitTypeLabel}</label>
-                <select className="ax-select" name="visit_type" id="visit-type-select" defaultValue={visitType}>
+              <div className="sq-field" style={{ maxInlineSize: 200 }}><label className="sq-field__label" htmlFor="visit-type-select">{strings.visitTypeLabel}</label>
+                <select className="sq-select" name="visit_type" id="visit-type-select" defaultValue={visitType}>
                   <option value="periodic">{strings.typePeriodic}</option>
                   <option value="follow_up">{strings.typeFollowUp}</option>
                   <option value="complaint">{strings.typeComplaint}</option>
@@ -118,21 +118,21 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
             <>
               <form action={rscAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
-                <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
-                  <input className="ax-input numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
-                <div className="ax-field" style={{ maxInlineSize: 220 }}><label className="ax-field__label" htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
-                  <input className="ax-input numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
+                <div className="sq-field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reschedule-start">{strings.newWindowStart}</label>
+                  <input className="sq-input numeric" type="datetime-local" name="window_start" id="visit-reschedule-start" defaultValue={toLocal(windowStart)} /></div>
+                <div className="sq-field" style={{ maxInlineSize: 220 }}><label className="sq-field__label" htmlFor="visit-reschedule-end">{strings.newWindowEnd}</label>
+                  <input className="sq-input numeric" type="datetime-local" name="window_end" id="visit-reschedule-end" defaultValue={toLocal(windowEnd)} /></div>
                 <button className="btn btn-secondary btn-touch" disabled={busy}>{strings.rescheduleBtn}</button>
               </form>
               <form action={canAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
                 <input type="hidden" name="visit_id" value={visitId} />
-                <div className="ax-field" style={{ maxInlineSize: 240 }}><label className="ax-field__label" htmlFor="visit-cancel-reason">{strings.cancelReason}</label>
-                  <select className="ax-select" name="reason_key" id="visit-cancel-reason" required>
+                <div className="sq-field" style={{ maxInlineSize: 240 }}><label className="sq-field__label" htmlFor="visit-cancel-reason">{strings.cancelReason}</label>
+                  <select className="sq-select" name="reason_key" id="visit-cancel-reason" required>
                     <option value="">—</option>
                     {cancelReasons.map(o => <option key={o.key} value={o.key}>{o.label_en}</option>)}
                   </select></div>
-                <div className="ax-field" style={{ maxInlineSize: 260 }}><label className="ax-field__label" htmlFor="visit-cancel-comments">{strings.cancelComments}</label>
-                  <input className="ax-input" name="comments" id="visit-cancel-comments" placeholder={strings.commentsHint} /></div>
+                <div className="sq-field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-cancel-comments">{strings.cancelComments}</label>
+                  <input className="sq-input" name="comments" id="visit-cancel-comments" placeholder={strings.commentsHint} /></div>
                 <button className="btn btn-danger btn-touch" disabled={busy}>{strings.cancelBtn}</button>
               </form>
             </>
@@ -140,8 +140,8 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
           {canManageReturned && packageOptions.length > 0 && (
             <form action={pkgAct} className="row" style={{ alignItems: "flex-end" }}>
               <input type="hidden" name="visit_id" value={visitId} />
-              <div className="ax-field" style={{ maxInlineSize: 260 }}><label className="ax-field__label" htmlFor="visit-repackage">{strings.repackageLabel}</label>
-                <select className="ax-select" name="package_version_id" id="visit-repackage" required>
+              <div className="sq-field" style={{ maxInlineSize: 260 }}><label className="sq-field__label" htmlFor="visit-repackage">{strings.repackageLabel}</label>
+                <select className="sq-select" name="package_version_id" id="visit-repackage" required>
                   <option value="">—</option>
                   {packageOptions.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
                 </select></div>
@@ -161,8 +161,8 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
 
       {/* ── ZONE: DISABLED, WITH WHY ───────────────────────────── */}
       {(scheduleBlocked || reassignBlocked) && (
-        <div className="ax-actionzone">
-          <p className="ax-actionzone__label t-caption">{strings.zoneBlocked}</p>
+        <div className="sq-actionzone">
+          <p className="sq-actionzone__label t-caption">{strings.zoneBlocked}</p>
           <ul className="stack" style={{ gap: "var(--space-2)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
             {scheduleBlocked && (
               <li><span className="badge badge-warning">{strings.cancelBtn} · {strings.rescheduleBtn} · {strings.visitTypeBtn}</span>{" "}
@@ -178,16 +178,16 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
 
       {/* ── ZONE: UNAVAILABLE (final lifecycle state) ──────────── */}
       {isFinal && (
-        <div className="ax-actionzone">
-          <p className="ax-actionzone__label t-caption">{strings.zoneUnavailable}</p>
+        <div className="sq-actionzone">
+          <p className="sq-actionzone__label t-caption">{strings.zoneUnavailable}</p>
           <span className="badge">{strings.finalState}</span>{" "}
           <span className="t-caption">{strings.duplicateWhy}</span>
         </div>
       )}
 
       {/* role=status success / single role=alert failure (DSG-A11Y-001) */}
-      <div aria-live="polite">{ok && <div className="ax-banner ax-banner--success" role="status"><div>{ok}</div></div>}</div>
-      {msg && <div className="ax-banner ax-banner--critical" role="alert"><div>{msg}</div></div>}
+      <div aria-live="polite">{ok && <div className="sq-banner sq-banner--success" role="status"><div>{ok}</div></div>}</div>
+      {msg && <div className="sq-banner sq-banner--critical" role="alert"><div>{msg}</div></div>}
     </div>
   );
 }

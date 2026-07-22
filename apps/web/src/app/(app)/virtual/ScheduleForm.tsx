@@ -13,13 +13,13 @@ export default function ScheduleForm({ visitId, strings }: { visitId: string; st
   return (
     <form action={formAction} className="row" style={{ alignItems: "flex-end" }}>
       <input type="hidden" name="visit_id" value={visitId} />
-      <div className="ax-field"><label className="ax-field__label" htmlFor="schedule-appointment">{strings.appointment}</label>
-        <input className="ax-input numeric" type="datetime-local" name="appointment_at" id="schedule-appointment" required /></div>
-      <div className="ax-field"><label className="ax-field__label" htmlFor="schedule-rep-name">{strings.repName}</label>
-        <input className="ax-input" name="rep_name" id="schedule-rep-name" placeholder={strings.repNamePh} required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="schedule-appointment">{strings.appointment}</label>
+        <input className="sq-input numeric" type="datetime-local" name="appointment_at" id="schedule-appointment" required /></div>
+      <div className="sq-field"><label className="sq-field__label" htmlFor="schedule-rep-name">{strings.repName}</label>
+        <input className="sq-input" name="rep_name" id="schedule-rep-name" placeholder={strings.repNamePh} required /></div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.working : strings.submit}</button>
-      {state.error && <div className="ax-banner ax-banner--critical" role="alert" style={{ flexBasis: "100%" }}><div>{state.error}</div></div>}
-      {state.ok && <div className="ax-banner ax-banner--success" style={{ flexBasis: "100%" }}><div>{state.ok}</div></div>}
+      {state.error && <div className="sq-banner sq-banner--critical" role="alert" style={{ flexBasis: "100%" }}><div>{state.error}</div></div>}
+      {state.ok && <div className="sq-banner sq-banner--success" style={{ flexBasis: "100%" }}><div>{state.ok}</div></div>}
     </form>
   );
 }

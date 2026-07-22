@@ -53,8 +53,8 @@ export default async function Factories() {
   };
   const isEmpty = factoryRows.length === 0;
   return (
-    <Shell current="/factories" title={t("f360.title", "Factory 360")} context={<span className="ax-lozenge ax-lozenge--info">SCR-WEB-400</span>}>
-      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
+    <Shell current="/factories" title={t("f360.title", "Factory 360")} context={<span className="sq-lozenge sq-lozenge--info">SCR-WEB-400</span>}>
+      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("f360.err.load", "Couldn’t load factories.")}</strong> {t("f360.err.neutral", "The Factory list is temporarily unavailable. Nothing was changed.")} — {t("f360.err.retry", "retry")}.</div></div>}
       {!error && isEmpty && (
         <EmptyState glyph="🏭" title={t("f360.empty.title", "No factories in the list")}
           body={t("f360.empty.desc", "Factory identity records sync from the national source (M07-002).")} />

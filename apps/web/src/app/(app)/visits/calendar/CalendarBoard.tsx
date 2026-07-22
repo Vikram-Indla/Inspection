@@ -33,7 +33,7 @@ export type CalendarStrings = {
 type ViewKey = "day" | "week" | "month";
 
 const DAY_MS = 86_400_000;
-const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical" };
+const PLAN_TONE: Record<string, string> = { published: "sq-lozenge--info", returned: "sq-lozenge--warning", cancelled: "sq-lozenge--critical", expired: "sq-lozenge--critical" };
 
 // UTC day helpers — placement key is the ISO date of window_start (UTC),
 // matching how windows are rendered everywhere else in the portal.
@@ -87,7 +87,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
         : dayTitle.format(anchor);
 
   const chip = (v: CalVisit, withTime: boolean) => (
-    <a key={v.id} href={`/visits/${v.id}`} className="ax-link"
+    <a key={v.id} href={`/visits/${v.id}`} className="sq-link"
       style={{
         display: "block", padding: "2px 6px", borderRadius: "var(--radius-xs)",
         background: "var(--accent-soft)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
@@ -114,7 +114,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)" }}>
-        <div className="ax-segmented" role="group" aria-label={strings.viewSwitchAria}>
+        <div className="sq-segmented" role="group" aria-label={strings.viewSwitchAria}>
           {([["day", strings.viewDay], ["week", strings.viewWeek], ["month", strings.viewMonth]] as [ViewKey, string][]).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
           ))}
@@ -131,7 +131,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
         <div className="panel" style={{ padding: "var(--space-4)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
             {weekDays.map(ms => (
-              <div key={`h${ms}`} className="ax-overline" style={{ padding: "var(--space-1)", textAlign: "center" }}>{weekdayName.format(new Date(ms))}</div>
+              <div key={`h${ms}`} className="sq-overline" style={{ padding: "var(--space-1)", textAlign: "center" }}>{weekdayName.format(new Date(ms))}</div>
             ))}
             {monthCells.map(ms => {
               const k = keyOf(ms);
@@ -172,7 +172,7 @@ export default function CalendarBoard({ visits, locale, strings }: {
                   border: `1px solid ${isToday ? "var(--action-primary)" : "var(--border-subtle)"}`,
                   borderRadius: "var(--radius-xs)", padding: "var(--space-2)",
                 }}>
-                  <span className="ax-overline" style={{ textAlign: "center" }}>{shortDay.format(new Date(ms))}</span>
+                  <span className="sq-overline" style={{ textAlign: "center" }}>{shortDay.format(new Date(ms))}</span>
                   {list.map(v => chip(v, true))}
                 </div>
               );
@@ -185,15 +185,15 @@ export default function CalendarBoard({ visits, locale, strings }: {
         <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <span className="t-caption numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
           {dayVisits.length === 0 ? (
-            <div className="ax-state ax-state--inline"><p className="t-caption">{strings.emptyRange}</p></div>
+            <div className="sq-state sq-state--inline"><p className="t-caption">{strings.emptyRange}</p></div>
           ) : dayVisits.map(v => (
             <a key={v.id} href={`/visits/${v.id}`} className="panel"
               style={{ padding: "var(--space-4)", display: "flex", gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap", textDecoration: "none", color: "inherit", border: "1px solid var(--border-subtle)" }}>
               <span className="numeric"><strong>{timeOf(v.windowStart)}</strong> → {timeOf(v.windowEnd)}</span>
               <strong>{v.factoryName}</strong>
               <span className="t-caption">{v.typeLabel}</span>
-              <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[v.planningStatus] ?? ""}`}>{v.planningLabel}</span>
-              <span className="ax-lozenge ax-lozenge--ops">{v.opsLabel}</span>
+              <span className={`sq-lozenge sq-lozenge--plan ${PLAN_TONE[v.planningStatus] ?? ""}`}>{v.planningLabel}</span>
+              <span className="sq-lozenge sq-lozenge--ops">{v.opsLabel}</span>
             </a>
           ))}
         </div>

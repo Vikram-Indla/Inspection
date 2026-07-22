@@ -119,23 +119,23 @@ export default function GisStudio({ factories, gis, strings: s }: {
   })), [located, selectedId, draftRadius, defaultFence]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const lozengeFor = (b: string | null) =>
-    `ax-lozenge ${b === "high" ? "ax-lozenge--critical" : b === "medium" ? "ax-lozenge--warning" : b === "low" ? "ax-lozenge--success" : "ax-lozenge--info"}`;
+    `sq-lozenge ${b === "high" ? "sq-lozenge--critical" : b === "medium" ? "sq-lozenge--warning" : b === "low" ? "sq-lozenge--success" : "sq-lozenge--info"}`;
 
   return (
     <div className="stack" style={{ gap: "var(--space-6)" }}>
       {/* Toolbar — search + filters + result count (RTL mirrors via flex) */}
       <div className="row" style={{ gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap" }}>
         <input
-          className="ax-input" type="search" value={query}
+          className="sq-input" type="search" value={query}
           aria-label={s.searchLabel} placeholder={s.searchPlaceholder}
           onChange={e => setQuery(e.target.value)} onKeyDown={onSearchKey}
           style={{ flex: 1, minInlineSize: 240 }}
         />
-        <select className="ax-select" style={{ maxInlineSize: 220 }} value={region} onChange={e => setRegion(e.target.value)} aria-label={s.thRegion}>
+        <select className="sq-select" style={{ maxInlineSize: 220 }} value={region} onChange={e => setRegion(e.target.value)} aria-label={s.thRegion}>
           <option value="">{s.filterRegionAll}</option>
           {regions.map(r => <option key={r} value={r}>{r}</option>)}
         </select>
-        <select className="ax-select" style={{ maxInlineSize: 220 }} value={band} onChange={e => setBand(e.target.value)} aria-label={s.thBand}>
+        <select className="sq-select" style={{ maxInlineSize: 220 }} value={band} onChange={e => setBand(e.target.value)} aria-label={s.thBand}>
           <option value="">{s.filterBandAll}</option>
           <option value="high">{s.bandHigh}</option>
           <option value="medium">{s.bandMedium}</option>
@@ -149,7 +149,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
       </div>
 
       <div style={{ display: "flex", gap: "var(--space-6)", alignItems: "stretch", flexWrap: "wrap" }}>
-        <div className="ax-panel" style={{ flex: 1, minInlineSize: 420, padding: 0, overflow: "hidden" }}>
+        <div className="sq-panel" style={{ flex: 1, minInlineSize: 420, padding: 0, overflow: "hidden" }}>
           <Suspense fallback={
             <EmptyState glyph="…" title={s.loadingTitle} body={s.loadingBody} bare role="status" ariaBusy />
           }>
@@ -165,7 +165,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
           </Suspense>
         </div>
 
-        <aside className="ax-panel" style={{ inlineSize: "var(--panel-w)", padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+        <aside className="sq-panel" style={{ inlineSize: "var(--panel-w)", padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           {!selected && (
             <EmptyState glyph="◎" title={s.selectTitle} body={s.selectBody} inline bare />
           )}
@@ -186,22 +186,22 @@ export default function GisStudio({ factories, gis, strings: s }: {
               </div>
 
               <div>
-                <div className="ax-field__label">{s.coordsLabel}</div>
+                <div className="sq-field__label">{s.coordsLabel}</div>
                 <p className="numeric" dir="ltr">{selected.official_lat}, {selected.official_lng}</p>
                 <p className="t-caption">{s.coordsCaption}</p>
               </div>
 
               <form action={formAction} className="stack" style={{ gap: "var(--space-3)" }}>
                 <input type="hidden" name="factory_id" value={selected.id} />
-                <div className="ax-field">
-                  <label className="ax-field__label" htmlFor="gis-radius">{s.radiusLabel}</label>
+                <div className="sq-field">
+                  <label className="sq-field__label" htmlFor="gis-radius">{s.radiusLabel}</label>
                   <input
-                    id="gis-radius" className="ax-input numeric" name="geofence_radius_m"
+                    id="gis-radius" className="sq-input numeric" name="geofence_radius_m"
                     type="number" min={1} step={1} required
                     value={draftRadius} onChange={e => setDraftRadius(e.target.value)}
                     placeholder={String(defaultFence)}
                   />
-                  <p className="ax-field__hint">{s.radiusHint} (<span className="numeric">{defaultFence}</span> m)</p>
+                  <p className="sq-field__hint">{s.radiusHint} (<span className="numeric">{defaultFence}</span> m)</p>
                 </div>
                 <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
                   <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.saving : s.save}</button>
@@ -213,8 +213,8 @@ export default function GisStudio({ factories, gis, strings: s }: {
           )}
 
           <div style={{ marginBlockStart: "auto" }}>
-            <div className="ax-field__label">{s.defaultsTitle}</div>
-            <table className="ax-table">
+            <div className="sq-field__label">{s.defaultsTitle}</div>
+            <table className="sq-table">
               <tbody>
                 <tr><td>{s.defaultsCheckin}</td><td className="numeric" dir="ltr">≤ {gis.gps_accuracy_checkin_max_m ?? "—"} m</td></tr>
                 <tr><td>{s.defaultsArrival}</td><td className="numeric" dir="ltr">{gis.arrival_detection_radius_m ?? "—"} m</td></tr>
@@ -234,8 +234,8 @@ export default function GisStudio({ factories, gis, strings: s }: {
       </div>
 
       {/* Linked registry table — row click selects on the map; selection highlights the row */}
-      <div className="ax-tablewrap">
-        <table className="ax-table">
+      <div className="sq-tablewrap">
+        <table className="sq-table">
           <thead>
             <tr>
               <th scope="col">{s.thCode}</th><th scope="col">{s.thName}</th><th scope="col">{s.thRegion}</th><th scope="col">{s.thCity}</th>

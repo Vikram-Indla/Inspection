@@ -76,9 +76,9 @@ export default async function AdminHome() {
   function chip(kind: "verified" | "verifiedZero" | "unavailable") {
     const glyph = kind === "unavailable" ? "✕" : "✓";
     const cls =
-      kind === "verified" ? "ax-lozenge ax-lozenge--success"
-      : kind === "verifiedZero" ? "ax-lozenge ax-lozenge--info"
-      : "ax-lozenge ax-lozenge--warning";
+      kind === "verified" ? "sq-lozenge sq-lozenge--success"
+      : kind === "verifiedZero" ? "sq-lozenge sq-lozenge--info"
+      : "sq-lozenge sq-lozenge--warning";
     const label =
       kind === "verified" ? t("admin.overview.r2.read.verified", "read verified")
       : kind === "verifiedZero" ? t("admin.overview.r2.read.verifiedZero", "read verified — genuinely empty")
@@ -122,7 +122,7 @@ export default async function AdminHome() {
   const familyAudit = t("admin.overview.r2.family.audit", "Audit trail");
   const openTmpl = t("admin.overview.r2.open", "Open {family}");
   const openLink = (family: string, href: string) => (
-    <a className="btn btn-secondary ax-link btn-touch" href={href} aria-label={`${fill(openTmpl, { family })} — ${family}`}>
+    <a className="btn btn-secondary sq-link btn-touch" href={href} aria-label={`${fill(openTmpl, { family })} — ${family}`}>
       {fill(openTmpl, { family })}
     </a>
   );
@@ -162,7 +162,7 @@ export default async function AdminHome() {
       {/* Singleton assertive region (spec §8). Total failure is shown; a partial
           failure is announced sr-only, the visible fact living in the header lozenge. */}
       {total ? (
-        <div className="ax-banner ax-banner--warning" role="alert">
+        <div className="sq-banner sq-banner--warning" role="alert">
           {t("admin.overview.r2.totalFailure", "Configuration sources couldn't be read. Nothing shown is current. Your session and navigation still work.")}
         </div>
       ) : failed > 0 ? (
@@ -173,8 +173,8 @@ export default async function AdminHome() {
 
       <section className="panel stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd004-spine-h" style={{ margin: 0 }}>{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</h3>
-        <div className="ax-tablewrap">
-          <table className="ax-table">
+        <div className="sq-tablewrap">
+          <table className="sq-table">
             <caption className="sr-only">{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</caption>
             <thead>
               <tr>
@@ -232,7 +232,7 @@ export default async function AdminHome() {
                             <li key={e.engine} className="t-caption">
                               <bdi dir="ltr">{e.engine}</bdi>
                               {" · "}
-                              <span className="ax-version"><bdi dir="ltr">{e.version_label}</bdi></span>
+                              <span className="sq-version"><bdi dir="ltr">{e.version_label}</bdi></span>
                               {e.updated_at ? (
                                 <> · <bdi dir="ltr" className="numeric">{new Date(e.updated_at).toISOString().slice(0, 10)}</bdi></>
                               ) : null}
@@ -264,14 +264,14 @@ export default async function AdminHome() {
         </h3>
         <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
           {linkOnly.map(l => (
-            <a key={l.href} className="btn btn-secondary ax-link btn-touch" href={l.href}>
+            <a key={l.href} className="btn btn-secondary sq-link btn-touch" href={l.href}>
               {t(l.key, l.en)}
             </a>
           ))}
         </div>
       </nav>
 
-      <section className="panel ax-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--space-6)" }}>
+      <section className="panel sq-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd004-scope-h" style={{ margin: 0 }}>
           {fill(t("admin.overview.r2.scope.heading", "Your scope — {role}"), { role: roleLabel })}
         </h3>

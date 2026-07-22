@@ -90,7 +90,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
 
   const unavailable = (
     <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
-      <div className="ax-banner ax-banner--critical" role="alert">
+      <div className="sq-banner sq-banner--critical" role="alert">
         {tr("plan.single.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.", "بيانات التخطيط غير متاحة مؤقتًا (ERR-OPS-001). حاول مرة أخرى.")}
       </div>
     </Shell>
@@ -404,7 +404,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   };
   return (
     <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.single.context", "SCR-WEB-120 · identity confidence lens")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.single.context", "SCR-WEB-120 · identity confidence lens")}</span>}>
       <Wizard
         query={q}
         portfolios={portfolios}

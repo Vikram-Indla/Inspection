@@ -14,9 +14,9 @@ export default function NotificationPrefsForm({
   return (
     <form action={action} className="stack" style={{ gap: "var(--space-3)" }}>
       <p className="t-caption" style={{ margin: 0 }}>{l.inappNote}</p>
-      <label className="ax-choice"><input type="checkbox" name="push_enabled" defaultChecked={push} /> {l.push}</label>
-      <label className="ax-choice"><input type="checkbox" name="sms_enabled" defaultChecked={sms} /> {l.sms}</label>
-      <label className="ax-choice"><input type="checkbox" name="email_enabled" defaultChecked={email} /> {l.email}</label>
+      <label className="sq-choice"><input type="checkbox" name="push_enabled" defaultChecked={push} /> {l.push}</label>
+      <label className="sq-choice"><input type="checkbox" name="sms_enabled" defaultChecked={sms} /> {l.sms}</label>
+      <label className="sq-choice"><input type="checkbox" name="email_enabled" defaultChecked={email} /> {l.email}</label>
       <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button type="submit" className="btn btn-primary btn-touch" disabled={pending}>{pending ? l.saving : l.save}</button>
         {state.ok ? <span className="t-caption" role="status">{l.saved}</span> : null}

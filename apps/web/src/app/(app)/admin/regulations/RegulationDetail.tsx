@@ -52,7 +52,7 @@ export default async function RegulationDetail({
 
   if (error) {
     return (
-      <div className="ax-banner ax-banner--critical" role="alert"><div>
+      <div className="sq-banner sq-banner--critical" role="alert"><div>
         <strong>{s.degradedTitle}</strong> {s.degradedBody}
       </div></div>
     );
@@ -82,23 +82,23 @@ export default async function RegulationDetail({
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{reg.code} — {reg.title}</h3>
         <div className="row" style={{ gap: "var(--space-3)" }}>
-          <span className={`ax-lozenge ${reg.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${reg.status}`, String(reg.status).replace(/_/g, " "))}</span>
+          <span className={`sq-lozenge ${reg.status === "published" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{t(`enum.${reg.status}`, String(reg.status).replace(/_/g, " "))}</span>
           {reg.status === "draft" && <PublishRegulation regulationId={reg.id} strings={s} />}
         </div>
       </div>
 
       {reg.status === "published" && (
-        <div className="ax-banner" role="status"><div>{s.publishedImmutable}</div></div>
+        <div className="sq-banner" role="status"><div>{s.publishedImmutable}</div></div>
       )}
 
       {reg.status === "draft" && unmapped.length > 0 && (
-        <div className="ax-banner ax-banner--warning" role="status"><div>
+        <div className="sq-banner sq-banner--warning" role="status"><div>
           {s.unmappedBanner.replace("{n}", String(unmapped.length))}
         </div></div>
       )}
 
       {/* Metadata + maker-checker evidence */}
-      <dl className="ax-grid-2" style={{ rowGap: "var(--space-2)" }}>
+      <dl className="sq-grid-2" style={{ rowGap: "var(--space-2)" }}>
         <div><dt className="t-caption">{s.issuingAuthority}</dt><dd><bdi>{reg.issuing_authority || "—"}</bdi></dd></div>
         <div><dt className="t-caption">{s.metaCreated}</dt><dd><bdi>{new Date(reg.created_at).toISOString().slice(0, 10)}</bdi></dd></div>
         <div><dt className="t-caption">{s.metaCreatedBy}</dt><dd><bdi>{nameOf(reg.created_by)}</bdi></dd></div>
@@ -111,7 +111,7 @@ export default async function RegulationDetail({
       {/* Clause navigator + clause→item dependency rail */}
       <div>
         <h4>{s.clauseNav}</h4>
-        <div className="ax-tablewrap" style={{ marginBlockStart: "var(--space-3)" }}><table className="ax-table">
+        <div className="sq-tablewrap" style={{ marginBlockStart: "var(--space-3)" }}><table className="sq-table">
           <thead><tr>
             <th scope="col">{s.clauseRef}</th><th scope="col">{s.title}</th><th scope="col">{s.legalSource}</th><th scope="col">{s.dependencyRail}</th>
           </tr></thead>

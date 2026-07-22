@@ -87,7 +87,7 @@ export type ReviewStrings = {
 
 type Phase = "loading" | "unavailable" | "scope" | "empty" | "review" | "publishing" | "success" | "failure";
 
-const RISK_TONE: Record<string, string> = { high: "ax-lozenge--critical", medium: "ax-lozenge--warning", low: "ax-lozenge--success" };
+const RISK_TONE: Record<string, string> = { high: "sq-lozenge--critical", medium: "sq-lozenge--warning", low: "sq-lozenge--success" };
 // per-kind presentation + which correction the Fix control performs
 const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" | "focusRow" | "focusWindow" | "review" | "none" }> = {
   duplicate:     { cls: "critical",    glyph: "▣", fix: "remove" },
@@ -279,55 +279,55 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
 
   if (phase === "loading") {
     return (
-      <div className="ax-surface ax-panel cd-panelpad" id="cd-main">
-        <div className="ax-banner ax-banner--immutable" style={{ marginBlockEnd: "var(--space-4)" }}>
-          <div><strong>{s.stagedBanner}</strong><div className="ax-caption">{s.stagedSub}</div></div>
+      <div className="sq-surface sq-panel cd-panelpad" id="cd-main">
+        <div className="sq-banner sq-banner--immutable" style={{ marginBlockEnd: "var(--space-4)" }}>
+          <div><strong>{s.stagedBanner}</strong><div className="sq-caption">{s.stagedSub}</div></div>
         </div>
-        <div className="ax-stack">{[0, 1, 2, 3].map(i => <div key={i} className="ax-skeleton" style={{ blockSize: 44 }} />)}</div>
-        <p className="ax-caption" role="status" style={{ marginBlockStart: "var(--space-4)" }}>{s.loadingNote}</p>
+        <div className="sq-stack">{[0, 1, 2, 3].map(i => <div key={i} className="sq-skeleton" style={{ blockSize: 44 }} />)}</div>
+        <p className="sq-caption" role="status" style={{ marginBlockStart: "var(--space-4)" }}>{s.loadingNote}</p>
       </div>
     );
   }
   if (phase === "unavailable") {
-    return <div className="ax-banner ax-banner--critical" role="alert" id="cd-main">{s.unavailable}</div>;
+    return <div className="sq-banner sq-banner--critical" role="alert" id="cd-main">{s.unavailable}</div>;
   }
   if (phase === "scope") {
     const missing = data?.missingFactoryIds?.length ?? 0;
     return (
-      <div className="ax-surface" style={{ padding: "var(--space-8)", textAlign: "center" }} id="cd-main">
-        <div className="ax-state">
-          <span className="ax-state__glyph" aria-hidden="true">◌</span>
+      <div className="sq-surface" style={{ padding: "var(--space-8)", textAlign: "center" }} id="cd-main">
+        <div className="sq-state">
+          <span className="sq-state__glyph" aria-hidden="true">◌</span>
           <h3>{s.scopeTitle}</h3>
-          <p className="ax-caption">{s.scopeBody.replace("{n}", String(missing))}</p>
-          <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
+          <p className="sq-caption">{s.scopeBody.replace("{n}", String(missing))}</p>
+          <a className="sq-btn sq-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
         </div>
       </div>
     );
   }
   if (phase === "empty") {
     return (
-      <div className="ax-surface" style={{ padding: "var(--space-8)", textAlign: "center" }} id="cd-main">
+      <div className="sq-surface" style={{ padding: "var(--space-8)", textAlign: "center" }} id="cd-main">
         {draftUnavailable && (
-          <div className="ax-banner ax-banner--warning" role="alert" style={{ marginBlockEnd: "var(--space-6)" }}>
+          <div className="sq-banner sq-banner--warning" role="alert" style={{ marginBlockEnd: "var(--space-6)" }}>
             {s.draftUnavailable}
           </div>
         )}
         <h3>{s.emptyTitle}</h3>
-        <p className="ax-caption">{s.emptyBody}</p>
-        <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
+        <p className="sq-caption">{s.emptyBody}</p>
+        <a className="sq-btn sq-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
       </div>
     );
   }
   if (phase === "publishing") {
     return (
-      <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
+      <section className="sq-surface sq-panel cd-panelpad cd-result" id="cd-main">
+        <div className="sq-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
           <div className="cd-result__icon lock" aria-hidden="true"><IconLock size={24} /></div>
-          <div className="ax-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
+          <div className="sq-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
             <h3>{s.publishingTitle}</h3>
             <p role="status">{s.publishingBody}</p>
-            <p className="ax-caption">{s.publishingSub}</p>
-            <div className="ax-skeleton" style={{ blockSize: 6, inlineSize: "60%" }} />
+            <p className="sq-caption">{s.publishingSub}</p>
+            <div className="sq-skeleton" style={{ blockSize: 6, inlineSize: "60%" }} />
           </div>
         </div>
       </section>
@@ -335,19 +335,19 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   }
   if (phase === "failure") {
     return (
-      <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
+      <section className="sq-surface sq-panel cd-panelpad cd-result" id="cd-main">
+        <div className="sq-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
           <div className="cd-result__icon fail" aria-hidden="true">✕</div>
-          <div className="ax-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
+          <div className="sq-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
             <h3 tabIndex={-1} ref={failHeadingRef} role="alert">{s.failTitle}</h3>
             <p>{state.error}</p>
-            <p className="ax-caption">{s.failSub}</p>
+            <p className="sq-caption">{s.failSub}</p>
           </div>
         </div>
-        <div className="ax-row" style={{ marginBlockStart: "var(--space-5)", gap: "var(--space-3)" }}>
+        <div className="sq-row" style={{ marginBlockStart: "var(--space-5)", gap: "var(--space-3)" }}>
           <form action={formAction}>{hiddenPublishFields(workingIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
-            <button className="ax-btn ax-btn--prominent">{s.tryAgain}</button></form>
-          <a className="ax-btn ax-btn--secondary" href="/planning/bulk">{s.backConfig}</a>
+            <button className="sq-btn sq-btn--prominent">{s.tryAgain}</button></form>
+          <a className="sq-btn sq-btn--secondary" href="/planning/bulk">{s.backConfig}</a>
         </div>
       </section>
     );
@@ -358,25 +358,25 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     const created = state.created ?? val?.ledger?.toCreate ?? val?.retained ?? 0;
     const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(created)], [s.sAssign, String(created)], [s.sNotif, String(created)]];
     return (
-      <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
+      <section className="sq-surface sq-panel cd-panelpad cd-result" id="cd-main">
+        <div className="sq-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
           <div className="cd-result__icon ok" aria-hidden="true">✓</div>
-          <div className="ax-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
+          <div className="sq-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
             <h3 tabIndex={-1} ref={successHeadingRef} role="status">{s.successTitle}</h3>
             <p>{s.successBody}</p>
             <div className="cd-resultgrid" style={{ marginBlock: "var(--space-3)" }}>
               {cells.map(([k, v]) => (
-                <div key={k} className="ax-surface" style={{ padding: "var(--space-3) var(--space-4)" }}>
-                  <div className="ax-overline">{k}</div><div className="cd-count">{v}</div>
+                <div key={k} className="sq-surface" style={{ padding: "var(--space-3) var(--space-4)" }}>
+                  <div className="sq-overline">{k}</div><div className="cd-count">{v}</div>
                 </div>
               ))}
             </div>
             {/* M7 — accepted-subset honesty: rows dropped at the authoritative
                 publish-time re-check are NAMED, never silently absent. */}
             {(state.dropped?.length ?? 0) > 0 && (
-              <div className="ax-banner ax-banner--warning" role="status">
+              <div className="sq-banner sq-banner--warning" role="status">
                 <strong>{interp(s.droppedH, { n: state.dropped!.length })}</strong>
-                <p className="ax-caption" style={{ marginBlock: "var(--space-1) 0" }}>{s.droppedD}</p>
+                <p className="sq-caption" style={{ marginBlock: "var(--space-1) 0" }}>{s.droppedD}</p>
                 <ul style={{ marginBlockStart: "var(--space-2)" }}>
                   {state.dropped!.map(d => (
                     <li key={d.id}><bdi>{d.name}</bdi> — {d.reasons.map(reasonText).join(" · ")}</li>
@@ -384,13 +384,13 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
                 </ul>
               </div>
             )}
-            <p className="ax-caption">{s.successSub}</p>
+            <p className="sq-caption">{s.successSub}</p>
           </div>
         </div>
-        <div className="ax-row" style={{ marginBlockStart: "var(--space-5)", gap: "var(--space-3)" }}>
-          <a className="ax-btn ax-btn--prominent" href="/visits">{s.goVisits}</a>
+        <div className="sq-row" style={{ marginBlockStart: "var(--space-5)", gap: "var(--space-3)" }}>
+          <a className="sq-btn sq-btn--prominent" href="/visits">{s.goVisits}</a>
           {/* optional read-only plan link — only when the publisher returned a plan ID */}
-          {state.planId && <a className="ax-btn ax-btn--secondary" href={`/planning/plans/${state.planId}`}>{s.openPlan}</a>}
+          {state.planId && <a className="sq-btn sq-btn--secondary" href={`/planning/plans/${state.planId}`}>{s.openPlan}</a>}
         </div>
       </section>
     );
@@ -479,17 +479,17 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   // Per-row evidence cell (glyph + text; never colour alone).
   const rowEvidence = (fid: string) => {
     const pick = picks[fid] ?? "";
-    if (!pick) return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>◐ {s.ecAuto}</span>;
+    if (!pick) return <span className="sq-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>◐ {s.ecAuto}</span>;
     const inPool = (data?.inspectors ?? []).some(i => i.user_id === pick);
-    if (!inPool) return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {s.ev.bNotPool}</span>;
-    if (overlapSource === "failed") return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {s.ecFail}</span>;
-    if (!windowSet || overlapSource === "not-evaluated") return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>○ {s.ecSetWindow}</span>;
+    if (!inPool) return <span className="sq-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {s.ev.bNotPool}</span>;
+    if (overlapSource === "failed") return <span className="sq-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {s.ecFail}</span>;
+    if (!windowSet || overlapSource === "not-evaluated") return <span className="sq-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>○ {s.ecSetWindow}</span>;
     const ov = overlapFor(pick);
     if (ov && ov.count > 0) {
       const sm = ov.samples[0];
-      return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · <bdi>{sm.visit_id.slice(0, 8)}</bdi> {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
+      return <span className="sq-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · <bdi>{sm.visit_id.slice(0, 8)}</bdi> {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
     }
-    return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
+    return <span className="sq-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
   };
 
   const blockerCopy = (b: Blocker) => {
@@ -515,22 +515,22 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   const createMark: "ok" | "pending" = committable ? "ok" : "pending";
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--space-8)" }} id="cd-main">
-      <a href="#cd-publish" className="ax-link cd-skip">{s.skipToPublish}</a>
+    <div className="sq-stack" style={{ gap: "var(--space-8)" }} id="cd-main">
+      <a href="#cd-publish" className="sq-link cd-skip">{s.skipToPublish}</a>
       {/* S10 — polite scope-reduction announcement (visually hidden, does not shift layout) */}
-      <p className="ax-sr-only" role="status" aria-live="polite">{announce}</p>
+      <p className="sq-sr-only" role="status" aria-live="polite">{announce}</p>
 
       {/* ---- context card ---- */}
-      <section className="ax-surface ax-panel">
+      <section className="sq-surface sq-panel">
         <div className="cd-methodline cd-panelpad" style={{ paddingBlockEnd: 0 }}>
-          <span className="ax-lozenge ax-lozenge--plan">{s.method}</span>
-          {freshness && <span className="ax-freshness">{s.freshnessPrefix} {freshness}</span>}
+          <span className="sq-lozenge sq-lozenge--plan">{s.method}</span>
+          {freshness && <span className="sq-freshness">{s.freshnessPrefix} {freshness}</span>}
         </div>
-        <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--space-2) 0" }}>{s.stagedBanner}</p>
+        <p className="sq-caption cd-panelpad" style={{ paddingBlock: "var(--space-2) 0" }}>{s.stagedBanner}</p>
         {/* M6 — resumed-draft provenance / failed-draft honesty */}
         {initialDraft && (
-          <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--space-2) 0" }} role="status">
-            <span className="ax-lozenge ax-lozenge--info">{interp(s.draftBanner, { ref: initialDraft.planReference })}</span>
+          <p className="sq-caption cd-panelpad" style={{ paddingBlock: "var(--space-2) 0" }} role="status">
+            <span className="sq-lozenge sq-lozenge--info">{interp(s.draftBanner, { ref: initialDraft.planReference })}</span>
             {/* M8 / PLN-CON-018 — discard the resumed draft (never-published);
                 distinct from cancelling a published visit. */}
             {" "}
@@ -539,7 +539,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           </p>
         )}
         {draftUnavailable && (
-          <div className="ax-banner ax-banner--warning" role="alert" style={{ margin: "0 var(--space-6)" }}>
+          <div className="sq-banner sq-banner--warning" role="alert" style={{ margin: "0 var(--space-6)" }}>
             {s.draftUnavailable}
           </div>
         )}
@@ -551,7 +551,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
             {/* M7 — options flow from planning_lookups; publish_bulk_plan still
                 commits periodic-only, so other governed types are listed
                 honestly as not-yet-available instead of failing at publish. */}
-            <select className="ax-select" aria-label={s.visitType} value="periodic" onChange={() => {}}>
+            <select className="sq-select" aria-label={s.visitType} value="periodic" onChange={() => {}}>
               {(data!.lookups?.visitTypes?.length ? data!.lookups.visitTypes : [{ key: "periodic", label_en: s.typePeriodic, label_ar: null }]).map(o => (
                 <option key={o.key} value={o.key} disabled={o.key !== "periodic"}>
                   {lk(o)}{o.key !== "periodic" ? ` — ${s.notBulkYet}` : ""}
@@ -559,7 +559,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
               ))}
             </select></dd></div>
           <div><dt>{s.mode}</dt><dd>
-            <select className="ax-select" aria-label={s.mode} value="physical" onChange={() => {}}>
+            <select className="sq-select" aria-label={s.mode} value="physical" onChange={() => {}}>
               {(data!.lookups?.visitModes?.length ? data!.lookups.visitModes : [{ key: "physical", label_en: s.physical, label_ar: null }]).map(o => (
                 <option key={o.key} value={o.key} disabled={o.key !== "physical"}>
                   {lk(o)}{o.key !== "physical" ? ` — ${s.notBulkYet}` : ""}
@@ -567,14 +567,14 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
               ))}
             </select></dd></div>
           <div><dt>{s.priorityLabel}</dt><dd>
-            <select className="ax-select" aria-label={s.priorityLabel} value={priority} onChange={e => setPriority(e.target.value)}>
+            <select className="sq-select" aria-label={s.priorityLabel} value={priority} onChange={e => setPriority(e.target.value)}>
               <option value="">{s.priorityNone}</option>
               {(data!.lookups?.priorities ?? []).map(o => <option key={o.key} value={o.key}>{lk(o)}</option>)}
             </select></dd></div>
           <div><dt>{s.packageLabel}</dt><dd>
-            <div className="ax-stack" style={{ gap: "var(--space-1)" }} role="group" aria-label={s.packageLabel}>
+            <div className="sq-stack" style={{ gap: "var(--space-1)" }} role="group" aria-label={s.packageLabel}>
               {data!.packages.map(p => (
-                <label key={p.id} className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+                <label key={p.id} className="sq-choice" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                   <input type="checkbox" value={p.id} checked={pkgIds.includes(p.id)}
                     onChange={e => setPkgIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
                   <span>{p.code} · {p.version_label}</span>
@@ -582,27 +582,27 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
               ))}
             </div>
             {pkgIds.length === 0 && (
-              <p className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--space-2)" }}>{s.packageHint}</p>
+              <p className="sq-banner sq-banner--info" role="status" style={{ marginBlockStart: "var(--space-2)" }}>{s.packageHint}</p>
             )}
           </dd></div>
-          <div><dt>{s.window}</dt><dd className="ax-row" style={{ gap: "var(--space-2)" }}>
-            <input ref={windowRef} className="ax-input cd-mono" name="window_start" type="datetime-local" aria-label={s.windowStart} value={windowStart} onChange={e => setWindowStart(e.target.value)} />
+          <div><dt>{s.window}</dt><dd className="sq-row" style={{ gap: "var(--space-2)" }}>
+            <input ref={windowRef} className="sq-input cd-mono" name="window_start" type="datetime-local" aria-label={s.windowStart} value={windowStart} onChange={e => setWindowStart(e.target.value)} />
             <span aria-hidden="true">→</span>
-            <input className="ax-input cd-mono" name="window_end" type="datetime-local" aria-label={s.windowEnd} value={windowEnd} onChange={e => setWindowEnd(e.target.value)} />
+            <input className="sq-input cd-mono" name="window_end" type="datetime-local" aria-label={s.windowEnd} value={windowEnd} onChange={e => setWindowEnd(e.target.value)} />
           </dd></div>
         </dl>
       </section>
 
       {/* ---- readiness rail (error summary) ---- */}
-      <section className={`ax-surface ax-panel cd-panelpad cd-ready ${validating ? "" : blockers.length ? "is-blocked" : "is-clear"}`}
+      <section className={`sq-surface sq-panel cd-panelpad cd-ready ${validating ? "" : blockers.length ? "is-blocked" : "is-clear"}`}
         role={blockers.length ? "alert" : "status"} aria-label={s.readiness}>
         <div className="cd-sectionhead"><h3 tabIndex={-1} ref={readinessHeadingRef}>{s.readiness}</h3></div>
         {validating ? (
-          <p className="ax-caption" role="status">{s.loadingNote}</p>
+          <p className="sq-caption" role="status">{s.loadingNote}</p>
         ) : blockers.length ? (
           <>
-            <div className="ax-row" style={{ gap: "var(--space-2)" }}>
-              <span className="ax-lozenge ax-lozenge--critical">{s.blockedTag}</span>
+            <div className="sq-row" style={{ gap: "var(--space-2)" }}>
+              <span className="sq-lozenge sq-lozenge--critical">{s.blockedTag}</span>
               <strong>{interp(s.blockersN, { n: blockers.length })}</strong>
             </div>
             <ul className="cd-blockerlist" style={{ marginBlockStart: "var(--space-3)" }}>
@@ -616,7 +616,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
                       <span className="cd-blocker__title">{title}</span>
                       {detail && <div className="cd-blocker__detail">{detail}</div>}
                       {meta.fix !== "none" && (
-                        <div className="cd-fix"><button type="button" className="ax-btn ax-btn--secondary" onClick={() => runFix(b)}>{fixLabel(b)}</button></div>
+                        <div className="cd-fix"><button type="button" className="sq-btn sq-btn--secondary" onClick={() => runFix(b)}>{fixLabel(b)}</button></div>
                       )}
                     </div>
                   </li>
@@ -625,15 +625,15 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
             </ul>
           </>
         ) : (
-          <div className="ax-row" style={{ gap: "var(--space-2)" }}>
-            <span className="ax-lozenge ax-lozenge--success">{s.readyTag}</span>
+          <div className="sq-row" style={{ gap: "var(--space-2)" }}>
+            <span className="sq-lozenge sq-lozenge--success">{s.readyTag}</span>
             <strong>{s.clearAll}</strong>
           </div>
         )}
         {/* M7 — non-blocking warnings (e.g. zero packages: preparation chooses
             later). Honest, visible, never gating publish. */}
         {!validating && (v?.warnings?.length ?? 0) > 0 && (
-          <div className="ax-banner ax-banner--warning" role="status" style={{ marginBlockStart: "var(--space-3)" }}>
+          <div className="sq-banner sq-banner--warning" role="status" style={{ marginBlockStart: "var(--space-3)" }}>
             {v!.warnings.map((w, i) => {
               const { title, detail } = blockerCopy(w);
               return <p key={w.kind + i} style={{ margin: 0 }}><strong>{title}</strong>{detail ? <> — {detail}</> : null}</p>;
@@ -643,19 +643,19 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       </section>
 
       {/* ---- M6 eligibility partition (7 counts from the live preview) ---- */}
-      <section className="ax-surface ax-panel cd-panelpad" aria-label={s.eligH}>
+      <section className="sq-surface sq-panel cd-panelpad" aria-label={s.eligH}>
         <div className="cd-sectionhead"><h3>{s.eligH}</h3></div>
         {validating || !v?.ledger ? (
-          <p className="ax-caption" role="status">{s.loadingNote}</p>
+          <p className="sq-caption" role="status">{s.loadingNote}</p>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: "var(--space-4)" }}>
-            <div><span className="ax-caption">{s.eligTotal}</span><div className="cd-count">{v.ledger.total}</div></div>
-            <div><span className="ax-caption">{s.eligEligible}</span><div className="cd-count ax-lozenge--success">{v.ledger.eligible}</div></div>
-            <div><span className="ax-caption">{s.eligIneligible}</span><div className="cd-count">{v.ledger.ineligible}</div></div>
-            <div><span className="ax-caption">{s.eligToCreate}</span><div className="cd-count">{v.ledger.toCreate}</div></div>
-            <div><span className="ax-caption">{s.eligMissingLoc}</span><div className="cd-count">{v.ledger.missingLocation}</div></div>
-            <div><span className="ax-caption">{s.eligConflicts}</span><div className="cd-count">{v.ledger.activeConflicts}</div></div>
-            <div><span className="ax-caption">{s.eligManualOverride}</span><div className="cd-count">{v.ledger.manualOverrideRequired}</div></div>
+            <div><span className="sq-caption">{s.eligTotal}</span><div className="cd-count">{v.ledger.total}</div></div>
+            <div><span className="sq-caption">{s.eligEligible}</span><div className="cd-count sq-lozenge--success">{v.ledger.eligible}</div></div>
+            <div><span className="sq-caption">{s.eligIneligible}</span><div className="cd-count">{v.ledger.ineligible}</div></div>
+            <div><span className="sq-caption">{s.eligToCreate}</span><div className="cd-count">{v.ledger.toCreate}</div></div>
+            <div><span className="sq-caption">{s.eligMissingLoc}</span><div className="cd-count">{v.ledger.missingLocation}</div></div>
+            <div><span className="sq-caption">{s.eligConflicts}</span><div className="cd-count">{v.ledger.activeConflicts}</div></div>
+            <div><span className="sq-caption">{s.eligManualOverride}</span><div className="cd-count">{v.ledger.manualOverrideRequired}</div></div>
           </div>
         )}
       </section>
@@ -664,9 +664,9 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       <section>
         <div className="cd-sectionhead">
           <h3>{s.targetsH}</h3>
-          <span className="ax-caption cd-mono">{workingIds.length} {s.selectedLabel} · {retained} {s.retainedLabel}</span>
+          <span className="sq-caption cd-mono">{workingIds.length} {s.selectedLabel} · {retained} {s.retainedLabel}</span>
         </div>
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col">{s.colFactory}</th><th scope="col">{s.colCity}</th>
             <th scope="col">{s.colRisk}</th><th scope="col">{s.colVisit}</th><th scope="col">{s.colAssign}</th>
@@ -684,28 +684,28 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
                   <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div>
                     {/* M6 — per-row ineligibility reasons from the partition */}
                     {(eligById.get(f.id)?.reasons.length ?? 0) > 0 && (
-                      <div className="ax-row" style={{ gap: "var(--space-1)", flexWrap: "wrap", marginBlockStart: "var(--space-1)" }}>
+                      <div className="sq-row" style={{ gap: "var(--space-1)", flexWrap: "wrap", marginBlockStart: "var(--space-1)" }}>
                         {eligById.get(f.id)!.reasons.map(r => (
-                          <span key={r} className="ax-lozenge ax-lozenge--warning">{reasonText(r)}</span>
+                          <span key={r} className="sq-lozenge sq-lozenge--warning">{reasonText(r)}</span>
                         ))}
                       </div>
                     )}
                   </td>
                   <td>{f.city ?? "—"}</td>
-                  <td><span className={`ax-lozenge ${RISK_TONE[f.risk_band ?? ""] ?? ""}`}>{f.risk_band === "high" ? s.riskHigh : f.risk_band === "medium" ? s.riskMedium : f.risk_band === "low" ? s.riskLow : "—"}</span></td>
-                  <td>{excluded ? <span className="ax-caption">—</span> : <span className="ax-lozenge ax-lozenge--plan">{s.typePeriodic}</span>}</td>
+                  <td><span className={`sq-lozenge ${RISK_TONE[f.risk_band ?? ""] ?? ""}`}>{f.risk_band === "high" ? s.riskHigh : f.risk_band === "medium" ? s.riskMedium : f.risk_band === "low" ? s.riskLow : "—"}</span></td>
+                  <td>{excluded ? <span className="sq-caption">—</span> : <span className="sq-lozenge sq-lozenge--plan">{s.typePeriodic}</span>}</td>
                   <td>
                     {excluded ? (
-                      <span className="ax-lozenge ax-lozenge--critical ax-lozenge--plan">{s.excludedLozenge}</span>
+                      <span className="sq-lozenge sq-lozenge--critical sq-lozenge--plan">{s.excludedLozenge}</span>
                     ) : (
                       <div className="cd-assignee">
-                        <select className="ax-select" name={`inspector_${f.id}`} value={pick} aria-label={s.chooseInspector}
+                        <select className="sq-select" name={`inspector_${f.id}`} value={pick} aria-label={s.chooseInspector}
                           onChange={e => setPicks(p => ({ ...p, [f.id]: e.target.value }))} style={{ minInlineSize: 200 }}>
                           <option value="">{s.autoLabel}</option>
                           {data!.inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
                         </select>
                         {rowEvidence(f.id)}
-                        <button type="button" className="ax-link" style={{ marginBlockStart: "var(--space-1)", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                        <button type="button" className="sq-link" style={{ marginBlockStart: "var(--space-1)", background: "none", border: "none", padding: 0, cursor: "pointer" }}
                           aria-controls="cd-evidence-ledger" onClick={() => setFocusedId(f.id)}>{s.evReview}</button>
                       </div>
                     )}
@@ -720,27 +720,27 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       {/* ---- CD-024 assignment evidence ledger (signature pattern) ---- */}
       <section id="cd-evidence-ledger">
         <div className="cd-sectionhead"><h3>{s.evTitle}</h3></div>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{s.evLead}</p>
+        <p className="sq-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{s.evLead}</p>
         <EvidenceLedger focus={ledgerFocus} strings={s.ev} />
       </section>
 
       {/* ---- assignment evidence ---- */}
       <section>
-        <div className="cd-sectionhead"><h3>{s.assignH}</h3><span className="ax-caption cd-mono">{interp(s.splitLine, { manual, auto })}</span></div>
-        <div className="ax-grid-2">
-          <div className="ax-surface ax-panel cd-panelpad"><div className="ax-overline">{s.manualNamed}</div>
+        <div className="cd-sectionhead"><h3>{s.assignH}</h3><span className="sq-caption cd-mono">{interp(s.splitLine, { manual, auto })}</span></div>
+        <div className="sq-grid-2">
+          <div className="sq-surface sq-panel cd-panelpad"><div className="sq-overline">{s.manualNamed}</div>
             <div className="cd-count" style={{ marginBlock: "var(--space-1)" }}>{manual}</div>
-            <p className="ax-caption">{s.manualEvidenceNote}</p></div>
-          <div className="ax-surface ax-panel cd-panelpad"><div className="ax-overline">{s.autoChosen}</div>
+            <p className="sq-caption">{s.manualEvidenceNote}</p></div>
+          <div className="sq-surface sq-panel cd-panelpad"><div className="sq-overline">{s.autoChosen}</div>
             <div className="cd-count" style={{ marginBlock: "var(--space-1)" }}>{auto}</div>
-            <p className="ax-caption">{s.autoNote}</p></div>
+            <p className="sq-caption">{s.autoNote}</p></div>
         </div>
       </section>
 
       {/* ---- publish consequence ledger (signature pattern) ---- */}
       <section>
         <div className="cd-sectionhead"><h3>{s.ledgerH}</h3></div>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{s.ledgerLead}</p>
+        <p className="sq-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{s.ledgerLead}</p>
         <div className="cd-ledger">
           <div className="cd-lgroup">
             <div className="cd-lgroup__head">1 · {s.gCreate}</div>
@@ -775,41 +775,41 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       <form action={formAction} className="cd-actionbar" id="cd-publish" aria-label={s.correctH}>
         {hiddenPublishFields(publishIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
         <div className="cd-sectionhead" style={{ margin: 0 }}><h3>{s.correctH}</h3></div>
-        <div className="ax-row" style={{ gap: "var(--space-3)" }}>
-          <a className="ax-link" href="/planning/bulk">{s.backConfig}</a>
-          <span className="ax-caption">{s.backConfigD}</span>
+        <div className="sq-row" style={{ gap: "var(--space-3)" }}>
+          <a className="sq-link" href="/planning/bulk">{s.backConfig}</a>
+          <span className="sq-caption">{s.backConfigD}</span>
         </div>
-        <div className="ax-field" style={{ maxInlineSize: "100%" }}>
-          <label className="ax-field__label" htmlFor="cd-notes">{s.notes}</label>
+        <div className="sq-field" style={{ maxInlineSize: "100%" }}>
+          <label className="sq-field__label" htmlFor="cd-notes">{s.notes}</label>
           {/* value submitted via the mirrored hidden field so notes survive the source failure form too */}
-          <textarea id="cd-notes" className="ax-textarea" rows={2} placeholder={s.notesPlaceholder} value={notes} onChange={e => setNotes(e.target.value)} />
+          <textarea id="cd-notes" className="sq-textarea" rows={2} placeholder={s.notesPlaceholder} value={notes} onChange={e => setNotes(e.target.value)} />
         </div>
         {/* M6 — eligibility acknowledgement: with ineligible rows present the
             publish stays disabled until the reviewer explicitly proceeds with
             the eligible subset only; the choice persists into the draft. */}
         {needsAck && !validating && (
-          <div className="ax-banner ax-banner--warning" role="alert">
+          <div className="sq-banner sq-banner--warning" role="alert">
             <p style={{ marginBlockStart: 0 }}>{interp(s.ackRequired, { n: ineligibleIds.length })}</p>
-            <label className="ax-row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
+            <label className="sq-row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
               <input type="checkbox" checked={acknowledged} onChange={e => setAcknowledged(e.target.checked)} />
               <span>{interp(s.ackLabel, { n: eligibleIds.length })}</span>
             </label>
           </div>
         )}
-        <p className="ax-caption">{s.willRecheck}</p>
+        <p className="sq-caption">{s.willRecheck}</p>
         <div className="cd-actionbar__row">
           <div className="cd-grow">
             {committable
-              ? <div className="ax-caption">{s.allClear}</div>
+              ? <div className="sq-caption">{s.allClear}</div>
               : <div className="cd-disabledreason" id={reasonId}>{s.disabledPrefix}{validating ? s.checking : needsAck && !acknowledged ? interp(s.ackRequired, { n: ineligibleIds.length }) : interp(s.blockersN, { n: blockers.length })}</div>}
-            {draftSavedMsg && <div className="ax-caption" role="status">{draftSavedMsg}</div>}
+            {draftSavedMsg && <div className="sq-caption" role="status">{draftSavedMsg}</div>}
             {draftSaveError && <div className="cd-disabledreason" role="alert">{s.draftSaveFailed}</div>}
           </div>
-          <button type="button" className="ax-btn ax-btn--secondary" disabled={savingDraft || workingIds.length === 0}
+          <button type="button" className="sq-btn sq-btn--secondary" disabled={savingDraft || workingIds.length === 0}
             onClick={() => { void onSaveDraft(); }}>
             {savingDraft ? s.savingDraft : s.saveDraft}
           </button>
-          <button className="ax-btn ax-btn--prominent cd-publishbtn" disabled={!committable}
+          <button className="sq-btn sq-btn--prominent cd-publishbtn" disabled={!committable}
             aria-describedby={committable ? undefined : reasonId}>
             {committable ? interp(s.publishReady, { n: baseReady ? retained : eligibleIds.length }) : validating ? s.checking : interp(s.publishBlocked, { n: needsAck && !acknowledged ? ineligibleIds.length : blockers.length })}
           </button>

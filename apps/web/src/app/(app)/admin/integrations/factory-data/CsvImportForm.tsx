@@ -21,9 +21,9 @@ export default function CsvImportForm() {
   return (
     <form action={action} className="stack" style={{ gap: "var(--space-4)" }}>
       <input type="hidden" name="schema_version" value={SCHEMA_VERSION} />
-      <label className="ax-field" style={{ maxInlineSize: "none" }}>
-        <span className="ax-field__label">CSV file</span>
-        <input className="ax-input" type="file" name="csv_file" accept=".csv,text/csv" required onChange={event => void inspect(event.target.files?.[0])} />
+      <label className="sq-field" style={{ maxInlineSize: "none" }}>
+        <span className="sq-field__label">CSV file</span>
+        <input className="sq-input" type="file" name="csv_file" accept=".csv,text/csv" required onChange={event => void inspect(event.target.files?.[0])} />
       </label>
       <p className="t-caption">Schema <bdi>{SCHEMA_VERSION}</bdi>. Required identity columns: <bdi>{REQUIRED.join(", ")}</bdi>. Files are staged for reconciliation; this action never overwrites factory truth.</p>
       {preview ? <div className="panel" style={{ padding: "var(--space-4)" }} aria-live="polite">
@@ -31,8 +31,8 @@ export default function CsvImportForm() {
         <p className="t-caption"><bdi>{preview.headers.join(" · ")}</bdi></p>
         {preview.errors.map(error => <p key={error} role="alert" style={{ color: "var(--status-critical)" }}>{error}</p>)}
       </div> : null}
-      {state.error ? <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div> : null}
-      {state.ok ? <div className="ax-banner ax-banner--success" role="status"><div>Batch <bdi>{state.batchId}</bdi> staged: {state.pendingReconciliation} pending reconciliation, {state.rejected} rejected with safe row errors. Zero rows are accepted until governed reconciliation.</div></div> : null}
+      {state.error ? <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div> : null}
+      {state.ok ? <div className="sq-banner sq-banner--success" role="status"><div>Batch <bdi>{state.batchId}</bdi> staged: {state.pendingReconciliation} pending reconciliation, {state.rejected} rejected with safe row errors. Zero rows are accepted until governed reconciliation.</div></div> : null}
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !!preview?.errors.length}>{pending ? "Staging…" : "Stage validated batch"}</button>
     </form>
   );

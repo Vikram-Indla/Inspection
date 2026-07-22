@@ -5,7 +5,7 @@ import { validateWorkflowPayload } from "@/lib/workflow/validate";
 
 // M2-02 Workflow Flight Deck — graph + outline, transition inspector, and the
 // live validation ledger (VAL-01..06). Design-dependent (approved R2 package).
-// Colour is owned entirely by ax-* classes; no bare colours. The graph is a
+// Colour is owned entirely by sq-* classes; no bare colours. The graph is a
 // keyboard-accessible ordered stepper that wraps at narrow widths (never a
 // clipped canvas); status uses glyph + text, never colour alone.
 
@@ -52,14 +52,14 @@ export function WfDeck({ payload, strings }: Props) {
       <section aria-label={strings.ledgerTitle} className="panel" style={{ padding: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <div className="row" style={{ justifyContent: "space-between" }}>
           <h4 style={{ margin: 0 }}>{strings.ledgerTitle}</h4>
-          <span className={`ax-lozenge ${validation.ok ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+          <span className={`sq-lozenge ${validation.ok ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>
             {validation.ok ? `✓ ${strings.passed}` : strings.failed}
           </span>
         </div>
         <ul style={{ margin: 0, paddingInlineStart: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           {validation.checks.map((c) => (
             <li key={c.id} className="t-caption">
-              <span className={`ax-lozenge ${c.ok ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+              <span className={`sq-lozenge ${c.ok ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>
                 {c.ok ? "✓" : "✕"} {c.id}
               </span>{" "}
               {c.why}
@@ -81,7 +81,7 @@ export function WfDeck({ payload, strings }: Props) {
                 onClick={() => setSelectedState(selectedState === s.key ? null : s.key)}
                 onKeyDown={(e) => onStateKey(e, idx)}
                 tabIndex={idx === 0 ? 0 : -1}
-                className={`ax-lozenge ${selectedState === s.key ? "ax-lozenge--info" : ""}`}
+                className={`sq-lozenge ${selectedState === s.key ? "sq-lozenge--info" : ""}`}
                 style={{ cursor: "pointer" }}
               >
                 {s.initial ? "▶ " : ""}{s.key}
@@ -101,7 +101,7 @@ export function WfDeck({ payload, strings }: Props) {
       <section aria-label={strings.inspectorTitle} className="panel" style={{ padding: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <h4 style={{ margin: 0 }}>{strings.inspectorTitle}</h4>
         <p className="t-caption">{strings.selectHint}</p>
-        <div className="ax-tablewrap"><table className="ax-table">
+        <div className="sq-tablewrap"><table className="sq-table">
           <thead><tr>
             <th scope="col">{strings.graphTitle}</th><th scope="col">{strings.actor}</th><th scope="col">{strings.guards}</th><th scope="col">{strings.sideEffects}</th>
           </tr></thead>
@@ -113,7 +113,7 @@ export function WfDeck({ payload, strings }: Props) {
                 <td className="t-caption">{(t.guards ?? []).join(", ") || strings.none}</td>
                 <td className="t-caption">
                   {(t.fx ?? []).length === 0 ? strings.none : (t.fx ?? []).map((f, k) => (
-                    <span key={k} className={`ax-lozenge ${f.idempotencyKey ? "ax-lozenge--success" : "ax-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>
+                    <span key={k} className={`sq-lozenge ${f.idempotencyKey ? "sq-lozenge--success" : "sq-lozenge--warning"}`} style={{ marginInlineEnd: 4 }}>
                       {f.idempotencyKey ? `✓ ${f.kind} ${strings.idempotent}` : `⚠ ${f.kind} ${strings.noIdempotencyKey}`}
                     </span>
                   ))}

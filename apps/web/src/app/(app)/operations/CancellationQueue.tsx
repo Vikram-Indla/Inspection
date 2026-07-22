@@ -60,24 +60,24 @@ export default function CancellationQueue({ rows, strings, locale }: { rows: Can
   }
 
   return (
-    <section className="ax-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="cancellation-queue-heading">
+    <section className="sq-surface" style={{ padding: "var(--space-6)" }} aria-labelledby="cancellation-queue-heading">
       <h4 id="cancellation-queue-heading" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.heading}</h4>
-      <p className="ax-caption" style={{ marginBlockEnd: "var(--space-4)" }}>{strings.caption}</p>
+      <p className="sq-caption" style={{ marginBlockEnd: "var(--space-4)" }}>{strings.caption}</p>
       {rows.length === 0 ? (
         <EmptyState glyph="✓" title={strings.emptyTitle} body={strings.emptyDesc} inline bare />
       ) : (
-        <div className="ax-stack" style={{ gap: "var(--space-4)" }}>
+        <div className="sq-stack" style={{ gap: "var(--space-4)" }}>
           {rows.map(row => (
-            <div key={row.id} className="ax-surface" style={{ padding: "var(--space-4)", borderColor: "var(--status-warning)" }}>
-              <div className="ax-row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div key={row.id} className="sq-surface" style={{ padding: "var(--space-4)", borderColor: "var(--status-warning)" }}>
+              <div className="sq-row" style={{ justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <div>
                   <strong>{row.factory_name ?? row.visit_id.slice(0, 8)}</strong>
-                  <p className="ax-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
+                  <p className="sq-caption">{strings.inspector}: {row.inspector_name ?? "—"} · {row.reason_label}</p>
                 </div>
-                <span className="ax-lozenge ax-lozenge--warning">{strings.requested}: {stamp(row.requested_at)}</span>
+                <span className="sq-lozenge sq-lozenge--warning">{strings.requested}: {stamp(row.requested_at)}</span>
               </div>
               {row.comment && <p style={{ marginBlock: "var(--space-3)" }}>{row.comment}</p>}
-              <div className="ax-row ax-caption" style={{ gap: 12, flexWrap: "wrap" }}>
+              <div className="sq-row sq-caption" style={{ gap: 12, flexWrap: "wrap" }}>
                 <span>{strings.phase}: {row.phase.replace(/_/g, " ")}</span>
                 <span>{strings.evidence}:{" "}
                   {row.evidence_url
@@ -86,26 +86,26 @@ export default function CancellationQueue({ rows, strings, locale }: { rows: Can
                 </span>
               </div>
               {confirming === row.id ? (
-                <div className="ax-banner ax-banner--critical" role="alert" style={{ marginBlockStart: "var(--space-3)" }}>
+                <div className="sq-banner sq-banner--critical" role="alert" style={{ marginBlockStart: "var(--space-3)" }}>
                   <div>
                     <strong>{strings.confirmTitle}</strong> {strings.confirmBody}
-                    <div className="ax-row" style={{ gap: 8, marginBlockStart: "var(--space-3)" }}>
-                      <button className="ax-btn ax-btn--subtle" disabled={pending} onClick={() => setConfirming(null)}>{strings.confirmBack}</button>
-                      <button className="ax-btn ax-btn--danger" disabled={pending} onClick={() => decide(row, "approve")}>{strings.confirmApprove}</button>
+                    <div className="sq-row" style={{ gap: 8, marginBlockStart: "var(--space-3)" }}>
+                      <button className="sq-btn sq-btn--subtle" disabled={pending} onClick={() => setConfirming(null)}>{strings.confirmBack}</button>
+                      <button className="sq-btn sq-btn--danger" disabled={pending} onClick={() => decide(row, "approve")}>{strings.confirmApprove}</button>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="ax-row" style={{ gap: 8, alignItems: "end", flexWrap: "wrap", marginBlockStart: "var(--space-3)" }}>
-                  <label className="ax-field" style={{ flex: 1, minInlineSize: 220 }}>
-                    <span className="ax-field__label">{strings.rejectReason}</span>
-                    <input className="ax-input" value={rejection[row.id] ?? ""} onChange={e => setRejection(v => ({ ...v, [row.id]: e.target.value }))} />
+                <div className="sq-row" style={{ gap: 8, alignItems: "end", flexWrap: "wrap", marginBlockStart: "var(--space-3)" }}>
+                  <label className="sq-field" style={{ flex: 1, minInlineSize: 220 }}>
+                    <span className="sq-field__label">{strings.rejectReason}</span>
+                    <input className="sq-input" value={rejection[row.id] ?? ""} onChange={e => setRejection(v => ({ ...v, [row.id]: e.target.value }))} />
                   </label>
-                  <button className="ax-btn ax-btn--secondary" disabled={pending} onClick={() => decide(row, "reject")}>{strings.reject}</button>
-                  <button className="ax-btn ax-btn--field" disabled={pending} onClick={() => { setMessage(m => ({ ...m, [row.id]: "" })); setConfirming(row.id); }}>{strings.approve}</button>
+                  <button className="sq-btn sq-btn--secondary" disabled={pending} onClick={() => decide(row, "reject")}>{strings.reject}</button>
+                  <button className="sq-btn sq-btn--field" disabled={pending} onClick={() => { setMessage(m => ({ ...m, [row.id]: "" })); setConfirming(row.id); }}>{strings.approve}</button>
                 </div>
               )}
-              {message[row.id] && <p className="ax-caption" role="status" style={{ marginBlockStart: 8 }}>{pending ? strings.deciding : message[row.id]}</p>}
+              {message[row.id] && <p className="sq-caption" role="status" style={{ marginBlockStart: 8 }}>{pending ? strings.deciding : message[row.id]}</p>}
             </div>
           ))}
         </div>

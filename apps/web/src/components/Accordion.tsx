@@ -1,8 +1,8 @@
 /**
  * Shared content accordion with a per-group progress counter (DSM-020).
- * No literal Accordion primitive existed before this — .ax-nav-group was
+ * No literal Accordion primitive existed before this — .sq-nav-group was
  * navigation-only. Built from the same proven chevron/RTL rotation pattern,
- * new CSS classes (.ax-accordion*) using existing tokens only.
+ * new CSS classes (.sq-accordion*) using existing tokens only.
  */
 "use client";
 import { useState } from "react";
@@ -30,26 +30,26 @@ export default function Accordion({ items }: AccordionProps) {
     });
   }
   return (
-    <div className="ax-accordion">
+    <div className="sq-accordion">
       {items.map(item => {
         const expanded = open.has(item.id);
         return (
-          <div key={item.id} className="ax-accordion__item">
+          <div key={item.id} className="sq-accordion__item">
             <button
               type="button"
-              className="ax-accordion__trigger"
+              className="sq-accordion__trigger"
               aria-expanded={expanded}
-              aria-controls={`ax-accordion-body-${item.id}`}
+              aria-controls={`sq-accordion-body-${item.id}`}
               onClick={() => toggle(item.id)}
             >
               <span>{item.title}</span>
               <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-                {item.progress ? <span className="ax-accordion__progress numeric">{item.progress}</span> : null}
-                <IconChevronDown size={16} className="ax-accordion__chevron" />
+                {item.progress ? <span className="sq-accordion__progress numeric">{item.progress}</span> : null}
+                <IconChevronDown size={16} className="sq-accordion__chevron" />
               </span>
             </button>
             {expanded && (
-              <div id={`ax-accordion-body-${item.id}`} className="ax-accordion__body">
+              <div id={`sq-accordion-body-${item.id}`} className="sq-accordion__body">
                 {item.content}
               </div>
             )}

@@ -33,7 +33,7 @@ export default async function ExceptionsPage() {
   const invariantOk = groupCountEqualsSource(sources); // must be true — no synthetic rows
   return (
     <Shell current="/operations" title={t("exc.title", "Exception board")} context={<span className="badge badge-info">CD-047 · REQ-0120,0124</span>}>
-      <div className="ax-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows).")} {invariantOk ? "✓" : "⚠"}</div></div>
+      <div className="sq-banner"><div><strong>{t("exc.banner.title", "Command posture.")}</strong> {t("exc.banner.body", "Exceptions are a projection over real objects — decisions stay on the owning object. Counts trace 1:1 to sources (no synthetic rows).")} {invariantOk ? "✓" : "⚠"}</div></div>
       {sources.length === 0 && (
         <EmptyState glyph="✅" title={t("exc.empty.title", "No open exceptions in scope")}
           body={t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope (RLS).")} />

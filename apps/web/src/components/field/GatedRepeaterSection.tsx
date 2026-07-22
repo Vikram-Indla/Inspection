@@ -17,7 +17,7 @@
  * wire-in). All state below is local and ephemeral by design; it deliberately
  * touches none of the offline/outbox machinery.
  *
- * Design-system only: ax-surface / ax-segmented / ax-btn / ax-field / t-caption,
+ * Design-system only: sq-surface / sq-segmented / sq-btn / sq-field / t-caption,
  * no bare colors, input geometry untouched.
  */
 "use client";
@@ -41,7 +41,7 @@ function PhotoAffordance({ inputId, label, helper }: { inputId: string; label: s
   return (
     <div className="stack" style={{ gap: "var(--space-1)", marginBlockStart: "var(--space-2)" }}>
       {/* Wrapping <label> = implicit control association (accessible); it is NOT
-          className="ax-field__label" so the a11y-form-label release guard's
+          className="sq-field__label" so the a11y-form-label release guard's
           htmlFor requirement does not apply to this button-style file control. */}
       <label className="btn btn-secondary btn-touch" htmlFor={inputId} style={{ cursor: "pointer", alignSelf: "flex-start" }}>
         {label}
@@ -101,8 +101,8 @@ export default function GatedRepeaterSection({
       {/* Yes/No gate question (VR-037 / VR-039). role=group + aria-labelledby
           names the toggle for assistive tech; mirrors the Workspace ctx toggle. */}
       <div role="group" aria-labelledby={gateLabelId} className="stack" style={{ gap: "var(--space-2)" }}>
-        <p id={gateLabelId} className="ax-field__label">{gate}</p>
-        <div className="ax-segmented ax-segmented--field" style={{ alignSelf: "flex-start" }}>
+        <p id={gateLabelId} className="sq-field__label">{gate}</p>
+        <div className="sq-segmented sq-segmented--field" style={{ alignSelf: "flex-start" }}>
           <button type="button" aria-pressed={gateAnswer === "yes"} onClick={() => setGateAnswer("yes")}>{gateYes}</button>
           <button type="button" aria-pressed={gateAnswer === "no"} onClick={() => setGateAnswer("no")}>{gateNo}</button>
         </div>

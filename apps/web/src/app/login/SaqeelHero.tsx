@@ -5,7 +5,7 @@
 // data, no real factory names, no counts — so it conveys "factories being
 // inspected" on a public page without leaking operational intelligence
 // (DEC-011 / SAQEEL-07). Tokens only (GLOBAL COLOR LAW); animations are
-// disabled under prefers-reduced-motion by the global rule in astryx.css.
+// disabled under prefers-reduced-motion by the global rule in saqeel-components-legacy.css.
 
 // Accurate KSA outline projected to an 800×640 viewBox (see scratchpad/ksa_path).
 const KSA =

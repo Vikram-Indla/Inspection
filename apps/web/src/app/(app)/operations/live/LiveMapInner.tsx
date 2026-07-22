@@ -165,6 +165,6 @@ export default function LiveMapInner({ factories, regions, inspectors, selectedI
     if (map?.isStyleLoaded()) updateRegions(map, regions, canonicalRef.current);
   }, [regions]);
 
-  if (!token || failed) return <div className="ax-state" role="status" data-map-provider="mapbox-unavailable"><span className="ax-state__glyph">⌖</span><h4>{s.unavailable}</h4><p className="t-caption">{s.notConfigured}</p></div>;
+  if (!token || failed) return <div className="sq-state" role="status" data-map-provider="mapbox-unavailable"><span className="sq-state__glyph">⌖</span><h4>{s.unavailable}</h4><p className="t-caption">{s.notConfigured}</p></div>;
   return <div ref={containerRef} aria-label={s.ariaLabel} data-map-provider="mapbox" style={{ blockSize: "100%", inlineSize: "100%", background: "var(--surface-canvas)" }} />;
 }

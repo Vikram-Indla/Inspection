@@ -71,36 +71,36 @@ export function NewItemForm({
       className="panel"
       style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}
     >
-      <div className="ax-field">
-        <label className="ax-field__label" htmlFor="item-code">{s.code}</label>
-        <input id="item-code" className="ax-input numeric" name="code" placeholder="FS-110" required style={{ maxInlineSize: 120 }} />
+      <div className="sq-field">
+        <label className="sq-field__label" htmlFor="item-code">{s.code}</label>
+        <input id="item-code" className="sq-input numeric" name="code" placeholder="FS-110" required style={{ maxInlineSize: 120 }} />
       </div>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}>
-        <label className="ax-field__label" htmlFor="item-title">{s.title}</label>
-        <input id="item-title" className="ax-input" name="title" placeholder={s.titlePlaceholder} required />
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 220 }}>
+        <label className="sq-field__label" htmlFor="item-title">{s.title}</label>
+        <input id="item-title" className="sq-input" name="title" placeholder={s.titlePlaceholder} required />
       </div>
-      <div className="ax-field" style={{ minInlineSize: 200 }}>
-        <label className="ax-field__label" htmlFor="item-clause">{s.clause}</label>
-        <select id="item-clause" className="ax-select" name="clause_id" required defaultValue="" disabled={clauseUnavailable}>
+      <div className="sq-field" style={{ minInlineSize: 200 }}>
+        <label className="sq-field__label" htmlFor="item-clause">{s.clause}</label>
+        <select id="item-clause" className="sq-select" name="clause_id" required defaultValue="" disabled={clauseUnavailable}>
           <option value="" disabled>{clauseUnavailable ? s.clauseUnavailable : s.selectClause}</option>
           {clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
         </select>
       </div>
-      <div className="ax-field">
-        <label className="ax-field__label" htmlFor="item-weight">{s.weight}</label>
-        <input id="item-weight" className="ax-input numeric" name="score_weight" inputMode="decimal" placeholder="5" style={{ maxInlineSize: 80 }} disabled={!scoring} />
+      <div className="sq-field">
+        <label className="sq-field__label" htmlFor="item-weight">{s.weight}</label>
+        <input id="item-weight" className="sq-input numeric" name="score_weight" inputMode="decimal" placeholder="5" style={{ maxInlineSize: 80 }} disabled={!scoring} />
       </div>
-      <div className="ax-field" style={{ minInlineSize: 240 }}>
-        <label className="ax-field__label" htmlFor="item-response">{s.responseModel}</label>
-        <select id="item-response" className="ax-select" name="response_preset" required defaultValue="tri_state">
+      <div className="sq-field" style={{ minInlineSize: 240 }}>
+        <label className="sq-field__label" htmlFor="item-response">{s.responseModel}</label>
+        <select id="item-response" className="sq-select" name="response_preset" required defaultValue="tri_state">
           <option value="tri_state">{s.responseTriState}</option>
           <option value="binary">{s.responseBinary}</option>
           <option value="value_date">{s.responseValueDate}</option>
         </select>
       </div>
-      <div className="ax-field" style={{ minInlineSize: 240 }}>
-        <label className="ax-field__label" htmlFor="item-evidence">{s.evidenceRule}</label>
-        <select id="item-evidence" className="ax-select" name="evidence_preset" required defaultValue="none">
+      <div className="sq-field" style={{ minInlineSize: 240 }}>
+        <label className="sq-field__label" htmlFor="item-evidence">{s.evidenceRule}</label>
+        <select id="item-evidence" className="sq-select" name="evidence_preset" required defaultValue="none">
           <option value="none">{s.evidenceNone}</option>
           <option value="photo_nc_mandatory">{s.evidencePhotoNc}</option>
           <option value="video_nc_mandatory">{s.evidenceVideoNc}</option>
@@ -113,9 +113,9 @@ export function NewItemForm({
         <input type="hidden" name="scoring_enabled" value={scoring ? "true" : "false"} />
         <input type="checkbox" checked={scoring} onChange={e => setScoring(e.target.checked)} /> {scoring ? s.scoringEnabled : s.scoringDisabled}
       </label>
-      <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}>
-        <label className="ax-field__label" htmlFor="item-guidance">{s.guidance}</label>
-        <input id="item-guidance" className="ax-input" name="guidance_en" placeholder={s.guidancePlaceholder} />
+      <div className="sq-field" style={{ flex: 1, minInlineSize: 220 }}>
+        <label className="sq-field__label" htmlFor="item-guidance">{s.guidance}</label>
+        <input id="item-guidance" className="sq-input" name="guidance_en" placeholder={s.guidancePlaceholder} />
       </div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending || clauseUnavailable}>
         {pending ? s.creating : s.create}
@@ -146,9 +146,9 @@ export function EditItemForm({ item, clauses, strings: s }: {
       <summary className="btn btn-ghost btn-touch">Edit · v{item.version}</summary>
       <form action={formAction} className="stack" style={{ gap: "var(--space-2)", minInlineSize: 280 }}>
         <input type="hidden" name="item_id" value={item.id} />
-        <label className="ax-field"><span className="ax-field__label">{s.title}</span><input className="ax-input" name="title" defaultValue={item.title} required /></label>
-        <label className="ax-field"><span className="ax-field__label">{s.clause}</span><select className="ax-select" name="clause_id" defaultValue={item.clauseId} required>{clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
-        <label className="ax-field"><span className="ax-field__label">{s.guidance}</span><textarea className="ax-input" name="guidance_en" defaultValue={item.guidance ?? ""} /></label>
+        <label className="sq-field"><span className="sq-field__label">{s.title}</span><input className="sq-input" name="title" defaultValue={item.title} required /></label>
+        <label className="sq-field"><span className="sq-field__label">{s.clause}</span><select className="sq-select" name="clause_id" defaultValue={item.clauseId} required>{clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
+        <label className="sq-field"><span className="sq-field__label">{s.guidance}</span><textarea className="sq-input" name="guidance_en" defaultValue={item.guidance ?? ""} /></label>
         <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
         {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
         {state.ok && <span className="badge badge-compliant" role="status">✓ {s.draftSaved}</span>}
@@ -164,7 +164,7 @@ export function ToggleActive({ itemId, active, strings: s }: { itemId: string; a
     <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="item_id" value={itemId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
-      {active ? <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required /></label> : null}
+      {active ? <label className="sq-field"><span className="sq-field__label">{s.deactivationReason}</span><input className="sq-input" name="deactivation_reason" required /></label> : null}
       <button className="btn btn-primary btn-touch" disabled={pending} title={s.reasonNote}>
         {pending ? s.saving : active ? s.deactivate : s.reactivate}
       </button>
@@ -239,9 +239,9 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
   const label = (r: string) => s.responseLabels[r] ?? r.replace(/_/g, " ");
   return (
     <div className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-4)" }}>
-      <div className="ax-field" style={{ maxInlineSize: 360 }}>
-        <label className="ax-field__label" htmlFor={selectId}>{s.select}</label>
-        <select id={selectId} className="ax-select" value={item.id} onChange={e => setSelected(e.target.value)}>
+      <div className="sq-field" style={{ maxInlineSize: 360 }}>
+        <label className="sq-field__label" htmlFor={selectId}>{s.select}</label>
+        <select id={selectId} className="sq-select" value={item.id} onChange={e => setSelected(e.target.value)}>
           {items.map(i => (
             <option key={i.id} value={i.id}>
               {i.code} — {i.title}{i.active ? "" : ` (${s.deactivatedWord})`}
@@ -255,7 +255,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
         <div className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="numeric"><bdi dir="ltr">{item.code}</bdi></strong>
           <span>{item.title}</span>
-          <span className={`ax-lozenge ${item.active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
+          <span className={`sq-lozenge ${item.active ? "sq-lozenge--success" : "sq-lozenge--critical"}`}>
             <span aria-hidden="true">{item.active ? "●" : "✕"} </span>{item.active ? s.active : s.deactivatedWord}
           </span>
         </div>
@@ -263,7 +263,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
 
         <div className="stack" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-3)" }}>
           <div>
-            <p className="ax-overline">{s.responsesLabel}</p>
+            <p className="sq-overline">{s.responsesLabel}</p>
             <div className="row" role="group" aria-label={s.responsesLabel} style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
               {item.responses.map(r => (
                 <button key={r} type="button" className="btn btn-secondary btn-touch" disabled aria-disabled="true">{label(r)}</button>
@@ -275,7 +275,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
           </div>
 
           <div>
-            <p className="ax-overline">{s.evidenceLabel}</p>
+            <p className="sq-overline">{s.evidenceLabel}</p>
             <p className="t-caption">
               {item.evidence?.mandatory
                 ? fill(s.evidenceRequired, { type: item.evidence.type ?? "evidence", min: item.evidence.min ?? 1 })
@@ -285,7 +285,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
           </div>
 
           <div>
-            <p className="ax-overline">{s.scoringLabel}</p>
+            <p className="sq-overline">{s.scoringLabel}</p>
             <p className="t-caption">
               {!item.scoringEnabled ? s.scoringOff : item.scoreWeight != null ? fill(s.weight, { weight: item.scoreWeight }) : s.noWeight}
               {item.scoreExcludedOn.length > 0 &&
@@ -294,7 +294,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
           </div>
 
           <div>
-            <p className="ax-overline">{s.guidanceLabel}</p>
+            <p className="sq-overline">{s.guidanceLabel}</p>
             <p className="t-caption">{item.guidance || s.guidanceNone}</p>
           </div>
         </div>

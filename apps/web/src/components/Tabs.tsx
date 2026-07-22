@@ -1,6 +1,6 @@
 /**
  * Canonical in-page tabs (Saqeel V5.1 §6 "Navigation" — WAI-ARIA tabs
- * contract with RTL-aware roving focus). Renders the existing .ax-tabs CSS.
+ * contract with RTL-aware roving focus). Renders the existing .sq-tabs CSS.
  * For same-page content panels only — route-level navigation must stay
  * <a>/aria-current, never role="tab" (see components/RouteTabs pattern).
  */
@@ -44,15 +44,15 @@ export default function Tabs({ items, active, onChange, label }: TabsProps) {
 
   return (
     <>
-      <div ref={listRef} role="tablist" aria-label={label} className="ax-tabs">
+      <div ref={listRef} role="tablist" aria-label={label} className="sq-tabs">
         {items.map((item, index) => (
           <button
             key={item.id}
-            id={`ax-tab-${item.id}`}
+            id={`sq-tab-${item.id}`}
             type="button"
             role="tab"
             aria-selected={item.id === activeItem?.id}
-            aria-controls={`ax-tabpanel-${item.id}`}
+            aria-controls={`sq-tabpanel-${item.id}`}
             aria-disabled={item.disabled || undefined}
             tabIndex={item.id === activeItem?.id ? 0 : -1}
             onClick={() => !item.disabled && onChange(item.id)}
@@ -65,9 +65,9 @@ export default function Tabs({ items, active, onChange, label }: TabsProps) {
       {items.map(item => (
         <div
           key={item.id}
-          id={`ax-tabpanel-${item.id}`}
+          id={`sq-tabpanel-${item.id}`}
           role="tabpanel"
-          aria-labelledby={`ax-tab-${item.id}`}
+          aria-labelledby={`sq-tab-${item.id}`}
           hidden={item.id !== activeItem?.id}
           tabIndex={0}
         >

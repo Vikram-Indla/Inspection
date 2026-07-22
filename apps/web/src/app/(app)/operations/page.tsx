@@ -63,17 +63,17 @@ type OverrideRow = {
 };
 
 const NOTIF_TONE: Record<string, string> = {
-  queued: "ax-lozenge--warning",
-  sent: "ax-lozenge--info",
-  delivered: "ax-lozenge--info",
-  handled: "ax-lozenge--success",
-  failed: "ax-lozenge--critical",
+  queued: "sq-lozenge--warning",
+  sent: "sq-lozenge--info",
+  delivered: "sq-lozenge--info",
+  handled: "sq-lozenge--success",
+  failed: "sq-lozenge--critical",
 };
 
 const BAND_TONE: Record<string, string> = {
-  high: "ax-lozenge--critical",
-  medium: "ax-lozenge--warning",
-  low: "ax-lozenge--success",
+  high: "sq-lozenge--critical",
+  medium: "sq-lozenge--warning",
+  low: "sq-lozenge--success",
 };
 
 // Active operational states → map pin tone (GeoMap resolves tones to ax tokens).
@@ -587,44 +587,44 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
   return (
     <Shell current="/operations" title={t("ops.title", "Operations Center")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("ops.context", "SCR-WEB-500 · SB12 · operational state ≠ workflow status (FND-002)")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("ops.context", "SCR-WEB-500 · SB12 · operational state ≠ workflow status (FND-002)")}</span>}>
       {loadErrors.length > 0 && (
-        <div className="ax-banner ax-banner--critical" role="alert"><div>
+        <div className="sq-banner sq-banner--critical" role="alert"><div>
           <strong>{t("ops.err.partial", "Some information could not be loaded.")}</strong> {loadErrors.join(" · ")} — {t("ops.err.retry", "retry")}.
         </div></div>
       )}
 
       {/* KPI cards — visits by operational_state (all planning statuses; FND-002) */}
-      <div className="ax-mstrip">
+      <div className="sq-mstrip">
         {states.map(s => (
-          <div key={s}><div className="ax-mstrip__label">{s === "prepared"
+          <div key={s}><div className="sq-mstrip__label">{s === "prepared"
             ? t("ops.kpi.prepared", "Prepared — ready for execution")
             : s === "under_review"
               ? t("ops.kpi.underReview", "Under review")
               : enumLabel(s)}</div>
-            <div className="ax-mstrip__value ax-numeric">{counts[s]}</div></div>
+            <div className="sq-mstrip__value sq-numeric">{counts[s]}</div></div>
         ))}
       </div>
-      <p className="ax-caption"><span className="ax-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="ax-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
+      <p className="sq-caption"><span className="sq-numeric">{monitored.length}</span> {t("ops.kpi.of", "of")} <span className="sq-numeric">{visits.length}</span> {t("ops.kpi.publishedLive", "visits are published or actively executing and monitored live below.")}</p>
 
       <OverrideQueue rows={overrideQueueRows} strings={overrideQueueStrings} locale={locale} />
       <CancellationQueue rows={cancellationQueueRows} strings={cancellationQueueStrings} locale={locale} />
 
       {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
-      <div className="ax-surface" style={{ padding: "var(--space-4) var(--space-6)" }}>
+      <div className="sq-surface" style={{ padding: "var(--space-4) var(--space-6)" }}>
         <OpsExport datasets={exportDatasets} strings={exportStrings} />
       </div>
 
       {/* Region/city scope — filters monitoring, map and SLA watch (M08-010) */}
-      <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
         <RegionCityFilter region={region} city={city} regions={regions} cities={cities} strings={monitoringStrings} />
       </div>
 
       {/* KSA operations map — M08-002 */}
-      <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-3)", marginBlockEnd: "var(--space-3)" }}>
+      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-3)", marginBlockEnd: "var(--space-3)" }}>
           <h4 style={{ margin: 0 }}>{t("ops.map.heading", "Live inspection map")}</h4>
-          <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
+          <a className="sq-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
         </div>
         {pins.length === 0 ? (
           <EmptyState bare icon={<IconMap size={28} />} title={t("ops.map.empty.title", "No mappable factories in scope")}
@@ -634,36 +634,36 @@ export default async function Operations({ searchParams }: { searchParams: Promi
         )}
       </div>
 
-      <div className="ax-grid-2">
-        <div className="ax-stack">
+      <div className="sq-grid-2">
+        <div className="sq-stack">
           {/* Live monitoring — M08-003 (auto-refresh via server action) */}
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h4>
             <MonitoringTable initialRows={monitorRows} initialAt={nowIso} region={region} city={city}
               enumLabels={enumLabels} strings={monitoringStrings} />
           </div>
 
           {/* SLA watch — ENG-09 thresholds vs live visit windows */}
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.sla.heading", "Deadline alerts")}</h4>
             {slaFlags.length === 0 ? (
               <EmptyState bare glyph="✓" title={t("ops.sla.empty.title", "No deadline alerts in scope")}
                 body={t("ops.sla.empty.desc", "Published visits are inside their planned windows; breaches surface here the moment a window lapses.")} />
             ) : (
-              <div className="ax-tablewrap"><table className="ax-table">
+              <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr><th scope="col">{t("ops.sla.th.visit", "Visit")}</th><th scope="col">{t("ops.sla.th.factory", "Factory")}</th><th scope="col">{t("ops.sla.th.operational", "Visit status")}</th><th scope="col">{t("ops.sla.th.deadline", "Deadline")}</th><th scope="col">{t("ops.sla.th.sla", "Deadline status")}</th><th scope="col">{t("ops.sla.th.escalation", "Escalation")}</th></tr></thead>
                 <tbody>{slaFlags.map(f => (
                   <tr key={f.visit.id}>
-                    <td><a className="ax-link" href={`/visits/${f.visit.id}`}>{f.visit.id.slice(0, 8)}</a></td>
+                    <td><a className="sq-link" href={`/visits/${f.visit.id}`}>{f.visit.id.slice(0, 8)}</a></td>
                     <td>{f.visit.factories
-                      ? <a className="ax-link" href={`/factories/${f.visit.factories.id}`}>{f.visit.factories.name}</a>
+                      ? <a className="sq-link" href={`/factories/${f.visit.factories.id}`}>{f.visit.factories.name}</a>
                       : "—"}</td>
-                    <td><span className="ax-lozenge ax-lozenge--ops">{enumLabel(f.visit.operational_state)}</span></td>
-                    <td><span className="ax-numeric">{fmtTs(f.deadlineMs)}</span></td>
-                    <td><span className={`ax-lozenge ${f.kind === "reminder" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{slaKindLabel(f)}</span></td>
+                    <td><span className="sq-lozenge sq-lozenge--ops">{enumLabel(f.visit.operational_state)}</span></td>
+                    <td><span className="sq-numeric">{fmtTs(f.deadlineMs)}</span></td>
+                    <td><span className={`sq-lozenge ${f.kind === "reminder" ? "sq-lozenge--warning" : "sq-lozenge--critical"}`}>{slaKindLabel(f)}</span></td>
                     <td>{f.escalation
-                      ? <span className={`ax-lozenge ${f.escalation === "L2" ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>{f.escalation}</span>
-                      : <span className="ax-caption">—</span>}</td>
+                      ? <span className={`sq-lozenge ${f.escalation === "L2" ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>{f.escalation}</span>
+                      : <span className="sq-caption">—</span>}</td>
                   </tr>
                 ))}</tbody>
               </table></div>
@@ -673,43 +673,43 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 writes; absent config surfaces honestly as unavailable. */}
             <h5 style={{ marginBlock: "var(--space-4) var(--space-3)" }}>{t("ops.sla.resubHeading", "Resubmission deadlines (returned inspections)")}</h5>
             {!resubSlaAvailable ? (
-              <p className="ax-caption">{t("ops.sla.resubUnavailable", "SLA unavailable — engine_settings.sla.resubmission_business_days is not configured.")}</p>
+              <p className="sq-caption">{t("ops.sla.resubUnavailable", "SLA unavailable — engine_settings.sla.resubmission_business_days is not configured.")}</p>
             ) : resubFlags.length === 0 ? (
-              <p className="ax-caption">{t("ops.sla.resubEmpty", "No returned inspections awaiting resubmission in scope.")}</p>
+              <p className="sq-caption">{t("ops.sla.resubEmpty", "No returned inspections awaiting resubmission in scope.")}</p>
             ) : (
-              <div className="ax-tablewrap"><table className="ax-table">
+              <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr><th scope="col">{t("ops.sla.resub.th.inspection", "Inspection")}</th><th scope="col">{t("ops.sla.th.factory", "Factory")}</th><th scope="col">{t("ops.sla.resub.th.returned", "Returned")}</th><th scope="col">{t("ops.sla.resub.th.due", "Resubmission due")}</th><th scope="col">{t("ops.sla.th.sla", "Deadline status")}</th></tr></thead>
                 <tbody>{resubFlags.map(f => (
                   <tr key={f.inspection_id}>
-                    <td><a className="ax-link" href={`/reviews/${f.inspection_id}`}>{f.inspection_id.slice(0, 8)}</a></td>
+                    <td><a className="sq-link" href={`/reviews/${f.inspection_id}`}>{f.inspection_id.slice(0, 8)}</a></td>
                     <td>{f.factory_name ?? "—"}</td>
-                    <td><span className="ax-numeric">{fmtTs(Date.parse(f.returned_at))}</span></td>
-                    <td><span className="ax-numeric">{fmtTs(f.deadlineMs)}</span></td>
-                    <td><span className={`ax-lozenge ${f.overdue ? "ax-lozenge--critical" : "ax-lozenge--warning"}`}>
+                    <td><span className="sq-numeric">{fmtTs(Date.parse(f.returned_at))}</span></td>
+                    <td><span className="sq-numeric">{fmtTs(f.deadlineMs)}</span></td>
+                    <td><span className={`sq-lozenge ${f.overdue ? "sq-lozenge--critical" : "sq-lozenge--warning"}`}>
                       {f.overdue ? t("ops.sla.resubOverdue", "Resubmission overdue") : t("ops.sla.resubDue", "Resubmission pending")}
                     </span></td>
                   </tr>
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>
+            <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>
               {t("ops.sla.confNote", "Thresholds from engine_settings (ENG-09):")}{" "}
-              {t("ops.sla.confCalendar", "calendar")} <span className="ax-numeric">{slaConf.calendar?.days ?? "—"} {slaConf.calendar?.hours ?? ""}</span> ·{" "}
-              {t("ops.sla.confReview", "review")} <span className="ax-numeric">{slaConf.review_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
-              {t("ops.sla.confResub", "resubmission")} <span className="ax-numeric">{slaConf.resubmission_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
-              {t("ops.sla.confAction", "action due")} <span className="ax-numeric">{slaConf.action_due_calendar_days ?? "—"}</span>{t("ops.sla.confDays", "d")} ·{" "}
-              {t("ops.sla.confReminders", "reminders at")} <span className="ax-numeric">{(slaConf.reminders ?? []).map(r => `${Math.round(r * 100)}%`).join(", ") || "—"}</span>
+              {t("ops.sla.confCalendar", "calendar")} <span className="sq-numeric">{slaConf.calendar?.days ?? "—"} {slaConf.calendar?.hours ?? ""}</span> ·{" "}
+              {t("ops.sla.confReview", "review")} <span className="sq-numeric">{slaConf.review_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
+              {t("ops.sla.confResub", "resubmission")} <span className="sq-numeric">{slaConf.resubmission_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
+              {t("ops.sla.confAction", "action due")} <span className="sq-numeric">{slaConf.action_due_calendar_days ?? "—"}</span>{t("ops.sla.confDays", "d")} ·{" "}
+              {t("ops.sla.confReminders", "reminders at")} <span className="sq-numeric">{(slaConf.reminders ?? []).map(r => `${Math.round(r * 100)}%`).join(", ") || "—"}</span>
             </p>
           </div>
 
           {/* Corrective actions queue — SB12 write leg */}
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.actions.heading", "Corrective actions queue (M09-027 · ENG-11)")}</h4>
             {actions.length === 0 ? (
               <EmptyState bare glyph="✓" title={t("ops.actions.empty.title", "No open corrective actions")}
                 body={t("ops.actions.empty.desc", "Action forms raised from violations land here until closed (FLD-ACT-001).")} />
             ) : (
-              <div className="ax-tablewrap"><table className="ax-table">
+              <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr><th scope="col">{t("ops.actions.th.factory", "Factory")}</th><th scope="col">{t("ops.actions.th.owner", "Owner")}</th><th scope="col">{t("ops.actions.th.due", "Due")}</th><th scope="col">{t("ops.actions.th.blocking", "Blocking")}</th><th scope="col">{t("ops.actions.th.status", "Status")}</th><th scope="col">{t("ops.actions.th.resolve", "Resolve")}</th></tr></thead>
                 <tbody>{actions.map(a => {
                   const overdue = a.due_at ? new Date(a.due_at).getTime() < now : false;
@@ -717,15 +717,15 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                   return (
                     <tr key={a.id}>
                       <td>{factory
-                        ? <a className="ax-link" href={`/factories/${factory.id}`}>{factory.name}</a>
+                        ? <a className="sq-link" href={`/factories/${factory.id}`}>{factory.name}</a>
                         : "—"}<br />
-                        {a.inspections?.visit_id && <a className="ax-link ax-caption" href={`/visits/${a.inspections.visit_id}`}>{visitWord} {a.inspections.visit_id.slice(0, 8)}</a>}</td>
-                      <td>{a.owner_name ?? "—"}{a.owner_role && <span className="ax-caption"> · {a.owner_role}</span>}</td>
+                        {a.inspections?.visit_id && <a className="sq-link sq-caption" href={`/visits/${a.inspections.visit_id}`}>{visitWord} {a.inspections.visit_id.slice(0, 8)}</a>}</td>
+                      <td>{a.owner_name ?? "—"}{a.owner_role && <span className="sq-caption"> · {a.owner_role}</span>}</td>
                       <td>{a.due_at
-                        ? <span className={overdue ? "ax-lozenge ax-lozenge--critical" : "ax-numeric"}>{formatDate(a.due_at, locale === "ar" ? "ar" : "en")}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
+                        ? <span className={overdue ? "sq-lozenge sq-lozenge--critical" : "sq-numeric"}>{formatDate(a.due_at, locale === "ar" ? "ar" : "en")}{overdue ? ` ${t("ops.actions.overdue", "overdue")}` : ""}</span>
                         : "—"}</td>
-                      <td>{a.is_blocking ? <span className="ax-lozenge ax-lozenge--critical">{t("ops.actions.blocking", "blocking")}</span> : <span className="ax-lozenge">{t("ops.actions.advisory", "advisory")}</span>}</td>
-                      <td><span className={`ax-lozenge ${a.status === "acknowledged" ? "ax-lozenge--info" : "ax-lozenge--warning"}`}>{enumLabel(a.status)}</span></td>
+                      <td>{a.is_blocking ? <span className="sq-lozenge sq-lozenge--critical">{t("ops.actions.blocking", "blocking")}</span> : <span className="sq-lozenge">{t("ops.actions.advisory", "advisory")}</span>}</td>
+                      <td><span className={`sq-lozenge ${a.status === "acknowledged" ? "sq-lozenge--info" : "sq-lozenge--warning"}`}>{enumLabel(a.status)}</span></td>
                       <td><ActionFormControls actionFormId={a.id} status={a.status} strings={actionControlStrings} /></td>
                     </tr>
                   );
@@ -735,25 +735,25 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
         </div>
 
-        <div className="ax-stack">
+        <div className="sq-stack">
           {/* High-risk factory board — M08-006 (ENG-04 output) */}
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.risk.heading", "High-risk factories (M08-006 · ENG-04)")}</h4>
             {highRisk.length === 0 ? (
               <EmptyState bare glyph="◎" title={t("ops.risk.empty.title", "No scored factories yet")}
                 body={t("ops.risk.empty.desc", "Factories appear here once the risk engine records a score (FLD-FACT-007/008).")} />
             ) : (
-              <div className="ax-tablewrap"><table className="ax-table">
+              <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr><th scope="col">{t("ops.risk.th.factory", "Factory")}</th><th scope="col">{t("ops.risk.th.location", "Location")}</th><th scope="col">{t("ops.risk.th.score", "Score")}</th><th scope="col">{t("ops.risk.th.band", "Band")}</th></tr></thead>
                 <tbody>{highRisk.map(f => (
                   <tr key={f.id}>
-                    <td><a className="ax-link" href={`/factories/${f.id}`}>{f.name}</a>
-                      {f.activity_class && <><br /><span className="ax-caption">{f.activity_class}</span></>}</td>
-                    <td className="ax-caption">{[f.region, f.city].filter(Boolean).join(" · ") || "—"}</td>
-                    <td><span className="ax-numeric">{f.risk_score}</span></td>
+                    <td><a className="sq-link" href={`/factories/${f.id}`}>{f.name}</a>
+                      {f.activity_class && <><br /><span className="sq-caption">{f.activity_class}</span></>}</td>
+                    <td className="sq-caption">{[f.region, f.city].filter(Boolean).join(" · ") || "—"}</td>
+                    <td><span className="sq-numeric">{f.risk_score}</span></td>
                     <td>{f.risk_band
-                      ? <span className={`ax-lozenge ${BAND_TONE[f.risk_band] ?? ""}`}>{enumLabel(f.risk_band)}</span>
-                      : <span className="ax-caption">—</span>}</td>
+                      ? <span className={`sq-lozenge ${BAND_TONE[f.risk_band] ?? ""}`}>{enumLabel(f.risk_band)}</span>
+                      : <span className="sq-caption">—</span>}</td>
                   </tr>
                 ))}</tbody>
               </table></div>
@@ -761,44 +761,44 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Location events — M08-014 immutable */}
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
             {scopedGeo.length === 0 ? (
               <EmptyState bare icon={<IconPin size={28} />} title={t("ops.geo.empty.title", "No location events yet")}
                 body={t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")} />
             ) : (
-              <ul className="ax-timeline">{scopedGeo.slice(0, 10).map(g => (
+              <ul className="sq-timeline">{scopedGeo.slice(0, 10).map(g => (
                 <li key={g.id} className={g.kind === "checkin" ? "is-key" : undefined}>
                   <div><strong>{enumLabel(g.kind)}</strong> ±{g.accuracy_m}m{" "}
-                    {g.geofence_result && <span className={`ax-lozenge ${g.geofence_result === "inside" ? "ax-lozenge--success" : g.geofence_result === "override" ? "ax-lozenge--warning" : "ax-lozenge--critical"}`}>{enumLabel(g.geofence_result)}</span>}{" "}
-                    <a className="ax-link ax-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />
-                    <span className="ax-timeline__meta ax-numeric">{fmtTs(new Date(g.occurred_at).getTime())}</span></div>
+                    {g.geofence_result && <span className={`sq-lozenge ${g.geofence_result === "inside" ? "sq-lozenge--success" : g.geofence_result === "override" ? "sq-lozenge--warning" : "sq-lozenge--critical"}`}>{enumLabel(g.geofence_result)}</span>}{" "}
+                    <a className="sq-link sq-caption" href={`/visits/${g.visit_id}`}>{visitWord} {g.visit_id.slice(0, 8)}</a><br />
+                    <span className="sq-timeline__meta sq-numeric">{fmtTs(new Date(g.occurred_at).getTime())}</span></div>
                 </li>
               ))}</ul>
             )}
           </div>
 
           {/* Notifications — ENG-11 */}
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
             {notifs.length === 0 ? (
               <EmptyState bare icon={<IconBell size={28} />} title={t("ops.notifs.empty.title", "No notifications")}
                 body={t("ops.notifs.empty.desc", "Event-keyed messages queue here as workflow events fire (REF-014).")} />
             ) : (
-              <div className="ax-tablewrap"><table className="ax-table">
+              <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr><th scope="col">{t("ops.notifs.th.event", "Event")}</th><th scope="col">{t("ops.notifs.th.channel", "Channel")}</th><th scope="col">{t("ops.notifs.th.state", "State")}</th><th scope="col">{t("ops.notifs.th.at", "At")}</th><th scope="col"></th></tr></thead>
                 <tbody>{notifs.map(n => (
                   <tr key={n.id}>
-                    <td><span className="ax-lozenge ax-lozenge--info">{n.event_key}</span></td>
-                    <td className="ax-caption">{n.channel}</td>
-                    <td><span className={`ax-lozenge ${NOTIF_TONE[n.delivery_state] ?? ""}`}>{enumLabel(n.delivery_state)}</span></td>
-                    <td><span className="ax-numeric">{fmtTs(new Date(n.created_at).getTime())}</span></td>
+                    <td><span className="sq-lozenge sq-lozenge--info">{n.event_key}</span></td>
+                    <td className="sq-caption">{n.channel}</td>
+                    <td><span className={`sq-lozenge ${NOTIF_TONE[n.delivery_state] ?? ""}`}>{enumLabel(n.delivery_state)}</span></td>
+                    <td><span className="sq-numeric">{fmtTs(new Date(n.created_at).getTime())}</span></td>
                     <td>{n.delivery_state !== "handled" && <MarkNotificationHandled notificationId={n.id} strings={markHandledStrings} />}</td>
                   </tr>
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>
+            <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>
               {t("ops.notifs.rlsNote", "Notification reads and mark-handled updates are recipient/Operations scoped by separate RLS policies; the database verdict remains authoritative.")}
             </p>
           </div>

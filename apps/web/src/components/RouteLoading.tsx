@@ -10,7 +10,7 @@ export default async function RouteLoading({ en, ar, bodyEn, bodyAr }: {
   const locale = await getLocale();
   const isAr = locale === "ar";
   return (
-    <main className="ax-content" aria-busy="true" aria-live="polite">
+    <main className="sq-content" aria-busy="true" aria-live="polite">
       <EmptyState glyph="◫" title={isAr ? ar : en}
         body={isAr ? (bodyAr ?? "جارٍ تحميل البيانات المقيّدة حسب صلاحيات الصفوف.") : (bodyEn ?? "Loading RLS-scoped data.")} />
     </main>

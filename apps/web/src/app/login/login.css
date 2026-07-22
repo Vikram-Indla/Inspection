@@ -68,7 +68,7 @@
 .lg-input--email { text-align: start; direction: ltr; }
 [dir="rtl"] .lg-input--email { text-align: left; }
 .lg-pwwrap { position: relative; }
-.lg-pwwrap .ax-input { padding-inline-end: 48px; }
+.lg-pwwrap .sq-input { padding-inline-end: 48px; }
 .lg-pwtoggle { position: absolute; inset-block-start: 50%; inset-inline-end: var(--space-2);
   transform: translateY(-50%); display: grid; place-items: center;
   inline-size: 36px; block-size: 36px; border: none; border-radius: var(--radius-xs);

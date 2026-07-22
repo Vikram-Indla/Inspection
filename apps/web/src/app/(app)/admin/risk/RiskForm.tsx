@@ -75,7 +75,7 @@ export default function RiskForm({
           <div key={f.key} className="rk-driver">
             <div className="rk-driver__name"><b>{f.name}</b></div>
             <input
-              className="ax-input numeric rk-w" id={f.key} name={f.key} type="number" step="0.05" min="0" max="1"
+              className="sq-input numeric rk-w" id={f.key} name={f.key} type="number" step="0.05" min="0" max="1"
               value={Number.isFinite(w) ? w : ""}
               onChange={e => setWeights(prev => ({ ...prev, [f.key]: parseFloat(e.target.value) }))}
               style={{ maxInlineSize: 110 }} aria-label={f.name}
@@ -93,14 +93,14 @@ export default function RiskForm({
 
       <h4>{labels.bandsTitle}</h4>
       <div className="row">
-        <div className="ax-field"><label className="ax-field__label" htmlFor="low_max">{labels.lowEnds}</label>
-          <input className="ax-input numeric" id="low_max" name="low_max" type="number" value={lowMax}
+        <div className="sq-field"><label className="sq-field__label" htmlFor="low_max">{labels.lowEnds}</label>
+          <input className="sq-input numeric" id="low_max" name="low_max" type="number" value={lowMax}
             onChange={e => setLowMax(parseInt(e.target.value, 10))} /></div>
-        <div className="ax-field"><label className="ax-field__label" htmlFor="med_max">{labels.mediumEnds}</label>
-          <input className="ax-input numeric" id="med_max" name="med_max" type="number" value={medMax}
+        <div className="sq-field"><label className="sq-field__label" htmlFor="med_max">{labels.mediumEnds}</label>
+          <input className="sq-input numeric" id="med_max" name="med_max" type="number" value={medMax}
             onChange={e => setMedMax(parseInt(e.target.value, 10))} /></div>
-        <div className="ax-field"><label className="ax-field__label" htmlFor="risk-high-band">{labels.high}</label>
-          <input className="ax-input" id="risk-high-band" value={`${(Number.isFinite(medMax) ? medMax : 0) + 1}–100`} readOnly /></div>
+        <div className="sq-field"><label className="sq-field__label" htmlFor="risk-high-band">{labels.high}</label>
+          <input className="sq-input" id="risk-high-band" value={`${(Number.isFinite(medMax) ? medMax : 0) + 1}–100`} readOnly /></div>
       </div>
       <div className="rk-band">
         <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--status-compliant)" }} />{labels.bandLow} 0–{lowMax}</span>

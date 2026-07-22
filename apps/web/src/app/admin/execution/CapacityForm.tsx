@@ -22,21 +22,21 @@ export default function CapacityForm({ cap, labels }: { cap: number | null; labe
 
   return (
     <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-      <div className="ax-field" style={{ maxInlineSize: 240 }}>
-        <label className="ax-field__label" htmlFor="daily_visit_cap">{labels.capLabel}</label>
+      <div className="sq-field" style={{ maxInlineSize: 240 }}>
+        <label className="sq-field__label" htmlFor="daily_visit_cap">{labels.capLabel}</label>
         <input
-          className="ax-input ax-numeric" id="daily_visit_cap" name="daily_visit_cap"
+          className="sq-input sq-numeric" id="daily_visit_cap" name="daily_visit_cap"
           type="number" min={1} step={1} required defaultValue={cap ?? ""}
         />
-        <p className="ax-caption" style={{ margin: 0 }}>{labels.capHint}</p>
+        <p className="sq-caption" style={{ margin: 0 }}>{labels.capHint}</p>
       </div>
-      <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending}>
+      <div className="sq-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
+        <button className="sq-btn sq-btn--prominent" disabled={pending}>
           {pending ? labels.saving : labels.save}
         </button>
-        {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
+        {state.ok && !pending && <span className="sq-lozenge sq-lozenge--success">{labels.saved}</span>}
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
+      {state.error && <p className="sq-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
     </form>
   );
 }

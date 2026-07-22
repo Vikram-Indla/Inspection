@@ -111,42 +111,42 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
 
   return (
     <>
-      <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setOpen(true)}>
+      <button type="button" className="sq-btn sq-btn--secondary" onClick={() => setOpen(true)}>
         {strings.openPack}
       </button>
 
       {open && (
         <>
-          <div onClick={() => setOpen(false)} aria-hidden className="ax-modal-backdrop" />
-          <aside className="ax-drawer" role="dialog" aria-modal="true" aria-label={strings.title} style={{ inlineSize: "min(560px, 94vw)" }}>
-            <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", padding: "var(--space-5) var(--space-6)", borderBlockEnd: "1px solid var(--border-subtle)" }}>
+          <div onClick={() => setOpen(false)} aria-hidden className="sq-modal-backdrop" />
+          <aside className="sq-drawer" role="dialog" aria-modal="true" aria-label={strings.title} style={{ inlineSize: "min(560px, 94vw)" }}>
+            <div className="sq-row" style={{ justifyContent: "space-between", alignItems: "flex-start", padding: "var(--space-5) var(--space-6)", borderBlockEnd: "1px solid var(--border-subtle)" }}>
               <div>
                 <div style={{ font: "var(--type-heading-lg)" }}>{strings.title}</div>
-                <div className="ax-caption">
-                  {data.factoryName} · <span className="ax-numeric">{data.visitRef}</span>
-                  {data.packPolicyVersion && <> · pack policy <span className="ax-numeric">{data.packPolicyVersion.slice(0, 8)}</span></>}
-                  {data.packageLabel && <> · package <span className="ax-numeric">{data.packageLabel}</span></>}
+                <div className="sq-caption">
+                  {data.factoryName} · <span className="sq-numeric">{data.visitRef}</span>
+                  {data.packPolicyVersion && <> · pack policy <span className="sq-numeric">{data.packPolicyVersion.slice(0, 8)}</span></>}
+                  {data.packageLabel && <> · package <span className="sq-numeric">{data.packageLabel}</span></>}
                 </div>
               </div>
-              <button type="button" className="ax-btn ax-btn--icon" onClick={() => setOpen(false)} aria-label={strings.close}>✕</button>
+              <button type="button" className="sq-btn sq-btn--icon" onClick={() => setOpen(false)} aria-label={strings.close}>✕</button>
             </div>
 
             <div className={moduleClasses.packChipRow}>
-              <span className={`ax-lozenge ax-lozenge--${blocked ? "warning" : "success"}`}>
+              <span className={`sq-lozenge sq-lozenge--${blocked ? "warning" : "success"}`}>
                 {blocked ? strings.reviewBlocker.replace("{n}", "1") : strings.ready}
               </span>
-              <span className="ax-sync ax-sync--synced">{strings.cached}</span>
+              <span className="sq-sync sq-sync--synced">{strings.cached}</span>
               {data.freshnessMinutes != null && (
-                <span className="ax-freshness ax-numeric">{strings.freshness.replace("{n}", String(data.freshnessMinutes))}</span>
+                <span className="sq-freshness sq-numeric">{strings.freshness.replace("{n}", String(data.freshnessMinutes))}</span>
               )}
             </div>
 
-            <div className="ax-drawer__body" style={{ flex: 1, overflowY: "auto" }}>
+            <div className="sq-drawer__body" style={{ flex: 1, overflowY: "auto" }}>
               <Section title={strings.sectionFactory} open>
                 <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "var(--space-2) var(--space-4)", margin: 0 }}>
-                  <dt>{strings.crNumber}</dt><dd style={{ margin: 0 }} className="ax-numeric">{data.crNumber ?? "—"}</dd>
+                  <dt>{strings.crNumber}</dt><dd style={{ margin: 0 }} className="sq-numeric">{data.crNumber ?? "—"}</dd>
                   <dt>{strings.licence}</dt><dd style={{ margin: 0 }}>{data.licence.value ?? <em>{data.licence.unavailable}</em>}</dd>
-                  <dt>{strings.officialLocation}</dt><dd style={{ margin: 0 }} className="ax-numeric">{data.officialLocation ?? "—"}</dd>
+                  <dt>{strings.officialLocation}</dt><dd style={{ margin: 0 }} className="sq-numeric">{data.officialLocation ?? "—"}</dd>
                   <dt>{strings.provenance}</dt><dd style={{ margin: 0 }}>{strings.provenanceValue}</dd>
                 </dl>
               </Section>
@@ -167,13 +167,13 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
               </Section>
 
               <Section title={strings.sectionHealthRisk}>
-                <div className="ax-row" style={{ gap: "var(--space-6)" }}>
+                <div className="sq-row" style={{ gap: "var(--space-6)" }}>
                   <div>
-                    <div className="ax-caption">{strings.healthScore}</div>
+                    <div className="sq-caption">{strings.healthScore}</div>
                     <div style={{ font: "var(--type-body-strong)" }}>{data.health.value ?? <em>{data.health.unavailable}</em>}</div>
                   </div>
                   <div>
-                    <div className="ax-caption">{strings.riskScore}</div>
+                    <div className="sq-caption">{strings.riskScore}</div>
                     <div style={{ font: "var(--type-body-strong)", color: "var(--status-critical-text)" }}>
                       {data.riskBand ?? "—"}{data.riskScore != null ? ` · ${data.riskScore}` : ""}
                     </div>
@@ -198,16 +198,16 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
               )}
 
               <div className={moduleClasses.packReadiness}>
-                <div className="ax-overline" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.startReadiness}</div>
-                <label className="ax-check">
+                <div className="sq-overline" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.startReadiness}</div>
+                <label className="sq-check">
                   <input type="checkbox" checked={packageCached} readOnly disabled />
                   {strings.ackPackageCached}
                 </label>
-                <label className="ax-check">
+                <label className="sq-check">
                   <input type="checkbox" checked={factory360Ack} onChange={(e) => setFactory360Ack(e.target.checked)} />
                   {strings.ackFactory360}
                 </label>
-                <label className="ax-check">
+                <label className="sq-check">
                   <input type="checkbox" checked={repeatReviewed} onChange={(e) => setRepeatReviewed(e.target.checked)} />
                   {strings.ackRepeatReviewed} <span className={moduleClasses.packBlocked}>{strings.required}</span>
                 </label>
@@ -215,11 +215,11 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
             </div>
 
             <div className={moduleClasses.packFooter}>
-              <button type="button" className="ax-btn ax-btn--secondary" style={{ flex: 1 }}>{strings.downloadOffline}</button>
+              <button type="button" className="sq-btn sq-btn--secondary" style={{ flex: 1 }}>{strings.downloadOffline}</button>
               <a
                 href={blocked ? undefined : startupHref}
                 aria-disabled={blocked}
-                className="ax-btn ax-btn--prominent"
+                className="sq-btn sq-btn--prominent"
                 style={{ flex: 1, textAlign: "center", ...(blocked ? { opacity: 0.5, pointerEvents: "none" } : {}) }}
                 title={strings.startupNote}
               >

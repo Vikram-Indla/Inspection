@@ -24,7 +24,7 @@ export default function StartReview({ inspectionId, submissionVersionId, strings
       <p className="t-caption">{strings.body}</p>
       <input type="hidden" name="inspection_id" value={inspectionId} />
       <input type="hidden" name="submission_version_id" value={submissionVersionId} />
-      {state.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{state.error}</div></div>}
+      {state.error && <div className="sq-banner sq-banner--critical" role="alert"><div>{state.error}</div></div>}
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? strings.starting : strings.start}</button>
     </form>
   );

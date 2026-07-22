@@ -107,4 +107,4 @@
   border-radius: var(--radius-md, 10px);
   -webkit-overflow-scrolling: touch;
 }
-.actionBar .ax-btn, .actionBar a, .actionBar > * { flex: 0 0 auto; min-block-size: 48px; }
+.actionBar .sq-btn, .actionBar a, .actionBar > * { flex: 0 0 auto; min-block-size: 48px; }

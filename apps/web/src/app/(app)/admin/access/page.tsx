@@ -118,24 +118,24 @@ export default async function Access() {
 
   return (
     <Shell current="/admin/access" title={t("admin.access.title", "Roles & permissions")}
-      context={<span className="ax-lozenge ax-lozenge--info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}>
-      <div className="ax-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
-      {error && <div className="ax-banner ax-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load roster. Nothing was changed. Try again.")}</strong></div></div>}
-      <div className="ax-tablewrap"><table className="ax-table">
+      context={<span className="sq-lozenge sq-lozenge--info">SCR-ADM-090 · RBAC-001..014 · EXE-ACCESS</span>}>
+      <div className="sq-banner"><div><strong>{t("admin.access.banner.title", "Access is enforced by Row Level Security, not UI.")}</strong> {t("admin.access.banner.body", "54 policies realize the frozen RBAC matrix; role grants are audited automatically (this page's data itself passed through RLS to render).")}</div></div>
+      {error && <div className="sq-banner sq-banner--critical" role="alert"><div><strong>{t("admin.access.error.title", "Couldn’t load roster. Nothing was changed. Try again.")}</strong></div></div>}
+      <div className="sq-tablewrap"><table className="sq-table">
         <thead><tr><th scope="col">{t("admin.access.table.user", "User")}</th><th scope="col">{t("admin.access.table.email", "Email")}</th><th scope="col">{t("admin.access.table.region", "Region")}</th><th scope="col">{t("admin.access.table.roles", "Roles")}</th></tr></thead>
         <tbody>
           {(profiles ?? []).map(p => (
             <tr key={p.user_id}>
               <td><strong>{p.full_name}</strong></td>
-              <td className="ax-caption">{p.email}</td>
+              <td className="sq-caption">{p.email}</td>
               <td>{p.region}</td>
               <td>{(p.user_roles as { role_key: string }[]).map(r =>
-                <span key={r.role_key} className={`ax-lozenge ${(roles ?? []).find(x => x.role_key === r.role_key)?.is_admin ? "ax-lozenge--warning" : "ax-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{r.role_key}</span>)}</td>
+                <span key={r.role_key} className={`sq-lozenge ${(roles ?? []).find(x => x.role_key === r.role_key)?.is_admin ? "sq-lozenge--warning" : "sq-lozenge--info"}`} style={{ marginInlineEnd: 6 }}>{r.role_key}</span>)}</td>
             </tr>
           ))}
         </tbody>
       </table></div>
-      <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>
+      <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>
         {canManage
           ? t("admin.access.rlsNote.manage", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. The management panel below changes access only through the governed RPCs.")
           : t("admin.access.rlsNote", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. This screen is read-only.")}

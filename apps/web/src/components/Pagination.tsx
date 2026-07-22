@@ -2,7 +2,7 @@
  * Shared pagination control. Genuine pre-existing frontend gap (DSM-022):
  * no shared pagination UI existed anywhere in the app before this component —
  * only apps/web/src/lib/supabase-pagination.ts, a data-fetch offset helper.
- * Built from existing ax-btn/ax-pagination tokens only, no new colors.
+ * Built from existing sq-btn/sq-pagination tokens only, no new colors.
  */
 "use client";
 
@@ -30,20 +30,20 @@ function pageWindow(page: number, pageCount: number): (number | "…")[] {
 export default function Pagination({ page, pageCount, onChange, prevLabel, nextLabel, pageLabel }: PaginationProps) {
   if (pageCount <= 1) return null;
   return (
-    <nav className="ax-pagination" aria-label={pageLabel(page)}>
-      <button type="button" className="ax-pagination__item" disabled={page <= 1} onClick={() => onChange(page - 1)}>{prevLabel}</button>
+    <nav className="sq-pagination" aria-label={pageLabel(page)}>
+      <button type="button" className="sq-pagination__item" disabled={page <= 1} onClick={() => onChange(page - 1)}>{prevLabel}</button>
       {pageWindow(page, pageCount).map((p, i) =>
         p === "…"
-          ? <span key={`gap-${i}`} className="ax-pagination__overflow">…</span>
+          ? <span key={`gap-${i}`} className="sq-pagination__overflow">…</span>
           : <button
               key={p}
               type="button"
-              className="ax-pagination__item"
+              className="sq-pagination__item"
               aria-current={p === page ? "page" : undefined}
               onClick={() => onChange(p)}
             >{p}</button>
       )}
-      <button type="button" className="ax-pagination__item" disabled={page >= pageCount} onClick={() => onChange(page + 1)}>{nextLabel}</button>
+      <button type="button" className="sq-pagination__item" disabled={page >= pageCount} onClick={() => onChange(page + 1)}>{nextLabel}</button>
     </nav>
   );
 }

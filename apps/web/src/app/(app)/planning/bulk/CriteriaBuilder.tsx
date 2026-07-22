@@ -138,14 +138,14 @@ export default function CriteriaBuilder({
       const inputType = def.type === "date" ? "date" : "number";
       return (
         <>
-          <div className="ax-field" style={{ maxInlineSize: 150 }}>
-            <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-            <input className="ax-input" id={`crit-value-${key}`} type={inputType} value={a} aria-invalid={isEmpty || undefined}
+          <div className="sq-field" style={{ maxInlineSize: 150 }}>
+            <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+            <input className="sq-input" id={`crit-value-${key}`} type={inputType} value={a} aria-invalid={isEmpty || undefined}
               onChange={e => patchValue(join(e.target.value, b))} />
           </div>
-          <div className="ax-field" style={{ maxInlineSize: 150 }}>
-            <label className="ax-field__label" htmlFor={`crit-value2-${key}`}>{strings.valueToLabel}</label>
-            <input className="ax-input" id={`crit-value2-${key}`} type={inputType} value={b} aria-invalid={isEmpty || undefined}
+          <div className="sq-field" style={{ maxInlineSize: 150 }}>
+            <label className="sq-field__label" htmlFor={`crit-value2-${key}`}>{strings.valueToLabel}</label>
+            <input className="sq-input" id={`crit-value2-${key}`} type={inputType} value={b} aria-invalid={isEmpty || undefined}
               onChange={e => patchValue(join(a, e.target.value))} />
           </div>
         </>
@@ -153,27 +153,27 @@ export default function CriteriaBuilder({
     }
     if (def.type === "number") {
       return (
-        <div className="ax-field" style={{ maxInlineSize: 150 }}>
-          <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-          <input className="ax-input" id={`crit-value-${key}`} type="number" value={c.value} aria-invalid={isEmpty || undefined}
+        <div className="sq-field" style={{ maxInlineSize: 150 }}>
+          <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+          <input className="sq-input" id={`crit-value-${key}`} type="number" value={c.value} aria-invalid={isEmpty || undefined}
             onChange={e => patchValue(e.target.value)} placeholder={strings.valuePlaceholder} />
         </div>
       );
     }
     if (def.type === "date") {
       return (
-        <div className="ax-field" style={{ maxInlineSize: 170 }}>
-          <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-          <input className="ax-input" id={`crit-value-${key}`} type="date" value={c.value} aria-invalid={isEmpty || undefined}
+        <div className="sq-field" style={{ maxInlineSize: 170 }}>
+          <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+          <input className="sq-input" id={`crit-value-${key}`} type="date" value={c.value} aria-invalid={isEmpty || undefined}
             onChange={e => patchValue(e.target.value)} />
         </div>
       );
     }
     // text / enum — free input with governed suggestions; "one of" is a comma list.
     return (
-      <div className="ax-field" style={{ maxInlineSize: 210 }}>
-        <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-        <input className="ax-input" id={`crit-value-${key}`} list={`vals-${key}`} value={c.value} aria-invalid={isEmpty || undefined}
+      <div className="sq-field" style={{ maxInlineSize: 210 }}>
+        <label className="sq-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+        <input className="sq-input" id={`crit-value-${key}`} list={`vals-${key}`} value={c.value} aria-invalid={isEmpty || undefined}
           onChange={e => patchValue(e.target.value)} placeholder={strings.valuePlaceholder} />
         <datalist id={`vals-${key}`}>
           {optionsFor(c.field).map(v => <option key={v} value={v} />)}
@@ -191,9 +191,9 @@ export default function CriteriaBuilder({
     return (
     <li role="treeitem" aria-label={strings.conditionItem} className="row"
       style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-3)" }}>
-      <div className="ax-field" style={{ maxInlineSize: 200 }}>
-        <label className="ax-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
-        <select className="ax-select" id={`crit-field-${key}`} value={c.field}
+      <div className="sq-field" style={{ maxInlineSize: 200 }}>
+        <label className="sq-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
+        <select className="sq-select" id={`crit-field-${key}`} value={c.field}
           onChange={e => {
             const next = fieldOf(e.target.value);
             patchCond(parentPath, idx, { field: e.target.value as Field, op: next.operators[0]?.op ?? "eq", value: "" });
@@ -204,9 +204,9 @@ export default function CriteriaBuilder({
           ))}
         </select>
       </div>
-      <div className="ax-field" style={{ maxInlineSize: 150 }}>
-        <label className="ax-field__label" htmlFor={`crit-op-${key}`}>{strings.opLabel}</label>
-        <select className="ax-select" id={`crit-op-${key}`} value={c.op}
+      <div className="sq-field" style={{ maxInlineSize: 150 }}>
+        <label className="sq-field__label" htmlFor={`crit-op-${key}`}>{strings.opLabel}</label>
+        <select className="sq-select" id={`crit-op-${key}`} value={c.op}
           onChange={e => patchCond(parentPath, idx, { op: e.target.value as Op, value: "" })}>
           {def.operators.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
         </select>
@@ -231,9 +231,9 @@ export default function CriteriaBuilder({
     <li role="treeitem" aria-label={strings.groupItem}
       style={{ listStyle: "none", borderInlineStart: "2px solid var(--border-subtle)", paddingInlineStart: "var(--space-4)" }}>
       <div className="row" style={{ alignItems: "flex-end", gap: "var(--space-3)", flexWrap: "wrap" }}>
-        <div className="ax-field" style={{ maxInlineSize: 220 }}>
-          <label className="ax-field__label" htmlFor={`crit-combine-${path.length ? pathKey(path) : "root"}`}>{strings.combineLabel}</label>
-          <select className="ax-select" id={`crit-combine-${path.length ? pathKey(path) : "root"}`} value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
+        <div className="sq-field" style={{ maxInlineSize: 220 }}>
+          <label className="sq-field__label" htmlFor={`crit-combine-${path.length ? pathKey(path) : "root"}`}>{strings.combineLabel}</label>
+          <select className="sq-select" id={`crit-combine-${path.length ? pathKey(path) : "root"}`} value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
             <option value="all">{strings.combineAll}</option>
             <option value="any">{strings.combineAny}</option>
           </select>
@@ -269,13 +269,13 @@ export default function CriteriaBuilder({
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
           {notSuppliedFields.map(f => (
             <li key={f.key} className="t-caption">
-              <span className="ax-lozenge ax-lozenge--warning">{f.label} · {strings.notSuppliedTag}</span> — {f.reason}
+              <span className="sq-lozenge sq-lozenge--warning">{f.label} · {strings.notSuppliedTag}</span> — {f.reason}
             </li>
           ))}
         </ul>
       )}
       {showInvalid && invalid.length > 0 && (
-        <div className="ax-banner ax-banner--warning" role="alert">
+        <div className="sq-banner sq-banner--warning" role="alert">
           <strong>{strings.invalidTitle}</strong>
           <p>{strings.invalidBody.replace("{n}", String(invalid.length))}</p>
         </div>

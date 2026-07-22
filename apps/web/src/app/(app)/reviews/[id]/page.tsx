@@ -22,7 +22,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     console.error("[review workspace auth read]", authError.message, authError.code);
     return (
       <Shell current="/reviews" title={t("review.ws.loadError", "Could not load")}>
-        <section className="ax-surface cd-panelpad cd-result" role="alert">
+        <section className="sq-surface cd-panelpad cd-result" role="alert">
           <h3 tabIndex={-1}>{t("review.ws.loadError", "Could not load")}</h3>
           <p>{t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")}</p>
         </section>
@@ -36,7 +36,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
     console.error("[review workspace role read]", roleReadError.message, roleReadError.code);
     return (
       <Shell current="/reviews" title={t("review.ws.loadError", "Could not load")}>
-        <section className="ax-surface cd-panelpad cd-result" role="alert">
+        <section className="sq-surface cd-panelpad cd-result" role="alert">
           <h3 tabIndex={-1}>{t("review.ws.loadError", "Could not load")}</h3>
           <p>{t("review.ws.loadErrorDesc", "The record could not be fetched — the data source may be degraded. Try again.")}</p>
         </section>
@@ -57,7 +57,7 @@ export default async function ReviewWorkspace({ params }: { params: Promise<{ id
   if (!authorized) {
     return (
       <Shell current="/reviews" title={t("review.ws.unauthTitle", "You don’t have access to this review")}>
-        <section className="ax-surface cd-panelpad cd-result" role="alert">
+        <section className="sq-surface cd-panelpad cd-result" role="alert">
           <div className="cd-result__row"><div className="cd-result__icon cd-result__icon--critical" aria-hidden="true"><IconBlocked size={24} /></div>
             <div className="cd-stack"><h3 tabIndex={-1}>{t("review.ws.unauthTitle", "You don’t have access to this review")}</h3>
               <p>{t("review.ws.unauthBody", "This workspace requires the Level 2 Reviewer role and matching scope. Navigation visibility is not authorization.")}</p></div></div>
@@ -266,48 +266,48 @@ const panelStrings: WorkspaceDecisionStrings = {
   };
   return (
     <Shell current="/reviews" title={t("review.ws.title", "Review — {factory}").replace("{factory}", f.name)}
-      context={<><span className="ax-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="ax-lozenge ax-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="ax-btn ax-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report →")}</a></>}>
-      <div className="ax-banner ax-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version.")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
+      context={<><span className="sq-version">v{latest?.version_number} · {t("review.ws.latest", "latest")}</span><span className="sq-lozenge sq-lozenge--review sq-lozenge--info">{t(`enum.${ins.status}`, ins.status.replace(/_/g, " "))}</span>{!canDecide && <span className="sq-lozenge sq-lozenge--warning">{t("review.ws.readOnlyRole", "{role} · read-only").replace("{role}", viewerRole ? t(`enum.${viewerRole}`, viewerRole) : "—")}</span>}<a className="sq-btn sq-btn--secondary" href={`/reports/inspection/${ins.id}`}>{t("review.ws.reportLink", "Official report →")}</a></>}>
+      <div className="sq-banner sq-banner--immutable"><div><strong>{t("review.ws.readOnlyTitle", "Read-only submitted version.")}</strong> {t("review.ws.readOnlyBody", "Content edits are impossible — the database rejects them (proven B3). Corrections happen only via Return with exact scope.")}</div></div>
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">
-        <div className="ax-stack">
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <div className="sq-stack">
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h4>
-            <div className="ax-tablewrap"><table className="ax-table">
+            <div className="sq-tablewrap"><table className="sq-table">
               <thead><tr><th scope="col">{t("review.ws.colItem", "Item")}</th><th scope="col">{t("review.ws.colResponse", "Response")}</th></tr></thead>
               <tbody>{Object.entries(latest?.snapshot?.answers ?? {}).map(([k, v]) => (
-                <tr key={k}><td><strong>{k}</strong></td><td><span className={`ax-lozenge ${v === "non_compliant" ? "ax-lozenge--critical" : "ax-lozenge--success"}`}>{t(`enum.${v}`, String(v).replace(/_/g, " "))}</span></td></tr>
+                <tr key={k}><td><strong>{k}</strong></td><td><span className={`sq-lozenge ${v === "non_compliant" ? "sq-lozenge--critical" : "sq-lozenge--success"}`}>{t(`enum.${v}`, String(v).replace(/_/g, " "))}</span></td></tr>
               ))}</tbody>
             </table></div>
           </div>
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h4>
             {(ins.violations as unknown as { violation_codes: { code: string; title: string; level: string }; mapping_version: string }[]).map((v, i) => (
-              <p key={i}><span className="ax-lozenge ax-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="ax-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
+              <p key={i}><span className="sq-lozenge sq-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="sq-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
             ))}
             {(ins.action_forms as unknown as { owner_name: string; due_at: string; status: string; required_correction: string }[]).map((a, i) => (
-              <p key={i} className="ax-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {formatDate(a.due_at, lang)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
+              <p key={i} className="sq-caption" style={{ marginBlockStart: 8 }}>{t("review.ws.actionPrefix", "action:")} {a.required_correction} — {a.owner_name}, {t("review.ws.due", "due")} {formatDate(a.due_at, lang)} · {t(`enum.${a.status}`, a.status.replace(/_/g, " "))}</p>
             ))}
             {(ins.evidence as unknown as { storage_path: string; content_sha256: string | null }[]).map((e, i) => (
-              <p key={i} className="ax-caption ax-numeric" style={{ marginBlockStart: 8 }}><IconPaperclip size={16} /> {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
+              <p key={i} className="sq-caption sq-numeric" style={{ marginBlockStart: 8 }}><IconPaperclip size={16} /> {e.storage_path} · sha256 {e.content_sha256?.slice(0, 12)}…</p>
             ))}
           </div>
           {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}
-          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
             <h4 style={{ marginBlockEnd: "var(--space-3)" }}>
               {t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)")}{" "}
-              <span className={`ax-lozenge ${fvUpdated ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>
+              <span className={`sq-lozenge ${fvUpdated ? "sq-lozenge--warning" : "sq-lozenge--success"}`}>
                 {fvUpdated
                   ? t("review.ws.fvChanged", "{n} field(s) updated").replace("{n}", String(fvUpdated))
                   : t("review.ws.fvNoChanges", "no changes vs source")}
               </span>
             </h4>
             {fv.error ? (
-              <p className="ax-caption">{t("review.ws.fvError", "Verification data is temporarily unavailable. Source-versus-observed comparison cannot be shown yet.")}</p>
+              <p className="sq-caption">{t("review.ws.fvError", "Verification data is temporarily unavailable. Source-versus-observed comparison cannot be shown yet.")}</p>
             ) : fv.checks.length === 0 ? (
-              <p className="ax-caption">{t("review.ws.fvEmpty", "No factory-field checks recorded for this inspection.")}</p>
+              <p className="sq-caption">{t("review.ws.fvEmpty", "No factory-field checks recorded for this inspection.")}</p>
             ) : (
-              <div className="ax-tablewrap"><table className="ax-table">
+              <div className="sq-tablewrap"><table className="sq-table">
                 <thead><tr>
                   <th scope="col">{t("review.ws.fvColField", "Field")}</th>
                   <th scope="col">{t("review.ws.fvColBefore", "Before — source (Senaei)")}</th>
@@ -322,31 +322,31 @@ const panelStrings: WorkspaceDecisionStrings = {
                     </td>
                     <td>{c.source_value ?? "—"}</td>
                     <td>{c.observed_value ?? "—"}</td>
-                    <td><span className={`ax-lozenge ${c.status === "verified" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.fv.${c.status}`, c.status)}</span></td>
-                    <td className="ax-numeric">
+                    <td><span className={`sq-lozenge ${c.status === "verified" ? "sq-lozenge--success" : "sq-lozenge--warning"}`}>{t(`enum.fv.${c.status}`, c.status)}</span></td>
+                    <td className="sq-numeric">
                       {fvEvCount(c.id) || "—"}
-                      {c.evidence_note && <div className="ax-caption">{c.evidence_note}</div>}
+                      {c.evidence_note && <div className="sq-caption">{c.evidence_note}</div>}
                     </td>
                   </tr>
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record; checks are audit-logged with before/after values.")}</p>
+            <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record; checks are audit-logged with before/after values.")}</p>
           </div>
           {/* M04-197 / M06-021 — acknowledgement signature made visible to the reviewer */}
           {latest?.acknowledgement != null && (() => {
             const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
             return (
-              <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+              <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
                 <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h4>
                 <p>
-                  <strong>{ack.name ?? "—"}</strong> · <span className="ax-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
-                  {" "}<span className="ax-version">v{latest.version_number}</span>
+                  <strong>{ack.name ?? "—"}</strong> · <span className="sq-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
+                  {" "}<span className="sq-version">v{latest.version_number}</span>
                 </p>
                 {ack.signature_data_url
                   // eslint-disable-next-line @next/next/no-img-element
                   ? <img src={ack.signature_data_url} alt={t("review.ws.sigAlt", "Representative signature")} style={{ maxInlineSize: 280, maxBlockSize: 120, background: "var(--surface-sunken)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)" }} />
-                  : <p className="ax-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>}
+                  : <p className="sq-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>}
               </div>
             );
           })()}
@@ -364,39 +364,39 @@ const panelStrings: WorkspaceDecisionStrings = {
             // submitted inspection always has at least one version on record).
             // State it explicitly; never render nothing where a comparison
             // surface belongs.
-            <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
-              <div className="ax-banner ax-banner--warning" role="status">
+            <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+              <div className="sq-banner sq-banner--warning" role="status">
                 <div><strong>{t("review.cmp.sourceUnavailable", "Comparison source unavailable.")}</strong> {t("review.cmp.sourceUnavailableBody", "Submitted-version data could not be loaded for this record, so no comparison can be shown — this is unavailable, not an empty result.")}</div>
               </div>
             </div>
           )}
           {(trail ?? []).length > 0 && (
-            <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
               <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail")}</h4>
               {(trail ?? []).map(ev => (
-                <p key={ev.id} className="ax-caption" style={{ marginBlockStart: 4 }}>
-                  <span className="ax-numeric">{formatDateTime(ev.occurred_at, lang)}</span>
+                <p key={ev.id} className="sq-caption" style={{ marginBlockStart: 4 }}>
+                  <span className="sq-numeric">{formatDateTime(ev.occurred_at, lang)}</span>
                   {" · "}<strong>{t(`enum.audit.${ev.object_type}`, ev.object_type.replace(/_/g, " "))}</strong>
                   {" · "}{t(`enum.audit.${ev.action}`, ev.action.replace(/_/g, " ").toLowerCase())}
                 </p>
               ))}
-              <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes.")}</p>
+              <p className="sq-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes.")}</p>
             </div>
           )}
           {reviews.filter(r => { return !!r.decided_at; }).map(r => (
-            <div key={r.id} className="ax-banner ax-banner--warning"><div><strong>{t("review.ws.priorDecision", "Prior decision:")}</strong> {r.decision ? t(`enum.${r.decision}`, r.decision) : "—"} · {r.decision_reason} {r.returned_sections && `· ${t("review.ws.sections", "sections")} ${r.returned_sections.join(", ")}`} <span className="ax-caption">({t("review.ws.immutable", "immutable")})</span></div></div>
+            <div key={r.id} className="sq-banner sq-banner--warning"><div><strong>{t("review.ws.priorDecision", "Prior decision:")}</strong> {r.decision ? t(`enum.${r.decision}`, r.decision) : "—"} · {r.decision_reason} {r.returned_sections && `· ${t("review.ws.sections", "sections")} ${r.returned_sections.join(", ")}`} <span className="sq-caption">({t("review.ws.immutable", "immutable")})</span></div></div>
           ))}
         </div>
         {!canDecide
           // HANDOFF read-only path — auditor/planner/leadership can read the
           // whole workspace above but never see Start review / the decision
           // controls, regardless of open/canStart state.
-          ? <div className="ax-surface" style={{ padding: "var(--space-6)" }}><p className="ax-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
+          ? <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
           ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))} strings={panelStrings} />
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
-          : <div className="ax-surface" style={{ padding: "var(--space-6)" }}><p className="ax-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
+          : <div className="sq-surface" style={{ padding: "var(--space-6)" }}><p className="sq-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
       </div>
     </Shell>
   );

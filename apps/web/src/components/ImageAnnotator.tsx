@@ -173,12 +173,12 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
   }
 
   return (
-    <div className="ax-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.title}>
-      <div className="ax-modal" style={{ inlineSize: "min(720px, 100%)" }}>
-        <div className="ax-modal__header"><h3>{strings.title}</h3></div>
-        <div className="ax-modal__body">
+    <div className="sq-modal-backdrop" role="dialog" aria-modal="true" aria-label={strings.title}>
+      <div className="sq-modal" style={{ inlineSize: "min(720px, 100%)" }}>
+        <div className="sq-modal__header"><h3>{strings.title}</h3></div>
+        <div className="sq-modal__body">
           <p className="t-caption">{strings.hint}</p>
-          <div className="ax-segmented" style={{ marginBlockEnd: "var(--space-3)" }}>
+          <div className="sq-segmented" style={{ marginBlockEnd: "var(--space-3)" }}>
             <button aria-pressed={tool === "pen"} onClick={() => setTool("pen")}>{strings.pen}</button>
             <button aria-pressed={tool === "rect"} onClick={() => setTool("rect")}>{strings.rect}</button>
           </div>
@@ -194,7 +194,7 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
             }}
           />
         </div>
-        <div className="ax-modal__footer">
+        <div className="sq-modal__footer">
           <button className="btn btn-ghost btn-touch" onClick={() => setShapes(s => s.slice(0, -1))} disabled={!shapes.length}>{strings.undo}</button>
           <button className="btn btn-ghost btn-touch" onClick={() => setShapes([])} disabled={!shapes.length}>{strings.clear}</button>
           <button className="btn btn-secondary btn-touch" onClick={onCancel}>{strings.cancel}</button>
