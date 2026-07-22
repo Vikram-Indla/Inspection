@@ -1,0 +1,3 @@
+source_id,filename,relative_path,size_bytes,sha256,file_type,authority,included_status,reason,extraction_status,reconciliation_status
+SRC-001,Inspection_Project_Customer_Auditor_Baseline.xlsx,01_SOURCE_REQUIREMENTS/**/01_SOURCE_BASELINE/Inspection_Project_Customer_Auditor_Baseline.xlsx,UNKNOWN,UNKNOWN,xlsx,A1_CUSTOMER_MANDATORY,POINTER_ONLY,"Source-side read/hash blocked; bridge comparison not passed",NOT_STARTED,NOT_STARTED
+SRC-002,MIM Inspection Consolidated Tracker and derivatives,UNRESOLVED_UNTIL_DISCOVERY,UNKNOWN,UNKNOWN,unknown,X1_EXCLUDED_INVALID_SOURCE,EXCLUDED,"EXCLUDED_BY_PRODUCT_OWNER — fabricated or derivative information; prohibited as requirement authority.",NOT_READ,NOT_APPLICABLE

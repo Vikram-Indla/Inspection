@@ -1,0 +1,8 @@
+schema_version: "1.0"
+status: "NOT_ESTABLISHED_R0_FAIL"
+source_requirement_count: null
+atomic_requirement_count: null
+duplicate_count: null
+conflict_count: null
+open_decision_count: 2
+reason: "Source bridge verification failed closed before extraction."

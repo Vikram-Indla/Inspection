@@ -1,0 +1,10 @@
+schema_version: "1.0"
+docs_root: "/Users/vikramindla/Desktop/Inspection Documentation"
+bridge_root: "/Users/vikramindla/Developer/Inspection-R0-Bridge"
+status: "SOURCE_DESTINATION_HASH_EQUALITY_UNVERIFIED"
+pointers:
+  - relative_path: "01_SOURCE_REQUIREMENTS/**"
+    authority: "A1_CUSTOMER_MANDATORY"
+    source_hash: null
+    bridge_hash: null
+    lifecycle_status: "BLOCKED"
