@@ -1,11 +1,7 @@
-# R0 Completeness Certificate
+# Corrected R0 Completeness Certificate
 
-**Status: PASS_SOURCE_BASELINE_ONLY**
+**Status: R0_CORRECTION_PACKAGE_READY_FOR_INDEPENDENT_ACCEPTANCE**
 
-The exact approved ZIP passed SHA-256 verification before extraction. The approved source directory contains exactly nine files, with zero unexpected files and no prohibited consolidated tracker.
+The nine-source lock passed re-verification. The corrected run retains 7341 source units and produces 2962 atomic obligations. Inspection Project reconciles to 478 customer rows plus 9 excluded header rows. Open decisions: 51; tensions: 6; API endpoints: 11; API schema elements: 988.
 
-The extraction processed 7341 source units and produced 7191 source-backed atomic requirements. Duplicate/corroboration groups: 826; conflicts: 0; open clarifications: 0; unreadable units: 0. Forward and reverse traceability are both 100%.
-
-Implementation, design, runtime, testing, UAT, and gap-audit status remain `NOT_ASSESSED_R0`.
-
-All binary and human-readable outputs remain outside Git under `/Users/vikramindla/Inspection-R0-Control`.
+Forward and reverse traceability are 100%. Implementation, design, runtime, testing, UAT, and R1/R2 analysis remain `NOT_ASSESSED_R0`.

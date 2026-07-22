@@ -1,3 +1,4 @@
 schema_version: "1.0"
-decisions: []
-status: "NO_OPEN_CLARIFICATIONS_IN_R0_EXTRACTION"
+status: "OPEN_DECISIONS_CAPTURED"
+count: 51
+manifest: "/Users/vikramindla/Inspection-R0-Control/manifests-corrected/R0_CORRECTED_DECISIONS.json"
