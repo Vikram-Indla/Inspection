@@ -16,7 +16,9 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 visual evidence", () => {
       document.documentElement.setAttribute("data-theme", "light");
     });
     await expect(page.getByRole("navigation", { name: "Primary navigation" })).toBeVisible();
-    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(7);
+    // 7 original admin-only entries + 3 added by the planning admin control
+    // plane (76a860cb: Planning Lookups / Expiry Rules / Status Rules).
+    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(10);
     await page.screenshot({ path: `${evidenceDir}/planner-desktop-en-light.png`, fullPage: false });
 
     await page.evaluate(() => {
@@ -42,7 +44,8 @@ test.describe("TASK-WEB-COMPLIANCE-SHARED-SHELL-001 visual evidence", () => {
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await page.getByRole("button", { name: "فتح قائمة التنقل" }).click();
     await expect(page.locator(".ax-shell")).toHaveClass(/is-drawer-open/);
-    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(7);
+    // Same 10-entry admin gate set as the desktop leg (see above).
+    await expect(page.locator('[data-nav-state="disabled"]')).toHaveCount(10);
     const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(horizontalOverflow).toBeLessThanOrEqual(1);
     await page.waitForTimeout(300); // evidence frame after the 200ms drawer transition settles
