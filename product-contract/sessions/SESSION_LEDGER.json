@@ -4683,9 +4683,29 @@
       "commit_sha": "f532056b (validated source before handoff record)",
       "next_task": "Continue the sponsor-selected Planning or Execution slice directly on main with scoped verification and evidence.",
       "resume_prompt": "Read product-contract/00_START_HERE.md, CURRENT_STATE.md UPDATE 118, execution/CURRENT_SLICE.yaml, and evidence/TASK-REPOSITORY-CONSOLIDATION-20260721.md. Work directly on main; do not create a long-lived Planning or Execution branch unless the sponsor explicitly changes this policy. Preserve all existing acceptance and provider/policy blockers."
+    },
+    {
+      "session_id": "2026-07-23-web-admin-phase1-plan-001",
+      "started_at": "2026-07-23",
+      "ended_at": "2026-07-23",
+      "branch": "revamp",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-PLAN-001",
+      "gate": "Web/Admin Phase 1 planning approval",
+      "requirements": ["CR-001..CR-478 with exactly one canonical disposition each", "G2-P00..P03, P06B, P10..P12", "Phase 2 /field and iPad isolation", "Current-to-target migration and rollback contract for every Phase 1 route"],
+      "acceptance_ids": ["WAP1-PLAN-AC-001..WAP1-PLAN-AC-072"],
+      "screens": ["71 Phase 1 Web/Admin routes", "five deferred /field routes", "46 supplied design files / 45 unique payloads"],
+      "engines": ["F0 shared SAQEEL foundation", "M1..M11 route packages", "planning generator and validator"],
+      "files_changed": ["product-contract/web-admin-phase1 planning authority", ".planning-pack/web-admin-phase1 handoff and prompts", "branch-local execution/governance/acceptance/evidence/session controls"],
+      "tests": ["planning validator PASS", "478/478 requirement IDs and dispositions", "71/5 route split", "46/45 design identity", "71/71 migration rows", "12/12 packages and prompts", "binary and Phase 2 ownership exclusions"],
+      "evidence": ["product-contract/web-admin-phase1/VALIDATION_RESULTS.md", "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-PLAN-001.md"],
+      "decisions": ["Direct replacement after certification is preferred", "Uncertainty requires a server-evaluated feature flag or guarded preview", "Prior implementations remain until stabilization and Product Owner removal approval", "478/478 traceability is distinct from Phase 1 implementation completion"],
+      "blockers": ["Product Owner approval of CC-WEB-ADMIN-PHASE1-001 before F0", "F0 certification before M1-M11", "Open provider policy provenance native-Arabic and G11 decisions"],
+      "commit_sha": "4d972017",
+      "next_task": "Product Owner reviews CC-WEB-ADMIN-PHASE1-001; if approved, start F0 only using its prompt and migration controls.",
+      "resume_prompt": "Read product-contract/web-admin-phase1/00_START_HERE.md, CC-WEB-ADMIN-PHASE1-001.yaml, CURRENT_TO_TARGET_MIGRATION.csv, and the F0 prompt. Do not implement before Product Owner approval. Preserve existing screens and use guarded exposure whenever uncertainty remains."
     }
   ],
-  "last_session": "2026-07-21-repository-consolidation-002",
+  "last_session": "2026-07-23-web-admin-phase1-plan-001",
   "rules": {
     "append_only": true,
     "required_fields": [

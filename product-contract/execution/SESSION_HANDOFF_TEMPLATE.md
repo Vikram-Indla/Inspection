@@ -1,39 +1,48 @@
 # Session Handoff
 
-- Session ID: `2026-07-20-saqeel-login-revamp-001`
-- Date/time: 2026-07-20 Asia/Riyadh
-- Gate: G10 verification / G11 UI hardening
-- Task ID: `TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001`
-- Branch: `feature/saqeel-login-revamp`
-- Starting commit: `d53e09f7ee4018bf2046e36d95fe45df355b11a2`
-- Ending source commit: `UNCOMMITTED`
-- Requirements: `CD-001`, `CD-002`, `SLR-REQ-001..018`
-- Acceptance IDs: `SLR-AC-001..018`
-- Screens: `SCR-PUB-010`
-- Engines: Supabase Auth, `FND-003`, Saudi atlas motion, theme and locale.
-- Files changed: login client/page/atlas/CSS; focused and visual Playwright
-  suites; protected-motion inventory; acceptance, evidence and governance
-  records.
-- Database/API changes: none.
-- Tests run: typecheck PASS; production build PASS; functional product checks
-  26/26 PASS; final visual/video evidence capture 2/2 PASS; diff/integrity checks PASS.
-- Evidence captured: `evidence/TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001.md`,
-  external 26-frame + interaction-video set and SHA-256 manifest.
-- Decisions made: final wordmark-protected prompt overrides earlier prompts;
-  repository prism + `صقيل | صناعي` stay exact; National SSO is absent; dark
-  native/light dedicated atlas sources are registered; only vehicle scale
-  changed in the protected motion layer.
-- Open blockers: exact browser-level 200%/400% zoom certification; unavailable
-  repository lint tooling; atlas rights/geographic confirmation; qualified
-  native-Arabic review; sponsor visual acceptance.
-- Regression result: authentication, reset, protected motion, theme, locale and
-  responsive matrix PASS; no external SSO control or capability is claimed.
-- Exact next task: sponsor visual acceptance of the evidence set, followed by
-  explicit direction for commit/push/merge/deploy if accepted.
-- Ready-to-paste resume prompt: Read `CURRENT_STATE.md` UPDATE 111,
-  `execution/CURRENT_SLICE.yaml`, and
-  `evidence/TASK-DESIGN-SAQEEL-LOGIN-REVAMP-001.md`. Review the 26 external
-  frames, interaction video and `MANIFESTS/SAQEEL_LOGIN_WORDMARK_PROTECTED_002.json`
-  on branch `feature/saqeel-login-revamp`. Engineering acceptance is 18/18 PASS;
-  exact zoom/lint/human release checks and sponsor visual acceptance remain open.
-  Do not add SSO or commit, push, merge, deploy without explicit authorization.
+- Session ID: `2026-07-23-web-admin-phase1-plan-001`
+- Date/time: 2026-07-23 Asia/Riyadh
+- Gate: Web/Admin Phase 1 planning approval
+- Task ID: `TASK-WEB-ADMIN-PHASE1-PLAN-001`
+- Change control: `CC-WEB-ADMIN-PHASE1-001`
+- Branch: `revamp`
+- Starting commit: `6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d`
+- Ending source commit: `4d972017`
+- Requirements: `CR-001..CR-478`; processes `G2-P00..P03`, `P06B`,
+  `P10..P12`.
+- Acceptance IDs: `WAP1-PLAN-AC-001..WAP1-PLAN-AC-072`.
+- Screens: 71 Phase 1 route migrations; five `/field/**` routes deferred;
+  46 supplied designs representing 45 unique payloads.
+- Engines: F0 shared SAQEEL foundation and M1–M11 implementation packages.
+- Files changed: planning authority under `product-contract/web-admin-phase1/`;
+  human/agent handoff and 12 prompts under `.planning-pack/web-admin-phase1/`;
+  branch-local task, change-control, acceptance, evidence, queue, decision, and
+  continuity records.
+- Application/database/API changes: none. No `apps/web` source, remote DDL,
+  provider, deployment, shared data, `main`, or G11 status was changed.
+- Tests run: generator PASS; planning validator PASS; 478/478 unique
+  dispositions; 71/5 route split; three APIs; 46/45 designs; 71/71 migration
+  rows; 12/12 packages and prompts; 72/72 package acceptance rows; JSON/YAML,
+  binary exclusion, Phase 2 ownership, and diff integrity PASS.
+- Evidence captured: `product-contract/web-admin-phase1/VALIDATION_RESULTS.md`
+  and `product-contract/evidence/TASK-WEB-ADMIN-PHASE1-PLAN-001.md`.
+- Decisions made: direct replacement after certification is the preferred path;
+  uncertainty requires a server-evaluated flag or guarded preview; prior screens
+  remain until stabilization and Product Owner removal approval; 478/478 means
+  traceability and preservation, not Phase 1 implementation completion.
+- Open blockers: Product Owner change-control approval before F0; F0
+  certification before M1–M11; provider, policy, provenance, native-Arabic, and
+  G11 performance decisions remain fail closed.
+- Regression result: planning-only PASS. Current application behavior was not
+  modified and no runtime acceptance is claimed.
+- Exact next task: Product Owner reviews `CC-WEB-ADMIN-PHASE1-001`; if approved,
+  execute F0 alone from its prompt and migration controls.
+- Ready-to-paste resume prompt: Read
+  `product-contract/web-admin-phase1/00_START_HERE.md`,
+  `product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml`,
+  `product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv`, and
+  `.planning-pack/web-admin-phase1/prompts/F0_IMPLEMENTATION_PROMPT.md` at
+  source commit `4d972017`. Do not implement before Product Owner approval.
+  Preserve current screens and use guarded exposure whenever uncertainty
+  remains. Do not push, merge, deploy, mutate shared data, enable providers, or
+  execute remote DDL without separate explicit approval.
