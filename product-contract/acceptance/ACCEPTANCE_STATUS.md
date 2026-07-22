@@ -1,5 +1,19 @@
 # Acceptance Status
 
+## TASK-WEB-ADMIN-PHASE1-PLAN-001 — 2026-07-23
+
+- Planning baseline: **PASS_READY_FOR_PRODUCT_OWNER_APPROVAL**.
+- Requirement traceability: **478/478 PASS**; implementation status remains
+  235 Phase 1, 238 Phase 2-deferred, and five open-decision rows.
+- Route/design/package authority: **PASS** — 71 Phase 1 routes, five deferred
+  routes, 46 supplied/45 unique designs, and 12 packages.
+- Migration safety: **PASS** — 71/71 rows define current behavior, backend,
+  permission, tests, cutover, rollback, and legacy retention; 20 direct after
+  certification and 51 guarded preview/flag paths.
+- Application implementation and runtime acceptance: **NOT STARTED / NOT
+  AUTHORIZED**.
+- Exact evidence: `../evidence/TASK-WEB-ADMIN-PHASE1-PLAN-001.md`.
+
 ## TASK-G11-REMEDIATION-PERFORMANCE-001 — 2026-07-20
 
 - Pass-4 pinned union: **PASS_VERIFIED** — `7994cc6` and `e8ffeaa` are both

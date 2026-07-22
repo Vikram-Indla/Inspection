@@ -1,81 +1,72 @@
 schema_version: "1.2"
-task_id: "TASK-G11-REMEDIATION-PERFORMANCE-001"
-gate: "G11 Hardening — platform navigation performance remediation"
-title: "P0 navigation-performance post-mortem and remediation across the Inspection Platform (Codex / Kimi K3 / Claude Code sequential passes)"
-status: "REMEDIATED_RESIDUAL_P0_BLOCKED"
+task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
+change_control_id: "CC-WEB-ADMIN-PHASE1-001"
+gate: "Web/Admin Phase 1 planning approval"
+title: "Source-backed Web/Admin Phase 1 implementation plan and handoff"
+status: "READY_FOR_PRODUCT_OWNER_APPROVAL"
 enforce_stop_gate: true
-broad_implementation_allowed: true
-branch: "perf/p0-navigation-remediation"
+broad_implementation_allowed: false
+application_implementation_allowed: false
+branch: "revamp"
+baseline_sha: "6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d"
+worktree: "/Users/vikramindla/Developer/Inspection/.worktrees/revamp"
 
-baseline_sha: "d53e09f7ee4018bf2046e36d95fe45df355b11a"
-head_at_activation: "f55e2eac80d040cb69c7a7211c67e80f7cfb9d51"
-measured_remediation_sha: "f2b86c4"
-post_audit_progress_guard_sha: "496ed0c"
-
-worktrees:
-  - path: "Inspection (main checkout)"
-    branch: "perf/p0-navigation-remediation"
-    agent: "Claude Code — Pass 3 (independent review and remediation)"
-  - path: "Inspection-perf-codex"
-    branch: "perf/p0-navigation-remediation--codex-pass"
-    agent: "Codex — Pass 1 (baseline/instrumentation) and Pass 4 (integration/acceptance)"
-  - path: "Inspection-perf-kimi"
-    branch: "perf/p0-navigation-remediation--kimi-pass"
-    agent: "Kimi K3 — Pass 2 (repository-wide post-mortem)"
-
-slice_history:
-  - "TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 — unrelated, concurrently active on its own branch/worktree; not superseded, not touched by this task."
+concurrent_tasks:
+  - task_id: "TASK-G11-REMEDIATION-PERFORMANCE-001"
+    status: "UNCHANGED_CONCURRENT_LINE"
+    authority: "product-contract/execution/slice-history/CURRENT_SLICE_TASK_G11_REMEDIATION_PERFORMANCE_001_backup_2026-07-23.yaml"
 
 objective: >-
-  Measure and eliminate the platform-wide one-to-two-second post-authentication
-  navigation lag (dashboard, side-nav, lists, detail, forms, drawers, tables,
-  search/filter, reports, admin, iPad, light/dark) via a governed multi-agent
-  investigation covering 60 mandatory diagnostic checks, evidence-backed fixes,
-  and before/after measurement, per docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md.
+  Produce the complete source-backed planning baseline, machine-readable
+  interfaces, package ownership, implementation prompts, verification gates,
+  and change-control handoff for Web/Admin Phase 1 without implementing the
+  application or changing the active G11 performance task's status.
 
-requirement_ids:
-  - "G11 Hardening — non-functional navigation performance. No MVP1 functional requirement, field, permission, state, or audit-event ID is invented, weakened, or removed while optimizing."
+process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06B", "G2-P10", "G2-P11", "G2-P12"]
+requirement_ids: ["CR-001..CR-478"]
+acceptance_ids: ["WAP1-PLAN-AC-001..WAP1-PLAN-AC-072"]
+screen_scope:
+  phase1_routes: 71
+  phase2_field_routes: 5
+  supplied_design_files: 46
+  unique_design_payloads: 45
+engines: ["ENG-WAP1-F0", "ENG-WAP1-M1", "ENG-WAP1-M2", "ENG-WAP1-M3", "ENG-WAP1-M4", "ENG-WAP1-M5", "ENG-WAP1-M6", "ENG-WAP1-M7", "ENG-WAP1-M8", "ENG-WAP1-M9", "ENG-WAP1-M10", "ENG-WAP1-M11"]
 
-acceptance_ids:
-  - "Project acceptance targets: docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §9 (navigation, interaction, network, rendering, responsive)"
-  - "60 mandatory P0 diagnostic checks: docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §6"
+dependencies:
+  - "Product Owner approval of CC-WEB-ADMIN-PHASE1-001 before F0 implementation"
+  - "F0 certification before M1-M11 implementation"
+  - "Separate authority for remote DDL, deployment, shared-data mutation, provider enablement, push, or merge"
 
-integration:
-  - "docs/performance/inspection-performance-postmortem.md"
-  - "docs/performance/inspection-route-inventory.md"
-  - "docs/performance/inspection-p0-register.md"
-  - "docs/performance/inspection-before-after-results.md"
-  - "docs/performance/inspection-regression-results.md"
-  - "docs/performance/inspection-agent-handover.md"
-  - "docs/performance/evidence/INDEX.md (pointers only — binaries live under INSPECTION_DOCS_ROOT)"
-  - "docs/performance/results/baseline.json, final.json, route-results.csv"
+required_context:
+  - "product-contract/web-admin-phase1/00_START_HERE.md"
+  - "product-contract/web-admin-phase1/BASELINE_SUMMARY.json"
+  - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv"
+  - "product-contract/web-admin-phase1/ROUTE_INVENTORY.csv"
+  - "product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv"
+  - "product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv"
+  - "product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv"
+  - "product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv"
+  - ".planning-pack/web-admin-phase1/WEB_ADMIN_PHASE1_HANDOFF.md"
+  - ".planning-pack/web-admin-phase1/prompts/"
 
 do_not_touch:
-  - "Do not push, merge, or fast-forward main, at any pass, for any reason."
-  - "Do not merge perf/p0-navigation-remediation into setup/Inspection without a separate future explicit human approval (Pass 4 opens a PR only)."
-  - "Do not touch TASK-FACTORY-360-IPAD-API-CONTRACT-CONSUMPTION-015 files, its branch codex/factory360-ipad-api-contract-consumption-015, or its worktree."
-  - "Do not commit binary evidence (screenshots, videos, traces) to Git — INSPECTION_DOCS_ROOT only, per docs/DOCUMENTATION_STORAGE_POLICY.md."
-  - "Do not weaken authentication, RLS, RBAC, tenant isolation, or accessibility behaviour to improve timings."
-  - "Do not invent policy values, thresholds, SLAs, or performance budgets beyond docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §9."
+  - "Do not modify the dirty root checkout or any user-owned untracked planning/evidence files."
+  - "Do not modify apps/web application source during this planning task."
+  - "Do not assign Phase 1 ownership to /field/**, field PWA, offline client/outbox UX, or iPad certification."
+  - "Do not change the status or evidence of TASK-G11-REMEDIATION-PERFORMANCE-001."
+  - "Do not commit supplied ZIPs, workbooks, HTML exports, screenshots, videos, traces, or other binary evidence."
+  - "Do not invent roles, status policy, risk values, geofence values, SLAs, legal rules, providers, or production fixture data."
+  - "Do not push, merge, deploy, execute remote DDL, mutate shared data, or enable a provider without separate explicit approval."
 
 evidence:
-  - "docs/performance/results/baseline.json — 90 authenticated production-build samples (5 cold / 10 warm per representative route)."
-  - "docs/performance/results/final.json and route-results.csv — definitive after sample and calculated comparison."
-  - "docs/performance/inspection-p0-register.md — P0-01..60 plus all 140 user-mandated investigations classified."
-  - "docs/performance/inspection-performance-postmortem.md and inspection-regression-results.md."
-  - "External before/after screenshots and traces indexed by docs/performance/evidence/INDEX.md."
+  - "product-contract/web-admin-phase1/SOURCE_MANIFEST.csv"
+  - "product-contract/web-admin-phase1/BASELINE_SUMMARY.json"
+  - "product-contract/web-admin-phase1/VALIDATION_RESULTS.md"
+  - "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-PLAN-001.md"
 
 exit_condition: >-
-  All reachable routes measured cold/warm with median/p75/p95; P0 register
-  complete with evidence per item; high-confidence fixes implemented and
-  regression-tested without weakening protected functionality; before/after
-  results and full agent-handover package published under docs/performance/;
-  branch perf/p0-navigation-remediation pushed with a final acceptance status
-  per docs/performance/MASTER_PROMPT_P0_PERFORMANCE.md §16 — not merged.
-
-open_blockers:
-  - "Useful-content acceptance remains failed: final warm p75 is 859–8,897 ms against the <=500 ms target."
-  - "Operations still logs statement timeouts for action_forms and geo-override evidence."
-  - "The checkout is not linked to a Supabase project, so the forward index migration cannot be remotely applied, advised or EXPLAIN-verified in this session."
-  - "The current Supabase connector identity is also denied read-only project, migration, advisor and catalog access."
-  - "Dashboard entity-search focused regression timed out once and the full mutation-heavy inventory was not rerun; no release certification is claimed."
+  Planning validators pass 478/478 unique requirement dispositions, 71 Phase 1
+  and five deferred field page routes, 46 supplied/45 unique designs, all 12
+  packages and prompts, 71 complete current-to-target migration rows, complete ownership and acceptance linkage, Phase 2
+  isolation, and binary/credential exclusions. Product Owner approval remains
+  required before implementation.

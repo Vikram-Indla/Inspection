@@ -1,5 +1,13 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
+    gate: "Web/Admin Phase 1 planning approval"
+    priority: "P0"
+    status: "READY_FOR_PRODUCT_OWNER_APPROVAL"
+    owner: "Product Owner approval authority + F0 implementation owner after approval"
+    blocked_by: ["Product Owner approval of CC-WEB-ADMIN-PHASE1-001"]
+    blocks: ["F0 implementation", "M1-M11 implementation"]
+    note: "Source-backed planning handoff on branch revamp: 478/478 customer rows uniquely dispositioned; 71 Phase 1 and five deferred field routes; 46 supplied/45 unique designs; F0 plus M1-M11 manifests and prompts; 71/71 current-to-target migration rows with 20 direct-after-certification and 51 guarded preview/flag strategies. Existing implementations remain through stabilization and Product Owner removal approval. Planning only—no app source, remote DDL, deployment, data mutation, provider enablement, push, or merge authorized. G11 remains concurrent and unchanged."
   - task_id: "TASK-REPOSITORY-CONSOLIDATION-20260721"
     gate: "Repository administration during G11 hardening"
     priority: "P0"

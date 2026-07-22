@@ -1,5 +1,18 @@
 # Evidence Status
 
+## TASK-WEB-ADMIN-PHASE1-PLAN-001 — 2026-07-23
+
+| ID | Evidence | Status |
+|---|---|---|
+| WAP1-EV-001..004 | Source, requirement, route, and design manifests | Captured — PASS |
+| WAP1-EV-005 | 71-row current-to-target migration register | Captured — PASS |
+| WAP1-EV-006..007 | Twelve package prompts and 72 acceptance gates | Captured — PASS |
+| WAP1-EV-008 | `node scripts/validate_web_admin_phase1.mjs` | PASS |
+| WAP1-EV-009 | Binary exclusion and Phase 2 ownership isolation | PASS |
+
+Exact record: `TASK-WEB-ADMIN-PHASE1-PLAN-001.md`. This is planning evidence,
+not application/runtime certification.
+
 ## TASK-G11-REMEDIATION-PERFORMANCE-001 — 2026-07-20
 
 | ID | Evidence | Status |

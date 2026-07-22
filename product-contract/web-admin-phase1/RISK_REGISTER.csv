@@ -1,0 +1,9 @@
+risk_id,description,impact,mitigation,status,owner
+WAP1-RISK-001,"Phase 2 field scope leaks into Phase 1 ownership",HIGH,"Validator rejects Phase 2 package ownership; deferred register is authoritative",CONTROLLED,"Planning owner"
+WAP1-RISK-002,"Parallel modules collide in shell, global CSS, navigation, i18n, migrations, or shared components",HIGH,"F0 exclusively owns shared prefixes; follow-up required for shared edits",OPEN,"F0 owner"
+WAP1-RISK-003,"Design fixture values enter production paths",HIGH,"Treat all executable-design values as visual fixtures; require source-backed data wiring",OPEN,"Module owners"
+WAP1-RISK-004,"Design conflicts with accepted route or backend behavior",HIGH,"Use delta records and Product Owner approval; preserve accepted aliases and behavior",OPEN,"Product Owner"
+WAP1-RISK-005,"Unresolved provider or policy values are invented",HIGH,"Fail closed and link OPEN_DECISIONS_AND_BLOCKERS.yaml",OPEN,"Product/Provider owners"
+WAP1-RISK-006,"Binary authority or evidence enters Git",MEDIUM,"Commit hashes/manifests/text only; store binaries under INSPECTION_DOCS_ROOT",CONTROLLED,"All package owners"
+WAP1-RISK-007,"Visual results vary outside the pinned browser/font environment",MEDIUM,"Pin Chromium/fonts and require an approved delta for every difference",OPEN,"QA owner"
+WAP1-RISK-008,"Source-only migrations are mistaken for runtime certification",HIGH,"Mark uncertified until controlled database/RLS verification",OPEN,"Database owner"
