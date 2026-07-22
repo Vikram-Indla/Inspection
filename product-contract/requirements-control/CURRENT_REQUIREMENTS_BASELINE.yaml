@@ -2,11 +2,11 @@ schema_version: "1.0"
 status: "R0_CORRECTION_PACKAGE_READY_FOR_INDEPENDENT_ACCEPTANCE"
 source_file_count: 9
 source_unit_count: 7341
-atomic_requirement_count: 2344
+atomic_requirement_count: 2263
 capability_parent_count: 564
-open_decision_count: 12
+open_decision_count: 5
 conflict_tension_count: 2
-duplicate_obligation_group_count: 227
+duplicate_obligation_group_count: 214
 api_endpoint_count: 11
 api_schema_element_count: 33
 inspection_project_customer_rows: 478
