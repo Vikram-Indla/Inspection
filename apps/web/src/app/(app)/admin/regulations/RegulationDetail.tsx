@@ -78,10 +78,10 @@ export default async function RegulationDetail({
   const unmapped = clauses.filter(c => !(c.inspection_items ?? []).length);
 
   return (
-    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h3>{reg.code} — {reg.title}</h3>
-        <div className="row" style={{ gap: "var(--ax-space-150)" }}>
+        <div className="row" style={{ gap: "var(--space-3)" }}>
           <span className={`ax-lozenge ${reg.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${reg.status}`, String(reg.status).replace(/_/g, " "))}</span>
           {reg.status === "draft" && <PublishRegulation regulationId={reg.id} strings={s} />}
         </div>
@@ -98,7 +98,7 @@ export default async function RegulationDetail({
       )}
 
       {/* Metadata + maker-checker evidence */}
-      <dl className="ax-grid-2" style={{ rowGap: "var(--ax-space-100)" }}>
+      <dl className="ax-grid-2" style={{ rowGap: "var(--space-2)" }}>
         <div><dt className="t-caption">{s.issuingAuthority}</dt><dd><bdi>{reg.issuing_authority || "—"}</bdi></dd></div>
         <div><dt className="t-caption">{s.metaCreated}</dt><dd><bdi>{new Date(reg.created_at).toISOString().slice(0, 10)}</bdi></dd></div>
         <div><dt className="t-caption">{s.metaCreatedBy}</dt><dd><bdi>{nameOf(reg.created_by)}</bdi></dd></div>
@@ -111,7 +111,7 @@ export default async function RegulationDetail({
       {/* Clause navigator + clause→item dependency rail */}
       <div>
         <h4>{s.clauseNav}</h4>
-        <div className="ax-tablewrap" style={{ marginBlockStart: "var(--ax-space-150)" }}><table className="ax-table">
+        <div className="ax-tablewrap" style={{ marginBlockStart: "var(--space-3)" }}><table className="ax-table">
           <thead><tr>
             <th scope="col">{s.clauseRef}</th><th scope="col">{s.title}</th><th scope="col">{s.legalSource}</th><th scope="col">{s.dependencyRail}</th>
           </tr></thead>
@@ -140,7 +140,7 @@ export default async function RegulationDetail({
       </div>
 
       {/* Downstream unproven legs — disclosed, not faked as working controls */}
-      <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+      <div className="panel" style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
         <div><strong className="t-caption">{s.auditTitle}</strong><p className="t-caption">{s.auditBody}</p></div>
         <div><strong className="t-caption">{s.lineageTitle}</strong><p className="t-caption">{s.lineageBody}</p></div>
         <div><strong className="t-caption">{s.dependencyEngineTitle}</strong><p className="t-caption">{s.dependencyEngineBody}</p></div>

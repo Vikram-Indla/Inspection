@@ -40,7 +40,7 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
     g.lineCap = "round";
     g.lineJoin = "round";
     // Ink color comes from the design system, never a bare color.
-    g.strokeStyle = getComputedStyle(c).getPropertyValue("--ax-color-text").trim();
+    g.strokeStyle = getComputedStyle(c).getPropertyValue("--text-primary").trim();
   }, []);
 
   const pos = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -104,9 +104,9 @@ export default function SignaturePad({ strings, onConfirm, onCancel }: {
         onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
         style={{
           inlineSize: "100%", blockSize: 180, touchAction: "none", cursor: "crosshair",
-          background: "var(--ax-color-surface-sunken)",
-          border: "1.5px dashed var(--ax-color-border-strong)",
-          borderRadius: "var(--ax-radius-standard)",
+          background: "var(--surface-sunken)",
+          border: "1.5px dashed var(--border-strong)",
+          borderRadius: "var(--radius-sm)",
         }}
       />
       {err && <p className="ax-field__error">{err}</p>}

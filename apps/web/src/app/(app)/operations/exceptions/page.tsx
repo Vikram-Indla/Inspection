@@ -39,7 +39,7 @@ export default async function ExceptionsPage() {
           body={t("exc.empty.body", "Open cases and risk exceptions surface here. Empty may also mean none are in your scope (RLS).")} />
       )}
       {groups.map((g) => (
-        <div key={g.category} className="panel" style={{ padding: "var(--ax-space-300)" }}>
+        <div key={g.category} className="panel" style={{ padding: "var(--space-6)" }}>
           <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>{g.category.replace(/_/g, " ")}</h3><span className="badge badge-warning numeric">{g.count}</span>
           </div>

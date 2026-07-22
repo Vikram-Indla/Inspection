@@ -46,8 +46,8 @@ function LookupForm({ row, kinds, labels, onDone }: {
     });
   };
   return (
-    <form onSubmit={submit} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-      <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "flex-end" }}>
+    <form onSubmit={submit} className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+      <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "flex-end" }}>
         {!row && (
           <div className="ax-field"><label className="ax-field__label" htmlFor="lk-kind">{labels.kind}</label>
             <select className="ax-select" id="lk-kind" name="kind" required>
@@ -69,7 +69,7 @@ function LookupForm({ row, kinds, labels, onDone }: {
       </div>
       <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
         <legend className="ax-field__label">{labels.flagsTitle}</legend>
-        <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap" }}>
           {KNOWN_METADATA_FLAGS.map(flag => (
             <label key={flag} className="ax-caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
               <input type="checkbox" name={`flag_${flag}`} value="1" defaultChecked={row?.metadata?.[flag] === true} /> {flag}
@@ -80,11 +80,11 @@ function LookupForm({ row, kinds, labels, onDone }: {
       <div className="ax-field"><label className="ax-field__label" htmlFor={row ? `lk-json-${row.id}` : "lk-json"}>{labels.rawJson}</label>
         <input className="ax-input numeric" id={row ? `lk-json-${row.id}` : "lk-json"} name="metadata_json" placeholder='{"custom_flag": true}' />
         <span className="ax-caption">{labels.rawJsonHint}</span></div>
-      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.working : row ? labels.save : labels.add}</button>
         {row && <button type="button" className="ax-btn" onClick={onDone}>{labels.closeEdit}</button>}
         {feedback.ok && !pending && <span className="ax-lozenge ax-lozenge--success" role="status">{feedback.ok}</span>}
-        {feedback.error && <span role="alert" className="ax-caption" style={{ color: "var(--ax-color-critical-strong)" }}>{feedback.error}</span>}
+        {feedback.error && <span role="alert" className="ax-caption" style={{ color: "var(--status-critical-text)" }}>{feedback.error}</span>}
       </div>
     </form>
   );
@@ -108,7 +108,7 @@ export default function LookupsAdmin({ rows, kinds, canConfigure, labels }: {
   };
 
   return (
-    <section className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <section className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
       {!canConfigure && <div className="ax-banner ax-banner--warning" role="status"><div>{labels.readOnlyWhy}</div></div>}
       <div className="ax-kpi-row" role="group" aria-label="lookup kinds">
         {kinds.map(k => (
@@ -139,13 +139,13 @@ export default function LookupsAdmin({ rows, kinds, canConfigure, labels }: {
               <td><span className={`ax-lozenge ${r.is_active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{r.is_active ? labels.active : labels.inactive}</span></td>
               {canConfigure && (
                 <td>
-                  <div className="row" style={{ gap: "var(--ax-space-100)" }}>
+                  <div className="row" style={{ gap: "var(--space-2)" }}>
                     <button type="button" className="ax-btn ax-btn--subtle" disabled={pending}
                       onClick={() => setEditingId(editingId === r.id ? null : r.id)}>{labels.edit}</button>
                     <button type="button" className={`ax-btn ${r.is_active ? "" : "ax-btn--prominent"}`} disabled={pending}
                       onClick={() => toggle(r)}>{r.is_active ? labels.deactivate : labels.activate}</button>
                   </div>
-                  {editingId === r.id && <div style={{ marginBlockStart: "var(--ax-space-150)" }}>
+                  {editingId === r.id && <div style={{ marginBlockStart: "var(--space-3)" }}>
                     <LookupForm row={r} kinds={kinds} labels={labels} onDone={() => setEditingId(null)} />
                   </div>}
                 </td>

@@ -47,16 +47,16 @@ export function WfDeck({ payload, strings }: Props) {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-250)" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
       {/* Validation ledger — the graph check that previously did not exist */}
-      <section aria-label={strings.ledgerTitle} className="panel" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <section aria-label={strings.ledgerTitle} className="panel" style={{ padding: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <div className="row" style={{ justifyContent: "space-between" }}>
           <h4 style={{ margin: 0 }}>{strings.ledgerTitle}</h4>
           <span className={`ax-lozenge ${validation.ok ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
             {validation.ok ? `✓ ${strings.passed}` : strings.failed}
           </span>
         </div>
-        <ul style={{ margin: 0, paddingInlineStart: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+        <ul style={{ margin: 0, paddingInlineStart: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           {validation.checks.map((c) => (
             <li key={c.id} className="t-caption">
               <span className={`ax-lozenge ${c.ok ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
@@ -69,11 +69,11 @@ export function WfDeck({ payload, strings }: Props) {
       </section>
 
       {/* Graph + outline — keyboard-accessible ordered stepper (wraps, never clipped) */}
-      <section aria-label={strings.graphTitle} className="panel" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <section aria-label={strings.graphTitle} className="panel" style={{ padding: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <h4 style={{ margin: 0 }}>{strings.graphTitle}</h4>
-        <ol role="list" style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "center" }}>
+        <ol role="list" style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: "var(--space-3)", alignItems: "center" }}>
           {def.states.map((s, idx) => (
-            <li key={s.key} style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+            <li key={s.key} style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
               <button
                 type="button"
                 ref={(el) => { stateRefs.current[idx] = el; }}
@@ -98,7 +98,7 @@ export function WfDeck({ payload, strings }: Props) {
       </section>
 
       {/* Transition inspector */}
-      <section aria-label={strings.inspectorTitle} className="panel" style={{ padding: "var(--ax-space-250)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <section aria-label={strings.inspectorTitle} className="panel" style={{ padding: "var(--space-5)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <h4 style={{ margin: 0 }}>{strings.inspectorTitle}</h4>
         <p className="t-caption">{strings.selectHint}</p>
         <div className="ax-tablewrap"><table className="ax-table">

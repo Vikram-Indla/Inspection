@@ -71,7 +71,7 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
       : "";
 
   return (
-    <section className="ax-surface" style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }} aria-labelledby="role-cap-h">
+    <section className="ax-surface" style={{ padding: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }} aria-labelledby="role-cap-h">
       <h3 id="role-cap-h" style={{ margin: 0 }}>{labels.panelTitle}</h3>
       <p className="ax-caption" style={{ margin: 0 }}>{labels.panelIntro}</p>
 
@@ -90,18 +90,18 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
           {held.size === 0 ? (
             <p className="ax-caption" style={{ margin: 0 }}>{labels.noGrants}</p>
           ) : (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "center" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)", alignItems: "center" }}>
               {grants.filter(g => g.roleKey === roleKey).map(g => (
                 <span key={g.permissionKey} className={`ax-lozenge ${g.permissionKey === "admin.access.manage" ? "ax-lozenge--warning" : "ax-lozenge--info"}`}>
                   {g.permissionKey}
-                  <button type="button" className="ax-btn" style={{ marginInlineStart: 6, padding: "0 var(--ax-space-100)" }}
+                  <button type="button" className="ax-btn" style={{ marginInlineStart: 6, padding: "0 var(--space-2)" }}
                     disabled={pending}
                     onClick={() => setConfirming({ kind: "revoke", permissionKey: g.permissionKey })}>{labels.revoke}</button>
                 </span>
               ))}
             </div>
           )}
-          <div style={{ display: "flex", gap: "var(--ax-space-150)", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "center" }}>
             <select className="ax-input" id="role-cap-grant-select" style={{ maxInlineSize: 420 }} disabled={pending}>
               {grantable.map(p => <option key={p.permissionKey} value={p.permissionKey}>{p.permissionKey} — {p.title}</option>)}
             </select>
@@ -116,9 +116,9 @@ export default function RoleCapabilityPanel({ roles, permissions, grants, labels
       )}
 
       {confirming && (
-        <div className="ax-banner ax-banner--critical" role="alert" style={{ display: "flex", gap: "var(--ax-space-150)", alignItems: "center", justifyContent: "space-between" }}>
+        <div className="ax-banner ax-banner--critical" role="alert" style={{ display: "flex", gap: "var(--space-3)", alignItems: "center", justifyContent: "space-between" }}>
           <div><strong>{confirmText}</strong></div>
-          <div style={{ display: "flex", gap: "var(--ax-space-100)" }}>
+          <div style={{ display: "flex", gap: "var(--space-2)" }}>
             <button type="button" className="ax-btn ax-btn--prominent" disabled={pending} onClick={confirmPending}>
               {pending ? labels.working : labels.confirm}
             </button>

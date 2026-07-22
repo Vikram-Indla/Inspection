@@ -72,7 +72,7 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
       g.drawImage(img, 0, 0, c.width, c.height);
       g.lineWidth = 3; g.lineCap = "round"; g.lineJoin = "round";
       // Annotation ink from the design system — never a bare color.
-      g.strokeStyle = getComputedStyle(c).getPropertyValue("--ax-color-critical").trim();
+      g.strokeStyle = getComputedStyle(c).getPropertyValue("--status-critical").trim();
       baseRef.current = img;
     };
     img.src = `data:${file.mime};base64,${file.b64}`;
@@ -119,7 +119,7 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
     >
       <p className="ax-caption">{strings.annotateHint}</p>
       <canvas ref={canvasRef} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
-        style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--ax-color-border-strong)", borderRadius: "var(--ax-radius-standard)" }} />
+        style={{ maxInlineSize: "100%", touchAction: "none", cursor: "crosshair", border: "1.5px dashed var(--border-strong)", borderRadius: "var(--radius-sm)" }} />
     </Modal>
   );
 }
@@ -239,8 +239,8 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   const changeCount = updatedFields.length;                                              // M04-110
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+    <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "var(--space-2)" }}>
         <h4>{strings.title}</h4>
         <span className={`ax-lozenge ${changeCount ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>
           {changeCount ? fmt(strings.changeCounter, { n: changeCount }) : strings.noChanges}
@@ -250,7 +250,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       {readOnly && <div className="ax-banner ax-banner--immutable"><div>{strings.readOnly}</div></div>}
       {checksLoadError && <div className="ax-banner ax-banner--warning"><div>{fmt(strings.loadError, { error: checksLoadError })}</div></div>}
       {failDetail !== null && (
-        <div className="ax-banner ax-banner--critical"><div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-200)" }}>
+        <div className="ax-banner ax-banner--critical"><div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-4)" }}>
           <span>{strings.syncFailed}{failDetail ? ` · ${failDetail}` : ""}</span>
           <button className="ax-btn ax-btn--secondary" onClick={() => processOutbox(onState)}>{strings.retry}</button>
         </div></div>
@@ -267,9 +267,9 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
             const c = checks[f.key];
             const isUpdated = c?.status === "updated";
             return (
-              <tr key={f.key} style={isUpdated ? { background: "var(--ax-color-surface-sunken)" } : undefined}>
+              <tr key={f.key} style={isUpdated ? { background: "var(--surface-sunken)" } : undefined}>
                 {/* M04-107 — updated-field highlighting */}
-                <td style={isUpdated ? { borderInlineStart: "4px solid var(--ax-color-warning)" } : undefined}><strong>{f.label}</strong></td>
+                <td style={isUpdated ? { borderInlineStart: "4px solid var(--status-warning)" } : undefined}><strong>{f.label}</strong></td>
                 <td>
                   <div>{f.source ?? "—"}</div>
                   <div className="ax-caption">{strings.sourceTag}</div>
@@ -279,7 +279,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                     value={observedDraft[f.key] ?? ""} placeholder={strings.observedPlaceholder}
                     onChange={e => setObservedDraft(d => ({ ...d, [f.key]: e.target.value }))}
                     onBlur={() => { const v = observedDraft[f.key] ?? ""; if (v.trim() && v.trim() !== (c?.observed_value ?? "")) persist(f, v); }} />
-                  <label className="ax-field" style={{ marginBlockStart: "var(--ax-space-100)" }}>
+                  <label className="ax-field" style={{ marginBlockStart: "var(--space-2)" }}>
                     <span className="ax-field__label">{strings.noteLabel}</span>
                     <input className="ax-input" disabled={readOnly} value={notes[f.key] ?? ""} placeholder={strings.notePlaceholder}
                       onChange={e => setNotes(n => ({ ...n, [f.key]: e.target.value }))} onBlur={() => persistNote(f)} />
@@ -287,7 +287,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
                 </td>
                 <td>
                   {!readOnly && (
-                    <button className="ax-btn ax-btn--secondary" style={{ marginBlockEnd: "var(--ax-space-100)" }} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
+                    <button className="ax-btn ax-btn--secondary" style={{ marginBlockEnd: "var(--space-2)" }} onClick={() => persist(f, f.source ?? "", "verified")}>{strings.verifyBtn}</button>
                   )}
                   <div>
                     {c
@@ -312,13 +312,13 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
       {/* M04-111 / M04-190 — change review list: every Updated field with before/after + evidence */}
       <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.reviewTitle}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.reviewTitle}</h4>
         {updatedFields.length === 0
           ? <p className="ax-caption">{strings.reviewEmpty}</p>
           : updatedFields.map(f => {
             const c = checks[f.key]!;
             return (
-              <div key={f.key} className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-100)" }}>
+              <div key={f.key} className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--space-2)" }}>
                 <div>
                   <strong>{f.label}</strong>
                   {" · "}{strings.before}: <span className="ax-numeric">{c.source_value ?? "—"}</span>
@@ -333,7 +333,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
       {/* M04-096 — license leg (issue/expiry from the synced license document) */}
       <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseTitle}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.licenseTitle}</h4>
         {license
           ? <p className="ax-caption ax-numeric">{strings.licRef}: {license.reference_no ?? "—"} · {strings.licIssue}: {license.valid_from ?? "—"} · {strings.licExpiry}: {license.valid_to ?? "—"}</p>
           : <p className="ax-caption">{strings.licNone}</p>}
@@ -341,7 +341,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
       {/* M04-098 — products & HS codes inside the execution flow (read-only, Senaei-sourced) */}
       <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.productsTitle}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.productsTitle}</h4>
         {products.length === 0 ? <p className="ax-caption">{strings.productsEmpty}</p> : (
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr><th scope="col">{strings.colProduct}</th><th scope="col">{strings.colHs}</th><th scope="col">{strings.colCapacity}</th></tr></thead>
@@ -358,7 +358,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
 
       {/* M04-099 — raw materials inside the execution flow (read-only, Senaei-sourced) */}
       <div>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.materialsTitle}</h4>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.materialsTitle}</h4>
         {materials.length === 0 ? <p className="ax-caption">{strings.materialsEmpty}</p> : (
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr><th scope="col">{strings.colMaterial}</th><th scope="col">{strings.colMatSource}</th><th scope="col">{strings.colHs}</th></tr></thead>

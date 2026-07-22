@@ -36,7 +36,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 /** Ink resolved from design-system tokens at draw time — never a bare color. */
 function tokenInk(el: HTMLElement): string {
   const cs = getComputedStyle(el);
-  return cs.getPropertyValue("--ax-color-critical").trim() || cs.getPropertyValue("--ax-color-text").trim();
+  return cs.getPropertyValue("--status-critical").trim() || cs.getPropertyValue("--text-primary").trim();
 }
 
 /** M04-166 — compress a base64 image: longest edge ≤1600px, JPEG q0.8. Returns null when the browser cannot decode it (caller falls back to the raw payload). */
@@ -178,7 +178,7 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
         <div className="ax-modal__header"><h3>{strings.title}</h3></div>
         <div className="ax-modal__body">
           <p className="t-caption">{strings.hint}</p>
-          <div className="ax-segmented" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+          <div className="ax-segmented" style={{ marginBlockEnd: "var(--space-3)" }}>
             <button aria-pressed={tool === "pen"} onClick={() => setTool("pen")}>{strings.pen}</button>
             <button aria-pressed={tool === "rect"} onClick={() => setTool("rect")}>{strings.rect}</button>
           </div>
@@ -188,9 +188,9 @@ export default function ImageAnnotator({ srcB64, mime, strings, onCancel, onConf
             onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
             style={{
               inlineSize: "100%", touchAction: "none", cursor: "crosshair", display: "block",
-              background: "var(--ax-color-surface-sunken)",
-              border: "1.5px solid var(--ax-color-border-strong)",
-              borderRadius: "var(--ax-radius-standard)",
+              background: "var(--surface-sunken)",
+              border: "1.5px solid var(--border-strong)",
+              borderRadius: "var(--radius-sm)",
             }}
           />
         </div>

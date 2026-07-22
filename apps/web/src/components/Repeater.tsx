@@ -27,13 +27,13 @@ export default function Repeater<T>({ items, onChange, makeItem, renderItem, add
     onChange([...items, makeItem()]);
   }
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
+    <div className="stack" style={{ gap: "var(--space-4)" }}>
       {items.map((item, i) => (
-        <div key={i} className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+        <div key={i} className="ax-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
             <div style={{ flex: 1 }}>{renderItem(item, i, next => update(i, next))}</div>
             {items.length > minItems && (
-              <button type="button" className="btn btn-ghost btn-touch" style={{ color: "var(--ax-color-critical)" }} onClick={() => remove(i)}>{removeLabel}</button>
+              <button type="button" className="btn btn-ghost btn-touch" style={{ color: "var(--status-critical)" }} onClick={() => remove(i)}>{removeLabel}</button>
             )}
           </div>
         </div>

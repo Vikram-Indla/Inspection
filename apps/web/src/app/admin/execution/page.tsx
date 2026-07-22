@@ -117,7 +117,7 @@ export default async function ExecutionControlPlane() {
     : null;
   const onePenalty = execSettings.one_penalty_per_violation_phase1 === true;
 
-  const sectionStyle = { padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" } as const;
+  const sectionStyle = { padding: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-4)" } as const;
 
   return (
     <Shell
@@ -128,7 +128,7 @@ export default async function ExecutionControlPlane() {
         {execution?.version_label && <span className="ax-version">{execution.version_label}</span>}
       </>}
     >
-      <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+      <div className="ax-stack" style={{ gap: "var(--space-6)" }}>
         <div className="ax-banner"><div>
           <strong>{t("admin.execution.banner.title", "This is the execution control plane.")}</strong>{" "}
           {t("admin.execution.banner.body", "Each section governs one part of the execution configuration. Every change is checked against your capabilities, written only to the keys that section owns, versioned, and recorded in the activity log. A value that has never been set is shown as unset — nothing is filled in by assumption.")}
@@ -339,7 +339,7 @@ export default async function ExecutionControlPlane() {
         )}
 
         {granted.size > 0 && (
-          <div className="ax-stack" style={{ gap: "var(--ax-space-200)" }}>
+          <div className="ax-stack" style={{ gap: "var(--space-4)" }}>
             <h4 style={{ margin: 0 }}>{t("admin.execution.raw.title", "Stored engine rows")}</h4>
             <p className="ax-caption" style={{ margin: 0 }}>
               {t("admin.execution.raw.hint", "Read-only inspection of the exact stored configuration. The governed forms above are the supported editing path.")}

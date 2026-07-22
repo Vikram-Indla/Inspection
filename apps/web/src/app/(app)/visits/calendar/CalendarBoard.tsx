@@ -89,9 +89,9 @@ export default function CalendarBoard({ visits, locale, strings }: {
   const chip = (v: CalVisit, withTime: boolean) => (
     <a key={v.id} href={`/visits/${v.id}`} className="ax-link"
       style={{
-        display: "block", padding: "2px 6px", borderRadius: "var(--ax-radius-small)",
-        background: "var(--ax-color-primary-tint)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
-        font: "var(--ax-text-caption)",
+        display: "block", padding: "2px 6px", borderRadius: "var(--radius-xs)",
+        background: "var(--accent-soft)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis",
+        font: "var(--type-caption-font)",
       }}
       title={`${v.factoryName} · ${v.typeLabel} · ${v.planningLabel} · ${v.opsLabel}`}>
       {withTime && <span className="numeric">{timeOf(v.windowStart)} </span>}{v.factoryName}
@@ -112,26 +112,26 @@ export default function CalendarBoard({ visits, locale, strings }: {
   const dayVisits = byDay.get(keyOf(anchorMs)) ?? [];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+      <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)" }}>
         <div className="ax-segmented" role="group" aria-label={strings.viewSwitchAria}>
           {([["day", strings.viewDay], ["week", strings.viewWeek], ["month", strings.viewMonth]] as [ViewKey, string][]).map(([k, label]) => (
             <button key={k} type="button" aria-pressed={view === k} onClick={() => setView(k)}>{label}</button>
           ))}
         </div>
-        <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+        <div className="row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
           <button type="button" className="btn btn-ghost btn-touch" onClick={() => shift(-1)} aria-label={strings.prev}>‹</button>
           <button type="button" className="btn btn-ghost btn-touch" onClick={() => setAnchorMs(utcMidnight(new Date()))}>{strings.today}</button>
           <button type="button" className="btn btn-ghost btn-touch" onClick={() => shift(1)} aria-label={strings.next}>›</button>
-          <strong style={{ marginInlineStart: "var(--ax-space-150)" }}>{heading}</strong>
+          <strong style={{ marginInlineStart: "var(--space-3)" }}>{heading}</strong>
         </div>
       </div>
 
       {view === "month" && (
-        <div className="panel" style={{ padding: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--space-4)" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2 }}>
             {weekDays.map(ms => (
-              <div key={`h${ms}`} className="ax-overline" style={{ padding: "var(--ax-space-050)", textAlign: "center" }}>{weekdayName.format(new Date(ms))}</div>
+              <div key={`h${ms}`} className="ax-overline" style={{ padding: "var(--space-1)", textAlign: "center" }}>{weekdayName.format(new Date(ms))}</div>
             ))}
             {monthCells.map(ms => {
               const k = keyOf(ms);
@@ -139,16 +139,16 @@ export default function CalendarBoard({ visits, locale, strings }: {
               const isToday = k === todayKey;
               return (
                 <div key={k} style={{
-                  minBlockSize: 92, padding: "var(--ax-space-050)", borderRadius: "var(--ax-radius-small)",
-                  border: `1px solid ${isToday ? "var(--ax-color-primary)" : "var(--ax-color-border)"}`,
-                  background: inMonth(ms) ? "var(--ax-color-surface)" : "var(--ax-color-surface-sunken)",
+                  minBlockSize: 92, padding: "var(--space-1)", borderRadius: "var(--radius-xs)",
+                  border: `1px solid ${isToday ? "var(--action-primary)" : "var(--border-subtle)"}`,
+                  background: inMonth(ms) ? "var(--surface-primary)" : "var(--surface-sunken)",
                   display: "flex", flexDirection: "column", gap: 2, opacity: inMonth(ms) ? 1 : .6,
                 }}>
                   <span className="t-caption numeric" style={{ alignSelf: "flex-end" }}>{new Date(ms).getUTCDate()}</span>
                   {list.slice(0, 3).map(v => chip(v, false))}
                   {list.length > 3 && (
                     <button type="button" className="t-caption" onClick={() => { setAnchorMs(ms); setView("day"); }}
-                      style={{ border: 0, background: "transparent", cursor: "pointer", textAlign: "start", color: "var(--ax-color-text-secondary)", padding: 0 }}>
+                      style={{ border: 0, background: "transparent", cursor: "pointer", textAlign: "start", color: "var(--text-secondary)", padding: 0 }}>
                       {strings.moreCount.replace("{n}", String(list.length - 3))}
                     </button>
                   )}
@@ -160,8 +160,8 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "week" && (
-        <div className="panel" style={{ padding: "var(--ax-space-200)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "var(--ax-space-100)" }}>
+        <div className="panel" style={{ padding: "var(--space-4)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: "var(--space-2)" }}>
             {weekDays.map(ms => {
               const k = keyOf(ms);
               const list = byDay.get(k) ?? [];
@@ -169,8 +169,8 @@ export default function CalendarBoard({ visits, locale, strings }: {
               return (
                 <div key={k} style={{
                   display: "flex", flexDirection: "column", gap: 4, minBlockSize: 180,
-                  border: `1px solid ${isToday ? "var(--ax-color-primary)" : "var(--ax-color-border)"}`,
-                  borderRadius: "var(--ax-radius-small)", padding: "var(--ax-space-100)",
+                  border: `1px solid ${isToday ? "var(--action-primary)" : "var(--border-subtle)"}`,
+                  borderRadius: "var(--radius-xs)", padding: "var(--space-2)",
                 }}>
                   <span className="ax-overline" style={{ textAlign: "center" }}>{shortDay.format(new Date(ms))}</span>
                   {list.map(v => chip(v, true))}
@@ -182,13 +182,13 @@ export default function CalendarBoard({ visits, locale, strings }: {
       )}
 
       {view === "day" && (
-        <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <span className="t-caption numeric">{strings.visitsOn.replace("{n}", String(dayVisits.length))}</span>
           {dayVisits.length === 0 ? (
             <div className="ax-state ax-state--inline"><p className="t-caption">{strings.emptyRange}</p></div>
           ) : dayVisits.map(v => (
             <a key={v.id} href={`/visits/${v.id}`} className="panel"
-              style={{ padding: "var(--ax-space-200)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap", textDecoration: "none", color: "inherit", border: "1px solid var(--ax-color-border)" }}>
+              style={{ padding: "var(--space-4)", display: "flex", gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap", textDecoration: "none", color: "inherit", border: "1px solid var(--border-subtle)" }}>
               <span className="numeric"><strong>{timeOf(v.windowStart)}</strong> → {timeOf(v.windowEnd)}</span>
               <strong>{v.factoryName}</strong>
               <span className="t-caption">{v.typeLabel}</span>

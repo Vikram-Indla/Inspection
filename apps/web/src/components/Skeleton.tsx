@@ -22,7 +22,7 @@ type SkeletonRowsProps = {
   gap?: string;
 };
 
-export function SkeletonRows({ rows = 3, rowBlockSize = 28, gap = "var(--ax-space-200)" }: SkeletonRowsProps) {
+export function SkeletonRows({ rows = 3, rowBlockSize = 28, gap = "var(--space-4)" }: SkeletonRowsProps) {
   return (
     <div style={{ display: "grid", gap }} aria-hidden="true">
       {Array.from({ length: rows }, (_, i) => (

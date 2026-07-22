@@ -10,8 +10,8 @@
    ========================================================================== */
 
 .lg-page { min-block-size: 100dvh; display: flex; flex-direction: column;
-  background: var(--ax-color-canvas);
-  color: var(--ax-color-text); font: var(--ax-text-body); }
+  background: var(--surface-canvas);
+  color: var(--text-primary); font: var(--type-body-font); }
 
 /* Split variant (login): fixed credential column on the start side, story
    panel takes the rest. The story panel disappears on small screens. */
@@ -21,127 +21,127 @@
 /* ---- credential panel -------------------------------------------------- */
 .lg-panel { display: flex; flex-direction: column; min-inline-size: 0;
   min-block-size: 100dvh;
-  padding: var(--ax-space-400) clamp(24px, 3vw, 44px);
-  background: var(--ax-color-surface);
-  border-inline-end: 1px solid var(--ax-color-border); }
+  padding: var(--space-8) clamp(24px, 3vw, 44px);
+  background: var(--surface-primary);
+  border-inline-end: 1px solid var(--border-subtle); }
 @media (max-width: 960px) { .lg-panel { border-inline-end: none; } }
 
-.lg-lockup { display: flex; align-items: center; gap: var(--ax-space-150); }
-.lg-lockup__mark { inline-size: 42px; block-size: 42px; color: var(--ax-color-text); flex-shrink: 0; }
+.lg-lockup { display: flex; align-items: center; gap: var(--space-3); }
+.lg-lockup__mark { inline-size: 42px; block-size: 42px; color: var(--text-primary); flex-shrink: 0; }
 .lg-lockup__text { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
-.lg-lockup__names { display: flex; align-items: center; gap: var(--ax-space-100); }
-.lg-lockup__ar { font: 700 22px/1 var(--ax-font-arabic); color: var(--ax-color-text); }
+.lg-lockup__names { display: flex; align-items: center; gap: var(--space-2); }
+.lg-lockup__ar { font: 700 22px/1 var(--font-body); color: var(--text-primary); }
 .lg-lockup__div { inline-size: 1px; block-size: 18px; flex-shrink: 0;
-  background: var(--ax-color-border-strong); }
-.lg-lockup__latin { font: 700 19px/1 var(--ax-font-sans); letter-spacing: 0.18em;
-  color: var(--ax-color-text); }
-.lg-lockup__sub { font: 600 9px/1.2 var(--ax-font-mono); letter-spacing: 0.24em;
-  color: var(--ax-color-text-secondary); }
-[dir="rtl"] .lg-lockup__sub { font-family: var(--ax-font-arabic); letter-spacing: 0; }
+  background: var(--border-strong); }
+.lg-lockup__latin { font: 700 19px/1 var(--font-body); letter-spacing: 0.18em;
+  color: var(--text-primary); }
+.lg-lockup__sub { font: 600 9px/1.2 var(--font-mono); letter-spacing: 0.24em;
+  color: var(--text-secondary); }
+[dir="rtl"] .lg-lockup__sub { font-family: var(--font-body); letter-spacing: 0; }
 
-.lg-controls { display: inline-flex; align-items: center; gap: var(--ax-space-100); }
+.lg-controls { display: inline-flex; align-items: center; gap: var(--space-2); }
 /* theme toggle in the lockup row exists for small screens only — on desktop
    the story panel header owns it */
 .lg-controls--compact { display: none; margin-inline-start: auto; }
 @media (max-width: 960px) { .lg-controls--compact { display: inline-flex; } }
 
 .lg-iconbtn { display: grid; place-items: center; inline-size: 40px; block-size: 40px;
-  border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-full);
-  background: var(--ax-color-surface); color: var(--ax-color-text-secondary); cursor: pointer;
-  transition: color var(--ax-motion-fast), border-color var(--ax-motion-fast); }
-.lg-iconbtn:hover { color: var(--ax-color-text); border-color: var(--ax-color-primary); }
-.lg-iconbtn:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-full);
+  background: var(--surface-primary); color: var(--text-secondary); cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast); }
+.lg-iconbtn:hover { color: var(--text-primary); border-color: var(--action-primary); }
+.lg-iconbtn:focus-visible { outline: none; box-shadow: var(--focus-ring-shadow); }
 
 .lg-center { flex: 1; display: flex; flex-direction: column; justify-content: center;
-  padding-block: var(--ax-space-300); }
+  padding-block: var(--space-6); }
 
 .lg-card { inline-size: 100%; display: flex; flex-direction: column;
-  gap: var(--ax-space-250); }
+  gap: var(--space-5); }
 [dir="rtl"] .lg-card { text-align: right; }
-.lg-card__title { margin: 0; font: var(--ax-text-title); color: var(--ax-color-text); }
-.lg-card__sub { margin: 0; margin-block-start: calc(-1 * var(--ax-space-150));
-  font: var(--ax-text-body); color: var(--ax-color-text-secondary); }
+.lg-card__title { margin: 0; font: var(--type-title); color: var(--text-primary); }
+.lg-card__sub { margin: 0; margin-block-start: calc(-1 * var(--space-3));
+  font: var(--type-body-font); color: var(--text-secondary); }
 
 /* ---- credential form ---------------------------------------------------- */
-.lg-credentials { display: flex; flex-direction: column; gap: var(--ax-space-200); }
+.lg-credentials { display: flex; flex-direction: column; gap: var(--space-4); }
 /* email addresses are LTR data even on the Arabic page */
 .lg-input--email { text-align: start; direction: ltr; }
 [dir="rtl"] .lg-input--email { text-align: left; }
 .lg-pwwrap { position: relative; }
 .lg-pwwrap .ax-input { padding-inline-end: 48px; }
-.lg-pwtoggle { position: absolute; inset-block-start: 50%; inset-inline-end: var(--ax-space-100);
+.lg-pwtoggle { position: absolute; inset-block-start: 50%; inset-inline-end: var(--space-2);
   transform: translateY(-50%); display: grid; place-items: center;
-  inline-size: 36px; block-size: 36px; border: none; border-radius: var(--ax-radius-small);
-  background: none; color: var(--ax-color-text-secondary); cursor: pointer; }
-.lg-pwtoggle:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
-.lg-submit { inline-size: 100%; margin-block-start: var(--ax-space-050); }
+  inline-size: 36px; block-size: 36px; border: none; border-radius: var(--radius-xs);
+  background: none; color: var(--text-secondary); cursor: pointer; }
+.lg-pwtoggle:hover { color: var(--text-primary); background: var(--surface-secondary); }
+.lg-submit { inline-size: 100%; margin-block-start: var(--space-1); }
 .lg-linkbtn { align-self: center; background: none; border: none; padding: 0; cursor: pointer;
-  font: var(--ax-text-body-strong); color: var(--ax-color-primary-hover); }
+  font: var(--type-body-strong); color: var(--action-primary-hover); }
 .lg-linkbtn:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---- reset page (shared) ------------------------------------------------ */
 .lg-topbar { display: flex; align-items: center; justify-content: space-between;
-  padding: var(--ax-space-250) clamp(20px, 4vw, 48px); }
-.lg-topbar__brand { font: 700 20px/28px var(--ax-font-arabic); color: var(--ax-color-text); }
+  padding: var(--space-5) clamp(20px, 4vw, 48px); }
+.lg-topbar__brand { font: 700 20px/28px var(--font-body); color: var(--text-primary); }
 /* reset renders .lg-center inside the flat .lg-page (no panel): center the card */
 .lg-page:not(.lg-page--split) .lg-center { display: grid; place-items: center;
-  padding: var(--ax-space-300) clamp(20px, 4vw, 48px); }
+  padding: var(--space-6) clamp(20px, 4vw, 48px); }
 .lg-page:not(.lg-page--split) .lg-card { inline-size: min(100%, 400px); }
 
 .lg-waiting { display: flex; flex-direction: column; align-items: center;
-  gap: var(--ax-space-200); text-align: center; }
-.lg-waiting__spinner { inline-size: 36px; block-size: 36px; border-radius: var(--ax-radius-full);
-  border: 3px solid var(--ax-color-border);
-  border-block-start-color: var(--ax-color-primary);
+  gap: var(--space-4); text-align: center; }
+.lg-waiting__spinner { inline-size: 36px; block-size: 36px; border-radius: var(--radius-full);
+  border: 3px solid var(--border-subtle);
+  border-block-start-color: var(--action-primary);
   animation: lg-spin 0.9s linear infinite; }
 @keyframes lg-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .lg-waiting__spinner { animation-duration: 2.4s; } }
 
 /* ---- credential-panel footer -------------------------------------------- */
-.lg-foot { display: flex; flex-direction: column; gap: var(--ax-space-100);
-  padding-block-start: var(--ax-space-200);
-  border-block-start: 1px solid var(--ax-color-border);
-  font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
-.lg-foot__item { display: inline-flex; align-items: center; gap: var(--ax-space-100); }
+.lg-foot { display: flex; flex-direction: column; gap: var(--space-2);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--border-subtle);
+  font: var(--type-caption-font); color: var(--text-secondary); }
+.lg-foot__item { display: inline-flex; align-items: center; gap: var(--space-2); }
 [dir="rtl"] .lg-foot__item { justify-content: flex-start; }
-.lg-foot__item svg { color: var(--ax-color-success); flex-shrink: 0; }
+.lg-foot__item svg { color: var(--status-compliant); flex-shrink: 0; }
 .lg-foot__row { display: flex; align-items: center; justify-content: space-between;
-  gap: var(--ax-space-150); }
+  gap: var(--space-3); }
 /* DEF-UI-001 — this is a live copyright label, not a disabled control; the
    disabled token mixes to ~2.3:1 against canvas in dark mode (fails AA). */
-.lg-foot__copy { color: var(--ax-color-text-secondary); }
-.lg-lang { font: 600 14px/20px var(--ax-font-sans); color: var(--ax-color-primary-hover);
+.lg-foot__copy { color: var(--text-secondary); }
+.lg-lang { font: 600 14px/20px var(--font-body); color: var(--action-primary-hover);
   text-decoration: none; }
 .lg-lang:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---- demo-access helper (evaluation only) ------------------------------- */
-.lg-demo { margin-block-start: var(--ax-space-100);
-  padding-block-start: var(--ax-space-150);
-  border-block-start: 1px solid var(--ax-color-border); }
-.lg-demo__toggle { display: inline-flex; align-items: center; gap: var(--ax-space-050);
+.lg-demo { margin-block-start: var(--space-2);
+  padding-block-start: var(--space-3);
+  border-block-start: 1px solid var(--border-subtle); }
+.lg-demo__toggle { display: inline-flex; align-items: center; gap: var(--space-1);
   background: none; border: none; padding: 0; cursor: pointer;
-  font: var(--ax-text-caption); font-weight: 600; color: var(--ax-color-text-secondary); }
-.lg-demo__toggle:hover { color: var(--ax-color-text); }
-.lg-demo__chev { transition: transform var(--ax-motion-fast); }
+  font: var(--type-caption-font); font-weight: 600; color: var(--text-secondary); }
+.lg-demo__toggle:hover { color: var(--text-primary); }
+.lg-demo__chev { transition: transform var(--transition-fast); }
 .lg-demo__chev--open { transform: rotate(180deg); }
-.lg-demo__body { margin-block-start: var(--ax-space-150); }
-.lg-demo__hint { font: var(--ax-text-caption); color: var(--ax-color-text-secondary);
-  margin-block-end: var(--ax-space-150); }
-.lg-demo__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ax-space-100); }
-.lg-demo__item { inline-size: 100%; display: grid; grid-template-columns: auto 1fr; column-gap: var(--ax-space-150);
-  align-items: baseline; padding: var(--ax-space-100) var(--ax-space-150); text-align: start; cursor: pointer;
-  background: var(--ax-color-surface-sunken); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-small);
-  transition: border-color var(--ax-motion-fast); }
-.lg-demo__item:hover { border-color: var(--ax-color-primary); }
-.lg-demo__item:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
-.lg-demo__role { font: var(--ax-text-body-strong); color: var(--ax-color-text); }
-.lg-demo__dest { justify-self: end; font: var(--ax-text-caption); color: var(--ax-color-primary-hover); }
-.lg-demo__email { grid-column: 1 / -1; font: 400 13px var(--ax-font-mono);
-  color: var(--ax-color-text-secondary); direction: ltr; text-align: start; }
+.lg-demo__body { margin-block-start: var(--space-3); }
+.lg-demo__hint { font: var(--type-caption-font); color: var(--text-secondary);
+  margin-block-end: var(--space-3); }
+.lg-demo__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.lg-demo__item { inline-size: 100%; display: grid; grid-template-columns: auto 1fr; column-gap: var(--space-3);
+  align-items: baseline; padding: var(--space-2) var(--space-3); text-align: start; cursor: pointer;
+  background: var(--surface-sunken); border: 1px solid var(--border-subtle); border-radius: var(--radius-xs);
+  transition: border-color var(--transition-fast); }
+.lg-demo__item:hover { border-color: var(--action-primary); }
+.lg-demo__item:focus-visible { outline: none; box-shadow: var(--focus-ring-shadow); }
+.lg-demo__role { font: var(--type-body-strong); color: var(--text-primary); }
+.lg-demo__dest { justify-self: end; font: var(--type-caption-font); color: var(--action-primary-hover); }
+.lg-demo__email { grid-column: 1 / -1; font: 400 13px var(--font-mono);
+  color: var(--text-secondary); direction: ltr; text-align: start; }
 [dir="rtl"] .lg-demo__email { text-align: right; }
 
 /* ---- CD-003: own-identity mono island (AccessState) ---------------------- */
-.lg-identity { font: 400 13px var(--ax-font-mono); color: var(--ax-color-text-secondary); }
+.lg-identity { font: 400 13px var(--font-mono); color: var(--text-secondary); }
 
 /* ============================================================================
    STORY PANEL — header · framed map with attached lifecycle strip
@@ -152,77 +152,77 @@
    remaps the fixed-dark atlas tokens onto the theme-aware base tokens so every
    overlay reads correctly on the daylight render (dark stays native). */
 .lg-story { position: relative; min-inline-size: 0; min-block-size: 100dvh;
-  overflow: hidden; background: var(--ax-color-atlas-canvas); }
+  overflow: hidden; background: var(--atlas-canvas); }
 :root[data-theme="light"] .lg-story {
-  --ax-color-atlas-canvas:  var(--ax-color-canvas);
-  --ax-color-atlas-surface: var(--ax-color-surface);
-  --ax-color-atlas-text:    var(--ax-color-text);
-  --ax-color-atlas-muted:   var(--ax-color-text-secondary);
-  --ax-color-atlas-border:  var(--ax-color-border); }
+  --atlas-canvas:  var(--surface-canvas);
+  --atlas-surface: var(--surface-primary);
+  --atlas-text:    var(--text-primary);
+  --atlas-muted:   var(--text-secondary);
+  --atlas-border:  var(--border-subtle); }
 
 .lg-story__head { position: absolute; inset-block-start: 0; inset-inline: 0; z-index: 30;
-  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--ax-space-200);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4);
   padding: clamp(18px, 2.2vw, 30px) clamp(20px, 2.4vw, 34px); pointer-events: none; }
 .lg-story__head > * { pointer-events: auto; }
 .lg-story__heading { display: flex; flex-direction: column; gap: 3px; min-inline-size: 0; }
-.lg-story__title { font: 700 18px/24px var(--ax-font-sans); color: var(--ax-color-atlas-text);
-  text-shadow: 0 1px 12px var(--ax-color-atlas-canvas), 0 0 4px var(--ax-color-atlas-canvas); }
-.lg-story__overline { font: 600 10px/14px var(--ax-font-mono); letter-spacing: 0.16em;
-  color: var(--ax-color-atlas-muted); align-self: start;
-  text-shadow: 0 1px 8px var(--ax-color-atlas-canvas); }
+.lg-story__title { font: 700 18px/24px var(--font-body); color: var(--atlas-text);
+  text-shadow: 0 1px 12px var(--atlas-canvas), 0 0 4px var(--atlas-canvas); }
+.lg-story__overline { font: 600 10px/14px var(--font-mono); letter-spacing: 0.16em;
+  color: var(--atlas-muted); align-self: start;
+  text-shadow: 0 1px 8px var(--atlas-canvas); }
 [dir="rtl"] .lg-story__overline { align-self: end; }
 [dir="rtl"] .lg-story__title,
-[dir="rtl"] .lg-story__overline { font-family: var(--ax-font-arabic); text-align: right; letter-spacing: 0; }
+[dir="rtl"] .lg-story__overline { font-family: var(--font-body); text-align: right; letter-spacing: 0; }
 
 .lg-story__frame { position: absolute; inset: 0; min-block-size: 0;
   border: 0; border-radius: 0; box-shadow: none;
-  overflow: hidden; background: var(--ax-color-atlas-canvas); }
+  overflow: hidden; background: var(--atlas-canvas); }
 /* atmospheric top/bottom fades so the title and rail melt into the hero */
 .lg-story__frame::before, .lg-story__frame::after { content: ""; position: absolute;
   inset-inline: 0; z-index: 22; pointer-events: none; }
 .lg-story__frame::before { inset-block-start: 0; block-size: 132px;
   background: linear-gradient(to bottom,
-    color-mix(in srgb, var(--ax-color-atlas-canvas) 60%, transparent),
-    color-mix(in srgb, var(--ax-color-atlas-canvas) 14%, transparent) 58%, transparent); }
+    color-mix(in srgb, var(--atlas-canvas) 60%, transparent),
+    color-mix(in srgb, var(--atlas-canvas) 14%, transparent) 58%, transparent); }
 .lg-story__frame::after { inset-block-end: 0; block-size: 112px;
   background: linear-gradient(to top,
-    color-mix(in srgb, var(--ax-color-atlas-canvas) 52%, transparent),
-    color-mix(in srgb, var(--ax-color-atlas-canvas) 12%, transparent) 58%, transparent); }
+    color-mix(in srgb, var(--atlas-canvas) 52%, transparent),
+    color-mix(in srgb, var(--atlas-canvas) 12%, transparent) 58%, transparent); }
 .lg-story__summary { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; overflow: hidden;
-  border: 1px solid var(--ax-color-atlas-border); border-radius: var(--ax-radius-standard);
-  background: color-mix(in srgb, var(--ax-color-atlas-surface) 94%, transparent); }
+  border: 1px solid var(--atlas-border); border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--atlas-surface) 94%, transparent); }
 .lg-story__summary small { grid-column: 1 / -1; padding: 5px 9px; text-align: center;
-  color: var(--ax-color-atlas-muted); border-block-end: 1px solid var(--ax-color-atlas-border);
-  font: 600 9px/13px var(--ax-font-sans); }
+  color: var(--atlas-muted); border-block-end: 1px solid var(--atlas-border);
+  font: 600 9px/13px var(--font-body); }
 .lg-story__summary div { display: grid; place-items: center; gap: 1px; padding: 7px 5px;
-  border-inline-end: 1px solid var(--ax-color-atlas-border); }
+  border-inline-end: 1px solid var(--atlas-border); }
 .lg-story__summary div:last-child { border-inline-end: 0; }
-.lg-story__summary strong { color: var(--ax-color-atlas-text); font: 700 15px var(--ax-font-mono); }
-.lg-story__summary span { color: var(--ax-color-atlas-muted); font: 600 9px var(--ax-font-sans); }
-.lg-story__summary em { color: var(--ax-color-text-secondary); font: 500 9px var(--ax-font-mono); font-style: normal; }
-[dir="rtl"] .lg-story__summary small, [dir="rtl"] .lg-story__summary span, [dir="rtl"] .lg-story__summary em { font-family: var(--ax-font-arabic); }
+.lg-story__summary strong { color: var(--atlas-text); font: 700 15px var(--font-mono); }
+.lg-story__summary span { color: var(--atlas-muted); font: 600 9px var(--font-body); }
+.lg-story__summary em { color: var(--text-secondary); font: 500 9px var(--font-mono); font-style: normal; }
+[dir="rtl"] .lg-story__summary small, [dir="rtl"] .lg-story__summary span, [dir="rtl"] .lg-story__summary em { font-family: var(--font-body); }
 .lg-story__fallback { position: absolute; inset: 0; display: flex;
-  align-items: center; justify-content: center; padding: var(--ax-space-400); }
+  align-items: center; justify-content: center; padding: var(--space-8); }
 
 /* ---- the map itself ------------------------------------------------------ */
-.lg-map { position: absolute; inset: 0; background: var(--ax-color-canvas); }
+.lg-map { position: absolute; inset: 0; background: var(--surface-canvas); }
 .lg-map .leaflet-container { background: transparent; font: inherit; }
 /* CARTO dark tiles are too dim behind the mask — brighten them (design 4a) */
 .lg-map .lg-map__tiles--bright { filter: brightness(2.3) saturate(1.2) contrast(1.02); }
 /* DEF-UI-001 — not a disabled control; use the caption token for AA contrast. */
 .lg-map .leaflet-control-attribution { background: transparent;
-  font: 400 9px var(--ax-font-sans); color: var(--ax-color-text-secondary); }
-.lg-map .leaflet-control-attribution a { color: var(--ax-color-text-secondary); }
+  font: 400 9px var(--font-body); color: var(--text-secondary); }
+.lg-map .leaflet-control-attribution a { color: var(--text-secondary); }
 
 /* factory chip */
 .lg-map__site { transform: translate(-50%, -50%); display: grid; place-items: center;
-  border-radius: var(--ax-radius-small); background: var(--ax-color-surface);
-  border: 1.5px solid var(--ax-color-primary); box-shadow: var(--ax-shadow-raised);
-  color: var(--ax-color-primary-hover); }
-.lg-map__sitelabel { white-space: nowrap; color: var(--ax-color-text);
-  text-shadow: 0 1px 4px var(--ax-color-canvas); }
-.lg-map__sitelabel--en { font: 600 10px var(--ax-font-mono); letter-spacing: 2px; }
-.lg-map__sitelabel--ar { font: 700 13px var(--ax-font-arabic); }
+  border-radius: var(--radius-xs); background: var(--surface-primary);
+  border: 1.5px solid var(--action-primary); box-shadow: var(--shadow-xs);
+  color: var(--action-primary-hover); }
+.lg-map__sitelabel { white-space: nowrap; color: var(--text-primary);
+  text-shadow: 0 1px 4px var(--surface-canvas); }
+.lg-map__sitelabel--en { font: 600 10px var(--font-mono); letter-spacing: 2px; }
+.lg-map__sitelabel--ar { font: 700 13px var(--font-body); }
 
 /* animated route (plan -> arrival) */
 .lg-map__route { animation: lg-map-route 24s linear infinite; }
@@ -230,20 +230,20 @@
 
 /* inspector en route — pulsing emerald */
 .lg-map__insp { transform: translate(-50%, -50%); position: relative; }
-.lg-map__insp-ping { position: absolute; inset: -7px; border-radius: var(--ax-radius-full);
-  border: 1.5px solid var(--ax-color-success); opacity: 0.7;
+.lg-map__insp-ping { position: absolute; inset: -7px; border-radius: var(--radius-full);
+  border: 1.5px solid var(--status-compliant); opacity: 0.7;
   animation: lg-map-ping 2.4s ease-out infinite; }
 @keyframes lg-map-ping { 0% { transform: scale(0.5); opacity: 0.8; } 100% { transform: scale(2); opacity: 0; } }
 .lg-map__insp-dot { display: grid; place-items: center; inline-size: 22px; block-size: 22px;
-  border-radius: var(--ax-radius-full); background: var(--ax-color-success);
-  border: 2px solid var(--ax-color-canvas); box-shadow: var(--ax-shadow-raised);
-  color: var(--ax-color-inverse-text); }
+  border-radius: var(--radius-full); background: var(--status-compliant);
+  border: 2px solid var(--surface-canvas); box-shadow: var(--shadow-xs);
+  color: var(--text-inverse); }
 
 /* step badges on the map (01 planned · 02 geofenced arrival) */
 .lg-map__badge { transform: translate(-50%, -68px); display: grid; place-items: center;
-  inline-size: 24px; block-size: 24px; border-radius: var(--ax-radius-full);
-  background: var(--ax-color-primary); color: var(--ax-color-inverse-text);
-  font: 700 11px var(--ax-font-mono); box-shadow: var(--ax-shadow-raised); }
+  inline-size: 24px; block-size: 24px; border-radius: var(--radius-full);
+  background: var(--action-primary); color: var(--text-inverse);
+  font: 700 11px var(--font-mono); box-shadow: var(--shadow-xs); }
 
 @media (prefers-reduced-motion: reduce) {
   .lg-map__route { animation: none; }
@@ -280,7 +280,7 @@
    The bitmap carries visual depth only. Buttons and dossier remain native DOM
    so the image is never the interaction or accessibility layer. */
 .lg-atlas-image { position: absolute; inset: 0; overflow: hidden;
-  container-type: size; background: var(--ax-color-atlas-canvas); }
+  container-type: size; background: var(--atlas-canvas); }
 .lg-atlas-image__plane { position: absolute; inset-block-start: 50%; inset-inline-start: 50%;
   inline-size: min(100cqw, calc(100cqh * 1.776833)); aspect-ratio: 1672 / 941;
   transform: translate(-50%, -50%); transform-style: preserve-3d;
@@ -292,7 +292,7 @@
 .lg-atlas-image.is-zone-engaged .lg-atlas-image__plane picture { filter: brightness(.73) saturate(.82); }
 .lg-atlas-image__media { position: absolute; inset: 0; inline-size: 100%; block-size: 100%;
   object-fit: fill; opacity: 0;
-  transition: opacity var(--ax-motion-standard); user-select: none; }
+  transition: opacity var(--transition-base); user-select: none; }
 .lg-atlas-image.is-ready .lg-atlas-image__media { opacity: 1; }
 
 /* ---- Arabic-first human journey + restrained zone depth -----------------
@@ -302,7 +302,7 @@
 .lg-atlas-motion { position: absolute; inset: 0; z-index: 8; pointer-events: none; }
 .lg-atlas-motion__zones, .lg-atlas-motion__route { position: absolute; inset: 0;
   inline-size: 100%; block-size: 100%; overflow: visible; }
-.lg-atlas-motion__zones path { --zone-tone: var(--ax-color-primary);
+.lg-atlas-motion__zones path { --zone-tone: var(--action-primary);
   fill: color-mix(in srgb, var(--zone-tone) 1.5%, transparent);
   stroke: color-mix(in srgb, var(--zone-tone) 8%, transparent); stroke-width: .8;
   vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center;
@@ -311,9 +311,9 @@
   animation-delay: calc(var(--zone-order) * 110ms); transition: transform 620ms cubic-bezier(.2,.7,.2,1),
   fill 620ms ease, stroke 620ms ease, filter 620ms ease, opacity 620ms ease; }
 .lg-atlas-motion__zones path[data-zone="west"],
-.lg-atlas-motion__zones path[data-zone="east"] { --zone-tone: var(--ax-color-success); }
-.lg-atlas-motion__zones path[data-zone="north"] { --zone-tone: var(--ax-color-warning); }
-.lg-atlas-motion__zones path[data-zone="south"] { --zone-tone: var(--ax-color-info); }
+.lg-atlas-motion__zones path[data-zone="east"] { --zone-tone: var(--status-compliant); }
+.lg-atlas-motion__zones path[data-zone="north"] { --zone-tone: var(--status-warning); }
+.lg-atlas-motion__zones path[data-zone="south"] { --zone-tone: var(--status-info); }
 .lg-atlas-motion__zones path.is-active { opacity: 1;
   fill: color-mix(in srgb, var(--zone-tone) 3.5%, transparent);
   stroke: color-mix(in srgb, var(--zone-tone) 24%, transparent); stroke-width: 1;
@@ -331,21 +331,21 @@
   fill: color-mix(in srgb, var(--zone-tone) 2%, transparent);
   stroke: color-mix(in srgb, var(--zone-tone) 56%, transparent); stroke-width: 1.2;
   stroke-dasharray: 5 6; vector-effect: non-scaling-stroke; }
-.lg-atlas-motion__zones path[data-outcome="complete"] { --zone-tone: var(--ax-color-success); }
-.lg-atlas-motion__zones path[data-outcome="follow-up"] { --zone-tone: var(--ax-color-critical); }
+.lg-atlas-motion__zones path[data-outcome="complete"] { --zone-tone: var(--status-compliant); }
+.lg-atlas-motion__zones path[data-outcome="follow-up"] { --zone-tone: var(--status-critical); }
 .lg-atlas-motion[data-stage="decide"] .lg-atlas-motion__zones path { opacity: .68; }
 
 .lg-atlas-motion__route-line { fill: none; opacity: 0; animation: none; stroke-dashoffset: 100;
-  stroke: var(--ax-color-info); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 4 7; }
+  stroke: var(--status-info); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 4 7; }
 .lg-atlas-motion[data-stage="travel"] .lg-atlas-motion__route-line {
   opacity: .72; stroke-dashoffset: 0; }
-.lg-atlas-motion__route-stops circle { fill: var(--ax-color-atlas-canvas); stroke: var(--ax-color-info); stroke-width: 1.6; }
-.lg-atlas-motion__route-vehicle { filter: drop-shadow(0 2px 3px color-mix(in srgb, var(--ax-color-shadow-base) 68%, transparent)); }
+.lg-atlas-motion__route-stops circle { fill: var(--atlas-canvas); stroke: var(--status-info); stroke-width: 1.6; }
+.lg-atlas-motion__route-vehicle { filter: drop-shadow(0 2px 3px color-mix(in srgb, var(--shadow-base) 68%, transparent)); }
 
 .lg-atlas-motion__inspector { position: absolute; z-index: 3; opacity: 0; left: auto; top: auto;
   inline-size: 42px; block-size: 67px; transform: translate(-50%, -50%); }
 .lg-atlas-motion__inspector img { display: block; inline-size: 100%; block-size: 100%; object-fit: contain;
-  filter: drop-shadow(0 5px 6px color-mix(in srgb, var(--ax-color-shadow-base) 68%, transparent)); }
+  filter: drop-shadow(0 5px 6px color-mix(in srgb, var(--shadow-base) 68%, transparent)); }
 .lg-atlas-motion[data-stage="arrive"] .lg-atlas-motion__inspector {
   animation: lg-atlas-inspector-in 520ms ease-out both;
   animation-delay: var(--actor-delay); }
@@ -356,13 +356,13 @@
 
 .lg-atlas-motion__outcome { position: absolute; z-index: 3; opacity: 0;
   transform: translate(-50%, -50%); display: flex; align-items: center; gap: 5px;
-  min-inline-size: max-content; padding: 4px 8px; border: 1px solid var(--ax-color-atlas-canvas);
-  border-radius: var(--ax-radius-full); color: var(--ax-color-inverse-text);
-  box-shadow: var(--ax-shadow-raised); font: 700 11px/1 var(--ax-font-sans); }
-[dir="rtl"] .lg-atlas-motion__outcome { font-family: var(--ax-font-arabic); }
-.lg-atlas-motion__outcome b { font: 900 15px/1 var(--ax-font-sans); }
-.lg-atlas-motion__outcome--passed { background: var(--ax-color-success); }
-.lg-atlas-motion__outcome--failed { background: var(--ax-color-critical); }
+  min-inline-size: max-content; padding: 4px 8px; border: 1px solid var(--atlas-canvas);
+  border-radius: var(--radius-full); color: var(--text-inverse);
+  box-shadow: var(--shadow-xs); font: 700 11px/1 var(--font-body); }
+[dir="rtl"] .lg-atlas-motion__outcome { font-family: var(--font-body); }
+.lg-atlas-motion__outcome b { font: 900 15px/1 var(--font-body); }
+.lg-atlas-motion__outcome--passed { background: var(--status-compliant); }
+.lg-atlas-motion__outcome--failed { background: var(--status-critical); }
 .lg-atlas-motion[data-stage="inspect"] .lg-atlas-motion__outcome {
   animation: lg-atlas-outcome-in 460ms ease-out both;
   animation-delay: var(--actor-delay); }
@@ -378,11 +378,11 @@
 .lg-zone-lift__slab > * { transform-box: view-box; transform-origin: center;
   transition: transform 900ms cubic-bezier(.16,.84,.25,1), opacity 680ms ease, filter 820ms ease; }
 /* Interactive rim: transparent at rest, a lit terrain edge once extracted. */
-.lg-zone-lift__edge { fill: transparent; stroke: color-mix(in srgb, var(--ax-color-info) 0%, transparent);
+.lg-zone-lift__edge { fill: transparent; stroke: color-mix(in srgb, var(--status-info) 0%, transparent);
   stroke-width: .8; vector-effect: non-scaling-stroke; pointer-events: all; cursor: pointer; }
-.lg-zone-lift__slab:hover .lg-zone-lift__edge { stroke: color-mix(in srgb, var(--ax-color-info) 34%, transparent); }
+.lg-zone-lift__slab:hover .lg-zone-lift__edge { stroke: color-mix(in srgb, var(--status-info) 34%, transparent); }
 /* The recess left behind: an opaque dark cavity over the resting terrain. */
-.lg-zone-lift__cavity { fill: color-mix(in srgb, var(--ax-color-shadow-base) 96%, #000); opacity: 0; }
+.lg-zone-lift__cavity { fill: color-mix(in srgb, var(--shadow-base) 96%, #000); opacity: 0; }
 /* Exposed earth/rock sidewall — a darkened copy of the same terrain slice. */
 .lg-zone-lift__wall image { filter: brightness(.32) saturate(.7) sepia(.28); }
 .lg-zone-lift__wall { opacity: 0; }
@@ -391,19 +391,19 @@
 .lg-zone-lift__slab.is-lifted .lg-zone-lift__cavity { opacity: 1; transform: translateY(3px) scale(.985);
   filter: blur(1.2px); }
 .lg-zone-lift__slab.is-lifted .lg-zone-lift__wall { opacity: 1; transform: translateY(-16px) scale(1.004);
-  filter: drop-shadow(0 16px 13px color-mix(in srgb, var(--ax-color-shadow-base) 80%, transparent)); }
+  filter: drop-shadow(0 16px 13px color-mix(in srgb, var(--shadow-base) 80%, transparent)); }
 .lg-zone-lift__slab.is-lifted .lg-zone-lift__terrain { opacity: 1; transform: translateY(-33px) scale(1.012);
-  filter: brightness(1.06) drop-shadow(0 15px 12px color-mix(in srgb, var(--ax-color-shadow-base) 76%, transparent)); }
+  filter: brightness(1.06) drop-shadow(0 15px 12px color-mix(in srgb, var(--shadow-base) 76%, transparent)); }
 .lg-zone-lift__slab.is-lifted .lg-zone-lift__edge { transform: translateY(-33px) scale(1.012);
-  stroke: color-mix(in srgb, var(--ax-color-info) 78%, transparent); stroke-width: 1.1; }
+  stroke: color-mix(in srgb, var(--status-info) 78%, transparent); stroke-width: 1.1; }
 /* Cinematic camera push: pitch and lift the whole atlas plane on engage. */
 .lg-atlas-image.is-zone-engaged .lg-atlas-motion { opacity: .42; transition: opacity 700ms ease; }
-.lg-zone-lift__readout { position: absolute; z-index: 3; inline-size: 196px; padding: 12px 13px; opacity: 0; transform: translate(-50%, -70%) scale(.9); color: var(--ax-color-atlas-text); background: linear-gradient(135deg, color-mix(in srgb, var(--ax-color-atlas-canvas) 94%, transparent), color-mix(in srgb, var(--ax-color-primary) 13%, var(--ax-color-atlas-canvas))); border: 1px solid color-mix(in srgb, var(--ax-color-info) 62%, transparent); border-radius: 10px; box-shadow: 0 18px 42px color-mix(in srgb, var(--ax-color-shadow-base) 78%, transparent); backdrop-filter: blur(12px); animation: lg-zone-readout-in 540ms 420ms cubic-bezier(.16,.84,.25,1) forwards; pointer-events: auto; }
-.lg-zone-lift__eyebrow { display: block; margin-block-end: 6px; color: var(--ax-color-info); font: 700 8px/1.2 var(--ax-font-mono); letter-spacing: .8px; }
-.lg-zone-lift__readout strong { display: block; font: 700 15px/1.2 var(--ax-font-sans); }
-.lg-zone-lift__readout div { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; margin-block: 9px 6px; font: 600 10px/1.25 var(--ax-font-sans); }
-.lg-zone-lift__readout div b { color: var(--ax-color-atlas-text); }.lg-zone-lift__readout div span { color: var(--ax-color-success); }.lg-zone-lift__readout div em { grid-column: 1 / -1; color: var(--ax-color-warning); font-style: normal; }
-.lg-zone-lift__readout small { color: var(--ax-color-atlas-muted); font: 500 9px/1.2 var(--ax-font-sans); }
+.lg-zone-lift__readout { position: absolute; z-index: 3; inline-size: 196px; padding: 12px 13px; opacity: 0; transform: translate(-50%, -70%) scale(.9); color: var(--atlas-text); background: linear-gradient(135deg, color-mix(in srgb, var(--atlas-canvas) 94%, transparent), color-mix(in srgb, var(--action-primary) 13%, var(--atlas-canvas))); border: 1px solid color-mix(in srgb, var(--status-info) 62%, transparent); border-radius: 10px; box-shadow: 0 18px 42px color-mix(in srgb, var(--shadow-base) 78%, transparent); backdrop-filter: blur(12px); animation: lg-zone-readout-in 540ms 420ms cubic-bezier(.16,.84,.25,1) forwards; pointer-events: auto; }
+.lg-zone-lift__eyebrow { display: block; margin-block-end: 6px; color: var(--status-info); font: 700 8px/1.2 var(--font-mono); letter-spacing: .8px; }
+.lg-zone-lift__readout strong { display: block; font: 700 15px/1.2 var(--font-body); }
+.lg-zone-lift__readout div { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; margin-block: 9px 6px; font: 600 10px/1.25 var(--font-body); }
+.lg-zone-lift__readout div b { color: var(--atlas-text); }.lg-zone-lift__readout div span { color: var(--status-compliant); }.lg-zone-lift__readout div em { grid-column: 1 / -1; color: var(--status-warning); font-style: normal; }
+.lg-zone-lift__readout small { color: var(--atlas-muted); font: 500 9px/1.2 var(--font-body); }
 @keyframes lg-zone-readout-in { to { opacity: 1; transform: translate(-50%, -94%) scale(1); } }
 
 /* Scene one is deliberately clean. Interactive anchors stay in the DOM but
@@ -418,42 +418,42 @@
 .lg-story.is-motion-paused .lg-atlas-motion *,
 .lg-story.is-motion-paused .lg-atlas-image__hotspot::after { animation-play-state: paused !important; }
 .lg-atlas-image__hotspots { position: absolute; inset: 0; z-index: 20; pointer-events: none; }
-.lg-atlas-image__hotspot { --tone: var(--ax-color-primary); position: absolute;
+.lg-atlas-image__hotspot { --tone: var(--action-primary); position: absolute;
   inline-size: 44px; block-size: 44px; transform: translate(-50%, -50%);
-  display: grid; place-items: center; border: 0; border-radius: var(--ax-radius-full);
+  display: grid; place-items: center; border: 0; border-radius: var(--radius-full);
   padding: 0; background: transparent; cursor: pointer; pointer-events: auto; }
-.lg-atlas-image__hotspot--arrival { --tone: var(--ax-color-success); }
-.lg-atlas-image__hotspot--planned { --tone: var(--ax-color-warning); }
-.lg-atlas-image__hotspot--virtual { --tone: var(--ax-color-info); }
-.lg-atlas-image__hotspot--route { --tone: var(--ax-color-primary); }
+.lg-atlas-image__hotspot--arrival { --tone: var(--status-compliant); }
+.lg-atlas-image__hotspot--planned { --tone: var(--status-warning); }
+.lg-atlas-image__hotspot--virtual { --tone: var(--status-info); }
+.lg-atlas-image__hotspot--route { --tone: var(--action-primary); }
 .lg-atlas-image__hotspot::before { content: ""; position: absolute; inset: 5px;
   border: 1px solid color-mix(in srgb, var(--tone) 72%, transparent);
   border-radius: inherit; opacity: 0; transform: scale(0.72);
-  transition: opacity var(--ax-motion-fast), transform var(--ax-motion-fast); }
+  transition: opacity var(--transition-fast), transform var(--transition-fast); }
 .lg-atlas-image__hotspot:hover::before,
 .lg-atlas-image__hotspot:focus-visible::before,
 .lg-atlas-image__hotspot.is-active::before { opacity: 1; transform: scale(1); }
 .lg-atlas-image__hotspot-core { inline-size: 10px; block-size: 10px;
-  border: 2px solid var(--ax-color-atlas-canvas); border-radius: var(--ax-radius-full);
-  background: var(--tone); box-shadow: var(--ax-shadow-raised); }
+  border: 2px solid var(--atlas-canvas); border-radius: var(--radius-full);
+  background: var(--tone); box-shadow: var(--shadow-xs); }
 .lg-atlas-image__hotspot-label { position: absolute; z-index: 2; min-inline-size: max-content;
-  padding: 2px 7px; border-radius: var(--ax-radius-full); pointer-events: none;
-  color: var(--ax-color-atlas-text); background: color-mix(in srgb, var(--ax-color-atlas-canvas) 88%, transparent);
+  padding: 2px 7px; border-radius: var(--radius-full); pointer-events: none;
+  color: var(--atlas-text); background: color-mix(in srgb, var(--atlas-canvas) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--tone) 34%, transparent);
-  font: 700 11px/16px var(--ax-font-arabic); box-shadow: 0 2px 8px color-mix(in srgb, var(--ax-color-shadow-base) 40%, transparent); }
-.lg-atlas-image__hotspot-label--ar { font-family: var(--ax-font-arabic); }
-.lg-atlas-image__hotspot-label--en { font: 700 10px/15px var(--ax-font-mono); letter-spacing: 0.4px; }
+  font: 700 11px/16px var(--font-body); box-shadow: 0 2px 8px color-mix(in srgb, var(--shadow-base) 40%, transparent); }
+.lg-atlas-image__hotspot-label--ar { font-family: var(--font-body); }
+.lg-atlas-image__hotspot-label--en { font: 700 10px/15px var(--font-mono); letter-spacing: 0.4px; }
 .lg-atlas-image__hotspot-label--below { inset-block-start: calc(100% - 4px); left: 50%; transform: translateX(-50%); }
 .lg-atlas-image__hotspot-label--above { inset-block-end: calc(100% - 4px); left: 50%; transform: translateX(-50%); }
 .lg-atlas-image__hotspot-label--right { left: calc(100% - 4px); }
 .lg-atlas-image__hotspot-label--left { right: calc(100% - 4px); }
 .lg-atlas-image__zones { position: absolute; inset: 0; pointer-events: none; }
 .lg-atlas-image__zones span { position: absolute; transform: translate(-50%, -50%);
-  padding: 1px 6px; border-radius: var(--ax-radius-full); white-space: nowrap;
-  color: var(--ax-color-atlas-muted); background: color-mix(in srgb, var(--ax-color-atlas-canvas) 82%, transparent);
-  font: 600 10px/15px var(--ax-font-arabic); letter-spacing: 0; }
-.lg-atlas-image__zones--en span { font-family: var(--ax-font-mono); letter-spacing: 1px; }
-.lg-atlas-image__hotspot:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
+  padding: 1px 6px; border-radius: var(--radius-full); white-space: nowrap;
+  color: var(--atlas-muted); background: color-mix(in srgb, var(--atlas-canvas) 82%, transparent);
+  font: 600 10px/15px var(--font-body); letter-spacing: 0; }
+.lg-atlas-image__zones--en span { font-family: var(--font-mono); letter-spacing: 1px; }
+.lg-atlas-image__hotspot:focus-visible { outline: none; box-shadow: var(--focus-ring-shadow); }
 .lg-atlas-image__hotspot.is-active::after { content: ""; position: absolute; inset: 6px;
   border: 1.5px solid var(--tone); border-radius: inherit;
   animation: lg-atlas-image-stage 1.8s ease-out infinite; }
@@ -465,90 +465,90 @@
 .lg-atlas3d__net { stroke-dasharray: 2 7; }
 
 /* ---- Layer 2: terrain relief slab + orientation labels ------------------- */
-.lg-atlas3d__terrain-top { fill: color-mix(in srgb, var(--ax-color-primary) 10%, transparent); }
-.lg-atlas3d__terrain-shadow { fill: color-mix(in srgb, var(--ax-color-shadow-base) 45%, transparent);
+.lg-atlas3d__terrain-top { fill: color-mix(in srgb, var(--action-primary) 10%, transparent); }
+.lg-atlas3d__terrain-shadow { fill: color-mix(in srgb, var(--shadow-base) 45%, transparent);
   transform: translateY(6px); }
 .lg-atlas3d__orient { transform: translate(-50%, -50%); white-space: nowrap;
-  color: var(--ax-color-text-secondary); text-shadow: 0 1px 3px var(--ax-color-canvas); }
-.lg-atlas3d__orient--en { font: 500 9px var(--ax-font-sans); letter-spacing: 0.5px; }
-.lg-atlas3d__orient--ar { font: 600 11px var(--ax-font-arabic); }
+  color: var(--text-secondary); text-shadow: 0 1px 3px var(--surface-canvas); }
+.lg-atlas3d__orient--en { font: 500 9px var(--font-body); letter-spacing: 0.5px; }
+.lg-atlas3d__orient--ar { font: 600 11px var(--font-body); }
 
 /* ---- Layer 2/4: node structures ------------------------------------------ */
 .lg-atlas3d__node { position: relative; inline-size: var(--nw); transform: translate(-50%, -100%);
   display: flex; flex-direction: column; align-items: center; color: var(--tone);
-  pointer-events: auto; cursor: pointer; transition: transform var(--ax-motion-fast); }
+  pointer-events: auto; cursor: pointer; transition: transform var(--transition-fast); }
 .lg-atlas3d__node:hover, .lg-atlas3d__node:focus-within { transform: translate(-50%, -100%) scale(1.06); }
-.lg-atlas3d__node--arrival { --tone: var(--ax-color-success); }
-.lg-atlas3d__node--planned { --tone: var(--ax-color-warning); }
-.lg-atlas3d__node--virtual { --tone: var(--ax-color-info); }
-.lg-atlas3d__node--route   { --tone: var(--ax-color-primary); }
+.lg-atlas3d__node--arrival { --tone: var(--status-compliant); }
+.lg-atlas3d__node--planned { --tone: var(--status-warning); }
+.lg-atlas3d__node--virtual { --tone: var(--status-info); }
+.lg-atlas3d__node--route   { --tone: var(--action-primary); }
 .lg-atlas3d__halo { position: absolute; inset-block-end: -4px; inset-inline-start: 50%;
   inline-size: calc(var(--nw) + 20px); block-size: 16px; transform: translateX(-50%);
-  border-radius: var(--ax-radius-full);
+  border-radius: var(--radius-full);
   background: radial-gradient(ellipse at center, color-mix(in srgb, var(--tone) 50%, transparent), transparent 72%); }
 .lg-atlas3d__struct { position: relative; inline-size: var(--nw); block-size: var(--nh);
-  display: grid; place-items: end center; border-radius: var(--ax-radius-small); }
+  display: grid; place-items: end center; border-radius: var(--radius-xs); }
 .lg-atlas3d__struct-flat svg { inline-size: var(--nw); block-size: var(--nh); overflow: visible;
-  filter: drop-shadow(0 4px 6px color-mix(in srgb, var(--ax-color-shadow-base) 60%, transparent)); }
+  filter: drop-shadow(0 4px 6px color-mix(in srgb, var(--shadow-base) 60%, transparent)); }
 /* isometric factory faces lit from the node --tone (roof brightest, front
    darkest) with warm work-lights — premium depth, tokens only. */
 .lg-atlas3d__factory .f-top { fill: var(--tone); }
-.lg-atlas3d__factory .f-side { fill: color-mix(in srgb, var(--tone) 66%, var(--ax-color-canvas)); }
-.lg-atlas3d__factory .f-front { fill: color-mix(in srgb, var(--tone) 40%, var(--ax-color-canvas)); }
-.lg-atlas3d__factory .f-win { fill: var(--ax-color-warning); opacity: 0.92; }
-.lg-atlas3d__factory .f-flame { fill: var(--ax-color-warning); }
+.lg-atlas3d__factory .f-side { fill: color-mix(in srgb, var(--tone) 66%, var(--surface-canvas)); }
+.lg-atlas3d__factory .f-front { fill: color-mix(in srgb, var(--tone) 40%, var(--surface-canvas)); }
+.lg-atlas3d__factory .f-win { fill: var(--status-warning); opacity: 0.92; }
+.lg-atlas3d__factory .f-flame { fill: var(--status-warning); }
 .lg-atlas3d__factory polygon, .lg-atlas3d__factory rect, .lg-atlas3d__factory ellipse {
-  stroke: color-mix(in srgb, var(--ax-color-canvas) 45%, transparent); stroke-width: 0.5;
+  stroke: color-mix(in srgb, var(--surface-canvas) 45%, transparent); stroke-width: 0.5;
   stroke-linejoin: round; }
 .lg-atlas3d__factory .f-win { stroke: none; }
 .lg-atlas3d__struct-img { position: absolute; inset: 0; inline-size: 100%; block-size: 100%;
-  object-fit: contain; opacity: 0; transition: opacity var(--ax-motion-standard); }
+  object-fit: contain; opacity: 0; transition: opacity var(--transition-base); }
 .lg-atlas3d__anchor { position: absolute; inset-block-end: 0; inset-inline-end: -9px;
   inline-size: 8px; block-size: 32px; opacity: 0.8;
   background: linear-gradient(to top, var(--tone), color-mix(in srgb, var(--tone) 25%, transparent));
   clip-path: polygon(32% 100%, 68% 100%, 58% 0, 42% 0); }
 .lg-atlas3d__node-base { inline-size: calc(var(--nw) + 6px); block-size: 4px; margin-block-start: 3px;
-  border-radius: var(--ax-radius-full); background: color-mix(in srgb, var(--tone) 40%, transparent); }
+  border-radius: var(--radius-full); background: color-mix(in srgb, var(--tone) 40%, transparent); }
 .lg-atlas3d__node-label { position: absolute; inset-inline-start: 50%; inset-block-start: 100%;
   transform: translateX(-50%); margin-block-start: 2px; white-space: nowrap; pointer-events: none;
-  color: var(--ax-color-text); text-shadow: 0 1px 4px var(--ax-color-canvas), 0 0 3px var(--ax-color-canvas); }
+  color: var(--text-primary); text-shadow: 0 1px 4px var(--surface-canvas), 0 0 3px var(--surface-canvas); }
 .lg-atlas3d__node-label--above { inset-block-start: auto; inset-block-end: 100%; margin-block: 0 3px; }
 .lg-atlas3d__node-label--right { inset-block-start: auto; inset-block-end: 4px; inset-inline-start: 100%;
   transform: none; margin-inline-start: 5px; }
 .lg-atlas3d__node-label--left { inset-block-start: auto; inset-block-end: 4px; inset-inline-start: auto;
   inset-inline-end: 100%; transform: none; margin-inline-end: 5px; }
-.lg-atlas3d__node-label--en { font: 600 10px var(--ax-font-mono); letter-spacing: 1.5px; }
-.lg-atlas3d__node-label--ar { font: 700 13px var(--ax-font-arabic); }
+.lg-atlas3d__node-label--en { font: 600 10px var(--font-mono); letter-spacing: 1.5px; }
+.lg-atlas3d__node-label--ar { font: 700 13px var(--font-body); }
 .lg-atlas3d__node:focus-visible { outline: none; }
-.lg-atlas3d__node:focus-visible .lg-atlas3d__struct { box-shadow: var(--ax-focus-ring); }
+.lg-atlas3d__node:focus-visible .lg-atlas3d__struct { box-shadow: var(--focus-ring-shadow); }
 
 /* ---- Layer 3: journey overlays (illustrative; no red states) ------------- */
 .lg-atlas3d__route { animation: lg-atlas-route 24s linear infinite; }
 @keyframes lg-atlas-route { to { stroke-dashoffset: -320; } }
 .lg-atlas3d__vehicle, .lg-atlas3d__actor, .lg-atlas3d__evidence, .lg-atlas3d__cue {
   position: absolute; transform: translate(-50%, -50%); opacity: 0; pointer-events: none;
-  transition: opacity var(--ax-motion-standard); }
+  transition: opacity var(--transition-base); }
 .lg-atlas3d__vehicle.is-on, .lg-atlas3d__actor.is-on, .lg-atlas3d__evidence.is-on, .lg-atlas3d__cue.is-on { opacity: 1; }
 .lg-atlas3d__vehicle { display: grid; place-items: center; inline-size: 42px; block-size: 30px;
-  border-radius: var(--ax-radius-small); background: var(--ax-color-surface);
-  border: 1.5px solid var(--ax-color-primary); color: var(--ax-color-primary-hover);
-  box-shadow: var(--ax-shadow-raised); }
+  border-radius: var(--radius-xs); background: var(--surface-primary);
+  border: 1.5px solid var(--action-primary); color: var(--action-primary-hover);
+  box-shadow: var(--shadow-xs); }
 .lg-atlas3d__actor { display: grid; place-items: center; inline-size: 26px; block-size: 26px;
-  border-radius: var(--ax-radius-full); background: var(--ax-color-success);
-  color: var(--ax-color-inverse-text); border: 2px solid var(--ax-color-canvas); box-shadow: var(--ax-shadow-raised); }
+  border-radius: var(--radius-full); background: var(--status-compliant);
+  color: var(--text-inverse); border: 2px solid var(--surface-canvas); box-shadow: var(--shadow-xs); }
 .lg-atlas3d__evidence { display: grid; place-items: center; inline-size: 20px; block-size: 20px;
-  border-radius: var(--ax-radius-full); background: var(--ax-color-success);
-  color: var(--ax-color-inverse-text); border: 2px solid var(--ax-color-canvas); }
+  border-radius: var(--radius-full); background: var(--status-compliant);
+  color: var(--text-inverse); border: 2px solid var(--surface-canvas); }
 .lg-atlas3d__cue { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
-  padding: 2px 8px; border-radius: var(--ax-radius-full); font: 700 11px var(--ax-font-mono);
-  background: var(--ax-color-surface); border: 1px solid var(--ax-color-border); box-shadow: var(--ax-shadow-raised); }
-.lg-atlas3d__cue--review { color: var(--ax-color-primary-hover); }
-.lg-atlas3d__cue--seal { color: var(--ax-color-success); }
+  padding: 2px 8px; border-radius: var(--radius-full); font: 700 11px var(--font-mono);
+  background: var(--surface-primary); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-xs); }
+.lg-atlas3d__cue--review { color: var(--action-primary-hover); }
+.lg-atlas3d__cue--seal { color: var(--status-compliant); }
 .lg-atlas3d__geofence { position: absolute; transform: translate(-50%, -50%); opacity: 0;
   inline-size: calc(var(--fence-r) * 2); block-size: calc(var(--fence-r) * 2);
-  border-radius: var(--ax-radius-full); border: 1.5px dashed var(--ax-color-success);
-  background: radial-gradient(circle, color-mix(in srgb, var(--ax-color-success) 12%, transparent), transparent 70%);
-  transition: opacity var(--ax-motion-standard); }
+  border-radius: var(--radius-full); border: 1.5px dashed var(--status-compliant);
+  background: radial-gradient(circle, color-mix(in srgb, var(--status-compliant) 12%, transparent), transparent 70%);
+  transition: opacity var(--transition-base); }
 .lg-atlas3d__geofence.is-on { opacity: 1; }
 .lg-atlas3d__geofence.pulse { animation: lg-atlas-fence 0.6s ease-out 1; }
 @keyframes lg-atlas-fence {
@@ -557,44 +557,44 @@
 
 /* ---- Layer 4: dossier ---------------------------------------------------- */
 .lg-atlas3d__dossier { position: absolute; inset-block-start: 44px; inset-inline-end: 10px; z-index: 650;
-  inline-size: min(280px, 72%); padding: var(--ax-space-200);
-  border-radius: var(--ax-radius-large); border: 1px solid var(--ax-color-border);
-  color: var(--ax-color-atlas-text);
-  background: color-mix(in srgb, var(--ax-color-atlas-surface) 94%, transparent); backdrop-filter: blur(10px);
-  box-shadow: var(--ax-shadow-overlay); animation: lg-atlas-dossier 0.18s ease-out; }
+  inline-size: min(280px, 72%); padding: var(--space-4);
+  border-radius: var(--radius-md); border: 1px solid var(--border-subtle);
+  color: var(--atlas-text);
+  background: color-mix(in srgb, var(--atlas-surface) 94%, transparent); backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-lg); animation: lg-atlas-dossier 0.18s ease-out; }
 .lg-atlas3d__dossier--left { inset-inline: auto; left: 10px; right: auto; }
 .lg-atlas3d__dossier--right { inset-inline: auto; right: 10px; left: auto; }
 @keyframes lg-atlas-dossier { from { opacity: 0; transform: translateY(-4px); } }
-.lg-atlas3d__dossier--locked { border-color: var(--ax-color-primary); }
-.lg-atlas3d__dossier-head { display: flex; align-items: center; gap: var(--ax-space-100); }
-.lg-atlas3d__dossier-dot { inline-size: 10px; block-size: 10px; border-radius: var(--ax-radius-full); flex-shrink: 0; }
-.lg-atlas3d__dossier-name { font: 700 15px var(--ax-font-sans); color: var(--ax-color-atlas-text); }
+.lg-atlas3d__dossier--locked { border-color: var(--action-primary); }
+.lg-atlas3d__dossier-head { display: flex; align-items: center; gap: var(--space-2); }
+.lg-atlas3d__dossier-dot { inline-size: 10px; block-size: 10px; border-radius: var(--radius-full); flex-shrink: 0; }
+.lg-atlas3d__dossier-name { font: 700 15px var(--font-body); color: var(--atlas-text); }
 .lg-atlas3d__dossier-close { margin-inline-start: auto; border: none; background: none; cursor: pointer;
-  padding: 4px; line-height: 1; font-size: 14px; color: var(--ax-color-text-secondary);
-  border-radius: var(--ax-radius-small); }
-.lg-atlas3d__dossier-close:hover { color: var(--ax-color-text); background: var(--ax-color-neutral-tint); }
-.lg-atlas3d__dossier-close:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
-.lg-atlas3d__dossier-body { margin: var(--ax-space-150) 0 0; display: flex; flex-direction: column; gap: var(--ax-space-100); }
+  padding: 4px; line-height: 1; font-size: 14px; color: var(--text-secondary);
+  border-radius: var(--radius-xs); }
+.lg-atlas3d__dossier-close:hover { color: var(--text-primary); background: var(--surface-secondary); }
+.lg-atlas3d__dossier-close:focus-visible { outline: none; box-shadow: var(--focus-ring-shadow); }
+.lg-atlas3d__dossier-body { margin: var(--space-3) 0 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .lg-atlas3d__dossier-row { display: flex; flex-direction: column; gap: 1px; }
-.lg-atlas3d__dossier-row dt { font: var(--ax-text-caption); color: var(--ax-color-text-secondary); }
-.lg-atlas3d__dossier-row dd { margin: 0; font: var(--ax-text-body); color: var(--ax-color-atlas-text); }
+.lg-atlas3d__dossier-row dt { font: var(--type-caption-font); color: var(--text-secondary); }
+.lg-atlas3d__dossier-row dd { margin: 0; font: var(--type-body-font); color: var(--atlas-text); }
 .lg-atlas3d__dossier-state { font-weight: 700; }
 
 /* ---- selected stage event: map motion carries the story ----------------- */
 .lg-atlas3d__event { position: absolute; inset-block-start: clamp(74px, 9vh, 104px); inset-inline-start: clamp(14px, 1.6vw, 22px); z-index: 610;
   max-inline-size: min(360px, calc(100% - 24px)); display: flex; flex-direction: column; gap: 4px;
-  padding: var(--ax-space-150) var(--ax-space-200); pointer-events: none;
-  border: 1px solid var(--ax-color-atlas-border); border-radius: var(--ax-radius-standard);
-  color: var(--ax-color-atlas-text);
-  background: color-mix(in srgb, var(--ax-color-atlas-surface) 88%, transparent);
-  box-shadow: var(--ax-shadow-raised); backdrop-filter: blur(10px);
+  padding: var(--space-3) var(--space-4); pointer-events: none;
+  border: 1px solid var(--atlas-border); border-radius: var(--radius-sm);
+  color: var(--atlas-text);
+  background: color-mix(in srgb, var(--atlas-surface) 88%, transparent);
+  box-shadow: var(--shadow-xs); backdrop-filter: blur(10px);
   animation: lg-atlas-event-in 280ms ease-out; }
-.lg-atlas3d__event-stage { display: flex; align-items: center; gap: var(--ax-space-100);
-  font: 700 10px/14px var(--ax-font-mono); letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--ax-color-info); }
+.lg-atlas3d__event-stage { display: flex; align-items: center; gap: var(--space-2);
+  font: 700 10px/14px var(--font-mono); letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--status-info); }
 [dir="rtl"] .lg-atlas3d__event { text-align: right; }
-[dir="rtl"] .lg-atlas3d__event-stage { font-family: var(--ax-font-arabic); text-transform: none; letter-spacing: 0; }
-.lg-atlas3d__event strong { font: 600 14px/20px var(--ax-font-sans); color: var(--ax-color-atlas-text); }
+[dir="rtl"] .lg-atlas3d__event-stage { font-family: var(--font-body); text-transform: none; letter-spacing: 0; }
+.lg-atlas3d__event strong { font: 600 14px/20px var(--font-body); color: var(--atlas-text); }
 @keyframes lg-atlas-event-in {
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -604,23 +604,23 @@
 .lg-atlas3d__stages { position: absolute; inset-inline: 10px; inset-block-end: 10px; z-index: 610;
   display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0;
   padding: 4px; overflow: hidden;
-  border: 1px solid var(--ax-color-atlas-border); border-radius: var(--ax-radius-standard);
-  background: color-mix(in srgb, var(--ax-color-atlas-surface) 90%, transparent);
-  box-shadow: var(--ax-shadow-raised); backdrop-filter: blur(10px); }
-.lg-atlas3d__stage { min-inline-size: 0; display: flex; align-items: center; gap: var(--ax-space-100);
-  padding: var(--ax-space-100) var(--ax-space-150); text-align: start; cursor: pointer;
-  background: transparent; border: 0; border-inline-end: 1px solid var(--ax-color-atlas-border);
-  border-radius: var(--ax-radius-small); color: var(--ax-color-atlas-muted);
-  transition: background var(--ax-motion-fast), color var(--ax-motion-fast); }
+  border: 1px solid var(--atlas-border); border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--atlas-surface) 90%, transparent);
+  box-shadow: var(--shadow-xs); backdrop-filter: blur(10px); }
+.lg-atlas3d__stage { min-inline-size: 0; display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-3); text-align: start; cursor: pointer;
+  background: transparent; border: 0; border-inline-end: 1px solid var(--atlas-border);
+  border-radius: var(--radius-xs); color: var(--atlas-muted);
+  transition: background var(--transition-fast), color var(--transition-fast); }
 .lg-atlas3d__stage:last-child { border-inline-end: 0; }
-.lg-atlas3d__stage:hover { color: var(--ax-color-atlas-text); background: color-mix(in srgb, var(--ax-color-atlas-text) 8%, transparent); }
-.lg-atlas3d__stage.is-active { color: var(--ax-color-atlas-text);
-  background: color-mix(in srgb, var(--ax-color-primary) 26%, var(--ax-color-atlas-surface)); }
-.lg-atlas3d__stage.is-active .lg-atlas3d__stage-n { color: var(--ax-color-atlas-text); }
-.lg-atlas3d__stage:focus-visible { outline: none; box-shadow: var(--ax-focus-ring); }
-.lg-atlas3d__stage-n { font: 700 10px var(--ax-font-mono); color: var(--ax-color-info); }
-.lg-atlas3d__stage-label { font: 600 12px var(--ax-font-sans); overflow: hidden; text-overflow: ellipsis; }
-[dir="rtl"] .lg-atlas3d__stage-label { font-family: var(--ax-font-arabic); }
+.lg-atlas3d__stage:hover { color: var(--atlas-text); background: color-mix(in srgb, var(--atlas-text) 8%, transparent); }
+.lg-atlas3d__stage.is-active { color: var(--atlas-text);
+  background: color-mix(in srgb, var(--action-primary) 26%, var(--atlas-surface)); }
+.lg-atlas3d__stage.is-active .lg-atlas3d__stage-n { color: var(--atlas-text); }
+.lg-atlas3d__stage:focus-visible { outline: none; box-shadow: var(--focus-ring-shadow); }
+.lg-atlas3d__stage-n { font: 700 10px var(--font-mono); color: var(--status-info); }
+.lg-atlas3d__stage-label { font: 600 12px var(--font-body); overflow: hidden; text-overflow: ellipsis; }
+[dir="rtl"] .lg-atlas3d__stage-label { font-family: var(--font-body); }
 [dir="rtl"] .lg-atlas3d__stage-n { unicode-bidi: isolate; }
 
 /* ---- responsive: dossier becomes a bottom sheet on narrow frames --------- */
@@ -635,7 +635,7 @@
   /* Below the credential panel the hero keeps its one-surface model but caps
      its height so sign-in stays first. Frame stays inset:0 within the block. */
   .lg-story { min-block-size: 0; block-size: min(72vh, 480px);
-    border-block-start: 1px solid var(--ax-color-atlas-border); }
+    border-block-start: 1px solid var(--atlas-border); }
   .lg-story__head .lg-iconbtn { display: none; }
   .lg-atlas3d__stages { overflow-x: auto; grid-template-columns: repeat(5, minmax(108px, 1fr)); }
 }

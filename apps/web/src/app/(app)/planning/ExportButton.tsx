@@ -36,7 +36,7 @@ export default function ExportButton({ params, strings }: { params: PlanningList
     });
   };
   return (
-    <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+    <span className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
       <button type="button" className="ax-btn ax-btn--secondary" disabled={pending} onClick={run}>
         {pending ? strings.busyLabel : strings.label}
       </button>

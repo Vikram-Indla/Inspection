@@ -97,16 +97,16 @@ export default async function PlanningStatus() {
         </p>
       )}
 
-      <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="ax-surface" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.states", "States")}</h2>
-        <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
           {states.map(state => (
             <span key={state} className="ax-lozenge ax-lozenge--info">{state}</span>
           ))}
         </div>
       </section>
 
-      <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="ax-surface" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.transitions", "Transitions")}</h2>
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>
@@ -134,7 +134,7 @@ export default async function PlanningStatus() {
         </table></div>
       </section>
 
-      <section className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="ax-surface" style={{ padding: "var(--space-6)" }}>
         <h2 style={{ marginBlockStart: 0 }}>{t("admin.planning.status.capabilities", "Planning capabilities")}</h2>
         <div className="ax-tablewrap"><table className="ax-table">
           <thead><tr>

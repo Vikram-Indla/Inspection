@@ -21,7 +21,7 @@ export default function CapacityForm({ cap, labels }: { cap: number | null; labe
   );
 
   return (
-    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
       <div className="ax-field" style={{ maxInlineSize: 240 }}>
         <label className="ax-field__label" htmlFor="daily_visit_cap">{labels.capLabel}</label>
         <input
@@ -30,13 +30,13 @@ export default function CapacityForm({ cap, labels }: { cap: number | null; labe
         />
         <p className="ax-caption" style={{ margin: 0 }}>{labels.capHint}</p>
       </div>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent" disabled={pending}>
           {pending ? labels.saving : labels.save}
         </button>
         {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)", margin: 0 }}>{state.error}</p>}
+      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
     </form>
   );
 }

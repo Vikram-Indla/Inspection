@@ -70,13 +70,13 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
   const hasAvailable = status === "published" || status === "returned" || isFinal;
 
   return (
-    <div className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
+    <div className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
 
       {/* ── ZONE: AVAILABLE NOW ────────────────────────────────── */}
       <div className="ax-actionzone">
         <p className="ax-actionzone__label t-caption">{strings.zoneAvailable}</p>
-        <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+        <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-4)" }}>
           {status === "published" && (
             <form action={retAct} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               <input type="hidden" name="visit_id" value={visitId} />
@@ -163,7 +163,7 @@ export default function ActionBar({ visitId, status, opState, opStateLabel, visi
       {(scheduleBlocked || reassignBlocked) && (
         <div className="ax-actionzone">
           <p className="ax-actionzone__label t-caption">{strings.zoneBlocked}</p>
-          <ul className="stack" style={{ gap: "var(--ax-space-100)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
+          <ul className="stack" style={{ gap: "var(--space-2)", margin: 0, paddingInlineStart: 0, listStyle: "none" }}>
             {scheduleBlocked && (
               <li><span className="badge badge-warning">{strings.cancelBtn} · {strings.rescheduleBtn} · {strings.visitTypeBtn}</span>{" "}
                 <span className="t-caption">{strings.scheduleLockedWhy.replace("{state}", opStateLabel)}</span></li>

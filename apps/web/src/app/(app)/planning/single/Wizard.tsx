@@ -291,7 +291,7 @@ export default function Wizard({
   const licenceFreshness = (l: ResolvedLicence) => l.sourceSyncedAt ? new Date(l.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever;
 
   return (
-    <form action={formAction} className="stack" style={{ gap: "var(--ax-space-300)" }}>
+    <form action={formAction} className="stack" style={{ gap: "var(--space-6)" }}>
       {/* Targeting fields — built from the resolved target, never from radio DOM state */}
       <input type="hidden" name="target_factory_id" value={target?.factoryId ?? ""} />
       <input type="hidden" name="target_license_number" value={target ? (target.factoryLicenseNumber ?? target.canonicalLicenseNumber ?? "") : ""} />
@@ -313,28 +313,28 @@ export default function Wizard({
         </div>
       )}
 
-      <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.findFactory}</h4>
+      <div className="panel" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.findFactory}</h4>
         <span className="ax-search"><input className="ax-input" placeholder={strings.searchPlaceholder} value={queryInput} onChange={e => setQueryInput(e.target.value)} /></span>
         {searching && registryUnavailable && (
-          <div className="ax-banner ax-banner--critical" role="alert" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+          <div className="ax-banner ax-banner--critical" role="alert" style={{ marginBlockStart: "var(--space-3)" }}>
             <div>{strings.registryUnavailable}</div>
             <button type="button" className="btn btn-secondary btn-touch" onClick={() => router.refresh()}>{strings.retry}</button>
           </div>
         )}
         {searching && !registryUnavailable && portfolios.length === 0 && results.length === 0 && (
-          <div className="ax-banner ax-banner--warning" style={{ marginBlockStart: "var(--ax-space-150)" }}><div>{strings.noMatch}</div></div>
+          <div className="ax-banner ax-banner--warning" style={{ marginBlockStart: "var(--space-3)" }}><div>{strings.noMatch}</div></div>
         )}
 
         {/* Legacy fallback comparison rail — graded result cards (source:'legacy'),
             nothing pre-selected; opening a dossier is an explicit click. */}
         {results.length > 0 && (
-          <ul role="listbox" aria-label={strings.findFactory} style={{ listStyle: "none", padding: 0, marginBlockStart: "var(--ax-space-150)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+          <ul role="listbox" aria-label={strings.findFactory} style={{ listStyle: "none", padding: 0, marginBlockStart: "var(--space-3)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
             {results.map(f => (
               <li key={f.id}>
                 {/* Selecting a candidate IS the explicit act that opens its dossier —
                     a single radio per result, nothing pre-checked by default (M01-035). */}
-                <label className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+                <label className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                   <input type="radio" name="factory_id" value={f.id} checked={factoryId === f.id}
                     onChange={() => { setFactoryId(f.id); setLicenceId(null); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
                   <span className={`ax-lozenge ${f.grade === "exact" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>
@@ -344,7 +344,7 @@ export default function Wizard({
                   <span><strong>{f.name}</strong> · <bdi>{f.cr_number ?? "—"}</bdi>{f.license_number ? <> · <bdi>{f.license_number}</bdi></> : null}</span>
                 </label>
                 {factoryId === f.id && (
-                  <div style={{ marginBlockStart: "var(--ax-space-150)" }}>
+                  <div style={{ marginBlockStart: "var(--space-3)" }}>
                     <IdentityDossier factory={f} plannerLat={plannerLat} plannerLng={plannerLng} strings={strings} locale={locale} />
                   </div>
                 )}
@@ -359,21 +359,21 @@ export default function Wizard({
           licences can never be targeted as a whole (explicit eligibility
           state), and a CR with none is not plannable at all (M01-036). */}
       {portfolios.length > 0 && (
-        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.portfolioStep}</h4>
+        <div className="panel" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.portfolioStep}</h4>
           {handoff && (
-            <div className="ax-banner ax-banner--info" role="status" style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+            <div className="ax-banner ax-banner--info" role="status" style={{ marginBlockEnd: "var(--space-3)" }}>
               <div>{strings.prefilledHandoff}</div>
             </div>
           )}
           {portfolios.map(p => (
-            <section key={p.id} className="panel" style={{ padding: "var(--ax-space-200)", marginBlockEnd: "var(--ax-space-150)" }}>
-              <header style={{ marginBlockEnd: "var(--ax-space-100)" }}>
+            <section key={p.id} className="panel" style={{ padding: "var(--space-4)", marginBlockEnd: "var(--space-3)" }}>
+              <header style={{ marginBlockEnd: "var(--space-2)" }}>
                 <strong>{strings.crIdentity}</strong>{" "}
                 <bdi className="numeric">{p.crNumber}</bdi>
                 {p.legalNameEn || p.legalName ? <> · {p.legalNameEn ?? p.legalName}</> : null}
                 {p.status ? <> · <span className="t-caption">{p.status}</span></> : null}
-                <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-50)" }}>
+                <p className="t-caption" style={{ marginBlockStart: "var(--space-1)" }}>
                   {strings.sourceLabel}: <bdi>{p.sourceSystem ?? "—"}</bdi> · {strings.freshnessLabel}: <bdi>{p.sourceSyncedAt ? new Date(p.sourceSyncedAt).toISOString().slice(0, 10) : strings.freshnessNever}</bdi>
                 </p>
               </header>
@@ -381,11 +381,11 @@ export default function Wizard({
                 <div className="ax-banner ax-banner--warning" role="status"><div>{strings.noLicences}</div></div>
               ) : (
                 <>
-                  <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.selectLicenceHint}</p>
-                  <ul role="listbox" aria-label={strings.portfolioStep} style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+                  <p className="t-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.selectLicenceHint}</p>
+                  <ul role="listbox" aria-label={strings.portfolioStep} style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
                     {p.licences.map(l => (
                       <li key={l.id}>
-                        <label className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+                        <label className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                           <input type="radio" name="licence_id" value={l.id} disabled={!l.factory}
                             checked={licenceId === l.id}
                             onChange={() => { setLicenceId(l.id); setFactoryId(null); setLicenseNumber(""); setLocationConfirmed(false); setPlannerLat(""); setPlannerLng(""); }} />
@@ -400,7 +400,7 @@ export default function Wizard({
                     ))}
                   </ul>
                   {licenceId == null && (
-                    <div className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+                    <div className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--space-3)" }}>
                       <div>{strings.licenceRequired}</div>
                     </div>
                   )}
@@ -414,10 +414,10 @@ export default function Wizard({
       {/* Selected canonical plant profile — registered fields + provenance,
           read-only; nothing here mutates the registry. */}
       {target?.kind === "canonical" && selectedLicenceEntry && (
-        <div className="panel" style={{ padding: "var(--ax-space-300)" }} role="region" aria-label={strings.selectedProfile}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.selectedProfile}</h4>
+        <div className="panel" style={{ padding: "var(--space-6)" }} role="region" aria-label={strings.selectedProfile}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.selectedProfile}</h4>
           <p><strong>{target.name}</strong></p>
-          <dl className="ax-grid-2" style={{ rowGap: "var(--ax-space-100)" }}>
+          <dl className="ax-grid-2" style={{ rowGap: "var(--space-2)" }}>
             <div><dt className="t-caption">{strings.crPrefix}</dt><dd><bdi>{target.crNumber ?? "—"}</bdi></dd></div>
             <div><dt className="t-caption">{strings.licenseLabel}</dt><dd><bdi>{target.canonicalLicenseNumber ?? "—"}</bdi></dd></div>
             <div><dt className="t-caption">{strings.plantLabel}</dt><dd><bdi>{target.plantNumber ?? "—"}</bdi></dd></div>
@@ -435,11 +435,11 @@ export default function Wizard({
       {/* Legacy license step — unchanged: explicit radio when the legacy
           factory carries a license_number, otherwise the CR-only note. */}
       {target?.kind === "legacy" && legacyFactory && (
-        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.licenseStep}</h4>
+        <div className="panel" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.licenseStep}</h4>
           {legacyFactory.license_number ? (
             <>
-              <p className="t-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.licenseSelect}</p>
+              <p className="t-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.licenseSelect}</p>
               <label className="ax-choice" style={{ display: "flex" }}>
                 <input key={resetKey} type="radio" name="license_number" value={legacyFactory.license_number} required
                   checked={licenseNumber === legacyFactory.license_number} onChange={() => setLicenseNumber(legacyFactory.license_number as string)} />
@@ -452,18 +452,18 @@ export default function Wizard({
         </div>
       )}
       {target && (
-        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.locationStep}</h4>
+        <div className="panel" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.locationStep}</h4>
           {!hasOfficial && (
-            <div className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--ax-space-150)" }}><div>{strings.noOfficialPin}</div></div>
+            <div className="ax-banner ax-banner--warning" style={{ marginBlockEnd: "var(--space-3)" }}><div>{strings.noOfficialPin}</div></div>
           )}
-          <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-4)" }}>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lat">{strings.plannerLat}</label>
               <input key={resetKey} className="ax-input numeric" name="planner_lat" id="wizard-planner-lat" value={plannerLat} onChange={e => setPlannerLat(e.target.value)} /></div>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-planner-lng">{strings.plannerLng}</label>
               <input key={resetKey} className="ax-input numeric" name="planner_lng" id="wizard-planner-lng" value={plannerLng} onChange={e => setPlannerLng(e.target.value)} /></div>
           </div>
-          <label className="ax-choice" style={{ display: "flex", marginBlockStart: "var(--ax-space-150)" }}>
+          <label className="ax-choice" style={{ display: "flex", marginBlockStart: "var(--space-3)" }}>
             <input key={resetKey} type="checkbox" name="location_confirmed" value="1" required
               checked={locationConfirmed} onChange={e => setLocationConfirmed(e.target.checked)} />
             <span>{strings.locationConfirmed}</span>
@@ -471,18 +471,18 @@ export default function Wizard({
         </div>
       )}
       {target && configUnlocked && (
-        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.configStep}</h4>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: "var(--ax-space-200)" }}>
+        <div className="panel" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.configStep}</h4>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: "var(--space-4)" }}>
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-visit-type">{strings.visitType}</label>
               <select key={resetKey} className="ax-select" name="visit_type" id="wizard-visit-type" value={visitType} onChange={e => setVisitType(e.target.value)}>
                 <option value="periodic">{strings.typePeriodic}</option><option value="follow_up">{strings.typeFollowUp}</option><option value="complaint">{strings.typeComplaint}</option>
               </select></div>
             <fieldset className="ax-field" style={{ border: 0, padding: 0, margin: 0 }}>
               <legend className="ax-field__label" style={{ padding: 0 }}>{strings.packageLabel}</legend>
-              <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }}>
+              <div className="ax-stack" style={{ gap: "var(--space-1)" }}>
                 {packages.map(p => (
-                  <label key={`${resetKey}-${p.id}`} className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+                  <label key={`${resetKey}-${p.id}`} className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                     <input type="checkbox" name="package_version_id" value={p.id}
                       checked={packageIds.includes(p.id)}
                       onChange={e => setPackageIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
@@ -491,7 +491,7 @@ export default function Wizard({
                 ))}
               </div>
               {packageIds.length === 0 && (
-                <p className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--ax-space-100)" }}>
+                <p className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--space-2)" }}>
                   {strings.packageOptionalHint}
                 </p>
               )}
@@ -509,16 +509,16 @@ export default function Wizard({
             <div className="ax-field"><label className="ax-field__label" htmlFor="wizard-inspector">{strings.inspector}</label>
               <select key={resetKey} className="ax-select" name="inspector_id" id="wizard-inspector" value={inspectorId} onChange={e => setInspectorId(e.target.value)}><option value="">{strings.selectOption}</option><option value="auto">{strings.autoAssign}</option>{inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}</select></div>
           </div>
-          <div className="ax-field" style={{ marginBlockStart: "var(--ax-space-200)" }}><label className="ax-field__label" htmlFor="wizard-notes">{strings.notes}</label>
+          <div className="ax-field" style={{ marginBlockStart: "var(--space-4)" }}><label className="ax-field__label" htmlFor="wizard-notes">{strings.notes}</label>
             <textarea key={resetKey} className="ax-textarea" name="notes" id="wizard-notes" rows={2} placeholder={strings.notesPlaceholder}
               value={notes} onChange={e => setNotes(e.target.value)} /></div>
         </div>
       )}
 
       {target && (
-        <div className="panel" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.readinessTitle}</h4>
-          <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+        <div className="panel" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.readinessTitle}</h4>
+          <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
             <span className="ax-lozenge ax-lozenge--success">✓ {strings.readyIdentity}</span>
             <span className={`ax-lozenge ${licenseOk ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{licenseOk ? "✓" : "✕"} {strings.readyLicense}</span>
             <span className={`ax-lozenge ${locationConfirmed ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{locationConfirmed ? "✓" : "✕"} {strings.readyLocation}</span>
@@ -531,7 +531,7 @@ export default function Wizard({
         <div ref={errorRef} tabIndex={-1} className="ax-validation" role="alert"><strong>{strings.blockedTitle}</strong>
           <ul>{state.error.split(" · ").map(b => <li key={b}>{b}</li>)}</ul>
           {steps && (
-            <ul style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            <ul style={{ marginBlockStart: "var(--space-3)" }}>
               <StepRow label={strings.stepPlan} status={steps.plan} />
               <StepRow label={strings.stepVisit} status={steps.visit} />
               <StepRow label={strings.stepAssignment} status={steps.assignment} />
@@ -549,7 +549,7 @@ export default function Wizard({
         <p className="t-caption" role="status">{strings.draftSavedPrefix} — <bdi>{draftState.planReference}</bdi> · v{draftState.version}</p>
       )}
 
-      <div className="row" style={{ justifyContent: "flex-end", gap: "var(--ax-space-100)" }}>
+      <div className="row" style={{ justifyContent: "flex-end", gap: "var(--space-2)" }}>
         <button type="button" className="btn btn-secondary btn-touch" disabled={savingDraft || !target} onClick={onSaveDraft}>
           {savingDraft ? strings.savingDraft : strings.saveDraft}
         </button>

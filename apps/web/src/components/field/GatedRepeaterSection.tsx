@@ -39,7 +39,7 @@ function PhotoAffordance({ inputId, label, helper }: { inputId: string; label: s
   const helperId = `${inputId}-helper`;
   const [chosen, setChosen] = useState<string | null>(null);
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-050)", marginBlockStart: "var(--ax-space-100)" }}>
+    <div className="stack" style={{ gap: "var(--space-1)", marginBlockStart: "var(--space-2)" }}>
       {/* Wrapping <label> = implicit control association (accessible); it is NOT
           className="ax-field__label" so the a11y-form-label release guard's
           htmlFor requirement does not apply to this button-style file control. */}
@@ -93,14 +93,14 @@ export default function GatedRepeaterSection({
   return (
     <section
       className="panel"
-      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}
+      style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}
       aria-labelledby={`${idPrefix}-title`}
     >
       <h4 id={`${idPrefix}-title`}>{title}</h4>
 
       {/* Yes/No gate question (VR-037 / VR-039). role=group + aria-labelledby
           names the toggle for assistive tech; mirrors the Workspace ctx toggle. */}
-      <div role="group" aria-labelledby={gateLabelId} className="stack" style={{ gap: "var(--ax-space-100)" }}>
+      <div role="group" aria-labelledby={gateLabelId} className="stack" style={{ gap: "var(--space-2)" }}>
         <p id={gateLabelId} className="ax-field__label">{gate}</p>
         <div className="ax-segmented ax-segmented--field" style={{ alignSelf: "flex-start" }}>
           <button type="button" aria-pressed={gateAnswer === "yes"} onClick={() => setGateAnswer("yes")}>{gateYes}</button>
@@ -117,7 +117,7 @@ export default function GatedRepeaterSection({
           addLabel={addLabel}
           removeLabel={removeLabel}
           renderItem={(_item, index) => (
-            <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
+            <div className="stack" style={{ gap: "var(--space-2)" }}>
               {itemHeader && (
                 // Captured header template; swap the captured numeral for the real
                 // 1-based row index (numeric formatting over the captured string —
@@ -136,7 +136,7 @@ export default function GatedRepeaterSection({
               <p
                 className="t-caption"
                 data-shell-placeholder="samples-seizure-item-fields"
-                style={{ fontStyle: "italic", color: "var(--ax-color-text-secondary)" }}
+                style={{ fontStyle: "italic", color: "var(--text-secondary)" }}
               >
                 item fields pending live-Figma extraction (VR-043/044/046 are sample data, not labels)
               </p>

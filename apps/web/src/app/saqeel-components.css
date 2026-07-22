@@ -41,7 +41,7 @@
 /* Astryx migration: .ax-btn--field guaranteed an unconditional 52px iPad/field
    touch target + readable text, independent of any [data-density] ancestor
    (none of the migrated field-workflow buttons sit under one). 52px matches
-   the PR1 shim's --ax-control-height-field pin, not a new invented value. */
+   the PR1 shim's --control-h-field pin, not a new invented value. */
 .btn-field { min-height: 52px; font-size: 15px; font-weight: 600; }
 .btn svg { width: 16px; height: 16px; flex: none; }
 [dir="rtl"] .btn svg[data-directional] { transform: scaleX(-1); }

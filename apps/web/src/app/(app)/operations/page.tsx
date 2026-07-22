@@ -611,18 +611,18 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       <CancellationQueue rows={cancellationQueueRows} strings={cancellationQueueStrings} locale={locale} />
 
       {/* M08-017 — CSV export of the live monitoring, SLA and high-risk tables */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-200) var(--ax-space-300)" }}>
+      <div className="ax-surface" style={{ padding: "var(--space-4) var(--space-6)" }}>
         <OpsExport datasets={exportDatasets} strings={exportStrings} />
       </div>
 
       {/* Region/city scope — filters monitoring, map and SLA watch (M08-010) */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+      <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
         <RegionCityFilter region={region} city={city} regions={regions} cities={cities} strings={monitoringStrings} />
       </div>
 
       {/* KSA operations map — M08-002 */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)", marginBlockEnd: "var(--ax-space-150)" }}>
+      <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-3)", marginBlockEnd: "var(--space-3)" }}>
           <h4 style={{ margin: 0 }}>{t("ops.map.heading", "Live inspection map")}</h4>
           <a className="ax-link" href="/operations/live">{t("ops.map.liveLink", "Open live national view →")}</a>
         </div>
@@ -637,15 +637,15 @@ export default async function Operations({ searchParams }: { searchParams: Promi
       <div className="ax-grid-2">
         <div className="ax-stack">
           {/* Live monitoring — M08-003 (auto-refresh via server action) */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h4>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.live.heading", "Live visit monitoring (M08-003)")}</h4>
             <MonitoringTable initialRows={monitorRows} initialAt={nowIso} region={region} city={city}
               enumLabels={enumLabels} strings={monitoringStrings} />
           </div>
 
           {/* SLA watch — ENG-09 thresholds vs live visit windows */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.sla.heading", "Deadline alerts")}</h4>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.sla.heading", "Deadline alerts")}</h4>
             {slaFlags.length === 0 ? (
               <EmptyState bare glyph="✓" title={t("ops.sla.empty.title", "No deadline alerts in scope")}
                 body={t("ops.sla.empty.desc", "Published visits are inside their planned windows; breaches surface here the moment a window lapses.")} />
@@ -671,7 +671,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
             {/* Phase 6 (§22, D-022) — resubmission SLA for returned inspections.
                 Display-only flag, consistent with the review SLA: no escalation
                 writes; absent config surfaces honestly as unavailable. */}
-            <h5 style={{ marginBlock: "var(--ax-space-200) var(--ax-space-150)" }}>{t("ops.sla.resubHeading", "Resubmission deadlines (returned inspections)")}</h5>
+            <h5 style={{ marginBlock: "var(--space-4) var(--space-3)" }}>{t("ops.sla.resubHeading", "Resubmission deadlines (returned inspections)")}</h5>
             {!resubSlaAvailable ? (
               <p className="ax-caption">{t("ops.sla.resubUnavailable", "SLA unavailable — engine_settings.sla.resubmission_business_days is not configured.")}</p>
             ) : resubFlags.length === 0 ? (
@@ -692,7 +692,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>
               {t("ops.sla.confNote", "Thresholds from engine_settings (ENG-09):")}{" "}
               {t("ops.sla.confCalendar", "calendar")} <span className="ax-numeric">{slaConf.calendar?.days ?? "—"} {slaConf.calendar?.hours ?? ""}</span> ·{" "}
               {t("ops.sla.confReview", "review")} <span className="ax-numeric">{slaConf.review_business_days ?? "—"}</span>{t("ops.sla.confBd", "bd")} ·{" "}
@@ -703,8 +703,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Corrective actions queue — SB12 write leg */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.actions.heading", "Corrective actions queue (M09-027 · ENG-11)")}</h4>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.actions.heading", "Corrective actions queue (M09-027 · ENG-11)")}</h4>
             {actions.length === 0 ? (
               <EmptyState bare glyph="✓" title={t("ops.actions.empty.title", "No open corrective actions")}
                 body={t("ops.actions.empty.desc", "Action forms raised from violations land here until closed (FLD-ACT-001).")} />
@@ -737,8 +737,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
 
         <div className="ax-stack">
           {/* High-risk factory board — M08-006 (ENG-04 output) */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.risk.heading", "High-risk factories (M08-006 · ENG-04)")}</h4>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.risk.heading", "High-risk factories (M08-006 · ENG-04)")}</h4>
             {highRisk.length === 0 ? (
               <EmptyState bare glyph="◎" title={t("ops.risk.empty.title", "No scored factories yet")}
                 body={t("ops.risk.empty.desc", "Factories appear here once the risk engine records a score (FLD-FACT-007/008).")} />
@@ -761,8 +761,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Location events — M08-014 immutable */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.geo.heading", "Location events — immutable tracking history (M08-014)")}</h4>
             {scopedGeo.length === 0 ? (
               <EmptyState bare icon={<IconPin size={28} />} title={t("ops.geo.empty.title", "No location events yet")}
                 body={t("ops.geo.empty.desc", "Check-ins, arrivals and telemetry are recorded append-only (FLD-GEO-*).")} />
@@ -779,8 +779,8 @@ export default async function Operations({ searchParams }: { searchParams: Promi
           </div>
 
           {/* Notifications — ENG-11 */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("ops.notifs.heading", "Notifications (ENG-11 · REF-014)")}</h4>
             {notifs.length === 0 ? (
               <EmptyState bare icon={<IconBell size={28} />} title={t("ops.notifs.empty.title", "No notifications")}
                 body={t("ops.notifs.empty.desc", "Event-keyed messages queue here as workflow events fire (REF-014).")} />
@@ -798,7 +798,7 @@ export default async function Operations({ searchParams }: { searchParams: Promi
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>
               {t("ops.notifs.rlsNote", "Notification reads and mark-handled updates are recipient/Operations scoped by separate RLS policies; the database verdict remains authoritative.")}
             </p>
           </div>

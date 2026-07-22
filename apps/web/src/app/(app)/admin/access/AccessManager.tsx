@@ -118,7 +118,7 @@ export default function AccessManager({
   const disabled = pending || isSelf;
 
   return (
-    <section className="ax-surface" style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }} aria-labelledby="access-manager-h">
+    <section className="ax-surface" style={{ padding: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }} aria-labelledby="access-manager-h">
       <h3 id="access-manager-h" style={{ margin: 0 }}>{labels.panelTitle}</h3>
       <p className="ax-caption" style={{ margin: 0 }}>{labels.panelIntro}</p>
 
@@ -143,9 +143,9 @@ export default function AccessManager({
 
       {selected && (
         <>
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
             <h4 style={{ margin: 0 }}>{labels.rolesTitle}</h4>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "center" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)", alignItems: "center" }}>
               {selected.roles.map(grant => {
                 const role = roles.find(r => r.roleKey === grant.roleKey);
                 return (
@@ -157,7 +157,7 @@ export default function AccessManager({
                     <button
                       type="button"
                       className="ax-btn"
-                      style={{ marginInlineStart: 6, padding: "0 var(--ax-space-100)" }}
+                      style={{ marginInlineStart: 6, padding: "0 var(--space-2)" }}
                       disabled={disabled}
                       onClick={() => requestRevokeRole(grant.roleKey)}
                     >{labels.revoke}</button>
@@ -165,7 +165,7 @@ export default function AccessManager({
                 );
               })}
             </div>
-            <div style={{ display: "flex", gap: "var(--ax-space-150)", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "center" }}>
               <select className="ax-input" id="access-role-grant-select" style={{ maxInlineSize: 280 }} disabled={disabled}>
                 {grantableRoles.map(r => (
                   <option key={r.roleKey} value={r.roleKey}>{r.roleKey}{r.isAdmin ? " (admin)" : ""}</option>
@@ -183,7 +183,7 @@ export default function AccessManager({
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
             <h4 style={{ margin: 0 }}>{labels.capabilitiesTitle}</h4>
             <p className="ax-caption" style={{ margin: 0 }}>{labels.capabilitiesHint}</p>
             {selected.effective.length === 0 ? (
@@ -222,7 +222,7 @@ export default function AccessManager({
                 </tbody>
               </table></div>
             )}
-            <div style={{ display: "flex", gap: "var(--ax-space-150)", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "var(--space-3)", alignItems: "center" }}>
               <select className="ax-input" id="access-capability-grant-select" style={{ maxInlineSize: 360 }} disabled={disabled}>
                 {grantableCapabilities.map(c => (
                   <option key={c.capabilityKey} value={c.capabilityKey}>{c.capabilityKey}</option>
@@ -245,9 +245,9 @@ export default function AccessManager({
       )}
 
       {confirming && (
-        <div className="ax-banner ax-banner--critical" role="alert" style={{ display: "flex", gap: "var(--ax-space-150)", alignItems: "center", justifyContent: "space-between" }}>
+        <div className="ax-banner ax-banner--critical" role="alert" style={{ display: "flex", gap: "var(--space-3)", alignItems: "center", justifyContent: "space-between" }}>
           <div><strong>{confirmText}</strong></div>
-          <div style={{ display: "flex", gap: "var(--ax-space-100)" }}>
+          <div style={{ display: "flex", gap: "var(--space-2)" }}>
             <button type="button" className="ax-btn ax-btn--prominent" disabled={pending} onClick={confirmPending}>
               {pending ? labels.working : labels.confirm}
             </button>
@@ -257,7 +257,7 @@ export default function AccessManager({
       )}
 
       {feedback.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
-      {feedback.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)", margin: 0 }}>{feedback.error}</p>}
+      {feedback.error && <p className="ax-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{feedback.error}</p>}
     </section>
   );
 }

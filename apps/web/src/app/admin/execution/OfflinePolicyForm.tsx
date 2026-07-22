@@ -44,8 +44,8 @@ export default function OfflinePolicyForm({
   );
 
   return (
-    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-      <div className="ax-row" style={{ gap: "var(--ax-space-300)", flexWrap: "wrap" }}>
+    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+      <div className="ax-row" style={{ gap: "var(--space-6)", flexWrap: "wrap" }}>
         <div className="ax-field" style={{ maxInlineSize: 280 }}>
           <label className="ax-field__label" htmlFor="max_sync_attempts">{labels.attemptsLabel}</label>
           <input
@@ -68,13 +68,13 @@ export default function OfflinePolicyForm({
         </div>
       </div>
       <p className="ax-caption" style={{ margin: 0 }}>{labels.unsetNote}</p>
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent" disabled={pending}>
           {pending ? labels.saving : labels.save}
         </button>
         {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)", margin: 0 }}>{state.error}</p>}
+      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
     </form>
   );
 }

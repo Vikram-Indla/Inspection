@@ -190,7 +190,7 @@ export default function CriteriaBuilder({
     const def = fieldOf(c.field);
     return (
     <li role="treeitem" aria-label={strings.conditionItem} className="row"
-      style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-3)" }}>
       <div className="ax-field" style={{ maxInlineSize: 200 }}>
         <label className="ax-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
         <select className="ax-select" id={`crit-field-${key}`} value={c.field}
@@ -216,7 +216,7 @@ export default function CriteriaBuilder({
         <button type="button" className="btn btn-ghost numeric btn-touch" aria-pressed={isFocused}
           onClick={() => onFocus?.(isFocused ? null : key)}
           aria-label={(isFocused ? strings.unfocusLabel : strings.contributionLabel.replace("{n}", String(contribution)))}
-          style={isFocused ? { borderColor: "var(--ax-color-primary)", fontWeight: 600 } : undefined}>
+          style={isFocused ? { borderColor: "var(--action-primary)", fontWeight: 600 } : undefined}>
           {contribution}
         </button>
       )}
@@ -229,8 +229,8 @@ export default function CriteriaBuilder({
 
   const renderGroup = (g: GroupNode, path: number[]): React.ReactNode => (
     <li role="treeitem" aria-label={strings.groupItem}
-      style={{ listStyle: "none", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
-      <div className="row" style={{ alignItems: "flex-end", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+      style={{ listStyle: "none", borderInlineStart: "2px solid var(--border-subtle)", paddingInlineStart: "var(--space-4)" }}>
+      <div className="row" style={{ alignItems: "flex-end", gap: "var(--space-3)", flexWrap: "wrap" }}>
         <div className="ax-field" style={{ maxInlineSize: 220 }}>
           <label className="ax-field__label" htmlFor={`crit-combine-${path.length ? pathKey(path) : "root"}`}>{strings.combineLabel}</label>
           <select className="ax-select" id={`crit-combine-${path.length ? pathKey(path) : "root"}`} value={g.combine} onChange={e => setCombine(path, e.target.value as "all" | "any")}>
@@ -242,14 +242,14 @@ export default function CriteriaBuilder({
           <button type="button" className="btn btn-ghost btn-touch" onClick={() => removeAt(path.slice(0, -1), path[path.length - 1])}>{strings.removeGroup}</button>
         )}
       </div>
-      <ul role="group" style={{ listStyle: "none", margin: "var(--ax-space-150) 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <ul role="group" style={{ listStyle: "none", margin: "var(--space-3) 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         {g.children.map((child, i) =>
           child.kind === "cond"
             ? <span key={i}>{renderCond(child, path, i, g.children.length)}</span>
             : <span key={i}>{renderGroup(child, [...path, i])}</span>
         )}
       </ul>
-      <div className="row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
+      <div className="row" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-3)" }}>
         <button type="button" className="btn btn-secondary btn-touch" onClick={() => addCond(path)}>{strings.addCondition}</button>
         <button type="button" className="btn btn-ghost btn-touch" onClick={() => addGroup(path)}>{strings.addGroup}</button>
       </div>
@@ -259,14 +259,14 @@ export default function CriteriaBuilder({
   return (
     <form method="get" action="/planning/bulk" className="panel"
       onSubmit={e => { if (invalid.length > 0) { e.preventDefault(); setShowInvalid(true); } }}
-      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+      style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
       <h4 style={{ margin: 0 }}>{strings.heading}</h4>
       <input type="hidden" name="ct" value={ct} />
       <ul role="tree" aria-label={strings.heading} style={{ listStyle: "none", margin: 0, padding: 0 }}>
         {renderGroup(tree, [])}
       </ul>
       {notSuppliedFields.length > 0 && (
-        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-050)" }}>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
           {notSuppliedFields.map(f => (
             <li key={f.key} className="t-caption">
               <span className="ax-lozenge ax-lozenge--warning">{f.label} · {strings.notSuppliedTag}</span> — {f.reason}
@@ -280,7 +280,7 @@ export default function CriteriaBuilder({
           <p>{strings.invalidBody.replace("{n}", String(invalid.length))}</p>
         </div>
       )}
-      <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
         <button className="btn btn-primary btn-lg btn-touch">{strings.apply}</button>
         <a className="btn btn-ghost btn-touch" href="/planning/bulk">{strings.clear}</a>
         <span className="t-caption numeric" role="status" aria-live="polite">{strings.matching.replace("{n}", String(matchCount))}</span>

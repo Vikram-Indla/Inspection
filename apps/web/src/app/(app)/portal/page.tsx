@@ -46,12 +46,12 @@ export default async function PortalPage() {
           body={t("portal.empty.body", "Requests and self-assessments appear here once submitted. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(reqs ?? []).map((r) => (
-        <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div key={r.id} className="ax-surface" style={{ padding: "var(--space-6)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between" }}><h3>{r.request_type} <span className="ax-caption">{r.subject ?? ""}</span></h3><span className="ax-lozenge ax-lozenge--info">{r.status}</span></div>
         </div>
       ))}
       {(sas ?? []).map((a) => (
-        <div key={a.id} className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <div key={a.id} className="ax-surface" style={{ padding: "var(--space-6)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between" }}><h3>{t("portal.sa", "Self-assessment")}</h3>
             <span className={`ax-lozenge ${a.risk_signal_emitted ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{a.status}</span></div>
         </div>

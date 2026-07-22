@@ -162,14 +162,14 @@ export default function PreExecution(props: {
   }
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }} data-testid="pre-execution-panel">
-      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-150)" }}>
+    <div className="ax-surface" style={{ padding: "var(--space-6)" }} data-testid="pre-execution-panel">
+      <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", marginBlockEnd: "var(--space-3)" }}>
         <h4>{s.heading}</h4>
         {ready && <span className="ax-lozenge ax-lozenge--success" data-testid="pre-execution-ready">{s.readyTitle}</span>}
       </div>
 
       {/* 1 · read-only Planning + factory context */}
-      <div className="ax-stack" style={{ gap: 4, marginBlockEnd: "var(--ax-space-200)" }}>
+      <div className="ax-stack" style={{ gap: 4, marginBlockEnd: "var(--space-4)" }}>
         <h5 style={{ marginBlockEnd: 4 }}>{s.contextHeading}</h5>
         <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }}>
           <span className="ax-badge">{s.lblFactory}: {props.context.factoryName}{props.context.factoryCode ? ` (${props.context.factoryCode})` : ""}</span>
@@ -183,7 +183,7 @@ export default function PreExecution(props: {
       </div>
 
       {ready ? (
-        <div className="ax-stack" style={{ gap: "var(--ax-space-150)" }}>
+        <div className="ax-stack" style={{ gap: "var(--space-3)" }}>
           <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }}>
             <span className="ax-badge">{s.dateHeading}: <span className="ax-numeric">{date ?? "—"}</span></span>
             <span className="ax-badge">{s.modeHeading}: {modeWord(mode)}</span>
@@ -203,11 +203,11 @@ export default function PreExecution(props: {
           {error && <div className="ax-banner ax-banner--critical" role="alert"><div>{error}</div></div>}
         </div>
       ) : (
-        <div className="ax-stack" style={{ gap: "var(--ax-space-250)" }}>
+        <div className="ax-stack" style={{ gap: "var(--space-5)" }}>
           {/* 2 · Execution Date — window-constrained, per-day availability */}
           <section aria-label={s.dateHeading}>
             <h5 style={{ marginBlockEnd: 4 }}>{s.dateHeading}</h5>
-            <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{s.dateCaption}</p>
+            <p className="ax-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{s.dateCaption}</p>
             {props.capacityNote === "unavailable" && <p className="ax-caption">{s.availabilityUnknown}</p>}
             {props.capacityNote === "truncated" && <p className="ax-caption">{s.truncatedNote}</p>}
             <div className="ax-row" style={{ gap: 8, flexWrap: "wrap" }} role="group" aria-label={s.dateHeading}>

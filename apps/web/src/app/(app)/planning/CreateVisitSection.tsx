@@ -21,10 +21,10 @@ export default function CreateVisitSection({ methods, strings }: { methods: Crea
       </button>
       {open && (
         <section aria-label={strings.createLabel}>
-          <div className="web-methods" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "var(--ax-space-300)" }}>
+          <div className="web-methods" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "var(--space-6)" }}>
             {methods.map(m => (
               <a key={m.href} href={m.href} className="ax-surface ax-panel"
-                style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", textDecoration: "none", color: "inherit" }}>
+                style={{ padding: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-3)", textDecoration: "none", color: "inherit" }}>
                 <span style={{ fontSize: 22 }}>{m.glyph}</span>
                 <h3>{m.title}</h3>
                 <p className="ax-caption">{m.desc}</p>

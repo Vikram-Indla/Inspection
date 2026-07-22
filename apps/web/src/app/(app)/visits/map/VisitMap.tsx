@@ -50,7 +50,7 @@ export default function VisitMap({ visits, strings: s = DEFAULT_STRINGS, locale 
     : markers.length ? [markers[0].lat, markers[0].lng] : [24.7136, 46.6753];
 
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
+    <div className="stack" style={{ gap: "var(--space-4)" }}>
       <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
         <label className="ax-field" style={{ minInlineSize: 260 }}><span className="ax-field__label">{s.region}</span>
           <select className="ax-select" value={region} onChange={e => { setRegion(e.target.value); setSelectedId(null); }}>

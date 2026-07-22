@@ -67,12 +67,12 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
   const expired = bucket("expired");
   const pct = (n: number) => total === 0 ? 0 : Math.round((n / total) * 100);
   const segments: { key: string; label: string; n: number; bg: string }[] = [
-    { key: "completed", label: t("plan.drill.completed", "completed"), n: completed, bg: "var(--ax-color-success)" },
-    { key: "published", label: t("enum.published", "published"), n: published, bg: "var(--ax-color-info)" },
-    { key: "draft", label: t("enum.draft", "draft"), n: draft, bg: "var(--ax-color-neutral-weak)" },
-    { key: "returned", label: t("enum.returned", "returned"), n: returned, bg: "var(--ax-color-warning)" },
-    { key: "cancelled", label: t("enum.cancelled", "cancelled"), n: cancelled, bg: "var(--ax-color-critical)" },
-    { key: "expired", label: t("enum.expired", "expired"), n: expired, bg: "var(--ax-color-critical-strong)" },
+    { key: "completed", label: t("plan.drill.completed", "completed"), n: completed, bg: "var(--status-compliant)" },
+    { key: "published", label: t("enum.published", "published"), n: published, bg: "var(--status-info)" },
+    { key: "draft", label: t("enum.draft", "draft"), n: draft, bg: "var(--border-subtle)" },
+    { key: "returned", label: t("enum.returned", "returned"), n: returned, bg: "var(--status-warning)" },
+    { key: "cancelled", label: t("enum.cancelled", "cancelled"), n: cancelled, bg: "var(--status-critical)" },
+    { key: "expired", label: t("enum.expired", "expired"), n: expired, bg: "var(--status-critical-text)" },
   ];
 
   return (
@@ -90,23 +90,23 @@ export default async function PlanDrilldown({ params }: { params: Promise<{ id: 
       </div>
 
       {/* M02-036 — progress calculation + % bar over persisted child states */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+      <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
         <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
           <h4 style={{ margin: 0 }}>{t("plan.drill.progressHeading", "Plan progress (M02-036)")}</h4>
           <span className="ax-numeric"><strong>{pct(completed)}%</strong> {t("plan.drill.progressOf", "of {n} child visits completed").replace("{n}", String(total))}</span>
         </div>
         {total > 0 && (
           <div role="img" aria-label={t("plan.drill.progressBarAria", "Progress by child-visit state")}
-            style={{ display: "flex", blockSize: 12, borderRadius: "var(--ax-radius-full)", overflow: "hidden", background: "var(--ax-color-neutral-tint)" }}>
+            style={{ display: "flex", blockSize: 12, borderRadius: "var(--radius-full)", overflow: "hidden", background: "var(--surface-secondary)" }}>
             {segments.filter(s => s.n > 0).map(s => (
               <div key={s.key} title={`${s.label}: ${s.n}`} style={{ inlineSize: `${(s.n / total) * 100}%`, background: s.bg }} />
             ))}
           </div>
         )}
-        <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+        <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--space-4)" }}>
           {segments.map(s => (
             <span key={s.key} className="ax-caption">
-              <span aria-hidden="true" style={{ display: "inline-block", inlineSize: 10, blockSize: 10, borderRadius: "var(--ax-radius-full)", background: s.bg, marginInlineEnd: 6 }} />
+              <span aria-hidden="true" style={{ display: "inline-block", inlineSize: 10, blockSize: 10, borderRadius: "var(--radius-full)", background: s.bg, marginInlineEnd: 6 }} />
               {s.label} <span className="ax-numeric"><strong>{s.n}</strong></span>
             </span>
           ))}

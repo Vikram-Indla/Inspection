@@ -63,7 +63,7 @@ function ReasonListEditor({
   };
 
   return (
-    <fieldset style={{ border: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+    <fieldset style={{ border: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
       <legend style={{ fontWeight: 600 }}>{title}</legend>
       <p className="ax-caption" style={{ margin: 0 }}>{hint}</p>
       <input type="hidden" name={name} value={JSON.stringify(rows)} readOnly />
@@ -102,7 +102,7 @@ function ReasonListEditor({
                     />
                   </td>
                   <td>
-                    <span className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+                    <span className="ax-row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
                       <button type="button" className="ax-btn" onClick={() => move(index, -1)} disabled={index === 0} aria-label={`${labels.moveUp} ${row.key}`}>↑</button>
                       <button type="button" className="ax-btn" onClick={() => move(index, 1)} disabled={index === rows.length - 1} aria-label={`${labels.moveDown} ${row.key}`}>↓</button>
                       {isProtected ? (
@@ -146,7 +146,7 @@ export default function ReasonsManager({
   );
 
   return (
-    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
+    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
       <ReasonListEditor
         name="cancellation_reasons"
         title={labels.cancellationTitle}
@@ -165,13 +165,13 @@ export default function ReasonsManager({
         protectedKeys={["safety_security"]}
         labels={labels}
       />
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent" disabled={pending}>
           {pending ? labels.saving : labels.save}
         </button>
         {state.ok && !pending && <span className="ax-lozenge ax-lozenge--success">{labels.saved}</span>}
       </div>
-      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)", margin: 0 }}>{state.error}</p>}
+      {state.error && <p className="ax-caption" role="alert" style={{ color: "var(--status-critical-text)", margin: 0 }}>{state.error}</p>}
     </form>
   );
 }

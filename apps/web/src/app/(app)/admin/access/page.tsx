@@ -135,7 +135,7 @@ export default async function Access() {
           ))}
         </tbody>
       </table></div>
-      <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+      <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>
         {canManage
           ? t("admin.access.rlsNote.manage", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. The management panel below changes access only through the governed RPCs.")
           : t("admin.access.rlsNote", "This roster is filtered to your access: users outside your visibility are absent, not hidden rows. This screen is read-only.")}

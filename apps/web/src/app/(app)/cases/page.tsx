@@ -40,7 +40,7 @@ export default async function CasesPage() {
           body={t("cases.empty.body", "Cases open from a review, violation or inspection. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(rows ?? []).map((c) => (
-        <div key={c.id} className="panel" style={{ padding: "var(--ax-space-300)" }}>
+        <div key={c.id} className="panel" style={{ padding: "var(--space-6)" }}>
           <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>{c.case_type} <span className="t-caption">· {c.origin_type ?? "—"}</span></h3>
             <span className="badge badge-info">{c.status}</span>

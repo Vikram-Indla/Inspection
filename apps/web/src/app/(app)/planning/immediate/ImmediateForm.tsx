@@ -229,7 +229,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const mapCenter: [number, number] = locationOk ? [latNum, lngNum] : (factory?.official_lat != null ? [factory.official_lat, factory.official_lng as number] : [23.8859, 45.0792]);
 
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <form action={formAction} className="ax-stack" style={{ gap: "var(--space-6)" }}>
       <input type="hidden" name="request_id" value={requestId} />
       <input type="hidden" name="actor_mode" value={actorMode} />
       <input type="hidden" name="locale" value={locale} />
@@ -237,7 +237,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
       <AuthorityBar chips={chips} strings={{ groupLabel: strings.chipGroupLabel, satisfied: strings.chipSatisfied, blocking: strings.chipBlocking, truth: strings.chipTruth, allSatisfied: strings.chipAllSatisfied, blockedAnnouncement: strings.chipBlockedAnnouncement }} />
 
       <div className="ax-grid-2">
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <h4>{strings.identity}</h4>
           <div className="ax-segmented" role="group" aria-label={strings.identity}>
             <button type="button" aria-pressed={mode === "registered"} onClick={() => setMode("registered")}>{strings.identityToggleRegistered}</button>
@@ -263,7 +263,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
                 </select>
               </div>
               {factory && (
-                <div className="ax-surface" style={{ padding: "var(--ax-space-200)", background: "var(--ax-color-surface-sunken)" }}>
+                <div className="ax-surface" style={{ padding: "var(--space-4)", background: "var(--surface-sunken)" }}>
                   <strong><bdi>{factory.name}</bdi></strong>
                   <div className="ax-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
                     {factory.license_number && <> · {strings.previewLicense} <bdi>{factory.license_number}</bdi></>}
@@ -284,7 +284,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
                   checked={notFoundConfirmed} onChange={e => setNotFoundConfirmed(e.target.checked)} />
                 <span>{strings.notFoundConfirm}</span>
               </label>
-              <fieldset disabled={!notFoundConfirmed} style={{ border: 0, padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", minInlineSize: 0 }}>
+              <fieldset disabled={!notFoundConfirmed} style={{ border: 0, padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--space-4)", minInlineSize: 0 }}>
                 <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-name">{strings.manualName}</label>
                   <input id="imm-manual-name" key={`mn-${resetKey}`} className="ax-input" name="manual_name" value={manualName} onChange={e => setManualName(e.target.value)} placeholder={strings.manualPlaceholder} /></div>
                 <div className="ax-row">
@@ -334,7 +334,7 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
                     insert-only; ops/compliance_admin hold the sole update policy. */}
                 <div className="ax-field" style={{ maxInlineSize: "none" }}>
                   <label className="ax-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
-                  <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.enforcementHint}</p>
+                  <p className="ax-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.enforcementHint}</p>
                   <div id="imm-enforcement" className="ax-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
                     {[["", strings.enforcementNone], ["fine", strings.enforcementFine], ["committee", strings.enforcementCommittee], ["warning", strings.enforcementWarning], ["closure", strings.enforcementClosure]].map(([v, label]) => (
                       <button key={v} type="button" aria-pressed={enforcementAction === v} onClick={() => setEnforcementAction(v)}>{label}</button>
@@ -376,12 +376,12 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             </select></div>
         </div>
 
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <h4>{strings.locationDispatch}</h4>
           {mode === "registered" && factory?.official_lat != null && factory?.official_lng != null && (
             <button type="button" className="ax-btn ax-btn--secondary" onClick={useOfficialLocation}>{strings.useOfficialLocation}</button>
           )}
-          <div style={{ blockSize: 240, marginBlockEnd: "var(--ax-space-100)" }}>
+          <div style={{ blockSize: 240, marginBlockEnd: "var(--space-2)" }}>
             <GeoMap center={mapCenter} zoom={locationOk ? 14 : 6} markers={mapMarkers} height="100%" />
           </div>
           <div className="ax-row">
@@ -433,15 +433,15 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
         </div>
       </div>
 
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.consequenceTitle}</h4>
-        <ul style={{ margin: 0, paddingInlineStart: "1.2em", display: "flex", flexDirection: "column", gap: "var(--ax-space-050)" }}>
+      <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.consequenceTitle}</h4>
+        <ul style={{ margin: 0, paddingInlineStart: "1.2em", display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
           <li className="ax-caption">{strings.consequenceVisit}</li>
           <li className="ax-caption">{strings.consequenceAssign}</li>
           <li className="ax-caption">{strings.consequenceNotify}</li>
           <li className="ax-caption">{strings.consequenceAudit}</li>
         </ul>
-        {actorMode === "planner" && <label className="ax-check" style={{ marginBlockStart: "var(--ax-space-200)" }}>
+        {actorMode === "planner" && <label className="ax-check" style={{ marginBlockStart: "var(--space-4)" }}>
           <input type="checkbox" name="review_confirmed" value="yes" checked={reviewed} onChange={e => setReviewed(e.target.checked)} />
           <span>{strings.reviewConfirm}</span>
         </label>}

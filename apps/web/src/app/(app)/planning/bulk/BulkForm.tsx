@@ -135,13 +135,13 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
   };
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <div className="ax-stack" style={{ gap: "var(--space-6)" }}>
       {invalidDropped > 0 && (
         <div className="ax-banner ax-banner--warning" role="alertdialog" aria-label={strings.invalidTitle}>
           <div>
             <strong>{strings.invalidTitle}</strong>
             <p>{strings.invalidBody.replace("{n}", String(invalidDropped))}</p>
-            <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+            <div className="ax-row" style={{ gap: "var(--space-3)" }}>
               <button type="button" className="ax-btn ax-btn--secondary" onClick={() => setInvalidDropped(0)}>{strings.invalidKeep}</button>
               <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { clearSelection(); setInvalidDropped(0); }}>{strings.invalidClear}</button>
             </div>
@@ -149,7 +149,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
         </div>
       )}
 
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "flex-end" }}>
+      <div className="ax-row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "flex-end" }}>
         <div className="ax-field" style={{ maxInlineSize: 280, flex: 1 }}>
           <label className="ax-field__label" htmlFor="bulk-filter">{strings.filterLabel}</label>
           <input id="bulk-filter" className="ax-input" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} placeholder={strings.filterPlaceholder} />
@@ -164,7 +164,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
           <div>
             <strong>{strings.selectAllConfirmTitle}</strong>
             <p>{strings.selectAllConfirmBody.replaceAll("{n}", String(filtered.length))}</p>
-            <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
+            <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "flex-end" }}>
               <div className="ax-field" style={{ maxInlineSize: 140 }}>
                 <label className="ax-field__label" htmlFor="select-all-confirm-input">{strings.selectAllConfirmInputLabel}</label>
                 <input id="select-all-confirm-input" className="ax-input ax-numeric" value={confirmInput} onChange={e => setConfirmInput(e.target.value)} inputMode="numeric" />
@@ -192,7 +192,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
             const isFocused = focusedField != null && focusedValue != null
               && String((f as unknown as Record<string, unknown>)[focusedField] ?? "").toLowerCase() === focusedValue.toLowerCase();
             return (
-              <tr key={f.id} style={isFocused ? { outline: "2px solid var(--ax-color-primary)", outlineOffset: -2 } : undefined}>
+              <tr key={f.id} style={isFocused ? { outline: "2px solid var(--action-primary)", outlineOffset: -2 } : undefined}>
                 <td><input type="checkbox" disabled={dup} checked={selected.has(f.id)} onChange={e => toggle(f.id, e.target.checked)} aria-label={strings.selectFactory.replace("{name}", f.name)} /></td>
                 <td><a href={`/factories/${f.id}`} target="_blank" rel="noreferrer"><strong>{f.name}</strong></a> <span className="ax-caption ax-numeric"><bdi>{f.factory_code}</bdi></span></td>
                 <td className="ax-numeric"><bdi>{f.cr_number}</bdi></td>
@@ -208,7 +208,7 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       </table></div>
       <p className="ax-caption">{strings.riskAdvisory}</p>
 
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", justifyContent: "center" }}>
+      <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center", justifyContent: "center" }}>
         <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={clampedPage === 0}>{strings.pagePrev}</button>
         <span className="ax-caption ax-numeric" role="status" aria-live="polite">
           {strings.pageStatus.replace("{a}", String(filtered.length === 0 ? 0 : clampedPage * PAGE_SIZE + 1)).replace("{b}", String(Math.min(filtered.length, (clampedPage + 1) * PAGE_SIZE))).replace("{n}", String(filtered.length))}
@@ -216,17 +216,17 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
         <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))} disabled={clampedPage >= pageCount - 1}>{strings.pageNext}</button>
       </div>
 
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.summaryTitle}</h4>
+      <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{strings.summaryTitle}</h4>
         {sel.length === 0 ? <p className="ax-caption">{strings.summaryEmpty}</p> : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "var(--ax-space-200)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "var(--space-4)" }}>
             <div><span className="ax-caption">{strings.summarySelected}</span><div className="ax-numeric"><strong>{sel.length}</strong></div></div>
             <div><span className="ax-caption">{strings.summaryByBand}</span>
-              <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+              <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
                 {Object.entries(byBand).map(([b, n]) => <span key={b} className={`ax-lozenge ${b === "high" ? "ax-lozenge--critical" : b === "medium" ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>{strings.riskBands[b] ?? b} · {n}</span>)}
               </div></div>
             <div><span className="ax-caption">{strings.summaryByRegion}</span>
-              <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+              <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--space-2)" }}>
                 {Object.entries(byRegion).map(([r, n]) => <span key={r} className="ax-lozenge ax-lozenge--info"><bdi>{r}</bdi> · {n}</span>)}
               </div></div>
           </div>
@@ -234,14 +234,14 @@ export default function BulkForm({ factories, strings, focusedField, focusedValu
       </div>
 
       {/* persistent selection bar — cross-page count + draft + hand-off to the P02 review step */}
-      <div className="ax-surface ax-row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--ax-space-200) var(--ax-space-300)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "center" }}>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="ax-surface ax-row" style={{ position: "sticky", insetBlockEnd: 0, padding: "var(--space-4) var(--space-6)", justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "center" }}>
+        <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="ax-numeric" aria-live="polite">{strings.selectionBar.replace("{n}", String(selected.size))}</strong>
           {selected.size === 0 && <span className="ax-lozenge ax-lozenge--warning">⚠ {strings.readyNothing}</span>}
           {selected.size > 0 && <button type="button" className="ax-btn ax-btn--subtle" onClick={clearSelection}>{strings.clearSelection}</button>}
           {draftRef && !saveFailed && <span className="ax-caption" role="status">{strings.draftSaved.replace("{ref}", draftRef)}</span>}
         </div>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+        <div className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
           {saveFailed && (
             <>
               <span className="ax-caption ax-lozenge ax-lozenge--critical" role="alert">{strings.draftSaveFailed}</span>

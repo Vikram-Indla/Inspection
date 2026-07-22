@@ -74,12 +74,12 @@ export default async function EnforcementRecommendations() {
       {readOnlyBanner}
       {pendingError && <div className="ax-banner ax-banner--warning" role="alert"><div>{tr("admin.enf.rec.loadError", "The recommendation queue is unavailable in this environment. No count is claimed.", "قائمة التوصيات غير متاحة في هذه البيئة. لا يُدَّعى أي عدد.")}</div></div>}
 
-      <section className="panel stack" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel stack" style={{ padding: "var(--space-6)" }}>
         <h3>{tr("admin.enf.rec.pending", "Pending recommendations", "التوصيات المعلقة")}</h3>
         {!rows.length && !pendingError ? (
           <EmptyState icon={<IconFolder size={28} />} title={tr("admin.enf.rec.empty", "No pending recommendations", "لا توجد توصيات معلقة")} inline />
         ) : rows.map(row => (
-          <div key={row.id} className="ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+          <div key={row.id} className="ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
             <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
               <div>
                 <strong>{row.factories?.name ?? row.factory_id}</strong>
@@ -104,7 +104,7 @@ export default async function EnforcementRecommendations() {
       </section>
 
       {isDecider && (
-        <section className="panel stack" style={{ padding: "var(--ax-space-300)", marginBlockStart: "var(--ax-space-200)" }}>
+        <section className="panel stack" style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-4)" }}>
           <h3>{tr("admin.enf.rec.recent", "Recently decided", "تم البت فيها مؤخرًا")}</h3>
           {!(decided ?? []).length ? <p className="t-caption">{tr("admin.enf.rec.noneDecided", "No decisions recorded yet.", "لم تُسجَّل أي قرارات بعد.")}</p> : (
             <div className="ax-tablewrap"><table className="ax-table"><tbody>

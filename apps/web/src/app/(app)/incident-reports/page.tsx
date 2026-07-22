@@ -71,7 +71,7 @@ export default async function IncidentReportsPage() {
         />
       )}
       {(rows ?? []).map((r) => (
-        <div key={r.id} className="panel" style={{ padding: "var(--ax-space-300)" }}>
+        <div key={r.id} className="panel" style={{ padding: "var(--space-6)" }}>
           <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>
               {r.establishment_code ?? "—"}{" "}

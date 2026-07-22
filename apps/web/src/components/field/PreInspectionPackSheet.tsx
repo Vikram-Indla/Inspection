@@ -78,9 +78,9 @@ export type PackStrings = {
 
 function Section({ title, open, children }: { title: string; open?: boolean; children: React.ReactNode }) {
   return (
-    <details open={open} style={{ borderBlockEnd: "1px solid var(--ax-color-border)" }}>
-      <summary style={{ padding: "var(--ax-space-200) var(--ax-space-300)", cursor: "pointer", font: "var(--ax-text-body-strong)" }}>{title}</summary>
-      <div style={{ padding: "0 var(--ax-space-300) var(--ax-space-250)", font: "var(--ax-text-caption)", color: "var(--ax-color-text-secondary)" }}>{children}</div>
+    <details open={open} style={{ borderBlockEnd: "1px solid var(--border-subtle)" }}>
+      <summary style={{ padding: "var(--space-4) var(--space-6)", cursor: "pointer", font: "var(--type-body-strong)" }}>{title}</summary>
+      <div style={{ padding: "0 var(--space-6) var(--space-5)", font: "var(--type-caption-font)", color: "var(--text-secondary)" }}>{children}</div>
     </details>
   );
 }
@@ -119,9 +119,9 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
         <>
           <div onClick={() => setOpen(false)} aria-hidden className="ax-modal-backdrop" />
           <aside className="ax-drawer" role="dialog" aria-modal="true" aria-label={strings.title} style={{ inlineSize: "min(560px, 94vw)" }}>
-            <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", padding: "var(--ax-space-250) var(--ax-space-300)", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
+            <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start", padding: "var(--space-5) var(--space-6)", borderBlockEnd: "1px solid var(--border-subtle)" }}>
               <div>
-                <div style={{ font: "var(--ax-text-heading)" }}>{strings.title}</div>
+                <div style={{ font: "var(--type-heading-lg)" }}>{strings.title}</div>
                 <div className="ax-caption">
                   {data.factoryName} · <span className="ax-numeric">{data.visitRef}</span>
                   {data.packPolicyVersion && <> · pack policy <span className="ax-numeric">{data.packPolicyVersion.slice(0, 8)}</span></>}
@@ -143,7 +143,7 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
 
             <div className="ax-drawer__body" style={{ flex: 1, overflowY: "auto" }}>
               <Section title={strings.sectionFactory} open>
-                <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "var(--ax-space-100) var(--ax-space-200)", margin: 0 }}>
+                <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "var(--space-2) var(--space-4)", margin: 0 }}>
                   <dt>{strings.crNumber}</dt><dd style={{ margin: 0 }} className="ax-numeric">{data.crNumber ?? "—"}</dd>
                   <dt>{strings.licence}</dt><dd style={{ margin: 0 }}>{data.licence.value ?? <em>{data.licence.unavailable}</em>}</dd>
                   <dt>{strings.officialLocation}</dt><dd style={{ margin: 0 }} className="ax-numeric">{data.officialLocation ?? "—"}</dd>
@@ -159,7 +159,7 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
 
               <Section title={strings.sectionPrevious}>
                 {data.previousApproved ?? strings.noPrevious}
-                {data.returnedContext && <div style={{ marginBlockStart: "var(--ax-space-100)" }}>{data.returnedContext}</div>}
+                {data.returnedContext && <div style={{ marginBlockStart: "var(--space-2)" }}>{data.returnedContext}</div>}
               </Section>
 
               <Section title={strings.sectionRepeat} open>
@@ -167,21 +167,21 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
               </Section>
 
               <Section title={strings.sectionHealthRisk}>
-                <div className="ax-row" style={{ gap: "var(--ax-space-300)" }}>
+                <div className="ax-row" style={{ gap: "var(--space-6)" }}>
                   <div>
                     <div className="ax-caption">{strings.healthScore}</div>
-                    <div style={{ font: "var(--ax-text-body-strong)" }}>{data.health.value ?? <em>{data.health.unavailable}</em>}</div>
+                    <div style={{ font: "var(--type-body-strong)" }}>{data.health.value ?? <em>{data.health.unavailable}</em>}</div>
                   </div>
                   <div>
                     <div className="ax-caption">{strings.riskScore}</div>
-                    <div style={{ font: "var(--ax-text-body-strong)", color: "var(--ax-color-critical-strong)" }}>
+                    <div style={{ font: "var(--type-body-strong)", color: "var(--status-critical-text)" }}>
                       {data.riskBand ?? "—"}{data.riskScore != null ? ` · ${data.riskScore}` : ""}
                     </div>
                   </div>
                 </div>
-                <div style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.distinctConcepts}</div>
+                <div style={{ marginBlockStart: "var(--space-2)" }}>{strings.distinctConcepts}</div>
                 {data.riskDrivers && data.riskDrivers.length > 0 && (
-                  <ul style={{ margin: "var(--ax-space-100) 0 0", paddingInlineStart: "var(--ax-space-300)" }}>
+                  <ul style={{ margin: "var(--space-2) 0 0", paddingInlineStart: "var(--space-6)" }}>
                     {data.riskDrivers.map((d, i) => <li key={i}>{d}</li>)}
                   </ul>
                 )}
@@ -198,7 +198,7 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
               )}
 
               <div className={moduleClasses.packReadiness}>
-                <div className="ax-overline" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{strings.startReadiness}</div>
+                <div className="ax-overline" style={{ marginBlockEnd: "var(--space-3)" }}>{strings.startReadiness}</div>
                 <label className="ax-check">
                   <input type="checkbox" checked={packageCached} readOnly disabled />
                   {strings.ackPackageCached}

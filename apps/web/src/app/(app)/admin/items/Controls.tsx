@@ -69,7 +69,7 @@ export function NewItemForm({
     <form
       action={formAction}
       className="panel"
-      style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}
+      style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}
     >
       <div className="ax-field">
         <label className="ax-field__label" htmlFor="item-code">{s.code}</label>
@@ -109,7 +109,7 @@ export function NewItemForm({
         </select>
         <span className="t-caption">{s.evidenceSource}</span>
       </div>
-      <label className="row" style={{ minBlockSize: 44, gap: "var(--ax-space-100)", alignItems: "center" }}>
+      <label className="row" style={{ minBlockSize: 44, gap: "var(--space-2)", alignItems: "center" }}>
         <input type="hidden" name="scoring_enabled" value={scoring ? "true" : "false"} />
         <input type="checkbox" checked={scoring} onChange={e => setScoring(e.target.checked)} /> {scoring ? s.scoringEnabled : s.scoringDisabled}
       </label>
@@ -122,7 +122,7 @@ export function NewItemForm({
       </button>
       {/* role=alert so screen readers move to the rejection; role=status for success. */}
       {state.error && (
-        <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">
+        <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">
           <span aria-hidden="true">✕ </span>{state.error}
         </span>
       )}
@@ -144,13 +144,13 @@ export function EditItemForm({ item, clauses, strings: s }: {
   return (
     <details className="stack">
       <summary className="btn btn-ghost btn-touch">Edit · v{item.version}</summary>
-      <form action={formAction} className="stack" style={{ gap: "var(--ax-space-100)", minInlineSize: 280 }}>
+      <form action={formAction} className="stack" style={{ gap: "var(--space-2)", minInlineSize: 280 }}>
         <input type="hidden" name="item_id" value={item.id} />
         <label className="ax-field"><span className="ax-field__label">{s.title}</span><input className="ax-input" name="title" defaultValue={item.title} required /></label>
         <label className="ax-field"><span className="ax-field__label">{s.clause}</span><select className="ax-select" name="clause_id" defaultValue={item.clauseId} required>{clauses.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
         <label className="ax-field"><span className="ax-field__label">{s.guidance}</span><textarea className="ax-input" name="guidance_en" defaultValue={item.guidance ?? ""} /></label>
         <button className="btn btn-primary btn-touch" disabled={pending}>{pending ? s.saving : s.saveDraft}</button>
-        {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
         {state.ok && <span className="badge badge-compliant" role="status">✓ {s.draftSaved}</span>}
       </form>
     </details>
@@ -161,7 +161,7 @@ export function EditItemForm({ item, clauses, strings: s }: {
 export function ToggleActive({ itemId, active, strings: s }: { itemId: string; active: boolean; strings: ItemStrings }) {
   const [state, formAction, pending] = useActionState<ItemResult, FormData>(toggleItemActive, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="item_id" value={itemId} />
       <input type="hidden" name="next_active" value={active ? "false" : "true"} />
       {active ? <label className="ax-field"><span className="ax-field__label">{s.deactivationReason}</span><input className="ax-input" name="deactivation_reason" required /></label> : null}
@@ -169,7 +169,7 @@ export function ToggleActive({ itemId, active, strings: s }: { itemId: string; a
         {pending ? s.saving : active ? s.deactivate : s.reactivate}
       </button>
       {state.error && (
-        <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">
+        <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">
           <span aria-hidden="true">✕ </span>{state.error}
         </span>
       )}
@@ -238,7 +238,7 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
   const item = items.find(i => i.id === selected) ?? items[0];
   const label = (r: string) => s.responseLabels[r] ?? r.replace(/_/g, " ");
   return (
-    <div className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-200)" }}>
+    <div className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-4)" }}>
       <div className="ax-field" style={{ maxInlineSize: 360 }}>
         <label className="ax-field__label" htmlFor={selectId}>{s.select}</label>
         <select id={selectId} className="ax-select" value={item.id} onChange={e => setSelected(e.target.value)}>
@@ -251,8 +251,8 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
       </div>
 
       {/* Read-only runtime projection — disabled controls signal "not an authoring surface". */}
-      <div className="panel" style={{ padding: "var(--ax-space-250)", background: "var(--ax-color-surface-sunken)" }}>
-        <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="panel" style={{ padding: "var(--space-5)", background: "var(--surface-sunken)" }}>
+        <div className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
           <strong className="numeric"><bdi dir="ltr">{item.code}</bdi></strong>
           <span>{item.title}</span>
           <span className={`ax-lozenge ${item.active ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>
@@ -261,10 +261,10 @@ export function ItemPreview({ items, strings: s }: { items: PreviewItem[]; strin
         </div>
         {!item.active && <p className="t-caption">{s.deactivated}</p>}
 
-        <div className="stack" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-150)" }}>
+        <div className="stack" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-3)" }}>
           <div>
             <p className="ax-overline">{s.responsesLabel}</p>
-            <div className="row" role="group" aria-label={s.responsesLabel} style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+            <div className="row" role="group" aria-label={s.responsesLabel} style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
               {item.responses.map(r => (
                 <button key={r} type="button" className="btn btn-secondary btn-touch" disabled aria-disabled="true">{label(r)}</button>
               ))}

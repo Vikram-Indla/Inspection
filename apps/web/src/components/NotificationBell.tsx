@@ -162,18 +162,18 @@ export default function NotificationBell({ strings, locale }: { strings: BellStr
       </button>
       {open && (
         <div className="ax-popover" role="dialog" aria-label={strings.heading}
-          style={{ position: "absolute", insetBlockStart: "calc(100% + 6px)", insetInlineEnd: 0, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+          style={{ position: "absolute", insetBlockStart: "calc(100% + 6px)", insetInlineEnd: 0, inlineSize: 360, maxInlineSize: "80vw", zIndex: 30, display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between" }}>
             <strong>{strings.heading}</strong>
             {unread > 0 && <button className="ax-btn ax-btn--subtle" onClick={markAllRead}>{strings.markAll}</button>}
           </div>
           {err && <p className="ax-caption" role="alert">{err}</p>}
           {rows.length === 0 && <p className="ax-caption">{strings.empty}</p>}
-          <div style={{ maxBlockSize: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+          <div style={{ maxBlockSize: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
             {rows.map(r => {
               const href = notificationHref(r.event_key, r.payload);
               return (
-              <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-150)", borderInlineStart: isUnread(r) ? "3px solid var(--ax-color-primary)" : "3px solid transparent" }}>
+              <div key={r.id} className="ax-surface" style={{ padding: "var(--space-3)", borderInlineStart: isUnread(r) ? "3px solid var(--action-primary)" : "3px solid transparent" }}>
                 <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                   <div>
                     <strong style={{ fontWeight: isUnread(r) ? 700 : 500 }}>

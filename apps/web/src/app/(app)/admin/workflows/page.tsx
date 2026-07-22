@@ -72,10 +72,10 @@ export default async function Workflows() {
         // pre-empt it with an explanation rather than an Approve button that fails.
         const isOwnDraft = w.status === "draft" && !!user && w.created_by === user.id;
         return (
-          <div key={w.id} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+          <div key={w.id} className="panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
             <div className="row" style={{ justifyContent: "space-between" }}>
               <h3>{t("admin.wf.object", "Object:")} {p.object ?? "—"} <span className="ax-version">{w.version_label}</span></h3>
-              <div className="row" style={{ gap: "var(--ax-space-150)" }}>
+              <div className="row" style={{ gap: "var(--space-3)" }}>
                 <span className={`ax-lozenge ${w.status === "published" ? "ax-lozenge--success" : "ax-lozenge--warning"}`}>{t(`enum.${w.status}`, String(w.status).replace(/_/g, " "))}</span>
                 {w.status === "draft" && !isOwnDraft && <ApprovePublish versionId={w.id} strings={strings} />}
                 {isOwnDraft && (

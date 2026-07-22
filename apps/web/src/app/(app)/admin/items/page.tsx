@@ -196,7 +196,7 @@ export default async function Items({
       current="/admin/items"
       title={t("admin.items.r2.title", "Inspection Item Catalogue")}
       context={
-        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+        <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
           <span className="badge badge-info">SCR-ADM-020 · ENG-01</span>
           <span role="status" className="t-caption">
             {fill(t("admin.items.r2.readAt", "catalogue read {time} — a source fact, not a freshness verdict"), { time: readAt })}
@@ -239,7 +239,7 @@ export default async function Items({
 
       {/* Permission + governance truth (S05/S06 + audit fact). Visibility is not
           authorization; the write path is RLS-guarded and every row change is audited. */}
-      <section className="panel ax-permission stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel ax-permission stack" aria-labelledby="cd007-gov-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd007-gov-h" style={{ margin: 0 }}>{t("admin.items.r2.gov.heading", "How this catalogue is governed")}</h3>
         <p className="t-caption" style={{ margin: 0 }}>
           {t("admin.items.r3.gov.body", "Anyone signed in can read the catalogue; writes require compliance_admin or form_admin. Deactivation preserves history and records a reason. Editing archives the previous configuration before advancing the version, and every row change is audited.")}
@@ -247,7 +247,7 @@ export default async function Items({
       </section>
 
       {!error && isWriter && (
-        <section className="panel stack" aria-labelledby="cd007-create-h" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="panel stack" aria-labelledby="cd007-create-h" style={{ padding: "var(--space-6)" }}>
           <h3 id="cd007-create-h" style={{ margin: 0 }}>{t("admin.items.r2.create.heading", "Add an inspection item")}</h3>
           <NewItemForm clauses={clauseOptions} clauseUnavailable={clauseUnavailable} strings={strings} />
         </section>
@@ -321,7 +321,7 @@ export default async function Items({
                       </span>
                     </td>
                     <td>
-                      <div className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+                      <div className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
                         <a className="btn btn-secondary ax-link btn-touch" href={`/admin/items/${encodeURIComponent(i.id)}/runtime-preview`}>Inspector Runtime Preview</a>
                         {isWriter ? <a className="btn btn-secondary ax-link btn-touch" href={`/admin/compliance-requests/new?request_type=modify&title=${encodeURIComponent(`Modify inspection item ${i.code}`)}&description=${encodeURIComponent(`Governed change request for inspection item ${i.code} — ${i.title}.`)}`}>Request change</a> : null}
                         {isWriter ? <ToggleActive itemId={i.id} active={i.active} strings={strings} /> : <span className="t-caption">{t("admin.items.r2.readonly.action", "Read only")}</span>}
@@ -338,13 +338,13 @@ export default async function Items({
       )}
 
       {!error && rows.length > 0 && isWriter && (
-        <section className="panel stack" aria-labelledby="cd007-audit-h" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="panel stack" aria-labelledby="cd007-audit-h" style={{ padding: "var(--space-6)" }}>
           <h3 id="cd007-audit-h" style={{ margin: 0 }}>{t("admin.items.r2.audit.heading", "Scoped item audit")}</h3>
           <p className="t-caption" style={{ margin: 0 }}>{t("admin.items.r2.audit.body", "Open Audit on one item to inspect its object-scoped configuration history; broad audit-table access is not granted.")}</p>
           {!auditItemId ? <p className="t-caption" role="status">{t("admin.items.r2.audit.select", "No item selected.")}</p>
             : !auditItem ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.items.r2.audit.notFound", "The selected item is no longer in the readable catalogue.")}</div>
             : auditResult.error ? <div className="ax-banner ax-banner--warning" role="alert">{t("admin.items.r2.audit.unavailable", "Audit unavailable — reload to retry; history is not reported as empty.")}</div>
-            : <div className="stack" style={{ gap: "var(--ax-space-100)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
+            : <div className="stack" style={{ gap: "var(--space-2)" }}><h4 style={{ margin: 0 }}><bdi dir="ltr" className="numeric">{auditItem.code}</bdi> — {auditItem.title}</h4>
               {auditEvents.length === 0 ? <p className="t-caption" role="status">{t("admin.items.r2.audit.empty", "No scoped audit events returned — verified zero.")}</p>
                 : <ol>{auditEvents.map(e => <li key={e.id}><strong>{e.action}</strong> · <bdi dir="ltr" className="numeric">{e.occurred_at}</bdi>{e.actor ? <> · <bdi dir="ltr">{e.actor}</bdi></> : null}</li>)}</ol>}
             </div>}

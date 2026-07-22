@@ -174,8 +174,8 @@ export default async function VirtualRoom({ params }: { params: Promise<{ id: st
         <span className={`ax-lozenge ax-lozenge--virtual ${STATE_TONE[s.state] ?? "ax-lozenge--info"}`}>{t(`enum.${s.state}`, s.state.replace(/_/g, " "))}</span>
       </>}>
       <Room session={s as never} strings={strings} rev={rev} />
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)", marginBlockStart: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("virtual.room.timelineHeading", "Session timeline (M05-003 · audited)")}</h4>
+      <div className="ax-surface" style={{ padding: "var(--space-6)", marginBlockStart: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("virtual.room.timelineHeading", "Session timeline (M05-003 · audited)")}</h4>
         {timeline.length === 0 && <p className="ax-caption">{t("virtual.room.timelineEmpty", "No events yet — the timeline records scheduling, joins, verification, start and close.")}</p>}
         {timeline.map((ev, i) => (
           <p key={i} className="ax-caption" style={{ marginBlockStart: 4 }}>

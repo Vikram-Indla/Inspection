@@ -54,8 +54,8 @@ export default function DualStateRibbon({ tracks, strings }: { tracks: RibbonTra
 
   const cur = tracks[active];
   return (
-    <section className="panel ax-ribbon" aria-label={strings.heading} style={{ padding: "var(--ax-space-300)" }}>
-      <h4 style={{ margin: 0, marginBlockEnd: "var(--ax-space-200)" }}>{strings.heading}</h4>
+    <section className="panel ax-ribbon" aria-label={strings.heading} style={{ padding: "var(--space-6)" }}>
+      <h4 style={{ margin: 0, marginBlockEnd: "var(--space-4)" }}>{strings.heading}</h4>
       <div className="ax-ribbon__tracks" role="tablist" aria-label={strings.tablistLabel} aria-orientation="horizontal">
         {tracks.map((tr, i) => (
           <button

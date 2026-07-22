@@ -36,9 +36,9 @@ export default function IdentityDossier({
     : hasPlannerPin ? [pLat, pLng] : [24.7136, 46.6753];
 
   return (
-    <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }} role="region" aria-label={factory.name}>
+    <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }} role="region" aria-label={factory.name}>
       <div>
-        <strong style={{ fontSize: "var(--ax-font-size-150)" }}>{factory.name}</strong>
+        <strong style={{ fontSize: "var(--type-label-size)" }}>{factory.name}</strong>
         {factory.grade === "exact"
           ? <span className="ax-lozenge ax-lozenge--success" style={{ marginInlineStart: 8 }}>{strings.exactBadge}</span>
           : <span className="ax-lozenge ax-lozenge--warning" style={{ marginInlineStart: 8 }}>{strings.similarBadge}</span>}
@@ -47,7 +47,7 @@ export default function IdentityDossier({
       </div>
 
       {/* Identifier grid — bdi-isolated so LTR codes read correctly inside Arabic labels */}
-      <dl className="ax-grid-2" style={{ rowGap: "var(--ax-space-100)" }}>
+      <dl className="ax-grid-2" style={{ rowGap: "var(--space-2)" }}>
         <div><dt className="ax-caption">{strings.crPrefix}</dt><dd><bdi>{factory.cr_number ?? "—"}</bdi></dd></div>
         <div><dt className="ax-caption">{strings.licenseLabel}</dt><dd><bdi>{factory.license_number ?? strings.licenseNone}</bdi></dd></div>
         <div><dt className="ax-caption">{strings.factory360}</dt><dd><bdi>{factory.factory_code ?? "—"}</bdi></dd></div>
@@ -77,11 +77,11 @@ export default function IdentityDossier({
           <button type="button" aria-pressed={view === "text"} onClick={() => setView("text")}>{strings.mapToggle.split(" / ")[1]}</button>
         </div>
         {view === "map" ? (
-          <div style={{ blockSize: 220, marginBlockStart: "var(--ax-space-150)" }}>
+          <div style={{ blockSize: 220, marginBlockStart: "var(--space-3)" }}>
             <GeoMap center={center} zoom={hasOfficial || hasPlannerPin ? 14 : 6} markers={markers} height="100%" />
           </div>
         ) : (
-          <ul className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }} aria-label={strings.textEquivalent}>
+          <ul className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }} aria-label={strings.textEquivalent}>
             <li>{strings.officialPin}: {hasOfficial ? <bdi>{factory.official_lat}, {factory.official_lng}</bdi> : strings.noOfficialPin}</li>
             {hasPlannerPin && <li>{strings.plannerPin}: <bdi>{plannerLat}, {plannerLng}</bdi></li>}
           </ul>

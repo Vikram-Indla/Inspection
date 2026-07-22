@@ -271,8 +271,8 @@ const panelStrings: WorkspaceDecisionStrings = {
       <FindingTraceChain traces={traceRows} strings={traceStrings} />
       <div className="cd-review-workspace-grid">
         <div className="ax-stack">
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h4>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.checklist", "Checklist — v{n}").replace("{n}", String(latest?.version_number))}</h4>
             <div className="ax-tablewrap"><table className="ax-table">
               <thead><tr><th scope="col">{t("review.ws.colItem", "Item")}</th><th scope="col">{t("review.ws.colResponse", "Response")}</th></tr></thead>
               <tbody>{Object.entries(latest?.snapshot?.answers ?? {}).map(([k, v]) => (
@@ -280,8 +280,8 @@ const panelStrings: WorkspaceDecisionStrings = {
               ))}</tbody>
             </table></div>
           </div>
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h4>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.evidenceHeading", "Violations · actions · evidence (read-only)")}</h4>
             {(ins.violations as unknown as { violation_codes: { code: string; title: string; level: string }; mapping_version: string }[]).map((v, i) => (
               <p key={i}><span className="ax-lozenge ax-lozenge--critical">{v.violation_codes.code} · {t(`enum.${v.violation_codes.level}`, v.violation_codes.level)}</span> {v.violation_codes.title} <span className="ax-version">{t("review.ws.mapping", "mapping")} {v.mapping_version}</span></p>
             ))}
@@ -293,8 +293,8 @@ const panelStrings: WorkspaceDecisionStrings = {
             ))}
           </div>
           {/* M04-190 / M06-017 / M06-034 — factory data verification: Source vs Observed, before/after, updated highlighting */}
-          <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-            <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>
+          <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+            <h4 style={{ marginBlockEnd: "var(--space-3)" }}>
               {t("review.ws.fvHeading", "Factory data verification (Senaei source vs observed)")}{" "}
               <span className={`ax-lozenge ${fvUpdated ? "ax-lozenge--warning" : "ax-lozenge--success"}`}>
                 {fvUpdated
@@ -316,8 +316,8 @@ const panelStrings: WorkspaceDecisionStrings = {
                   <th scope="col">{t("review.ws.fvColEvidence", "Evidence")}</th>
                 </tr></thead>
                 <tbody>{fv.checks.map(c => (
-                  <tr key={c.id} style={c.status === "updated" ? { background: "var(--ax-color-surface-sunken)" } : undefined}>
-                    <td style={c.status === "updated" ? { borderInlineStart: "4px solid var(--ax-color-warning)" } : undefined}>
+                  <tr key={c.id} style={c.status === "updated" ? { background: "var(--surface-sunken)" } : undefined}>
+                    <td style={c.status === "updated" ? { borderInlineStart: "4px solid var(--status-warning)" } : undefined}>
                       <strong>{t(`field.fv.f.${c.field_key}`, FACTORY_FIELD_EN[c.field_key] ?? c.field_key.replace(/_/g, " "))}</strong>
                     </td>
                     <td>{c.source_value ?? "—"}</td>
@@ -331,21 +331,21 @@ const panelStrings: WorkspaceDecisionStrings = {
                 ))}</tbody>
               </table></div>
             )}
-            <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record; checks are audit-logged with before/after values.")}</p>
+            <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.fvNote", "Observations never modify the Senaei source record; checks are audit-logged with before/after values.")}</p>
           </div>
           {/* M04-197 / M06-021 — acknowledgement signature made visible to the reviewer */}
           {latest?.acknowledgement != null && (() => {
             const ack = latest.acknowledgement as { name?: string; ts?: string; signed_at?: string; signature_data_url?: string };
             return (
-              <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-                <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h4>
+              <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+                <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.sigHeading", "Acknowledgement signature (DEC-009)")}</h4>
                 <p>
                   <strong>{ack.name ?? "—"}</strong> · <span className="ax-numeric">{(ack.signed_at ?? ack.ts) ? formatDateTime(ack.signed_at ?? ack.ts!, lang) : "—"}</span>
                   {" "}<span className="ax-version">v{latest.version_number}</span>
                 </p>
                 {ack.signature_data_url
                   // eslint-disable-next-line @next/next/no-img-element
-                  ? <img src={ack.signature_data_url} alt={t("review.ws.sigAlt", "Representative signature")} style={{ maxInlineSize: 280, maxBlockSize: 120, background: "var(--ax-color-surface-sunken)", border: "1px solid var(--ax-color-border)", borderRadius: "var(--ax-radius-standard)" }} />
+                  ? <img src={ack.signature_data_url} alt={t("review.ws.sigAlt", "Representative signature")} style={{ maxInlineSize: 280, maxBlockSize: 120, background: "var(--surface-sunken)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)" }} />
                   : <p className="ax-caption">{t("review.ws.sigNone", "No drawn signature stored with this version (acknowledged by name only).")}</p>}
               </div>
             );
@@ -364,15 +364,15 @@ const panelStrings: WorkspaceDecisionStrings = {
             // submitted inspection always has at least one version on record).
             // State it explicitly; never render nothing where a comparison
             // surface belongs.
-            <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+            <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
               <div className="ax-banner ax-banner--warning" role="status">
                 <div><strong>{t("review.cmp.sourceUnavailable", "Comparison source unavailable.")}</strong> {t("review.cmp.sourceUnavailableBody", "Submitted-version data could not be loaded for this record, so no comparison can be shown — this is unavailable, not an empty result.")}</div>
               </div>
             </div>
           )}
           {(trail ?? []).length > 0 && (
-            <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-              <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail")}</h4>
+            <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+              <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("review.ws.timelineHeading", "Timeline — audit trail")}</h4>
               {(trail ?? []).map(ev => (
                 <p key={ev.id} className="ax-caption" style={{ marginBlockStart: 4 }}>
                   <span className="ax-numeric">{formatDateTime(ev.occurred_at, lang)}</span>
@@ -380,7 +380,7 @@ const panelStrings: WorkspaceDecisionStrings = {
                   {" · "}{t(`enum.audit.${ev.action}`, ev.action.replace(/_/g, " ").toLowerCase())}
                 </p>
               ))}
-              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes.")}</p>
+              <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>{t("review.ws.timelineNote", "Append-only rows from audit_events; the database rejects edits and deletes.")}</p>
             </div>
           )}
           {reviews.filter(r => { return !!r.decided_at; }).map(r => (
@@ -391,12 +391,12 @@ const panelStrings: WorkspaceDecisionStrings = {
           // HANDOFF read-only path — auditor/planner/leadership can read the
           // whole workspace above but never see Start review / the decision
           // controls, regardless of open/canStart state.
-          ? <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
+          ? <div className="ax-surface" style={{ padding: "var(--space-6)" }}><p className="ax-caption">{t("review.ws.readOnlyNote", "Read-only for this role — decision controls are limited to Level 2 Reviewer / Operations.")}</p></div>
           : open && ins.status === "under_review"
           ? <DecisionPanel reviewId={open.id} sections={sections.map(s => ({ key: s.key, title: s.title }))} strings={panelStrings} />
           : canStart
           ? <StartReview inspectionId={ins.id} submissionVersionId={latest!.id} strings={startStrings} />
-          : <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}><p className="ax-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
+          : <div className="ax-surface" style={{ padding: "var(--space-6)" }}><p className="ax-caption">{t("review.ws.noOpenDecision", "No open decision — status {status}.").replace("{status}", t(`enum.${ins.status}`, ins.status.replace(/_/g, " ")))}</p></div>}
       </div>
     </Shell>
   );

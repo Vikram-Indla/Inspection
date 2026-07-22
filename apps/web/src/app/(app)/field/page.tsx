@@ -437,7 +437,7 @@ export default async function Field() {
           <div className={styles.pane}>
             {/* Selected / next visit preparation */}
             {selected && selected.factories ? (
-              <section className={`ax-surface ax-panel ${styles.selectedCard} ${riskTone === "warning" ? styles["selectedCard--warning"] : riskTone === "neutral" || riskTone === "success" ? styles["selectedCard--neutral"] : ""}`} style={{ padding: "var(--ax-space-300)" }}>
+              <section className={`ax-surface ax-panel ${styles.selectedCard} ${riskTone === "warning" ? styles["selectedCard--warning"] : riskTone === "neutral" || riskTone === "success" ? styles["selectedCard--neutral"] : ""}`} style={{ padding: "var(--space-6)" }}>
                 <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                   <span className={`ax-lozenge ax-lozenge--${riskTone === "critical" ? "critical" : riskTone === "warning" ? "warning" : "ops"}`}>
                     {selected.factories.risk_band
@@ -446,9 +446,9 @@ export default async function Field() {
                   </span>
                   <span className="ax-caption ax-numeric">{selected.id.slice(0, 8)}</span>
                 </div>
-                <div style={{ font: "var(--ax-text-body-strong)", marginBlockStart: "var(--ax-space-150)" }}>{selected.factories.name}</div>
+                <div style={{ font: "var(--type-body-strong)", marginBlockStart: "var(--space-3)" }}>{selected.factories.name}</div>
                 <div className="ax-caption">{selected.visit_type} · {selected.execution_mode.replace(/_/g, " ")}{selected.factories.cr_number ? <> · <span className="ax-numeric">CR {selected.factories.cr_number}</span></> : null}</div>
-                <dl className={styles.desc} style={{ marginBlockStart: "var(--ax-space-200)" }}>
+                <dl className={styles.desc} style={{ marginBlockStart: "var(--space-4)" }}>
                   <dt>{t("field.selected.health", "Health Score")}</dt>
                   <dd><em className="ax-caption">{t("field.selected.healthUnavailable", "Not scored (separate engine)")}</em></dd>
                   <dt>{t("field.selected.riskScore", "Risk Score")}</dt>
@@ -460,7 +460,7 @@ export default async function Field() {
                     </>
                   )}
                 </dl>
-                <div className="ax-row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)", flexWrap: "wrap" }}>
+                <div className="ax-row" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-4)", flexWrap: "wrap" }}>
                   {packData && <PreInspectionPackSheet data={packData} moduleClasses={{ packChipRow: styles.packChipRow, packReadiness: styles.packReadiness, packFooter: styles.packFooter, packBlocked: styles.packBlocked }} strings={{
                     openPack: t("field.pack.open", "Open pre-inspection pack"),
                     title: t("field.pack.title", "Pre-inspection pack"),
@@ -500,27 +500,27 @@ export default async function Field() {
                 </div>
               </section>
             ) : (
-              <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)" }}>
+              <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)" }}>
                 <p className="ax-caption">{t("field.selected.none", "No upcoming visit selected. Pick one from the list, calendar, or map.")}</p>
               </section>
             )}
 
             {/* Pending attention (returned / draft resume) */}
-            <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+            <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
               <div className="ax-overline">{t("field.attention.title", "Pending attention")}</div>
               {returnedCount === 0 && draftCount === 0 ? (
                 <span className="ax-caption">{t("field.attention.empty", "Nothing needs attention. Returned inspections and drafts to resume appear here.")}</span>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                   {cards.filter(v => v.inspections && (v.inspections.status === "returned" || (v.inspections.reviews ?? []).some(r => r.status === "returned"))).slice(0, 4).map(v => (
-                    <div key={`ret-${v.id}`} className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+                    <div key={`ret-${v.id}`} className="ax-row" style={{ gap: "var(--space-3)" }}>
                       <span className={`${styles.exc} ${styles["exc--warning"]}`}><span className={styles.exc__mark} /></span>
                       <span style={{ flex: 1 }} className="ax-caption">{t("field.attention.returned", "Returned")} · {v.factories!.name}</span>
                       <a className="ax-btn ax-btn--subtle" href={`/field/inspection/${v.inspections!.id}`}>{t("field.attention.resume", "Resume")}</a>
                     </div>
                   ))}
                   {cards.filter(v => v.inspections?.status === "in_progress").slice(0, 4).map(v => (
-                    <div key={`draft-${v.id}`} className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+                    <div key={`draft-${v.id}`} className="ax-row" style={{ gap: "var(--space-3)" }}>
                       <span className={`${styles.exc} ${styles["exc--pending"]}`}><span className={styles.exc__mark} /></span>
                       <span style={{ flex: 1 }} className="ax-caption">{t("field.attention.draft", "Draft")} · {v.factories!.name}</span>
                       <a className="ax-btn ax-btn--subtle" href={`/field/inspection/${v.inspections!.id}`}>{t("field.attention.resume", "Resume")}</a>
@@ -531,24 +531,24 @@ export default async function Field() {
             </section>
 
             {/* Personal performance — Approval outcomes vs Checklist compliance (SEPARATE, P0) */}
-            <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+            <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
               <div className="ax-overline">{t("field.perf.title", "Personal performance")}</div>
               <div className={styles.perfSplit}>
                 <div className={styles.perfSplit__col}>
                   <span className={styles.perfSplit__value}>{approvalRate == null ? t("field.metric.na", "N/A") : `${approvalRate}%`}</span>
                   <span className="ax-caption">{t("field.perf.approval", "Approval outcomes")}</span>
-                  <span className="ax-caption ax-numeric" style={{ font: "var(--ax-text-micro)", color: "var(--ax-color-text-secondary)" }}>{t("field.perf.approvalFormula", "approved L2 ÷ decided L2")}</span>
+                  <span className="ax-caption ax-numeric" style={{ font: "var(--type-micro)", color: "var(--text-secondary)" }}>{t("field.perf.approvalFormula", "approved L2 ÷ decided L2")}</span>
                   <span className="ax-caption ax-numeric">{t("field.perf.mix", "A {a} · R {r} · X {x}").replace("{a}", String(approvalBreak.approve ?? 0)).replace("{r}", String(approvalBreak.return ?? 0)).replace("{x}", String(approvalBreak.reject ?? 0))}</span>
                 </div>
                 <div className={styles.perfSplit__rule} />
                 <div className={styles.perfSplit__col}>
                   <span className={styles.perfSplit__value}>{mCompliance?.value == null ? t("field.metric.na", "N/A") : `${mCompliance.value}%`}</span>
                   <span className="ax-caption">{t("field.perf.compliance", "Checklist compliance")}</span>
-                  <span className="ax-caption ax-numeric" style={{ font: "var(--ax-text-micro)", color: "var(--ax-color-text-secondary)" }}>{t("field.perf.complianceFormula", "compliant ÷ (compliant + non)")}</span>
+                  <span className="ax-caption ax-numeric" style={{ font: "var(--type-micro)", color: "var(--text-secondary)" }}>{t("field.perf.complianceFormula", "compliant ÷ (compliant + non)")}</span>
                   <span className="ax-caption ax-numeric">{t("field.perf.complianceDenom", "{c}/{e} eligible").replace("{c}", String(mCompliance?.numerator ?? 0)).replace("{e}", String(mCompliance?.denominator ?? 0))}</span>
                 </div>
               </div>
-              <span className="ax-caption" style={{ color: "var(--ax-color-text-secondary)" }}>{t("field.perf.distinct", "Distinct metrics — approval is not compliance.")}</span>
+              <span className="ax-caption" style={{ color: "var(--text-secondary)" }}>{t("field.perf.distinct", "Distinct metrics — approval is not compliance.")}</span>
             </section>
           </div>
         </div>
@@ -558,12 +558,12 @@ export default async function Field() {
           <summary>{t("field.dashboard.performanceOverview", "Performance overview")}</summary>
           <div className="ax-field-performance__body">
             <div className="ax-field-performance__charts">
-              <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-                <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{t("field.dashboard.visitsByMonth", "Visits by month")}</h3>
+              <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+                <h3 style={{ font: "var(--type-heading-lg)", margin: 0 }}>{t("field.dashboard.visitsByMonth", "Visits by month")}</h3>
                 <BarChart data={visitsByMonth} title={t("field.dashboard.visitsByMonth", "Visits by month")} emptyLabel={noData} />
               </section>
-              <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-                <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{t("field.dashboard.reviewOutcomes", "Review outcomes")}</h3>
+              <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+                <h3 style={{ font: "var(--type-heading-lg)", margin: 0 }}>{t("field.dashboard.reviewOutcomes", "Review outcomes")}</h3>
                 <DonutChart
                   data={[
                     { label: t("field.dashboard.approved", "Approved"), value: approvedReviews, tone: "success" },
@@ -575,8 +575,8 @@ export default async function Field() {
                   emptyLabel={noData}
                 />
               </section>
-              <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-                <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{t("field.dashboard.submissionsTrend", "Submissions trend")}</h3>
+              <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+                <h3 style={{ font: "var(--type-heading-lg)", margin: 0 }}>{t("field.dashboard.submissionsTrend", "Submissions trend")}</h3>
                 <LineChart data={submissionsByMonth} title={t("field.dashboard.submissionsTrend", "Submissions trend")} emptyLabel={noData} />
               </section>
             </div>

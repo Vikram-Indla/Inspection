@@ -718,15 +718,15 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
   const tone = sync === "synced" ? "ax-sync--synced" : sync === "offline" ? "ax-sync--offline" : sync === "syncing" ? "ax-sync--syncing" : sync === "conflict" ? "ax-sync--conflict" : sync === "failed" ? "ax-sync--failed" : "ax-sync--pending";
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", position: "sticky", insetBlockStart: 0, zIndex: 10, background: "var(--ax-color-canvas)", paddingBlock: "var(--ax-space-100)" }}>
-        <span className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+    <div className="ax-stack" style={{ gap: "var(--space-6)" }}>
+      <div className="ax-row" style={{ justifyContent: "space-between", position: "sticky", insetBlockStart: 0, zIndex: 10, background: "var(--surface-canvas)", paddingBlock: "var(--space-2)" }}>
+        <span className="ax-row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
           <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
           {sync === "failed" && (
             <button type="button" className="ax-btn ax-btn--subtle" onClick={() => processOutbox(onState)}>{strings.retryNow}</button>
           )}
         </span>
-        <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+        <span className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           <span className="ax-caption ax-numeric">{inspectionNo ? `${inspectionNo} · ` : ""}{fmt(strings.answered, { a: totals.a, b: totals.b })} · {fmt(strings.progress, { pct: overallPct })}</span>
           {!submitted && <button type="button" className="ax-btn ax-btn--subtle" onClick={() => setExiting(true)}>{strings.exitBtn}</button>}
         </span>
@@ -746,14 +746,14 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* M04-054 / M04-068 — collapsible Factory/Visit context panel with expandable cards,
           reachable from every wizard step (sticky-header sibling at the top of the workspace) */}
-      <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>
+      <details className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <summary style={{ cursor: "pointer", font: "var(--type-field)", fontWeight: 600 }}>
           {strings.panelTitle}{inspectionNo ? <span className="ax-numeric"> · {inspectionNo}</span> : null}
         </summary>
-        <div className="ax-grid-2" style={{ marginBlockStart: "var(--ax-space-200)" }}>
-          <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+        <div className="ax-grid-2" style={{ marginBlockStart: "var(--space-4)" }}>
+          <details open className="ax-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelFactory}</summary>
-            <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+            <div className="ax-stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)" }}>
               <div><strong>{panel.factory.name}</strong></div>
               <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelCode}</span><span className="ax-numeric">{panel.factory.code ?? "—"}</span></div>
               <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelLicense}</span><span className="ax-numeric">{panel.factory.license ?? "—"}</span></div>
@@ -761,9 +761,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
               <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelActivity}</span><span>{panel.factory.activity ?? "—"}</span></div>
             </div>
           </details>
-          <details open className="ax-panel" style={{ padding: "var(--ax-space-200)", border: "1px solid var(--ax-color-border)" }}>
+          <details open className="ax-panel" style={{ padding: "var(--space-4)", border: "1px solid var(--border-subtle)" }}>
             <summary style={{ cursor: "pointer", fontWeight: 600 }}>{strings.panelVisit}</summary>
-            <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+            <div className="ax-stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)" }}>
               <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelWindow}</span><span className="ax-numeric">{panel.visit.window_start.slice(0, 16).replace("T", " ")} → {panel.visit.window_end.slice(11, 16)}</span></div>
               <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelTypeMode}</span><span>{(strings.enumLabels[panel.visit.visit_type] ?? panel.visit.visit_type)} · {(strings.enumLabels[panel.visit.execution_mode] ?? panel.visit.execution_mode)}</span></div>
               <div className="ax-row" style={{ justifyContent: "space-between" }}><span className="ax-caption">{strings.panelPkg}</span><span>{panel.pkg.code} <span className="ax-version">{panel.pkg.label}</span></span></div>
@@ -771,7 +771,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           </details>
         </div>
         {/* M04-136/137 — source of the previous-inspection comparison shown per item below */}
-        {prev && <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-150)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
+        {prev && <p className="ax-caption" style={{ marginBlockStart: "var(--space-3)" }}>{fmt(strings.prevSource, { ref: prev.label, date: prev.date ?? "—" })}</p>}
       </details>
       {conflicts.map(c => (
         <div key={c.key} className="ax-conflict">
@@ -799,7 +799,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* Live summary — answered / pending / compliant / non-compliant / violations / evidence (M04-149) */}
       {!submitted && (
-        <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "center" }}>
+        <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "center" }}>
           <span className="ax-overline">{strings.summaryTitle}</span>
           <span className="ax-badge">{strings.sumAnswered} <span className="ax-numeric">{summary.answered}</span></span>
           <span className="ax-badge">{strings.sumPending} <span className="ax-numeric">{summary.pending}</span></span>
@@ -817,13 +817,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
       <fieldset disabled={cancelApproved} style={{ display: "contents" }}>
       {/* Site conditions — flags feeding conditional.visible_when (M04-119); persisted on the inspection row */}
       {!submitted && flags.length > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <h4>{strings.ctxTitle}</h4>
           <p className="ax-caption">{strings.ctxHint}</p>
-          <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)" }}>
+          <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--space-6)" }}>
             {flags.map(k => (
-              <div key={k} className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
-                <span style={{ font: "var(--ax-text-field)" }}>{strings.ctxLabels[k] ?? k}</span>
+              <div key={k} className="ax-row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
+                <span style={{ font: "var(--type-field)" }}>{strings.ctxLabels[k] ?? k}</span>
                 <div className="ax-segmented ax-segmented--field">
                   <button type="button" aria-pressed={ctx[k] === "yes"} onClick={() => saveCtx(k, "yes")}>{strings.ctxYes}</button>
                   <button type="button" aria-pressed={ctx[k] === "no"} onClick={() => saveCtx(k, "no")}>{strings.ctxNo}</button>
@@ -838,19 +838,19 @@ export default function Workspace({ inspection, items, library, serverResponses,
         if (inspection.status === "returned") {
           const lastReturn = (inspection.reviews ?? []).filter(r => { return !!r.decided_at && !!r.returned_sections; }).slice(-1)[0];
           if (lastReturn && !lastReturn.returned_sections!.includes(s.key)) {
-            return <div key={s.key} className="ax-surface" style={{ padding: "var(--ax-space-300)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="ax-caption">{strings.lockedSection}</p></div>;
+            return <div key={s.key} className="ax-surface" style={{ padding: "var(--space-6)", opacity: .6 }}><h4>{s.title} <IconLock size={16} /></h4><p className="ax-caption">{strings.lockedSection}</p></div>;
           }
         }
         const sp = progress.find(p => p.key === s.key)!;
         return (
-        <div key={s.key} id={`ax-section-${s.key}`} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-600)" }}>
+        <div key={s.key} id={`ax-section-${s.key}`} className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)", scrollMarginBlockStart: "var(--space-12)" }}>
           <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h4>{s.title}</h4>
             <span className="ax-caption ax-numeric">{sp.answered}/{sp.total} · {fmt(strings.progress, { pct: sp.pct })}</span>
           </div>
           {/* Per-section progress (M04-081) */}
-          <div style={{ blockSize: 4, borderRadius: 2, background: "var(--ax-color-border)" }} role="progressbar" aria-valuenow={sp.pct} aria-valuemin={0} aria-valuemax={100}>
-            <div style={{ blockSize: 4, borderRadius: 2, inlineSize: `${sp.pct}%`, background: "var(--ax-color-primary)" }} />
+          <div style={{ blockSize: 4, borderRadius: 2, background: "var(--border-subtle)" }} role="progressbar" aria-valuenow={sp.pct} aria-valuemin={0} aria-valuemax={100}>
+            <div style={{ blockSize: 4, borderRadius: 2, inlineSize: `${sp.pct}%`, background: "var(--action-primary)" }} />
           </div>
           {(s.items ?? []).map(code => {
             const it = allMap[code]; if (!it) return null;
@@ -865,9 +865,9 @@ export default function Workspace({ inspection, items, library, serverResponses,
             const complete = def ? formComplete(def, draft) : false;
             const conditional = !!it.response_model.conditional?.visible_when;
             return (
-              <div key={code} className={`ipad-q ${val?.value ? "is-answered" : ""}`} style={{ border: "1px solid var(--ax-color-border)", borderRadius: "var(--ax-radius-large)", padding: "var(--ax-space-300)", borderInlineStart: val?.value ? "4px solid var(--ax-color-success)" : undefined, display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-                <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--ax-space-100)", alignItems: "baseline" }}>
-                  <p style={{ font: "var(--ax-text-field)", fontWeight: 600 }}>{code} · {it.title}</p>
+              <div key={code} className={`ipad-q ${val?.value ? "is-answered" : ""}`} style={{ border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", padding: "var(--space-6)", borderInlineStart: val?.value ? "4px solid var(--status-compliant)" : undefined, display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+                <div className="ax-row" style={{ flexWrap: "wrap", gap: "var(--space-2)", alignItems: "baseline" }}>
+                  <p style={{ font: "var(--type-field)", fontWeight: 600 }}>{code} · {it.title}</p>
                   {it.clause && <span className="ax-caption">{it.clause.legal_source ?? ""} §{it.clause.clause_ref}</span>}
                   {conditional && <span className="ax-lozenge ax-lozenge--info">{strings.conditionalBadge}</span>}
                   {itemStates[it.id]?.active && itemStates[it.id]?.state === "added" && <span className="ax-lozenge ax-lozenge--info">{strings.libAddedGroup}</span>}
@@ -908,7 +908,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
                       <input className="ax-input" type="date" value={val?.date ?? ""} onChange={e => e.target.value && answer(it, { value: e.target.value, date: e.target.value })} />
                     </label>
                   ) : (it.response_model.responses ?? []).map(r => (
-                    <button key={r} className="ax-btn ax-btn--field" style={{ background: val?.value === r ? (r === "non_compliant" ? "var(--ax-color-critical)" : "var(--ax-color-primary)") : "var(--ax-color-surface)", color: val?.value === r ? "var(--ax-color-inverse-text)" : "var(--ax-color-text)", border: "1.5px solid var(--ax-color-border)" }}
+                    <button key={r} className="ax-btn ax-btn--field" style={{ background: val?.value === r ? (r === "non_compliant" ? "var(--status-critical)" : "var(--action-primary)") : "var(--surface-primary)", color: val?.value === r ? "var(--text-inverse)" : "var(--text-primary)", border: "1.5px solid var(--border-subtle)" }}
                       onClick={() => answer(it, { value: r })}>{strings.enumLabels[r] ?? r.replace(/_/g, " ")}</button>
                   ))}
                   {leg?.applies && leg.type !== "comment" && (
@@ -918,7 +918,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
                     </label>
                   )}
                   {leg?.applies && leg.type === "comment" && (
-                    <span className="ax-row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+                    <span className="ax-row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
                       <label className="ax-field">
                         <span className="ax-field__label">{strings.noteLabel}</span>
                         <textarea className="ax-input" value={commentDrafts[it.id] ?? ""} onChange={e => setCommentDrafts(current => ({ ...current, [it.id]: e.target.value }))} />
@@ -931,7 +931,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
                   )}
                 </div>
                 {val?.value && scoreExcluded(it, val.value) && <p className="ax-caption">{strings.naExcluded}</p>}
-                {leg?.applies && leg.mandatory && evCount < leg.min && <p className="ax-caption" style={{ color: "var(--ax-color-critical)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
+                {leg?.applies && leg.mandatory && evCount < leg.min && <p className="ax-caption" style={{ color: "var(--status-critical)" }}>{fmt(strings.evRequired, { min: leg.min })}</p>}
                 {/* F2 — evidence list per item: synced thumbnails + REPLACE (archive, M04-163)
                     + DELETE (soft, audited, M04-164); queued captures ride alongside unsynced */}
                 {(() => {
@@ -952,7 +952,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
                               {archived
                                 ? <span className="ax-lozenge ax-lozenge--warning">{strings.evArchived}</span>
                                 : (
-                                  <span className="ax-row" style={{ gap: "var(--ax-space-050)", flexWrap: "wrap" }}>
+                                  <span className="ax-row" style={{ gap: "var(--space-1)", flexWrap: "wrap" }}>
                                     <label className="ax-btn ax-btn--subtle" style={{ cursor: "pointer" }}>
                                       {strings.evReplace}
                                       <input type="file" accept={acceptFor(leg?.type ?? "photo")} hidden
@@ -979,7 +979,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
                 </label>
                 {/* Action form runtime (M04-171..184): instantiated from the package's form template */}
                 {def && (
-                  <div className="ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", borderInlineStart: complete ? "4px solid var(--ax-color-success)" : "4px solid var(--ax-color-critical)" }}>
+                  <div className="ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)", borderInlineStart: complete ? "4px solid var(--status-compliant)" : "4px solid var(--status-critical)" }}>
                     <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
                       <strong>{def.title}</strong>
                       <span className={`ax-lozenge ${complete ? "ax-lozenge--success" : "ax-lozenge--critical"}`}>{complete ? strings.afComplete : strings.afIncomplete}</span>
@@ -1007,13 +1007,13 @@ export default function Workspace({ inspection, items, library, serverResponses,
           Under a reviewer return the whole panel locks (added items have no
           frozen section to match against the return scope — fail closed). */}
       {!submitted && inspection.status !== "returned" && (
-        <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <summary style={{ cursor: "pointer", font: "var(--ax-text-field)", fontWeight: 600 }}>{strings.libTitle}</summary>
-          <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>{strings.libHint}</p>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)" }}>
+        <details className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <summary style={{ cursor: "pointer", font: "var(--type-field)", fontWeight: 600 }}>{strings.libTitle}</summary>
+          <p className="ax-caption" style={{ marginBlockStart: "var(--space-2)" }}>{strings.libHint}</p>
+          <div className="ax-stack" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)" }}>
             {libraryCandidates.length === 0 ? <p className="ax-caption">{strings.libEmpty}</p> : libraryCandidates.map(it => (
-              <div key={it.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-150)" }}>
-                <span style={{ font: "var(--ax-text-field)" }}>{it.code} · {it.title}</span>
+              <div key={it.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-3)" }}>
+                <span style={{ font: "var(--type-field)" }}>{it.code} · {it.title}</span>
                 <button type="button" className="ax-btn ax-btn--secondary" onClick={() => { pushItemState(it, "added", null, false); setMsg(fmt(strings.libAddedMsg, { code: it.code })); }}>{strings.libAdd}</button>
               </div>
             ))}
@@ -1024,7 +1024,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
       {/* §15 — deselected items stay in the audit trail with their reason;
           restore is available before submit (returned scope permitting). */}
       {!submitted && deselectedItems.length > 0 && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+        <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           <h4>{fmt(strings.deselectedTitle, { n: deselectedItems.length })}</h4>
           <p className="ax-caption">{strings.deselectedAudit}</p>
           {deselectedItems.map(({ item, reason }) => {
@@ -1034,7 +1034,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
               : null;
             const restoreLocked = inspection.status === "returned" && !lr?.returned_sections?.includes(homeKey);
             return (
-              <div key={item.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-150)" }}>
+              <div key={item.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-3)" }}>
                 <span className="ax-caption"><strong>{item.code}</strong> · {item.title} — {reason}</span>
                 {!restoreLocked && (
                   <button type="button" className="ax-btn ax-btn--subtle" onClick={() => { pushItemState(item, "deselected", reason, true); setMsg(fmt(strings.restoredMsg, { code: item.code })); }}>{strings.restoreBtn}</button>
@@ -1049,10 +1049,10 @@ export default function Workspace({ inspection, items, library, serverResponses,
           item above; here the inspector adds published configuration templates
           manually. Included ≠ completed: new rows stay open. */}
       {!submitted && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <h4>{strings.afAddTitle}</h4>
           <p className="ax-caption">{strings.afAddHint}</p>
-          <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+          <div className="ax-row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
             <label className="ax-field">
               <span className="ax-field__label">{strings.afAddPick}</span>
               <select className="ax-select" value={afPick} onChange={e => setAfPick(e.target.value)}>
@@ -1065,7 +1065,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
           {actionTemplates.length === 0 && <p className="ax-caption">{strings.afNone}</p>}
           {manualForms.map(f => (
             <div key={f.id} className="ax-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ font: "var(--ax-text-field)" }}>{f.title}</span>
+              <span style={{ font: "var(--type-field)" }}>{f.title}</span>
               <span className="ax-lozenge ax-lozenge--warning">{f.status}</span>
             </div>
           ))}
@@ -1096,7 +1096,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
 
       {/* Violation auto-display — config-driven, non-overridable (M04-142/143/144) */}
       {!submitted && (
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <h4>{strings.vioTitle}</h4>
           {implied.length === 0 && invalidatedList.length === 0 ? <p className="ax-caption">{strings.vioNone}</p> : implied.map(v => (
             <div key={`${v.itemCode}-${v.code}`} className="ax-banner ax-banner--critical">
@@ -1144,7 +1144,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
       )}
 
       {!submitted && (
-        <div className="ax-row" style={{ justifyContent: "flex-end", alignItems: "center", gap: "var(--ax-space-200)" }}>
+        <div className="ax-row" style={{ justifyContent: "flex-end", alignItems: "center", gap: "var(--space-4)" }}>
           {/* Readiness evaluation (M04-204): submit stays clickable so refusal + grouped blockers surface on tap */}
           <span className="ax-caption">{blockCount ? fmt(strings.notReady, { n: blockCount }) : strings.ready}</span>
           <button className="ax-btn ax-btn--prominent ax-btn--field" aria-disabled={blockCount > 0} onClick={submit}>{strings.submitBtn}</button>
@@ -1185,11 +1185,11 @@ export default function Workspace({ inspection, items, library, serverResponses,
               passed — pre-migration there is no active-session cancel path. */}
           {journeySchemaAvailable && !cancelApproved && (
             cancelPending ? (
-              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-200)" }}>{strings.cancelPending}</p>
+              <p className="ax-caption" style={{ marginBlockStart: "var(--space-4)" }}>{strings.cancelPending}</p>
             ) : (cancelReasons ?? []).length === 0 ? (
-              <p className="ax-caption" style={{ marginBlockStart: "var(--ax-space-200)" }}>{strings.cancelReasonsMissing}</p>
+              <p className="ax-caption" style={{ marginBlockStart: "var(--space-4)" }}>{strings.cancelReasonsMissing}</p>
             ) : (
-              <div className="ax-stack" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)", borderBlockStart: "1px solid var(--ax-color-border)", paddingBlockStart: "var(--ax-space-200)" }}>
+              <div className="ax-stack" style={{ gap: "var(--space-3)", marginBlockStart: "var(--space-4)", borderBlockStart: "1px solid var(--border-subtle)", paddingBlockStart: "var(--space-4)" }}>
                 <strong>{strings.cancelHeading}</strong>
                 <p className="ax-caption">{strings.cancelCaption}</p>
                 <label className="ax-field"><span className="ax-field__label">{strings.cancelSelectReason}</span>

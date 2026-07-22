@@ -128,29 +128,29 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
   }
   return (
     <div>
-      <button type="button" className="ax-link" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "var(--ax-text-caption)" }} onClick={toggle} aria-expanded={open}>
+      <button type="button" className="ax-link" style={{ background: "none", border: 0, cursor: "pointer", padding: 0, font: "var(--type-caption-font)" }} onClick={toggle} aria-expanded={open}>
         {labels.history}
       </button>
       {open && (
-        <div style={{ marginBlockStart: "var(--ax-space-100)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
+        <div style={{ marginBlockStart: "var(--space-2)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           {loading && <span className="t-caption">{labels.historyLoading}</span>}
-          {err && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{err}</span>}
+          {err && <span className="t-caption" role="alert" style={{ color: "var(--status-critical)" }}>{err}</span>}
           {revs !== null && revs.length === 0 && <span className="t-caption">{labels.historyEmpty}</span>}
           {(revs ?? []).map(r => (
-            <div key={r.id} className="row" style={{ gap: "var(--ax-space-150)", alignItems: "baseline", flexWrap: "wrap", borderBlockStart: "1px dashed var(--ax-color-border)", paddingBlockStart: "var(--ax-space-100)" }}>
+            <div key={r.id} className="row" style={{ gap: "var(--space-3)", alignItems: "baseline", flexWrap: "wrap", borderBlockStart: "1px dashed var(--border-subtle)", paddingBlockStart: "var(--space-2)" }}>
               <span className="t-caption numeric">{r.changed_at.slice(0, 16).replace("T", " ")} · {r.change_source} · {r.status}</span>
-              <span dir="rtl" lang="ar" style={{ font: "var(--ax-text-caption)" }}>{r.ar ?? "—"}</span>
+              <span dir="rtl" lang="ar" style={{ font: "var(--type-caption-font)" }}>{r.ar ?? "—"}</span>
               <form action={restAction}>
                 <input type="hidden" name="key" value={row.key} />
                 <input type="hidden" name="revision_id" value={r.id} />
-                <button className="btn btn-primary btn-touch" style={{ paddingBlock: 2, font: "var(--ax-text-caption)" }} disabled={restPending}>
+                <button className="btn btn-primary btn-touch" style={{ paddingBlock: 2, font: "var(--type-caption-font)" }} disabled={restPending}>
                   {restPending ? labels.restoring : labels.restore}
                 </button>
               </form>
             </div>
           ))}
           {restState.ok && <span className="badge badge-compliant">{labels.restored}</span>}
-          {restState.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{restState.error}</span>}
+          {restState.error && <span className="t-caption" role="alert" style={{ color: "var(--status-critical)" }}>{restState.error}</span>}
         </div>
       )}
     </div>
@@ -160,14 +160,14 @@ function HistoryPanel({ row, labels }: { row: UiString; labels: Labels }) {
 function SyncButton({ labels }: { labels: Labels }) {
   const [state, formAction, pending] = useActionState<SyncResult, FormData>(syncFromCode, {});
   return (
-    <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? labels.syncing : labels.sync}</button>
       {state.report && !pending && (
         <span className="t-caption">
           {labels.syncReport} <span className="numeric">+{state.report.added.length}</span> · EN Δ <span className="numeric">{state.report.enChanged.length}</span> · ⌀ <span className="numeric">{state.report.orphaned.length}</span> · ↻ <span className="numeric">{state.report.revived.length}</span>
         </span>
       )}
-      {state.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
+      {state.error && <span className="t-caption" role="alert" style={{ color: "var(--status-critical)" }}>{state.error}</span>}
     </form>
   );
 }
@@ -197,7 +197,7 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
       {/* Arabic — inline edit + Save (returns to draft). */}
       <div className="lz-cell" dir="rtl">
         <span className="lz-key" dir="ltr">AR</span>
-        <form action={saveAction} className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", inlineSize: "100%" }}>
+        <form action={saveAction} className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap", inlineSize: "100%" }}>
           <input type="hidden" name="key" value={row.key} />
           <input className="ax-input lz-ar" name="ar" dir="rtl" lang="ar" value={ar} onChange={e => setAr(e.target.value)}
             placeholder="—" aria-label={`${labels.colAr}: ${row.key}`} style={{ flex: 1, minInlineSize: 160 }} />
@@ -230,7 +230,7 @@ function Row({ row, labels }: { row: UiString; labels: Labels }) {
 function AddKeyForm({ labels }: { labels: Labels }) {
   const [state, formAction, pending] = useActionState<L10nResult, FormData>(addKey, {});
   return (
-    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div style={{ inlineSize: "100%" }}><strong>{labels.addTitle}</strong></div>
       <div className="ax-field"><label className="ax-field__label" htmlFor="l10n-add-key">{labels.addKeyField}</label>
         <input className="ax-input numeric" name="key" id="l10n-add-key" placeholder="nav.planning" required /></div>
@@ -241,7 +241,7 @@ function AddKeyForm({ labels }: { labels: Labels }) {
       <div className="ax-field" style={{ flex: 1, minInlineSize: 180 }}><label className="ax-field__label" htmlFor="l10n-add-context">{labels.addContextField}</label>
         <input className="ax-input" name="context" id="l10n-add-context" placeholder="SCR-ADM-100" /></div>
       <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? labels.adding : labels.addBtn}</button>
-      {state.error && <span className="t-caption" role="alert" style={{ color: "var(--ax-color-critical)" }}>{state.error}</span>}
+      {state.error && <span className="t-caption" role="alert" style={{ color: "var(--status-critical)" }}>{state.error}</span>}
       {state.ok && !pending && <span className="badge badge-compliant">{labels.added}</span>}
     </form>
   );
@@ -293,7 +293,7 @@ export default function Manager({ rows, labels }: { rows: UiString[]; labels: La
 
   return (
     <>
-      <div className="panel" style={{ padding: "var(--ax-space-200) var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="panel" style={{ padding: "var(--space-4) var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap" }}>
         <input className="ax-input" value={query} onChange={e => setQuery(e.target.value)}
           placeholder={labels.searchPlaceholder} aria-label={labels.searchPlaceholder} style={{ flex: 1, minInlineSize: 220 }} />
         <select className="ax-select" value={filter} onChange={e => setFilter(e.target.value as Filter)} aria-label={labels.colStatus}>

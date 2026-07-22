@@ -122,9 +122,9 @@ export default function GisStudio({ factories, gis, strings: s }: {
     `ax-lozenge ${b === "high" ? "ax-lozenge--critical" : b === "medium" ? "ax-lozenge--warning" : b === "low" ? "ax-lozenge--success" : "ax-lozenge--info"}`;
 
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-300)" }}>
+    <div className="stack" style={{ gap: "var(--space-6)" }}>
       {/* Toolbar — search + filters + result count (RTL mirrors via flex) */}
-      <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "center", flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap" }}>
         <input
           className="ax-input" type="search" value={query}
           aria-label={s.searchLabel} placeholder={s.searchPlaceholder}
@@ -148,7 +148,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
         </span>
       </div>
 
-      <div style={{ display: "flex", gap: "var(--ax-space-300)", alignItems: "stretch", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "var(--space-6)", alignItems: "stretch", flexWrap: "wrap" }}>
         <div className="ax-panel" style={{ flex: 1, minInlineSize: 420, padding: 0, overflow: "hidden" }}>
           <Suspense fallback={
             <EmptyState glyph="…" title={s.loadingTitle} body={s.loadingBody} bare role="status" ariaBusy />
@@ -165,7 +165,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
           </Suspense>
         </div>
 
-        <aside className="ax-panel" style={{ inlineSize: "var(--ax-shell-panel-width)", padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <aside className="ax-panel" style={{ inlineSize: "var(--panel-w)", padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           {!selected && (
             <EmptyState glyph="◎" title={s.selectTitle} body={s.selectBody} inline bare />
           )}
@@ -174,13 +174,13 @@ export default function GisStudio({ factories, gis, strings: s }: {
             <>
               <div>
                 <h4>{selected.name}</h4>
-                <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-100)" }}>
+                <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap", marginBlockStart: "var(--space-2)" }}>
                   <span className="badge badge-info">{selected.factory_code}</span>
                   <span className={lozengeFor(selected.risk_band)}>
                     {bandLabel(selected.risk_band)}{selected.risk_score != null ? ` · ${selected.risk_score}` : ""}
                   </span>
                 </div>
-                <p className="t-caption" style={{ marginBlockStart: "var(--ax-space-100)" }}>
+                <p className="t-caption" style={{ marginBlockStart: "var(--space-2)" }}>
                   {selected.region ?? "—"} · {selected.city ?? "—"}
                 </p>
               </div>
@@ -191,7 +191,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                 <p className="t-caption">{s.coordsCaption}</p>
               </div>
 
-              <form action={formAction} className="stack" style={{ gap: "var(--ax-space-150)" }}>
+              <form action={formAction} className="stack" style={{ gap: "var(--space-3)" }}>
                 <input type="hidden" name="factory_id" value={selected.id} />
                 <div className="ax-field">
                   <label className="ax-field__label" htmlFor="gis-radius">{s.radiusLabel}</label>
@@ -203,9 +203,9 @@ export default function GisStudio({ factories, gis, strings: s }: {
                   />
                   <p className="ax-field__hint">{s.radiusHint} (<span className="numeric">{defaultFence}</span> m)</p>
                 </div>
-                <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+                <div className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
                   <button className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? s.saving : s.save}</button>
-                  {state.error && <span className="t-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+                  {state.error && <span className="t-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
                   {state.ok && <span className="badge badge-compliant">{s.saved}</span>}
                 </div>
               </form>
@@ -222,7 +222,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
               </tbody>
             </table>
             {/* Legend with live counts of the pins currently on the map */}
-            <div className="row" style={{ gap: "var(--ax-space-100)", marginBlockStart: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+            <div className="row" style={{ gap: "var(--space-2)", marginBlockStart: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
               <span className="badge badge-critical">{s.bandHigh} <span className="numeric">{bandCounts.high}</span></span>
               <span className="badge badge-warning">{s.bandMedium} <span className="numeric">{bandCounts.medium}</span></span>
               <span className="badge badge-compliant">{s.bandLow} <span className="numeric">{bandCounts.low}</span></span>
@@ -256,7 +256,7 @@ export default function GisStudio({ factories, gis, strings: s }: {
                   aria-selected={isSel || undefined}
                   style={{
                     cursor: hasCoords ? "pointer" : "default",
-                    background: isSel ? "var(--ax-color-selected-tint, var(--ax-color-neutral-tint))" : undefined,
+                    background: isSel ? "var(--accent-soft, var(--surface-secondary))" : undefined,
                   }}
                 >
                   <td className="numeric">{f.factory_code}</td>

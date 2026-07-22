@@ -284,7 +284,7 @@ export default async function Packages() {
 
   return (
     <Shell current="/admin/packages" title={t("admin.pkg.title", "Package library & designer")}
-      context={<span className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+      context={<span className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
         <span className="badge badge-info">SCR-ADM-030/031 · ENG-02</span>
         <span className="t-caption" role="status">{t("admin.pkg.readAt", "Read from source at")} <bdi dir="ltr">{readAt}</bdi></span>
       </span>}>
@@ -400,7 +400,7 @@ export default async function Packages() {
                         {published && canWrite && <DeactivatePackage versionId={version.id} strings={publishStrings} />}
 
                         {version.status === "draft" && canWrite && (
-                          <section className="panel" style={{ padding: "var(--ax-space-200)" }} aria-label={t("admin.pkg.publish.heading", "Publish gate")}>
+                          <section className="panel" style={{ padding: "var(--space-4)" }} aria-label={t("admin.pkg.publish.heading", "Publish gate")}>
                             <ApprovePublish versionId={version.id} strings={publishStrings} />
                           </section>
                         )}
@@ -409,7 +409,7 @@ export default async function Packages() {
                   );
                 })}</div>
 
-                {canWrite && <section className="panel" style={{ padding: "var(--ax-space-200)" }}><NewDraftForm packageId={pkg.id} strings={publishStrings} /></section>}
+                {canWrite && <section className="panel" style={{ padding: "var(--space-4)" }}><NewDraftForm packageId={pkg.id} strings={publishStrings} /></section>}
               </div>
             </details>
           );

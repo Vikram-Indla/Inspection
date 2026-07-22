@@ -371,7 +371,7 @@ function GeneratedAtlasFallback({
     if (hub) NODES.forEach(n => {
       if (n.id === hub.id) return;
       L.polyline([[hub.lat, hub.lng], [n.lat, n.lng]], {
-        className: "lg-atlas3d__net", color: `var(--ax-color-primary)`,
+        className: "lg-atlas3d__net", color: `var(--action-primary)`,
         weight: 1, opacity: 0.26, interactive: false,
       }).addTo(g);
     });
@@ -420,7 +420,7 @@ function GeneratedAtlasFallback({
 
     // L3 — the illustrative journey (Riyadh → Jubail)
     const route = L.polyline(JOURNEY.route, {
-      className: "lg-atlas3d__route", color: `var(--ax-color-primary)`,
+      className: "lg-atlas3d__route", color: `var(--action-primary)`,
       weight: 2.5, opacity: 0, dashArray: "7 9", interactive: false,
     }).addTo(g);
 

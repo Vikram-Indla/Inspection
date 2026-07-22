@@ -196,7 +196,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
     <Shell current="/planning" title={title}
       context={<span className="ax-caption ax-numeric">{tr("plan.list.context", "{total} visits in scope", "{total} زيارة في النطاق").replace("{total}", String(list.total))}</span>}>
       {/* Page actions — Create Visit / Export / Refresh (PLN-REQ-006/017/018) */}
-      <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "center" }}>
+      <div className="ax-row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "center" }}>
         {access.can("planning.create") && (
           <CreateVisitSection methods={methods} strings={{
             createLabel: tr("plan.list.createVisit", "Create Visit", "إنشاء زيارة"),
@@ -220,7 +220,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
         {PLANNING_TABS.map(tab => (
           <a key={tab} href={hrefWith(sp, { tab: tab === "all" ? "" : tab, page: "" })}
             className="ax-surface ax-kpi" aria-current={params.tab === tab ? "page" : undefined}
-            style={{ textDecoration: "none", color: "inherit", outline: params.tab === tab ? "2px solid var(--ax-color-focus, currentColor)" : undefined }}>
+            style={{ textDecoration: "none", color: "inherit", outline: params.tab === tab ? "2px solid var(--focus-ring, currentColor)" : undefined }}>
             <span className="ax-overline">{tabLabels[tab]}</span>
             <span className="ax-kpi__value ax-numeric">{list.counts[tab]}</span>
           </a>
@@ -229,7 +229,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
       {/* Filter bar — GET form keeps all state in the URL (PLN-REQ-014/015/016) */}
       <form method="get" action="/planning" className="ax-surface ax-panel"
-        style={{ padding: "var(--ax-space-300)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-200)", alignItems: "flex-end" }}>
+        style={{ padding: "var(--space-6)", display: "flex", flexWrap: "wrap", gap: "var(--space-4)", alignItems: "flex-end" }}>
         {params.tab !== "all" && <input type="hidden" name="tab" value={params.tab} />}
         <label className="ax-field" style={{ flex: "1 1 260px" }}>
           <span className="ax-field__label">{tr("plan.list.searchLabel", "Search", "بحث")}</span>
@@ -311,7 +311,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
             {PLANNING_SORT_KEYS.map(k => <option key={k} value={k}>{sortLabels[k]}</option>)}
           </select>
         </label>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+        <div className="ax-row" style={{ gap: "var(--space-3)" }}>
           <button type="submit" className="ax-btn ax-btn--secondary">{tr("plan.list.apply", "Apply", "تطبيق")}</button>
           <a className="ax-btn ax-btn--subtle" href="/planning">{tr("plan.list.reset", "Reset", "إعادة تعيين")}</a>
         </div>
@@ -385,13 +385,13 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
       {/* Pagination — state carried in the URL like every other control */}
       {list.total > 0 && (
-        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--ax-space-150)" }}>
+        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", alignItems: "center", gap: "var(--space-3)" }}>
           <span className="ax-caption ax-numeric">
             {tr("plan.list.showing", "Showing {shown} of {total} · page {page} of {pages}", "عرض {shown} من {total} · صفحة {page} من {pages}")
               .replace("{shown}", String(list.rows.length)).replace("{total}", String(list.total))
               .replace("{page}", String(page)).replace("{pages}", String(totalPages))}
           </span>
-          <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+          <div className="ax-row" style={{ gap: "var(--space-3)" }}>
             {page > 1 && <a className="ax-btn ax-btn--subtle" href={hrefWith(sp, { page: String(page - 1) })}>{tr("plan.list.prev", "← Previous", "→ السابق")}</a>}
             {page < totalPages && <a className="ax-btn ax-btn--subtle" href={hrefWith(sp, { page: String(page + 1) })}>{tr("plan.list.next", "Next →", "التالي ←")}</a>}
           </div>
@@ -400,7 +400,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
       {/* Draft continuation (PLN-REQ-010 entry point; resume consumption is a later phase) */}
       {drafts.length > 0 && (
-        <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)" }}>
+        <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)" }}>
           <h3>{tr("plan.list.draftsHeading", "Draft plans — continue where you left off", "خطط مسودة — تابع من حيث توقفت")}</h3>
           <div className="ax-tablewrap"><table className="ax-table">
             <thead><tr>

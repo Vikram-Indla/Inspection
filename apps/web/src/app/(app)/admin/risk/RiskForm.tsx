@@ -66,7 +66,7 @@ export default function RiskForm({
   const maxWeight = Math.max(0.0001, ...Object.values(weights).map(w => (Number.isFinite(w) ? w : 0)));
 
   return (
-    <form action={formAction} className="panel" style={{ padding: "var(--ax-space-400)", display: "flex", flexDirection: "column", gap: "var(--ax-space-300)", maxInlineSize: 720 }}>
+    <form action={formAction} className="panel" style={{ padding: "var(--space-8)", display: "flex", flexDirection: "column", gap: "var(--space-6)", maxInlineSize: 720 }}>
       <h4>{labels.factorsTitle}</h4>
       {initialFactors.map(f => {
         const w = weights[f.key] ?? 0;
@@ -103,21 +103,21 @@ export default function RiskForm({
           <input className="ax-input" id="risk-high-band" value={`${(Number.isFinite(medMax) ? medMax : 0) + 1}–100`} readOnly /></div>
       </div>
       <div className="rk-band">
-        <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--ax-color-success)" }} />{labels.bandLow} 0–{lowMax}</span>
-        <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--ax-color-warning)" }} />{labels.bandMedium} {lowMax + 1}–{medMax}</span>
-        <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--ax-color-critical)" }} />{labels.bandHigh} {medMax + 1}–100</span>
+        <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--status-compliant)" }} />{labels.bandLow} 0–{lowMax}</span>
+        <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--status-warning)" }} />{labels.bandMedium} {lowMax + 1}–{medMax}</span>
+        <span className="rk-bandchip"><span className="rk-bandchip__dot" style={{ background: "var(--status-critical)" }} />{labels.bandHigh} {medMax + 1}–100</span>
       </div>
 
-      <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "var(--space-3)" }}>
         <p className="t-caption numeric">{labels.lastUpdated} {updatedAt ? new Date(updatedAt).toISOString().slice(0, 16).replace("T", " ") : "—"}</p>
-        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+        <span className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
           {state.ok && !pending && <span className="badge badge-compliant">{labels.saved}</span>}
           <button className="btn btn-primary btn-lg btn-touch" disabled={pending || !sumOk} aria-disabled={!sumOk}>
             {pending ? labels.saving : labels.save}
           </button>
         </span>
       </div>
-      {state.error && <p className="t-caption" role="alert" style={{ color: "var(--ax-color-critical-strong)" }}>{state.error}</p>}
+      {state.error && <p className="t-caption" role="alert" style={{ color: "var(--status-critical-text)" }}>{state.error}</p>}
       <p className="t-caption">{labels.savedNote}</p>
     </form>
   );

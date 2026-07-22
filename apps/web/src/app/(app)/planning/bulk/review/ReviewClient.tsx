@@ -280,11 +280,11 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   if (phase === "loading") {
     return (
       <div className="ax-surface ax-panel cd-panelpad" id="cd-main">
-        <div className="ax-banner ax-banner--immutable" style={{ marginBlockEnd: "var(--ax-space-200)" }}>
+        <div className="ax-banner ax-banner--immutable" style={{ marginBlockEnd: "var(--space-4)" }}>
           <div><strong>{s.stagedBanner}</strong><div className="ax-caption">{s.stagedSub}</div></div>
         </div>
         <div className="ax-stack">{[0, 1, 2, 3].map(i => <div key={i} className="ax-skeleton" style={{ blockSize: 44 }} />)}</div>
-        <p className="ax-caption" role="status" style={{ marginBlockStart: "var(--ax-space-200)" }}>{s.loadingNote}</p>
+        <p className="ax-caption" role="status" style={{ marginBlockStart: "var(--space-4)" }}>{s.loadingNote}</p>
       </div>
     );
   }
@@ -294,7 +294,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   if (phase === "scope") {
     const missing = data?.missingFactoryIds?.length ?? 0;
     return (
-      <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
+      <div className="ax-surface" style={{ padding: "var(--space-8)", textAlign: "center" }} id="cd-main">
         <div className="ax-state">
           <span className="ax-state__glyph" aria-hidden="true">◌</span>
           <h3>{s.scopeTitle}</h3>
@@ -306,9 +306,9 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   }
   if (phase === "empty") {
     return (
-      <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
+      <div className="ax-surface" style={{ padding: "var(--space-8)", textAlign: "center" }} id="cd-main">
         {draftUnavailable && (
-          <div className="ax-banner ax-banner--warning" role="alert" style={{ marginBlockEnd: "var(--ax-space-300)" }}>
+          <div className="ax-banner ax-banner--warning" role="alert" style={{ marginBlockEnd: "var(--space-6)" }}>
             {s.draftUnavailable}
           </div>
         )}
@@ -321,9 +321,9 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   if (phase === "publishing") {
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
+        <div className="ax-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
           <div className="cd-result__icon lock" aria-hidden="true"><IconLock size={24} /></div>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
+          <div className="ax-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
             <h3>{s.publishingTitle}</h3>
             <p role="status">{s.publishingBody}</p>
             <p className="ax-caption">{s.publishingSub}</p>
@@ -336,15 +336,15 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   if (phase === "failure") {
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
+        <div className="ax-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
           <div className="cd-result__icon fail" aria-hidden="true">✕</div>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
+          <div className="ax-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
             <h3 tabIndex={-1} ref={failHeadingRef} role="alert">{s.failTitle}</h3>
             <p>{state.error}</p>
             <p className="ax-caption">{s.failSub}</p>
           </div>
         </div>
-        <div className="ax-row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
+        <div className="ax-row" style={{ marginBlockStart: "var(--space-5)", gap: "var(--space-3)" }}>
           <form action={formAction}>{hiddenPublishFields(workingIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
             <button className="ax-btn ax-btn--prominent">{s.tryAgain}</button></form>
           <a className="ax-btn ax-btn--secondary" href="/planning/bulk">{s.backConfig}</a>
@@ -359,14 +359,14 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
     const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(created)], [s.sAssign, String(created)], [s.sNotif, String(created)]];
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
-        <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
+        <div className="ax-row" style={{ gap: "var(--space-4)", alignItems: "flex-start" }}>
           <div className="cd-result__icon ok" aria-hidden="true">✓</div>
-          <div className="ax-stack" style={{ gap: "var(--ax-space-100)", flex: 1 }}>
+          <div className="ax-stack" style={{ gap: "var(--space-2)", flex: 1 }}>
             <h3 tabIndex={-1} ref={successHeadingRef} role="status">{s.successTitle}</h3>
             <p>{s.successBody}</p>
-            <div className="cd-resultgrid" style={{ marginBlock: "var(--ax-space-150)" }}>
+            <div className="cd-resultgrid" style={{ marginBlock: "var(--space-3)" }}>
               {cells.map(([k, v]) => (
-                <div key={k} className="ax-surface" style={{ padding: "var(--ax-space-150) var(--ax-space-200)" }}>
+                <div key={k} className="ax-surface" style={{ padding: "var(--space-3) var(--space-4)" }}>
                   <div className="ax-overline">{k}</div><div className="cd-count">{v}</div>
                 </div>
               ))}
@@ -376,8 +376,8 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
             {(state.dropped?.length ?? 0) > 0 && (
               <div className="ax-banner ax-banner--warning" role="status">
                 <strong>{interp(s.droppedH, { n: state.dropped!.length })}</strong>
-                <p className="ax-caption" style={{ marginBlock: "var(--ax-space-050) 0" }}>{s.droppedD}</p>
-                <ul style={{ marginBlockStart: "var(--ax-space-100)" }}>
+                <p className="ax-caption" style={{ marginBlock: "var(--space-1) 0" }}>{s.droppedD}</p>
+                <ul style={{ marginBlockStart: "var(--space-2)" }}>
                   {state.dropped!.map(d => (
                     <li key={d.id}><bdi>{d.name}</bdi> — {d.reasons.map(reasonText).join(" · ")}</li>
                   ))}
@@ -387,7 +387,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
             <p className="ax-caption">{s.successSub}</p>
           </div>
         </div>
-        <div className="ax-row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
+        <div className="ax-row" style={{ marginBlockStart: "var(--space-5)", gap: "var(--space-3)" }}>
           <a className="ax-btn ax-btn--prominent" href="/visits">{s.goVisits}</a>
           {/* optional read-only plan link — only when the publisher returned a plan ID */}
           {state.planId && <a className="ax-btn ax-btn--secondary" href={`/planning/plans/${state.planId}`}>{s.openPlan}</a>}
@@ -479,17 +479,17 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   // Per-row evidence cell (glyph + text; never colour alone).
   const rowEvidence = (fid: string) => {
     const pick = picks[fid] ?? "";
-    if (!pick) return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>◐ {s.ecAuto}</span>;
+    if (!pick) return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>◐ {s.ecAuto}</span>;
     const inPool = (data?.inspectors ?? []).some(i => i.user_id === pick);
-    if (!inPool) return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {s.ev.bNotPool}</span>;
-    if (overlapSource === "failed") return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {s.ecFail}</span>;
-    if (!windowSet || overlapSource === "not-evaluated") return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>○ {s.ecSetWindow}</span>;
+    if (!inPool) return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {s.ev.bNotPool}</span>;
+    if (overlapSource === "failed") return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {s.ecFail}</span>;
+    if (!windowSet || overlapSource === "not-evaluated") return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>○ {s.ecSetWindow}</span>;
     const ov = overlapFor(pick);
     if (ov && ov.count > 0) {
       const sm = ov.samples[0];
-      return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · <bdi>{sm.visit_id.slice(0, 8)}</bdi> {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
+      return <span className="ax-caption cd-disabledreason" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✕ {interp(s.ecBlockedN, { n: ov.count })}{sm ? <> · <bdi>{sm.visit_id.slice(0, 8)}</bdi> {fmtWin(sm.window_start)}→{fmtWin(sm.window_end)}</> : null}</span>;
     }
-    return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--ax-space-050)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
+    return <span className="ax-caption" style={{ display: "block", marginBlockStart: "var(--space-1)" }}>✓ {s.ecInPool} · ✓ {interp(s.ecOverlaps, { n: 0 })} · {s.ecSkills}</span>;
   };
 
   const blockerCopy = (b: Blocker) => {
@@ -515,7 +515,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
   const createMark: "ok" | "pending" = committable ? "ok" : "pending";
 
   return (
-    <div className="ax-stack" style={{ gap: "var(--ax-space-400)" }} id="cd-main">
+    <div className="ax-stack" style={{ gap: "var(--space-8)" }} id="cd-main">
       <a href="#cd-publish" className="ax-link cd-skip">{s.skipToPublish}</a>
       {/* S10 — polite scope-reduction announcement (visually hidden, does not shift layout) */}
       <p className="ax-sr-only" role="status" aria-live="polite">{announce}</p>
@@ -526,10 +526,10 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           <span className="ax-lozenge ax-lozenge--plan">{s.method}</span>
           {freshness && <span className="ax-freshness">{s.freshnessPrefix} {freshness}</span>}
         </div>
-        <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }}>{s.stagedBanner}</p>
+        <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--space-2) 0" }}>{s.stagedBanner}</p>
         {/* M6 — resumed-draft provenance / failed-draft honesty */}
         {initialDraft && (
-          <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }} role="status">
+          <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--space-2) 0" }} role="status">
             <span className="ax-lozenge ax-lozenge--info">{interp(s.draftBanner, { ref: initialDraft.planReference })}</span>
             {/* M8 / PLN-CON-018 — discard the resumed draft (never-published);
                 distinct from cancelling a published visit. */}
@@ -539,7 +539,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           </p>
         )}
         {draftUnavailable && (
-          <div className="ax-banner ax-banner--warning" role="alert" style={{ margin: "0 var(--ax-space-300)" }}>
+          <div className="ax-banner ax-banner--warning" role="alert" style={{ margin: "0 var(--space-6)" }}>
             {s.draftUnavailable}
           </div>
         )}
@@ -572,9 +572,9 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
               {(data!.lookups?.priorities ?? []).map(o => <option key={o.key} value={o.key}>{lk(o)}</option>)}
             </select></dd></div>
           <div><dt>{s.packageLabel}</dt><dd>
-            <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }} role="group" aria-label={s.packageLabel}>
+            <div className="ax-stack" style={{ gap: "var(--space-1)" }} role="group" aria-label={s.packageLabel}>
               {data!.packages.map(p => (
-                <label key={p.id} className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+                <label key={p.id} className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                   <input type="checkbox" value={p.id} checked={pkgIds.includes(p.id)}
                     onChange={e => setPkgIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
                   <span>{p.code} · {p.version_label}</span>
@@ -582,10 +582,10 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
               ))}
             </div>
             {pkgIds.length === 0 && (
-              <p className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--ax-space-100)" }}>{s.packageHint}</p>
+              <p className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--space-2)" }}>{s.packageHint}</p>
             )}
           </dd></div>
-          <div><dt>{s.window}</dt><dd className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
+          <div><dt>{s.window}</dt><dd className="ax-row" style={{ gap: "var(--space-2)" }}>
             <input ref={windowRef} className="ax-input cd-mono" name="window_start" type="datetime-local" aria-label={s.windowStart} value={windowStart} onChange={e => setWindowStart(e.target.value)} />
             <span aria-hidden="true">→</span>
             <input className="ax-input cd-mono" name="window_end" type="datetime-local" aria-label={s.windowEnd} value={windowEnd} onChange={e => setWindowEnd(e.target.value)} />
@@ -601,11 +601,11 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
           <p className="ax-caption" role="status">{s.loadingNote}</p>
         ) : blockers.length ? (
           <>
-            <div className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
+            <div className="ax-row" style={{ gap: "var(--space-2)" }}>
               <span className="ax-lozenge ax-lozenge--critical">{s.blockedTag}</span>
               <strong>{interp(s.blockersN, { n: blockers.length })}</strong>
             </div>
-            <ul className="cd-blockerlist" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            <ul className="cd-blockerlist" style={{ marginBlockStart: "var(--space-3)" }}>
               {blockers.map((b, i) => {
                 const { title, detail } = blockerCopy(b);
                 const meta = BLK_META[b.kind];
@@ -625,7 +625,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
             </ul>
           </>
         ) : (
-          <div className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
+          <div className="ax-row" style={{ gap: "var(--space-2)" }}>
             <span className="ax-lozenge ax-lozenge--success">{s.readyTag}</span>
             <strong>{s.clearAll}</strong>
           </div>
@@ -633,7 +633,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         {/* M7 — non-blocking warnings (e.g. zero packages: preparation chooses
             later). Honest, visible, never gating publish. */}
         {!validating && (v?.warnings?.length ?? 0) > 0 && (
-          <div className="ax-banner ax-banner--warning" role="status" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+          <div className="ax-banner ax-banner--warning" role="status" style={{ marginBlockStart: "var(--space-3)" }}>
             {v!.warnings.map((w, i) => {
               const { title, detail } = blockerCopy(w);
               return <p key={w.kind + i} style={{ margin: 0 }}><strong>{title}</strong>{detail ? <> — {detail}</> : null}</p>;
@@ -648,7 +648,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         {validating || !v?.ledger ? (
           <p className="ax-caption" role="status">{s.loadingNote}</p>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: "var(--ax-space-200)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: "var(--space-4)" }}>
             <div><span className="ax-caption">{s.eligTotal}</span><div className="cd-count">{v.ledger.total}</div></div>
             <div><span className="ax-caption">{s.eligEligible}</span><div className="cd-count ax-lozenge--success">{v.ledger.eligible}</div></div>
             <div><span className="ax-caption">{s.eligIneligible}</span><div className="cd-count">{v.ledger.ineligible}</div></div>
@@ -684,7 +684,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
                   <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div>
                     {/* M6 — per-row ineligibility reasons from the partition */}
                     {(eligById.get(f.id)?.reasons.length ?? 0) > 0 && (
-                      <div className="ax-row" style={{ gap: "var(--ax-space-050)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-050)" }}>
+                      <div className="ax-row" style={{ gap: "var(--space-1)", flexWrap: "wrap", marginBlockStart: "var(--space-1)" }}>
                         {eligById.get(f.id)!.reasons.map(r => (
                           <span key={r} className="ax-lozenge ax-lozenge--warning">{reasonText(r)}</span>
                         ))}
@@ -705,7 +705,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
                           {data!.inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
                         </select>
                         {rowEvidence(f.id)}
-                        <button type="button" className="ax-link" style={{ marginBlockStart: "var(--ax-space-050)", background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                        <button type="button" className="ax-link" style={{ marginBlockStart: "var(--space-1)", background: "none", border: "none", padding: 0, cursor: "pointer" }}
                           aria-controls="cd-evidence-ledger" onClick={() => setFocusedId(f.id)}>{s.evReview}</button>
                       </div>
                     )}
@@ -720,7 +720,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       {/* ---- CD-024 assignment evidence ledger (signature pattern) ---- */}
       <section id="cd-evidence-ledger">
         <div className="cd-sectionhead"><h3>{s.evTitle}</h3></div>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{s.evLead}</p>
+        <p className="ax-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{s.evLead}</p>
         <EvidenceLedger focus={ledgerFocus} strings={s.ev} />
       </section>
 
@@ -729,10 +729,10 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         <div className="cd-sectionhead"><h3>{s.assignH}</h3><span className="ax-caption cd-mono">{interp(s.splitLine, { manual, auto })}</span></div>
         <div className="ax-grid-2">
           <div className="ax-surface ax-panel cd-panelpad"><div className="ax-overline">{s.manualNamed}</div>
-            <div className="cd-count" style={{ marginBlock: "var(--ax-space-050)" }}>{manual}</div>
+            <div className="cd-count" style={{ marginBlock: "var(--space-1)" }}>{manual}</div>
             <p className="ax-caption">{s.manualEvidenceNote}</p></div>
           <div className="ax-surface ax-panel cd-panelpad"><div className="ax-overline">{s.autoChosen}</div>
-            <div className="cd-count" style={{ marginBlock: "var(--ax-space-050)" }}>{auto}</div>
+            <div className="cd-count" style={{ marginBlock: "var(--space-1)" }}>{auto}</div>
             <p className="ax-caption">{s.autoNote}</p></div>
         </div>
       </section>
@@ -740,7 +740,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       {/* ---- publish consequence ledger (signature pattern) ---- */}
       <section>
         <div className="cd-sectionhead"><h3>{s.ledgerH}</h3></div>
-        <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-150)" }}>{s.ledgerLead}</p>
+        <p className="ax-caption" style={{ marginBlockEnd: "var(--space-3)" }}>{s.ledgerLead}</p>
         <div className="cd-ledger">
           <div className="cd-lgroup">
             <div className="cd-lgroup__head">1 · {s.gCreate}</div>
@@ -775,7 +775,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
       <form action={formAction} className="cd-actionbar" id="cd-publish" aria-label={s.correctH}>
         {hiddenPublishFields(publishIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
         <div className="cd-sectionhead" style={{ margin: 0 }}><h3>{s.correctH}</h3></div>
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
+        <div className="ax-row" style={{ gap: "var(--space-3)" }}>
           <a className="ax-link" href="/planning/bulk">{s.backConfig}</a>
           <span className="ax-caption">{s.backConfigD}</span>
         </div>
@@ -790,7 +790,7 @@ export default function ReviewClient({ strings: s, initialDraft, draftUnavailabl
         {needsAck && !validating && (
           <div className="ax-banner ax-banner--warning" role="alert">
             <p style={{ marginBlockStart: 0 }}>{interp(s.ackRequired, { n: ineligibleIds.length })}</p>
-            <label className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+            <label className="ax-row" style={{ gap: "var(--space-2)", alignItems: "center" }}>
               <input type="checkbox" checked={acknowledged} onChange={e => setAcknowledged(e.target.checked)} />
               <span>{interp(s.ackLabel, { n: eligibleIds.length })}</span>
             </label>

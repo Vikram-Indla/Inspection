@@ -38,7 +38,7 @@ const EVENT_KEYS = ["assignment", "reschedule", "review_decision", "virtual_clos
 const CHANNELS = ["inapp", "push", "sms", "email"];
 
 function Msg({ state }: { state: NotifRuleResult }) {
-  if (state.error) return <p className="t-caption" role="alert" style={{ color: "var(--ax-fg-critical, inherit)" }}>{state.error}</p>;
+  if (state.error) return <p className="t-caption" role="alert" style={{ color: "var(--text-on-action, inherit)" }}>{state.error}</p>;
   if (state.notice) return <p className="t-caption" role="status">{state.notice}</p>;
   return null;
 }
@@ -46,8 +46,8 @@ function Msg({ state }: { state: NotifRuleResult }) {
 function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]; l: Labels }) {
   const [state, action, pending] = useActionState<NotifRuleResult, FormData>(createNotificationRule, {});
   return (
-    <form action={action} className="stack" style={{ gap: "var(--ax-space-150)" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--ax-space-150)" }}>
+    <form action={action} className="stack" style={{ gap: "var(--space-3)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--space-3)" }}>
         <label className="ax-field"><span>{l.eventKey}</span>
           <select name="event_key" required defaultValue="">
             <option value="" disabled>—</option>
@@ -78,7 +78,7 @@ function CreateForm({ roles, l }: { roles: { role_key: string; title: string }[]
       <label className="ax-field"><span>{l.template}</span>
         <textarea name="template" required rows={2} placeholder="e.g. Review decision recorded: {decision}" />
       </label>
-      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button type="submit" className="btn btn-primary btn-lg btn-touch" disabled={pending}>{pending ? l.creating : l.create}</button>
         <Msg state={state} />
       </div>
@@ -93,7 +93,7 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
 
   if (row.status === "draft") {
     return (
-      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--space-1)" }}>
         <form action={pubAction}><input type="hidden" name="rule_id" value={row.id} />
           <button type="submit" className="btn btn-primary btn-touch" disabled={pubPending}>{pubPending ? l.publishing : l.publish}</button>
         </form>
@@ -103,12 +103,12 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
   }
   if (row.status === "published") {
     return (
-      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--space-1)" }}>
         <form action={testAction}><input type="hidden" name="rule_id" value={row.id} />
           <button type="submit" className="btn btn-primary btn-touch" disabled={testPending}>{testPending ? l.testing : l.test}</button>
         </form>
         <Msg state={testState} />
-        <form action={deactAction} className="row" style={{ gap: "var(--ax-space-100)" }}>
+        <form action={deactAction} className="row" style={{ gap: "var(--space-2)" }}>
           <input type="hidden" name="rule_id" value={row.id} />
           <input type="text" name="deactivation_reason" placeholder={l.deactivationReason} required />
           <button type="submit" className="btn btn-primary btn-touch" disabled={deactPending}>{deactPending ? l.deactivating : l.deactivate}</button>
@@ -122,8 +122,8 @@ function RowActions({ row, l }: { row: NotificationRuleRow; l: Labels }) {
 
 export default function NotificationRulesManager({ rows, roles, l }: { rows: NotificationRuleRow[]; roles: { role_key: string; title: string }[]; l: Labels }) {
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-200)" }}>
-      <section className="panel stack" style={{ padding: "var(--ax-space-300)", gap: "var(--ax-space-150)" }}>
+    <div className="stack" style={{ gap: "var(--space-4)" }}>
+      <section className="panel stack" style={{ padding: "var(--space-6)", gap: "var(--space-3)" }}>
         <CreateForm roles={roles} l={l} />
       </section>
 

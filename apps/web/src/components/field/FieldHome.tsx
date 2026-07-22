@@ -117,9 +117,9 @@ function fmtWindow(iso: string, locale: string): string {
 // navigates; the Details link is the navigation affordance, so tap-to-open is
 // preserved for keyboard and pointer users alike.
 function VisitCard({ v, s, strings, selected, onSelect, onDragStart, locale }: { v: FieldVisit; s: DerivedStatus; strings: FieldHomeStrings; selected: boolean; onSelect: (id: string) => void; onDragStart: (id: string) => void; locale: string }) {
-  const accent = s.tone === "critical" ? "var(--ax-color-critical)"
-    : s.tone === "warning" ? "var(--ax-color-warning)"
-    : "var(--ax-color-primary)";
+  const accent = s.tone === "critical" ? "var(--status-critical)"
+    : s.tone === "warning" ? "var(--status-warning)"
+    : "var(--action-primary)";
   return (
     // V2 a11y fix: aria-selected is only a valid ARIA attribute on elements
     // with a role that supports it (option/row/tab/gridcell/etc) — axe
@@ -128,15 +128,15 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart, locale }: {
     // state; this outer attribute was redundant as well as invalid.
     <div className="ax-surface ax-panel" draggable={s.key !== "expired" && s.key !== "approved"}
       onDragStart={() => onDragStart(v.id)}
-      style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)", color: "inherit", borderInlineStart: `4px solid ${accent}`,
-        outline: selected ? "var(--ax-focus-ring)" : undefined, outlineOffset: selected ? "-2px" : undefined }}>
-      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)" }}>
+      style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)", color: "inherit", borderInlineStart: `4px solid ${accent}`,
+        outline: selected ? "var(--focus-ring-shadow)" : undefined, outlineOffset: selected ? "-2px" : undefined }}>
+      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--space-3)" }}>
         {/* Select-on-click/focus drives the persistent highlight (real state in
             the parent); the button is natively keyboard-operable. */}
         <button type="button" className="ax-link ax-inline-target" aria-pressed={selected}
           onClick={() => onSelect(v.id)} onFocus={() => onSelect(v.id)}
           aria-label={strings.selectAria.replace("{name}", v.factoryName)}
-          style={{ font: "var(--ax-text-field)", fontWeight: 600, textAlign: "start", background: "none", border: "none", padding: 0, cursor: "pointer", color: "inherit" }}>
+          style={{ font: "var(--type-field)", fontWeight: 600, textAlign: "start", background: "none", border: "none", padding: 0, cursor: "pointer", color: "inherit" }}>
           {v.factoryName}
         </button>
         <span className={`ax-lozenge ax-lozenge--${s.tone === "ops" ? "ops" : s.tone}`}>
@@ -147,11 +147,11 @@ function VisitCard({ v, s, strings, selected, onSelect, onDragStart, locale }: {
         {fmtWindow(v.windowStart, locale)} · {v.visitType} · {v.executionMode.replace(/_/g, " ")} · {v.city}
       </span>
       {(s.key === "expired" || s.key === "overdue") && (
-        <span className="ax-caption" style={{ color: s.key === "expired" ? "var(--ax-color-critical)" : "var(--ax-color-warning-strong)" }}>
+        <span className="ax-caption" style={{ color: s.key === "expired" ? "var(--status-critical)" : "var(--status-warning-text)" }}>
           {strings.windowEnds.replace("{date}", fmtWindow(v.windowEnd, locale))}
         </span>
       )}
-      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+      <div className="ax-row" style={{ justifyContent: "space-between", gap: "var(--space-3)", flexWrap: "wrap" }}>
         {s.key !== "expired" && s.key !== "approved" ? <span className="ax-caption">{strings.rescheduleHint}</span> : <span />}
         <Link href={visitHref(v)} prefetch={false} className="ax-link ax-caption ax-inline-target" style={{ marginInlineStart: "auto" }}
           aria-label={strings.openDetailsAria.replace("{name}", v.factoryName)}>{strings.openDetails} →</Link>
@@ -165,15 +165,15 @@ function InboxRow({ n, strings, locale }: { n: FieldNotification; strings: Field
   const [state, formAction, pending] = useActionState<FieldActionResult, FormData>(markNotificationRead, {});
   const read = !n.unread || !!state.ok;
   return (
-    <li className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-start", paddingBlock: "var(--ax-space-100)", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
-      <span aria-hidden="true" style={{ marginBlockStart: 6, inlineSize: 8, blockSize: 8, flex: "0 0 auto", borderRadius: "var(--ax-radius-full)", background: read ? "var(--ax-color-border)" : "var(--ax-color-primary)" }} />
+    <li className="ax-row" style={{ gap: "var(--space-3)", alignItems: "flex-start", paddingBlock: "var(--space-2)", borderBlockEnd: "1px solid var(--border-subtle)" }}>
+      <span aria-hidden="true" style={{ marginBlockStart: 6, inlineSize: 8, blockSize: 8, flex: "0 0 auto", borderRadius: "var(--radius-full)", background: read ? "var(--border-subtle)" : "var(--action-primary)" }} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-        <span style={{ font: "var(--ax-text-body-strong)" }}>
+        <span style={{ font: "var(--type-body-strong)" }}>
           {n.label}{!read && <span className="ax-sr-only"> — {strings.unreadBadge}</span>}
         </span>
         {n.detail && <span className="ax-caption">{n.detail}</span>}
         <span className="ax-caption ax-numeric">{fmtWindow(n.createdAt, locale)}</span>
-        {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}
+        {state.error && <span className="ax-caption" style={{ color: "var(--status-critical)" }} role="alert">{state.error}</span>}
       </div>
       {!read && (
         <form action={formAction}>
@@ -297,10 +297,10 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
-      <section id="visits" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", scrollMarginBlockStart: "var(--ax-space-300)" }}>
-        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
-          <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.heading}</h3>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+      <section id="visits" style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", scrollMarginBlockStart: "var(--space-6)" }}>
+        <div className="ax-row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-3)" }}>
+          <h3 style={{ font: "var(--type-heading-lg)", margin: 0 }}>{strings.heading}</h3>
           {/* M03-003 — view switch */}
           <div className="ax-segmented ax-segmented--field" role="group" aria-label={strings.viewSwitchAria}>
             {([["list", strings.viewList], ["calendar", strings.viewCalendar], ["map", strings.viewMap]] as [ViewKey, string][]).map(([k, label]) => (
@@ -311,7 +311,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         {rescheduleMessage && <div className="ax-banner" role="status">{rescheduleMessage}</div>}
 
         {/* M03-004 — search / filter / sort */}
-        <div className="ax-row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+        <div className="ax-row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
           <span className="ax-search" style={{ flex: "1 1 220px" }}>
             <input className="ax-input" style={{ inlineSize: "100%" }} value={q}
               onChange={e => setQ(e.target.value)}
@@ -353,7 +353,7 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
         {view === "list" && filtered.length > 0 && (
           <>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--space-4)" }}>
               {pageSlice.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} locale={locale} />)}
             </div>
             <Pagination page={clampedPage} pageCount={pageCount} onChange={setPage}
@@ -363,15 +363,15 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
         )}
 
         {view === "calendar" && filtered.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
             {byDay.map(([day, group]) => (
-              <div key={day} style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-                <div className="ax-row" style={{ gap: "var(--ax-space-150)" }} onDragOver={e => e.preventDefault()} onDrop={() => void dropOnDay(day)}>
+              <div key={day} style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+                <div className="ax-row" style={{ gap: "var(--space-3)" }} onDragOver={e => e.preventDefault()} onDrop={() => void dropOnDay(day)}>
                   <span className="ax-overline">{dayLabel(day)}</span>
                   <span className="ax-badge">{group.length}</span>
                   {draggedId && <span className="ax-caption">{rescheduleBusy ? "…" : strings.rescheduleHint}</span>}
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--ax-space-200)", borderInlineStart: "2px solid var(--ax-color-border)", paddingInlineStart: "var(--ax-space-200)" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "var(--space-4)", borderInlineStart: "2px solid var(--border-subtle)", paddingInlineStart: "var(--space-4)" }}>
                   {group.map(({ v, s }) => <VisitCard key={v.id} v={v} s={s} strings={strings} selected={v.id === selectedId} onSelect={setSelectedId} onDragStart={setDraggedId} locale={locale} />)}
                 </div>
               </div>
@@ -394,9 +394,9 @@ export default function FieldHome({ visits, notifications, strings, nowIso, loca
 
       {/* M03-001 — inspector inbox remains available after the active work
           queue so alerts do not displace the next assignment. */}
-      <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+      <section className="ax-surface ax-panel" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
         <div className="ax-row" style={{ justifyContent: "space-between" }}>
-          <h3 style={{ font: "var(--ax-text-heading)", margin: 0 }}>{strings.inboxTitle}</h3>
+          <h3 style={{ font: "var(--type-heading-lg)", margin: 0 }}>{strings.inboxTitle}</h3>
           {unread > 0 && <span className="ax-badge">{unread}</span>}
         </div>
         {notifications.length === 0

@@ -40,7 +40,7 @@ export default async function CommitteePage() {
           body={t("cmte.empty.body", "Records appear here as reports are signed and verifications requested. Empty may also mean none are in your scope (RLS).")} />
       )}
       {(acts ?? []).map((a) => (
-        <div key={a.id} className="panel" style={{ padding: "var(--ax-space-300)" }}>
+        <div key={a.id} className="panel" style={{ padding: "var(--space-6)" }}>
           <div className="row" style={{ justifyContent: "space-between" }}>
             <h3>{a.kind} · {a.outcome}</h3><span className="badge badge-warning">{a.verification_status}</span>
           </div>

@@ -359,12 +359,12 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   const anyProblem = nBlocked > 0 || nNoNotif > 0; // partial/failed → role=alert
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
       {/* CD-026 — Selected Visit Continuity Spine (signature pattern). One stable
           selected identity + state + allowed-action context, carried in-session. */}
       <section className="panel" aria-label={strings.spineHeading}
-        style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--ax-space-100)" }}>
+        style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+        <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap", gap: "var(--space-2)" }}>
           <span className="ax-overline">{strings.spineHeading}</span>
           {activeVisit && (
             <span className={`ax-lozenge ${allowedTone[allowedKey(activeVisit)]}`}>{allowedLabel[allowedKey(activeVisit)]}</span>
@@ -373,7 +373,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         {!activeVisit ? (
           <p className="t-caption" style={{ margin: 0 }}>{strings.spineEmpty}</p>
         ) : (
-          <div className="row" style={{ flexWrap: "wrap", gap: "var(--ax-space-300)", alignItems: "flex-start" }}>
+          <div className="row" style={{ flexWrap: "wrap", gap: "var(--space-6)", alignItems: "flex-start" }}>
             <div style={{ minInlineSize: 200 }}>
               <div className="numeric"><strong>{activeVisit.id.slice(0, 8)}</strong>
                 {activeVisit.planId && <span className="t-caption numeric">{"  "}· {activeVisit.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {activeVisit.planId.slice(0, 8)}</span>}
@@ -382,7 +382,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <div className="t-caption">{activeVisit.typeLabel} · {activeVisit.modeLabel}</div>
             </div>
             <div style={{ minInlineSize: 180 }}>
-              <div className="row" style={{ gap: "var(--ax-space-100)", flexWrap: "wrap" }}>
+              <div className="row" style={{ gap: "var(--space-2)", flexWrap: "wrap" }}>
                 <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[effectiveStatus(activeVisit)] ?? ""}`}>
                   {effectiveStatus(activeVisit) === "expired" && activeVisit.planningStatus === "published" ? strings.expiredLabel : activeVisit.planningLabel}
                 </span>
@@ -403,7 +403,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
           <button key={s} type="button" className="panel ax-kpi"
             aria-pressed={status === s}
             onClick={() => setStatus(status === s ? "" : s)}
-            style={{ cursor: "pointer", textAlign: "start", boxShadow: status === s ? "var(--ax-focus-ring)" : undefined }}>
+            style={{ cursor: "pointer", textAlign: "start", boxShadow: status === s ? "var(--focus-ring-shadow)" : undefined }}>
             <span className="ax-overline">{strings.statusLabels[s] ?? s}</span>
             <span className="ax-kpi__value numeric">{counts[s] ?? 0}</span>
           </button>
@@ -411,7 +411,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
       </div>
 
       {/* M02-003/004 — search + filters + sort */}
-      <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)", alignItems: "flex-end" }}>
+      <div className="panel" style={{ padding: "var(--space-4)", display: "flex", flexWrap: "wrap", gap: "var(--space-3)", alignItems: "flex-end" }}>
         <input className="ax-input" style={{ inlineSize: 260 }} value={q} onChange={e => setQ(e.target.value)}
           placeholder={strings.searchPlaceholder} aria-label={strings.searchAria} />
         <select className="ax-select" value={status} onChange={e => setStatus(e.target.value)} aria-label={strings.allStatuses}>
@@ -452,16 +452,16 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
 
       {/* M02-007/011/031-034 — bulk action bar over the selection */}
       {selected.size > 0 && (
-        <div className="panel" style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+        <div className="panel" style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           <div className="row" style={{ justifyContent: "space-between", flexWrap: "wrap" }}>
             <h4 style={{ margin: 0 }}>{strings.bulkHeading} · {strings.selectedCount.replace("{n}", String(selected.size))}</h4>
             <button type="button" className="btn btn-ghost btn-touch" onClick={() => setSelected(new Set())}>{strings.clearSelection}</button>
           </div>
 
           {/* CD-026 — eligibility preview: verified now, re-checked at submit */}
-          <div className="ax-state ax-state--inline" style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-050)", alignItems: "flex-start" }}>
+          <div className="ax-state ax-state--inline" style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", alignItems: "flex-start" }}>
             <span className="ax-overline">{strings.eligHeading}</span>
-            <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+            <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap" }}>
               <span className="t-caption">{strings.eligReschedule}: <strong>{eligLine(elig.publishNew)}</strong></span>
               <span className="t-caption">{strings.eligCancel}: <strong>{eligLine(elig.publishNew)}</strong></span>
               <span className="t-caption">{strings.eligReassign}: <strong>{eligLine(elig.notStarted)}</strong></span>
@@ -471,7 +471,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
             {!elig.samePlan && <span className="badge badge-warning">{strings.eligSamePlanBlocked}</span>}
           </div>
 
-          <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-200)" }}>
+          <div className="row" style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--space-4)" }}>
             <form action={rscAct} onSubmit={() => setLastVerb("reschedule")} className="row" style={{ alignItems: "flex-end", flexWrap: "wrap" }}>
               {hidden}
               <div className="ax-field" style={{ maxInlineSize: 210 }}><label className="ax-field__label" htmlFor="bulk-window-start">{strings.bulkWindowStart}</label>
@@ -543,8 +543,8 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         <div ref={summaryRef} tabIndex={-1}
           className={`panel ${anyProblem ? "ax-banner--critical" : ""}`}
           role={anyProblem ? "alert" : "status"} aria-live="polite"
-          style={{ padding: "var(--ax-space-200)", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-          <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "baseline" }}>
+          style={{ padding: "var(--space-4)", display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+          <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "baseline" }}>
             <strong>{verbLabel[result!.verb as BulkVerb] ?? ""}</strong>
             {nApplied > 0 && <span className="badge badge-compliant">{strings.ledgerSummaryApplied.replace("{n}", String(nApplied))}</span>}
             {nBlocked > 0 && <span className="badge badge-warning">{strings.ledgerSummaryBlocked.replace("{n}", String(nBlocked))}</span>}
@@ -593,7 +593,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               const isActive = v.id === activeId;
               return (
                 <tr key={v.id} aria-selected={isActive}
-                  style={isActive ? { outline: "var(--ax-focus-ring)", outlineOffset: "-2px" } : undefined}>
+                  style={isActive ? { outline: "var(--focus-ring-shadow)", outlineOffset: "-2px" } : undefined}>
                   <td><input type="checkbox" checked={selected.has(v.id)} onChange={() => toggleOne(v.id)}
                     aria-label={strings.selectRowAria.replace("{id}", v.id.slice(0, 8))} /></td>
                   <td className="numeric">

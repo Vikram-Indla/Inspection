@@ -5,7 +5,7 @@
 // native <details> disclosure).
 export default function RawJsonDetails({ engine, json }: { engine: string; json: unknown }) {
   return (
-    <details className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+    <details className="ax-surface" style={{ padding: "var(--space-6)" }}>
       <summary>
         <b>{engine}</b> — Raw JSON (advanced)
       </summary>

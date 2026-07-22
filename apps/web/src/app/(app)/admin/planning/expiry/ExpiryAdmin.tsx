@@ -68,8 +68,8 @@ function RuleForm({ row, ruleType, labels, onDone }: {
     });
   };
   return (
-    <form onSubmit={submit} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
-      <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap", alignItems: "flex-end" }}>
+    <form onSubmit={submit} className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+      <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap", alignItems: "flex-end" }}>
         <div className="ax-field" style={{ maxInlineSize: 150 }}>
           <label className="ax-field__label" htmlFor={row ? `ex-off-${row.id}` : `ex-off-new-${ruleType}`}>{labels.offsetLabel}</label>
           <input className="ax-input numeric" id={row ? `ex-off-${row.id}` : `ex-off-new-${ruleType}`}
@@ -102,7 +102,7 @@ function RuleForm({ row, ruleType, labels, onDone }: {
         <label className="ax-field__label" htmlFor={row ? `ex-rs-${row.id}` : `ex-rs-new-${ruleType}`}>{labels.reasonLabel}</label>
         <input className="ax-input" id={row ? `ex-rs-${row.id}` : `ex-rs-new-${ruleType}`} name="reason" required maxLength={500} defaultValue={row?.reason ?? ""} />
       </div>
-      <div className="row" style={{ gap: "var(--ax-space-200)", flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: "var(--space-4)", flexWrap: "wrap" }}>
         <label className="ax-caption" style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
           <input type="checkbox" name="notify_plan_creator" value="1" defaultChecked={row?.notify_plan_creator ?? true} /> {labels.notifyPlanCreator}
         </label>
@@ -110,11 +110,11 @@ function RuleForm({ row, ruleType, labels, onDone }: {
           <input type="checkbox" name="notify_inspector" value="1" defaultChecked={row?.notify_inspector ?? false} /> {labels.notifyInspector}
         </label>
       </div>
-      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>
+      <div className="row" style={{ gap: "var(--space-3)", alignItems: "center" }}>
         <button className="ax-btn ax-btn--prominent" disabled={pending}>{pending ? labels.working : row ? labels.save : labels.createVersion}</button>
         <button type="button" className="ax-btn" onClick={onDone}>{labels.closeEdit}</button>
         {feedback.ok && !pending && <span className="ax-lozenge ax-lozenge--success" role="status">{feedback.ok}</span>}
-        {feedback.error && <span role="alert" className="ax-caption" style={{ color: "var(--ax-color-critical-strong)" }}>{feedback.error}</span>}
+        {feedback.error && <span role="alert" className="ax-caption" style={{ color: "var(--status-critical-text)" }}>{feedback.error}</span>}
       </div>
     </form>
   );
@@ -138,7 +138,7 @@ export default function ExpiryAdmin({ rows, canConfigure, labels }: {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-300)" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
       {!canConfigure && <div className="ax-banner ax-banner--warning" role="status"><div>{labels.readOnlyWhy}</div></div>}
       {toggleFeedback.ok && <div className="ax-banner ax-banner--success" role="status"><div>{toggleFeedback.ok}</div></div>}
       {toggleFeedback.error && <div className="ax-banner ax-banner--critical" role="alert"><div>{toggleFeedback.error}</div></div>}
@@ -148,8 +148,8 @@ export default function ExpiryAdmin({ rows, canConfigure, labels }: {
           .filter(r => r.rule_type === ruleType)
           .sort((a, b) => b.version - a.version);
         return (
-          <section key={ruleType} className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
-            <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-150)" }}>
+          <section key={ruleType} className="ax-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+            <div className="row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--space-3)" }}>
               <h2 style={{ margin: 0 }}>{labels.ruleTypes[ruleType] ?? ruleType}</h2>
               {canConfigure && (
                 <button type="button" className="ax-btn ax-btn--subtle" disabled={pending}
@@ -193,7 +193,7 @@ export default function ExpiryAdmin({ rows, canConfigure, labels }: {
                         <td className="ax-caption">{labels.effectiveFrom} {formatInstant(row.effective_from)}{row.effective_to ? "" : ` · ${labels.ongoing}`}</td>
                         {canConfigure && (
                           <td>
-                            <div className="row" style={{ gap: "var(--ax-space-100)" }}>
+                            <div className="row" style={{ gap: "var(--space-2)" }}>
                               <button type="button" className={`ax-btn ${row.enabled ? "" : "ax-btn--prominent"}`} disabled={pending}
                                 onClick={() => toggle(row)}>{row.enabled ? labels.disable : labels.enable}</button>
                               <button type="button" className="ax-btn ax-btn--subtle" disabled={pending}
@@ -201,7 +201,7 @@ export default function ExpiryAdmin({ rows, canConfigure, labels }: {
                                 {editingId === row.id ? labels.closeEdit : labels.edit}
                               </button>
                             </div>
-                            {editingId === row.id && <div style={{ marginBlockStart: "var(--ax-space-150)" }}>
+                            {editingId === row.id && <div style={{ marginBlockStart: "var(--space-3)" }}>
                               <RuleForm row={row} ruleType={ruleType} labels={labels} onDone={() => setEditingId(null)} />
                             </div>}
                           </td>

@@ -102,14 +102,14 @@ export default async function AdminHome() {
     const c = r.count ?? 0;
     if (c === 0) {
       return (
-        <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
+        <div className="stack" style={{ gap: "var(--space-1)" }}>
           {chip("verifiedZero")}
           {emptyHint ? <span className="t-caption">{emptyHint}</span> : null}
         </div>
       );
     }
     return (
-      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
+      <div className="stack" style={{ gap: "var(--space-1)" }}>
         {chip("verified")} {num(c, unitEn)}
       </div>
     );
@@ -148,7 +148,7 @@ export default async function AdminHome() {
       current="/admin"
       title={t("admin.overview.r2.title", "Approval & Configuration — overview")}
       context={
-        <span className="row" style={{ gap: "var(--ax-space-150)", alignItems: "center", flexWrap: "wrap" }}>
+        <span className="row" style={{ gap: "var(--space-3)", alignItems: "center", flexWrap: "wrap" }}>
           <span role="status" aria-live="polite" className="t-caption">{readAtNode}</span>
           {failed > 0 ? (
             <span className="badge badge-warning">
@@ -171,7 +171,7 @@ export default async function AdminHome() {
         </div>
       ) : null}
 
-      <section className="panel stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel stack" aria-labelledby="cd004-spine-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd004-spine-h" style={{ margin: 0 }}>{t("admin.overview.r2.spine.caption", "Configuration evidence spine")}</h3>
         <div className="ax-tablewrap">
           <table className="ax-table">
@@ -197,7 +197,7 @@ export default async function AdminHome() {
               <tr>
                 <th scope="row">{familyPackages}</th>
                 <td>
-                  <div className="stack" style={{ gap: "var(--ax-space-100)" }}>
+                  <div className="stack" style={{ gap: "var(--space-2)" }}>
                     {ok(pkgsRes) ? (
                       <span>{chip("verified")} {num(pkgsRes.count ?? 0, "published")}</span>
                     ) : chip("unavailable")}
@@ -225,7 +225,7 @@ export default async function AdminHome() {
                   {!ok(enginesRes) ? chip("unavailable")
                     : engines.length === 0 ? chip("verifiedZero")
                     : (
-                      <div className="stack" style={{ gap: "var(--ax-space-050)" }}>
+                      <div className="stack" style={{ gap: "var(--space-1)" }}>
                         <span>{chip("verified")} {num(engines.length, "domains")}</span>
                         <ul className="stack" style={{ gap: "2px", listStyle: "none", margin: 0, padding: 0 }}>
                           {engines.map(e => (
@@ -258,11 +258,11 @@ export default async function AdminHome() {
         </div>
       </section>
 
-      <nav className="panel stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--ax-space-300)" }}>
+      <nav className="panel stack" aria-labelledby="cd004-links-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd004-links-h" style={{ margin: 0 }}>
           {t("admin.overview.r2.linkOnly.heading", "Families this gateway reads no data for today — links only:")}
         </h3>
-        <div className="row" style={{ gap: "var(--ax-space-150)", flexWrap: "wrap" }}>
+        <div className="row" style={{ gap: "var(--space-3)", flexWrap: "wrap" }}>
           {linkOnly.map(l => (
             <a key={l.href} className="btn btn-secondary ax-link btn-touch" href={l.href}>
               {t(l.key, l.en)}
@@ -271,7 +271,7 @@ export default async function AdminHome() {
         </div>
       </nav>
 
-      <section className="panel ax-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--ax-space-300)" }}>
+      <section className="panel ax-permission stack" aria-labelledby="cd004-scope-h" style={{ padding: "var(--space-6)" }}>
         <h3 id="cd004-scope-h" style={{ margin: 0 }}>
           {fill(t("admin.overview.r2.scope.heading", "Your scope — {role}"), { role: roleLabel })}
         </h3>

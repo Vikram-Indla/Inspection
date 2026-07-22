@@ -57,7 +57,7 @@ export function NewViolationForm({ clauses, strings: s }: { clauses: ClauseOptio
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="panel" aria-label={s.create} style={{ padding: "var(--ax-space-300)", display: "flex", gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="panel" aria-label={s.create} style={{ padding: "var(--space-6)", display: "flex", gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="new-violation-code">{s.code}</label>
         <input id="new-violation-code" className="ax-input numeric" name="code" placeholder="V-FS-12" required style={{ maxInlineSize: 120 }} /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 220 }}><label className="ax-field__label" htmlFor="new-violation-title">{s.title}</label>
@@ -105,18 +105,18 @@ export function AddMappingForm({ violationId, violationCode, templates, strings:
     <li><span aria-hidden="true">{ok ? "✓" : "✕"}</span> {ok ? s.pass : s.needsAttention} — {label}</li>
   );
   return (
-    <form ref={formRef} action={formAction} className="stack" aria-label={`${s.mapTo} ${violationCode}`} style={{ gap: "var(--ax-space-150)" }}>
+    <form ref={formRef} action={formAction} className="stack" aria-label={`${s.mapTo} ${violationCode}`} style={{ gap: "var(--space-3)" }}>
       <input type="hidden" name="violation_code_id" value={violationId} />
-      <div className="panel stack" role="status" aria-live="polite" aria-label={s.validationLens} style={{ padding: "var(--ax-space-150)", gap: "var(--ax-space-050)" }}>
+      <div className="panel stack" role="status" aria-live="polite" aria-label={s.validationLens} style={{ padding: "var(--space-3)", gap: "var(--space-1)" }}>
         <strong>{s.validationLens}</strong>
-        <ul style={{ margin: 0, paddingInlineStart: "var(--ax-space-250)" }}>
+        <ul style={{ margin: 0, paddingInlineStart: "var(--space-5)" }}>
           {check(true, s.checkUnmapped)}
           {check(true, s.checkUnique)}
           {check(Boolean(legalBasis.trim()), s.checkLegalBasis)}
           {check(Boolean(rangePreset && repeatPreset), s.checkPresets)}
         </ul>
       </div>
-      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap" }}>
+      <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor={`${baseId}-penalty-ref`}>{s.penaltyRef}</label>
         <input id={`${baseId}-penalty-ref`} className="ax-input numeric" name="penalty_ref" placeholder="P-042" required style={{ maxInlineSize: 100 }} /></div>
       <div className="ax-field" style={{ flex: 1, minInlineSize: 200 }}><label className="ax-field__label" htmlFor={`${baseId}-legal-basis`}>{s.legalBasis}</label>
@@ -155,7 +155,7 @@ export function PublishViolationForm({ violationId, violationCode, strings: s }:
 
 export function PublishMappingForm({ mappingId, violationCode, strings: s }: { mappingId: string; violationCode: string; strings: VioStrings }) {
   const [state, formAction, pending] = useActionState<VioResult, FormData>(publishPenaltyMapping, {});
-  return <form action={formAction} className="row" style={{ gap: "var(--ax-space-100)", alignItems: "center", flexWrap: "wrap" }}>
+  return <form action={formAction} className="row" style={{ gap: "var(--space-2)", alignItems: "center", flexWrap: "wrap" }}>
     <input type="hidden" name="mapping_id" value={mappingId} />
     <button className="btn btn-primary btn-lg btn-touch" aria-label={`${s.approveMapping} ${violationCode}`} disabled={pending}>{pending ? s.publishingMapping : s.approveMapping}</button>
     {state.error ? <span className="ax-validation" role="alert">{state.error}</span> : null}
@@ -171,7 +171,7 @@ export function DeactivateViolationForm({ violationId, violationCode, strings: s
     if (state.error) errorRef.current?.focus();
   }, [state.error]);
   return (
-    <form action={formAction} className="row" aria-label={`${s.deactivate} ${violationCode}`} style={{ gap: "var(--ax-space-100)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <form action={formAction} className="row" aria-label={`${s.deactivate} ${violationCode}`} style={{ gap: "var(--space-2)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <input type="hidden" name="violation_code_id" value={violationId} />
       <div className="ax-field">
         <label className="ax-field__label" htmlFor={fieldId}>{s.activeTo}</label>

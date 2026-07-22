@@ -47,7 +47,7 @@ export function RegionCityFilter({ region, city, regions, cities, strings: s }: 
     router.replace(q ? `/operations?${q}` : "/operations");
   };
   return (
-    <div className="row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-end", flexWrap: "wrap" }}>
+    <div className="row" style={{ gap: "var(--space-4)", alignItems: "flex-end", flexWrap: "wrap" }}>
       <div className="ax-field"><label className="ax-field__label" htmlFor="monitoring-region">{s.regionLabel}</label>
         {/* changing region resets city — the city list is region-scoped server-side */}
         <select className="ax-select" id="monitoring-region" style={{ maxInlineSize: 220 }} value={region}
@@ -98,7 +98,7 @@ export function MonitoringTable({ initialRows, initialAt, region, city, enumLabe
   const label = (v: string) => enumLabels[v] ?? v.replace(/_/g, " ");
 
   return (
-    <div className="stack" style={{ gap: "var(--ax-space-150)" }}>
+    <div className="stack" style={{ gap: "var(--space-3)" }}>
       {err && <div className="ax-banner ax-banner--critical" role="alert"><div>{err}</div></div>}
       {rows.length === 0 ? (
         <EmptyState icon={<IconSatellite size={28} />} title={s.emptyTitle} body={s.emptyDesc} bare />

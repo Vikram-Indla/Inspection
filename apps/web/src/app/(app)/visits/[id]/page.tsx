@@ -288,8 +288,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {/* CD-027 — signature interaction: Dual-State Ribbon (one per screen) */}
       <DualStateRibbon tracks={ribbonTracks} strings={ribbonStrings} />
       <div className="ax-grid-2">
-        <div id="config" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
+        <div id="config" className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.configuration", "Configuration")}</h4>
           <p>{t(`enum.${v.visit_type}`, v.visit_type)} · {t(`enum.${v.execution_mode}`, v.execution_mode)} · {t("visit.detail.window", "window")} <span className="ax-numeric">{new Date(v.window_start).toISOString().slice(0, 16).replace("T", " ")} → {new Date(v.window_end).toISOString().slice(5, 16).replace("T", " ")}</span></p>
           <p style={{ marginBlockStart: 8 }}>{t("visit.detail.assignment", "Assignment:")} <strong>{asg?.profiles?.full_name ?? "—"}</strong> ({asg ? t(`enum.${asg.method}`, asg.method) : "—"}) · <a className="ax-link" href={`/factories/${f.id}`}>{t("visit.detail.factory360", "Factory 360 →")}</a></p>
           {(v.immediate_creator_role || v.source_channel) && (
@@ -303,8 +303,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
             </p>
           )}
         </div>
-        <div id="inspection" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-          <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.inspectionVersions", "Inspection & versions")}</h4>
+        <div id="inspection" className="ax-surface" style={{ padding: "var(--space-6)" }}>
+          <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.inspectionVersions", "Inspection & versions")}</h4>
           {insp ? (
             <div className="ax-stack" style={{ gap: 8 }}>
               <span className="ax-lozenge ax-lozenge--review ax-lozenge--info">{t(`enum.${insp.status}`, insp.status.replace(/_/g, " "))}</span>
@@ -321,8 +321,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         </div>
       </div>
       {/* M02-005 — linked plan info: how this visit was planned, by whom, published when */}
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h4>
+      <div className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.planHeading", "Linked plan (M02-005)")}</h4>
         {plan ? (
           <p>
             <span className="ax-lozenge ax-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
@@ -344,7 +344,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           and highlight this block. */}
       {returnReason && (
         <div id="return-block" className="ax-banner ax-banner--warning"
-          style={focus === "return" ? { outline: "2px solid var(--ax-color-primary)", outlineOffset: 2 } : undefined}><div>
+          style={focus === "return" ? { outline: "2px solid var(--action-primary)", outlineOffset: 2 } : undefined}><div>
           {t("visit.detail.returnReason", "Returned — reason: {reason} (PLN-CON-011)").replace("{reason}", returnReason)}
           {latestReturnEvent?.comments ? <> · <bdi>{latestReturnEvent.comments}</bdi></> : null}
           {latestReturnEvent ? <span className="ax-caption"> · {new Date(latestReturnEvent.created_at).toISOString().slice(0, 16).replace("T", " ")}</span> : null}
@@ -381,8 +381,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {/* M8 / PLN-CON-003 — report packages: every visit_packages link with its
           immutable snapshot; the primary (visits.package_version_id) is marked.
           Zero links = preparation chooses the checklist later (honest, allowed). */}
-      <div id="packages" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.packagesHeading", "Report packages")}</h4>
+      <div id="packages" className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.packagesHeading", "Report packages")}</h4>
         {pkgLinks.length === 0 ? (
           <p className="ax-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation (PLN-CON-003).")}</p>
         ) : (
@@ -408,8 +408,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       {/* M8 / PLN-CON-011 — lifecycle history: the append-only event stream
           (return/cancel/republish/expire/duplicate/reschedule/reassign/
           discard_draft), reasons resolved through the governed lookups. */}
-      <div id="lifecycle" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only (PLN-CON-011)")}</h4>
+      <div id="lifecycle" className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only (PLN-CON-011)")}</h4>
         {lifecycleEvents.length === 0 ? (
           <p className="ax-caption">{t("visit.detail.noLifecycle", "No lifecycle events recorded yet.")}</p>
         ) : (
@@ -437,8 +437,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       </div>
       {/* M8 — location provenance: current planned pin, first pin, and the
           additive visit_location_events stream (canonical §12). */}
-      <div id="location" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.locationHeading", "Location & provenance")}</h4>
+      <div id="location" className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.locationHeading", "Location & provenance")}</h4>
         <p className="ax-numeric">
           {t("visit.detail.locationPlanned", "Planned pin:")}{" "}
           {v.planner_lat != null && v.planner_lng != null ? `${v.planner_lat}, ${v.planner_lng}` : t("visit.detail.locationFactory", "factory location")}
@@ -464,8 +464,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           </ul>
         )}
       </div>
-      <div id="journey" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited (EV-005)")}</h4>
+      <div id="journey" className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited (EV-005)")}</h4>
         <ul className="ax-timeline">
           {journeys.flatMap(j => j.geo_events.map(g => (
             <li key={g.occurred_at} className={g.kind === "checkin" ? "is-key" : undefined}>
@@ -476,8 +476,8 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
           {journeys.length === 0 && <p className="ax-caption">{t("visit.detail.noJourney", "No journey yet.")}</p>}
         </ul>
       </div>
-      <div id="audit" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (ENG-12, latest 30)")}</h4>
+      <div id="audit" className="ax-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-3)" }}>{t("visit.detail.auditHeading", "Planning history — cannot be edited, only added to (ENG-12, latest 30)")}</h4>
         <ul className="ax-timeline">
           {(auditRows ?? []).map(a => (
             <li key={a.id}>

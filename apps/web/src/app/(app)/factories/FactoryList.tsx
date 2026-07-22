@@ -59,7 +59,7 @@ export default function FactoryList({ factories, strings }: { factories: Factory
     [factories, region, city, license]);
   return (
     <>
-      <div className="row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--ax-space-200)" }}>
+      <div className="row" style={{ gap: "var(--space-3)", alignItems: "flex-end", flexWrap: "wrap", marginBlockEnd: "var(--space-4)" }}>
         {/* FNS-103/104 — licensed/unlicensed segmentation over the real is_temporary flag */}
         <div className="ax-segmented" role="group" aria-label={strings.licenseGroupAria}>
           {([["", strings.licenseAll], ["licensed", strings.licensed], ["unlicensed", strings.unlicensed]] as [LicenseKey, string][]).map(([k, label]) => (
