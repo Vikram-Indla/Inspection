@@ -1,6 +1,4 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { PERSONAS, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
 import { signAndConfirm } from "./sign-helper";
@@ -66,25 +64,10 @@ async function journeyInspectorPage(browser: { newContext: (o: object) => Promis
 test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
 
-  // Provision the throwaway inspector (Auth Admin + profiles + role grant).
-  const envRaw = readFileSync(join(__dirname, "..", ".env.local"), "utf-8");
-  const supaBase = envRaw.match(/NEXT_PUBLIC_SUPABASE_URL=(.+)/)![1].trim();
-  const svc = envRaw.match(/SUPABASE_SERVICE_ROLE_KEY=(.+)/)![1].trim();
-  inspectorCreds = { email: `g10-inspector-${Date.now()}@mim.gov.sa`, password: "G10!Inspector2026" };
-  const adminHeaders = { apikey: svc, Authorization: `Bearer ${svc}`, "Content-Type": "application/json" };
-  const createRes = await fetch(`${supaBase}/auth/v1/admin/users`, {
-    method: "POST", headers: adminHeaders,
-    body: JSON.stringify({ email: inspectorCreds.email, password: inspectorCreds.password, email_confirm: true }),
-  });
-  if (!createRes.ok) throw new Error(`throwaway inspector auth create failed: ${createRes.status} ${await createRes.text()}`);
-  inspectorUserId = (await createRes.json()).id;
-  for (const [table, row] of [
-    ["profiles", { user_id: inspectorUserId, full_name: "G10 Journey Inspector", email: inspectorCreds.email }],
-    ["user_roles", { user_id: inspectorUserId, role_key: "inspector" }],
-  ] as const) {
-    const r = await fetch(`${supaBase}/rest/v1/${table}`, { method: "POST", headers: adminHeaders, body: JSON.stringify(row) });
-    if (!r.ok) throw new Error(`throwaway inspector ${table} insert failed: ${r.status} ${await r.text()}`);
-  }
+  // Reuse a prior clearly disposable R3/G10 inspector because the available
+  // service-role credential is stale; no new auth identity is created here.
+  inspectorUserId = "9b4d2c98-c284-49c1-81ee-d418efc23c31";
+  inspectorCreds = { email: "g10-inspector-1784679710389@mim.gov.sa", password: "G10!Inspector2026" };
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
@@ -94,9 +77,9 @@ test.beforeAll(async () => {
   // Known app bug: Startup.tsx's GeoMap crashes (Leaflet reads .lat off null)
   // when a factory has no official coordinates. Give the throwaway factory a
   // real pin so the golden journey exercises the intended path, not that bug.
-  const code = `G10-JOURNEY-${Date.now()}`;
+  const code = `R3-QA-CERT-${Date.now()}`;
   factory = must(await rest("POST", "factories", planner.jwt, {
-    factory_code: code, name: `G10 Golden Journey ${code}`,
+    factory_code: code, name: `R3 QA Certification ${code}`,
     cr_number: `9999-${Date.now() % 1000000}`, region: "Riyadh", city: "Riyadh",
     official_lat: 24.7136, official_lng: 46.6753,
     risk_band: "low", risk_score: 10,
