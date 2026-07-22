@@ -12,7 +12,6 @@
 // plus the reopen path back to New. All writes go through the readiness RPCs
 // via preparation-actions.ts — the server re-validates everything.
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { confirmReady, reopenPreparation, savePreparation } from "./preparation-actions";
 
@@ -89,7 +88,6 @@ export default function PreExecution(props: {
   strings: PreExecutionStrings;
 }) {
   const { strings: s } = props;
-  const router = useRouter();
   const [date, setDate] = useState(props.draft?.executionDate ?? null as string | null);
   const [mode, setMode] = useState(props.draft?.confirmedMode ?? props.plannedMode);
   const [packageId, setPackageId] = useState(props.draft?.packageVersionId ?? null as string | null);
@@ -145,7 +143,13 @@ export default function PreExecution(props: {
       r => {
         setConfirmed(r.snapshot ?? { preparation_version: props.snapshot?.preparation_version ?? 1, checksum: props.snapshot?.checksum ?? "" });
         setStatus(null);
-        router.refresh();
+        // D-027 anomaly: router.refresh() re-fetches the CORRECT fresh RSC
+        // payload (verified server-side) but this page's client tree does not
+        // reconcile it — the Startup gate stays as first rendered. Readiness
+        // is a hard gate transition (locks/unlocks package download + journey
+        // start), so take the deterministic path: full reload from server
+        // truth instead of relying on in-place reconciliation.
+        window.location.reload();
       },
     );
   }
@@ -153,7 +157,7 @@ export default function PreExecution(props: {
   function onReopen() {
     void run(
       () => reopenPreparation(props.visitId),
-      () => { setConfirmed(null); router.refresh(); },
+      () => { setConfirmed(null); window.location.reload(); },
     );
   }
 
