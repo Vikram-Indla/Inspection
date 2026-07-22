@@ -1,23 +1,11 @@
 # Last Session
-- Time: 2026-07-20T17:26:48.404339+00:00
-- Session ID: dd3b78b7-c722-45e8-9f52-fc8cb1811153
+- Time: 2026-07-22T22:26:55.112058+00:00
+- Session ID: 31083a8b-8822-55e4-b67e-43b4ff72bbe8
 - End reason: other
-- Branch: improved
-- Commit: a22d3cf
+- Branch: claude/skill-extraction-inspection-validation-rnpo0c
+- Commit: f64a88a
 - Working tree:
 ```
-M .project-memory/audit/instructions_loaded.jsonl
- M .project-memory/audit/session_end.jsonl
- M .project-memory/audit/tool_events.jsonl
- M apps/web/src/app/dashboard/DashboardView.tsx
- M apps/web/src/app/visits/VisitsBoard.tsx
- M apps/web/src/app/visits/page.tsx
- M apps/web/src/components/FieldTabs.tsx
- M apps/web/src/components/ShellClient.tsx
- M apps/web/src/components/field/FieldHome.tsx
- M product-contract/sessions/LAST_SESSION.md
-?? .worktrees/
-?? docs/performance/inspection-p0-register.md
-?? package.json
+M .project-memory/audit/tool_events.jsonl
 ```
 - Required next action: complete `SESSION_HANDOFF_TEMPLATE.md` and append `SESSION_LEDGER.json`.
