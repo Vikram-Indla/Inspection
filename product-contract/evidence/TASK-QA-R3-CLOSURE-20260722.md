@@ -22,8 +22,11 @@ DEC-032 was confirmed remediated before R3 execution: migration `20260722090000_
 
 - Bulk mutation subset: 5/5 PASS, including package snapshot, authoritative recheck, reviewer capability, and zero-package publication.
 - Focused execution contracts: 32/32 PASS.
-- Two-factory same-window bulk publish: blocked by one usable staging inspector; no capacity or identity was invented.
-- Industry Shared remains contract-blocked and fail-closed. Dashboard/Operations lanes are proof debt for a separate scoped run.
+- Two-factory same-window bulk publish: PASS after creating a second disposable staging inspector; final Playwright lane passed 2/2, including five-factory capacity rejection. Visit Plan and generated Visit IDs, automatic assignments, statuses, and audit rows were verified.
+- Dashboard KPI live acceptance: FAIL/PARTIAL. Source-backed KPI contract checks passed 13/13, but the combined live Dashboard/KPI suite passed 6/11; required trend copy, entity search, and scoped KPI card surface were absent, and two captures hit external evidence-root EPERM.
+- Operations live/degraded matrix: FAIL/PARTIAL. Permission checks, exception grouping 3/3, and provider contracts 15/15 passed; live KPI cards and the complete partial-source/degraded matrix remain unproven.
+- Industry Shared remains contract-blocked and fail-closed. No mock or fabricated contract was used.
+- Cleanup removed only exact safe R3 disposable records and the second inspector. One immutable R3 factory/visit/inspection remains with 2 submission versions and 1 package snapshot because governed deletion was blocked by immutability.
 
 ## External handoff
 
