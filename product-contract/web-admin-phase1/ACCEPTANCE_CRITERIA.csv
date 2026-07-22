@@ -1,10 +1,10 @@
 acceptance_id,package_id,category,criterion,priority,proof,status
-WA-F0-AC-001,F0,FUNCTIONAL,Authorized source-backed route behavior and all required interactions are wired to real services.,P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-F0-AC-002,F0,NEGATIVE_SECURITY,"Unauthorized, validation, stale/conflict, provider and RLS/RBAC negative paths fail safely.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-F0-AC-003,F0,VISUAL,Reference and implementation match at the fixed design viewport with zero unapproved difference.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-F0-AC-004,F0,RTL_RESPONSIVE_A11Y,"English/LTR and Arabic/RTL pass desktop, 1024, 412/390 and 320 reflow plus keyboard/accessibility checks.",P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-F0-AC-005,F0,REGRESSION,"Protected backend, workflow, audit, version, maker-checker and adjacent-route regression passes.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
-WA-F0-AC-006,F0,EVIDENCE,Requirement/design/route IDs and external binary evidence manifest are complete and truthful.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
+WA-F0-AC-001,F0,FUNCTIONAL,Authorized source-backed route behavior and all required interactions are wired to real services.,P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,VERIFIED_TECHNICAL_FOUNDATION
+WA-F0-AC-002,F0,NEGATIVE_SECURITY,"Unauthorized, validation, stale/conflict, provider and RLS/RBAC negative paths fail safely.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,VERIFIED_TECHNICAL_FOUNDATION
+WA-F0-AC-003,F0,VISUAL,Reference and implementation match at the fixed design viewport with zero unapproved difference.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,TECHNICAL_REFERENCE_CAPTURED_NOT_PRODUCT_SCREEN
+WA-F0-AC-004,F0,RTL_RESPONSIVE_A11Y,"English/LTR and Arabic/RTL pass desktop, 1024, 412/390 and 320 reflow plus keyboard/accessibility checks.",P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,VERIFIED_TECHNICAL_FOUNDATION
+WA-F0-AC-005,F0,REGRESSION,"Protected backend, workflow, audit, version, maker-checker and adjacent-route regression passes.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PASS_NO_NEW_REGRESSION_BASELINE_26_OF_38
+WA-F0-AC-006,F0,EVIDENCE,Requirement/design/route IDs and external binary evidence manifest are complete and truthful.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,VERIFIED_TECHNICAL_FOUNDATION
 WA-M1-AC-001,M1,FUNCTIONAL,Authorized source-backed route behavior and all required interactions are wired to real services.,P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
 WA-M1-AC-002,M1,NEGATIVE_SECURITY,"Unauthorized, validation, stale/conflict, provider and RLS/RBAC negative paths fail safely.",P0,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED
 WA-M1-AC-003,M1,VISUAL,Reference and implementation match at the fixed design viewport with zero unapproved difference.,P1,TEST_PLUS_RUNTIME_PLUS_TEXTUAL_EVIDENCE_INDEX,PLANNED_NOT_IMPLEMENTED

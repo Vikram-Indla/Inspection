@@ -1,5 +1,35 @@
 # Current State
 
+## 2026-07-23 UPDATE 122 — F0 closed as internal technical foundation
+
+F0 is technically complete on `revamp`: typecheck and production build pass;
+focused functional/security/RTL/responsive/accessibility checks pass 6/6; the
+reference/evidence harness passes 2/2; and the Web/Admin planning validator still
+proves 478/478 traceability. The protected aggregate remains 26/38 with 12
+unchanged baseline failures and zero F0-introduced regression. Existing product
+screens, canonical routes, shell behavior, backend contracts, and rollback paths
+remain intact.
+
+The Product Owner clarified that foundations are internal technical work, not
+human project-screen approval batches. `SCREEN_BATCH_LEDGER.csv` therefore starts
+with the first actual M1-M11 screen batch. No foundation/reference route will be
+presented as a product screen. Field/iPad remains excluded.
+
+## 2026-07-23 UPDATE 121 — Web/Admin Phase 1 plan approved; F0 activated
+
+The Product Owner explicitly approved `CC-WEB-ADMIN-PHASE1-001`. Per the
+approved handoff, this authorizes F0 source implementation and local
+verification only. M1–M11, remote DDL, deployment, shared-data mutation,
+provider enablement, push, and merge remain blocked. The branch-local active
+slice is `TASK-WEB-ADMIN-PHASE1-PLAN-001-F0`; the prior planning slice is
+archived, and G11 remains concurrent and unchanged.
+
+Before application edits, F0 added a seven-row component migration ledger
+covering tokens, typed components, shell, navigation, localization, RLS-scoped
+search, and shared states/reference verification. Existing implementations are
+retained for rollback, and uncertainty remains guarded rather than silently
+replacing accepted behavior.
+
 ## 2026-07-23 UPDATE 120 — Web/Admin Phase 1 planning handoff ready for approval
 
 `TASK-WEB-ADMIN-PHASE1-PLAN-001` prepared change control

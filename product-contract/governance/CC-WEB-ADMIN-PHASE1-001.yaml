@@ -2,13 +2,17 @@ schema_version: "1.0"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
 title: "Web/Admin Phase 1 replacement-design planning authority"
-status: "PREPARED_AWAITING_PRODUCT_OWNER_APPROVAL"
+status: "APPROVED_F0_ONLY"
 prepared_on: "2026-07-23"
+approved_on: "2026-07-23"
+approved_by: "Vikram Indla / Product Owner"
+approval_evidence: "Explicit user message: approved"
 baseline_sha: "6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d"
 branch: "revamp"
 authority:
   statement: "The supplied package is Product Owner replacement-design input and authorizes planning preparation only."
-  implementation_authorized: false
+  implementation_authorized: true
+  authorized_package: "F0 only"
 scope:
   requirements: "CR-001..CR-478"
   processes: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06B", "G2-P10", "G2-P11", "G2-P12"]

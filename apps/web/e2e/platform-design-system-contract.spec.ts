@@ -35,6 +35,7 @@ test.describe("Platform-wide government design-system contract", () => {
       "src/app/login/page.tsx": /login\.css/,
       "src/app/reset/page.tsx": /login\/login\.css/,
       "src/app/reports/inspection/[id]/page.tsx": /report\.css/,
+      "src/app/reference/web-admin/f0/page.tsx": /SAQEEL_F0_REFERENCE_RENDERER/,
       "src/app/(app)/reviews/[id]/started/page.tsx": /redirect\(`\/reviews\//,
       "src/app/(app)/admin/regulations/[id]/page.tsx": /import Regulations from "\.\.\/page"/,
     };
@@ -47,7 +48,7 @@ test.describe("Platform-wide government design-system contract", () => {
       expect(approvedExceptions[relative], `${relative} must use Shell or be a governed exception`).toBeDefined();
       expect(source).toMatch(approvedExceptions[relative]);
     }
-    expect(Object.keys(approvedExceptions)).toHaveLength(7);
+    expect(Object.keys(approvedExceptions)).toHaveLength(8);
   });
 
   test("PDS-AC-012..016 semantic palette is centralized, including non-CSS map renderers", () => {

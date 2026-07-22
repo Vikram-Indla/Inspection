@@ -1,15 +1,21 @@
 schema_version: "1.2"
-task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
+task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-F0"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
-gate: "Web/Admin Phase 1 planning approval"
-title: "Source-backed Web/Admin Phase 1 implementation plan and handoff"
-status: "READY_FOR_PRODUCT_OWNER_APPROVAL"
+gate: "Web/Admin Phase 1 F0 foundation certification"
+title: "Shared SAQEEL foundation, shell, states, RTL, reference renderer, and visual harness"
+status: "TECHNICAL_COMPLETE"
 enforce_stop_gate: true
-broad_implementation_allowed: false
-application_implementation_allowed: false
+broad_implementation_allowed: true
+application_implementation_allowed: true
 branch: "revamp"
-baseline_sha: "6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d"
+baseline_sha: "832a186d90473b74b148ecdadeae8d7ef2d7a332"
 worktree: "/Users/vikramindla/Developer/Inspection/.worktrees/revamp"
+
+approval:
+  approved_by: "Vikram Indla / Product Owner"
+  approved_on: "2026-07-23"
+  evidence: "Explicit user message: approved"
+  authorizes: "F0 source implementation and local verification only"
 
 concurrent_tasks:
   - task_id: "TASK-G11-REMEDIATION-PERFORMANCE-001"
@@ -17,56 +23,70 @@ concurrent_tasks:
     authority: "product-contract/execution/slice-history/CURRENT_SLICE_TASK_G11_REMEDIATION_PERFORMANCE_001_backup_2026-07-23.yaml"
 
 objective: >-
-  Produce the complete source-backed planning baseline, machine-readable
-  interfaces, package ownership, implementation prompts, verification gates,
-  and change-control handoff for Web/Admin Phase 1 without implementing the
-  application or changing the active G11 performance task's status.
+  Certify the reusable SAQEEL foundation against WA-DES-022 and WA-DES-041,
+  preserving the current shell, backend, RLS/RBAC, audit, versioning, i18n,
+  theme, navigation, search, and performance behavior. Add only the shared
+  states/reference/verification support required before M1-M11.
 
 process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06B", "G2-P10", "G2-P11", "G2-P12"]
-requirement_ids: ["CR-001..CR-478"]
-acceptance_ids: ["WAP1-PLAN-AC-001..WAP1-PLAN-AC-072"]
-screen_scope:
-  phase1_routes: 71
-  phase2_field_routes: 5
-  supplied_design_files: 46
-  unique_design_payloads: 45
-engines: ["ENG-WAP1-F0", "ENG-WAP1-M1", "ENG-WAP1-M2", "ENG-WAP1-M3", "ENG-WAP1-M4", "ENG-WAP1-M5", "ENG-WAP1-M6", "ENG-WAP1-M7", "ENG-WAP1-M8", "ENG-WAP1-M9", "ENG-WAP1-M10", "ENG-WAP1-M11"]
+requirement_ids: ["CR-001..CR-478 cross-cutting presentation and preservation"]
+acceptance_ids: ["WA-F0-AC-001", "WA-F0-AC-002", "WA-F0-AC-003", "WA-F0-AC-004", "WA-F0-AC-005", "WA-F0-AC-006"]
+screen_ids: ["WA-DES-022", "WA-DES-041", "F0-SHELL", "F0-REFERENCE-RENDERER"]
+engines: ["ENG-WAP1-F0", "Next.js App Router/RSC", "Supabase SSR/RLS shell search", "SAQEEL tokens/components", "i18n/RTL/theme"]
 
 dependencies:
-  - "Product Owner approval of CC-WEB-ADMIN-PHASE1-001 before F0 implementation"
-  - "F0 certification before M1-M11 implementation"
-  - "Separate authority for remote DDL, deployment, shared-data mutation, provider enablement, push, or merge"
+  - "Approved CC-WEB-ADMIN-PHASE1-001"
+  - "Current accepted shell, performance, RLS/RBAC, audit, immutable-version, and provider contracts"
 
 required_context:
-  - "product-contract/web-admin-phase1/00_START_HERE.md"
-  - "product-contract/web-admin-phase1/BASELINE_SUMMARY.json"
-  - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv"
-  - "product-contract/web-admin-phase1/ROUTE_INVENTORY.csv"
-  - "product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv"
-  - "product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv"
-  - "product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv"
-  - "product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv"
-  - ".planning-pack/web-admin-phase1/WEB_ADMIN_PHASE1_HANDOFF.md"
-  - ".planning-pack/web-admin-phase1/prompts/"
+  - ".planning-pack/web-admin-phase1/prompts/F0_IMPLEMENTATION_PROMPT.md"
+  - "product-contract/web-admin-phase1/F0_CURRENT_TO_TARGET_MIGRATION.csv"
+  - "product-contract/web-admin-phase1/DESIGN_ROUTE_MAP.csv#WA-DES-022,WA-DES-041"
+  - "product-contract/web-admin-phase1/PACKAGE_MANIFEST.csv#F0"
+  - "product-contract/web-admin-phase1/ACCEPTANCE_CRITERIA.csv#WA-F0-AC-001..006"
+  - "product-contract/web-admin-phase1/OPEN_DECISIONS_AND_BLOCKERS.yaml"
+
+owned_files:
+  - "apps/web/src/app/api/shell/search/route.ts"
+  - "apps/web/src/app/astryx.css"
+  - "apps/web/src/app/saqeel-components.css"
+  - "apps/web/src/app/tokens.css"
+  - "apps/web/src/components/saqeel/**"
+  - "apps/web/src/app/reference/web-admin/f0/page.tsx"
+  - "apps/web/src/components/Shell.tsx"
+  - "apps/web/src/components/ShellClient.tsx"
+  - "apps/web/src/lib/shell-navigation.ts"
+  - "apps/web/src/lib/i18n.ts"
+  - "apps/web/e2e/web-admin-f0-*.spec.ts"
+  - "apps/web/e2e/platform-design-system-contract.spec.ts (F0 reference-route exception only)"
+  - "product-contract/web-admin-phase1/** F0 records"
 
 do_not_touch:
-  - "Do not modify the dirty root checkout or any user-owned untracked planning/evidence files."
-  - "Do not modify apps/web application source during this planning task."
-  - "Do not assign Phase 1 ownership to /field/**, field PWA, offline client/outbox UX, or iPad certification."
-  - "Do not change the status or evidence of TASK-G11-REMEDIATION-PERFORMANCE-001."
-  - "Do not commit supplied ZIPs, workbooks, HTML exports, screenshots, videos, traces, or other binary evidence."
-  - "Do not invent roles, status policy, risk values, geofence values, SLAs, legal rules, providers, or production fixture data."
-  - "Do not push, merge, deploy, execute remote DDL, mutate shared data, or enable a provider without separate explicit approval."
+  - "Do not edit /field/**, field PWA, offline engines, or iPad certification."
+  - "Do not delete current routes, shell behavior, components, tokens, or compatibility contracts."
+  - "Do not edit M1-M11 route-owned page files."
+  - "Do not weaken RLS/RBAC, tenant isolation, audit, workflow, immutable versions, provider failure, accessibility, or G11 performance behavior."
+  - "Do not commit supplied binaries or rendered evidence."
+  - "Do not push, merge, deploy, execute remote DDL, mutate shared data, or enable providers."
 
-evidence:
-  - "product-contract/web-admin-phase1/SOURCE_MANIFEST.csv"
-  - "product-contract/web-admin-phase1/BASELINE_SUMMARY.json"
-  - "product-contract/web-admin-phase1/VALIDATION_RESULTS.md"
-  - "product-contract/evidence/TASK-WEB-ADMIN-PHASE1-PLAN-001.md"
+verification:
+  - "npm run typecheck"
+  - "npm run build"
+  - "focused F0 functional and negative Playwright contracts"
+  - "EN/LTR and AR/RTL; light/dark; 1440x900, 1200x820, 1024x768, 412/390, 320"
+  - "keyboard/accessibility and protected shell regression"
+  - "node scripts/validate_web_admin_phase1.mjs"
 
 exit_condition: >-
-  Planning validators pass 478/478 unique requirement dispositions, 71 Phase 1
-  and five deferred field page routes, 46 supplied/45 unique designs, all 12
-  packages and prompts, 71 complete current-to-target migration rows, complete ownership and acceptance linkage, Phase 2
-  isolation, and binary/credential exclusions. Product Owner approval remains
-  required before implementation.
+  WA-F0-AC-001..006 have source, functional/negative, visual, RTL/responsive,
+  accessibility, protected regression, and textual evidence. Existing behavior
+  remains available for rollback. M1-M11 stay blocked until Product Owner accepts
+  the F0 certificate.
+
+completion:
+  completed_on: "2026-07-23"
+  result: "TECHNICAL_FOUNDATION_COMPLETE_BASELINE_REGRESSIONS_RECORDED"
+  focused_tests: "6/6 PASS"
+  visual_harness: "2/2 PASS; external binaries manifest-only"
+  protected_regression: "26/38 PASS; 12 unchanged baseline failures; zero F0-introduced failures"
+  product_owner_direction: "Foundation is internal technical work, not a human project-screen approval batch"

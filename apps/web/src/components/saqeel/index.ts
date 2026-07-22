@@ -27,6 +27,7 @@ export { Drawer, type DrawerProps } from "./feedback/Drawer";
 export { Tooltip, type TooltipProps } from "./feedback/Tooltip";
 export { Menu, type MenuProps, type MenuItem } from "./feedback/Menu";
 export { EmptyState, type EmptyStateProps } from "./feedback/EmptyState";
+export { StateSurface, STATE_SURFACE_KINDS, type StateSurfaceProps, type StateSurfaceKind } from "./feedback/StateSurface";
 export { SyncIndicator, type SyncIndicatorProps, type SyncState } from "./feedback/SyncIndicator";
 export { DiffView, type DiffViewProps, type DiffRow } from "./feedback/DiffView";
 // PR5 — forms
@@ -59,3 +60,4 @@ export { AuditTrail, type AuditTrailProps } from "./inspection/AuditTrail";
 export { StatusSpine, SPINE_STAGES, type StatusSpineProps, type StatusSpineStage } from "./signature/StatusSpine";
 export { EvidenceStack, type EvidenceStackProps, type EvidenceStackItem } from "./signature/EvidenceStack";
 export { CommandPalette, type CommandPaletteProps, type CommandPaletteItem } from "./navigation/CommandPalette";
+export { ReferenceRenderer, F0_REFERENCE_DESIGN_HASHES } from "./ReferenceRenderer";

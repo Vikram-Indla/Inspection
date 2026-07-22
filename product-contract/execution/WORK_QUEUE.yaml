@@ -1,9 +1,17 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-F0"
+    gate: "Web/Admin Phase 1 F0 foundation certification"
+    priority: "P0"
+    status: "TECHNICAL_COMPLETE"
+    owner: "Codex implementation and QA"
+    blocked_by: []
+    blocks: ["M1-M11 implementation"]
+    note: "F0 technical foundation complete 2026-07-23: typecheck/build and focused 6/6 pass; visual harness 2/2 pass; 12 protected failures are unchanged baseline debt and no F0 regression was introduced. Product Owner clarified foundations are not human screen-approval batches. Existing screens/routes/backend remain unchanged and rollback is additive commit reversion."
   - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
     gate: "Web/Admin Phase 1 planning approval"
     priority: "P0"
-    status: "READY_FOR_PRODUCT_OWNER_APPROVAL"
+    status: "APPROVED_F0_ONLY"
     owner: "Product Owner approval authority + F0 implementation owner after approval"
     blocked_by: ["Product Owner approval of CC-WEB-ADMIN-PHASE1-001"]
     blocks: ["F0 implementation", "M1-M11 implementation"]

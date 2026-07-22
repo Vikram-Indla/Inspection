@@ -61,6 +61,7 @@ const acceptance = parseCsv(path.join(contract, "ACCEPTANCE_CRITERIA.csv"));
 const migrations = parseCsv(path.join(contract, "CURRENT_TO_TARGET_MIGRATION.csv"));
 const designSources = parseCsv(path.join(contract, "DESIGN_SOURCE_MANIFEST.csv"));
 const authorityPackages = parseCsv(path.join(contract, "AUTHORITY_PACKAGE_MANIFEST.csv"));
+const f0Migrations = parseCsv(path.join(contract, "F0_CURRENT_TO_TARGET_MIGRATION.csv"));
 
 const allowedDispositions = new Set([
   "PHASE1_WEB", "PHASE1_ADMIN", "PHASE1_SHARED_BACKEND", "PHASE2_IPAD_DEFERRED",
@@ -117,6 +118,12 @@ for (const row of designSources) {
   if (row.git_storage !== "PROHIBITED_BINARY_EXTERNAL_ONLY") fail(`${row.source_id} violates binary storage policy`);
 }
 if (authorityPackages.length !== 1 || !/^[a-f0-9]{64}$/.test(authorityPackages[0].sha256)) fail("authority package manifest is invalid");
+if (f0Migrations.length !== 7) fail(`expected 7 F0 migration rows, found ${f0Migrations.length}`);
+for (const row of f0Migrations) {
+  for (const field of ["current_files", "design_ids", "requirement_ids", "existing_behavior", "backend_contracts", "permissions", "current_tests", "replacement_strategy", "cutover_method", "rollback_method", "legacy_retention"]) {
+    if (!row[field]) fail(`${row.migration_id} lacks ${field}`);
+  }
+}
 const uniqueDesigns = new Set(designs.map(row => row.sha256));
 if (uniqueDesigns.size !== 45) fail(`expected 45 unique design payloads, found ${uniqueDesigns.size}`);
 const aliases = designs.filter(row => row.unique_payload === "IDENTICAL_ALIAS");

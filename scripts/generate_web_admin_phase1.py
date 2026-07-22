@@ -276,7 +276,10 @@ def build_routes(repo: Path, output_dir: Path, requirements: list[dict[str, obje
     nav_text = (repo / "apps/web/src/lib/shell-navigation.ts").read_text(encoding="utf-8")
     nav_hrefs = set(re.findall(r'href:\s*"([^"]+)"', nav_text))
     routes: list[dict[str, object]] = []
-    candidates = [(path, "PAGE") for path in app_root.rglob("page.tsx")]
+    candidates = [
+        (path, "PAGE") for path in app_root.rglob("page.tsx")
+        if not path.relative_to(app_root).as_posix().startswith("reference/")
+    ]
     candidates += [(path, "API") for path in (app_root / "api").rglob("route.ts")]
     for path, route_type in candidates:
         route = route_from_file(app_root, path, "page" if route_type == "PAGE" else "api")
