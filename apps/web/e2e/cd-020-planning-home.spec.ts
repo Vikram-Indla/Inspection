@@ -39,11 +39,17 @@ test.describe("CD-020 planning home", () => {
   });
 
   test("inspector class is denied the planning workspace", async ({ browser }) => {
+    // M11 reconciliation (same precedent as cd-021's inspector test): the
+    // channel gate (RBAC-009/010, Inspector = iPad channel) redirects
+    // field-only personas off web-portal routes BEFORE the page gate renders.
+    // The governed denial for an inspector IS the redirect to their field
+    // home; the in-page unauthorized state is covered by the admin test below.
     const context = await browser.newContext({ storageState: storageStatePath("inspector") });
     const page = await context.newPage();
     await page.goto("/locale?set=en");
     await page.goto("/planning");
-    await expect(page.getByRole("heading", { name: /Authorized role required/i })).toBeVisible();
+    await expect(page).toHaveURL(/\/field/);
+    await expect(page.getByRole("heading", { name: /Authorized role required/i })).toHaveCount(0);
     await expect(page.locator('a[href^="/planning/"]')).toHaveCount(0);
     await expect(page.getByTestId("planning-visit-table")).toHaveCount(0);
     await context.close();
