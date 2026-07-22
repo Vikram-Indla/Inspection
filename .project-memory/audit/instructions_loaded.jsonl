@@ -555,3 +555,9 @@
 {"time": "2026-07-20T17:26:47.371641+00:00", "session_id": "dd3b78b7-c722-45e8-9f52-fc8cb1811153", "file_path": "/Users/vikramindla/Developer/Inspection/CLAUDE.md", "memory_type": "Project", "load_reason": "session_start"}
 {"time": "2026-07-20T17:26:47.371819+00:00", "session_id": "dd3b78b7-c722-45e8-9f52-fc8cb1811153", "file_path": "/Users/vikramindla/.claude/RTK.md", "memory_type": "User", "load_reason": "include"}
 {"time": "2026-07-20T17:26:47.371683+00:00", "session_id": "dd3b78b7-c722-45e8-9f52-fc8cb1811153", "file_path": "/Users/vikramindla/.claude/CLAUDE.md", "memory_type": "User", "load_reason": "session_start"}
+{"time": "2026-07-22T22:22:14.804896+00:00", "session_id": "31083a8b-8822-55e4-b67e-43b4ff72bbe8", "file_path": "/home/user/Inspection/CLAUDE.md", "memory_type": "Project", "load_reason": "session_start"}
+{"time": "2026-07-22T22:22:14.810123+00:00", "session_id": "31083a8b-8822-55e4-b67e-43b4ff72bbe8", "file_path": "/home/user/Inspection/.claude/rules/documentation-storage.md", "memory_type": "Project", "load_reason": "session_start"}
+{"time": "2026-07-22T22:22:14.811041+00:00", "session_id": "31083a8b-8822-55e4-b67e-43b4ff72bbe8", "file_path": "/home/user/Inspection/.claude/rules/governance.md", "memory_type": "Project", "load_reason": "session_start"}
+{"time": "2026-07-22T22:22:20.115442+00:00", "session_id": "31083a8b-8822-55e4-b67e-43b4ff72bbe8", "file_path": "/home/user/Inspection/CLAUDE.md", "memory_type": "Project", "load_reason": "session_start"}
+{"time": "2026-07-22T22:22:20.120086+00:00", "session_id": "31083a8b-8822-55e4-b67e-43b4ff72bbe8", "file_path": "/home/user/Inspection/.claude/rules/governance.md", "memory_type": "Project", "load_reason": "session_start"}
+{"time": "2026-07-22T22:22:20.181074+00:00", "session_id": "31083a8b-8822-55e4-b67e-43b4ff72bbe8", "file_path": "/home/user/Inspection/.claude/rules/documentation-storage.md", "memory_type": "Project", "load_reason": "session_start"}
