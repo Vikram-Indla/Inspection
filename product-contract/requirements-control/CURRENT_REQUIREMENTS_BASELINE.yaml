@@ -1,8 +1,13 @@
 schema_version: "1.0"
-status: "NOT_ESTABLISHED_R0_FAIL"
-source_requirement_count: null
-atomic_requirement_count: null
-duplicate_count: null
-conflict_count: null
-open_decision_count: 2
-reason: "Source bridge verification failed closed before extraction."
+status: "R0_SOURCE_BASELINE_PASS"
+source_file_count: 9
+source_unit_count: 7341
+source_cell_count: 6685
+atomic_requirement_count: 7191
+duplicate_group_count: 826
+conflict_count: 0
+open_clarification_count: 0
+unreadable_unit_count: 0
+forward_traceability: "100%"
+reverse_traceability: "100%"
+implementation_design_test_uat: "NOT_ASSESSED_R0"

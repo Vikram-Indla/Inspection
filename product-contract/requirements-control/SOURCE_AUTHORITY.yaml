@@ -1,29 +1,18 @@
 schema_version: "1.0"
 run_id: "REQ-CONSOLIDATION-2026-07-22"
-status: "R0_FAIL"
+status: "R0_SOURCE_BASELINE_PASS"
 repository: "/Users/vikramindla/Developer/Inspection"
-isolated_worktree: "/Users/vikramindla/Developer/Inspection-R0-Recovery"
+isolated_worktree: "/Users/vikramindla/Inspection-R0-Recovery"
 branch: "docs/requirements-r0-recovery-20260722"
-baseline_sha: "6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d"
-source_root: "/Users/vikramindla/Desktop/Inspection Documentation"
-bridge_root: "/Users/vikramindla/Developer/Inspection-R0-Bridge"
-source_access: "FINDER_ONLY_TERMINAL_NODE_EPERM"
-bridge_verification: "FAIL_COUNT_SIZE_HASH_COMPARISON_BLOCKED"
-source_file_count: null
-bridge_file_count: 4744
-source_item_count_finder_reported: 5440
-bridge_item_count: 5515
-source_sha256: null
-atomic_requirement_count: null
-application_code_changed: false
-authorities:
-  A1_CUSTOMER_MANDATORY: "Original customer/business documentation"
-  A2_CUSTOMER_API_CONTRACT: "Customer-supplied API and JSON contract"
-  A3_APPROVED_CHANGE_DECISION: "Approved change decision"
-  B1_RECONCILED_REQUIREMENT_ARTEFACT: "Secondary comparison artefact"
-  B2_REPOSITORY_PRODUCT_CONTRACT: "Repository governance contract"
-  C1_DESIGN_REFERENCE: "Design reference"
-  C2_IMPLEMENTATION_EVIDENCE: "Implementation evidence"
-  C3_TEST_EVIDENCE: "Test evidence"
-  D1_STRATEGIC_RECOMMENDATION: "Recommendation only"
-  X1_EXCLUDED_INVALID_SOURCE: "Invalid/fabricated source; prohibited"
+source_root: "/Users/vikramindla/Inspection-R0-Control/approved-sources"
+output_root: "/Users/vikramindla/Inspection-R0-Control/output"
+manifest_root: "/Users/vikramindla/Inspection-R0-Control/manifests"
+source_access: "LOCAL_LOCKED_ZIP"
+source_file_count: 9
+source_unit_count: 7341
+atomic_requirement_count: 7191
+duplicate_group_count: 826
+conflict_count: 0
+open_clarification_count: 0
+prohibited_tracker_present: false
+implementation_design_test_uat: "NOT_ASSESSED_R0"

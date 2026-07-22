@@ -1,8 +1,7 @@
 schema_version: "1.0"
 entries:
   - exclusion_id: "EXC-001"
-    name: "MIM Inspection Consolidated Tracker"
-    lineage: "Original tracker, renamed copies, exports, derivatives, and generated artefacts with tracker lineage"
+    name: "MIM Inspection Consolidated Tracker and derivatives"
     authority: "X1_EXCLUDED_INVALID_SOURCE"
     status: "EXCLUDED"
     reason: "EXCLUDED_BY_PRODUCT_OWNER — fabricated or derivative information; prohibited as requirement authority."

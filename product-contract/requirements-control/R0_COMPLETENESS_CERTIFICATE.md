@@ -1,18 +1,11 @@
 # R0 Completeness Certificate
 
-**Status: R0_FAIL**
+**Status: PASS_SOURCE_BASELINE_ONLY**
 
-The approved documentation root was visible to Finder and copied to the
-temporary bridge. However, the active hashing/extraction process still receives
-`EPERM` for the original root. Finder reported 5,440 source items / 1.24 GB;
-the bridge currently contains 5,515 observed items, 4,744 files, 771
-directories, and 1,255,460,864 bytes. Source-side SHA-256 and path/size equality
-therefore remain unverified.
+The exact approved ZIP passed SHA-256 verification before extraction. The approved source directory contains exactly nine files, with zero unexpected files and no prohibited consolidated tracker.
 
-No authoritative workbook tabs, source rows, atomic requirements, duplicate
-links, conflicts, or completeness percentages are claimed. Required XLSX,
-DOCX, PDF, and promoted external outputs were not generated because the gate
-requires verified bridge equality before extraction.
+The extraction processed 7341 source units and produced 7191 source-backed atomic requirements. Duplicate/corroboration groups: 826; conflicts: 0; open clarifications: 0; unreadable units: 0. Forward and reverse traceability are both 100%.
 
-The canonical dirty worktree remains untouched. This certificate is stored only
-in the isolated recovery worktree.
+Implementation, design, runtime, testing, UAT, and gap-audit status remain `NOT_ASSESSED_R0`.
+
+All binary and human-readable outputs remain outside Git under `/Users/vikramindla/Inspection-R0-Control`.

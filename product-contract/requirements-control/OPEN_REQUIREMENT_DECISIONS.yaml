@@ -1,10 +1,3 @@
 schema_version: "1.0"
-decisions:
-  - decision_id: "REQ-OD-001"
-    status: "OPEN_DECISION_REQUIRED"
-    question: "Can the active source-reading process be restarted or granted access so it can enumerate and hash the approved root?"
-    impact: "Blocks bridge verification and all extraction."
-  - decision_id: "REQ-OD-002"
-    status: "OPEN_DECISION_REQUIRED"
-    question: "How should the Finder-reported 5,440 items / 1.24 GB reconcile to the bridge-observed 5,515 items / 1,255,460,864 bytes?"
-    impact: "Blocks source/destination equality proof."
+decisions: []
+status: "NO_OPEN_CLARIFICATIONS_IN_R0_EXTRACTION"
