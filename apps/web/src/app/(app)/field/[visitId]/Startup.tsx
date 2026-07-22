@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
-import { local, processOutbox, sha256b64, type SyncState } from "@/lib/offline";
+import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState } from "@/lib/offline";
 import { getFieldDeviceMetadata } from "@/lib/field-device";
 import { formatDateTime, formatTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
@@ -103,7 +103,8 @@ type LocationCorrectionView = {
   reason: string; source: string; corrected_at: string; capture_context: string;
 };
 
-export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion, locale, preparationGated, journeySchemaAvailable, initialCancellation, initialCorrections }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string; locale: Locale; preparationGated?: boolean; journeySchemaAvailable?: boolean; initialCancellation?: ActiveCancellation | null; initialCorrections?: LocationCorrectionView[] }) {
+export default function Startup({ visit, gis, strings, reasons, overrideReasons, initialOverride, flags, appVersion, locale, userId, preparationGated, journeySchemaAvailable, initialCancellation, initialCorrections }: { visit: V; gis: Gis; strings: StartupStrings; reasons: Reason[]; overrideReasons: Reason[]; initialOverride: InitialOverride | null; flags: Flags; appVersion: string; locale: Locale; userId: string; preparationGated?: boolean; journeySchemaAvailable?: boolean; initialCancellation?: ActiveCancellation | null; initialCorrections?: LocationCorrectionView[] }) {
+  const local = useMemo(() => localForUser(userId), [userId]);
   const dLang = locale === "ar" ? "ar" : "en";
   mapLoadingLabel = strings.mapLoading;
   const router = useRouter();
@@ -175,6 +176,8 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   const lastFixRef = useRef(null as Fix | null);
   const stringsRef = useRef(strings); stringsRef.current = strings;
 
+  useEffect(() => { void promptLegacyOfflineRestore(userId).catch(() => {}); }, [userId]);
+
   // A reconnect must continue a durable request rather than invite the field
   // user to begin a second arrival attempt. If only the offline outside check-
   // in exists, reconstruct its captured facts so the user can add the governed
@@ -217,13 +220,13 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
   useEffect(() => {
     if (overrideState !== "queued") return;
     const retry = () => {
-      void processOutbox(state => {
+      void processOutbox(userId, state => {
         if (state === "synced") { setOverrideState("pending"); router.refresh(); }
       });
     };
     window.addEventListener("online", retry);
     return () => window.removeEventListener("online", retry);
-  }, [overrideState, router]);
+  }, [overrideState, router, userId]);
 
   // Phase 4B — server-rendered cancellation state is authoritative after an
   // Operations decision; a bounded refresh while pending mirrors the override
@@ -643,7 +646,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
         safety_security_exception: overrideSafetyException, queued_at: capturedAt,
       });
       let synced = false;
-      await processOutbox((state: SyncState) => { synced = state === "synced"; });
+      await processOutbox(userId, (state: SyncState) => { synced = state === "synced"; });
       setOverrideState(synced ? "pending" : "queued");
       setPendingOverride(null); setOverrideReasonKey(""); setOverrideReason("");
       setOverrideFile(null); setOverrideSafetyException(false);
@@ -681,7 +684,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           data_b64: b64, captured_at: capturedAt, sha256: sha, queued_at: capturedAt,
         });
       }
-      await processOutbox(() => { /* failure remains queued and is retried by the field sync engine */ });
+      await processOutbox(userId, () => { /* failure remains queued and is retried by the field sync engine */ });
       setArrivalEvidenceSaved(true); add(strings.arrivalSaved);
     } finally { setBusy(false); }
   }
@@ -727,7 +730,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           data_b64: b64, captured_at: new Date().toISOString(), sha256: sha, queued_at: new Date().toISOString(),
         });
         add(fmt(strings.logCancelEvidenceQueued, { name: cancelFile.name, sha: sha.slice(0, 12) }));
-        processOutbox(() => { /* startup has no sync banner; failures stay queued for the workspace runner */ });
+        processOutbox(userId, () => { /* startup has no sync banner; failures stay queued for the workspace runner */ });
       }
       const fd = new FormData();
       fd.set("visit_id", visit.id); fd.set("reason_key", cancelReason); fd.set("comment", cancelComment);
@@ -763,7 +766,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           mime: correctionFile.type || "image/jpeg", data_b64: b64,
           captured_at: capturedAt, sha256: sha, queued_at: capturedAt,
         });
-        await processOutbox(() => { /* failure stays queued; correction proceeds without the link */ });
+        await processOutbox(userId, () => { /* failure stays queued; correction proceeds without the link */ });
         const { data: evRow } = await supabaseBrowser().from("evidence")
           .select("id").eq("linked_type", "location_correction").eq("linked_id", correctionRef).maybeSingle();
         evidenceId = evRow?.id ?? null;
@@ -804,7 +807,7 @@ export default function Startup({ visit, gis, strings, reasons, overrideReasons,
           mime: cancelFile.type || "image/jpeg", data_b64: b64,
           captured_at: capturedAt, sha256: sha, queued_at: capturedAt,
         });
-        await processOutbox(() => { /* failure stays queued; request proceeds without the link */ });
+        await processOutbox(userId, () => { /* failure stays queued; request proceeds without the link */ });
         const { data: evRow } = await supabaseBrowser().from("evidence")
           .select("id").eq("linked_type", "cancellation_request").eq("linked_id", cancelIdemRef.current).maybeSingle();
         evidenceId = evRow?.id ?? null;

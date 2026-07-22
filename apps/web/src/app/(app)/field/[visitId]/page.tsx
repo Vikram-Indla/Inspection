@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Startup, { type StartupStrings } from "./Startup";
@@ -14,12 +15,32 @@ import { getWindowCapacity } from "@/lib/execution";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
 import packageInfo from "../../../../../package.json";
+import { getVerifiedUser } from "@/lib/verified-user";
+
+// BUG-2 fix — [visitId] sits beside static field/* routes (drafts, notifications,
+// settings, …) with no more-specific match; Next.js still routes an unmatched
+// literal like "notifications" or "xyz123notarealid" here and it was treated
+// as a visitId, producing a misleading "Visit not found (M02-001)" after a
+// wasted RLS-scoped DB round trip. This guard is a cheap, honest short-circuit
+// on shape alone — it does not enumerate route names and never widens what a
+// valid visit lookup can match.
+const UUID_SHAPE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async function FieldVisit({ params, searchParams }: { params: Promise<{ visitId: string }>; searchParams: Promise<{ created?: string }> }) {
   const { visitId } = await params;
   const { created } = await searchParams;
   const { t, locale } = await useT();
   const sb = await supabaseServer();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError || !user) redirect("/login");
+  if (!UUID_SHAPE.test(visitId)) {
+    return (
+      <Shell current="/field" title={t("field.start.notFoundTitle", "Not found")}>
+        <EmptyState glyph="∅" title={t("field.start.notFound", "Visit not found")}
+          body={t("field.start.notFoundDesc", "This visit does not exist or is outside your organizational scope (M02-001).")} />
+      </Shell>
+    );
+  }
   // NB: visits.execution_date (20260721090000) is deliberately NOT in this
   // unconditional select — while the migration is unapplied the column is
   // absent and the whole read would 400, rendering "Visit not found". The
@@ -583,7 +604,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             <span className="ax-lozenge ax-lozenge--warning">{unverifiedManualLabel}</span>
           </div>
         )}
-        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} preparationGated={preparationGated}
+        <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} userId={user.id} preparationGated={preparationGated}
           journeySchemaAvailable={journeySchemaAvailable}
           initialCancellation={initialCancellation as never}
           initialCorrections={initialCorrections as never} />

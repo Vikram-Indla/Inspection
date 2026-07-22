@@ -33,6 +33,7 @@
     "@types/leaflet": "^1.9.21",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.2.3",
     "@types/web-push": "^3.6.4",
     "typescript": "^5.7.0"
   }

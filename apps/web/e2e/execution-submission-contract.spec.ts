@@ -107,7 +107,7 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 6 submission + review hardening",
 
   test("offline submit handler uses the RPC with a 42883 legacy fallback and never masks EXE refusals", () => {
     const ts = read(offlinePath);
-    expect(ts).toContain('await sb.rpc("submit_inspection"');
+    expect(ts).toContain('await guard.network(() => sb.rpc("submit_inspection"');
     expect(ts).toContain('"42883"');
     expect(ts).toContain("LEGACY FALLBACK");
     // EXE-SUBMIT-SCOPE-VIOLATION (and every EXE-* token) is an explicit failure.

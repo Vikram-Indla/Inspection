@@ -1,4 +1,5 @@
 import Shell from "@/components/Shell";
+import EmptyState from "@/components/EmptyState";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import Workspace, { type WorkspaceStrings, type WorkspacePanel, type PrevComparison } from "./Workspace";
@@ -7,6 +8,8 @@ import FactoryVerification, {
   type FactoryLicense, type FactoryFieldEvidence, type FactoryVerificationStrings,
 } from "./FactoryVerification";
 import { contextFlags, type FormDef, type Item, type VioConfig } from "./runtime";
+import { redirect } from "next/navigation";
+import { getVerifiedUser } from "@/lib/verified-user";
 
 const humanize = (k: string) => k.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
 
@@ -27,14 +30,24 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
   const { id } = await params;
   const { t, locale } = await useT();
   const sb = await supabaseServer();
+  const { data: { user }, error: authError } = await getVerifiedUser(sb);
+  if (authError || !user) redirect("/login");
   const { data: ins } = await sb.from("inspections")
     .select("id, status, visit_id, package_versions(id, version_label, definition, packages(code, title)), visits(factory_id, visit_type, execution_mode, window_start, window_end, factories(name, factory_code, region, city, license_number, activity_class)), submission_versions(version_number), reviews(returned_sections, decision_reason, decided_at)")
     .eq("id", id).single();
   if (!ins) {
     return <Shell current="/field" title={t("field.ws.notFound", "Not found")}><div /></Shell>;
   }
-  const packageVersion = ins.package_versions as unknown as { id: string; definition: { sections?: { items?: string[] }[]; item_snapshot?: Record<string, FrozenItemRow>; violation_snapshot?: Record<string, FrozenVCodeRow> } };
+  const packageVersion = ins.package_versions as unknown as { id: string; definition: { package_kind?: unknown; sections?: { items?: string[] }[]; item_snapshot?: Record<string, FrozenItemRow>; violation_snapshot?: Record<string, FrozenVCodeRow> } };
   const frozenDefinition = packageVersion.definition;
+  if (frozenDefinition.package_kind) {
+    return (
+      <Shell current="/field" title={t("field.ws.notConfiguredTitle", "Not configured")}>
+        <EmptyState glyph="∅" title={t("field.ws.notConfigured", "Inspection package not configured")}
+          body={t("field.ws.notConfiguredDesc", "This report type is not configured for field execution.")} />
+      </Shell>
+    );
+  }
   const packageCodes = [...new Set((frozenDefinition.sections ?? []).flatMap(section => section.items ?? []))];
   const itemRead = packageCodes.length
     ? sb.from("inspection_items")
@@ -537,6 +550,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
       {/* SCR-IPAD-630 — factory-verification step precedes the checklist (M04-095) */}
       <FactoryVerification
         inspectionId={id}
+        userId={user.id}
         fields={factoryFields}
         license={factoryLicense}
         products={factoryProducts}
@@ -549,6 +563,7 @@ export default async function FieldInspection({ params }: { params: Promise<{ id
         strings={fvStrings}
       />
       <Workspace
+        userId={user.id}
         inspection={ins as never}
         items={items}
         serverResponses={(resp ?? []) as never}

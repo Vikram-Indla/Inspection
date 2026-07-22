@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { local, processOutbox, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
+import { localForUser, processOutbox, promptLegacyOfflineRestore, sha256b64, type SyncState, type Conflict, type OutboxOp } from "@/lib/offline";
 import { supabaseBrowser } from "@/lib/supabase";
 import {
   type Item, type Answer, type FormDef, type FormDraft, type VioConfig, type Section, type ItemStates,
@@ -102,14 +102,16 @@ export type WorkspaceStrings = {
 const fmt = (s: string, vars: Record<string, string | number>) => { return s.replace(/\{(\w+)\}/g, (m, k) => String(vars[k] ?? m)); };
 const acceptFor = (type: string) => type === "document" ? ".pdf,application/pdf" : type === "video" ? "video/*" : "image/*";
 
-export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, cancellation, cancelReasons, journeySchemaAvailable }: {
+export default function Workspace({ inspection, items, library, serverResponses, serverEvidence, serverForms, serverViolations, serverItemStates, actionTemplates, serverContext, vioConfig, evidenceLimits, actionDueDays, strings, evidenceUrls, prev, panel, inspectionNo, locale, userId, cancellation, cancelReasons, journeySchemaAvailable }: {
   inspection: Ins; items: Item[]; library: Item[]; serverResponses: SResp[]; serverEvidence: SEv[]; serverForms: SForm[]; serverViolations: SVio[];
+  userId: string;
   serverItemStates: SItemState[]; actionTemplates: ActionTemplate[];
   serverContext: Record<string, string>; vioConfig: Record<string, VioConfig>; evidenceLimits: EvidenceLimits; actionDueDays: number; strings: WorkspaceStrings;
   evidenceUrls: Record<string, string>; prev: PrevComparison | null; panel: WorkspacePanel; inspectionNo: string | null; locale: "en" | "ar";
   // Phase 4B — active-session cancellation (inert unless the schema probe passed)
   cancellation?: WorkspaceCancellation | null; cancelReasons?: { key: string; label: string }[]; journeySchemaAvailable?: boolean;
 }) {
+  const local = useMemo(() => localForUser(userId), [userId]);
   const router = useRouter();
   const [sync, setSync] = useState("synced" as SyncState);
   const [detail, setDetail] = useState(undefined as string | undefined);
@@ -141,6 +143,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
   const cancelIdemRef = useRef(null as string | null);
   const cancelApproved = cancelState?.status === "approved";
   const cancelPending = cancelState?.status === "pending";
+  useEffect(() => { void promptLegacyOfflineRestore(userId).catch(() => {}); }, [userId]);
   useEffect(() => { setCancelState(cancellation ?? null); }, [cancellation]);
   useEffect(() => {
     if (!cancelPending) return;
@@ -259,7 +262,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         });
       }
     });
-  }, [inspection.id]);
+  }, [inspection.id, local]);
 
   const onState = useCallback((s: SyncState, d?: string) => {
     // A replay started while online can finish after the browser goes offline.
@@ -268,19 +271,19 @@ export default function Workspace({ inspection, items, library, serverResponses,
     setSync(effective);
     setDetail(effective === "offline" ? undefined : d);
     local.conflicts().then(setConflicts);
-  }, []);
+  }, [local]);
   const refreshQueued = useCallback(async () => {
     const ops = await local.peekAll();
     setQueuedEv(ops.filter((o): o is QueuedEvidence => o.kind === "evidence" && o.inspection_id === inspection.id));
   }, [inspection.id]);
   useEffect(() => {
-    const tick = () => { processOutbox(onState); refreshQueued(); flushRef.current(); };
+    const tick = () => { processOutbox(userId, onState); refreshQueued(); flushRef.current(); };
     tick();
     const goOffline = () => onState("offline");
     window.addEventListener("online", tick); window.addEventListener("offline", goOffline);
     const iv = setInterval(tick, 8000);
     return () => { clearInterval(iv); window.removeEventListener("online", tick); window.removeEventListener("offline", goOffline); };
-  }, [onState, refreshQueued]);
+  }, [onState, refreshQueued, userId]);
 
   // --- Persistence beyond the outbox (context · action forms · runtime violations) ---
   // The offline engine is untouched: these use direct writes when online plus a
@@ -337,7 +340,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
       violation_id: vid, violation_code_id: vid ? null : (vioConfig[code]?.id ?? null),
       reason: "Response changed to compliant", queued_at: new Date().toISOString(),
     });
-    processOutbox(onState);
+    processOutbox(userId, onState);
   }
   /** Phase 5 (§15, D-017) — one op kind covers add / deselect / restore: the
    *  payload is the DESIRED final row, upserted on (inspection_id, item_id). */
@@ -345,7 +348,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     const reverted_at = reverted ? new Date().toISOString() : null;
     setItemStates(m => ({ ...m, [item.id]: { state, reason, active: !reverted } }));
     await local.enqueue({ kind: "item_state", inspection_id: inspection.id, item_id: item.id, state, reason, reverted_at, queued_at: new Date().toISOString() });
-    processOutbox(onState);
+    processOutbox(userId, onState);
   }
   async function confirmDeselect() {
     if (!deselecting) return;
@@ -466,7 +469,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     await local.saveDraft(inspection.id, item.id, next);                 // durable draft (autosave — FND-005)
     if (next.value) {                                                    // note rides with the answer; note-only stays a local draft
       await local.enqueue({ kind: "response", inspection_id: inspection.id, item_id: item.id, response: next, baseline_updated_at: baseline[item.id] ?? null, queued_at: new Date().toISOString() });
-      processOutbox(onState);
+      processOutbox(userId, onState);
     }
     const nc = next.value ? item.response_model.mapping?.[next.value] : undefined;
     if (nc?.violation) {
@@ -509,7 +512,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
       setMsg(fmt(strings.evidenceQueued, { code: item.code, sha: sha.slice(0, 12) }));
     }
     await refreshQueued();
-    processOutbox(onState);
+    processOutbox(userId, onState);
     flushMedia();
   }
   async function attachFiles(item: Item, files: FileList, replaceId?: string) {
@@ -711,7 +714,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
     setMsg(navigator.onLine ? fmt(strings.submitting, { v: legacyVersion }) : strings.queuedOffline);
     // After a successful RPC submit, local state follows the SERVER-assigned
     // version number (D-020); the legacy fallback never reports one back.
-    processOutbox(onState, (inspectionId, info) => {
+    processOutbox(userId, onState, (inspectionId, info) => {
       if (inspectionId === inspection.id) setMsg(fmt(strings.submitting, { v: info.version_number }));
     });
   }
@@ -723,7 +726,7 @@ export default function Workspace({ inspection, items, library, serverResponses,
         <span className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
           <span className={`ax-sync ${tone}`}>{strings.sync[sync]}{detail ? ` · ${detail}` : ""}</span>
           {sync === "failed" && (
-            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => processOutbox(onState)}>{strings.retryNow}</button>
+            <button type="button" className="ax-btn ax-btn--subtle" onClick={() => processOutbox(userId, onState)}>{strings.retryNow}</button>
           )}
         </span>
         <span className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "center" }}>

@@ -189,3 +189,54 @@ test.describe("TASK-EXECUTION-MODULE-001 Phase 5 workspace item lifecycle", () =
     expect(log).toContain("D-019");
   });
 });
+
+test.describe("PLAN item 4 report-kind package switch", () => {
+  const page = read(workspacePagePath);
+  const frozenDefinitionAt = page.indexOf("const frozenDefinition = packageVersion.definition;");
+  const guardAt = page.indexOf("if (frozenDefinition.package_kind)");
+  const packageCodesAt = page.indexOf("const packageCodes =");
+  const guardBlock = page.slice(guardAt, packageCodesAt);
+
+  test("a real visit-report definition without package_kind keeps the existing workspace path", () => {
+    const visitReportDefinition: { package_kind?: unknown; sections: { items: string[] }[] } = {
+      sections: [{ items: ["VISIT-001"] }],
+    };
+
+    expect(Boolean(visitReportDefinition.package_kind)).toBe(false);
+    expect(frozenDefinitionAt).toBeGreaterThan(-1);
+    expect(guardAt).toBeGreaterThan(frozenDefinitionAt);
+    expect(packageCodesAt).toBeGreaterThan(guardAt);
+    expect(page.slice(packageCodesAt)).toContain("<FactoryVerification");
+    expect(page.slice(packageCodesAt)).toContain("<Workspace");
+  });
+
+  test("known draft package kinds return the governed empty state before protected reads", () => {
+    for (const package_kind of ["chemical_clearance", "customs_exemption"]) {
+      expect(Boolean(package_kind)).toBe(true);
+    }
+
+    expect(guardBlock).toContain("return (");
+    expect(guardBlock).toContain('<Shell current="/field"');
+    expect(guardBlock).toContain("<EmptyState");
+    expect(guardBlock).toContain("Inspection package not configured");
+    expect(guardBlock).not.toContain("<FactoryVerification");
+    expect(guardBlock).not.toContain("<Workspace");
+
+    for (const protectedRead of [
+      "const itemRead =",
+      "const libraryRead =",
+      'sb.from("checklist_responses")',
+      'sb.from("violations")',
+    ]) {
+      expect(page.indexOf(protectedRead), `${protectedRead} must remain after the early return`).toBeGreaterThan(guardAt);
+    }
+  });
+
+  test("an unrecognized truthy package_kind also fails closed without an allowlist", () => {
+    expect(Boolean("future_unknown_report_kind")).toBe(true);
+    expect(guardBlock).toContain("if (frozenDefinition.package_kind)");
+    expect(guardBlock).not.toContain("chemical_clearance");
+    expect(guardBlock).not.toContain("customs_exemption");
+    expect(guardBlock).not.toMatch(/includes|switch|case/);
+  });
+});

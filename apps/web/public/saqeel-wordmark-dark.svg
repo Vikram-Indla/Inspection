@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 40" width="260" height="40">
+  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" fill="none" stroke="#5980a6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" transform="translate(4,4) scale(1.15)"></path>
+  <path d="m9 12 2 2 4-4" fill="none" stroke="#5980a6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" transform="translate(4,4) scale(1.15)"></path>
+  <text x="42" y="26" font-family="Barlow Condensed, -apple-system, Segoe UI, Roboto, Arial, sans-serif" font-weight="700" font-size="18" letter-spacing="1.6" fill="#ffffff">SAQEEL</text>
+  <text x="118" y="27" font-size="19" font-weight="300" fill="#ffffff" opacity="0.45">|</text>
+  <text x="132" y="27" font-family="IBM Plex Sans Arabic, -apple-system, Segoe UI, Roboto, Arial, sans-serif" font-weight="700" font-size="21" fill="#ffffff">صقيل</text>
+</svg>

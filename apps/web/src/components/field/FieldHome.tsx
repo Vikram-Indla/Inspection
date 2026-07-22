@@ -5,7 +5,8 @@
 // M03-015: expired / overdue display — window_end < now with a not-started
 //          inspection renders red 'expired'; lapsed-but-started renders amber
 //          'overdue'. Persistence is the server's expire_lapsed_visits() rpc.
-// M03-001: inspector notification inbox card with mark-read (delivery_state).
+// M03-001: inspector notification inbox card with authoritative read_at receipt
+//          and queued delivery_state compatibility.
 // All strings arrive pre-translated from the server page (strings-prop canon —
 // client components cannot call useT()). Colors: ax tokens only; logical props.
 import Link from "next/link";
@@ -47,7 +48,7 @@ export type FieldNotification = {
   label: string;      // pre-translated event label (server maps event_key)
   detail: string;     // payload extract (reason / visit ref) — data, not UI copy
   createdAt: string;  // ISO
-  unread: boolean;    // delivery_state === 'queued'
+  unread: boolean;    // authoritative read_at plus terminal delivery-state compatibility
 };
 
 export type FieldHomeStrings = {
@@ -168,9 +169,10 @@ function InboxRow({ n, strings, locale }: { n: FieldNotification; strings: Field
     <li className="ax-row" style={{ gap: "var(--ax-space-150)", alignItems: "flex-start", paddingBlock: "var(--ax-space-100)", borderBlockEnd: "1px solid var(--ax-color-border)" }}>
       <span aria-hidden="true" style={{ marginBlockStart: 6, inlineSize: 8, blockSize: 8, flex: "0 0 auto", borderRadius: "var(--ax-radius-full)", background: read ? "var(--ax-color-border)" : "var(--ax-color-primary)" }} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-        <span style={{ font: "var(--ax-text-body-strong)" }}>
+        <Link href={`/field/notifications/${encodeURIComponent(n.id)}`} prefetch={false}
+          className="ax-link" style={{ font: "var(--ax-text-body-strong)" }}>
           {n.label}{!read && <span className="ax-sr-only"> — {strings.unreadBadge}</span>}
-        </span>
+        </Link>
         {n.detail && <span className="ax-caption">{n.detail}</span>}
         <span className="ax-caption ax-numeric">{fmtWindow(n.createdAt, locale)}</span>
         {state.error && <span className="ax-caption" style={{ color: "var(--ax-color-critical)" }} role="alert">{state.error}</span>}

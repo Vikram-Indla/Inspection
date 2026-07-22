@@ -44,6 +44,12 @@ export type LoginStrings = {
   forgotSending: string;
   forgotSentTitle: string;
   forgotSentBody: string;
+  otpLabel: string;
+  otpPlaceholder: string;
+  otpInvalid: string;
+  otpErrorGeneric: string;
+  otpVerify: string;
+  otpVerifying: string;
   back: string;
   footTrust: string;
   footSecure: string;
@@ -62,6 +68,8 @@ type View = "signin" | "forgot" | "forgot-sent";
 
 // Format check only — never an existence check (that would be enumeration).
 const EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const OTP_FORMAT = /^\d{6}$/;
+const RECOVERY_OTP_USER_KEY = "saqeel-recovery-otp-user";
 
 function safeSignInError(error: unknown, s: LoginStrings): string {
   const message = error instanceof Error
@@ -76,20 +84,23 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
   const [view, setView] = useState<View>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailFormatError, setEmailFormatError] = useState<string | null>(null);
+  const [otpFormatError, setOtpFormatError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [credentialFocus, setCredentialFocus] = useState(false);
 
   const forgotHeadingRef = useRef<HTMLHeadingElement | null>(null);
-  const backLinkRef = useRef<HTMLButtonElement | null>(null);
+  const otpHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const otpRef = useRef<HTMLInputElement | null>(null);
 
   // CD-002 focus table: entering "forgot" moves focus to its heading;
-  // entering "forgot-sent" moves focus to "Back to sign in".
+  // entering "forgot-sent" moves focus to the OTP heading.
   useEffect(() => {
     if (view === "forgot") forgotHeadingRef.current?.focus();
-    else if (view === "forgot-sent") backLinkRef.current?.focus();
+    else if (view === "forgot-sent") otpHeadingRef.current?.focus();
   }, [view]);
 
   async function signIn(e: React.FormEvent) {
@@ -124,10 +135,10 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
     setError(null);
     if (!EMAIL_FORMAT.test(email)) { setEmailFormatError(s.emailInvalid); return; }
     setEmailFormatError(null);
+    // A new request invalidates any abandoned same-tab recovery UX marker.
+    sessionStorage.removeItem(RECOVERY_OTP_USER_KEY);
     setBusy(true);
-    const { error } = await supabaseBrowser().auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset`,
-    });
+    const { error } = await supabaseBrowser().auth.resetPasswordForEmail(email);
     setBusy(false);
     // Anti-enumeration: never reveal whether the address exists — always
     // advance to the neutral confirmation on success; only surface transport
@@ -135,6 +146,29 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
     if (error) { setError(s.resetErrorGeneric); return; }
     void logAuthEvent("password_reset_requested", email);
     setView("forgot-sent");
+  }
+
+  async function verifyResetOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    if (!OTP_FORMAT.test(otp)) {
+      setOtpFormatError(s.otpInvalid);
+      otpRef.current?.focus();
+      return;
+    }
+    setOtpFormatError(null);
+    sessionStorage.removeItem(RECOVERY_OTP_USER_KEY);
+    setBusy(true);
+    const { data, error } = await supabaseBrowser().auth.verifyOtp({ email, token: otp, type: "recovery" });
+    setBusy(false);
+    // Safe failure copy covers wrong/expired codes, missing accounts and
+    // provider errors without exposing which condition occurred.
+    if (error || !data.session) { setError(s.otpErrorGeneric); return; }
+    // /reset admits only the same-tab session established by this recovery
+    // verification. Supabase's authenticated session remains authoritative;
+    // this marker only prevents unrelated signed-in sessions entering the UX.
+    sessionStorage.setItem(RECOVERY_OTP_USER_KEY, data.session.user.id);
+    window.location.assign("/reset");
   }
 
   const themeLabels = { toLight: s.themeToLight, toDark: s.themeToDark };
@@ -230,12 +264,34 @@ export default function LoginClient({ strings: s }: { strings: LoginStrings }) {
           {view === "forgot-sent" && (
             <section className="lg-card" aria-label={s.forgotSentTitle}>
               <div role="status">
-                <h1 className="lg-card__title">{s.forgotSentTitle}</h1>
+                <h1 className="lg-card__title" ref={otpHeadingRef} tabIndex={-1}>{s.forgotSentTitle}</h1>
                 <p className="lg-card__sub">{s.forgotSentBody}</p>
               </div>
-              <button ref={backLinkRef} type="button" className="lg-linkbtn" onClick={() => { setError(null); setView("signin"); }}>
-                {s.back}
-              </button>
+              <form className="lg-credentials" onSubmit={verifyResetOtp} noValidate>
+                <div className={`ax-field${otpFormatError ? " is-invalid" : ""}`}>
+                  <label className="ax-field__label" htmlFor="reset-otp">{s.otpLabel}</label>
+                  <input ref={otpRef} id="reset-otp" className="ax-input" type="text" inputMode="numeric"
+                    autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} dir="ltr"
+                    placeholder={s.otpPlaceholder} value={otp}
+                    aria-invalid={otpFormatError ? true : undefined}
+                    aria-describedby={otpFormatError ? "otp-err" : undefined}
+                    onChange={e => {
+                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 6));
+                      setOtpFormatError(null);
+                      setError(null);
+                    }} required />
+                  {otpFormatError && <p id="otp-err" className="ax-field__error">{otpFormatError}</p>}
+                </div>
+                {error && <div className="ax-banner ax-banner--critical" role="alert">{error}</div>}
+                <button className="btn btn-primary btn-lg lg-submit btn-touch" type="submit" disabled={busy} aria-busy={busy}>
+                  {busy ? s.otpVerifying : s.otpVerify}
+                </button>
+                <button type="button" className="lg-linkbtn" onClick={() => {
+                  setError(null); setOtp(""); setOtpFormatError(null); setView("signin");
+                }}>
+                  {s.back}
+                </button>
+              </form>
             </section>
           )}
         </div>

@@ -13,6 +13,8 @@ import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { formatDateTime } from "@/lib/dates";
 import type { Locale } from "@/lib/i18n";
+import { isNotificationUnread, notificationReadPatch } from "@/lib/notification-read";
+import { shellNotificationVisitHref } from "@/lib/shell-navigation";
 
 export type BellStrings = {
   label: string;            // accessible name for the toggle
@@ -33,14 +35,19 @@ export type BellStrings = {
 // visits/[id]/actions.ts, expire_lapsed_visits 0025/0030). Returned visits
 // deep-link to the detail FOCUSED on the return block; the other planning
 // events land on the detail itself. Non-planning events have no link.
-export function notificationHref(eventKey: string, payload: Record<string, unknown> | null): string | null {
+export function notificationHref(
+  eventKey: string,
+  payload: Record<string, unknown> | null,
+  fieldOnly = false,
+): string | null {
   const visitId = typeof payload?.visit_id === "string" ? payload.visit_id : null;
   if (!visitId) return null;
-  if (eventKey === "visit_returned") return `/visits/${visitId}?focus=return`;
+  let webHref: string | null = null;
+  if (eventKey === "visit_returned") webHref = `/visits/${visitId}?focus=return`;
   if (["visit_cancelled", "visit_expired", "visit_republished", "visit_rescheduled", "assignment"].includes(eventKey)) {
-    return `/visits/${visitId}`;
+    webHref = `/visits/${visitId}`;
   }
-  return null;
+  return webHref ? shellNotificationVisitHref(visitId, webHref, fieldOnly) : null;
 }
 
 type Row = {
@@ -49,7 +56,7 @@ type Row = {
 };
 
 const POLL_MS = 30_000;
-const isUnread = (r: Row) => !r.read_at && r.delivery_state !== "read" && r.delivery_state !== "handled";
+const isUnread = (r: Row) => isNotificationUnread(r);
 
 // K-008 — session-scoped result cache. The shell remounts on every client
 // navigation (K-001), which used to re-fire the list query + exact count on
@@ -69,7 +76,7 @@ function BellIcon() {
   );
 }
 
-export default function NotificationBell({ strings, locale }: { strings: BellStrings; locale: Locale }) {
+export default function NotificationBell({ strings, locale, fieldOnly = false }: { strings: BellStrings; locale: Locale; fieldOnly?: boolean }) {
   const [rows, setRows] = useState<Row[]>([]);
   const [unreadTotal, setUnreadTotal] = useState(0);
   const [open, setOpen] = useState(false);
@@ -129,9 +136,8 @@ export default function NotificationBell({ strings, locale }: { strings: BellStr
   async function markRead(r: Row) {
     const sb = sbRef.current;
     // read_at is the platform read receipt; legacy 'queued' rows also flip
-    // delivery_state so the field inbox (delivery_state semantics) agrees.
-    const patch: Record<string, unknown> = { read_at: new Date().toISOString() };
-    if (r.delivery_state === "queued") patch.delivery_state = "read";
+    // delivery_state so legacy delivery-state consumers remain compatible.
+    const patch = notificationReadPatch(r.delivery_state, new Date().toISOString());
     const { error } = await sb.from("notifications").update(patch).eq("id", r.id);
     if (error) { setErr(strings.loadError); return; }
     if (snapshot) {
@@ -171,7 +177,7 @@ export default function NotificationBell({ strings, locale }: { strings: BellStr
           {rows.length === 0 && <p className="ax-caption">{strings.empty}</p>}
           <div style={{ maxBlockSize: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
             {rows.map(r => {
-              const href = notificationHref(r.event_key, r.payload);
+              const href = notificationHref(r.event_key, r.payload, fieldOnly);
               return (
               <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-150)", borderInlineStart: isUnread(r) ? "3px solid var(--ax-color-primary)" : "3px solid transparent" }}>
                 <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>

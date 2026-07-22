@@ -6,8 +6,8 @@
 // queue, the Factory 360 cache, or any workflow state. Strings arrive
 // pre-translated from the server (strings-prop canon).
 
-import { useEffect, useState } from "react";
-import { local, type Conflict } from "@/lib/offline";
+import { useEffect, useMemo, useState } from "react";
+import { localForUser, promptLegacyOfflineRestore, type Conflict } from "@/lib/offline";
 
 export type FieldSyncStrings = {
   offlineQueued: string;   // "Offline — {n} changes queued"
@@ -16,7 +16,8 @@ export type FieldSyncStrings = {
   syncFailed: string;      // "{n} sync conflict(s) — no data lost"
 };
 
-export default function FieldSyncChips({ strings }: { strings: FieldSyncStrings }) {
+export default function FieldSyncChips({ strings, userId }: { strings: FieldSyncStrings; userId: string }) {
+  const local = useMemo(() => localForUser(userId), [userId]);
   const [online, setOnline] = useState(true);
   const [queued, setQueued] = useState<number | null>(null);
   const [conflicts, setConflicts] = useState<number>(0);
@@ -34,14 +35,14 @@ export default function FieldSyncChips({ strings }: { strings: FieldSyncStrings 
         if (alive) setQueued(0);
       }
     };
-    void refresh();
+    void promptLegacyOfflineRestore(userId).then(refresh).catch(() => refresh());
     const on = () => { setOnline(true); void refresh(); };
     const off = () => setOnline(false);
     window.addEventListener("online", on);
     window.addEventListener("offline", off);
     const id = window.setInterval(refresh, 15000);
     return () => { alive = false; window.removeEventListener("online", on); window.removeEventListener("offline", off); window.clearInterval(id); };
-  }, []);
+  }, [local, userId]);
 
   // Until the outbox has been read on the client, render nothing (SSR-safe; no
   // fabricated "synced" state before we actually know).

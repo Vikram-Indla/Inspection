@@ -56,8 +56,13 @@ export function browserReportedOsVersion(nav: Pick<Navigator, "userAgent" | "pla
 
 export function getFieldDeviceMetadata(applicationVersion: string): FieldDeviceMetadata {
   return {
-    deviceId: stableDeviceId(),
+    deviceId: getFieldDeviceIdentifier(),
     osVersion: browserReportedOsVersion(navigator),
     applicationVersion,
   };
+}
+
+/** Stable per-install identifier shared by field telemetry and device enrollment. */
+export function getFieldDeviceIdentifier(): string {
+  return stableDeviceId();
 }

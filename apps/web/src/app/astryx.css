@@ -45,7 +45,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   border: 1px solid var(--ax-color-border);
   border-radius: var(--ax-radius-standard);
 }
-.ax-panel { border-radius: var(--ax-radius-large); }
+.ax-panel { border-radius: var(--ax-radius-large); padding: var(--ax-space-250); }
 
 /* ============================================================ CORE: BUTTONS
    States: default/hover/focus/active/disabled/loading.
@@ -132,7 +132,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   transition: background-color 6000s ease-in-out 0s;
 }
 .ax-input:hover, .ax-select:hover, .ax-textarea:hover { border-color: var(--ax-color-border-strong); }
-.ax-input:focus-visible, .ax-select:focus-visible, .ax-textarea:focus-visible { outline: none; border-color: var(--ax-color-primary); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.ax-input:focus-visible, .ax-select:focus-visible, .ax-textarea:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-input[disabled], .ax-select[disabled], .ax-textarea[disabled] { background: var(--ax-color-neutral-tint); color: var(--ax-color-text-disabled); cursor: not-allowed; }
 .ax-input[readonly] { background: var(--ax-color-surface-sunken); border-style: dashed; }
 .ax-field.is-invalid .ax-input, .ax-field.is-invalid .ax-select, .ax-field.is-invalid .ax-textarea { border-color: var(--ax-color-critical); }
@@ -428,6 +428,10 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
    collapse and accessible mobile drawer. All geometry uses logical axes. */
 .ax-shell { display: grid; grid-template-columns: var(--ax-shell-nav-width) minmax(0, 1fr); min-block-size: 100dvh; transition: grid-template-columns var(--ax-motion-standard); }
 .ax-shell.is-collapsed { grid-template-columns: 68px minmax(0, 1fr); }
+/* Field-only Inspector sessions render no console sidebar nav at all — the
+   drawer, backdrop and hamburger are not in the DOM. Collapse the reserved
+   nav column so the page content spans full width instead of leaving a gap. */
+.ax-shell.is-field-nav-hidden, .ax-shell.is-field-nav-hidden.is-collapsed { grid-template-columns: minmax(0, 1fr); }
 .ax-shell__skip { position: fixed; inset-block-start: var(--ax-space-100); inset-inline-start: var(--ax-space-100); z-index: var(--ax-z-toast); transform: translateY(-160%); background: var(--ax-color-primary); color: var(--ax-color-inverse-text); padding: var(--ax-space-100) var(--ax-space-150); border-radius: var(--ax-radius-small); font: var(--ax-text-body-strong); text-decoration: none; }
 .ax-shell__skip:focus { transform: translateY(0); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 /* SAQEEL graphite navigation — deep graphite in BOTH themes (PR 1b hotfix). */
@@ -493,7 +497,7 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
   padding: var(--ax-space-100) var(--ax-space-300) var(--ax-space-150); display: flex; flex-direction: column; gap: var(--ax-space-100);
   position: sticky; inset-block-start: 0; z-index: var(--ax-z-sticky);
 }
-.ax-pagehead__topbar { display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height-field); }
+.ax-pagehead__topbar { display: flex; align-items: center; gap: var(--ax-space-150); min-block-size: var(--ax-control-height-field); position: relative; z-index: 1; }
 .ax-pagehead__actions { margin-inline-start: auto; display: flex; align-items: center; gap: var(--ax-space-100); }
 .ax-shell-controls { display: flex; align-items: center; gap: var(--ax-space-100); min-inline-size: 0; flex: 1; }
 .ax-topbar-icon { display: grid; place-items: center; inline-size: var(--ax-control-height); block-size: var(--ax-control-height); border: 1px solid transparent; border-radius: var(--ax-radius-standard); background: transparent; color: var(--ax-color-text-secondary); cursor: pointer; transition: color var(--ax-motion-fast), background var(--ax-motion-fast), border-color var(--ax-motion-fast); }
@@ -503,8 +507,13 @@ a.ax-link:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 
 .ax-shell-search { position: relative; inline-size: min(420px, 38vw); }
 .ax-shell-search__icon { position: absolute; inset-inline-start: var(--ax-space-150); inset-block-start: 50%; transform: translateY(-50%); color: var(--ax-color-text-secondary); pointer-events: none; }
 .ax-shell-search input { inline-size: 100%; min-block-size: var(--ax-control-height); padding-inline: 40px var(--ax-space-150); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-full); background: var(--ax-color-surface-sunken); color: var(--ax-color-text); font: var(--ax-text-input); }
-.ax-shell-search input:focus-visible { outline: none; border-color: var(--ax-color-primary); outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.ax-shell-search input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 .ax-shell-search__results { position: absolute; inset-block-start: calc(100% + var(--ax-space-100)); inset-inline: 0; z-index: var(--ax-z-drawer); padding: var(--ax-space-100); border: 1px solid var(--ax-color-border); border-radius: var(--ax-radius-standard); background: var(--ax-color-surface); box-shadow: var(--ax-shadow-overlay); }
+/* Portaled to document.body (see ShellClient.tsx) so it paints outside the
+   sticky pagehead's subtree — top/left/width come from inline style, computed
+   off the search box's live position; margin-top clears the gap the
+   attached-layout variant got from inset-block-start above. */
+.ax-shell-search__results--portal { position: fixed; inset-inline: auto; margin-block-start: var(--ax-space-100); z-index: var(--ax-z-toast); }
 .ax-shell-search__results a { display: flex; align-items: center; gap: var(--ax-space-100); padding: var(--ax-space-100); color: var(--ax-color-text); text-decoration: none; border-radius: var(--ax-radius-small); }
 .ax-shell-search__results a > span { display: flex; flex-direction: column; min-inline-size: 0; }
 .ax-shell-search__results a strong, .ax-shell-search__results a small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

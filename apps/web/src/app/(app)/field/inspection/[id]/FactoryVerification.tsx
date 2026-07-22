@@ -9,7 +9,7 @@
 // queueing so the annotated copy rides with the original (M04-109).
 // Senaei data is NEVER written back (FND-007 / M04-112).
 import { useEffect, useMemo, useRef, useState } from "react";
-import { local, processOutbox, sha256b64, type OutboxOp, type SyncState } from "@/lib/offline";
+import { localForUser, processOutbox, sha256b64, type OutboxOp, type SyncState } from "@/lib/offline";
 import Modal from "@/components/Modal";
 
 type QueuedEvidence = Extract<OutboxOp, { kind: "evidence" }>;
@@ -124,8 +124,9 @@ function AnnotateModal({ file, strings, onDone, onCancel }: {
   );
 }
 
-export default function FactoryVerification({ inspectionId, fields, license, products, materials, initialChecks, checksLoadError, serverFieldEvidence, evidenceLimits, readOnly, strings }: {
+export default function FactoryVerification({ inspectionId, fields, license, products, materials, initialChecks, checksLoadError, serverFieldEvidence, evidenceLimits, readOnly, strings, userId }: {
   inspectionId: string;
+  userId: string;
   fields: FactoryField[];
   license: FactoryLicense;
   products: FactoryProductRow[];
@@ -137,6 +138,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
   readOnly: boolean;
   strings: FactoryVerificationStrings;
 }) {
+  const local = useMemo(() => localForUser(userId), [userId]);
   const [checks, setChecks] = useState(() => Object.fromEntries(initialChecks.map(c => [c.field_key, c])) as Record<string, CheckState>);
   const [observedDraft, setObservedDraft] = useState(() => Object.fromEntries(initialChecks.map(c => [c.field_key, c.observed_value ?? ""])) as Record<string, string>);
   const [notes, setNotes] = useState(() => Object.fromEntries(initialChecks.map(c => [c.field_key, c.evidence_note ?? ""])) as Record<string, string>);
@@ -182,7 +184,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
     await local.saveDraft(inspectionId, `fv:${field.key}`, next);           // durable local home (M04-114 — nothing lost)
     await local.enqueue({ kind: "factory_check", inspection_id: inspectionId, check: next, queued_at: new Date().toISOString() });
     setMsg(strings.savedLocal);
-    processOutbox(onState);
+    processOutbox(userId, onState);
   }
   async function persistNote(field: FactoryField) {
     const existing = checksRef.current[field.key];
@@ -195,7 +197,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
     const sha = await sha256b64(b64);
     await local.enqueue({ kind: "evidence", inspection_id: inspectionId, linked_type: "factory_field", linked_id: id, name, mime, data_b64: b64, captured_at: new Date().toISOString(), sha256: sha, queued_at: new Date().toISOString() });
     await refreshQueued();
-    processOutbox(onState);
+    processOutbox(userId, onState);
   }
   async function attach(field: FactoryField, files: FileList) {
     for (const file of Array.from(files)) {
@@ -252,7 +254,7 @@ export default function FactoryVerification({ inspectionId, fields, license, pro
       {failDetail !== null && (
         <div className="ax-banner ax-banner--critical"><div className="ax-row" style={{ justifyContent: "space-between", alignItems: "center", gap: "var(--ax-space-200)" }}>
           <span>{strings.syncFailed}{failDetail ? ` · ${failDetail}` : ""}</span>
-          <button className="ax-btn ax-btn--secondary" onClick={() => processOutbox(onState)}>{strings.retry}</button>
+          <button className="ax-btn ax-btn--secondary" onClick={() => processOutbox(userId, onState)}>{strings.retry}</button>
         </div></div>
       )}
       {msg && <div className="ax-banner"><div>{msg}</div></div>}

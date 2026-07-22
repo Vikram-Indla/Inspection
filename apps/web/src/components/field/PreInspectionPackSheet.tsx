@@ -9,8 +9,8 @@
 // another task). Package-cached-for-offline is read from the inspection package
 // cache (lib/offline.ts) — display only, no mutation, no queue changes.
 
-import { useEffect, useState } from "react";
-import { local } from "@/lib/offline";
+import { useEffect, useMemo, useState } from "react";
+import { localForUser } from "@/lib/offline";
 
 export type PackSection = {
   /** governed value present */ value: string | null;
@@ -85,11 +85,13 @@ function Section({ title, open, children }: { title: string; open?: boolean; chi
   );
 }
 
-export default function PreInspectionPackSheet({ data, strings, moduleClasses }: {
+export default function PreInspectionPackSheet({ data, strings, moduleClasses, userId }: {
   data: PackData;
   strings: PackStrings;
   moduleClasses: { packChipRow: string; packReadiness: string; packFooter: string; packBlocked: string };
+  userId: string;
 }) {
+  const local = useMemo(() => localForUser(userId), [userId]);
   const [open, setOpen] = useState(false);
   const [packageCached, setPackageCached] = useState(false);
   const [factory360Ack, setFactory360Ack] = useState(false);
@@ -101,7 +103,7 @@ export default function PreInspectionPackSheet({ data, strings, moduleClasses }:
     let alive = true;
     void local.getPackage(data.inspectionId).then((def) => { if (alive) setPackageCached(!!def); }).catch(() => {});
     return () => { alive = false; };
-  }, [open, data.inspectionId]);
+  }, [open, data.inspectionId, local]);
 
   // Readiness blocker: the repeat-findings review acknowledgement. This is a
   // local readiness nudge, not an invented governance policy — the authoritative

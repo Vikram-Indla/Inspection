@@ -8,8 +8,9 @@ import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
 import FieldHome, { type FieldHomeStrings, type FieldNotification, type FieldVisit } from "@/components/field/FieldHome";
-import ContextualAiPanel from "@/components/ContextualAiPanel";
 import FieldSyncChips from "@/components/field/FieldSyncChips";
+import FieldConnectivityBanner from "@/components/field/FieldConnectivityBanner";
+import FieldDraftList from "@/components/field/FieldDraftList";
 import PreInspectionPackSheet, { type PackData } from "@/components/field/PreInspectionPackSheet";
 import {
   buildInspectorKpiProjection,
@@ -17,8 +18,16 @@ import {
   countChecklistCompliance,
   type InspectorProjectionInput,
 } from "@/lib/dashboard-kpi";
+import { buildInspectorWeeklyKpi } from "@/lib/dashboard-kpi/inspector-weekly";
 import { resolveDashboardPolicyVersion } from "@/lib/dashboard-kpi/loader";
+import { buildGovernedMetricTile, buildPlainMetricTile, type BlockedTexts } from "@/lib/field-metric-tile";
+import { getOrGenerateBriefing } from "@/lib/ai/briefing";
+import { FieldScopeProvider } from "@/components/field/FieldScopeProvider";
+import FieldScopeToggle from "@/components/field/FieldScopeToggle";
+import FieldMetricStrip from "@/components/field/FieldMetricStrip";
+import DailyBriefingCard from "@/components/field/DailyBriefingCard";
 import styles from "./field-dashboard.module.css";
+import { isNotificationUnread } from "@/lib/notification-read";
 
 // visits -> inspections is TO-ONE (object | null, NOT array) — do not regress.
 // inspections -> reviews / submission_versions are TO-MANY (arrays).
@@ -79,18 +88,22 @@ export default async function Field() {
     // (0025, every 15 min, unscoped); boards render display-level 'expired' for
     // lapsed windows in between ticks. No per-page-load mutating RPC (K-009).
 
-  const [assignmentRead, notificationRead, policy] = await Promise.all([
+  const [assignmentRead, notificationRead, policy, dailyBriefing, weeklyBriefing] = await Promise.all([
     sb.from("assignments")
       .select("visit_id, status, visits(id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, factories(id, name, factory_code, city, cr_number, official_lat, official_lng, risk_band, risk_score, risk_drivers), inspections(id, status, submitted_at, package_version_id, reviews(status, decision, decided_at), submission_versions(submitted_at)))")
       .eq("inspector_id", user.id).order("created_at", { ascending: false }),
     // M03-001 — inspector inbox: own rows only (RLS notif_own is the authority)
     sb.from("notifications")
-      .select("id, event_key, payload, delivery_state, created_at")
+      .select("id, event_key, payload, delivery_state, read_at, created_at")
       .eq("recipient", user.id)
       .order("created_at", { ascending: false })
       .limit(8),
     // Shared KPI: the effective published dashboard policy version (or null).
     resolveDashboardPolicyVersion(sb),
+    // TASK-FIELD-BRIEFING-AUTOLOAD-001 — auto-fetch, cached once/Riyadh-day;
+    // no manual "Generate" click needed for the briefing to already be there.
+    getOrGenerateBriefing("daily"),
+    getOrGenerateBriefing("weekly"),
   ]);
   if (assignmentRead.error || notificationRead.error) {
     console.error("[field dashboard reads]", assignmentRead.error?.message ?? notificationRead.error?.message);
@@ -103,9 +116,19 @@ export default async function Field() {
   const asg = assignmentRead.data;
   const notifRows = notificationRead.data;
 
+  // Excludes only the golden-journey e2e fixture (apps/web/e2e/golden-journey.spec.ts
+  // creates a throwaway factory per run: factory_code `G10-JOURNEY-<ts>`, name
+  // `G10 Golden Journey G10-JOURNEY-<ts>`). This is a human-facing display filter
+  // only — the fixture itself, its migrations, and the spec are untouched, and the
+  // spec authenticates as its own throwaway inspector (a different inspector_id),
+  // never asserting this list's contents, so this filter cannot affect the test.
+  const isGoldenJourneyFixture = (v: VisitCard) =>
+    /^G10-JOURNEY-/.test(v.factories?.factory_code ?? "") || /^G10 Golden Journey /.test(v.factories?.name ?? "");
+
   const cards = (asg ?? [])
     .map(a => a.visits as unknown as VisitCard)
-    .filter((v): v is NonNullable<typeof v> => !!v && !!v.factories && ["published", "expired"].includes(v.planning_status));
+    .filter((v): v is NonNullable<typeof v> => !!v && !!v.factories && ["published", "expired"].includes(v.planning_status))
+    .filter(v => !isGoldenJourneyFixture(v));
 
   // ---- Checklist responses for the inspector's own inspections (RLS-scoped) --
   // Fed to the SHARED projection for the correct compliance metric — never a
@@ -144,6 +167,14 @@ export default async function Field() {
   const mProgress = findMetric(projection, "IPAD-KPI-004");
   const mApproval = findMetric(projection, "IPAD-KPI-005");
   const mCompliance = findMetric(projection, "IPAD-KPI-006");
+
+  // TASK-FIELD-KPI-WEEKLY-001 — same rows, same formulas, 7-day window.
+  const weeklyKpi = buildInspectorWeeklyKpi({
+    visits: projectionInput.visits,
+    inspections: projectionInput.inspections,
+    reviews: projectionInput.reviews,
+    nowMs,
+  });
 
   // Status-rail buckets, derived for DISPLAY from governed rows (not new KPIs).
   const returnedCount = cards.filter(v => v.inspections?.status === "returned"
@@ -216,7 +247,10 @@ export default async function Field() {
       label: notifLabels[n.event_key as string] ?? String(n.event_key).replace(/_/g, " "),
       detail: detail ?? "",
       createdAt: n.created_at as string,
-      unread: n.delivery_state === "queued",
+      unread: isNotificationUnread({
+        read_at: n.read_at as string | null,
+        delivery_state: n.delivery_state as string,
+      }),
     };
   });
 
@@ -340,30 +374,27 @@ export default async function Field() {
     weekday: "long", day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Riyadh",
   });
 
-  // Metric-strip cell: honest render of a shared metric (never fabricate a value).
-  const blockedStatuses = ["unavailable", "not_configured", "decision_required"];
-  function metricCell(label: string, m: ReturnType<typeof findMetric>, delta: string, opts?: { percent?: boolean; warn?: boolean }) {
-    const blocked = !m || blockedStatuses.includes(m.sourceStatus);
-    const naText = blocked
-      ? (m?.sourceStatus === "not_configured" ? t("field.metric.notConfigured", "Not configured")
-        : m?.sourceStatus === "decision_required" ? t("field.metric.decisionRequired", "Decision required")
-        : t("field.metric.unavailable", "Unavailable"))
-      : null;
-    const isNull = !blocked && (m?.value == null);
-    const valueText = blocked ? naText
-      : isNull ? t("field.metric.na", "N/A")
-      : opts?.percent ? `${m!.value}%`
-      : String(m!.value);
-    return (
-      <div className={styles.metric}>
-        <span className={styles.metric__label}>{label}</span>
-        {blocked
-          ? <span className={styles.metric__blocked}>{valueText}</span>
-          : <span className={`${styles.metric__value}${opts?.warn ? " " + styles["metric__value--warning"] : ""}`}>{valueText}</span>}
-        <span className={styles.metric__delta}>{delta}</span>
-      </div>
-    );
-  }
+  // Metric-strip tiles: honest render of a shared metric (never fabricate a
+  // value); daily uses the governed SharedMetric blocked-state machinery,
+  // weekly is a plain always-available mirror of the same formula.
+  const blockedTexts: BlockedTexts = {
+    notConfigured: t("field.metric.notConfigured", "Not configured"),
+    decisionRequired: t("field.metric.decisionRequired", "Decision required"),
+    unavailable: t("field.metric.unavailable", "Unavailable"),
+    na: t("field.metric.na", "N/A"),
+  };
+  const dailyTiles = [
+    buildGovernedMetricTile(t("field.metric.today", "Today's visits"), mToday, t("field.metric.today.delta", "assigned · window begins today"), blockedTexts),
+    buildGovernedMetricTile(t("field.metric.remaining", "Remaining"), mRemaining, t("field.metric.remaining.delta", "assigned − submitted"), blockedTexts),
+    buildGovernedMetricTile(t("field.metric.attention", "Pending attention"), mAttention, t("field.metric.attention.delta", "returned + draft"), blockedTexts, { warn: (mAttention?.value ?? 0) > 0 }),
+    buildGovernedMetricTile(t("field.metric.progress", "Daily progress"), mProgress, t("field.metric.progress.delta", "submitted ÷ assigned · not approval"), blockedTexts, { percent: true }),
+  ];
+  const weeklyTiles = [
+    buildPlainMetricTile(t("field.metric.week.visits", "This week's visits"), weeklyKpi.visitsThisWeek, t("field.metric.week.visits.delta", "assigned · past 7 days"), blockedTexts),
+    buildPlainMetricTile(t("field.metric.week.remaining", "Remaining this week"), weeklyKpi.remainingThisWeek, t("field.metric.remaining.delta", "assigned − submitted"), blockedTexts),
+    buildPlainMetricTile(t("field.metric.week.attention", "Pending attention (week)"), weeklyKpi.pendingAttentionThisWeek, t("field.metric.attention.delta", "returned + draft"), blockedTexts, { warn: weeklyKpi.pendingAttentionThisWeek > 0 }),
+    buildPlainMetricTile(t("field.metric.week.progress", "Weekly progress"), weeklyKpi.progressPercentThisWeek, t("field.metric.progress.delta", "submitted ÷ assigned · not approval"), blockedTexts, { percent: true }),
+  ];
 
   const riskTone = selected?.factories?.risk_band
     ? (/high|crit/i.test(selected.factories.risk_band) ? "critical" : /med/i.test(selected.factories.risk_band) ? "warning" : "success")
@@ -384,13 +415,28 @@ export default async function Field() {
             </div>
           </div>
           <span className={styles.grow} />
-          <FieldSyncChips strings={{
+          <FieldSyncChips userId={user.id} strings={{
             offlineQueued: t("field.sync.offlineQueued", "Offline — {n} changes queued"),
             online: t("field.sync.online", "Online"),
             synced: t("field.sync.synced", "All changes synced"),
             syncFailed: t("field.sync.failed", "{n} sync conflict(s) — no data lost"),
           }} />
         </header>
+        <FieldConnectivityBanner
+          offline={t("field.connectivity.offline", "You are offline — local work will sync when connectivity returns.")}
+          weak={t("field.connectivity.weak", "Weak connection detected — syncing may take longer.")}
+        />
+
+        {/* PLAN v7 item 7 — field-native establishment and incident entry. */}
+        <nav aria-label={t("field.quickActions", "Field tools")} className="ax-surface ax-panel"
+          style={{ padding: "var(--ax-space-200)", display: "flex", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
+          <a className="ax-btn ax-btn--secondary ax-btn--field" href="/field/establishments">
+            {locale === "ar" ? "المنشآت الميدانية" : t("field.establishments.title", "Field establishments")}
+          </a>
+          <a className="ax-btn ax-btn--secondary ax-btn--field" href="/field/incident-reports">
+            {locale === "ar" ? "بلاغات الحوادث" : t("field.incidents.title", "Incident reports")}
+          </a>
+        </nav>
 
         {/* MISSION + STATUS RAIL */}
         <div className={styles.missionRail}>
@@ -401,30 +447,46 @@ export default async function Field() {
           </div>
           <span className={styles.grow} />
           {returnedCount > 0 && <span className={`${styles.exc} ${styles["exc--warning"]}`}><span className={styles.exc__mark} />{t("field.rail.returned", "{n} returned inspection").replace("{n}", String(returnedCount))}</span>}
-          {draftCount > 0 && <span className={`${styles.exc} ${styles["exc--pending"]}`}><span className={styles.exc__mark} />{t("field.rail.draft", "{n} draft to resume").replace("{n}", String(draftCount))}</span>}
+          {draftCount > 0 && (
+            <a href="/field/drafts" className={`${styles.exc} ${styles["exc--pending"]}`} style={{ textDecoration: "none" }}>
+              <span className={styles.exc__mark} />{t("field.rail.draft", "{n} draft to resume").replace("{n}", String(draftCount))}
+            </a>
+          )}
         </div>
 
-        {/* METRIC STRIP — shared inspector projection (P0 semantics) */}
-        <div className={styles.metricStrip}>
-          {metricCell(t("field.metric.today", "Today's visits"), mToday, t("field.metric.today.delta", "assigned · window begins today"))}
-          {metricCell(t("field.metric.remaining", "Remaining"), mRemaining, t("field.metric.remaining.delta", "assigned − submitted"))}
-          {metricCell(t("field.metric.attention", "Pending attention"), mAttention, t("field.metric.attention.delta", "returned + draft"), { warn: (mAttention?.value ?? 0) > 0 })}
-          {metricCell(t("field.metric.progress", "Daily progress"), mProgress, t("field.metric.progress.delta", "submitted ÷ assigned · not approval"), { percent: true })}
-        </div>
+        {/* Daily/Weekly KPI strip + briefing card share ONE toggle (TASK-FIELD-KPI-WEEKLY-001 /
+            TASK-FIELD-BRIEFING-WEEKLY-001) — see FieldScopeProvider for why shared vs separate. */}
+        <FieldScopeProvider>
+          <div className="ax-row" style={{ justifyContent: "flex-end" }}>
+            <FieldScopeToggle strings={{
+              daily: t("field.scope.daily", "Daily"),
+              weekly: t("field.scope.weekly", "Weekly"),
+              aria: t("field.scope.aria", "Switch dashboard scope"),
+            }} />
+          </div>
 
-        {/* Contextual advisory (PRESERVED) */}
-        <ContextualAiPanel
-          surface="inspector_daily_briefing"
-          title={t("field.dashboard.ai.title", "My daily inspection briefing")}
-          description={t("field.dashboard.ai.description", "A short advisory summary of your recorded assignments. It does not create a route, alter a visit, or change your priorities.")}
-          context={JSON.stringify({ inspector_id: user.id })}
-          evidenceRefs={["MVP1-M03-001", "MVP1-M03-003", "MVP1-M03-009", "SCR-IPAD-600"]}
-          generateLabel={t("field.dashboard.ai.generate", "Generate my briefing")}
-          unavailableLabel={t("field.dashboard.ai.unavailable", "AI briefing unavailable — nothing was generated or changed.")}
-          evidenceLabel={t("field.dashboard.ai.evidence", "Source references")}
-          advisoryLabel={t("field.dashboard.ai.advisory", "Advisory only · human decides")}
-          reviewLabel={t("field.dashboard.ai.review", "Review or reject this advisory")}
-        />
+          {/* METRIC STRIP — shared inspector projection (P0 semantics); weekly is the
+              same formula over the past 7 days (TASK-FIELD-KPI-WEEKLY-001). */}
+          <FieldMetricStrip daily={dailyTiles} weekly={weeklyTiles} />
+
+          {/* Redesigned daily/weekly briefing card (TASK-FIELD-BRIEFING-AUTOLOAD-001) —
+              already populated on load, cached once/Riyadh-day, no manual Generate click. */}
+          <DailyBriefingCard
+            daily={dailyBriefing}
+            weekly={weeklyBriefing}
+            evidenceRefs={["MVP1-M03-001", "MVP1-M03-003", "MVP1-M03-009", "SCR-IPAD-600"]}
+            strings={{
+              titleDaily: t("field.dashboard.ai.title", "My daily inspection briefing"),
+              titleWeekly: t("field.dashboard.ai.titleWeekly", "My weekly inspection briefing"),
+              advisory: t("field.dashboard.ai.advisory", "AI-advisory · not a decision"),
+              refreshAria: t("field.dashboard.ai.refresh", "Refresh briefing"),
+              refreshing: t("field.dashboard.ai.refreshing", "Refreshing…"),
+              review: t("field.dashboard.ai.review", "Review or reject this advisory"),
+              unavailable: t("field.dashboard.ai.unavailable", "Briefing unavailable — nothing was generated or changed."),
+              cachedFrom: t("field.dashboard.ai.cachedFrom", "Generated {time}"),
+            }}
+          />
+        </FieldScopeProvider>
 
         {/* WORKSPACE: map/list/calendar (PRESERVED FieldHome) + selected-visit pane */}
         <div className={styles.workspace}>
@@ -461,7 +523,7 @@ export default async function Field() {
                   )}
                 </dl>
                 <div className="ax-row" style={{ gap: "var(--ax-space-150)", marginBlockStart: "var(--ax-space-200)", flexWrap: "wrap" }}>
-                  {packData && <PreInspectionPackSheet data={packData} moduleClasses={{ packChipRow: styles.packChipRow, packReadiness: styles.packReadiness, packFooter: styles.packFooter, packBlocked: styles.packBlocked }} strings={{
+                  {packData && <PreInspectionPackSheet userId={user.id} data={packData} moduleClasses={{ packChipRow: styles.packChipRow, packReadiness: styles.packReadiness, packFooter: styles.packFooter, packBlocked: styles.packBlocked }} strings={{
                     openPack: t("field.pack.open", "Open pre-inspection pack"),
                     title: t("field.pack.title", "Pre-inspection pack"),
                     close: t("field.pack.close", "Close"),
@@ -508,10 +570,7 @@ export default async function Field() {
             {/* Pending attention (returned / draft resume) */}
             <section className="ax-surface ax-panel" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
               <div className="ax-overline">{t("field.attention.title", "Pending attention")}</div>
-              {returnedCount === 0 && draftCount === 0 ? (
-                <span className="ax-caption">{t("field.attention.empty", "Nothing needs attention. Returned inspections and drafts to resume appear here.")}</span>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--ax-space-150)" }}>
                   {cards.filter(v => v.inspections && (v.inspections.status === "returned" || (v.inspections.reviews ?? []).some(r => r.status === "returned"))).slice(0, 4).map(v => (
                     <div key={`ret-${v.id}`} className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
                       <span className={`${styles.exc} ${styles["exc--warning"]}`}><span className={styles.exc__mark} /></span>
@@ -519,15 +578,18 @@ export default async function Field() {
                       <a className="ax-btn ax-btn--subtle" href={`/field/inspection/${v.inspections!.id}`}>{t("field.attention.resume", "Resume")}</a>
                     </div>
                   ))}
-                  {cards.filter(v => v.inspections?.status === "in_progress").slice(0, 4).map(v => (
-                    <div key={`draft-${v.id}`} className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
-                      <span className={`${styles.exc} ${styles["exc--pending"]}`}><span className={styles.exc__mark} /></span>
-                      <span style={{ flex: 1 }} className="ax-caption">{t("field.attention.draft", "Draft")} · {v.factories!.name}</span>
-                      <a className="ax-btn ax-btn--subtle" href={`/field/inspection/${v.inspections!.id}`}>{t("field.attention.resume", "Resume")}</a>
-                    </div>
-                  ))}
-                </div>
-              )}
+                  <FieldDraftList
+                    userId={user.id}
+                    serverDrafts={cards.filter(v => v.inspections?.status === "in_progress").map(v => ({
+                      inspectionId: v.inspections!.id,
+                      factoryName: v.factories!.name,
+                    }))}
+                    draftLabel={t("field.attention.draft", "Draft")}
+                    resumeLabel={t("field.attention.resume", "Resume")}
+                    localLabel={t("field.attention.localDraft", "Local inspection draft")}
+                    emptyLabel={returnedCount === 0 ? t("field.attention.empty", "Nothing needs attention. Returned inspections and drafts to resume appear here.") : undefined}
+                  />
+              </div>
             </section>
 
             {/* Personal performance — Approval outcomes vs Checklist compliance (SEPARATE, P0) */}
