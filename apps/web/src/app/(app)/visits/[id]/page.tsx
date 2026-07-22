@@ -9,11 +9,12 @@ import { getReasonOptions, type ReasonOption } from "@/lib/planning/lifecycle";
 import { mapError } from "./neutral";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
+import FocusScroll from "./FocusScroll";
 
 const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical" };
 
-export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
-  const { created } = await searchParams;
+export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; focus?: string }> }) {
+  const { created, focus } = await searchParams;
   const { id } = await params;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
@@ -338,14 +339,18 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         )}
       </div>
       {/* M02-008/029 + M8 — return info from the lifecycle stream; the legacy
-          notes-prefix parse only fires for historical rows without an event */}
+          notes-prefix parse only fires for historical rows without an event.
+          M10 / PLN-REQ-009 — notification deep-links (?focus=return) anchor
+          and highlight this block. */}
       {returnReason && (
-        <div className="ax-banner ax-banner--warning"><div>
+        <div id="return-block" className="ax-banner ax-banner--warning"
+          style={focus === "return" ? { outline: "2px solid var(--ax-color-primary)", outlineOffset: 2 } : undefined}><div>
           {t("visit.detail.returnReason", "Returned — reason: {reason} (PLN-CON-011)").replace("{reason}", returnReason)}
           {latestReturnEvent?.comments ? <> · <bdi>{latestReturnEvent.comments}</bdi></> : null}
           {latestReturnEvent ? <span className="ax-caption"> · {new Date(latestReturnEvent.created_at).toISOString().slice(0, 16).replace("T", " ")}</span> : null}
         </div></div>
       )}
+      {focus === "return" && returnReason ? <FocusScroll targetId="return-block" /> : null}
       {v.planning_status === "cancelled" && cancelReasonDisplay && (
         <div className="ax-banner ax-banner--critical"><div>
           {t("visit.detail.cancelledReason", "Cancelled — reason: {reason} (M02-006, final)").replace("{reason}", cancelReasonDisplay)}

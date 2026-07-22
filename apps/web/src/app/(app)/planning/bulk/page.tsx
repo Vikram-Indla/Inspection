@@ -11,6 +11,7 @@ import type { LedgerStrings } from "./EligibilityLedger";
 import type { Bucket, Distribution, DistributionStrings } from "./DistributionPanels";
 import TargetingLensClient from "./TargetingLensClient";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import WidgetBoundary from "@/components/WidgetBoundary";
 import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey, FIELD_REGISTRY, type Op } from "./criteria";
 
 type FactoryForCriteria = {
@@ -372,18 +373,21 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
           <p>{tr("plan.bulk.noCriteria.body", "Bulk targeting never matches the whole registry by default. Add at least one criterion below to see matching factories; nothing is selected or published without an explicit scope.", "الاستهداف الجماعي لا يطابق السجل بالكامل افتراضيًا. أضف معيارًا واحدًا على الأقل أدناه لعرض المصانع المطابقة؛ لا يتم اختيار أو نشر أي شيء دون نطاق صريح.")}</p>
         </div>
       )}
-      {/* MVP1-M01-016 / MVP1-M01-026 · AC-0016 / AC-0026 — contextual planning summary. */}
-      <ContextualAiPanel
-        surface="planning_summary"
-        title={t("plan.bulk.ai.title", "AI planning summary")}
-        description={t("plan.bulk.ai.description", "Evidence-linked advisory summary of the current factory scope. It never selects, ranks or publishes anything.")}
-        context={aiPlanningContext}
-        evidenceRefs={["AC-0016", "AC-0026", "M01-016", "M01-026", "SCR-WEB-110"]}
-        generateLabel={t("plan.bulk.ai.generate", "Generate planning summary")}
-        unavailableLabel={t("plan.bulk.ai.unavailable", "AI provider unavailable — nothing was generated or changed.")}
-        evidenceLabel={t("plan.bulk.ai.evidence", "Source evidence")}
-        advisoryLabel={t("plan.bulk.ai.advisory", "Advisory only · human decides")}
-      />
+      {/* MVP1-M01-016 / MVP1-M01-026 · AC-0016 / AC-0026 — contextual planning summary.
+          M10 / canonical §19 — fails isolated, never blanks the targeting UI. */}
+      <WidgetBoundary label={t("plan.bulk.ai.unavailable", "AI provider unavailable — nothing was generated or changed.")}>
+        <ContextualAiPanel
+          surface="planning_summary"
+          title={t("plan.bulk.ai.title", "AI planning summary")}
+          description={t("plan.bulk.ai.description", "Evidence-linked advisory summary of the current factory scope. It never selects, ranks or publishes anything.")}
+          context={aiPlanningContext}
+          evidenceRefs={["AC-0016", "AC-0026", "M01-016", "M01-026", "SCR-WEB-110"]}
+          generateLabel={t("plan.bulk.ai.generate", "Generate planning summary")}
+          unavailableLabel={t("plan.bulk.ai.unavailable", "AI provider unavailable — nothing was generated or changed.")}
+          evidenceLabel={t("plan.bulk.ai.evidence", "Source evidence")}
+          advisoryLabel={t("plan.bulk.ai.advisory", "Advisory only · human decides")}
+        />
+      </WidgetBoundary>
       <TargetingLensClient
         initialTree={tree} fieldOptions={fieldOptions} matchCount={factories.length} criteriaStrings={criteriaStrings}
         contributions={contributions} leafInfo={leafInfo}
