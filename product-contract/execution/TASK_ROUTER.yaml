@@ -1,6 +1,18 @@
 schema_version: "1.0"
 project: "MIM Inspection Platform MVP1"
 routing_rules:
+  - intent: web_admin_phase1_shell_authority
+    id_pattern: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-*"
+    required_context:
+      - product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml
+      - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md
+      - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_SOURCE_MANIFEST.csv
+      - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json
+      - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_PRESERVATION_MATRIX.csv
+      - product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv
+      - product-contract/web-admin-phase1/WEB_ADMIN_DESIGN_CONFLICT_DECISIONS.md
+      - product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ACCEPTANCE.csv
+      - product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv
   - intent: web_admin_phase1_planning
     id_pattern: "TASK-WEB-ADMIN-PHASE1-*"
     required_context:

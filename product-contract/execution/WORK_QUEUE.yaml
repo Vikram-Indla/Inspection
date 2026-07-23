@@ -1,13 +1,21 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001"
+    gate: "Web/Admin shell-authority amendment approval"
+    priority: "P0"
+    status: "GOVERNANCE_REGISTERED_AWAITING_PRODUCT_OWNER_APPROVAL"
+    owner: "Product Owner approval authority"
+    blocked_by: ["Explicit Product Owner approval of the canonical shell-authority amendment"]
+    blocks: ["All further Web/Admin application implementation", "WA-P1-M2-BATCH-001 rework and review", "Any canonical route cutover"]
+    note: "Saqeel Web(3).html registered as WA-SHELL-SRC-001 for represented Phase 1 Web/Admin shell Dashboard Operations Center and Factory 360 authority. Requirements remain 478/478 with unchanged dispositions. Planning owns Visits at target /planning/visits routes; /visits compatibility redirects require certified cutover. Field/iPad remains Phase 2. Governance only; application WIP preserved at stash 405708dc8f30fe46577dfbad05efd779d1424909."
   - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-M2-BATCH-001"
     gate: "Web/Admin Phase 1 human screen approval"
     priority: "P0"
-    status: "AWAITING_PRODUCT_OWNER_APPROVAL"
+    status: "SUSPENDED_PENDING_SHELL_AUTHORITY_APPROVAL_AND_RECONCILIATION"
     owner: "Codex implementation and QA + Product Owner screen approval"
-    blocked_by: []
+    blocked_by: ["TASK-WEB-ADMIN-PHASE1-AUTHORITY-001 Product Owner approval"]
     blocks: ["Next Web/Admin screen batch", "Canonical Planning/Visits cutover"]
-    note: "Three-screen batch only: Planning landing, Visits list, Visit details. Review uses server-gated wa_preview URLs; current routes remain default and retained for rollback. CR-001..CR-098; WA-DES-036/045; WA-M2-AC-001..006. No Field/iPad, next batch, cutover, push, merge, deploy, DDL, data mutation, or provider change."
+    note: "Three-screen batch is suspended and not approved. Its committed preview and retained current routes remain rollback evidence; interrupted corrections are stashed. Reconcile the shell and Planning-owned /planning/visits target routes only after the authority amendment is approved. No Field/iPad, next batch, cutover, push, merge, deploy, DDL, data mutation, or provider change."
   - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-F0"
     gate: "Web/Admin Phase 1 F0 foundation certification"
     priority: "P0"

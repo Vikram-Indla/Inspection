@@ -10,19 +10,26 @@ for ownership, and 46 supplied design files representing 45 unique payloads.
 
 Read in this order:
 
-1. `BASELINE_SUMMARY.json`
-2. `SOURCE_MANIFEST.csv`
-3. `DESIGN_SOURCE_MANIFEST.csv`
-4. `AUTHORITY_PACKAGE_MANIFEST.csv`
-5. `REQUIREMENT_BASELINE.csv`
-6. `ROUTE_INVENTORY.csv`
-7. `DESIGN_ROUTE_MAP.csv`
-8. `CURRENT_TO_TARGET_MIGRATION.csv`
-9. `PACKAGE_MANIFEST.csv`
-10. `ACCEPTANCE_CRITERIA.csv`
-11. `PHASE2_IPAD_DEFERRED_REGISTER.md`
-12. `OPEN_DECISIONS_AND_BLOCKERS.yaml`
-13. `.planning-pack/web-admin-phase1/WEB_ADMIN_PHASE1_HANDOFF.md`
+1. `WEB_ADMIN_SHELL_AUTHORITY.md`
+2. `WEB_ADMIN_SHELL_SOURCE_MANIFEST.csv`
+3. `WEB_ADMIN_SHELL_ROUTE_MANIFEST.json`
+4. `WEB_ADMIN_SHELL_PRESERVATION_MATRIX.csv`
+5. `WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv`
+6. `WEB_ADMIN_DESIGN_CONFLICT_DECISIONS.md`
+7. `WEB_ADMIN_SHELL_ACCEPTANCE.csv`
+8. `BASELINE_SUMMARY.json`
+9. `SOURCE_MANIFEST.csv`
+10. `DESIGN_SOURCE_MANIFEST.csv`
+11. `AUTHORITY_PACKAGE_MANIFEST.csv`
+12. `REQUIREMENT_BASELINE.csv`
+13. `ROUTE_INVENTORY.csv`
+14. `DESIGN_ROUTE_MAP.csv`
+15. `CURRENT_TO_TARGET_MIGRATION.csv`
+16. `PACKAGE_MANIFEST.csv`
+17. `ACCEPTANCE_CRITERIA.csv`
+18. `PHASE2_IPAD_DEFERRED_REGISTER.md`
+19. `OPEN_DECISIONS_AND_BLOCKERS.yaml`
+20. `.planning-pack/web-admin-phase1/WEB_ADMIN_PHASE1_HANDOFF.md`
 
 Only these dispositions are valid: `PHASE1_WEB`, `PHASE1_ADMIN`,
 `PHASE1_SHARED_BACKEND`, `PHASE2_IPAD_DEFERRED`,
@@ -48,3 +55,12 @@ until stabilization and Product Owner removal approval.
 External workbooks, HTML design exports, ZIPs, Office files, screenshots,
 videos, traces, and rendered pages are not stored here. Their hashes and
 approved external-storage pointers are in `SOURCE_MANIFEST.csv`.
+
+## 2026-07-23 shell-authority amendment
+
+The Product Owner approved `Saqeel Web(3).html` as binding Phase 1 Web/Admin
+shell and dashboard design authority. Its raw rendered source remains external;
+`WEB_ADMIN_SHELL_SOURCE_MANIFEST.csv` records the supplied path, size, checksum,
+scope, and acceptance date. Application implementation is paused until the
+canonical amendment receives explicit Product Owner approval. The 478-row
+requirement baseline and its dispositions are unchanged.

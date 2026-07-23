@@ -1,0 +1,2 @@
+source_id,canonical_source_name,supplied_file_alias,external_storage_pointer,size_bytes,sha256,authority,version,accepted_on,phase_scope,git_storage
+WA-SHELL-SRC-001,Saqeel Web(3).html,saqeel web.html,/Users/vikramindla/Developer/Business - Inspection/saqeel web.html,104507,b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2,PRODUCT_OWNER_APPROVED_BINDING_WEB_ADMIN_SHELL_AND_DASHBOARD_DESIGN_AUTHORITY,v1,2026-07-23,PHASE1_WEB_ADMIN,EXTERNAL_RENDERED_SOURCE_POINTER_ONLY

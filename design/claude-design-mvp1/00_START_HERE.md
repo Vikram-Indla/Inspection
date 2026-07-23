@@ -1,5 +1,16 @@
 # Saqeel MVP1 — Claude Design Workspace
 
+## 2026-07-23 Phase 1 Web/Admin authority amendment
+
+Before any Web/Admin shell, Dashboard, Operations Center, Factory 360, or
+module-screen work, read
+`product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md` and its route,
+preservation, conflict, and acceptance manifests. `Saqeel Web(3).html`
+(`WA-SHELL-SRC-001`) is binding for every represented Phase 1 Web/Admin shell
+and dashboard element. Customer requirements remain behavioral authority and
+Field/iPad stays Phase 2. Application work is paused pending explicit approval
+of the registered amendment.
+
 This directory is the design-execution layer for ChatGPT, Codex, Claude Design, and Fable. It improves the existing MVP1 user experience without rediscovering the product or rebuilding its functional core.
 
 ## Read order

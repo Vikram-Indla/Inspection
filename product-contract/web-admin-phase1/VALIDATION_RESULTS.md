@@ -35,3 +35,24 @@ design authority, requirement and acceptance linkage, existing behavior,
 backend and permission contracts, tests or an explicit test gap, certification,
 cutover, rollback, and legacy-retention instructions. No prohibited binary
 source or evidence file is present in the planning authority.
+
+## 2026-07-23 shell-authority amendment
+
+`TASK-WEB-ADMIN-PHASE1-AUTHORITY-001` extended the validator without changing
+the original baseline counts. Result: **PASS**.
+
+| Amendment control | Result |
+|---|---:|
+| Shell authority source records | 1/1 |
+| Source name / size / SHA-256 | PASS |
+| Shell preservation rows | 46/46 |
+| Shell current-to-target route rows | 18/18 |
+| Existing Phase 1 routes covered by authority map | 71/71 |
+| Fixed navigation labels and order | 17/17 |
+| Shell acceptance rows | 18/18 |
+| Phase 2 `/field/**` exclusion | PASS |
+| YAML and JSON parse | PASS |
+| Git whitespace validation | PASS |
+
+The rendered HTML remains external. No application source or requirement
+disposition changed in this amendment.

@@ -2,7 +2,7 @@ schema_version: "1.0"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
 title: "Web/Admin Phase 1 replacement-design planning authority"
-status: "APPROVED_SCREEN_BATCH_EXECUTION"
+status: "SHELL_AUTHORITY_AMENDMENT_REGISTERED_AWAITING_PRODUCT_OWNER_APPROVAL"
 prepared_on: "2026-07-23"
 approved_on: "2026-07-23"
 approved_by: "Vikram Indla / Product Owner"
@@ -10,9 +10,12 @@ approval_evidence: "Explicit user message: approved"
 baseline_sha: "6fc27d3f654a79d2aa6ef659b0879b35b9eb5b6d"
 branch: "revamp"
 authority:
-  statement: "The supplied package is Product Owner replacement-design input and authorizes planning preparation only."
-  implementation_authorized: true
-  authorized_package: "Declared Web/Admin screen batches; current authorization WA-P1-M2-BATCH-001 only"
+  statement: "The supplied package remains module authority; Saqeel Web(3).html is the binding represented shell/dashboard authority under the 2026-07-23 amendment."
+  implementation_authorized: false
+  authorized_package: "Governance registration only; all application batches paused pending amendment approval"
+  shell_source_id: "WA-SHELL-SRC-001"
+  shell_source_sha256: "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2"
+  shell_authority_record: "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
 scope:
   requirements: "CR-001..CR-478"
   processes: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06B", "G2-P10", "G2-P11", "G2-P12"]
@@ -37,7 +40,26 @@ replacement_policy:
   retention: "Do not delete the current implementation until stabilization and Product Owner removal approval."
   route_authority: "product-contract/web-admin-phase1/CURRENT_TO_TARGET_MIGRATION.csv"
 approval_effect:
-  approved: "Authorizes one declared 2-4 screen Web/Admin batch at a time with mandatory live review and stop; current authorization WA-P1-M2-BATCH-001 only."
+  approved: "After explicit approval of the shell-authority amendment, authorizes one newly declared 2-4 screen Web/Admin batch at a time with mandatory live review and stop."
   rejected: "No application source change; revise the planning baseline under change control."
 separate_explicit_approval_required: ["remote DDL", "deployment", "shared-data mutation", "provider enablement", "push", "merge to main"]
 rollback: "Revert package branch changes; database remediation must be additive and forward-only."
+
+amendment_2026_07_23:
+  task_id: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001"
+  decision_id: "DEC-034"
+  source_name: "Saqeel Web(3).html"
+  supplied_alias: "/Users/vikramindla/Developer/Business - Inspection/saqeel web.html"
+  size_bytes: 104507
+  sha256: "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2"
+  authority_scope:
+    - "Authenticated Web/Admin shell, brand, sidebar hierarchy/options/order, and top bar"
+    - "Dashboard Strategic and Operational views and every represented element"
+    - "Operations Center primary views and represented interactions"
+    - "Factory 360 represented three-column structure and interactions"
+  behavior_authority: "Customer requirements and canonical backend/RLS/RBAC/audit/versioning/integration contracts"
+  current_frontend_role: "Migration and regression evidence only"
+  requirements_effect: "No CR row reopened, duplicated, weakened, or redispositioned; 478/478 remains mandatory"
+  route_decision: "Planning owns Visits; target /planning/visits and /planning/visits/:id with certified /visits compatibility redirects"
+  implementation_hold: "Do not resume application implementation until explicit Product Owner approval of this amendment"
+  excluded: ["/field/**", "Field PWA", "offline field execution", "Inspector iPad", "Phase 2 estimates or tests"]

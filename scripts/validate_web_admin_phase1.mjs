@@ -62,6 +62,11 @@ const migrations = parseCsv(path.join(contract, "CURRENT_TO_TARGET_MIGRATION.csv
 const designSources = parseCsv(path.join(contract, "DESIGN_SOURCE_MANIFEST.csv"));
 const authorityPackages = parseCsv(path.join(contract, "AUTHORITY_PACKAGE_MANIFEST.csv"));
 const f0Migrations = parseCsv(path.join(contract, "F0_CURRENT_TO_TARGET_MIGRATION.csv"));
+const shellSources = parseCsv(path.join(contract, "WEB_ADMIN_SHELL_SOURCE_MANIFEST.csv"));
+const shellPreservation = parseCsv(path.join(contract, "WEB_ADMIN_SHELL_PRESERVATION_MATRIX.csv"));
+const shellRoutes = parseCsv(path.join(contract, "WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv"));
+const shellAcceptance = parseCsv(path.join(contract, "WEB_ADMIN_SHELL_ACCEPTANCE.csv"));
+const shellRouteManifest = JSON.parse(fs.readFileSync(path.join(contract, "WEB_ADMIN_SHELL_ROUTE_MANIFEST.json"), "utf8"));
 
 const allowedDispositions = new Set([
   "PHASE1_WEB", "PHASE1_ADMIN", "PHASE1_SHARED_BACKEND", "PHASE2_IPAD_DEFERRED",
@@ -157,6 +162,25 @@ for (const source of sources) {
 if (acceptance.length !== 72) fail(`expected 72 package acceptance rows, found ${acceptance.length}`);
 if (new Set(acceptance.map(row => row.acceptance_id)).size !== 72) fail("package acceptance IDs are not unique");
 
+if (shellSources.length !== 1) fail(`expected one shell authority source, found ${shellSources.length}`);
+const shellSource = shellSources[0];
+if (shellSource.canonical_source_name !== "Saqeel Web(3).html") fail("shell authority canonical name is incorrect");
+if (shellSource.size_bytes !== "104507") fail("shell authority source size is incorrect");
+if (shellSource.sha256 !== "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2") fail("shell authority checksum is incorrect");
+if (shellSource.git_storage !== "EXTERNAL_RENDERED_SOURCE_POINTER_ONLY") fail("shell authority rendered source must remain external");
+if (shellPreservation.length !== 46) fail(`expected 46 shell preservation rows, found ${shellPreservation.length}`);
+if (new Set(shellPreservation.map(row => row.preservation_id)).size !== 46) fail("shell preservation IDs are not unique");
+if (shellRoutes.length !== 18) fail(`expected 18 shell route mapping rows, found ${shellRoutes.length}`);
+if (new Set(shellRoutes.map(row => row.authority_route_id)).size !== 18) fail("shell route IDs are not unique");
+const coveredShellRoutes = new Set(shellRoutes.flatMap(row => row.current_routes.split(";").filter(Boolean)));
+for (const row of phase1Pages) if (!coveredShellRoutes.has(row.route)) fail(`${row.route} is absent from the shell current-to-target route map`);
+if (shellAcceptance.length !== 18) fail(`expected 18 shell acceptance rows, found ${shellAcceptance.length}`);
+if (new Set(shellAcceptance.map(row => row.acceptance_id)).size !== 18) fail("shell acceptance IDs are not unique");
+if (shellRouteManifest.navigation.length !== 17) fail("shell navigation must contain exactly 17 ordered entries including the Inspection group and children");
+const expectedLabels = ["Dashboard", "Operations Center", "Factory 360", "Planning", "Inspection", "Execution", "Review & Approval", "Compliance Library", "Approval Queue", "Enforcement Library", "Analytics", "Users & Roles", "Lookup Management", "Risk Configuration", "Survey Configuration", "Notification Configuration", "Integration Management"];
+if (shellRouteManifest.navigation.map(row => row.label).join("|") !== expectedLabels.join("|")) fail("shell navigation labels or order differ from authority");
+if (!shellRouteManifest.excluded.includes("/field/**")) fail("shell authority does not isolate Phase 2 field routes");
+
 const prohibitedExtensions = new Set([".zip", ".xlsx", ".xls", ".docx", ".pdf", ".png", ".jpg", ".jpeg", ".webp", ".avif", ".mp4", ".webm"]);
 for (const base of [contract, planning]) {
   for (const entry of fs.readdirSync(base, { recursive: true, withFileTypes: true })) {
@@ -178,5 +202,9 @@ if (!process.exitCode) {
     packages: packages.length,
     migrationRows: migrations.length,
     acceptanceRows: acceptance.length,
+    shellAuthoritySources: shellSources.length,
+    shellPreservationRows: shellPreservation.length,
+    shellRouteRows: shellRoutes.length,
+    shellAcceptanceRows: shellAcceptance.length,
   }, null, 2));
 }

@@ -1,70 +1,58 @@
-schema_version: "1.2"
-task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-M2-BATCH-001"
-batch_id: "WA-P1-M2-BATCH-001"
+schema_version: "1.3"
+task_id: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
-gate: "Web/Admin Phase 1 human screen approval"
-title: "Planning landing, Visits list, and Visit details"
-status: "IMPLEMENTED_VERIFIED_AWAITING_PRODUCT_OWNER_APPROVAL"
+gate: "Web/Admin shell-authority amendment approval"
+title: "Register Saqeel Web(3).html as canonical Phase 1 Web/Admin shell and dashboard authority"
+status: "GOVERNANCE_REGISTERED_AWAITING_PRODUCT_OWNER_APPROVAL"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-application_implementation_allowed: true
+application_implementation_allowed: false
 branch: "revamp"
-baseline_sha: "044a5a99"
+baseline_sha: "40fc19c6"
 worktree: "/Users/vikramindla/Developer/Inspection/.worktrees/revamp"
 
-approval:
-  approved_by: "Vikram Indla / Product Owner"
-  approved_on: "2026-07-23"
-  evidence: "Explicit direction to continue approved Web/Admin implementation with mandatory 2-4 screen human batches"
-  authorizes: "This M2 three-screen batch only; no cutover, next batch, push, merge, deploy, remote DDL, shared-data mutation, or provider enablement"
-
-objective: >-
-  Replicate the supplied SAQEEL Planning and Visits designs for the Planning
-  landing, Visits list, and Visit details using real existing backend contracts.
-  Keep canonical screens active by default and expose the replacement only via
-  the server-gated wa_preview review path until Product Owner approval.
+authority:
+  source_id: "WA-SHELL-SRC-001"
+  source_name: "Saqeel Web(3).html"
+  external_pointer: "/Users/vikramindla/Developer/Business - Inspection/saqeel web.html"
+  sha256: "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2"
+  record: "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
 
 process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06B", "G2-P10", "G2-P11", "G2-P12"]
-requirement_ids: ["CR-001..CR-098"]
-acceptance_ids: ["WA-M2-AC-001", "WA-M2-AC-002", "WA-M2-AC-003", "WA-M2-AC-004", "WA-M2-AC-005", "WA-M2-AC-006", "WA-AC-0001..WA-AC-0098"]
-screen_ids: ["WA-DES-036", "WA-DES-045"]
-engines: ["ENG-WAP1-M2", "Supabase SSR/RLS", "planning capability/expiry RPCs", "planning lifecycle", "audit/versioning"]
+requirement_ids: ["CR-001..CR-478"]
+acceptance_ids: ["WA-SHELL-AC-001..018"]
+screen_scope: ["Authenticated shell", "Dashboard", "Operations Center", "Factory 360"]
+engines: ["Next.js App Router", "RLS/RBAC", "audit/versioning", "governed workflows", "provider fail-closed contracts"]
 
-current_routes: ["/planning", "/visits", "/visits/:id"]
-review_routes: ["/planning?wa_preview=1", "/visits?wa_preview=1", "/visits/:id?wa_preview=1"]
-design_files: ["SAQEEL Planning.dc.html", "SAQEEL Visits.dc.html"]
+required_context:
+  - "product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml"
+  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
+  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_SOURCE_MANIFEST.csv"
+  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json"
+  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_PRESERVATION_MATRIX.csv"
+  - "product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv"
+  - "product-contract/web-admin-phase1/WEB_ADMIN_DESIGN_CONFLICT_DECISIONS.md"
+  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ACCEPTANCE.csv"
+  - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv"
 
-backend_contracts_to_preserve:
-  - "Authenticated planner/operations route guards and RLS visibility"
-  - "has_planning_capability and expire_lapsed_visits contracts"
-  - "visits, assignments, inspections, notifications, package/version, lifecycle and audit reads"
-  - "Canonical workflow transitions, immutable versions, audit and fail-closed provider behavior"
-
-owned_files:
-  - "apps/web/src/app/(app)/planning/page.tsx"
-  - "apps/web/src/app/(app)/planning/*Preview*"
-  - "apps/web/src/app/(app)/visits/page.tsx"
-  - "apps/web/src/app/(app)/visits/*Preview*"
-  - "apps/web/src/app/(app)/visits/[id]/page.tsx"
-  - "apps/web/src/app/(app)/visits/[id]/*Preview*"
-  - "apps/web/e2e/web-admin-m2-batch-001*.spec.ts"
-  - "product-contract/web-admin-phase1/** batch records"
+dependencies:
+  - "Product Owner approval of the registered shell-authority amendment before application work resumes"
+  - "Existing open policy/provider decisions remain fail closed"
 
 do_not_touch:
-  - "Do not edit or investigate /field/**, Field PWA, offline field execution, or iPad screens."
-  - "Do not delete current Planning/Visits routes, components, actions, or backend contracts."
-  - "Do not change canonical routes or remove rollback before explicit APPROVED FOR CUTOVER."
-  - "Do not edit shared shell, global CSS, i18n core, migrations, providers, G11 performance line, main, or other package files."
+  - "Do not implement or continue application screens during this governance step."
+  - "Do not edit or investigate /field/**, Field PWA, offline field execution, or Inspector iPad."
+  - "Do not change any of the 478 requirement dispositions."
+  - "Do not delete current routes, screens, components, tests, or rollback implementations."
+  - "Do not cut over canonical routes, push, merge, deploy, apply remote DDL, mutate shared data, or enable providers."
+  - "Do not change the concurrent G11 performance line or its acceptance status."
 
-verification:
-  - "typecheck and production build"
-  - "focused functional, route/permission, negative-path and refresh-persistence tests"
-  - "workflow/audit/version preservation and affected Planning/Visits regression"
-  - "exact SAQEEL visual comparison at 1440x900"
-  - "EN/LTR and AR/RTL; light/dark; 1024x768, 412/390, and 320 reflow"
-  - "keyboard and automated accessibility"
+wip_preservation:
+  stash_sha: "405708dc8f30fe46577dfbad05efd779d1424909"
+  description: "Interrupted WA-P1-M2-BATCH-001 visual corrections preserved before governance-only amendment"
+  restore_rule: "Restore only after amendment approval and reconcile against the new authority before any batch review."
 
 exit_condition: >-
-  Complete pre-demo verification, open all three real review routes in visible
-  Chrome with safe data/personas, present the approval packet with commit SHA,
-  then stop exactly at SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL.
+  Commit governance and requirements-management records only, prove 478/478
+  dispositions are unchanged and all new authority artifacts are consistent,
+  then stop at CANONICAL_WEB_ADMIN_AUTHORITY_REGISTERED_AWAITING_APPROVAL.

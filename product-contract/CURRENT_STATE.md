@@ -1,5 +1,31 @@
 # Current State
 
+## 2026-07-23 UPDATE 123 — Web/Admin shell authority registered; implementation paused
+
+The Product Owner directed an immediate controlled design-authority amendment
+under `CC-WEB-ADMIN-PHASE1-001`. `Saqeel Web(3).html` is now registered as
+`WA-SHELL-SRC-001`, the binding represented Phase 1 Web/Admin visual and
+interaction authority for the authenticated shell, Dashboard, Operations
+Center, and Factory 360. The external source is 104507 bytes with SHA-256
+`b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2`; the
+rendered HTML remains outside Git under documentation-storage policy.
+
+Customer requirements and canonical backend/RLS/RBAC/audit/versioning/
+integration contracts remain behavioral authority. All 478 requirement rows
+retain exactly one disposition: 207 Phase 1 Web, 28 Phase 1 Admin, 238 Phase 2
+iPad-deferred, and five open business decisions. Planning owns Visits at target
+routes `/planning/visits` and `/planning/visits/:id`; existing `/visits/**`
+paths remain current and become compatibility redirects only after certified
+cutover approval. Field/iPad remains Phase 2 and was not investigated,
+estimated, tested, or implemented.
+
+The earlier M2 review batch is suspended pending amendment approval. Its
+interrupted visual-correction WIP is recoverably preserved at stash
+`405708dc8f30fe46577dfbad05efd779d1424909`. No application source is included
+in this governance amendment. No route cutover, deletion, push, merge, deploy,
+remote DDL, shared-data mutation, provider enablement, or G11 status change is
+authorized. Status: `CANONICAL_WEB_ADMIN_AUTHORITY_REGISTERED_AWAITING_APPROVAL`.
+
 ## 2026-07-23 UPDATE 122 — F0 closed as internal technical foundation
 
 F0 is technically complete on `revamp`: typecheck and production build pass;
