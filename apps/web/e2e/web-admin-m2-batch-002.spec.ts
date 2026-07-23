@@ -34,6 +34,29 @@ test.describe("WA-P1-M2-BATCH-002 source, cutover and security", () => {
     const migration = source("../../product-contract/web-admin-phase1/M2_BATCH_002_CURRENT_TO_TARGET_MIGRATION.csv");
     expect(migration).not.toMatch(/\/field\/|field pwa|ipad/i);
   });
+
+  test("runtime navigation colors match the supplied SAQEEL semantic tokens", () => {
+    const tokens = source("src/app/tokens.css");
+    const shell = source("src/app/astryx.css");
+
+    for (const token of [
+      "--nav-bg:          #1f2328",
+      "--nav-bg-hover:    #2a2f35",
+      "--nav-bg-selected: #17352b",
+      "--nav-border:      #32373d",
+      "--nav-text:        #b9bec4",
+      "--nav-indicator:   #35b285",
+      "--nav-bg:          #131519",
+      "--nav-bg-hover:    #1d2025",
+      "--nav-bg-selected: #16342a",
+      "--nav-border:      #262a30",
+      "--nav-text:        #a8adb4",
+      "--nav-indicator:   #3fbd8d",
+    ]) expect(tokens).toContain(token);
+
+    expect(tokens).not.toMatch(/#101828|#0b1120|#26314a|#8a93ab/);
+    expect(shell).not.toMatch(/#4b5670|#6b7794/);
+  });
 });
 
 test.describe("WA-P1-M2-BATCH-002 planner journey", () => {
