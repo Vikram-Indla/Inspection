@@ -35,7 +35,7 @@ export type ShellIcon =
   | "dashboard" | "radar" | "factory" | "calendar" | "visits"
   | "inspect" | "virtual" | "review" | "admin" | "library"
   | "forms" | "enforcement" | "workflow" | "risk" | "map"
-  | "access" | "notify" | "insights";
+  | "access" | "notify" | "insights" | "ai";
 
 type Visibility = "business" | "admin-primary" | "admin-advanced";
 
@@ -131,7 +131,7 @@ export const SHELL_NAVIGATION: readonly ShellNavGroupDefinition[] = [
     labelEn: "Insights",
     labelAr: "الرؤى",
     items: [
-      { id: "ai-insights", labelKey: "shell.nav.aiInsights", labelEn: "AI Insights", labelAr: "رؤى الذكاء الاصطناعي", href: "/ai/suggestions", icon: "insights", roles: businessRoles, businessTab: "AI Insights", visibility: "business" },
+      { id: "ai-insights", labelKey: "shell.nav.aiInsights", labelEn: "AI Insights", labelAr: "رؤى الذكاء الاصطناعي", href: "/ai/suggestions", icon: "ai", roles: businessRoles, businessTab: "AI Insights", visibility: "business" },
     ],
   },
   {

@@ -66,6 +66,7 @@ test.describe("WA-P1-M2-BATCH-001 planner runtime", () => {
     await page.goto("/locale?set=ar");
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/visits?wa_preview=1");
+    await expect(page.locator('[data-saqeel-design="WA-DES-045"]')).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);

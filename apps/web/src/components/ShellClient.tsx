@@ -68,6 +68,10 @@ function Icon({ name }: { name: ShellIcon }) {
     access: <><circle cx="9" cy="8" r="4"/><path d="M3 21v-2a6 6 0 0112 0v2M17 11h4M19 9v4"/></>,
     notify: <><path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></>,
     insights: <><path d="M4 19V9M10 19V5M16 19v-7M22 19V3"/><path d="m3 6 6-3 6 5 7-6"/></>,
+    ai: <>
+      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .963L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" fill="currentColor" stroke="none"/>
+      <path d="M19 3v2.5M20.25 4.25H17.75"/>
+    </>,
   };
   return <svg {...common}>{paths[name]}</svg>;
 }
@@ -415,7 +419,7 @@ export default function ShellClient({
               <ThemeToggle className="ax-topbar-icon" labels={{ toLight: strings.themeLight, toDark: strings.themeDark }} />
               <NotificationBell strings={bellStrings} locale={locale} />
               <Link className="ax-topbar-icon" href="/ai/suggestions" aria-label={strings.aiEntry} title={strings.aiEntry} data-next-spa="true" prefetch={false}>
-                <Icon name="insights" />
+                <Icon name="ai" />
               </Link>
               <div ref={accountRef} className="ax-shell-account">
                 <button className="ax-shell-account__trigger" type="button" aria-label={strings.account} aria-expanded={accountOpen}

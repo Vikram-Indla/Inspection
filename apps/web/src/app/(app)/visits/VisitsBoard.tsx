@@ -176,7 +176,7 @@ type AllowedKey = "editable" | "locked" | "final" | "expired";
 const fmt = (iso: string) => new Date(iso).toISOString().slice(0, 16).replace("T", " ");
 const EMPTY: ActionResult = {};
 
-export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, cancelReasons, total, limit, nextLimit, strings, locale, targetMode = false }: {
+export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions, regionOptions, cityOptions, cancelReasons, total, limit, nextLimit, strings, locale, targetMode = false, routeBase = "/visits" }: {
   rows: VisitRow[];
   inspectors: Inspector[];
   typeOptions: { value: string; label: string }[];
@@ -191,6 +191,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
   strings: VisitsBoardStrings;
   locale: "ar" | "en";
   targetMode?: boolean;
+  routeBase?: string;
 }) {
   void locale;
   const [q, setQ] = useState("");
@@ -395,7 +396,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
               <div className="t-caption">{strings.spineWindow}: <span className="numeric">{fmt(activeVisit.windowStart)}</span></div>
               <div className="t-caption">{strings.spineInspector}: {activeVisit.inspectorName || "—"}</div>
             </div>
-            <a className="btn btn-ghost btn-touch" href={`/visits/${activeVisit.id}`}
+            <a className="btn btn-ghost btn-touch" href={`${routeBase}/${activeVisit.id}${targetMode ? "?wa_preview=1" : ""}`}
               aria-label={strings.openDetailAria.replace("{id}", activeVisit.id.slice(0, 8))}>{strings.spineOpenDetail}</a>
           </div>
         )}
@@ -572,7 +573,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       : strings.ledgerShortBlocked}
                   </span></td>
                   <td className="t-caption">{outcomeText[item.outcome]}</td>
-                  <td><a className="ax-link t-caption" href={`/visits/${item.id}`}>{strings.ledgerOpen}</a></td>
+                  <td><a className="ax-link t-caption" href={`${routeBase}/${item.id}${targetMode ? "?wa_preview=1" : ""}`}>{strings.ledgerOpen}</a></td>
                 </tr>
               ))}
             </tbody>
@@ -607,8 +608,10 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
                       aria-label={strings.previewAria.replace("{id}", v.id.slice(0, 8))}>
                       <strong>{v.id.slice(0, 8)}</strong>
                     </button>
-                    {" "}<a className="ax-link t-caption ax-inline-target" href={`/visits/${v.id}${targetMode ? "?wa_preview=1" : ""}`}
-                      aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>↗</a>
+                    {" "}<a className="ax-link t-caption ax-inline-target" href={`${routeBase}/${v.id}${targetMode ? "?wa_preview=1" : ""}`}
+                      aria-label={strings.openDetailAria.replace("{id}", v.id.slice(0, 8))}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M8 5h11v11"/><path d="m19 5-14 14"/></svg>
+                    </a>
                     {v.planId && (
                       <><br /><span className="t-caption numeric">{v.planMethod === "bulk" ? strings.campaignLabel : strings.planLabel} {v.planId.slice(0, 8)}</span></>
                     )}
@@ -635,7 +638,7 @@ export default function VisitsBoard({ rows, inspectors, typeOptions, modeOptions
         <span className="t-caption numeric">
           {strings.showing.replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}
         </span>
-        {nextLimit !== null && <a className="btn btn-ghost btn-touch" href={`/visits?limit=${nextLimit}`}>{strings.loadMore}</a>}
+        {nextLimit !== null && <a className="btn btn-ghost btn-touch" href={`${routeBase}?limit=${nextLimit}${targetMode ? "&wa_preview=1" : ""}`}>{strings.loadMore}</a>}
       </div>
     </div>
   );

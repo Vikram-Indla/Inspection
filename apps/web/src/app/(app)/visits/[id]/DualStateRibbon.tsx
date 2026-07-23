@@ -83,7 +83,7 @@ export default function DualStateRibbon({ tracks, strings }: { tracks: RibbonTra
           <div><dt>{strings.sourceWord}</dt><dd>{cur.sourceLabel}</dd></div>
           <div><dt>{strings.boundaryWord}</dt><dd>{cur.boundaryLabel}</dd></div>
         </dl>
-        <a className="ax-link" href={cur.anchorHref}>{cur.anchorLabel} →</a>
+        <a className="ax-btn ax-btn--subtle" href={cur.anchorHref}>{cur.anchorLabel}</a>
       </div>
     </section>
   );
