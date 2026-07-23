@@ -1,56 +1,70 @@
-schema_version: "1.4"
-task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
-batch_id: "WA-P1-F0-CORR-001"
+schema_version: "1.5"
+task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
+batch_id: "WA-P1-M2-BATCH-002"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 gate: "Web/Admin human screen approval"
-title: "Replace magenta prism favicon and generated shell identity"
-status: "IMPLEMENTED_VERIFIED_AWAITING_PRODUCT_OWNER_APPROVAL"
+title: "Planning landing and Planning-owned Visits list/detail"
+status: "APPROVED_IN_PROGRESS"
 enforce_stop_gate: true
 broad_implementation_allowed: true
-application_implementation_allowed: false
+application_implementation_allowed: true
 branch: "revamp"
-baseline_sha: "79163773"
+baseline_sha: "cf705db0"
 worktree: "/Users/vikramindla/Developer/Inspection/.worktrees/revamp"
 
 approval:
   approved_by: "Vikram Indla / Product Owner"
   approved_on: "2026-07-23"
-  evidence: "Explicit user response: approved"
-  scope: "Web/Admin favicon and authenticated shell identity correction only"
+  evidence: "Explicit user direction: continue"
+  interpretation: "APPROVED — PROCEED after WA-P1-F0-CORR-001"
+  authorizes: "WA-P1-M2-BATCH-002 only; no cutover deletion next batch push merge deploy remote DDL shared-data mutation or provider enablement"
 
-source:
-  name: "SAQEEL Design System (7).zip"
-  external_pointer: "/Users/vikramindla/Attachment dump/SAQEEL Design System (7).zip"
-  size_bytes: 2324
-  sha256: "0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270"
-  manifest: "product-contract/web-admin-phase1/WEB_ADMIN_BRAND_ASSET_SOURCE_MANIFEST.csv"
+process_ids: ["G2-P01", "G2-P02", "G2-P03"]
+requirement_ids: ["CR-001..CR-098"]
+acceptance_ids: ["WA-M2-AC-001..006", "WA-SHELL-AC-002", "WA-SHELL-AC-013"]
+screen_ids: ["WA-DES-036", "WA-DES-045"]
+screens: ["Planning landing", "Planning Visits list", "Planning Visit details"]
+current_routes: ["/planning", "/visits", "/visits/:id"]
+target_routes: ["/planning", "/planning/visits", "/planning/visits/:id"]
+review_routes: ["/planning?wa_preview=1", "/planning/visits?wa_preview=1", "/planning/visits/:id?wa_preview=1"]
+design_files: ["SAQEEL Planning.dc.html", "SAQEEL Visits.dc.html", "Saqeel Web(3).html shell authority"]
+engines: ["Supabase SSR/RLS", "planning capability and expiry RPCs", "visit lifecycle", "assignment and package/version reads", "audit/versioning"]
 
-process_ids: ["G2-P00"]
-requirement_ids: ["CR-001..CR-478"]
-acceptance_ids: ["WA-SHELL-AC-001", "WA-SHELL-AC-002", "WA-SHELL-AC-003"]
-screens: ["Browser favicon", "Expanded authenticated shell identity", "Collapsed authenticated shell mark"]
-engines: ["Next.js metadata", "Authenticated AppShell", "SAQEEL runtime SVG assets"]
+backend_contracts_to_preserve:
+  - "Authenticated planner/operations route guards and RLS visibility"
+  - "has_planning_capability and expire_lapsed_visits contracts"
+  - "visits assignments inspections notifications package/version lifecycle and audit reads"
+  - "Canonical workflow transitions immutable submitted versions audit and fail-closed providers"
+
+expected_files:
+  - "apps/web/src/app/(app)/planning/page.tsx"
+  - "apps/web/src/app/(app)/planning/PlanningPreview.tsx"
+  - "apps/web/src/app/(app)/planning/visits/**"
+  - "apps/web/src/app/(app)/visits/** compatibility sources only"
+  - "apps/web/e2e/web-admin-m2-batch-002.spec.ts"
+  - "product-contract/web-admin-phase1/** batch records"
 
 verification:
-  - "typecheck PASS"
-  - "production build PASS"
-  - "focused branding contract and auth setup 6/6 PASS"
-  - "live SVG asset HTTP checks PASS"
-  - "visible in-app browser Web/Admin review PASS"
-  - "planning and shell validator PASS with 478/478 unchanged dispositions"
-  - "broader login-atlas regression blocked by pre-existing missing expected light atlas image before favicon assertion"
+  - "typecheck and production build"
+  - "focused unit integration route permission and negative-path tests"
+  - "Playwright functional and refresh-persistence tests"
+  - "exact design comparison at 1440x900"
+  - "EN/LTR and AR/RTL light/dark 1024x768 412/390 and 320 reflow"
+  - "keyboard and automated accessibility"
+  - "affected Planning Visits shell and protected regression"
 
 do_not_touch:
-  - "Do not continue another implementation batch before explicit Product Owner approval."
-  - "Do not delete legacy prism assets before stabilization and removal approval."
-  - "Do not edit manifest.json, sw.js, Field PWA, offline field execution, or Inspector iPad."
-  - "Do not change routes, backend behavior, RLS/RBAC, workflow, audit, versioning, integrations, requirements dispositions, G11, main, or remote systems."
+  - "Do not edit or investigate /field/** Field PWA offline execution or Inspector iPad."
+  - "Do not delete current /planning or /visits routes components actions tests or backend contracts."
+  - "Do not activate compatibility redirects or change canonical routes without APPROVED FOR CUTOVER."
+  - "Do not restore the prior WIP stash blindly; it contains superseded prism branding."
+  - "Do not change shared brand assets PWA manifest service worker migrations providers G11 main or remote systems."
 
 rollback:
-  method: "Revert the correction commit; legacy assets remain available."
-  status: "PROVEN_SOURCE_LEVEL_SINGLE_COMMIT_REVERSION"
+  method: "Disable new Planning-owned preview routes or revert the batch commit; retained /visits implementations remain canonical."
+  retention: "RETAIN_UNTIL_STABILIZATION_AND_PRODUCT_OWNER_REMOVAL_APPROVAL"
 
 exit_condition: >-
-  Present the corrected live Web/Admin shell and favicon with test evidence,
-  commit SHA and rollback, then stop exactly at
-  SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL.
+  Verify and demonstrate all three real review routes in the visible in-app
+  browser, commit the complete batch, present the approval packet, and stop
+  exactly at SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL.

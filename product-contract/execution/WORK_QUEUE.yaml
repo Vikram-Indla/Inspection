@@ -1,12 +1,20 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
+    gate: "Web/Admin human screen approval"
+    priority: "P0"
+    status: "APPROVED_IN_PROGRESS"
+    owner: "Codex implementation and QA + Product Owner screen approval"
+    blocked_by: []
+    blocks: ["Next Web/Admin screen batch", "Planning-owned Visits cutover"]
+    note: "Three-screen batch: Planning landing plus Planning-owned Visits list/detail. Current /planning and /visits routes remain canonical and retained. New target routes are preview-only until APPROVED FOR CUTOVER. CR-001..CR-098; WA-DES-036/045; SAQEEL shell authority. No Field/iPad or remote action."
   - task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
     gate: "Web/Admin human screen approval"
     priority: "P0"
-    status: "IMPLEMENTED_VERIFIED_AWAITING_PRODUCT_OWNER_APPROVAL"
+    status: "PRODUCT_OWNER_APPROVED_PROCEED"
     owner: "Product Owner visual approval authority"
-    blocked_by: ["Explicit Product Owner decision on WA-P1-F0-CORR-001"]
-    blocks: ["Next Web/Admin screen batch", "Legacy prism removal"]
+    blocked_by: []
+    blocks: ["Legacy prism removal remains separately gated"]
     note: "Approved SAQEEL Design System (7) shield favicon and bilingual shell wordmark implemented on revamp. Typecheck/build and focused 6/6 pass; visible browser confirms new metadata and shell assets. PWA/Field/iPad untouched. One broader login-atlas test remains red on a pre-existing missing light-atlas expectation before its favicon assertion."
   - task_id: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001"
     gate: "Web/Admin shell-authority amendment approval"
