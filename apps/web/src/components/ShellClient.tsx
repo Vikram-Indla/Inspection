@@ -326,10 +326,9 @@ export default function ShellClient({
       <button className="ax-shell__backdrop" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)} />
       <nav ref={navRef} id="saqeel-primary-nav" className="ax-shell__nav" aria-label={strings.primary}>
         <div className="ax-shell__brand">
-          <span className="ax-shell__brand-mark" aria-hidden="true" lang="ar">ص</span>
+          <img className="ax-shell__brand-mark" src="/saqeel-favicon.svg" alt="" aria-hidden="true" />
           <span className="ax-shell__brand-lockup">
-            <span className="ax-shell__brand-wordmark">SAQEEL</span>
-            <span className="ax-shell__brand-sub" lang="ar">صقيل Platform</span>
+            <img className="ax-shell__brand-wordmark" src="/saqeel-wordmark-dark-mode.svg" alt="SAQEEL | صقيل" />
           </span>
           <button className="ax-shell__close" type="button" aria-label={strings.closeMenu} onClick={() => setDrawerOpen(false)}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>

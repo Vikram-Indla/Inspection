@@ -13,6 +13,12 @@ web_admin_shell_authority:
   status: "REGISTERED_AWAITING_PRODUCT_OWNER_APPROVAL_BEFORE_IMPLEMENTATION"
   current_frontend_role: "migration and regression evidence only"
   phase2_exclusion: "Field/iPad/PWA/offline field execution excluded"
+  brand_assets:
+    source_name: "SAQEEL Design System (7).zip"
+    sha256: "0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270"
+    manifest: "product-contract/web-admin-phase1/WEB_ADMIN_BRAND_ASSET_SOURCE_MANIFEST.csv"
+    approved_use: "Web/Admin favicon and bilingual shell wordmark"
+    status: "IMPLEMENTED_ON_REVAMP_AWAITING_PRODUCT_OWNER_VISUAL_APPROVAL"
 counts:
   governed_screens: 38
   storyboards: 20

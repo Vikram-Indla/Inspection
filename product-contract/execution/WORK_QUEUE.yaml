@@ -1,12 +1,20 @@
 schema_version: "1.0"
 items:
+  - task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
+    gate: "Web/Admin human screen approval"
+    priority: "P0"
+    status: "IMPLEMENTED_VERIFIED_AWAITING_PRODUCT_OWNER_APPROVAL"
+    owner: "Product Owner visual approval authority"
+    blocked_by: ["Explicit Product Owner decision on WA-P1-F0-CORR-001"]
+    blocks: ["Next Web/Admin screen batch", "Legacy prism removal"]
+    note: "Approved SAQEEL Design System (7) shield favicon and bilingual shell wordmark implemented on revamp. Typecheck/build and focused 6/6 pass; visible browser confirms new metadata and shell assets. PWA/Field/iPad untouched. One broader login-atlas test remains red on a pre-existing missing light-atlas expectation before its favicon assertion."
   - task_id: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001"
     gate: "Web/Admin shell-authority amendment approval"
     priority: "P0"
-    status: "GOVERNANCE_REGISTERED_AWAITING_PRODUCT_OWNER_APPROVAL"
+    status: "PRODUCT_OWNER_APPROVED_2026-07-23"
     owner: "Product Owner approval authority"
-    blocked_by: ["Explicit Product Owner approval of the canonical shell-authority amendment"]
-    blocks: ["All further Web/Admin application implementation", "WA-P1-M2-BATCH-001 rework and review", "Any canonical route cutover"]
+    blocked_by: []
+    blocks: ["WA-P1-M2-BATCH-001 remains separately suspended until a new batch declaration", "Any canonical route cutover"]
     note: "Saqeel Web(3).html registered as WA-SHELL-SRC-001 for represented Phase 1 Web/Admin shell Dashboard Operations Center and Factory 360 authority. Requirements remain 478/478 with unchanged dispositions. Planning owns Visits at target /planning/visits routes; /visits compatibility redirects require certified cutover. Field/iPad remains Phase 2. Governance only; application WIP preserved at stash 405708dc8f30fe46577dfbad05efd779d1424909."
   - task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001-M2-BATCH-001"
     gate: "Web/Admin Phase 1 human screen approval"

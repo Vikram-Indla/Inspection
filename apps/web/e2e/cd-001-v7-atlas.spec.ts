@@ -70,7 +70,7 @@ test("atlas mounts without landing-page disclaimers or a location list", async (
   await expect(page.locator('.lg-atlas-image__media[src$="inspection-atlas-scene-base-v2.png"]')).toHaveCSS("opacity", "0");
   await expect(page.locator(".lg-atlas-image__hotspot")).toHaveCount(9);
   await expect(page.locator(".lg-story__step")).toHaveCount(0);
-  await expect(page.locator('link[rel="icon"][href="/saqeel-prism.svg"]')).toHaveCount(1);
+  await expect(page.locator('link[rel="icon"][href="/saqeel-favicon.svg"]')).toHaveCount(1);
 
   // Public surface must not expose the source render's operational claims.
   const body = (await page.locator("body").innerText()).toLowerCase();

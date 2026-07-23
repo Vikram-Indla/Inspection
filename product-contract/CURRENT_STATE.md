@@ -1,5 +1,31 @@
 # Current State
 
+## 2026-07-23 UPDATE 124 — Web/Admin favicon and shell identity corrected
+
+The Product Owner approved correction batch `WA-P1-F0-CORR-001`. The active
+Web/Admin metadata no longer references the magenta prism and now serves the
+approved green shield/check `saqeel-favicon.svg`. The expanded graphite rail
+uses the supplied bilingual `SAQEEL | صقيل` dark-surface wordmark; the collapsed
+rail is wired to the supplied favicon mark. The approved light-surface wordmark
+is retained for light backgrounds. Source authority is `SAQEEL Design System
+(7).zip`, 2324 bytes, SHA-256
+`0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270`.
+
+Typecheck and production build pass. The focused branding contract including
+authentication setup passes 6/6, live asset requests pass, the Web/Admin
+planning validator still proves 478/478 unchanged dispositions, and visible
+in-app browser review confirms `/saqeel-favicon.svg` in document metadata plus
+the supplied favicon and bilingual wordmark in shell markup. A broader login
+atlas test remains red before its favicon assertion because the branch lacks
+that test's expected light atlas image; this pre-existing login baseline mismatch
+is recorded and not attributed to the branding correction.
+
+Legacy prism assets remain for rollback and the deferred PWA channel.
+`manifest.json`, `sw.js`, Field PWA, offline execution, and Inspector iPad were
+not changed. No route, backend, RLS/RBAC, workflow, audit, version, integration,
+DDL, deployment, push, merge, or shared-data mutation occurred. Status:
+`SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
 ## 2026-07-23 UPDATE 123 — Web/Admin shell authority registered; implementation paused
 
 The Product Owner directed an immediate controlled design-authority amendment

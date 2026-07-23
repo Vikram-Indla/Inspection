@@ -1,58 +1,56 @@
-schema_version: "1.3"
-task_id: "TASK-WEB-ADMIN-PHASE1-AUTHORITY-001"
+schema_version: "1.4"
+task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
+batch_id: "WA-P1-F0-CORR-001"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
-gate: "Web/Admin shell-authority amendment approval"
-title: "Register Saqeel Web(3).html as canonical Phase 1 Web/Admin shell and dashboard authority"
-status: "GOVERNANCE_REGISTERED_AWAITING_PRODUCT_OWNER_APPROVAL"
+gate: "Web/Admin human screen approval"
+title: "Replace magenta prism favicon and generated shell identity"
+status: "IMPLEMENTED_VERIFIED_AWAITING_PRODUCT_OWNER_APPROVAL"
 enforce_stop_gate: true
 broad_implementation_allowed: true
 application_implementation_allowed: false
 branch: "revamp"
-baseline_sha: "40fc19c6"
+baseline_sha: "79163773"
 worktree: "/Users/vikramindla/Developer/Inspection/.worktrees/revamp"
 
-authority:
-  source_id: "WA-SHELL-SRC-001"
-  source_name: "Saqeel Web(3).html"
-  external_pointer: "/Users/vikramindla/Developer/Business - Inspection/saqeel web.html"
-  sha256: "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2"
-  record: "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
+approval:
+  approved_by: "Vikram Indla / Product Owner"
+  approved_on: "2026-07-23"
+  evidence: "Explicit user response: approved"
+  scope: "Web/Admin favicon and authenticated shell identity correction only"
 
-process_ids: ["G2-P00", "G2-P01", "G2-P02", "G2-P03", "G2-P06B", "G2-P10", "G2-P11", "G2-P12"]
+source:
+  name: "SAQEEL Design System (7).zip"
+  external_pointer: "/Users/vikramindla/Attachment dump/SAQEEL Design System (7).zip"
+  size_bytes: 2324
+  sha256: "0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270"
+  manifest: "product-contract/web-admin-phase1/WEB_ADMIN_BRAND_ASSET_SOURCE_MANIFEST.csv"
+
+process_ids: ["G2-P00"]
 requirement_ids: ["CR-001..CR-478"]
-acceptance_ids: ["WA-SHELL-AC-001..018"]
-screen_scope: ["Authenticated shell", "Dashboard", "Operations Center", "Factory 360"]
-engines: ["Next.js App Router", "RLS/RBAC", "audit/versioning", "governed workflows", "provider fail-closed contracts"]
+acceptance_ids: ["WA-SHELL-AC-001", "WA-SHELL-AC-002", "WA-SHELL-AC-003"]
+screens: ["Browser favicon", "Expanded authenticated shell identity", "Collapsed authenticated shell mark"]
+engines: ["Next.js metadata", "Authenticated AppShell", "SAQEEL runtime SVG assets"]
 
-required_context:
-  - "product-contract/governance/CC-WEB-ADMIN-PHASE1-001.yaml"
-  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
-  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_SOURCE_MANIFEST.csv"
-  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ROUTE_MANIFEST.json"
-  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_PRESERVATION_MATRIX.csv"
-  - "product-contract/web-admin-phase1/WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv"
-  - "product-contract/web-admin-phase1/WEB_ADMIN_DESIGN_CONFLICT_DECISIONS.md"
-  - "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_ACCEPTANCE.csv"
-  - "product-contract/web-admin-phase1/REQUIREMENT_BASELINE.csv"
-
-dependencies:
-  - "Product Owner approval of the registered shell-authority amendment before application work resumes"
-  - "Existing open policy/provider decisions remain fail closed"
+verification:
+  - "typecheck PASS"
+  - "production build PASS"
+  - "focused branding contract and auth setup 6/6 PASS"
+  - "live SVG asset HTTP checks PASS"
+  - "visible in-app browser Web/Admin review PASS"
+  - "planning and shell validator PASS with 478/478 unchanged dispositions"
+  - "broader login-atlas regression blocked by pre-existing missing expected light atlas image before favicon assertion"
 
 do_not_touch:
-  - "Do not implement or continue application screens during this governance step."
-  - "Do not edit or investigate /field/**, Field PWA, offline field execution, or Inspector iPad."
-  - "Do not change any of the 478 requirement dispositions."
-  - "Do not delete current routes, screens, components, tests, or rollback implementations."
-  - "Do not cut over canonical routes, push, merge, deploy, apply remote DDL, mutate shared data, or enable providers."
-  - "Do not change the concurrent G11 performance line or its acceptance status."
+  - "Do not continue another implementation batch before explicit Product Owner approval."
+  - "Do not delete legacy prism assets before stabilization and removal approval."
+  - "Do not edit manifest.json, sw.js, Field PWA, offline field execution, or Inspector iPad."
+  - "Do not change routes, backend behavior, RLS/RBAC, workflow, audit, versioning, integrations, requirements dispositions, G11, main, or remote systems."
 
-wip_preservation:
-  stash_sha: "405708dc8f30fe46577dfbad05efd779d1424909"
-  description: "Interrupted WA-P1-M2-BATCH-001 visual corrections preserved before governance-only amendment"
-  restore_rule: "Restore only after amendment approval and reconcile against the new authority before any batch review."
+rollback:
+  method: "Revert the correction commit; legacy assets remain available."
+  status: "PROVEN_SOURCE_LEVEL_SINGLE_COMMIT_REVERSION"
 
 exit_condition: >-
-  Commit governance and requirements-management records only, prove 478/478
-  dispositions are unchanged and all new authority artifacts are consistent,
-  then stop at CANONICAL_WEB_ADMIN_AUTHORITY_REGISTERED_AWAITING_APPROVAL.
+  Present the corrected live Web/Admin shell and favicon with test evidence,
+  commit SHA and rollback, then stop exactly at
+  SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL.

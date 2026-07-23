@@ -67,6 +67,7 @@ const shellPreservation = parseCsv(path.join(contract, "WEB_ADMIN_SHELL_PRESERVA
 const shellRoutes = parseCsv(path.join(contract, "WEB_ADMIN_CURRENT_TO_TARGET_ROUTE_MAP.csv"));
 const shellAcceptance = parseCsv(path.join(contract, "WEB_ADMIN_SHELL_ACCEPTANCE.csv"));
 const shellRouteManifest = JSON.parse(fs.readFileSync(path.join(contract, "WEB_ADMIN_SHELL_ROUTE_MANIFEST.json"), "utf8"));
+const brandAssets = parseCsv(path.join(contract, "WEB_ADMIN_BRAND_ASSET_SOURCE_MANIFEST.csv"));
 
 const allowedDispositions = new Set([
   "PHASE1_WEB", "PHASE1_ADMIN", "PHASE1_SHARED_BACKEND", "PHASE2_IPAD_DEFERRED",
@@ -180,6 +181,15 @@ if (shellRouteManifest.navigation.length !== 17) fail("shell navigation must con
 const expectedLabels = ["Dashboard", "Operations Center", "Factory 360", "Planning", "Inspection", "Execution", "Review & Approval", "Compliance Library", "Approval Queue", "Enforcement Library", "Analytics", "Users & Roles", "Lookup Management", "Risk Configuration", "Survey Configuration", "Notification Configuration", "Integration Management"];
 if (shellRouteManifest.navigation.map(row => row.label).join("|") !== expectedLabels.join("|")) fail("shell navigation labels or order differ from authority");
 if (!shellRouteManifest.excluded.includes("/field/**")) fail("shell authority does not isolate Phase 2 field routes");
+if (brandAssets.length !== 4) fail(`expected one brand archive and three approved assets, found ${brandAssets.length}`);
+if (brandAssets[0].source_sha256 !== "0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270") fail("brand archive checksum is incorrect");
+for (const row of brandAssets) {
+  if (!/^[a-f0-9]{64}$/.test(row.source_sha256)) fail(`${row.record_id} lacks source checksum`);
+  if (row.phase_scope !== "PHASE1_WEB_ADMIN") fail(`${row.record_id} is outside Web/Admin Phase 1`);
+}
+for (const row of brandAssets.filter(row => row.record_type === "ASSET")) {
+  if (!row.runtime_path || !/^[a-f0-9]{64}$/.test(row.runtime_sha256)) fail(`${row.record_id} lacks runtime asset traceability`);
+}
 
 const prohibitedExtensions = new Set([".zip", ".xlsx", ".xls", ".docx", ".pdf", ".png", ".jpg", ".jpeg", ".webp", ".avif", ".mp4", ".webm"]);
 for (const base of [contract, planning]) {
@@ -206,5 +216,6 @@ if (!process.exitCode) {
     shellPreservationRows: shellPreservation.length,
     shellRouteRows: shellRoutes.length,
     shellAcceptanceRows: shellAcceptance.length,
+    brandAuthorityRecords: brandAssets.length,
   }, null, 2));
 }

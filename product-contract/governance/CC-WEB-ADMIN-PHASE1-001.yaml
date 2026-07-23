@@ -2,7 +2,7 @@ schema_version: "1.0"
 change_control_id: "CC-WEB-ADMIN-PHASE1-001"
 task_id: "TASK-WEB-ADMIN-PHASE1-PLAN-001"
 title: "Web/Admin Phase 1 replacement-design planning authority"
-status: "SHELL_AUTHORITY_AMENDMENT_REGISTERED_AWAITING_PRODUCT_OWNER_APPROVAL"
+status: "BRAND_CORRECTION_IMPLEMENTED_AWAITING_PRODUCT_OWNER_VISUAL_APPROVAL"
 prepared_on: "2026-07-23"
 approved_on: "2026-07-23"
 approved_by: "Vikram Indla / Product Owner"
@@ -12,7 +12,7 @@ branch: "revamp"
 authority:
   statement: "The supplied package remains module authority; Saqeel Web(3).html is the binding represented shell/dashboard authority under the 2026-07-23 amendment."
   implementation_authorized: false
-  authorized_package: "Governance registration only; all application batches paused pending amendment approval"
+  authorized_package: "WA-P1-F0-CORR-001 implemented and stopped for Product Owner review; no further batch authorized"
   shell_source_id: "WA-SHELL-SRC-001"
   shell_source_sha256: "b870e06820feb5784687dcb62289aa24a0070635cbc7b606157ec2128bab9bc2"
   shell_authority_record: "product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md"
@@ -63,3 +63,15 @@ amendment_2026_07_23:
   route_decision: "Planning owns Visits; target /planning/visits and /planning/visits/:id with certified /visits compatibility redirects"
   implementation_hold: "Do not resume application implementation until explicit Product Owner approval of this amendment"
   excluded: ["/field/**", "Field PWA", "offline field execution", "Inspector iPad", "Phase 2 estimates or tests"]
+  approval_status: "APPROVED_BY_PRODUCT_OWNER_2026-07-23"
+
+brand_correction_2026_07_23:
+  batch_id: "WA-P1-F0-CORR-001"
+  decision_id: "DEC-035"
+  source_name: "SAQEEL Design System (7).zip"
+  source_sha256: "0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270"
+  approval_evidence: "Explicit user response: approved"
+  scope: "Replace active Web/Admin magenta prism favicon and generated shell identity with supplied shield/check and bilingual wordmark assets"
+  status: "IMPLEMENTED_VERIFIED_AWAITING_PRODUCT_OWNER_VISUAL_APPROVAL"
+  exclusions: ["manifest.json", "sw.js", "Field PWA", "offline execution", "Inspector iPad"]
+  rollback: "Legacy assets retained; revert one correction commit"

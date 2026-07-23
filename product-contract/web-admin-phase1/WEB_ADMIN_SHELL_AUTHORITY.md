@@ -12,6 +12,21 @@
 - Scope: Phase 1 Web/Admin only
 - Raw-source storage: external pointer only under `docs/DOCUMENTATION_STORAGE_POLICY.md`
 
+### Approved brand-asset correction
+
+`SAQEEL Design System (7).zip` is the binding Web/Admin favicon and wordmark
+asset source following Product Owner approval on 2026-07-23. Archive SHA-256:
+`0b78a174e622e3e81e215f159ae27c1fee8111535fe6be1761fced2569d6b270`.
+Its green shield/check favicon replaces the magenta prism in active Web/Admin
+metadata and collapsed navigation. Its bilingual dark-surface wordmark replaces
+generated shell lettering in the expanded graphite navigation. The supplied
+light-surface wordmark is retained as the approved counterpart. Exact source
+and runtime hashes are in `WEB_ADMIN_BRAND_ASSET_SOURCE_MANIFEST.csv`.
+
+Legacy prism assets remain tracked solely for rollback and the separately
+deferred PWA channel. Phase 1 does not alter `manifest.json`, `sw.js`, Field PWA,
+offline execution, or Inspector iPad assets.
+
 This source is binding visual and interaction authority for the authenticated
 Web/Admin shell, brand treatment, sidebar hierarchy/options/order, top bar,
 Dashboard Strategic and Operational views, Operations Center primary views,

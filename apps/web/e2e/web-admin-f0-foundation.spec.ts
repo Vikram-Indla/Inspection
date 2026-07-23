@@ -48,6 +48,28 @@ test.describe("Web/Admin F0 source and security contract", () => {
     expect(css).toContain(".btn-field");
     expect(css).toContain("current .ax-state and SAQEEL component contracts remain");
   });
+
+  test("WA-P1-F0-CORR-001 uses the approved shield favicon and bilingual wordmark", () => {
+    const layout = read("src/app/layout.tsx");
+    const shell = read("src/components/ShellClient.tsx");
+    const css = read("src/app/astryx.css");
+    const favicon = read("public/saqeel-favicon.svg");
+    const darkWordmark = read("public/saqeel-wordmark-dark-mode.svg");
+    const lightWordmark = read("public/saqeel-wordmark-light-mode.svg");
+
+    expect(layout).toContain('/saqeel-favicon.svg');
+    expect(layout).not.toContain('/saqeel-prism.svg');
+    expect(shell).toContain('/saqeel-favicon.svg');
+    expect(shell).toContain('/saqeel-wordmark-dark-mode.svg');
+    expect(shell).not.toContain('ax-shell__brand-mark" aria-hidden="true" lang="ar">ص');
+    expect(css).toContain('.ax-shell.is-collapsed .ax-shell__brand-mark { display: block; }');
+    for (const asset of [favicon, darkWordmark, lightWordmark]) {
+      expect(asset).toContain('M12 2.5 4 5.5');
+      expect(asset).not.toMatch(/D946EF|7C6CFF|magenta|prism/i);
+    }
+    expect(darkWordmark).toContain('>SAQEEL</text>');
+    expect(darkWordmark).toContain('>صقيل</text>');
+  });
 });
 
 test.describe("Web/Admin F0 guarded reference runtime", () => {
