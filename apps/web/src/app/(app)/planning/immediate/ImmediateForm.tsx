@@ -20,7 +20,6 @@ import PackageTypeSelector from "@/components/PackageTypeSelector";
 import { createImmediateVisit, type ImmResult } from "./actions";
 import AuthorityBar, { type Chip } from "./AuthorityBar";
 import EmptyState from "@/components/EmptyState";
-import { IconMapPin } from "@/app/icons";
 
 type F = {
   id: string; name: string; factory_code: string; cr_number: string; license_number: string | null;
@@ -78,7 +77,7 @@ const normalizeMobile = (v: string) => v.replace(/[\s-]/g, "");
 let mapLoadingLabel = "Loading location map";
 const GeoMap = dynamic(() => import("@/components/GeoMap"), {
   ssr: false,
-  loading: () => <EmptyState icon={<IconMapPin />} title={mapLoadingLabel} inline bare role="status" ariaBusy />,
+  loading: () => <EmptyState glyph="…" title={mapLoadingLabel} inline bare role="status" ariaBusy />,
 });
 
 export default function ImmediateForm({ factories, packages, inspectors, regionOptions, cityOptions, cityByRegion, hasInspectorPool, actorName, actorMode, locale, manualAllowed, visitTypes, manualReasons, strings, initialFactoryId }: {
@@ -230,46 +229,46 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
   const mapCenter: [number, number] = locationOk ? [latNum, lngNum] : (factory?.official_lat != null ? [factory.official_lat, factory.official_lng as number] : [23.8859, 45.0792]);
 
   return (
-    <form action={formAction} className="ax-stack" style={{ gap: "var(--ax-space-300)" }}>
+    <form action={formAction} className="sq-stack" style={{ gap: "var(--space-6)" }}>
       <input type="hidden" name="request_id" value={requestId} />
       <input type="hidden" name="actor_mode" value={actorMode} />
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="location_source" value={locationSource ?? ""} />
       <AuthorityBar chips={chips} strings={{ groupLabel: strings.chipGroupLabel, satisfied: strings.chipSatisfied, blocking: strings.chipBlocking, truth: strings.chipTruth, allSatisfied: strings.chipAllSatisfied, blockedAnnouncement: strings.chipBlockedAnnouncement }} />
 
-      <div className="ax-grid-2">
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+      <div className="sq-grid-2">
+        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <h4>{strings.identity}</h4>
-          <div className="ax-segmented" role="group" aria-label={strings.identity}>
+          <div className="sq-segmented" role="group" aria-label={strings.identity}>
             <button type="button" aria-pressed={mode === "registered"} onClick={() => setMode("registered")}>{strings.identityToggleRegistered}</button>
             <button type="button" aria-pressed={mode === "unregistered"} disabled={!manualAvailable} onClick={() => setMode("unregistered")}>{strings.identityToggleUnregistered}</button>
           </div>
-          {manualLockReason && <p className="ax-caption" role="note">{manualLockReason}</p>}
+          {manualLockReason && <p className="sq-caption" role="note">{manualLockReason}</p>}
 
           {mode === "registered" ? (
             <>
-              <div className="ax-field" style={{ maxInlineSize: "none" }}>
-                <label className="ax-field__label" htmlFor="imm-search">{strings.searchLabel}</label>
-                <span className="ax-search"><input id="imm-search" key={`s-${resetKey}`} className="ax-input" placeholder={strings.searchPlaceholder} value={query} onChange={e => setQuery(e.target.value)} /></span>
+              <div className="sq-field" style={{ maxInlineSize: "none" }}>
+                <label className="sq-field__label" htmlFor="imm-search">{strings.searchLabel}</label>
+                <span className="sq-search"><input id="imm-search" key={`s-${resetKey}`} className="sq-input" placeholder={strings.searchPlaceholder} value={query} onChange={e => setQuery(e.target.value)} /></span>
               </div>
               {ql.length >= 2 && shown.length === 0 && (
-                <div className="ax-banner ax-banner--warning"><div>{strings.searchNoMatch}</div></div>
+                <div className="sq-banner sq-banner--warning"><div>{strings.searchNoMatch}</div></div>
               )}
-              <div className="ax-field" style={{ maxInlineSize: "none" }}>
-                <label className="ax-field__label" htmlFor="imm-existing">{strings.existingFactory}</label>
-                <select id="imm-existing" key={`e-${resetKey}`} className="ax-select" name="existing_factory_id"
+              <div className="sq-field" style={{ maxInlineSize: "none" }}>
+                <label className="sq-field__label" htmlFor="imm-existing">{strings.existingFactory}</label>
+                <select id="imm-existing" key={`e-${resetKey}`} className="sq-select" name="existing_factory_id"
                   value={factory?.id ?? ""} onChange={e => { setFactory(shown.find(f => f.id === e.target.value) ?? null); setLocationSource(null); }}>
                   <option value="">{strings.selectOption}</option>
                   {shown.map(f => <option key={f.id} value={f.id}>{f.name} · {f.cr_number}{f.license_number ? ` · ${f.license_number}` : ""}</option>)}
                 </select>
               </div>
               {factory && (
-                <div className="ax-surface" style={{ padding: "var(--ax-space-200)", background: "var(--ax-color-surface-sunken)" }}>
+                <div className="sq-surface" style={{ padding: "var(--space-4)", background: "var(--surface-sunken)" }}>
                   <strong><bdi>{factory.name}</bdi></strong>
-                  <div className="ax-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
+                  <div className="sq-caption">{strings.previewCr} <bdi>{factory.cr_number}</bdi>
                     {factory.license_number && <> · {strings.previewLicense} <bdi>{factory.license_number}</bdi></>}
                     {" · "}{strings.previewRegion} <bdi>{factory.region ?? "—"}{factory.city ? `, ${factory.city}` : ""}</bdi></div>
-                  <div className="ax-caption">{strings.previewFreshness}: {factory.source_synced_at ? <bdi>{formatDate(factory.source_synced_at, locale)}</bdi> : strings.previewFreshnessNever}
+                  <div className="sq-caption">{strings.previewFreshness}: {factory.source_synced_at ? <bdi>{formatDate(factory.source_synced_at, locale)}</bdi> : strings.previewFreshnessNever}
                     {" · "}{strings.previewRisk}: {factory.risk_band ?? strings.previewRiskUnknown}{factory.risk_score != null ? ` (${factory.risk_score})` : ""}</div>
                 </div>
               )}
@@ -277,66 +276,66 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
           ) : (
             <>
               {/* PLN-REQ-028 — manual entries are never presented as master data. */}
-              <p><span className="ax-lozenge ax-lozenge--warning">{strings.unverifiedBadge}</span></p>
+              <p><span className="sq-lozenge sq-lozenge--warning">{strings.unverifiedBadge}</span></p>
               {/* PLN-REQ-025 leg 3 — explicit not-found confirmation gates every
                   manual field (and the server re-checks it before the RPC). */}
-              <label className="ax-check">
+              <label className="sq-check">
                 <input type="checkbox" id="imm-not-found" name="not_found_confirmed" value="yes"
                   checked={notFoundConfirmed} onChange={e => setNotFoundConfirmed(e.target.checked)} />
                 <span>{strings.notFoundConfirm}</span>
               </label>
-              <fieldset disabled={!notFoundConfirmed} style={{ border: 0, padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-200)", minInlineSize: 0 }}>
-                <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-name">{strings.manualName}</label>
-                  <input id="imm-manual-name" key={`mn-${resetKey}`} className="ax-input" name="manual_name" value={manualName} onChange={e => setManualName(e.target.value)} placeholder={strings.manualPlaceholder} /></div>
-                <div className="ax-row">
-                  <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-region">{strings.manualRegion}</label>
-                    <input id="imm-manual-region" key={`mrg-${resetKey}`} className="ax-input" name="manual_region" list="imm-region-options" value={manualRegion} onChange={e => { setManualRegion(e.target.value); setManualCity(""); }} /></div>
-                  <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-city">{strings.manualCity}</label>
-                    <input id="imm-manual-city" key={`mci-${resetKey}`} className="ax-input" name="manual_city" list="imm-city-options" value={manualCity} onChange={e => setManualCity(e.target.value)} placeholder={strings.manualCityPlaceholder} /></div>
+              <fieldset disabled={!notFoundConfirmed} style={{ border: 0, padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "var(--space-4)", minInlineSize: 0 }}>
+                <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-manual-name">{strings.manualName}</label>
+                  <input id="imm-manual-name" key={`mn-${resetKey}`} className="sq-input" name="manual_name" value={manualName} onChange={e => setManualName(e.target.value)} placeholder={strings.manualPlaceholder} /></div>
+                <div className="sq-row">
+                  <div className="sq-field"><label className="sq-field__label" htmlFor="imm-manual-region">{strings.manualRegion}</label>
+                    <input id="imm-manual-region" key={`mrg-${resetKey}`} className="sq-input" name="manual_region" list="imm-region-options" value={manualRegion} onChange={e => { setManualRegion(e.target.value); setManualCity(""); }} /></div>
+                  <div className="sq-field"><label className="sq-field__label" htmlFor="imm-manual-city">{strings.manualCity}</label>
+                    <input id="imm-manual-city" key={`mci-${resetKey}`} className="sq-input" name="manual_city" list="imm-city-options" value={manualCity} onChange={e => setManualCity(e.target.value)} placeholder={strings.manualCityPlaceholder} /></div>
                 </div>
                 <datalist id="imm-region-options">{regionOptions.map(r => <option key={r} value={r} />)}</datalist>
                 <datalist id="imm-city-options">{manualCityOptions.map(c => <option key={c} value={c} />)}</datalist>
-                <div className="ax-row">
-                  <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-cr">{strings.manualCr}</label>
-                    <input id="imm-manual-cr" key={`mcr-${resetKey}`} className="ax-input ax-numeric" name="manual_cr" value={manualCr} onChange={e => setManualCr(e.target.value)} /></div>
-                  <div className="ax-field"><label className="ax-field__label" htmlFor="imm-manual-license">{strings.manualLicense}</label>
-                    <input id="imm-manual-license" key={`mli-${resetKey}`} className="ax-input ax-numeric" name="manual_license" value={manualLicense} onChange={e => setManualLicense(e.target.value)} /></div>
+                <div className="sq-row">
+                  <div className="sq-field"><label className="sq-field__label" htmlFor="imm-manual-cr">{strings.manualCr}</label>
+                    <input id="imm-manual-cr" key={`mcr-${resetKey}`} className="sq-input sq-numeric" name="manual_cr" value={manualCr} onChange={e => setManualCr(e.target.value)} /></div>
+                  <div className="sq-field"><label className="sq-field__label" htmlFor="imm-manual-license">{strings.manualLicense}</label>
+                    <input id="imm-manual-license" key={`mli-${resetKey}`} className="sq-input sq-numeric" name="manual_license" value={manualLicense} onChange={e => setManualLicense(e.target.value)} /></div>
                 </div>
-                <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-activity">{strings.manualActivity}</label>
-                  <input id="imm-manual-activity" key={`mac-${resetKey}`} className="ax-input" name="manual_activity" value={manualActivity} onChange={e => setManualActivity(e.target.value)} placeholder={strings.manualActivityPlaceholder} /></div>
+                <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-manual-activity">{strings.manualActivity}</label>
+                  <input id="imm-manual-activity" key={`mac-${resetKey}`} className="sq-input" name="manual_activity" value={manualActivity} onChange={e => setManualActivity(e.target.value)} placeholder={strings.manualActivityPlaceholder} /></div>
                 {/* PLN-REQ-027 — governed reason lookup (not free text); Other
                     requires a comment, matching the lookup label. */}
-                <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-reason">{strings.manualReasonLabel}</label>
-                  <select id="imm-manual-reason" key={`mrs-${resetKey}`} className="ax-select" value={manualReasonKey} onChange={e => setManualReasonKey(e.target.value)}>
+                <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-manual-reason">{strings.manualReasonLabel}</label>
+                  <select id="imm-manual-reason" key={`mrs-${resetKey}`} className="sq-select" value={manualReasonKey} onChange={e => setManualReasonKey(e.target.value)}>
                     <option value="">{strings.selectOption}</option>
                     {manualReasons.map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
                   </select></div>
                 {manualReasonKey === "other" && (
-                  <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-manual-reason-comment">{strings.manualReasonComment}</label>
-                    <input id="imm-manual-reason-comment" key={`mrc-${resetKey}`} className="ax-input" value={manualReasonComment} onChange={e => setManualReasonComment(e.target.value)} placeholder={strings.manualReasonCommentPlaceholder} /></div>
+                  <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-manual-reason-comment">{strings.manualReasonComment}</label>
+                    <input id="imm-manual-reason-comment" key={`mrc-${resetKey}`} className="sq-input" value={manualReasonComment} onChange={e => setManualReasonComment(e.target.value)} placeholder={strings.manualReasonCommentPlaceholder} /></div>
                 )}
                 {/* Conditional contact mobile — required only when factory
                     notification is enabled (PLN-REQ-026). */}
-                <label className="ax-check">
+                <label className="sq-check">
                   <input type="checkbox" id="imm-notify-factory" checked={notifyFactory} onChange={e => setNotifyFactory(e.target.checked)} />
                   <span>{strings.notifyFactory}</span>
                 </label>
                 {notifyFactory && (
-                  <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-factory-mobile">{strings.factoryMobile}</label>
-                    <input id="imm-factory-mobile" key={`fmb-${resetKey}`} className="ax-input ax-numeric" value={factoryMobile} onChange={e => setFactoryMobile(e.target.value)} placeholder={strings.factoryMobilePlaceholder} dir="ltr" /></div>
+                  <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-factory-mobile">{strings.factoryMobile}</label>
+                    <input id="imm-factory-mobile" key={`fmb-${resetKey}`} className="sq-input sq-numeric" value={factoryMobile} onChange={e => setFactoryMobile(e.target.value)} placeholder={strings.factoryMobilePlaceholder} dir="ltr" /></div>
                 )}
                 {selectedType?.attachmentRequired && (
-                  <div className="ax-banner ax-banner--info"><div>{strings.attachmentRequiredNote}</div></div>
+                  <div className="sq-banner sq-banner--info"><div>{strings.attachmentRequiredNote}</div></div>
                 )}
-                <p className="ax-caption">{strings.temporaryNote}</p>
+                <p className="sq-caption">{strings.temporaryNote}</p>
 
                 {/* DEC-F — recommendation only. This inspector never executes the
                     decision: enforcement_recommendations RLS grants inspector
                     insert-only; ops/compliance_admin hold the sole update policy. */}
-                <div className="ax-field" style={{ maxInlineSize: "none" }}>
-                  <label className="ax-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
-                  <p className="ax-caption" style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.enforcementHint}</p>
-                  <div id="imm-enforcement" className="ax-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
+                <div className="sq-field" style={{ maxInlineSize: "none" }}>
+                  <label className="sq-field__label" htmlFor="imm-enforcement">{strings.enforcementLabel}</label>
+                  <p className="sq-caption" style={{ marginBlockEnd: "var(--space-2)" }}>{strings.enforcementHint}</p>
+                  <div id="imm-enforcement" className="sq-segmented" role="group" aria-label={strings.enforcementLabel} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
                     {[["", strings.enforcementNone], ["fine", strings.enforcementFine], ["committee", strings.enforcementCommittee], ["warning", strings.enforcementWarning], ["closure", strings.enforcementClosure]].map(([v, label]) => (
                       <button key={v} type="button" aria-pressed={enforcementAction === v} onClick={() => setEnforcementAction(v)}>{label}</button>
                     ))}
@@ -344,9 +343,9 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
                 </div>
                 <input type="hidden" name="enforcement_action" value={enforcementAction} key={`ea-${resetKey}`} />
                 {enforcementAction !== "" && (
-                  <label className="ax-field" style={{ maxInlineSize: "none" }}>
-                    <span className="ax-field__label">{strings.enforcementNotes}</span>
-                    <textarea className="ax-textarea" name="enforcement_notes" rows={2} value={enforcementNotes}
+                  <label className="sq-field" style={{ maxInlineSize: "none" }}>
+                    <span className="sq-field__label">{strings.enforcementNotes}</span>
+                    <textarea className="sq-textarea" name="enforcement_notes" rows={2} value={enforcementNotes}
                       onChange={e => setEnforcementNotes(e.target.value)} placeholder={strings.enforcementNotesPlaceholder} />
                   </label>
                 )}
@@ -360,58 +359,58 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             </>
           )}
 
-          <div className="ax-field" style={{ maxInlineSize: "none" }} id="imm-reason" tabIndex={-1}>
-            <label className="ax-field__label" htmlFor="imm-reason">{strings.urgencyReason}</label>
-            <div className="ax-segmented" role="group" aria-label={strings.urgencyReason} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
+          <div className="sq-field" style={{ maxInlineSize: "none" }} id="imm-reason" tabIndex={-1}>
+            <label className="sq-field__label" htmlFor="imm-reason">{strings.urgencyReason}</label>
+            <div className="sq-segmented" role="group" aria-label={strings.urgencyReason} style={{ flexWrap: "wrap", maxInlineSize: "100%" }}>
               {[["Complaint received", strings.reasonComplaint], ["Incident / accident report", strings.reasonIncident], ["Referral from authority", strings.reasonReferral], ["Other", strings.reasonOther]].map(([v, label]) => (
                 <button key={v} type="button" aria-pressed={reason === v} onClick={() => setReason(v)}>{label}</button>
               ))}
             </div>
-            {reason === "Other" && <p id="imm-reason-other-hint" className="ax-caption">{strings.reasonOtherHint}</p>}
+            {reason === "Other" && <p id="imm-reason-other-hint" className="sq-caption">{strings.reasonOtherHint}</p>}
           </div>
           <input type="hidden" name="urgency_reason" value={reason} key={`ur-${resetKey}`} />
 
-          <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-visit-type">{strings.visitType}</label>
-            <select id="imm-visit-type" key={`vt-${resetKey}`} className="ax-select" name="visit_type" value={visitType} onChange={e => setVisitType(e.target.value)}>
+          <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-visit-type">{strings.visitType}</label>
+            <select id="imm-visit-type" key={`vt-${resetKey}`} className="sq-select" name="visit_type" value={visitType} onChange={e => setVisitType(e.target.value)}>
               {visitTypes.map(v => <option key={v.key} value={v.key}>{v.label}</option>)}
             </select></div>
         </div>
 
-        <div className="ax-surface" style={{ padding: "var(--ax-space-300)", display: "flex", flexDirection: "column", gap: "var(--ax-space-200)" }}>
+        <div className="sq-surface" style={{ padding: "var(--space-6)", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <h4>{strings.locationDispatch}</h4>
           {mode === "registered" && factory?.official_lat != null && factory?.official_lng != null && (
-            <button type="button" className="ax-btn ax-btn--secondary" onClick={useOfficialLocation}>{strings.useOfficialLocation}</button>
+            <button type="button" className="sq-btn sq-btn--secondary" onClick={useOfficialLocation}>{strings.useOfficialLocation}</button>
           )}
-          <div style={{ blockSize: 240, marginBlockEnd: "var(--ax-space-100)" }}>
+          <div style={{ blockSize: 240, marginBlockEnd: "var(--space-2)" }}>
             <GeoMap center={mapCenter} zoom={locationOk ? 14 : 6} markers={mapMarkers} height="100%" />
           </div>
-          <div className="ax-row">
-            <div className="ax-field"><label className="ax-field__label" htmlFor="imm-lat">{strings.latitude}</label>
-              <input id="imm-lat" key={`lat-${resetKey}`} className="ax-input ax-numeric" name="lat" value={lat} onChange={e => onLatChange(e.target.value)} /></div>
-            <div className="ax-field"><label className="ax-field__label" htmlFor="imm-lng">{strings.longitude}</label>
-              <input id="imm-lng" key={`lng-${resetKey}`} className="ax-input ax-numeric" name="lng" value={lng} onChange={e => onLngChange(e.target.value)} /></div>
+          <div className="sq-row">
+            <div className="sq-field"><label className="sq-field__label" htmlFor="imm-lat">{strings.latitude}</label>
+              <input id="imm-lat" key={`lat-${resetKey}`} className="sq-input sq-numeric" name="lat" value={lat} onChange={e => onLatChange(e.target.value)} /></div>
+            <div className="sq-field"><label className="sq-field__label" htmlFor="imm-lng">{strings.longitude}</label>
+              <input id="imm-lng" key={`lng-${resetKey}`} className="sq-input sq-numeric" name="lng" value={lng} onChange={e => onLngChange(e.target.value)} /></div>
           </div>
-          <p className="ax-caption" dir="ltr">
+          <p className="sq-caption" dir="ltr">
             {!locationOk ? strings.locationSourceNone
               : locationSource === "official" ? strings.locationSourceOfficial
                 : strings.locationSourceManual.replace("{who}", actorName || "—").replace("{when}", locationAt ? new Date(locationAt).toLocaleString() : "")}
           </p>
 
           {actorMode === "planner" ? <>
-            <div className="ax-row">
-              <div className="ax-field"><label className="ax-field__label" htmlFor="imm-window-start">{strings.windowStart}</label>
-                <input id="imm-window-start" key={`ws-${resetKey}`} className="ax-input ax-numeric" name="window_start" type="datetime-local" value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
-              <div className="ax-field"><label className="ax-field__label" htmlFor="imm-window-end">{strings.windowEnd}</label>
-                <input id="imm-window-end" key={`we-${resetKey}`} className="ax-input ax-numeric" name="window_end" type="datetime-local" value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
+            <div className="sq-row">
+              <div className="sq-field"><label className="sq-field__label" htmlFor="imm-window-start">{strings.windowStart}</label>
+                <input id="imm-window-start" key={`ws-${resetKey}`} className="sq-input sq-numeric" name="window_start" type="datetime-local" value={windowStart} onChange={e => setWindowStart(e.target.value)} /></div>
+              <div className="sq-field"><label className="sq-field__label" htmlFor="imm-window-end">{strings.windowEnd}</label>
+                <input id="imm-window-end" key={`we-${resetKey}`} className="sq-input sq-numeric" name="window_end" type="datetime-local" value={windowEnd} onChange={e => setWindowEnd(e.target.value)} /></div>
             </div>
-            <span className="ax-caption">{strings.windowHint}</span>
-          </> : <div className="ax-banner ax-banner--info"><div>{strings.inspectorStartNow}</div></div>}
+            <span className="sq-caption">{strings.windowHint}</span>
+          </> : <div className="sq-banner sq-banner--info"><div>{strings.inspectorStartNow}</div></div>}
 
-          <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-priority">{strings.priority}</label>
-            <input id="imm-priority" key={`pr-${resetKey}`} className="ax-input" name="priority" value={priority} onChange={e => setPriority(e.target.value)} placeholder={strings.priorityPlaceholder} /></div>
+          <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-priority">{strings.priority}</label>
+            <input id="imm-priority" key={`pr-${resetKey}`} className="sq-input" name="priority" value={priority} onChange={e => setPriority(e.target.value)} placeholder={strings.priorityPlaceholder} /></div>
 
-          <div className="ax-field" style={{ maxInlineSize: "none" }}>
-            <label className="ax-field__label" id="imm-package-label">{strings.packageLabel}</label>
+          <div className="sq-field" style={{ maxInlineSize: "none" }}>
+            <label className="sq-field__label" id="imm-package-label">{strings.packageLabel}</label>
             <PackageTypeSelector
               key={`pk-${resetKey}`}
               id="imm-package"
@@ -423,35 +422,35 @@ export default function ImmediateForm({ factories, packages, inspectors, regionO
             />
           </div>
 
-          {actorMode === "planner" && <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-inspector">{strings.inspector}</label>
-            <select id="imm-inspector" key={`in-${resetKey}`} className="ax-select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}>
+          {actorMode === "planner" && <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-inspector">{strings.inspector}</label>
+            <select id="imm-inspector" key={`in-${resetKey}`} className="sq-select" name="inspector_id" value={inspectorId} onChange={e => setInspectorId(e.target.value)}>
               <option value="auto">{strings.autoAssign}</option>
               {inspectors.map(i => <option key={i.user_id} value={i.user_id}>{i.full_name}</option>)}
             </select></div>}
 
-          <div className="ax-field" style={{ maxInlineSize: "none" }}><label className="ax-field__label" htmlFor="imm-notes">{strings.notes}</label>
-            <textarea id="imm-notes" key={`no-${resetKey}`} className="ax-input" name="notes" rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder={strings.notesPlaceholder} /></div>
+          <div className="sq-field" style={{ maxInlineSize: "none" }}><label className="sq-field__label" htmlFor="imm-notes">{strings.notes}</label>
+            <textarea id="imm-notes" key={`no-${resetKey}`} className="sq-input" name="notes" rows={2} value={notes} onChange={e => setNotes(e.target.value)} placeholder={strings.notesPlaceholder} /></div>
         </div>
       </div>
 
-      <div className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
-        <h4 style={{ marginBlockEnd: "var(--ax-space-100)" }}>{strings.consequenceTitle}</h4>
-        <ul style={{ margin: 0, paddingInlineStart: "1.2em", display: "flex", flexDirection: "column", gap: "var(--ax-space-050)" }}>
-          <li className="ax-caption">{strings.consequenceVisit}</li>
-          <li className="ax-caption">{strings.consequenceAssign}</li>
-          <li className="ax-caption">{strings.consequenceNotify}</li>
-          <li className="ax-caption">{strings.consequenceAudit}</li>
+      <div className="sq-surface" style={{ padding: "var(--space-6)" }}>
+        <h4 style={{ marginBlockEnd: "var(--space-2)" }}>{strings.consequenceTitle}</h4>
+        <ul style={{ margin: 0, paddingInlineStart: "1.2em", display: "flex", flexDirection: "column", gap: "var(--space-1)" }}>
+          <li className="sq-caption">{strings.consequenceVisit}</li>
+          <li className="sq-caption">{strings.consequenceAssign}</li>
+          <li className="sq-caption">{strings.consequenceNotify}</li>
+          <li className="sq-caption">{strings.consequenceAudit}</li>
         </ul>
-        {actorMode === "planner" && <label className="ax-check" style={{ marginBlockStart: "var(--ax-space-200)" }}>
+        {actorMode === "planner" && <label className="sq-check" style={{ marginBlockStart: "var(--space-4)" }}>
           <input type="checkbox" name="review_confirmed" value="yes" checked={reviewed} onChange={e => setReviewed(e.target.checked)} />
           <span>{strings.reviewConfirm}</span>
         </label>}
       </div>
 
-      {state.error && <div className="ax-validation" role="alert"><strong>{strings.blockedTitle}</strong><div>{state.error}</div></div>}
+      {state.error && <div className="sq-validation" role="alert"><strong>{strings.blockedTitle}</strong><div>{state.error}</div></div>}
 
-      <div className="ax-row" style={{ justifyContent: "flex-end" }}>
-        <button className="ax-btn ax-btn--prominent" disabled={pending || !requestId || (actorMode === "planner" && !reviewed)}>
+      <div className="sq-row" style={{ justifyContent: "flex-end" }}>
+        <button className="sq-btn sq-btn--prominent" disabled={pending || !requestId || (actorMode === "planner" && !reviewed)}>
           {pending ? strings.creating : actorMode === "inspector" ? strings.createAndStart : strings.create}
         </button>
       </div>

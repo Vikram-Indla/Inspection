@@ -12,7 +12,6 @@ import {
 } from "@/lib/planning/factory-resolver";
 import Wizard, { type WizardStrings, type GradedFactory, type DraftConfig, type DraftInfo, type InitialSelection } from "./Wizard";
 import { findDuplicateActiveVisits } from "./duplicate";
-import { IconBlocked } from "@/app/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -91,7 +90,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
 
   const unavailable = (
     <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
-      <div className="ax-banner ax-banner--critical" role="alert">
+      <div className="sq-banner sq-banner--critical" role="alert">
         {tr("plan.single.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.", "بيانات التخطيط غير متاحة مؤقتًا (ERR-OPS-001). حاول مرة أخرى.")}
       </div>
     </Shell>
@@ -116,7 +115,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   if (!access.can("planning.create.single")) {
     return (
       <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState glyph="⛔" title={tr("plan.single.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.single.unauthorized.body", "Plan one visit (SCR-WEB-120) requires the planning.create.single capability — available to business planning staff, not to inspector or admin roles.", "تخطيط زيارة واحدة (SCR-WEB-120) يتطلب صلاحية planning.create.single — متاحة لموظفي التخطيط فقط، وليس لأدوار المفتش أو المسؤول.")} />
       </Shell>
     );
@@ -405,7 +404,7 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
   };
   return (
     <Shell current="/planning" title={t("plan.single.title", "Plan one visit")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.single.context", "SCR-WEB-120 · identity confidence lens")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.single.context", "SCR-WEB-120 · identity confidence lens")}</span>}>
       <Wizard
         query={q}
         portfolios={portfolios}

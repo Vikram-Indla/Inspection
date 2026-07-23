@@ -6,7 +6,6 @@ import { getPlanningAccess } from "@/lib/planning/access";
 import ImmediateForm, { type ImmediateStrings, type ManualReasonOption, type VisitTypeOption } from "./ImmediateForm";
 import EmptyState from "@/components/EmptyState";
 import Link from "next/link";
-import { IconBlocked } from "@/app/icons";
 
 // Distinct, sorted, non-empty string values for a field across the registered
 // factory set — same one-line pattern /planning/bulk/page.tsx uses for its
@@ -32,7 +31,7 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   if (!user || access.error !== null || !access.can("planning.create.immediate")) {
     return (
       <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState glyph="⛔" title={tr("plan.imm.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.imm.unauthorized.body", "Create an urgent visit (SCR-WEB-130) requires the immediate-visit capability (Planner / Inspector).", "إنشاء زيارة عاجلة (SCR-WEB-130) يتطلب صلاحية الزيارة الفورية (المخطط / المفتش).")} />
       </Shell>
     );
@@ -235,8 +234,8 @@ export default async function Immediate({ searchParams }: { searchParams: Promis
   };
   return (
     <Shell current="/planning" title={t("plan.imm.title", "Create an urgent visit")}
-      context={<><span className="ax-lozenge ax-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>{sourceCrId && sourceLicenseId ? <span className="ax-lozenge ax-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
-      {safeReturnTo ? <p><Link className="ax-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
+      context={<><span className="sq-lozenge sq-lozenge--warning">{t("plan.imm.context", "SCR-WEB-130 · bypasses Visit Plans (M01-050)")}</span>{sourceCrId && sourceLicenseId ? <span className="sq-lozenge sq-lozenge--info">Factory 360 · CR <bdi>{sourceCrId}</bdi> · License <bdi>{sourceLicenseId}</bdi></span> : null}</>}>
+      {safeReturnTo ? <p><Link className="sq-link" href={safeReturnTo}>← {t("f360.actions.return", "Return to selected Factory 360 license")}</Link></p> : null}
       <ImmediateForm
         factories={factoryList as never}
         packages={(pkgs ?? []) as never}

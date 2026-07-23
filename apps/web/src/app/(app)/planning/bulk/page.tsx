@@ -13,7 +13,6 @@ import TargetingLensClient from "./TargetingLensClient";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
 import WidgetBoundary from "@/components/WidgetBoundary";
 import { parseCt, fromFlat, evalNode, hasCriteria, emptyTree, leaves, pathKey, FIELD_REGISTRY, type Op } from "./criteria";
-import { IconBlocked } from "@/app/icons";
 
 type FactoryForCriteria = {
   region: string | null; risk_band: string | null; activity_class: string | null; city: string | null;
@@ -38,14 +37,14 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[CD-021 bulk planning authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <div className="ax-banner ax-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
+        <div className="sq-banner sq-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
       </Shell>
     );
   }
   if (!user || !access.can("planning.create.bulk")) {
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState icon={<IconBlocked />} title={tr("plan.bulk.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
+        <EmptyState glyph="⛔" title={tr("plan.bulk.unauthorized.title", "Authorized role required", "يلزم دور مصرح له")}
           body={tr("plan.bulk.unauthorized.body", "Plan multiple visits (SCR-WEB-110) requires the bulk-planning capability (Planner / Reviewer).", "تخطيط زيارات متعددة (SCR-WEB-110) يتطلب صلاحية التخطيط الجماعي (المخطط / المراجع).")} />
       </Shell>
     );
@@ -80,7 +79,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[CD-021] factories read failed:", factoriesError.message, factoriesError.code);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState icon={<IconBlocked />} title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
+        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
           body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
       </Shell>
     );
@@ -108,7 +107,7 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
     console.error("[CD-021] criteria history read failed:", violationsRead.error?.message ?? inspectionsRead.error?.message);
     return (
       <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}>
-        <EmptyState icon={<IconBlocked />} title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
+        <EmptyState glyph="⚠" title={t("plan.bulk.serviceUnavailable.title", "Factory list unavailable")}
           body={t("plan.bulk.serviceUnavailable.body", "The Factory list could not be read (ERR-OPS-001). Nothing was filtered or published. Please retry.")} />
       </Shell>
     );
@@ -361,15 +360,15 @@ export default async function BulkPlanning({ searchParams }: { searchParams: Pro
   };
   return (
     <Shell current="/planning" title={t("plan.bulk.title", "Plan multiple visits — criteria & targeting")}
-      context={<span className="ax-lozenge ax-lozenge--info">{t("plan.bulk.context", "SCR-WEB-110 · AND/OR criteria builder")}</span>}>
+      context={<span className="sq-lozenge sq-lozenge--info">{t("plan.bulk.context", "SCR-WEB-110 · AND/OR criteria builder")}</span>}>
       {ctWasInvalid && (
-        <div className="ax-banner ax-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>
+        <div className="sq-banner sq-banner--warning" role="alert" aria-label={t("plan.bulk.invalidCt.title", "Criteria could not be read")}>
           <strong>{t("plan.bulk.invalidCt.title", "Criteria could not be read")}</strong>
           <p>{t("plan.bulk.invalidCt.body", "The criteria link was invalid or corrupted (ERR-PLN-001) and could not be applied. No results are shown until valid criteria are applied — please rebuild your criteria below.")}</p>
         </div>
       )}
       {!criteriaApplied && !ctWasInvalid && (
-        <div className="ax-banner ax-banner--warning" role="alert" aria-label={tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}>
+        <div className="sq-banner sq-banner--warning" role="alert" aria-label={tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}>
           <strong>{tr("plan.bulk.noCriteria.title", "At least one criterion is required", "يلزم معيار واحد على الأقل")}</strong>
           <p>{tr("plan.bulk.noCriteria.body", "Bulk targeting never matches the whole registry by default. Add at least one criterion below to see matching factories; nothing is selected or published without an explicit scope.", "الاستهداف الجماعي لا يطابق السجل بالكامل افتراضيًا. أضف معيارًا واحدًا على الأقل أدناه لعرض المصانع المطابقة؛ لا يتم اختيار أو نشر أي شيء دون نطاق صريح.")}</p>
         </div>
