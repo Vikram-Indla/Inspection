@@ -3,11 +3,11 @@ items:
   - task_id: "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002"
     gate: "Web/Admin human screen approval"
     priority: "P0"
-    status: "APPROVED_IN_PROGRESS"
+    status: "AWAITING_PRODUCT_OWNER_APPROVAL"
     owner: "Codex implementation and QA + Product Owner screen approval"
     blocked_by: []
     blocks: ["Next Web/Admin screen batch", "Planning-owned Visits cutover"]
-    note: "Three-screen batch: Planning landing plus Planning-owned Visits list/detail. Current /planning and /visits routes remain canonical and retained. New target routes are preview-only until APPROVED FOR CUTOVER. CR-001..CR-098; WA-DES-036/045; SAQEEL shell authority. No Field/iPad or remote action."
+    note: "Rework commit 8343c62c corrects icons, spacing, focus borders, directional links, fixed rail, and sticky Visit action form. Typecheck/build PASS; pinned focused/protected M2 19/19 and final focused 8/8 PASS; validator 478/478 PASS; visible three-route review complete. Current routes remain canonical and retained. Stop pending Product Owner decision; no Field/iPad or remote action."
   - task_id: "TASK-WEB-ADMIN-PHASE1-F0-CORR-001"
     gate: "Web/Admin human screen approval"
     priority: "P0"

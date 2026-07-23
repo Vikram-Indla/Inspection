@@ -4763,9 +4763,29 @@
       "commit_sha": "c75407aa",
       "next_task": "Stop until Product Owner reviews the corrected favicon and shell identity.",
       "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-F0-CORR-001.md. Proceed only after an explicit Product Owner decision; do not begin another screen batch."
+    },
+    {
+      "session_id": "2026-07-23-web-admin-m2-batch-002",
+      "started_at": "2026-07-23",
+      "ended_at": "2026-07-23",
+      "branch": "revamp",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002",
+      "gate": "Web/Admin human screen approval",
+      "requirements": ["CR-001..CR-098", "478/478 traceability retained", "No Field/iPad Phase 2 implementation or investigation"],
+      "acceptance_ids": ["WA-M2-AC-001..006", "WA-SHELL-AC-002", "WA-SHELL-AC-013"],
+      "screens": ["Planning landing", "Planning Visits list", "Planning Visit details"],
+      "engines": ["Supabase SSR/RLS", "planning capability and expiry RPCs", "visit lifecycle", "audit and immutable version reads"],
+      "files_changed": ["Preview-only Planning-owned Visits routes", "Planning icons and spacing", "AI shell icon", "fixed desktop rail", "Visit sticky action form", "focused tests and approval governance"],
+      "tests": ["typecheck PASS", "production build PASS", "pinned preview-enabled focused/protected M2 Playwright 19/19 PASS", "final focused correction 8/8 PASS", "Web/Admin validator 478/478 PASS", "visible three-route browser review PASS"],
+      "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md", "visible Codex browser walkthrough on 2026-07-23"],
+      "decisions": ["Rejected-review corrections applied only to the same batch", "Current routes remain canonical", "Preview remains server and query gated", "No visual difference is self-approved"],
+      "blockers": ["Explicit Product Owner decision for WA-P1-M2-BATCH-002", "APPROVED FOR CUTOVER required before canonical replacement", "Stabilization and removal approval required before deleting legacy implementation"],
+      "commit_sha": "8343c62c",
+      "next_task": "Stop until Product Owner responds to WA-P1-M2-BATCH-002; do not begin another batch.",
+      "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md. Proceed only after an explicit permitted Product Owner decision; do not cut over or remove current routes without APPROVED FOR CUTOVER."
     }
   ],
-  "last_session": "2026-07-23-web-admin-f0-brand-correction-001",
+  "last_session": "2026-07-23-web-admin-m2-batch-002",
   "rules": {
     "append_only": true,
     "required_fields": [

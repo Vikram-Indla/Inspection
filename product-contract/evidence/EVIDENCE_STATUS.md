@@ -427,3 +427,11 @@ synthetic beta licence and expected result for `POST /shared/api/v2/license-info
 | ID | Evidence | Status |
 |---|---|---|
 | REPO-CONSOLIDATION-EV-001 | Branch/worktree/stash inventory, conflict-resolution record, compile/build/date/diff/management-key verification | CAPTURED — `TASK-REPOSITORY-CONSOLIDATION-20260721.md`; no product acceptance upgrade |
+## Web/Admin M2 Planning and Visits correction — 2026-07-23
+
+| ID | Evidence | Status |
+|---|---|---|
+| WA-M2-B002-EV-001 | Typecheck and production build | PASS |
+| WA-M2-B002-EV-002 | Pinned focused/protected M2 Playwright 19/19; final focused 8/8 | PASS |
+| WA-M2-B002-EV-003 | Visible Codex browser walkthrough of three preview routes | PASS — awaiting Product Owner decision |
+| WA-M2-B002-EV-004 | 478-row Web/Admin validator and Phase 2 isolation | PASS |

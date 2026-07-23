@@ -1,5 +1,24 @@
 # Current State
 
+## 2026-07-23 UPDATE 125 — M2 Planning/Visits correction awaiting approval
+
+`WA-P1-M2-BATCH-002` rework is committed at `8343c62c`. The rejected visual
+issues are corrected: coherent SVG method icons, sparkle AI entry, compact card
+spacing, single focus treatment, no directional-link decoration, fixed desktop
+navigation, and a sticky bounded Visit management-action form. The replacement
+remains preview-only at `/planning?wa_preview=1`, `/planning/visits?wa_preview=1`,
+and `/planning/visits/:id?wa_preview=1`; current `/visits/**` routes remain
+canonical and retained.
+
+Typecheck and production build pass. Pinned focused/protected M2 Playwright is
+19/19 and the final focused correction run is 8/8; permission negatives, governed
+actions, audit/version preservation, RTL, narrow reflow and accessibility pass.
+The planning validator remains PASS at 478/478 requirements, 71 Phase 1 routes,
+five deferred Field routes, and 46 supplied/45 unique designs. All three screens
+were reviewed in the visible Codex browser with safe planner data and no mutation.
+No Field/iPad, cutover, deletion, push, merge, deploy, DDL, provider, or shared
+data action occurred. Status: `SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
 ## 2026-07-23 UPDATE 124 — Web/Admin favicon and shell identity corrected
 
 The Product Owner approved correction batch `WA-P1-F0-CORR-001`. The active

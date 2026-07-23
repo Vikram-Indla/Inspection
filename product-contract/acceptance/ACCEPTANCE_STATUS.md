@@ -428,3 +428,10 @@ CD-006..CD-011 backend/frontend completion and are superseded. Evidence:
 - Existing G11, provider, policy, sponsor, Arabic/human-review and release
   blockers remain authoritative after branch convergence.
 - Checkpoint: sponsor-approved push readiness PASS; all endpoints remain `DISCOVERY_REQUIRED`, provider network calls remain absent, sensitive domains remain separate, zero stubs are retired, and no canonical migration or Factory 360 projection changed. Stop state: `AWAITING_SYNTHETIC_INDUSTRY_SHARED_API_CONTRACT`.
+## Web/Admin M2 Planning and Visits correction — 2026-07-23
+
+- `WA-M2-AC-001..006`, `WA-SHELL-AC-002`, and `WA-SHELL-AC-013`: engineering
+  evidence PASS at implementation commit `8343c62c`; Product Owner screen
+  acceptance remains pending.
+- Current routes remain canonical. Cutover, legacy removal, and stabilization
+  acceptance are not granted by this checkpoint.
