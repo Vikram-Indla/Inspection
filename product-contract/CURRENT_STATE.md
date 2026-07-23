@@ -1,5 +1,23 @@
 # Current State
 
+## 2026-07-23 UPDATE 126 — SAQEEL palette authority corrected
+
+The Product Owner rejected the M2 navy/blue appearance and supplied `SAQEEL
+Design System.zip`. Exact comparison proved that the runtime navigation tokens
+had been locally substituted with navy values and that shell labels retained
+hard-coded blue colors. Commit `50c95d35` replaces them with the ZIP's exact
+graphite navigation ramp for light and dark themes and adds a regression guard.
+The external source is registered as `WA-DESIGN-SYSTEM-SRC-001`: 5,895,468
+bytes, SHA-256
+`d019686f88d0b1239df289b4030796a64c70c5daa20c74971f7d2399e4510a`.
+
+Token authority comparison, typecheck and production build pass; same-batch and
+protected M2 Playwright passes 15/15; and the Web/Admin validator remains PASS at
+478/478. Visible Codex browser review confirmed the exact light and dark semantic
+values. Current routes remain retained and canonical; no Field/iPad, cutover,
+deletion, push, merge, deploy, DDL, provider or shared-data action occurred.
+Status: `SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
 ## 2026-07-23 UPDATE 125 — M2 Planning/Visits correction awaiting approval
 
 `WA-P1-M2-BATCH-002` rework is committed at `8343c62c`. The rejected visual

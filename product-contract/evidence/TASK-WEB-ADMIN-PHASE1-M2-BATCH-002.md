@@ -7,6 +7,7 @@
 - Designs: `WA-DES-036`, `WA-DES-045`, and shell authority `WA-SHELL-SRC-001`
 - Requirements: `CR-001..CR-098`; acceptance: `WA-M2-AC-001..006`, `WA-SHELL-AC-002`, `WA-SHELL-AC-013`
 - Implementation commit: `8343c62c`
+- Palette correction commit: `50c95d35`
 
 ## Rework delivered
 
@@ -46,3 +47,24 @@ No Field/iPad/PWA/offline work, remote DDL, deployment, provider activation,
 shared-data mutation, canonical cutover, legacy deletion, push, or merge occurred.
 No visual difference is self-approved. Status is
 `SCREEN_BATCH_AWAITING_PRODUCT_OWNER_APPROVAL`.
+
+## Product Owner palette rejection and correction
+
+The Product Owner rejected the navy/blue and cement appearance and supplied
+`SAQEEL Design System.zip` as the correction authority. The ZIP remains external
+to Git and is registered as `WA-DESIGN-SYSTEM-SRC-001`: 5,895,468 bytes,
+SHA-256 `d019686f88d0b1239df289b4030796a64c70c5daa20c74971f7d2399e4510a`.
+
+Token-by-token comparison found that runtime surfaces, text, status, action,
+border and chart tokens already matched the supplied semantic color sheet. The
+navigation ramp did not: locally substituted navy values and hard-coded blue
+shell labels were present. Commit `50c95d35` replaces them with the exact
+supplied graphite navigation values in both themes and removes the hard-coded
+blue shell colors. A source guard prevents those unauthorized values returning.
+
+Post-correction typecheck and production build pass; the complete same-batch
+and protected M2 suite passes 15/15; the exact semantic-color authority
+comparison passes; and the 478-row Web/Admin validator remains PASS. Visible
+Codex browser review confirmed light `#f4f3f0/#ffffff` surfaces with `#1f2328`
+graphite navigation and dark `#17191d/#1e2126` surfaces with `#131519` graphite
+navigation. Product Owner acceptance remains pending.

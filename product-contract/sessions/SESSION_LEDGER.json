@@ -4783,9 +4783,29 @@
       "commit_sha": "8343c62c",
       "next_task": "Stop until Product Owner responds to WA-P1-M2-BATCH-002; do not begin another batch.",
       "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md. Proceed only after an explicit permitted Product Owner decision; do not cut over or remove current routes without APPROVED FOR CUTOVER."
+    },
+    {
+      "session_id": "2026-07-23-web-admin-m2-batch-002-palette-rework",
+      "started_at": "2026-07-23",
+      "ended_at": "2026-07-23",
+      "branch": "revamp",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-M2-BATCH-002",
+      "gate": "Web/Admin human screen approval — rejected palette rework",
+      "requirements": ["CR-001..CR-098", "478/478 traceability retained", "No Field/iPad Phase 2 implementation or investigation"],
+      "acceptance_ids": ["WA-M2-AC-001..006", "WA-SHELL-AC-002", "WA-SHELL-AC-013"],
+      "screens": ["Planning landing", "Planning Visits list", "Planning Visit details", "Shared authenticated Web/Admin shell palette"],
+      "engines": ["SAQEEL semantic tokens", "authenticated shell", "Supabase SSR/RLS and governed Planning/Visit behavior unchanged"],
+      "files_changed": ["Exact light/dark graphite navigation tokens", "semantic shell navigation colors", "palette regression guard", "external source manifest and approval evidence"],
+      "tests": ["exact supplied semantic-color comparison PASS", "typecheck PASS", "production build PASS", "same-batch/protected M2 Playwright 15/15 PASS", "Web/Admin validator 478/478 PASS", "visible light/dark browser review PASS"],
+      "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md", "product-contract/web-admin-phase1/WEB_ADMIN_DESIGN_SYSTEM_SOURCE_MANIFEST.csv", "visible Codex browser light/dark walkthrough on 2026-07-23"],
+      "decisions": ["Product Owner palette rejection accepted", "Supplied ZIP is semantic color authority", "Unauthorized navy and hard-coded blue removed", "Current routes and backend behavior remain unchanged"],
+      "blockers": ["Explicit Product Owner decision for corrected WA-P1-M2-BATCH-002", "APPROVED FOR CUTOVER required before canonical replacement", "Stabilization and removal approval required before deleting legacy implementation"],
+      "commit_sha": "50c95d35",
+      "next_task": "Stop until Product Owner reviews the exact SAQEEL palette correction; do not begin another batch.",
+      "resume_prompt": "Read CURRENT_SLICE.yaml, TASK-WEB-ADMIN-PHASE1-M2-BATCH-002.md, and WEB_ADMIN_DESIGN_SYSTEM_SOURCE_MANIFEST.csv. Proceed only after an explicit permitted Product Owner decision."
     }
   ],
-  "last_session": "2026-07-23-web-admin-m2-batch-002",
+  "last_session": "2026-07-23-web-admin-m2-batch-002-palette-rework",
   "rules": {
     "append_only": true,
     "required_fields": [
