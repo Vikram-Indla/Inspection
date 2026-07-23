@@ -1,0 +1,597 @@
+﻿source_line_id,source_type,style_or_shape,verbatim_text
+PLN-SRC-0001,paragraph,Normal,The Planning Module allows authorized users to create inspection visits for:
+PLN-SRC-0002,paragraph,Normal,One specific factory through Single Planning.
+PLN-SRC-0003,paragraph,Normal,Multiple factories through Bulk Planning.
+PLN-SRC-0004,paragraph,Normal,"The Planner defines the allowed Visit Window, while the Inspector defines the exact Execution Date during the preparation stage."
+PLN-SRC-0005,paragraph,Normal,"The Planner may optionally select one or more Report Packages. If no Report Package is selected during planning, the Inspector must select the required package before execution."
+PLN-SRC-0006,paragraph,Normal,Planning Entry Points
+PLN-SRC-0007,paragraph,Normal,Users may access Planning from the following entry points:
+PLN-SRC-0008-R01,table_row,2 columns,Entry Point || Behavior
+PLN-SRC-0008-R02,table_row,2 columns,Main Navigation → Operations → Planning || Opens the Planning Visit List.
+PLN-SRC-0008-R03,table_row,2 columns,Planning List → Create Visit || Opens the Create Visit journey.
+PLN-SRC-0008-R04,table_row,2 columns,Factory 360 → Create Visit || Opens Single Planning with the selected factory prefilled.
+PLN-SRC-0008-R05,table_row,2 columns,Factory Map or Factory Quick Card → Create Visit || Opens Single Planning with available factory information prefilled.
+PLN-SRC-0008-R06,table_row,2 columns,Returned Visit Notification || Opens the returned visit details and return comments.
+PLN-SRC-0008-R07,table_row,2 columns,Draft Visit Notification or Shortcut || Opens the existing draft for continuation.
+PLN-SRC-0008-R08,table_row,2 columns,Visit Details → Duplicate Visit || Creates a new draft using eligible information from the selected visit.
+PLN-SRC-0009,paragraph,Normal,Access to create or update visits must be controlled through role-based permissions.
+PLN-SRC-0010,paragraph,Normal,The Planning List is the main landing page for the Planning Module.
+PLN-SRC-0011,paragraph,Normal,"It allows authorized users to view and manage all planning records, including:"
+PLN-SRC-0012,paragraph,Normal,Draft
+PLN-SRC-0013,paragraph,Normal,Published
+PLN-SRC-0014,paragraph,Normal,Returned
+PLN-SRC-0015,paragraph,Normal,Cancelled
+PLN-SRC-0016,paragraph,Normal,Expired
+PLN-SRC-0017,paragraph,Normal,The list must include visits created through both Single and Bulk Planning.
+PLN-SRC-0018,paragraph,Normal,Planning List Tabs
+PLN-SRC-0019-R01,table_row,2 columns,Tab || Description
+PLN-SRC-0019-R02,table_row,2 columns,All || Displays all visits the user is authorized to view.
+PLN-SRC-0019-R03,table_row,2 columns,Draft || Displays visits that have not yet been published.
+PLN-SRC-0019-R04,table_row,2 columns,Published || Displays visits successfully sent to inspectors.
+PLN-SRC-0019-R05,table_row,2 columns,Returned || Displays visits returned to the Planner for correction or reassignment.
+PLN-SRC-0019-R06,table_row,2 columns,Cancelled || Displays visits cancelled before inspection execution.
+PLN-SRC-0019-R07,table_row,2 columns,"Expired || Displays visits whose Visit Window ended before execution was properly started or completed, according to the configured expiry rule."
+PLN-SRC-0020,paragraph,Normal,Planning List Columns
+PLN-SRC-0021,paragraph,Normal,General Search
+PLN-SRC-0022,paragraph,Normal,The Planning List must support search by:
+PLN-SRC-0023,paragraph,Normal,Visit Reference
+PLN-SRC-0024,paragraph,Normal,CR Number
+PLN-SRC-0025,paragraph,Normal,CR Name
+PLN-SRC-0026,paragraph,Normal,License Number
+PLN-SRC-0027,paragraph,Normal,Plant Number
+PLN-SRC-0028,paragraph,Normal,Factory Name
+PLN-SRC-0029,paragraph,Normal,Assigned Inspector
+PLN-SRC-0030,paragraph,Normal,Created By
+PLN-SRC-0031-R01,table_row,3 columns,Filter || Type || Expected Values
+PLN-SRC-0031-R02,table_row,3 columns,"Planning Type || Multi-select || Single, Bulk"
+PLN-SRC-0031-R03,table_row,3 columns,"Visit Status || Multi-select || Draft, Published, Returned, Cancelled, Expired"
+PLN-SRC-0031-R04,table_row,3 columns,Visit Type || Multi-select lookup || Active Visit Type values
+PLN-SRC-0031-R05,table_row,3 columns,Region || Multi-select lookup || Active Saudi regions
+PLN-SRC-0031-R06,table_row,3 columns,City || Multi-select dependent lookup || Cities related to selected regions
+PLN-SRC-0031-R07,table_row,3 columns,Assigned Inspector || Searchable multi-select || Active inspectors
+PLN-SRC-0031-R08,table_row,3 columns,Visit Window Start || Date || From date
+PLN-SRC-0031-R09,table_row,3 columns,Visit Window End || Date || To date
+PLN-SRC-0031-R10,table_row,3 columns,Created Date || Date range || Creation period
+PLN-SRC-0031-R11,table_row,3 columns,Created By || Searchable user list || Authorized users
+PLN-SRC-0031-R12,table_row,3 columns,Report Package || Multi-select lookup || Active report packages
+PLN-SRC-0031-R13,table_row,3 columns,Priority || Multi-select || Configured priority values
+PLN-SRC-0031-R14,table_row,3 columns,Return Status || Single select || Returned before / Never returned
+PLN-SRC-0031-R15,table_row,3 columns,Bulk Plan Reference || Text search || Originating Bulk Plan Reference
+PLN-SRC-0032,paragraph,Normal,Users must be able to reset all filters.
+PLN-SRC-0033,paragraph,Normal,The system should preserve filters during the user’s current session when opening and returning from Visit Details.
+PLN-SRC-0034,paragraph,Normal,Page-Level Actions
+PLN-SRC-0035-R01,table_row,3 columns,Record-Level Actions ||  || 
+PLN-SRC-0035-R02,table_row,3 columns, ||  || 
+PLN-SRC-0035-R03,table_row,3 columns, ||  || 
+PLN-SRC-0035-R04,table_row,3 columns,"Main Planning Statuses Draft ↓ Published ↓ Returned / Cancelled / Expired A Returned visit may be corrected and republished: Returned ↓ Draft or Returned – Under Update ↓ Published Status Definitions Journey Steps Create Visit ↓ Select Planning Type ├── Single └── Bulk ↓ Search or Identify Factory / Factories ↓ Review Retrieved Factory Information ↓ Confirm or Add Map Location ↓ Define Visit Details ↓ Assign Inspector ↓ Define Visit Window ↓ Select Optional Report Package ↓ Add Attachments and Notes ↓ Save Draft or Publish The system may present the journey as steps, sections, or one expandable form, provided that all validations and dependencies are maintained. Common Visit Fields The following fields apply to both Single and Bulk Planning unless specified otherwise. ||  || "
+PLN-SRC-0036,paragraph,Normal,Single Planning Search Methods
+PLN-SRC-0037-R01,table_row,2 columns,Search Method || Expected Input
+PLN-SRC-0037-R02,table_row,2 columns,CR Number || Valid CR number
+PLN-SRC-0037-R03,table_row,2 columns,License Number || Valid industrial license number
+PLN-SRC-0037-R04,table_row,2 columns,Plant Number || Valid plant identifier
+PLN-SRC-0038,paragraph,Normal,Registered Factory Result
+PLN-SRC-0039,paragraph,Normal,"When a match is found, the system must retrieve and display available information."
+PLN-SRC-0040-R01,table_row,4 columns,Field || Source || Editable || Expected Value / Explanation
+PLN-SRC-0040-R02,table_row,4 columns,CR Number || Senaei || No || Registered Commercial Registration number.
+PLN-SRC-0040-R03,table_row,4 columns,CR Name || Senaei || No || Registered commercial name.
+PLN-SRC-0040-R04,table_row,4 columns,License Number || Senaei || No || Industrial License number associated with the selected factory.
+PLN-SRC-0040-R05,table_row,4 columns,Plant Number || Senaei || No || Plant identifier.
+PLN-SRC-0040-R06,table_row,4 columns,"License Stage || Senaei || No || Foundation, Establish, Production, or configured stage."
+PLN-SRC-0040-R07,table_row,4 columns,License Status || Senaei || No || Current license status.
+PLN-SRC-0040-R08,table_row,4 columns,"Factory Name || Senaei || No, except observation || Registered factory or establishment name."
+PLN-SRC-0040-R09,table_row,4 columns,Contact Name || Senaei || According to rule / edited || Available factory contact.
+PLN-SRC-0040-R10,table_row,4 columns,Contact Mobile || Senaei || According to rule / edited || Available factory contact number.
+PLN-SRC-0040-R11,table_row,4 columns,Contact Email || Senaei || According to rule / edited || Available factory email address.
+PLN-SRC-0040-R12,table_row,4 columns,Region || Senaei / location record || Controlled edit || Registered region.
+PLN-SRC-0040-R13,table_row,4 columns,City || Senaei / location record || Controlled edit || Registered city.
+PLN-SRC-0040-R14,table_row,4 columns,"Coordinates || Senaei / license || Controlled edit || Latitude and longitude, when available."
+PLN-SRC-0040-R15,table_row,4 columns,"Location Source || System || No || License, Planner, Inspector, or other configured source."
+PLN-SRC-0040-R16,table_row,4 columns,"Land Provider || Senaei || No || Land provider, when available."
+PLN-SRC-0040-R17,table_row,4 columns,Sector || Senaei || No || Factory sector.
+PLN-SRC-0040-R18,table_row,4 columns,Activities || Senaei || No || Registered industrial activities.
+PLN-SRC-0040-R19,table_row,4 columns,Products || Senaei || No || Registered products.
+PLN-SRC-0040-R20,table_row,4 columns,Employee Count || Senaei || No || Current available employee count.
+PLN-SRC-0041,paragraph,Normal,Multiple Licenses Under One CR
+PLN-SRC-0042,paragraph,Normal,When searching by CR Number and multiple licenses are found:
+PLN-SRC-0043,paragraph,Normal,Display the CR information.
+PLN-SRC-0044,paragraph,Normal,Display all related licenses and plants.
+PLN-SRC-0045,paragraph,Normal,Require the Planner to select the target license or plant.
+PLN-SRC-0046,paragraph,Normal,Display the selected factory details.
+PLN-SRC-0047,paragraph,Normal,Create the visit at the license or plant level.
+PLN-SRC-0048,paragraph,Normal,A visit must not be created only at the CR level when a factory-level license or plant is required.
+PLN-SRC-0049,paragraph,Normal,Unregistered Factory or Factory Not Found
+PLN-SRC-0050,paragraph,Normal,Manual Creation Eligibility
+PLN-SRC-0051,paragraph,Normal,"If the searched factory is not found in Senaei, the system must allow manual information entry only when:"
+PLN-SRC-0052,paragraph,Normal,The user has the required permission.
+PLN-SRC-0053,paragraph,Normal,The applicable Visit Type permits inspections of unregistered factories.
+PLN-SRC-0054,paragraph,Normal,The user confirms that the factory was not found.
+PLN-SRC-0055,paragraph,Normal,The system records that the factory information was manually entered.
+PLN-SRC-0056,paragraph,Normal,Manual Factory Fields
+PLN-SRC-0057-R01,table_row,5 columns,Field || Type || Required || Expected Value || Explanation
+PLN-SRC-0057-R02,table_row,5 columns,CR Number || Text || Conditional || Valid CR number if available || May be unavailable for certain inspection scenarios.
+PLN-SRC-0057-R03,table_row,5 columns,CR Name / Establishment Name || Text || Yes || Legal or known establishment name || Used as the primary display name.
+PLN-SRC-0057-R04,table_row,5 columns,License Number || Text || No || License number if known || Manually entered and marked as unverified.
+PLN-SRC-0057-R05,table_row,5 columns,Plant Number || Text || No || Plant identifier if known || Manually entered and marked as unverified.
+PLN-SRC-0057-R06,table_row,5 columns,Contact Name || Text || No || Contact person || Factory contact information.
+PLN-SRC-0057-R07,table_row,5 columns,Contact Mobile || Text || Conditional || Valid Saudi or configured mobile format || Required when factory notification is enabled.
+PLN-SRC-0057-R08,table_row,5 columns,Contact Email || Email || No || Valid email address || Optional factory contact.
+PLN-SRC-0057-R09,table_row,5 columns,Region || Dropdown || Yes || Active region || Required location classification.
+PLN-SRC-0057-R10,table_row,5 columns,City || Dependent dropdown || Yes || City under selected region || Required location classification.
+PLN-SRC-0057-R11,table_row,5 columns,Address Description || Text area || No || Free text || Additional directions or address information.
+PLN-SRC-0057-R12,table_row,5 columns,Map Location || Map pin || Yes || Latitude and longitude || Added manually by Planner.
+PLN-SRC-0057-R13,table_row,5 columns,Location Source || System generated || System || Planner || Records that coordinates were provided by the Planner.
+PLN-SRC-0057-R14,table_row,5 columns,"Manual Entry Reason || Dropdown / text || Yes || Not registered, external complaint, field discovery, or configured reason || Explains why a non-master factory was used."
+PLN-SRC-0057-R15,table_row,5 columns,Supporting Attachment || File || Configurable || Evidence of factory identity or request || May be required based on Visit Type.
+PLN-SRC-0058,paragraph,Normal,Bulk Planning
+PLN-SRC-0059,paragraph,Normal,Bulk Planning allows the Planner to identify and select multiple factories using configurable search conditions.
+PLN-SRC-0060,paragraph,Normal,Bulk Planning must retrieve factories from Senaei or the approved factory master source.
+PLN-SRC-0061,paragraph,Normal,Manual unregistered factory entry is not supported within Bulk Planning.
+PLN-SRC-0062,paragraph,Normal,Bulk Search Criteria
+PLN-SRC-0063-R01,table_row,4 columns,Search Criterion || Type || Expected Value || Explanation
+PLN-SRC-0063-R02,table_row,4 columns,Region || Multi-select || One or more regions || Returns factories registered in selected regions.
+PLN-SRC-0063-R03,table_row,4 columns,City || Multi-select || One or more cities || Dependent on selected regions where applicable.
+PLN-SRC-0063-R04,table_row,4 columns,Sector || Multi-select || Active sectors || Filters factories by industrial sector.
+PLN-SRC-0063-R05,table_row,4 columns,License Stage || Multi-select || Foundation / Establish / Production || Filters by current license stage.
+PLN-SRC-0063-R06,table_row,4 columns,Activity || Multi-select || Active industrial activities || Filters factories with selected activities.
+PLN-SRC-0063-R07,table_row,4 columns,Product || Searchable multi-select || Registered products or HS-related product master || Filters factories producing selected products.
+PLN-SRC-0063-R08,table_row,4 columns,"Land Provider || Multi-select || MODON, RCJY, private, or configured values || Filters by available land provider information."
+PLN-SRC-0063-R09,table_row,4 columns,Employee Count || Range || Minimum and maximum || Filters factories based on available employee count.
+PLN-SRC-0063-R10,table_row,4 columns,"License Status || Multi-select || Active, Expired, Suspended, etc. || Filters using configured eligible statuses."
+PLN-SRC-0063-R11,table_row,4 columns,"Risk Level || Multi-select || Low, Medium, High, Critical || Available when Risk Engine data exists."
+PLN-SRC-0063-R12,table_row,4 columns,Previous Violation Count || Range || Minimum and maximum || Optional risk-based filter.
+PLN-SRC-0063-R13,table_row,4 columns,"Previous Inspection Outcome || Multi-select || Compliant, Non-Compliant, etc. || Optional historical inspection filter."
+PLN-SRC-0063-R14,table_row,4 columns,Last Inspection Date || Date range || From and to || Optional historical inspection filter.
+PLN-SRC-0063-R15,table_row,4 columns,Issuing Authority || Multi-select || Configured authority values || Optional regulatory or operational filter.
+PLN-SRC-0064,paragraph,Normal,Bulk search must not require all filters.
+PLN-SRC-0065,paragraph,Normal,The Planner must provide at least one valid criterion unless the user has a specific permission allowing unrestricted factory retrieval.
+PLN-SRC-0066,paragraph,Normal,AND / OR Logic
+PLN-SRC-0067,paragraph,Normal,The Planner must be able to define how search conditions are combined.
+PLN-SRC-0068,paragraph,Normal,AND Example
+PLN-SRC-0069,paragraph,Normal,Region = Riyadh
+PLN-SRC-0070,paragraph,Normal,AND
+PLN-SRC-0071,paragraph,Normal,Sector = Food
+PLN-SRC-0072,paragraph,Normal,AND
+PLN-SRC-0073,paragraph,Normal,Employee Count > 100
+PLN-SRC-0074,paragraph,Normal,The result includes factories satisfying all conditions.
+PLN-SRC-0075,paragraph,Normal,OR Example
+PLN-SRC-0076,paragraph,Normal,Region = Riyadh
+PLN-SRC-0077,paragraph,Normal,OR
+PLN-SRC-0078,paragraph,Normal,Region = Eastern Province
+PLN-SRC-0079,paragraph,Normal,OR
+PLN-SRC-0080,paragraph,Normal,Risk Level = Critical
+PLN-SRC-0081,paragraph,Normal,The result includes factories satisfying at least one condition.
+PLN-SRC-0082,paragraph,Normal,Condition Builder
+PLN-SRC-0083,paragraph,Normal,The interface should support condition rows containing:
+PLN-SRC-0084-R01,table_row,2 columns,Component || Description
+PLN-SRC-0084-R02,table_row,2 columns,Field || Selected search criterion
+PLN-SRC-0084-R03,table_row,2 columns,"Operator || Equals, contains, greater than, less than, between, in, depending on field type"
+PLN-SRC-0084-R04,table_row,2 columns,Value || Selected or entered value
+PLN-SRC-0084-R05,table_row,2 columns,Connector || AND / OR
+PLN-SRC-0084-R06,table_row,2 columns,Remove || Removes the condition
+PLN-SRC-0084-R07,table_row,2 columns,Add Condition || Adds another search condition
+PLN-SRC-0084-R08,table_row,2 columns,Add Group || Optional grouping for advanced conditions
+PLN-SRC-0085,paragraph,Normal,"Where grouped conditions are supported, the system must process parentheses correctly."
+PLN-SRC-0086,paragraph,Normal,Example:
+PLN-SRC-0087,paragraph,Normal,Region = Riyadh
+PLN-SRC-0088,paragraph,Normal,AND
+PLN-SRC-0089,paragraph,Normal,(
+PLN-SRC-0090,paragraph,Normal,Sector = Food
+PLN-SRC-0091,paragraph,Normal,OR
+PLN-SRC-0092,paragraph,Normal,Sector = Chemical
+PLN-SRC-0093,paragraph,Normal,)
+PLN-SRC-0094,paragraph,Normal,Bulk Selection Actions
+PLN-SRC-0095,paragraph,Normal,The Planner must be able to:
+PLN-SRC-0096,paragraph,Normal,Select one factory.
+PLN-SRC-0097,paragraph,Normal,Select multiple factories.
+PLN-SRC-0098,paragraph,Normal,Select all displayed results.
+PLN-SRC-0099,paragraph,Normal,"Select all matching results, subject to a configurable maximum."
+PLN-SRC-0100,paragraph,Normal,Unselect selected factories.
+PLN-SRC-0101,paragraph,Normal,View factory details.
+PLN-SRC-0102,paragraph,Normal,Open Factory 360.
+PLN-SRC-0103,paragraph,Normal,Remove an ineligible factory from the selection.
+PLN-SRC-0104,paragraph,Normal,Review the final selected factory count.
+PLN-SRC-0105,paragraph,Normal,Bulk Visit Creation
+PLN-SRC-0106,paragraph,Normal,After confirming the selected factories:
+PLN-SRC-0107,paragraph,Normal,The Planner defines common visit information.
+PLN-SRC-0108,paragraph,Normal,The system validates each selected factory separately.
+PLN-SRC-0109,paragraph,Normal,The system displays eligible and ineligible factories.
+PLN-SRC-0110,paragraph,Normal,The Planner may proceed with eligible factories.
+PLN-SRC-0111,paragraph,Normal,A separate visit record is created for each eligible factory.
+PLN-SRC-0112,paragraph,Normal,All created visits retain the same Bulk Plan Reference.
+PLN-SRC-0113,paragraph,Normal,Each visit receives its own Visit Reference.
+PLN-SRC-0114,paragraph,Normal,Inspector assignment may be shared or distributed based on assignment logic.
+PLN-SRC-0115,paragraph,Normal,One factory failing validation must not automatically block all other valid factories.
+PLN-SRC-0116,paragraph,Normal,"Before final creation, the system must show a summary of:"
+PLN-SRC-0117,paragraph,Normal,Total selected.
+PLN-SRC-0118,paragraph,Normal,Eligible.
+PLN-SRC-0119,paragraph,Normal,Ineligible.
+PLN-SRC-0120,paragraph,Normal,Visits to be created.
+PLN-SRC-0121,paragraph,Normal,Visits with missing location.
+PLN-SRC-0122,paragraph,Normal,Visits with active conflicts.
+PLN-SRC-0123,paragraph,Normal,Visits requiring manual Inspector override.
+PLN-SRC-0124,paragraph,Normal,Factory Location and Map
+PLN-SRC-0125,paragraph,Normal,The map must display the selected factory or selected factories.
+PLN-SRC-0126,paragraph,Normal,The map must display the selected factory or selected factories.
+PLN-SRC-0127,paragraph,Normal,For Single Planning:
+PLN-SRC-0128,paragraph,Normal,Display the selected factory pin.
+PLN-SRC-0129,paragraph,Normal,Allow location review.
+PLN-SRC-0130,paragraph,Normal,Allow location addition when no coordinates exist.
+PLN-SRC-0131,paragraph,Normal,Allow controlled location correction.
+PLN-SRC-0132,paragraph,Normal,For Bulk Planning:
+PLN-SRC-0133,paragraph,Normal,Display selected factory pins when coordinates exist.
+PLN-SRC-0134,paragraph,Normal,Indicate factories with missing coordinates.
+PLN-SRC-0135,paragraph,Normal,Allow the Planner to exclude factories with missing locations or provide a location through an approved process.
+PLN-SRC-0136,paragraph,Normal,Location Source
+PLN-SRC-0137,paragraph,Normal,Every factory location used in the inspection platform must include a source.
+PLN-SRC-0138-R01,table_row,2 columns,Location Source || Meaning
+PLN-SRC-0138-R02,table_row,2 columns,License || Coordinates retrieved from the industrial license or Senaei master data.
+PLN-SRC-0138-R03,table_row,2 columns,Planner || Coordinates added or corrected by the Planner during planning.
+PLN-SRC-0138-R04,table_row,2 columns,Inspector || Coordinates captured or corrected by the Inspector during arrival or execution.
+PLN-SRC-0138-R05,table_row,2 columns,Integration || Coordinates retrieved from another approved integration.
+PLN-SRC-0138-R06,table_row,2 columns,"Historical Inspection || Coordinates obtained from a previously approved inspection, if configured."
+PLN-SRC-0139,paragraph,Normal,The system must also store:
+PLN-SRC-0140,paragraph,Normal,Original coordinates.
+PLN-SRC-0141,paragraph,Normal,Current visit coordinates.
+PLN-SRC-0142,paragraph,Normal,Source.
+PLN-SRC-0143,paragraph,Normal,Added or modified by.
+PLN-SRC-0144,paragraph,Normal,Added or modified date.
+PLN-SRC-0145,paragraph,Normal,Location Editing Rules
+PLN-SRC-0146,paragraph,Normal,If coordinates come from the License:
+PLN-SRC-0147,paragraph,Normal,The Planner may correct them only with the required permission.
+PLN-SRC-0148,paragraph,Normal,The original coordinates must remain unchanged in the audit history.
+PLN-SRC-0149,paragraph,Normal,The planning visit uses the corrected visit coordinates.
+PLN-SRC-0150,paragraph,Normal,Senaei master coordinates must not be automatically updated.
+PLN-SRC-0151,paragraph,Normal,If coordinates were entered by the Planner:
+PLN-SRC-0152,paragraph,Normal,The source must be Planner.
+PLN-SRC-0153,paragraph,Normal,The Inspector may later confirm or correct the location.
+PLN-SRC-0154,paragraph,Normal,Any Inspector correction must not overwrite the planning history.
+PLN-SRC-0155,paragraph,Normal,If the Inspector updates coordinates:
+PLN-SRC-0156,paragraph,Normal,The source for the new coordinates becomes Inspector.
+PLN-SRC-0157,paragraph,Normal,The system must preserve the previous Planner or License coordinates.
+PLN-SRC-0158,paragraph,Normal,The approved inspection may submit the updated location for a later data-quality process.
+PLN-SRC-0159,paragraph,Normal,Inspector Assignment
+PLN-SRC-0160,paragraph,Normal,An Inspector must be assigned before publishing.
+PLN-SRC-0161,paragraph,Normal,"The system must provide a recommended Inspector, but the Planner may manually override the recommendation."
+PLN-SRC-0162,paragraph,Normal,"The recommendation must prioritize configured criteria, including:"
+PLN-SRC-0163,paragraph,Normal,Inspector is active.
+PLN-SRC-0164,paragraph,Normal,Inspector is assigned to or operates within the same Region.
+PLN-SRC-0165,paragraph,Normal,Inspector has fewer currently assigned visits.
+PLN-SRC-0166,paragraph,Normal,Inspector has availability within the Visit Window.
+PLN-SRC-0167,paragraph,Normal,Inspector Recommendation Display
+PLN-SRC-0168-R01,table_row,2 columns,Information || Explanation
+PLN-SRC-0168-R02,table_row,2 columns,Inspector Name || User display name
+PLN-SRC-0168-R03,table_row,2 columns,Region || Assigned or operational region
+PLN-SRC-0168-R04,table_row,2 columns,Assigned Visits || Current number of active assigned visits
+PLN-SRC-0168-R05,table_row,2 columns,Visits Within Selected Window || Workload overlapping the Visit Window
+PLN-SRC-0168-R06,table_row,2 columns,"Availability || Available, Partially Available, Unavailable"
+PLN-SRC-0168-R07,table_row,2 columns,Recommendation Reason || Example: Same region and lowest active workload
+PLN-SRC-0168-R08,table_row,2 columns,"Warning || Schedule conflict, overload, missing skill, leave, etc."
+PLN-SRC-0169,paragraph,Normal,Manual Override
+PLN-SRC-0170,paragraph,Normal,The Planner may assign another eligible Inspector.
+PLN-SRC-0171,paragraph,Normal,If the selected Inspector has a warning but is not blocked:
+PLN-SRC-0172,paragraph,Normal,Display the warning.
+PLN-SRC-0173,paragraph,Normal,Require an override reason when configured.
+PLN-SRC-0174,paragraph,Normal,Store the override in the audit log.
+PLN-SRC-0175,paragraph,Normal,Bulk Assignment
+PLN-SRC-0176,paragraph,Normal,"For Bulk Planning, the Planner may:"
+PLN-SRC-0177,paragraph,Normal,Allow the system to distribute visits among recommended Inspectors.
+PLN-SRC-0178,paragraph,Normal,Manually assign Inspectors per factory.
+PLN-SRC-0179,paragraph,Normal,Reassign individual factories before publishing.
+PLN-SRC-0180,paragraph,Normal,The system distribution should primarily consider:
+PLN-SRC-0181,paragraph,Normal,Same Region.
+PLN-SRC-0182,paragraph,Normal,Active workload.
+PLN-SRC-0183,paragraph,Normal,Visit Window availability.
+PLN-SRC-0184,paragraph,Normal,Visit Window
+PLN-SRC-0185,paragraph,Normal,The Visit Window is the allowed date range in which the Inspector must define and execute the visit
+PLN-SRC-0186,paragraph,Normal,The Planner does not define the exact Execution Date.
+PLN-SRC-0187,paragraph,Normal,The Inspector selects the Execution Date during preparation.
+PLN-SRC-0188-R01,table_row,3 columns,Field || Required || Expected Value
+PLN-SRC-0188-R02,table_row,3 columns,Visit Window Start || Yes || Valid permitted start date
+PLN-SRC-0188-R03,table_row,3 columns,Visit Window End || Yes || Date equal to or later than start date
+PLN-SRC-0188-R04,table_row,3 columns,Window Notes || No || Additional scheduling constraints
+PLN-SRC-0189,paragraph,Normal, The Inspector’s Execution Date must fall inside the Visit Window.
+PLN-SRC-0190,paragraph,Normal," The Inspector may change the Execution Date before execution, provided the new date remains inside the Visit Window."
+PLN-SRC-0191,paragraph,Normal, Changes outside the Visit Window require the visit to be returned to the Planner or formally extended by an authorized Planner.
+PLN-SRC-0192,paragraph,Normal, The Planner may update the Visit Window while the visit is Draft or Returned.
+PLN-SRC-0193,paragraph,Normal,Visit Window End must not be earlier than Visit Window Start.
+PLN-SRC-0194,paragraph,Normal,Draft Behavior
+PLN-SRC-0195,paragraph,Normal,The Planner may save a partially completed visit.
+PLN-SRC-0196,paragraph,Normal,Minimum information required to create a Draft:
+PLN-SRC-0197,paragraph,Normal,Planning Type.
+PLN-SRC-0198,paragraph,Normal,"At least one factory search or selection attempt, when applicable."
+PLN-SRC-0199,paragraph,Normal,"The system may allow a completely initial Draft if auto-save is introduced, but such records must be clearly distinguished from completed Drafts."
+PLN-SRC-0200,paragraph,Normal,Draft Rules
+PLN-SRC-0201,paragraph,Normal,Draft does not notify the Inspector.
+PLN-SRC-0202,paragraph,Normal,Draft does not reserve the Inspector’s workload unless configured.
+PLN-SRC-0203,paragraph,Normal,Draft does not appear in the Inspector’s pool.
+PLN-SRC-0204,paragraph,Normal,Draft may contain incomplete fields.
+PLN-SRC-0205,paragraph,Normal,Draft may be edited or Canceled by authorized users.
+PLN-SRC-0206,paragraph,Normal,Draft must retain all entered values.
+PLN-SRC-0207,paragraph,Normal,Draft must show missing mandatory fields required for publishing.
+PLN-SRC-0208,paragraph,Normal,Saving a Draft must generate a Visit Reference or Draft Reference.
+PLN-SRC-0209,paragraph,Normal,Draft Rules
+PLN-SRC-0210,paragraph,Normal,Draft does not notify the Inspector.
+PLN-SRC-0211,paragraph,Normal,Draft does not reserve the Inspector’s workload unless configured.
+PLN-SRC-0212,paragraph,Normal,Draft does not appear in the Inspector’s pool.
+PLN-SRC-0213,paragraph,Normal,Draft may contain incomplete fields.
+PLN-SRC-0214,paragraph,Normal,Draft may be edited or deleted by authorized users.
+PLN-SRC-0215,paragraph,Normal,Draft must retain all entered values.
+PLN-SRC-0216,paragraph,Normal,Draft must show missing mandatory fields required for publishing.
+PLN-SRC-0217,paragraph,Normal,Saving a Draft must generate a Visit Reference or Draft Reference.
+PLN-SRC-0218,paragraph,Normal,19. Publish Visit
+PLN-SRC-0219,paragraph,Normal,19.1 Publish Preconditions
+PLN-SRC-0220,paragraph,Normal,"Before publishing, the system must validate:"
+PLN-SRC-0221,paragraph,Normal,Planning Type is selected.
+PLN-SRC-0222,paragraph,Normal,At least one eligible factory is selected.
+PLN-SRC-0223,paragraph,Normal,Required factory identity information exists.
+PLN-SRC-0224,paragraph,Normal,Required location information exists according to Visit Type.
+PLN-SRC-0225,paragraph,Normal,Visit Type is selected.
+PLN-SRC-0226,paragraph,Normal,Visit Mode is selected.
+PLN-SRC-0227,paragraph,Normal,Visit Window is valid.
+PLN-SRC-0228,paragraph,Normal,Inspector is assigned.
+PLN-SRC-0229,paragraph,Normal,Required attachments exist when configured.
+PLN-SRC-0230,paragraph,Normal,No blocking duplicate visit exists.
+PLN-SRC-0231,paragraph,Normal,No blocking active visit conflict exists.
+PLN-SRC-0232,paragraph,Normal,"Selected Report Packages are active and eligible, when provided."
+PLN-SRC-0233,paragraph,Normal,User has publish permission.
+PLN-SRC-0234,paragraph,Normal,Any required override reasons are entered.
+PLN-SRC-0235,paragraph,Normal,Report Package is not mandatory for publishing.
+PLN-SRC-0236,paragraph,Normal,Publish Result
+PLN-SRC-0237,paragraph,Normal,Upon successful publishing:
+PLN-SRC-0238,paragraph,Normal,Status becomes Published.
+PLN-SRC-0239,paragraph,Normal,Operational state becomes New.
+PLN-SRC-0240,paragraph,Normal,Visit becomes visible to the assigned Inspector.
+PLN-SRC-0241,paragraph,Normal,Visit appears in the Inspector’s visit pool.
+PLN-SRC-0242,paragraph,Normal,Inspector receives the configured notification.
+PLN-SRC-0243,paragraph,Normal,Factory notification is sent only according to the configured process.
+PLN-SRC-0244,paragraph,Normal,A package snapshot is stored when a Planner-selected Report Package exists.
+PLN-SRC-0245,paragraph,Normal,Publish date and publisher are recorded.
+PLN-SRC-0246,paragraph,Normal,Audit log entry is created.
+PLN-SRC-0247,paragraph,Normal,Duplicate and Active Visit Validation
+PLN-SRC-0248,paragraph,Normal,"Before publishing, the system must check for possible duplicate visits using configurable criteria, such as:"
+PLN-SRC-0249,paragraph,Normal,Same License or Plant.
+PLN-SRC-0250,paragraph,Normal,Same Visit Type.
+PLN-SRC-0251,paragraph,Normal,Overlapping Visit Window.
+PLN-SRC-0252,paragraph,Normal,Existing Draft or Published Visit.
+PLN-SRC-0253,paragraph,Normal,Same regulatory campaign or reference.
+PLN-SRC-0254,paragraph,Normal,Return Journey
+PLN-SRC-0255,paragraph,Normal,"A visit may be returned to Planning by an inspector , supervisor ."
+PLN-SRC-0256,paragraph,Normal,Return Reasons
+PLN-SRC-0257,paragraph,Normal,Return Reason must be selected from an active lookup.
+PLN-SRC-0258,paragraph,Normal,Examples:
+PLN-SRC-0259,paragraph,Normal,Incorrect factory.
+PLN-SRC-0260,paragraph,Normal,Incorrect Inspector assignment.
+PLN-SRC-0261,paragraph,Normal,Inspector unavailable.
+PLN-SRC-0262,paragraph,Normal,Visit Window not suitable.
+PLN-SRC-0263,paragraph,Normal,Incorrect Visit Type.
+PLN-SRC-0264,paragraph,Normal,Incorrect Visit Mode.
+PLN-SRC-0265,paragraph,Normal,Missing information.
+PLN-SRC-0266,paragraph,Normal,Missing or incorrect location.
+PLN-SRC-0267,paragraph,Normal,Report Package requires Planner review.
+PLN-SRC-0268,paragraph,Normal,Duplicate visit.
+PLN-SRC-0269,paragraph,Normal,Factory closed or unavailable.
+PLN-SRC-0270,paragraph,Normal,Other.
+PLN-SRC-0271,paragraph,Normal,Return Behavior
+PLN-SRC-0272,paragraph,Normal,When a visit is returned:
+PLN-SRC-0273,paragraph,Normal,Planning status becomes Returned.
+PLN-SRC-0274,paragraph,Normal,The visit is removed from the Inspector’s active schedule where applicable.
+PLN-SRC-0275,paragraph,Normal,The visit appears in the Planner’s Returned tab.
+PLN-SRC-0276,paragraph,Normal,The Planner receives a notification.
+PLN-SRC-0277,paragraph,Normal,Return reason and comments are displayed prominently.
+PLN-SRC-0278,paragraph,Normal,The Planner may edit the permitted fields.
+PLN-SRC-0279,paragraph,Normal,The Planner may reassign the Inspector.
+PLN-SRC-0280,paragraph,Normal,The Planner may update the Visit Window.
+PLN-SRC-0281,paragraph,Normal,The Planner may update or add Report Packages.
+PLN-SRC-0282,paragraph,Normal,The Planner may cancel the visit.
+PLN-SRC-0283,paragraph,Normal,The Planner may republish after validation.
+PLN-SRC-0284,paragraph,Normal,Return and resubmission history must be retained.
+PLN-SRC-0285,paragraph,Normal,Cancellation Eligibility
+PLN-SRC-0286,paragraph,Normal,An authorized user may cancel a visit before the configured cancellation cut-off.
+PLN-SRC-0287,paragraph,Normal,"Generally, cancellation is allowed while the visit is:"
+PLN-SRC-0288,paragraph,Normal,Draft
+PLN-SRC-0289,paragraph,Normal,Published and New.
+PLN-SRC-0290,paragraph,Normal,when execution has not started and permission allows.
+PLN-SRC-0291,paragraph,Normal,Cancellation must be blocked after:
+PLN-SRC-0292,paragraph,Normal,Start Journey
+PLN-SRC-0293,paragraph,Normal,Arrival.
+PLN-SRC-0294,paragraph,Normal,Inspection execution start.
+PLN-SRC-0295,paragraph,Normal,Submission.
+PLN-SRC-0296,paragraph,Normal,Cancellation Fields
+PLN-SRC-0297-R01,table_row,3 columns,Field || Required || Expected Value
+PLN-SRC-0297-R02,table_row,3 columns,Cancellation Reason || Yes || Active lookup value
+PLN-SRC-0297-R03,table_row,3 columns,Cancellation Comments || Conditional || Mandatory for Other or configured reasons
+PLN-SRC-0297-R04,table_row,3 columns,Cancelled By || System || User
+PLN-SRC-0297-R05,table_row,3 columns,Cancelled Date || System || Timestamp
+PLN-SRC-0297-R06,table_row,3 columns,Previous Inspector || System || Assigned Inspector at cancellation
+PLN-SRC-0297-R07,table_row,3 columns,Previous Visit Window || System || Window at cancellation
+PLN-SRC-0298,paragraph,Normal,Cancellation Behavior
+PLN-SRC-0299,paragraph,Normal,Status becomes Cancelled.
+PLN-SRC-0300,paragraph,Normal,Visit is removed from the Inspector’s active pool or schedule.
+PLN-SRC-0301,paragraph,Normal,Inspector is notified.
+PLN-SRC-0302,paragraph,Normal,Factory is notified only if factory notification had already been sent and cancellation communication is configured.
+PLN-SRC-0303,paragraph,Normal,Cancelled visits remain visible in history.
+PLN-SRC-0304,paragraph,Normal,Cancelled visits cannot be edited or republished.
+PLN-SRC-0305,paragraph,Normal,A new visit may be created using Duplicate.
+PLN-SRC-0306,paragraph,Normal,Expiry
+PLN-SRC-0307,paragraph,Normal,Expiry Definition
+PLN-SRC-0308,paragraph,Normal,A visit becomes Expired when the Visit Window End date passes and the visit has not progressed
+PLN-SRC-0309,paragraph,Normal,Possible expiry criteria may include:
+PLN-SRC-0310,paragraph,Normal,Inspector did not acknowledge.
+PLN-SRC-0311,paragraph,Normal,Inspector did not define an Execution Date.
+PLN-SRC-0312,paragraph,Normal,Execution did not start.
+PLN-SRC-0313,paragraph,Normal,Visit was not completed.
+PLN-SRC-0314,paragraph,Normal,Expiry Behavior
+PLN-SRC-0315,paragraph,Normal,Status becomes Expired through a scheduled system process.
+PLN-SRC-0316,paragraph,Normal,Inspector and Planner are notified.
+PLN-SRC-0317,paragraph,Normal,Expiry reason is stored.
+PLN-SRC-0318,paragraph,Normal,Expired visit is read-only.
+PLN-SRC-0319,paragraph,Normal,Expired visit may be duplicated into a new Draft.
+PLN-SRC-0320,paragraph,Normal,Expiry does not extend the Visit Window automatically.
+PLN-SRC-0321,paragraph,Normal,An authorized user may extend the Visit Window before expiry.
+PLN-SRC-0322,paragraph,Normal,Visit Details View
+PLN-SRC-0323,paragraph,Normal,The Visit Details page must provide a complete read-only representation of the visit.
+PLN-SRC-0324,paragraph,Normal,Display:
+PLN-SRC-0325,paragraph,Normal,Visit Reference.
+PLN-SRC-0326,paragraph,Normal,Status.
+PLN-SRC-0327,paragraph,Normal,Operational State.
+PLN-SRC-0328,paragraph,Normal,Planning Type.
+PLN-SRC-0329,paragraph,Normal,Visit Type.
+PLN-SRC-0330,paragraph,Normal,Priority.
+PLN-SRC-0331,paragraph,Normal,Assigned Inspector.
+PLN-SRC-0332,paragraph,Normal,Visit Window.
+PLN-SRC-0333,paragraph,Normal,"Execution Date, once selected by the Inspector."
+PLN-SRC-0334,paragraph,Normal,"Bulk Plan Reference, when applicable."
+PLN-SRC-0335,paragraph,Normal,Details Sections
+PLN-SRC-0336-R01,table_row,2 columns,Section || Content
+PLN-SRC-0336-R02,table_row,2 columns,"Factory Information || CR, license, plant, factory name, stage, status, contact information"
+PLN-SRC-0336-R03,table_row,2 columns,"Location || Region, city, coordinates, map, source, change history"
+PLN-SRC-0336-R04,table_row,2 columns,"Visit Information || Visit Type, Visit Mode, priority, window, notes"
+PLN-SRC-0336-R05,table_row,2 columns,"Inspector Assignment || Assigned Inspector, recommendation details, override reason"
+PLN-SRC-0336-R06,table_row,2 columns,"Report Packages || Selected packages, selection source, selected by"
+PLN-SRC-0336-R07,table_row,2 columns,Attachments || Files and metadata
+PLN-SRC-0336-R08,table_row,2 columns,"Return Information || Return reasons, comments, return history"
+PLN-SRC-0336-R09,table_row,2 columns,Cancellation Information || Reason and comments
+PLN-SRC-0336-R10,table_row,2 columns,"Execution Information || Acknowledgment, Execution Date, journey and inspection timestamps"
+PLN-SRC-0336-R11,table_row,2 columns,Audit Log || Full history
+PLN-SRC-0336-R12,table_row,2 columns,"Related Visits || Duplicates, previous visits, active visits"
+PLN-SRC-0336-R13,table_row,2 columns,Bulk Information || Bulk Plan Reference and related visit count
+PLN-SRC-0337,paragraph,Normal,Main Business Rules
+PLN-SRC-0338,paragraph,Normal, Only authorized users may create Planning visits.
+PLN-SRC-0339,paragraph,Normal, Planning Type must be either Single or Bulk.
+PLN-SRC-0340,paragraph,Normal," Single Planning supports search by CR Number, License Number, or Plant Number."
+PLN-SRC-0341,paragraph,Normal, A CR with multiple licenses requires selection of the target License or Plant.
+PLN-SRC-0342,paragraph,Normal, Manual factory entry is allowed only when the factory is not found and the user has permission.
+PLN-SRC-0343,paragraph,Normal, Bulk Planning only uses registered factory records.
+PLN-SRC-0344,paragraph,Normal, Bulk filters must support AND and OR logic.
+PLN-SRC-0345,paragraph,Normal, Bulk results must create separate visits per selected factory.
+PLN-SRC-0346,paragraph,Normal, One invalid Bulk factory must not block valid factories.
+PLN-SRC-0347,paragraph,Normal, Location source must always be captured.
+PLN-SRC-0348,paragraph,Normal, License coordinates must not be overwritten in Senaei by Planning.
+PLN-SRC-0349,paragraph,Normal, The Planner defines the Visit Window.
+PLN-SRC-0350,paragraph,Normal, The Inspector defines the Execution Date.
+PLN-SRC-0351,paragraph,Normal, Execution Date must fall within the Visit Window.
+PLN-SRC-0352,paragraph,Normal, An Inspector must be assigned before publishing.
+PLN-SRC-0353,paragraph,Normal, Inspector recommendation must prioritize same Region and lower assigned workload.
+PLN-SRC-0354,paragraph,Normal, Draft visits do not appear to Inspectors.
+PLN-SRC-0355,paragraph,Normal, Published visits appear in the Inspector’s visit pool.
+PLN-SRC-0356,paragraph,Normal, Returned visits must display return reason and comments.
+PLN-SRC-0357,paragraph,Normal, Returned visits may be corrected and republished.
+PLN-SRC-0358,paragraph,Normal, Cancellation is blocked after the configured execution cut-off.
+PLN-SRC-0359,paragraph,Normal, Expired visits are read-only and may be duplicated.
+PLN-SRC-0360,paragraph,Normal," Published, Cancelled, and Expired visits must not be physically deleted."
+PLN-SRC-0361,paragraph,Normal, All updates must be audited.
+PLN-SRC-0362,paragraph,Normal,Acceptance Criteria
+PLN-SRC-0363,paragraph,Normal,31.1 Planning List
+PLN-SRC-0364,paragraph,Normal,"The user can view Draft, Published, Returned, Cancelled, and Expired visits."
+PLN-SRC-0365,paragraph,Normal,The user only sees records within their authorized scope.
+PLN-SRC-0366,paragraph,Normal,Search and filters return correct records.
+PLN-SRC-0367,paragraph,Normal,Available actions change based on status and permission.
+PLN-SRC-0368,paragraph,Normal,Each Bulk-created visit appears as an individual record.
+PLN-SRC-0369,paragraph,Normal,31.2 Single Planning
+PLN-SRC-0370,paragraph,Normal,"The user can search by CR, License, or Plant Number."
+PLN-SRC-0371,paragraph,Normal,The system retrieves factory data from Senaei.
+PLN-SRC-0372,paragraph,Normal,Multiple licenses under one CR require selection.
+PLN-SRC-0373,paragraph,Normal,The user can manually enter an unregistered factory when authorized.
+PLN-SRC-0374,paragraph,Normal,Manual information is clearly marked as manually entered.
+PLN-SRC-0375,paragraph,Normal,The system records the location source.
+PLN-SRC-0376,paragraph,Normal,31.3 Bulk Planning
+PLN-SRC-0377,paragraph,Normal,"The user can filter by Region, City, Sector, Stage, Activity, Product, Land Provider, and Employee Count."
+PLN-SRC-0378,paragraph,Normal,The user can combine filters using AND or OR.
+PLN-SRC-0379,paragraph,Normal,The system returns matching factories.
+PLN-SRC-0380,paragraph,Normal,The user can select and unselect factories.
+PLN-SRC-0381,paragraph,Normal,The system validates factories separately.
+PLN-SRC-0382,paragraph,Normal,Valid visits can proceed when some factories fail.
+PLN-SRC-0383,paragraph,Normal,Each created visit receives a unique Visit Reference.
+PLN-SRC-0384,paragraph,Normal,31.4 Map and Location
+PLN-SRC-0385,paragraph,Normal,Registered coordinates are displayed on the map.
+PLN-SRC-0386,paragraph,Normal,Missing coordinates can be added by an authorized Planner.
+PLN-SRC-0387,paragraph,Normal,Corrected coordinates preserve the original value.
+PLN-SRC-0388,paragraph,Normal,"Location Source is stored as License, Planner, Inspector, Integration, or configured source."
+PLN-SRC-0389,paragraph,Normal,Planning changes do not directly update Senaei master data.
+PLN-SRC-0390,paragraph,Normal,31.5 Assignment
+PLN-SRC-0391,paragraph,Normal,The system recommends eligible Inspectors.
+PLN-SRC-0392,paragraph,Normal,Recommendation considers same Region and lower workload.
+PLN-SRC-0393,paragraph,Normal,The Planner can override the recommendation when permitted.
+PLN-SRC-0394,paragraph,Normal,An Inspector is mandatory before publishing.
+PLN-SRC-0395,paragraph,Normal,31.6 Visit Window
+PLN-SRC-0396,paragraph,Normal,The Planner can define Visit Window Start and End.
+PLN-SRC-0397,paragraph,Normal,The system validates the date range.
+PLN-SRC-0398,paragraph,Normal,The Inspector later defines the Execution Date.
+PLN-SRC-0399,paragraph,Normal,Execution Date outside the Visit Window is blocked.
+PLN-SRC-0400,paragraph,Normal,Updating a published window is audited and notifies the Inspector.
+PLN-SRC-0401,paragraph,Normal,31.8 Status and Workflow
+PLN-SRC-0402,paragraph,Normal,Draft may be edited and deleted.
+PLN-SRC-0403,paragraph,Normal,Published appears in the Inspector’s pool.
+PLN-SRC-0404,paragraph,Normal,Returned appears in the Planner’s Returned list.
+PLN-SRC-0405,paragraph,Normal,Returned visits can be corrected and republished.
+PLN-SRC-0406,paragraph,Normal,Cancelled visits are read-only.
+PLN-SRC-0407,paragraph,Normal,Expired visits are read-only.
+PLN-SRC-0408,paragraph,Normal,All lifecycle changes are audited.
+PLN-SRC-0409,paragraph,Normal,31.9 Notifications and Audit
+PLN-SRC-0410,paragraph,Normal,The Inspector is notified when a visit is published.
+PLN-SRC-0411,paragraph,Normal,The Planner is notified when a visit is returned.
+PLN-SRC-0412,paragraph,Normal,"Reassignment, cancellation, expiry, and window changes generate notifications."
+PLN-SRC-0413,paragraph,Normal,Audit Log shows who changed what and when.
+PLN-SRC-0414,paragraph,Normal,Historical values remain available after updates.
+PLN-SRC-0415,paragraph,Normal,Dependencies
+PLN-SRC-0416-R01,table_row,2 columns,Dependency || Usage
+PLN-SRC-0416-R02,table_row,2 columns,"Senaei Integration || Retrieves CR, License, Plant, factory, contact, product, activity, stage, and location data."
+PLN-SRC-0416-R03,table_row,2 columns,Factory 360 || Displays complete factory context and provides a Create Visit entry point.
+PLN-SRC-0416-R04,table_row,2 columns,User and Role Management || Validates Planner and Inspector permissions.
+PLN-SRC-0416-R05,table_row,2 columns,"Inspector Profile || Retrieves region, workload, and availability."
+PLN-SRC-0416-R06,table_row,2 columns,Maps || Displays and captures factory coordinates.
+PLN-SRC-0416-R07,table_row,2 columns,"Lookup Management || Provides Visit Type, Visit Mode, priority, return reason, cancellation reason, region, city, and other values."
+PLN-SRC-0416-R08,table_row,2 columns,Compliance Configuration || Provides eligible Report Packages and inspection content.
+PLN-SRC-0416-R09,table_row,2 columns,Notification Engine || Sends Planning notifications.
+PLN-SRC-0416-R10,table_row,2 columns,Audit Service || Stores immutable action history.
+PLN-SRC-0416-R11,table_row,2 columns,Risk Engine || Provides factory risk data for Bulk Planning and recommendation context.
+PLN-SRC-0416-R12,table_row,2 columns,Visit Management || Stores visit records and lifecycle status.
+PLN-SRC-0416-R13,table_row,2 columns,"Execution Module || Receives published visits and manages acknowledgment, preparation, and inspection."
+PLN-SRC-0416-R14,table_row,2 columns,Scheduler || Processes expiry and reminder notifications.
+PLN-SRC-0416-R15,table_row,2 columns,Document Management || Stores planning attachments.
+PLN-SRC-0417-R01,table_row,3 columns,Visit Status || Operational State || Meaning
+PLN-SRC-0417-R02,table_row,3 columns,Published || New || Visit is available in the Inspector’s pool and no action has been completed yet.
+PLN-SRC-0417-R03,table_row,3 columns,"Published || Ready for Execution || Inspector accepted the visit, selected the Execution Date, selected the required Inspection Report if needed, and completed all preparation requirements."
+PLN-SRC-0417-R04,table_row,3 columns,Published || On the Way || Inspector started the journey to the factory.
+PLN-SRC-0417-R05,table_row,3 columns,Published || Arrived || Inspector confirmed arrival at the factory.
+PLN-SRC-0417-R06,table_row,3 columns,Published || Executing Inspection || Inspector started the inspection.
+PLN-SRC-0417-R07,table_row,3 columns,Published || Submitted || Inspector submitted the inspection.
+PLN-SRC-0418,paragraph,Normal,Draft
+PLN-SRC-0419,paragraph,Normal,│
+PLN-SRC-0420,paragraph,Normal,├── Save Changes → Draft
+PLN-SRC-0421,paragraph,Normal,│
+PLN-SRC-0422,paragraph,Normal,├── Delete Draft
+PLN-SRC-0423,paragraph,Normal,│
+PLN-SRC-0424,paragraph,Normal,└── Publish
+PLN-SRC-0425,paragraph,Normal,↓
+PLN-SRC-0426,paragraph,Normal,Published
+PLN-SRC-0427,paragraph,Normal,│
+PLN-SRC-0428,paragraph,Normal,├── Inspector accepts and prepares the visit
+PLN-SRC-0429,paragraph,Normal,│ Status remains Published
+PLN-SRC-0430,paragraph,Normal,│
+PLN-SRC-0431,paragraph,Normal,├── Return to Planner
+PLN-SRC-0432,paragraph,Normal,│ ↓
+PLN-SRC-0433,paragraph,Normal,│ Returned
+PLN-SRC-0434,paragraph,Normal,│ │
+PLN-SRC-0435,paragraph,Normal,│ ├── Correct and Republish → Published
+PLN-SRC-0436,paragraph,Normal,│ └── Cancel → Cancelled
+PLN-SRC-0437,paragraph,Normal,│
+PLN-SRC-0438,paragraph,Normal,├── Cancel before execution → Cancelled
+PLN-SRC-0439,paragraph,Normal,│
+PLN-SRC-0440,paragraph,Normal,└── Visit Window expires → Expired
+PLN-SRC-0441-R01,table_row,4 columns,Field || Required || Expected Value || Description
+PLN-SRC-0441-R02,table_row,4 columns,"Inspection Package / report package || Optional during Planning || One or more active Inspection Packages || The Planner may assign one or more packages. If none are assigned, the Inspector must select the required package(s) during Preparation."
+PLN-SRC-0442,paragraph,Normal,Each package consists of:
+PLN-SRC-0443-R01,table_row,2 columns,Component || Multiplicity
+PLN-SRC-0443-R02,table_row,2 columns,Inspection Form || One or many
+PLN-SRC-0443-R03,table_row,2 columns,"Action Form || Zero, one, or many"
+PLN-SRC-0444,paragraph,Normal,Food Manufacturing Package
+PLN-SRC-0445,paragraph,Normal,Contains:
+PLN-SRC-0446,paragraph,Normal,Inspection Forms
+PLN-SRC-0447,paragraph,Normal,General Factory Inspection
+PLN-SRC-0448,paragraph,Normal,Food Safety Inspection
+PLN-SRC-0449,paragraph,Normal,Storage Inspection
+PLN-SRC-0450,paragraph,Normal,Action Forms
+PLN-SRC-0451,paragraph,Normal,Product Hold Form
+PLN-SRC-0452,paragraph,Normal,Factory Closure Form
+PLN-SRC-0453,paragraph,Normal,"When the Inspector opens the visit, they automatically receive everything included in that package."

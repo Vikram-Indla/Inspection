@@ -1,0 +1,80 @@
+﻿requirement_id,domain,requirement,source,current_baseline,target_implementation,acceptance,priority,status
+PLN-REQ-001,Access,"Resolve Admin, Inspector and default internal business staff classes",Sponsor direction,Legacy multi-role model,Compatibility capability migration,Admin sees dashboard/admin only; Inspector own work; business staff Planning,P0,NOT_STARTED
+PLN-REQ-002,Access,Remove unique ops-role dependency from Planning authorization,Sponsor direction,ops referenced in nav/RLS/actions,Capability-based authorization,Equivalent authorized staff pass; admin/inspector negatives pass,P0,NOT_STARTED
+PLN-REQ-003,Access,Server/RLS/action enforcement for every Planning action,Planning access rule,Mixed page guards and RLS,Single effective-capability contract,Direct server calls by unauthorized actor fail,P0,NOT_STARTED
+PLN-REQ-004,Admin,Implement audited role/capability grant and revoke,Admin requirement,/admin/access read-only,Maker-checker/self-escalation-safe workflow,Authorized admin grants/revokes; full audit; self-escalation blocked,P0,NOT_STARTED
+PLN-REQ-005,Landing,Planning nav opens canonical visit list,Planning entry point,/planning method chooser,List-first landing with Create Visit,Status tabs/list render; legacy routes remain,P0,NOT_STARTED
+PLN-REQ-006,Landing,Create Visit selects Single/Bulk/Immediate preserved,Planning journey + non-regression,Cards exist,Create action/drawer or route-neutral method screen,All methods route correctly,P0,NOT_STARTED
+PLN-REQ-007,Entry,Factory 360 prefilled Single with selected CR/licence/plant,Planning entry point,Immediate handoff exists,Add Single handoff; preserve Immediate,Context IDs retained with no cross-licence leakage,P0,NOT_STARTED
+PLN-REQ-008,Entry,Map/quick card prefilled Single,Planning entry point,Partial/unknown,Stable source-channel handoff,Correct factory target and source channel,P0,NOT_STARTED
+PLN-REQ-009,Entry,Returned notification deep-link,Planning entry point,Notifications exist,Focus return information,Reason/comments visible immediately,P0,NOT_STARTED
+PLN-REQ-010,Entry,Draft notification/shortcut resumes server draft,Planning entry point,Resume unavailable,Persisted draft route,All entered data restored,P0,NOT_STARTED
+PLN-REQ-011,Entry,Duplicate visit creates eligible new Draft,Planning entry point,Partial detail actions,Guarded duplicate service,"New IDs, safe copied fields only",P0,NOT_STARTED
+PLN-REQ-012,List,All/Draft/Published/Returned/Cancelled/Expired tabs,Planning list,Split plan/visit pages,Canonical visit list query,Counts and rows match records,P0,NOT_STARTED
+PLN-REQ-013,List,Full required list columns,Planning columns,Subset,Canonical list projection,Every required field available and exportable,P0,NOT_STARTED
+PLN-REQ-014,List,General search across eight identifiers,Planning search,Subset client search,Server-side indexed search,Each field finds matching visit,P0,NOT_STARTED
+PLN-REQ-015,List,Full filter set and dependent city,Planning filters,Subset,Typed server filters,Combined filters correct,P0,NOT_STARTED
+PLN-REQ-016,List,Reset and session filter preservation,Planning filters,Partial local state,URL/session contract,Return from detail preserves filters,P0,NOT_STARTED
+PLN-REQ-017,List,Export authorized filtered rows,Planning page action,Missing/partial,Server export with same query,Export rows equal visible authorized result set,P0,NOT_STARTED
+PLN-REQ-018,List,Refresh latest data,Planning page action,Page refresh,Explicit refresh/freshness,Latest changes visible without losing filters,P0,NOT_STARTED
+PLN-REQ-019,List,Status/permission-specific row actions,Planning actions,Partial,Canonical action resolver,Only documented valid actions appear and succeed,P0,NOT_STARTED
+PLN-REQ-020,Single,Search CR/licence/plant,Planning single,No plant search,Canonical resolver,Exact search results correct,P0,NOT_STARTED
+PLN-REQ-021,Single,Multiple licences require target selection,Planning single,Factory-row model,CR portfolio selector,Publish blocked until target selected,P0,NOT_STARTED
+PLN-REQ-022,Single,"Visit is licence/plant-level, not CR-only",Planning rule,CR fallback exists,Target key required where applicable,No CR-only visit created,P0,NOT_STARTED
+PLN-REQ-023,Single,Display complete registered factory fields and provenance,Planning fields,Subset,Shared canonical projection,All documented fields/state/source render,P0,NOT_STARTED
+PLN-REQ-024,Single,Controlled contact/location edit rules,Planning fields,Partial pin override,Permission and history model,Master unchanged; visit override audited,P0,NOT_STARTED
+PLN-REQ-025,Manual,Eligibility: permission + visit type + not-found confirmation,Planning manual,Partial toggle,Eligibility engine,All three conditions required,P0,NOT_STARTED
+PLN-REQ-026,Manual,Complete manual field contract,Planning manual,Optional name/region/city gaps,Required/conditional validation,Every documented required rule passes/fails,P0,NOT_STARTED
+PLN-REQ-027,Manual,Manual reason and attachment,Planning manual,Incomplete,Admin lookup and configured evidence,Reason stored; attachment enforced by type,P0,NOT_STARTED
+PLN-REQ-028,Manual,Mark unverified fields and source,Planning manual,Temporary flag partial,Field/source metadata,UI/export/audit clearly mark manual,P0,NOT_STARTED
+PLN-REQ-029,Bulk,At least one criterion unless unrestricted permission,Planning bulk,Match-all allowed,Guarded retrieval,Empty search blocked for normal staff,P0,NOT_STARTED
+PLN-REQ-030,Bulk,All documented criteria fields,Planning bulk,4 fields,Typed criterion registry,Each field independently filters fixture set,P0,NOT_STARTED
+PLN-REQ-031,Bulk,Field-appropriate operators,Planning bulk,is/is-not,equals/contains/gt/lt/between/in,Operator semantics tested,P0,NOT_STARTED
+PLN-REQ-032,Bulk,Nested AND/OR group semantics,Planning bulk,Nested all/any exists,Preserve and extend,Parentheses fixtures evaluate correctly,P0,NOT_STARTED
+PLN-REQ-033,Bulk,Select page/all matching configurable max,Planning bulk,Exists partly,Admin max + confirmation,Selection respects limit and filters,P0,NOT_STARTED
+PLN-REQ-034,Bulk,Persist criteria/selection as Draft,Planning draft,sessionStorage,Server draft/autosave,Close/reopen restores exact selection,P0,NOT_STARTED
+PLN-REQ-035,Bulk,Per-factory eligible/ineligible validation,Planning bulk,Duplicate/missing location partial,Full eligibility ledger,Named reasons for every row,P0,NOT_STARTED
+PLN-REQ-036,Bulk,One invalid row does not block eligible rows,Planning bulk,Potential all-block,Explicit eligible-subset acknowledgement,Eligible subset can proceed,P0,NOT_STARTED
+PLN-REQ-037,Bulk,Atomic commit accepted eligible subset,Planning bulk,Atomic all selected,Partition then atomic commit,No partial accepted-subset commit,P0,NOT_STARTED
+PLN-REQ-038,Bulk,Shared Bulk Plan Ref + unique Visit Refs,Planning bulk,Plan/visit IDs exist,Expose and search,All child rows trace to one plan,P0,NOT_STARTED
+PLN-REQ-039,Bulk,Pre-creation summary counts,Planning bulk,Partial readiness,Seven required metrics,Counts match ledger,P0,NOT_STARTED
+PLN-REQ-040,Config,All common fields,Planning fields,Subset,Shared configuration schema/form,All fields stored/displayed/audited,P0,NOT_STARTED
+PLN-REQ-041,Config,Zero-or-more packages,Planning package,One required,Join table/version snapshots,Zero allowed; multiple retained,P0,NOT_STARTED
+PLN-REQ-042,Config,Inspector package selection when none planned,Planning package,Execution may expect package,Preparation gate,Inspector selects before execution,P0,NOT_STARTED
+PLN-REQ-043,Config,Admin-managed visit type/mode/priority,Planning lookups,Hardcoded/free text,Active versioned lookups,Inactive values unavailable for new records,P0,NOT_STARTED
+PLN-REQ-044,Config,Attachments/notes/notify/internal ref/source channel,Planning fields,Partial,Complete shared model,Persist through lifecycle/detail/export,P0,NOT_STARTED
+PLN-REQ-045,Assignment,Recommendation active/same region/workload/availability,Planning assignment,First available,Deterministic evidence engine,Ordered recommendation reasons traceable,P0,NOT_STARTED
+PLN-REQ-046,Assignment,Display evidence and warnings,Planning assignment,Overlap evidence partial,Full documented display,No false zero/not-evaluated hidden,P0,NOT_STARTED
+PLN-REQ-047,Assignment,Manual override reason,Planning assignment,Pick exists,Configured warning/override,Required reason stored/audited,P0,NOT_STARTED
+PLN-REQ-048,Assignment,Bulk distribution and per-row reassignment,Planning bulk,Manual/auto partial,Distribution engine,Every visit assigned before publish,P0,NOT_STARTED
+PLN-REQ-049,Assignment,Authoritative overlap/concurrency guard,Planning assignment,Pre-RPC gap documented,Transaction-level lock/recheck,Concurrent conflicting publish blocked,P0,NOT_STARTED
+PLN-REQ-050,Location,Map selected factory/factories and missing pins,Planning map,Partial,Shared map/list contract,Pins and missing-location states correct,P0,NOT_STARTED
+PLN-REQ-051,Location,Store original/current/source/actor/time,Planning location,Partial,Location version/history table,History never overwritten,P0,NOT_STARTED
+PLN-REQ-052,Location,Planner correction permission,Planning location,Pin override,Capability guard,Unauthorized correction fails,P0,NOT_STARTED
+PLN-REQ-053,Location,Inspector correction preserves planning/master,Planning/execution,Execution observations exist,Cross-module location lineage,Three values remain comparable,P0,NOT_STARTED
+PLN-REQ-054,Draft,Stable reference and partial save,Planning draft,Plans created at publish in bulk,Persisted plan draft,Incomplete draft survives session,P0,NOT_STARTED
+PLN-REQ-055,Draft,No inspector notification/workload/pool,Planning draft,Needs proof,Draft side-effect guards,No assignment side effects,P0,NOT_STARTED
+PLN-REQ-056,Draft,Missing publish requirements shown,Planning draft,Readiness exists staged,Persisted validation ledger,Exact blockers visible after resume,P0,NOT_STARTED
+PLN-REQ-057,Draft,Discard/soft-delete audit,Planning draft,Ambiguous,Canonical discard contract,No physical loss of audit,P0,NOT_STARTED
+PLN-REQ-058,Publish,All documented preconditions except mandatory package,Planning publish,Package required,Shared validator,Zero-package publish passes; other guards enforced,P0,NOT_STARTED
+PLN-REQ-059,Publish,Duplicate active criteria,Planning publish,Factory+periodic partial,Licence/plant/type/window/status/campaign,Each duplicate rule tested,P0,NOT_STARTED
+PLN-REQ-060,Publish,Published/New + inspector pool + audit/notifications,Planning publish,Exists,Reconcile complete,All side effects transactionally consistent,P0,NOT_STARTED
+PLN-REQ-061,Return,Normalized reason/comments/history,Planning return,Notes prefix,Return cycle records,Multiple cycles preserved,P0,NOT_STARTED
+PLN-REQ-062,Return,Editable allowed fields and republish same IDs,Planning return,Actions partial,State-specific form,IDs unchanged; audit/notifications correct,P0,NOT_STARTED
+PLN-REQ-063,Cancel,Cut-off after journey/arrival/execution/submission,Planning cancel,Pre-start guards partial,Canonical guard service,Every blocking state tested,P0,NOT_STARTED
+PLN-REQ-064,Cancel,Complete cancellation fields/history,Planning cancel,Reason only partial,Normalized cancellation record,Previous inspector/window retained,P0,NOT_STARTED
+PLN-REQ-065,Cancel,Final/read-only/duplicate,Planning cancel,Final guards exist,Full contract,Edit/republish blocked; duplicate works,P0,NOT_STARTED
+PLN-REQ-066,Expiry,Configurable four rule families,Planning expiry,One fixed rule,Versioned rules,Each rule triggers fixture independently,P0,NOT_STARTED
+PLN-REQ-067,Expiry,"Scheduler, reason, notifications, audit",Planning expiry,Cron exists,Generalized evaluator,Idempotent scheduled test passes,P0,NOT_STARTED
+PLN-REQ-068,Expiry,"Read-only, duplicate, no auto-extension",Planning expiry,Partial,Full actions,Correct boundaries,P0,NOT_STARTED
+PLN-REQ-069,Detail,All documented sections,Planning details,Many but incomplete,Complete canonical detail,All fields/history visible,P0,NOT_STARTED
+PLN-REQ-070,Admin,Manage all Planning lookups,Planning dependencies,Scattered/hardcoded,Lookup management,Create/activate/deactivate with audit,P0,NOT_STARTED
+PLN-REQ-071,Admin,Manage workflow/status/transitions/guards,Planning admin,Generic workflow editor,Planning-specific UI over versioned engine,Invalid transition cannot publish,P0,NOT_STARTED
+PLN-REQ-072,Admin,Manage expiry/cut-off/bulk max/assignment rules,Planning admin,Missing,Versioned config,Runtime uses published version,P0,NOT_STARTED
+PLN-REQ-073,Notifications,Publish/return/reassign/cancel/expiry/window events,Planning notifications,Some rows,Complete event catalogue,Recipient and truthful delivery state tested,P0,NOT_STARTED
+PLN-REQ-074,Audit,All changes before/after/actor/server time,Planning audit,Triggers exist,Coverage audit,Every transition/action traceable,P0,NOT_STARTED
+PLN-REQ-075,API,Server-only canonical provider integration,Planning dependencies,Factory tables local,Shared adapters/projection,No browser provider calls,P0,NOT_STARTED
+PLN-REQ-076,API,Source/freshness/unavailable states,Planning dependencies,Partial,Canonical metadata,Failure never zero/empty masquerade,P0,NOT_STARTED
+PLN-REQ-077,Dashboard,Canonical status KPIs and downstream counts,Planning KPI,Multiple surfaces,Shared views/query service,List/dashboard/operations counts reconcile,P0,NOT_STARTED
+PLN-REQ-078,i18n,English/Arabic/RTL/dark/light/responsive,Platform NFR,Partial translations,Complete Planning key inventory,No fallback/overflow; keyboard/focus pass,P0,NOT_STARTED
+PLN-REQ-079,Testing,Kimi full browser journeys on port 3000,User direction,Partial historical tests,Independent browser certification,All journeys evidenced,P0,NOT_STARTED
