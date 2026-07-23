@@ -82,19 +82,36 @@ export function StrategicView({ locale, metrics, group, params, refreshedAt }: {
   const kpis: Kpi[] = [
     {
       key: "compliance",
-      label: copy(locale, "National compliance rate", "معدل الامتثال الوطني"),
+      label: copy(locale, "National compliance rate — approved", "معدل الامتثال الوطني — المعتمدة"),
       value: s.complianceRate == null ? na : `${s.complianceRate}`,
       unit: s.complianceRate == null ? undefined : "%",
-      deltaText: copy(locale, `${s.compliant} of ${s.answeredForCompliance} eligible answers`, `${s.compliant} من ${s.answeredForCompliance} إجابة مؤهلة`),
+      deltaText: copy(locale, `${s.approvedCompliant} of ${s.approvedAnsweredForCompliance} eligible answers · approved inspections only`, `${s.approvedCompliant} من ${s.approvedAnsweredForCompliance} إجابة مؤهلة · التفتيشات المعتمدة فقط`),
       method: method({
-        id: "STR-COMP-RATE", label: copy(locale, "National compliance rate", "معدل الامتثال الوطني"),
-        q: copy(locale, "How compliant are answered inspection items?", "ما مدى امتثال بنود التفتيش المجابة؟"),
+        id: "STR-COMP-RATE", label: copy(locale, "National compliance rate — approved", "معدل الامتثال الوطني — المعتمدة"),
+        q: copy(locale, "How compliant are answered inspection items in approved inspections?", "ما مدى امتثال بنود التفتيش المجابة في التفتيشات المعتمدة؟"),
         value: s.complianceRate == null ? na : `${s.complianceRate}%`,
-        num: copy(locale, `Compliant answers (${s.compliant})`, `الإجابات الممتثلة (${s.compliant})`),
-        den: copy(locale, `Compliant + non-compliant (${s.answeredForCompliance})`, `الممتثل + غير الممتثل (${s.answeredForCompliance})`),
-        excl: copy(locale, "N/A, unknown and incomplete answers", "غير المنطبق وغير المعروف والإجابات غير المكتملة"),
+        num: copy(locale, `Compliant answers in approved inspections (${s.approvedCompliant})`, `الإجابات الممتثلة في التفتيشات المعتمدة (${s.approvedCompliant})`),
+        den: copy(locale, `Compliant + non-compliant in approved inspections (${s.approvedAnsweredForCompliance})`, `الممتثل + غير الممتثل في التفتيشات المعتمدة (${s.approvedAnsweredForCompliance})`),
+        excl: copy(locale, "N/A, unknown and incomplete answers; not-yet-approved work is reported separately as pending", "غير المنطبق وغير المعروف والإجابات غير المكتملة؛ الأعمال غير المعتمدة بعد تُعرض منفصلة كمعلّقة"),
         time: copy(locale, `${params.from} → ${params.to} · Asia/Riyadh`, `${params.from} → ${params.to} · آسيا/الرياض`),
         drill: copy(locale, "Compliance explorer", "مستكشف الامتثال"), drillHref: "/reports",
+      }),
+    },
+    {
+      key: "pending-compliance",
+      label: copy(locale, "Pending compliance rate — not yet approved", "معدل الامتثال المعلّق — غير معتمدة بعد"),
+      value: s.pendingComplianceRate == null ? na : `${s.pendingComplianceRate}`,
+      unit: s.pendingComplianceRate == null ? undefined : "%",
+      deltaText: copy(locale, `${s.pendingCompliant} of ${s.pendingAnsweredForCompliance} eligible answers · submitted / under review / returned`, `${s.pendingCompliant} من ${s.pendingAnsweredForCompliance} إجابة مؤهلة · مقدمة / قيد المراجعة / مُعادة`),
+      method: method({
+        id: "STR-COMP-PENDING", label: copy(locale, "Pending compliance rate", "معدل الامتثال المعلّق"),
+        q: copy(locale, "How compliant is submitted work that is not yet approved?", "ما مدى امتثال الأعمال المقدمة التي لم تُعتمد بعد؟"),
+        value: s.pendingComplianceRate == null ? na : `${s.pendingComplianceRate}%`,
+        num: copy(locale, `Compliant answers in not-yet-approved inspections (${s.pendingCompliant})`, `الإجابات الممتثلة في تفتيشات غير معتمدة بعد (${s.pendingCompliant})`),
+        den: copy(locale, `Compliant + non-compliant in not-yet-approved inspections (${s.pendingAnsweredForCompliance})`, `الممتثل + غير الممتثل في تفتيشات غير معتمدة بعد (${s.pendingAnsweredForCompliance})`),
+        excl: copy(locale, "Pending ≠ official — only the approved rate above is the authoritative figure (same basis as Factory 360)", "المعلّق ≠ الرسمي — المعدل المعتمد أعلاه فقط هو الرقم المعتمد (نفس أساس المصنع 360)"),
+        time: copy(locale, `${params.from} → ${params.to} · Asia/Riyadh`, `${params.from} → ${params.to} · آسيا/الرياض`),
+        drill: copy(locale, "Review & approval queue", "قائمة المراجعة والاعتماد"), drillHref: "/reviews",
       }),
     },
     {
@@ -278,7 +295,7 @@ export function StrategicView({ locale, metrics, group, params, refreshedAt }: {
       </div>
       <div>
         <SummaryRow tone="info" href="#compliance" verify={copy(locale, "Verify records →", "تحقق من السجلات ←")}
-          text={copy(locale, `National compliance rate is ${s.complianceRate == null ? "not computable" : `${s.complianceRate}%`} across ${s.answeredForCompliance} eligible answers.`, `معدل الامتثال الوطني ${s.complianceRate == null ? "غير قابل للحساب" : `${s.complianceRate}%`} عبر ${s.answeredForCompliance} إجابة مؤهلة.`)} />
+          text={copy(locale, `National compliance rate (approved inspections only) is ${s.complianceRate == null ? "not computable" : `${s.complianceRate}%`} across ${s.approvedAnsweredForCompliance} eligible answers; not-yet-approved work stands at ${s.pendingComplianceRate == null ? "not computable" : `${s.pendingComplianceRate}%`} across ${s.pendingAnsweredForCompliance} answers (pending).`, `معدل الامتثال الوطني (التفتيشات المعتمدة فقط) ${s.complianceRate == null ? "غير قابل للحساب" : `${s.complianceRate}%`} عبر ${s.approvedAnsweredForCompliance} إجابة مؤهلة؛ والأعمال غير المعتمدة بعد عند ${s.pendingComplianceRate == null ? "غير قابل للحساب" : `${s.pendingComplianceRate}%`} عبر ${s.pendingAnsweredForCompliance} إجابة (معلّقة).`)} />
         <SummaryRow tone={s.violationDelta > 0 ? "warning" : "compliant"} href="#violations" verify={copy(locale, "Verify records →", "تحقق من السجلات ←")}
           text={copy(locale, `Linked violations show a ${movementDir} (${s.scopedViolations.length} vs ${s.previousViolations}).`, `تُظهر المخالفات المرتبطة ${movementDir} (${s.scopedViolations.length} مقابل ${s.previousViolations}).`)} />
         <SummaryRow tone="compliant" href="#decisions" last verify={copy(locale, "Verify records →", "تحقق من السجلات ←")}

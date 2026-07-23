@@ -15,11 +15,12 @@
 // a rolled-back publish is never presented as success (P03 all-or-nothing).
 import { useActionState, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
-  publishBulkPlan, loadBulkSelection, validateBulkPlan,
+  publishBulkPlan, loadBulkSelection, validateBulkPlan, saveBulkDraft,
   type BulkResult, type ReviewData, type ValidateResult, type Blocker, type BlockerKind,
-  type OverlapEvidence, type SourceState,
+  type OverlapEvidence, type SourceState, type BulkDraft, type EligibilityReason, type LookupOption,
 } from "../actions";
 import EvidenceLedger, { type LedgerFocus, type EvidenceLedgerStrings } from "./EvidenceLedger";
+import DiscardDraftButton from "../../DiscardDraftButton";
 import { IconLock } from "@/app/icons";
 
 const SEL_KEY = "cd021-bulk-selection";
@@ -32,6 +33,12 @@ export type ReviewStrings = {
   // context
   method: string; freshnessPrefix: string; selected: string; retained: string; visits: string;
   assignments: string; manual: string; auto: string; packageLabel: string; visitType: string;
+  /** M7 — zero-many packages: preparation hint, ledger zero-state and count. */
+  packageHint: string; packageNone: string; packageCount: string;
+  /** M7 — lookups-driven config: priority field + honest bulk-unavailable tag. */
+  priorityLabel: string; priorityNone: string; notBulkYet: string;
+  /** M7 — publish-time dropped-rows ledger (accepted-subset commit). */
+  droppedH: string; droppedD: string;
   typePeriodic: string; mode: string; physical: string; window: string; scope: string;
   // config
   configTitle: string; windowStart: string; windowEnd: string; notes: string; notesPlaceholder: string;
@@ -62,6 +69,13 @@ export type ReviewStrings = {
   successTitle: string; successBody: string; successSub: string;
   sPlan: string; sVisits: string; sAssign: string; sNotif: string;
   goVisits: string; openPlan: string;
+  // M6 — eligibility partition + acknowledgement + persisted drafts
+  eligH: string; eligTotal: string; eligEligible: string; eligIneligible: string;
+  eligToCreate: string; eligMissingLoc: string; eligConflicts: string; eligManualOverride: string;
+  reasonDup: string; reasonScope: string; reasonLocation: string; reasonInspector: string;
+  ackRequired: string; ackLabel: string;
+  saveDraft: string; savingDraft: string; draftSaved: string; draftSaveFailed: string;
+  draftBanner: string; draftUnavailable: string; discardDraft: string;
   // CD-024 — Assignment Evidence Ledger + per-row evidence cells
   evTitle: string; evLead: string; evReview: string;
   ecInPool: string; ecOverlaps: string; ecSkills: string; ecAuto: string;
@@ -80,7 +94,7 @@ const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" 
   overlap:       { cls: "critical",    glyph: "◆", fix: "focusRow" },
   coverage:      { cls: "warning",     glyph: "▲", fix: "focusWindow" },
   capacity:      { cls: "critical",    glyph: "▲", fix: "focusWindow" },
-  nopackage:     { cls: "critical",    glyph: "⟳", fix: "none" },
+  nopackage:     { cls: "warning",     glyph: "⟳", fix: "none" },
   packageInvalid:{ cls: "critical",    glyph: "⟳", fix: "review" },
   nopool:        { cls: "critical",    glyph: "●", fix: "none" },
   configMissing: { cls: "warning",     glyph: "▲", fix: "focusWindow" },
@@ -91,18 +105,36 @@ const BLK_META: Record<BlockerKind, { cls: string; glyph: string; fix: "remove" 
   srcDuplicate:  { cls: "unavailable", glyph: "◆", fix: "review" },
 };
 
-export default function ReviewClient({ strings: s }: { strings: ReviewStrings }) {
+export default function ReviewClient({ strings: s, initialDraft, draftUnavailable, locale }: {
+  strings: ReviewStrings;
+  initialDraft?: BulkDraft | null;
+  draftUnavailable?: boolean;
+  locale: "en" | "ar";
+}) {
   const [state, formAction, pending] = useActionState<BulkResult, FormData>(publishBulkPlan, {});
   const [data, setData] = useState<ReviewData | null>(null);
   const [allIds, setAllIds] = useState<string[]>([]);
   const [removedDups, setRemovedDups] = useState(false);
   const [picks, setPicks] = useState<Record<string, string>>({});
-  const [pkgId, setPkgId] = useState("");
+  // M7 — zero-or-more packages; empty = preparation chooses later (warning).
+  const [pkgIds, setPkgIds] = useState<string[]>([]);
   const [windowStart, setWindowStart] = useState("");
   const [windowEnd, setWindowEnd] = useState("");
   const [notes, setNotes] = useState("");
+  // M7 — governed priority ("" = unset) and the lookup-label picker.
+  const [priority, setPriority] = useState("");
+  const lk = useCallback((o: LookupOption) => (locale === "ar" ? (o.label_ar ?? o.label_en) : o.label_en), [locale]);
   const [val, setVal] = useState<ValidateResult | null>(null);
   const [freshness, setFreshness] = useState("");
+  // M6 — persisted-draft working state: the acknowledgement choice and the
+  // draft identity (so repeat saves upsert the same visit_plans row).
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [draftMeta, setDraftMeta] = useState<{ planId: string; planReference: string; version: number } | null>(
+    initialDraft ? { planId: initialDraft.planId, planReference: initialDraft.planReference, version: initialDraft.version } : null
+  );
+  const [savingDraft, setSavingDraft] = useState(false);
+  const [draftSaveError, setDraftSaveError] = useState(false);
+  const [draftSavedMsg, setDraftSavedMsg] = useState<string | null>(null);
   const [, startValidate] = useTransition();
   const validateSeq = useRef(0); // guards against stale preview responses resolving out of order
   // CD-024 — selection-time overlap evidence + focused candidate for the ledger
@@ -118,19 +150,46 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   // correction, whose Fix control unmounts on click (WIRING leg 2/4).
   const [announce, setAnnounce] = useState("");
 
-  // ---- load the staged selection (no persistence exists yet) ----
+  // ---- load the staged working set ----
+  // M6 — a persisted draft (?plan=<id>, loaded server-side) is authoritative:
+  // selection, inspector picks, package, window, notes and the acknowledgement
+  // all hydrate from it. The browser-held sessionStorage selection remains the
+  // fallback path when no draft is referenced (legacy targeting hand-off).
   useEffect(() => {
+    setFreshness(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+    if (initialDraft) {
+      const ids = initialDraft.selection;
+      setAllIds(ids);
+      setPicks(initialDraft.config.picks);
+      if (initialDraft.config.package_version_ids.length) setPkgIds(initialDraft.config.package_version_ids);
+      setWindowStart(initialDraft.config.window_start);
+      setWindowEnd(initialDraft.config.window_end);
+      setNotes(initialDraft.config.notes);
+      setPriority(initialDraft.config.priority);
+      setAcknowledged(initialDraft.acknowledged);
+      if (ids.length) loadBulkSelection(ids).then(setData).catch(() => setData({ factories: [], packages: [], inspectors: [], unavailable: true }));
+      else setData({ factories: [], packages: [], inspectors: [] });
+      return;
+    }
     let stored: string[] = [];
     try { stored = JSON.parse(sessionStorage.getItem(SEL_KEY) ?? "[]"); } catch { stored = []; }
     const clean = Array.isArray(stored) ? stored.map(String) : [];
     setAllIds(clean);
-    setFreshness(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
     if (clean.length) loadBulkSelection(clean).then(setData).catch(() => setData({ factories: [], packages: [], inspectors: [], unavailable: true }));
     else setData({ factories: [], packages: [], inspectors: [] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // default to the first available published/locked package
-  useEffect(() => { if (data?.packages.length && !pkgId) setPkgId(data.packages[0].id); }, [data, pkgId]);
+  // Default to the first available published/locked package — ONCE. A draft
+  // resume or an explicit deselect-all is a deliberate zero-package choice
+  // (M7: preparation chooses later) and must never be overridden.
+  const pkgTouched = useRef(!!initialDraft);
+  useEffect(() => {
+    if (!pkgTouched.current && data?.packages.length && pkgIds.length === 0) {
+      setPkgIds([data.packages[0].id]);
+      pkgTouched.current = true;
+    }
+  }, [data, pkgIds, initialDraft]);
 
   const dupIds = useMemo(() => new Set((data?.factories ?? []).filter(f => f.dup).map(f => f.id)), [data]);
   const nonDupIds = useMemo(() => allIds.filter(id => !dupIds.has(id)), [allIds, dupIds]);
@@ -143,7 +202,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
       const seq = ++validateSeq.current;
       startValidate(() => {
         validateBulkPlan({
-          ids: workingIds, package_version_id: pkgId,
+          ids: workingIds, package_version_ids: pkgIds,
           window_start: windowStart, window_end: windowEnd,
           visit_type: "periodic", picks,
         })
@@ -153,7 +212,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     }, 250);
     return () => clearTimeout(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, workingIds.join(","), pkgId, windowStart, windowEnd, JSON.stringify(picks)]);
+  }, [data, workingIds.join(","), pkgIds.join(","), windowStart, windowEnd, JSON.stringify(picks)]);
 
   // ---- CD-024 selection-time overlap evidence (loadBulkSelection with window) ----
   // Feeds the per-row evidence cells and the Assignment Evidence Ledger from the
@@ -197,6 +256,12 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
 
   const interp = (tpl: string, map: Record<string, string | number>) =>
     tpl.replace(/\{(\w+)\}/g, (_, k) => String(map[k] ?? ""));
+
+  const reasonText = (r: EligibilityReason): string =>
+    r === "duplicate_active_visit" ? s.reasonDup
+      : r === "out_of_scope" ? s.reasonScope
+        : r === "missing_location" ? s.reasonLocation
+          : s.reasonInspector;
 
   // ---- phase resolution ----
   const phase: Phase =
@@ -242,6 +307,11 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   if (phase === "empty") {
     return (
       <div className="ax-surface" style={{ padding: "var(--ax-space-400)", textAlign: "center" }} id="cd-main">
+        {draftUnavailable && (
+          <div className="ax-banner ax-banner--warning" role="alert" style={{ marginBlockEnd: "var(--ax-space-300)" }}>
+            {s.draftUnavailable}
+          </div>
+        )}
         <h3>{s.emptyTitle}</h3>
         <p className="ax-caption">{s.emptyBody}</p>
         <a className="ax-btn ax-btn--prominent" href="/planning/bulk">{s.backToTargeting}</a>
@@ -275,7 +345,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           </div>
         </div>
         <div className="ax-row" style={{ marginBlockStart: "var(--ax-space-250)", gap: "var(--ax-space-150)" }}>
-          <form action={formAction}>{hiddenPublishFields(workingIds, pkgId, windowStart, windowEnd, notes, picks)}
+          <form action={formAction}>{hiddenPublishFields(workingIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
             <button className="ax-btn ax-btn--prominent">{s.tryAgain}</button></form>
           <a className="ax-btn ax-btn--secondary" href="/planning/bulk">{s.backConfig}</a>
         </div>
@@ -283,7 +353,10 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
     );
   }
   if (phase === "success") {
-    const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(val?.retained ?? "")], [s.sAssign, String(val?.retained ?? "")], [s.sNotif, String(val?.retained ?? "")]];
+    // M7 — the published count is the committed eligible subset from the
+    // authoritative result; the preview ledger is only the fallback.
+    const created = state.created ?? val?.ledger?.toCreate ?? val?.retained ?? 0;
+    const cells: [string, string][] = [[s.sPlan, "1"], [s.sVisits, String(created)], [s.sAssign, String(created)], [s.sNotif, String(created)]];
     return (
       <section className="ax-surface ax-panel cd-panelpad cd-result" id="cd-main">
         <div className="ax-row" style={{ gap: "var(--ax-space-200)", alignItems: "flex-start" }}>
@@ -298,6 +371,19 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
                 </div>
               ))}
             </div>
+            {/* M7 — accepted-subset honesty: rows dropped at the authoritative
+                publish-time re-check are NAMED, never silently absent. */}
+            {(state.dropped?.length ?? 0) > 0 && (
+              <div className="ax-banner ax-banner--warning" role="status">
+                <strong>{interp(s.droppedH, { n: state.dropped!.length })}</strong>
+                <p className="ax-caption" style={{ marginBlock: "var(--ax-space-050) 0" }}>{s.droppedD}</p>
+                <ul style={{ marginBlockStart: "var(--ax-space-100)" }}>
+                  {state.dropped!.map(d => (
+                    <li key={d.id}><bdi>{d.name}</bdi> — {d.reasons.map(reasonText).join(" · ")}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <p className="ax-caption">{s.successSub}</p>
           </div>
         </div>
@@ -314,15 +400,54 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
   const v = val;
   const validating = v === null;            // preview not yet resolved — never show a false "ready"
   const blockers = v?.blockers ?? [];
-  const committable = !!v?.committable && !pending;
   const retained = v?.retained ?? nonDupIds.length;
   const manual = v?.manual ?? 0;
   const auto = v?.auto ?? Math.max(0, retained - manual);
   const reasonId = "cd-disabled-reason";
 
+  // ---- M6 eligibility partition + acknowledgement ----
+  // Every selected row is classified server-side (validateBulkPlan rows). Rows
+  // with no blocker-bound ineligibility (e.g. missing official location) still
+  // require the explicit acknowledgement before publish; when acknowledged the
+  // publish submits ONLY the eligible subset, with ineligible rows named.
+  const eligById = new Map((v?.rows ?? []).map(r => [r.id, r]));
+  const eligibleIds = workingIds.filter(id => eligById.get(id)?.eligible === true);
+  const ineligibleIds = workingIds.filter(id => eligById.has(id) && !eligById.get(id)!.eligible);
+  const needsAck = !validating && ineligibleIds.length > 0;
+  // Row-bound blockers (duplicate / overlap) name exactly the rows the
+  // partition excludes; every other blocker kind always blocks publishing.
+  const hardBlockers = blockers.filter(b => b.kind !== "duplicate" && b.kind !== "overlap");
+  const baseReady = !!v?.committable && !needsAck;
+  const ackReady = needsAck && acknowledged && eligibleIds.length > 0 && hardBlockers.length === 0;
+  const committable = (baseReady || ackReady) && !pending;
+  const publishIds = baseReady ? workingIds : eligibleIds;
+
+  // M6 — persist the current working state as a bulk draft (upserts the same
+  // visit_plans row when this session resumed from or already saved a draft).
+  const onSaveDraft = async () => {
+    setSavingDraft(true); setDraftSaveError(false); setDraftSavedMsg(null);
+    try {
+      const res = await saveBulkDraft({
+        planId: draftMeta?.planId,
+        criteriaTree: initialDraft?.criteriaTree ?? undefined,
+        selection: workingIds,
+        config: { picks, package_version_ids: pkgIds, window_start: windowStart, window_end: windowEnd, notes, priority },
+        validation: v ?? undefined,
+        acknowledged,
+      });
+      if (res.error || !res.planId) { setDraftSaveError(true); return; }
+      setDraftMeta({ planId: res.planId, planReference: res.planReference ?? "", version: res.version ?? 0 });
+      setDraftSavedMsg(interp(s.draftSaved, { ref: res.planReference ?? "", n: res.version ?? 0 }));
+    } catch {
+      setDraftSaveError(true);
+    } finally {
+      setSavingDraft(false);
+    }
+  };
+
   // ---- CD-024 evidence derivations ----
   const windowSet = !!windowStart && !!windowEnd && Number.isFinite(Date.parse(windowStart)) && Number.isFinite(Date.parse(windowEnd)) && Date.parse(windowEnd) > Date.parse(windowStart);
-  const packagePublished = !!pkgId && (data?.packages ?? []).some(p => p.id === pkgId);
+  const packagePublished = pkgIds.length > 0 && pkgIds.every(id => (data?.packages ?? []).some(p => p.id === id));
   const overlapSource: SourceState = evidence?.overlapSource ?? "not-evaluated";
   const fmtWin = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? iso : d.toLocaleString([], { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" }); };
   const overlapFor = (inspectorId: string) => (evidence?.overlaps ?? []).find(o => o.inspector_id === inspectorId);
@@ -402,15 +527,64 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           {freshness && <span className="ax-freshness">{s.freshnessPrefix} {freshness}</span>}
         </div>
         <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }}>{s.stagedBanner}</p>
+        {/* M6 — resumed-draft provenance / failed-draft honesty */}
+        {initialDraft && (
+          <p className="ax-caption cd-panelpad" style={{ paddingBlock: "var(--ax-space-100) 0" }} role="status">
+            <span className="ax-lozenge ax-lozenge--info">{interp(s.draftBanner, { ref: initialDraft.planReference })}</span>
+            {/* M8 / PLN-CON-018 — discard the resumed draft (never-published);
+                distinct from cancelling a published visit. */}
+            {" "}
+            <DiscardDraftButton planId={initialDraft.planId} label={s.discardDraft}
+              discardAria={`${s.discardDraft} — ${initialDraft.planReference}`} />
+          </p>
+        )}
+        {draftUnavailable && (
+          <div className="ax-banner ax-banner--warning" role="alert" style={{ margin: "0 var(--ax-space-300)" }}>
+            {s.draftUnavailable}
+          </div>
+        )}
         <dl className="cd-context cd-ctx">
           <div><dt>{s.selected} / {s.retained}</dt><dd className="cd-count">{workingIds.length}{workingIds.length !== retained ? <> <small>→</small> {retained}</> : null}</dd></div>
           <div><dt>{s.visits}</dt><dd className="cd-count">{retained}</dd></div>
           <div><dt>{s.assignments}</dt><dd>{manual} {s.manual} · {auto} {s.auto}</dd></div>
-          <div><dt>{s.visitType}</dt><dd>{s.typePeriodic} · {s.physical}</dd></div>
-          <div><dt>{s.packageLabel}</dt><dd>
-            <select className="ax-select" name="package_version_id" aria-label={s.packageLabel} value={pkgId} onChange={e => setPkgId(e.target.value)}>
-              {data!.packages.map(p => <option key={p.id} value={p.id}>{p.code} · {p.version_label}</option>)}
+          <div><dt>{s.visitType}</dt><dd>
+            {/* M7 — options flow from planning_lookups; publish_bulk_plan still
+                commits periodic-only, so other governed types are listed
+                honestly as not-yet-available instead of failing at publish. */}
+            <select className="ax-select" aria-label={s.visitType} value="periodic" onChange={() => {}}>
+              {(data!.lookups?.visitTypes?.length ? data!.lookups.visitTypes : [{ key: "periodic", label_en: s.typePeriodic, label_ar: null }]).map(o => (
+                <option key={o.key} value={o.key} disabled={o.key !== "periodic"}>
+                  {lk(o)}{o.key !== "periodic" ? ` — ${s.notBulkYet}` : ""}
+                </option>
+              ))}
             </select></dd></div>
+          <div><dt>{s.mode}</dt><dd>
+            <select className="ax-select" aria-label={s.mode} value="physical" onChange={() => {}}>
+              {(data!.lookups?.visitModes?.length ? data!.lookups.visitModes : [{ key: "physical", label_en: s.physical, label_ar: null }]).map(o => (
+                <option key={o.key} value={o.key} disabled={o.key !== "physical"}>
+                  {lk(o)}{o.key !== "physical" ? ` — ${s.notBulkYet}` : ""}
+                </option>
+              ))}
+            </select></dd></div>
+          <div><dt>{s.priorityLabel}</dt><dd>
+            <select className="ax-select" aria-label={s.priorityLabel} value={priority} onChange={e => setPriority(e.target.value)}>
+              <option value="">{s.priorityNone}</option>
+              {(data!.lookups?.priorities ?? []).map(o => <option key={o.key} value={o.key}>{lk(o)}</option>)}
+            </select></dd></div>
+          <div><dt>{s.packageLabel}</dt><dd>
+            <div className="ax-stack" style={{ gap: "var(--ax-space-050)" }} role="group" aria-label={s.packageLabel}>
+              {data!.packages.map(p => (
+                <label key={p.id} className="ax-choice" style={{ display: "flex", alignItems: "center", gap: "var(--ax-space-100)" }}>
+                  <input type="checkbox" value={p.id} checked={pkgIds.includes(p.id)}
+                    onChange={e => setPkgIds(ids => e.target.checked ? [...ids, p.id] : ids.filter(x => x !== p.id))} />
+                  <span>{p.code} · {p.version_label}</span>
+                </label>
+              ))}
+            </div>
+            {pkgIds.length === 0 && (
+              <p className="ax-banner ax-banner--info" role="status" style={{ marginBlockStart: "var(--ax-space-100)" }}>{s.packageHint}</p>
+            )}
+          </dd></div>
           <div><dt>{s.window}</dt><dd className="ax-row" style={{ gap: "var(--ax-space-100)" }}>
             <input ref={windowRef} className="ax-input cd-mono" name="window_start" type="datetime-local" aria-label={s.windowStart} value={windowStart} onChange={e => setWindowStart(e.target.value)} />
             <span aria-hidden="true">→</span>
@@ -456,6 +630,34 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
             <strong>{s.clearAll}</strong>
           </div>
         )}
+        {/* M7 — non-blocking warnings (e.g. zero packages: preparation chooses
+            later). Honest, visible, never gating publish. */}
+        {!validating && (v?.warnings?.length ?? 0) > 0 && (
+          <div className="ax-banner ax-banner--warning" role="status" style={{ marginBlockStart: "var(--ax-space-150)" }}>
+            {v!.warnings.map((w, i) => {
+              const { title, detail } = blockerCopy(w);
+              return <p key={w.kind + i} style={{ margin: 0 }}><strong>{title}</strong>{detail ? <> — {detail}</> : null}</p>;
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* ---- M6 eligibility partition (7 counts from the live preview) ---- */}
+      <section className="ax-surface ax-panel cd-panelpad" aria-label={s.eligH}>
+        <div className="cd-sectionhead"><h3>{s.eligH}</h3></div>
+        {validating || !v?.ledger ? (
+          <p className="ax-caption" role="status">{s.loadingNote}</p>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: "var(--ax-space-200)" }}>
+            <div><span className="ax-caption">{s.eligTotal}</span><div className="cd-count">{v.ledger.total}</div></div>
+            <div><span className="ax-caption">{s.eligEligible}</span><div className="cd-count ax-lozenge--success">{v.ledger.eligible}</div></div>
+            <div><span className="ax-caption">{s.eligIneligible}</span><div className="cd-count">{v.ledger.ineligible}</div></div>
+            <div><span className="ax-caption">{s.eligToCreate}</span><div className="cd-count">{v.ledger.toCreate}</div></div>
+            <div><span className="ax-caption">{s.eligMissingLoc}</span><div className="cd-count">{v.ledger.missingLocation}</div></div>
+            <div><span className="ax-caption">{s.eligConflicts}</span><div className="cd-count">{v.ledger.activeConflicts}</div></div>
+            <div><span className="ax-caption">{s.eligManualOverride}</span><div className="cd-count">{v.ledger.manualOverrideRequired}</div></div>
+          </div>
+        )}
       </section>
 
       {/* ---- targets & proposed visits ---- */}
@@ -479,7 +681,16 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
                 <tr key={f.id} className={`cd-obj ${excluded ? "is-removed" : ""}`} data-code={f.factory_code}
                   ref={el => { rowRefs.current[f.id] = el; }} aria-selected={excluded ? true : undefined}
                   onFocus={() => setFocusedId(f.id)}>
-                  <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div></td>
+                  <td><div className="cd-fname">{f.name}</div><div className="cd-fmeta cd-mono"><bdi>{f.factory_code}</bdi> · CR <bdi>{f.cr_number}</bdi></div>
+                    {/* M6 — per-row ineligibility reasons from the partition */}
+                    {(eligById.get(f.id)?.reasons.length ?? 0) > 0 && (
+                      <div className="ax-row" style={{ gap: "var(--ax-space-050)", flexWrap: "wrap", marginBlockStart: "var(--ax-space-050)" }}>
+                        {eligById.get(f.id)!.reasons.map(r => (
+                          <span key={r} className="ax-lozenge ax-lozenge--warning">{reasonText(r)}</span>
+                        ))}
+                      </div>
+                    )}
+                  </td>
                   <td>{f.city ?? "—"}</td>
                   <td><span className={`ax-lozenge ${RISK_TONE[f.risk_band ?? ""] ?? ""}`}>{f.risk_band === "high" ? s.riskHigh : f.risk_band === "medium" ? s.riskMedium : f.risk_band === "low" ? s.riskLow : "—"}</span></td>
                   <td>{excluded ? <span className="ax-caption">—</span> : <span className="ax-lozenge ax-lozenge--plan">{s.typePeriodic}</span>}</td>
@@ -540,7 +751,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           </div>
           <div className="cd-lgroup">
             <div className="cd-lgroup__head">2 · {s.gRef}</div>
-            <div className="cd-lrow">{mark("ok")}<div className="cd-lrow__body"><div className="cd-lrow__v">{data!.packages.find(p => p.id === pkgId)?.code ?? s.packageLabel} · {data!.packages.find(p => p.id === pkgId)?.version_label ?? ""}</div><div className="cd-lrow__d">{s.rTypeD}</div></div></div>
+            <div className="cd-lrow">{mark(pkgIds.length ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{pkgIds.length ? interp(s.packageCount, { n: pkgIds.length }) + " · " + pkgIds.map(id => data!.packages.find(p => p.id === id)?.code ?? id.slice(0, 8)).join(" · ") : s.packageNone}</div><div className="cd-lrow__d">{pkgIds.length ? s.rTypeD : s.packageHint}</div></div></div>
             <div className="cd-lrow">{mark("ok")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.rType}</div><div className="cd-lrow__d">{s.rTypeD}</div></div></div>
             <div className="cd-lrow">{mark(windowStart && windowEnd ? "ok" : "pending")}<div className="cd-lrow__body"><div className="cd-lrow__v">{s.rWin}</div><div className="cd-lrow__d">{s.rWinD}</div></div></div>
             <div className="cd-lrow">{mark("ok")}<div className="cd-lrow__body"><div className="cd-lrow__v">{interp(s.rMethod, { manual, auto })}</div><div className="cd-lrow__d">{s.rMethodD}</div></div></div>
@@ -562,7 +773,7 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
 
       {/* ---- corrections & publish action ---- */}
       <form action={formAction} className="cd-actionbar" id="cd-publish" aria-label={s.correctH}>
-        {hiddenPublishFields(workingIds, pkgId, windowStart, windowEnd, notes, picks)}
+        {hiddenPublishFields(publishIds, pkgIds, windowStart, windowEnd, notes, picks, priority)}
         <div className="cd-sectionhead" style={{ margin: 0 }}><h3>{s.correctH}</h3></div>
         <div className="ax-row" style={{ gap: "var(--ax-space-150)" }}>
           <a className="ax-link" href="/planning/bulk">{s.backConfig}</a>
@@ -573,16 +784,34 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
           {/* value submitted via the mirrored hidden field so notes survive the source failure form too */}
           <textarea id="cd-notes" className="ax-textarea" rows={2} placeholder={s.notesPlaceholder} value={notes} onChange={e => setNotes(e.target.value)} />
         </div>
+        {/* M6 — eligibility acknowledgement: with ineligible rows present the
+            publish stays disabled until the reviewer explicitly proceeds with
+            the eligible subset only; the choice persists into the draft. */}
+        {needsAck && !validating && (
+          <div className="ax-banner ax-banner--warning" role="alert">
+            <p style={{ marginBlockStart: 0 }}>{interp(s.ackRequired, { n: ineligibleIds.length })}</p>
+            <label className="ax-row" style={{ gap: "var(--ax-space-100)", alignItems: "center" }}>
+              <input type="checkbox" checked={acknowledged} onChange={e => setAcknowledged(e.target.checked)} />
+              <span>{interp(s.ackLabel, { n: eligibleIds.length })}</span>
+            </label>
+          </div>
+        )}
         <p className="ax-caption">{s.willRecheck}</p>
         <div className="cd-actionbar__row">
           <div className="cd-grow">
             {committable
               ? <div className="ax-caption">{s.allClear}</div>
-              : <div className="cd-disabledreason" id={reasonId}>{s.disabledPrefix}{validating ? s.checking : interp(s.blockersN, { n: blockers.length })}</div>}
+              : <div className="cd-disabledreason" id={reasonId}>{s.disabledPrefix}{validating ? s.checking : needsAck && !acknowledged ? interp(s.ackRequired, { n: ineligibleIds.length }) : interp(s.blockersN, { n: blockers.length })}</div>}
+            {draftSavedMsg && <div className="ax-caption" role="status">{draftSavedMsg}</div>}
+            {draftSaveError && <div className="cd-disabledreason" role="alert">{s.draftSaveFailed}</div>}
           </div>
+          <button type="button" className="ax-btn ax-btn--secondary" disabled={savingDraft || workingIds.length === 0}
+            onClick={() => { void onSaveDraft(); }}>
+            {savingDraft ? s.savingDraft : s.saveDraft}
+          </button>
           <button className="ax-btn ax-btn--prominent cd-publishbtn" disabled={!committable}
             aria-describedby={committable ? undefined : reasonId}>
-            {committable ? interp(s.publishReady, { n: retained }) : validating ? s.checking : interp(s.publishBlocked, { n: blockers.length })}
+            {committable ? interp(s.publishReady, { n: baseReady ? retained : eligibleIds.length }) : validating ? s.checking : interp(s.publishBlocked, { n: needsAck && !acknowledged ? ineligibleIds.length : blockers.length })}
           </button>
         </div>
       </form>
@@ -592,13 +821,16 @@ export default function ReviewClient({ strings: s }: { strings: ReviewStrings })
 
 // Hidden fields carrying the retained working set into the publish server action.
 // Only non-excluded factory ids are submitted; the server + RPC re-validate.
-function hiddenPublishFields(ids: string[], pkgId: string, ws: string, we: string, notes: string, picks: Record<string, string>) {
+// M7 — one package_version_id field per checked package (zero fields = zero
+// packages, an allowed preparation-time choice).
+function hiddenPublishFields(ids: string[], pkgIds: string[], ws: string, we: string, notes: string, picks: Record<string, string>, priority: string) {
   return (
     <>
-      <input type="hidden" name="package_version_id" value={pkgId} />
+      {pkgIds.map(id => <input key={`p-${id}`} type="hidden" name="package_version_id" value={id} />)}
       <input type="hidden" name="window_start" value={ws} />
       <input type="hidden" name="window_end" value={we} />
       <input type="hidden" name="visit_type" value="periodic" />
+      <input type="hidden" name="priority" value={priority} />
       <input type="hidden" name="notes" value={notes} />
       {ids.map(id => <input key={id} type="hidden" name="factory_id" value={id} />)}
       {ids.map(id => (picks[id] ? <input key={`i-${id}`} type="hidden" name={`inspector_${id}`} value={picks[id]} /> : null))}

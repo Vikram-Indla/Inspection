@@ -86,3 +86,36 @@ export function computeSlaFlags<T extends SlaVisitBase>(visits: T[], sla: SlaCon
   const rank = (f: SlaFlag<T>) => (f.kind === "reminder" ? 2 : f.escalation === "L2" ? 0 : 1);
   return flags.sort((a, b) => rank(a) - rank(b) || a.deadlineMs - b.deadlineMs);
 }
+
+// ---------- TASK-EXECUTION-MODULE-001 · Phase 6 — resubmission SLA (§22, D-022) ----------
+export type ResubmissionSource = {
+  inspection_id: string;
+  visit_id: string;
+  factory_name: string | null;
+  /** Latest decided Return review timestamp (the SLA clock start). */
+  returned_at: string;
+};
+export type ResubmissionFlag = ResubmissionSource & { deadlineMs: number; overdue: boolean };
+
+/**
+ * Resubmission deadline for RETURNED inspections: returned_at +
+ * engine_settings.sla.resubmission_business_days working days. Same math
+ * pattern as the review queue SLA (reviews/page.tsx): the working-day set
+ * comes from the configured calendar and an unparsable calendar degrades to
+ * calendar days — the threshold itself is never invented. Display-only: no
+ * escalation writes, consistent with the review SLA.
+ */
+export function computeResubmissionFlags(rows: ResubmissionSource[], sla: SlaConf, nowMs: number): ResubmissionFlag[] {
+  const days = sla.resubmission_business_days;
+  if (typeof days !== "number") return []; // callers surface "SLA unavailable" honestly
+  const wd = workingDays(sla.calendar?.days) ?? new Set([0, 1, 2, 3, 4, 5, 6]);
+  const flags: ResubmissionFlag[] = [];
+  for (const r of rows) {
+    const base = Date.parse(r.returned_at);
+    if (Number.isNaN(base)) continue;
+    const deadlineMs = addBusinessDays(base, days, wd);
+    flags.push({ ...r, deadlineMs, overdue: nowMs > deadlineMs });
+  }
+  // Overdue first, then the nearest deadline — same breach-first ordering as computeSlaFlags.
+  return flags.sort((a, b) => Number(b.overdue) - Number(a.overdue) || a.deadlineMs - b.deadlineMs);
+}

@@ -3,7 +3,12 @@
 // sees their own RLS-scoped rows (notif_own, 0002). Polls unread count, lists
 // the latest rows, records read receipts (read_at; notif_update_recipient 0015).
 // SB19 — strings built server-side with t() and passed as props.
+// M10 / PLN-REQ-009 — planning event rows deep-link into the app: returned
+// visits land on the visit detail focused on the return block (?focus=return);
+// cancelled/expired/republished/rescheduled/assignment rows land on the visit
+// detail. Opening a row also records its read receipt.
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { formatDateTime } from "@/lib/dates";
@@ -17,10 +22,26 @@ export type BellStrings = {
   markRead: string;
   unreadBadge: string;      // sr-only tag on unread rows
   loadError: string;
+  view: string;             // deep-link into the subject view (M10 / PLN-REQ-009)
   events: Record<string, string>;          // event_key → label
   channels: Record<string, string>;        // channel → label
   notConfigured: string;    // delivery adapter pending (honest state)
 };
+
+// M10 / PLN-REQ-009 — canonical entry points for planning events. Every
+// planning notification carries payload.visit_id (emission sites:
+// visits/[id]/actions.ts, expire_lapsed_visits 0025/0030). Returned visits
+// deep-link to the detail FOCUSED on the return block; the other planning
+// events land on the detail itself. Non-planning events have no link.
+export function notificationHref(eventKey: string, payload: Record<string, unknown> | null): string | null {
+  const visitId = typeof payload?.visit_id === "string" ? payload.visit_id : null;
+  if (!visitId) return null;
+  if (eventKey === "visit_returned") return `/visits/${visitId}?focus=return`;
+  if (["visit_cancelled", "visit_expired", "visit_republished", "visit_rescheduled", "assignment"].includes(eventKey)) {
+    return `/visits/${visitId}`;
+  }
+  return null;
+}
 
 type Row = {
   id: string; event_key: string; payload: Record<string, unknown> | null;
@@ -149,7 +170,9 @@ export default function NotificationBell({ strings, locale }: { strings: BellStr
           {err && <p className="ax-caption" role="alert">{err}</p>}
           {rows.length === 0 && <p className="ax-caption">{strings.empty}</p>}
           <div style={{ maxBlockSize: 320, overflowY: "auto", display: "flex", flexDirection: "column", gap: "var(--ax-space-100)" }}>
-            {rows.map(r => (
+            {rows.map(r => {
+              const href = notificationHref(r.event_key, r.payload);
+              return (
               <div key={r.id} className="ax-surface" style={{ padding: "var(--ax-space-150)", borderInlineStart: isUnread(r) ? "3px solid var(--ax-color-primary)" : "3px solid transparent" }}>
                 <div className="ax-row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
                   <div>
@@ -163,11 +186,18 @@ export default function NotificationBell({ strings, locale }: { strings: BellStr
                       {" · "}{strings.channels[r.channel] ?? r.channel}
                       {r.delivery_state === "not_configured" && <> · <span className="ax-lozenge ax-lozenge--warning">{strings.notConfigured}</span></>}
                     </p>
+                    {href && (
+                      <Link className="ax-link" href={href} prefetch={false}
+                        onClick={() => { if (isUnread(r)) void markRead(r); }}>
+                        {strings.view} →
+                      </Link>
+                    )}
                   </div>
                   {isUnread(r) && <button className="ax-btn ax-btn--subtle" onClick={() => markRead(r)}>{strings.markRead}</button>}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -66,11 +66,17 @@ test.describe("TASK-MVP3-RETROFIT-REGRESSION-001 inherited persona containment",
     const page = await context.newPage();
     await page.goto("/locale?set=en");
     await page.goto("/field");
-    await expect(page.getByRole("heading", { name: "Field dashboard" })).toBeVisible();
+    await page.waitForURL(/\/field/);
+    // Channel-gate reconciliation (M11, precedent cd-020 / bc99e163): the
+    // layout channel gate (3bc1acb0) redirects field-only personas to /field
+    // BEFORE any admin query fires — the redirect IS the denial, strictly
+    // stronger than the old RLS-scoped-shell premise. The registry contents
+    // must never reach the inspector's page. (The original "Field dashboard"
+    // heading assertion was dropped: the consolidation merges renamed the
+    // field surface to "My assignments" — execution-line naming, not the
+    // security property this test guards.)
     await page.goto("/admin/integrations");
-    await expect(page.getByRole("heading", { name: "System Connections" })).toBeVisible();
-    await expect(page.locator("tbody tr")).toHaveCount(1);
-    await expect(page.locator("tbody")).toContainText("No endpoints are registered");
+    await expect(page).toHaveURL(/\/field/);
     await expect(page.locator("body")).not.toContainText("EBDA data exchange");
     await context.close();
   });

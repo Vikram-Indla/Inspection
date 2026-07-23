@@ -16,6 +16,8 @@ export type OutboxOp =
   // (cancellation — no inspections row exists yet); inspection_id then only
   // namespaces the storage path. Ops without visit_id replay exactly as before.
   | { kind: "evidence"; inspection_id: string | null; linked_type: string; linked_id: string; evidence_type?: "photo" | "video" | "document" | "comment"; evidence_note?: string; name: string; mime: string; data_b64: string; captured_at: string; sha256: string; queued_at: string; visit_id?: string }
+  // Phase 6 — version_number is LEGACY-fallback payload only (used when the
+  // server lacks submit_inspection); the RPC assigns the number server-side.
   | { kind: "submit"; inspection_id: string; version_number: number; snapshot: unknown; idempotency_key: string; acknowledgement: unknown; queued_at: string }
   // Additive (slice F1 · M04-095..114): factory-field verification check.
   // Upsert on (inspection_id, field_key) → idempotent replay; never touches factories (FND-007/M04-112).
@@ -23,7 +25,15 @@ export type OutboxOp =
   // TASK-IPAD-M04-OVERRIDE-APPROVAL-WORKFLOW-003 — the request is replayed
   // only after its visit-linked photo evidence, if required, has synced. The
   // server derives all GPS/time facts from checkin_event_id, not this payload.
-  | { kind: "geo_override_request"; request_id: string; visit_id: string; journey_id: string; checkin_event_id: string; reason_key: string; explanation: string; safety_security_exception: boolean; queued_at: string };
+  | { kind: "geo_override_request"; request_id: string; visit_id: string; journey_id: string; checkin_event_id: string; reason_key: string; explanation: string; safety_security_exception: boolean; queued_at: string }
+  // Phase 5 (§15, D-017) — per-visit item lifecycle. Upsert on
+  // (inspection_id, item_id) with the DESIRED final row (reverted_at set =
+  // restored before submit), so replays and re-deselects stay idempotent.
+  | { kind: "item_state"; inspection_id: string; item_id: string; state: "added" | "deselected"; reason: string | null; reverted_at: string | null; queued_at: string }
+  // Phase 5 (§18, D-018) — invalidate (never delete) the ACTIVE violation
+  // candidate when its triggering response flipped back to Compliant. Replays
+  // after the response op it follows (FIFO); a missing candidate is a no-op.
+  | { kind: "violation_invalidate"; inspection_id: string; violation_id: string | null; violation_code_id: string | null; reason: string; queued_at: string };
 export type Conflict = { key: string; local: unknown; server: unknown; item_id: string; detected_at: string };
 export type CachedRouteEstimate = {
   etaMinutes: number;
@@ -86,8 +96,13 @@ export async function sha256b64(b64: string): Promise<string> {
   return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+// Phase 6 (§21) — authoritative submit result reported back to the workspace
+// so local state reflects the SERVER-assigned version number (D-020), never
+// the legacy client-side estimate.
+export type SubmitSynced = { submission_version_id: string; version_number: number; reused: boolean };
+
 /** Idempotent replay: every op safe to retry; conflicts become explicit records (STM-SYNC-002). */
-export async function processOutbox(onState: (s: SyncState, detail?: string) => void): Promise<void> {
+export async function processOutbox(onState: (s: SyncState, detail?: string) => void, onSubmitSynced?: (inspectionId: string, info: SubmitSynced) => void): Promise<void> {
   if (!navigator.onLine) { onState("offline"); return; }
   const sb = supabaseBrowser();
   const keys = await local.keys(); const ops = await local.peekAll();
@@ -141,13 +156,38 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
         const { error } = await sb.from("evidence").upsert(row, { onConflict: "storage_path", ignoreDuplicates: true } as never);
         if (error && !String(error.message).includes("duplicate")) throw error;
       } else if (op.kind === "submit") {
-        const { error } = await sb.from("submission_versions").insert({
-          inspection_id: op.inspection_id, version_number: op.version_number, snapshot: op.snapshot,
-          idempotency_key: op.idempotency_key, acknowledgement: op.acknowledgement,
-          submitted_by: (await getVerifiedUser(sb)).data.user?.id,
+        // Phase 6 (§21/§22) — the atomic submission RPC is the authority:
+        // server-side version numbering under a row lock, returned-scope
+        // byte-equality, mandatory-evidence-sync precondition, CAS status
+        // transition, journey completion and audit in ONE transaction.
+        // EXE-* guard failures (e.g. EXE-SUBMIT-SCOPE-VIOLATION) surface as an
+        // explicit failed-sync state — they are NEVER routed through the
+        // legacy duplicate-tolerance, which could mask a real refusal as
+        // success.
+        const { data: rpcResult, error: rpcError } = await sb.rpc("submit_inspection", {
+          p_inspection: op.inspection_id,
+          p_snapshot: op.snapshot,
+          p_idempotency_key: op.idempotency_key,
+          p_acknowledgement: op.acknowledgement,
         });
-        if (error && !String(error.message).includes("duplicate")) throw error;  // 409 duplicate = already submitted (ERR-SUB-002)
-        await sb.from("inspections").update({ status: "submitted" }).eq("id", op.inspection_id);
+        if (rpcError) {
+          const missing =
+            rpcError.code === "42883" || rpcError.code === "PGRST202" ||
+            String(rpcError.message).includes("Could not find the function");
+          if (!missing) throw rpcError; // EXE-* token — explicit failure, never masked
+          // LEGACY FALLBACK (pre-20260721160000 servers): the original direct
+          // insert with its duplicate-tolerance. The unguarded status update
+          // and client-side version_number stay as-is on this path only.
+          const { error } = await sb.from("submission_versions").insert({
+            inspection_id: op.inspection_id, version_number: op.version_number, snapshot: op.snapshot,
+            idempotency_key: op.idempotency_key, acknowledgement: op.acknowledgement,
+            submitted_by: (await getVerifiedUser(sb)).data.user?.id,
+          });
+          if (error && !String(error.message).includes("duplicate")) throw error;  // 409 duplicate = already submitted (ERR-SUB-002)
+          await sb.from("inspections").update({ status: "submitted" }).eq("id", op.inspection_id);
+        } else if (rpcResult) {
+          onSubmitSynced?.(op.inspection_id, rpcResult as SubmitSynced);
+        }
       } else if (op.kind === "factory_check") {
         // M04-103/104/105/113 — observed value + Verified/Updated status persisted
         // separately from Senaei data; audit trigger logs before/after server-side.
@@ -174,6 +214,48 @@ export async function processOutbox(onState: (s: SyncState, detail?: string) => 
           p_safety_security_exception: op.safety_security_exception,
         });
         if (error) throw error;
+      } else if (op.kind === "item_state") {
+        // §15 / D-017 — upsert on (inspection_id, item_id) carrying the desired
+        // final row, so FIFO replays of add → deselect → restore converge.
+        // Pre-migration the table is missing: the op stays queued (honest).
+        const { error } = await sb.from("inspection_item_states").upsert({
+          inspection_id: op.inspection_id, item_id: op.item_id,
+          state: op.state, reason: op.reason, reverted_at: op.reverted_at,
+        }, { onConflict: "inspection_id,item_id" });
+        if (error) throw error;
+      } else if (op.kind === "violation_invalidate") {
+        // §18 / D-018 — invalidate, never delete. Targets the row by id when
+        // known, else the ACTIVE candidate for (inspection, code). Zero
+        // affected rows is a legitimate no-op (the candidate never synced).
+        // The guard trigger (20260721150000) narrows the update to the three
+        // invalidation columns; the audit trigger records before/after.
+        const { data: { user } } = await getVerifiedUser(sb);
+        const stamp = { invalidated_at: new Date().toISOString(), invalidated_by: user?.id ?? null, invalidate_reason: op.reason };
+        let vid = op.violation_id;
+        if (vid) {
+          const { error } = await sb.from("violations").update(stamp).eq("id", vid);
+          if (error) throw error;
+        } else if (op.violation_code_id) {
+          const { error } = await sb.from("violations").update(stamp)
+            .eq("inspection_id", op.inspection_id).eq("violation_code_id", op.violation_code_id)
+            .is("invalidated_at", null);
+          if (error) throw error;
+          const { data: justInvalidated } = await sb.from("violations").select("id")
+            .eq("inspection_id", op.inspection_id).eq("violation_code_id", op.violation_code_id)
+            .not("invalidated_at", "is", null).limit(1).maybeSingle();
+          vid = justInvalidated?.id ?? null;
+        }
+        // Dependent trigger-generated action forms are re-evaluated here
+        // (D-018): open forms LINKED to the invalidated candidate are closed
+        // with status 'cancelled' (action_forms.status is free text — no enum
+        // forbids it). Package-included forms (violation_id null) are NEVER
+        // touched. A missing column (pre-migration) surfaces as an error and
+        // the op stays queued — honest, no silent skip.
+        if (vid) {
+          const { error } = await sb.from("action_forms").update({ status: "cancelled" })
+            .eq("violation_id", vid).eq("status", "open");
+          if (error) throw error;
+        }
       }
       await local.remove(key);
     } catch (e) {

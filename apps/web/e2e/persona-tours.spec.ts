@@ -49,10 +49,13 @@ test.describe("inspector tour (iPad channel)", () => {
   });
 
   test("cross-channel visit renders an RLS-scoped shell, not a data leak", async ({ page }) => {
-    // Design: "Access is enforced by Row Level Security, not UI" — the admin
-    // shell renders but every query is scoped by the inspector's JWT.
+    // Channel-gate reconciliation (M11, same precedent as cd-020 / bc99e163):
+    // the app layout channel gate (3bc1acb0) redirects field-only personas to
+    // their own channel BEFORE any admin query fires — the redirect IS the
+    // denial, strictly stronger than the original RLS-scoped-shell premise.
+    // RLS still guards the data plane; the shell now gates the channel plane.
     await page.goto("/admin");
-    await expect(page).toHaveURL(/\/admin/); // no crash, no login bounce
+    await expect(page).toHaveURL(/\/field/); // channel-gate denial redirect
     await expect(page.locator("nav").first()).toBeVisible();
   });
 });

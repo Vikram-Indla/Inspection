@@ -138,6 +138,15 @@ export async function markSessionVerified(_: RoomActionResult, fd: FormData): Pr
 
 // M05-019/020 — begin remote inspection: same workspace + submission flow as
 // physical. Creates the in_progress inspection against the frozen package.
+// TASK-EXECUTION-MODULE-001 · Phase 7 (plan §23/§29, D-023): a confirmed Ready
+// preparation is mandatory before the session can begin, the inspections row
+// created by confirm_visit_ready (started_at NULL, package frozen — D-008) is
+// reused select-first (D-011), and the visit enters executing through the
+// shared set_operational_state virtual leg (20260721170000) instead of a
+// direct write. Tolerant probe: while the readiness schema (20260721120000)
+// is unapplied the preparation read fails and the legacy behavior is
+// preserved unchanged.
+const READY_REQUIRED = "Preparation is required before the session can start — confirm the visit ready for execution first.";
 export async function beginRemote(_: RoomActionResult, fd: FormData): Promise<RoomActionResult> {
   const sb = await supabaseServer();
   const { data: { user } } = await getVerifiedUser(sb);
@@ -145,23 +154,60 @@ export async function beginRemote(_: RoomActionResult, fd: FormData): Promise<Ro
   const session_id = String(fd.get("session_id") ?? "");
   const clientRev = String(fd.get("rev") ?? "");
   const { data: s, error: sErr } = await sb.from("virtual_sessions")
-    .select("id, state, timeline, visit_id, visits(package_version_id, inspections(id))").eq("id", session_id).single();
+    .select("id, state, timeline, visit_id, visits(package_version_id, inspections(id, started_at))").eq("id", session_id).single();
   if (sErr) { console.error("[virtual begin session read]", sErr); return { error: SYSTEM_ERROR }; }
   if (clientRev && clientRev !== sessionRev(s.state, s.timeline))
     return { error: STALE, stale: true };
   if (s.state !== "verified" && s.state !== "in_progress")
     return { error: "Verification gates execution — verify the factory representative first (STM-VIR-002, no bypass)." };
+  // Phase 7 readiness gate (§23 — confirmed package/readiness): tolerant probe
+  // like Phase 4B. Schema unavailable → legacy flow unchanged.
+  const { data: prep, error: prepError } = await sb.from("visit_preparations")
+    .select("confirmed_ready_at, package_version_id").eq("visit_id", s.visit_id).maybeSingle();
+  const readinessAvailable = !prepError;
+  if (readinessAvailable && !prep?.confirmed_ready_at) return { error: READY_REQUIRED };
   const v = s.visits as unknown as { package_version_id: string; inspections: unknown };
   // visits -> inspections is a TO-ONE embed (unique visit_id): object|null.
   const insEmbed = v.inspections;
-  let inspectionId = (Array.isArray(insEmbed) ? insEmbed[0] : insEmbed as { id: string } | null)?.id as string | undefined;
-  if (!inspectionId) {
+  const insRow = (Array.isArray(insEmbed) ? insEmbed[0] : insEmbed) as { id: string; started_at: string | null } | null;
+  let inspectionId = insRow?.id as string | undefined;
+  if (inspectionId) {
+    // D-011 — reuse the Ready-created inspections row: the session begin owns
+    // started_at and sets it only while still null (never clobbered).
+    if (!insRow?.started_at) {
+      const { error: stErr } = await sb.from("inspections")
+        .update({ started_at: new Date().toISOString() })
+        .eq("id", inspectionId).is("started_at", null);
+      if (stErr) console.error("[virtual begin started_at]", stErr);
+    }
+  } else {
+    // Legacy fallback — no Ready-created row (schema unavailable or legacy
+    // visit): keep the previous direct insert, freezing the preparation's
+    // resolved package when the readiness schema is available.
     const { data: ins, error: iErr } = await sb.from("inspections").insert({
-      visit_id: s.visit_id, status: "in_progress", package_version_id: v.package_version_id,
+      visit_id: s.visit_id, status: "in_progress",
+      package_version_id: (readinessAvailable ? prep?.package_version_id : null) ?? v.package_version_id,
       started_at: new Date().toISOString(),
     }).select("id").single();
     if (iErr) { console.error("[virtual begin inspection]", iErr); return { error: SYSTEM_ERROR }; }
     inspectionId = ins.id;
+  }
+  // Phase 7 (§29) — the visit enters executing through the ONE shared
+  // transition authority: the set_operational_state virtual prepared→executing
+  // leg (migration 20260721170000, guarded by execution_mode + confirmed
+  // preparation). Virtual skips on_the_way/arrived by design (§23). Legacy
+  // fallback: RPC missing (42883, migration unapplied) or the room begun by a
+  // non-assigned planner/ops actor (RBAC-009) → guarded CAS write; a failure
+  // there is logged, never masks the begin.
+  if (readinessAvailable) {
+    const { error: opErr } = await sb.rpc("set_operational_state", { p_visit: s.visit_id, p_next: "executing" });
+    if (opErr) {
+      if (String(opErr.message ?? "").includes("EXE-READY-REQUIRED")) return { error: READY_REQUIRED };
+      const { error: casErr } = await sb.from("visits")
+        .update({ operational_state: "executing" })
+        .eq("id", s.visit_id).eq("operational_state", "prepared");
+      if (casErr) console.error("[virtual begin operational state]", casErr);
+    }
   }
   // Advance verified → in_progress and record the begin event on EVERY entry
   // path (not only when the inspection is freshly created — WA-02). The

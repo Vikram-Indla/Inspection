@@ -10,6 +10,7 @@ import {
   type PlanningTab, type PlanningListParams, type PlanningVisitRow,
 } from "@/lib/planning/visit-list";
 import CreateVisitSection, { type CreateVisitMethod } from "./CreateVisitSection";
+import DiscardDraftButton from "./DiscardDraftButton";
 import ExportButton from "./ExportButton";
 import RefreshButton from "./RefreshButton";
 
@@ -82,7 +83,7 @@ function hrefWith(sp: Sp, overrides: Record<string, string>): string {
 
 type DraftRow = {
   id: string; method: string; status: string; plan_reference: string | null;
-  draft_version: number; created_at: string;
+  draft_version: number; created_at: string; created_by: string;
   profiles: { full_name: string } | null;
 };
 
@@ -96,7 +97,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
   const sb = await supabaseServer();
-  await getVerifiedUser(sb); // identity verified once; the RPC class check below is the access decision
+  const { data: { user } } = await getVerifiedUser(sb); // identity verified once; the RPC class check below is the access decision
 
   const access = await getPlanningAccess(sb, ["planning.view", "planning.create", "planning.export"]);
   const title = t("plan.home.title", "Visit planning");
@@ -134,7 +135,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
       : sb.from("factories").select("city").not("city", "is", null).limit(1000),
     sb.from("profiles").select("user_id, full_name, user_roles!user_roles_user_id_fkey!inner(role_key)").eq("user_roles.role_key", "inspector").order("full_name"),
     sb.from("package_versions").select("id, version_label, packages(title)").order("published_at", { ascending: false, nullsFirst: false }).limit(500),
-    sb.from("visit_plans").select("id, method, status, plan_reference, draft_version, created_at, profiles(full_name)")
+    sb.from("visit_plans").select("id, method, status, plan_reference, draft_version, created_at, created_by, profiles(full_name)")
       .in("status", ["draft", "validated"]).is("archived_at", null).order("created_at", { ascending: false }).limit(10),
   ]);
 
@@ -409,6 +410,7 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
               <th scope="col">{tr("plan.list.colCreatedBy", "Created By", "أُنشئت بواسطة")}</th>
               <th scope="col" className="ax-td-num">{tr("plan.list.colCreatedDate", "Created Date", "تاريخ الإنشاء")}</th>
               <th scope="col">{tr("plan.list.colContinue", "Continue", "متابعة")}</th>
+              <th scope="col">{tr("plan.list.colDiscard", "Discard", "تجاهل")}</th>
             </tr></thead>
             <tbody>
               {drafts.map(d => (
@@ -419,6 +421,16 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
                   <td>{d.profiles?.full_name ?? "—"}</td>
                   <td className="ax-td-num ax-numeric">{fmt(d.created_at)}</td>
                   <td><a className="ax-link" href={continueHref(d)}>{tr("plan.list.continue", "Continue →", "متابعة ←")}</a></td>
+                  <td>
+                    {/* M8 / PLN-CON-018 — discard is offered on OWN drafts only
+                        (same ownership boundary as resume); the copy stays
+                        distinct from cancelling a published visit. */}
+                    {user && d.created_by === user.id ? (
+                      <DiscardDraftButton planId={d.id}
+                        label={tr("plan.list.discard", "Discard", "تجاهل")}
+                        discardAria={tr("plan.list.discardAria", "Discard draft {ref}", "تجاهل المسودة {ref}").replace("{ref}", d.plan_reference ?? d.id.slice(0, 8))} />
+                    ) : "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -428,6 +440,9 @@ export default async function PlanningHome({ searchParams }: { searchParams: Pro
 
       {/* FIX WAVE F4 — M02-035 plan register entry point (preserved) */}
       <p><a className="ax-link" href="/planning/plans">{t("plan.home.registerLink", "Visit plans — status, child visits and progress of every plan (M02-035) →")}</a></p>
+      {/* M8 — /visits is the accepted management alias surface; the two are
+          cross-linked in both directions (canonical §5/§6 reconciliation). */}
+      <p><a className="ax-link" href="/visits">{tr("plan.home.visitsLink", "Visit management — bulk actions and lenses over the same visits (/visits) →", "إدارة الزيارات — إجراءات جماعية وعدسات على نفس الزيارات ←")}</a></p>
     </Shell>
   );
 }

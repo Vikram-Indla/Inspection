@@ -224,8 +224,14 @@ test.describe("CD-023 Planner UI and atomic persistence", () => {
     expect(Number(locationEvent.lat)).toBeCloseTo(24.7136, 5);
     const [assignment] = must(await rest("GET", `assignments?visit_id=eq.${visitId}&select=id,inspector_id,method,candidates`, planner.jwt), "assignment");
     expect(assignment.inspector_id).toBeTruthy();
-    const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
-    const [notification] = must(await rest("GET", `notifications?payload->>visit_id=eq.${visitId}&select=id,delivery_state`, inspector.jwt), "notification");
+    // The notification is addressed to the ASSIGNED inspector. Staging no
+    // longer has a single inspector (the execution line added G10 Journey
+    // Inspector and automatic distribution may pick it), so read through the
+    // ops role — notif_own (0002) lets ops read every notification — and
+    // assert the recipient is whoever was assigned.
+    const ops = await login(PERSONAS.ops.email, PERSONAS.ops.password);
+    const [notification] = must(await rest("GET", `notifications?payload->>visit_id=eq.${visitId}&select=id,recipient,delivery_state`, ops.jwt), "notification");
+    expect(notification.recipient).toBe(assignment.inspector_id);
     expect(notification.delivery_state).toBe("not_configured");
 
     const audit = must(await rest("GET", `audit_events?or=(object_id.eq.${visitId},object_id.eq.${visit.factory_id},object_id.eq.${assignment.id},object_id.eq.${notification.id},object_id.eq.${visit.creation_request_id})&select=object_type,action`, planner.jwt), "audit events");

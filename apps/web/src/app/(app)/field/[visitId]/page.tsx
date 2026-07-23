@@ -20,8 +20,12 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
   const { created } = await searchParams;
   const { t, locale } = await useT();
   const sb = await supabaseServer();
+  // NB: visits.execution_date (20260721090000) is deliberately NOT in this
+  // unconditional select — while the migration is unapplied the column is
+  // absent and the whole read would 400, rendering "Visit not found". The
+  // Pre-Execution panel reads it tolerantly via the preparation row below.
   const { data: v } = await sb.from("visits")
-    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, operational_state, package_version_id, execution_date, planner_lat, planner_lng, immediate_creator_role, visit_location_source, factories(name, name_is_system_generated, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m), package_versions(id, version_label, definition, packages(code, title)), inspections(id, status, started_at)")
+    .select("id, window_start, window_end, execution_mode, visit_type, priority, notes, planning_status, operational_state, package_version_id, planner_lat, planner_lng, immediate_creator_role, visit_location_source, factories(name, name_is_system_generated, factory_code, city, region, cr_number, license_number, official_lat, official_lng, geofence_radius_m, is_temporary, source), package_versions(id, version_label, definition, packages(code, title)), inspections(id, status, started_at)")
     .eq("id", visitId).single();
   const { data: engines } = await sb.from("engine_settings").select("engine, settings").in("engine", ["gis", "otp", "field"]);
   // Phase 3B — governed execution config (visit_modes for the Pre-Execution
@@ -183,8 +187,16 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
     title: (locale === "ar" && (r.title_ar as string)) ? (r.title_ar as string) : (r.title_en as string),
     versionLabel: r.version_label as string,
   }));
-  const factory = v.factories as unknown as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null };
+  const factory = v.factories as unknown as { name: string; name_is_system_generated: boolean; official_lat: number | null; official_lng: number | null; is_temporary: boolean; source: string | null };
   const factoryName = factory.name_is_system_generated ? t("field.start.unregisteredFactory", "Unregistered factory") : factory.name;
+  // TASK-EXECUTION-MODULE-001 · Phase 7 (§24, D-024) — unregistered immediate
+  // identity is shown with the EXISTING temporary/unverified marker (same
+  // condition and copy as the visit detail page, PLN-REQ-028): a manual-entry
+  // factory is never presented as master data, here or in Pre-Execution.
+  const factoryUnverifiedManual = factory.is_temporary === true && factory.source === "immediate_manual";
+  const unverifiedManualLabel = locale === "ar"
+    ? "إدخال يدوي غير موثّق — بانتظار المطابقة"
+    : t("visit.detail.unverifiedManual", "Unverified manual entry — pending reconciliation");
   // F360IPAD-ENTRY-001 — assigned visit opens the iPad Factory 360 with the
   // visit's license selected, carrying a return context to this startup.
   const facIds = v.factories as unknown as { cr_number: string | null; license_number: string | null };
@@ -553,6 +565,7 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
               visitType: v.visit_type,
               priority: v.priority,
               windowLabel: `${windowStartDate} → ${windowEndDate}`,
+              unverifiedLabel: factoryUnverifiedManual ? unverifiedManualLabel : null,
             }}
             days={preparationDays}
             capacityNote={capacityNote}
@@ -564,6 +577,11 @@ export default async function FieldVisit({ params, searchParams }: { params: Pro
             draft={preparationDraft}
             strings={prepStrings}
           />
+        )}
+        {factoryUnverifiedManual && (
+          <div className="row" style={{ gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <span className="ax-lozenge ax-lozenge--warning">{unverifiedManualLabel}</span>
+          </div>
         )}
         <Startup visit={vNorm as never} gis={gis as never} strings={strings} reasons={reasons} overrideReasons={overrideReasons} initialOverride={initialOverride as never} flags={flags} appVersion={packageInfo.version} locale={locale} preparationGated={preparationGated}
           journeySchemaAvailable={journeySchemaAvailable}

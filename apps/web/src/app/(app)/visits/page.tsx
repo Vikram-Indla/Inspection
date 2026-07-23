@@ -3,7 +3,9 @@ import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
 import VisitsBoard, { type VisitRow, type VisitsBoardStrings } from "./VisitsBoard";
+import { getReasonOptions } from "@/lib/planning/lifecycle";
 import ContextualAiPanel from "@/components/ContextualAiPanel";
+import WidgetBoundary from "@/components/WidgetBoundary";
 import EmptyState from "@/components/EmptyState";
 import { IconCalendar } from "@/app/icons";
 
@@ -83,6 +85,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
   const modeOptions = distinct(rows.map(r => r.executionMode)).map(v => ({ value: v, label: t(`enum.${v}`, v) }));
   const regionOptions = distinct(rows.map(r => r.region).filter(Boolean)).map(v => ({ value: v, label: v }));
   const cityOptions = distinct(rows.map(r => r.city).filter(Boolean)).map(v => ({ value: v, label: v }));
+  // M8 / PLN-CON-011 — governed cancellation reasons for the bulk-cancel form.
+  const { options: cancelReasons } = await getReasonOptions(sb, "cancellation_reason");
   const total = count ?? rows.length;
   const nextLimit = rows.length < total && limit < PAGE_MAX ? Math.min(limit + PAGE_STEP, PAGE_MAX) : null;
   const strings: VisitsBoardStrings = {
@@ -128,7 +132,8 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     bulkReassignBtn: t("visit.list.bulkReassignBtn", "Reassign selected"),
     selectOption: t("visit.list.selectOption", "— select"),
     bulkCancelReason: t("visit.list.bulkCancelReason", "Cancellation reason *"),
-    bulkCancelPlaceholder: t("visit.list.bulkCancelPlaceholder", "mandatory — M02-011, final"),
+    bulkCancelComments: t("visit.list.bulkCancelComments", "Cancellation comments"),
+    bulkCancelPlaceholder: t("visit.list.bulkCancelPlaceholder", "mandatory when the reason is Other"),
     bulkCancelBtn: t("visit.list.bulkCancelBtn", "Cancel selected"),
     bulkEditType: t("visit.list.bulkEditType", "New visit type"),
     bulkEditNotes: t("visit.list.bulkEditNotes", "New notes"),
@@ -189,7 +194,9 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
     outcomeBlockedNoAssign: t("visit.outcome.blockedNoAssign", "Blocked before change — no assignment to update, or outside your scope. Nothing changed."),
     outcomeError: t("visit.outcome.error", "Not changed — something went wrong. This item is safe to retry."),
     errSelectOne: t("visit.err.selectOne", "Select at least one visit."),
-    errReasonRequired: t("visit.err.reasonRequired", "A cancellation reason is required and final."),
+    errReasonRequired: t("visit.err.reasonRequired", "A governed cancellation reason is required (comments are mandatory for Other) — final."),
+    errReasonsUnavailable: t("visit.err.reasonsUnavailable", "Cancellation reasons are temporarily unavailable (ERR-OPS-001) — nothing was changed."),
+    errSession: t("visit.err.session", "Session expired — sign in again."),
     errWindowRequired: t("visit.err.windowRequired", "A new window start and end are both required."),
     errWindowInvalid: t("visit.err.windowInvalid", "Enter valid date and time values."),
     errWindowOrder: t("visit.err.windowOrder", "The window end must be after the window start."),
@@ -210,9 +217,18 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
           <Link className="ax-btn ax-btn--subtle" href="/visits/workload" prefetch={false}>{t("visit.views.workload", "Workload")}</Link>
           <Link className="ax-btn ax-btn--subtle" href="/visits/map" prefetch={false}>{t("visit.views.map", "Map")}</Link>
         </div>
-        <span className="ax-caption ax-numeric">{t("visit.list.scope", "Showing {shown} of {total} (filtered to your access)").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
+        {/* M8 — /planning is the accepted planning surface; the two are
+            cross-linked in both directions (canonical §5/§6 reconciliation).
+            The empty-state "Create a plan" link below only renders with zero
+            rows, so the populated board needs its own always-visible route. */}
+        <Link className="ax-btn ax-btn--subtle" href="/planning" prefetch={false}>{t("visit.list.planningLink", "Planning — drafts and plans →")}</Link>
+        <span className="ax-caption ax-numeric">{t("visit.list.scope", "RLS-scoped — showing {shown} of {total}").replace("{shown}", String(Math.min(rows.length, limit))).replace("{total}", String(total))}</span>
       </div>
-      <ContextualAiPanel surface="visit_management_summary" title={t("visit.ai.title", "Visit management summary")} description={t("visit.ai.description", "Advisory summary of the visits currently in your authorized scope. It cannot change a visit, assignment, state or campaign.")} context={JSON.stringify({ scope: "visit-management" })} evidenceRefs={["MVP1-M02-001", "MVP1-M02-002", "MVP1-M02-017", "MVP1-M02-035", "SCR-WEB-200"]} generateLabel={t("visit.ai.generate", "Generate operational summary")} unavailableLabel={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")} evidenceLabel={t("visit.ai.evidence", "Source references")} advisoryLabel={t("visit.ai.advisory", "Advisory only · human decides")} reviewLabel={t("visit.ai.review", "Review or reject this advisory")} />
+      {/* M10 / canonical §19 — the AI widget fails isolated; it can never
+          blank the visit board. */}
+      <WidgetBoundary label={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")}>
+        <ContextualAiPanel surface="visit_management_summary" title={t("visit.ai.title", "Visit management summary")} description={t("visit.ai.description", "Advisory summary of the visits currently in your authorized scope. It cannot change a visit, assignment, state or campaign.")} context={JSON.stringify({ scope: "visit-management" })} evidenceRefs={["MVP1-M02-001", "MVP1-M02-002", "MVP1-M02-017", "MVP1-M02-035", "SCR-WEB-200"]} generateLabel={t("visit.ai.generate", "Generate operational summary")} unavailableLabel={t("visit.ai.unavailable", "AI summary unavailable — nothing was generated or changed.")} evidenceLabel={t("visit.ai.evidence", "Source references")} advisoryLabel={t("visit.ai.advisory", "Advisory only · human decides")} reviewLabel={t("visit.ai.review", "Review or reject this advisory")} />
+      </WidgetBoundary>
       {rows.length === 0 ? (
         <EmptyState icon={<IconCalendar size={28} />} title={t("visit.list.empty", "No visits in your scope")}
           body={t("visit.list.emptyDesc", "Only visits inside your organizational scope are shown (M02-001 · RLS-enforced, not filtered client-side).")}>
@@ -220,7 +236,7 @@ export default async function Visits({ searchParams }: { searchParams: Promise<{
         </EmptyState>
       ) : (
         <VisitsBoard rows={rows} inspectors={inspectors} typeOptions={typeOptions} modeOptions={modeOptions}
-          regionOptions={regionOptions} cityOptions={cityOptions}
+          regionOptions={regionOptions} cityOptions={cityOptions} cancelReasons={cancelReasons}
           total={total} limit={limit} nextLimit={nextLimit} strings={strings} locale={locale} />
       )}
     </Shell>

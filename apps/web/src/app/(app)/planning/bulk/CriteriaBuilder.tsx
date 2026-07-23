@@ -1,25 +1,35 @@
 "use client";
 // CD-021 (SCR-WEB-110) — criteria tree instrument (design frames 1a/1d).
-// M01-003/012/022 extended to nested ALL/ANY groups. Each condition is
-// field ∈ {region, risk_band, activity_class, city} · operator ∈ {is, is-not}
-// · value. Groups combine their children with ALL (AND) or ANY (OR) and may
-// nest. The builder only COLLECTS criteria — evaluation stays server-side. On
-// Apply it serializes the tree into a single `ct` URL param and GET-submits, so
-// criteria remain URL-reproducible (legacy cf/co/cv links still parse server-
-// side). ARIA tree pattern; reorder via keyboard-operable move buttons; the
-// match count is announced via aria-live.
+// M01-003/012/022 extended to nested ALL/ANY groups. M6: the field list comes
+// from the governed criteria dictionary (FIELD_REGISTRY) — supplied fields with
+// per-type operators (text: is/is-not/contains/one-of · number: is/is-not/
+// greater/less/between · date: is/after/before/between), CONTRACT_NOT_SUPPLIED
+// fields disabled with their honest explanation (PLN-CON-019). The builder only
+// COLLECTS criteria — evaluation stays server-side. On Apply it serializes the
+// tree into a single `ct` URL param and GET-submits, so criteria remain
+// URL-reproducible (legacy cf/co/cv links still parse server-side). ARIA tree
+// pattern; reorder via keyboard-operable move buttons; the match count is
+// announced via aria-live.
 import { useMemo, useState } from "react";
 import {
-  type GroupNode, type CriteriaNode, type CondNode, type Field,
-  CRITERIA_FIELDS, newCond, emptyTree, serializeCriteria, emptyValueLeaves, pathKey,
+  type GroupNode, type CriteriaNode, type CondNode, type Field, type FieldType, type Op,
+  newCond, emptyTree, serializeCriteria, leaves, pathKey,
 } from "./criteria";
+
+export type BuilderField = {
+  key: string;
+  label: string;
+  type: FieldType;
+  operators: { op: Op; label: string }[];
+  supplied: boolean;
+  reason?: string; // CONTRACT_NOT_SUPPLIED explanation (disabled fields)
+};
 
 export type CriteriaBuilderStrings = {
   heading: string;
   combineLabel: string; combineAll: string; combineAny: string;
   fieldLabel: string; opLabel: string; valueLabel: string; valuePlaceholder: string;
-  fieldRegion: string; fieldRiskBand: string; fieldActivity: string; fieldCity: string;
-  opIs: string; opIsNot: string;
+  valueToLabel: string; inHint: string; notSuppliedTag: string;
   addCondition: string; addGroup: string; remove: string; removeGroup: string;
   moveUp: string; moveDown: string;
   apply: string; clear: string; matching: string; hint: string;
@@ -43,8 +53,23 @@ function editChildren(root: GroupNode, parentPath: number[], fn: (ch: CriteriaNo
   return modifyGroupAt(root, parentPath, g => ({ ...g, children: fn(g.children) }));
 }
 
+// A between leaf is only complete when BOTH bounds are filled — a one-sided
+// range would silently match nothing server-side (same honesty bar as a blank
+// value, ERR-PLN-001).
+const leafIncomplete = (c: CondNode): boolean => {
+  const v = c.value.trim();
+  if (v === "") return true;
+  if (c.op === "between") {
+    const i = v.indexOf("..");
+    if (i < 0) return true;
+    return v.slice(0, i).trim() === "" || v.slice(i + 2).trim() === "";
+  }
+  return false;
+};
+
 export default function CriteriaBuilder({
   initialTree, fieldOptions, matchCount, strings, contributions, focusedPath, onFocus,
+  builderFields, cityByRegion,
 }: {
   initialTree: GroupNode;
   fieldOptions: Record<string, string[]>;
@@ -53,19 +78,41 @@ export default function CriteriaBuilder({
   contributions?: Record<string, number>;
   focusedPath?: string | null;
   onFocus?: (path: string | null) => void;
+  builderFields: BuilderField[];
+  cityByRegion?: Record<string, string[]>;
 }) {
   const [tree, setTree] = useState<GroupNode>(
     initialTree.children.length ? initialTree : { ...emptyTree(), children: [newCond()] }
   );
   const ct = useMemo(() => serializeCriteria(tree), [tree]);
-  const invalid = useMemo(() => emptyValueLeaves(tree), [tree]);
+  const invalid = useMemo(() => leaves(tree).filter(l => leafIncomplete(l.node)), [tree]);
   const [showInvalid, setShowInvalid] = useState(false);
 
-  const fieldLabel = (f: string) =>
-    f === "region" ? strings.fieldRegion
-      : f === "risk_band" ? strings.fieldRiskBand
-        : f === "activity_class" ? strings.fieldActivity
-          : strings.fieldCity;
+  const fieldOf = (key: string): BuilderField =>
+    builderFields.find(f => f.key === key) ?? builderFields[0];
+  const suppliedFields = builderFields.filter(f => f.supplied);
+  const notSuppliedFields = builderFields.filter(f => !f.supplied);
+
+  // Region-dependent city suggestions: union the cities of every region named
+  // in an eq/one-of region condition; fall back to the full city list when no
+  // region criterion exists (never invent pairings).
+  const regionSelections = useMemo(() => {
+    const out: string[] = [];
+    for (const leaf of leaves(tree)) {
+      if (leaf.node.field !== "region") continue;
+      if (leaf.node.op === "eq") out.push(leaf.node.value.trim());
+      if (leaf.node.op === "in") out.push(...leaf.node.value.split(",").map(s => s.trim()));
+    }
+    return out.filter(Boolean);
+  }, [tree]);
+  const optionsFor = (fieldKey: string): string[] => {
+    if (fieldKey === "city" && cityByRegion && regionSelections.length > 0) {
+      const union = new Set<string>();
+      for (const r of regionSelections) for (const c of cityByRegion[r] ?? []) union.add(c);
+      if (union.size > 0) return [...union].sort();
+    }
+    return fieldOptions[fieldKey] ?? [];
+  };
 
   const addCond = (path: number[]) => setTree(t => editChildren(t, path, ch => [...ch, newCond()]));
   const addGroup = (path: number[]) => setTree(t => editChildren(t, path, ch => [...ch, { kind: "group", combine: "any", children: [newCond()] }]));
@@ -79,36 +126,92 @@ export default function CriteriaBuilder({
     const next = ch.slice(); [next[idx], next[j]] = [next[j], next[idx]]; return next;
   }));
 
+  const valueInput = (c: CondNode, parentPath: number[], idx: number, key: string) => {
+    const def = fieldOf(c.field);
+    const isEmpty = leafIncomplete(c);
+    const patchValue = (value: string) => patchCond(parentPath, idx, { value });
+    if (c.op === "between") {
+      const i = c.value.indexOf("..");
+      const a = i < 0 ? c.value : c.value.slice(0, i);
+      const b = i < 0 ? "" : c.value.slice(i + 2);
+      const join = (x: string, y: string) => `${x}..${y}`;
+      const inputType = def.type === "date" ? "date" : "number";
+      return (
+        <>
+          <div className="ax-field" style={{ maxInlineSize: 150 }}>
+            <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+            <input className="ax-input" id={`crit-value-${key}`} type={inputType} value={a} aria-invalid={isEmpty || undefined}
+              onChange={e => patchValue(join(e.target.value, b))} />
+          </div>
+          <div className="ax-field" style={{ maxInlineSize: 150 }}>
+            <label className="ax-field__label" htmlFor={`crit-value2-${key}`}>{strings.valueToLabel}</label>
+            <input className="ax-input" id={`crit-value2-${key}`} type={inputType} value={b} aria-invalid={isEmpty || undefined}
+              onChange={e => patchValue(join(a, e.target.value))} />
+          </div>
+        </>
+      );
+    }
+    if (def.type === "number") {
+      return (
+        <div className="ax-field" style={{ maxInlineSize: 150 }}>
+          <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+          <input className="ax-input" id={`crit-value-${key}`} type="number" value={c.value} aria-invalid={isEmpty || undefined}
+            onChange={e => patchValue(e.target.value)} placeholder={strings.valuePlaceholder} />
+        </div>
+      );
+    }
+    if (def.type === "date") {
+      return (
+        <div className="ax-field" style={{ maxInlineSize: 170 }}>
+          <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+          <input className="ax-input" id={`crit-value-${key}`} type="date" value={c.value} aria-invalid={isEmpty || undefined}
+            onChange={e => patchValue(e.target.value)} />
+        </div>
+      );
+    }
+    // text / enum — free input with governed suggestions; "one of" is a comma list.
+    return (
+      <div className="ax-field" style={{ maxInlineSize: 210 }}>
+        <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
+        <input className="ax-input" id={`crit-value-${key}`} list={`vals-${key}`} value={c.value} aria-invalid={isEmpty || undefined}
+          onChange={e => patchValue(e.target.value)} placeholder={strings.valuePlaceholder} />
+        <datalist id={`vals-${key}`}>
+          {optionsFor(c.field).map(v => <option key={v} value={v} />)}
+        </datalist>
+        {c.op === "in" && <span className="t-caption">{strings.inHint}</span>}
+      </div>
+    );
+  };
+
   const renderCond = (c: CondNode, parentPath: number[], idx: number, count: number) => {
     const key = pathKey([...parentPath, idx]);
     const contribution = contributions?.[key];
-    const isEmpty = c.value.trim() === "";
     const isFocused = focusedPath === key;
+    const def = fieldOf(c.field);
     return (
     <li role="treeitem" aria-label={strings.conditionItem} className="row"
       style={{ alignItems: "flex-end", flexWrap: "wrap", gap: "var(--ax-space-150)" }}>
-      <div className="ax-field" style={{ maxInlineSize: 180 }}>
+      <div className="ax-field" style={{ maxInlineSize: 200 }}>
         <label className="ax-field__label" htmlFor={`crit-field-${key}`}>{strings.fieldLabel}</label>
         <select className="ax-select" id={`crit-field-${key}`} value={c.field}
-          onChange={e => patchCond(parentPath, idx, { field: e.target.value as Field, value: "" })}>
-          {CRITERIA_FIELDS.map(f => <option key={f} value={f}>{fieldLabel(f)}</option>)}
+          onChange={e => {
+            const next = fieldOf(e.target.value);
+            patchCond(parentPath, idx, { field: e.target.value as Field, op: next.operators[0]?.op ?? "eq", value: "" });
+          }}>
+          {suppliedFields.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
+          {notSuppliedFields.map(f => (
+            <option key={f.key} value={f.key} disabled>{f.label} · {strings.notSuppliedTag}</option>
+          ))}
         </select>
       </div>
-      <div className="ax-field" style={{ maxInlineSize: 140 }}>
+      <div className="ax-field" style={{ maxInlineSize: 150 }}>
         <label className="ax-field__label" htmlFor={`crit-op-${key}`}>{strings.opLabel}</label>
-        <select className="ax-select" id={`crit-op-${key}`} value={c.op} onChange={e => patchCond(parentPath, idx, { op: e.target.value as "is" | "is-not" })}>
-          <option value="is">{strings.opIs}</option>
-          <option value="is-not">{strings.opIsNot}</option>
+        <select className="ax-select" id={`crit-op-${key}`} value={c.op}
+          onChange={e => patchCond(parentPath, idx, { op: e.target.value as Op, value: "" })}>
+          {def.operators.map(o => <option key={o.op} value={o.op}>{o.label}</option>)}
         </select>
       </div>
-      <div className="ax-field" style={{ maxInlineSize: 210 }}>
-        <label className="ax-field__label" htmlFor={`crit-value-${key}`}>{strings.valueLabel}</label>
-        <input className="ax-input" id={`crit-value-${key}`} list={`vals-${c.field}`} value={c.value} aria-invalid={isEmpty || undefined}
-          onChange={e => patchCond(parentPath, idx, { value: e.target.value })} placeholder={strings.valuePlaceholder} />
-        <datalist id={`vals-${c.field}`}>
-          {(fieldOptions[c.field] ?? []).map(v => <option key={v} value={v} />)}
-        </datalist>
-      </div>
+      {valueInput(c, parentPath, idx, key)}
       {contribution != null && (
         <button type="button" className="btn btn-ghost numeric btn-touch" aria-pressed={isFocused}
           onClick={() => onFocus?.(isFocused ? null : key)}
@@ -162,6 +265,15 @@ export default function CriteriaBuilder({
       <ul role="tree" aria-label={strings.heading} style={{ listStyle: "none", margin: 0, padding: 0 }}>
         {renderGroup(tree, [])}
       </ul>
+      {notSuppliedFields.length > 0 && (
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "var(--ax-space-050)" }}>
+          {notSuppliedFields.map(f => (
+            <li key={f.key} className="t-caption">
+              <span className="ax-lozenge ax-lozenge--warning">{f.label} · {strings.notSuppliedTag}</span> — {f.reason}
+            </li>
+          ))}
+        </ul>
+      )}
       {showInvalid && invalid.length > 0 && (
         <div className="ax-banner ax-banner--warning" role="alert">
           <strong>{strings.invalidTitle}</strong>

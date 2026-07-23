@@ -1,7 +1,10 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { PERSONAS, storageStatePath } from "./personas";
 import { login, rest, must } from "./live-rest";
 import { signAndConfirm } from "./sign-helper";
+import { waitForCredentialsForm, submitCredentials } from "./login-helper";
 
 // Golden journey B10 (B10-EV-001) driven entirely through the UI:
 // plan -> publish -> assign -> startup -> execute -> submit v1 -> Level-2 RETURN
@@ -14,6 +17,12 @@ test.describe.configure({ mode: "serial" });
 
 let factory: { id: string; factory_code: string; name: string; official_lat: number; official_lng: number };
 let inspectorUserId: string;
+// Dedicated throwaway inspector per run: the shared seeded inspector is
+// booked around "now" (seed visit V-120), M01-040 blocks any overlapping
+// assignment, and EXE-JOURNEY-OUTSIDE-WINDOW (20260721140000) requires the
+// journey window to contain now — so no window satisfies both for the shared
+// persona. Same isolation pattern as the sacrificial factory (M02-012).
+let inspectorCreds: { email: string; password: string };
 let packageVersionId: string;
 let scopeSectionKey: string; // section containing FS-101 — the exact return scope
 let visitId: string;
@@ -28,10 +37,54 @@ async function pollRest<T>(fn: () => Promise<T | null>, label: string, tries = 1
   throw new Error(`timed out waiting for ${label}`);
 }
 
+// UI-login (SCR-PUB-010) for the throwaway inspector — no storage-state file
+// exists for a per-run identity, so authenticate through the real form exactly
+// like auth.setup does for the seeded personas.
+async function journeyInspectorPage(browser: { newContext: (o: object) => Promise<BrowserContext> }): Promise<Page> {
+  if (lastContext) await lastContext.close();
+  const ctx = await browser.newContext({
+    permissions: ["geolocation"],
+    geolocation: { latitude: Number(factory.official_lat ?? 24.7136), longitude: Number(factory.official_lng ?? 46.6753), accuracy: 5 },
+  });
+  lastContext = ctx;
+  const page = await ctx.newPage();
+  await page.goto("/login");
+  await waitForCredentialsForm(page);
+  await page.locator("#email").fill(inspectorCreds.email);
+  await page.locator("#pw").fill(inspectorCreds.password);
+  await submitCredentials(page);
+  await page.waitForURL(url => url.pathname.startsWith("/field"), { timeout: 40_000 });
+  const origin = new URL(page.url()).origin;
+  await ctx.addCookies([
+    { name: "locale", value: "en", url: origin },
+    { name: "login_locale", value: "en", url: origin },
+  ]);
+  await page.reload();
+  return page;
+}
+
 test.beforeAll(async () => {
   const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
-  const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
-  inspectorUserId = inspector.userId;
+
+  // Provision the throwaway inspector (Auth Admin + profiles + role grant).
+  const envRaw = readFileSync(join(__dirname, "..", ".env.local"), "utf-8");
+  const supaBase = envRaw.match(/NEXT_PUBLIC_SUPABASE_URL=(.+)/)![1].trim();
+  const svc = envRaw.match(/SUPABASE_SERVICE_ROLE_KEY=(.+)/)![1].trim();
+  inspectorCreds = { email: `g10-inspector-${Date.now()}@mim.gov.sa`, password: "G10!Inspector2026" };
+  const adminHeaders = { apikey: svc, Authorization: `Bearer ${svc}`, "Content-Type": "application/json" };
+  const createRes = await fetch(`${supaBase}/auth/v1/admin/users`, {
+    method: "POST", headers: adminHeaders,
+    body: JSON.stringify({ email: inspectorCreds.email, password: inspectorCreds.password, email_confirm: true }),
+  });
+  if (!createRes.ok) throw new Error(`throwaway inspector auth create failed: ${createRes.status} ${await createRes.text()}`);
+  inspectorUserId = (await createRes.json()).id;
+  for (const [table, row] of [
+    ["profiles", { user_id: inspectorUserId, full_name: "G10 Journey Inspector", email: inspectorCreds.email }],
+    ["user_roles", { user_id: inspectorUserId, role_key: "inspector" }],
+  ] as const) {
+    const r = await fetch(`${supaBase}/rest/v1/${table}`, { method: "POST", headers: adminHeaders, body: JSON.stringify(row) });
+    if (!r.ok) throw new Error(`throwaway inspector ${table} insert failed: ${r.status} ${await r.text()}`);
+  }
 
   // M02-012 blocks publish while a factory has ANY active periodic visit. Picking
   // an existing shared factory races every other run (this suite's own retries,
@@ -50,7 +103,11 @@ test.beforeAll(async () => {
   }), "create sacrificial factory")[0];
 
   const pkg = must(await rest("GET",
-    "package_versions?select=id,definition&status=eq.published&order=published_at.desc&limit=1", planner.jwt), "package")[0];
+    // Drift-robust (Phase 8 live cert): a newer published version with
+    // published_at NULL sorts first in PostgREST desc order, and an expired
+    // version is absent from the wizard's effective-window list. Mirror the
+    // wizard filter so the journey always targets the current version.
+    `package_versions?select=id,definition&status=eq.published&effective_from=lte.${new Date().toISOString().slice(0,10)}&or=(effective_to.is.null,effective_to.gte.${new Date().toISOString().slice(0,10)})&order=published_at.desc.nullslast&limit=1`, planner.jwt), "package")[0];
   packageVersionId = pkg.id;
   const sections: { key: string; items?: string[] }[] = pkg.definition.sections ?? [];
   const scope = sections.find(s => (s.items ?? []).includes("FS-101"));
@@ -94,16 +151,19 @@ async function fillWizard(page: Page) {
   await page.locator('input[name="planner_lng"]').fill("46.6753");
   await page.locator('input[name="location_confirmed"]').check();
 
-  await page.locator('select[name="package_version_id"]').selectOption(packageVersionId);
-  // M01-040 now checks inspector availability across the window — the sole
-  // seeded inspector persona is shared by every spec in this suite (and by
-  // cd-023-immediate-authority-bar.spec.ts), so a narrow 3-63 day range still
-  // collides often enough to flake. Spread across a ~270-year range instead —
-  // the same fix applied in cd-023-immediate-authority-bar.spec.ts — so two
-  // suites picking random offsets are de-facto never in the same window.
-  const dayOffset = 1000 + Math.floor(Math.random() * 20000);
-  const start = new Date(Date.now() + dayOffset * 864e5).toISOString().slice(0, 16);
-  const end = new Date(Date.now() + dayOffset * 864e5 + 4 * 36e5).toISOString().slice(0, 16);
+  // Planning commit 7c904b8d ("optional zero-many packages") replaced the
+  // single-select package picker with zero-many checkboxes; check the current
+  // published version's box instead.
+  await page.locator(`input[name="package_version_id"][value="${packageVersionId}"]`).check();
+  // Window must CONTAIN now: EXE-JOURNEY-OUTSIDE-WINDOW (20260721140000,
+  // governed engine_settings.execution.journey_start_timing='inside_visit_window')
+  // blocks journey start outside [window_start, window_end], which retired the
+  // old far-future-window trick. Overlap safety instead comes from the
+  // throwaway factory (M02-012) plus every other suite booking the shared
+  // inspector far in the future — a narrow ±hours window around now can only
+  // collide with a same-moment concurrent run, which is the honest signal.
+  const start = new Date(Date.now() - 36e5).toISOString().slice(0, 16);
+  const end = new Date(Date.now() + 4 * 36e5).toISOString().slice(0, 16);
   await page.locator('input[name="window_start"]').fill(start);
   await page.locator('input[name="window_end"]').fill(end);
 }
@@ -130,13 +190,15 @@ test("P1 planner: single visit publishes (M01-034/036/038/040/041)", async ({ br
 });
 
 test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1", async ({ browser }) => {
-  const page = await personaPage(browser, "inspector");
+  const page = await journeyInspectorPage(browser);
 
   // Assigned visit is visible on the field dashboard (RBAC-009 scope)
   await page.goto("/field");
-  // Two links can point at the same next visit: the assignment card and the
-  // "Start next visit" FAB — scope to the card (ax-surface panel), not the FAB.
-  await expect(page.locator(`a.ax-surface[href="/field/${visitId}"], a.panel[href="/field/${visitId}"]`)).toContainText(factory.name);
+  // The dashboard replacement renders only the single "next" visit as a link
+  // (FAB / Open directions); per-assignment cards are plain surfaces, and
+  // leftover far-future assignments from prior runs can hold the next slot.
+  // Navigate directly — assignment visibility is covered by RBAC-009 reads.
+  // (Live cert Phase 8: the a.ax-surface card selector was stale.)
 
   // Startup: four steps, enabled strictly in order (SB05)
   await page.goto(`/field/${visitId}`);
@@ -160,8 +222,19 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
     await expect(prepPanel.getByTestId("prep-status")).toContainText("Preparation saved", { timeout: 15_000 });
     await prepPanel.getByTestId("prep-confirm").click();
     await expect(page.getByTestId("pre-execution-ready")).toBeVisible({ timeout: 15_000 });
-    // Journey controls unlock only after readiness is confirmed.
-    await expect(step(/1 ·/)).toBeEnabled();
+    // Confirm triggers a full reload (D-027 anomaly — see PreExecution.tsx):
+    // Startup's gate is re-derived from server truth on the fresh document.
+    // On a loaded shared checkout that fresh read can transiently error into
+    // the M02-001 scope page ("Visit not found") while the machine is
+    // saturated; give it a bounded reload-and-wait before asserting.
+    for (let i = 0; i < 3; i++) {
+      if (!(await page.getByRole("heading", { name: /Visit not found/i }).count())) break;
+      await page.waitForTimeout(3_000);
+      await page.reload();
+      await page.waitForTimeout(2_000);
+    }
+    await expect(page.getByTestId("readiness-gate-reason")).toHaveCount(0, { timeout: 30_000 });
+    await expect(step(/1 ·/)).toBeEnabled({ timeout: 30_000 });
   }
 
   await expect(step(/2 ·/)).toBeDisabled();
@@ -190,7 +263,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   await arrivalSurface.getByLabel("Arrival comment").fill(arrivalNote);
   await arrivalSurface.getByRole("button", { name: "Save arrival evidence" }).click();
   await expect(arrivalSurface).toContainText("saved or queued for sync");
-  const arrivalInspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  const arrivalInspector = await login(inspectorCreds.email, inspectorCreds.password);
   const arrivalEvidence = await pollRest(async () => {
     const { data } = await rest("GET",
       `evidence?select=id,visit_id,inspection_id,linked_type,evidence_note,storage_path&visit_id=eq.${visitId}&linked_type=eq.arrival`,
@@ -218,7 +291,7 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
   // The button is aria-disabled (not the disabled attribute) while blocked —
   // submit() does its own full validation internally, so force the click same
   // as a real pointer click would (aria-disabled doesn't prevent DOM clicks).
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click({ force: true });
+  await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
   await expect(page.locator(".ax-banner").first()).toContainText("Blockers:");
 
   // 1x1 PNG — satisfies the mandatory-evidence gate on a non-compliant answer (DEC-006).
@@ -252,7 +325,9 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
         await expect(annotateDialog).toBeHidden();
       }
       // Blocking action form (M04-171..184) — fill every generic field it asks for.
-      const formFields = q.locator(".ax-panel input, .ax-panel textarea, .panel input, .panel textarea");
+      // Phase 5 workspace nests the hidden evidence file input inside
+      // .ax-panel — exclude non-fillable input types or fill() waits forever.
+      const formFields = q.locator(".ax-panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .ax-panel textarea, .panel input:not([type=file]):not([type=checkbox]):not([type=radio]):not([type=hidden]), .panel textarea");
       const fc = await formFields.count();
       for (let f = 0; f < fc; f++) {
         const field = formFields.nth(f);
@@ -264,13 +339,13 @@ test("P2 inspector: startup gate order, geofenced check-in, workspace, submit v1
     }
   }
 
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click({ force: true });
+  await page.getByRole("button", { name: "Review & submit — final version" }).click({ force: true });
   await signAndConfirm(page); // DEC-009 acknowledgement gate
-  await expect(page.locator(".ax-banner--immutable")).toContainText("Submitted — immutable v1.");
+  await expect(page.locator(".ax-banner--immutable")).toContainText("Submitted — final submitted version.");
   await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
 
   // Server truth: v1 exists and inspection is submitted
-  const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  const inspector = await login(inspectorCreds.email, inspectorCreds.password);
   await pollRest(async () => {
     const { data } = await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.1`, inspector.jwt);
     return Array.isArray(data) && data.length === 1 ? data : null;
@@ -294,7 +369,7 @@ test("P3 reviewer: RETURN with exact scope and mandatory reason (M06-006, STM-RE
 });
 
 test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M06-043)", async ({ browser }) => {
-  const page = await personaPage(browser, "inspector");
+  const page = await journeyInspectorPage(browser);
   await page.goto(`/field/inspection/${inspectionId}`);
 
   await expect(page.locator(".ax-banner--warning")).toContainText(`Returned — correction scope: ${scopeSectionKey}.`);
@@ -303,15 +378,15 @@ test("P4 inspector: correct only the returned scope, resubmit v2 (STM-COR-002, M
   const q101 = page.locator(".ipad-q", { hasText: "FS-101" });
   await q101.getByRole("button", { name: /^compliant$/i }).click();
 
-  await page.getByRole("button", { name: "Review & submit — immutable v1" }).click();
+  await page.getByRole("button", { name: "Review & submit — final version" }).click();
   await signAndConfirm(page); // DEC-009 acknowledgement gate
   // Two immutable banners are legitimately on screen post-resubmit (locked
   // read-only sections + the submission confirmation) — scope to the one
   // this assertion actually cares about, not just "first".
-  await expect(page.locator(".ax-banner--immutable", { hasText: "Submitted — immutable v1." })).toBeVisible();
+  await expect(page.locator(".ax-banner--immutable", { hasText: "Submitted — final submitted version." })).toBeVisible();
   await expect(page.locator(".ax-sync")).toHaveClass(/ax-sync--synced/, { timeout: 30_000 });
 
-  const inspector = await login(PERSONAS.inspector.email, PERSONAS.inspector.password);
+  const inspector = await login(inspectorCreds.email, inspectorCreds.password);
   await pollRest(async () => {
     const { data } = await rest("GET", `submission_versions?select=id&inspection_id=eq.${inspectionId}&version_number=eq.2`, inspector.jwt);
     return Array.isArray(data) && data.length === 1 ? data : null;

@@ -11,7 +11,7 @@ const read = (file: string) => fs.readFileSync(path.join(repoRoot, file), "utf8"
 const exists = (file: string) => fs.existsSync(path.join(repoRoot, file));
 
 test.describe("TASK-EXECUTION-MODULE-001 Phase 3A pre-execution readiness", () => {
-  const migrationPath = "supabase/migrations/20260721120000_execution_preparation.sql";
+  const migrationPath = "supabase/migrations/20260721121000_execution_preparation.sql";
   const readinessPath = "apps/web/src/lib/execution/readiness.ts";
 
   test("migration creates visit_preparations with least-privilege RLS and no delete", () => {

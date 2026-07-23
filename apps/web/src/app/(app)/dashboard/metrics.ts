@@ -228,6 +228,20 @@ export function buildDashboardMetrics(input: {
   );
   const approvedScoped = scopedInspections.filter(i => approvedInspectionIds.has(i.id)).length;
 
+  // TASK-EXECUTION-MODULE-001 · Phase 7 (§29, D-025) — pending vs approved
+  // compliance never mix. The OFFICIAL rate is computed over approved
+  // inspections only (matching Factory 360's approved-only line); pending work
+  // (submitted / under_review / returned — not yet approved) is reported as a
+  // separate, explicitly labelled figure. The overall totals above are kept
+  // for the explorer breakdowns — no information is removed.
+  const approvedScopedIds = new Set(scopedInspections.filter(i => approvedInspectionIds.has(i.id)).map(i => i.id));
+  const approvedComplianceCounts = countChecklistCompliance(scopedResponses.filter(r => approvedScopedIds.has(r.inspection_id)));
+  const pendingComplianceCounts = countChecklistCompliance(scopedResponses.filter(r => !approvedScopedIds.has(r.inspection_id)));
+  const approvedCompliant = approvedComplianceCounts.compliant;
+  const approvedAnsweredForCompliance = approvedComplianceCounts.eligible;
+  const pendingCompliant = pendingComplianceCounts.compliant;
+  const pendingAnsweredForCompliance = pendingComplianceCounts.eligible;
+
   const scopedViolations = violations.filter(v => scopedInspectionIds.has(v.inspection_id));
   const previousScope: DateScope = {
     fromMs: scope.fromMs - (scope.toMs - scope.fromMs + 1),
@@ -323,7 +337,16 @@ export function buildDashboardMetrics(input: {
       compliant,
       nonCompliant,
       answeredForCompliance,
-      complianceRate: percent(compliant, answeredForCompliance),
+      // Official rate: approved inspections only (§29 — the authoritative
+      // figure, same basis as Factory 360's approved-only compliance).
+      complianceRate: percent(approvedCompliant, approvedAnsweredForCompliance),
+      approvedCompliant,
+      approvedAnsweredForCompliance,
+      // Pending rate: submitted / under_review / returned work not yet
+      // approved — always labelled pending where shown.
+      pendingComplianceRate: percent(pendingCompliant, pendingAnsweredForCompliance),
+      pendingCompliant,
+      pendingAnsweredForCompliance,
       approvedScoped,
       approvalRate: percent(approvedScoped, completedInspections),
       scopedResponses,

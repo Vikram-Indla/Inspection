@@ -4,7 +4,7 @@
 // Capabilities replace new top-level roles: the existing roles stay untouched
 // as compatibility aliases, and the fine-grained capability keys below are
 // what guards evaluate. The catalogue and the default role mapping are seeded
-// by migration `20260721090000_execution_canonical_contracts.sql`.
+// by migration `20260721093000_execution_canonical_contracts.sql`.
 //
 // AUTHORITATIVE ENFORCEMENT IS SERVER-SIDE ONLY: the `has_capability` RPC and
 // RLS decide. This module exists purely for UI affordance (rendering or

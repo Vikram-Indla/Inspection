@@ -2,7 +2,8 @@ import { test, expect, type Page } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { evidenceDirectory } from "./evidence-path";
-import { storageStatePath } from "./personas";
+import { PERSONAS, storageStatePath } from "./personas";
+import { login, rest, must } from "./live-rest";
 
 // CD-026 / SCR-WEB-200 / P03 — Visit Management Workspace (Track 1: approved
 // visual/UI; blocked legs represented as unavailable, never faked).
@@ -176,5 +177,147 @@ test.describe("CD-026 wiring proof (DSG-CODE-001)", () => {
     const mapRoute = readFileSync(join(process.cwd(), "src/app/(app)/visits/map/page.tsx"), "utf8");
     expect(mapRoute).toContain('from("geo_events")');
     expect(mapRoute).toContain("official_lat");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// M8 — governed bulk cancel (PLN-CON-011), Discard draft (PLN-CON-018) and
+// the /visits ↔ /planning reconciliation links (canonical §5/§6). Fixtures
+// are staged over PostgREST with the planner's own JWT so RLS stays the
+// enforcement; the mutations under test go through the real UI.
+test.describe("M8 — governed bulk cancel, discard draft, cross-links", () => {
+  let plannerJwt = "";
+  let plannerUserId = "";
+  let pkgId = "";
+
+  test.beforeAll(async () => {
+    const planner = await login(PERSONAS.planner.email, PERSONAS.planner.password);
+    plannerJwt = planner.jwt;
+    plannerUserId = planner.userId;
+    pkgId = must(await rest("GET",
+      "package_versions?select=id&status=eq.published&order=published_at.desc.nullslast&limit=1",
+      plannerJwt), "published package")[0].id;
+  });
+
+  // Throwaway factory (one per visit — publish marks a factory forever) +
+  // draft single plan + draft visit PATCHed to published (the proven
+  // offline-drill pattern). The board pages window_start ASC capped at 1000;
+  // staging already carries far-future leftovers out to year 2381, so a
+  // +6000..18000d window (≈2042–2075) ranks comfortably inside the first
+  // page while the single staging Inspector stays un-bookable.
+  async function stagePublishedVisit(runTag: string, i: number) {
+    const factory = must(await rest("POST", "factories", plannerJwt, {
+      factory_code: `CD026-M8-${runTag}-${i}`, name: `CD026 M8 ${runTag} ${i}`,
+      cr_number: `CR-M826-${runTag}-${i}`, region: "Riyadh", city: "Riyadh",
+      official_lat: 24.72 + i / 100, official_lng: 46.69 + i / 100,
+    }), `factory ${i}`)[0];
+    const plan = must(await rest("POST", "visit_plans", plannerJwt, {
+      method: "single", status: "draft", created_by: plannerUserId,
+    }), `plan ${i}`)[0];
+    const dayOffset = 6000 + Math.floor(Math.random() * 12000);
+    const visit = must(await rest("POST", "visits", plannerJwt, {
+      visit_plan_id: plan.id, factory_id: factory.id, visit_type: "periodic",
+      execution_mode: "physical", planning_status: "draft",
+      window_start: new Date(Date.now() + dayOffset * 86400e3).toISOString(),
+      window_end: new Date(Date.now() + dayOffset * 86400e3 + 4 * 36e5).toISOString(),
+      package_version_id: pkgId,
+    }), `visit ${i}`)[0];
+    must(await rest("PATCH", `visits?id=eq.${visit.id}`, plannerJwt, { planning_status: "published" }), `publish ${i}`);
+    return { factory, plan, visit };
+  }
+
+  test("bulk cancel applies the governed reason per row and records one cancel event per visit (PLN-CON-011)", async ({ page }) => {
+    // ?limit=1000 renders up to 1000 embedded rows server-side; on a cold dev
+    // server the first render can exceed the default 60s test budget.
+    test.setTimeout(180_000);
+    const runTag = `${Date.now()}`;
+    const a = await stagePublishedVisit(runTag, 0);
+    const b = await stagePublishedVisit(runTag, 1);
+
+    await page.goto("/visits?limit=1000", { waitUntil: "domcontentloaded" });
+    await page.getByLabel(/Search visits/).fill(`CD026-M8-${runTag}`, { timeout: 120_000 });
+    const cbA = page.getByRole("checkbox", { name: `Select visit ${a.visit.id.slice(0, 8)}` });
+    const cbB = page.getByRole("checkbox", { name: `Select visit ${b.visit.id.slice(0, 8)}` });
+    await expect(cbA).toBeVisible();
+    await cbA.check();
+    await cbB.check();
+    await page.locator("#bulk-cancel-reason").selectOption("safety_risk");
+    await page.locator("#bulk-cancel-comments").fill("M8 bulk cancel");
+    await page.locator("form", { has: page.locator("#bulk-cancel-reason") }).locator("button").click();
+    // Per-item ledger: both rows applied — never a single mixed banner.
+    await expect(page.getByText("2 applied")).toBeVisible({ timeout: 20000 });
+    await page.screenshot({ path: join(EVIDENCE_DIR, "m8-bulk-cancel-ledger.png"), fullPage: true });
+
+    for (const v of [a.visit, b.visit]) {
+      const row = must(await rest("GET", `visits?id=eq.${v.id}&select=planning_status,cancellation_reason`, plannerJwt), "cancelled row")[0];
+      expect(row.planning_status).toBe("cancelled");
+      expect(row.cancellation_reason).toBe("safety_risk");
+      const ev = must(await rest("GET",
+        `visit_lifecycle_events?visit_id=eq.${v.id}&event_type=eq.cancel&select=reason_key,comments`,
+        plannerJwt), "cancel event");
+      expect(ev).toHaveLength(1);
+      expect(ev[0].reason_key).toBe("safety_risk");
+      expect(ev[0].comments).toBe("M8 bulk cancel");
+    }
+  });
+
+  test("discard retires an own draft plan and removes it from the drafts list (PLN-CON-018)", async ({ page }) => {
+    const plan = must(await rest("POST", "visit_plans", plannerJwt, {
+      method: "single", status: "draft", created_by: plannerUserId,
+    }), "draft plan")[0];
+    const ref = plan.plan_reference ?? plan.id.slice(0, 8);
+
+    await page.goto("/planning");
+    await page.getByRole("button", { name: `Discard draft ${ref}` }).click();
+    // Success returns to /planning and the archived draft leaves the list.
+    await expect(page.getByRole("button", { name: `Discard draft ${ref}` })).toHaveCount(0, { timeout: 15000 });
+    const row = must(await rest("GET", `visit_plans?id=eq.${plan.id}&select=archived_at,status`, plannerJwt), "archived plan")[0];
+    expect(row.status).toBe("draft"); // retired via archived_at — never a status rewrite
+    expect(row.archived_at).not.toBeNull();
+  });
+
+  test("discard cancels the linked draft child visit with a discard_draft event (PLN-CON-018)", async ({ page }) => {
+    const plan = must(await rest("POST", "visit_plans", plannerJwt, {
+      method: "single", status: "draft", created_by: plannerUserId,
+    }), "draft plan")[0];
+    const suffix = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+    const factory = must(await rest("POST", "factories", plannerJwt, {
+      factory_code: `CD026-M8-DSC-${suffix}`, name: `CD026 M8 DSC ${suffix}`,
+      cr_number: `CR-M826-DSC-${suffix}`, region: "Riyadh", city: "Riyadh",
+      official_lat: 24.73, official_lng: 46.70,
+    }), "factory")[0];
+    const dayOffset = 6000 + Math.floor(Math.random() * 20000);
+    const child = must(await rest("POST", "visits", plannerJwt, {
+      visit_plan_id: plan.id, factory_id: factory.id, visit_type: "periodic",
+      execution_mode: "physical", planning_status: "draft",
+      window_start: new Date(Date.now() + dayOffset * 86400e3).toISOString(),
+      window_end: new Date(Date.now() + dayOffset * 86400e3 + 4 * 36e5).toISOString(),
+      package_version_id: pkgId,
+    }), "draft child")[0];
+    const ref = plan.plan_reference ?? plan.id.slice(0, 8);
+
+    await page.goto("/planning");
+    await page.getByRole("button", { name: `Discard draft ${ref}` }).click();
+    await expect(page.getByRole("button", { name: `Discard draft ${ref}` })).toHaveCount(0, { timeout: 15000 });
+
+    // Canonical §15: Draft cancellation is allowed — the child is cancelled
+    // (visits RLS grants no delete) and the provenance event names the plan.
+    const row = must(await rest("GET", `visits?id=eq.${child.id}&select=planning_status`, plannerJwt), "child after discard")[0];
+    expect(row.planning_status).toBe("cancelled");
+    const ev = must(await rest("GET",
+      `visit_lifecycle_events?visit_id=eq.${child.id}&event_type=eq.discard_draft&select=comments,previous`,
+      plannerJwt), "discard_draft event");
+    expect(ev).toHaveLength(1);
+    expect(ev[0].previous.plan_id).toBe(plan.id);
+    const archived = must(await rest("GET", `visit_plans?id=eq.${plan.id}&select=archived_at`, plannerJwt), "archived plan")[0];
+    expect(archived.archived_at).not.toBeNull();
+  });
+
+  test("/visits and /planning cross-link in both directions (canonical §5/§6 reconciliation)", async ({ page }) => {
+    test.setTimeout(120_000); // dev-server first render of both boards can be slow
+    await page.goto("/planning", { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("link", { name: /Visit management — bulk actions/i })).toHaveAttribute("href", "/visits", { timeout: 60_000 });
+    await page.goto("/visits", { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("link", { name: /Planning — drafts and plans/i })).toHaveAttribute("href", "/planning", { timeout: 60_000 });
   });
 });

@@ -171,20 +171,26 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
       if (planRow.source_channel) sourceChannel = planRow.source_channel;
       const payload = (planRow.draft_payload ?? {}) as {
         target?: { factory_id?: string; cr_number?: string | null; license_number?: string | null; canonical_license_number?: string | null; plant_number?: string | null; source?: string };
-        config?: Record<string, string | null>;
+        config?: Record<string, string | string[] | null>;
       };
       const cfg = payload.config ?? {};
       const target = payload.target;
+      const str = (v: unknown) => (typeof v === "string" && v !== "" ? v : undefined);
+      // M7 — zero-many packages hydrate from the array; the legacy singular
+      // field (older drafts) still hydrates as a one-element selection.
+      const cfgPkgIds = Array.isArray(cfg.package_version_ids)
+        ? (cfg.package_version_ids as unknown[]).map(String).filter(id => UUID.test(id))
+        : undefined;
       draftConfig = {
-        visitType: cfg.visit_type ?? undefined,
-        packageVersionId: cfg.package_version_id ?? undefined,
-        executionMode: cfg.execution_mode ?? undefined,
-        windowStart: cfg.window_start ?? undefined,
-        windowEnd: cfg.window_end ?? undefined,
-        inspectorId: cfg.inspector_id ?? undefined,
-        notes: cfg.notes ?? undefined,
-        plannerLat: cfg.planner_lat ?? undefined,
-        plannerLng: cfg.planner_lng ?? undefined,
+        visitType: str(cfg.visit_type),
+        packageVersionIds: cfgPkgIds ?? (str(cfg.package_version_id) ? [str(cfg.package_version_id)!] : undefined),
+        executionMode: str(cfg.execution_mode),
+        windowStart: str(cfg.window_start),
+        windowEnd: str(cfg.window_end),
+        inspectorId: str(cfg.inspector_id),
+        notes: str(cfg.notes),
+        plannerLat: str(cfg.planner_lat),
+        plannerLng: str(cfg.planner_lng),
         // Legacy targets re-confirm their licence through the same radio the
         // fresh flow uses; the saved value pre-checks it (canonical targets
         // need no separate confirmation — the licence IS the selection).
@@ -360,7 +366,8 @@ export default async function SinglePlanning({ searchParams }: { searchParams: P
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     typeFollowUp: t("enum.follow_up", "Follow-up"),
     typeComplaint: t("enum.complaint", "Complaint-triggered"),
-    packageLabel: t("plan.single.package", "Inspection checklist (active only)"),
+    packageLabel: t("plan.single.package", "Inspection checklists (optional — zero or more, active only)"),
+    packageOptionalHint: t("plan.single.packageOptionalHint", "No checklist selected — that is allowed. The inspector chooses an eligible checklist during preparation."),
     mode: t("plan.single.mode", "Mode"),
     modePhysical: t("enum.physical", "Physical"),
     modeVirtual: t("enum.virtual", "Virtual"),

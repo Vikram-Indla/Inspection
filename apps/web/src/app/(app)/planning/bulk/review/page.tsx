@@ -1,9 +1,10 @@
 import Shell from "@/components/Shell";
-import { getUserRoles } from "@/lib/persona";
 import { supabaseServer } from "@/lib/supabase-server";
 import { getVerifiedUser } from "@/lib/verified-user";
 import { useT } from "@/lib/i18n";
+import { getPlanningAccess } from "@/lib/planning/access";
 import ReviewClient, { type ReviewStrings } from "./ReviewClient";
+import { loadBulkDraft } from "../actions";
 import { IconBlocked } from "@/app/icons";
 import "./review.css";
 
@@ -14,38 +15,54 @@ import "./review.css";
 // reviews the staged plan, surfaces every blocker bound to its object, shows the
 // Publish Consequence Ledger, and publishes atomically via publish_bulk_plan.
 // /planning/plans/:id stays read-only and is only linked after a successful commit.
-export default async function BulkReview() {
-  const { t } = await useT();
+// M6 — ?plan=<id> resumes a persisted bulk draft (visit_plans method 'bulk',
+// status 'draft'): the server loads it here and the workspace hydrates from it,
+// falling back to the browser-held selection when no draft is referenced.
+export default async function BulkReview({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
+  const { plan: planParam } = await searchParams;
+  const { t, locale } = await useT();
 
-  // RBAC-007 — independent Planner gate. Navigation visibility is never
-  // authorization; RLS remains the data boundary and the guarded RPC re-checks.
+  // RBAC-007 / M6 — capability gate (planning.create.bulk), the canonical
+  // planning access model instead of a hand-rolled role read. Navigation
+  // visibility is never authorization; RLS remains the data boundary and the
+  // guarded RPC re-checks its own Planner role at publish (documented
+  // asymmetry: the Reviewer persona holds the capability and can stage,
+  // validate and save drafts, but publish_bulk_plan enforces has_role).
   const sb = await supabaseServer();
   const { data: { user }, error: authError } = await getVerifiedUser(sb);
-  const { data: myRoles, error: rolesError } = user
-    ? await getUserRoles(user.id)
-    : { data: [] as { role_key: string }[], error: null };
-  if (authError || rolesError) {
-    console.error("[CD-025 bulk review authorization]", authError?.message ?? rolesError?.message);
+  const access = await getPlanningAccess(sb, ["planning.create.bulk"]);
+  if (authError || access.error !== null) {
+    console.error("[CD-025 bulk review authorization]", authError?.message ?? access.error);
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
         <div className="ax-banner ax-banner--critical" role="alert">{t("plan.bulk.unavailable", "Planning data is temporarily unavailable (ERR-OPS-001). Try again.")}</div>
       </Shell>
     );
   }
-  const isPlanner = (myRoles ?? []).some(r => r.role_key === "planner");
-  if (!isPlanner) {
+  if (!user || !access.can("planning.create.bulk")) {
     return (
       <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}>
         <section className="panel cd-panelpad ax-permission">
           <div className="ax-state ax-state--inline">
             <span className="ax-state__glyph" aria-hidden="true"><IconBlocked size={24} /></span>
             <h4 tabIndex={-1}>{t("plan.review.unauth.title", "You don’t have access to review this plan")}</h4>
-            <p className="t-caption">{t("plan.review.unauth.body", "This view requires the Planner role and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
+            <p className="t-caption">{t("plan.review.unauth.body", "This view requires the bulk-planning capability and matching scope. Navigation visibility is not authorization; RLS remains the boundary.")}</p>
             <a className="ax-link" href="/planning">{t("plan.review.unauth.back", "Back to planning")}</a>
           </div>
         </section>
       </Shell>
     );
+  }
+
+  // M6 — resume consumption. Only an OWN, still-draft bulk plan hydrates the
+  // workspace; anything else (published, archived, another planner's, unknown
+  // id) is reported honestly and the legacy browser-held path takes over.
+  let initialDraft = null;
+  let draftUnavailable = false;
+  if (planParam) {
+    const res = await loadBulkDraft(planParam);
+    if (res.draft) initialDraft = res.draft;
+    else draftUnavailable = true;
   }
 
   const strings: ReviewStrings = {
@@ -69,7 +86,15 @@ export default async function BulkReview() {
     assignments: t("plan.review.assignments", "Assignments"),
     manual: t("plan.review.manual", "manual"),
     auto: t("plan.review.auto", "automatic"),
-    packageLabel: t("plan.bulk.package", "Inspection checklist"),
+    packageLabel: t("plan.bulk.package", "Inspection checklists (optional — zero or more)"),
+    packageHint: t("plan.review.packageHint", "No checklist selected — that is allowed. The inspector chooses an eligible checklist during preparation."),
+    packageNone: t("plan.review.packageNone", "No checklist — chosen during preparation"),
+    packageCount: t("plan.review.packageCount", "{n} checklist(s)"),
+    priorityLabel: t("plan.review.priority", "Priority"),
+    priorityNone: t("plan.review.priorityNone", "None (default)"),
+    notBulkYet: t("plan.review.notBulkYet", "not yet available for bulk"),
+    droppedH: t("plan.review.droppedH", "{n} row(s) were excluded at the authoritative publish re-check"),
+    droppedD: t("plan.review.droppedD", "These rows became ineligible between the last check and the commit. They were NOT published; everything else committed atomically."),
     visitType: t("plan.bulk.visitType", "Visit type"),
     typePeriodic: t("enum.periodic", "Periodic compliance"),
     mode: t("plan.review.mode", "Mode"),
@@ -176,6 +201,29 @@ export default async function BulkReview() {
     goVisits: t("plan.review.goVisits", "Go to visits"),
     openPlan: t("plan.review.openPlan", "Open the published plan (read-only)"),
 
+    // M6 — eligibility partition + acknowledgement + persisted drafts
+    eligH: t("plan.review.elig.h", "Eligibility"),
+    eligTotal: t("plan.review.elig.total", "Total selected"),
+    eligEligible: t("plan.review.elig.eligible", "Eligible"),
+    eligIneligible: t("plan.review.elig.ineligible", "Ineligible"),
+    eligToCreate: t("plan.review.elig.toCreate", "To create"),
+    eligMissingLoc: t("plan.review.elig.missingLoc", "Missing location"),
+    eligConflicts: t("plan.review.elig.conflicts", "Active conflicts"),
+    eligManualOverride: t("plan.review.elig.manualOverride", "Manual override required"),
+    reasonDup: t("plan.review.elig.reasonDup", "duplicate — active visit (M02-012)"),
+    reasonScope: t("plan.review.elig.reasonScope", "out of scope"),
+    reasonLocation: t("plan.review.elig.reasonLocation", "missing official location"),
+    reasonInspector: t("plan.review.elig.reasonInspector", "inspector conflict"),
+    ackRequired: t("plan.review.elig.ackRequired", "{n} selected row(s) are ineligible. Acknowledge below to proceed with the eligible subset only, or go back and adjust the selection."),
+    ackLabel: t("plan.review.elig.ackLabel", "Proceed with the {n} eligible factories only — ineligible rows are named above and will not be published."),
+    saveDraft: t("plan.review.saveDraft", "Save draft"),
+    savingDraft: t("plan.review.savingDraft", "Saving draft…"),
+    draftSaved: t("plan.review.draftSaved", "Draft saved · {ref} (v{n})"),
+    draftSaveFailed: t("plan.review.draftSaveFailed", "The draft could not be saved. Your working state is unchanged — you can retry or continue without saving."),
+    draftBanner: t("plan.review.draftBanner", "Resumed from draft {ref} — saved working state; readiness is re-checked live."),
+    draftUnavailable: t("plan.review.draftUnavailable", "The referenced draft could not be loaded — it may have been published, archived or created by someone else. Falling back to the browser-held selection."),
+    discardDraft: t("plan.review.discardDraft", "Discard draft"),
+
     // CD-024 — Assignment Evidence Ledger + per-row evidence cells
     evTitle: t("plan.review.ev.title", "Assignment evidence ledger"),
     evLead: t("plan.review.ev.lead", "Focus a factory row (or choose “Review evidence”) to see exactly what is verified, what is not evaluated, what blocks the assignment, and what is checked again just before publishing — for that candidate only. No score, rank or confidence is shown."),
@@ -213,7 +261,7 @@ export default async function BulkReview() {
       overlap: { title: t("plan.review.bl.ov.t", "Inspector is already booked in this window"), detail: t("plan.review.bl.ov.d", "{targets}") },
       coverage: { title: t("plan.review.bl.cov.t", "{n} visits have no eligible Inspector available in the window"), detail: t("plan.review.bl.cov.d", "Widen the window or assign an Inspector manually.") },
       capacity: { title: t("plan.review.bl.cap.t", "No day in the window has remaining daily capacity for the assigned Inspector"), detail: t("plan.review.bl.cap.d", "{targets}") },
-      nopackage: { title: t("plan.review.bl.nopkg.t", "No active or locked inspection checklist is available"), detail: t("plan.review.bl.nopkg.d", "Cannot reference an unpublished version — this is a legitimate empty state.") },
+      nopackage: { title: t("plan.review.bl.nopkg.t", "No inspection checklist selected"), detail: t("plan.review.bl.nopkg.d", "Allowed (PLN-CON-003): the inspector chooses an eligible checklist during preparation. Publishing proceeds without one.") },
       packageInvalid: { title: t("plan.review.bl.pkginv.t", "Selected inspection checklist is no longer active at the authoritative check"), detail: t("plan.review.bl.pkginv.d", "Revalidate and choose a currently active version before publishing.") },
       nopool: { title: t("plan.review.bl.nopool.t", "No Inspector exists in the Inspector role pool"), detail: t("plan.review.bl.nopool.d", "Automatic assignment cannot be derived — a legitimate empty pool, not a source failure.") },
       configMissing: { title: t("plan.review.bl.cfg.t", "Mandatory configuration is missing"), detail: t("plan.review.bl.cfg.d", "Set the visit type, a valid window (end after start) and an inspection checklist.") },
@@ -228,7 +276,7 @@ export default async function BulkReview() {
   return (
     <Shell current="/planning" title={t("plan.review.title", "Plan review & publish")}
       context={<span className="badge badge-info">{t("plan.review.context", "SCR-WEB-150 · review · publish")}</span>}>
-      <ReviewClient strings={strings} />
+      <ReviewClient strings={strings} initialDraft={initialDraft} draftUnavailable={draftUnavailable} locale={locale} />
     </Shell>
   );
 }

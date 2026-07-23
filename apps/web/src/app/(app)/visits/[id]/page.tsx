@@ -1,18 +1,20 @@
 import Shell from "@/components/Shell";
 import { supabaseServer } from "@/lib/supabase-server";
 import { useT } from "@/lib/i18n";
-import ActionBar, { type ActionBarStrings } from "./ActionBar";
+import ActionBar, { type ActionBarStrings, type PackageOption } from "./ActionBar";
 import Attachments, { type AttachmentRow, type AttachmentsStrings } from "./Attachments";
 import NotesEditor, { type NotesStrings } from "./NotesEditor";
 import DualStateRibbon, { type RibbonTrack, type RibbonStrings } from "./DualStateRibbon";
+import { getReasonOptions, type ReasonOption } from "@/lib/planning/lifecycle";
 import { mapError } from "./neutral";
 import CreatedToast from "@/components/CreatedToast";
 import EmptyState from "@/components/EmptyState";
+import FocusScroll from "./FocusScroll";
 
-const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical" };
+const PLAN_TONE: Record<string, string> = { published: "ax-lozenge--info", returned: "ax-lozenge--warning", cancelled: "ax-lozenge--critical", expired: "ax-lozenge--critical" };
 
-export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
-  const { created } = await searchParams;
+export default async function VisitDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; focus?: string }> }) {
+  const { created, focus } = await searchParams;
   const { id } = await params;
   const { t, locale } = await useT();
   const tr = (key: string, en: string, ar: string) => locale === "ar" ? ar : t(key, en);
@@ -24,8 +26,9 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   const inspectors = (inspRows ?? []).map(r => ({ user_id: r.user_id as string, full_name: r.full_name as string }));
   const { data: v, error: vErr } = await sb.from("visits")
     .select(`id, visit_type, execution_mode, planning_status, operational_state, window_start, window_end, cancellation_reason, notes,
-      immediate_creator_role, source_channel, internal_reference,
-      visit_plans(id, method, status, published_at, created_at, profiles(full_name)),
+      immediate_creator_role, source_channel, internal_reference, priority, visit_reference, expired_by_rule_id, package_version_id,
+      planner_lat, planner_lng, original_lat, original_lng, visit_location_source, created_at,
+      visit_plans(id, method, status, published_at, created_at, plan_reference, profiles(full_name)),
       factories(id, factory_code, name, cr_number, official_lat, official_lng, risk_band, is_temporary, source),
       package_versions(version_label, packages(code)),
       assignments(method, status, profiles(full_name)),
@@ -40,6 +43,36 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     .select("id, actor, action, before_state, after_state, occurred_at")
     .eq("object_type", "visits").eq("object_id", id)
     .order("occurred_at", { ascending: false }).limit(30);
+  // M8 / PLN-CON-011 — governed lifecycle stream + location provenance +
+  // package links. All three are additive reads; a failed read degrades to an
+  // empty section (logged), never a crashed page.
+  const [lifecycleRead, locationRead, pkgLinksRead, returnReasonsRes, cancelReasonsRes] = await Promise.all([
+    sb.from("visit_lifecycle_events")
+      .select("id, event_type, reason_key, comments, actor, previous, created_at")
+      .eq("visit_id", id).order("created_at", { ascending: false }).limit(50),
+    sb.from("visit_location_events")
+      .select("id, lat, lng, source, actor, note, created_at")
+      .eq("visit_id", id).order("created_at", { ascending: false }).limit(50),
+    sb.from("visit_packages")
+      .select("id, package_version_id, snapshot, added_at")
+      .eq("visit_id", id).order("added_at", { ascending: true }),
+    getReasonOptions(sb, "return_reason"),
+    getReasonOptions(sb, "cancellation_reason"),
+  ]);
+  if (lifecycleRead.error) console.error("[visit.detail] lifecycle read:", lifecycleRead.error.message);
+  if (locationRead.error) console.error("[visit.detail] location events read:", locationRead.error.message);
+  if (pkgLinksRead.error) console.error("[visit.detail] visit_packages read:", pkgLinksRead.error.message);
+  const lifecycleEvents = (lifecycleRead.data ?? []) as {
+    id: string; event_type: string; reason_key: string | null; comments: string | null;
+    actor: string | null; previous: Record<string, unknown>; created_at: string;
+  }[];
+  const locationEvents = (locationRead.data ?? []) as {
+    id: string; lat: number; lng: number; source: string; actor: string | null; note: string | null; created_at: string;
+  }[];
+  const pkgLinks = (pkgLinksRead.data ?? []) as {
+    id: string; package_version_id: string; added_at: string;
+    snapshot: { code?: string | null; title?: string | null; version_label?: string | null; status?: string | null } | null;
+  }[];
   if (vErr) {
     return <Shell current="/visits" title={t("visit.detail.errorTitle", "Visit — error")}><div className="ax-banner ax-banner--critical" role="alert"><div>{mapError(vErr, "load")}</div></div></Shell>;
   }
@@ -55,9 +88,51 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
   // provenance (Planner/Inspector, reason, channel) is surfaced below.
   const isUnverifiedManual = f.is_temporary && f.source === "immediate_manual";
   // visits->visit_plans is TO-ONE (FK on visits): object or null (null = immediate, M01-050)
-  const plan = v.visit_plans as unknown as { id: string; method: string; status: string; published_at: string | null; created_at: string; profiles: { full_name: string } | null } | null;
-  const returnReason = v.planning_status === "returned" && typeof v.notes === "string" && v.notes.startsWith("RETURNED: ")
+  const plan = v.visit_plans as unknown as { id: string; method: string; status: string; published_at: string | null; created_at: string; plan_reference: string | null; profiles: { full_name: string } | null } | null;
+  // M8 — governed reason label resolution (locale-aware; AR falls back to EN).
+  const reasonLabel = (options: ReasonOption[], key: string | null | undefined) => {
+    if (!key) return null;
+    const opt = options.find(o => o.key === key);
+    return opt ? (locale === "ar" ? (opt.label_ar ?? opt.label_en) : opt.label_en) : key;
+  };
+  const returnReasons = returnReasonsRes.options;
+  const cancelReasons = cancelReasonsRes.options;
+  // M8 / PLN-CON-011 — return info comes from the LATEST lifecycle 'return'
+  // event. LEGACY FALLBACK: historical rows encoded the reason in a
+  // 'RETURNED: ' notes prefix; when no event exists the prefix still renders
+  // (never break historical rows).
+  const latestReturnEvent = lifecycleEvents.find(e => e.event_type === "return") ?? null;
+  const legacyReturnReason = v.planning_status === "returned" && typeof v.notes === "string" && v.notes.startsWith("RETURNED: ")
     ? v.notes.slice("RETURNED: ".length) : null;
+  const returnReason = latestReturnEvent ? reasonLabel(returnReasons, latestReturnEvent.reason_key) : legacyReturnReason;
+  const latestCancelEvent = lifecycleEvents.find(e => e.event_type === "cancel") ?? null;
+  const cancelReasonDisplay = reasonLabel(cancelReasons, v.cancellation_reason) ?? v.cancellation_reason;
+  // M8 — expiry provenance: the rule that expired this visit + its reason.
+  const latestExpireEvent = lifecycleEvents.find(e => e.event_type === "expire") ?? null;
+  let expiryRuleReason: string | null = null;
+  if (v.expired_by_rule_id) {
+    const { data: rule } = await sb.from("planning_expiry_rules").select("rule_type, reason").eq("id", v.expired_by_rule_id).maybeSingle();
+    expiryRuleReason = rule?.reason ?? rule?.rule_type ?? null;
+  }
+  if (!expiryRuleReason && latestExpireEvent) expiryRuleReason = latestExpireEvent.comments ?? latestExpireEvent.reason_key;
+  // M8 — bulk context: sibling visits under the same plan.
+  let siblingCount = 0;
+  if (plan) {
+    const { count } = await sb.from("visits").select("id", { count: "exact", head: true }).eq("visit_plan_id", plan.id);
+    siblingCount = count ?? 0;
+  }
+  // M8 — repackage options for returned visits (active packages only).
+  let packageOptions: PackageOption[] = [];
+  if (v.planning_status === "returned") {
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: pvs } = await sb.from("package_versions")
+      .select("id, version_label, packages(code)").in("status", ["published", "locked"])
+      .lte("effective_from", today).or(`effective_to.is.null,effective_to.gte.${today}`);
+    packageOptions = (pvs ?? []).map(p => ({
+      id: p.id as string,
+      label: `${(p.packages as unknown as { code: string } | null)?.code ?? p.id.slice(0, 8)} · ${p.version_label}`,
+    }));
+  }
   const pkg = v.package_versions as unknown as { version_label: string; packages: { code: string } } | null;
   const asg = (v.assignments as unknown as { method: string; status: string; profiles: { full_name: string } }[])[0];
   const journeys = v.journey_sessions as unknown as { id: string; started_at: string; geo_events: { kind: string; accuracy_m: number; geofence_result: string | null; gis_version: string; occurred_at: string }[] }[];
@@ -105,12 +180,12 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     placeholder: t("visit.notes.placeholder", "Context for the inspector or operations — saved to the visit, audited"),
     saveBtn: t("visit.notes.saveBtn", "Save notes"),
     saving: t("visit.notes.saving", "Saving…"),
-    hint: t("visit.notes.hint", "planner/ops only (RLS visits_update) · return flows also write here (M02-008)"),
+    hint: t("visit.notes.hint", "planner/ops only (RLS visits_update) · return flows never write here — reasons live on the lifecycle stream (M8)"),
   };
   const actionStrings: ActionBarStrings = {
     heading: t("visit.actions.heading", "Management actions — state-guarded (only valid transitions succeed)"),
     returnReason: t("visit.actions.returnReason", "Return reason *"),
-    returnPlaceholder: t("visit.actions.returnPlaceholder", "mandatory — STM-VIS-001"),
+    returnComments: t("visit.actions.returnComments", "Return comments"),
     returnBtn: t("visit.actions.returnBtn", "Return"),
     republishBtn: t("visit.actions.republishBtn", "Republish (same ID)"),
     reassignTo: t("visit.actions.reassignTo", "Reassign to (M02-009)"),
@@ -119,7 +194,7 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     newWindowEnd: t("visit.actions.newWindowEnd", "New window end"),
     rescheduleBtn: t("visit.actions.rescheduleBtn", "Reschedule"),
     cancelReason: t("visit.actions.cancelReason", "Cancellation reason *"),
-    cancelPlaceholder: t("visit.actions.cancelPlaceholder", "final — M02-006"),
+    cancelComments: t("visit.actions.cancelComments", "Cancellation comments"),
     cancelBtn: t("visit.actions.cancelBtn", "Cancel visit"),
     visitTypeLabel: t("visit.actions.visitTypeLabel", "Visit type (pre-start — M02-006)"),
     visitTypeBtn: t("visit.actions.visitTypeBtn", "Update type"),
@@ -134,6 +209,11 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
     reassignLockedWhy: t("visit.actions.reassignLockedWhy", "reassign locked — inspection already started ({state}) (M02-006)"),
     scheduleLockedWhy: t("visit.actions.scheduleLockedWhy", "locked — execution started ({state}); only published/new visits can be rescheduled, retyped or cancelled (M02-006/008)"),
     noneAvailable: t("visit.actions.noneAvailable", "No management actions available in this state."),
+    commentsHint: t("visit.actions.commentsHint", "mandatory when the reason is Other"),
+    repackageLabel: t("visit.actions.repackageLabel", "New primary checklist (returned — PLN-CON-003)"),
+    repackageBtn: t("visit.actions.repackageBtn", "Repackage"),
+    duplicateBtn: t("visit.actions.duplicateBtn", "Duplicate visit"),
+    duplicateWhy: t("visit.actions.duplicateWhy", "Duplicate produces a new Draft with planning fields only (PLN-REQ-011)."),
   };
   // CD-027 — Dual-State Ribbon: five never-collapsed domains, each with the
   // latest VERIFIED event + its source + the allowed-action boundary + a history
@@ -246,26 +326,50 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
         {plan ? (
           <p>
             <span className="ax-lozenge ax-lozenge--info">{t(`enum.${plan.method}`, plan.method)}</span>{" "}
-            <span className="ax-numeric">{plan.id.slice(0, 8)}</span> · {t("visit.detail.planCreatedBy", "created by")} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
+            <span className="ax-numeric"><strong>{plan.plan_reference ?? plan.id.slice(0, 8)}</strong></span> · {t("visit.detail.planCreatedBy", "created by")} <strong>{plan.profiles?.full_name ?? "—"}</strong>{" "}
             <span className="ax-numeric">{new Date(plan.created_at).toISOString().slice(0, 16).replace("T", " ")}</span>
             {plan.published_at && <> · {t("visit.detail.planPublishedAt", "published")} <span className="ax-numeric">{new Date(plan.published_at).toISOString().slice(0, 16).replace("T", " ")}</span></>}
             {" "}· <span className={`ax-lozenge ax-lozenge--plan ${PLAN_TONE[plan.status] ?? ""}`}>{t(`enum.${plan.status}`, plan.status)}</span>
+            {/* M8 — bulk context: this visit is one of N under the plan */}
+            {" "}· {t("visit.detail.siblings", "{n} visits under this plan").replace("{n}", String(siblingCount))}
+            {" "}· <a className="ax-link" href={`/planning/plans/${plan.id}`}>{t("visit.detail.openPlan", "Open plan →")}</a>
           </p>
         ) : (
           <p className="ax-caption">{t("visit.detail.noPlan", "Immediate visit — created without a plan (M01-050).")}</p>
         )}
       </div>
-      {/* M02-008/029 — return reason surfaced, not just stored */}
+      {/* M02-008/029 + M8 — return info from the lifecycle stream; the legacy
+          notes-prefix parse only fires for historical rows without an event.
+          M10 / PLN-REQ-009 — notification deep-links (?focus=return) anchor
+          and highlight this block. */}
       {returnReason && (
-        <div className="ax-banner ax-banner--warning"><div>{t("visit.detail.returnReason", "Returned — reason: {reason} (M02-008)").replace("{reason}", returnReason)}</div></div>
+        <div id="return-block" className="ax-banner ax-banner--warning"
+          style={focus === "return" ? { outline: "2px solid var(--ax-color-primary)", outlineOffset: 2 } : undefined}><div>
+          {t("visit.detail.returnReason", "Returned — reason: {reason} (PLN-CON-011)").replace("{reason}", returnReason)}
+          {latestReturnEvent?.comments ? <> · <bdi>{latestReturnEvent.comments}</bdi></> : null}
+          {latestReturnEvent ? <span className="ax-caption"> · {new Date(latestReturnEvent.created_at).toISOString().slice(0, 16).replace("T", " ")}</span> : null}
+        </div></div>
       )}
-      {v.planning_status === "cancelled" && v.cancellation_reason && (
-        <div className="ax-banner ax-banner--critical"><div>{t("visit.detail.cancelledReason", "Cancelled — reason: {reason} (M02-006, final)").replace("{reason}", v.cancellation_reason)}</div></div>
+      {focus === "return" && returnReason ? <FocusScroll targetId="return-block" /> : null}
+      {v.planning_status === "cancelled" && cancelReasonDisplay && (
+        <div className="ax-banner ax-banner--critical"><div>
+          {t("visit.detail.cancelledReason", "Cancelled — reason: {reason} (M02-006, final)").replace("{reason}", cancelReasonDisplay)}
+          {latestCancelEvent?.comments ? <> · <bdi>{latestCancelEvent.comments}</bdi></> : null}
+        </div></div>
+      )}
+      {/* M8 — expiry provenance: rule reason + event comments, final/read-only */}
+      {v.planning_status === "expired" && (
+        <div className="ax-banner ax-banner--critical"><div>
+          {t("visit.detail.expiredReason", "Expired — {reason} (final; duplicate produces a new Draft)")
+            .replace("{reason}", expiryRuleReason ?? t("visit.detail.expiredUnknown", "lapsed by the scheduled expiry sweep"))}
+        </div></div>
       )}
       <ActionBar visitId={v.id} status={v.planning_status} opState={v.operational_state}
         opStateLabel={t(`enum.${v.operational_state}`, v.operational_state.replace(/_/g, " "))}
         visitType={v.visit_type} windowStart={v.window_start} windowEnd={v.window_end} inspectors={inspectors}
-        canManage={canManage} canReassign={canReassign} isFinal={isFinal} strings={actionStrings} />
+        canManage={canManage} canReassign={canReassign} isFinal={isFinal}
+        returnReasons={returnReasons} cancelReasons={cancelReasons} packageOptions={packageOptions}
+        strings={actionStrings} />
       {/* FIX WAVE F4 — M02-043 notes add/edit */}
       <NotesEditor visitId={v.id} initialNotes={typeof v.notes === "string" ? v.notes : ""} strings={notesStrings} />
       {/* FIX WAVE F4 — M02-042 attachments */}
@@ -274,6 +378,92 @@ export default async function VisitDetail({ params, searchParams }: { params: Pr
       ) : (
         <Attachments visitId={v.id} rows={attRows} strings={attachmentsStrings} />
       )}
+      {/* M8 / PLN-CON-003 — report packages: every visit_packages link with its
+          immutable snapshot; the primary (visits.package_version_id) is marked.
+          Zero links = preparation chooses the checklist later (honest, allowed). */}
+      <div id="packages" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.packagesHeading", "Report packages")}</h4>
+        {pkgLinks.length === 0 ? (
+          <p className="ax-caption">{t("visit.detail.noPackages", "No checklist selected — the inspector chooses an eligible checklist during preparation (PLN-CON-003).")}</p>
+        ) : (
+          <ul className="ax-timeline">
+            {pkgLinks.map(l => (
+              <li key={l.id} className={l.package_version_id === v.package_version_id ? "is-key" : undefined}>
+                <div>
+                  <strong>{l.snapshot?.code ?? l.package_version_id.slice(0, 8)}</strong>
+                  {l.snapshot?.title ? <> · {l.snapshot.title}</> : null}
+                  {l.snapshot?.version_label ? <> · <span className="ax-version">{l.snapshot.version_label}</span></> : null}
+                  {l.package_version_id === v.package_version_id && <span className="ax-lozenge ax-lozenge--info">{t("visit.detail.primaryPackage", "primary")}</span>}
+                  <br />
+                  <span className="ax-timeline__meta ax-numeric">
+                    {t("visit.detail.packageLinkedAt", "linked")} {new Date(l.added_at).toISOString().slice(0, 16).replace("T", " ")}
+                    {l.snapshot?.status ? <> · {t("visit.detail.packageSnapshot", "snapshot at link time:")} {l.snapshot.status}</> : null}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      {/* M8 / PLN-CON-011 — lifecycle history: the append-only event stream
+          (return/cancel/republish/expire/duplicate/reschedule/reassign/
+          discard_draft), reasons resolved through the governed lookups. */}
+      <div id="lifecycle" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.lifecycleHeading", "Lifecycle history — append-only (PLN-CON-011)")}</h4>
+        {lifecycleEvents.length === 0 ? (
+          <p className="ax-caption">{t("visit.detail.noLifecycle", "No lifecycle events recorded yet.")}</p>
+        ) : (
+          <ul className="ax-timeline">
+            {lifecycleEvents.map(e => {
+              const label = e.event_type === "return" ? reasonLabel(returnReasons, e.reason_key)
+                : e.event_type === "cancel" ? reasonLabel(cancelReasons, e.reason_key)
+                : e.reason_key;
+              return (
+                <li key={e.id} className={["return", "cancel", "expire"].includes(e.event_type) ? "is-key" : undefined}>
+                  <div>
+                    <strong>{t(`enum.lifecycle.${e.event_type}`, e.event_type.replace(/_/g, " "))}</strong>
+                    {label ? <> · {label}</> : null}
+                    {e.comments ? <> · <bdi>{e.comments}</bdi></> : null}
+                    <br />
+                    <span className="ax-timeline__meta ax-numeric">
+                      {new Date(e.created_at).toISOString().slice(0, 19).replace("T", " ")} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      {/* M8 — location provenance: current planned pin, first pin, and the
+          additive visit_location_events stream (canonical §12). */}
+      <div id="location" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
+        <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.locationHeading", "Location & provenance")}</h4>
+        <p className="ax-numeric">
+          {t("visit.detail.locationPlanned", "Planned pin:")}{" "}
+          {v.planner_lat != null && v.planner_lng != null ? `${v.planner_lat}, ${v.planner_lng}` : t("visit.detail.locationFactory", "factory location")}
+          {v.visit_location_source ? <> · {t(`enum.locationSource.${v.visit_location_source}`, v.visit_location_source)}</> : null}
+          {v.original_lat != null && v.original_lng != null && (v.original_lat !== v.planner_lat || v.original_lng !== v.planner_lng) && (
+            <> · {t("visit.detail.locationOriginal", "first pin:")} {v.original_lat}, {v.original_lng}</>
+          )}
+        </p>
+        {locationEvents.length > 0 && (
+          <ul className="ax-timeline">
+            {locationEvents.map(e => (
+              <li key={e.id}>
+                <div>
+                  <strong>{t(`enum.locationSource.${e.source}`, e.source)}</strong> · <span className="ax-numeric">{e.lat}, {e.lng}</span>
+                  {e.note ? <> · <bdi>{e.note}</bdi></> : null}
+                  <br />
+                  <span className="ax-timeline__meta ax-numeric">
+                    {new Date(e.created_at).toISOString().slice(0, 19).replace("T", " ")} · {e.actor ? t("visit.detail.auditActor", "by {who}").replace("{who}", e.actor.slice(0, 8)) : t("visit.detail.auditSystem", "system")}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       <div id="journey" className="ax-surface" style={{ padding: "var(--ax-space-300)" }}>
         <h4 style={{ marginBlockEnd: "var(--ax-space-150)" }}>{t("visit.detail.journeyHeading", "Journey & location events — cannot be edited (EV-005)")}</h4>
         <ul className="ax-timeline">
