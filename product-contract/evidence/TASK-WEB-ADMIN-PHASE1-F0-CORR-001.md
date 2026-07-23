@@ -43,3 +43,5 @@ offline execution, or iPad implementation changed.
 Revert the correction commit or restore the retained metadata/shell references.
 Do not delete legacy assets until stabilization and Product Owner removal
 approval.
+
+Implementation commit: `c75407aa`.

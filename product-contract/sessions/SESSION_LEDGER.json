@@ -4743,9 +4743,29 @@
       "commit_sha": "5932a4db",
       "next_task": "Product Owner reviews the canonical shell-authority amendment; do not resume a screen batch until explicit approval.",
       "resume_prompt": "Read product-contract/execution/CURRENT_SLICE.yaml and product-contract/web-admin-phase1/WEB_ADMIN_SHELL_AUTHORITY.md. Confirm commit 5932a4db and validator PASS. Restore stash 405708dc8f30fe46577dfbad05efd779d1424909 only after explicit amendment approval, then reconcile and redeclare the first coherent 2-4 screen batch."
+    },
+    {
+      "session_id": "2026-07-23-web-admin-f0-brand-correction-001",
+      "started_at": "2026-07-23",
+      "ended_at": "2026-07-23",
+      "branch": "revamp",
+      "task_id": "TASK-WEB-ADMIN-PHASE1-F0-CORR-001",
+      "gate": "Web/Admin human screen approval",
+      "requirements": ["CR-001..CR-478 unchanged", "Web/Admin brand correction only", "Field/PWA/iPad Phase 2 excluded"],
+      "acceptance_ids": ["WA-SHELL-AC-001", "WA-SHELL-AC-002", "WA-SHELL-AC-003"],
+      "screens": ["Browser favicon", "Expanded authenticated shell identity", "Collapsed authenticated shell mark"],
+      "engines": ["Next.js metadata", "Authenticated AppShell", "SAQEEL SVG runtime assets"],
+      "files_changed": ["Web favicon metadata", "Approved shield and bilingual wordmark assets", "Authenticated shell brand markup and CSS", "Focused brand regression tests", "Brand authority manifest and approval ledger"],
+      "tests": ["typecheck PASS", "production build PASS", "focused branding contract and auth setup 6/6 PASS", "live asset HTTP checks PASS", "visible in-app browser review PASS", "web-admin validator 478/478 PASS", "broader login-atlas test remains red on pre-existing missing light-atlas element before favicon assertion"],
+      "evidence": ["product-contract/evidence/TASK-WEB-ADMIN-PHASE1-F0-CORR-001.md", "visible in-app browser review at /admin/violations"],
+      "decisions": ["Use supplied green shield/check favicon", "Use supplied dark-surface SAQEEL | صقيل wordmark on graphite rail", "Retain light-surface counterpart and legacy prism rollback assets", "Do not touch deferred PWA manifest service worker Field or iPad"],
+      "blockers": ["Explicit Product Owner visual decision for WA-P1-F0-CORR-001", "Existing unrelated login-atlas baseline mismatch", "APPROVED FOR CUTOVER or removal approval remains separate"],
+      "commit_sha": "c75407aa",
+      "next_task": "Stop until Product Owner reviews the corrected favicon and shell identity.",
+      "resume_prompt": "Read CURRENT_SLICE.yaml and TASK-WEB-ADMIN-PHASE1-F0-CORR-001.md. Proceed only after an explicit Product Owner decision; do not begin another screen batch."
     }
   ],
-  "last_session": "2026-07-23-web-admin-shell-authority-001",
+  "last_session": "2026-07-23-web-admin-f0-brand-correction-001",
   "rules": {
     "append_only": true,
     "required_fields": [
